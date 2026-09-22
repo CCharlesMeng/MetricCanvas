@@ -30,9 +30,9 @@ class BundleSkillsTest(unittest.TestCase):
             (workflows / f"{name}.md").write_text("# Workflow\n")
         self.bundle = {"skill": {"entrypoint": self.entries[0]["entrypoint"]}, "skills": self.entries}
         self.entries[1]["mcpServer"] = "metriccanvas-platform-content"
-        self.bundle["toolServices"] = {"metriccanvas-platform-content": {"command": "metriccanvas-platform-content", "module": "metriccanvas_authoring.unified_content_server", "contextContract": "authoring-turn/1.0"}}
+        self.bundle["toolServices"] = {"metriccanvas-platform-content": {"command": "metriccanvas-platform-content", "module": "metriccanvas_authoring.platform_server", "contextContract": "authoring-turn/1.0", "platformProtocolVersion": "2.0"}}
         (self.root / "tool").mkdir()
-        (self.root / "tool/pyproject.toml").write_text('[project.scripts]\nmetriccanvas-platform-content = "metriccanvas_authoring.unified_content_server:main"\n')
+        (self.root / "tool/pyproject.toml").write_text('[project.scripts]\nmetriccanvas-platform-content = "metriccanvas_authoring.platform_server:main"\n')
 
 
     def check(self, bundle=None, locked=None):

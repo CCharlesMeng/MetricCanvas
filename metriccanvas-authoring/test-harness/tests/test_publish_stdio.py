@@ -9,8 +9,8 @@ from fastmcp.client.transports import StdioTransport
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
 from publish_stdio_server import Programs, Identities, PublicationSources, PublicationProvider, HumanEvents, prepare_request, context
-from metriccanvas_authoring.application.publish_ports import PublicationDependencies
-from metriccanvas_authoring.adapters.inbound.lifecycle_mcp import create_lifecycle_mcp_server
+from metriccanvas_authoring.assets.publish_ports import PublicationDependencies
+from metriccanvas_authoring.entrypoints.compat.lifecycle_mcp import create_lifecycle_mcp_server
 
 NAMES = {'save_draft', 'get_save_result', 'read_revision', 'list_revisions', 'prepare_candidate',
          'read_candidate', 'revise_candidate', 'confirm_publish', 'get_publish_operation_result'}
@@ -73,7 +73,7 @@ class PublishStdioTest(unittest.IsolatedAsyncioTestCase):
         with tempfile.TemporaryDirectory() as directory:
             installed = os.environ.get('S4_LIFECYCLE_INSTALLED_ROOT')
             env = {'PYTHONPATH': installed or str(ROOT / 'tool'), 'METRICCANVAS_TOOL_SURFACE': 'invalid-unused'}
-            args = [str(Path(installed) / 'bin/metriccanvas-lifecycle')] if installed else ['-m', 'metriccanvas_authoring.lifecycle_server']
+            args = [str(Path(installed) / 'bin/metriccanvas-lifecycle')] if installed else ['-m', 'metriccanvas_authoring.entrypoints.compat.lifecycle_server']
             async with Client(StdioTransport(command=sys.executable, args=args, env=env, cwd=directory)) as client:
                 self.assertEqual({t.name for t in await client.list_tools()}, NAMES)
                 for name in NAMES - {'save_draft', 'get_save_result', 'read_revision', 'list_revisions'}:

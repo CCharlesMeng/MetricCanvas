@@ -10,13 +10,13 @@ sys.path[:0] = [str(ROOT/'tool'), str(ROOT/'test-harness')]
 from test_authoring_submission import SubmissionFixture
 from test_unified_content_mcp import dependencies
 from test_page_editing import title
-from metriccanvas_authoring.application.authoring_candidates import AuthoringCandidates
-from metriccanvas_authoring.application.authoring_submission import AuthoringSubmissionCoordinator
-from metriccanvas_authoring.application.authoring_recovery import AuthoringRecoveryCoordinator
-from metriccanvas_authoring.application.lifecycle import Lifecycle
-from metriccanvas_authoring.application.lifecycle_ports import LifecycleError
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
-from metriccanvas_authoring.adapters.outbound.sqlite_authoring_state import SqliteCandidateStore, SqliteExecutionRecords, SqliteLifecyclePrograms
+from metriccanvas_authoring.work.authoring_candidates import AuthoringCandidates
+from metriccanvas_authoring.work.authoring_submission import AuthoringSubmissionCoordinator
+from metriccanvas_authoring.work.authoring_recovery import AuthoringRecoveryCoordinator
+from metriccanvas_authoring.assets.lifecycle import Lifecycle
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleError
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.adapters.storage.sqlite_authoring_state import SqliteCandidateStore, SqliteExecutionRecords, SqliteLifecyclePrograms
 
 
 class AuthoringRestartVerticalTest(unittest.IsolatedAsyncioTestCase):

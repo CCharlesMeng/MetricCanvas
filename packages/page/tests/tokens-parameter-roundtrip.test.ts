@@ -15,14 +15,14 @@ it('Tokens: all five verified queries round-trip, changed region/period changes 
   expect(e.candidates.map(c=>[c.id,c.coveredQueries.length,c.defaultSelected])).toEqual([['region',5,true],['report-period',5,true]]);
   expect(validate(s.document)).toEqual([]);
   expect(Object.values(s.document.dataSources).every(d=>!('initial' in d.source))).toBe(true);
-  for(const inputs of [s.originalValues,{region:'欧洲区','report-period':{start:'2026-07',end:'2026-12',granularity:'month'}}]){
+  for(const inputs of [s.originalValues,{region:['欧洲区'],'report-period':{start:'2026-07',end:'2026-12',granularity:'month'}}]){
     const r=resolvePageParams(s.document,inputs);expect(r.ok).toBe(true);if(!r.ok)throw Error(JSON.stringify(r.issues));
-    const stripped=structuredClone(r.document);if(!Array.isArray(stripped.params))throw Error('expected legacy array');stripped.params.forEach(p=>delete p.value);expect(stripped).toEqual(s.document);
+    const stripped=structuredClone(r.document);if(Array.isArray(stripped.params)||!stripped.params)throw Error('expected grouped parameters');for(const p of stripped.params.query?.dimensions??[])delete p.dim_value_list;for(const p of stripped.params.query?.times??[]){delete p.start;delete p.end;}expect(stripped).toEqual(s.document);
     expect(resolvePageParams(s.document,inputs)).toEqual(r);
     for(const [id,ds] of Object.entries(r.resolvedPage.dataSources)){
       if(ds.source.type!=='query')throw Error('query');
       const before=structuredClone((source.dataSources as any)[id].source.query.body);
-      before.dsl_list[0].filter.dims[0].dim_value_list=[inputs.region];
+      before.dsl_list[0].filter.dims[0].dim_value_list=inputs.region;
       Object.assign(before.dsl_list[0].filter.time,{start:(inputs['report-period'] as any).start,end:(inputs['report-period'] as any).end});
       expect(ds.source.query.body).toEqual(before);
     }

@@ -1,189 +1,211 @@
 {
-  "schemaVersion": "6.5",
+  "schemaVersion": "6.11",
   "id": "ioc-project-detail",
   "meta": {
     "description": "IOC 作战地图项目详情页。页面参数来自 URL，业务数据全部是 inline 合成演示数据，不来自真实系统。页面按有效设计源收口为 450:1168 的项目基本信息与项目规范性双卡，规范性两组矩阵同时展示；销售预测展示一至七月并保留小计、总计和合并逻辑；项目叙事收口为六块。原始业务长文本字段全部保留，latest-analysis-meeting-display 与 risk-management-display 仅为 inline 展示合成字段，不构成未来 GraphQL 契约。"
   },
-  "params": [
-    {
-      "id": "page-title",
-      "type": "string",
-      "required": true,
-      "label": "页面标题",
-      "default": "XX 云迁移项目"
-    },
-    {
-      "id": "opportunity-code",
-      "type": "string",
-      "required": true,
-      "label": "机会点编码",
-      "default": "OPP202604001"
-    },
-    {
-      "id": "mtime",
-      "type": "string",
-      "required": true,
-      "label": "数据月份",
-      "default": "202604"
-    },
-    {
-      "id": "ati-status-label",
-      "type": "string",
-      "required": false,
-      "label": "立项状态",
-      "default": "已立项"
-    },
-    {
-      "id": "project-initiation-level",
-      "type": "string",
-      "required": false,
-      "label": "立项级别",
-      "default": "L1"
-    },
-    {
-      "id": "public-cloud-na-level-name",
-      "type": "string",
-      "required": false,
-      "label": "客户级别",
-      "default": "战略客户"
-    },
-    {
-      "id": "sub-industry-level1-name",
-      "type": "string",
-      "required": false,
-      "label": "行业",
-      "default": "运营商"
-    },
-    {
-      "id": "party-number",
-      "type": "string",
-      "required": false,
-      "label": "客户编号"
-    }
-  ],
+  "params": {
+    "display": [
+      {
+        "id": "page-title",
+        "type": "string",
+        "value": "XX 云迁移项目",
+        "label": "页面标题"
+      },
+      {
+        "id": "opportunity-code",
+        "type": "string",
+        "value": "OPP202604001",
+        "label": "机会点编码"
+      },
+      {
+        "id": "mtime",
+        "type": "string",
+        "value": "202604",
+        "label": "数据月份"
+      },
+      {
+        "id": "ati-status-label",
+        "type": "string",
+        "value": "已立项",
+        "required": false,
+        "label": "立项状态"
+      },
+      {
+        "id": "project-initiation-level",
+        "type": "string",
+        "value": "L1",
+        "required": false,
+        "label": "立项级别"
+      },
+      {
+        "id": "public-cloud-na-level-name",
+        "type": "string",
+        "value": "战略客户",
+        "required": false,
+        "label": "客户级别"
+      },
+      {
+        "id": "sub-industry-level1-name",
+        "type": "string",
+        "value": "运营商",
+        "required": false,
+        "label": "行业"
+      },
+      {
+        "id": "party-number",
+        "type": "string",
+        "required": false,
+        "label": "客户编号"
+      }
+    ]
+  },
   "dataSources": {
     "project-detail": {
       "fields": {
         "region-dept-name": {
+          "queryField": "region_dept_name",
           "type": "string",
           "role": "dimension",
           "label": "地区部"
         },
         "rep-office-name": {
+          "queryField": "rep_office_name",
           "type": "string",
           "role": "dimension",
           "label": "代表处"
         },
         "region-office-display": {
+          "queryField": "region_office_display",
           "type": "string",
           "role": "dimension",
           "label": "地区部/代表处"
         },
         "party-company-name": {
+          "queryField": "party_company_name",
           "type": "string",
           "role": "dimension",
           "label": "客户名称"
         },
         "owner-name": {
+          "queryField": "owner_name",
           "type": "string",
           "role": "dimension",
           "label": "Owner"
         },
         "bd-name": {
+          "queryField": "bd_name",
           "type": "string",
           "role": "dimension",
           "label": "BD"
         },
         "owner-bd-display": {
+          "queryField": "owner_bd_display",
           "type": "string",
           "role": "dimension",
           "label": "Owner/BD"
         },
         "main-competitor": {
+          "queryField": "main_competitor",
           "type": "string",
           "role": "dimension",
           "label": "主要竞对"
         },
         "order-date-estimated": {
+          "queryField": "order_date_estimated",
           "type": "string",
           "role": "dimension",
           "label": "预签日期"
         },
         "opportunity-step-name": {
+          "queryField": "opportunity_step_name",
           "type": "string",
           "role": "dimension",
           "label": "机会点阶段"
         },
         "partner-real-customer-name": {
+          "queryField": "partner_real_customer_name",
           "type": "string",
           "role": "dimension",
           "label": "伙伴客户"
         },
         "solution-partner-name": {
+          "queryField": "solution_partner_name",
           "type": "string",
           "role": "dimension",
           "label": "解决方案伙伴"
         },
         "latest-analysis-meeting-time": {
+          "queryField": "latest_analysis_meeting_time",
           "type": "string",
           "role": "dimension",
           "label": "最近分析会时间"
         },
         "project-background": {
+          "queryField": "project_background",
           "type": "string",
           "role": "dimension",
           "label": "项目背景",
           "nullable": true
         },
         "project-objectives": {
+          "queryField": "project_objectives",
           "type": "string",
           "role": "dimension",
           "label": "项目目标",
           "nullable": true
         },
         "project-help-required": {
+          "queryField": "project_help_required",
           "type": "string",
           "role": "dimension",
           "label": "困难求助",
           "nullable": true
         },
         "competitor-update": {
+          "queryField": "competitor_update",
           "type": "string",
           "role": "dimension",
           "label": "竞对动态",
           "nullable": true
         },
         "project-risks": {
+          "queryField": "project_risks",
           "type": "string",
           "role": "dimension",
           "label": "项目风险",
           "nullable": true
         },
         "project-progress": {
+          "queryField": "project_progress",
           "type": "string",
           "role": "dimension",
           "label": "项目进展",
           "nullable": true
         },
         "latest-analysis-meeting-topic": {
+          "queryField": "latest_analysis_meeting_topic",
           "type": "string",
           "role": "dimension",
           "label": "最近分析会主题",
           "nullable": true
         },
         "latest-analysis-meeting-conclusion": {
+          "queryField": "latest_analysis_meeting_conclusion",
           "type": "string",
           "role": "dimension",
           "label": "最近分析会结论",
           "nullable": true
         },
         "latest-analysis-meeting-display": {
+          "queryField": "latest_analysis_meeting_display",
           "type": "string",
           "role": "dimension",
           "label": "项目分析会（最近）",
           "nullable": true
         },
         "risk-management-display": {
+          "queryField": "risk_management_display",
           "type": "string",
           "role": "dimension",
           "label": "风险管理和管控措施",
@@ -191,91 +213,170 @@
         }
       },
       "source": {
-        "type": "inline",
-        "rows": [
-          {
-            "region-dept-name": "欧洲地区部",
-            "rep-office-name": "德国代表处",
-            "region-office-display": "欧洲地区部 / 德国代表处",
-            "party-company-name": "XX 科技有限公司",
-            "owner-name": "张三",
-            "bd-name": "李四",
-            "owner-bd-display": "张三 / 李四",
-            "main-competitor": "AWS",
-            "order-date-estimated": "2026-06",
-            "opportunity-step-name": "方案确认",
-            "partner-real-customer-name": "XX 集成商",
-            "solution-partner-name": "XX 解决方案公司",
-            "latest-analysis-meeting-time": "2026-04-10",
-            "project-background": "客户 2025 年完成核心业务上云评估，2026 年启动一期迁移，预算已进入年度 IT 规划。",
-            "project-objectives": "一期迁移 120 套应用与两个核心数据库，年内完成灰度切换并通过等保三级复测。",
-            "project-help-required": "需要总部数据库迁移专家两人现场支持四周，并申请一次高层拜访窗口。",
-            "competitor-update": "竞对在 3 月提交了降价 12% 的替代方案，并承诺免费提供一年专属技术服务。",
-            "project-risks": "客户内部尚未完成迁移窗口审批，若 6 月前未获批，交付节点将顺延一个季度。",
-            "project-progress": "方案已通过客户技术委员会评审，商务条款进入第二轮谈判，预计 6 月完成预签。",
-            "latest-analysis-meeting-topic": "一期迁移方案收敛与竞对降价应对策略。",
-            "latest-analysis-meeting-conclusion": "维持现有报价，以专属服务与迁移保障方案换取客户对总价的接受；四月底前完成高层拜访。",
-            "latest-analysis-meeting-display": "主题：一期迁移方案收敛与竞对降价应对策略。\n时间：2026-04-10\n结论：维持现有报价，以专属服务与迁移保障方案换取客户对总价的接受；四月底前完成高层拜访。",
-            "risk-management-display": "项目风险：客户内部尚未完成迁移窗口审批，若 6 月前未获批，交付节点将顺延一个季度。\n困难求助：需要总部数据库迁移专家两人现场支持四周，并申请一次高层拜访窗口。"
+        "type": "query",
+        "initial": {
+          "capturedAt": "2026-04-30T00:00:00Z",
+          "rows": [
+            {
+              "region_dept_name": "欧洲地区部",
+              "rep_office_name": "德国代表处",
+              "region_office_display": "欧洲地区部 / 德国代表处",
+              "party_company_name": "XX 科技有限公司",
+              "owner_name": "张三",
+              "bd_name": "李四",
+              "owner_bd_display": "张三 / 李四",
+              "main_competitor": "AWS",
+              "order_date_estimated": "2026-06",
+              "opportunity_step_name": "方案确认",
+              "partner_real_customer_name": "XX 集成商",
+              "solution_partner_name": "XX 解决方案公司",
+              "latest_analysis_meeting_time": "2026-04-10",
+              "project_background": "客户 2025 年完成核心业务上云评估，2026 年启动一期迁移，预算已进入年度 IT 规划。",
+              "project_objectives": "一期迁移 120 套应用与两个核心数据库，年内完成灰度切换并通过等保三级复测。",
+              "project_help_required": "需要总部数据库迁移专家两人现场支持四周，并申请一次高层拜访窗口。",
+              "competitor_update": "竞对在 3 月提交了降价 12% 的替代方案，并承诺免费提供一年专属技术服务。",
+              "project_risks": "客户内部尚未完成迁移窗口审批，若 6 月前未获批，交付节点将顺延一个季度。",
+              "project_progress": "方案已通过客户技术委员会评审，商务条款进入第二轮谈判，预计 6 月完成预签。",
+              "latest_analysis_meeting_topic": "一期迁移方案收敛与竞对降价应对策略。",
+              "latest_analysis_meeting_conclusion": "维持现有报价，以专属服务与迁移保障方案换取客户对总价的接受；四月底前完成高层拜访。",
+              "latest_analysis_meeting_display": "主题：一期迁移方案收敛与竞对降价应对策略。\n时间：2026-04-10\n结论：维持现有报价，以专属服务与迁移保障方案换取客户对总价的接受；四月底前完成高层拜访。",
+              "risk_management_display": "项目风险：客户内部尚未完成迁移窗口审批，若 6 月前未获批，交付节点将顺延一个季度。\n困难求助：需要总部数据库迁移专家两人现场支持四周，并申请一次高层拜访窗口。"
+            }
+          ],
+          "totalCount": 1
+        },
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region_dept_name",
+                  "rep_office_name",
+                  "region_office_display",
+                  "party_company_name",
+                  "owner_name",
+                  "bd_name",
+                  "owner_bd_display",
+                  "main_competitor",
+                  "order_date_estimated",
+                  "opportunity_step_name",
+                  "partner_real_customer_name",
+                  "solution_partner_name",
+                  "latest_analysis_meeting_time",
+                  "project_background",
+                  "project_objectives",
+                  "project_help_required",
+                  "competitor_update",
+                  "project_risks",
+                  "project_progress",
+                  "latest_analysis_meeting_topic",
+                  "latest_analysis_meeting_conclusion",
+                  "latest_analysis_meeting_display",
+                  "risk_management_display"
+                ],
+                "output_metrics": [],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
           }
-        ]
+        }
       }
     },
     "operation-norm": {
       "fields": {
         "ati-status": {
+          "queryField": "ati_status",
           "type": "string",
           "role": "dimension",
           "label": "立项"
         },
         "is-timely-projected": {
+          "queryField": "is_timely_projected",
           "type": "string",
           "role": "dimension",
           "label": "立项及时"
         },
         "is-actual-project-analysis-meeting": {
+          "queryField": "is_actual_project_analysis_meeting",
           "type": "string",
           "role": "dimension",
           "label": "立项开工会"
         },
         "is-analysis-meeting-held-current-month": {
+          "queryField": "is_analysis_meeting_held_current_month",
           "type": "string",
           "role": "dimension",
           "label": "近 30 天项目分析会"
         },
         "is-owner-attended-analysis": {
+          "queryField": "is_owner_attended_analysis",
           "type": "string",
           "role": "dimension",
           "label": "Owner/Sponsor 与会"
         },
         "is-review-completed": {
+          "queryField": "is_review_completed",
           "type": "string",
           "role": "dimension",
           "label": "复盘总结"
         }
       },
       "source": {
-        "type": "inline",
-        "rows": [
-          {
-            "ati-status": "已立项",
-            "is-timely-projected": "Y",
-            "is-actual-project-analysis-meeting": "Y",
-            "is-analysis-meeting-held-current-month": "N",
-            "is-owner-attended-analysis": "Y",
-            "is-review-completed": "N"
+        "type": "query",
+        "initial": {
+          "capturedAt": "2026-04-30T00:00:00Z",
+          "rows": [
+            {
+              "ati_status": "已立项",
+              "is_timely_projected": "Y",
+              "is_actual_project_analysis_meeting": "Y",
+              "is_analysis_meeting_held_current_month": "N",
+              "is_owner_attended_analysis": "Y",
+              "is_review_completed": "N"
+            }
+          ],
+          "totalCount": 1
+        },
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "ati_status",
+                  "is_timely_projected",
+                  "is_actual_project_analysis_meeting",
+                  "is_analysis_meeting_held_current_month",
+                  "is_owner_attended_analysis",
+                  "is_review_completed"
+                ],
+                "output_metrics": [],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
           }
-        ]
+        }
       }
     },
     "customer-relation": {
       "fields": {
         "activity-type": {
+          "queryField": "activity_type",
           "type": "string",
           "role": "dimension",
           "label": "活动类型"
         },
         "activity-count": {
+          "queryField": "activity_count",
           "type": "number",
           "role": "measure",
           "label": "当月活动次数"
@@ -352,35 +453,61 @@
         }
       ],
       "source": {
-        "type": "inline",
-        "rows": [
-          {
-            "activity-type": "高层拜访",
-            "activity-count": 5
-          },
-          {
-            "activity-type": "公司考察",
-            "activity-count": 3
-          },
-          {
-            "activity-type": "技术交流",
-            "activity-count": 2
-          },
-          {
-            "activity-type": "圈层活动",
-            "activity-count": 4
+        "type": "query",
+        "initial": {
+          "capturedAt": "2026-04-30T00:00:00Z",
+          "rows": [
+            {
+              "activity_type": "高层拜访",
+              "activity_count": 5
+            },
+            {
+              "activity_type": "公司考察",
+              "activity_count": 3
+            },
+            {
+              "activity_type": "技术交流",
+              "activity_count": 2
+            },
+            {
+              "activity_type": "圈层活动",
+              "activity_count": 4
+            }
+          ],
+          "totalCount": 4
+        },
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "activity_type"
+                ],
+                "output_metrics": [
+                  "activity_count"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
           }
-        ]
+        }
       }
     },
     "sales-forecast": {
       "fields": {
         "business-type": {
+          "queryField": "business_type",
           "type": "string",
           "role": "dimension",
           "label": "云业务类型"
         },
         "sub-business-type": {
+          "queryField": "sub_business_type",
           "type": "string",
           "role": "dimension",
           "label": "云业务子类型",
@@ -393,6 +520,7 @@
           "nullable": true
         },
         "object-forecast-jan": {
+          "queryField": "object_forecast_jan",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -402,6 +530,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "lift-forecast-jan": {
+          "queryField": "lift_forecast_jan",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -411,6 +540,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "total-forecast-jan": {
+          "queryField": "total_forecast_jan",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -420,6 +550,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "object-forecast-feb": {
+          "queryField": "object_forecast_feb",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -429,6 +560,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "lift-forecast-feb": {
+          "queryField": "lift_forecast_feb",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -438,6 +570,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "total-forecast-feb": {
+          "queryField": "total_forecast_feb",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -447,6 +580,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "object-forecast-mar": {
+          "queryField": "object_forecast_mar",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -456,6 +590,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "lift-forecast-mar": {
+          "queryField": "lift_forecast_mar",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -465,6 +600,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "total-forecast-mar": {
+          "queryField": "total_forecast_mar",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -474,6 +610,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "object-forecast-apr": {
+          "queryField": "object_forecast_apr",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -483,6 +620,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "lift-forecast-apr": {
+          "queryField": "lift_forecast_apr",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -492,6 +630,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "total-forecast-apr": {
+          "queryField": "total_forecast_apr",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -501,6 +640,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "object-forecast-may": {
+          "queryField": "object_forecast_may",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -510,6 +650,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "lift-forecast-may": {
+          "queryField": "lift_forecast_may",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -519,6 +660,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "total-forecast-may": {
+          "queryField": "total_forecast_may",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -528,6 +670,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "object-forecast-jun": {
+          "queryField": "object_forecast_jun",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -537,6 +680,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "lift-forecast-jun": {
+          "queryField": "lift_forecast_jun",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -546,6 +690,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "total-forecast-jun": {
+          "queryField": "total_forecast_jun",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -555,6 +700,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "object-forecast-jul": {
+          "queryField": "object_forecast_jul",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -564,6 +710,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "lift-forecast-jul": {
+          "queryField": "lift_forecast_jul",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -573,6 +720,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "total-forecast-jul": {
+          "queryField": "total_forecast_jul",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -582,6 +730,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "object-forecast-aug": {
+          "queryField": "object_forecast_aug",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -591,6 +740,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "lift-forecast-aug": {
+          "queryField": "lift_forecast_aug",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -600,6 +750,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "total-forecast-aug": {
+          "queryField": "total_forecast_aug",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -609,6 +760,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "object-forecast-sep": {
+          "queryField": "object_forecast_sep",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -618,6 +770,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "lift-forecast-sep": {
+          "queryField": "lift_forecast_sep",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -627,6 +780,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "total-forecast-sep": {
+          "queryField": "total_forecast_sep",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -636,6 +790,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "object-forecast-oct": {
+          "queryField": "object_forecast_oct",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -645,6 +800,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "lift-forecast-oct": {
+          "queryField": "lift_forecast_oct",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -654,6 +810,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "total-forecast-oct": {
+          "queryField": "total_forecast_oct",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -663,6 +820,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "object-forecast-nov": {
+          "queryField": "object_forecast_nov",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -672,6 +830,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "lift-forecast-nov": {
+          "queryField": "lift_forecast_nov",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -681,6 +840,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "total-forecast-nov": {
+          "queryField": "total_forecast_nov",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -690,6 +850,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "object-forecast-dec": {
+          "queryField": "object_forecast_dec",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -699,6 +860,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "lift-forecast-dec": {
+          "queryField": "lift_forecast_dec",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -708,6 +870,7 @@
           "defaultFormat": "cny-adaptive"
         },
         "total-forecast-dec": {
+          "queryField": "total_forecast_dec",
           "type": "money",
           "role": "measure",
           "currency": "CNY",
@@ -816,329 +979,389 @@
         }
       ],
       "source": {
-        "type": "inline",
-        "rows": [
-          {
-            "business-type": "CORE",
-            "sub-business-type": "公网region",
-            "object-forecast-jan": 5000000,
-            "lift-forecast-jan": 900000,
-            "total-forecast-jan": 5900000,
-            "object-forecast-feb": 5400000,
-            "lift-forecast-feb": 972000,
-            "total-forecast-feb": 6372000,
-            "object-forecast-mar": 5800000,
-            "lift-forecast-mar": 1044000,
-            "total-forecast-mar": 6844000,
-            "object-forecast-apr": 6200000,
-            "lift-forecast-apr": 1116000,
-            "total-forecast-apr": 7316000,
-            "object-forecast-may": 6600000,
-            "lift-forecast-may": 1188000,
-            "total-forecast-may": 7788000,
-            "object-forecast-jun": 7000000,
-            "lift-forecast-jun": 1260000,
-            "total-forecast-jun": 8260000,
-            "object-forecast-jul": 7400000,
-            "lift-forecast-jul": 1332000,
-            "total-forecast-jul": 8732000,
-            "object-forecast-aug": 7800000,
-            "lift-forecast-aug": 1404000,
-            "total-forecast-aug": 9204000,
-            "object-forecast-sep": 8200000,
-            "lift-forecast-sep": 1476000,
-            "total-forecast-sep": 9676000,
-            "object-forecast-oct": 8600000,
-            "lift-forecast-oct": 1548000,
-            "total-forecast-oct": 10148000,
-            "object-forecast-nov": 9000000,
-            "lift-forecast-nov": 1620000,
-            "total-forecast-nov": 10620000,
-            "object-forecast-dec": 9400000,
-            "lift-forecast-dec": 1692000,
-            "total-forecast-dec": 11092000
-          },
-          {
-            "business-type": "CORE",
-            "sub-business-type": "专业服务",
-            "object-forecast-jan": 3000000,
-            "lift-forecast-jan": 540000,
-            "total-forecast-jan": 3540000,
-            "object-forecast-feb": 3240000,
-            "lift-forecast-feb": 583200,
-            "total-forecast-feb": 3823200,
-            "object-forecast-mar": 3480000,
-            "lift-forecast-mar": 626400,
-            "total-forecast-mar": 4106400,
-            "object-forecast-apr": 3720000,
-            "lift-forecast-apr": 669600,
-            "total-forecast-apr": 4389600,
-            "object-forecast-may": 3960000,
-            "lift-forecast-may": 712800,
-            "total-forecast-may": 4672800,
-            "object-forecast-jun": 4200000,
-            "lift-forecast-jun": 756000,
-            "total-forecast-jun": 4956000,
-            "object-forecast-jul": 4440000,
-            "lift-forecast-jul": 799200,
-            "total-forecast-jul": 5239200,
-            "object-forecast-aug": 4680000,
-            "lift-forecast-aug": 842400,
-            "total-forecast-aug": 5522400,
-            "object-forecast-sep": 4920000,
-            "lift-forecast-sep": 885600,
-            "total-forecast-sep": 5805600,
-            "object-forecast-oct": 5160000,
-            "lift-forecast-oct": 928800,
-            "total-forecast-oct": 6088800,
-            "object-forecast-nov": 5400000,
-            "lift-forecast-nov": 972000,
-            "total-forecast-nov": 6372000,
-            "object-forecast-dec": 5640000,
-            "lift-forecast-dec": 1015200,
-            "total-forecast-dec": 6655200
-          },
-          {
-            "business-type": "CORE",
-            "sub-business-type": "云市场",
-            "object-forecast-jan": 3800000,
-            "lift-forecast-jan": 684000,
-            "total-forecast-jan": 4484000,
-            "object-forecast-feb": 4104000,
-            "lift-forecast-feb": 738720,
-            "total-forecast-feb": 4842720,
-            "object-forecast-mar": 4408000,
-            "lift-forecast-mar": 793440,
-            "total-forecast-mar": 5201440,
-            "object-forecast-apr": 4712000,
-            "lift-forecast-apr": 848160,
-            "total-forecast-apr": 5560160,
-            "object-forecast-may": 5016000,
-            "lift-forecast-may": 902880,
-            "total-forecast-may": 5918880,
-            "object-forecast-jun": 5320000,
-            "lift-forecast-jun": 957600,
-            "total-forecast-jun": 6277600,
-            "object-forecast-jul": 5624000,
-            "lift-forecast-jul": 1012320,
-            "total-forecast-jul": 6636320,
-            "object-forecast-aug": 5928000,
-            "lift-forecast-aug": 1067040,
-            "total-forecast-aug": 6995040,
-            "object-forecast-sep": 6232000,
-            "lift-forecast-sep": 1121760,
-            "total-forecast-sep": 7353760,
-            "object-forecast-oct": 6536000,
-            "lift-forecast-oct": 1176480,
-            "total-forecast-oct": 7712480,
-            "object-forecast-nov": 6840000,
-            "lift-forecast-nov": 1231200,
-            "total-forecast-nov": 8071200,
-            "object-forecast-dec": 7144000,
-            "lift-forecast-dec": 1285920,
-            "total-forecast-dec": 8429920
-          },
-          {
-            "business-type": "CORE",
-            "sub-business-type": "基地云",
-            "object-forecast-jan": 1710000,
-            "lift-forecast-jan": 307800,
-            "total-forecast-jan": 2017800,
-            "object-forecast-feb": 1846800,
-            "lift-forecast-feb": 332424,
-            "total-forecast-feb": 2179224,
-            "object-forecast-mar": 1983600,
-            "lift-forecast-mar": 357048,
-            "total-forecast-mar": 2340648,
-            "object-forecast-apr": 2120400,
-            "lift-forecast-apr": 381672,
-            "total-forecast-apr": 2502072,
-            "object-forecast-may": 2257200,
-            "lift-forecast-may": 406296,
-            "total-forecast-may": 2663496,
-            "object-forecast-jun": 2394000,
-            "lift-forecast-jun": 430920,
-            "total-forecast-jun": 2824920,
-            "object-forecast-jul": 2530800,
-            "lift-forecast-jul": 455544,
-            "total-forecast-jul": 2986344,
-            "object-forecast-aug": 2667600,
-            "lift-forecast-aug": 480168,
-            "total-forecast-aug": 3147768,
-            "object-forecast-sep": 2804400,
-            "lift-forecast-sep": 504792,
-            "total-forecast-sep": 3309192,
-            "object-forecast-oct": 2941200,
-            "lift-forecast-oct": 529416,
-            "total-forecast-oct": 3470616,
-            "object-forecast-nov": 3078000,
-            "lift-forecast-nov": 554040,
-            "total-forecast-nov": 3632040,
-            "object-forecast-dec": 3214800,
-            "lift-forecast-dec": 578664,
-            "total-forecast-dec": 3793464
-          },
-          {
-            "business-type": "CORE",
-            "sub-business-type": "CORE其他",
-            "object-forecast-jan": 2400000,
-            "lift-forecast-jan": 432000,
-            "total-forecast-jan": 2832000,
-            "object-forecast-feb": 2520000,
-            "lift-forecast-feb": 453600,
-            "total-forecast-feb": 2973600,
-            "object-forecast-mar": 2640000,
-            "lift-forecast-mar": 475200,
-            "total-forecast-mar": 3115200,
-            "object-forecast-apr": 2760000,
-            "lift-forecast-apr": 496800,
-            "total-forecast-apr": 3256800,
-            "object-forecast-may": 2880000,
-            "lift-forecast-may": 518400,
-            "total-forecast-may": 3398400,
-            "object-forecast-jun": 3000000,
-            "lift-forecast-jun": 540000,
-            "total-forecast-jun": 3540000,
-            "object-forecast-jul": 3120000,
-            "lift-forecast-jul": 561600,
-            "total-forecast-jul": 3681600,
-            "object-forecast-aug": null,
-            "lift-forecast-aug": null,
-            "total-forecast-aug": null,
-            "object-forecast-sep": null,
-            "lift-forecast-sep": null,
-            "total-forecast-sep": null,
-            "object-forecast-oct": null,
-            "lift-forecast-oct": null,
-            "total-forecast-oct": null,
-            "object-forecast-nov": null,
-            "lift-forecast-nov": null,
-            "total-forecast-nov": null,
-            "object-forecast-dec": null,
-            "lift-forecast-dec": null,
-            "total-forecast-dec": null
-          },
-          {
-            "business-type": "CORE",
-            "sub-business-type": "CDN",
-            "object-forecast-jan": 1800000,
-            "lift-forecast-jan": 324000,
-            "total-forecast-jan": 2124000,
-            "object-forecast-feb": 1890000,
-            "lift-forecast-feb": 340200,
-            "total-forecast-feb": 2230200,
-            "object-forecast-mar": 1980000,
-            "lift-forecast-mar": 356400,
-            "total-forecast-mar": 2336400,
-            "object-forecast-apr": 2070000,
-            "lift-forecast-apr": 372600,
-            "total-forecast-apr": 2442600,
-            "object-forecast-may": 2160000,
-            "lift-forecast-may": 388800,
-            "total-forecast-may": 2548800,
-            "object-forecast-jun": 2250000,
-            "lift-forecast-jun": 405000,
-            "total-forecast-jun": 2655000,
-            "object-forecast-jul": 2340000,
-            "lift-forecast-jul": 421200,
-            "total-forecast-jul": 2761200,
-            "object-forecast-aug": null,
-            "lift-forecast-aug": null,
-            "total-forecast-aug": null,
-            "object-forecast-sep": null,
-            "lift-forecast-sep": null,
-            "total-forecast-sep": null,
-            "object-forecast-oct": null,
-            "lift-forecast-oct": null,
-            "total-forecast-oct": null,
-            "object-forecast-nov": null,
-            "lift-forecast-nov": null,
-            "total-forecast-nov": null,
-            "object-forecast-dec": null,
-            "lift-forecast-dec": null,
-            "total-forecast-dec": null
-          },
-          {
-            "business-type": "云通信",
-            "sub-business-type": "短信",
-            "object-forecast-jan": 1200000,
-            "lift-forecast-jan": 216000,
-            "total-forecast-jan": 1416000,
-            "object-forecast-feb": 1260000,
-            "lift-forecast-feb": 226800,
-            "total-forecast-feb": 1486800,
-            "object-forecast-mar": 1320000,
-            "lift-forecast-mar": 237600,
-            "total-forecast-mar": 1557600,
-            "object-forecast-apr": 1380000,
-            "lift-forecast-apr": 248400,
-            "total-forecast-apr": 1628400,
-            "object-forecast-may": 1440000,
-            "lift-forecast-may": 259200,
-            "total-forecast-may": 1699200,
-            "object-forecast-jun": 1500000,
-            "lift-forecast-jun": 270000,
-            "total-forecast-jun": 1770000,
-            "object-forecast-jul": 1560000,
-            "lift-forecast-jul": 280800,
-            "total-forecast-jul": 1840800,
-            "object-forecast-aug": null,
-            "lift-forecast-aug": null,
-            "total-forecast-aug": null,
-            "object-forecast-sep": null,
-            "lift-forecast-sep": null,
-            "total-forecast-sep": null,
-            "object-forecast-oct": null,
-            "lift-forecast-oct": null,
-            "total-forecast-oct": null,
-            "object-forecast-nov": null,
-            "lift-forecast-nov": null,
-            "total-forecast-nov": null,
-            "object-forecast-dec": null,
-            "lift-forecast-dec": null,
-            "total-forecast-dec": null
-          },
-          {
-            "business-type": "云通信",
-            "sub-business-type": "云通信其他",
-            "object-forecast-jan": 900000,
-            "lift-forecast-jan": 162000,
-            "total-forecast-jan": 1062000,
-            "object-forecast-feb": 945000,
-            "lift-forecast-feb": 170100,
-            "total-forecast-feb": 1115100,
-            "object-forecast-mar": 990000,
-            "lift-forecast-mar": 178200,
-            "total-forecast-mar": 1168200,
-            "object-forecast-apr": 1035000,
-            "lift-forecast-apr": 186300,
-            "total-forecast-apr": 1221300,
-            "object-forecast-may": 1080000,
-            "lift-forecast-may": 194400,
-            "total-forecast-may": 1274400,
-            "object-forecast-jun": 1125000,
-            "lift-forecast-jun": 202500,
-            "total-forecast-jun": 1327500,
-            "object-forecast-jul": 1170000,
-            "lift-forecast-jul": 210600,
-            "total-forecast-jul": 1380600,
-            "object-forecast-aug": null,
-            "lift-forecast-aug": null,
-            "total-forecast-aug": null,
-            "object-forecast-sep": null,
-            "lift-forecast-sep": null,
-            "total-forecast-sep": null,
-            "object-forecast-oct": null,
-            "lift-forecast-oct": null,
-            "total-forecast-oct": null,
-            "object-forecast-nov": null,
-            "lift-forecast-nov": null,
-            "total-forecast-nov": null,
-            "object-forecast-dec": null,
-            "lift-forecast-dec": null,
-            "total-forecast-dec": null
+        "type": "query",
+        "initial": {
+          "capturedAt": "2026-04-30T00:00:00Z",
+          "rows": [
+            {
+              "business_type": "CORE",
+              "sub_business_type": "公网region",
+              "object_forecast_jan": 5000000,
+              "lift_forecast_jan": 900000,
+              "total_forecast_jan": 5900000,
+              "object_forecast_feb": 5400000,
+              "lift_forecast_feb": 972000,
+              "total_forecast_feb": 6372000,
+              "object_forecast_mar": 5800000,
+              "lift_forecast_mar": 1044000,
+              "total_forecast_mar": 6844000,
+              "object_forecast_apr": 6200000,
+              "lift_forecast_apr": 1116000,
+              "total_forecast_apr": 7316000,
+              "object_forecast_may": 6600000,
+              "lift_forecast_may": 1188000,
+              "total_forecast_may": 7788000,
+              "object_forecast_jun": 7000000,
+              "lift_forecast_jun": 1260000,
+              "total_forecast_jun": 8260000,
+              "object_forecast_jul": 7400000,
+              "lift_forecast_jul": 1332000,
+              "total_forecast_jul": 8732000,
+              "object_forecast_aug": 7800000,
+              "lift_forecast_aug": 1404000,
+              "total_forecast_aug": 9204000,
+              "object_forecast_sep": 8200000,
+              "lift_forecast_sep": 1476000,
+              "total_forecast_sep": 9676000,
+              "object_forecast_oct": 8600000,
+              "lift_forecast_oct": 1548000,
+              "total_forecast_oct": 10148000,
+              "object_forecast_nov": 9000000,
+              "lift_forecast_nov": 1620000,
+              "total_forecast_nov": 10620000,
+              "object_forecast_dec": 9400000,
+              "lift_forecast_dec": 1692000,
+              "total_forecast_dec": 11092000
+            },
+            {
+              "business_type": "CORE",
+              "sub_business_type": "专业服务",
+              "object_forecast_jan": 3000000,
+              "lift_forecast_jan": 540000,
+              "total_forecast_jan": 3540000,
+              "object_forecast_feb": 3240000,
+              "lift_forecast_feb": 583200,
+              "total_forecast_feb": 3823200,
+              "object_forecast_mar": 3480000,
+              "lift_forecast_mar": 626400,
+              "total_forecast_mar": 4106400,
+              "object_forecast_apr": 3720000,
+              "lift_forecast_apr": 669600,
+              "total_forecast_apr": 4389600,
+              "object_forecast_may": 3960000,
+              "lift_forecast_may": 712800,
+              "total_forecast_may": 4672800,
+              "object_forecast_jun": 4200000,
+              "lift_forecast_jun": 756000,
+              "total_forecast_jun": 4956000,
+              "object_forecast_jul": 4440000,
+              "lift_forecast_jul": 799200,
+              "total_forecast_jul": 5239200,
+              "object_forecast_aug": 4680000,
+              "lift_forecast_aug": 842400,
+              "total_forecast_aug": 5522400,
+              "object_forecast_sep": 4920000,
+              "lift_forecast_sep": 885600,
+              "total_forecast_sep": 5805600,
+              "object_forecast_oct": 5160000,
+              "lift_forecast_oct": 928800,
+              "total_forecast_oct": 6088800,
+              "object_forecast_nov": 5400000,
+              "lift_forecast_nov": 972000,
+              "total_forecast_nov": 6372000,
+              "object_forecast_dec": 5640000,
+              "lift_forecast_dec": 1015200,
+              "total_forecast_dec": 6655200
+            },
+            {
+              "business_type": "CORE",
+              "sub_business_type": "云市场",
+              "object_forecast_jan": 3800000,
+              "lift_forecast_jan": 684000,
+              "total_forecast_jan": 4484000,
+              "object_forecast_feb": 4104000,
+              "lift_forecast_feb": 738720,
+              "total_forecast_feb": 4842720,
+              "object_forecast_mar": 4408000,
+              "lift_forecast_mar": 793440,
+              "total_forecast_mar": 5201440,
+              "object_forecast_apr": 4712000,
+              "lift_forecast_apr": 848160,
+              "total_forecast_apr": 5560160,
+              "object_forecast_may": 5016000,
+              "lift_forecast_may": 902880,
+              "total_forecast_may": 5918880,
+              "object_forecast_jun": 5320000,
+              "lift_forecast_jun": 957600,
+              "total_forecast_jun": 6277600,
+              "object_forecast_jul": 5624000,
+              "lift_forecast_jul": 1012320,
+              "total_forecast_jul": 6636320,
+              "object_forecast_aug": 5928000,
+              "lift_forecast_aug": 1067040,
+              "total_forecast_aug": 6995040,
+              "object_forecast_sep": 6232000,
+              "lift_forecast_sep": 1121760,
+              "total_forecast_sep": 7353760,
+              "object_forecast_oct": 6536000,
+              "lift_forecast_oct": 1176480,
+              "total_forecast_oct": 7712480,
+              "object_forecast_nov": 6840000,
+              "lift_forecast_nov": 1231200,
+              "total_forecast_nov": 8071200,
+              "object_forecast_dec": 7144000,
+              "lift_forecast_dec": 1285920,
+              "total_forecast_dec": 8429920
+            },
+            {
+              "business_type": "CORE",
+              "sub_business_type": "基地云",
+              "object_forecast_jan": 1710000,
+              "lift_forecast_jan": 307800,
+              "total_forecast_jan": 2017800,
+              "object_forecast_feb": 1846800,
+              "lift_forecast_feb": 332424,
+              "total_forecast_feb": 2179224,
+              "object_forecast_mar": 1983600,
+              "lift_forecast_mar": 357048,
+              "total_forecast_mar": 2340648,
+              "object_forecast_apr": 2120400,
+              "lift_forecast_apr": 381672,
+              "total_forecast_apr": 2502072,
+              "object_forecast_may": 2257200,
+              "lift_forecast_may": 406296,
+              "total_forecast_may": 2663496,
+              "object_forecast_jun": 2394000,
+              "lift_forecast_jun": 430920,
+              "total_forecast_jun": 2824920,
+              "object_forecast_jul": 2530800,
+              "lift_forecast_jul": 455544,
+              "total_forecast_jul": 2986344,
+              "object_forecast_aug": 2667600,
+              "lift_forecast_aug": 480168,
+              "total_forecast_aug": 3147768,
+              "object_forecast_sep": 2804400,
+              "lift_forecast_sep": 504792,
+              "total_forecast_sep": 3309192,
+              "object_forecast_oct": 2941200,
+              "lift_forecast_oct": 529416,
+              "total_forecast_oct": 3470616,
+              "object_forecast_nov": 3078000,
+              "lift_forecast_nov": 554040,
+              "total_forecast_nov": 3632040,
+              "object_forecast_dec": 3214800,
+              "lift_forecast_dec": 578664,
+              "total_forecast_dec": 3793464
+            },
+            {
+              "business_type": "CORE",
+              "sub_business_type": "CORE其他",
+              "object_forecast_jan": 2400000,
+              "lift_forecast_jan": 432000,
+              "total_forecast_jan": 2832000,
+              "object_forecast_feb": 2520000,
+              "lift_forecast_feb": 453600,
+              "total_forecast_feb": 2973600,
+              "object_forecast_mar": 2640000,
+              "lift_forecast_mar": 475200,
+              "total_forecast_mar": 3115200,
+              "object_forecast_apr": 2760000,
+              "lift_forecast_apr": 496800,
+              "total_forecast_apr": 3256800,
+              "object_forecast_may": 2880000,
+              "lift_forecast_may": 518400,
+              "total_forecast_may": 3398400,
+              "object_forecast_jun": 3000000,
+              "lift_forecast_jun": 540000,
+              "total_forecast_jun": 3540000,
+              "object_forecast_jul": 3120000,
+              "lift_forecast_jul": 561600,
+              "total_forecast_jul": 3681600,
+              "object_forecast_aug": null,
+              "lift_forecast_aug": null,
+              "total_forecast_aug": null,
+              "object_forecast_sep": null,
+              "lift_forecast_sep": null,
+              "total_forecast_sep": null,
+              "object_forecast_oct": null,
+              "lift_forecast_oct": null,
+              "total_forecast_oct": null,
+              "object_forecast_nov": null,
+              "lift_forecast_nov": null,
+              "total_forecast_nov": null,
+              "object_forecast_dec": null,
+              "lift_forecast_dec": null,
+              "total_forecast_dec": null
+            },
+            {
+              "business_type": "CORE",
+              "sub_business_type": "CDN",
+              "object_forecast_jan": 1800000,
+              "lift_forecast_jan": 324000,
+              "total_forecast_jan": 2124000,
+              "object_forecast_feb": 1890000,
+              "lift_forecast_feb": 340200,
+              "total_forecast_feb": 2230200,
+              "object_forecast_mar": 1980000,
+              "lift_forecast_mar": 356400,
+              "total_forecast_mar": 2336400,
+              "object_forecast_apr": 2070000,
+              "lift_forecast_apr": 372600,
+              "total_forecast_apr": 2442600,
+              "object_forecast_may": 2160000,
+              "lift_forecast_may": 388800,
+              "total_forecast_may": 2548800,
+              "object_forecast_jun": 2250000,
+              "lift_forecast_jun": 405000,
+              "total_forecast_jun": 2655000,
+              "object_forecast_jul": 2340000,
+              "lift_forecast_jul": 421200,
+              "total_forecast_jul": 2761200,
+              "object_forecast_aug": null,
+              "lift_forecast_aug": null,
+              "total_forecast_aug": null,
+              "object_forecast_sep": null,
+              "lift_forecast_sep": null,
+              "total_forecast_sep": null,
+              "object_forecast_oct": null,
+              "lift_forecast_oct": null,
+              "total_forecast_oct": null,
+              "object_forecast_nov": null,
+              "lift_forecast_nov": null,
+              "total_forecast_nov": null,
+              "object_forecast_dec": null,
+              "lift_forecast_dec": null,
+              "total_forecast_dec": null
+            },
+            {
+              "business_type": "云通信",
+              "sub_business_type": "短信",
+              "object_forecast_jan": 1200000,
+              "lift_forecast_jan": 216000,
+              "total_forecast_jan": 1416000,
+              "object_forecast_feb": 1260000,
+              "lift_forecast_feb": 226800,
+              "total_forecast_feb": 1486800,
+              "object_forecast_mar": 1320000,
+              "lift_forecast_mar": 237600,
+              "total_forecast_mar": 1557600,
+              "object_forecast_apr": 1380000,
+              "lift_forecast_apr": 248400,
+              "total_forecast_apr": 1628400,
+              "object_forecast_may": 1440000,
+              "lift_forecast_may": 259200,
+              "total_forecast_may": 1699200,
+              "object_forecast_jun": 1500000,
+              "lift_forecast_jun": 270000,
+              "total_forecast_jun": 1770000,
+              "object_forecast_jul": 1560000,
+              "lift_forecast_jul": 280800,
+              "total_forecast_jul": 1840800,
+              "object_forecast_aug": null,
+              "lift_forecast_aug": null,
+              "total_forecast_aug": null,
+              "object_forecast_sep": null,
+              "lift_forecast_sep": null,
+              "total_forecast_sep": null,
+              "object_forecast_oct": null,
+              "lift_forecast_oct": null,
+              "total_forecast_oct": null,
+              "object_forecast_nov": null,
+              "lift_forecast_nov": null,
+              "total_forecast_nov": null,
+              "object_forecast_dec": null,
+              "lift_forecast_dec": null,
+              "total_forecast_dec": null
+            },
+            {
+              "business_type": "云通信",
+              "sub_business_type": "云通信其他",
+              "object_forecast_jan": 900000,
+              "lift_forecast_jan": 162000,
+              "total_forecast_jan": 1062000,
+              "object_forecast_feb": 945000,
+              "lift_forecast_feb": 170100,
+              "total_forecast_feb": 1115100,
+              "object_forecast_mar": 990000,
+              "lift_forecast_mar": 178200,
+              "total_forecast_mar": 1168200,
+              "object_forecast_apr": 1035000,
+              "lift_forecast_apr": 186300,
+              "total_forecast_apr": 1221300,
+              "object_forecast_may": 1080000,
+              "lift_forecast_may": 194400,
+              "total_forecast_may": 1274400,
+              "object_forecast_jun": 1125000,
+              "lift_forecast_jun": 202500,
+              "total_forecast_jun": 1327500,
+              "object_forecast_jul": 1170000,
+              "lift_forecast_jul": 210600,
+              "total_forecast_jul": 1380600,
+              "object_forecast_aug": null,
+              "lift_forecast_aug": null,
+              "total_forecast_aug": null,
+              "object_forecast_sep": null,
+              "lift_forecast_sep": null,
+              "total_forecast_sep": null,
+              "object_forecast_oct": null,
+              "lift_forecast_oct": null,
+              "total_forecast_oct": null,
+              "object_forecast_nov": null,
+              "lift_forecast_nov": null,
+              "total_forecast_nov": null,
+              "object_forecast_dec": null,
+              "lift_forecast_dec": null,
+              "total_forecast_dec": null
+            }
+          ],
+          "totalCount": 8
+        },
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "business_type",
+                  "sub_business_type"
+                ],
+                "output_metrics": [
+                  "object_forecast_jan",
+                  "lift_forecast_jan",
+                  "total_forecast_jan",
+                  "object_forecast_feb",
+                  "lift_forecast_feb",
+                  "total_forecast_feb",
+                  "object_forecast_mar",
+                  "lift_forecast_mar",
+                  "total_forecast_mar",
+                  "object_forecast_apr",
+                  "lift_forecast_apr",
+                  "total_forecast_apr",
+                  "object_forecast_may",
+                  "lift_forecast_may",
+                  "total_forecast_may",
+                  "object_forecast_jun",
+                  "lift_forecast_jun",
+                  "total_forecast_jun",
+                  "object_forecast_jul",
+                  "lift_forecast_jul",
+                  "total_forecast_jul",
+                  "object_forecast_aug",
+                  "lift_forecast_aug",
+                  "total_forecast_aug",
+                  "object_forecast_sep",
+                  "lift_forecast_sep",
+                  "total_forecast_sep",
+                  "object_forecast_oct",
+                  "lift_forecast_oct",
+                  "total_forecast_oct",
+                  "object_forecast_nov",
+                  "lift_forecast_nov",
+                  "total_forecast_nov",
+                  "object_forecast_dec",
+                  "lift_forecast_dec",
+                  "total_forecast_dec"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
           }
-        ]
+        }
       }
     }
   },

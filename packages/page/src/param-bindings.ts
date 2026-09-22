@@ -1,9 +1,8 @@
 import type { TypedError } from './errors';
 import { pageParamDeclarations, type PageParamDeclaration, type GroupedPageParams } from './page-param';
 import type { FilterDeclaration } from './filter';
-import type { DqeQueryDefinition } from './query';
+import { bindingQueryFields, isLevelDimensionBinding, type DqeQueryDefinition } from './query';
 import { resolveTimeWindow, timeWindowCompatible } from './time-param';
-import { inspectInlineQuery } from './inline-query-params';
 
 /** 结构校验后的参数绑定不变量；不从字段名猜目标，不解释任意表达式。 */
 export function paramBindingErrors(document: unknown): TypedError[] {
@@ -17,19 +16,6 @@ export function paramBindingErrors(document: unknown): TypedError[] {
     const query = source.source.query;
     if (source.source.type !== 'query' || !query) continue;
     const owners = new Map<string, string>();
-    const inline = inspectInlineQuery(query, pageParamDeclarations(page.params), `/dataSources/${pointer(sourceId)}/source/query`);
-    errors.push(...inline.errors);
-    for (const usage of inline.usages) {
-      if (usage.target !== 'dimension' || !usage.queryField) continue;
-      owners.set(usage.queryField, usage.param);
-      const matching = Object.entries(query.filterBindings ?? {}).filter(([, b]) => b.target === 'dimension' && b.queryField === usage.queryField);
-      if (matching.length > 1) error(usage.path, '参数目标不得由多个筛选器控制');
-      for (const [filterId] of matching) {
-        const f = filters.get(filterId);
-        if (f?.type !== 'dimension' || f.initialParam !== usage.param) error(usage.path, '筛选与查询必须引用相同参数');
-        else filterConsumers.add(filterId);
-      }
-    }
     let timeOwner: string | undefined;
     for (const [id, binding] of Object.entries(query.paramBindings ?? {})) {
       const path = `/dataSources/${pointer(sourceId)}/source/query/paramBindings/${pointer(id)}`;
@@ -62,7 +48,7 @@ export function paramBindingErrors(document: unknown): TypedError[] {
       if (filter && typeof filter === 'object' && !Array.isArray(filter) && Array.isArray(filter.dims) && filter.dims.some(d => d && typeof d === 'object' && !Array.isArray(d) && d.dim_name === binding.queryField)) {
         error(path, '参数绑定目标不得另有查询体默认条件');
       }
-      const matching = Object.entries(query.filterBindings ?? {}).filter(([, f]) => f.target === 'dimension' && f.queryField === binding.queryField);
+      const matching = Object.entries(query.filterBindings ?? {}).filter(([, f]) => bindingQueryFields(f).includes(binding.queryField));
       if (matching.length > 1) error(path, '参数绑定目标不得由多个筛选器控制');
       for (const [filterId] of matching) {
         const declaration = filters.get(filterId);
@@ -72,20 +58,48 @@ export function paramBindingErrors(document: unknown): TypedError[] {
     }
     for (const [filterId, binding] of Object.entries(query.filterBindings ?? {})) {
       const declaration = filters.get(filterId);
+      // 层级筛选器按当前层取字段，初值只能落在缺省层上：参数给的是取值，
+      // 层级由 defaultLevel 决定，两者必须指向同一个字段才算显式绑定。
       if (declaration?.type === 'dimension' && declaration.initialParam &&
-          (binding.target !== 'dimension' || owners.get(binding.queryField) !== declaration.initialParam)) {
+          (binding.target !== 'dimension' ||
+            owners.get(initialQueryField(declaration, binding)) !== declaration.initialParam)) {
         error(`/dataSources/${pointer(sourceId)}/source/query/filterBindings/${pointer(filterId)}`, '参数初始化筛选的每个查询目标都必须显式绑定同一参数');
+      }
+      // timePoint 在 paramBindings 里没有对应目标，显式查询目标就是这条筛选绑定本身。
+      if (declaration?.type === 'timePoint' && declaration.initialParam && binding.target === 'timePoint') {
+        filterConsumers.add(filterId);
       }
     }
   }
   (page.filters ?? []).forEach((filter, index) => {
-    if (filter.type !== 'dimension' || filter.initialParam === undefined) return;
+    if (filter.type !== 'dimension' && filter.type !== 'timePoint') return;
+    if (filter.initialParam === undefined) return;
     const path = `/filters/${index}/initialParam`;
-    if (params.get(filter.initialParam)?.type !== 'dimension') error(path, '筛选初值必须引用已声明的dimension参数');
+    const declaration = params.get(filter.initialParam);
     if (filter.default !== undefined) error(path, '参数初始化与筛选default互斥，默认来源只能声明一次');
-    if (filter.hierarchy) error(path, '第一版参数初始化只支持平面维度筛选');
     if (!filterConsumers.has(filter.id)) error(path, '参数初始化筛选必须具有匹配的显式查询目标');
+    if (filter.type === 'dimension') {
+      if (declaration?.type !== 'dimension') error(path, '筛选初值必须引用已声明的dimension参数');
+      return;
+    }
+    // 时间点筛选器的初值来自一个退化成单点的 times 输入:区间没有唯一的点可取。
+    if (declaration?.type !== 'timeRange' || !declaration.required) error(path, '时间点筛选初值必须引用必需的 times 参数');
+    else if (declaration.granularity !== filter.granularity) error(path, '时间点筛选初值的参数精度必须与筛选器一致');
+    else if (isRange(declaration.value) && declaration.value.start !== declaration.value.end) error(path, '时间点筛选初值要求参数是单点');
   });
   return errors;
+}
+
+/** 参数初始化落到哪个查询字段:层级绑定取缺省层，恒定绑定取那一个字段。 */
+function initialQueryField(filter: FilterDeclaration & { type: 'dimension' }, binding: { target: 'dimension' } & Record<string, unknown>): string {
+  if (!isLevelDimensionBinding(binding as never)) return String((binding as { queryField?: string }).queryField);
+  const level = filter.defaultLevel ?? filter.hierarchy?.[0]?.id;
+  const fields = (binding as unknown as { levelQueryFields: Record<string, string> }).levelQueryFields;
+  return level === undefined ? '' : fields[level] ?? '';
+}
+
+function isRange(value: unknown): value is { start: string; end: string } {
+  return typeof value === 'object' && value !== null && !Array.isArray(value) &&
+    typeof (value as { start?: unknown }).start === 'string' && typeof (value as { end?: unknown }).end === 'string';
 }
 function pointer(s: string): string { return s.replaceAll('~', '~0').replaceAll('/', '~1'); }

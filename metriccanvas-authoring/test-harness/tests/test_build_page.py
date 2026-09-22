@@ -15,18 +15,16 @@ from adapters.fakes import (  # noqa: E402
     FakeDqeExecutionPort,
     FakePageAssetPort,
 )
-from metriccanvas_authoring.application.build_page import (  # noqa: E402
+from metriccanvas_authoring.ask.build_page import (  # noqa: E402
     BuildPageCommand,
     BuildPageDependencies,
     create_build_page,
 )
-from metriccanvas_authoring.application.ports import (  # noqa: E402
-    DqeExecutionResult,
-    SavedRevision,
-)
-from metriccanvas_authoring.application.bundle_info import load_bundle_info  # noqa: E402
-from metriccanvas_authoring.domain.idempotency import derive_idempotency_key  # noqa: E402
-from metriccanvas_authoring.domain.page_validation import validate_page_document  # noqa: E402
+from metriccanvas_authoring.assets.ports import SavedRevision  # noqa: E402
+from metriccanvas_authoring.data.execution import DqeExecutionResult  # noqa: E402
+from metriccanvas_authoring.bundle_info import load_bundle_info  # noqa: E402
+from metriccanvas_authoring.assets.java_save_fingerprint import derive_idempotency_key  # noqa: E402
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document  # noqa: E402
 
 
 def fixture(name: str) -> dict[str, object]:

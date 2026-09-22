@@ -1,6 +1,6 @@
 # MetricCanvas 整体解决方案
 
-> 当前架构（2026-09-16）：Platform 是静态 SPA，页面资产遵循外部 Java YAML 与 [ADR-0080](./adr/0080-java-assets-single-attempt-save-and-status-publication.md)。本文描述已实现的本仓边界；真实 Java/Relay 联调与部署注入仍需独立验收。实现位置和验证证据见[实施记录](./plan/2026-09-16-java-page-assets-implementation.md)。
+> 当前架构（2026-09-16）：Platform 是静态 SPA，页面资产遵循外部 Java YAML 与 [ADR-0080](./adr/0080-java-assets-single-attempt-save-and-status-publication.md)。本文描述已实现的本仓边界；真实 Java/Relay 联调与部署注入仍需独立验收。实现位置和验证证据见[实施记录](archive/java-page-assets/2026-09-16-java-page-assets-implementation.md)。
 
 ## 1. 系统定位
 

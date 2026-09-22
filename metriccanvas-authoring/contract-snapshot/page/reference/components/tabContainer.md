@@ -9,7 +9,7 @@
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.6。结构真源为本册[schema.json](../schema.json)，SHA256 `a421c583a35d98c6d01d1a47965f13984e4d6ec1aab62779b4d5ec78b7c8cf8f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.11。结构真源为本册[schema.json](../schema.json)，SHA256 `6b28ba0e717198c2963d957ea5c11e3177d05605f5bcc5e818f55f71e945e174`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -99,7 +99,7 @@ Schema位置：`#/definitions/tabContainerComponent/properties/props/properties/
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "compact" | 紧凑工具栏呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。 |
+| "compact" | 时间点去掉分隔符后送出，例如 202604。 |
 | "analysisStack" | 分析纵向堆叠呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。 |
 
 <a id="schema-232f646566696e6974696f6e732f746162436f6e7461696e6572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f64656661756c74546162"></a>
@@ -234,7 +234,7 @@ Schema位置：`#/definitions/tabItem/anyOf/1/properties/components/items`。目
 
 ## 语义规则与反例（生成）
 
-- `tab-container`：Tab id 唯一且 defaultTab 已声明。反例：[tab-id-duplicate](../errors/tab-id-duplicate.json)、[tab-default-unknown](../errors/tab-default-unknown.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
+- `tab-container`：Tab id 唯一且 defaultTab 已声明。反例：[tab-id-duplicate](../errors/tab-id-duplicate.json)、[tab-default-unknown](../errors/tab-default-unknown.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 

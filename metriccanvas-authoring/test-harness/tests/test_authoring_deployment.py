@@ -13,11 +13,11 @@ from adapters.fakes import FakeDataContextPort
 from test_unified_content_mcp import dependencies
 from test_authoring_turns import Turns
 from test_authoring_candidates import MemoryCandidates
-from metriccanvas_authoring.application.authoring_deployment import (
+from metriccanvas_authoring.assets.authoring_deployment import (
     RegisteredExtension, DeploymentError, assemble_deployment, AUTHOR, SKILL_PATH, SERVICE,
 )
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
-from metriccanvas_authoring.authoring_bootstrap import create_deployment_content_server
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.bootstrap.compatibility import create_deployment_content_server
 
 
 class DeploymentTest(unittest.IsolatedAsyncioTestCase):
@@ -112,9 +112,9 @@ class DeploymentTest(unittest.IsolatedAsyncioTestCase):
         import tempfile
         from test_authoring_submission import SubmissionFixture
         from test_authoring_recovery import RecoveryAuthority
-        from metriccanvas_authoring.adapters.outbound.sqlite_authoring_state import (
+        from metriccanvas_authoring.adapters.storage.sqlite_authoring_state import (
             SqliteCandidateStore, SqliteExecutionRecords, SqliteLifecyclePrograms)
-        from metriccanvas_authoring.application.authoring_deployment import SystemDependencies
+        from metriccanvas_authoring.assets.authoring_deployment import SystemDependencies
         f = await SubmissionFixture.create()
         directory = tempfile.TemporaryDirectory(); self.addCleanup(directory.cleanup)
         path = Path(directory.name) / 'system.sqlite'
@@ -124,7 +124,7 @@ class DeploymentTest(unittest.IsolatedAsyncioTestCase):
 
     def assemble_system(self, system, *, name='system-a', ports=None, base_system=None):
         from dataclasses import fields
-        from metriccanvas_authoring.application.authoring_deployment import SystemDependencies
+        from metriccanvas_authoring.assets.authoring_deployment import SystemDependencies
         selected_ports = {f.name: getattr(system, f.name) for f in fields(SystemDependencies)} if ports is None else ports
         registration = replace(self.reg, id=name, implementation=name, kind='system', ports=selected_ports)
         manifest = deepcopy(self.manifest)

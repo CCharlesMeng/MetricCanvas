@@ -1,3 +1,4 @@
+import { bindingQueryFields } from './query';
 import { parsePage } from './validate';
 import { canonicalizeJson } from './canonical-json';
 import { record, pointer } from './inline-query-params';
@@ -46,12 +47,12 @@ export function extractPageParams(input:unknown, context:ExtractionContext):Page
       if(!record(d)||Object.keys(d).some(k=>!['dim_name','dim_value_list'].includes(k))||typeof d.dim_name!=='string'||!Array.isArray(d.dim_value_list)||!d.dim_value_list.length||!d.dim_value_list.every((x:unknown)=>typeof x==='string'&&x.length)||new Set(d.dim_value_list).size!==d.dim_value_list.length||f.dims.filter((x:any)=>x?.dim_name===d.dim_name).length!==1){skipped.push({path,reason:'仅提取无歧义的简单字符串维度谓词'});continue;}
       const multiple=d.dim_value_list.length>1;
       const identity=context.dimensionIdentities?.[id]?.[d.dim_name]??`${id}:${d.dim_name}`;
-      add(identity,{id:'',type:'dimension',label:d.dim_name,...(multiple?{multiple:true}:{})},multiple?[...d.dim_value_list]:d.dim_value_list[0],{dataSourceId:id,path,queryField:d.dim_name});
+      add(identity,{id:'',type:'dimension',required:true,label:d.dim_name,...(multiple?{multiple:true}:{})},multiple?[...d.dim_value_list]:d.dim_value_list[0],{dataSourceId:id,path,queryField:d.dim_name});
     }
     const t=f.time;
     if(record(t)) {
       const granularity=t.period==='month'?'month':t.period==='day'?'date':undefined;
-      const declaration:PageParamDeclaration={id:'',type:'timeRange',label:'报告期间',granularity};
+      const declaration:PageParamDeclaration={id:'',type:'timeRange',required:true,label:'报告期间',granularity};
       const value={start:t.start,end:t.end,granularity};
       if(granularity&&matchesParamDeclaration(value,declaration))add(`time:${granularity}`,declaration,value,{dataSourceId:id,path:`${base}/time`});
       else skipped.push({path:`${base}/time`,reason:'只提取明确合法的固定月/日区间，不推断窗口关系'});
@@ -75,26 +76,30 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
   if(canonicalizeJson(extraction.source)!==extraction.sourceKey)return fail('提取来源已改变，须重新提取');
   if(new Set(selectedIds).size!==selectedIds.length||selectedIds.some(id=>!extraction.candidates.some(c=>c.id===id)))return fail('选择包含未知或重复参数');
   const selected=extraction.candidates.filter(c=>selectedIds.includes(c.id));
-  const document=structuredClone(extraction.source);document.schemaVersion=extraction.source.schemaVersion === '6.6' ? '6.6' : '6.5';
+  const document=structuredClone(extraction.source);
+  document.schemaVersion='6.11';
+  if (Array.isArray(document.params) && document.params.length) return fail('已有旧参数须先显式迁移，不能在提取时丢弃');
+  if (selected.length && (!document.params || Array.isArray(document.params))) document.params={query:{}};
   const originalValues:Record<string,PageParamValue>={};
   for(const c of selected) {
     if (document.params && !Array.isArray(document.params)) {
+      const queryParams = (document.params.query ??= {});
       if (c.declaration.type === 'dimension') {
         const names = new Set(c.locations.map(l => l.queryField));
         if (names.size !== 1 || !c.locations[0].queryField) return fail('分组维度参数的查询字段必须一致');
-        if (c.locations.some(l => { const ds=document.dataSources[l.dataSourceId]; return ds.source.type === 'query' && Object.values(ds.source.query.filterBindings ?? {}).some(b => b.target === 'dimension' && b.queryField === l.queryField); })) return fail('分组维度不能与页内筛选共同控制');
-        (document.params.dimensions ??= []).push({id:c.id, dim_name:c.locations[0].queryField, label:c.declaration.label});
+        if (c.locations.some(l => { const ds=document.dataSources[l.dataSourceId]; return ds.source.type === 'query' && Object.values(ds.source.query.filterBindings ?? {}).some(b => bindingQueryFields(b).includes(l.queryField ?? '')); })) return fail('分组维度不能与页内筛选共同控制');
+        (queryParams.dimensions ??= []).push({id:c.id, dim_name:c.locations[0].queryField, label:c.declaration.label});
         originalValues[c.id]=Array.isArray(c.originalValue) ? [...c.originalValue] : [String(c.originalValue)];
       } else if (c.declaration.type === 'timeRange' && c.declaration.granularity && typeof c.originalValue === 'object' && !Array.isArray(c.originalValue)) {
-        (document.params.times ??= []).push({id:c.id, granularity:c.declaration.granularity, label:c.declaration.label});
+        (queryParams.times ??= []).push({id:c.id, granularity:c.declaration.granularity, label:c.declaration.label});
         originalValues[c.id]={start:c.originalValue.start,end:c.originalValue.end};
       } else return fail('分组参数不支持此提取类型');
-    } else { const params=document.params ?? []; if (!Array.isArray(params)) return fail('参数结构不匹配'); params.push(structuredClone(c.declaration)); document.params=params;originalValues[c.id]=structuredClone(c.originalValue); }
+    }
     for(const location of c.locations) {
       if(c.declaration.type==='dimension') {
         setAt(document,location.path,{param:c.id});
         const ds=document.dataSources[location.dataSourceId];
-        if(ds.source.type==='query')for(const [filterId,b] of Object.entries(ds.source.query.filterBindings??{}))if(b.target==='dimension'&&b.queryField===location.queryField) {
+        if(ds.source.type==='query')for(const [filterId,b] of Object.entries(ds.source.query.filterBindings??{}))if(bindingQueryFields(b).includes(location.queryField ?? '')) {
           const filter=document.filters?.find(f=>f.id===filterId);
           if(filter?.type!=='dimension')return fail('维度筛选类型不匹配');
           const value=Array.isArray(c.originalValue)?c.originalValue:[c.originalValue];
@@ -102,7 +107,12 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
           delete filter.default;filter.initialParam=c.id;
         }
       }
-      else {setAt(document,location.path+'/start',{param:c.id,part:'start'});setAt(document,location.path+'/end',{param:c.id,part:'end'});}
+      else {
+        const source = document.dataSources[location.dataSourceId].source;
+        if (source.type !== 'query') return fail('来源查询已改变');
+        const time = (source.query.body.dsl_list[0].filter as Record<string, any>).time;
+        delete time.start; delete time.end; time.param = c.id;
+      }
     }
   }
   const pending:string[]=[];
@@ -124,7 +134,7 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
     // Filter-owned targets are checked with their initialized value reinstated.
     const body=structuredClone(after.query.body);
     const f:Record<string,any>=record(body.dsl_list[0].filter)?body.dsl_list[0].filter:{};
-    const restored=selected.flatMap(c=>c.locations.filter(l=>l.dataSourceId===id&&l.queryField&&Object.values(after.query.filterBindings??{}).some(b=>b.target==='dimension'&&b.queryField===l.queryField)).map(l=>({c,l,index:Number(l.path.split('/').at(-2))}))).sort((a,b)=>a.index-b.index);
+    const restored=selected.flatMap(c=>c.locations.filter(l=>l.dataSourceId===id&&l.queryField&&Object.values(after.query.filterBindings??{}).some(b=>bindingQueryFields(b).includes(l.queryField ?? ''))).map(l=>({c,l,index:Number(l.path.split('/').at(-2))}))).sort((a,b)=>a.index-b.index);
     for(const {c,l,index} of restored) {
       f.dims??=[];
       f.dims.splice(index,0,{dim_name:l.queryField,dim_value_list:Array.isArray(c.originalValue)?c.originalValue:[c.originalValue]});

@@ -34,4 +34,4 @@
 
 删除操作仅覆盖允许的顶层文本、地图、容器及总结，容器完整子树一起删除，共享数据源保留；connectPrevious后继依赖阻止删除。内容工具不保存/发布，不在创作期调用总结服务；标题含“AI”不自动升级动态总结。
 
-溯源（仓库路径）：`metriccanvas-authoring/tool/metriccanvas_authoring/domain/component_editing.py`、`page_building.py`、`text_map_building.py`、`container_building.py`；公开闭集测试`metriccanvas-authoring/test-harness/tests/test_content_containers.py`。t08/t09/t10/t11证据位于`docs/plan/authoring-tickets-126/`，它们分别记录本仓静态、实际本地协议与外部待验收边界。
+溯源（仓库路径）：`metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py`、`pages/composition/page_building.py`、`pages/components/text_map_building.py`、`pages/components/container_building.py`；公开闭集测试`metriccanvas-authoring/test-harness/tests/test_content_containers.py`。t08/t09/t10/t11证据位于`docs/archive/authoring-tickets-126/`，它们分别记录本仓静态、实际本地协议与外部待验收边界。

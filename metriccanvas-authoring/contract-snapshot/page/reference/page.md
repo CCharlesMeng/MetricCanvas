@@ -2,7 +2,7 @@
 
 页面元数据是统一运行时消费的声明式文档；数据上下文、会话、修订和执行身份由宿主管理。页面id、字段id、组件id分别属于自己的命名空间，组件id在整页唯一。
 
-当前作者写出6.6。公开读取兼容5.0—5.4及6.0—6.6；5.x在读取边界转换为6.x运行态文档。6.0使用layoutForm，6.1起允许layout。双字段同时出现即拒绝；缺布局默认report。normalizePageDocument只进行已声明的兼容规范化并保留文档原始字段，不将运行时参数替换结果保存。历史修订先核验原文hash再规范化。
+当前作者写出6.5。公开读取兼容5.0—5.4及6.0—6.5；5.x在读取边界转换为6.x运行态文档。6.0使用layoutForm，6.1起允许layout。双字段同时出现即拒绝；缺布局默认report。normalizePageDocument只进行已声明的兼容规范化并保留文档原始字段，不将运行时参数替换结果保存。历史修订先核验原文hash再规范化。
 
 report定宽居中，dashboard占满宿主宽度。dashboardToolbar缺省visible；hidden用于页面已有自有页头；compact对象表达紧凑工具栏，readOnly只影响呈现，不是服务权限。meta.title是页面级标题，缺席时消费方可回退页头再回退页面id。
 
@@ -11,7 +11,7 @@ report定宽居中，dashboard占满宿主宽度。dashboardToolbar缺省visible
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.6。结构真源为本册[schema.json](schema.json)，SHA256 `a421c583a35d98c6d01d1a47965f13984e4d6ec1aab62779b4d5ec78b7c8cf8f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `6b28ba0e717198c2963d957ea5c11e3177d05605f5bcc5e818f55f71e945e174`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -33,7 +33,7 @@ Schema位置：`#/properties/schemaVersion`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.6"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.6 |
+| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -42,8 +42,8 @@ Schema位置：`#/properties/schemaVersion`。
 | "5.2" | 历史5.2文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。 |
 | "5.3" | 历史5.3文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。 |
 | "5.4" | 历史5.4文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。 |
-| "6.5" | 兼容读取的6.5协议，支持原位参数引用与百万展示格式。 |
-| "6.6" | 当前作者写出版本，新增分组参数与多个独立时间区间。 |
+| "6.5" | 新增按百万呈现的0/1/2位小数格式。 |
+| "6.11" | 当前作者写出版本，新增时间点与层级维度筛选器的参数初值。 |
 
 <a id="schema-232f70726f706572746965732f6964"></a>
 
@@ -217,7 +217,7 @@ Schema位置：`#/definitions/dashboardToolbar/anyOf/1/properties/variant`。
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "compact" | 紧凑工具栏呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。 |
+| "compact" | 时间点去掉分隔符后送出，例如 202604。 |
 
 <a id="schema-232f646566696e6974696f6e732f64617368626f617264546f6f6c6261722f616e794f662f312f70726f706572746965732f726561644f6e6c79"></a>
 
@@ -411,9 +411,9 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 
 ## 语义规则与反例（生成）
 
-- `page-layout-compatibility`：6.1 layout 能力下限与单布局真源；6.0 layoutForm 仍可读取。反例：[layout-before-6.1](errors/layout-before-6.1.json)、[layout-dual-equal](errors/layout-dual-equal.json)、[layout-dual-conflict](errors/layout-dual-conflict.json)、[layout-invalid-value](errors/layout-invalid-value.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `schema-structure`：Page Schema 结构校验（ajv allErrors 文案与顺序）。反例：[missing-schema-version](errors/missing-schema-version.json)、[unknown-top-level-field](errors/unknown-top-level-field.json)、[layout-span-out-of-range](errors/layout-span-out-of-range.json)、[field-id-pattern](errors/field-id-pattern.json)、[sections-empty](errors/sections-empty.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `schema-version-supported`：schemaVersion 必须是当前主版本内的受支持次版本。反例：[version-major-unsupported](errors/version-major-unsupported.json)、[version-minor-ahead](errors/version-minor-ahead.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
+- `page-layout-compatibility`：6.1 layout 能力下限与单布局真源；6.0 layoutForm 仍可读取。反例：[layout-before-6.1](errors/layout-before-6.1.json)、[layout-dual-equal](errors/layout-dual-equal.json)、[layout-dual-conflict](errors/layout-dual-conflict.json)、[layout-invalid-value](errors/layout-invalid-value.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `schema-structure`：Page Schema 结构校验（ajv allErrors 文案与顺序）。反例：[missing-schema-version](errors/missing-schema-version.json)、[unknown-top-level-field](errors/unknown-top-level-field.json)、[layout-span-out-of-range](errors/layout-span-out-of-range.json)、[field-id-pattern](errors/field-id-pattern.json)、[sections-empty](errors/sections-empty.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `schema-version-supported`：schemaVersion 必须是当前主版本内的受支持次版本。反例：[version-major-unsupported](errors/version-major-unsupported.json)、[version-minor-ahead](errors/version-minor-ahead.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -431,7 +431,7 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - `#/properties/params/anyOf/1`：[合法完整页面](examples/grouped-params-page.json)，JSON Pointer `#/params`。
 - `#/properties/filters/items/oneOf/0`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/filters/0`。
 - `#/properties/filters/items/oneOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/1`。
-- `#/properties/filters/items/oneOf/2`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/filters/4`。
-- `#/properties/filters/items/oneOf/3`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/filters/7`。
-- `#/properties/filters/items/oneOf/4`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/filters/6`。
+- `#/properties/filters/items/oneOf/2`：[合法完整页面](examples/non-dimension-bindings-page.json)，JSON Pointer `#/filters/0`。
+- `#/properties/filters/items/oneOf/3`：[合法完整页面](examples/non-dimension-bindings-page.json)，JSON Pointer `#/filters/1`。
+- `#/properties/filters/items/oneOf/4`：[合法完整页面](examples/non-dimension-bindings-page.json)，JSON Pointer `#/filters/2`。
 - `#/properties/filters/items/oneOf/5`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/filters/8`。

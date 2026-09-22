@@ -3,8 +3,8 @@ import unittest
 from copy import deepcopy
 from pathlib import Path
 from test_page_editing import page, edit, title
-from metriccanvas_authoring.domain.layout_policy import apply_creation_layout
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.composition.layout_policy import apply_creation_layout
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 
 ROOT = Path(__file__).resolve().parents[3]
 

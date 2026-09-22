@@ -59,7 +59,35 @@ export const dqeQueryZ = z
             z
               .object({ target: z.literal('dimension'), queryField: z.string().min(1) })
               .strict(),
-            z.object({ target: z.literal('time') }).strict()
+            // 层级维度筛选器逐级声明谓词字段(ADR-0084);层级 id 为键。
+            z
+              .object({
+                target: z.literal('dimension'),
+                levelQueryFields: z
+                  .record(idZ, z.string().min(1))
+                  .meta({ minProperties: 2 })
+              })
+              .strict(),
+            z.object({ target: z.literal('time') }).strict(),
+            // 非维度筛选器的三支谓词(ADR-0085)。
+            z
+              .object({
+                target: z.literal('timePoint'),
+                queryField: z.string().min(1),
+                valueFormat: z.enum(['iso', 'compact']).optional()
+              })
+              .strict(),
+            z
+              .object({
+                target: z.literal('boolean'),
+                queryField: z.string().min(1),
+                whenTrue: z.array(z.string().min(1)).min(1),
+                whenFalse: z.array(z.string().min(1)).min(1).optional()
+              })
+              .strict(),
+            z
+              .object({ target: z.literal('numberRange'), metric: z.string().min(1) })
+              .strict()
           ])
       )
       .optional()

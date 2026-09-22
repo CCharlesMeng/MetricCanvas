@@ -1,21 +1,24 @@
 {
   "case": "missing-schema-version",
   "invariant": "schema-structure",
-  "input": {
-    "id": "missing-schema-version",
-    "dataSources": {},
-    "sections": []
-  },
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/schemaVersion",
-      "message": "缺少必填字段 schemaVersion"
+      "message": "缺少必填字段 schemaVersion",
+      "paths": [
+        "/schemaVersion"
+      ]
     },
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections",
-      "message": "must NOT have fewer than 1 items"
+      "message": "must NOT have fewer than 1 items",
+      "paths": [
+        "/sections"
+      ]
     }
-  ]
+  ],
+  "inputExcerpt": {
+    "sections": []
+  },
+  "fullInput": "page/conformance/invalid/missing-schema-version.json"
 }

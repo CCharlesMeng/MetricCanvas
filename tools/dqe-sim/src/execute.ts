@@ -2,8 +2,15 @@ import customerActivityRiskFixtureJson from '../fixtures/customer-activity-risk.
 import customerActivityRiskTop100FixtureJson from '../fixtures/customer-activity-risk-top100.json';
 import customerActivityInspectionFixtureJson from '../fixtures/customer-activity-inspection.json';
 import flowAnalysisReportFixtureJson from '../fixtures/flow-analysis-report.json';
+import iocOpportunityListFixtureJson from '../fixtures/ioc-opportunity-list.json';
+import iocPageDatasetsJson from '../fixtures/ioc-page-datasets.json';
 import salesAnalyticsFixture from '../fixtures/sales-analytics.json';
-import { dimensionValuesFor } from './dimension-value-surface';
+import {
+  dimensionValuesFor,
+  narrowByParent,
+  parentDimensionOf,
+  type DimensionValueCandidate
+} from './dimension-value-surface';
 import { runSemanticSurface } from './semantic-surface-execute';
 
 type JsonRecord = Record<string, unknown>;
@@ -51,6 +58,15 @@ interface FlowAnalysisReportFixture {
   queries: Record<string, FlowAnalysisQueryFixture>;
 }
 
+interface IocOpportunityListFixture {
+  capturedAt: string;
+  output_dims: string[];
+  output_metrics: string[];
+  /** 可参与 `filter.dims` 谓词的列;行里的其余列只作为投影输出。 */
+  filterableDims: string[];
+  rows: JsonRecord[];
+}
+
 export interface DqeSimItemResult {
   code: 'SUCCESS' | 'DQE_SIM_UNSUPPORTED_QUERY';
   data: JsonRecord[];
@@ -78,6 +94,17 @@ const customerActivityInspectionFixture =
   customerActivityInspectionFixtureJson as CustomerActivityInspectionFixture;
 const flowAnalysisReportFixture =
   flowAnalysisReportFixtureJson as FlowAnalysisReportFixture;
+/**
+ * IOC 四张页面的数据源夹具。机会点清单单独一份(它先落地、且被嵌入测试
+ * 宿主直接读),其余三张页面的十四个数据源合在一份里;执行分支对它们
+ * 一视同仁,按 output_dims/output_metrics 精确匹配认领。
+ */
+const iocDatasets: readonly IocOpportunityListFixture[] = [
+  iocOpportunityListFixtureJson as IocOpportunityListFixture,
+  ...Object.values(
+    (iocPageDatasetsJson as { datasets: Record<string, IocOpportunityListFixture> }).datasets
+  )
+];
 const inspectionProgressMetrics = [
   'NA客户数',
   '无公司考察客户数',
@@ -140,6 +167,8 @@ function executeExactScenarios(item: unknown): DqeSimItemResult {
   if (!isRecord(item)) return unsupported('查询项必须是 JSON 对象');
   const flowAnalysisResult = executeFlowAnalysisReport(item);
   if (flowAnalysisResult) return flowAnalysisResult;
+  const iocOpportunityResult = executeIocOpportunityList(item);
+  if (iocOpportunityResult) return iocOpportunityResult;
   const fixture = customerActivityRiskFixtures.find(
     (candidate) =>
       equalJson(item.output_metrics, candidate.query.output_metrics) &&
@@ -214,6 +243,7 @@ function executeDimensionValuesQuery(item: JsonRecord): DqeSimItemResult | undef
   const name = dimensions[0]!;
   const values = dimensionValuesFor(name);
   if (!values) return undefined;
+  let constraints: Array<{ dimension: string; values: string[] }> = [];
   if (item.filter !== undefined) {
     if (!isRecord(item.filter)) {
       return unsupported('候选值查询的 filter 必须是对象');
@@ -224,16 +254,18 @@ function executeDimensionValuesQuery(item: JsonRecord): DqeSimItemResult | undef
     ) {
       return unsupported('候选值查询仅支持 filter.metrics=[]');
     }
-    if (Object.hasOwn(item.filter, 'dims') && !equalJson(item.filter.dims, [])) {
-      return unsupported('候选值查询仅支持 filter.dims=[]');
-    }
+    const parsed = dimensionValueConstraints(item.filter.dims);
+    if ('error' in parsed) return parsed.error;
+    constraints = parsed.constraints;
   }
   if (item.order !== undefined && !validOrder(item.order)) {
     return unsupported('order 必须为 {} 或包含非负 offset/正整数 limit');
   }
+  const narrowed = narrowDimensionValues(name, values, constraints);
+  if ('error' in narrowed) return narrowed.error;
   return successResult(
     item,
-    values.map((candidate) => ({
+    narrowed.values.map((candidate) => ({
       [name]: candidate.value,
       [`${name}__label`]: candidate.label
     })),
@@ -253,6 +285,151 @@ function executeDimensionValuesQuery(item: JsonRecord): DqeSimItemResult | undef
       sql: null
     }
   );
+}
+
+/**
+ * 服务端排序:`order.by` 按中间层文档的 `@order(type, priority)` 语义
+ * (ADR-0086),priority 小者先比。缺席即保持夹具原序。
+ */
+function applyDqeSort(
+  rows: JsonRecord[],
+  order: unknown
+): { rows: JsonRecord[] } | { error: DqeSimItemResult } {
+  if (!isRecord(order) || order.by === undefined) return { rows };
+  if (!Array.isArray(order.by)) return { error: unsupported('order.by 必须是数组') };
+  const rules: Array<{ field: string; descending: boolean; priority: number }> = [];
+  for (const entry of order.by) {
+    if (!isRecord(entry) || typeof entry.field !== 'string') {
+      return { error: unsupported('排序项格式无效') };
+    }
+    if (entry.type !== 'asc' && entry.type !== 'desc') {
+      return { error: unsupported(`不支持的排序方向:${String(entry.type)}`) };
+    }
+    if (!Number.isInteger(entry.priority) || Number(entry.priority) < 1) {
+      return { error: unsupported('排序优先级必须是正整数') };
+    }
+    rules.push({
+      field: entry.field,
+      descending: entry.type === 'desc',
+      priority: Number(entry.priority)
+    });
+  }
+  rules.sort((left, right) => left.priority - right.priority);
+  const sorted = [...rows].sort((left, right) => {
+    for (const rule of rules) {
+      const a = left[rule.field];
+      const b = right[rule.field];
+      const comparison =
+        a === b
+          ? 0
+          : a === null || a === undefined
+            ? -1
+            : b === null || b === undefined
+              ? 1
+              : a < b
+                ? -1
+                : 1;
+      if (comparison !== 0) return rule.descending ? -comparison : comparison;
+    }
+    return 0;
+  });
+  return { rows: sorted };
+}
+
+/**
+ * 数值区间谓词:`filter.metrics` 上的比较条目(ADR-0085)。只认封闭的四个
+ * 比较算子与单值列表;算子看不懂、指标不在输出里都拒答,不静默放行。
+ */
+function applyMetricRangeFilters(
+  rows: JsonRecord[],
+  metrics: unknown,
+  known: ReadonlySet<string>
+): { rows: JsonRecord[] } | { error: DqeSimItemResult } {
+  if (metrics === undefined) return { rows };
+  if (!Array.isArray(metrics)) {
+    return { error: unsupported('filter.metrics 必须是数组') };
+  }
+  const compare: Record<string, (left: number, right: number) => boolean> = {
+    '>=': (left, right) => left >= right,
+    '<=': (left, right) => left <= right,
+    '>': (left, right) => left > right,
+    '<': (left, right) => left < right
+  };
+  let filtered = rows;
+  for (const entry of metrics) {
+    if (!isRecord(entry) || typeof entry.metric_name !== 'string') {
+      return { error: unsupported('指标筛选格式无效') };
+    }
+    if (!known.has(entry.metric_name)) {
+      return { error: unsupported(`不支持的指标筛选:${entry.metric_name}`) };
+    }
+    const operator = typeof entry.operator === 'string' ? compare[entry.operator] : undefined;
+    if (!operator) {
+      return { error: unsupported(`不支持的比较算子:${String(entry.operator)}`) };
+    }
+    const bounds = Array.isArray(entry.metric_value_list) ? entry.metric_value_list : [];
+    if (bounds.length !== 1 || typeof bounds[0] !== 'number') {
+      return { error: unsupported(`指标筛选 ${entry.metric_name} 需要单个数值端点`) };
+    }
+    const bound = bounds[0];
+    filtered = filtered.filter((row) => {
+      const value = row[entry.metric_name as string];
+      return typeof value === 'number' && operator(value, bound);
+    });
+  }
+  return { rows: filtered };
+}
+
+/** 候选值查询的级联约束:形状不合法直接拒答,不静默丢弃一条约束。 */
+function dimensionValueConstraints(
+  dims: unknown
+):
+  | { constraints: Array<{ dimension: string; values: string[] }> }
+  | { error: DqeSimItemResult } {
+  if (dims === undefined) return { constraints: [] };
+  if (!Array.isArray(dims)) {
+    return { error: unsupported('候选值查询的 filter.dims 必须是数组') };
+  }
+  const constraints: Array<{ dimension: string; values: string[] }> = [];
+  for (const entry of dims) {
+    if (!isRecord(entry) || typeof entry.dim_name !== 'string') {
+      return { error: unsupported('候选值查询的级联约束格式无效') };
+    }
+    const values = stringArray(entry.dim_value_list);
+    if (!values) {
+      return {
+        error: unsupported(`级联约束 ${entry.dim_name} 必须是字符串数组`)
+      };
+    }
+    constraints.push({ dimension: entry.dim_name, values });
+  }
+  return { constraints };
+}
+
+/**
+ * 按级联约束收窄候选值。约束的维度必须是目标维度登记过的上游,否则拒答:
+ * 忽略一条看不懂的约束会把全量候选值当成"收窄后的结果"送回去。
+ */
+function narrowDimensionValues(
+  name: string,
+  values: readonly DimensionValueCandidate[],
+  constraints: Array<{ dimension: string; values: string[] }>
+):
+  | { values: readonly DimensionValueCandidate[] }
+  | { error: DqeSimItemResult } {
+  let narrowed = values;
+  for (const constraint of constraints) {
+    if (constraint.values.length === 0) continue;
+    if (parentDimensionOf(name) !== constraint.dimension) {
+      return {
+        error: unsupported(
+          `维度 ${name} 不接受来自 ${constraint.dimension} 的级联约束`
+        )
+      };
+    }
+    narrowed = narrowByParent(name, narrowed, constraint.values);
+  }
+  return { values: narrowed };
 }
 
 function executeFlowAnalysisReport(
@@ -324,6 +501,98 @@ function executeFlowAnalysisReport(
     query.rows.map((row) => ({ ...row })),
     flowAnalysisMetadata(query)
   );
+}
+
+/**
+ * IOC 机会点清单:页面数据源把筛选器下推为 `filter.dims` 谓词后走这一支。
+ *
+ * 行存放的是采集副本,另带各级区域编码等谓词列;返回只投影
+ * `output_dims`/`output_metrics`,谓词列不外溢。层级区域筛选器按当前层级
+ * 送来不同的 `dim_name`(geo_pc_code / region_dept_code / rep_office_code),
+ * 这里据此各自命中——这正是层级绑定逐级声明谓词字段要验的东西。
+ */
+function executeIocOpportunityList(
+  item: JsonRecord
+): DqeSimItemResult | undefined {
+  const fixture = iocDatasets.find(
+    (candidate) =>
+      equalStrings(item.output_dims, candidate.output_dims) &&
+      equalStrings(item.output_metrics, candidate.output_metrics)
+  );
+  if (!fixture) return undefined;
+  if (!isRecord(item.filter)) return unsupported('机会点清单缺少 filter 对象');
+  if (!Array.isArray(item.filter.dims)) {
+    return unsupported('filter.dims 必须是数组');
+  }
+  if (!validOrder(item.order)) {
+    return unsupported('order 必须为 {} 或包含非负 offset/正整数 limit');
+  }
+  const filterable = new Set([...fixture.filterableDims, ...fixture.output_dims]);
+  let rows = fixture.rows;
+  for (const entry of item.filter.dims) {
+    if (!isRecord(entry) || typeof entry.dim_name !== 'string') {
+      return unsupported('维度筛选格式无效');
+    }
+    const name = entry.dim_name;
+    if (!filterable.has(name)) {
+      return unsupported(`机会点清单不支持的维度筛选:${name}`);
+    }
+    const values = stringArray(entry.dim_value_list);
+    if (!values) {
+      return unsupported(`维度筛选 ${name} 必须是字符串数组`);
+    }
+    if (values.length === 0) continue;
+    // 带 operator 的维度谓词是表头区间筛选(ADR-0086);不带即集合包含。
+    if (entry.operator !== undefined) {
+      if (values.length !== 1) return unsupported(`维度区间筛选 ${name} 需要单个端点`);
+      const bound = values[0]!;
+      const passes =
+        entry.operator === '>='
+          ? (value: string) => value >= bound
+          : entry.operator === '<='
+            ? (value: string) => value <= bound
+            : undefined;
+      if (!passes) return unsupported(`不支持的维度比较算子:${String(entry.operator)}`);
+      rows = rows.filter((row) => passes(String(row[name] ?? '')));
+      continue;
+    }
+    rows = rows.filter((row) => values.includes(String(row[name] ?? '')));
+  }
+  const sorted = applyDqeSort(rows, item.order);
+  if ('error' in sorted) return sorted.error;
+  rows = sorted.rows;
+  const metricFiltered = applyMetricRangeFilters(
+    rows,
+    item.filter.metrics,
+    new Set(fixture.output_metrics)
+  );
+  if ('error' in metricFiltered) return metricFiltered.error;
+  rows = metricFiltered.rows;
+  const projected = rows.map((row) =>
+    Object.fromEntries(
+      [...fixture.output_dims, ...fixture.output_metrics].map((field) => [field, row[field] ?? null])
+    )
+  );
+  return successResult(item, projected, {
+    columns: [
+      ...fixture.output_dims.map((caption) => ({
+        id: `dqe-sim.${caption}`,
+        caption,
+        data_type: 'STRING' as const,
+        type: 'dimension' as const
+      })),
+      ...fixture.output_metrics.map((caption) => ({
+        id: `dqe-sim.${caption}`,
+        caption,
+        data_type: 'NUMBER' as const,
+        type: 'metric' as const
+      }))
+    ],
+    orders: [],
+    limit: -1,
+    offset: -1,
+    sql: null
+  });
 }
 
 function flowAnalysisMetadata(
@@ -832,9 +1101,14 @@ function successResult(
   };
 }
 
+/**
+ * `order` 承载分页与排序两件事(ADR-0086):分页要么整体缺席,要么 offset
+ * 与 limit 成对且合法;排序 `by` 的形状由 `applyDqeSort` 单独判定。
+ */
 function validOrder(value: unknown): boolean {
   if (!isRecord(value)) return false;
-  if (Object.keys(value).length === 0) return true;
+  const paginated = Object.hasOwn(value, 'offset') || Object.hasOwn(value, 'limit');
+  if (!paginated) return true;
   return (
     Number.isInteger(value.offset) &&
     Number(value.offset) >= 0 &&
@@ -847,7 +1121,8 @@ function pageOrder(
   value: unknown,
   rowCount: number
 ): { offset: number; limit: number; paginated: boolean } {
-  if (!isRecord(value) || Object.keys(value).length === 0) {
+  // 只声明了排序没声明分页时,整份结果都要返回(ADR-0086)。
+  if (!isRecord(value) || !Object.hasOwn(value, 'limit')) {
     return { offset: 0, limit: rowCount, paginated: false };
   }
   return {

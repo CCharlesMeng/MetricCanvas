@@ -10,7 +10,7 @@ from pathlib import Path
 BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
-from metriccanvas_authoring.domain.section_layout import (  # noqa: E402
+from metriccanvas_authoring.pages.composition.section_layout import (  # noqa: E402
     SECTION_COLUMN_COUNT,
     pack_section_spans,
 )

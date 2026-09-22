@@ -6,9 +6,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
 from test_authoring_turns import Turns
-from metriccanvas_authoring.application.authoring_turns import AuthoringTurnGate
-from metriccanvas_authoring.application.authoring_candidates import AuthoringCandidates
-from metriccanvas_authoring.application.content_ports import ContentBaselineError
+from metriccanvas_authoring.work.authoring_turns import AuthoringTurnGate
+from metriccanvas_authoring.work.authoring_candidates import AuthoringCandidates
+from metriccanvas_authoring.work.content_ports import ContentBaselineError
 
 
 class MemoryCandidates:

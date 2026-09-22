@@ -1,0 +1,147 @@
+{
+  "case": "level-query-fields-undeclared-level",
+  "invariant": "filter-binding",
+  "input": {
+    "schemaVersion": "6.11",
+    "id": "hierarchy-binding-page",
+    "layout": "dashboard",
+    "meta": {
+      "description": "层级维度筛选绑定逐级声明谓词字段的契约样例：同一个筛选器在每一层各有自己的 DQE 字段"
+    },
+    "dataSources": {
+      "sales": {
+        "fields": {
+          "region": {
+            "queryField": "region_name",
+            "type": "string",
+            "role": "dimension",
+            "nullable": false
+          },
+          "level": {
+            "queryField": "region_level",
+            "type": "string",
+            "role": "dimension"
+          },
+          "gmv": {
+            "queryField": "gmv",
+            "type": "number",
+            "role": "measure"
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-01T00:00:00Z",
+            "rows": [
+              {
+                "region_name": "华东地区部",
+                "region_level": "region-dept",
+                "gmv": 1200
+              }
+            ]
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "region_name",
+                    "region_level"
+                  ],
+                  "output_metrics": [
+                    "gmv"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "area": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "region_dept_code",
+                  "office": "rep_office_code",
+                  "country": "country_code"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "filters": [
+      {
+        "id": "area",
+        "type": "dimension",
+        "dimension": "geo-pc-code",
+        "label": "区域",
+        "hierarchy": [
+          {
+            "id": "geo",
+            "dimension": "geo-pc-code",
+            "label": "全球"
+          },
+          {
+            "id": "region-dept",
+            "dimension": "region-dept-code",
+            "label": "地区部"
+          },
+          {
+            "id": "office",
+            "dimension": "rep-office-code",
+            "label": "代表处"
+          }
+        ],
+        "defaultLevel": "geo"
+      }
+    ],
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "region-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sales"
+            },
+            "props": {
+              "title": "分区域 GMV",
+              "columns": [
+                {
+                  "field": "region"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "gmv",
+                    "format": "number-grouped"
+                  }
+                }
+              ],
+              "pagination": {
+                "mode": "none"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "FILTER_BINDING_ERROR",
+      "path": "/dataSources/sales/source/query/filterBindings/area/levelQueryFields/country",
+      "message": "筛选器 area 未声明层级:country"
+    }
+  ]
+}

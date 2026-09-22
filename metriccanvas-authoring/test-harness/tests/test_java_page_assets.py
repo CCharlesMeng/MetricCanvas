@@ -11,19 +11,16 @@ from pathlib import Path
 BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
-from metriccanvas_authoring.adapters.outbound.env_identity import (  # noqa: E402
+from metriccanvas_authoring.adapters.relay.env_identity import (  # noqa: E402
     AUTH_TOKEN_ENV,
     OPERATOR_ID_ENV,
     EnvIdentityPort,
 )
-from metriccanvas_authoring.adapters.outbound.java_page_assets import (  # noqa: E402
+from metriccanvas_authoring.adapters.firstparty.java_page_assets import (  # noqa: E402
     JavaPageAssetPort,
 )
-from metriccanvas_authoring.application.ports import (  # noqa: E402
-    PageAssetError,
-    SavedRevision,
-    ServiceIdentity,
-)
+from metriccanvas_authoring.assets.ports import PageAssetError, SavedRevision  # noqa: E402
+from metriccanvas_authoring.adapters.service_identity import ServiceIdentity  # noqa: E402
 
 
 class StaticIdentity:

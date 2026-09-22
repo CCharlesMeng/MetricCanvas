@@ -54,7 +54,7 @@ from scenario_flow_server import dependencies, FIXTURE, SOURCES
 from fastmcp import Client
 from test_authoring_turns import Turns
 from test_authoring_candidates import MemoryCandidates
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 async def check():
     async with Client(create_unified_content_mcp_server(dependencies(), Turns('new'), candidate_store=MemoryCandidates())) as client:
         for key, domain in SOURCES.items():

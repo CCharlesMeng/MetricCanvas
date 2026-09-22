@@ -6,8 +6,8 @@ import httpx
 ROOT=Path(__file__).resolve().parents[2]
 sys.path[:0]=[str(ROOT/'tool'),str(ROOT/'test-harness')]
 from lifecycle_stdio_server import document, Identities
-from metriccanvas_authoring.adapters.outbound.lifecycle_http import KnownLifecycleHttp
-from metriccanvas_authoring.application.lifecycle_ports import LifecycleError
+from metriccanvas_authoring.adapters.firstparty.lifecycle_http import KnownLifecycleHttp
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleError
 
 
 class KnownHttpTest(unittest.IsolatedAsyncioTestCase):

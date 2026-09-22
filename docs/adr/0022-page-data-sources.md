@@ -1,3 +1,9 @@
+---
+status: accepted
+revised-by: [0014, 0016, 0017, 0020]
+note: 结构性基线；query 的字段模型与内嵌初始行细节已被修订，“静态页面”约束已于 2026-08-25 改写为仅内联页面的不变量，原文首部有说明
+---
+
 # 公开页面采用命名数据源,统一 inline 与 query 取数
 
 > 原编号 ADR-0008(与 `0008-immutable-page-revisions-and-publish-leases.md` 编号冲突,于 2026-08-05 重编号为 ADR-0022;标题与正文未改动)。

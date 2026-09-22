@@ -14,16 +14,14 @@ from adapters.fakes import (  # noqa: E402
     FakeDqeExecutionPort,
     FakePageAssetPort,
 )
-from metriccanvas_authoring.adapters.inbound.fastmcp import (  # noqa: E402
+from metriccanvas_authoring.entrypoints.compat.fastmcp import (  # noqa: E402
     create_mcp_server,
 )
-from metriccanvas_authoring.application.build_page import (  # noqa: E402
+from metriccanvas_authoring.ask.build_page import (  # noqa: E402
     BuildPageDependencies,
 )
-from metriccanvas_authoring.application.ports import (  # noqa: E402
-    DqeExecutionResult,
-    SavedRevision,
-)
+from metriccanvas_authoring.assets.ports import SavedRevision  # noqa: E402
+from metriccanvas_authoring.data.execution import DqeExecutionResult  # noqa: E402
 
 
 def fixture(name: str) -> dict[str, object]:

@@ -101,7 +101,7 @@
 
 <div class:read-only={readOnly} class="filter-bar">
   {#each visible as declaration (declaration.id)}
-    <div data-filter-control class="filter-control">
+    <div data-filter-control data-filter-id={declaration.id} class="filter-control">
     {#if readOnly && declaration.type === 'boolean'}
       <label class="readonly-boolean">
         <input type="checkbox" checked={booleanValue(declaration.id)} disabled />

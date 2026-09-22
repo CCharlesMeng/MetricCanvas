@@ -30,13 +30,13 @@ sys.path[:0]=['metriccanvas-authoring/tool','metriccanvas-authoring/test-harness
 from fastmcp import Client
 from test_text_map_building import content_page,recipe
 from test_container_building import composite,tabs,summary,child
-from metriccanvas_authoring.application.edit_page import document_sha256
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 output=Path(sys.argv[1]);feed=output/'baselines';feed.mkdir(exist_ok=True);pages=output/'pages';pages.mkdir(exist_ok=True)
 def publish(token,doc):
  (feed/(token+'.json')).write_text(json.dumps({'ref':{'pageId':doc['id'],'revisionId':'r1','resourceId':'resource1'},'document':doc,'documentSha256':document_sha256(doc)}))
 publish('trusted-content-source',content_page())
 async def main():
- config={'mcpServers':{'content':{'command':sys.executable,'args':['-m','metriccanvas_authoring.content_server'],'env':{'PYTHONPATH':str(Path('metriccanvas-authoring/tool').resolve()),'METRICCANVAS_CONTENT_BASELINES_DIR':str(feed),'METRICCANVAS_CONTENT_AI_SUMMARY_CONFIG':json.dumps({'conversationBaseUrl':sys.argv[2]})}}}}
+ config={'mcpServers':{'content':{'command':sys.executable,'args':['-m','metriccanvas_authoring.entrypoints.compat.content_server'],'env':{'PYTHONPATH':str(Path('metriccanvas-authoring/tool').resolve()),'METRICCANVAS_CONTENT_BASELINES_DIR':str(feed),'METRICCANVAS_CONTENT_AI_SUMMARY_CONFIG':json.dumps({'conversationBaseUrl':sys.argv[2]})}}}}
  async with Client(config) as client:
   for layout in ['report','dashboard']:
    op=composite(title='组合经营指标',children=[child(title='总额指标'),child('pieChart','nested-pie','sales',title='地域占比')])

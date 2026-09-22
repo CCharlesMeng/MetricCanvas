@@ -14,8 +14,8 @@ from test_authoring_candidates import MemoryCandidates
 from test_unified_content_mcp import dependencies
 from test_source_mapping import DescriptorFixture
 from test_page_editing import title
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 
 
 def spec(): return json.loads((ROOT/'test-harness/fixtures/page-build-spec.json').read_text())

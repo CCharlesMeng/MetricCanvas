@@ -1,5 +1,6 @@
 ---
 status: proposed
+note: 未实现，恢复条件见原文
 ---
 
 # 挂起服务端计算数据集，问数期计算由 DQE formula 承担

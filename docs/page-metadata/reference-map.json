@@ -32,8 +32,8 @@
         "textValueReference",
         "textValue",
         "pageParam",
-        "timeWindow",
-        "groupedPageParams"
+        "groupedPageParams",
+        "timeWindow"
       ],
       "keywords": [
         "params-and-text-values",
@@ -43,8 +43,6 @@
         "dimension-params-page",
         "reference-branches-page",
         "time-params-page",
-        "inline-params-page",
-        "inline-params-values-page",
         "grouped-params-page",
         "grouped-scalar-params-page"
       ],
@@ -147,7 +145,9 @@
         "查询定义与显式绑定"
       ],
       "examples": [
-        "dimension-params-page"
+        "dimension-params-page",
+        "hierarchy-binding-page",
+        "non-dimension-bindings-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -424,7 +424,6 @@
         "pagination-query-source",
         "pagination-query-order",
         "pagination-initial-rows",
-        "pagination-no-view-columns",
         "pagination-exclusive-source"
       ]
     },
@@ -577,7 +576,6 @@
         "pagination-query-source",
         "pagination-query-order",
         "pagination-initial-rows",
-        "pagination-no-view-columns",
         "pagination-exclusive-source"
       ]
     },
@@ -844,8 +842,6 @@
     }
   },
   "fieldNotes": {
-    "start": "闭区间的规范起点，与声明输入精度一致。",
-    "end": "闭区间的规范终点，不早于起点。",
     "id": "稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。",
     "title": "展示标题；是否必需由此处Schema分支决定，不能推断为空时的行为。",
     "type": "选择所属结构的类型分支。",
@@ -1025,7 +1021,7 @@
     "tags": "标签集合。",
     "target": "写回目标或查询绑定目标，按所在结构明确类型。",
     "term": "关联字段对应的业务术语。",
-    "titleField": "标题内容绑定字段。",
+    "titleField": "详情浮层标题取被点行的该字段；省略时用组件标题。",
     "titleIcon": "标题前受控图标。",
     "to": "范围终点；与from的顺序和精度须匹配。",
     "tone": "受控内容语气/正负语义。",
@@ -1047,9 +1043,22 @@
     "dim_name": "参数对应的业务维度字段；查询目标须与之相同。",
     "dim_value_list": "本次页面实例的非空、无重复维度值列表；模板可省略。",
     "times": "独立时间区间输入数组，每项由唯一参数 ID 引用。",
-    "scalars": "纯展示等标量参数数组，实际取值用 value 保存。",
-    "#/definitions/groupedPageParams/properties/times/items/properties/start": "包含的区间起点，与 end 同时填写或省略。",
-    "#/definitions/groupedPageParams/properties/times/items/properties/end": "包含的区间终点，不早于 start。"
+    "levelQueryFields": "层级维度筛选器逐级声明的谓词字段：键是层级id，值是该层的DQE字段；必须逐级写全。",
+    "valueFormat": "时间点取值送进谓词的写法：iso原样YYYY-MM，compact去掉分隔符。",
+    "whenTrue": "布尔筛选器勾选时下推的取值；不勾选默认无条件。",
+    "whenFalse": "布尔筛选器显式为假时下推的取值；缺席即不勾选不加条件。",
+    "metric": "数值区间谓词作用的DQE指标名，不等于页面字段id。",
+    "openDetail": "点击在页内打开详情浮层，读被点那一行，不离开当前页。",
+    "surface": "浮层形态：modal居中、drawer右侧贴边；尺寸与层级由渲染引擎决定。",
+    "#/definitions/groupedPageParams/properties/query": "落进查询请求的输入层：只有这一层下的参数可被查询体原位引用。",
+    "#/definitions/groupedPageParams/properties/query/properties/dimensions": "维度输入数组，每项由唯一参数 ID 引用，dim_name 必须与被引用查询条件一致。",
+    "#/definitions/groupedPageParams/properties/query/properties/times": "时间输入数组，每项是一个包含区间；单点写成 start 与 end 相同。",
+    "#/definitions/groupedPageParams/properties/query/properties/times/items/properties/start": "包含的区间起点，与 end 同时填写或省略。",
+    "#/definitions/groupedPageParams/properties/query/properties/times/items/properties/end": "包含的区间终点，不早于 start。",
+    "#/definitions/groupedPageParams/properties/display": "只供呈现的输入层：被文本取值和导航消费，不能进入查询；实际取值用 value 保存。",
+    "#/definitions/pageParam/anyOf/3/properties/value/properties/start": "timeRange 参数的包含起点；与 end 一起表达一次页面实例的明确时间区间。",
+    "#/definitions/pageParam/anyOf/3/properties/value/properties/end": "timeRange 参数的包含终点；必须与 start 使用相同粒度且不早于起点。",
+    "#/definitions/timePointFilter/properties/initialParam": "初值取自一个单点 times 参数；与 default 互斥，打开后仍可在页内改。"
   },
   "enumNotes": {
     "5.0": "历史5.0文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
@@ -1057,7 +1066,6 @@
     "5.2": "历史5.2文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
     "5.3": "历史5.3文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
     "5.4": "历史5.4文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
-    "6.5": "兼容读取的6.5协议，支持原位参数引用与百万展示格式。",
     "6.0": "布局使用layoutForm的兼容旧文档；不能声明layout或6.2参数能力。",
     "6.1": "支持layout的增量布局协议；不能使用6.2维度参数能力。",
     "6.2": "维度单/多值参数及显式初始化绑定；不能使用6.3时间参数。",
@@ -1078,6 +1086,9 @@
     "number-grouped": "千分位数值展示。",
     "compact-wan-0": "按万缩放，0位小数。",
     "compact-wan-1": "按万缩放，1位小数。",
+    "compact-million-0": "按百万缩放，0位小数，附加百万后缀（6.5）。",
+    "compact-million-1": "按百万缩放，1位小数，附加百万后缀（6.5）。",
+    "compact-million-2": "按百万缩放，2位小数，附加百万后缀（6.5）。",
     "compact-yi-1": "按亿缩放，1位小数。",
     "cny-adaptive": "按金额量级使用元/万/亿自适应展示。",
     "percent-0": "原数值加百分号，0位小数。",
@@ -1133,7 +1144,7 @@
     "100": "ratio输出乘100，匹配百分比原值展示。",
     "activityProgress": "活动进展呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
     "analysisStack": "分析纵向堆叠呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
-    "compact": "紧凑工具栏呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "compact": "时间点去掉分隔符后送出，例如 202604。",
     "compactStack": "紧凑纵向堆叠呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
     "compactStrip": "紧凑横条呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
     "compactSummary": "紧凑摘要呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
@@ -1170,11 +1181,17 @@
     "monthToDate": "自然月起点至绑定参数的报告基准期，不读取系统今天（6.4）。",
     "toDate": "兼容6.3的旧写法，新文档优先使用yearToDate或monthToDate。",
     "6.3": "增加确定性日期/月参数与查询时间窗口绑定。",
-    "6.4": "当前作者写出版本，新增yearToDate和monthToDate具名窗口，终点为报告基准期。",
-    "compact-million-0": "按百万缩放，0位小数，附加百万后缀（6.5）。",
-    "compact-million-1": "按百万缩放，1位小数，附加百万后缀（6.5）。",
-    "compact-million-2": "按百万缩放，2位小数，附加百万后缀（6.5）。",
-    "6.6": "当前作者写出版本，新增分组参数与多个独立时间区间。"
+    "6.4": "新增yearToDate和monthToDate具名窗口，终点为报告基准期。",
+    "6.5": "新增按百万呈现的0/1/2位小数格式。",
+    "6.6": "新增分组参数与多个独立时间区间。",
+    "6.7": "新增层级维度筛选绑定逐级声明谓词字段。",
+    "6.8": "层级维度筛选器不再允许恒定queryField，必须逐级声明。",
+    "6.9": "新增timePoint/boolean/numberRange筛选器的查询绑定目标。",
+    "iso": "时间点原样送 YYYY-MM / YYYY-MM-DD。",
+    "6.10": "新增页内详情浮层动作。",
+    "modal": "居中模态浮层。",
+    "drawer": "右侧贴边抽屉。",
+    "6.11": "当前作者写出版本，新增时间点与层级维度筛选器的参数初值。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

@@ -77,8 +77,8 @@ class ModelEvalHarnessTest(unittest.TestCase):
         root=Path('/repo')
         legacy=preflight.client_configuration(root)['mcpServers']['content']
         unified=preflight.client_configuration(root,'unified-content')['mcpServers']['content']
-        self.assertEqual(legacy['args'],['-m','metriccanvas_authoring.content_server'])
-        self.assertEqual(unified['args'],['-m','metriccanvas_authoring.unified_content_server'])
+        self.assertEqual(legacy['args'],['-m','metriccanvas_authoring.entrypoints.compat.content_server'])
+        self.assertEqual(unified['args'],['-m','metriccanvas_authoring.entrypoints.compat.unified_content_server'])
         self.assertNotIn('METRICCANVAS_CONTENT_BASELINES_DIR',unified['env'])
         with self.assertRaises(KeyError):preflight.client_configuration(root,'unknown')
 

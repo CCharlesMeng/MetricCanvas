@@ -49,7 +49,7 @@ const authoredAgentConformance = path.join(
   authoringContractRoot,
   'authored/agent-conformance.schema.json'
 );
-const authoringContractVersion = '0.2.0';
+const authoringContractVersion = '0.3.0';
 const snapshotRoot = path.join(bundleRoot, 'contract-snapshot');
 // 旧接口仅供退场中的客户端对照；提供方新接口以 #105 为准。
 const legacyContractRoot = path.join(repoRoot, 'tools/fixtures/legacy-contracts');
@@ -131,19 +131,32 @@ async function buildProductOutputs(): Promise<OutputMap> {
     change(input);
     groupedCases.push({name, input, expected: normalizePageDocument(input)});
   }
-  groupedCase('multiple-times', () => {});
+  groupedCase('range-and-derived', () => {});
   groupedCase('unfilled-template', p => {
-    delete p.params.dimensions[0].dim_value_list;
-    for (const t of p.params.times) { delete t.start; delete t.end; }
+    delete p.params.query.dimensions[0].dim_value_list;
+    for (const t of p.params.query.times) { delete t.start; delete t.end; }
   });
   groupedCase('old-version', p => { p.schemaVersion = '6.5'; });
-  groupedCase('duplicate-id', p => { p.params.times[0].id = 'region'; });
-  groupedCase('partial-range', p => { delete p.params.times[0].end; });
-  groupedCase('reversed-range', p => { p.params.times[0].start = '2027-01'; });
-  groupedCase('invalid-calendar', p => { p.params.times[0].start = '2026-13'; });
-  groupedCase('duplicate-dim-values', p => { p.params.dimensions[0].dim_value_list = ['A','A']; });
-  groupedCase('dimension-mismatch', p => { p.params.dimensions[0].dim_name = 'other'; });
-  groupedCase('mixed-time-sources', p => { p.dataSources.current.source.query.body.dsl_list[0].filter.time.end.param = 'comparison-period'; });
+  groupedCase('duplicate-id', p => { p.params.query.times[0].id = 'region'; });
+  groupedCase('legacy-flat-groups', p => { p.params = {dimensions: p.params.query.dimensions, times: p.params.query.times}; });
+  groupedCase('partial-range', p => { delete p.params.query.times[0].end; });
+  groupedCase('reversed-range', p => { p.params.query.times[0].start = '2027-01'; });
+  groupedCase('invalid-calendar', p => { p.params.query.times[0].start = '2026-13'; });
+  groupedCase('duplicate-dim-values', p => { p.params.query.dimensions[0].dim_value_list = ['A','A']; });
+  groupedCase('dimension-mismatch', p => { p.params.query.dimensions[0].dim_name = 'other'; });
+  groupedCase('retired-endpoint-form', p => {
+    p.dataSources.current.source.query.body.dsl_list[0].filter.time = {
+      period: 'month', is_aggregate: true,
+      start: {param: 'report-period', part: 'start'}, end: {param: 'report-period', part: 'end'}
+    };
+  });
+  groupedCase('reference-with-literal-range', p => { p.dataSources.current.source.query.body.dsl_list[0].filter.time.start = '2026-01'; });
+  groupedCase('window-precision-mismatch', p => { p.dataSources.rolling.source.query.body.dsl_list[0].filter.time.window = {kind:'lastN',unit:'day',n:7}; });
+  groupedCase('window-on-range', p => { p.dataSources.rolling.source.query.body.dsl_list[0].filter.time.param = 'report-period'; });
+  groupedCase('display-input-in-query', p => {
+    p.params.display = [{id:'note', type:'string', value:'中国地区部'}];
+    p.dataSources.current.source.query.body.dsl_list[0].filter.dims[0].dim_value_list = {param:'note'};
+  });
   groupedCase('uncontrolled-reference', p => { p.dataSources.current.source.query.body.dsl_list[0].output_dims = [{param:'region'}]; });
   groupedCase('filter-conflict', p => { p.dataSources.current.source.query.filterBindings = {other:{target:'time'}}; });
   outputs.set('page/conformance/grouped-params.json', json({cases: groupedCases}));
@@ -216,21 +229,21 @@ async function buildProductOutputs(): Promise<OutputMap> {
     change(input);inlineCases.push({name,input,expected:normalizePageDocument(input)});
   }
   inlineCase('unfilled-template',()=>{});
-  inlineCase('filled-range',p=>{p.params[0].value='中国区';p.params[1].value={start:'2026-01',end:'2026-06',granularity:'month'};});
+  inlineCase('filled-range',p=>{p.params.query.dimensions[0].dim_value_list=['中国区'];p.params.query.times[0].start='2026-01';p.params.query.times[0].end='2026-06';});
   inlineCase('old-version',p=>{p.schemaVersion='6.4';});
-  inlineCase('optional-query-input',p=>{p.params[0].required=false;});
-  inlineCase('value-default-conflict',p=>{p.params[0].value='中国区';p.params[0].default='全球';});
-  inlineCase('duplicate-values',p=>{p.params[0].multiple=true;p.params[0].value=['中国区','中国区'];});
-  inlineCase('invalid-day',p=>{p.params[1].granularity='date';p.params[1].value={start:'2026-02-29',end:'2026-03-01',granularity:'date'};});
-  inlineCase('reversed-range',p=>{p.params[1].value={start:'2026-06',end:'2026-01',granularity:'month'};});
+  inlineCase('optional-query-input',p=>{p.params.query.dimensions[0].required=false;});
+  inlineCase('value-default-conflict',p=>{p.params.query.dimensions[0].default='全球';});
+  inlineCase('duplicate-values',p=>{p.params.query.dimensions[0].dim_value_list=['中国区','中国区'];});
+  inlineCase('invalid-day',p=>{p.params.query.times[0].granularity='date';p.params.query.times[0].start='2026-02-29';p.params.query.times[0].end='2026-03-01';});
+  inlineCase('reversed-range',p=>{p.params.query.times[0].start='2026-06';p.params.query.times[0].end='2026-01';});
   inlineCase('uncontrolled-reference',p=>{p.dataSources.tokens.source.query.body.dsl_list[0].output_metrics=[{param:'region'}];});
   inlineCase('wrong-reference-key',p=>{p.dataSources.tokens.source.query.body.dsl_list[0].filter.dims[0].dim_value_list={param:'report_period'};});
   inlineCase('extra-reference-key',p=>{p.dataSources.tokens.source.query.body.dsl_list[0].filter.dims[0].dim_value_list.extra=1;});
   inlineCase('mixed-time-endpoints',p=>{p.dataSources.tokens.source.query.body.dsl_list[0].filter.time.end='2026-06';});
   inlineCase('mixed-binding-model',p=>{p.dataSources.tokens.source.query.paramBindings={region:{target:'dimension',queryField:'other'}};});
-  const anchorReference=(p:any)=>{p.params[1]={id:'report-period',type:'time',granularity:'month',value:'2026-03'};const t=p.dataSources.tokens.source.query.body.dsl_list[0].filter.time;t.start.window={kind:'lastN',unit:'month',n:12};t.end.window={kind:'lastN',unit:'month',n:12};};
+  const anchorReference=(p:any)=>{p.params.query.times[0]={id:'report-period',granularity:'month',start:'2026-03',end:'2026-03'};const t=p.dataSources.tokens.source.query.body.dsl_list[0].filter.time;t.window={kind:'lastN',unit:'month',n:12};};
   inlineCase('anchor-window',anchorReference);
-  inlineCase('mismatched-windows',p=>{anchorReference(p);p.dataSources.tokens.source.query.body.dsl_list[0].filter.time.end.window.n=6;});
+  inlineCase('mismatched-windows',p=>{anchorReference(p);p.dataSources.tokens.source.query.body.dsl_list[0].filter.time.end={param:'report-period',part:'end',window:{kind:'lastN',unit:'month',n:6}};});
   outputs.set('page/conformance/inline-params.json',json({cases:inlineCases}));
 
   const tokensInput=JSON.parse(await readFile(path.join(repoRoot,'packages/page/fixtures/parameter-extraction/tokens-parameter-source.json'),'utf8'));
@@ -384,7 +397,7 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
     json({
       authoringContractVersion,
       files: [
-        ...await Promise.all(['publication-contract.ts', 'publication-conformance.json', 'authoring-turn.schema.json', 'authoring-turn.conformance.json', 'authoring-turn-contract.ts', 'authoring-turn-protocol.md', 'authoring-turn.bytes.json', 'authoring-candidate.schema.json', 'authoring-candidate-protocol.md', 'authoring-candidate.conformance.json', 'authoring-recovery-protocol.md', 'authoring-ui-recovery-protocol.md', 'source-description.schema.json', 'add-data-component.schema.json', 'authoring-data-mapping-protocol.md', 'source-format.conformance.json', 'section-patterns.json', 'page-structure-plan.schema.json', 'structure-revision.schema.json'].map(async name => ({file: `authored/${name}`, sha256: sha256(await readFile(path.join(authoringContractRoot, 'authored', name), 'utf8'))}))),
+        ...await Promise.all(['platform-v2-protocol.md', 'publication-contract.ts', 'publication-conformance.json', 'authoring-turn.schema.json', 'authoring-turn.conformance.json', 'authoring-turn-contract.ts', 'authoring-turn-protocol.md', 'authoring-turn.bytes.json', 'authoring-candidate.schema.json', 'authoring-candidate-protocol.md', 'authoring-candidate.conformance.json', 'authoring-recovery-protocol.md', 'authoring-ui-recovery-protocol.md', 'source-description.schema.json', 'add-data-component.schema.json', 'authoring-data-mapping-protocol.md', 'source-format.conformance.json', 'section-patterns.json', 'page-structure-plan.schema.json', 'structure-revision.schema.json'].map(async name => ({file: `authored/${name}`, sha256: sha256(await readFile(path.join(authoringContractRoot, 'authored', name), 'utf8'))}))),
         { file: 'authored/analysis-intents.json', sha256: sha256(analysisIntents) },
         { file: 'authored/page-edit-request.schema.json', sha256: sha256(authoredEditRequest) },
         { file: 'authored/lifecycle-request.schema.json', sha256: sha256(authoredLifecycleRequest) },
@@ -517,7 +530,8 @@ async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{
         entry.entrypoint !== `skill/${entry.id}/SKILL.md` || seen.has(entry.id)) throw new Error('Invalid or duplicate Skill entry');
     if (entry.id === 'metriccanvas-platform-authoring' &&
         (entry.mcpServer !== 'metriccanvas-platform-content' ||
-         bundle.toolServices?.['metriccanvas-platform-content']?.module !== 'metriccanvas_authoring.unified_content_server')) {
+         bundle.toolServices?.['metriccanvas-platform-content']?.module !== 'metriccanvas_authoring.platform_server' ||
+         bundle.toolServices?.['metriccanvas-platform-content']?.platformProtocolVersion !== '2.0')) {
       throw new Error('Unified Platform deployment requires gated content service');
     }
     seen.add(entry.id);
@@ -564,6 +578,7 @@ async function buildBundleLock(): Promise<string> {
   const artifactPaths = (await listFiles(bundleRoot)).filter(
     (file) =>
       file !== 'bundle.lock.json' &&
+      !file.startsWith('test-harness/model-evals/local-runs/') &&
       !file.includes('__pycache__') &&
       !file.endsWith('.pyc') &&
       !file.split('/').some((segment) => localOnlyDirectories.has(segment))

@@ -11,7 +11,7 @@ groupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.6。结构真源为本册[schema.json](schema.json)，SHA256 `a421c583a35d98c6d01d1a47965f13984e4d6ec1aab62779b4d5ec78b7c8cf8f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `6b28ba0e717198c2963d957ea5c11e3177d05605f5bcc5e818f55f71e945e174`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -491,12 +491,12 @@ Schema位置：`#/definitions/computeOperator/oneOf/4/properties/keyFields/items
 
 ## 语义规则与反例（生成）
 
-- `compute-operator-inputs`：算子引用的字段已声明、角色相容、数值算子输入为数值类型。反例：[compute-undeclared-field](errors/compute-undeclared-field.json)、[compute-role-mismatch](errors/compute-role-mismatch.json)、[compute-non-numeric-input](errors/compute-non-numeric-input.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `compute-operator-outputs`：算子产出字段已声明、不重名、不来自外部响应。反例：[compute-duplicate-output](errors/compute-duplicate-output.json)、[compute-output-with-query-field](errors/compute-output-with-query-field.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `compute-folding-collapsible`：折叠算子只能作用于显式声明 collapsible 的度量字段。反例：[compute-fold-non-collapsible](errors/compute-fold-non-collapsible.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `compute-row-kind-field`：行类别字段必须是可空的 string 维度。反例：[compute-row-kind-not-string](errors/compute-row-kind-not-string.json)、[compute-row-kind-not-nullable](errors/compute-row-kind-not-nullable.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `compute-pivot-categories-unique`：透视类别取值只能映射到一个目标列。反例：[compute-pivot-duplicate-category](errors/compute-pivot-duplicate-category.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `compute-output-not-in-rows`：算子产出字段不得出现在数据行中。反例：[compute-output-in-inline-rows](errors/compute-output-in-inline-rows.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
+- `compute-operator-inputs`：算子引用的字段已声明、角色相容、数值算子输入为数值类型。反例：[compute-undeclared-field](errors/compute-undeclared-field.json)、[compute-role-mismatch](errors/compute-role-mismatch.json)、[compute-non-numeric-input](errors/compute-non-numeric-input.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `compute-operator-outputs`：算子产出字段已声明、不重名、不来自外部响应。反例：[compute-duplicate-output](errors/compute-duplicate-output.json)、[compute-output-with-query-field](errors/compute-output-with-query-field.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `compute-folding-collapsible`：折叠算子只能作用于显式声明 collapsible 的度量字段。反例：[compute-fold-non-collapsible](errors/compute-fold-non-collapsible.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `compute-row-kind-field`：行类别字段必须是可空的 string 维度。反例：[compute-row-kind-not-string](errors/compute-row-kind-not-string.json)、[compute-row-kind-not-nullable](errors/compute-row-kind-not-nullable.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `compute-pivot-categories-unique`：透视类别取值只能映射到一个目标列。反例：[compute-pivot-duplicate-category](errors/compute-pivot-duplicate-category.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `compute-output-not-in-rows`：算子产出字段不得出现在数据行中。反例：[compute-output-in-inline-rows](errors/compute-output-in-inline-rows.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 

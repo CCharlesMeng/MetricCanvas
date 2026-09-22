@@ -29,6 +29,64 @@ export function atPointer(document: unknown, pointer: string): any {
   }, document);
 }
 
+const EXCERPT_DEPTH = 2;
+const EXCERPT_TEXT = 200;
+
+function capExcerpt(node: any, depth: number): any {
+  if (typeof node === 'string' && node.length > EXCERPT_TEXT) return `${node.slice(0, EXCERPT_TEXT)}…（共${node.length}字符）`;
+  if (node === null || typeof node !== 'object') return node;
+  if (depth <= 0) return Array.isArray(node) ? [`…（共${node.length}项）`] : {'…': `共${Object.keys(node).length}个键`};
+  if (Array.isArray(node)) return node.slice(0, 2).map(item => capExcerpt(item, depth - 1));
+  return Object.fromEntries(Object.entries(node).map(([key, value]) => [key, capExcerpt(value, depth - 1)]));
+}
+
+/** 只保留触发点的祖先链与命中节点，数组下标照原位保留。 */
+function excerptAt(document: any, pointers: string[]): any {
+  const paths = pointers.filter(Boolean).map(pointer => pointer.split('/').slice(1).map(unescapePointer));
+  if (!paths.length) return capExcerpt(document, 1);
+  const blank = (node: unknown) => Array.isArray(node) ? [] : {};
+  const root: any = blank(document);
+  for (const tokens of paths) {
+    let source: any = document, target: any = root;
+    for (const [index, token] of tokens.entries()) {
+      if (source === null || typeof source !== 'object') break;
+      const key: any = Array.isArray(source) ? Number(token) : token;
+      if (!(key in source)) break;
+      const child = source[key];
+      if (index === tokens.length - 1) { target[key] = capExcerpt(child, EXCERPT_DEPTH); break; }
+      if (target[key] === null || typeof target[key] !== 'object') target[key] = blank(child);
+      source = child; target = target[key];
+    }
+  }
+  return markSkipped(root);
+}
+
+/** 未落在触发点祖先链上的数组兄弟项显式标出，避免被读成值为 null。 */
+function markSkipped(node: any): any {
+  if (Array.isArray(node)) return Array.from(node, item => item === undefined ? '…' : markSkipped(item));
+  if (node === null || typeof node !== 'object') return node;
+  return Object.fromEntries(Object.entries(node).map(([key, value]) => [key, markSkipped(value)]));
+}
+
+/** 反例投影只回答“哪个位置违反了哪条不变式”；完整向量留在契约夹具。 */
+function errorExcerpt(vector: any, source: string) {
+  type Issue = {type: string; message: string; paths: string[]};
+  const grouped = new Map<string, Issue>();
+  for (const issue of vector.expected ?? []) {
+    const key = `${issue.type}\u0000${issue.message ?? ''}`;
+    const entry: Issue = grouped.get(key) ?? {type: issue.type, message: issue.message ?? '', paths: []};
+    entry.paths.push(issue.path ?? '');
+    grouped.set(key, entry);
+  }
+  return {
+    case: vector.case,
+    invariant: vector.invariant,
+    expected: [...grouped.values()],
+    inputExcerpt: excerptAt(vector.input, (vector.expected ?? []).map((issue: any) => issue.path ?? '')),
+    fullInput: source,
+  };
+}
+
 /** 每个局部结构只生成一次；$ref指向同一Schema节点，递归通过链接闭合。 */
 export function referenceNodes(schema: Schema, map: ReferenceMap): ReferenceNode[] {
   const owners = new Map<string, string>();
@@ -92,10 +150,13 @@ function minimalExample(document: any, component: any): any | undefined {
     candidate.params = candidate.params.filter((p:any)=>params.has(p.id));
     if (!candidate.params.length) delete candidate.params;
   } else if (candidate.params) {
-    for (const group of Object.keys(candidate.params)) {
-      candidate.params[group] = candidate.params[group].filter((p:any) => params.has(p.id));
-      if (!candidate.params[group].length) delete candidate.params[group];
+    const keep = (list:any[]) => list.filter((p:any) => params.has(p.id));
+    for (const [owner, group] of [[candidate.params.query, 'dimensions'], [candidate.params.query, 'times'], [candidate.params, 'display']] as const) {
+      if (!owner?.[group]) continue;
+      owner[group] = keep(owner[group]);
+      if (!owner[group].length) delete owner[group];
     }
+    if (candidate.params.query && !Object.keys(candidate.params.query).length) delete candidate.params.query;
     if (!Object.keys(candidate.params).length) delete candidate.params;
   }
   const clean = JSON.parse(JSON.stringify(candidate));
@@ -185,7 +246,7 @@ export async function buildPageReference(root: string, schema: Schema, catalog: 
     }
   }
   const rules: Array<{id:string;description:string;valid:string[];invalid:string[]}> = JSON.parse(inputs.get('page/conformance/coverage.json') ?? '{"invariants":[]}').invariants;
-  for(const [file,content] of inputs) if(file.startsWith('page/conformance/invalid/')) output.set(`errors/${path.posix.basename(file)}`,content);
+  for(const [file,content] of inputs) if(file.startsWith('page/conformance/invalid/')) output.set(`errors/${path.posix.basename(file)}`,json(errorExcerpt(JSON.parse(content),file)));
   output.set('rules.json',json({invariants:rules}));
   const semanticSources = await Promise.all([...new Set([...Object.values(map.modules).flatMap(m=>m.sources), ...Object.values(map.branchExceptions ?? {}).map(e=>e.source)])].sort().map(async file=>({file,sha256:createHash('sha256').update(await readFile(path.join(root,file))).digest('hex')})));
   const schemaHash = createHash('sha256').update(json(schema)).digest('hex');
@@ -214,7 +275,7 @@ export async function buildPageReference(root: string, schema: Schema, catalog: 
     body += '## 语义规则与反例（生成）\n\n';
     for(const id of module.rules ?? []) {
       const rule=rules.find(r=>r.id===id);if(!rule)throw new Error(`Missing reference rule: ${id}`);
-      body += `- \`${rule.id}\`：${rule.description}。反例：${rule.invalid.map(name=>`[${name}](${prefix}errors/${name}.json)`).join('、')}。反例文件包含完整input及预期type/path；修复后须重新完整校验。\n`;
+      body += `- \`${rule.id}\`：${rule.description}。反例：${rule.invalid.map(name=>`[${name}](${prefix}errors/${name}.json)`).join('、')}。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。\n`;
     }
     body += '\n## 示例与溯源（生成）\n\n';
     for (const example of exampleCoverage.filter(e=>`components/${e.type}.md`===file && e.file)) body += `- [${example.variant ?? '最小组件'}](${prefix}${example.file})：独立完整页面，保留必要语义依赖。\n`;
@@ -241,9 +302,9 @@ export async function buildPageReference(root: string, schema: Schema, catalog: 
     const branch = branchCoverage.find(b => b.schemaPointer === pointer);
     if (!branch || branch.file) throw new Error(`Obsolete branch exception: ${pointer}`);
     const file = `errors/${exception.case}.json`;
-    const vector = JSON.parse(output.get(file) ?? 'null');
+    const vector = JSON.parse(inputs.get(`page/conformance/invalid/${exception.case}.json`) ?? 'null');
     const rule = rules.find(r => r.id === exception.rule);
-    if (!vector || !rule?.invalid.includes(exception.case) || vector.invariant !== exception.rule || !exception.reason.trim()) throw new Error(`Invalid branch exception: ${pointer}`);
+    if (!vector || !output.has(file) || !rule?.invalid.includes(exception.case) || vector.invariant !== exception.rule || !exception.reason.trim()) throw new Error(`Invalid branch exception: ${pointer}`);
     const actual = validate(vector.input).map(({type,path}) => ({type,path}));
     const expected = vector.expected.map(({type,path}:any) => ({type,path}));
     if (!actual.length || json(actual) !== json(expected)) throw new Error(`Stale branch rejection: ${pointer}`);
@@ -266,7 +327,7 @@ export async function buildPageReference(root: string, schema: Schema, catalog: 
   const missingFields = nodes.filter(n => /\/properties\/[^/]+$/.test(n.pointer) && !map.fieldNotes[n.pointer] && !n.schema.description && !map.fieldNotes[n.path.split('.').at(-1)!]).map(n => n.pointer);
   const semanticGaps = {fields:missingFields,enums:missingEnums,examples:exampleCoverage.filter(e=>!e.file),branches:documentedBranches.filter(b=>!b.file&&!b.negativeWitness)};
   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
-  output.set('index.json', json({schemaVersion:version,schemaSha256:schemaHash,semanticSources,modules:map.modules,components:catalog.map(c=>({type:c.type,file:`components/${c.type}.md`})),nodes:nodes.map(({schema:s,...n})=>({...n,type:typeOf(s),constraints:constraints(s),enum:s.enum,const:s.const,ref:s.$ref})),exampleCoverage,branchCoverage:documentedBranches,semanticGaps}));
+  output.set('index.json', json({schemaVersion:version,schemaSha256:schemaHash,semanticSources,modules:map.modules,components:catalog.map(c=>({type:c.type,file:`components/${c.type}.md`})),nodes:nodes.map(({schema:s,...n})=>({...n,enum:s.enum,const:s.const,ref:s.$ref})),exampleCoverage,branchCoverage:documentedBranches,semanticGaps}));
   for (const component of catalog) if (!output.has(`components/${component.type}.md`)) throw new Error(`Undocumented component: ${component.type}`);
   validateReferenceLinks(output);
   return output;

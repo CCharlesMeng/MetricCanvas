@@ -17,7 +17,7 @@ it('requires current preview, saves only the unfilled template once, and does no
   await f.api.confirmAndPublish();expect(f.save).not.toHaveBeenCalled();
   await f.api.preview();await f.api.confirmAndPublish();await f.api.confirmAndPublish();
   expect(f.save).toHaveBeenCalledTimes(1);expect(f.api.snapshot().phase).toBe('queued');
-  expect(f.save.mock.calls[0][0].params.every((p:any)=>!('value'in p)&&!('default'in p))).toBe(true);
+  expect(f.save.mock.calls[0][0].params.query.dimensions.every((p:any)=>!('dim_value_list'in p)) && f.save.mock.calls[0][0].params.query.times.every((p:any)=>!('start'in p)&&!('end'in p))).toBe(true);
 });
 it('invalidates preview on input, selection and source change',async()=>{
   const f=setup();await f.api.prepare();f.api.select(f.api.snapshot().extraction!.candidates.map(c=>c.id));await f.api.preview();

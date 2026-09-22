@@ -9,9 +9,9 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 sys.path[:0]=[str(ROOT/'tool'),str(ROOT/'test-harness')]
 from lifecycle_stdio_server import ProposedService, Programs, Identities, save_command, digest
-from metriccanvas_authoring.application.lifecycle import Lifecycle
-from metriccanvas_authoring.application.lifecycle_ports import LifecycleIdentity, LifecycleCapabilities, LifecycleError
-from metriccanvas_authoring.adapters.outbound.lifecycle_spool import FileLifecyclePrograms
+from metriccanvas_authoring.assets.lifecycle import Lifecycle
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleIdentity, LifecycleCapabilities, LifecycleError
+from metriccanvas_authoring.adapters.relay.lifecycle_spool import FileLifecyclePrograms
 
 
 class LifecycleTest(unittest.IsolatedAsyncioTestCase):

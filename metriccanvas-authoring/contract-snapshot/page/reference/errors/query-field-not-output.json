@@ -1,10 +1,23 @@
 {
   "case": "query-field-not-output",
   "invariant": "query-field-mapping",
-  "input": {
-    "schemaVersion": "6.5",
-    "layout": "report",
-    "id": "query-dashboard",
+  "expected": [
+    {
+      "type": "QUERY_MAPPING_ERROR",
+      "message": "queryField unknown 不在 DQE 输出字段中",
+      "paths": [
+        "/dataSources/sales/fields/gmv/queryField"
+      ]
+    },
+    {
+      "type": "QUERY_MAPPING_ERROR",
+      "message": "DQE 输出字段 gmv 缺少显式 queryField 映射",
+      "paths": [
+        "/dataSources/sales/fields"
+      ]
+    }
+  ],
+  "inputExcerpt": {
     "dataSources": {
       "sales": {
         "fields": {
@@ -20,96 +33,9 @@
             "role": "measure",
             "nullable": false
           }
-        },
-        "source": {
-          "type": "query",
-          "query": {
-            "language": "dqe",
-            "body": {
-              "dsl_list": [
-                {
-                  "output_dims": [
-                    "region"
-                  ],
-                  "output_metrics": [
-                    "gmv"
-                  ],
-                  "filter": {
-                    "dims": [],
-                    "metrics": []
-                  },
-                  "order": {
-                    "offset": 0,
-                    "limit": 20
-                  }
-                }
-              ]
-            },
-            "filterBindings": {
-              "region-filter": {
-                "target": "dimension",
-                "queryField": "region"
-              }
-            }
-          }
         }
       }
-    },
-    "filters": [
-      {
-        "id": "region-filter",
-        "type": "dimension",
-        "dimension": "region"
-      }
-    ],
-    "sections": [
-      {
-        "id": "details",
-        "components": [
-          {
-            "id": "sales-table",
-            "type": "table",
-            "layout": {
-              "span": 12
-            },
-            "data": {
-              "main": "sales"
-            },
-            "props": {
-              "columns": [
-                {
-                  "field": "region"
-                },
-                {
-                  "field": "gmv"
-                }
-              ],
-              "pagination": {
-                "mode": "query"
-              },
-              "actions": [
-                {
-                  "on": "click",
-                  "writeFilter": "region-filter",
-                  "field": "region"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    ]
-  },
-  "expected": [
-    {
-      "type": "QUERY_MAPPING_ERROR",
-      "path": "/dataSources/sales/fields/gmv/queryField",
-      "message": "queryField unknown 不在 DQE 输出字段中"
-    },
-    {
-      "type": "QUERY_MAPPING_ERROR",
-      "path": "/dataSources/sales/fields",
-      "message": "DQE 输出字段 gmv 缺少显式 queryField 映射"
     }
-  ]
+  },
+  "fullInput": "page/conformance/invalid/query-field-not-output.json"
 }

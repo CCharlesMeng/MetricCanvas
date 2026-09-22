@@ -1,4 +1,4 @@
-import { initializeQueryParams, matchesParamDeclaration, materializePageParams, type PageParamDeclaration, type PageParamValue } from '@metriccanvas/page/internal';
+import { matchesParamDeclaration, materializePageParams, type PageParamDeclaration, type PageParamValue } from '@metriccanvas/page/internal';
 
 /** 普通查询参数按接收页面的声明解释，URL 层仅编码一次。 */
 export type PageParamValues = ReadonlyMap<string, PageParamValue>;
@@ -25,9 +25,8 @@ export function resolvePageParams(
         const entries = query.getAll(declaration.id);
         if (declaration.type === 'dimension') value = entries;
         else if (entries.length !== 1) value = undefined;
-        else if (declaration.type === 'timeRange') {
-          try { value = JSON.parse(entries[0]); } catch { value = undefined; }
-        } else value = parseParamValue(entries[0], declaration);
+        else if (declaration.type === 'timeRange') value = parseTimeRange(entries[0]);
+        else value = parseParamValue(entries[0], declaration);
       }
       if (matchesParamDeclaration(value, declaration)) values.set(declaration.id, value);
       else if (value !== undefined || query.has(declaration.id) || declaration.required) missing.push(declaration.id);
@@ -77,12 +76,16 @@ export function pageParamSearch(values: PageParamValues): string {
   return query.toString();
 }
 
+/** 时间区间在 URL 里是纯文本:单点写 `2026-03`,区间写 `2026-01..2026-06`。 */
 export function serializePageParam(value: PageParamValue): string {
-  if (typeof value === 'object' && !Array.isArray(value)) {
-    if (value.granularity !== undefined) throw new Error('旧timeRange参数仍通过程序通道传递');
-    return JSON.stringify(value);
-  }
-  return String(value);
+  if (typeof value !== 'object' || Array.isArray(value)) return String(value);
+  return value.start === value.end ? value.start : `${value.start}..${value.end}`;
+}
+
+function parseTimeRange(raw: string): PageParamValue | undefined {
+  const parts = raw.split('..');
+  if (parts.length === 1) return { start: parts[0], end: parts[0] };
+  return parts.length === 2 ? { start: parts[0], end: parts[1] } : undefined;
 }
 
 function parseParamValue(
@@ -107,22 +110,25 @@ function stripQuestionMark(search: string): string {
 
 /** 运行态副本：参数只写入未受筛选控制的查询目标及筛选初值，模板不变。 */
 export function initializePageParams(page: import('@metriccanvas/page').Page, values: PageParamValues): import('@metriccanvas/page').Page {
-  // 6.5 inline values are resolved once at the Page boundary.  In particular,
-  // a missing template value never reaches the gateway as an object or as an
-  // accidentally unfiltered query.
-  const materialized = ['6.5', '6.6'].includes(page.schemaVersion);
-  if (materialized) {
-    page = materializePageParams(page, values);
-  }
+  // Resolve every accepted version at the same boundary, before initial rows or queries are exposed.
+  page = materializePageParams(page, values);
   for (const declaration of page.params ?? []) {
     const value = values.get(declaration.id);
     if ((value === undefined && declaration.required !== false) || (value !== undefined && !matchesParamDeclaration(value, declaration))) throw new Error(`参数取值缺失或类型错误:${declaration.id}`);
   }
   const initialized = structuredClone(page);
   for (const declaration of initialized.filters ?? []) {
-    if (declaration.type !== 'dimension' || !declaration.initialParam) continue;
+    if (declaration.type !== 'dimension' && declaration.type !== 'timePoint') continue;
+    if (!declaration.initialParam) continue;
     const value = values.get(declaration.initialParam);
-    declaration.default = value === undefined ? [] : Array.isArray(value) ? [...value] : [String(value)];
+    if (declaration.type === 'dimension') {
+      declaration.default = value === undefined ? [] : Array.isArray(value) ? [...value] : [String(value)];
+    } else if (declaration.type === 'timePoint') {
+      // 单点 times 输入的两端相同，取哪一端都一样；缺值时不写初值＝不筛。
+      const point = value as { start?: string } | undefined;
+      if (typeof point?.start === 'string') declaration.default = point.start;
+      else delete declaration.default;
+    }
   }
   for (const source of Object.values(initialized.dataSources)) {
     if (source.source.type === 'query') {
@@ -130,7 +136,6 @@ export function initializePageParams(page: import('@metriccanvas/page').Page, va
         // 内嵌行没有当前参数的执行凭据；已核验的执行回执另由 execution 接管。
         delete source.source.initial;
       }
-      if (!materialized) source.source.query = initializeQueryParams(source.source.query, values);
     }
   }
   return initialized;

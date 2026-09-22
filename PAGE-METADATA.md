@@ -20,52 +20,65 @@
 
 ## 版本、初始化与持久化
 
-新文档写6.6和layout；已支持版本的layoutForm在输入边界兼容读取，双字段同时出现拒绝。规范化保留已支持版本的能力边界，旧文档迁移另存新修订；先核验历史原文hash，再规范化。详见[布局迁移](docs/page-metadata/layout-migration.md)。
+新文档写6.11和layout；已支持版本的layoutForm在输入边界兼容读取，双字段同时出现拒绝。规范化保留已支持版本的能力边界，旧文档迁移另存新修订；先核验历史原文hash，再规范化。详见[布局迁移](docs/page-metadata/layout-migration.md)。
 
-6.5 新模板在同一 Page Schema 内以 params/value 与 DQE 取值位置的原位 param 引用表达，新增 timeRange 闭区间。required 省略为 true；无值模板结构合法，输入完整性在执行前验证。提取、解析和旧绑定显式迁移的调用面见[页面参数](PAGE-PARAMETERS.md)。
+当前模板在同一 Page Schema 内以分层 params 与 DQE 取值位置的原位 param 引用表达。无值模板结构合法，输入完整性在执行前验证。6.x 接受 6.5 与当前 6.11，保留 5.0–5.4 兼容读取。提取、解析和旧绑定显式迁移见[页面参数](PAGE-PARAMETERS.md)。
 
-页面参数是一次初始化的不可变输入，筛选器是页内可变状态。6.6 新增 `params.dimensions/times/scalars` 分组声明：多组时间按 ID 独立引用，实际值用 `dim_value_list`、`start/end`、`value` 表达。新结构规则见[分组参数](PAGE-PARAMETERS.md#66-分组参数新页面)，以下 default/paramBindings 说明保留旧数组兼容语义。6.2维度参数支持单值/多值和显式query.paramBindings/filter.initialParam；实际执行值与URL初始化的边界见[参数与文本](contracts/metriccanvas/page/reference/params-and-text-values.md)及[执行消费契约](docs/plan/authoring-tickets-126/t18-execution-contract.md)。运行时替换后的副本不作为模板原文保存。
+页面参数是一次初始化的不可变输入，筛选器是页内可变状态。6.6 新增 `params.query.{dimensions,times}` 与 `params.display` 分层声明：按消费位置分层，多组时间按 ID 独立引用，实际值用 `dim_value_list`、`start/end`、`value` 表达；查询侧在 `filter.time` 上整段引用时间输入，写 `window` 即以该值为基准点派生区间。新结构规则见[分层参数](PAGE-PARAMETERS.md#当前分层参数新页面)，以下 default/paramBindings 说明保留旧数组兼容语义。6.2维度参数支持单值/多值和显式query.paramBindings/filter.initialParam；实际执行值与URL初始化的边界见[参数与文本](contracts/metriccanvas/page/reference/params-and-text-values.md)及[执行消费契约](docs/archive/authoring-tickets-126/t18-execution-contract.md)。运行时替换后的副本不作为模板原文保存。
 
 Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面构建规格与工具能力另见[Authoring Bundle](metriccanvas-authoring/README.md)。
 
 ## 参数场景索引与使用
 
-[页面参数现行方案](PAGE-PARAMETERS.md)区分页面文档、模板、本次输入和执行副本。下表按用户操作索引完整用法，查询使用原位参数引用。
-
-| 场景 | 使用入口 |
-|---|---|
-| 初次生成并运行具体页面 | [场景一](PAGE-PARAMETERS.md#2-场景一初次生成并运行) |
-| 提取参数，形成无值模板；确认文本、预览与发布 | [场景二](PAGE-PARAMETERS.md#3-场景二提取参数形成无值模板) |
-| 赋值运行或直接运行填值文档 | [场景三](PAGE-PARAMETERS.md#4-场景三赋值运行或直接运行填值文档) |
-| 召回模板，改用另一组值 | [场景四](PAGE-PARAMETERS.md#5-场景四召回模板赋予另一组值) |
-| 用 MCP 提取、确认与赋值 | [MCP 调用流程](PAGE-PARAMETERS.md#8-通过-mcp-调用不需要模型填写过程证据) |
+按场景进入[维度参数](#维度参数)、[时间参数](#时间参数)或[参数的打开保存与显示](#参数的打开保存与显示)。创作时按“声明 → 消费 → 打开/显示”的顺序配置，不能只声明参数。完整规则见[页面参数现行方案](PAGE-PARAMETERS.md)。
 
 ## 维度参数
 
-`type: "dimension"` 确定业务范围，如代表处或地区；用 `value` 保存本次值。查询在 `filter.dims[].dim_value_list` 写 `{ "param": "region" }`，实际维度由同项的 `dim_name` 指定。多值使用 `multiple: true` 与字符串数组。文本属性用同一参数引用显示实际范围。
+维度参数确定“看哪个业务范围”。完整用法见[维度参数专章](PAGE-PARAMETERS.md#4-维度参数)。
 
-详见[维度参数](PAGE-PARAMETERS.md#维度参数)。需要打开后可修改范围时，用 `filters[].initialParam` 初始化维度筛选器，再由 `filterBindings` 接管查询，详见[参数与页内筛选](PAGE-PARAMETERS.md#7-参数与页内筛选)。
+| 场景 | 页面元数据怎样使用 | 规则与示例 |
+|---|---|---|
+| 多地区输入 | 维度参数声明 `multiple: true`，默认值为非空、无重复字符串数组；URL用重复键 `?regions=EU&regions=APAC` | [维度的值](PAGE-PARAMETERS.md#维度的值)、[URL初始化规则](PAGE-PARAMETERS.md#url初始化规则) |
+| 同一月份驱动当月、全年、上期与趋势 | `type: "time"` 配置 `granularity: "month"` 或 `"date"`；各查询独立声明时间窗口 | [窗口与指标口径](PAGE-PARAMETERS.md#报告基准期查询时间窗口与指标口径) |
+| URL打开另一份报告 | URL键为参数id；未传取保存的 `default`，非法时间输入阻止初始化；新实例不覆盖保存默认值 | [打开与保存](PAGE-PARAMETERS.md#6-打开页面保存页面与显示参数) |
 
 ## 时间参数
 
-时间单独区分“明确区间”和“报告基准期”，不能互换使用。完整声明、查询示例与约束见[时间参数](PAGE-PARAMETERS.md#时间参数)。
+时间参数确定“本次看哪一期”，完整用法见[时间参数专章](PAGE-PARAMETERS.md#5-时间参数)。配置时明确区分三层：
 
-| 场景 | 页面元数据怎样使用 |
-|---|---|
-| 查看1—6月这样的明确区间 | `type: "timeRange"`，值为 `start/end/granularity`；查询起止双端引用同一参数的 `part:start/end` |
-| 同一基准月份驱动多种查询窗口 | `type: "time"`、`granularity: "month"`、`value: "2026-06"`；各查询双端引用同一参数并声明一致窗口 |
-| 当月、全年、上期 | `window: {kind:"period",unit:"month"}`；全年用 `year`，上期加 `offset:-1` |
-| 近12个月、近7天 | `lastN` 窗口，月参数用 `unit:"month",n:12`；日参数用 `unit:"day",n:7` |
-| 年初/月初至报告基准期 | `yearToDate` / `monthToDate`，不带 `unit`，不读取系统今天 |
-| 页面显示当前期间 | 文本属性引用同一时间参数，显示与查询输入一致；参见完整填值文档 |
+| 层次 | 配置位置或依据 | 示例 |
+|---|---|---|
+| 报告基准期 | `params` 的 `type: "time"`、`granularity` 和实际输入 | `2026-03`，表示本次看2026年3月 |
+| 查询时间窗口 | 各查询 `paramBindings` 的 `target: "time"` 与 `window` | 当月、全年、近12个月、年初至3月 |
+| 指标统计口径 | 指标定义与数据服务契约 | 月流水、年累计流水、同比；不会随窗口自动改写 |
 
-报告基准期决定“本次看哪一期”，窗口决定“读取哪些期间”，指标口径决定“一个值代表什么”。例如6月分区已返回年累计值时，应读取6月，不因“年累计”再查1—6月求和。详细窗口示例见[已支持的窗口](PAGE-PARAMETERS.md#已支持的窗口)。
+### 时间场景索引
 
-### 时间初始化、保存与无数据
+| 场景 | 页面元数据怎样使用 | 规则与示例 |
+|---|---|---|
+| 当月/全年/上一年/前一天 | `window: {kind:"period",unit:"month"}`；全年改 `year`，上一年增加 `offset:-1`；日参数前一天用 `day` 与 `offset:-1` | [全部窗口示例](PAGE-PARAMETERS.md#已支持的窗口) |
+| 近12个月/近7天 | `window: {kind:"lastN",unit:"month",n:12}`；日参数近7天用 `day` 与 `n:7`，包含基准期 | [全部窗口示例](PAGE-PARAMETERS.md#已支持的窗口) |
+| 年初/月初至报告基准期 | `window: {kind:"yearToDate"}` 或 `{kind:"monthToDate"}`，不带 `unit`，不读取系统今天 | [时间窗口](PAGE-PARAMETERS.md#已支持的窗口) |
+| 参数给页内筛选初值 | 筛选器写 `initialParam`；查询的 `paramBindings` 与 `filterBindings` 指向同一维度，后续修改/清空由筛选状态控制 | [参数与筛选配合](PAGE-PARAMETERS.md#参数与页内筛选怎样配合) |
 
-用 `value` 或 `suppliedValues` 输入本次时间，必需值缺失或非法时先处理解析问题；`timeRange` 没有 URL 编码协议。填值文档保留引用，执行副本解析为具体条件，运行不会自动保存为页面资产。
+### 时间初始化与保存
 
-指定期间无数据就显示空结果，不回退最新期；服务故障与权限错误仍显示查询错误。时间参数不能与时间筛选器同时控制同一查询，不以旧查询初始行兜底。详见[初始化、保存与约束](PAGE-PARAMETERS.md#时间初始化保存与约束)和[无数据处理](PAGE-PARAMETERS.md#无数据如何处理)。
+`?report-month=2026-03` 将本次基准期设为2026年3月，各绑定查询按自己的窗口取数。未传该键时使用保存的默认值；显式空值、非法日期/月或重复键阻止初始化，不回退默认值。URL值只影响本次页面实例，改变保存的默认月份需要显式保存。详见[时间初始化与保存](PAGE-PARAMETERS.md#时间初始化与保存)。
+
+### 无数据与时间约束
+
+按指定期间查询，无数据就呈现空结果，不回退最新期；服务故障、权限错误或查询被拒绝仍显示对应错误。时间绑定必须引用必需参数，每个查询只允许一个时间参数来源，不能同时保留静态 `start/end` 或绑定时间筛选器。月份输入对应查询 `period=month`，日期输入对应 `period=day`，不隐式转换粒度。
+
+窗口不改变指标统计口径。例如3月分区已经返回年累计值时，应查询3月，不能因“年累计”再查询1—3月求和。更多边界见[无数据如何处理](PAGE-PARAMETERS.md#无数据如何处理)与[时间绑定约束](PAGE-PARAMETERS.md#时间绑定约束)。
+
+## 参数的打开、保存与显示
+
+| 场景 | 页面元数据怎样使用 | 规则与示例 |
+|---|---|---|
+| 页头显示当前代表处与月份 | 报告页头 `badge: {param:"representative-office"}`、`asOf.value: {param:"report-month"}`，引用整个属性，不拼模板字符串 | [页面显示](PAGE-PARAMETERS.md#页面显示) |
+| 指定期间没有数据 | 查询指定窗口，显示空结果，不回退最新期；查询错误仍按错误呈现 | [无数据处理](PAGE-PARAMETERS.md#无数据如何处理) |
+
+完整业务用法见[流水分析报告参数版](pages/flow-analysis-report-params.json)：12个查询共用代表处和月份输入，分别消费当月、全年、上月、近12个月和年初至报告月份窗口。可直接参考其中的 `params`、`paramBindings` 与页头引用。
 
 ## 百万单位的使用（6.5）
 
@@ -332,3 +345,5 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 6.3 新增确定性时间参数与查询窗口绑定。日期/月取值固定于初始化，按指定时间查询，不回退最新期；结构、窗口边界与实施限制见[时间参数](docs/page-metadata/time-parameters.md)。
 
 6.4新增 `yearToDate` / `monthToDate` 具名窗口，不带unit，终点为绑定参数的报告基准期；保留6.3旧窗口写法兼容。
+
+6.5新增 `compact-million-0/1/2` 数值展示格式，按百万缩放并保留指定小数位；不改变查询与原始数值。

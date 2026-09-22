@@ -181,7 +181,12 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
       'region-dept-code': [
         { value: 'CN-BJ', label: '北京' },
         { value: 'CN-SH', label: '上海' },
-        { value: 'CN-GD', label: '广东' }
+        { value: 'CN-GD', label: '广东' },
+        { value: 'CN-EAST', label: '华东地区部' },
+        { value: 'CN-NORTH', label: '华北地区部' },
+        { value: 'CN-SOUTH', label: '华南地区部' },
+        { value: 'CN-WEST', label: '西部地区部' },
+        { value: 'APAC', label: '亚太地区部' }
       ],
       'rep-office-code': [
         { value: 'SH-01', label: '上海代表处' },
@@ -191,7 +196,10 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
         { value: 'HZ-01', label: '杭州代表处' },
         { value: 'CD-01', label: '成都代表处' },
         { value: 'SG-01', label: '新加坡代表处' },
-        { value: 'TJ-01', label: '天津代表处' }
+        { value: 'TJ-01', label: '天津代表处' },
+        { value: 'XA-01', label: '西安代表处' },
+        { value: 'GZ-01', label: '广州代表处' },
+        { value: 'NJ-01', label: '南京代表处' }
       ]
     } as const;
     for (const [dimension, candidates] of Object.entries(iocDimensions)) {
@@ -204,6 +212,49 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
     await expect(gateway.fetchDimensionValues('仿真面外维度')).resolves.toEqual({
       kind: 'unavailable'
     });
+  });
+
+  // 级联约束要真的到达上游:此前适配器把 constraints 丢了,候选值查询固定
+  // 发 filter.dims=[],下游拿回来的仍是全量,"按上游收窄"整条空转。
+  it('级联约束进入候选值查询的 filter.dims 并真实收窄下游候选', async () => {
+    const server = createDqeSimServer({ logger: false });
+    servers.push(server);
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const address = server.address() as AddressInfo;
+    const gateway = createDqeGateway({
+      endpoint: `http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`
+    });
+
+    const all = await gateway.fetchDimensionValues('sub-industry-level2');
+    expect(all).toMatchObject({ kind: 'values' });
+    expect(all.kind === 'values' && all.candidates).toHaveLength(10);
+
+    await expect(
+      gateway.fetchDimensionValues('sub-industry-level2', {
+        constraints: { 'sub-industry-level1': ['零售'] }
+      })
+    ).resolves.toEqual({
+      kind: 'values',
+      candidates: [
+        { value: '零售-连锁', label: '零售-连锁' },
+        { value: '零售-外贸', label: '零售-外贸' }
+      ]
+    });
+
+    // 空选集合等同不约束,不发一条空的 dim_value_list 让上游去猜。
+    await expect(
+      gateway.fetchDimensionValues('sub-industry-level2', {
+        constraints: { 'sub-industry-level1': [] }
+      })
+    ).resolves.toEqual(all);
+
+    // 上游不是该维度登记的父维度 → 上游拒答 → 能力不可用,
+    // 而不是忽略约束把全量候选冒充成收窄结果。
+    await expect(
+      gateway.fetchDimensionValues('sub-industry-level2', {
+        constraints: { 'cloud-class': ['公有云'] }
+      })
+    ).resolves.toEqual({ kind: 'unavailable' });
   });
 
   it('把同一轮 NA 与 Top100 逻辑查询合并为一个真实 HTTP 请求', async () => {

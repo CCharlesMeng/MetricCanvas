@@ -1,6 +1,7 @@
 ---
 status: accepted
 date: 2026-09-07
+note: #56 已实现并完成专项回归；不再等待 #55；发布策略由 #100 裁决
 ---
 
 # 独立创作包提供 MetricCanvas，RuntimeView 保持正式渲染

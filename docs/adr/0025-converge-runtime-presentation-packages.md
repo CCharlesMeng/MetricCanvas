@@ -1,5 +1,6 @@
 ---
 status: accepted
+note: 包名与 WidgetHost 术语、Table.svelte 拆分留有待决与遗留
 ---
 
 # 表现层包边界按纯渲染职责收敛，widgets 只留页面组件

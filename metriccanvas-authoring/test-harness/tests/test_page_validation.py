@@ -12,7 +12,7 @@ CONTRACT_ROOT = BUNDLE_ROOT / "contract-snapshot"
 PENDING_PATH = BUNDLE_ROOT / "test-harness" / "fixtures" / "page-conformance-pending.json"
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
-from metriccanvas_authoring.domain.page_validation import (  # noqa: E402
+from metriccanvas_authoring.pages.validation.page_validation import (  # noqa: E402
     normalize_page_document,
     validate_page_document,
 )
@@ -77,6 +77,12 @@ class PageContractConformanceTest(unittest.TestCase):
                 else:
                     self.assertEqual({(e["type"], e["path"]) for e in actual["errors"]}, {(e["type"], e["path"]) for e in expected["errors"]})
                 self.assertEqual(case["input"], before)
+
+    def test_million_formats_require_65(self) -> None:
+        page = json.loads((CONTRACT_ROOT / "page/conformance/valid/million-formats-page.json").read_text())
+        self.assertFalse(validate_page_document(page))
+        page["schemaVersion"] = "6.4"
+        self.assertTrue(validate_page_document(page))
 
     def test_dimension_param_bindings_match_shared_contract(self) -> None:
         matrix = json.loads((CONTRACT_ROOT / "page/conformance/param-bindings.json").read_text())

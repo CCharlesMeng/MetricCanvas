@@ -1,48 +1,54 @@
 {
-  "schemaVersion": "6.5",
+  "schemaVersion": "6.11",
   "id": "inline-params-values-page",
   "layout": "report",
-  "params": [
-    {
-      "id": "region",
-      "type": "dimension",
-      "value": "中国区"
-    },
-    {
-      "id": "report-period",
-      "type": "timeRange",
-      "granularity": "month",
-      "value": {
-        "start": "2026-01",
-        "end": "2026-06",
-        "granularity": "month"
-      }
-    },
-    {
-      "id": "caption",
-      "type": "string",
-      "value": "说明"
-    },
-    {
-      "id": "count",
-      "type": "number",
-      "value": 1
-    },
-    {
-      "id": "enabled",
-      "type": "boolean",
-      "value": true
-    },
-    {
-      "id": "regions",
-      "type": "dimension",
-      "value": [
-        "中国区",
-        "欧洲区"
+  "params": {
+    "query": {
+      "dimensions": [
+        {
+          "id": "region",
+          "dim_name": "区域",
+          "dim_value_list": [
+            "中国区"
+          ]
+        },
+        {
+          "id": "regions",
+          "dim_name": "区域",
+          "dim_value_list": [
+            "中国区",
+            "欧洲区"
+          ],
+          "required": false
+        }
       ],
-      "multiple": true
-    }
-  ],
+      "times": [
+        {
+          "id": "report-period",
+          "granularity": "month",
+          "start": "2026-01",
+          "end": "2026-06"
+        }
+      ]
+    },
+    "display": [
+      {
+        "id": "caption",
+        "type": "string",
+        "value": "说明"
+      },
+      {
+        "id": "count",
+        "type": "number",
+        "value": 1
+      },
+      {
+        "id": "enabled",
+        "type": "boolean",
+        "value": true
+      }
+    ]
+  },
   "dataSources": {
     "tokens": {
       "fields": {
@@ -75,14 +81,7 @@
                   "time": {
                     "period": "month",
                     "is_aggregate": true,
-                    "start": {
-                      "param": "report-period",
-                      "part": "start"
-                    },
-                    "end": {
-                      "param": "report-period",
-                      "part": "end"
-                    }
+                    "param": "report-period"
                   }
                 }
               }

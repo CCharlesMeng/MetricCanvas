@@ -9,46 +9,61 @@ import { matchesTimeValue, type TimeParamGranularity } from './time-param';
  */
 
 export type PageParamType = 'string' | 'number' | 'boolean' | 'dimension' | 'time' | 'timeRange';
-export interface TimeRangeParamValue { start: string; end: string; granularity?: TimeParamGranularity; }
 export type PageParamValue = string | number | boolean | string[] | TimeRangeParamValue;
 
+export interface TimeRangeParamValue { start: string; end: string; granularity?: TimeParamGranularity; }
+/**
+ * 参数按用途分层:`query` 下的输入落进 DQE 请求体,`display` 下的只被文本
+ * 取值和导航消费。分的是消费位置,不是数据类型——同一个 ID 空间由两层共享,
+ * 引用处只写 id,不写所在层。
+ */
 export interface GroupedPageParams {
-  dimensions?: Array<{ id: string; dim_name: string; dim_value_list?: string[]; required?: boolean; label?: string }>;
-  times?: Array<{ id: string; granularity: TimeParamGranularity; start?: string; end?: string; required?: boolean; label?: string }>;
-  scalars?: Array<{ id: string; type: 'string' | 'number' | 'boolean'; value?: string | number | boolean; required?: boolean; label?: string }>;
+  query?: {
+    dimensions?: Array<{ id: string; dim_name: string; dim_value_list?: string[]; required?: boolean; label?: string }>;
+    times?: Array<{ id: string; granularity: TimeParamGranularity; start?: string; end?: string; required?: boolean; label?: string }>;
+  };
+  display?: Array<{ id: string; type: 'string' | 'number' | 'boolean'; value?: string | number | boolean; required?: boolean; label?: string }>;
 }
 
-/** 只归一化运行态声明；保存文档维持原来的分组结构。 */
+/** 声明位置:查询输入带此前缀,展示输入不带。 */
+const QUERY_PARAM_PATH_PREFIX = '/params/query/';
+
+/** 只归一化运行态声明；保存文档维持原来的分层结构。 */
 export function pageParamDeclarations(params: readonly PageParamDeclaration[] | GroupedPageParams | undefined): PageParamDeclaration[] {
   if (!params) return [];
   if (Array.isArray(params)) return [...params];
   const groups = params as GroupedPageParams;
   return [
-    ...(groups.dimensions ?? []).map((p, i): PageParamDeclaration => ({
+    ...(groups.query?.dimensions ?? []).map((p, i): PageParamDeclaration => ({
       id: p.id, type: 'dimension', required: p.required ?? true, multiple: true,
-      label: p.label, dimName: p.dim_name, value: p.dim_value_list, path: `/params/dimensions/${i}`
+      label: p.label, dimName: p.dim_name, value: p.dim_value_list, path: `/params/query/dimensions/${i}`
     })),
-    ...(groups.times ?? []).map((p, i): PageParamDeclaration => ({
+    ...(groups.query?.times ?? []).map((p, i): PageParamDeclaration => ({
       id: p.id, type: 'timeRange', required: p.required ?? true, granularity: p.granularity,
-      label: p.label, value: p.start === undefined && p.end === undefined ? undefined : {start: p.start!, end: p.end!}, path: `/params/times/${i}`
+      label: p.label, value: p.start === undefined && p.end === undefined ? undefined : {start: p.start!, end: p.end!}, path: `/params/query/times/${i}`
     })),
-    ...(groups.scalars ?? []).map((p, i): PageParamDeclaration => ({
-      id: p.id, type: p.type, required: p.required ?? true, label: p.label, value: p.value, path: `/params/scalars/${i}`
+    ...(groups.display ?? []).map((p, i): PageParamDeclaration => ({
+      id: p.id, type: p.type, required: p.required ?? true, label: p.label, value: p.value, path: `/params/display/${i}`
     }))
   ];
+}
+
+/** 声明能否被查询消费:按声明位置判,不按数据类型判。 */
+export function isQueryInputDeclaration(declaration: PageParamDeclaration): boolean {
+  return declaration.path?.startsWith(QUERY_PARAM_PATH_PREFIX) ?? false;
 }
 
 export interface PageParamDeclaration {
   id: string;
   type: PageParamType;
-  required?: boolean;
+  required: boolean;
   /** 仅维度参数支持多值；缺省单值。 */
   multiple?: boolean;
   granularity?: TimeParamGranularity;
   label?: string;
-  default?: Exclude<PageParamValue, TimeRangeParamValue>;
-  /** Filled inputs are persisted only on an instantiated page, never on a template. */
+  default?: PageParamValue;
   value?: PageParamValue;
+  /** 运行态携带原声明位置和业务维度，不回写文档。 */
   path?: string;
   dimName?: string;
 }
@@ -108,7 +123,6 @@ export function formatSuitsParamType(
   format: ValueFormatPreset,
   type: PageParamType
 ): boolean {
-  if (type === 'timeRange') return false;
   if (NUMERIC_FORMATS.has(format)) return type === 'number';
   if (DATE_FORMATS.has(format)) return type === 'string';
   return true;
@@ -170,7 +184,6 @@ export function pageParamErrors(
 
   declarations.forEach((declaration, index) => {
     const path = declaration.path ?? `/params/${index}`;
-    if (!['6.5', '6.6'].includes((document as {schemaVersion?:string}).schemaVersion ?? '') && declaration.required === undefined) errors.push(schemaError(`${path}/required`, '旧版本必须显式声明required'));
     if (byId.has(declaration.id)) {
       errors.push(schemaError(`${path}/id`, `页面参数 id 重复:${declaration.id}`));
     }
@@ -185,35 +198,28 @@ export function pageParamErrors(
         )
       );
     }
-    if (declaration.default !== undefined && declaration.value !== undefined) {
-      errors.push(schemaError(`${path}/value`, 'value 与 default 互斥'));
+    if (declaration.value !== undefined && !matchesParamDeclaration(declaration.value, declaration)) {
+      errors.push(schemaError(path, `实际值不符合参数类型 ${declaration.type}`));
     }
     if (declaration.default !== undefined && !matchesParamDeclaration(declaration.default, declaration)) {
       errors.push(
         schemaError(`${path}/default`, `默认值不符合参数类型 ${declaration.type}`)
       );
     }
-    if (declaration.value !== undefined && !matchesParamDeclaration(declaration.value, declaration)) {
-      errors.push(schemaError(declaration.path ?? `${path}/value`, `实际值不符合参数类型 ${declaration.type}`));
-    }
   });
 
   const consumed = new Set<string>();
-  const raw = document as { dataSources?: Record<string, {source?: {query?: {paramBindings?: Record<string, unknown>; body?: { dsl_list?: Array<{ filter?: unknown }> }}}}>; filters?: Array<{initialParam?: string}> };
-  for (const source of Object.values(raw.dataSources ?? {})) for (const id of Object.keys(source.source?.query?.paramBindings ?? {})) consumed.add(id);
+  function queryConsumers(value: unknown): void {
+    if (!value || typeof value !== 'object') return;
+    if (Array.isArray(value)) { value.forEach(queryConsumers); return; }
+    const node = value as Record<string, unknown>;
+    if (typeof node.param === 'string') consumed.add(node.param);
+    Object.values(node).forEach(queryConsumers);
+  }
+  const raw = document as { dataSources?: Record<string, {source?: {query?: {body?: unknown; paramBindings?: Record<string, unknown>}}}>; filters?: Array<{initialParam?: string}> };
   for (const source of Object.values(raw.dataSources ?? {})) {
-    const filter = source.source?.query?.body?.dsl_list?.[0]?.filter;
-    if (!filter || typeof filter !== 'object' || Array.isArray(filter)) continue;
-    const node = filter as Record<string, unknown>;
-    if (Array.isArray(node.dims)) for (const dim of node.dims) {
-      const reference = dim && typeof dim === 'object' && !Array.isArray(dim) ? (dim as Record<string, unknown>).dim_value_list : undefined;
-      if (isInlineReference(reference)) consumed.add(reference.param);
-    }
-    const time = node.time;
-    if (time && typeof time === 'object' && !Array.isArray(time)) for (const part of ['start', 'end']) {
-      const reference = (time as Record<string, unknown>)[part];
-      if (isInlineReference(reference)) consumed.add(reference.param);
-    }
+    queryConsumers(source.source?.query?.body);
+    for (const id of Object.keys(source.source?.query?.paramBindings ?? {})) consumed.add(id);
   }
   for (const filter of raw.filters ?? []) if (filter.initialParam) consumed.add(filter.initialParam);
   function navigationConsumers(value: unknown): void {
@@ -255,15 +261,15 @@ export function pageParamErrors(
 }
 
 export function matchesParamDeclaration(value: unknown, declaration: PageParamDeclaration): value is PageParamValue {
-  if (declaration.type === 'time') return matchesTimeValue(value, declaration.granularity);
   if (declaration.type === 'timeRange') {
     if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
     const range = value as TimeRangeParamValue;
-    const keys = declaration.path ? ['start', 'end'] : ['start', 'end', 'granularity'];
-    return Object.keys(value).length === keys.length && Object.keys(value).every(k => keys.includes(k)) &&
-      (declaration.path !== undefined || range.granularity === declaration.granularity) &&
+    const declared = value as TimeRangeParamValue & { granularity?: TimeParamGranularity };
+    return Object.keys(value).every(k => k === 'start' || k === 'end' || k === 'granularity') &&
+      (declared.granularity === undefined || declared.granularity === declaration.granularity) &&
       matchesTimeValue(range.start, declaration.granularity) && matchesTimeValue(range.end, declaration.granularity) && range.start <= range.end;
   }
+  if (declaration.type === 'time') return matchesTimeValue(value, declaration.granularity);
   if (declaration.type !== 'dimension') return typeof value === declaration.type && (typeof value !== 'number' || Number.isFinite(value));
   return declaration.multiple
     ? Array.isArray(value) && value.length > 0 && value.every(item => typeof item === 'string' && item.length > 0) && new Set(value).size === value.length
@@ -276,9 +282,4 @@ function schemaError(path: string, message: string): TypedError {
 
 function escapePointer(segment: string): string {
   return segment.replaceAll('~', '~0').replaceAll('/', '~1');
-}
-
-function isInlineReference(value: unknown): value is { param: string } {
-  return !!value && typeof value === 'object' && !Array.isArray(value) &&
-    typeof (value as { param?: unknown }).param === 'string';
 }

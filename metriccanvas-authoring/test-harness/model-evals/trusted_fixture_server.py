@@ -15,10 +15,10 @@ sys.path[:0] = [str(ROOT/'metriccanvas-authoring/tool'), str(TESTS)]
 from test_authoring_turns import Turns
 from test_authoring_candidates import MemoryCandidates
 from test_unified_content_mcp import dependencies
-from metriccanvas_authoring.application.authoring_turns import PreparedAuthoringTurn
-from metriccanvas_authoring.application.content_ports import ContentBaseline, ContentBaselineError
-from metriccanvas_authoring.application.edit_page import document_sha256
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.work.authoring_turns import PreparedAuthoringTurn
+from metriccanvas_authoring.work.content_ports import ContentBaseline, ContentBaselineError
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 
 
 class LocalSyntheticTurns:
@@ -36,9 +36,9 @@ def fixture_server(state_path):
     deps = dependencies()  # Existing explicitly synthetic Data Context/DQE/descriptor fixtures.
     if state.get('dataProvider') == 'missing-source': deps = replace(deps, source_description=None)
     if state.get('dataProvider') == 'unavailable':
-        from metriccanvas_authoring.server import _UnconfiguredDataContextPort, _UnconfiguredDqeExecutionPort
-        deps = replace(deps, data_context=_UnconfiguredDataContextPort('Local fixture intentionally unavailable'),
-                       dqe=_UnconfiguredDqeExecutionPort('Local fixture intentionally unavailable'), source_description=None)
+        from metriccanvas_authoring.bootstrap.environment import unconfigured_data_context, unconfigured_dqe
+        deps = replace(deps, data_context=unconfigured_data_context('Local fixture intentionally unavailable'),
+                       dqe=unconfigured_dqe('Local fixture intentionally unavailable'), source_description=None)
     return create_unified_content_mcp_server(deps,
         None if state.get('turnProvider') == 'unavailable' else LocalSyntheticTurns(state_path),
         candidate_store=None if state.get('candidateProvider') == 'unavailable' else MemoryCandidates())

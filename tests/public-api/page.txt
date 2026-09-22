@@ -60,10 +60,14 @@ DeltaOperator
 DetailRecord
 DetailRecordList
 DimensionFilterDeclaration
+DqeBooleanFilterBinding
+DqeDimensionFilterBinding
 DqeEffectiveQuery
 DqeFilterBinding
+DqeNumberRangeFilterBinding
 DqeQueryDefinition
 DqeRequestBody
+DqeTimePointFilterBinding
 ERROR_TYPES
 EffectiveQuery
 EmbeddedInitialRows
@@ -117,6 +121,7 @@ NavigationBinding
 NavigationTarget
 NumberRangeFilterDeclaration
 NumberRangeValue
+OpenDetailAction
 PAGE_SCHEMA_MAJOR
 Page
 PageCapabilities
@@ -152,7 +157,6 @@ QueryErrorDisposition
 QueryFieldDefinition
 QueryLanguage
 QueryMoneyFieldDefinition
-QueryParamReference
 QueryRecordListFieldDefinition
 QueryRowNormalizationIssue
 QueryRowsNormalizationResult
@@ -220,6 +224,8 @@ WriteFilterAction
 ZeroDenominatorSemantics
 assertNoQueryParamReferences
 barForecastBoundaryIssues
+bindingQueryField
+bindingQueryFields
 canonicalizeJson
 capabilityFloorErrors
 collectTextValueReferences
@@ -250,11 +256,12 @@ isDataComponent
 isDqeQueryDefinition
 isFoldingOperator
 isInlineDataSource
+isLevelDimensionBinding
 isNavigationHref
 isQueryDataSource
 isQueryErrorCode
+isQueryInputDeclaration
 isQueryLanguage
-isQueryParamReference
 isRelativeTimeExpression
 isTextValueReference
 isTimeRangeValue
@@ -283,6 +290,7 @@ runPageParameterProgram
 sectionBackdrop
 supportedVersions
 textValueScope
+timePointPredicateValue
 toLocalDate
 toLocalTime
 urlInputErrors

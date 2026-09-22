@@ -56,7 +56,7 @@ export function prepareExecution(request: ExecutionRequest, response: unknown, r
     params.set(id, structuredClone(value));
   }
   for (const declaration of declarations.values()) if (declaration.required !== false && !params.has(declaration.id)) fail('缺少实际必需参数，不能回退模板默认');
-  if (['6.5', '6.6'].includes(page.schemaVersion)) for (const [id, value] of Object.entries(request.explicitInputs)) if (!params.has(id) || canonicalizeJson(params.get(id)) !== canonicalizeJson(value)) fail('回执未使用本次明确输入');
+  if (page.params?.some(p => p.path?.startsWith('/params/'))) for (const [id, value] of Object.entries(request.explicitInputs)) if (!params.has(id) || canonicalizeJson(params.get(id)) !== canonicalizeJson(value)) fail('回执未使用本次明确输入');
   const filters = new Map<string, FilterValue>();
   for (const [id, value] of Object.entries(response.filterValues)) {
     const declaration = page.filters?.find(f => f.id === id);

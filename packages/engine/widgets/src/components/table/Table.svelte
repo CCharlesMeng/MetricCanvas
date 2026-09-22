@@ -330,7 +330,7 @@
                   style={`${cellStyle(column)} top: ${headerTop(rowIndex)}px;`}
                 >
                   <div class="head">
-                    {#if interactive && props.pagination?.mode !== 'query' && column.sortable}
+                    {#if interactive && column.sortable}
                       <button
                         type="button"
                         class="sort-toggle"
@@ -351,7 +351,7 @@
                       <span>{cell.title}</span>
                     {/if}
 
-                    {#if interactive && props.pagination?.mode !== 'query' && column.filterable}
+                    {#if interactive && column.filterable}
                       <details class="filter">
                         <summary class:active={hasActiveFilter(columnField(column))} title="表头筛选">▼</summary>
                         <div class="menu">

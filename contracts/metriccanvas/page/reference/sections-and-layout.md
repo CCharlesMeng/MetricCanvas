@@ -11,7 +11,7 @@ Tab和组合卡是受控容器组件，子项允许类型由各自Schema分支�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.6。结构真源为本册[schema.json](schema.json)，SHA256 `a421c583a35d98c6d01d1a47965f13984e4d6ec1aab62779b4d5ec78b7c8cf8f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `6b28ba0e717198c2963d957ea5c11e3177d05605f5bcc5e818f55f71e945e174`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -397,13 +397,13 @@ Schema位置：`#/definitions/section/properties/components/items/oneOf/16`。�
 
 ## 语义规则与反例（生成）
 
-- `section-id-unique`：内容分区 id 唯一。反例：[duplicate-section-id](errors/duplicate-section-id.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `component-id-unique`：组件 id 在整页（含容器内）唯一。反例：[duplicate-component-id](errors/duplicate-component-id.json)、[duplicate-component-id-in-container](errors/duplicate-component-id-in-container.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `layer-top-level-only`：layout.layer 只能声明在内容分区的顶层组件上。反例：[layer-inside-composite-card](errors/layer-inside-composite-card.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `single-backdrop-per-section`：一个分区最多一个 backdrop。反例：[two-backdrops](errors/two-backdrops.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `backdrop-needs-siblings`：声明 backdrop 的分区必须还有别的组件叠在其上。反例：[backdrop-only-section](errors/backdrop-only-section.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `backdrop-container-plain`：声明 backdrop 的分区必须使用 container: plain。反例：[backdrop-in-card-container](errors/backdrop-in-card-container.json)、[backdrop-without-container](errors/backdrop-without-container.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `column-track-span`：声明列轨的分区里顶层组件 span 不得超过轨数。反例：[span-exceeds-column-tracks](errors/span-exceeds-column-tracks.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
+- `section-id-unique`：内容分区 id 唯一。反例：[duplicate-section-id](errors/duplicate-section-id.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `component-id-unique`：组件 id 在整页（含容器内）唯一。反例：[duplicate-component-id](errors/duplicate-component-id.json)、[duplicate-component-id-in-container](errors/duplicate-component-id-in-container.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `layer-top-level-only`：layout.layer 只能声明在内容分区的顶层组件上。反例：[layer-inside-composite-card](errors/layer-inside-composite-card.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `single-backdrop-per-section`：一个分区最多一个 backdrop。反例：[two-backdrops](errors/two-backdrops.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `backdrop-needs-siblings`：声明 backdrop 的分区必须还有别的组件叠在其上。反例：[backdrop-only-section](errors/backdrop-only-section.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `backdrop-container-plain`：声明 backdrop 的分区必须使用 container: plain。反例：[backdrop-in-card-container](errors/backdrop-in-card-container.json)、[backdrop-without-container](errors/backdrop-without-container.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `column-track-span`：声明列轨的分区里顶层组件 span 不得超过轨数。反例：[span-exceeds-column-tracks](errors/span-exceeds-column-tracks.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 

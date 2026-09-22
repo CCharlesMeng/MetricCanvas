@@ -80,7 +80,7 @@ frontmatter 中的 `metadata.mcp_servers` 只授权 MCP Server，`allowed-tools`
 
 `route_business_domains`、`submit_data_request_units` 和 `submit_analysis_intent` 是三类模型决策名称，不是 MCP 工具。Relay 完成 tokenizer 级分词和模型调用；MetricCanvas 业务词解析与排序由 `discover_data_context` 内的确定性算法完成。DQE 调用、查询生成、结果字段验真和页面装配全部封装在 `compose_page` 内，不向模型注册细粒度算法工具。
 
-确定性多轮规则已落在 `tool/metriccanvas_authoring/domain/agent_core.py`：稳定单元身份、定向增改换删、结构空操作防静默失效、组件话语作用域、意图降级、路由和消歧确认。Relay 尚未提供固定工作流执行器；在 Relay 完成该调用面接线前，本 Skill 是可执行编排规约，Agent Core 测试是确定性规则证据，二者都不能被误报为“Relay 固定编排已上线”。
+确定性多轮规则已落在 `tool/metriccanvas_authoring/ask/rules.py`：稳定单元身份、定向增改换删、结构空操作防静默失效、组件话语作用域、意图降级、路由和消歧确认。Relay 尚未提供固定工作流执行器；在 Relay 完成该调用面接线前，本 Skill 是可执行编排规约，Agent Core 测试是确定性规则证据，二者都不能被误报为“Relay 固定编排已上线”。
 
 ## 调用边界
 
@@ -192,7 +192,7 @@ Relay Page Artifact Adapter 必须保存 `artifactEnvelope.artifact`，再将模
 
 ## Agent Core 会话状态与确定性规则
 
-Relay 检查点保存 `entries`、`nextOrdinal`、`routedDomains`、`dataContextVersion` 和最后 target。每个 entry 只保存 `dataSourceId + unit + intent + requestedComponent`；不把数据行放入模型上下文。对应的可执行参考实现是 `domain/agent_core.py`。
+Relay 检查点保存 `entries`、`nextOrdinal`、`routedDomains`、`dataContextVersion` 和最后 target。每个 entry 只保存 `dataSourceId + unit + intent + requestedComponent`；不把数据行放入模型上下文。对应的可执行参考实现是 `ask/rules.py`。
 
 1. 将画布 target 的 `sectionId/componentId` 定向到组件 `data.main`，再校验它是已知 `dataSourceId`。“这个/它”优先作用于该单元。
 2. `modify` 只合并 patch，`replace` 替换业务口径但保留原 `dataSourceId/intent/requestedComponent`，`remove` 不回收序号，`add` 使用单调 `nextOrdinal`。空 patch 不算触及；未触及 entry 保持原状态。

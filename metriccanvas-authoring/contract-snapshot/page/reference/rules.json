@@ -492,13 +492,26 @@
     },
     {
       "id": "filter-binding",
-      "description": "筛选绑定引用已声明筛选器，且 time / dimension 目标类型匹配",
+      "description": "筛选绑定引用已声明筛选器，time / dimension 目标类型匹配，层级绑定逐级声明谓词字段",
       "valid": [
         "query-dashboard",
         "filters-page",
-        "map-page"
+        "map-page",
+        "hierarchy-binding-page"
       ],
       "invalid": [
+        "level-query-fields-on-flat-filter",
+        "level-query-fields-missing-level",
+        "level-query-fields-undeclared-level",
+        "hierarchy-filter-flat-query-field",
+        "time-point-target-not-time-point",
+        "boolean-target-not-boolean",
+        "number-range-target-not-number-range",
+        "time-point-initial-param-not-times",
+        "time-point-initial-param-precision",
+        "time-point-initial-param-range",
+        "time-point-initial-param-and-default",
+        "time-point-initial-param-without-query-target",
         "unknown-filter-binding",
         "filter-binding-time-target-not-time-range",
         "filter-binding-dimension-target-not-dimension"
@@ -914,18 +927,6 @@
       "invalid": [
         "pagination-initial-without-total-count",
         "pagination-initial-not-full-page"
-      ]
-    },
-    {
-      "id": "pagination-no-view-columns",
-      "description": "查询分页暂不支持排序与表头筛选",
-      "valid": [
-        "query-dashboard",
-        "filters-page"
-      ],
-      "invalid": [
-        "pagination-sortable-column",
-        "pagination-filterable-column"
       ]
     },
     {

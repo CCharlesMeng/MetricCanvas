@@ -9,9 +9,9 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT/'tool'), str(ROOT/'test-harness')]
 from publish_stdio_server import PublicationProvider, PublicationSources, HumanEvents, prepare_request, context
 from lifecycle_stdio_server import Identities
-from metriccanvas_authoring.application.lifecycle_publish import Publication
-from metriccanvas_authoring.application.publish_ports import PublicationDependencies
-from metriccanvas_authoring.adapters.outbound.sqlite_authoring_state import SqliteLifecyclePrograms
+from metriccanvas_authoring.assets.lifecycle_publish import Publication
+from metriccanvas_authoring.assets.publish_ports import PublicationDependencies
+from metriccanvas_authoring.adapters.storage.sqlite_authoring_state import SqliteLifecyclePrograms
 
 
 class PublicationRestartTest(unittest.IsolatedAsyncioTestCase):

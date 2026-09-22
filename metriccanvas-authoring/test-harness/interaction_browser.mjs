@@ -33,12 +33,12 @@ from pathlib import Path
 sys.path[:0]=['metriccanvas-authoring/tool','metriccanvas-authoring/test-harness/tests']
 from fastmcp import Client
 from test_interaction_editing import interaction_page,add_filter,link
-from metriccanvas_authoring.application.edit_page import document_sha256
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 out=Path(sys.argv[1]);feed=out/'baselines';feed.mkdir(exist_ok=True);pages=out/'pages';pages.mkdir(exist_ok=True)
 def publish(token,doc):
  (feed/(token+'.json')).write_text(json.dumps({'ref':{'pageId':doc['id'],'revisionId':'r1','resourceId':'resource1'},'document':doc,'documentSha256':document_sha256(doc)}))
 async def main():
- config={'mcpServers':{'content':{'command':sys.executable,'args':['-m','metriccanvas_authoring.content_server'],'env':{'PYTHONPATH':str(Path('metriccanvas-authoring/tool').resolve()),'METRICCANVAS_CONTENT_BASELINES_DIR':str(feed)}}}}
+ config={'mcpServers':{'content':{'command':sys.executable,'args':['-m','metriccanvas_authoring.entrypoints.compat.content_server'],'env':{'PYTHONPATH':str(Path('metriccanvas-authoring/tool').resolve()),'METRICCANVAS_CONTENT_BASELINES_DIR':str(feed)}}}}
  async with Client(config) as c:
   for layout in ['report','dashboard']:
    baseline=interaction_page();baseline['id']='interactions-'+layout;baseline['layout']=layout;publish('trusted-interaction-source',baseline)

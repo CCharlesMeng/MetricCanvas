@@ -6,9 +6,10 @@ from pathlib import Path
 from fastmcp import Client
 from test_container_building import composite,tabs,summary
 from test_text_map_building import recipe
-from metriccanvas_authoring.domain.component_editing import walk_components, DATA_COMPONENTS
-from metriccanvas_authoring.domain.page_validation import validate_page_document
-from metriccanvas_authoring.application.edit_page import document_sha256
+from metriccanvas_authoring.pages.components.capabilities import DATA_COMPONENTS
+from metriccanvas_authoring.pages.components.component_editing import walk_components
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 ROOT=Path(__file__).resolve().parents[2]
 
 class ContentContainersTest(unittest.IsolatedAsyncioTestCase):

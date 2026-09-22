@@ -32,4 +32,4 @@
 - [文本 text](components/text.md)：components/text
 - [AI 总结 aiSummary](components/aiSummary.md)：components/aiSummary
 
-机器检索使用[index.json](index.json)，完整结构使用[schema.json](schema.json)。作者仓库中的结构表在导出时生成；独立Bundle/Skill直接阅读生成Markdown。
+机器检索使用[index.json](index.json)定位Schema位置与所属模块，类型和结构约束查[schema.json](schema.json)或对应模块的结构表。作者仓库中的结构表在导出时生成；独立Bundle/Skill直接阅读生成Markdown。

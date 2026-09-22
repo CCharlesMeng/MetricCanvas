@@ -1,5 +1,6 @@
 ---
-status: superseded by ADR-0014
+status: superseded
+superseded-by: [0014]
 ---
 
 # 指标履约只查询 DP 并以数据服务目录验真

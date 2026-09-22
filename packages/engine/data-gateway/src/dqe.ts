@@ -342,7 +342,8 @@ export function createDqeGateway(
    */
   async function fetchDimensionValuesOnce(
     dimension: string,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    constraints?: Readonly<Record<string, readonly string[]>>
   ): Promise<DimensionValuesResult> {
     if (signal?.aborted) {
       throw new DqeGatewayError('DQE_CANCELLED', '候选值请求已被取消');
@@ -362,7 +363,9 @@ export function createDqeGateway(
         method: 'POST',
         headers: { 'content-type': 'application/json;charset=utf-8', ...headers },
         credentials,
-        body: JSON.stringify({ dsl_list: [dimensionValuesDqeItem(dimension)] }),
+        body: JSON.stringify({
+          dsl_list: [dimensionValuesDqeItem(dimension, constraints)]
+        }),
         signal: controller.signal
       });
       if (!response.ok) {
@@ -464,7 +467,7 @@ export function createDqeGateway(
       });
     },
     fetchDimensionValues(dimension, options) {
-      return fetchDimensionValuesOnce(dimension, options?.signal);
+      return fetchDimensionValuesOnce(dimension, options?.signal, options?.constraints);
     }
   };
 }
@@ -474,11 +477,19 @@ export function createDqeGateway(
  * 枚举,适配器再去重。候选项不做时间收窄——候选值是维度取值域,不是
  * 某时间窗内的出现值;真实环境协议复验归 issue #3。
  */
-export function dimensionValuesDqeItem(dimension: string): JsonObject {
+export function dimensionValuesDqeItem(
+  dimension: string,
+  constraints?: Readonly<Record<string, readonly string[]>>
+): JsonObject {
+  // 级联约束按上游维度 code 编成谓词:上游选了什么，下游候选值就只在
+  // 那个范围里枚举。空选集合等同不约束，不发一条空的 dim_value_list。
+  const dims = Object.entries(constraints ?? {})
+    .filter(([name, values]) => name !== dimension && values.length > 0)
+    .map(([name, values]) => ({ dim_name: name, dim_value_list: [...values] }));
   return {
     output_dims: [dimension],
     output_metrics: [],
-    filter: { dims: [], metrics: [] },
+    filter: { dims, metrics: [] },
     order: {}
   };
 }
@@ -586,14 +597,29 @@ export function effectiveDqeItem(query: EffectiveQuery): JsonObject {
   for (const filter of query.filterValues) {
     if (filter.target === 'dimension') {
       setDimensionFilter(item, filter.queryField, filter.values);
+    } else if (filter.target === 'metricRange') {
+      setMetricRangeFilter(item, filter.metric, filter.from, filter.to);
+    } else if (filter.target === 'dimensionRange') {
+      setDimensionRangeFilter(item, filter.queryField, filter.from, filter.to);
     } else {
       setTimeFilter(item, filter.value.from, filter.value.to);
     }
   }
-  if (query.pagination) {
+  if (query.pagination || query.sort) {
     const order = isRecord(item.order) ? { ...item.order } : {};
-    order.offset = query.pagination.offset;
-    order.limit = query.pagination.limit;
+    if (query.pagination) {
+      order.offset = query.pagination.offset;
+      order.limit = query.pagination.limit;
+    }
+    if (query.sort) {
+      // 排序编码沿用中间层文档的 @order(type, priority) 语义(ADR-0086):
+      // asc/desc 加优先级，数组序即优先级。真实环境协议复验归 issue #3。
+      order.by = query.sort.map((rule, index) => ({
+        field: rule.queryField,
+        type: rule.direction,
+        priority: index + 1
+      }));
+    }
     item.order = order;
   }
   return item;
@@ -617,6 +643,53 @@ function setDimensionFilter(
     else existing.push(next);
   }
   filter.dims = existing;
+}
+
+/**
+ * 表头区间筛选:同一维度上的两条比较谓词(ADR-0086)。维度谓词带 operator
+ * 的写法本仓既有页面已在用,这里沿用同一形状。
+ */
+function setDimensionRangeFilter(
+  item: JsonObject,
+  queryField: string,
+  from: string | undefined,
+  to: string | undefined
+): void {
+  const filter = ensureRecord(item, 'filter');
+  const existing = Array.isArray(filter.dims)
+    ? filter.dims.filter(isRecord).filter((entry) => entry.dim_name !== queryField)
+    : [];
+  if (from !== undefined) {
+    existing.push({ dim_name: queryField, dim_value_list: [from], operator: '>=' });
+  }
+  if (to !== undefined) {
+    existing.push({ dim_name: queryField, dim_value_list: [to], operator: '<=' });
+  }
+  filter.dims = existing;
+}
+
+/**
+ * 数值区间落在 `filter.metrics` 上,两端各自成一条比较谓词(ADR-0085)。
+ * 端点缺席即那一侧无界;重写前先清掉同名指标的既有条目,避免同一指标
+ * 在多轮筛选后堆出互相矛盾的比较。
+ */
+function setMetricRangeFilter(
+  item: JsonObject,
+  metric: string,
+  from: number | undefined,
+  to: number | undefined
+): void {
+  const filter = ensureRecord(item, 'filter');
+  const existing = Array.isArray(filter.metrics)
+    ? filter.metrics.filter(isRecord).filter((entry) => entry.metric_name !== metric)
+    : [];
+  if (from !== undefined) {
+    existing.push({ metric_name: metric, metric_value_list: [from], operator: '>=' });
+  }
+  if (to !== undefined) {
+    existing.push({ metric_name: metric, metric_value_list: [to], operator: '<=' });
+  }
+  filter.metrics = existing;
 }
 
 function setTimeFilter(item: JsonObject, start: string, end: string): void {

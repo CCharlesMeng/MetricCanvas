@@ -9,8 +9,8 @@ from test_authoring_turns import Turns
 from test_authoring_candidates import MemoryCandidates
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'model-evals'))
 from scenario_flow_server import dependencies
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 
 
 def plan():
@@ -105,14 +105,14 @@ class SectionPresentationTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(component,{**original,'id':'reused'}); self.assertEqual(len(deps.dqe.calls),1)
 
     async def test_schema_contract_and_program_privacy_do_not_accept_raw_or_trust_input(self):
-        from metriccanvas_authoring.domain.structure_preflight import preflight
+        from metriccanvas_authoring.pages.composition.structure_preflight import preflight
         for key in ['trustedRelations','rows','query','credentials']:
             p=plan(); p['dataRequests'][0][key]='private-value'
             errors=preflight(p)
             self.assertTrue(errors); self.assertNotIn('private-value',str(errors))
 
     async def test_full_result_beyond_initial_sample_supports_unique_row(self):
-        from metriccanvas_authoring.domain.execution import DqeExecutionResult
+        from metriccanvas_authoring.data.execution import DqeExecutionResult
         deps=dependencies(); original=deps.dqe.execute
         async def many(query):
             r=await original(query); rows=[{**r.rows[0],'scope':'object-'+str(i)} for i in range(30)]

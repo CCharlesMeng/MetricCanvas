@@ -2,12 +2,12 @@ import { readFileSync } from 'node:fs';
 import { expect, it, vi } from 'vitest';
 import { parsePage } from '@metriccanvas/page';
 import { createFilterState, initializePageParams, loadExecution, orchestrate, prepareExecution, type ExecutionRequest } from '../src';
-const fixtures = JSON.parse(readFileSync('docs/plan/authoring-tickets-126/t04-contract-examples.json','utf8'));
-// Preserve the historical T04 source; derive the current-version execution fixture explicitly.
+const fixtures = JSON.parse(readFileSync('docs/archive/authoring-tickets-126/t04-contract-examples.json','utf8'));
 const scenario = (id: string) => {
-  const value = structuredClone(fixtures.cases.find((c: any)=>c.id === id).steps[0]);
-  if (value.response?.document) value.response.document.schemaVersion = '6.5';
-  return value;
+  const scenario=structuredClone(fixtures.cases.find((c: any)=>c.id === id).steps[0]);
+  // Archived T04 examples retain their original version; current execution uses the supported compatibility version.
+  if(scenario.response?.document)scenario.response.document.schemaVersion='6.5';
+  return scenario;
 };
 const flush = () => new Promise(r=>setTimeout(r,0));
 for (const id of ['execute-success','execute-partial','execute-empty','execute-missing-source','execute-wrong-conditions','execute-no-access']) {
@@ -65,7 +65,7 @@ it.each(['explicit','history','default','permission-fallback'])('权威%s取值�
   // 外部边界固定回执：只验证消费，不在替身实现提取或权限算法。
   const document = dimensionDocument();
   const actual = origin === 'explicit' ? ['EU'] : origin === 'history' ? ['NA'] : origin === 'default' ? ['APAC'] : ['ALLOWED'];
-  const request: ExecutionRequest = {target:{kind:'draft',ref:{pageId:document.id,revisionId:'r1',resourceId:'metadata'}},operationId:'operation',explicitInputs:origin === 'explicit' ? {regions:actual} : {}};
+  const request: ExecutionRequest = {target:{kind:'draft',ref:{pageId:document.id,revisionId:'r1',resourceId:'metadata'}},operationId:'operation',explicitInputs:{regions:['FORBIDDEN']}};
   const response = {status:'success',target:request.target,operationId:request.operationId,executionId:'execution',conditionKey:'conditions',document,appliedInputs:{regions:actual,heading:'Actual'},filterValues:{'region-filter':{type:'dimension',dimension:'region',values:actual}},dataSources:Object.fromEntries(Object.keys(document.dataSources).map(id=>[id,{status:'success',rows:[{region:actual[0],gmv:1}],totalCount:1,conditionKey:'conditions'}]))};
   const bootstrap = prepareExecution(request,response);
   const parsed = parsePage(document,{textValues:{values:bootstrap.params}}); if(!parsed.ok) throw new Error('invalid');
@@ -114,4 +114,15 @@ it('查询定义变化时仅重查变化的数据源，不能套用旧执行行'
   expect(result.get('gmv')).toMatchObject({status:'ready',rows:[{gmv:9}]});
   expect(result.get('orders')).toEqual(bootstrap.snapshots.get('orders'));
   stop();
+});
+
+it('当前分层参数回执必须匹配明确输入，不能以历史或默认值替代', () => {
+  const {request,response}=scenario('execute-success');
+  const document=JSON.parse(readFileSync('packages/page/fixtures/contract-valid/inline-params-page.json','utf8'));
+  response.document=document;
+  request.target={kind:'draft',ref:{pageId:document.id,revisionId:'r1',resourceId:'metadata'}};
+  response.target=structuredClone(request.target);
+  request.explicitInputs={region:['欧洲区']};
+  response.appliedInputs={region:['中国区'],'report-period':{start:'2026-01',end:'2026-06'}};
+  expect(()=>prepareExecution(request,response)).toThrow('回执未使用本次明确输入');
 });

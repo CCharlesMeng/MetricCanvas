@@ -17,7 +17,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.5",
+          "schemaVersion": "6.11",
           "id": "tokens-report",
           "layout": "report",
           "dataSources": {
@@ -51,15 +51,8 @@
                           ],
                           "time": {
                             "period": "month",
-                            "start": {
-                              "param": "report-period",
-                              "part": "start"
-                            },
-                            "end": {
-                              "param": "report-period",
-                              "part": "end"
-                            },
-                            "is_aggregate": true
+                            "is_aggregate": true,
+                            "param": "report-period"
                           }
                         },
                         "order": {
@@ -109,15 +102,8 @@
                           ],
                           "time": {
                             "period": "month",
-                            "start": {
-                              "param": "report-period",
-                              "part": "start"
-                            },
-                            "end": {
-                              "param": "report-period",
-                              "part": "end"
-                            },
-                            "is_aggregate": false
+                            "is_aggregate": false,
+                            "param": "report-period"
                           }
                         },
                         "order": {
@@ -167,15 +153,8 @@
                           ],
                           "time": {
                             "period": "month",
-                            "start": {
-                              "param": "report-period",
-                              "part": "start"
-                            },
-                            "end": {
-                              "param": "report-period",
-                              "part": "end"
-                            },
-                            "is_aggregate": true
+                            "is_aggregate": true,
+                            "param": "report-period"
                           }
                         },
                         "order": {
@@ -225,15 +204,8 @@
                           ],
                           "time": {
                             "period": "month",
-                            "start": {
-                              "param": "report-period",
-                              "part": "start"
-                            },
-                            "end": {
-                              "param": "report-period",
-                              "part": "end"
-                            },
-                            "is_aggregate": true
+                            "is_aggregate": true,
+                            "param": "report-period"
                           }
                         },
                         "order": {
@@ -289,15 +261,8 @@
                           ],
                           "time": {
                             "period": "month",
-                            "start": {
-                              "param": "report-period",
-                              "part": "start"
-                            },
-                            "end": {
-                              "param": "report-period",
-                              "part": "end"
-                            },
-                            "is_aggregate": true
+                            "is_aggregate": true,
+                            "param": "report-period"
                           }
                         },
                         "order": {
@@ -438,17 +403,22 @@
               ]
             }
           ],
-          "params": [
-            {
-              "id": "region",
-              "type": "dimension"
-            },
-            {
-              "id": "report-period",
-              "type": "timeRange",
-              "granularity": "month"
+          "params": {
+            "query": {
+              "dimensions": [
+                {
+                  "id": "region",
+                  "dim_name": "区域"
+                }
+              ],
+              "times": [
+                {
+                  "id": "report-period",
+                  "granularity": "month"
+                }
+              ]
             }
-          ]
+          }
         },
         "contentHash": "document-hash",
         "canonicalization": "trusted-document-v1",
@@ -467,7 +437,7 @@
           {
             "parameterId": "region",
             "label": "region",
-            "valueType": "string",
+            "valueType": "string[]",
             "selected": true,
             "required": true,
             "valueState": "missing",
@@ -493,9 +463,11 @@
                 "queryField": "区域"
               }
             ],
-            "extractionKind": "dimension-eq",
+            "extractionKind": "dimension-in",
             "sharing": "identical-values",
-            "originalValue": "中国区",
+            "originalValue": [
+              "中国区"
+            ],
             "uncoveredQueries": []
           },
           {

@@ -13,9 +13,9 @@ sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
 from test_unified_content_mcp import dependencies
 from test_authoring_turns import Turns
 from test_authoring_candidates import MemoryCandidates
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
-from metriccanvas_authoring.application.unified_composition import CREATION_OPERATIONS
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.pages.composition.unified_composition import CREATION_OPERATIONS
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 
 
 def spec(): return json.loads((ROOT / 'test-harness/fixtures/page-build-spec.json').read_text())

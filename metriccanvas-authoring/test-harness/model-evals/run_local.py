@@ -24,8 +24,8 @@ sys.path[:0] = [str(AUTHORING / 'tool'), str(AUTHORING / 'test-harness/tests')]
 from fastmcp import Client
 import httpx
 from test_page_editing import page
-from metriccanvas_authoring.application.edit_page import document_sha256
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 
 PARAMS = {'temperature': 0, 'max_tokens': 4096, 'thinking': {'type': 'disabled'}}
 MAX_CALLS = 6  # per user turn; no transport retries
@@ -115,7 +115,7 @@ async def run_case(case, cfg, output, phase):
     result = {'id':case['id'],'phase':phase,'manuallyAssignedSkill':skill,'status':'inconclusive','turns':[], 'assertions':{}, 'repeat':case['repeat'], 'arm':cfg['arm'], 'toolProfile':cfg['profile'], 'routing':'blocked', 'latestGuarantee':'blocked', 'modelVersionVerified':False}
     messages = [{'role':'system','content':system}]
     child_env = {'PYTHONPATH':str(AUTHORING/'tool'), 'PYTHONDONTWRITEBYTECODE':'1', 'METRICCANVAS_CONTENT_BASELINES_DIR':str(folder)}
-    mcp_config = {'mcpServers':{'content':{'command':sys.executable,'args':['-m','metriccanvas_authoring.content_server'],'env':child_env}}}
+    mcp_config = {'mcpServers':{'content':{'command':sys.executable,'args':['-m','metriccanvas_authoring.entrypoints.compat.content_server'],'env':child_env}}}
     new_id = 'eval-'+uuid.uuid4().hex
     start = time.monotonic()
     async with Client(mcp_config) as client, httpx.AsyncClient(timeout=120) as http:

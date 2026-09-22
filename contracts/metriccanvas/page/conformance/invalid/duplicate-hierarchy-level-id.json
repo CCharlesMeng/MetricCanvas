@@ -2,7 +2,7 @@
   "case": "duplicate-hierarchy-level-id",
   "invariant": "hierarchy-level-id-unique",
   "input": {
-    "schemaVersion": "6.5",
+    "schemaVersion": "6.11",
     "layout": "report",
     "id": "filters-page",
     "meta": {
@@ -93,7 +93,10 @@
             "filterBindings": {
               "region": {
                 "target": "dimension",
-                "queryField": "region"
+                "levelQueryFields": {
+                  "region-level": "region",
+                  "city-level": "city"
+                }
               },
               "period": {
                 "target": "time"
@@ -365,6 +368,11 @@
       "type": "SCHEMA_ERROR",
       "path": "/filters/0/hierarchy/1/id",
       "message": "层级 id 重复:region-level"
+    },
+    {
+      "type": "FILTER_BINDING_ERROR",
+      "path": "/dataSources/orders/source/query/filterBindings/region/levelQueryFields/city-level",
+      "message": "筛选器 region 未声明层级:city-level"
     }
   ]
 }

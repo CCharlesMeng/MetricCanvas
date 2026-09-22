@@ -444,6 +444,7 @@
       "declaration": {
         "id": "region",
         "type": "dimension",
+        "required": true,
         "label": "区域"
       },
       "originalValue": "中国区",
@@ -490,6 +491,7 @@
       "declaration": {
         "id": "report-period",
         "type": "timeRange",
+        "required": true,
         "label": "报告期间",
         "granularity": "month"
       },
@@ -536,7 +538,7 @@
     "report-period"
   ],
   "template": {
-    "schemaVersion": "6.5",
+    "schemaVersion": "6.11",
     "id": "tokens-report",
     "layout": "report",
     "dataSources": {
@@ -570,15 +572,8 @@
                     ],
                     "time": {
                       "period": "month",
-                      "start": {
-                        "param": "report-period",
-                        "part": "start"
-                      },
-                      "end": {
-                        "param": "report-period",
-                        "part": "end"
-                      },
-                      "is_aggregate": true
+                      "is_aggregate": true,
+                      "param": "report-period"
                     }
                   },
                   "order": {
@@ -628,15 +623,8 @@
                     ],
                     "time": {
                       "period": "month",
-                      "start": {
-                        "param": "report-period",
-                        "part": "start"
-                      },
-                      "end": {
-                        "param": "report-period",
-                        "part": "end"
-                      },
-                      "is_aggregate": false
+                      "is_aggregate": false,
+                      "param": "report-period"
                     }
                   },
                   "order": {
@@ -686,15 +674,8 @@
                     ],
                     "time": {
                       "period": "month",
-                      "start": {
-                        "param": "report-period",
-                        "part": "start"
-                      },
-                      "end": {
-                        "param": "report-period",
-                        "part": "end"
-                      },
-                      "is_aggregate": true
+                      "is_aggregate": true,
+                      "param": "report-period"
                     }
                   },
                   "order": {
@@ -744,15 +725,8 @@
                     ],
                     "time": {
                       "period": "month",
-                      "start": {
-                        "param": "report-period",
-                        "part": "start"
-                      },
-                      "end": {
-                        "param": "report-period",
-                        "part": "end"
-                      },
-                      "is_aggregate": true
+                      "is_aggregate": true,
+                      "param": "report-period"
                     }
                   },
                   "order": {
@@ -808,15 +782,8 @@
                     ],
                     "time": {
                       "period": "month",
-                      "start": {
-                        "param": "report-period",
-                        "part": "start"
-                      },
-                      "end": {
-                        "param": "report-period",
-                        "part": "end"
-                      },
-                      "is_aggregate": true
+                      "is_aggregate": true,
+                      "param": "report-period"
                     }
                   },
                   "order": {
@@ -957,30 +924,36 @@
         ]
       }
     ],
-    "params": [
-      {
-        "id": "region",
-        "type": "dimension",
-        "label": "区域"
-      },
-      {
-        "id": "report-period",
-        "type": "timeRange",
-        "label": "报告期间",
-        "granularity": "month"
+    "params": {
+      "query": {
+        "dimensions": [
+          {
+            "id": "region",
+            "dim_name": "区域",
+            "label": "区域"
+          }
+        ],
+        "times": [
+          {
+            "id": "report-period",
+            "granularity": "month",
+            "label": "报告期间"
+          }
+        ]
       }
-    ]
+    }
   },
   "originalValues": {
-    "region": "中国区",
+    "region": [
+      "中国区"
+    ],
     "report-period": {
       "start": "2026-01",
-      "end": "2026-06",
-      "granularity": "month"
+      "end": "2026-06"
     }
   },
   "filled": {
-    "schemaVersion": "6.5",
+    "schemaVersion": "6.11",
     "id": "tokens-report",
     "layout": "report",
     "dataSources": {
@@ -1014,15 +987,8 @@
                     ],
                     "time": {
                       "period": "month",
-                      "start": {
-                        "param": "report-period",
-                        "part": "start"
-                      },
-                      "end": {
-                        "param": "report-period",
-                        "part": "end"
-                      },
-                      "is_aggregate": true
+                      "is_aggregate": true,
+                      "param": "report-period"
                     }
                   },
                   "order": {
@@ -1072,15 +1038,8 @@
                     ],
                     "time": {
                       "period": "month",
-                      "start": {
-                        "param": "report-period",
-                        "part": "start"
-                      },
-                      "end": {
-                        "param": "report-period",
-                        "part": "end"
-                      },
-                      "is_aggregate": false
+                      "is_aggregate": false,
+                      "param": "report-period"
                     }
                   },
                   "order": {
@@ -1130,15 +1089,8 @@
                     ],
                     "time": {
                       "period": "month",
-                      "start": {
-                        "param": "report-period",
-                        "part": "start"
-                      },
-                      "end": {
-                        "param": "report-period",
-                        "part": "end"
-                      },
-                      "is_aggregate": true
+                      "is_aggregate": true,
+                      "param": "report-period"
                     }
                   },
                   "order": {
@@ -1188,15 +1140,8 @@
                     ],
                     "time": {
                       "period": "month",
-                      "start": {
-                        "param": "report-period",
-                        "part": "start"
-                      },
-                      "end": {
-                        "param": "report-period",
-                        "part": "end"
-                      },
-                      "is_aggregate": true
+                      "is_aggregate": true,
+                      "param": "report-period"
                     }
                   },
                   "order": {
@@ -1252,15 +1197,8 @@
                     ],
                     "time": {
                       "period": "month",
-                      "start": {
-                        "param": "report-period",
-                        "part": "start"
-                      },
-                      "end": {
-                        "param": "report-period",
-                        "part": "end"
-                      },
-                      "is_aggregate": true
+                      "is_aggregate": true,
+                      "param": "report-period"
                     }
                   },
                   "order": {
@@ -1401,28 +1339,32 @@
         ]
       }
     ],
-    "params": [
-      {
-        "id": "region",
-        "type": "dimension",
-        "label": "区域",
-        "value": "中国区"
-      },
-      {
-        "id": "report-period",
-        "type": "timeRange",
-        "label": "报告期间",
-        "granularity": "month",
-        "value": {
-          "start": "2026-01",
-          "end": "2026-06",
-          "granularity": "month"
-        }
+    "params": {
+      "query": {
+        "dimensions": [
+          {
+            "id": "region",
+            "dim_name": "区域",
+            "label": "区域",
+            "dim_value_list": [
+              "中国区"
+            ]
+          }
+        ],
+        "times": [
+          {
+            "id": "report-period",
+            "granularity": "month",
+            "label": "报告期间",
+            "start": "2026-01",
+            "end": "2026-06"
+          }
+        ]
       }
-    ]
+    }
   },
   "execution": {
-    "schemaVersion": "6.5",
+    "schemaVersion": "6.11",
     "id": "tokens-report",
     "layout": "report",
     "sections": [
@@ -1556,19 +1498,26 @@
       {
         "id": "region",
         "type": "dimension",
+        "required": true,
+        "multiple": true,
         "label": "区域",
-        "value": "中国区"
+        "dimName": "区域",
+        "value": [
+          "中国区"
+        ],
+        "path": "/params/query/dimensions/0"
       },
       {
         "id": "report-period",
         "type": "timeRange",
-        "label": "报告期间",
+        "required": true,
         "granularity": "month",
+        "label": "报告期间",
         "value": {
           "start": "2026-01",
-          "end": "2026-06",
-          "granularity": "month"
-        }
+          "end": "2026-06"
+        },
+        "path": "/params/query/times/0"
       }
     ],
     "dataSources": {
@@ -1602,9 +1551,9 @@
                     ],
                     "time": {
                       "period": "month",
+                      "is_aggregate": true,
                       "start": "2026-01",
-                      "end": "2026-06",
-                      "is_aggregate": true
+                      "end": "2026-06"
                     }
                   },
                   "order": {
@@ -1654,9 +1603,9 @@
                     ],
                     "time": {
                       "period": "month",
+                      "is_aggregate": false,
                       "start": "2026-01",
-                      "end": "2026-06",
-                      "is_aggregate": false
+                      "end": "2026-06"
                     }
                   },
                   "order": {
@@ -1706,9 +1655,9 @@
                     ],
                     "time": {
                       "period": "month",
+                      "is_aggregate": true,
                       "start": "2026-01",
-                      "end": "2026-06",
-                      "is_aggregate": true
+                      "end": "2026-06"
                     }
                   },
                   "order": {
@@ -1758,9 +1707,9 @@
                     ],
                     "time": {
                       "period": "month",
+                      "is_aggregate": true,
                       "start": "2026-01",
-                      "end": "2026-06",
-                      "is_aggregate": true
+                      "end": "2026-06"
                     }
                   },
                   "order": {
@@ -1816,9 +1765,9 @@
                     ],
                     "time": {
                       "period": "month",
+                      "is_aggregate": true,
                       "start": "2026-01",
-                      "end": "2026-06",
-                      "is_aggregate": true
+                      "end": "2026-06"
                     }
                   },
                   "order": {

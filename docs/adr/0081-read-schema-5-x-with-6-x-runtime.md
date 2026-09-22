@@ -1,6 +1,7 @@
 ---
 status: accepted
 date: 2026-09-17
+note: 平台与页面试验场读取 5.0—5.4 后规范化为 6.x
 ---
 
 # 6.x 运行时兼容读取 Schema 5.x

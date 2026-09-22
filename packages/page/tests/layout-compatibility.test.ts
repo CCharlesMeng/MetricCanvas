@@ -6,7 +6,7 @@ const fixture = (name: string) => JSON.parse(readFileSync(new URL(`../fixtures/c
 const legacyBase = () => { const { layout: _layout, ...base } = fixture('inline-report'); return base; };
 
 describe('6.1 layout 兼容公开边界', () => {
-  for (const schemaVersion of ['6.5', '6.6']) {
+  for (const schemaVersion of ['6.5', '6.11']) {
     for (const form of ['report', 'dashboard']) {
       it(`${schemaVersion} layoutForm ${form} 保持布局且只写新版`, () => {
         const input = { ...legacyBase(), schemaVersion, layoutForm: form };
@@ -29,7 +29,7 @@ describe('6.1 layout 兼容公开边界', () => {
   it.each(['report', 'dashboard'])('6.1 layout %s 原生可读', (layout) => {
     const input = fixture(`layout-6-1-${layout}`);
     expect(validate(input)).toEqual([]);
-    expect(normalizePageDocument(input)).toMatchObject({ ok: true, document: { ...input, schemaVersion: '6.5' } });
+    expect(normalizePageDocument(input)).toMatchObject({ ok: true, document: { ...input } });
   });
   it('旧版本不可使用新字段', () => {
     expect(validate({ ...fixture('layout-6-1-dashboard'), schemaVersion: '6.0' })).toEqual([
@@ -41,16 +41,16 @@ describe('6.1 layout 兼容公开边界', () => {
       expect.objectContaining({ type: 'SCHEMA_ERROR', path: '/layoutForm' })
     ]);
   });
-  it.each(['4.0', '5.5', '6.0', '6.1', '6.2', '6.3', '6.4', '6.7', '7.0', '06.1'])('非支持版本 %s 不得自动升级', (schemaVersion) => {
+  it.each(['4.0', '5.5', '6.12', '7.0', '06.1'])('未知或非规范版本 %s 不得自动升级', (schemaVersion) => {
     const input = { ...fixture('layout-6-1-dashboard'), schemaVersion };
     expect(normalizePageDocument(input)).toMatchObject({ ok: false, errors: [expect.objectContaining({ path: '/schemaVersion' })] });
   });
-  it.each(['5.0', '5.1', '5.2', '5.3', '5.4'])('%s 通过当前结构校验并规范化为 6.1 的唯一写出形状', (schemaVersion) => {
+  it.each(['5.0', '5.1', '5.2', '5.3', '5.4'])('%s 通过当前结构校验并规范化为当前版本的唯一写出形状', (schemaVersion) => {
     const { layout: _layout, ...legacyContent } = fixture('inline-report');
     const result = normalizePageDocument({ ...legacyContent, schemaVersion });
     expect(result).toMatchObject({
       ok: true,
-      document: { ...legacyContent, schemaVersion: '6.6', layout: 'report' }
+      document: { ...legacyContent, schemaVersion: '6.11', layout: 'report' }
     });
   });
   it('5.4 的完整站内导航规范化为 6.x 普通 URL 导航，且不改写输入', () => {
@@ -76,7 +76,7 @@ describe('6.1 layout 兼容公开边界', () => {
     expect(result).toMatchObject({
       ok: true,
       document: {
-        schemaVersion: '6.6', layout: 'report',
+        schemaVersion: '6.11', layout: 'report',
         sections: [{ components: [{ props: { actions: [{ navigate: {
           href: '/pages/detail', query: {
             region: { source: 'filter', id: 'region' },

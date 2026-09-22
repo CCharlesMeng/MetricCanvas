@@ -6,7 +6,7 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / 'metriccanvas-authoring/tool'))
-from metriccanvas_authoring.application.parameter_preparation import prepare_page_parameters
+from metriccanvas_authoring.pages.parameters.parameter_preparation import prepare_page_parameters
 
 
 class NodeProgram:
@@ -60,16 +60,16 @@ class ParameterPreparationTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_grouped_resolution_preserves_shape_and_summary_never_contains_values(self):
         from copy import deepcopy
-        from metriccanvas_authoring.application.page_parameters import parameter_summary
-        from metriccanvas_authoring.domain.grouped_params import clear_values
+        from metriccanvas_authoring.pages.parameters.page_parameters import parameter_summary
+        from metriccanvas_authoring.pages.validation.grouped_params import clear_values
         source = json.loads((ROOT / 'packages/page/fixtures/contract-valid/grouped-params-page.json').read_text())
         template = deepcopy(source)
         clear_values(template)
         summary = parameter_summary(template)
-        self.assertEqual([p['id'] for p in summary], ['region', 'report-period', 'comparison-period'])
+        self.assertEqual([p['id'] for p in summary], ['region', 'report-period', 'report-month'])
         self.assertTrue(all(not p['hasValue'] for p in summary))
         values = {'region': ['欧洲地区部'], 'report-period': {'start': '2026-07', 'end': '2026-09'},
-                  'comparison-period': {'start': '2025-07', 'end': '2025-09'}}
+                  'report-month': {'start': '2026-09', 'end': '2026-09'}}
         result = await NodeProgram().prepare({'action': 'resolve', 'document': template, 'suppliedValues': values})
         self.assertTrue(result['ok'], result)
         self.assertIsInstance(result['document']['params'], dict)

@@ -9,7 +9,7 @@ map限定china/world，区域名称须与底图名称或显式nameMap匹配；�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.6。结构真源为本册[schema.json](../schema.json)，SHA256 `a421c583a35d98c6d01d1a47965f13984e4d6ec1aab62779b4d5ec78b7c8cf8f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.11。结构真源为本册[schema.json](../schema.json)，SHA256 `6b28ba0e717198c2963d957ea5c11e3177d05605f5bcc5e818f55f71e945e174`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -524,7 +524,7 @@ Schema位置：`#/definitions/mapPinnedSummary/properties/titleField`。目标�
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| 引用 #/definitions/fieldBinding | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 标题内容绑定字段。 |
+| 引用 #/definitions/fieldBinding | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 详情浮层标题取被点行的该字段；省略时用组件标题。 |
 
 <a id="schema-232f646566696e6974696f6e732f6d617050696e6e656453756d6d6172792f70726f706572746965732f6669656c6473"></a>
 
@@ -568,9 +568,9 @@ Schema位置：`#/definitions/mapChartComponent/properties/props/properties/acti
 
 ## 语义规则与反例（生成）
 
-- `map-legend-bands-increasing`：地图图例档位下界严格递增。反例：[map-legend-bands-not-increasing](../errors/map-legend-bands-not-increasing.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `map-pinned-summary`：固定地域摘要只用于 regionalOverview，匹配值符合类型，标签不重复。反例：[map-pinned-summary-wrong-variant](../errors/map-pinned-summary-wrong-variant.json)、[map-pinned-summary-match-value-type](../errors/map-pinned-summary-match-value-type.json)、[map-pinned-summary-duplicate-label](../errors/map-pinned-summary-duplicate-label.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `map-hierarchy`：地图下钻字段只与 hierarchyFilter 一起使用，目标是声明了 hierarchy 的维度筛选器。反例：[map-level-fields-without-hierarchy-filter](../errors/map-level-fields-without-hierarchy-filter.json)、[map-hierarchy-filter-undeclared](../errors/map-hierarchy-filter-undeclared.json)、[map-hierarchy-filter-not-hierarchical](../errors/map-hierarchy-filter-not-hierarchical.json)、[map-level-maps-unknown-level](../errors/map-level-maps-unknown-level.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
+- `map-legend-bands-increasing`：地图图例档位下界严格递增。反例：[map-legend-bands-not-increasing](../errors/map-legend-bands-not-increasing.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `map-pinned-summary`：固定地域摘要只用于 regionalOverview，匹配值符合类型，标签不重复。反例：[map-pinned-summary-wrong-variant](../errors/map-pinned-summary-wrong-variant.json)、[map-pinned-summary-match-value-type](../errors/map-pinned-summary-match-value-type.json)、[map-pinned-summary-duplicate-label](../errors/map-pinned-summary-duplicate-label.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `map-hierarchy`：地图下钻字段只与 hierarchyFilter 一起使用，目标是声明了 hierarchy 的维度筛选器。反例：[map-level-fields-without-hierarchy-filter](../errors/map-level-fields-without-hierarchy-filter.json)、[map-hierarchy-filter-undeclared](../errors/map-hierarchy-filter-undeclared.json)、[map-hierarchy-filter-not-hierarchical](../errors/map-hierarchy-filter-not-hierarchical.json)、[map-level-maps-unknown-level](../errors/map-level-maps-unknown-level.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 

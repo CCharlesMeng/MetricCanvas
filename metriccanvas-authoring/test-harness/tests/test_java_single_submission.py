@@ -7,8 +7,8 @@ ROOT=Path(__file__).resolve().parents[2]
 sys.path[:0]=[str(ROOT/'tool'),str(ROOT/'test-harness')]
 from test_authoring_submission import SubmissionFixture
 from lifecycle_stdio_server import save_command, Identities
-from metriccanvas_authoring.adapters.outbound.lifecycle_http import KnownLifecycleHttp
-from metriccanvas_authoring.application.lifecycle import Lifecycle
+from metriccanvas_authoring.adapters.firstparty.lifecycle_http import KnownLifecycleHttp
+from metriccanvas_authoring.assets.lifecycle import Lifecycle
 
 VECTORS=json.loads((ROOT/'test-harness/fixtures/java-page-assets.json').read_text())
 
@@ -52,7 +52,7 @@ class JavaSingleSubmissionTest(unittest.IsolatedAsyncioTestCase):
         f=await self.configured(failure=True);candidate=await f.candidate()
         self.assertEqual((await f.finalize(candidate))['status'],'unknown')
         self.assertEqual((await f.finalize(candidate))['status'],'unknown')
-        from metriccanvas_authoring.application.authoring_submission import AuthoringSubmissionCoordinator
+        from metriccanvas_authoring.work.authoring_submission import AuthoringSubmissionCoordinator
         f.coordinator=AuthoringSubmissionCoordinator(f.candidates,f.records,f.gate,f.lifecycle)
         self.assertEqual((await f.finalize(candidate))['status'],'unknown')
         self.assertEqual(len(self.calls),1)

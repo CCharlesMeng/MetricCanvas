@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.5",
+  "schemaVersion": "6.11",
   "layout": "report",
   "id": "url-navigation-page",
   "params": [
@@ -132,6 +132,19 @@
                       "part": "to"
                     }
                   }
+                }
+              },
+              {
+                "on": "click",
+                "openDetail": {
+                  "surface": "modal",
+                  "titleField": "code",
+                  "fields": [
+                    {
+                      "label": "金额",
+                      "field": "amount"
+                    }
+                  ]
                 }
               }
             ]

@@ -21,8 +21,9 @@ function loadPage(): Page {
 function snapshotsOf(page: Page): PageDataSnapshots {
   let snapshots: PageDataSnapshots = new Map();
   orchestrate(page, {
+    // 默认筛选下编排器直接用 source.initial 的内嵌行，不发请求。
     async fetchData() {
-      throw new Error('机会点分析页首版全部使用 inline 合成数据');
+      throw new Error('默认筛选下不应发起查询');
     }
   }).subscribe((next) => {
     snapshots = next;
@@ -31,10 +32,10 @@ function snapshotsOf(page: Page): PageDataSnapshots {
 }
 
 describe('ioc-opportunity-analysis 页面契约', () => {
-  it('声明 5.4 看板、紧凑只读页头和七个原型筛选位', () => {
+  it('声明 5.4 看板、紧凑可操作页头和七个已下推的筛选位', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('6.5');
-    expect(requiredMinorVersion(document)).toBe(1);
+    expect(page.schemaVersion).toBe('6.11');
+    expect(requiredMinorVersion(document)).toBe(11);
     expect(page.layout).toBe('dashboard');
     expect(page.meta).toMatchObject({
       title: '机会点数',
@@ -42,20 +43,19 @@ describe('ioc-opportunity-analysis 页面契约', () => {
     });
     expect(page.dashboardToolbar).toEqual({
       variant: 'compact',
-      readOnly: true,
-      note: '合成演示数据，非生产口径，筛选尚未接入'
+      note: '合成演示数据，非生产口径；七个筛选位均已下推到查询'
     });
     expect(page.filters?.map((filter) => filter.id)).toEqual([
       'key-office', 'as-of-date', 'industry', 'region', 'customer-category', 'trade', 'pre-sign-amount'
     ]);
   });
 
-  it('页面数据源全部 inline，不声称生产查询或远程依赖', () => {
+  it('页面数据源全部走受控查询，默认筛选下用内嵌初始行渲染', () => {
     const page = loadPage();
     expect(Object.keys(page.dataSources)).toEqual([
       'opportunity-metrics', 'region-analysis', 'office-analysis'
     ]);
-    expect(Object.values(page.dataSources).every((source) => source.source.type === 'inline')).toBe(true);
+    expect(Object.values(page.dataSources).every((source) => source.source.type === 'query')).toBe(true);
 
     const snapshots = snapshotsOf(page);
     for (const sourceId of Object.keys(page.dataSources)) {

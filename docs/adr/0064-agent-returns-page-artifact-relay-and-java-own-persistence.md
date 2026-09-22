@@ -1,5 +1,6 @@
 ---
 status: accepted
+note: 现行目标；Agent 不保存页面，Relay 需新增模型摘要/完整 artifact 双通道
 ---
 
 # Agent 返回页面构建产物，Relay 会话与 Java 页面资产分别持久化

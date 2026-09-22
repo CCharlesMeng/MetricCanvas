@@ -9,8 +9,13 @@
  * 结构错误由 ajv 产出，这里也登记少量结构反例，用来钉住 Java 侧对 ajv 文案与顺序的复现。
  */
 
+import { versionPolicy } from '../../packages/page/src/version.ts';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Doc = any;
+
+/** 恰好领先当前次版本一位；写死的版本号会在每次次版本递增时失效。 */
+const minorAheadOfCurrent = `${versionPolicy.major}.${versionPolicy.minor + 1}`;
 
 export interface ConformanceCase {
   case: string;
@@ -146,7 +151,7 @@ export const invariants: InvariantDefinition[] = [
         base: 'query-dashboard',
         expect: /高于运行时当前次版本/,
         mutate: (document) => {
-          document.schemaVersion = '6.9';
+          document.schemaVersion = minorAheadOfCurrent;
         }
       }
     ]
@@ -1022,9 +1027,126 @@ export const invariants: InvariantDefinition[] = [
   },
   {
     id: 'filter-binding',
-    description: '筛选绑定引用已声明筛选器，且 time / dimension 目标类型匹配',
-    valid: ['query-dashboard', 'filters-page', 'map-page'],
+    description:
+      '筛选绑定引用已声明筛选器，time / dimension 目标类型匹配，层级绑定逐级声明谓词字段',
+    valid: ['query-dashboard', 'filters-page', 'map-page', 'hierarchy-binding-page'],
     cases: [
+      {
+        case: 'level-query-fields-on-flat-filter',
+        base: 'hierarchy-binding-page',
+        expect: /levelQueryFields 只能绑定层级维度筛选器:area/,
+        mutate: (document) => {
+          delete document.filters[0].hierarchy;
+          delete document.filters[0].defaultLevel;
+        }
+      },
+      {
+        case: 'level-query-fields-missing-level',
+        base: 'hierarchy-binding-page',
+        expect: /层级 office 缺少谓词字段/,
+        mutate: (document) => {
+          delete document.dataSources.sales.source.query.filterBindings.area
+            .levelQueryFields.office;
+        }
+      },
+      {
+        case: 'level-query-fields-undeclared-level',
+        base: 'hierarchy-binding-page',
+        expect: /筛选器 area 未声明层级:country/,
+        mutate: (document) => {
+          document.dataSources.sales.source.query.filterBindings.area.levelQueryFields.country =
+            'country_code';
+        }
+      },
+      {
+        case: 'hierarchy-filter-flat-query-field',
+        base: 'map-page',
+        expect: /层级维度筛选器必须用 levelQueryFields 逐级声明谓词字段:area/,
+        mutate: (document) => {
+          document.dataSources.regions.source.query.filterBindings.area = {
+            target: 'dimension',
+            queryField: 'code'
+          };
+        }
+      },
+      {
+        case: 'time-point-target-not-time-point',
+        base: 'non-dimension-bindings-page',
+        expect: /timePoint 目标必须绑定 timePoint 筛选器:only-key/,
+        mutate: (document) => {
+          document.dataSources.sales.source.query.filterBindings['only-key'] = {
+            target: 'timePoint',
+            queryField: 'stat_month'
+          };
+        }
+      },
+      {
+        case: 'boolean-target-not-boolean',
+        base: 'non-dimension-bindings-page',
+        expect: /boolean 目标必须绑定 boolean 筛选器:amount-range/,
+        mutate: (document) => {
+          document.dataSources.sales.source.query.filterBindings['amount-range'] = {
+            target: 'boolean',
+            queryField: 'is_key',
+            whenTrue: ['true']
+          };
+        }
+      },
+      {
+        case: 'number-range-target-not-number-range',
+        base: 'non-dimension-bindings-page',
+        expect: /numberRange 目标必须绑定 numberRange 筛选器:only-key/,
+        mutate: (document) => {
+          document.dataSources.sales.source.query.filterBindings['only-key'] = {
+            target: 'numberRange',
+            metric: 'amount'
+          };
+        }
+      },
+      {
+        case: 'time-point-initial-param-not-times',
+        base: 'non-dimension-bindings-page',
+        expect: /时间点筛选初值必须引用必需的 times 参数/,
+        mutate: (document) => {
+          document.params = { display: [{ id: 'report-month', type: 'string', value: '2026-07' }] };
+        }
+      },
+      {
+        case: 'time-point-initial-param-precision',
+        base: 'non-dimension-bindings-page',
+        expect: /时间点筛选初值的参数精度必须与筛选器一致/,
+        mutate: (document) => {
+          Object.assign(document.params.query.times[0], {
+            granularity: 'date',
+            start: '2026-07-01',
+            end: '2026-07-01'
+          });
+        }
+      },
+      {
+        case: 'time-point-initial-param-range',
+        base: 'non-dimension-bindings-page',
+        expect: /时间点筛选初值要求参数是单点/,
+        mutate: (document) => {
+          document.params.query.times[0].end = '2026-09';
+        }
+      },
+      {
+        case: 'time-point-initial-param-and-default',
+        base: 'non-dimension-bindings-page',
+        expect: /参数初始化与筛选default互斥/,
+        mutate: (document) => {
+          document.filters[0].default = '2026-07';
+        }
+      },
+      {
+        case: 'time-point-initial-param-without-query-target',
+        base: 'non-dimension-bindings-page',
+        expect: /参数初始化筛选必须具有匹配的显式查询目标/,
+        mutate: (document) => {
+          delete document.dataSources.sales.source.query.filterBindings.month;
+        }
+      },
       {
         case: 'unknown-filter-binding',
         base: 'query-dashboard',
@@ -1833,29 +1955,6 @@ export const invariants: InvariantDefinition[] = [
         expect: /查询分页的内嵌初始行必须是完整第一页/,
         mutate: (document) => {
           document.dataSources.paged.source.initial.totalCount = 3;
-        }
-      }
-    ]
-  },
-  {
-    id: 'pagination-no-view-columns',
-    description: '查询分页暂不支持排序与表头筛选',
-    valid: ['query-dashboard', 'filters-page'],
-    cases: [
-      {
-        case: 'pagination-sortable-column',
-        base: 'query-dashboard',
-        expect: /查询分页暂不支持排序/,
-        mutate: (document) => {
-          firstComponent(document).props.columns[1].sortable = true;
-        }
-      },
-      {
-        case: 'pagination-filterable-column',
-        base: 'query-dashboard',
-        expect: /查询分页暂不支持表头筛选/,
-        mutate: (document) => {
-          firstComponent(document).props.columns[0].filterable = { mode: 'select' };
         }
       }
     ]

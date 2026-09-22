@@ -1,11 +1,14 @@
 # 错误处理
 
-按工具 issues 的 code/path/stage 解释具体失败，不从错误文本生成新命令。
+- ANALYSIS_PLAN_NOT_CONFIRMED：回到计划审核，由程序取得用户确认；不重复查询。
+- MODEL_EVIDENCE_UNAVAILABLE：模型证据通道未授权，不退回读取完整产物。
+- METRIC_DEFINITION_CONFLICT：说明具体口径矛盾，仅停止受影响项；不偷偷修公式。
+- RESULT_SCOPE_MISMATCH / RESULT_VERSION_STALE：引用失效，重新核对当前身份、页、轮次和版本；不搜索“最近结果”。
+- SOURCE_DESCRIPTION_UNAVAILABLE / 查询拒绝：保留错误范围；不自动删筛选或改指标。
+- AUTHORING_BUDGET_EXHAUSTED / 相同无进展错误：终止对应分支，说明未完成部分。
+- WORK_VERSION_CONFLICT / WORK_BUSY：读取工作稿状态；并发或迟到结果不能覆盖新工作。
+- SAVE_RECONCILIATION_REQUIRED / unknown / pending：原写入可能已生效，停止提交；程序核对原冻结记录。
+- 保存 rejected：保留工作并报告原因；不能转兼容入口绕过。
+- PREVIEW_ARTIFACT_MISMATCH / RELAY_PREVIEW_UNAVAILABLE：保存与预览分别报告，只修复匹配产物交付。
 
-- 参数/不支持操作：按 path、rule、allowedValues（若返回）对照工具 Schema 修正涉及字段，保留未触及内容及创建入口 title。计划内枚举错误不需要重新发现数据。每次修正必须有新依据。
-- 缺配置、权限或可信基线：说明缺项并等待部署/上下文变化；相同配置不盲重试。
-- 数据歧义：澄清口径或候选；未知指标、字段与时间规则不自行补造。
-- 独立项失败：报告失败、依赖跳过与合法成功子集；无变更保持原页。
-- 冲突、取消或保存结果未知：停止内容续写，保留候选与原提交记录，由可信程序核对已有回执；不能换新操作 ID 重做写入，也不能声称取消撤回了已提交事务。预算耗尽保留未决状态，等待可信程序处理。当前 Java 不支持远端操作查询或历史精确回读，不自动重发；成功回执经程序验证即可确认。预览失败仅重试已确认回执文档的渲染。
-
-DQE 超时或传输错误只有真实结果声明 retrySafe 且预算允许时才重试；数据发现不用于修复文档缺失。实际模型行为与真实服务保证分别验收。
+只作一次有依据的页面修复；依赖失败会 skipped，其他合法成功部分可保存。无变化不应报告生成了新修订。

@@ -1,0 +1,75 @@
+"""Target platform surface. Legacy candidate tools are registered separately."""
+from typing import Annotated, Any
+from fastmcp import FastMCP
+from fastmcp.tools import ToolResult
+from pydantic import Field, WithJsonSchema
+from metriccanvas_authoring.data.results import QUERY_SCHEMA
+from metriccanvas_authoring.pages.referenced import COMPOSE_SCHEMA, EDIT_RESULT_SCHEMA
+from metriccanvas_authoring.work.content_ports import ContentBaselineError
+from metriccanvas_authoring.bundle_info import load_bundle_info
+
+QueryRequest = Annotated[dict[str, Any], WithJsonSchema(QUERY_SCHEMA)]
+ComposeRequest = Annotated[dict[str, Any], WithJsonSchema(COMPOSE_SCHEMA)]
+EditRequest = Annotated[dict[str, Any], WithJsonSchema(EDIT_RESULT_SCHEMA)]
+
+
+def create_platform_mcp_server(application):
+    mcp = FastMCP('metriccanvas-platform-content', instructions=(
+        'Platform v2: query approved analysis plans, compose/edit from result references and save drafts internally. '
+        'Read workVersion before editing. Only modelSummary enters the model channel; '
+        'authorized bounded query evidence is model-visible. Relay retains artifactEnvelope. '
+        'After saved, prepare the exact artifact with page_metadata_emit_preview; preserve Relay placeholders.'))
+
+    async def call(method, *args, mutation=False, **kwargs):
+        try:
+            result = await method(*args, **kwargs)
+            envelope = None
+            if mutation:
+                result, value = result
+                if value is not None:
+                    envelope = {'kind': 'metriccanvas.platform-artifact', 'formatVersion': '2.0', 'artifact': value}
+            output = {'ok': result.get('status') not in {'failed', 'rejected', 'unavailable'}, 'modelSummary': result, 'artifactEnvelope': envelope}
+            return ToolResult(content=result, structured_content=output)
+        except ContentBaselineError as error:
+            summary = {'status': 'rejected', 'issues': [{'code': error.code, 'path': ''}]}
+        except Exception:
+            summary = {'status': 'unavailable', 'issues': [{'code': 'AUTHORING_PROVIDER_UNAVAILABLE', 'path': ''}]}
+        return ToolResult(content=summary, structured_content={'ok': False, 'modelSummary': summary, 'artifactEnvelope': None})
+
+    @mcp.resource('metriccanvas://bundle-info')
+    def bundle_info():
+        return {**load_bundle_info(), 'platformProtocolVersion': '2.0'}
+
+    @mcp.tool
+    async def read_page_context(context_ref: str, target_component_id: str | None = None, use_selection: bool = False,
+            offset: Annotated[int, Field(ge=0)] = 0, limit: Annotated[int, Field(ge=1, le=50)] = 20, cursor: str | None = None) -> ToolResult:
+        """Read current work configuration and workVersion. No business query or save."""
+        return await call(application.read, context_ref, target_component_id=target_component_id, use_selection=use_selection, offset=offset, limit=limit, cursor=cursor)
+
+    @mcp.tool
+    async def discover_data_context(context_ref: str, query: str = '', limit: Annotated[int, Field(ge=1, le=50)] = 10,
+            detail_refs: list[str] | None = None) -> ToolResult:
+        """Find relevant metrics; request identity-matched details only for material gaps."""
+        return await call(application.discover, context_ref, query, limit, detail_refs)
+
+    @mcp.tool
+    async def query_data(context_ref: str, request: QueryRequest | None = None, result_ref: str | None = None) -> ToolResult:
+        """Execute an approved batch or read existing bounded evidence. Exactly one input; no page creation."""
+        return await call(application.query, context_ref, request, result_ref)
+
+    @mcp.tool
+    async def compose_page(context_ref: str, request: ComposeRequest, expected_version: Annotated[int, Field(ge=0)] = 0) -> ToolResult:
+        """Create sections from result references or text; save a valid draft internally."""
+        return await call(application.mutate, 'compose', context_ref, request, expected_version, mutation=True)
+
+    @mcp.tool
+    async def edit_page(context_ref: str, request: EditRequest, expected_version: Annotated[int, Field(ge=0)]) -> ToolResult:
+        """Edit the current work and save valid changes, including partial. Data additions use resultRef."""
+        return await call(application.mutate, 'edit', context_ref, request, expected_version, mutation=True)
+
+    @mcp.tool
+    async def page_metadata_emit_preview(context_ref: str, artifact_ref: str) -> ToolResult:
+        """Prepare the exact saved artifact through Relay. Does not query data or save again."""
+        return await call(application.preview, context_ref, artifact_ref)
+
+    return mcp

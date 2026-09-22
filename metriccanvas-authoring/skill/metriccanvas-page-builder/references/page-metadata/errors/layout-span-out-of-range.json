@@ -1,51 +1,199 @@
 {
   "case": "layout-span-out-of-range",
   "invariant": "schema-structure",
-  "input": {
-    "schemaVersion": "6.5",
-    "layout": "report",
-    "id": "inline-report",
-    "meta": {
-      "description": "内联报告契约样例"
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 data(拼写错误?)",
+      "paths": [
+        "/sections/0/components/1/data",
+        "/sections/0/components/1/data",
+        "/sections/0/components/1/data",
+        "/sections/0/components/1/data",
+        "/sections/0/components/1/data"
+      ]
     },
-    "dataSources": {
-      "overview": {
-        "fields": {
-          "gmv": {
-            "type": "number",
-            "role": "measure",
-            "label": "成交总额",
-            "nullable": false
-          }
-        },
-        "source": {
-          "type": "inline",
-          "rows": [
-            {
-              "gmv": 632300000000
-            }
-          ]
-        }
-      }
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be equal to constant",
+      "paths": [
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type"
+      ]
     },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be <= 12",
+      "paths": [
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 rows(拼写错误?)",
+      "paths": [
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 categoryField",
+      "paths": [
+        "/sections/0/components/1/props/categoryField",
+        "/sections/0/components/1/props/categoryField",
+        "/sections/0/components/1/props/categoryField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 series",
+      "paths": [
+        "/sections/0/components/1/props/series",
+        "/sections/0/components/1/props/series"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 xField",
+      "paths": [
+        "/sections/0/components/1/props/xField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 valueField",
+      "paths": [
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 columns",
+      "paths": [
+        "/sections/0/components/1/props/columns",
+        "/sections/0/components/1/props/columns"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 nameField",
+      "paths": [
+        "/sections/0/components/1/props/nameField",
+        "/sections/0/components/1/props/nameField",
+        "/sections/0/components/1/props/nameField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 map",
+      "paths": [
+        "/sections/0/components/1/props/map"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 tabs",
+      "paths": [
+        "/sections/0/components/1/props/tabs"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 components",
+      "paths": [
+        "/sections/0/components/1/props/components"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 items",
+      "paths": [
+        "/sections/0/components/1/props/items"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 field",
+      "paths": [
+        "/sections/0/components/1/props/field"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 promptTemplate",
+      "paths": [
+        "/sections/0/components/1/props/promptTemplate"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 relatedData",
+      "paths": [
+        "/sections/0/components/1/props/relatedData"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match exactly one schema in oneOf",
+      "paths": [
+        "/sections/0/components/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
     "sections": [
       {
-        "id": "overview",
         "components": [
-          {
-            "id": "report-header",
-            "type": "reportHeader",
-            "layout": {
-              "span": 12
-            },
-            "props": {
-              "title": "经营简报",
-              "asOf": {
-                "label": "数据截至",
-                "value": "2026-07-21"
-              }
-            }
-          },
+          "…",
           {
             "id": "gmv-card",
             "type": "metricCard",
@@ -58,14 +206,7 @@
             "props": {
               "title": "GMV",
               "rows": [
-                {
-                  "label": "当日",
-                  "valueField": {
-                    "data": "main",
-                    "field": "gmv",
-                    "format": "compact-yi-1"
-                  }
-                }
+                "…（共1项）"
               ]
             }
           }
@@ -73,396 +214,5 @@
       }
     ]
   },
-  "expected": [
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/data",
-      "message": "存在未定义字段 data(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/categoryField",
-      "message": "缺少必填字段 categoryField"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/series",
-      "message": "缺少必填字段 series"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/xField",
-      "message": "缺少必填字段 xField"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/series",
-      "message": "缺少必填字段 series"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/categoryField",
-      "message": "缺少必填字段 categoryField"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/valueField",
-      "message": "缺少必填字段 valueField"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/columns",
-      "message": "缺少必填字段 columns"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/nameField",
-      "message": "缺少必填字段 nameField"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/valueField",
-      "message": "缺少必填字段 valueField"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/map",
-      "message": "缺少必填字段 map"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/valueField",
-      "message": "缺少必填字段 valueField"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/data",
-      "message": "存在未定义字段 data(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/tabs",
-      "message": "缺少必填字段 tabs"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/data",
-      "message": "存在未定义字段 data(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/components",
-      "message": "缺少必填字段 components"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/nameField",
-      "message": "缺少必填字段 nameField"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/valueField",
-      "message": "缺少必填字段 valueField"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/nameField",
-      "message": "缺少必填字段 nameField"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/valueField",
-      "message": "缺少必填字段 valueField"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/items",
-      "message": "缺少必填字段 items"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/categoryField",
-      "message": "缺少必填字段 categoryField"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/columns",
-      "message": "缺少必填字段 columns"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/field",
-      "message": "缺少必填字段 field"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/data",
-      "message": "存在未定义字段 data(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/data",
-      "message": "存在未定义字段 data(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/type",
-      "message": "must be equal to constant"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/layout/span",
-      "message": "must be <= 12"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/promptTemplate",
-      "message": "缺少必填字段 promptTemplate"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/relatedData",
-      "message": "缺少必填字段 relatedData"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1/props/rows",
-      "message": "存在未定义字段 rows(拼写错误?)"
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/1",
-      "message": "must match exactly one schema in oneOf"
-    }
-  ]
+  "fullInput": "page/conformance/invalid/layout-span-out-of-range.json"
 }

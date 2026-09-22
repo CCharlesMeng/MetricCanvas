@@ -5,14 +5,14 @@ from fastmcp import Client
 from test_section_presentation import plan, dependencies
 from test_authoring_candidates import MemoryCandidates
 from test_authoring_turns import Turns
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
-from metriccanvas_authoring.application.structure_query_cache import StructureQueryCache
-from metriccanvas_authoring.domain.execution import DqeExecutionResult
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.data.structure_query_cache import StructureQueryCache
+from metriccanvas_authoring.data.execution import DqeExecutionResult
 
 
 class StructureRevisionTests(unittest.IsolatedAsyncioTestCase):
     async def test_removed_manual_target_fails_before_query_without_mutating_parent(self):
-        from metriccanvas_authoring.application.structure_revision import revise_structure
+        from metriccanvas_authoring.pages.editing.structure_revision import revise_structure
         deps=dependencies()
         async def current(): return None
         store=MemoryCandidates()
@@ -31,7 +31,7 @@ class StructureRevisionTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(deps.dqe.calls),1)
 
     def test_scope_notes_deduplicate_facts_not_order_and_keep_distinct_periods(self):
-        from metriccanvas_authoring.domain.page_structure import scope_notes
+        from metriccanvas_authoring.pages.composition.page_structure import scope_notes
         first=deepcopy(plan()['dataRequests'][0])
         first['groupBy']=['scope','region']
         first['filters']=[{'dimension':'scope','values':['core','total']}]

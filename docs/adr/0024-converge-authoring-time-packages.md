@@ -1,5 +1,6 @@
 ---
 status: accepted
+note: 模板发布治理强度留有待决事项
 ---
 
 # 创作期包边界按领域收敛，agent-runner 与 data-context 不再是一级包

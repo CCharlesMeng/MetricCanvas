@@ -7,8 +7,8 @@ from copy import deepcopy
 from pathlib import Path
 from fastmcp import Client
 from test_page_editing import page, title
-from metriccanvas_authoring.application.edit_page import document_sha256
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -22,7 +22,7 @@ def publish(directory, token, document):
 
 class PlatformAuthoringFlowsTest(unittest.IsolatedAsyncioTestCase):
     def config(self, folder):
-        return {'mcpServers':{'content':{'command':sys.executable,'args':['-m','metriccanvas_authoring.content_server'],'env':{'PYTHONPATH':os.environ.get('METRICCANVAS_TEST_INSTALLED_CONTENT',str(ROOT/'tool')),'METRICCANVAS_CONTENT_BASELINES_DIR':folder,'PYTHONDONTWRITEBYTECODE':'1'}}}}
+        return {'mcpServers':{'content':{'command':sys.executable,'args':['-m','metriccanvas_authoring.entrypoints.compat.content_server'],'env':{'PYTHONPATH':os.environ.get('METRICCANVAS_TEST_INSTALLED_CONTENT',str(ROOT/'tool')),'METRICCANVAS_CONTENT_BASELINES_DIR':folder,'PYTHONDONTWRITEBYTECODE':'1'}}}}
 
     def artifact(self, result):
         payload = result.structured_content

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.5",
+  "schemaVersion": "6.11",
   "layout": "report",
   "id": "flow-analysis-report-params",
   "meta": {
@@ -93,27 +93,26 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": true
+                    "is_aggregate": true,
+                    "param": "report-month",
+                    "window": {
+                      "kind": "period",
+                      "unit": "month"
+                    }
                   },
-                  "dims": [],
+                  "dims": [
+                    {
+                      "dim_name": "代表处",
+                      "dim_value_list": {
+                        "param": "representative-office"
+                      }
+                    }
+                  ],
                   "metrics": []
                 },
                 "order": {}
               }
             ]
-          },
-          "paramBindings": {
-            "representative-office": {
-              "target": "dimension",
-              "queryField": "代表处"
-            },
-            "report-month": {
-              "target": "time",
-              "window": {
-                "kind": "period",
-                "unit": "month"
-              }
-            }
           }
         }
       }
@@ -189,27 +188,26 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": false
+                    "is_aggregate": false,
+                    "param": "report-month",
+                    "window": {
+                      "kind": "period",
+                      "unit": "year"
+                    }
                   },
-                  "dims": [],
+                  "dims": [
+                    {
+                      "dim_name": "代表处",
+                      "dim_value_list": {
+                        "param": "representative-office"
+                      }
+                    }
+                  ],
                   "metrics": []
                 },
                 "order": {}
               }
             ]
-          },
-          "paramBindings": {
-            "representative-office": {
-              "target": "dimension",
-              "queryField": "代表处"
-            },
-            "report-month": {
-              "target": "time",
-              "window": {
-                "kind": "period",
-                "unit": "year"
-              }
-            }
           }
         }
       }
@@ -285,27 +283,26 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": false
+                    "is_aggregate": false,
+                    "param": "report-month",
+                    "window": {
+                      "kind": "period",
+                      "unit": "year"
+                    }
                   },
-                  "dims": [],
+                  "dims": [
+                    {
+                      "dim_name": "代表处",
+                      "dim_value_list": {
+                        "param": "representative-office"
+                      }
+                    }
+                  ],
                   "metrics": []
                 },
                 "order": {}
               }
             ]
-          },
-          "paramBindings": {
-            "representative-office": {
-              "target": "dimension",
-              "queryField": "代表处"
-            },
-            "report-month": {
-              "target": "time",
-              "window": {
-                "kind": "period",
-                "unit": "year"
-              }
-            }
           }
         }
       }
@@ -379,27 +376,26 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": true
+                    "is_aggregate": true,
+                    "param": "report-month",
+                    "window": {
+                      "kind": "period",
+                      "unit": "month"
+                    }
                   },
-                  "dims": [],
+                  "dims": [
+                    {
+                      "dim_name": "代表处",
+                      "dim_value_list": {
+                        "param": "representative-office"
+                      }
+                    }
+                  ],
                   "metrics": []
                 },
                 "order": {}
               }
             ]
-          },
-          "paramBindings": {
-            "representative-office": {
-              "target": "dimension",
-              "queryField": "代表处"
-            },
-            "report-month": {
-              "target": "time",
-              "window": {
-                "kind": "period",
-                "unit": "month"
-              }
-            }
           }
         }
       }
@@ -483,7 +479,12 @@
                 ],
                 "filter": {
                   "time": {
-                    "period": "month"
+                    "period": "month",
+                    "param": "report-month",
+                    "window": {
+                      "kind": "period",
+                      "unit": "month"
+                    }
                   },
                   "metrics": [
                     {
@@ -492,6 +493,14 @@
                         0
                       ],
                       "operator": "<"
+                    }
+                  ],
+                  "dims": [
+                    {
+                      "dim_name": "代表处",
+                      "dim_value_list": {
+                        "param": "representative-office"
+                      }
                     }
                   ]
                 },
@@ -503,19 +512,6 @@
                 }
               }
             ]
-          },
-          "paramBindings": {
-            "representative-office": {
-              "target": "dimension",
-              "queryField": "代表处"
-            },
-            "report-month": {
-              "target": "time",
-              "window": {
-                "kind": "period",
-                "unit": "month"
-              }
-            }
           }
         }
       }
@@ -571,27 +567,26 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": true
+                    "is_aggregate": true,
+                    "param": "report-month",
+                    "window": {
+                      "kind": "period",
+                      "unit": "month"
+                    }
                   },
-                  "dims": [],
+                  "dims": [
+                    {
+                      "dim_name": "代表处",
+                      "dim_value_list": {
+                        "param": "representative-office"
+                      }
+                    }
+                  ],
                   "metrics": []
                 },
                 "order": {}
               }
             ]
-          },
-          "paramBindings": {
-            "representative-office": {
-              "target": "dimension",
-              "queryField": "代表处"
-            },
-            "report-month": {
-              "target": "time",
-              "window": {
-                "kind": "period",
-                "unit": "month"
-              }
-            }
           }
         }
       }
@@ -675,27 +670,26 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": true
+                    "is_aggregate": true,
+                    "param": "report-month",
+                    "window": {
+                      "kind": "period",
+                      "unit": "month"
+                    }
                   },
-                  "dims": [],
+                  "dims": [
+                    {
+                      "dim_name": "代表处",
+                      "dim_value_list": {
+                        "param": "representative-office"
+                      }
+                    }
+                  ],
                   "metrics": []
                 },
                 "order": {}
               }
             ]
-          },
-          "paramBindings": {
-            "representative-office": {
-              "target": "dimension",
-              "queryField": "代表处"
-            },
-            "report-month": {
-              "target": "time",
-              "window": {
-                "kind": "period",
-                "unit": "month"
-              }
-            }
           }
         }
       }
@@ -810,27 +804,26 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": true
+                    "is_aggregate": true,
+                    "param": "report-month",
+                    "window": {
+                      "kind": "period",
+                      "unit": "month"
+                    }
                   },
-                  "dims": [],
+                  "dims": [
+                    {
+                      "dim_name": "代表处",
+                      "dim_value_list": {
+                        "param": "representative-office"
+                      }
+                    }
+                  ],
                   "metrics": []
                 },
                 "order": {}
               }
             ]
-          },
-          "paramBindings": {
-            "representative-office": {
-              "target": "dimension",
-              "queryField": "代表处"
-            },
-            "report-month": {
-              "target": "time",
-              "window": {
-                "kind": "period",
-                "unit": "month"
-              }
-            }
           }
         }
       }
@@ -945,27 +938,26 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": true
+                    "is_aggregate": true,
+                    "param": "report-month",
+                    "window": {
+                      "kind": "period",
+                      "unit": "month"
+                    }
                   },
-                  "dims": [],
+                  "dims": [
+                    {
+                      "dim_name": "代表处",
+                      "dim_value_list": {
+                        "param": "representative-office"
+                      }
+                    }
+                  ],
                   "metrics": []
                 },
                 "order": {}
               }
             ]
-          },
-          "paramBindings": {
-            "representative-office": {
-              "target": "dimension",
-              "queryField": "代表处"
-            },
-            "report-month": {
-              "target": "time",
-              "window": {
-                "kind": "period",
-                "unit": "month"
-              }
-            }
           }
         }
       }
@@ -1041,28 +1033,27 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": false
+                    "is_aggregate": false,
+                    "param": "report-month",
+                    "window": {
+                      "kind": "period",
+                      "unit": "month",
+                      "offset": -1
+                    }
                   },
-                  "dims": [],
+                  "dims": [
+                    {
+                      "dim_name": "代表处",
+                      "dim_value_list": {
+                        "param": "representative-office"
+                      }
+                    }
+                  ],
                   "metrics": []
                 },
                 "order": {}
               }
             ]
-          },
-          "paramBindings": {
-            "representative-office": {
-              "target": "dimension",
-              "queryField": "代表处"
-            },
-            "report-month": {
-              "target": "time",
-              "window": {
-                "kind": "period",
-                "unit": "month",
-                "offset": -1
-              }
-            }
           }
         }
       }
@@ -1138,28 +1129,27 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": false
+                    "is_aggregate": false,
+                    "param": "report-month",
+                    "window": {
+                      "kind": "lastN",
+                      "unit": "month",
+                      "n": 12
+                    }
                   },
-                  "dims": [],
+                  "dims": [
+                    {
+                      "dim_name": "代表处",
+                      "dim_value_list": {
+                        "param": "representative-office"
+                      }
+                    }
+                  ],
                   "metrics": []
                 },
                 "order": {}
               }
             ]
-          },
-          "paramBindings": {
-            "representative-office": {
-              "target": "dimension",
-              "queryField": "代表处"
-            },
-            "report-month": {
-              "target": "time",
-              "window": {
-                "kind": "lastN",
-                "unit": "month",
-                "n": 12
-              }
-            }
           }
         }
       }
@@ -1235,26 +1225,25 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": false
+                    "is_aggregate": false,
+                    "param": "report-month",
+                    "window": {
+                      "kind": "yearToDate"
+                    }
                   },
-                  "dims": [],
+                  "dims": [
+                    {
+                      "dim_name": "代表处",
+                      "dim_value_list": {
+                        "param": "representative-office"
+                      }
+                    }
+                  ],
                   "metrics": []
                 },
                 "order": {}
               }
             ]
-          },
-          "paramBindings": {
-            "representative-office": {
-              "target": "dimension",
-              "queryField": "代表处"
-            },
-            "report-month": {
-              "target": "time",
-              "window": {
-                "kind": "yearToDate"
-              }
-            }
           }
         }
       }
@@ -2389,21 +2378,25 @@
       ]
     }
   ],
-  "params": [
-    {
-      "id": "representative-office",
-      "type": "dimension",
-      "required": true,
-      "label": "代表处",
-      "default": "北京代表处"
-    },
-    {
-      "id": "report-month",
-      "type": "time",
-      "granularity": "month",
-      "required": true,
-      "label": "报告月份",
-      "default": "2026-02"
+  "params": {
+    "query": {
+      "dimensions": [
+        {
+          "id": "representative-office",
+          "dim_name": "代表处",
+          "dim_value_list": [
+            "北京代表处"
+          ]
+        }
+      ],
+      "times": [
+        {
+          "id": "report-month",
+          "granularity": "month",
+          "start": "2026-02",
+          "end": "2026-02"
+        }
+      ]
     }
-  ]
+  }
 }

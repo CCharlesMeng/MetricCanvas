@@ -9,7 +9,7 @@ from pathlib import Path
 BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
-from metriccanvas_authoring.domain.page_build_spec import (  # noqa: E402
+from metriccanvas_authoring.data.page_build_spec import (  # noqa: E402
     validate_page_build_spec,
 )
 

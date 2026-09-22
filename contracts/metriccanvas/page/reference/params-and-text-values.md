@@ -2,7 +2,7 @@
 
 旧数组参数：页面参数是一次初始化的不可变取值；筛选器是页内可变状态。标量参数保留string/number/boolean；6.2的dimension单值使用非空string，multiple:true使用非空、无重复string[]。URL多值用重复键，不拆逗号。标量/维度参数的非法URL输入回退唯一default；必需参数缺值会阻止呈现和查数。
 
-文本取值引用为{param:id}，由声明取值并按可选format格式化；必需文本不能引用可能缺失的参数。initialParam只把实际参数用于筛选初值，不能与filter.default双默认；paramBindings显式指定查询目标，后续筛选清空不会复活原值。受筛选控制的目标不同时写静态参数条件。
+文本取值引用为{param:id}，由声明取值并按可选format格式化；必需文本不能引用可能缺失的参数。initialParam只把实际参数用于筛选初值，不能与filter.default双默认；6.11起timePoint筛选器与层级维度筛选器同样可用，前者引用单点times参数，后者的初值落在defaultLevel那一层；paramBindings显式指定查询目标，后续筛选清空不会复活原值。受筛选控制的目标不同时写静态参数条件。
 
 执行回执的appliedInputs/filterValues是初始化权威；浏览器不再次用URL或模板默认覆盖。服务权限优先级不由Schema证明。
 
@@ -23,18 +23,18 @@
 
 运行时仅改副本中的查询起止，保留period、is_aggregate及指标；无数据呈现空结果，不回退最新期。时间绑定查询不消费没有参数执行凭据的source.initial旧行；经过prepareExecution核验的执行回执仍是权威。累计、同比/环比、历史预测版本、结果按小时分组与物理分区路由不由此规则计算。
 
-## 6.6 分组参数与多个时间区间
+## 6.6 分层参数与查询侧时间窗口
 
-params 增加对象分支：dimensions、times、scalars 均为可选非空数组，至少声明一个参数。dimensions 每项为 id、dim_name、可选 dim_value_list；times 每项为 id、granularity、可选且成对的 start/end；scalars 每项为 id、type 与可选 value。所有组的 ID 全局唯一，required 缺省 true，label 可选；新结构不接受 default。
+params 增加对象分支，按消费位置分两层：params.query.{dimensions,times} 落进 DQE 请求体，params.display 只被文本取值与导航消费。三个数组均为可选非空数组，至少声明一个参数。dimensions 每项为 id、dim_name、可选 dim_value_list；times 每项为 id、granularity、可选且成对的 start/end；display 每项为 id、type 与可选 value。两层 ID 全局唯一，required 缺省 true，label 可选；新结构不接受 default。
 
-维度统一非空去重字符串数组。时间精度 month/date，校验真实日历及起止顺序。多个 times 是独立输入，查询显式按 ID 选择；period 与 is_aggregate 留在查询侧。未填值模板允许校验与保存，但必需输入不全不能执行。
+维度统一非空去重字符串数组。时间精度 month/date，校验真实日历及起止顺序。一个 times 项就是一个包含区间，单点写成 start 与 end 相同；多个 times 是独立输入，查询显式按 ID 选择；period 与 is_aggregate 留在查询侧。未填值模板允许校验与保存，但必需输入不全不能执行。
 
-原位引用限于 DQE filter.dims[].dim_value_list 的 {param:id} 和 filter.time.start/end 的 {param:id,part:start/end}。时间两端同源、精度兼容，维度 dim_name 匹配声明；禁止与筛选/旧参数绑定双控或引用其他请求位置。执行前在副本解析，带引用的查询不消费未经核验的 initial 旧行。
+原位引用限于 DQE filter.dims[].dim_value_list 的 {param:id} 和 filter.time 的 {period,is_aggregate?,param,window?}。时间引用不写 window 时原样取参数起止，写 window 时以参数值为基准点派生，此时被引用输入必须是单点——已填值的在声明期判，未填值模板留到取值代入时报。window 的取值与语义同上一节，单位须与输入精度相容。引用的参数必须声明在 params.query 下；引用不得与筛选/旧参数绑定双控、不得与查询体字面量起止并存、不得出现在其他请求位置。执行前在副本解析，带引用的查询不消费未经核验的 initial 旧行。
 
-文本区间显示 start 至 end，相同起止显示一次，维度多值用顿号连接。URL 维度重复键、时间值用编码后的 {start,end} JSON；未传使用保存实际值，显式非法不回退。旧数组/default/time-window 保持兼容，规范化保存不把分组改写为数组。
+文本区间显示 start 至 end，相同起止显示一次，维度多值用顿号连接。URL 维度用重复键；时间是纯文本，单点写 2026-03，区间写 2026-01..2026-06，未传使用保存实际值，显式非法不回退。旧数组/default/time-window 保持兼容，规范化保存不把分层结构改写为数组。
 
 
-页面协议 6.6。结构真源为本册[schema.json](schema.json)，SHA256 `a421c583a35d98c6d01d1a47965f13984e4d6ec1aab62779b4d5ec78b7c8cf8f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `6b28ba0e717198c2963d957ea5c11e3177d05605f5bcc5e818f55f71e945e174`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -585,7 +585,7 @@ Schema位置：`#/definitions/pageParam/anyOf/3/properties/value/properties/star
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 闭区间的规范起点，与声明输入精度一致。 |
+| "string" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | timeRange 参数的包含起点；与 end 一起表达一次页面实例的明确时间区间。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f332f70726f706572746965732f76616c75652f70726f706572746965732f656e64"></a>
 
@@ -595,7 +595,7 @@ Schema位置：`#/definitions/pageParam/anyOf/3/properties/value/properties/end`
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 闭区间的规范终点，不早于起点。 |
+| "string" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | timeRange 参数的包含终点；必须与 start 使用相同粒度且不早于起点。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f332f70726f706572746965732f76616c75652f70726f706572746965732f6772616e756c6172697479"></a>
 
@@ -620,123 +620,133 @@ Schema位置：`#/definitions/groupedPageParams`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 类型/分支 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按 dimensions、times、scalars 分组的页面输入；各组共享唯一参数 ID 空间。 |
+| "object" | 类型/分支 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按用途分层的页面输入：params.query 落进查询，params.display 只供呈现；两层共享唯一参数 ID 空间。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f64696d656e73696f6e73"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f7175657279"></a>
 
-### `@groupedPageParams.dimensions`
+### `@groupedPageParams.query`
 
-Schema位置：`#/definitions/groupedPageParams/properties/dimensions`。
+Schema位置：`#/definitions/groupedPageParams/properties/query`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 按角色声明的维度字段组。 |
+| "object" | 本分支可选 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 落进查询请求的输入层：只有这一层下的参数可被查询体原位引用。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f64696d656e73696f6e732f6974656d73"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f64696d656e73696f6e73"></a>
 
-### `@groupedPageParams.dimensions[]`
+### `@groupedPageParams.query.dimensions`
 
-Schema位置：`#/definitions/groupedPageParams/properties/dimensions/items`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/dimensions`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 维度输入数组，每项由唯一参数 ID 引用，dim_name 必须与被引用查询条件一致。 |
+
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f64696d656e73696f6e732f6974656d73"></a>
+
+### `@groupedPageParams.query.dimensions[]`
+
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/dimensions/items`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 每个数组项 | required=["id","dim_name"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f64696d656e73696f6e732f6974656d732f70726f706572746965732f6964"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f64696d656e73696f6e732f6974656d732f70726f706572746965732f6964"></a>
 
-### `@groupedPageParams.dimensions[].id`
+### `@groupedPageParams.query.dimensions[].id`
 
-Schema位置：`#/definitions/groupedPageParams/properties/dimensions/items/properties/id`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/dimensions/items/properties/id`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f64696d656e73696f6e732f6974656d732f70726f706572746965732f64696d5f6e616d65"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f64696d656e73696f6e732f6974656d732f70726f706572746965732f64696d5f6e616d65"></a>
 
-### `@groupedPageParams.dimensions[].dim_name`
+### `@groupedPageParams.query.dimensions[].dim_name`
 
-Schema位置：`#/definitions/groupedPageParams/properties/dimensions/items/properties/dim_name`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/dimensions/items/properties/dim_name`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 参数对应的业务维度字段；查询目标须与之相同。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f64696d656e73696f6e732f6974656d732f70726f706572746965732f64696d5f76616c75655f6c697374"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f64696d656e73696f6e732f6974656d732f70726f706572746965732f64696d5f76616c75655f6c697374"></a>
 
-### `@groupedPageParams.dimensions[].dim_value_list`
+### `@groupedPageParams.query.dimensions[].dim_value_list`
 
-Schema位置：`#/definitions/groupedPageParams/properties/dimensions/items/properties/dim_value_list`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/dimensions/items/properties/dim_value_list`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 本次页面实例的非空、无重复维度值列表；模板可省略。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f64696d656e73696f6e732f6974656d732f70726f706572746965732f64696d5f76616c75655f6c6973742f6974656d73"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f64696d656e73696f6e732f6974656d732f70726f706572746965732f64696d5f76616c75655f6c6973742f6974656d73"></a>
 
-### `@groupedPageParams.dimensions[].dim_value_list[]`
+### `@groupedPageParams.query.dimensions[].dim_value_list[]`
 
-Schema位置：`#/definitions/groupedPageParams/properties/dimensions/items/properties/dim_value_list/items`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/dimensions/items/properties/dim_value_list/items`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 每个数组项 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f64696d656e73696f6e732f6974656d732f70726f706572746965732f7265717569726564"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f64696d656e73696f6e732f6974656d732f70726f706572746965732f7265717569726564"></a>
 
-### `@groupedPageParams.dimensions[].required`
+### `@groupedPageParams.query.dimensions[].required`
 
-Schema位置：`#/definitions/groupedPageParams/properties/dimensions/items/properties/required`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/dimensions/items/properties/required`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 参数是否必需；缺值时是否阻止初始化。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f64696d656e73696f6e732f6974656d732f70726f706572746965732f6c6162656c"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f64696d656e73696f6e732f6974656d732f70726f706572746965732f6c6162656c"></a>
 
-### `@groupedPageParams.dimensions[].label`
+### `@groupedPageParams.query.dimensions[].label`
 
-Schema位置：`#/definitions/groupedPageParams/properties/dimensions/items/properties/label`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/dimensions/items/properties/label`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f74696d6573"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f74696d6573"></a>
 
-### `@groupedPageParams.times`
+### `@groupedPageParams.query.times`
 
-Schema位置：`#/definitions/groupedPageParams/properties/times`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/times`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 独立时间区间输入数组，每项由唯一参数 ID 引用。 |
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 时间输入数组，每项是一个包含区间；单点写成 start 与 end 相同。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f74696d65732f6974656d73"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f74696d65732f6974656d73"></a>
 
-### `@groupedPageParams.times[]`
+### `@groupedPageParams.query.times[]`
 
-Schema位置：`#/definitions/groupedPageParams/properties/times/items`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/times/items`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 每个数组项 | required=["id","granularity"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f74696d65732f6974656d732f70726f706572746965732f6964"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f74696d65732f6974656d732f70726f706572746965732f6964"></a>
 
-### `@groupedPageParams.times[].id`
+### `@groupedPageParams.query.times[].id`
 
-Schema位置：`#/definitions/groupedPageParams/properties/times/items/properties/id`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/times/items/properties/id`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f74696d65732f6974656d732f70726f706572746965732f6772616e756c6172697479"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f74696d65732f6974656d732f70726f706572746965732f6772616e756c6172697479"></a>
 
-### `@groupedPageParams.times[].granularity`
+### `@groupedPageParams.query.times[].granularity`
 
-Schema位置：`#/definitions/groupedPageParams/properties/times/items/properties/granularity`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/times/items/properties/granularity`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
@@ -747,81 +757,81 @@ Schema位置：`#/definitions/groupedPageParams/properties/times/items/propertie
 | "month" | 月粒度；timePoint使用YYYY-MM。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f74696d65732f6974656d732f70726f706572746965732f7374617274"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f74696d65732f6974656d732f70726f706572746965732f7374617274"></a>
 
-### `@groupedPageParams.times[].start`
+### `@groupedPageParams.query.times[].start`
 
-Schema位置：`#/definitions/groupedPageParams/properties/times/items/properties/start`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/times/items/properties/start`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 包含的区间起点，与 end 同时填写或省略。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f74696d65732f6974656d732f70726f706572746965732f656e64"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f74696d65732f6974656d732f70726f706572746965732f656e64"></a>
 
-### `@groupedPageParams.times[].end`
+### `@groupedPageParams.query.times[].end`
 
-Schema位置：`#/definitions/groupedPageParams/properties/times/items/properties/end`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/times/items/properties/end`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 包含的区间终点，不早于 start。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f74696d65732f6974656d732f70726f706572746965732f7265717569726564"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f74696d65732f6974656d732f70726f706572746965732f7265717569726564"></a>
 
-### `@groupedPageParams.times[].required`
+### `@groupedPageParams.query.times[].required`
 
-Schema位置：`#/definitions/groupedPageParams/properties/times/items/properties/required`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/times/items/properties/required`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 参数是否必需；缺值时是否阻止初始化。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f74696d65732f6974656d732f70726f706572746965732f6c6162656c"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f71756572792f70726f706572746965732f74696d65732f6974656d732f70726f706572746965732f6c6162656c"></a>
 
-### `@groupedPageParams.times[].label`
+### `@groupedPageParams.query.times[].label`
 
-Schema位置：`#/definitions/groupedPageParams/properties/times/items/properties/label`。
+Schema位置：`#/definitions/groupedPageParams/properties/query/properties/times/items/properties/label`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f7363616c617273"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f646973706c6179"></a>
 
-### `@groupedPageParams.scalars`
+### `@groupedPageParams.display`
 
-Schema位置：`#/definitions/groupedPageParams/properties/scalars`。
+Schema位置：`#/definitions/groupedPageParams/properties/display`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 纯展示等标量参数数组，实际取值用 value 保存。 |
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 只供呈现的输入层：被文本取值和导航消费，不能进入查询；实际取值用 value 保存。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f7363616c6172732f6974656d73"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f646973706c61792f6974656d73"></a>
 
-### `@groupedPageParams.scalars[]`
+### `@groupedPageParams.display[]`
 
-Schema位置：`#/definitions/groupedPageParams/properties/scalars/items`。
+Schema位置：`#/definitions/groupedPageParams/properties/display/items`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 每个数组项 | required=["id","type"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f7363616c6172732f6974656d732f70726f706572746965732f6964"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f646973706c61792f6974656d732f70726f706572746965732f6964"></a>
 
-### `@groupedPageParams.scalars[].id`
+### `@groupedPageParams.display[].id`
 
-Schema位置：`#/definitions/groupedPageParams/properties/scalars/items/properties/id`。
+Schema位置：`#/definitions/groupedPageParams/properties/display/items/properties/id`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f7363616c6172732f6974656d732f70726f706572746965732f74797065"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f646973706c61792f6974656d732f70726f706572746965732f74797065"></a>
 
-### `@groupedPageParams.scalars[].type`
+### `@groupedPageParams.display[].type`
 
-Schema位置：`#/definitions/groupedPageParams/properties/scalars/items/properties/type`。
+Schema位置：`#/definitions/groupedPageParams/properties/display/items/properties/type`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
@@ -833,61 +843,61 @@ Schema位置：`#/definitions/groupedPageParams/properties/scalars/items/propert
 | "number" | 数值标量或原数值格式，按所在字段解释。 |
 | "boolean" | 布尔值；false是显式取值。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f7363616c6172732f6974656d732f70726f706572746965732f76616c7565"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f646973706c61792f6974656d732f70726f706572746965732f76616c7565"></a>
 
-### `@groupedPageParams.scalars[].value`
+### `@groupedPageParams.display[].value`
 
-Schema位置：`#/definitions/groupedPageParams/properties/scalars/items/properties/value`。
+Schema位置：`#/definitions/groupedPageParams/properties/display/items/properties/value`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f7363616c6172732f6974656d732f70726f706572746965732f76616c75652f616e794f662f30"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f646973706c61792f6974656d732f70726f706572746965732f76616c75652f616e794f662f30"></a>
 
-### `@groupedPageParams.scalars[].value · anyOf[0]`
+### `@groupedPageParams.display[].value · anyOf[0]`
 
-Schema位置：`#/definitions/groupedPageParams/properties/scalars/items/properties/value/anyOf/0`。
+Schema位置：`#/definitions/groupedPageParams/properties/display/items/properties/value/anyOf/0`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f7363616c6172732f6974656d732f70726f706572746965732f76616c75652f616e794f662f31"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f646973706c61792f6974656d732f70726f706572746965732f76616c75652f616e794f662f31"></a>
 
-### `@groupedPageParams.scalars[].value · anyOf[1]`
+### `@groupedPageParams.display[].value · anyOf[1]`
 
-Schema位置：`#/definitions/groupedPageParams/properties/scalars/items/properties/value/anyOf/1`。
+Schema位置：`#/definitions/groupedPageParams/properties/display/items/properties/value/anyOf/1`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "number" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f7363616c6172732f6974656d732f70726f706572746965732f76616c75652f616e794f662f32"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f646973706c61792f6974656d732f70726f706572746965732f76616c75652f616e794f662f32"></a>
 
-### `@groupedPageParams.scalars[].value · anyOf[2]`
+### `@groupedPageParams.display[].value · anyOf[2]`
 
-Schema位置：`#/definitions/groupedPageParams/properties/scalars/items/properties/value/anyOf/2`。
+Schema位置：`#/definitions/groupedPageParams/properties/display/items/properties/value/anyOf/2`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "boolean" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f7363616c6172732f6974656d732f70726f706572746965732f7265717569726564"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f646973706c61792f6974656d732f70726f706572746965732f7265717569726564"></a>
 
-### `@groupedPageParams.scalars[].required`
+### `@groupedPageParams.display[].required`
 
-Schema位置：`#/definitions/groupedPageParams/properties/scalars/items/properties/required`。
+Schema位置：`#/definitions/groupedPageParams/properties/display/items/properties/required`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 参数是否必需；缺值时是否阻止初始化。 |
 
-<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f7363616c6172732f6974656d732f70726f706572746965732f6c6162656c"></a>
+<a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d732f70726f706572746965732f646973706c61792f6974656d732f70726f706572746965732f6c6162656c"></a>
 
-### `@groupedPageParams.scalars[].label`
+### `@groupedPageParams.display[].label`
 
-Schema位置：`#/definitions/groupedPageParams/properties/scalars/items/properties/label`。
+Schema位置：`#/definitions/groupedPageParams/properties/display/items/properties/label`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
@@ -1121,21 +1131,19 @@ Schema位置：`#/definitions/textValue/anyOf/1`。目标：[#/definitions/textV
 
 ## 语义规则与反例（生成）
 
-- `page-param-id-unique`：页面参数 id 唯一。反例：[duplicate-page-param-id](errors/duplicate-page-param-id.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `page-param-not-filter-name`：页面参数不得与筛选器同名。反例：[page-param-named-like-filter](errors/page-param-named-like-filter.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `page-param-default-type`：页面参数默认值符合声明类型。反例：[page-param-default-type-mismatch](errors/page-param-default-type-mismatch.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `text-value-param-declared`：文本取值只能引用已声明的页面参数。反例：[text-value-unknown-param](errors/text-value-unknown-param.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `text-value-format-compatible`：文本取值引用的展示格式与参数类型相容。反例：[text-value-format-mismatch](errors/text-value-format-mismatch.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `page-param-consumed`：每个页面参数至少被一处文本取值消费。反例：[page-param-unconsumed](errors/page-param-unconsumed.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `optional-param-not-in-required-text`：必填文本属性只能引用必需参数。反例：[required-title-references-optional-param](errors/required-title-references-optional-param.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
+- `page-param-id-unique`：页面参数 id 唯一。反例：[duplicate-page-param-id](errors/duplicate-page-param-id.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `page-param-not-filter-name`：页面参数不得与筛选器同名。反例：[page-param-named-like-filter](errors/page-param-named-like-filter.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `page-param-default-type`：页面参数默认值符合声明类型。反例：[page-param-default-type-mismatch](errors/page-param-default-type-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `text-value-param-declared`：文本取值只能引用已声明的页面参数。反例：[text-value-unknown-param](errors/text-value-unknown-param.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `text-value-format-compatible`：文本取值引用的展示格式与参数类型相容。反例：[text-value-format-mismatch](errors/text-value-format-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `page-param-consumed`：每个页面参数至少被一处文本取值消费。反例：[page-param-unconsumed](errors/page-param-unconsumed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `optional-param-not-in-required-text`：必填文本属性只能引用必需参数。反例：[required-title-references-optional-param](errors/required-title-references-optional-param.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
 - [dimension-params-page](examples/dimension-params-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 - [time-params-page](examples/time-params-page.json)：完整合法页面；查询仅为静态契约证据。
-- [inline-params-page](examples/inline-params-page.json)：完整合法页面；查询仅为静态契约证据。
-- [inline-params-values-page](examples/inline-params-values-page.json)：完整合法页面；查询仅为静态契约证据。
 - [grouped-params-page](examples/grouped-params-page.json)：完整合法页面；查询仅为静态契约证据。
 - [grouped-scalar-params-page](examples/grouped-scalar-params-page.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
@@ -1152,19 +1160,19 @@ Schema位置：`#/definitions/textValue/anyOf/1`。目标：[#/definitions/textV
 - `#/definitions/pageParam/anyOf/0/properties/default/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/2/default`。
 - `#/definitions/pageParam/anyOf/0/properties/default/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/3/default`。
 - `#/definitions/pageParam/anyOf/0/properties/default/anyOf/2`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/4/default`。
-- `#/definitions/pageParam/anyOf/0/properties/value/anyOf/0`：[合法完整页面](examples/inline-params-values-page.json)，JSON Pointer `#/params/2/value`。
-- `#/definitions/pageParam/anyOf/0/properties/value/anyOf/1`：[合法完整页面](examples/inline-params-values-page.json)，JSON Pointer `#/params/3/value`。
-- `#/definitions/pageParam/anyOf/0/properties/value/anyOf/2`：[合法完整页面](examples/inline-params-values-page.json)，JSON Pointer `#/params/4/value`。
+- `#/definitions/pageParam/anyOf/0/properties/value/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/2/value`。
+- `#/definitions/pageParam/anyOf/0/properties/value/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/3/value`。
+- `#/definitions/pageParam/anyOf/0/properties/value/anyOf/2`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/4/value`。
 - `#/definitions/pageParam/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/0`。
 - `#/definitions/pageParam/anyOf/1/properties/default/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/0/default`。
 - `#/definitions/pageParam/anyOf/1/properties/default/anyOf/1`：[合法完整页面](examples/dimension-params-page.json)，JSON Pointer `#/params/0/default`。
-- `#/definitions/pageParam/anyOf/1/properties/value/anyOf/0`：[合法完整页面](examples/inline-params-values-page.json)，JSON Pointer `#/params/0/value`。
-- `#/definitions/pageParam/anyOf/1/properties/value/anyOf/1`：[合法完整页面](examples/inline-params-values-page.json)，JSON Pointer `#/params/5/value`。
+- `#/definitions/pageParam/anyOf/1/properties/value/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/0/value`。
+- `#/definitions/pageParam/anyOf/1/properties/value/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/1/value`。
 - `#/definitions/pageParam/anyOf/2`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/params/0`。
-- `#/definitions/pageParam/anyOf/3`：[合法完整页面](examples/inline-params-page.json)，JSON Pointer `#/params/1`。
-- `#/definitions/groupedPageParams/properties/scalars/items/properties/value/anyOf/0`：[合法完整页面](examples/grouped-scalar-params-page.json)，JSON Pointer `#/params/scalars/0/value`。
-- `#/definitions/groupedPageParams/properties/scalars/items/properties/value/anyOf/1`：[合法完整页面](examples/grouped-scalar-params-page.json)，JSON Pointer `#/params/scalars/1/value`。
-- `#/definitions/groupedPageParams/properties/scalars/items/properties/value/anyOf/2`：[合法完整页面](examples/grouped-scalar-params-page.json)，JSON Pointer `#/params/scalars/2/value`。
+- `#/definitions/pageParam/anyOf/3`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/5`。
+- `#/definitions/groupedPageParams/properties/display/items/properties/value/anyOf/0`：[合法完整页面](examples/grouped-scalar-params-page.json)，JSON Pointer `#/params/display/0/value`。
+- `#/definitions/groupedPageParams/properties/display/items/properties/value/anyOf/1`：[合法完整页面](examples/grouped-scalar-params-page.json)，JSON Pointer `#/params/display/1/value`。
+- `#/definitions/groupedPageParams/properties/display/items/properties/value/anyOf/2`：[合法完整页面](examples/grouped-scalar-params-page.json)，JSON Pointer `#/params/display/2/value`。
 - `#/definitions/timeWindow/oneOf/0`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/current/source/query/paramBindings/report-month/window`。
 - `#/definitions/timeWindow/oneOf/1`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/rolling/source/query/paramBindings/report-month/window`。
 - `#/definitions/timeWindow/oneOf/2`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/to-date/source/query/paramBindings/report-month/window`。

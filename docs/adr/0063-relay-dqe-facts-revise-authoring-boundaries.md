@@ -1,5 +1,7 @@
 ---
 status: accepted
+revised-by: [0064]
+note: 身份、DQE 与打包事实继续生效；Python 保存幂等与取消后修订语义已退出
 ---
 
 # Relay 与 DQE 真实接口对创作期边界的修正

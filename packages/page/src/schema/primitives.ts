@@ -107,24 +107,26 @@ export const pageParamZ = z.union([z
     description: '页面参数：一次初始化确定的具名输入；6.5 以 value 承载本次实际值，旧 URL/default 路径兼容读取'
   });
 
-/** 6.6：参数按业务条件分组，实际值可省略以保存未填值模板。 */
+/** 6.6：参数按用途分层，实际值可省略以保存未填值模板。 */
 export const groupedPageParamsZ = z.object({
-  dimensions: z.array(z.object({
-    id: idZ, dim_name: z.string().min(1),
-    dim_value_list: z.array(z.string().min(1)).min(1).optional(),
-    required: z.boolean().optional(), label: z.string().min(1).optional()
-  }).strict()).min(1).optional(),
-  times: z.array(z.object({
-    id: idZ, granularity: z.enum(['month', 'date']),
-    start: z.string().optional(), end: z.string().optional(),
-    required: z.boolean().optional(), label: z.string().min(1).optional()
-  }).strict()).min(1).optional(),
-  scalars: z.array(z.object({
+  query: z.object({
+    dimensions: z.array(z.object({
+      id: idZ, dim_name: z.string().min(1),
+      dim_value_list: z.array(z.string().min(1)).min(1).optional(),
+      required: z.boolean().optional(), label: z.string().min(1).optional()
+    }).strict()).min(1).optional(),
+    times: z.array(z.object({
+      id: idZ, granularity: z.enum(['month', 'date']),
+      start: z.string().optional(), end: z.string().optional(),
+      required: z.boolean().optional(), label: z.string().min(1).optional()
+    }).strict()).min(1).optional()
+  }).strict().optional(),
+  display: z.array(z.object({
     id: idZ, type: z.enum(['string', 'number', 'boolean']),
     value: z.union([z.string(), z.number(), z.boolean()]).optional(),
     required: z.boolean().optional(), label: z.string().min(1).optional()
   }).strict()).min(1).optional()
-}).strict().meta({ id: 'groupedPageParams', description: '按 dimensions、times、scalars 分组的页面输入；各组共享唯一参数 ID 空间。' });
+}).strict().meta({ id: 'groupedPageParams', description: '按用途分层的页面输入：params.query 落进查询，params.display 只供呈现；两层共享唯一参数 ID 空间。' });
 
 export const standardFieldTypeZ = z.enum([
   'string',

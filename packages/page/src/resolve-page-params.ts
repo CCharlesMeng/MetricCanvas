@@ -30,13 +30,13 @@ export function resolvePageParams(page:unknown, suppliedValues:Readonly<Record<s
       values.set(p.id,structuredClone(value));
       if (document.params && !Array.isArray(document.params)) {
         const groups = document.params;
-        const dimension = groups.dimensions?.find(d => d.id === p.id);
-        const time = groups.times?.find(t => t.id === p.id);
-        const scalar = groups.scalars?.find(s => s.id === p.id);
+        const dimension = groups.query?.dimensions?.find(d => d.id === p.id);
+        const time = groups.query?.times?.find(t => t.id === p.id);
+        const scalar = groups.display?.find(s => s.id === p.id);
         if (dimension && Array.isArray(value)) dimension.dim_value_list = [...value];
         else if (time && typeof value === 'object' && !Array.isArray(value)) { time.start = value.start; time.end = value.end; }
         else if (scalar && typeof value !== 'object') scalar.value = value;
-      } else if (['6.5', '6.6'].includes(document.schemaVersion)) { delete p.default; p.value=structuredClone(value); }
+      } else if (Array.isArray(document.params) && ['6.5', '6.6'].includes(document.schemaVersion)) { delete p.default; p.value=structuredClone(value); }
     }
   }
   if(issues.length)return {ok:false,issues};
@@ -57,7 +57,7 @@ export function materializePageParams(page:Page,values:ReadonlyMap<string,PagePa
   const resolved=structuredClone(page);
   for(const source of Object.values(resolved.dataSources))if(source.source.type==='query') {
     source.source.query=initializeQueryParams(source.source.query,values);
-    if(page.params?.length)delete source.source.initial;
+    if(page.params && (Array.isArray(page.params) ? page.params.length > 0 : Object.keys(page.params).length > 0)) delete source.source.initial;
   }
   return resolved;
 }

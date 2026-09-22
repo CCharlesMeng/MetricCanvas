@@ -18,7 +18,7 @@ Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是入站 Adapter�
 ## 当前已具备的可执行能力
 
 - `discover_data_context` 保留受治理 `matches`，同时返回全量规范业务域闭集 `businessDomains`、`resolution {candidates, selected, ambiguities}`、`time`、`intent`、`structureOperation` 和 `dataContextVersion`。Relay 应先发现完整问题，再从这个闭集做业务域路由。
-- [`domain/agent_core.py`](./tool/metriccanvas_authoring/domain/agent_core.py) 已实现稳定 `dataSourceId`、单调序号、`add/modify/replace/remove` 多轮 reducer、target 定向、结构 guard、组件话语、基于 `businessDomains` 闭集的用户覆盖与模型路由验真/零命中重路由/消歧、按取数单元意图降级，以及部分可答与 Metric Gap 确认。Scope Card 选择同时接受 discovery `canonicalName` 与事件 `metricName` 形状；Metric Gap 只投影 metric 候选，忽略 resolution 中的 time/intent/structure 候选。
+- [`ask/rules.py`](./tool/metriccanvas_authoring/ask/rules.py) 已实现稳定 `dataSourceId`、单调序号、`add/modify/replace/remove` 多轮 reducer、target 定向、结构 guard、组件话语、基于 `businessDomains` 闭集的用户覆盖与模型路由验真/零命中重路由/消歧、按取数单元意图降级，以及部分可答与 Metric Gap 确认。Scope Card 选择同时接受 discovery `canonicalName` 与事件 `metricName` 形状；Metric Gap 只投影 metric 候选，忽略 resolution 中的 time/intent/structure 候选。
 - 结构 guard 可直接消费 discovery 的 `structureOperation`，并以问句解析兜底；模型首次静默忽略结构操作时要求修正，第二次仍忽略则拒绝。
 - Page Build Spec 必须携带发现阶段的 `dataContextVersion` 和每个取数单元的 `dataSourceId`，ID 格式满足 Page key 约束；`compose_page` 在 DQE 之前拒绝过期版本或重复 ID。
 - `compose_page` 对最多 6 个取数单元有序并发执行 DQE，按单元序号稳定装配或归因失败，无保存副作用。
@@ -30,7 +30,7 @@ Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是入站 Adapter�
 
 ## MCP 工具面
 
-Platform 内容编辑使用独立入口 `metriccanvas-content`（或源码 `python -m metriccanvas_authoring.content_server`），提供 `discover_data_context`、`compose_page`、`create_content_page`、`edit_page`，没有保存/发布工具。既有下列 compatibility/relay 工具面继续服务原调用方。
+Platform 内容编辑使用独立入口 `metriccanvas-content`（或源码 `python -m metriccanvas_authoring.entrypoints.compat.content_server`），提供 `discover_data_context`、`compose_page`、`create_content_page`、`edit_page`，没有保存/发布工具。既有下列 compatibility/relay 工具面继续服务原调用方。
 
 `create_content_page` 用 `page_id/title/layout` 与 `request.operations` 创建新页。允许 `add_text/add_field_text/add_map_chart/add_tab_container/add_composite_card/add_ai_summary`，目标分区为 `main`（panel）；静态正文直接声明，字段长文本与地图仅从可信 `source_token` 对应完整页面复用数据源。创建产物 `metriccanvas.content-page-artifact` 包含新 document/hash、可空 sourceRef 和 Bundle 版本，不包含保存结果，也不将创建冒充既有页修改。
 
@@ -57,7 +57,7 @@ Relay 工具面的完整 `artifact` 含页面文档和 DQE 初始行，不能作
 
 ## 生产组合与分发
 
-`metriccanvas_authoring.server` 是可安装包的生产组合根，`tool/server.py` 是源码检出兼容入口。组合根按环境变量装配 Lab Data Context HTTP Adapter、DQE HTTP Adapter 和兼容 Java 页面资产 Adapter。
+`metriccanvas_authoring.entrypoints.compat.server` 是可安装包的 CLI 入口，`tool/server.py` 是源码检出兼容入口；装配住在 `bootstrap/`。组合根按环境变量装配 Lab Data Context HTTP Adapter、DQE HTTP Adapter 和兼容 Java 页面资产 Adapter。
 
 Relay 配置见 [`relay/mcp_configs/metriccanvas-authoring.json`](./relay/mcp_configs/metriccanvas-authoring.json)：
 
@@ -67,7 +67,7 @@ uvx --from <metriccanvas-authoring-sdist.tar.gz> metriccanvas-authoring
 
 sdist 内嵌运行时契约，不依赖宿主 Bundle 源码目录。Data Context 治理配置样例见 [`relay/data-context-projection.example.json`](./relay/data-context-projection.example.json)。DQE Adapter 只调用 `POST .../v1/dsl/execute`，不直连 Lab 执行查询。
 
-当前 Data Context、DQE 和兼容 Java Adapter 共用 [`EnvIdentityPort`](./tool/metriccanvas_authoring/adapters/outbound/env_identity.py) 从 Relay MCP config 读取的服务态 `operator/token`。这不是按用户身份，不能当作生产权限证据。
+当前 Data Context、DQE 和兼容 Java Adapter 共用 [`EnvIdentityPort`](./tool/metriccanvas_authoring/adapters/relay/env_identity.py) 从 Relay MCP config 读取的服务态 `operator/token`。这不是按用户身份，不能当作生产权限证据。
 
 ## 还未在本仓闭环的内容
 
@@ -83,7 +83,7 @@ python3 scripts/check_bundle.py
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s test-harness/tests -p 'test_*.py'
 ```
 
-根仓另提供 `pnpm authoring:contracts:check`，检查产品契约、Bundle 快照、Authoring manifest 与锁文件是否漂移。页面预检的全量证据位于 [`test_page_validation.py`](./test-harness/tests/test_page_validation.py) 和 [`page-conformance-pending.json`](./test-harness/fixtures/page-conformance-pending.json)；Agent Core、目录级组件选型和布局性质证据分别位于 [`test_agent_core.py`](./test-harness/tests/test_agent_core.py)、[`test_component_selection.py`](./test-harness/tests/test_component_selection.py) 与 [`test_section_layout.py`](./test-harness/tests/test_section_layout.py)。
+根仓另提供 `pnpm authoring:contracts:check`，检查产品契约、Bundle 快照、Authoring manifest 与锁文件是否漂移。页面预检的全量证据位于 [`test_page_validation.py`](./test-harness/tests/test_page_validation.py) 和 [`page-conformance-pending.json`](./test-harness/fixtures/page-conformance-pending.json)；Ask/Explore 确定性规则、目录级组件选型和布局性质证据分别位于 [`test_ask_rules.py`](./test-harness/tests/test_ask_rules.py)、[`test_component_selection.py`](./test-harness/tests/test_component_selection.py) 与 [`test_section_layout.py`](./test-harness/tests/test_section_layout.py)。
 
 构建并验证 Relay 可安装包：
 
@@ -93,11 +93,11 @@ METRICCANVAS_TOOL_SURFACE=relay \
   uvx --from dist/metriccanvas_authoring-0.2.0.tar.gz metriccanvas-authoring
 ```
 
-完整迁移状态、F01–F14 等价矩阵与硬切换门禁见 [`docs/plan/metriccanvas-agent-full-migration.md`](../docs/plan/metriccanvas-agent-full-migration.md)。
+完整迁移状态、F01–F14 等价矩阵与硬切换门禁见 [`docs/archive/metriccanvas-agent-migration/metriccanvas-agent-full-migration.md`](../docs/archive/metriccanvas-agent-migration/metriccanvas-agent-full-migration.md)。
 
 ## 独立生命周期 MCP（#138）
 
-`metriccanvas-lifecycle`（或 `python -m metriccanvas_authoring.lifecycle_server`）独立装载，四项草稿工具为 `save_draft`、`get_save_result`、`read_revision`、`list_revisions`，各只接受 `request_token`。不初始化内容 MCP、DQE、旧 `/pages` 保存适配器，也不执行页面编辑或参数提取。公共程序组合入口为 `create_lifecycle_mcp_server(service, programs, identities)`；应用端口位于 `application/lifecycle_ports.py`，自有输入契约 `contracts/authored/lifecycle-request.schema.json` 沿内部 `authoring-lifecycle-proposal/1`，不是线上 API。
+`metriccanvas-lifecycle`（或 `python -m metriccanvas_authoring.entrypoints.compat.lifecycle_server`）独立装载，四项草稿工具为 `save_draft`、`get_save_result`、`read_revision`、`list_revisions`，各只接受 `request_token`。不初始化内容 MCP、DQE、旧 `/pages` 保存适配器，也不执行页面编辑或参数提取。公共程序组合入口为 `create_lifecycle_mcp_server(service, programs, identities)`；应用端口位于 `assets/lifecycle_ports.py`，自有输入契约 `contracts/authored/lifecycle-request.schema.json` 沿内部 `authoring-lifecycle-proposal/1`，不是线上 API。
 
 受信任 Relay 适配器在调用之前把完整请求写到独立用户/工作区进程的 `METRICCANVAS_LIFECYCLE_INPUTS_DIR/<token>.json`。目录权限须 0700、文件 0600，令牌为 16–128 位字母/数字/下划线/连字符；文件内容 `{actorId,workspaceId,request}`，request 按该 schema 的 save/read/history 分支。目录不可由模型写入；调用方必须保证同一逻辑操作的请求文件不可变并持久保留，禁止在重试时换 operationId 或修改原载荷。token 只定位受信任请求，不代替服务鉴权；保存指纹、基线原子比较、去重期限与授权仍由服务裁决。
 
@@ -141,7 +141,7 @@ Skill 负责业务问题、阅读层级与组件选型；工具负责能力检�
 | --- | --- | --- |
 | 阅读顺序、选型、场景适用条件 | [reading-design.md](skill/metriccanvas-platform-authoring/references/reading-design.md) 与场景参考 | 差异场景前向检查，不以固定卡数或图数评分 |
 | 创作输入与版本 | `contracts/authored/page-structure-plan.schema.json`、`structure-revision.schema.json` | 新旧版本、创建/修订块契约一致性与安全错误测试 |
-| 默认占位、受控呈现、说明 | `contracts/authored/section-patterns.json`、`tool/metriccanvas_authoring/domain/` 下的 section_presentation、structure_presentation、structure_scope | 公开 create/edit 回归；保护人工设置和查询复用 |
+| 默认占位、受控呈现、说明 | `contracts/authored/section-patterns.json`、`tool/metriccanvas_authoring/pages/components/` 下的 section_presentation、structure_presentation 与 `pages/composition/structure_scope.py` | 公开 create/edit 回归；保护人工设置和查询复用 |
 | 页面协议、组件与响应式 | 仓库 `packages/page/src/schema/` 与统一运行时/组件实现 | 页面 Schema、组件及呈现测试，不由 Skill 覆盖 CSS |
 
 pattern 是默认组合占位，不是整页模板或自动选型算法。结构分区仍为平面组合；新能力须同时有合法输入和可执行装配路径，再进入 structureCapabilities。
@@ -153,3 +153,5 @@ pattern 是默认组合占位，不是整页模板或自动选型算法。结构
 完整创建必须能够读取或被注入工作流、布局参考、scenarios.md、reading-design.md 及适用场景。局部编辑不例行加载新建参考；整体重组时再加载阅读设计。独立分发链接闭合不等于外部宿主已完成注入，部署状态仍需单独验证。
 
 当前证据：v3 本地全量离线回归 480 项通过，A/B/C 分别覆盖经营阅读、用量监控、宽表局部核对。该数字是一次冻结实现的记录，不是永久测试数量承诺。工具直接生成的 JSON 通过结构校验；模型自主设计稳定性与该新产物视觉验收仍未完成。
+
+维护源与派生副本见 [SOURCES.md](SOURCES.md)；按验证层运行测试见 [test-harness/README.md](test-harness/README.md)。

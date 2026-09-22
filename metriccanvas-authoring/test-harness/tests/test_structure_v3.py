@@ -7,7 +7,7 @@ from fastmcp import Client
 from test_section_presentation import plan, dependencies
 from test_authoring_turns import Turns
 from test_authoring_candidates import MemoryCandidates
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 
 
 def v3_plan():
@@ -201,7 +201,7 @@ class StructureV3Tests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(len(deps.dqe.calls),2)
 
     def test_scope_cleanup_preserves_authored_explanations_and_data(self):
-        from metriccanvas_authoring.domain.structure_scope import refresh_scope
+        from metriccanvas_authoring.pages.composition.structure_scope import refresh_scope
         authored={'id':'business-note','type':'text','props':{'body':'推演不代表实际完成额。'}}
         document={'dataSources':{'kept':{'query':'unchanged'}},'sections':[
             {'id':'header','components':[{'id':'structure-scope-page'}]},
@@ -213,7 +213,7 @@ class StructureV3Tests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(document['dataSources'],before)
 
     def test_capabilities_variants_are_supported_by_page_contract(self):
-        from metriccanvas_authoring.domain.structure_presentation import capabilities
+        from metriccanvas_authoring.pages.components.structure_presentation import capabilities
         from metriccanvas_authoring.runtime_assets import bundle_root
         page=json.loads((bundle_root()/'contract-snapshot/page/schema.json').read_text())
         # Validate with the actual generated page definitions, not a second enum list.
@@ -228,8 +228,8 @@ class StructureV3Tests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(any(set(metric['options']['variant'])<=set(e) for e in available))
 
     def test_creation_and_published_revision_contracts_do_not_drift(self):
-        from metriccanvas_authoring.domain.page_structure import V2_PLAN_SCHEMA,V3_PLAN_SCHEMA
-        from metriccanvas_authoring.application.structure_revision import REVISION_SCHEMA
+        from metriccanvas_authoring.pages.composition.page_structure import V2_PLAN_SCHEMA,V3_PLAN_SCHEMA
+        from metriccanvas_authoring.pages.editing.structure_revision import REVISION_SCHEMA
         for index,plan_schema in enumerate((V2_PLAN_SCHEMA,V3_PLAN_SCHEMA)):
             replacement=REVISION_SCHEMA['oneOf'][index]['properties']['structureRevision']['properties']['patches']['items']['oneOf'][0]['properties']['block']
             self.assertEqual(replacement,plan_schema['properties']['sections']['items']['properties']['blocks']['items'])

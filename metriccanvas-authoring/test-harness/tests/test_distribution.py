@@ -18,16 +18,16 @@ class DistributionContractTest(unittest.TestCase):
     def test_distribution_exposes_pinned_stdio_cli(self) -> None:
         project = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
 
-        self.assertEqual(project["project"]["version"], "0.2.0")
+        self.assertEqual(project["project"]["version"], "0.3.0")
         self.assertEqual(
             project["project"]["scripts"]["metriccanvas-authoring"],
-            "metriccanvas_authoring.server:main",
+            "metriccanvas_authoring.entrypoints.compat.server:main",
         )
         self.assertEqual(
             project["project"]["scripts"]["metriccanvas-content"],
-            "metriccanvas_authoring.content_server:main",
+            "metriccanvas_authoring.entrypoints.compat.content_server:main",
         )
-        self.assertEqual(project["project"]["scripts"]["metriccanvas-platform-content"], "metriccanvas_authoring.unified_content_server:main")
+        self.assertEqual(project["project"]["scripts"]["metriccanvas-platform-content"], "metriccanvas_authoring.platform_server:main")
         requirements = {
             line
             for line in (TOOL_ROOT / "requirements.in").read_text(
@@ -40,6 +40,8 @@ class DistributionContractTest(unittest.TestCase):
     def test_sdist_embeds_all_runtime_contracts_for_wheel_build(self) -> None:
         project = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
         expected = {
+            "metriccanvas_authoring/_bundle/contracts",
+            "metriccanvas_authoring/_bundle/contract-snapshot",
             "metriccanvas_authoring/_bundle/contracts/authored/source-description.schema.json",
             "metriccanvas_authoring/_bundle/contracts/authored/add-data-component.schema.json",
             "metriccanvas_authoring/_bundle/contracts/authored/authoring-candidate.schema.json",

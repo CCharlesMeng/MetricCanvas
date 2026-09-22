@@ -1,6 +1,7 @@
 ---
 status: accepted
 date: 2026-09-08
+note: #122–#125 已建立基线并完成主体解耦清理；新页面资产消费验证后退出旧适配器
 ---
 
 # 人工组件切换在浏览器完成，旧服务链隔离为可复现历史基线
@@ -42,4 +43,4 @@ date: 2026-09-08
 
 后续 `8ee924d` 已完成平台静态化与 #105 已确认目录/详情/新建/更新接口的浏览器消费验证。因此旧页面资产适配器、TypeScript 页面生命周期、Postgres 持久化及 compose 已退出主线；历史材料由固定基线保留。这不代表未确认的历史修订接口、真实内网部署或盘古集成已验收。
 
-用户另提出以本体论（概念设计）形式化表达项目架构，帮助约束新代码与交付范围。已确认第一版覆盖 #95 的架构主干，并作为 CI 契约；范围、模型与事实的区分，以及迁移开发/目标交付门禁已记录在 [ADR-0076](./0076-formal-architecture-contract-scope-and-enforcement.md)。具体模型草案见 [`architecture-formal-model.md`](../plan/architecture-formal-model.md)，维护来源、表达方式与行为验证深度继续讨论，本 ADR 不把任何候选技术视为已选定。
+用户另提出以本体论（概念设计）形式化表达项目架构，帮助约束新代码与交付范围。已确认第一版覆盖 #95 的架构主干，并作为 CI 契约；范围、模型与事实的区分，以及迁移开发/目标交付门禁已记录在 [ADR-0076](./0076-formal-architecture-contract-scope-and-enforcement.md)。具体模型草案见 [`architecture-formal-model.md`](../evidence/architecture-formal-model.md)，维护来源、表达方式与行为验证深度继续讨论，本 ADR 不把任何候选技术视为已选定。

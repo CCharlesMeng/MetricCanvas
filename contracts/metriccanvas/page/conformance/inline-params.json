@@ -3,20 +3,25 @@
     {
       "name": "unfilled-template",
       "input": {
-        "schemaVersion": "6.5",
+        "schemaVersion": "6.11",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension"
-          },
-          {
-            "id": "report-period",
-            "type": "timeRange",
-            "granularity": "month"
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域"
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "month"
+              }
+            ]
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -49,14 +54,7 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start"
-                          },
-                          "end": {
-                            "param": "report-period",
-                            "part": "end"
-                          }
+                          "param": "report-period"
                         }
                       }
                     }
@@ -101,20 +99,25 @@
       "expected": {
         "ok": true,
         "document": {
-          "schemaVersion": "6.5",
+          "schemaVersion": "6.11",
           "id": "inline-params-page",
           "layout": "report",
-          "params": [
-            {
-              "id": "region",
-              "type": "dimension"
-            },
-            {
-              "id": "report-period",
-              "type": "timeRange",
-              "granularity": "month"
+          "params": {
+            "query": {
+              "dimensions": [
+                {
+                  "id": "region",
+                  "dim_name": "区域"
+                }
+              ],
+              "times": [
+                {
+                  "id": "report-period",
+                  "granularity": "month"
+                }
+              ]
             }
-          ],
+          },
           "dataSources": {
             "tokens": {
               "fields": {
@@ -147,14 +150,7 @@
                           "time": {
                             "period": "month",
                             "is_aggregate": true,
-                            "start": {
-                              "param": "report-period",
-                              "part": "start"
-                            },
-                            "end": {
-                              "param": "report-period",
-                              "part": "end"
-                            }
+                            "param": "report-period"
                           }
                         }
                       }
@@ -202,26 +198,30 @@
     {
       "name": "filled-range",
       "input": {
-        "schemaVersion": "6.5",
+        "schemaVersion": "6.11",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension",
-            "value": "中国区"
-          },
-          {
-            "id": "report-period",
-            "type": "timeRange",
-            "granularity": "month",
-            "value": {
-              "start": "2026-01",
-              "end": "2026-06",
-              "granularity": "month"
-            }
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域",
+                "dim_value_list": [
+                  "中国区"
+                ]
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "month",
+                "start": "2026-01",
+                "end": "2026-06"
+              }
+            ]
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -254,14 +254,7 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start"
-                          },
-                          "end": {
-                            "param": "report-period",
-                            "part": "end"
-                          }
+                          "param": "report-period"
                         }
                       }
                     }
@@ -306,26 +299,30 @@
       "expected": {
         "ok": true,
         "document": {
-          "schemaVersion": "6.5",
+          "schemaVersion": "6.11",
           "id": "inline-params-page",
           "layout": "report",
-          "params": [
-            {
-              "id": "region",
-              "type": "dimension",
-              "value": "中国区"
-            },
-            {
-              "id": "report-period",
-              "type": "timeRange",
-              "granularity": "month",
-              "value": {
-                "start": "2026-01",
-                "end": "2026-06",
-                "granularity": "month"
-              }
+          "params": {
+            "query": {
+              "dimensions": [
+                {
+                  "id": "region",
+                  "dim_name": "区域",
+                  "dim_value_list": [
+                    "中国区"
+                  ]
+                }
+              ],
+              "times": [
+                {
+                  "id": "report-period",
+                  "granularity": "month",
+                  "start": "2026-01",
+                  "end": "2026-06"
+                }
+              ]
             }
-          ],
+          },
           "dataSources": {
             "tokens": {
               "fields": {
@@ -358,14 +355,7 @@
                           "time": {
                             "period": "month",
                             "is_aggregate": true,
-                            "start": {
-                              "param": "report-period",
-                              "part": "start"
-                            },
-                            "end": {
-                              "param": "report-period",
-                              "part": "end"
-                            }
+                            "param": "report-period"
                           }
                         }
                       }
@@ -416,17 +406,22 @@
         "schemaVersion": "6.4",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension"
-          },
-          {
-            "id": "report-period",
-            "type": "timeRange",
-            "granularity": "month"
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域"
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "month"
+              }
+            ]
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -459,14 +454,7 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start"
-                          },
-                          "end": {
-                            "param": "report-period",
-                            "part": "end"
-                          }
+                          "param": "report-period"
                         }
                       }
                     }
@@ -514,7 +502,7 @@
           {
             "type": "SCHEMA_ERROR",
             "path": "/schemaVersion",
-            "message": "不支持的文档格式版本 6.4:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.6，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
+            "message": "不支持的文档格式版本 6.4:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
           }
         ]
       }
@@ -522,21 +510,26 @@
     {
       "name": "optional-query-input",
       "input": {
-        "schemaVersion": "6.5",
+        "schemaVersion": "6.11",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension",
-            "required": false
-          },
-          {
-            "id": "report-period",
-            "type": "timeRange",
-            "granularity": "month"
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域",
+                "required": false
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "month"
+              }
+            ]
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -569,14 +562,7 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start"
-                          },
-                          "end": {
-                            "param": "report-period",
-                            "part": "end"
-                          }
+                          "param": "report-period"
                         }
                       }
                     }
@@ -624,7 +610,7 @@
           {
             "type": "SCHEMA_ERROR",
             "path": "/dataSources/tokens/source/query/body/dsl_list/0/filter/dims/0/dim_value_list",
-            "message": "维度原位引用必须引用必需的dimension参数"
+            "message": "原位维度引用必须使用必需的分组维度参数"
           }
         ]
       }
@@ -632,22 +618,26 @@
     {
       "name": "value-default-conflict",
       "input": {
-        "schemaVersion": "6.5",
+        "schemaVersion": "6.11",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension",
-            "value": "中国区",
-            "default": "全球"
-          },
-          {
-            "id": "report-period",
-            "type": "timeRange",
-            "granularity": "month"
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域",
+                "default": "全球"
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "month"
+              }
+            ]
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -680,14 +670,7 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start"
-                          },
-                          "end": {
-                            "param": "report-period",
-                            "part": "end"
-                          }
+                          "param": "report-period"
                         }
                       }
                     }
@@ -734,8 +717,18 @@
         "errors": [
           {
             "type": "SCHEMA_ERROR",
-            "path": "/params/0/value",
-            "message": "value 与 default 互斥"
+            "path": "/params",
+            "message": "must be array"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/params/query/dimensions/0/default",
+            "message": "存在未定义字段 default(拼写错误?)"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/params",
+            "message": "must match a schema in anyOf"
           }
         ]
       }
@@ -743,25 +736,29 @@
     {
       "name": "duplicate-values",
       "input": {
-        "schemaVersion": "6.5",
+        "schemaVersion": "6.11",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension",
-            "multiple": true,
-            "value": [
-              "中国区",
-              "中国区"
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域",
+                "dim_value_list": [
+                  "中国区",
+                  "中国区"
+                ]
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "month"
+              }
             ]
-          },
-          {
-            "id": "report-period",
-            "type": "timeRange",
-            "granularity": "month"
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -794,14 +791,7 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start"
-                          },
-                          "end": {
-                            "param": "report-period",
-                            "part": "end"
-                          }
+                          "param": "report-period"
                         }
                       }
                     }
@@ -848,7 +838,7 @@
         "errors": [
           {
             "type": "SCHEMA_ERROR",
-            "path": "/params/0/value",
+            "path": "/params/query/dimensions/0",
             "message": "实际值不符合参数类型 dimension"
           }
         ]
@@ -857,25 +847,27 @@
     {
       "name": "invalid-day",
       "input": {
-        "schemaVersion": "6.5",
+        "schemaVersion": "6.11",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension"
-          },
-          {
-            "id": "report-period",
-            "type": "timeRange",
-            "granularity": "date",
-            "value": {
-              "start": "2026-02-29",
-              "end": "2026-03-01",
-              "granularity": "date"
-            }
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域"
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "date",
+                "start": "2026-02-29",
+                "end": "2026-03-01"
+              }
+            ]
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -908,14 +900,7 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start"
-                          },
-                          "end": {
-                            "param": "report-period",
-                            "part": "end"
-                          }
+                          "param": "report-period"
                         }
                       }
                     }
@@ -963,11 +948,11 @@
           {
             "type": "SCHEMA_ERROR",
             "path": "/dataSources/tokens/source/query/body/dsl_list/0/filter/time",
-            "message": "时间引用精度与period不相容"
+            "message": "查询 period 与时间参数精度不兼容"
           },
           {
             "type": "SCHEMA_ERROR",
-            "path": "/params/1/value",
+            "path": "/params/query/times/0",
             "message": "实际值不符合参数类型 timeRange"
           }
         ]
@@ -976,25 +961,27 @@
     {
       "name": "reversed-range",
       "input": {
-        "schemaVersion": "6.5",
+        "schemaVersion": "6.11",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension"
-          },
-          {
-            "id": "report-period",
-            "type": "timeRange",
-            "granularity": "month",
-            "value": {
-              "start": "2026-06",
-              "end": "2026-01",
-              "granularity": "month"
-            }
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域"
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "month",
+                "start": "2026-06",
+                "end": "2026-01"
+              }
+            ]
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -1027,14 +1014,7 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start"
-                          },
-                          "end": {
-                            "param": "report-period",
-                            "part": "end"
-                          }
+                          "param": "report-period"
                         }
                       }
                     }
@@ -1081,7 +1061,7 @@
         "errors": [
           {
             "type": "SCHEMA_ERROR",
-            "path": "/params/1/value",
+            "path": "/params/query/times/0",
             "message": "实际值不符合参数类型 timeRange"
           }
         ]
@@ -1090,20 +1070,25 @@
     {
       "name": "uncontrolled-reference",
       "input": {
-        "schemaVersion": "6.5",
+        "schemaVersion": "6.11",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension"
-          },
-          {
-            "id": "report-period",
-            "type": "timeRange",
-            "granularity": "month"
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域"
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "month"
+              }
+            ]
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -1138,14 +1123,7 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start"
-                          },
-                          "end": {
-                            "param": "report-period",
-                            "part": "end"
-                          }
+                          "param": "report-period"
                         }
                       }
                     }
@@ -1193,7 +1171,7 @@
           {
             "type": "SCHEMA_ERROR",
             "path": "/dataSources/tokens/source/query/body/dsl_list/0/output_metrics/0",
-            "message": "此DQE位置不允许参数引用"
+            "message": "此查询位置不允许页面参数引用"
           }
         ]
       }
@@ -1201,20 +1179,25 @@
     {
       "name": "wrong-reference-key",
       "input": {
-        "schemaVersion": "6.5",
+        "schemaVersion": "6.11",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension"
-          },
-          {
-            "id": "report-period",
-            "type": "timeRange",
-            "granularity": "month"
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域"
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "month"
+              }
+            ]
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -1247,14 +1230,7 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start"
-                          },
-                          "end": {
-                            "param": "report-period",
-                            "part": "end"
-                          }
+                          "param": "report-period"
                         }
                       }
                     }
@@ -1302,7 +1278,12 @@
           {
             "type": "SCHEMA_ERROR",
             "path": "/dataSources/tokens/source/query/body/dsl_list/0/filter/dims/0/dim_value_list",
-            "message": "维度引用仅允许 {param:Id}"
+            "message": "原位维度引用必须使用必需的分组维度参数"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/tokens/source/query/body/dsl_list/0/filter/dims/0/dim_value_list",
+            "message": "维度参数 dim_name 必须与查询目标一致"
           }
         ]
       }
@@ -1310,20 +1291,25 @@
     {
       "name": "extra-reference-key",
       "input": {
-        "schemaVersion": "6.5",
+        "schemaVersion": "6.11",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension"
-          },
-          {
-            "id": "report-period",
-            "type": "timeRange",
-            "granularity": "month"
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域"
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "month"
+              }
+            ]
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -1357,14 +1343,7 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start"
-                          },
-                          "end": {
-                            "param": "report-period",
-                            "part": "end"
-                          }
+                          "param": "report-period"
                         }
                       }
                     }
@@ -1412,7 +1391,7 @@
           {
             "type": "SCHEMA_ERROR",
             "path": "/dataSources/tokens/source/query/body/dsl_list/0/filter/dims/0/dim_value_list",
-            "message": "维度引用仅允许 {param:Id}"
+            "message": "维度引用只能声明 param"
           }
         ]
       }
@@ -1420,20 +1399,25 @@
     {
       "name": "mixed-time-endpoints",
       "input": {
-        "schemaVersion": "6.5",
+        "schemaVersion": "6.11",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension"
-          },
-          {
-            "id": "report-period",
-            "type": "timeRange",
-            "granularity": "month"
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域"
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "month"
+              }
+            ]
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -1466,10 +1450,7 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start"
-                          },
+                          "param": "report-period",
                           "end": "2026-06"
                         }
                       }
@@ -1518,7 +1499,7 @@
           {
             "type": "SCHEMA_ERROR",
             "path": "/dataSources/tokens/source/query/body/dsl_list/0/filter/time",
-            "message": "时间原位引用必须成对使用同一参数、相同window和start/end"
+            "message": "时间引用不得与查询体起止并存"
           }
         ]
       }
@@ -1526,20 +1507,25 @@
     {
       "name": "mixed-binding-model",
       "input": {
-        "schemaVersion": "6.5",
+        "schemaVersion": "6.11",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension"
-          },
-          {
-            "id": "report-period",
-            "type": "timeRange",
-            "granularity": "month"
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域"
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "month"
+              }
+            ]
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -1572,14 +1558,7 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start"
-                          },
-                          "end": {
-                            "param": "report-period",
-                            "part": "end"
-                          }
+                          "param": "report-period"
                         }
                       }
                     }
@@ -1632,7 +1611,7 @@
         "errors": [
           {
             "type": "SCHEMA_ERROR",
-            "path": "/dataSources/tokens/source/query",
+            "path": "/dataSources/tokens/source/query/body",
             "message": "同一查询不得混用原位引用和paramBindings"
           }
         ]
@@ -1641,21 +1620,27 @@
     {
       "name": "anchor-window",
       "input": {
-        "schemaVersion": "6.5",
+        "schemaVersion": "6.11",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension"
-          },
-          {
-            "id": "report-period",
-            "type": "time",
-            "granularity": "month",
-            "value": "2026-03"
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域"
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "month",
+                "start": "2026-03",
+                "end": "2026-03"
+              }
+            ]
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -1688,23 +1673,11 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start",
-                            "window": {
-                              "kind": "lastN",
-                              "unit": "month",
-                              "n": 12
-                            }
-                          },
-                          "end": {
-                            "param": "report-period",
-                            "part": "end",
-                            "window": {
-                              "kind": "lastN",
-                              "unit": "month",
-                              "n": 12
-                            }
+                          "param": "report-period",
+                          "window": {
+                            "kind": "lastN",
+                            "unit": "month",
+                            "n": 12
                           }
                         }
                       }
@@ -1750,21 +1723,27 @@
       "expected": {
         "ok": true,
         "document": {
-          "schemaVersion": "6.5",
+          "schemaVersion": "6.11",
           "id": "inline-params-page",
           "layout": "report",
-          "params": [
-            {
-              "id": "region",
-              "type": "dimension"
-            },
-            {
-              "id": "report-period",
-              "type": "time",
-              "granularity": "month",
-              "value": "2026-03"
+          "params": {
+            "query": {
+              "dimensions": [
+                {
+                  "id": "region",
+                  "dim_name": "区域"
+                }
+              ],
+              "times": [
+                {
+                  "id": "report-period",
+                  "granularity": "month",
+                  "start": "2026-03",
+                  "end": "2026-03"
+                }
+              ]
             }
-          ],
+          },
           "dataSources": {
             "tokens": {
               "fields": {
@@ -1797,23 +1776,11 @@
                           "time": {
                             "period": "month",
                             "is_aggregate": true,
-                            "start": {
-                              "param": "report-period",
-                              "part": "start",
-                              "window": {
-                                "kind": "lastN",
-                                "unit": "month",
-                                "n": 12
-                              }
-                            },
-                            "end": {
-                              "param": "report-period",
-                              "part": "end",
-                              "window": {
-                                "kind": "lastN",
-                                "unit": "month",
-                                "n": 12
-                              }
+                            "param": "report-period",
+                            "window": {
+                              "kind": "lastN",
+                              "unit": "month",
+                              "n": 12
                             }
                           }
                         }
@@ -1862,21 +1829,27 @@
     {
       "name": "mismatched-windows",
       "input": {
-        "schemaVersion": "6.5",
+        "schemaVersion": "6.11",
         "id": "inline-params-page",
         "layout": "report",
-        "params": [
-          {
-            "id": "region",
-            "type": "dimension"
-          },
-          {
-            "id": "report-period",
-            "type": "time",
-            "granularity": "month",
-            "value": "2026-03"
+        "params": {
+          "query": {
+            "dimensions": [
+              {
+                "id": "region",
+                "dim_name": "区域"
+              }
+            ],
+            "times": [
+              {
+                "id": "report-period",
+                "granularity": "month",
+                "start": "2026-03",
+                "end": "2026-03"
+              }
+            ]
           }
-        ],
+        },
         "dataSources": {
           "tokens": {
             "fields": {
@@ -1909,14 +1882,11 @@
                         "time": {
                           "period": "month",
                           "is_aggregate": true,
-                          "start": {
-                            "param": "report-period",
-                            "part": "start",
-                            "window": {
-                              "kind": "lastN",
-                              "unit": "month",
-                              "n": 12
-                            }
+                          "param": "report-period",
+                          "window": {
+                            "kind": "lastN",
+                            "unit": "month",
+                            "n": 12
                           },
                           "end": {
                             "param": "report-period",
@@ -1974,7 +1944,12 @@
           {
             "type": "SCHEMA_ERROR",
             "path": "/dataSources/tokens/source/query/body/dsl_list/0/filter/time",
-            "message": "时间原位引用必须成对使用同一参数、相同window和start/end"
+            "message": "时间引用不得与查询体起止并存"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/tokens/source/query/body/dsl_list/0/filter/time/end",
+            "message": "此查询位置不允许页面参数引用"
           }
         ]
       }

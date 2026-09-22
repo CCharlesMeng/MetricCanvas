@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.5",
+  "schemaVersion": "6.11",
   "id": "map-page",
   "layout": "dashboard",
   "dataSources": {
@@ -79,7 +79,10 @@
           "filterBindings": {
             "area": {
               "target": "dimension",
-              "queryField": "code"
+              "levelQueryFields": {
+                "province": "code",
+                "city": "city_code"
+              }
             }
           }
         }

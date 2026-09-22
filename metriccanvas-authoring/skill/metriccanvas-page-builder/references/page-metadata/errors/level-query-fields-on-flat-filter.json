@@ -1,0 +1,33 @@
+{
+  "case": "level-query-fields-on-flat-filter",
+  "invariant": "filter-binding",
+  "expected": [
+    {
+      "type": "FILTER_BINDING_ERROR",
+      "message": "levelQueryFields 只能绑定层级维度筛选器:area",
+      "paths": [
+        "/dataSources/sales/source/query/filterBindings/area/levelQueryFields"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "sales": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "area": {
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "region_dept_code",
+                  "office": "rep_office_code"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/level-query-fields-on-flat-filter.json"
+}

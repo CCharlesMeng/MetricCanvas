@@ -10,8 +10,8 @@ from eval_evidence import injection_paths, sha, verify_hashes
 
 
 SURFACES = {
-    'legacy-content': ('metriccanvas_authoring.content_server', 'metriccanvas-content'),
-    'unified-content': ('metriccanvas_authoring.unified_content_server', 'metriccanvas-platform-content'),
+    'legacy-content': ('metriccanvas_authoring.entrypoints.compat.content_server', 'metriccanvas-content'),
+    'unified-content': ('metriccanvas_authoring.entrypoints.compat.unified_content_server', 'metriccanvas-platform-content'),
 }
 LEGACY_TOOLS = {'discover_data_context', 'compose_page', 'create_content_page', 'edit_page'}
 UNIFIED_TOOLS = LEGACY_TOOLS | {'read_page_context', 'extract_page_parameters', 'apply_page_parameter_selection', 'resolve_page_parameters'}

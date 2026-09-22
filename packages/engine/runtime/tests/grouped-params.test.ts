@@ -10,7 +10,7 @@ function parse(raw: unknown) {
   if (!result.ok) throw new Error(JSON.stringify(result.errors));
   return result.page;
 }
-it('多时间输入分别进入实际请求，保持各查询聚合设置并清除无执行凭据的旧行', async () => {
+it('区间原样用与基准点派生同页共存，窗口重合的查询去重，清除无执行凭据的旧行', async () => {
   const raw = document(), before = JSON.stringify(raw), page = parse(raw);
   const inputs = resolvePageParams('', page.params ?? []);
   expect(inputs.missing).toEqual([]);
@@ -22,27 +22,38 @@ it('多时间输入分别进入实际请求，保持各查询聚合设置并清�
   const requests: EffectiveQuery[] = [];
   const stop = orchestrate(loaded, {fetchData: async q => { requests.push(q); return {rows:[],totalCount:0}; }}, createFilterState()).subscribe(() => {});
   try {
-    await vi.waitFor(() => expect(requests).toHaveLength(2));
+    // 7 个数据源、5 个请求:to-date 与 legacy-to-date 在 2026-06 上与 current 同区间，被去重。
+    await vi.waitFor(() => expect(requests).toHaveLength(5));
     const filters = requests.map(effectiveDqeItem).map(item => item.filter);
-    expect(filters).toContainEqual(expect.objectContaining({time:{period:'month',is_aggregate:true,start:'2026-01',end:'2026-06'}}));
-    expect(filters).toContainEqual(expect.objectContaining({time:{period:'month',is_aggregate:false,start:'2025-01',end:'2025-06'}}));
+    for (const time of [
+      {period:'month',is_aggregate:true,start:'2026-01',end:'2026-06'},   // 区间原样用
+      {period:'month',is_aggregate:false,start:'2025-07',end:'2026-06'},  // lastN 12 个月
+      {period:'month',is_aggregate:true,start:'2026-01',end:'2026-12'},   // 所在整年
+      {period:'month',is_aggregate:false,start:'2025-01',end:'2025-12'},  // 上一整年
+      {period:'month',is_aggregate:false,start:'2026-06',end:'2026-06'}   // 月初至基准期
+    ]) expect(filters).toContainEqual(expect.objectContaining({time}));
     for (const filter of filters) expect(filter).toMatchObject({dims:[{dim_name:'region',dim_value_list:['中国地区部']}]});
     expect(JSON.stringify(requests)).not.toContain('"param"');
+    expect(JSON.stringify(requests)).not.toContain('"window"');
     expect(JSON.stringify(raw)).toBe(before);
   } finally { stop(); }
 });
 it('缺值模板阻止执行，URL只覆盖指定时间，非法时间不回退', () => {
   const raw = document();
-  for (const time of raw.params.times) { delete time.start; delete time.end; }
+  for (const time of raw.params.query.times) { delete time.start; delete time.end; }
   const page = parse(raw), declarations = page.params ?? [];
   const inputs = resolvePageParams('', declarations);
-  expect(inputs.missing).toEqual(['report-period','comparison-period']);
+  expect(inputs.missing).toEqual(['report-period','report-month']);
   expect(() => initializePageParams(page, inputs.values)).toThrow();
   const filled = parse(document());
-  const values = resolvePageParams(`report-period=${encodeURIComponent(JSON.stringify({start:'2027-01',end:'2027-06'}))}`, filled.params ?? []);
-  expect(values.values.get('comparison-period')).toEqual({start:'2025-01',end:'2025-06'});
+  const values = resolvePageParams('report-period=2027-01..2027-06', filled.params ?? []);
+  expect(values.values.get('report-month')).toEqual({start:'2026-06',end:'2026-06'});
   expect(values.values.get('report-period')).toEqual({start:'2027-01',end:'2027-06'});
-  for (const value of ['', '{}', '{"start":"2026-13","end":"2027-01"}', 'null']) {
+  // 基准点在 URL 里是一个裸月份,不是退化成 `2026-03..2026-03` 的区间。
+  const point = resolvePageParams('report-month=2026-03', filled.params ?? []);
+  expect(point.values.get('report-month')).toEqual({start:'2026-03',end:'2026-03'});
+  expect(pageParamSearch(point.values)).toContain('report-month=2026-03');
+  for (const value of ['', '2026-13..2027-01', '2027-06..2027-01', '2027-01..2027-03..2027-06', 'null']) {
     const bad = resolvePageParams(`report-period=${encodeURIComponent(value)}`, filled.params ?? []);
     expect(bad.missing).toEqual(['report-period']);
     expect(bad.values.has('report-period')).toBe(false);
@@ -60,7 +71,7 @@ it('导航可携带独立时间区间且返回同一实际值', () => {
 it('可信执行回执可覆盖两组时间且必须完整提供，快照消费不重查', async () => {
   const raw = document();
   const request: ExecutionRequest = {target:{kind:'draft',ref:{pageId:raw.id,revisionId:'r1',resourceId:'metadata'}},operationId:'grouped-execution',explicitInputs:{}};
-  const actual = {region:['上海地区部'], 'report-period':{start:'2027-01',end:'2027-06'}, 'comparison-period':{start:'2026-01',end:'2026-06'}};
+  const actual = {region:['上海地区部'], 'report-period':{start:'2027-01',end:'2027-06'}, 'report-month':{start:'2027-06',end:'2027-06'}};
   const response = {status:'success',target:request.target,operationId:request.operationId,executionId:'e1',conditionKey:'c1',document:raw,appliedInputs:actual,filterValues:{},dataSources:Object.fromEntries(Object.keys(raw.dataSources).map(id => [id,{status:'success',rows:[],totalCount:0,conditionKey:'c1'}]))};
   const bootstrap = prepareExecution(request, response);
   const parsed = parsePage(raw, {textValues:{values:bootstrap.params}});

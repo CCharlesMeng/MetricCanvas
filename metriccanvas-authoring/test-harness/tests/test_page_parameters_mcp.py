@@ -12,14 +12,15 @@ sys.path[:0] = [str(ROOT/'metriccanvas-authoring/tool'), str(ROOT/'metriccanvas-
 from test_authoring_turns import Turns
 from test_authoring_candidates import MemoryCandidates
 from test_unified_content_mcp import dependencies
-from metriccanvas_authoring.application.authoring_turns import AuthoringTurnGate, SCOPE_KEYS
-from metriccanvas_authoring.application.authoring_candidates import AuthoringCandidates
-from metriccanvas_authoring.application.content_ports import ContentBaseline, ContentBaselineError
-from metriccanvas_authoring.application.edit_page import document_sha256
-from metriccanvas_authoring.application.page_parameters import PageParameters, ParameterDependencies
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
-from metriccanvas_authoring.adapters.outbound.parameter_program import SubprocessParameterProgram
-from metriccanvas_authoring.adapters.outbound.sqlite_parameter_records import SqliteParameterRecords
+from metriccanvas_authoring.work.authoring_turns import AuthoringTurnGate, SCOPE_KEYS
+from metriccanvas_authoring.work.authoring_candidates import AuthoringCandidates
+from metriccanvas_authoring.pages.validation.grouped_params import declarations as _param_declarations
+from metriccanvas_authoring.work.content_ports import ContentBaseline, ContentBaselineError
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
+from metriccanvas_authoring.pages.parameters.page_parameters import PageParameters, ParameterDependencies
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.adapters.firstparty.parameter_program import SubprocessParameterProgram
+from metriccanvas_authoring.adapters.firstparty.sqlite_parameter_records import SqliteParameterRecords
 
 
 class VerifiedFixture:
@@ -81,10 +82,10 @@ class PageParametersMcpTest(unittest.IsolatedAsyncioTestCase):
             ref = output['modelSummary']['candidate_ref']
             template = output['artifactEnvelope']['artifact']['document']
             self.assertEqual(output['artifactEnvelope']['kind'], 'metriccanvas.parameter-template')
-            self.assertTrue(all('value' not in p and 'default' not in p for p in template['params']))
+            self.assertTrue(all('value' not in p and 'default' not in p for p in _param_declarations(template)))
             self.assertTrue(all('initial' not in d['source'] for d in template['dataSources'].values()))
             original = deepcopy(template)
-            values = {'region':'欧洲区', 'report-period':{'start':'2026-07','end':'2026-09','granularity':'month'}}
+            values = {'region':['欧洲区'], 'report-period':{'start':'2026-07','end':'2026-09','granularity':'month'}}
             result = (await client.call_tool('resolve_page_parameters', {'context_ref':'current-context',
                 'candidate_ref':ref, 'values':values})).structured_content
             self.assertTrue(result['ok'], result)

@@ -215,19 +215,17 @@ describe('v4 data source 与 binding 校验', () => {
     );
   });
 
-  it('查询分页数据源必须独占，且禁止排序与表头筛选', () => {
+  // 排序与表头筛选在查询分页下由上游执行（ADR-0086），只剩独占判定。
+  it('查询分页数据源必须独占，排序与表头筛选不再被拒绝', () => {
     const document: any = structuredClone(queryDashboard);
     document.sections[0].components[0].props.columns[0].sortable = true;
+    expect(validate(document)).toEqual([]);
+
     const duplicate = structuredClone(document.sections[0].components[0]);
     duplicate.id = 'sales-table-copy';
     document.sections[0].components.push(duplicate);
-
-    const errors = validate(document);
-    expect(errors).toEqual(
+    expect(validate(document)).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({
-          path: '/sections/0/components/0/props/columns/0/sortable'
-        }),
         expect.objectContaining({
           path: '/sections/0/components/0/data/main',
           message: expect.stringContaining('必须独占页面数据源')

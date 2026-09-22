@@ -51,4 +51,4 @@ pnpm --filter platform check
 S1_BASE_URL=http://localhost:5174 node apps/platform/tests/workbench/authoring-browser.mjs
 ```
 
-验收明细见 [T01 验收回执](plan/authoring-tickets-126/t01-evidence.md)。#127 交付独立开发边界与兼容替身演练；真实 SDK 事件、Java 精确草稿读取、身份、路由与真实上游升级由 #105–#108 继续跟踪。
+验收明细见 [T01 验收回执](archive/authoring-tickets-126/t01-evidence.md)。#127 交付独立开发边界与兼容替身演练；真实 SDK 事件、Java 精确草稿读取、身份、路由与真实上游升级由 #105–#108 继续跟踪。

@@ -1,0 +1,32 @@
+{
+  "case": "level-query-fields-missing-level",
+  "invariant": "filter-binding",
+  "expected": [
+    {
+      "type": "FILTER_BINDING_ERROR",
+      "message": "层级 office 缺少谓词字段;层级绑定必须逐级声明",
+      "paths": [
+        "/dataSources/sales/source/query/filterBindings/area/levelQueryFields"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "sales": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "area": {
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "region_dept_code"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/level-query-fields-missing-level.json"
+}

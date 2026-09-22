@@ -4,7 +4,7 @@ import {resolvePageParams} from '@metriccanvas/page';
 import {createParameterInstanceSession,type ParameterInstancePort,type ParameterInstanceScope} from '../../src/lib/workbench/parameter-instance';
 
 const template=JSON.parse(readFileSync('packages/page/fixtures/contract-valid/inline-params-page.json','utf8'));
-const result=resolvePageParams(template,{region:'欧洲区','report-period':{start:'2026-07',end:'2026-09',granularity:'month'}});
+const result=resolvePageParams(template,{region:['欧洲区'],'report-period':{start:'2026-07',end:'2026-09',granularity:'month'}});
 if(!result.ok)throw Error('fixture invalid');
 const document=result.document;
 const disposals:Array<()=>void>=[];

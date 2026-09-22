@@ -1,5 +1,7 @@
 ---
-status: superseded by ADR-0060
+status: superseded
+superseded-by: [0060]
+note: 仍描述当前待迁移实现
 ---
 
 # 平台采用独立 SvelteKit Node + PostgreSQL,统一运行时保持独立

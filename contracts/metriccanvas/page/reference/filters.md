@@ -2,7 +2,7 @@
 
 六类筛选为dimension、timeRange、timePoint、boolean、numberRange、search。声明描述输入能力，当前值由页内FilterState保存。URL只在初始化时读；重复维度键表示多值，不拆逗号。boolean的false是显式值，不能被默认true覆盖。
 
-维度display选择select、tabs或tree；层级维度显式声明层级和初始层，不能把层级初值当6.2 initialParam绑定。时间范围支持绝对from/to和受控相对时间；timePoint限定month/date粒度。numberRange允许单边界，两边空视为无条件；search为普通文本。
+维度display选择select、tabs或tree；层级维度显式声明层级和初始层；6.11起层级维度与timePoint筛选器也可用initialParam取页面参数作初值。时间范围支持绝对from/to和受控相对时间；timePoint限定month/date粒度。numberRange允许单边界，两边空视为无条件；search为普通文本。
 
 urlParams仅映射该类允许的value/from/to/level键，不能与本页其它参数或筛选输入冲突。候选值来自受控数据能力，业务维度值不是协议枚举。
 
@@ -11,7 +11,7 @@ urlParams仅映射该类允许的value/from/to/level键，不能与本页其它�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.6。结构真源为本册[schema.json](schema.json)，SHA256 `a421c583a35d98c6d01d1a47965f13984e4d6ec1aab62779b4d5ec78b7c8cf8f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `6b28ba0e717198c2963d957ea5c11e3177d05605f5bcc5e818f55f71e945e174`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -726,6 +726,16 @@ Schema位置：`#/definitions/timePointFilter/properties/default`。
 |---|---|---|---|---|
 | "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 作者声明的初始默认；不是运行时随状态变化重新应用的值。 |
 
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f696e697469616c506172616d"></a>
+
+### `@timePointFilter.initialParam`
+
+Schema位置：`#/definitions/timePointFilter/properties/initialParam`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 初值取自一个单点 times 参数；与 default 互斥，打开后仍可在页内改。 |
+
 <a id="schema-232f646566696e6974696f6e732f626f6f6c65616e46696c746572"></a>
 
 ### `@booleanFilter`
@@ -1090,16 +1100,16 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 
 ## 语义规则与反例（生成）
 
-- `filter-id-unique`：筛选器 id 唯一。反例：[duplicate-filter-id](errors/duplicate-filter-id.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `time-range-default-calendar`：timeRange 绝对默认值须为合法公历值、精度一致且 from 不晚于 to。反例：[time-range-from-format](errors/time-range-from-format.json)、[time-range-to-calendar](errors/time-range-to-calendar.json)、[time-range-datetime-without-precision](errors/time-range-datetime-without-precision.json)、[time-range-from-after-to](errors/time-range-from-after-to.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `relative-time-anchor`：结构化相对时间的 anchor 须为合法公历日期。反例：[relative-time-anchor-invalid](errors/relative-time-anchor-invalid.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `time-point-default`：timePoint 默认值符合其粒度的格式与日历。反例：[time-point-month-format](errors/time-point-month-format.json)、[time-point-month-range](errors/time-point-month-range.json)、[time-point-date-format](errors/time-point-date-format.json)、[time-point-date-calendar](errors/time-point-date-calendar.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `number-range-default`：numberRange 默认值至少有一端且 from 不大于 to。反例：[number-range-empty](errors/number-range-empty.json)、[number-range-inverted](errors/number-range-inverted.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `hierarchy-level-id-unique`：层级 id 在同一筛选器内唯一。反例：[duplicate-hierarchy-level-id](errors/duplicate-hierarchy-level-id.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `default-level-declared`：defaultLevel 只能用于声明了 hierarchy 的筛选器并引用已声明层级。反例：[default-level-without-hierarchy](errors/default-level-without-hierarchy.json)、[default-level-unknown](errors/default-level-unknown.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `hierarchy-picker-requires-hierarchy`：hierarchyPicker 只能用于声明了 hierarchy 的维度筛选器。反例：[hierarchy-picker-without-hierarchy](errors/hierarchy-picker-without-hierarchy.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `filter-depends-on`：级联只能依赖另一个已声明的 dimension 筛选器且不成环。反例：[depends-on-self](errors/depends-on-self.json)、[depends-on-undeclared](errors/depends-on-undeclared.json)、[depends-on-non-dimension](errors/depends-on-non-dimension.json)、[depends-on-cycle](errors/depends-on-cycle.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `hidden-hierarchy-picker-needs-map`：隐藏层级切换器时必须有地图通过 hierarchyFilter 承担下钻。反例：[hidden-hierarchy-picker-without-map](errors/hidden-hierarchy-picker-without-map.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
+- `filter-id-unique`：筛选器 id 唯一。反例：[duplicate-filter-id](errors/duplicate-filter-id.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `time-range-default-calendar`：timeRange 绝对默认值须为合法公历值、精度一致且 from 不晚于 to。反例：[time-range-from-format](errors/time-range-from-format.json)、[time-range-to-calendar](errors/time-range-to-calendar.json)、[time-range-datetime-without-precision](errors/time-range-datetime-without-precision.json)、[time-range-from-after-to](errors/time-range-from-after-to.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `relative-time-anchor`：结构化相对时间的 anchor 须为合法公历日期。反例：[relative-time-anchor-invalid](errors/relative-time-anchor-invalid.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `time-point-default`：timePoint 默认值符合其粒度的格式与日历。反例：[time-point-month-format](errors/time-point-month-format.json)、[time-point-month-range](errors/time-point-month-range.json)、[time-point-date-format](errors/time-point-date-format.json)、[time-point-date-calendar](errors/time-point-date-calendar.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `number-range-default`：numberRange 默认值至少有一端且 from 不大于 to。反例：[number-range-empty](errors/number-range-empty.json)、[number-range-inverted](errors/number-range-inverted.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `hierarchy-level-id-unique`：层级 id 在同一筛选器内唯一。反例：[duplicate-hierarchy-level-id](errors/duplicate-hierarchy-level-id.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `default-level-declared`：defaultLevel 只能用于声明了 hierarchy 的筛选器并引用已声明层级。反例：[default-level-without-hierarchy](errors/default-level-without-hierarchy.json)、[default-level-unknown](errors/default-level-unknown.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `hierarchy-picker-requires-hierarchy`：hierarchyPicker 只能用于声明了 hierarchy 的维度筛选器。反例：[hierarchy-picker-without-hierarchy](errors/hierarchy-picker-without-hierarchy.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `filter-depends-on`：级联只能依赖另一个已声明的 dimension 筛选器且不成环。反例：[depends-on-self](errors/depends-on-self.json)、[depends-on-undeclared](errors/depends-on-undeclared.json)、[depends-on-non-dimension](errors/depends-on-non-dimension.json)、[depends-on-cycle](errors/depends-on-cycle.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `hidden-hierarchy-picker-needs-map`：隐藏层级切换器时必须有地图通过 hierarchyFilter 承担下钻。反例：[hidden-hierarchy-picker-without-map](errors/hidden-hierarchy-picker-without-map.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 

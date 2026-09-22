@@ -124,6 +124,8 @@ export interface TimePointFilterDeclaration {
   granularity: 'month' | 'date';
   /** month 为 YYYY-MM,date 为 YYYY-MM-DD */
   default?: string;
+  /** 只在实例化时读取参数；与default互斥。引用的 times 参数必须是单点。 */
+  initialParam?: string;
 }
 
 export interface BooleanFilterDeclaration {

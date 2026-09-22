@@ -12,12 +12,12 @@ sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 sys.path.insert(0, str(BUNDLE_ROOT / "test-harness"))
 
 from adapters.fakes import FakeDataContextPort  # noqa: E402
-from metriccanvas_authoring.application.discover_data_context import (  # noqa: E402
+from metriccanvas_authoring.data.discover_data_context import (  # noqa: E402
     DiscoverDataContextCommand,
     DiscoverDataContextDependencies,
     create_discover_data_context,
 )
-from metriccanvas_authoring.domain.agent_core import (  # noqa: E402
+from metriccanvas_authoring.ask.rules import (  # noqa: E402
     guard_structural_response,
     plan_metric_gap_resolution,
 )

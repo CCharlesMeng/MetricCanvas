@@ -4,7 +4,7 @@ import { chromium, expect } from '../../../../packages/embed/node_modules/@playw
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 const root=fileURLToPath(new URL('../..',import.meta.url)).replace(/\/$/, '');
-const fixture=JSON.parse(readFileSync(new URL('../../../../docs/plan/authoring-tickets-126/t04-contract-examples.json',import.meta.url),'utf8')).cases.find(c=>c.id==='execute-success').steps[0];
+const fixture=JSON.parse(readFileSync(new URL('../../../../docs/archive/authoring-tickets-126/t04-contract-examples.json',import.meta.url),'utf8')).cases.find(c=>c.id==='execute-success').steps[0];
 const harness=`<script>import Preview from '/src/lib/RevisionPreview.svelte';let id=$state('r1');let shown=$state(true);export function change(next){id=next}export function remove(){shown=false}</script>{#if shown}<Preview pageId="t04-example" revisionId={id} readRevision={window.readRevision} executeRevision={window.executeRevision}/>{/if}`;
 const entry=`import {mount} from 'svelte';import Harness from '/__harness.svelte';import {prepareExecution} from '@metriccanvas/engine';import {normalizePageDocument} from '@metriccanvas/page';
 const fixture=${JSON.stringify(fixture)};

@@ -9,7 +9,7 @@
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.6。结构真源为本册[schema.json](../schema.json)，SHA256 `a421c583a35d98c6d01d1a47965f13984e4d6ec1aab62779b4d5ec78b7c8cf8f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.11。结构真源为本册[schema.json](../schema.json)，SHA256 `6b28ba0e717198c2963d957ea5c11e3177d05605f5bcc5e818f55f71e945e174`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -275,7 +275,7 @@ Schema位置：`#/definitions/rankingDetailCardComponent/properties/props/proper
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 标题内容绑定字段。 |
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 详情浮层标题取被点行的该字段；省略时用组件标题。 |
 
 <a id="schema-232f646566696e6974696f6e732f72616e6b696e6744657461696c43617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f64657461696c732f70726f706572746965732f76616c75654669656c64"></a>
 
@@ -350,8 +350,8 @@ Schema位置：`#/definitions/rankingDetailCardComponent/properties/props/proper
 
 ## 语义规则与反例（生成）
 
-- `ranking-detail-semantic-description`：语义 HTML 说明必须绑定 semanticHtml 类型的 detail 字段。反例：[ranking-semantic-description-not-detail](../errors/ranking-semantic-description-not-detail.json)、[ranking-semantic-description-record-list](../errors/ranking-semantic-description-record-list.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `ranking-detail-records`：结构化明细必须绑定 recordList 字段，项字段存在且角色相容。反例：[ranking-details-not-record-list](../errors/ranking-details-not-record-list.json)、[ranking-details-item-field-unknown](../errors/ranking-details-item-field-unknown.json)、[ranking-details-item-role-mismatch](../errors/ranking-details-item-role-mismatch.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
+- `ranking-detail-semantic-description`：语义 HTML 说明必须绑定 semanticHtml 类型的 detail 字段。反例：[ranking-semantic-description-not-detail](../errors/ranking-semantic-description-not-detail.json)、[ranking-semantic-description-record-list](../errors/ranking-semantic-description-record-list.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `ranking-detail-records`：结构化明细必须绑定 recordList 字段，项字段存在且角色相容。反例：[ranking-details-not-record-list](../errors/ranking-details-not-record-list.json)、[ranking-details-item-field-unknown](../errors/ranking-details-item-field-unknown.json)、[ranking-details-item-role-mismatch](../errors/ranking-details-item-role-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 

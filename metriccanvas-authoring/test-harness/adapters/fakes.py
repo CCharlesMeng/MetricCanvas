@@ -3,11 +3,8 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
-from metriccanvas_authoring.application.ports import (
-    DqeExecutionResult,
-    JsonObject,
-    SavedRevision,
-)
+from metriccanvas_authoring.assets.ports import SavedRevision, JsonObject
+from metriccanvas_authoring.data.execution import DqeExecutionResult
 
 
 class FakeDataContextPort:

@@ -1,6 +1,6 @@
 import unittest
 
-from metriccanvas_authoring.domain.structure_preflight import preflight
+from metriccanvas_authoring.pages.composition.structure_preflight import preflight
 
 
 class StructurePreflightTests(unittest.TestCase):

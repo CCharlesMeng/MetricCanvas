@@ -61,6 +61,18 @@ async function runtimeShellSnapshot(page: Page) {
   };
 }
 
+/**
+ * IOC 四张页面都是 query 数据源，要真网关才渲染得出来；内容服务同源提供
+ * DQE 端点。函数体在页面里求值，因此走 addInitScript 注入而不是闭包捕获。
+ */
+const INSTALL_IOC_GATEWAY = `window.iocGateway = function () {
+  return (window.__iocGateway ??= MetricCanvas.createDqeGateway());
+};`;
+
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(INSTALL_IOC_GATEWAY);
+});
+
 async function iocPageDocument(pageId: string) {
   return JSON.parse(await readFile(
     new URL(`../../../../pages/${pageId}.json`, import.meta.url),
@@ -192,8 +204,9 @@ test('四个 IOC 页面在 1980px 视口占满宿主且没有页面级横向溢�
   ];
   for (const pageId of pageIds) {
     const pageDocument = await iocPageDocument(pageId);
+    // IOC 清单已是 query 页面，要真网关才渲染得出来；内容服务同源提供 DQE 端点。
     await page.evaluate((pageDocument) => {
-      window.queryRuntime.update({ document: pageDocument });
+      window.queryRuntime.update({ document: pageDocument, dataGateway: iocGateway() });
     }, pageDocument);
 
     const host = page.locator('[data-metriccanvas-runtime]');
@@ -235,7 +248,7 @@ test('机会点清单使用单一标准页头并把密集筛选收纳到更多�
   ]) {
     await page.setViewportSize(viewport);
     await page.evaluate((document) => {
-      window.queryRuntime.update({ document });
+      window.queryRuntime.update({ document, dataGateway: iocGateway() });
     }, opportunityList);
 
     const host = page.locator('[data-metriccanvas-runtime]');
@@ -292,7 +305,7 @@ test('机会点清单使用单一标准页头并把密集筛选收纳到更多�
   await page.setViewportSize({ width: 1980, height: 1080 });
   const overview = await iocPageDocument('ioc-project-overview');
   await page.evaluate((document) => {
-    window.queryRuntime.update({ document });
+    window.queryRuntime.update({ document, dataGateway: iocGateway() });
   }, overview);
   const overviewToolbar = page.locator(
     '[data-metriccanvas-runtime] header[data-dashboard-toolbar]'
@@ -318,7 +331,10 @@ test('1980px 下 IOC 组合卡保持页面列轨与卡内 span 声明', async ({
 
   const captureTopOffsets = async (pageId: string, selectors: readonly string[]) => {
     const pageDocument = await iocPageDocument(pageId);
-    await page.evaluate((document) => window.queryRuntime.update({ document }), pageDocument);
+    await page.evaluate(
+      (document) => window.queryRuntime.update({ document, dataGateway: iocGateway() }),
+      pageDocument
+    );
     await expect(page.locator('[data-page-layout-form="dashboard"]')).toBeVisible();
     return page.evaluate((selectors) => {
       const runtime = document
@@ -368,7 +384,10 @@ test('Tab 活动面板提供直接组件布局盒且自身不保存页面派生�
   });
 
   const overviewDocument = await iocPageDocument('ioc-project-overview');
-  await page.evaluate((document) => window.queryRuntime.update({ document }), overviewDocument);
+  await page.evaluate(
+    (document) => window.queryRuntime.update({ document, dataGateway: iocGateway() }),
+    overviewDocument
+  );
   const compact = await page.evaluate(() => {
     const runtime = document
       .querySelector<HTMLElement>('[data-metriccanvas-runtime]')!
@@ -393,8 +412,9 @@ test('Tab 活动面板提供直接组件布局盒且自身不保存页面派生�
   const analysisDocument = await iocPageDocument('ioc-opportunity-analysis');
   await page.evaluate((pageDocument) => {
     document.querySelector<HTMLElement>('#dashboard')!.style.width = '900px';
-    window.queryRuntime.update({ document: pageDocument });
+    window.queryRuntime.update({ document: pageDocument, dataGateway: iocGateway() });
   }, analysisDocument);
+  await expect(page.locator('[data-component="opportunity-regions/opportunity-region-tabs"] .tab-panel tbody tr').first()).toBeVisible();
   const analysis = await page.evaluate(() => {
     const runtime = document
       .querySelector<HTMLElement>('[data-metriccanvas-runtime]')!
@@ -434,7 +454,7 @@ test('项目详情组件只按内容单元响应，不受外部视口宽度影�
     dashboard.style.width = '900px';
     dashboard.style.maxWidth = 'none';
     dashboard.style.margin = '0';
-    window.queryRuntime.update({ document: pageDocument });
+    window.queryRuntime.update({ document: pageDocument, dataGateway: iocGateway() });
   }, pageDocument);
 
   const host = page.locator('[data-metriccanvas-runtime]');
@@ -1363,7 +1383,7 @@ test('报告 AI 总结与指标卡共用摘要正文的浅紫描边样式', asyn
   await expect(positiveText).toHaveCSS('font-weight', '400');
   await expect(negativeText).toHaveCSS('font-weight', '400');
 
-  await expect(metricPanel).toHaveCSS('background-color', 'rgb(241, 244, 255)');
+  await expect(metricPanel).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await expect(metricPanel).toHaveCSS('border-color', 'rgb(212, 213, 255)');
   await expect(metricPanel).toHaveCSS('border-style', 'solid');
   await expect(metricPanel).toHaveCSS('border-width', '1px');
@@ -2085,13 +2105,13 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(overviewMetricPanels.first()).toHaveCSS('border-radius', '12px');
   await expect(overviewMetricPanels.first()).toHaveCSS(
     'background-color',
-    'rgb(241, 244, 255)'
+    'rgb(255, 255, 255)'
   );
   await expect(reportMetricPanels).toHaveCount(11);
   await expect.poll(async () => reportMetricPanels.evaluateAll((panels) => panels.every((panel) => {
     const style = getComputedStyle(panel);
     return (
-      style.backgroundColor === 'rgb(241, 244, 255)' &&
+      style.backgroundColor === 'rgb(255, 255, 255)' &&
       style.borderTopColor === 'rgb(212, 213, 255)' &&
       style.borderTopStyle === 'solid' &&
       style.borderTopWidth === '1px' &&

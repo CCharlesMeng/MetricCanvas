@@ -1,0 +1,29 @@
+{
+  "case": "hierarchy-filter-flat-query-field",
+  "invariant": "filter-binding",
+  "expected": [
+    {
+      "type": "FILTER_BINDING_ERROR",
+      "message": "层级维度筛选器必须用 levelQueryFields 逐级声明谓词字段:area",
+      "paths": [
+        "/dataSources/regions/source/query/filterBindings/area/queryField"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "regions": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "area": {
+                "queryField": "code"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/hierarchy-filter-flat-query-field.json"
+}

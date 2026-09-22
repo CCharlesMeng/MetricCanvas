@@ -10,11 +10,11 @@ from adapters.fakes import FakeDataContextPort, FakeDqeExecutionPort
 from test_page_editing import page
 from test_text_map_building import content_page
 from test_interaction_editing import interaction_page
-from metriccanvas_authoring.adapters.inbound.content_mcp import create_content_mcp_server
-from metriccanvas_authoring.application.compose_page import ComposePageDependencies
-from metriccanvas_authoring.application.content_ports import ContentBaseline, ContentBaselineError
-from metriccanvas_authoring.application.edit_page import document_sha256
-from metriccanvas_authoring.application.ports import DqeExecutionResult
+from metriccanvas_authoring.entrypoints.compat.content_mcp import create_content_mcp_server
+from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
+from metriccanvas_authoring.work.content_ports import ContentBaseline, ContentBaselineError
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
+from metriccanvas_authoring.data.execution import DqeExecutionResult
 
 
 class Baselines:

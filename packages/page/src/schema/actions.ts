@@ -23,8 +23,33 @@ export const navigateActionZ = z
   })
   .strict();
 
+/**
+ * 页内详情动作(ADR-0087):点击在页内打开一层浮层，展示被点那一行的若干
+ * 字段，不离开当前页。`fields` 必须非空——空的详情浮层是个什么都不说的
+ * 弹窗，比没有更糟。
+ */
+export const openDetailActionZ = z
+  .object({
+    on: z.literal('click'),
+    openDetail: z
+      .object({
+        surface: z.enum(['modal', 'drawer']),
+        /** 标题取被点行的某个字段；省略时用组件标题。 */
+        titleField: fieldReferenceZ.optional(),
+        fields: z
+          .array(
+            z
+              .object({ label: z.string().min(1), field: fieldReferenceZ })
+              .strict()
+          )
+          .min(1)
+      })
+      .strict()
+  })
+  .strict();
+
 export const componentActionZ = z
-  .union([writeFilterActionZ, navigateActionZ])
+  .union([writeFilterActionZ, navigateActionZ, openDetailActionZ])
   .meta({ id: 'componentAction' });
 
 export const actionsZ = z

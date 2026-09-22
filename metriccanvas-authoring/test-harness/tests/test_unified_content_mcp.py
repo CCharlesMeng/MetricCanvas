@@ -13,9 +13,9 @@ from test_authoring_candidates import MemoryCandidates
 from test_source_mapping import DescriptorFixture
 from test_page_editing import title
 from adapters.fakes import FakeDataContextPort, FakeDqeExecutionPort
-from metriccanvas_authoring.application.compose_page import ComposePageDependencies
-from metriccanvas_authoring.application.ports import DqeExecutionResult
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
+from metriccanvas_authoring.data.execution import DqeExecutionResult
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 
 
 def dependencies():
@@ -61,8 +61,8 @@ class UnifiedContentMcpTest(unittest.IsolatedAsyncioTestCase):
             self.assertFalse(output.structured_content['ok'])
 
     async def test_production_does_not_fallback_to_old_factory_or_tokens(self):
-        from metriccanvas_authoring.unified_content_server import create_production_unified_content_server
-        with patch('metriccanvas_authoring.content_server.create_production_content_server', side_effect=AssertionError('legacy bypass')), patch.dict(os.environ, {'METRICCANVAS_CONTENT_BASELINES_DIR': '/tmp/old-tokens'}):
+        from metriccanvas_authoring.entrypoints.compat.unified_content_server import create_production_unified_content_server
+        with patch('metriccanvas_authoring.entrypoints.compat.content_server.create_production_content_server', side_effect=AssertionError('legacy bypass')), patch.dict(os.environ, {'METRICCANVAS_CONTENT_BASELINES_DIR': '/tmp/old-tokens'}):
             async with Client(create_production_unified_content_server()) as client:
                 for ref in ('current-context', 'trusted-baseline-token'):
                     result = await client.call_tool('edit_page', {'context_ref': ref, 'request': {'operations': [title()]}})
@@ -95,8 +95,8 @@ class UnifiedContentMcpTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_real_line_chart_binding_projection_excludes_business_payload(self):
         import hashlib
-        from metriccanvas_authoring.application.content_ports import ContentBaseline
-        from metriccanvas_authoring.application.edit_page import document_sha256
+        from metriccanvas_authoring.work.content_ports import ContentBaseline
+        from metriccanvas_authoring.pages.editing.edit_page import document_sha256
         turns = Turns()
         document = json.loads((ROOT / 'contract-snapshot/page/conformance/valid/mixed-page.json').read_text())
         # Use the real governed chart configuration, with secret business evidence in sources.
@@ -128,7 +128,7 @@ class UnifiedContentMcpTest(unittest.IsolatedAsyncioTestCase):
             self.assertNotIn('业务保密', json.dumps(entries, ensure_ascii=False))
             self.assertNotIn('private-dqe-body', json.dumps(entries))
             self.assertNotIn('dataSources', json.dumps(entries))
-        from metriccanvas_authoring.application.authoring_turns import AuthoringTurnGate
+        from metriccanvas_authoring.work.authoring_turns import AuthoringTurnGate
         verified = await AuthoringTurnGate(turns).require('current-context')
         self.assertEqual(verified.baseline.document, json.loads(turns.document_json))
         self.assertEqual(verified.baseline.document['dataSources']['private-evidence']['source']['rows'][0],
@@ -212,7 +212,7 @@ class UnifiedContentMcpTest(unittest.IsolatedAsyncioTestCase):
                     self.assertEqual(result['modelSummary']['issues'][0]['code'], 'CANDIDATE_BINDING_MISMATCH')
                 turns.binding = deepcopy(binding); turns.scope = deepcopy(scope)
             # A valid newer baseline in this same turn is still a different root.
-            from metriccanvas_authoring.application.content_ports import ContentBaseline
+            from metriccanvas_authoring.work.content_ports import ContentBaseline
             turns.binding['baseRef']['revisionId'] = 'r2'
             turns.baseline = ContentBaseline(deepcopy(turns.binding['baseRef']), turns.baseline.document, turns.baseline.document_sha256)
             result = (await client.call_tool('read_page_context', {'context_ref': 'current-context', 'candidate_ref': ref})).structured_content

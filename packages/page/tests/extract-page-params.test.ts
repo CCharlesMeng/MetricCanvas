@@ -18,8 +18,9 @@ it('extracts identical trusted dimension identity/range, selects explicitly and 
   expect(extraction.candidates.every(c=>c.defaultSelected)).toBe(true);
   const selected=applyPageParamSelection(extraction,extraction.candidates.map(c=>c.id));
   expect(selected.ok).toBe(true);if(!selected.ok)throw Error(JSON.stringify(selected.issues));
-  if (!Array.isArray(selected.document.params)) throw Error('expected legacy array');
-  expect(selected.document.params.every(p=>p.value===undefined&&p.default===undefined)).toBe(true);
+  if (Array.isArray(selected.document.params)||!selected.document.params) throw Error('expected grouped parameters');
+  expect(selected.document.params.query?.dimensions?.every(p=>p.dim_value_list===undefined)).toBe(true);
+  expect(selected.document.params.query?.times?.every(p=>p.start===undefined&&p.end===undefined)).toBe(true);
   const result=resolvePageParams(selected.document,selected.originalValues);
   expect(result.ok).toBe(true);if(!result.ok)return;
   for(const id of Object.keys(p.dataSources))expect((result.resolvedPage.dataSources[id].source as any).query.body).toEqual(p.dataSources[id].source.query.body);
@@ -34,7 +35,7 @@ it('does not merge same-named dimensions without identity or different values; s
   const s=extractPageParams(single,{baseline:'revision-2'});if(!s.ok)throw Error('failed');
   expect(s.candidates.every(c=>!c.defaultSelected)).toBe(true);
 });
-it('preserves predicate order when a selected parameter initializes a filter before another fixed predicate',()=>{
+it('rejects extraction when a dimension is already owned by a filter',()=>{
   const p=concrete();p.filters=[{id:'region-filter',type:'dimension',dimension:'region',default:['中国区']}];
   p.dataSources.tokens.fields.region={type:'string',role:'dimension',queryField:'区域'};
   p.dataSources.tokens.source.query.body.dsl_list[0].output_dims=['区域'];
@@ -42,5 +43,5 @@ it('preserves predicate order when a selected parameter initializes a filter bef
   p.dataSources.tokens.source.query.body.dsl_list[0].filter.dims.push({dim_name:'模型',dim_value_list:['m1']});
   const e=extractPageParams(p,{baseline:'r1',dimensionIdentities:{tokens:{'区域':'region'},trend:{'区域':'region'}}});
   if(!e.ok)throw Error(JSON.stringify(e.issues));
-  expect(applyPageParamSelection(e,['region']).ok).toBe(true);
+  expect(applyPageParamSelection(e,['region']).ok).toBe(false);
 });

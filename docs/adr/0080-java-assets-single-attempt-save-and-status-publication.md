@@ -1,6 +1,7 @@
 ---
 status: accepted
 date: 2026-09-16
+note: 当前 Java 接入依据；本仓实现已落地，真实联调另验
 ---
 
 # 按外部 Java 契约单次保存，发布更新页面状态
@@ -13,4 +14,4 @@ date: 2026-09-16
 
 代价是未知写入需要人工核对，不能自动恢复发送；草稿历史只能展示服务返回的摘要，回退没有跨窗口基线检查，也不承诺一定追加新修订。草稿保存会更新当前资源状态，不承诺存在独立且不受编辑影响的已发布副本。旧未决记录不能因切换新模式而重放，兼容强保存实现不作为目标部署的回退。
 
-设计与分批实施见 `docs/plan/2026-09-16-java-page-assets-architecture.md`、`docs/plan/2026-09-16-java-page-assets-implementation.md`。决策被接受不表示外部 Relay 接线或真实服务联调已经验收。
+设计与分批实施见 `docs/archive/java-page-assets/2026-09-16-java-page-assets-architecture.md`、`docs/archive/java-page-assets/2026-09-16-java-page-assets-implementation.md`。决策被接受不表示外部 Relay 接线或真实服务联调已经验收。

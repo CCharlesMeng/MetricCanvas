@@ -10,7 +10,11 @@ import { walkDocumentComponents } from './component-walk';
  */
 
 export const PAGE_SCHEMA_MAJOR = 6;
-const CURRENT_MINOR = 6;
+/**
+ * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
+ * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
+ */
+const CURRENT_MINOR = 11;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -32,6 +36,33 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'initial-param-beyond-flat-dimensions': {
+    minor: 11, description: '时间点筛选器与层级维度筛选器的参数初值',
+    usedAt: (document) => filterPaths(document, f =>
+      has(f, 'initialParam') && (f.type === 'timePoint' || Array.isArray(f.hierarchy))
+    ).map((path) => `${path}/initialParam`)
+  },
+  'open-detail-action': {
+    minor: 10, description: '组件点击在页内打开详情浮层',
+    usedAt: (document) => componentPaths(document, (component) =>
+      Array.isArray(props(component)?.actions) &&
+      (props(component)!.actions as unknown[]).some((a) => has(record(a), 'openDetail'))
+    ).map((path) => `${path}/props/actions`)
+  },
+  'filter-binding-non-dimension-targets': {
+    minor: 9, description: 'timePoint / boolean / numberRange 筛选器的查询绑定目标',
+    usedAt: (document) => dataSourcePaths(document, d =>
+      Object.values(record(record(record(d.source)?.query)?.filterBindings) ?? {}).some(b =>
+        ['timePoint', 'boolean', 'numberRange'].includes(String(record(b)?.target))
+      )).map(p => `${p}/source/query/filterBindings`)
+  },
+  'filter-binding-level-query-fields': {
+    minor: 7, description: '层级维度筛选绑定逐级声明谓词字段',
+    usedAt: (document) => dataSourcePaths(document, d =>
+      Object.values(record(record(record(d.source)?.query)?.filterBindings) ?? {}).some(b =>
+        has(record(b), 'levelQueryFields')
+      )).map(p => `${p}/source/query/filterBindings`)
+  },
   'grouped-params': {
     minor: 6, description: '分组参数、多个独立时间区间与查询原位引用',
     usedAt: (document) => record(record(document)?.params) ? ['/params'] : []
@@ -52,10 +83,17 @@ export const pageCapabilities = {
   },
   'named-to-date-windows': {
     minor: 4, description: '具名年初/月初至报告基准期窗口',
-    usedAt: (document) => dataSourcePaths(document, d =>
-      Object.values(record(record(record(d.source)?.query)?.paramBindings) ?? {}).some(b =>
-        ['yearToDate', 'monthToDate'].includes(String(record(record(b)?.window)?.kind))
-      )).map(p => `${p}/source/query/paramBindings`)
+    // 窗口有两个落点:旧参数绑定,和 6.6 的查询时间引用。只探一处会让
+    // 后者按 minor 推算出偏低的版本下限。
+    usedAt: (document) => [
+      ...dataSourcePaths(document, d =>
+        Object.values(record(record(record(d.source)?.query)?.paramBindings) ?? {}).some(b =>
+          ['yearToDate', 'monthToDate'].includes(String(record(record(b)?.window)?.kind))
+        )).map(p => `${p}/source/query/paramBindings`),
+      ...dataSourcePaths(document, d =>
+        ['yearToDate', 'monthToDate'].includes(String(record(queryTimeReference(d)?.window)?.kind))
+      ).map(p => `${p}/source/query/body/dsl_list/0/filter/time/window`)
+    ]
   },
   'time-params': {
     minor: 3, description: '确定性日期/月参数与查询时间窗口绑定',
@@ -558,6 +596,14 @@ function nonEmptyArray(value: unknown): boolean {
 
 function props(component: Json): Json | undefined {
   return record(component.props);
+}
+
+/** 6.6 起时间引用连同窗口写在查询体里；未用引用形状时为 undefined。 */
+function queryTimeReference(dataSource: Json): Json | undefined {
+  const body = record(record(record(dataSource.source)?.query)?.body);
+  const first = Array.isArray(body?.dsl_list) ? record(body.dsl_list[0]) : undefined;
+  const time = record(record(first?.filter)?.time);
+  return typeof time?.param === 'string' ? time : undefined;
 }
 
 function dataSourcePaths(

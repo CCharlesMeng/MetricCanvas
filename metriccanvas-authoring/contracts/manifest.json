@@ -1,13 +1,17 @@
 {
-  "authoringContractVersion": "0.2.0",
+  "authoringContractVersion": "0.3.0",
   "files": [
     {
+      "file": "authored/platform-v2-protocol.md",
+      "sha256": "27f39278860389bcf90f29e75f052541849b03a469f135c6066d8a0c7fa435e8"
+    },
+    {
       "file": "authored/publication-contract.ts",
-      "sha256": "7e9adacb4ef424cf1f47600d0bebf7c039c06f639a5fddfebc49e0979da686f1"
+      "sha256": "afda0a41e3d8035056473ed8d4f7eb5a11403da9c872a1dd597f081cf8901bbd"
     },
     {
       "file": "authored/publication-conformance.json",
-      "sha256": "cfefc9688999e4a9f754b0d51483ea3d9c902773907bbafc881d84d292a4c67b"
+      "sha256": "e2383775351e953c4d58744459ea785f6be615507e3bf95e2c25a78236a5bef0"
     },
     {
       "file": "authored/authoring-turn.schema.json",
@@ -131,7 +135,7 @@
     },
     {
       "file": "exported/build-page-conformance.json",
-      "sha256": "b479d16e58107fa3f37227715c613e96d4a5a90a64c82d59d6b1a577973b9c4a"
+      "sha256": "439bdc6a17d146b85b40400d81f574acf1c962e33b032a7368066a34c1fde3fb"
     }
   ]
 }

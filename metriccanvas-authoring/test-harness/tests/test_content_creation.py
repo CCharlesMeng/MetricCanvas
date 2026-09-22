@@ -4,10 +4,10 @@ from copy import deepcopy
 from pathlib import Path
 from fastmcp import Client
 from test_text_map_building import content_page, recipe
-from metriccanvas_authoring.application.content_ports import ContentBaseline, ContentBaselineError
-from metriccanvas_authoring.application.create_content_page import create_content_page
-from metriccanvas_authoring.application.edit_page import document_sha256
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.work.content_ports import ContentBaseline, ContentBaselineError
+from metriccanvas_authoring.pages.composition.create_content_page import create_content_page
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 
 ROOT = Path(__file__).resolve().parents[2]
 

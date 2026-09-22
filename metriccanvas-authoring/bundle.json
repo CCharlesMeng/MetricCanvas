@@ -1,5 +1,5 @@
 {
-  "bundleVersion": "0.2.0",
+  "bundleVersion": "0.3.0",
   "status": "local-core-verified-external-validation-blocked",
   "skill": {
     "entrypoint": "skill/metriccanvas-page-builder/SKILL.md"
@@ -32,8 +32,13 @@
   "toolServices": {
     "metriccanvas-platform-content": {
       "command": "metriccanvas-platform-content",
-      "module": "metriccanvas_authoring.unified_content_server",
-      "contextContract": "authoring-turn/1.0"
+      "module": "metriccanvas_authoring.platform_server",
+      "contextContract": "authoring-turn/1.0",
+      "platformProtocolVersion": "2.0"
     }
+  },
+  "compatibility": {
+    "platformV1Command": "metriccanvas-platform-content-v1",
+    "skill": "skill-compat/platform-authoring-v1/SKILL.md"
   }
 }

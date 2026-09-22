@@ -133,11 +133,21 @@ function parameterTargets(document:Record<string,any>,id:string): Array<{dataSou
     if(binding)targets.push({dataSourceId,queryField:binding.queryField});
     const filter=source?.type==='query'?source.query?.body?.dsl_list?.[0]?.filter:undefined;
     for(const dim of filter?.dims??[])if(dim.dim_value_list?.param===id)targets.push({dataSourceId,queryField:dim.dim_name});
-    if(filter?.time?.start?.param===id)targets.push({dataSourceId,queryField:'time'});
+    if(filter?.time?.param===id)targets.push({dataSourceId,queryField:'time'});
   }
   return targets;
 }
 const sortedTargets=(targets:Array<{dataSourceId:string;queryField:string}>)=>targets.map(canonical).sort();
+
+function declarations(document: Record<string,any>): any[] {
+  const params=document.params??[];
+  if(Array.isArray(params))return params;
+  return [
+    ...(params.query?.dimensions??[]).map((p:any)=>({id:p.id,type:'dimension',multiple:true,required:p.required??true,...(p.dim_value_list===undefined?{}:{value:p.dim_value_list})})),
+    ...(params.query?.times??[]).map((p:any)=>({id:p.id,type:'timeRange',granularity:p.granularity,required:p.required??true,...(p.start===undefined?{}:{value:{start:p.start,end:p.end}})})),
+    ...(params.display??[]).map((p:any)=>({...p,required:p.required??true}))
+  ];
+}
 
 /** Structural/relational checks only. This cannot authenticate a source, review or extraction. */
 export function validateCandidateRelations(value:Candidate,context:CandidateContext): ContractIssue[] {
@@ -146,17 +156,17 @@ export function validateCandidateRelations(value:Candidate,context:CandidateCont
   const document=value.document as Record<string,any>;
   if(!context.validatePage(document))return issue('/document','PAGE_INVALID');
   if(document.id!==value.ref.source.pageId)fail('/ref/source/pageId');
-  const params=new Map<string,any>((document.params??[]).map((param:any)=>[param.id,param]));
+  const params=new Map<string,any>(declarations(document).map((param:any)=>[param.id,param]));
   const inline=[...params.values()].some(p=>p.type==='timeRange'||own(p,'value'))||Object.values(document.dataSources??{}).some((ds:any)=>{
     const filter=ds.source?.query?.body?.dsl_list?.[0]?.filter;
-    return filter?.time?.start?.param!==undefined||filter?.dims?.some((d:any)=>d.dim_value_list?.param!==undefined);
+    return filter?.time?.param!==undefined||filter?.dims?.some((d:any)=>d.dim_value_list?.param!==undefined);
   });
   const dimensions=new Map([...params].filter(([,param])=>param.type==='dimension'||inline&&['time','timeRange'].includes(param.type)));
   if(inline&&(value.retainDimensionValues||Object.values(document.dataSources??{}).some((ds:any)=>ds.source.type==='query'&&own(ds.source,'initial'))))fail('/document');
   const summaries=new Map<string,Value<typeof parameter>>();
   const source=context.source;
   if(source && (!same(source.ref,value.ref.source)||source.document.id!==source.ref.pageId||!context.validatePage(source.document)))fail('/ref/source','SOURCE_MISMATCH');
-  const sourceParams=new Map<string,any>((source?.document.params??[]).map((param:any)=>[param.id,param]));
+  const sourceParams=new Map<string,any>(declarations(source?.document??{}).map((param:any)=>[param.id,param]));
   for(const [index,entry] of value.parameterSummary.entries()) {
     const p=`/parameterSummary/${index}`;
     if(summaries.has(entry.parameterId))fail(`${p}/parameterId`);

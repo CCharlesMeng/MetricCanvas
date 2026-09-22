@@ -13,20 +13,18 @@ import httpx
 BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
-from metriccanvas_authoring.adapters.outbound.data_context_http import (  # noqa: E402
+from metriccanvas_authoring.adapters.firstparty.data_context_http import (  # noqa: E402
     DataContextProjection,
     LabDataContextHttpPort,
 )
-from metriccanvas_authoring.application.discover_data_context import (  # noqa: E402
+from metriccanvas_authoring.data.discover_data_context import (  # noqa: E402
     DiscoverDataContextCommand,
     DiscoverDataContextDependencies,
     create_discover_data_context,
 )
-from metriccanvas_authoring.application.ports import (  # noqa: E402
-    DataContextError,
-    ServiceIdentity,
-)
-from metriccanvas_authoring.domain.data_context import parse_data_context  # noqa: E402
+from metriccanvas_authoring.adapters.service_identity import ServiceIdentity  # noqa: E402
+from metriccanvas_authoring.data.ports import DataContextError  # noqa: E402
+from metriccanvas_authoring.data.data_context import parse_data_context  # noqa: E402
 
 
 class StaticIdentity:

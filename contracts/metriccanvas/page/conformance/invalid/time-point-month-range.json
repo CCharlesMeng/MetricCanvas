@@ -2,7 +2,7 @@
   "case": "time-point-month-range",
   "invariant": "time-point-default",
   "input": {
-    "schemaVersion": "6.5",
+    "schemaVersion": "6.11",
     "layout": "report",
     "id": "filters-page",
     "meta": {
@@ -93,7 +93,10 @@
             "filterBindings": {
               "region": {
                 "target": "dimension",
-                "queryField": "region"
+                "levelQueryFields": {
+                  "region-level": "region",
+                  "city-level": "city"
+                }
               },
               "period": {
                 "target": "time"

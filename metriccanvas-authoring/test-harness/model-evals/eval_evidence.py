@@ -169,7 +169,7 @@ def score(case, folder, review=None):
     if unified:
         try:
             from run_trusted_local import admit_candidate
-            from metriccanvas_authoring.application.authoring_turns import SCOPE_KEYS
+            from metriccanvas_authoring.work.authoring_turns import SCOPE_KEYS
             admitted={}
             for index,turn in enumerate(turns,1):
                 state=json.loads((folder/f'trusted-turn-{index}.json').read_text());states.append(state)

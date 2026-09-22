@@ -1,0 +1,21 @@
+{
+  "case": "time-point-initial-param-and-default",
+  "invariant": "filter-binding",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "参数初始化与筛选default互斥，默认来源只能声明一次",
+      "paths": [
+        "/filters/0/initialParam"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "initialParam": "report-month"
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/time-point-initial-param-and-default.json"
+}
