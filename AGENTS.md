@@ -33,3 +33,7 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 ### Domain docs
 
 单上下文布局:根目录 `CONTEXT.md` + `docs/adr/`。详见 `docs/agents/domain.md`。
+
+### Skill 对接 DS 模型验收
+
+新增或调整 Skill，并需要对接或复验 DS 真实模型时，按 `docs/agents/skill-ds-model-acceptance.md` 分层验收无模型预检、确定性主流程、真实模型、页面产物、浏览器与分发自洽性，并分别报告结论。
