@@ -1,0 +1,35 @@
+$ tsc --noEmit -p tools/package-build && tsc --noEmit -p tests/tsconfig.json && pnpm -r check
+Scope: 9 of 10 workspace projects
+packages/page check$ tsc --noEmit -p . && tsc --noEmit -p tsconfig.test.json
+tools/design-facts check$ tsc --noEmit -p . && tsc --noEmit -p tsconfig.test.json
+tools/dqe-sim check$ tsc --noEmit -p . && tsc --noEmit -p tsconfig.test.json
+tools/design-facts check: Done
+tools/dqe-sim check: Done
+packages/page check: Done
+packages/engine check$ svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json
+packages/engine check: Loading svelte-check in workspace: /Users/moon/Documents/Code/公司项目/DataDashboard/packages/engine
+packages/engine check: Getting Svelte diagnostics...
+packages/engine check: svelte-check found 0 errors and 0 warnings
+packages/engine check: Done
+packages/metric-canvas check$ svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json
+packages/embed check$ svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json
+packages/application-runtime check$ tsc --noEmit -p .
+packages/application-runtime check: Done
+packages/metric-canvas check: Loading svelte-check in workspace: /Users/moon/Documents/Code/公司项目/DataDashboard/packages/metric-canvas
+packages/metric-canvas check: Getting Svelte diagnostics...
+packages/metric-canvas check: svelte-check found 0 errors and 0 warnings
+packages/embed check: Loading svelte-check in workspace: /Users/moon/Documents/Code/公司项目/DataDashboard/packages/embed
+packages/embed check: Getting Svelte diagnostics...
+packages/embed check: svelte-check found 0 errors and 0 warnings
+packages/metric-canvas check: Done
+packages/embed check: Done
+apps/playground check$ svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json
+apps/platform check$ svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json
+apps/playground check: Loading svelte-check in workspace: /Users/moon/Documents/Code/公司项目/DataDashboard/apps/playground
+apps/playground check: Getting Svelte diagnostics...
+apps/playground check: svelte-check found 0 errors and 0 warnings
+apps/platform check: Loading svelte-check in workspace: /Users/moon/Documents/Code/公司项目/DataDashboard/apps/platform
+apps/platform check: Getting Svelte diagnostics...
+apps/platform check: svelte-check found 0 errors and 0 warnings
+apps/playground check: Done
+apps/platform check: Done

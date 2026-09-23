@@ -5,6 +5,8 @@ its own tools and failure behaviour. They take adapters from the same
 environment selection as the target surface; none of them is a fallback for
 it, and the target surface never assembles from here.
 """
+import os
+
 from metriccanvas_authoring.entrypoints.compat.content_mcp import create_content_mcp_server
 from metriccanvas_authoring.entrypoints.compat.fastmcp import create_mcp_server
 from metriccanvas_authoring.entrypoints.compat.lifecycle_mcp import create_lifecycle_mcp_server
@@ -12,7 +14,6 @@ from metriccanvas_authoring.adapters.firstparty.publish_unavailable import (
     UnavailableHumanConfirmations,
     UnavailablePublicationService,
 )
-from metriccanvas_authoring.ask.build_page import BuildPageDependencies
 from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
 from metriccanvas_authoring.assets.publish_ports import PublicationDependencies
 from metriccanvas_authoring.bootstrap import environment
@@ -26,15 +27,11 @@ def compose_page_dependencies() -> ComposePageDependencies:
 
 
 def create_production_server():
-    """Ask/Explore surface: discovery, build_page and compose_page."""
-    return create_mcp_server(
-        BuildPageDependencies(
-            data_context=environment.configure_data_context(),
-            dqe=environment.configure_dqe(),
-            page_assets=environment.configure_page_assets(),
-        ),
-        tool_surface=environment.configure_tool_surface(),
-    )
+    """Ordinary Ask/Explore produces temporary artifacts and has no save capability."""
+    selected = os.environ.get('METRICCANVAS_TOOL_SURFACE', '').strip()
+    if selected not in {'', 'relay'}:
+        raise RuntimeError('METRICCANVAS_TOOL_SURFACE: legacy save surface retired; use relay or omit')
+    return create_mcp_server(compose_page_dependencies())
 
 
 def create_production_content_server():

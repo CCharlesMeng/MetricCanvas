@@ -73,13 +73,8 @@ delivery_files=(
   metriccanvas-authoring/test-harness/test-layers.json
   metriccanvas-authoring/test-harness/tests/test_harness_inventory.py
   metriccanvas-authoring/tool/metriccanvas_authoring/data/metric_relations.py
-  metriccanvas-authoring/tool/metriccanvas_authoring/data/structure_query_cache.py
   metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/section_presentation.py
   metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/structure_presentation.py
-  metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/structure_diagnostics.py
-  metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/structure_preflight.py
-  metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/structure_scope.py
-  metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/structure_revision.py
   metriccanvas-authoring/tool/metriccanvas_authoring/pages/parameters/__init__.py
   metriccanvas-authoring/tool/metriccanvas_authoring/pages/parameters/page_parameters.py
   metriccanvas-authoring/tool/metriccanvas_authoring/pages/parameters/parameter_preparation.py

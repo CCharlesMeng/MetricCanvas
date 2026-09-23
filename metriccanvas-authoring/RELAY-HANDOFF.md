@@ -2,6 +2,10 @@
 
 Bundle 0.3.0 的目标入口是 `metriccanvas_authoring.platform_server.create_platform_server`，生产由 Relay 注册的 MCP stdio server 受控启动。这里的 CLI 只表示进程启动方式，不是模型可调用的通用 shell，也不是第二条创作流程。参数与各提供方 Interface 见[平台协议](contracts/authored/platform-v2-protocol.md)。生产不注册历史候选入口，也不在同一轮失败后切换旧流程。
 
+普通问数的 metriccanvas-authoring 已移除 build_page 及旧 Java 强保存链，默认即为只返回临时产物的双工具面。旧显式 METRICCANVAS_TOOL_SURFACE=compatibility 会拒绝启动，需移除该配置并将消费者切到 compose_page；不能以新默认行为假装兼容旧 savedRevision 回执。
+
+平台查询如需展示同比/环比，应注入 ComposePageDependencies.metric_relations。其 resolve 接口接收本轮 binding、数据上下文版本和业务域；现行 QueryResults 验证并按执行期间/字段/对象过滤后持久化。模型只看到受限关系证据，完整关系随对应 resultRef 供装配与编辑核验。未接此能力时，普通取数仍可执行，但需要关系证明的指标卡不能伪造关系生成。
+
 ## 接入顺序
 
 1. 将用户问题、页面/选中目标随同一次请求交给 Agent。工具执行时从可信宿主取得 current_turns；真实身份、页、基线和 plan confirmation 不由模型自报，不要求工作台先独立调用 MCP。

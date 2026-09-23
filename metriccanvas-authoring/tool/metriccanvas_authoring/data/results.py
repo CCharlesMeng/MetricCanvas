@@ -6,6 +6,7 @@ import json
 from jsonschema import Draft202012Validator
 from metriccanvas_authoring.data.query import create_query_data
 from metriccanvas_authoring.data.executable_units import build_query_source
+from metriccanvas_authoring.data.metric_relations import load_relations, query_relations, relation_evidence
 from metriccanvas_authoring.runtime_assets import bundle_root
 
 # The authored plan owns the governed request schema; data does not import page composition.
@@ -79,6 +80,11 @@ class QueryResults:
                         source=build_query_source(result.units[0], execution), rows=[dict(row) for row in execution.rows],
                         returnedCount=len(execution.rows), totalCount=execution.total_count,
                         capturedAt=execution.captured_at, sourceDescriptions=list(result.source_descriptions))
+                    async with asyncio.timeout(await self.state.remaining(prepared)):
+                        relations, status = await load_relations(self.dependencies.metric_relations,
+                            dict(prepared.binding), version, item['businessDomain'])
+                    await current()
+                    claimed.update(relations=query_relations(relations, item, claimed['source']), relationStatus=status)
                 else:
                     claimed.update(status='failed', issues=[{'code': i.code, 'path': i.path} for i in result.issues])
                 await self.state.store.compare_and_swap('query', ref, 1, claimed)
@@ -99,11 +105,18 @@ class QueryResults:
         def size(): return len(json.dumps(payload, ensure_ascii=False, allow_nan=False).encode())
         while size() > self.state.limits.evidence_bytes:
             rows = [r for r in payload['results'] if r.get('rows')]
-            require(bool(rows), 'MODEL_EVIDENCE_LIMIT')
+            if not rows:
+                related = [r for r in payload['results'] if r.get('relations')]
+                require(bool(related), 'MODEL_EVIDENCE_LIMIT')
+                item = max(related, key=lambda r: len(r['relations']))
+                item['relations'].pop()
+                item['relationCoverage'].update(shownCount=len(item['relations']), truncated=True)
+                continue
             item = max(rows, key=lambda r: len(r['rows']))
             item['rows'].pop()
             item['coverage']['shownCount'] = len(item['rows'])
             item['coverage']['truncated'] = True
+            item['coverage']['complete'] = False
 
     def evidence(self, record, source_id=None):
         result = {'resultRef': record['resultRef'], 'dataSourceId': source_id or record['request']['dataSourceId'],
@@ -122,6 +135,10 @@ class QueryResults:
                               'truncated': shown < returned or total is not None and returned < total,
                               'complete': total is not None and shown == returned == total,
                               'basis': 'returned rows; no ranking or aggregation inferred'}
+        entries = relation_evidence(record.get('relations', []), allowed)
+        result['relations'] = entries[:20]
+        result['relationCoverage'] = {'status': record.get('relationStatus', 'unknown'),
+            'shownCount': len(result['relations']), 'totalCount': len(entries), 'truncated': len(entries) > 20}
         result['capturedAt'] = record['capturedAt']
         return result
 

@@ -10,9 +10,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import cast
 
-from metriccanvas_authoring.entrypoints.compat.fastmcp import ToolSurface
 from metriccanvas_authoring.adapters.relay.content_baselines import FileContentBaselines
 from metriccanvas_authoring.adapters.firstparty.data_context_http import (
     APP_CODE_ENV,
@@ -31,10 +29,6 @@ from metriccanvas_authoring.adapters.firstparty.dqe_http import (
     DqeHttpExecutionPort,
 )
 from metriccanvas_authoring.adapters.relay.env_identity import EnvIdentityPort
-from metriccanvas_authoring.adapters.firstparty.java_page_assets import (
-    PAGE_ASSETS_BASE_URL_ENV,
-    JavaPageAssetPort,
-)
 from metriccanvas_authoring.adapters.firstparty.lifecycle_http import KnownLifecycleHttp
 from metriccanvas_authoring.adapters.firstparty.dataset_metadata_http import (
     JavaDatasetMetadataProvider, DATASET_DETAIL_BASE_URL_ENV, DATASET_IDS_ENV,
@@ -43,15 +37,14 @@ from metriccanvas_authoring.adapters.relay.lifecycle_spool import (
     FileLifecyclePrograms,
     InjectedLifecycleIdentity,
 )
-from metriccanvas_authoring.assets.ports import JsonObject, PageAssetPort, SavedRevision
 from metriccanvas_authoring.data.ports import (
+    JsonObject,
     DataContextError,
     DataContextPort,
     DqeExecutionPort,
 )
 from metriccanvas_authoring.data.execution import DqeExecutionError, DqeExecutionResult
 
-TOOL_SURFACE_ENV = "METRICCANVAS_TOOL_SURFACE"
 CONTENT_BASELINES_DIRECTORY_ENV = "METRICCANVAS_CONTENT_BASELINES_DIR"
 CONTENT_SUMMARY_CONFIG_ENV = "METRICCANVAS_CONTENT_AI_SUMMARY_CONFIG"
 LIFECYCLE_COLLECTION_URL_ENV = "METRICCANVAS_LIFECYCLE_COLLECTION_URL"
@@ -75,13 +68,6 @@ class _UnconfiguredDqeExecutionPort:
         raise DqeExecutionError("DQE_CONFIG_ERROR", self._message)
 
 
-class _UnconfiguredPageAssetPort:
-    async def save_revision(self, command: JsonObject) -> SavedRevision:
-        raise RuntimeError(
-            f"Java Page Asset adapter is not configured; set {PAGE_ASSETS_BASE_URL_ENV}"
-        )
-
-
 def unconfigured_data_context(reason: str) -> DataContextPort:
     """A governed-metadata port that states why it is unavailable when called."""
     return _UnconfiguredDataContextPort(reason)
@@ -90,13 +76,6 @@ def unconfigured_data_context(reason: str) -> DataContextPort:
 def unconfigured_dqe(reason: str) -> DqeExecutionPort:
     """An execution port that states why it is unavailable when called."""
     return _UnconfiguredDqeExecutionPort(reason)
-
-
-def configure_page_assets() -> PageAssetPort:
-    base_url = (os.environ.get(PAGE_ASSETS_BASE_URL_ENV) or "").strip()
-    if not base_url:
-        return _UnconfiguredPageAssetPort()
-    return JavaPageAssetPort(base_url, EnvIdentityPort())
 
 
 def configure_data_context(*, identities=None) -> DataContextPort:
@@ -163,15 +142,6 @@ def configure_dqe() -> DqeExecutionPort:
         EnvIdentityPort(),
         forbidden_hint=os.environ.get(DQE_FORBIDDEN_HINT_ENV),
     )
-
-
-def configure_tool_surface() -> ToolSurface:
-    value = (os.environ.get(TOOL_SURFACE_ENV) or "compatibility").strip()
-    if value not in {"compatibility", "relay"}:
-        raise RuntimeError(
-            f"{TOOL_SURFACE_ENV} must be 'compatibility' or 'relay', got {value!r}"
-        )
-    return cast(ToolSurface, value)
 
 
 def configure_content_baselines() -> FileContentBaselines:

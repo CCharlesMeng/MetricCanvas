@@ -7,7 +7,7 @@ Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../
 ## 入口与业务范围
 
 - `metriccanvas-platform-content` → `platform_server.create_platform_server`：读配置、发现、独立查询、创建、编辑，另保留 Relay 预览工具。compose/edit 内部保存平台草稿。
-- `metriccanvas-authoring` → `server`：普通问数/探索，临时页面态不自动保存；两工具 Skill 保持原协议。
+- `metriccanvas-authoring` → `server`：普通问数/探索，默认只提供发现与临时页面装配；旧 build_page 保存面已退役，显式 compatibility 配置拒绝启动。
 
 目标工具面固定九项：`read_page_context`、`discover_data_context`、`query_data`、`compose_page`、`edit_page`、`page_metadata_emit_preview`、`extract_page_parameters`、`apply_page_parameter_selection`、`resolve_page_parameters`，另有 resource `metriccanvas://bundle-info`。请求体不另写模型，直接以 `WithJsonSchema` 投影领域侧的 `QUERY_SCHEMA`/`COMPOSE_SCHEMA`/`EDIT_RESULT_SCHEMA`；工具面消费契约，不拥有契约。返回恒为 `{ok, modelSummary, artifactEnvelope}`，模型只读 `modelSummary`，程序产物在内容修改或参数模板/实例准备时产出 `artifactEnvelope`；异常在此收成 `rejected`/`unavailable` 闭集，实现细节不外泄。
 
@@ -23,7 +23,7 @@ Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../
 |---|---|
 | `data/executable_units.py` | 取数单元派生、结果字段契约、DQE 请求体与查询源投影；不选组件、不排布局 |
 | `data/query.py` | 共享查询派生、执行、源描述映射与字段核对；不构造页面 |
-| `data/results.py` | 计划/证据授权、持久结果引用、失败去重、受限证据、作用域及版本检查 |
+| `data/results.py` | 计划/证据授权、持久结果引用、可信指标关系、失败去重、受限证据、作用域及版本检查 |
 | `data/semantic_catalog.py` | 相关 Lab 指标精简投影、calculate_conf 识别、缺失/冲突与精确详情身份；不输出 SQL |
 | `pages/referenced.py` | 消费结果引用后的章节装配与局部新增组件；不执行 DQE |
 | `pages/editing/operation_batch.py` | 同步/异步共用的批次、依赖、回滚和 partial/unchanged 规则 |
@@ -41,7 +41,7 @@ Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../
 | `bootstrap/platform.py` | 目标组合根，选择显式注入能力；无需旧候选存储或强保存能力 |
 | `bootstrap/compatibility.py` | 旧入口的装配，与目标入口共用同一份适配器选择；不是 v2 的回退 |
 
-依赖单向：`data` 不 import `pages.composition.page_building`，取数单元模型与查询源投影归 `data`，`pages` 消费它装配页面；两侧共同的构造失败类型在包根 `build_issues.py`，与 `canonical.py`、`runtime_assets.py`、`bundle_info.py` 同层。章节和新增组件不再生成临时整页再拆取。旧新装配调用共享查询内核；统一兼容入口也直接调用 `pages/composition/compose_content.py`，不创建 MCP Server 调自己的工具。纯规则不依赖 HTTP、MCP 或 SQLite。
+依赖单向：`data` 不 import `pages.composition.page_building`，取数单元模型与查询源投影归 `data`，`pages` 消费它装配页面；两侧共同的构造失败类型在包根 `build_issues.py`，与 `canonical.py`、`runtime_assets.py`、`bundle_info.py` 同层。章节和新增组件不再生成临时整页再拆取。普通问数与平台查询共享查询内核；内容兼容入口直接调用 `pages/composition/compose_content.py`，不创建 MCP Server 调自己的工具。旧 unified_composition、结构查询缓存和结构修订编排已退役，组件/章节/页面结构纯规则继续共享。纯规则不依赖 HTTP、MCP 或 SQLite。
 
 ## 状态与交付
 

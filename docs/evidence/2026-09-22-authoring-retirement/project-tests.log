@@ -1,0 +1,37 @@
+$ pnpm --filter platform --filter playground exec svelte-kit sync && vitest run
+
+ RUN  v4.1.11 /Users/moon/Documents/Code/公司项目/DataDashboard
+
+ ❯ apps/platform/tests/workbench/platform-shell-and-composer.test.ts (6 tests | 1 failed) 6ms
+     × 分析会话轨在所有工作台断点保持 480px 宽 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/platform/tests/workbench/platform-shell-and-composer.test.ts > Platform 样式 token 边界 > 分析会话轨在所有工作台断点保持 480px 宽
+AssertionError: expected [] to deeply equal [ '480px' ]
+
+- Expected
++ Received
+
+- [
+-   "480px",
+- ]
++ []
+
+ ❯ apps/platform/tests/workbench/platform-shell-and-composer.test.ts:41:30
+     39|     const breakpointWidths = [...workbenchSource.matchAll(/--analysis-…
+     40|       .map((match) => match[1].trim());
+     41|     expect(breakpointWidths).toEqual(['480px']);
+       |                              ^
+     42|   });
+     43|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 166 passed (167)
+      Tests  1 failed | 1509 passed (1510)
+   Start at  23:48:48
+   Duration  30.39s (transform 7.38s, setup 0ms, import 56.70s, tests 50.25s, environment 8ms)
+
+[ELIFECYCLE] Test failed. See above for more details.

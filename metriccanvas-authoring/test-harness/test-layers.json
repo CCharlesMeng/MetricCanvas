@@ -15,7 +15,6 @@
       "tests/test_platform_layout_policy.py",
       "tests/test_section_layout.py",
       "tests/test_source_mapping.py",
-      "tests/test_structure_preflight.py",
       "tests/test_text_map_building.py"
     ],
     "adapters": [
@@ -23,7 +22,6 @@
       "tests/test_data_context_http.py",
       "tests/test_dataset_metadata_http.py",
       "tests/test_dqe_http.py",
-      "tests/test_java_page_assets.py",
       "tests/test_lifecycle_http.py",
       "tests/test_ports.py",
       "tests/test_server_config.py"
@@ -34,7 +32,7 @@
     "delivery": [
       "tests/test_agent_contracts.py",
       "tests/test_authoring_turns.py",
-      "tests/test_build_page.py",
+      "tests/test_page_building_conformance.py",
       "tests/test_bundle_info.py",
       "tests/test_bundle_skills.py",
       "tests/test_compose_page.py",
@@ -59,7 +57,8 @@
       "tests/test_semantic_catalog.py",
       "tests/test_skill_contract.py",
       "tests/test_stdio.py",
-      "tests/test_structure_current.py"
+      "tests/test_structure_current.py",
+      "tests/test_result_relations.py"
     ]
   }
 }

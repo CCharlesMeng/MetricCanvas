@@ -1,0 +1,21 @@
+======================================================================
+FAIL: test_public_query_restart_compose_edit_preserve_change_bindings (test_result_relations.ResultRelationsTest.test_public_query_restart_compose_edit_preserve_change_bindings)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/moon/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_result_relations.py", line 48, in test_public_query_restart_compose_edit_preserve_change_bindings
+    self.assertEqual(response['modelSummary']['saveStatus'], 'saved', response)
+AssertionError: 'not_requested' != 'saved'
+- not_requested
++ saved
+ : {'ok': False, 'modelSummary': {'status': 'failed', 'operations': [{'id': 'total', 'status': 'failed', 'issues': [{'code': 'STRUCTURE_CHANGE_RELATION_UNVERIFIED', 'path': ''}], 'adjustments': []}, {'id': 'core', 'status': 'failed', 'issues': [{'code': 'STRUCTURE_CHANGE_RELATION_UNVERIFIED', 'path': ''}], 'adjustments': []}, {'id': 'communication', 'status': 'failed', 'issues': [{'code': 'STRUCTURE_CHANGE_RELATION_UNVERIFIED', 'path': ''}], 'adjustments': []}], 'issues': [{'code': 'COMPOSE_RESULT_INVALID', 'path': ''}], 'saveStatus': 'not_requested', 'workVersion': 0}, 'artifactEnvelope': None}
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.111s
+
+FAILED (failures=1)

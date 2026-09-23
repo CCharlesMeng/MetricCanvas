@@ -39,3 +39,32 @@ async def load_relations(provider, scope, version, domain):
         return deepcopy(entries), 'known'
     except Exception:
         return [], 'unavailable'
+
+
+def query_relations(entries, request, source):
+    """Keep only relations for this executed source, period and returned objects."""
+    fields = source['fields']
+    names = {field.get('queryField', key): field for key, field in fields.items()}
+    period = {key: request['time'][key] for key in ('start', 'end', 'granularity')}
+    rows = source['source'].get('initial', {}).get('rows', [])
+    return [deepcopy(item) for item in entries
+            if item['time'] == period
+            and all(names.get(item[key], {}).get('role') == 'measure' for key in ('primaryField', 'changeField'))
+            and (not item.get('match') or names.get(item['match']['field'], {}).get('role') == 'dimension'
+                 and any(row.get(item['match']['field']) == item['match']['equals'] for row in rows))]
+
+
+def relation_evidence(entries, fields):
+    """Use the same public field IDs as query evidence; never disclose provider JSON."""
+    ids = {field.get('queryField', key): key for key, field in fields.items()}
+    result = []
+    for entry in entries:
+        if not all(entry[key] in ids for key in ('primaryField', 'changeField')):
+            continue
+        item = deepcopy(entry)
+        for key in ('primaryField', 'changeField'): item[key] = ids[item[key]]
+        if item.get('match'):
+            if item['match']['field'] not in ids: continue
+            item['match']['field'] = ids[item['match']['field']]
+        result.append(item)
+    return result

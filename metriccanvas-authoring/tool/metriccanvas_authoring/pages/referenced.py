@@ -62,7 +62,9 @@ def compose(prepared, request, records):
         used = []
         for block in section['blocks']:
             try:
-                component = block_component(block, sources, section['pattern'])
+                record = records.get(block.get('source'))
+                component = block_component(block, sources, section['pattern'],
+                    relations=record.get('relations', ()) if record else ())
                 trial = deepcopy(document)
                 trial['dataSources'].update(sources)
                 trial['sections'].append({**target, 'components': target['components'] + [component]})
@@ -103,7 +105,7 @@ async def edit(baseline, request, resolve, current, summary_enabled=False):
                 document['dataSources'][source_id] = source
                 operation = {k: v for k, v in op.items() if k != 'resultRef'}
                 operation['type'] = 'add_source_component'
-                candidate = edit_section(document, operation)
+                candidate = edit_section(document, operation, relations=record.get('relations', ()))
                 target = next(section for section in candidate['sections'] if section['id'] == op['sectionId'])
                 target['components'].append({'id': 'result-scope-' + op['block']['id'], 'type': 'text', 'layout': {'span': 12},
                     'props': {'body': '数据口径：' + scope_note(record['request'])}})

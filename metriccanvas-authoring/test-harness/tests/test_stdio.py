@@ -39,7 +39,7 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
             tools = await client.list_tools()
             self.assertEqual(
                 {tool.name for tool in tools},
-                {"discover_data_context", "build_page"},
+                {"discover_data_context", "compose_page"},
             )
             wire_tools = {
                 tool.name: tool.model_dump(by_alias=True, exclude_none=True)
@@ -97,7 +97,7 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
                 set(ambiguity_schema["required"]),
                 {"matchedTerm", "candidates"},
             )
-            build_spec_schema = wire_tools["build_page"]["inputSchema"][
+            build_spec_schema = wire_tools["compose_page"]["inputSchema"][
                 "properties"
             ]["spec"]
             authored_spec = json.loads(
@@ -119,16 +119,15 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
             )
             self.assertNotIn('"$ref"', json.dumps(build_spec_schema))
             self.assertEqual(
-                set(wire_tools["build_page"]["outputSchema"]["required"]),
+                set(wire_tools["compose_page"]["outputSchema"]["required"]),
                 {
                     "ok",
                     "completedStages",
-                    "savedRevision",
-                    "summary",
+                    "artifactEnvelope",
                     "issues",
                 },
             )
-            for tool_name in ("discover_data_context", "build_page"):
+            for tool_name in ("discover_data_context", "compose_page"):
                 issue_schema = wire_tools[tool_name]["outputSchema"][
                     "properties"
                 ]["issues"]["items"]
@@ -408,15 +407,13 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
         from adapters.fakes import (  # noqa: PLC0415
             FakeDataContextPort,
             FakeDqeExecutionPort,
-            FakePageAssetPort,
-        )
+                )
         from metriccanvas_authoring.entrypoints.compat.fastmcp import (  # noqa: PLC0415
             create_mcp_server,
         )
-        from metriccanvas_authoring.ask.build_page import (  # noqa: PLC0415
-            BuildPageDependencies,
+        from metriccanvas_authoring.pages.composition.compose_page import (  # noqa: PLC0415
+            ComposePageDependencies,
         )
-        from metriccanvas_authoring.assets.ports import SavedRevision  # noqa: PLC0415
 
         class DqeFailure(Exception):
             def __init__(self, code: str) -> None:
@@ -430,16 +427,12 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
             with self.subTest(code=code):
                 dqe = FakeDqeExecutionPort(error=DqeFailure(code))
                 server = create_mcp_server(
-                    BuildPageDependencies(
+                    ComposePageDependencies(
                         data_context=FakeDataContextPort(
                             fixture("data-context.json")
                         ),
                         dqe=dqe,
-                        page_assets=FakePageAssetPort(
-                            SavedRevision("unused", "unused", 1)
-                        ),
                     ),
-                    tool_surface="relay",
                 )
                 async with Client(server) as client:
                     composed = await client.call_tool(
@@ -525,40 +518,24 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
             )
 
             build = await client.call_tool(
-                "build_page",
+                "compose_page",
                 {
                     "page_id": "tokens-by-region",
-                    "page_id_confirmed": True,
                     "spec": fixture("page-build-spec.json"),
                 },
             )
-            self.assertEqual(
-                build.structured_content,
-                {
-                    "ok": True,
-                    "completedStages": [
-                        "discovery",
-                        "generation",
-                        "execution",
-                        "presentation",
-                        "save",
-                    ],
-                    "savedRevision": {
-                        "pageId": "tokens-by-region",
-                        "revisionId": "revision-1",
-                        "revisionNumber": 1,
-                    },
-                    "summary": {"unitCount": 1},
-                    "issues": [],
-                },
-            )
+            self.assertTrue(build.structured_content['ok'])
+            self.assertEqual(build.structured_content['completedStages'], ['discovery', 'generation', 'execution', 'presentation'])
+            document = build.structured_content['artifactEnvelope']['artifact']['document']
+            self.assertEqual(document['id'], 'tokens-by-region')
+            self.assertNotIn('savedRevision', build.structured_content)
 
     async def test_build_failure_reports_completed_stages_without_mcp_error(self) -> None:
         from fastmcp import Client
 
         async with Client(HARNESS_SERVER) as client:
             build = await client.call_tool(
-                "build_page",
+                "compose_page",
                 {
                     "page_id": "invalid",
                     "spec": {
@@ -572,8 +549,7 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
             self.assertFalse(build.is_error)
             self.assertFalse(build.structured_content["ok"])
             self.assertEqual(build.structured_content["completedStages"], [])
-            self.assertIsNone(build.structured_content["savedRevision"])
-            self.assertEqual(build.structured_content["summary"], {"unitCount": 0})
+            self.assertIsNone(build.structured_content["artifactEnvelope"])
             self.assertEqual(
                 [
                     (issue["code"], issue["stage"])

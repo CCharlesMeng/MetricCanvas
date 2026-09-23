@@ -54,3 +54,9 @@ Relay replaces them through its actual integration. Plan confirmation is not pub
 ## Evidence boundary
 
 Local tests and fixture model runs validate this consumer contract. Real Relay injection/replacement, production Lab identity/detail mapping and Java response compatibility require the deployment-owned implementations and cannot be certified by local fakes.
+
+## Query relation evidence
+
+Optional `ComposePageDependencies.metric_relations` resolves trusted metadata/user-recorded relations for the current binding, dataContextVersion and businessDomain. QueryResults freezes only relations matching the executed fields, period/granularity and returned object scope. Public evidence projects relation fields to query field IDs, exposes at most 20 items with relationCoverage, and applies the same byte budget. Composition and add_result_component use only the referenced stored relations; missing authority rejects the component. No relation provider is reloaded during rendering, save or preview.
+
+The old unified composition/structureRevision pipeline and add_data_component request contract are retired. Ordinary Ask/Explore has only discovery and save-free compose; the old build_page/Java strong-save path cannot be selected by environment configuration.

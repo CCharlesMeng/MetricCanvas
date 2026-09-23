@@ -1,0 +1,84 @@
+RUN  v4.1.11 /Users/moon/Documents/Code/公司项目/DataDashboard
+
+ ❯ tests/authoring-export-isolation.test.ts (16 tests | 2 failed) 21153ms
+     × 无旧链时可运行 1214ms
+     × 本地模型评估产物不影响交付锁 1014ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 无旧链时可运行
+AssertionError: /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-ay4azG/tools/scripts/export-authoring-contracts.ts:683
+    throw new Error(`authoring contract export drifted:\n${drift.join('\n')}`);
+          ^
+
+Error: authoring contract export drifted:
+metriccanvas-authoring/bundle.lock.json: stale
+    at assertCurrent (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-ay4azG/tools/scripts/export-authoring-contracts.ts:683:11)
+    at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-ay4azG/tools/scripts/export-authoring-contracts.ts:752:16)
+
+Node.js v24.11.1
+: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to be '' // Object.is equality
+
+- Expected
++ Received
+
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-ay4azG/tools/scripts/export-authoring-contracts.ts:683
++     throw new Error(`authoring contract export drifted:\n${drift.join('\n')}`);
++           ^
++
++ Error: authoring contract export drifted:
++ metriccanvas-authoring/bundle.lock.json: stale
++     at assertCurrent (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-ay4azG/tools/scripts/export-authoring-contracts.ts:683:11)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-ay4azG/tools/scripts/export-authoring-contracts.ts:752:16)
++
++ Node.js v24.11.1
++
+
+ ❯ assertCurrent ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-ay4azG/tools/scripts/export-authoring-contracts.ts:683:11
+ ❯ <anonymous> ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-ay4azG/tools/scripts/export-authoring-contracts.ts:752:16
+ ❯ tests/authoring-export-isolation.test.ts:64:40
+     62|     }
+     63|     const clean = runExport();
+     64|     expect(clean.stderr, clean.stderr).toBe('');
+       |                                        ^
+     65|     expect(clean.status).toBe(0);
+     66|     expect(clean.stdout).toContain('authoring contract export current'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 本地模型评估产物不影响交付锁
+AssertionError: /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-ay4azG/tools/scripts/export-authoring-contracts.ts:683
+    throw new Error(`authoring contract export drifted:\n${drift.join('\n')}`);
+          ^
+
+Error: authoring contract export drifted:
+metriccanvas-authoring/bundle.lock.json: stale
+    at assertCurrent (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-ay4azG/tools/scripts/export-authoring-contracts.ts:683:11)
+    at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-ay4azG/tools/scripts/export-authoring-contracts.ts:752:16)
+
+Node.js v24.11.1
+: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ assertCurrent ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-ay4azG/tools/scripts/export-authoring-contracts.ts:683:11
+ ❯ <anonymous> ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-ay4azG/tools/scripts/export-authoring-contracts.ts:752:16
+ ❯ tests/authoring-export-isolation.test.ts:75:46
+     73|       writeFileSync(path.join(localRun, 'report.json'), '{"local":true…
+     74|       const checked = runExport();
+     75|       expect(checked.status, checked.stderr).toBe(0);
+       |                                              ^
+     76|     } finally { rmSync(localRun, { recursive: true, force: true }); }
+     77|   }, scenarioTimeout);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  2 failed | 26 passed (28)
+   Start at  23:06:07
+   Duration  21.25s (transform 63ms, setup 0ms, import 138ms, tests 22.25s, environment 0ms)

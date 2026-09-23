@@ -13,17 +13,13 @@ sys.path.insert(0, str(BUNDLE_ROOT / "test-harness"))
 from adapters.fakes import (  # noqa: E402
     FakeDataContextPort,
     FakeDqeExecutionPort,
-    FakePageAssetPort,
 )
-from metriccanvas_authoring.ask.build_page import (  # noqa: E402
-    BuildPageCommand,
-    BuildPageDependencies,
-    create_build_page,
+from metriccanvas_authoring.pages.composition.compose_page import (  # noqa: E402
+    ComposePageCommand,
+    ComposePageDependencies,
+    create_compose_page,
 )
-from metriccanvas_authoring.assets.ports import SavedRevision  # noqa: E402
 from metriccanvas_authoring.data.execution import DqeExecutionResult  # noqa: E402
-from metriccanvas_authoring.bundle_info import load_bundle_info  # noqa: E402
-from metriccanvas_authoring.assets.java_save_fingerprint import derive_idempotency_key  # noqa: E402
 from metriccanvas_authoring.pages.validation.page_validation import validate_page_document  # noqa: E402
 
 
@@ -57,7 +53,7 @@ class RuntimeQueryError(Exception):
         self.code = code
 
 
-class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
+class PageBuildingConformanceTest(unittest.IsolatedAsyncioTestCase):
     async def test_matches_typescript_build_page_conformance_vector(self) -> None:
         vector = exported_contract("build-page-conformance.json")
         vector_input = vector["input"]
@@ -70,20 +66,17 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 captured_at=execution.get("capturedAt"),
             )
         )
-        pages = FakePageAssetPort(SavedRevision("tokens-by-region", "revision-1", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
         command = vector_input["command"]
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id=command["pageId"],
-                page_id_confirmed=command["pageIdConfirmed"],
                 spec=vector_input["spec"],
             )
         )
@@ -91,7 +84,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(result.ok, result.issues)
         self.assertEqual(dqe.calls, vector["expected"]["effectiveQueries"])
         self.assertEqual(
-            pages.calls[0]["document"], vector["expected"]["document"]
+            result.artifact.document, vector["expected"]["document"]
         )
 
     async def test_matches_typescript_manifest_error_conformance_vectors(self) -> None:
@@ -100,17 +93,15 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
             with self.subTest(case=case["case"]):
                 data_context = FakeDataContextPort(case["input"]["dataContext"])
                 dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
-                pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
-                build_page = create_build_page(
-                    BuildPageDependencies(
+                compose_page = create_compose_page(
+                    ComposePageDependencies(
                         data_context=data_context,
                         dqe=dqe,
-                        page_assets=pages,
                     )
                 )
 
-                result = await build_page(
-                    BuildPageCommand(
+                result = await compose_page(
+                    ComposePageCommand(
                         page_id="error-conformance",
                         spec=case["input"]["spec"],
                     )
@@ -125,7 +116,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                     ],
                 )
                 self.assertEqual(dqe.calls, [])
-                self.assertEqual(pages.calls, [])
+                self.assertIsNone(result.artifact)
 
     async def test_matches_typescript_page_validation_error_vectors(self) -> None:
         vector = exported_contract("build-page-conformance.json")
@@ -140,17 +131,15 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                         captured_at=execution.get("capturedAt"),
                     )
                 )
-                pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
-                build_page = create_build_page(
-                    BuildPageDependencies(
+                compose_page = create_compose_page(
+                    ComposePageDependencies(
                         data_context=FakeDataContextPort(vector_input["dataContext"]),
                         dqe=dqe,
-                        page_assets=pages,
                     )
                 )
 
-                result = await build_page(
-                    BuildPageCommand(
+                result = await compose_page(
+                    ComposePageCommand(
                         page_id="error-conformance",
                         spec=vector_input["spec"],
                     )
@@ -165,9 +154,9 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                     ],
                 )
                 self.assertEqual(len(dqe.calls), 1)
-                self.assertEqual(pages.calls, [])
+                self.assertIsNone(result.artifact)
 
-    async def test_valid_spec_builds_and_saves_a_current_page_revision(self) -> None:
+    async def test_valid_spec_builds_a_current_page_artifact(self) -> None:
         data_context = FakeDataContextPort(fixture("data-context.json"))
         dqe = FakeDqeExecutionPort(
             DqeExecutionResult(
@@ -179,19 +168,16 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 captured_at="2026-09-02T00:00:01.000Z",
             )
         )
-        pages = FakePageAssetPort(SavedRevision("tokens-by-region", "revision-1", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-by-region",
-                page_id_confirmed=True,
                 spec=fixture("page-build-spec.json"),
             )
         )
@@ -199,11 +185,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(result.ok)
         self.assertEqual(
             result.completed_stages,
-            ("discovery", "generation", "execution", "presentation", "save"),
-        )
-        self.assertEqual(
-            result.saved_revision,
-            SavedRevision("tokens-by-region", "revision-1", 1),
+            ("discovery", "generation", "execution", "presentation"),
         )
         self.assertEqual(data_context.calls, 1)
         self.assertEqual(
@@ -250,22 +232,8 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 }
             ],
         )
-        self.assertEqual(len(pages.calls), 1)
-        save_command = pages.calls[0]
-        self.assertEqual(save_command["pageId"], "tokens-by-region")
-        self.assertIsNone(save_command["baseRevisionId"])
-        self.assertEqual(
-            save_command["idempotencyKey"],
-            derive_idempotency_key("tokens-by-region", None, fixture("page-build-spec.json")),
-        )
-        self.assertTrue(save_command["pageIdConfirmed"])
-        self.assertEqual(
-            save_command["source"],
-            {"type": "relay", "skillVersion": load_bundle_info()["bundleVersion"]},
-        )
-        self.assertEqual(save_command["dataContextVersion"], "2026-09-02.1")
 
-        document = save_command["document"]
+        document = result.artifact.document
         self.assertEqual(validate_page_document(document), [])
         self.assertEqual(document["schemaVersion"], json.loads((BUNDLE_ROOT / "contract-lock.json").read_text())["pageSchemaVersion"])
         self.assertEqual(document["layout"], "report")
@@ -297,74 +265,18 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
             },
         )
 
-    async def test_idempotency_key_is_derived_from_page_base_and_spec(self) -> None:
-        spec = fixture("page-build-spec.json")
-        base = {"pageId": "tokens-by-region", "revisionId": "a" * 32, "revisionNumber": 1}
-        same = derive_idempotency_key("tokens-by-region", "a" * 32, {**spec, "baseRevision": base})
-        reordered = derive_idempotency_key(
-            "tokens-by-region",
-            "a" * 32,
-            dict(reversed(list({**spec, "baseRevision": base}.items()))),
-        )
-        self.assertEqual(same, reordered)
-        self.assertEqual(len(same), 64)
-        self.assertNotEqual(same, derive_idempotency_key("other-page", "a" * 32, spec))
-        self.assertNotEqual(same, derive_idempotency_key("tokens-by-region", None, spec))
-        changed = json.loads(json.dumps(spec))
-        changed["units"][0]["title"] = "另一个标题"
-        self.assertNotEqual(same, derive_idempotency_key("tokens-by-region", "a" * 32, changed))
 
-    async def test_same_intent_twice_sends_the_same_key_and_base_revision(self) -> None:
-        spec = fixture("page-build-spec.json")
-        spec["baseRevision"] = {
-            "pageId": "tokens-by-region",
-            "revisionId": "b" * 32,
-            "revisionNumber": 3,
-        }
-        pages = FakePageAssetPort(SavedRevision("tokens-by-region", "revision-4", 4))
-        build_page = create_build_page(
-            BuildPageDependencies(
-                data_context=FakeDataContextPort(fixture("data-context.json")),
-                dqe=FakeDqeExecutionPort(
-                    DqeExecutionResult(rows=[{"区域": "华东", "Tokens请求量": 18}])
-                ),
-                page_assets=pages,
-            )
-        )
-        command = BuildPageCommand(
-            page_id="tokens-by-region",
-            spec=spec,
-            session_id="relay-session-9",
-            run_id="run-42",
-        )
-
-        first = await build_page(command)
-        second = await build_page(command)
-
-        self.assertTrue(first.ok and second.ok)
-        self.assertEqual(pages.calls[0]["idempotencyKey"], pages.calls[1]["idempotencyKey"])
-        self.assertEqual(pages.calls[0]["baseRevisionId"], "b" * 32)
-        self.assertEqual(
-            pages.calls[0]["source"],
-            {
-                "type": "relay",
-                "skillVersion": load_bundle_info()["bundleVersion"],
-                "sessionId": "relay-session-9",
-                "runId": "run-42",
-            },
-        )
 
     async def test_base_revision_of_another_page_stops_before_discovery(self) -> None:
         spec = fixture("page-build-spec.json")
         spec["baseRevision"] = {"pageId": "some-other-page", "revisionId": "c" * 32, "revisionNumber": 1}
         data_context = FakeDataContextPort(fixture("data-context.json"))
         dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
-        pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(data_context=data_context, dqe=dqe, page_assets=pages)
+        compose_page = create_compose_page(
+            ComposePageDependencies(data_context=data_context, dqe=dqe)
         )
 
-        result = await build_page(BuildPageCommand(page_id="tokens-by-region", spec=spec))
+        result = await compose_page(ComposePageCommand(page_id="tokens-by-region", spec=spec))
 
         self.assertFalse(result.ok)
         self.assertEqual(
@@ -373,62 +285,23 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(data_context.calls, 0)
         self.assertEqual(dqe.calls, [])
-        self.assertEqual(pages.calls, [])
+        self.assertIsNone(result.artifact)
 
-    async def test_save_failure_preserves_code_and_completed_stages(self) -> None:
-        data_context = FakeDataContextPort(fixture("data-context.json"))
-        dqe = FakeDqeExecutionPort(
-            DqeExecutionResult(
-                rows=[{"区域": "华东", "Tokens请求量": 18}],
-                total_count=1,
-                captured_at="2026-09-02T00:00:01.000Z",
-            )
-        )
-        pages = FakePageAssetPort(
-            error=RuntimeQueryError("REVISION_CONFLICT", "revision conflict")
-        )
-        build_page = create_build_page(
-            BuildPageDependencies(
-                data_context=data_context,
-                dqe=dqe,
-                page_assets=pages,
-            )
-        )
 
-        result = await build_page(
-            BuildPageCommand(
-                page_id="tokens-by-region",
-                spec=fixture("page-build-spec.json"),
-            )
-        )
-
-        self.assertFalse(result.ok)
-        self.assertEqual(
-            [(issue.code, issue.path, issue.stage) for issue in result.issues],
-            [("REVISION_CONFLICT", "/", "save")],
-        )
-        self.assertEqual(
-            result.completed_stages,
-            ("discovery", "generation", "execution", "presentation"),
-        )
-        self.assertEqual(len(pages.calls), 1)
-
-    async def test_invalid_data_context_stops_before_execution_and_save(self) -> None:
+    async def test_invalid_data_context_stops_before_execution(self) -> None:
         snapshot = fixture("data-context.json")
         snapshot.pop("formatVersion")
         data_context = FakeDataContextPort(snapshot)
         dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
-        pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-by-region",
                 spec=fixture("page-build-spec.json"),
             )
@@ -441,7 +314,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(data_context.calls, 1)
         self.assertEqual(dqe.calls, [])
-        self.assertEqual(pages.calls, [])
+        self.assertIsNone(result.artifact)
 
     async def test_unpinned_comparison_selects_bar_chart(self) -> None:
         spec = fixture("page-build-spec.json")
@@ -453,27 +326,25 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 captured_at="2026-09-02T00:00:01.000Z",
             )
         )
-        pages = FakePageAssetPort(SavedRevision("tokens-by-region", "revision-1", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-by-region",
                 spec=spec,
             )
         )
 
         self.assertTrue(result.ok, result.issues)
-        component = first_bound_component(pages.calls[0]["document"])
+        component = first_bound_component(result.artifact.document)
         self.assertEqual(component["type"], "barChart")
 
-    async def test_incompatible_pinned_component_stops_before_save(self) -> None:
+    async def test_incompatible_pinned_component_stops_before_artifact(self) -> None:
         spec = fixture("page-build-spec.json")
         spec["units"][0]["pinnedComponent"] = "metricCard"
         data_context = FakeDataContextPort(fixture("data-context.json"))
@@ -485,17 +356,15 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 ]
             )
         )
-        pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-by-region",
                 spec=spec,
             )
@@ -514,7 +383,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(data_context.calls, 1)
         self.assertEqual(len(dqe.calls), 1)
-        self.assertEqual(pages.calls, [])
+        self.assertIsNone(result.artifact)
 
     async def test_unpinned_trend_selects_line_chart(self) -> None:
         spec = fixture("page-build-spec.json")
@@ -528,24 +397,22 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 captured_at="2026-09-02T00:00:01.000Z",
             )
         )
-        pages = FakePageAssetPort(SavedRevision("tokens-trend", "revision-1", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-trend",
                 spec=spec,
             )
         )
 
         self.assertTrue(result.ok)
-        document = pages.calls[0]["document"]
+        document = result.artifact.document
         component = first_bound_component(document)
         self.assertEqual(component["type"], "lineChart")
         self.assertEqual(component["props"]["xField"], "field-1")
@@ -563,24 +430,22 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 captured_at="2026-09-02T00:00:01.000Z",
             )
         )
-        pages = FakePageAssetPort(SavedRevision("tokens-summary", "revision-1", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-summary",
                 spec=spec,
             )
         )
 
         self.assertTrue(result.ok, result.issues)
-        component = first_bound_component(pages.calls[0]["document"])
+        component = first_bound_component(result.artifact.document)
         self.assertEqual(component["type"], "metricCard")
         self.assertEqual(
             component["props"]["rows"],
@@ -600,24 +465,22 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 ]
             )
         )
-        pages = FakePageAssetPort(SavedRevision("tokens-share", "revision-1", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-share",
                 spec=spec,
             )
         )
 
         self.assertTrue(result.ok, result.issues)
-        component = first_bound_component(pages.calls[0]["document"])
+        component = first_bound_component(result.artifact.document)
         self.assertEqual(component["type"], "pieChart")
         self.assertEqual(component["props"]["categoryField"], "field-1")
         self.assertEqual(component["props"]["valueField"], "field-2")
@@ -630,24 +493,22 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         dqe = FakeDqeExecutionPort(
             DqeExecutionResult(rows=[{"区域": "华东", "Tokens请求量": 18}])
         )
-        pages = FakePageAssetPort(SavedRevision("tokens-ranking", "revision-1", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-ranking",
                 spec=spec,
             )
         )
 
         self.assertTrue(result.ok, result.issues)
-        component = first_bound_component(pages.calls[0]["document"])
+        component = first_bound_component(result.artifact.document)
         self.assertEqual(component["type"], "rankingCard")
         self.assertEqual(component["props"]["nameField"], "field-1")
         self.assertEqual(component["props"]["valueField"], "field-2")
@@ -665,24 +526,22 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 ]
             )
         )
-        pages = FakePageAssetPort(SavedRevision("tokens-detail", "revision-1", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-detail",
                 spec=spec,
             )
         )
 
         self.assertTrue(result.ok, result.issues)
-        component = first_bound_component(pages.calls[0]["document"])
+        component = first_bound_component(result.artifact.document)
         self.assertEqual(component["type"], "table")
         self.assertEqual(
             component["props"]["columns"],
@@ -732,23 +591,19 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 spec["units"][0]["pinnedComponent"] = component_type
                 data_context = FakeDataContextPort(fixture("data-context.json"))
                 dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[row]))
-                pages = FakePageAssetPort(
-                    SavedRevision("component-page", "revision-1", 1)
-                )
-                build_page = create_build_page(
-                    BuildPageDependencies(
+                compose_page = create_compose_page(
+                    ComposePageDependencies(
                         data_context=data_context,
                         dqe=dqe,
-                        page_assets=pages,
                     )
                 )
 
-                result = await build_page(
-                    BuildPageCommand(page_id="component-page", spec=spec)
+                result = await compose_page(
+                    ComposePageCommand(page_id="component-page", spec=spec)
                 )
 
                 self.assertTrue(result.ok, result.issues)
-                component = first_bound_component(pages.calls[0]["document"])
+                component = first_bound_component(result.artifact.document)
                 self.assertEqual(component["type"], component_type)
                 for key, expected in expected_props.items():
                     self.assertEqual(component["props"][key], expected)
@@ -771,24 +626,22 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 captured_at="2026-09-02T00:00:01.000Z",
             )
         )
-        pages = FakePageAssetPort(SavedRevision("tokens-scopes", "revision-1", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-scopes",
                 spec=spec,
             )
         )
 
         self.assertTrue(result.ok, result.issues)
-        sections = pages.calls[0]["document"]["sections"]
+        sections = result.artifact.document["sections"]
         self.assertEqual(
             sections[0],
             {
@@ -836,31 +689,29 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         dqe = FakeDqeExecutionPort(
             DqeExecutionResult(rows=[{"区域": "华东", "Tokens请求量": 18}])
         )
-        pages = FakePageAssetPort(SavedRevision("tokens-packed", "revision-1", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-packed",
                 spec=spec,
             )
         )
 
         self.assertTrue(result.ok, result.issues)
-        sections = pages.calls[0]["document"]["sections"]
+        sections = result.artifact.document["sections"]
         self.assertEqual([section["id"] for section in sections], ["header", "main"])
         self.assertEqual(
             [component["layout"]["span"] for component in sections[1]["components"]],
             [6, 6],
         )
 
-    async def test_unknown_business_domain_stops_before_execution_and_save(self) -> None:
+    async def test_unknown_business_domain_stops_before_execution(self) -> None:
         spec = fixture("page-build-spec.json")
         spec["units"][0]["businessDomain"] = "不存在的业务域"
         data_context = FakeDataContextPort(fixture("data-context.json"))
@@ -870,17 +721,15 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 captured_at="2026-09-02T00:00:01.000Z",
             )
         )
-        pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-by-region",
                 spec=spec,
             )
@@ -893,24 +742,22 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(data_context.calls, 1)
         self.assertEqual(dqe.calls, [])
-        self.assertEqual(pages.calls, [])
+        self.assertIsNone(result.artifact)
 
-    async def test_unknown_metric_stops_before_execution_and_save(self) -> None:
+    async def test_unknown_metric_stops_before_execution(self) -> None:
         spec = fixture("page-build-spec.json")
         spec["units"][0]["metrics"][0]["name"] = "不存在的指标"
         data_context = FakeDataContextPort(fixture("data-context.json"))
         dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
-        pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-by-region",
                 spec=spec,
             )
@@ -923,24 +770,22 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(data_context.calls, 1)
         self.assertEqual(dqe.calls, [])
-        self.assertEqual(pages.calls, [])
+        self.assertIsNone(result.artifact)
 
-    async def test_unknown_dimension_stops_before_execution_and_save(self) -> None:
+    async def test_unknown_dimension_stops_before_execution(self) -> None:
         spec = fixture("page-build-spec.json")
         spec["units"][0]["groupBy"][0] = "不存在的维度"
         data_context = FakeDataContextPort(fixture("data-context.json"))
         dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
-        pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-by-region",
                 spec=spec,
             )
@@ -953,7 +798,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(data_context.calls, 1)
         self.assertEqual(dqe.calls, [])
-        self.assertEqual(pages.calls, [])
+        self.assertIsNone(result.artifact)
 
     async def test_data_context_aliases_are_canonicalized_before_dqe(self) -> None:
         spec = fixture("page-build-spec.json")
@@ -966,19 +811,16 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 captured_at="2026-09-02T00:00:01.000Z",
             )
         )
-        pages = FakePageAssetPort(SavedRevision("tokens-by-region", "revision-1", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-by-region",
-                page_id_confirmed=True,
                 spec=spec,
             )
         )
@@ -1026,19 +868,16 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 captured_at="2026-09-02T00:00:01.000Z",
             )
         )
-        pages = FakePageAssetPort(SavedRevision("tokens-by-region", "revision-1", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-by-region",
-                page_id_confirmed=True,
                 spec=spec,
             )
         )
@@ -1071,19 +910,16 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 captured_at="2026-09-02T00:00:01.000Z",
             )
         )
-        pages = FakePageAssetPort(SavedRevision("tokens-by-region", "revision-1", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-by-region",
-                page_id_confirmed=True,
                 spec=spec,
             )
         )
@@ -1094,24 +930,22 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
             [{"dim_name": "区域", "dim_value_list": ["华东"]}],
         )
 
-    async def test_unknown_filter_dimension_stops_before_execution_and_save(self) -> None:
+    async def test_unknown_filter_dimension_stops_before_execution(self) -> None:
         spec = fixture("page-build-spec.json")
         spec["units"][0]["filters"] = [
             {"dimension": "不存在的筛选维度", "values": ["华东"]}
         ]
         data_context = FakeDataContextPort(fixture("data-context.json"))
         dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
-        pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-by-region",
                 spec=spec,
             )
@@ -1124,24 +958,22 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(data_context.calls, 1)
         self.assertEqual(dqe.calls, [])
-        self.assertEqual(pages.calls, [])
+        self.assertIsNone(result.artifact)
 
-    async def test_unknown_filter_value_stops_before_execution_and_save(self) -> None:
+    async def test_unknown_filter_value_stops_before_execution(self) -> None:
         spec = fixture("page-build-spec.json")
         spec["units"][0]["filters"] = [{"dimension": "区域", "values": ["东北"]}]
         data_context = FakeDataContextPort(fixture("data-context.json"))
         dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
-        pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-by-region",
                 spec=spec,
             )
@@ -1154,24 +986,22 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(data_context.calls, 1)
         self.assertEqual(dqe.calls, [])
-        self.assertEqual(pages.calls, [])
+        self.assertIsNone(result.artifact)
 
-    async def test_unknown_time_granularity_stops_before_execution_and_save(self) -> None:
+    async def test_unknown_time_granularity_stops_before_execution(self) -> None:
         spec = fixture("page-build-spec.json")
         spec["units"][0]["time"]["granularity"] = "quarter"
         data_context = FakeDataContextPort(fixture("data-context.json"))
         dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
-        pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
-        build_page = create_build_page(
-            BuildPageDependencies(
+        compose_page = create_compose_page(
+            ComposePageDependencies(
                 data_context=data_context,
                 dqe=dqe,
-                page_assets=pages,
             )
         )
 
-        result = await build_page(
-            BuildPageCommand(
+        result = await compose_page(
+            ComposePageCommand(
                 page_id="tokens-by-region",
                 spec=spec,
             )
@@ -1184,7 +1014,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(data_context.calls, 1)
         self.assertEqual(dqe.calls, [])
-        self.assertEqual(pages.calls, [])
+        self.assertIsNone(result.artifact)
 
     async def test_runtime_query_errors_keep_their_code_and_authoring_stage(self) -> None:
         cases = [
@@ -1199,17 +1029,15 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 dqe = FakeDqeExecutionPort(
                     error=RuntimeQueryError(error_code, "query failed")
                 )
-                pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
-                build_page = create_build_page(
-                    BuildPageDependencies(
+                compose_page = create_compose_page(
+                    ComposePageDependencies(
                         data_context=data_context,
                         dqe=dqe,
-                        page_assets=pages,
                     )
                 )
 
-                result = await build_page(
-                    BuildPageCommand(
+                result = await compose_page(
+                    ComposePageCommand(
                         page_id="tokens-by-region",
                         spec=fixture("page-build-spec.json"),
                     )
@@ -1225,7 +1053,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 )
                 self.assertEqual(data_context.calls, 1)
                 self.assertEqual(len(dqe.calls), 1)
-                self.assertEqual(pages.calls, [])
+                self.assertIsNone(result.artifact)
 
 
 if __name__ == "__main__":

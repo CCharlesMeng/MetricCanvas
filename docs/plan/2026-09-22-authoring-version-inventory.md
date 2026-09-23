@@ -21,14 +21,16 @@
 |---|---|---|---|
 | `metriccanvas-platform-content-v1` / `unified_content_server` | `tool/pyproject.toml`、`entrypoints/compat/` | 启动模块、console script 和旧 MCP 工厂已删除 | 无环境开关恢复入口 |
 | `report-metadata-creator` | Relay 侧调查报告中的旧 Skill；本仓有 `skill-compat/platform-authoring-v1` 相关兼容资料 | 旧工具链与统一平台创作重叠 | Relay 路由迁移后删除生产 Skill；历史说明归档 |
-| `build_page` | `ask/build_page.py`、`entrypoints/compat/fastmcp.py` | 普通问数 compatibility surface 仍注册；部分旧 ADR 将其描述为保存入口 | 普通问数兼容入口暂留，但不得作为平台创作 fallback；删除旧保存语义和误导文档 |
+| `build_page` | 已删除保存用例、JavaPageAssetPort、指纹和专属端口 | 默认问数只注册 discover_data_context / compose_page；显式 compatibility 拒绝启动 | 旧保存链已退役；保留不保存的普通问数入口 |
 | `candidateRef` / candidates 表 | 旧候选存储、提交、恢复模块 | 实现与专属契约已删除，参数工具使用工作稿和 artifact_ref | 发布生命周期的独立候选与参数选择 candidate_id 保留，不属于旧页面候选链 |
 | `platform-authoring-v1` | `skill-compat/platform-authoring-v1/` | 整个目录已删除 | 历史说明查 Git 与 ADR，不随 Bundle 分发 |
+
+旧 unified/structure 编排及结构修订专属契约已删除；可信指标关系已迁入现行 query_data 的持久结果，创建/编辑通过 resultRef 消费。原结构测试迁至现行平台工具链，页面规则与格式断言保留。
 
 ## 当前不能直接删除的内容
 
 - 页面 Schema 5.x/6.x 读取、规范化和兼容测试。
-- 普通问数/探索的临时页面态和 `build_page` compatibility surface，直到其消费者完成迁移。
+- 普通问数/探索的临时页面态（discover_data_context / compose_page）；build_page 保存面已退役。
 - `page_metadata_emit_preview`、`{{RESPONSE_START}}`、`{{PAGE_METADATA_PREVIEW_JSON}}`，它们是 Relay 预览交付协议，不是旧保存流程。
 
 ## 下一步删除顺序

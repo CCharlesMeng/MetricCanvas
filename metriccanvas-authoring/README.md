@@ -15,7 +15,13 @@
 - `test-harness/`：从外部调用 Tool 的契约测试、向量和 Fake Adapter；不进入生产运行时。
 - `relay/`：Relay stdio MCP 注册与 Data Context 投影配置样例。
 
-Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是入站 Adapter；业务词解析、多轮 reducer、查询派生、验真、组件选择、布局和页面预检不拆成更多模型可见 Tool。
+Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是入站接入点；业务词解析、多轮 reducer、查询派生、验真、组件选择、布局和页面预检不拆成更多模型可见 Tool。
+
+## 现行入口与已退役行为
+
+普通问数的 `metriccanvas-authoring` 默认只注册 discover_data_context 和 compose_page，返回临时产物，不具备保存依赖。原 METRICCANVAS_TOOL_SURFACE=relay 配置继续有效；显式 compatibility 配置会报旧保存入口已退役。build_page、旧 `/pages/{pageId}/revisions` Java 保存适配器、强保存指纹与专属端口已删除。
+
+平台 `metriccanvas-platform-content` 仍使用可信轮次和内部单次草稿保存。旧 unified/structure 编排及 structureRevision、add_data_component 契约已删除；指标关系随现行 query_data 结果记录保存，compose/edit 消费精确结果引用。结构表现验收通过现行平台路径，不再调用旧编排。普通问数规则 ask/rules.py、公开平台入口委托、页面 Schema 兼容和明确独立的生命周期接口继续保留。
 
 ## 当前已具备的可执行能力
 
@@ -75,7 +81,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s test-harness/tests -p 
 ```bash
 uv build --sdist --out-dir dist tool
 METRICCANVAS_TOOL_SURFACE=relay \
-  uvx --from dist/metriccanvas_authoring-0.2.0.tar.gz metriccanvas-authoring
+  uvx --from dist/metriccanvas_authoring-0.3.0.tar.gz metriccanvas-authoring
 ```
 
 完整迁移状态、F01–F14 等价矩阵与硬切换门禁见 [`docs/archive/metriccanvas-agent-migration/metriccanvas-agent-full-migration.md`](../docs/archive/metriccanvas-agent-migration/metriccanvas-agent-full-migration.md)。
@@ -125,7 +131,7 @@ Skill 负责业务问题、阅读层级与组件选型；工具负责能力检�
 | 要维护的内容 | 修改真源 | 配套验证 |
 | --- | --- | --- |
 | 阅读顺序、选型、场景适用条件 | [reading-design.md](skill/metriccanvas-platform-authoring/references/reading-design.md) 与场景参考 | 差异场景前向检查，不以固定卡数或图数评分 |
-| 创作输入与版本 | `contracts/authored/page-structure-plan.schema.json`、`structure-revision.schema.json` | 新旧版本、创建/修订块契约一致性与安全错误测试 |
+| 创作输入与版本 | `contracts/authored/page-structure-plan.schema.json`、`pages/referenced.py` 的结果引用输入 | 现行版本、query→compose/edit、可信关系与工作稿版本验收 |
 | 默认占位、受控呈现、说明 | `contracts/authored/section-patterns.json`、`tool/metriccanvas_authoring/pages/components/` 下的 section_presentation、structure_presentation 与 `pages/composition/structure_scope.py` | 公开 create/edit 回归；保护人工设置和查询复用 |
 | 页面协议、组件与响应式 | 仓库 `packages/page/src/schema/` 与统一运行时/组件实现 | 页面 Schema、组件及呈现测试，不由 Skill 覆盖 CSS |
 

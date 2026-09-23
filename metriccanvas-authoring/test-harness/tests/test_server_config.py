@@ -51,6 +51,21 @@ class ProductionServerConfigurationTest(unittest.IsolatedAsyncioTestCase):
             await port.execute({})
         self.assertEqual(raised.exception.code, "DQE_CONFIG_ERROR")
 
+    async def test_default_and_relay_servers_never_expose_legacy_save_tool(self):
+        from fastmcp import Client
+        from metriccanvas_authoring.bootstrap.compatibility import create_production_server
+        for config in ({}, {'METRICCANVAS_TOOL_SURFACE': 'relay'}):
+            with patch.dict(os.environ, config, clear=True):
+                async with Client(create_production_server()) as client:
+                    self.assertEqual({t.name for t in await client.list_tools()},
+                                     {'discover_data_context', 'compose_page'})
+
+    def test_explicit_old_save_surface_is_rejected(self):
+        from metriccanvas_authoring.bootstrap.compatibility import create_production_server
+        with patch.dict(os.environ, {'METRICCANVAS_TOOL_SURFACE': 'compatibility'}, clear=True):
+            with self.assertRaisesRegex(RuntimeError, 'legacy save surface retired'):
+                create_production_server()
+
 
 if __name__ == "__main__":
     unittest.main()

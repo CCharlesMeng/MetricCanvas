@@ -12,15 +12,13 @@ sys.path.insert(0, str(BUNDLE_ROOT / "test-harness"))
 from adapters.fakes import (  # noqa: E402
     FakeDataContextPort,
     FakeDqeExecutionPort,
-    FakePageAssetPort,
 )
 from metriccanvas_authoring.entrypoints.compat.fastmcp import (  # noqa: E402
     create_mcp_server,
 )
-from metriccanvas_authoring.ask.build_page import (  # noqa: E402
-    BuildPageDependencies,
+from metriccanvas_authoring.pages.composition.compose_page import (  # noqa: E402
+    ComposePageDependencies,
 )
-from metriccanvas_authoring.assets.ports import SavedRevision  # noqa: E402
 from metriccanvas_authoring.data.execution import DqeExecutionResult  # noqa: E402
 
 
@@ -34,7 +32,7 @@ def fixture(name: str) -> dict[str, object]:
 
 execution = fixture("page-build-execution.json")
 mcp = create_mcp_server(
-    BuildPageDependencies(
+    ComposePageDependencies(
         data_context=FakeDataContextPort(fixture("data-context.json")),
         dqe=FakeDqeExecutionPort(
             DqeExecutionResult(
@@ -42,9 +40,6 @@ mcp = create_mcp_server(
                 total_count=execution.get("totalCount"),
                 captured_at=execution.get("capturedAt"),
             )
-        ),
-        page_assets=FakePageAssetPort(
-            SavedRevision("tokens-by-region", "revision-1", 1)
         ),
     )
 )
