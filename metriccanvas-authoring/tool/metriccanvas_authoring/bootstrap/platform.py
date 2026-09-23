@@ -8,6 +8,7 @@ from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_
 from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
 from metriccanvas_authoring.pages.platform_authoring import PlatformAuthoring
 from metriccanvas_authoring.bootstrap import environment
+from metriccanvas_authoring.bootstrap.readiness import platform_readiness
 from metriccanvas_authoring.work.state import Limits
 from metriccanvas_authoring.data.semantic_catalog import SemanticCatalog
 from metriccanvas_authoring.adapters.firstparty.dataset_metadata_http import JavaDatasetMetadataProvider
@@ -24,10 +25,15 @@ def create_platform_server(dependencies, *, current_turns=None, store=None, anal
         summary_config=summary_config, semantic_catalog=semantic_catalog, parameter_dependencies=parameter_dependencies))
 
 
-def create_production_platform_server():
-    return create_platform_server(
-        ComposePageDependencies(
-            environment.configure_data_context(),
-            environment.configure_dqe(),
-        )
-    )
+class DeploymentReadinessError(RuntimeError):
+    def __init__(self, report):
+        self.report = report
+        super().__init__('PLATFORM_DEPLOYMENT_NOT_READY')
+
+
+def create_production_platform_server(*, protocol_discovery=False):
+    dependencies = ComposePageDependencies(
+        environment.configure_data_context(), environment.configure_dqe())
+    if not protocol_discovery:
+        raise DeploymentReadinessError(platform_readiness(dependencies))
+    return create_platform_server(dependencies)

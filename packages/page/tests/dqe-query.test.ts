@@ -134,6 +134,28 @@ describe('raw DQE 页面查询', () => {
     expect(validate(page)).toEqual([]);
   });
 
+  it('接受 DQE 时间粒度返回列且保留旧页面的基础列名', () => {
+    const page = rawPage();
+    const item = page.dataSources.overview.source.query.body.dsl_list[0];
+    item.output_dims = ['周期'];
+    item.filter.time = { period: 'month', start: '2026-06', end: '2026-08' };
+    page.dataSources.overview.fields.level.queryField = '周期(month)';
+    page.dataSources.overview.source.initial = {
+      capturedAt: '2026-08-05T15:32:01+08:00',
+      rows: [{ '周期(month)': '2026-08', NA客户数: 15 }],
+      totalCount: 1
+    };
+    expect(validate(page)).toEqual([]);
+    page.dataSources.overview.fields.level.queryField = '周期';
+    page.dataSources.overview.source.initial.rows = [{ 周期: '2026-08', NA客户数: 15 }];
+    expect(validate(page)).toEqual([]);
+    page.dataSources.overview.fields.level.queryField = '周期(year)';
+    delete page.dataSources.overview.source.initial;
+    expect(validate(page)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: 'QUERY_MAPPING_ERROR' })
+    ]));
+  });
+
   it('递归映射一层对象数组并以 detail 角色交给明细排行卡', () => {
     const page = rawPage();
     page.dataSources.overview.fields.attributions = {

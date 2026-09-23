@@ -11,7 +11,6 @@ from metriccanvas_authoring.adapters.service_identity import ServiceIdentity
 from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
 from metriccanvas_authoring.assets.lifecycle_ports import LifecycleIdentity
 from metriccanvas_authoring.bootstrap.platform import create_platform_server
-from metriccanvas_authoring.data.source_mapping import query_sha256
 from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
 from metriccanvas_authoring.work.state import Limits, digest
 
@@ -45,29 +44,6 @@ class MainFlowAuthorization:
                 "modelEvidenceAllowed": confirmed}
 
 
-class MainFlowSourceDescriptions:
-    def __init__(self, fields):
-        self.fields = deepcopy(fields)
-
-    async def describe(self, scope, data_context_version, effective_query):
-        provided = []
-        for raw in effective_query["fieldMappings"].values():
-            semantic = raw["queryField"]
-            configured = self.fields.get(semantic)
-            if configured is None:
-                raise ValueError("MAIN_FLOW_SOURCE_FIELD_UNKNOWN")
-            for key in ("type", "role", "nullable"):
-                if configured[key] != raw.get(key, False if key == "nullable" else None):
-                    raise ValueError("MAIN_FLOW_SOURCE_FIELD_MISMATCH")
-            provided.append({"semanticName": semantic, "queryField": semantic,
-                **deepcopy(configured)})
-        return {"formatVersion": "1.0", "providerNamespace": "main-flow-http-fixture",
-                "descriptorRef": "main-flow-descriptor", "descriptorVersion": "1",
-                "querySha256": query_sha256(effective_query),
-                "dataContextVersion": data_context_version, "fields": provided,
-                "rules": [], "unresolved": []}
-
-
 class MainFlowPreview:
     def __init__(self, output_path: Path):
         self.output_path = output_path
@@ -89,7 +65,6 @@ def create_main_flow_server(state_path: Path, current_turns):
     dependencies = ComposePageDependencies(
         metadata,
         DqeHttpExecutionPort(base_url, "w", MainFlowDqeIdentity()),
-        source_description=MainFlowSourceDescriptions(fixture["fields"]),
     )
     return create_platform_server(
         dependencies,

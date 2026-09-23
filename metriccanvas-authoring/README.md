@@ -81,7 +81,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s test-harness/tests -p 
 ```bash
 uv build --sdist --out-dir dist tool
 METRICCANVAS_TOOL_SURFACE=relay \
-  uvx --from dist/metriccanvas_authoring-0.3.0.tar.gz metriccanvas-authoring
+  uvx --from dist/metriccanvas_authoring-0.3.1.tar.gz metriccanvas-authoring
 ```
 
 完整迁移状态、F01–F14 等价矩阵与硬切换门禁见 [`docs/archive/metriccanvas-agent-migration/metriccanvas-agent-full-migration.md`](../docs/archive/metriccanvas-agent-migration/metriccanvas-agent-full-migration.md)。

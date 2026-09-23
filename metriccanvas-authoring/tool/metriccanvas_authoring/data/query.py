@@ -10,7 +10,7 @@ from copy import deepcopy
 from typing import Any, Mapping
 
 from metriccanvas_authoring.data.source_description_ports import SourceDescriptionPort
-from metriccanvas_authoring.data.source_mapping import map_source_description, validate_mapped_rows, SourceMappingError
+from metriccanvas_authoring.data.source_mapping import map_source_description, derive_source_fields, validate_mapped_rows, SourceMappingError
 from metriccanvas_authoring.data.ports import DataContextError, DataContextPort, DqeExecutionPort
 from metriccanvas_authoring.data.data_context import parse_data_context
 from metriccanvas_authoring.data.execution import (
@@ -33,6 +33,7 @@ class QueryDataDependencies:
     source_description: SourceDescriptionPort | None = None
     authoring_scope: Mapping[str, Any] | None = None
     require_source_description: bool = False
+    stable_field_ids: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -156,6 +157,13 @@ def create_query_data(dependencies: QueryDataDependencies):
                                              completed_stages=('discovery', 'generation'))
             units = mapped_units
 
+        if dependencies.stable_field_ids and not source_descriptions:
+            try:
+                units = [derive_source_fields(unit) for unit in units]
+            except SourceMappingError as error:
+                return QueryDataResult(ok=False, issues=(QueryDataIssue(error.code, '', error.code),),
+                                       completed_stages=('discovery', 'generation'))
+
         execution_results = await asyncio.gather(
             *(
                 dependencies.dqe.execute(unit.effective_query())
@@ -184,7 +192,7 @@ def create_query_data(dependencies: QueryDataDependencies):
             result for result in execution_results if not isinstance(result, Exception)
         ]
 
-        if dependencies.require_source_description or dependencies.source_description is not None:
+        if dependencies.stable_field_ids or dependencies.require_source_description or dependencies.source_description is not None:
             for index, (unit, execution) in enumerate(zip(units, executions, strict=True)):
                 try:
                     validate_mapped_rows(unit.fields, execution.rows)

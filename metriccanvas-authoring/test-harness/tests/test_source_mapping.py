@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
 from adapters.fakes import FakeDataContextPort, FakeDqeExecutionPort
 from test_authoring_turns import Turns
-from metriccanvas_authoring.data.source_mapping import map_source_description, query_sha256, validate_mapped_rows, SourceMappingError
+from metriccanvas_authoring.data.source_mapping import map_source_description, derive_source_fields, query_sha256, validate_mapped_rows, SourceMappingError
 from metriccanvas_authoring.data.executable_units import derive_executable_units
 from metriccanvas_authoring.data.data_context import parse_data_context
 from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies, ComposePageCommand, create_compose_page
@@ -73,6 +73,22 @@ class SourceMappingTest(unittest.IsolatedAsyncioTestCase):
     async def test_chinese_uses_trusted_logical_id_without_translation(self):
         mapped = map_source_description(self.unit, self.descriptor, self.context.version)
         self.assertEqual(set(mapped.fields), {self.unit.data_source_id + '-field-test-dimension-001', self.unit.data_source_id + '-field-test-metric-002'})
+
+    async def test_internal_ids_survive_reorder_and_do_not_claim_external_identity(self):
+        spec = deepcopy(self.spec)
+        formula = {'kind': 'formula', 'label': '千次请求量', 'expression': 'Tokens请求量 / 1000'}
+        spec['units'][0]['metrics'].append(formula)
+        first = derive_source_fields(derive_executable_units(spec, self.context)[0])
+        spec['units'][0]['metrics'].reverse()
+        second = derive_source_fields(derive_executable_units(spec, self.context)[0])
+        self.assertEqual(set(first.fields), set(second.fields))
+        self.assertTrue(all(key.startswith('result-field-identity-') for key in first.fields))
+        self.assertNotIn('field-1', first.fields)
+
+    async def test_internal_ids_reject_duplicate_output_names_before_dqe(self):
+        duplicate = replace(self.unit, fields={key: {**value, 'queryField': 'same'} for key, value in self.unit.fields.items()})
+        with self.assertRaisesRegex(SourceMappingError, 'SOURCE_SEMANTIC_MAPPING_MISMATCH'):
+            derive_source_fields(duplicate)
 
     async def test_normalization_collision_is_semantic_and_order_independent(self):
         description = deepcopy(self.descriptor)

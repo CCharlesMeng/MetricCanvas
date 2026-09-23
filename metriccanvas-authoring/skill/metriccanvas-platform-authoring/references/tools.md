@@ -18,7 +18,7 @@
 
 只有 modelSummary 进入模型通道。query_data 的有界行证据需计划确认和模型数据策略授权；完整响应、SQL、查询体和页面产物不进入模型。document 保存查询定义而不带 query initial；previewJson 可带本次有效 initial。静态 inline 内容属于页面定义，照常保留。
 
-工具列表、Schema、Skill、Bundle 版本一起切换。缺 current-turn、持久化工作存储、授权、源描述、保存服务或 Relay Adapter 时报告明确不可用。Relay 注入和卡片格式由部署适配器负责；工具 ready 不等于用户已看到页面。
+工具列表、Schema、Skill、Bundle 版本一起切换。部署就绪检查区分提供方装配与当前轮次有效：启动时须有轮次提供方，但不需要已有用户轮次。缺轮次、工作存储、查询授权、数据上下文/DQE、保存服务或交接 Adapter 时按受影响操作报告不可用。一般结果字段契约从现有事实派生；额外字段描述仅在真实重命名或尺度语义有依据时选配。参数未配置不阻塞主流程。工具 ready 表示交接 Adapter 接收精确产物，不等于用户已看到页面。
 
 ## 页面身份与新鲜度
 

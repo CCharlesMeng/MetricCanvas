@@ -1,6 +1,6 @@
 # Relay 接入：平台页面创作
 
-Bundle 0.3.0 的目标入口是 `metriccanvas_authoring.platform_server.create_platform_server`，生产由 Relay 注册的 MCP stdio server 受控启动。这里的 CLI 只表示进程启动方式，不是模型可调用的通用 shell，也不是第二条创作流程。参数与各提供方 Interface 见[平台协议](contracts/authored/platform-v2-protocol.md)。生产不注册历史候选入口，也不在同一轮失败后切换旧流程。
+Bundle 0.3.1 的目标入口是 `metriccanvas_authoring.platform_server.create_platform_server`，生产由 Relay 注册的 MCP stdio server 受控启动。这里的 CLI 只表示进程启动方式，不是模型可调用的通用 shell，也不是第二条创作流程。参数与各提供方 Interface 见[平台协议](contracts/authored/platform-v2-protocol.md)。生产不注册历史候选入口，也不在同一轮失败后切换旧流程。
 
 普通问数的 metriccanvas-authoring 已移除 build_page 及旧 Java 强保存链，默认即为只返回临时产物的双工具面。旧显式 METRICCANVAS_TOOL_SURFACE=compatibility 会拒绝启动，需移除该配置并将消费者切到 compose_page；不能以新默认行为假装兼容旧 savedRevision 回执。
 
@@ -9,11 +9,19 @@ Bundle 0.3.0 的目标入口是 `metriccanvas_authoring.platform_server.create_p
 ## 接入顺序
 
 1. 将用户问题、页面/选中目标随同一次请求交给 Agent。工具执行时从可信宿主取得 current_turns；真实身份、页、基线和 plan confirmation 不由模型自报，不要求工作台先独立调用 MCP。
-2. 注入持久化工作存储、现有数据上下文/DQE/源描述、Java 当前资源读取、单次保存服务和身份提供方。已有 `KnownLifecycleHttp` 是本仓核验的消费 Adapter；真实 Java 行为仍须部署对账。当前工具协议不要求远端幂等 lookup 或历史 exact-read。Relay 必须把当前可信身份注入 MCP 调用；不能让工具回退到共享进程环境凭据。
+2. 注入持久化工作存储、现有数据上下文/DQE、Java 当前资源读取、单次保存服务和身份提供方。普通查询的结果字段契约由本仓派生；确有输出重命名或尺度事实时可注入额外描述扩展，不预设新服务。已有 `KnownLifecycleHttp` 是本仓核验的消费 Adapter；真实 Java 行为仍须部署对账。当前工具协议不要求远端幂等 lookup 或历史 exact-read。Relay 必须把每次调用的可信身份注入 MCP，不能修改主进程共享 `os.environ` 来承载并发用户身份。
 3. 数据创作展示推荐分析计划。用户确认后，授权提供方核对当前 binding、取数请求和版本，并显式许可模型证据通道。计划补充或范围变化须遵守用户授权；配置编辑不强制计划审核。
 4. query_data 返回 modelSummary 中的有界证据；只把摘要交模型。compose/edit 返回摘要与程序 artifactEnvelope，内部已经执行单次草稿保存，Relay/前端不可第二次保存。保存、发布、删除和预览产物注入都由可信程序编排，不暴露为模型可自由组合的低级写工具。
-5. 保存成功后，page_metadata_emit_preview 使用精确 artifactRef，从工作存储拿到对应 document/previewJson/ref；`relay_preview.prepare` 映射到真实部署的 compose_page_result 注入和卡片格式。此 Adapter 同时处理 compose 与 edit 产物；缺失返回不可用。
-6. 模型最终原样输出 `{{RESPONSE_START}}` 和 `{{PAGE_METADATA_PREVIEW_JSON}}`，Relay 按既有协议替换并交付工作台。
+5. 保存成功后，page_metadata_emit_preview 使用精确 artifactRef，从工作存储拿到对应 document/previewJson/ref；`relay_preview.prepare` 在程序通道接收该产物并回执精确 artifactRef/ref。内部自主实现与既有 Relay 插件/配置相容的通道。工具 `ready` 只证明 Adapter 接收成功；后续卡片替换、前端显示与显示回执由内部页面流程负责。
+6. 模型最终原样输出 `{{RESPONSE_START}}` 和 `{{PAGE_METADATA_PREVIEW_JSON}}`；本仓验收止于 Adapter 接收回执，不把占位符或前端显示作为已完成的本仓交付声明。
+
+## 包外装配与就绪检查
+
+仓内 [包外入口样例](examples/platform-oneshot-host.py) 从 `METRICCANVAS_HOST_ADAPTER_MODULE` 加载 `create_host_adapters()`，复用 `SqlitePlatformState` 和 `KnownLifecycleHttp`。内部模块须提供每次调用的 `current_turns`、`analysis_authorization`、`lifecycle_identities`、`relay_preview`、受治理 `data_context` 和 `dqe`；参数依赖及额外字段描述可选。入口需要稳定的 `METRICCANVAS_WORK_DB`、真实 `METRICCANVAS_LIFECYCLE_COLLECTION_URL`。所有调用同轮保持同一 binding 与工作数据库；不同实例若要共享须自行保证路由与存储可达，不将唯一文件名当恢复方案。
+
+`bootstrap.readiness.platform_readiness` 一次报告缺失提供方、影响操作及配置位置。它只检查装配，不调用模型、DQE 或 Java，不检查连接与业务验收，也不要求启动时已有用户轮次。`current_turn_readiness` 在有 contextRef 的调用中单独核验当前轮次。参数未装配报告为可选能力缺失，不阻塞创建和编辑。随包默认 `metriccanvas-platform-content` 在未装配时以状态 2 拒绝业务启动；只有显式 `METRICCANVAS_PROTOCOL_DISCOVERY=1` 可作九工具协议发现，此模式不能对外宣称业务就绪。
+
+内部 Adapter 的输入输出、错误向量和职责以[正式平台协议](contracts/authored/platform-v2-protocol.md#host-adapter-contract-and-failure-vectors)为准。包外入口是装配模板，不带身份、计划确认、保存回执或交接回执的本地伪实现。oneshot 子进程环境变量可提供该进程的调用配置，不能当作把完整产物回传父进程的通道；若 Relay 丢弃 `structuredContent`，内部应通过已有插件支持的程序通道传递完整产物并回传精确接收回执。
 
 ## 原始指标语义层发现
 
@@ -56,7 +64,7 @@ MCP 的结构化结果不是自动安全的模型通道：宿主必须投影 mod
 
 ## 尚需真实部署验收
 
-本仓没有 Relay 注入、占位符解析和工作台卡片缓存实现，不能凭本仓 Python Interface 声称真实替换已完成。需提供方完成 prepare Adapter，并验证首次构建、数据修改、样式修改、partial、未知保存、交错请求、预览失败和两个标记。Java 原始指标元数据接口的真实身份、响应和 DQE 执行结果仍须提供实例证据；本地 HTTP 替身不证明服务已接通。
+本仓没有 Relay 可信轮次注入和内部程序通道实现，不能凭本仓 Python Interface 声称真实交接已完成。内部应完成 prepare Adapter，并验证首次构建、数据修改、样式修改、partial、未知保存、交错请求与交接失败。卡片替换、占位符实际渲染及用户可见状态由内部页面流程另行验收，不属于本批本仓关闭条件。Java 原始指标元数据接口的真实身份、响应和 DQE 执行结果仍须提供实例证据；本地 HTTP 替身不证明服务已接通。
 
 Relay 调查已确认 MCP stdio 是生产入口，但同时发现四项上线阻塞：`agent_context` 尚未注入 MCP 工具调用；当前凭据路径可能退回共享服务账号；子进程内 HTTP 缺少分层超时/取消；写操作缺少贯穿轮次的关联与结果未知处理。远端幂等键和操作结果查询仍未证实，按 ADR-0080 不强制新增；未知写入停止重发并人工核对。以上属于 Relay/Java/部署接线工作，本 Bundle 不把源码调查升级为已验收事实。
 

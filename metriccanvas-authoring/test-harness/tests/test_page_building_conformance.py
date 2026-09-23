@@ -393,7 +393,7 @@ class PageBuildingConformanceTest(unittest.IsolatedAsyncioTestCase):
         data_context = FakeDataContextPort(fixture("data-context.json"))
         dqe = FakeDqeExecutionPort(
             DqeExecutionResult(
-                rows=[{"统计周期": "2026-08", "Tokens请求量": 18}],
+                rows=[{"统计周期(month)": "2026-08", "Tokens请求量": 18}],
                 captured_at="2026-09-02T00:00:01.000Z",
             )
         )
@@ -896,7 +896,7 @@ class PageBuildingConformanceTest(unittest.IsolatedAsyncioTestCase):
                 "role": "measure",
                 "label": "千次请求量",
                 "unit": "千次",
-                "nullable": False,
+                "nullable": True,
             },
         )
 

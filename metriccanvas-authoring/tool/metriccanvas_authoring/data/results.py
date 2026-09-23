@@ -59,7 +59,7 @@ class QueryResults:
                 require(record['binding'] == dict(prepared.binding), 'RESULT_SCOPE_MISMATCH')
                 await current()
                 return self.evidence(record, item['dataSourceId'])
-            deps = replace(self.dependencies, authoring_scope=dict(prepared.binding), require_source_description=True)
+            deps = replace(self.dependencies, authoring_scope=dict(prepared.binding), stable_field_ids=True)
             try:
                 await current()
                 if self.semantic_catalog is not None:

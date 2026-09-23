@@ -6,7 +6,7 @@
 
 按以下顺序阅读，括号中是这一层回答的问题：
 
-1. [platform_server.py](metriccanvas_authoring/platform_server.py) 与 [bootstrap/platform.py](metriccanvas_authoring/bootstrap/platform.py)：服务如何启动、哪些提供方必须由可信集成程序注入？独立启动没有提供方时明确不可用。
+1. [platform_server.py](metriccanvas_authoring/platform_server.py)、[bootstrap/platform.py](metriccanvas_authoring/bootstrap/platform.py) 与 [bootstrap/readiness.py](metriccanvas_authoring/bootstrap/readiness.py)：服务如何启动、如何区分已装配提供方与当前轮次有效？独立启动未装配时退出，显式协议发现模式只供 introspection。
 2. [entrypoints/mcp/platform_mcp.py](metriccanvas_authoring/entrypoints/mcp/platform_mcp.py)：模型可见的九个工具、参数 Schema 和结果分流。`edit_page` 要求 context_ref、page_id、expected_version、request；MCP 不拥有业务实现。
 3. [work/authoring_turns.py](metriccanvas_authoring/work/authoring_turns.py)：身份、页、轮次、原文摘要和基线如何校验？context_ref 不接受模型自造的完整页面。
 4. [pages/platform_authoring.py](metriccanvas_authoring/pages/platform_authoring.py)：read/mutate 的主控制流，工作稿、编辑、保存与产物如何衔接？这是平台任务的编排入口。
@@ -31,6 +31,7 @@
 | 参数提取、无值模板、临时实例 | [pages/parameters/page_parameters.py](metriccanvas_authoring/pages/parameters/page_parameters.py) | 参数引用、失效与程序通道；不自动保存 |
 | 草稿、发布与恢复的职责 | [assets/drafts.py](metriccanvas_authoring/assets/drafts.py)、[assets/lifecycle.py](metriccanvas_authoring/assets/lifecycle.py) | lifecycle_ports.py；发布见 lifecycle_publish.py，不由计划确认触发 |
 | SQLite 状态与进程重启 | [adapters/storage/platform_state.py](metriccanvas_authoring/adapters/storage/platform_state.py) | work/state.py；区分 work、budget、result、submission |
+| 包外最小装配 | [platform-oneshot-host.py](../examples/platform-oneshot-host.py) | bootstrap/readiness.py；内部提供可信轮次、授权、身份和交接 Adapter |
 | 普通问数的临时页面 | [ask/rules.py](metriccanvas_authoring/ask/rules.py) | bootstrap/compatibility.py、pages/composition/compose_page.py；与平台草稿路径独立 |
 
 ## 文件命名与目录职责

@@ -716,6 +716,17 @@ def _query_mapping_issues(
         for entry in item.get("output_dims", [])
         if isinstance(entry, str)
     ]
+    filter_value = item.get("filter")
+    time_value = filter_value.get("time") if isinstance(filter_value, Mapping) else None
+    period = time_value.get("period") if isinstance(time_value, Mapping) else None
+    mapped_names = {
+        field.get("queryField") for field in raw_fields.values()
+        if isinstance(field, Mapping) and isinstance(field.get("queryField"), str)
+    }
+    dimensions = [
+        f"{name}({period})" if isinstance(period, str) and f"{name}({period})" in mapped_names else name
+        for name in dimensions
+    ]
     metrics = _metric_names(item.get("output_metrics", []))
     outputs = set([*dimensions, *metrics])
     fields, field_paths, field_issues = _resolved_fields(

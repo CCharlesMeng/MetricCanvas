@@ -19,8 +19,11 @@ UNIFIED_TOOLS = {'read_page_context', 'discover_data_context', 'query_data', 'co
 
 def client_configuration(root, surface='legacy-content'):
     module, _ = SURFACES[surface]
+    env = {'PYTHONPATH':str(root/'metriccanvas-authoring/tool'),'PYTHONDONTWRITEBYTECODE':'1'}
+    if surface == 'unified-content':
+        env['METRICCANVAS_PROTOCOL_DISCOVERY'] = '1'
     return {'mcpServers':{'content':{'command':sys.executable,'args':['-m',module],
-            'env':{'PYTHONPATH':str(root/'metriccanvas-authoring/tool'),'PYTHONDONTWRITEBYTECODE':'1'}}}}
+            'env':env}}}
 
 
 def surface_evidence(surface, definitions):

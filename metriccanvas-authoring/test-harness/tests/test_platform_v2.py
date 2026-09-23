@@ -1,6 +1,9 @@
 """Target public behavior and restart tests, independent of legacy candidates."""
 import asyncio
 import json
+import os
+import subprocess
+import sys
 import tempfile
 import unittest
 from copy import deepcopy
@@ -18,6 +21,9 @@ from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatfor
 from metriccanvas_authoring.assets.lifecycle_ports import LifecycleCapabilities, LifecycleIdentity
 from metriccanvas_authoring.work.content_ports import ContentBaselineError
 from metriccanvas_authoring.work.state import Limits, digest
+from metriccanvas_authoring.bootstrap.readiness import platform_readiness, current_turn_readiness
+from metriccanvas_authoring.bootstrap.environment import unconfigured_data_context, unconfigured_dqe
+from metriccanvas_authoring.bootstrap.platform import create_production_platform_server, DeploymentReadinessError
 
 
 class Authorization:
@@ -93,6 +99,48 @@ class PlatformV2Test(unittest.IsolatedAsyncioTestCase):
         request = {'title': '报告', 'sources': {'result': ref}, 'sections': plan()['sections']}
         return await self.app.mutate('compose', 'current-context', request)
 
+    async def test_static_readiness_distinguishes_provider_and_live_turn(self):
+        report = platform_readiness(self.deps, current_turns=self.turns, store=self.store,
+            analysis_authorization=self.auth, lifecycle_service=self.service,
+            lifecycle_identities=Identities(), relay_preview=self.preview)
+        self.assertTrue(report['deploymentReady'])
+        self.assertEqual(report['currentTurn']['status'], 'not_checked')
+        self.assertEqual(report['parameterCapability'], 'optional_unconfigured')
+        self.assertEqual((await current_turn_readiness(report, self.turns, 'current-context'))['currentTurn']['status'], 'valid')
+        self.assertEqual((await current_turn_readiness(report, self.turns, 'wrong-context'))['currentTurn']['status'], 'invalid')
+
+    async def test_readiness_reports_all_missing_operations_without_running_them(self):
+        deps = replace(self.deps, data_context=unconfigured_data_context('not configured'),
+                       dqe=unconfigured_dqe('not configured'))
+        report = platform_readiness(deps)
+        self.assertFalse(report['deploymentReady'])
+        self.assertEqual(set(report['providersAssembled']), {entry['provider'] for entry in report['missing']})
+        self.assertFalse(report['operations']['data_query']['available'])
+        self.assertEqual(report['connectivity'], 'not_checked')
+        self.assertEqual(self.deps.dqe.calls, [])
+
+    async def test_stock_entry_requires_explicit_discovery_or_host_assembly(self):
+        with self.assertRaises(DeploymentReadinessError) as caught:
+            create_production_platform_server()
+        self.assertIn('current_turns', {item['provider'] for item in caught.exception.report['missing']})
+        self.assertIsNotNone(create_production_platform_server(protocol_discovery=True))
+
+    async def test_sqlite_record_is_visible_to_another_process_and_cas_conflicts(self):
+        self.assertTrue(await self.store.compare_and_swap('work', 'shared', 0, {'value': 1}))
+        code = (
+            'import asyncio, json, sys; '
+            'from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState; '
+            's=SqlitePlatformState(sys.argv[1]); '
+            'v,x=asyncio.run(s.read("work","shared")); '
+            'print(json.dumps([v,x,asyncio.run(s.compare_and_swap("work","shared",v,{"value":2}))]))'
+        )
+        env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[2] / 'tool'))
+        child = subprocess.run([sys.executable, '-c', code, self.store.path],
+                               capture_output=True, text=True, env=env, check=True)
+        self.assertEqual(json.loads(child.stdout), [1, {'value': 1}, True])
+        self.assertFalse(await self.store.compare_and_swap('work', 'shared', 1, {'value': 3}))
+        self.assertEqual(await self.store.read('work', 'shared'), (2, {'value': 2}))
+
     async def test_registered_tools_schemas_and_public_text_save_preview(self):
         async with Client(create_platform_mcp_server(self.app)) as client:
             tools = await client.list_tools()
@@ -116,11 +164,45 @@ class PlatformV2Test(unittest.IsolatedAsyncioTestCase):
         self.assertIn('initial', value['previewJson']['dataSources']['result']['source'])
         self.assertEqual(value['document'], self.service.calls[0]['document'])
 
+    async def test_query_without_extra_field_provider_uses_stable_ids_and_validates_rows(self):
+        self.deps = replace(self.deps, source_description=None)
+        self.app = self.make()
+        summary, value = await self.build_data()
+        self.assertEqual(summary['saveStatus'], 'saved')
+        fields = value['document']['dataSources']['result']['fields']
+        self.assertEqual(len(fields), 2)
+        self.assertTrue(all(key.startswith('result-field-identity-') for key in fields))
+        self.assertEqual(len(self.deps.dqe.calls), 1)
+
+    async def test_non_http_adapter_checks_every_returned_row(self):
+        from metriccanvas_authoring.data.execution import DqeExecutionResult
+        self.deps = replace(self.deps, source_description=None)
+        self.app = self.make()
+        async def bad(query):
+            return DqeExecutionResult(rows=[{'区域': '华东', 'Tokens请求量': 18}] * 20 +
+                                      [{'区域': '华南', 'Tokens请求量': None}])
+        self.deps.dqe.execute = bad
+        result = await self.app.query('current-context', query_request())
+        self.assertEqual(result['results'][0]['status'], 'failed')
+        self.assertEqual(result['results'][0]['issues'][0]['code'], 'SOURCE_ROW_TYPE_MISMATCH')
+
     async def test_plan_and_evidence_authorization_fail_before_query(self):
         for field, code in [('confirmed', 'ANALYSIS_PLAN_NOT_CONFIRMED'), ('allowed', 'MODEL_EVIDENCE_UNAVAILABLE')]:
             setattr(self.auth, field, False)
             with self.assertRaisesRegex(ContentBaselineError, code): await self.app.query('current-context', query_request())
             setattr(self.auth, field, True)
+        self.assertEqual(self.deps.dqe.calls, [])
+
+    async def test_confirmation_must_echo_exact_binding_request_and_version(self):
+        original = self.auth.authorize
+        for mismatch in ('binding', 'requestSha256', 'dataContextVersion'):
+            async def wrong(binding, request, version, field=mismatch):
+                grant = await original(binding, request, version)
+                grant[field] = 'other'
+                return grant
+            self.auth.authorize = wrong
+            with self.subTest(field=mismatch), self.assertRaisesRegex(ContentBaselineError, 'ANALYSIS_PLAN_NOT_CONFIRMED'):
+                await self.app.query('current-context', query_request())
         self.assertEqual(self.deps.dqe.calls, [])
 
     async def test_same_query_reuses_success_and_failure_without_dqe_retry(self):

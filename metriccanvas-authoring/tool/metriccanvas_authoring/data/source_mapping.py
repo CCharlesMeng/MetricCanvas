@@ -102,6 +102,42 @@ def map_source_description(unit, description, data_context_version):
     return replace(unit, fields=fields)
 
 
+def derive_source_fields(unit):
+    """Give a new query source repeatable field IDs from its governed request.
+
+    These are scoped identities for new page sources, not claims that a display
+    caption is a permanent upstream field ID. Existing page fields are never
+    rewritten by this function.
+    """
+    item = unit.query_body['dsl_list'][0]
+    selections = [('dimension', value) for value in item['output_dims']]
+    selections += [('measure', value) for value in item['output_metrics']]
+    _require(len(selections) == len(unit.fields), 'SOURCE_SEMANTIC_MAPPING_MISMATCH')
+    prefix = unit.data_source_id if re.match(r'^[A-Za-z_]', unit.data_source_id) else 'source-' + unit.data_source_id
+    fields = {}
+    query_names = set()
+    identities = set()
+    for original, (role, selected) in zip(unit.fields.values(), selections, strict=True):
+        # A formula's expression identifies the selection; its alias is only
+        # the output column name and may change without changing its meaning.
+        identity_value = selected['formula'] if isinstance(selected, dict) else selected
+        time_level = (unit.scope.granularity if role == 'dimension'
+                      and original['queryField'] == f'{selected}({unit.scope.granularity})'
+                      else None)
+        identity = canonical_json([unit.scope.business_domain, role, identity_value, time_level])
+        _require(identity not in identities, 'SOURCE_FIELD_IDENTITY_DUPLICATE')
+        identities.add(identity)
+        query_field = original['queryField']
+        _require(query_field not in query_names, 'SOURCE_SEMANTIC_MAPPING_MISMATCH')
+        query_names.add(query_field)
+        digest = hashlib.sha256(identity.encode('utf-8')).hexdigest()
+        readable = _id_part(query_field) or 'identity'
+        field_id = f'{prefix}-field-{readable}-{digest[:16]}'
+        _require(_FIELD.is_valid(original), 'SOURCE_FIELD_CONTRACT_MISMATCH')
+        fields[field_id] = deepcopy(original)
+    return replace(unit, fields=fields)
+
+
 def validate_mapped_rows(fields, rows):
     """Validate every returned raw row, including rows beyond the initial sample.
 

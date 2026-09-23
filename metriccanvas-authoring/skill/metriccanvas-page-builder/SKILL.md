@@ -29,7 +29,7 @@ metadata:
 3. 安装 Relay Page Artifact Adapter，使其截获 `compose_page` 的完整页面构建产物、写入最新会话检查点，并仅向模型返回安全摘要。
 4. 接通真实 Data Context 与 DQE Adapter。未接通时工具会返回结构化失败，不得使用测试夹具或模型补造数据继续执行。
 
-发布时先在 `tool/` 构建 `metriccanvas_authoring-0.3.0.tar.gz`。Relay 通过 `uvx`
+发布时先在 `tool/` 构建 `metriccanvas_authoring-0.3.1.tar.gz`。Relay 通过 `uvx`
 从该 sdist 临时安装并启动可执行入口；将所有 `<...>` 替换为部署值：
 
 ```json

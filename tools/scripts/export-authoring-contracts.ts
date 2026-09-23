@@ -49,7 +49,7 @@ const authoredAgentConformance = path.join(
   authoringContractRoot,
   'authored/agent-conformance.schema.json'
 );
-const authoringContractVersion = '0.3.0';
+const authoringContractVersion = '0.3.1';
 const snapshotRoot = path.join(bundleRoot, 'contract-snapshot');
 // 旧接口仅供退场中的客户端对照；提供方新接口以 #105 为准。
 const legacyContractRoot = path.join(repoRoot, 'tools/fixtures/legacy-contracts');
@@ -589,8 +589,8 @@ async function buildBundleLock(): Promise<string> {
   const bundle = JSON.parse(await readFile(path.join(bundleRoot, 'bundle.json'), 'utf8')) as {
     bundleVersion: string;
   };
-  // 本机工具产物不是 Bundle 的一部分:虚拟环境、缓存目录只在开发机存在,进锁文件会让 CI 判定漂移。
-  const localOnlyDirectories = new Set(['.venv', 'venv', '.pytest_cache', '.mypy_cache', '.ruff_cache']);
+  // 构建产物不能进入源 Bundle 的锁，否则 ZIP 包含锁文件后会形成自引用，导致每次打包都漂移。
+  const localOnlyDirectories = new Set(['.venv', 'venv', '.pytest_cache', '.mypy_cache', '.ruff_cache', 'dist']);
   const artifactPaths = (await listFiles(bundleRoot)).filter(
     (file) =>
       file !== 'bundle.lock.json' &&

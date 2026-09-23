@@ -11,10 +11,14 @@ Workflow 指导模型选择与组织任务；权限、引用、版本、预算�
 | 页面表达 | resultRef、章节、字段选择与受控操作 | 标题/对象/期间一致；指标与单位相容；引用可追溯；章节顺序符合用户问题 | 不用无证据内容填充版面；未覆盖需求逐项报告 |
 | 页面修改 | page_id、expected_version、operations；新建使用 compose 请求 | 目标页匹配、Java 当前基线匹配、工作版本竞争成功，逐操作整页校验 | 过期基线回到集成程序重建轮次；不自动合并或重放 |
 | 草稿保存 | 合法且有变化的定义，冻结的 base 与 operationId | saveStatus=saved 且 ref/draftId/artifactRef 完整 | unknown/pending/rejected 停止发送；程序核对原提交 |
-| 预览交付 | 保存返回的精确 artifactRef | page_metadata_emit_preview 返回 ready | 只修复预览交付，不再次查数或保存；ready 不证明用户已看到 |
+| 产物交接 | 保存返回的精确 artifactRef | page_metadata_emit_preview 返回 ready，且 artifactRef/ref 匹配 | 已保存但交接失败时保留保存状态，只修复交接，不再次查数或保存；ready 不证明用户已看到 |
 | 最终答复 | 逐项操作与保存/预览回执 | 说明完成项、partial 缺口、保存状态；ready 时保留两个字面标记 | 不把合法 Schema、预览准备好或计划确认说成已发布 |
 
 ## 工具强制执行的边界
+
+将基础设施错误与用户计划状态分开处理：`CURRENT_TURN_UNAVAILABLE`、`WORK_STORE_UNAVAILABLE`、`ANALYSIS_AUTHORIZATION_UNAVAILABLE`、`SAVE_CAPABILITY_UNAVAILABLE` 和 `RELAY_PREVIEW_UNAVAILABLE` 表示部署接口未装配，停止受影响操作并报告接口位置；不重复调用、不伪造 contextRef、不切换旧流程。`ANALYSIS_PLAN_NOT_CONFIRMED` 表示当前请求、确认范围或数据上下文版本没有匹配的确认记录，等可信程序取得对应确认后才查询。参数能力缺失只影响参数流程。`CURRENT_TURN_STALE`、`RESULT_VERSION_STALE` 和 `CURRENT_PAGE_STALE` 要由可信程序建立新轮次或重新核对，模型不能自行替换 binding。
+
+保存 `unknown/pending/rejected` 时保留冻结提交和 operationId，停止自动重发并交程序核对。保存已成功而交接失败时只用相同 artifactRef 重试交接；交接 Adapter 必须返回匹配 artifactRef/ref 的接收回执。程序通道保存完整 document/previewJson，模型只读摘要；子进程 env 不承担向父进程回传产物。
 
 默认单轮共享预算：24 次调用、3 轮业务查询、2 次页面修改、300 秒；证据每结果最多 20 行、16000 字节，累计 96000 字节。部署可注入其他 Limits；以实际错误为准，不能换 context_ref 绕过预算。相同查询复用已记录结果，包括失败；只修改表达时不重查。
 

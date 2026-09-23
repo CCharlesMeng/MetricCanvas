@@ -605,7 +605,20 @@ function queryContractErrors(
   const errors: TypedError[] = [];
   const query = dataSource.source.query;
   const item = query.body.dsl_list[0];
-  const dimensions = stringArray(item.output_dims);
+  const rawDimensions = stringArray(item.output_dims);
+  const filter = item.filter;
+  const time = typeof filter === 'object' && filter !== null && 'time' in filter
+    ? filter.time : undefined;
+  const period = typeof time === 'object' && time !== null && 'period' in time
+    && typeof time.period === 'string' ? time.period : undefined;
+  const mappedNames = new Set(Object.values(dataSource.fields)
+    .filter(hasQueryFieldMapping).map((field) => field.queryField));
+  // DQE keeps the base caption in output_dims, then returns a selected time
+  // level under caption(period). Existing base-caption pages remain valid.
+  const dimensions = rawDimensions.map((name) => {
+    const level = period && `${name}(${period})`;
+    return level && mappedNames.has(level) ? level : name;
+  });
   const metrics = dqeMetricNames(item.output_metrics);
   const outputs = new Set([...dimensions, ...metrics]);
   const mapped = new Map<string, string>();

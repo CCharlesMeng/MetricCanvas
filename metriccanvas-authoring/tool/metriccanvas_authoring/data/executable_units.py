@@ -180,7 +180,13 @@ def _field_contracts(
         )
         field_number += 1
         fields[f"field-{field_number}"] = {
-            "queryField": canonical_name,
+            # The DSL names a time dimension by its base caption, while DQE
+            # returns its selected level as e.g. "周期(month)".
+            "queryField": (
+                f"{canonical_name}({granularity})"
+                if declaration.is_time and granularity is not None
+                else canonical_name
+            ),
             "type": (
                 "date"
                 if declaration.is_time and granularity == "day"
@@ -208,7 +214,10 @@ def _field_contracts(
                     if metric.get("unit") is None
                     else {"unit": metric["unit"]}
                 ),
-                "nullable": False,
+                # A valid formula may return null (for example a guarded
+                # division by zero); the formula request has no non-null
+                # guarantee in the data context.
+                "nullable": True,
             }
             continue
         name = str(metric["name"])

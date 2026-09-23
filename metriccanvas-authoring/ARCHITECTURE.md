@@ -1,6 +1,6 @@
 # MetricCanvas 创作架构
 
-Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../docs/adr/0083-platform-evidence-work-and-internal-draft-save.md) 与 [ADR-0090](../docs/adr/0090-authoring-flow-hard-cutover-and-version-vocabulary.md)，部署接口与状态约束见[平台协议](contracts/authored/platform-v2-protocol.md)。生产只保留平台现行创作流程；历史候选链不属于生产入口。
+Bundle 0.3.1 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../docs/adr/0083-platform-evidence-work-and-internal-draft-save.md) 与 [ADR-0090](../docs/adr/0090-authoring-flow-hard-cutover-and-version-vocabulary.md)，部署接口与状态约束见[平台协议](contracts/authored/platform-v2-protocol.md)。生产只保留平台现行创作流程；历史候选链不属于生产入口。
 
 逐文件阅读顺序与问题定位见 [Tool 阅读指南](tool/README.md)。
 

@@ -141,7 +141,7 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
 
             contents = await client.read_resource("metriccanvas://bundle-info")
             info = json.loads(contents[0].text)
-            self.assertEqual(info["bundleVersion"], "0.3.0")
+            self.assertEqual(info["bundleVersion"], "0.3.1")
             self.assertEqual(info["transport"], "stdio")
 
     async def test_discovery_exposes_governed_details_and_term_resolution(

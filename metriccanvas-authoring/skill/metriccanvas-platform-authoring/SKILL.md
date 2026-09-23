@@ -38,7 +38,7 @@ read_page_context 返回 pageId、当前 workVersion 与 Java 核对过的 ref�
 
 compose_page/edit_page 内部保存合法变化，包括 partial。逐项说明 applied/failed/skipped；核心证据不足时保留未完成状态，不声称回答完整。全失败、无变化或页面非法不新增保存。冲突或未知保存保留工作并停止，由程序核对原提交，不能更换入口或参数重发。
 
-saveStatus=saved 且有可核验 ref/draftId 才说已保存。随后调用 page_metadata_emit_preview，传工具返回的 artifactRef；系统将匹配的产物注入 Relay。预览失败只修复交付，不能再次保存。工具报告 ready 后最终响应原样包含：
+saveStatus=saved 且有可核验 ref/draftId 才说已保存。随后调用 page_metadata_emit_preview，传工具返回的 artifactRef；部署 Adapter 接收匹配产物后才返回 ready。预览失败只修复交接，不能再次保存。ready 表示 Adapter 接收成功，不表示用户已看到页面。工具报告 ready 后最终响应原样包含：
 
 ```text
 {{RESPONSE_START}}

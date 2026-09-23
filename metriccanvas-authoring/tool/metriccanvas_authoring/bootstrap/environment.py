@@ -53,6 +53,7 @@ LIFECYCLE_OUTPUTS_DIRECTORY_ENV = "METRICCANVAS_LIFECYCLE_OUTPUTS_DIR"
 
 
 class _UnconfiguredDataContextPort:
+    configured = False
     def __init__(self, message: str) -> None:
         self._message = message
 
@@ -61,6 +62,7 @@ class _UnconfiguredDataContextPort:
 
 
 class _UnconfiguredDqeExecutionPort:
+    configured = False
     def __init__(self, message: str) -> None:
         self._message = message
 

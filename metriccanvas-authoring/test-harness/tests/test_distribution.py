@@ -15,10 +15,17 @@ RELAY_CONFIG = (
 
 
 class DistributionContractTest(unittest.TestCase):
+    def test_build_artifacts_are_not_source_bundle_inputs(self) -> None:
+        lock = json.loads((BUNDLE_ROOT / "bundle.lock.json").read_text(encoding="utf-8"))
+        self.assertFalse(any(
+            "dist" in artifact["file"].split("/")
+            for artifact in lock["artifacts"]
+        ))
+
     def test_distribution_exposes_pinned_stdio_cli(self) -> None:
         project = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
 
-        self.assertEqual(project["project"]["version"], "0.3.0")
+        self.assertEqual(project["project"]["version"], "0.3.1")
         self.assertEqual(
             project["project"]["scripts"]["metriccanvas-authoring"],
             "metriccanvas_authoring.entrypoints.compat.server:main",

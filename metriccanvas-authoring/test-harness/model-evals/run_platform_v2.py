@@ -222,6 +222,13 @@ def _stdio(state_path):
                           env=env, cwd=str(ROOT))
 
 
+async def _call_oneshot(state_path, name, arguments):
+    # Mirror Relay's process lifecycle: one fresh stdio server per tool call.
+    # Binding and SQLite location are supplied unchanged by the trusted host.
+    async with Client(_stdio(state_path)) as client:
+        return await client.call_tool(name, arguments, raise_on_error=False)
+
+
 async def _execute_case(case, fixture, instructions, base_url, output, dependencies, transport):
     folder = output / case["id"]
     folder.mkdir(parents=True)
@@ -267,7 +274,7 @@ async def _execute_case(case, fixture, instructions, base_url, output, dependenc
             for call in calls:
                 name = call["function"]["name"]
                 arguments = json.loads(call["function"]["arguments"])
-                result = await client.call_tool(name, arguments, raise_on_error=False)
+                result = await _call_oneshot(state_path, name, arguments)
                 value = result.structured_content
                 if value is None:
                     raise RuntimeError("MODEL_TOOL_INPUT_INVALID")

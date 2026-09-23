@@ -222,6 +222,7 @@ class DqeHttpExecutionPortTest(unittest.IsolatedAsyncioTestCase):
         invalid_rows = (
             [{"区域": "华东"}],
             [{"区域": "华东", "Tokens请求量": "18"}],
+            [{"区域": "华东", "Tokens请求量": float('nan')}],
             ["not-an-object"],
         )
         for rows in invalid_rows:

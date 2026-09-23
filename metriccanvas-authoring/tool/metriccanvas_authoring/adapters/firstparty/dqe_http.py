@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import math
 import socket
 import urllib.error
 from collections.abc import Callable
@@ -300,7 +301,8 @@ def _violates_field(value: Any, field: Mapping[str, Any]) -> bool:
     if field_type == "string":
         return not isinstance(value, str)
     if field_type in {"number", "money"}:
-        return not isinstance(value, (int, float)) or isinstance(value, bool)
+        return (not isinstance(value, (int, float)) or isinstance(value, bool)
+                or isinstance(value, float) and not math.isfinite(value))
     if field_type == "boolean":
         return not isinstance(value, bool)
     if field_type == "date":
