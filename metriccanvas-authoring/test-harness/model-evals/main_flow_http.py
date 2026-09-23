@@ -136,13 +136,20 @@ def _handler(state: MainFlowState):
             if path == DQE_PATH:
                 if not self._authorized(dqe=True):
                     return
-                rows = None
-                if body == state.fixture["query"]:
-                    rows = state.fixture["rows"]
-                elif body == state.fixture["supplementQuery"]:
-                    rows = state.fixture["supplementRows"]
-                item = {"code": "SUCCESS", "data": deepcopy(rows), "total_count": len(rows)} if rows is not None else {"code": "NO_MATCH", "data": [], "total_count": 0, "message": "unsupported fixture query"}
-                self._send(200, {"retCode": "CBC.0000", "retDesc": None, "results": [item]}, request_body=body)
+                known = [(state.fixture["query"]["dsl_list"][0], state.fixture["rows"]),
+                         (state.fixture["supplementQuery"]["dsl_list"][0], state.fixture["supplementRows"])]
+                known.extend((query["dsl_list"][0], state.fixture["complexRows"][source_id])
+                             for source_id, query in state.fixture.get("complexQueries", {}).items())
+                units = body.get("dsl_list") if isinstance(body, dict) and set(body) == {"dsl_list"} else None
+                if not isinstance(units, list) or not units:
+                    units = [None]
+                results = []
+                for unit in units:
+                    rows = next((rows for query, rows in known if unit == query), None)
+                    results.append({"code": "SUCCESS", "data": deepcopy(rows), "total_count": len(rows)}
+                                   if rows is not None else {"code": "NO_MATCH", "data": [], "total_count": 0,
+                                                             "message": "unsupported fixture query"})
+                self._send(200, {"retCode": "CBC.0000", "retDesc": None, "results": results}, request_body=body)
                 return
             if path == ASSETS_PATH:
                 if not self._authorized():

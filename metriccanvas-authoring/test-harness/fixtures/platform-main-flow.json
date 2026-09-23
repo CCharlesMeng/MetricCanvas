@@ -2,7 +2,7 @@
   "dataset": {
     "id": "operations-dataset",
     "caption": "运营分析",
-    "description": "Tokens 服务运营分析",
+    "description": "Tokens 服务运营分析，含请求量和失败请求量",
     "workspace_id": "w",
     "update_date": 1788400000000,
     "logical_schema": {
@@ -14,6 +14,11 @@
             "synonyms": [
               "大区"
             ],
+            "dimension_type": "stringDimension"
+          },
+          {
+            "name": "模型",
+            "description": "调用的模型类别",
             "dimension_type": "stringDimension"
           },
           {
@@ -52,6 +57,9 @@
             "dimensions": [
               {
                 "name": "区域"
+              },
+              {
+                "name": "模型"
               }
             ],
             "timeDimensions": [
@@ -60,6 +68,30 @@
               }
             ],
             "id": "metric-a",
+            "model_id": "operations-dataset",
+            "workspace_id": "w",
+            "is_agg": true
+          },
+          {
+            "name": "失败请求量",
+            "code": "failed_requests",
+            "definition": "统计期内未成功完成的模型调用请求次数",
+            "unit": "次",
+            "aggregator": "SUM",
+            "dimensions": [
+              {
+                "name": "区域"
+              },
+              {
+                "name": "模型"
+              }
+            ],
+            "timeDimensions": [
+              {
+                "name": "统计周期"
+              }
+            ],
+            "id": "metric-b",
             "model_id": "operations-dataset",
             "workspace_id": "w",
             "is_agg": true
@@ -182,11 +214,23 @@
         "maxQueriesPerBatch": 6,
         "timeoutMs": 20000
       },
-      "security": {"scope": "authoring-service-state"}
+      "security": {
+        "scope": "authoring-service-state"
+      }
     },
-    "defaults": {"nullable": false, "sensitive": false},
+    "defaults": {
+      "nullable": false,
+      "sensitive": false
+    },
     "metricGovernance": {
-      "operations-dataset": {"Tokens请求量": {"isRatio": false}}
+      "operations-dataset": {
+        "Tokens请求量": {
+          "isRatio": false
+        },
+        "失败请求量": {
+          "isRatio": false
+        }
+      }
     }
   },
   "query": {
@@ -266,6 +310,408 @@
       "label": "Tokens请求量",
       "unit": "次",
       "defaultFormat": "number"
+    },
+    "模型": {
+      "logicalId": "model-dimension",
+      "projectionId": "operations-dataset",
+      "type": "string",
+      "role": "dimension",
+      "scale": "none",
+      "nullable": false,
+      "label": "模型"
+    },
+    "统计周期": {
+      "logicalId": "period-dimension",
+      "projectionId": "operations-dataset",
+      "type": "string",
+      "role": "dimension",
+      "scale": "none",
+      "nullable": false,
+      "label": "统计周期"
+    },
+    "失败请求量": {
+      "logicalId": "metric-b",
+      "projectionId": "operations-dataset",
+      "type": "number",
+      "role": "measure",
+      "scale": "none",
+      "nullable": false,
+      "label": "失败请求量",
+      "unit": "次",
+      "defaultFormat": "number"
     }
-  }
+  },
+  "complexRequests": [
+    {
+      "dataSourceId": "summary",
+      "businessDomain": "运营分析",
+      "metrics": [
+        {
+          "kind": "metric",
+          "name": "Tokens请求量"
+        },
+        {
+          "kind": "metric",
+          "name": "失败请求量"
+        }
+      ],
+      "groupBy": [],
+      "filters": [],
+      "time": {
+        "granularity": "month",
+        "start": "2026-08",
+        "end": "2026-08",
+        "providedBy": "user"
+      }
+    },
+    {
+      "dataSourceId": "trend",
+      "businessDomain": "运营分析",
+      "metrics": [
+        {
+          "kind": "metric",
+          "name": "Tokens请求量"
+        },
+        {
+          "kind": "metric",
+          "name": "失败请求量"
+        }
+      ],
+      "groupBy": [
+        "统计周期"
+      ],
+      "filters": [],
+      "time": {
+        "granularity": "month",
+        "start": "2026-06",
+        "end": "2026-08",
+        "providedBy": "user"
+      }
+    },
+    {
+      "dataSourceId": "region",
+      "businessDomain": "运营分析",
+      "metrics": [
+        {
+          "kind": "metric",
+          "name": "Tokens请求量"
+        },
+        {
+          "kind": "metric",
+          "name": "失败请求量"
+        }
+      ],
+      "groupBy": [
+        "区域"
+      ],
+      "filters": [],
+      "time": {
+        "granularity": "month",
+        "start": "2026-08",
+        "end": "2026-08",
+        "providedBy": "user"
+      }
+    },
+    {
+      "dataSourceId": "model",
+      "businessDomain": "运营分析",
+      "metrics": [
+        {
+          "kind": "metric",
+          "name": "Tokens请求量"
+        },
+        {
+          "kind": "metric",
+          "name": "失败请求量"
+        }
+      ],
+      "groupBy": [
+        "模型"
+      ],
+      "filters": [],
+      "time": {
+        "granularity": "month",
+        "start": "2026-08",
+        "end": "2026-08",
+        "providedBy": "user"
+      }
+    }
+  ],
+  "complexQueries": {
+    "summary": {
+      "dsl_list": [
+        {
+          "output_dims": [],
+          "output_metrics": [
+            "Tokens请求量",
+            "失败请求量"
+          ],
+          "filter": {
+            "time": {
+              "period": "month",
+              "start": "2026-08",
+              "end": "2026-08"
+            },
+            "dims": [],
+            "metrics": []
+          },
+          "order": {}
+        }
+      ]
+    },
+    "trend": {
+      "dsl_list": [
+        {
+          "output_dims": [
+            "统计周期"
+          ],
+          "output_metrics": [
+            "Tokens请求量",
+            "失败请求量"
+          ],
+          "filter": {
+            "time": {
+              "period": "month",
+              "start": "2026-06",
+              "end": "2026-08"
+            },
+            "dims": [],
+            "metrics": []
+          },
+          "order": {}
+        }
+      ]
+    },
+    "region": {
+      "dsl_list": [
+        {
+          "output_dims": [
+            "区域"
+          ],
+          "output_metrics": [
+            "Tokens请求量",
+            "失败请求量"
+          ],
+          "filter": {
+            "time": {
+              "period": "month",
+              "start": "2026-08",
+              "end": "2026-08"
+            },
+            "dims": [],
+            "metrics": []
+          },
+          "order": {}
+        }
+      ]
+    },
+    "model": {
+      "dsl_list": [
+        {
+          "output_dims": [
+            "模型"
+          ],
+          "output_metrics": [
+            "Tokens请求量",
+            "失败请求量"
+          ],
+          "filter": {
+            "time": {
+              "period": "month",
+              "start": "2026-08",
+              "end": "2026-08"
+            },
+            "dims": [],
+            "metrics": []
+          },
+          "order": {}
+        }
+      ]
+    }
+  },
+  "complexRows": {
+    "summary": [
+      {
+        "Tokens请求量": 1200,
+        "失败请求量": 60
+      }
+    ],
+    "trend": [
+      {
+        "统计周期": "2026-06",
+        "Tokens请求量": 900,
+        "失败请求量": 54
+      },
+      {
+        "统计周期": "2026-07",
+        "Tokens请求量": 1050,
+        "失败请求量": 52
+      },
+      {
+        "统计周期": "2026-08",
+        "Tokens请求量": 1200,
+        "失败请求量": 60
+      }
+    ],
+    "region": [
+      {
+        "区域": "华东",
+        "Tokens请求量": 540,
+        "失败请求量": 24
+      },
+      {
+        "区域": "华南",
+        "Tokens请求量": 390,
+        "失败请求量": 18
+      },
+      {
+        "区域": "华北",
+        "Tokens请求量": 270,
+        "失败请求量": 18
+      }
+    ],
+    "model": [
+      {
+        "模型": "通用",
+        "Tokens请求量": 700,
+        "失败请求量": 28
+      },
+      {
+        "模型": "推理",
+        "Tokens请求量": 350,
+        "失败请求量": 21
+      },
+      {
+        "模型": "视觉",
+        "Tokens请求量": 150,
+        "失败请求量": 11
+      }
+    ]
+  },
+  "complexSections": [
+    {
+      "id": "overview",
+      "title": "运营概况与月度变化",
+      "pattern": "overview-with-trend",
+      "businessQuestion": "当月请求规模和失败请求情况如何变化",
+      "businessObject": "Tokens服务",
+      "distinctFrom": "当月地域与模型差异",
+      "blocks": [
+        {
+          "id": "sample-note",
+          "type": "text",
+          "body": "本页使用本地样例数据，不代表生产数据。"
+        },
+        {
+          "id": "requests-card",
+          "type": "data",
+          "source": "summary",
+          "component": "metricCard",
+          "fields": [
+            "Tokens请求量"
+          ],
+          "title": "当月请求量",
+          "width": "half"
+        },
+        {
+          "id": "failures-card",
+          "type": "data",
+          "source": "summary",
+          "component": "metricCard",
+          "fields": [
+            "失败请求量"
+          ],
+          "title": "当月失败请求量",
+          "width": "half"
+        },
+        {
+          "id": "monthly-trend",
+          "type": "data",
+          "source": "trend",
+          "component": "lineChart",
+          "fields": [
+            "统计周期",
+            "Tokens请求量"
+          ],
+          "title": "6至8月请求量变化",
+          "width": "full"
+        }
+      ]
+    },
+    {
+      "id": "regional-analysis",
+      "title": "区域差异",
+      "pattern": "comparison",
+      "businessQuestion": "不同区域请求量与失败请求情况有何差异",
+      "businessObject": "区域",
+      "distinctFrom": "模型差异",
+      "blocks": [
+        {
+          "id": "east-note",
+          "type": "text",
+          "body": "2026 年 8 月，华东 Tokens请求量 540 次、失败请求量 24 次，在已返回的华东、华南、华北三个区域中请求量最高。"
+        },
+        {
+          "id": "region-chart",
+          "type": "data",
+          "source": "region",
+          "component": "barChart",
+          "fields": [
+            "区域",
+            "Tokens请求量"
+          ],
+          "title": "区域请求量对比",
+          "width": "full"
+        },
+        {
+          "id": "region-table",
+          "type": "data",
+          "source": "region",
+          "component": "table",
+          "fields": [
+            "区域",
+            "Tokens请求量",
+            "失败请求量"
+          ],
+          "title": "区域请求与失败明细",
+          "width": "full"
+        }
+      ]
+    },
+    {
+      "id": "model-analysis",
+      "title": "模型差异",
+      "pattern": "comparison",
+      "businessQuestion": "不同模型请求量与失败请求情况有何差异",
+      "businessObject": "模型",
+      "distinctFrom": "区域差异",
+      "blocks": [
+        {
+          "id": "model-chart",
+          "type": "data",
+          "source": "model",
+          "component": "barChart",
+          "fields": [
+            "模型",
+            "Tokens请求量"
+          ],
+          "title": "模型请求量对比",
+          "width": "full"
+        },
+        {
+          "id": "model-table",
+          "type": "data",
+          "source": "model",
+          "component": "table",
+          "fields": [
+            "模型",
+            "Tokens请求量",
+            "失败请求量"
+          ],
+          "title": "模型请求与失败明细",
+          "width": "full"
+        }
+      ]
+    }
+  ]
 }

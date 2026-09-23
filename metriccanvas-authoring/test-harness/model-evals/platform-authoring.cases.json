@@ -7,6 +7,7 @@
     "references/tools.md",
     "references/execution.md",
     "references/scenarios.md",
+    "references/reading-design.md",
     "references/scenarios/usage-report.md",
     "references/layouts/report.md",
     "references/layouts/dashboard.md",
@@ -18,7 +19,7 @@
     {
       "id": "create-report",
       "workflow": "create",
-      "injectionSources": ["SKILL.md", "references/tools.md", "references/execution.md", "references/scenarios.md", "references/scenarios/usage-report.md", "references/layouts/report.md", "workflows/create.md", "workflows/data-analysis.md"],
+      "injectionSources": ["SKILL.md", "references/tools.md", "references/execution.md", "references/scenarios.md", "references/reading-design.md", "references/scenarios/usage-report.md", "references/layouts/report.md", "workflows/create.md", "workflows/data-analysis.md"],
       "prompt": "新建一份 2026 年 8 月区域运营报告，采用 report，展示各区域 Tokens 请求量对比与明细。分析计划已经确认，请先取得证据再创建草稿并交付预览。",
       "layout": "report",
       "pageId": "main-flow-report",
@@ -33,7 +34,7 @@
     {
       "id": "create-dashboard",
       "workflow": "create",
-      "injectionSources": ["SKILL.md", "references/tools.md", "references/execution.md", "references/scenarios.md", "references/scenarios/usage-report.md", "references/layouts/dashboard.md", "workflows/create.md", "workflows/data-analysis.md"],
+      "injectionSources": ["SKILL.md", "references/tools.md", "references/execution.md", "references/scenarios.md", "references/reading-design.md", "references/scenarios/usage-report.md", "references/layouts/dashboard.md", "workflows/create.md", "workflows/data-analysis.md"],
       "prompt": "新建一份 2026 年 8 月区域运营概览，明确采用 dashboard，展示各区域 Tokens 请求量对比与明细。分析计划已经确认，请先取得证据再创建草稿并交付预览。",
       "layout": "dashboard",
       "pageId": "main-flow-dashboard",
@@ -43,6 +44,34 @@
         "unit": "次",
         "period": "2026-08",
         "rows": [{"区域": "华东", "Tokens请求量": 18}, {"区域": "华南", "Tokens请求量": 12}]
+      }
+    },
+    {
+      "id": "create-complex-report",
+      "workflow": "create",
+      "injectionSources": ["SKILL.md", "references/tools.md", "references/execution.md", "references/scenarios.md", "references/reading-design.md", "references/scenarios/usage-report.md", "references/layouts/report.md", "workflows/create.md", "workflows/data-analysis.md"],
+      "prompt": "新建一份 2026 年 8 月 Tokens 服务运营分析报告，采用 report。面向运营负责人说明当月请求规模和失败请求情况，并分析 6 至 8 月变化、区域与模型差异，重点关注华东；将简短的华东观察融入区域分析，不单设小章节。分析计划已经确认；请先取得证据，再自行组织完整的阅读顺序和内容。只使用本地样例中真实返回的数值；计划没有提供比率指标，页面中不要自行计算占比、失败率等百分比。明确说明本页为本地样例数据，不代表生产；无需单设口径或数据说明。创建草稿并交付预览。",
+      "layout": "report",
+      "pageId": "main-flow-complex-report",
+      "creationBaseline": "empty",
+      "dataContext": "platform-main-flow.json#complexRequests",
+      "allowedTools": ["read_page_context", "discover_data_context", "query_data", "compose_page", "page_metadata_emit_preview"],
+      "forbidden": ["invented business values", "unapproved derived percentages", "production data claim", "unapproved data request", "unrelated page edits"],
+      "expected": {
+        "title": "2026年8月Tokens服务运营分析报告",
+        "period": "2026-08",
+        "dataSources": ["summary", "trend", "region", "model"],
+        "metrics": [{"name": "Tokens请求量", "unit": "次"}, {"name": "失败请求量", "unit": "次"}],
+        "minimumSections": 4,
+        "minimumComponents": 9,
+        "forbidDerivedPercentages": true,
+        "componentTypes": {"metricCard": 2, "lineChart": 1, "barChart": 2, "table": 2, "text": 1},
+        "rows": {
+          "summary": [{"Tokens请求量": 1200, "失败请求量": 60}],
+          "trend": [{"统计周期": "2026-06", "Tokens请求量": 900, "失败请求量": 54}, {"统计周期": "2026-07", "Tokens请求量": 1050, "失败请求量": 52}, {"统计周期": "2026-08", "Tokens请求量": 1200, "失败请求量": 60}],
+          "region": [{"区域": "华东", "Tokens请求量": 540, "失败请求量": 24}, {"区域": "华南", "Tokens请求量": 390, "失败请求量": 18}, {"区域": "华北", "Tokens请求量": 270, "失败请求量": 18}],
+          "model": [{"模型": "通用", "Tokens请求量": 700, "失败请求量": 28}, {"模型": "推理", "Tokens请求量": 350, "失败请求量": 21}, {"模型": "视觉", "Tokens请求量": 150, "失败请求量": 11}]
+        }
       }
     },
     {

@@ -96,7 +96,7 @@ def create_main_flow_server(state_path: Path, current_turns):
         current_turns=current_turns,
         store=SqlitePlatformState(state_path.parent / "work.db"),
         analysis_authorization=MainFlowAuthorization(
-            [fixture["request"], fixture["supplementRequest"]]),
+            [fixture["request"], fixture["supplementRequest"], *fixture.get("complexRequests", [])]),
         lifecycle_service=KnownLifecycleHttp(base_url + "/user-page-metadata"),
         lifecycle_identities=identities,
         relay_preview=MainFlowPreview(state_path.parent / "preview.json"),

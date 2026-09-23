@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import sys
 import time
 from uuid import uuid4
@@ -77,8 +78,11 @@ def _facts(messages, state):
             if key in value:
                 facts[key] = value[key]
         results = value.get("results") or []
-        if results and results[0].get("resultRef"):
-            facts["resultRef"] = results[0]["resultRef"]
+        for result in results:
+            if result.get("resultRef"):
+                facts["resultRef"] = result["resultRef"]
+                if result.get("dataSourceId"):
+                    facts["resultRef:" + result["dataSourceId"]] = result["resultRef"]
     return facts
 
 
@@ -127,6 +131,19 @@ def action(name, **arguments):
 
 def scripted_actions(case, fixture, state):
     if case["workflow"] == "create":
+        if case["id"] == "create-complex-report":
+            return [
+                action("read_page_context"),
+                action("discover_data_context", query="Tokens 请求量 失败请求量 区域 模型 统计周期"),
+                action("query_data", request={"question": "2026年8月运营概况、区域和模型分布，以及6至8月趋势",
+                    "dataContextVersion": "$dataContextVersion", "requests": deepcopy(fixture["complexRequests"])}),
+                action("compose_page", expected_version="$workVersion", request={
+                    "title": case["expected"]["title"], "layout": case["layout"],
+                    "sources": {request["dataSourceId"]: "$resultRef:" + request["dataSourceId"]
+                                for request in fixture["complexRequests"]},
+                    "sections": deepcopy(fixture["complexSections"])}),
+                action("page_metadata_emit_preview", artifact_ref="$artifactRef"),
+            ]
         return [
             action("read_page_context"),
             action("discover_data_context", query="Tokens 请求量 区域"),
@@ -200,7 +217,7 @@ def _stdio(state_path):
              AUTHORING / "test-harness", HERE]
     env = {"PYTHONPATH": os.pathsep.join(str(path) for path in paths),
            "PYTHONDONTWRITEBYTECODE": "1", "NO_PROXY": "127.0.0.1,localhost",
-           "no_proxy": "127.0.0.1,localhost"}
+           "no_proxy": "127.0.0.1,localhost", "FASTMCP_CHECK_FOR_UPDATES": "off"}
     return StdioTransport(command=sys.executable, args=[str(SERVER_PATH), str(state_path)],
                           env=env, cwd=str(ROOT))
 
@@ -228,8 +245,8 @@ async def _execute_case(case, fixture, instructions, base_url, output, dependenc
     messages = [{"role": "system", "content": instructions}, {"role": "user", "content": json.dumps({
         "userRequest": case["prompt"], "trustedContext": {"context_ref": "current-context",
         "mode": binding["mode"], "platformProtocolVersion": "2.0"},
-        "approvedPlan": {"question": "2026年8月华东区域 Tokens 请求量是多少？" if case["id"] == "edit-add-data" else "2026年8月各区域 Tokens 请求量是多少？",
-                         "requests": [fixture["supplementRequest"] if case["id"] == "edit-add-data" else fixture["request"]]}}, ensure_ascii=False)}]
+        "approvedPlan": {"question": "2026年8月华东区域 Tokens 请求量是多少？" if case["id"] == "edit-add-data" else "2026年8月运营概况、区域和模型分布，以及6至8月趋势" if case["id"] == "create-complex-report" else "2026年8月各区域 Tokens 请求量是多少？",
+                         "requests": deepcopy(fixture["complexRequests"]) if case["id"] == "create-complex-report" else [fixture["supplementRequest"] if case["id"] == "edit-add-data" else fixture["request"]]}}, ensure_ascii=False)}]
     trajectory, artifact, final = [], None, ""
     async with Client(_stdio(state_path)) as client:
         definitions = await client.list_tools()
@@ -271,7 +288,7 @@ async def _execute_case(case, fixture, instructions, base_url, output, dependenc
         dump(folder / "document.json", artifact["document"])
     dump(folder / "trajectory.json", trajectory)
     dump(folder / "final.json", {"content": final})
-    passed, issues = _assess(case, before, artifact, trajectory, final)
+    passed, issues = _assess(case, fixture, before, artifact, trajectory, final)
     result = {"id": case["id"], "workflow": case["workflow"], "passed": passed,
               "status": "pass" if passed else "fail", "issues": issues,
               "toolCalls": len(trajectory), "final": final,
@@ -280,7 +297,7 @@ async def _execute_case(case, fixture, instructions, base_url, output, dependenc
     return result, artifact
 
 
-def _assess(case, before, artifact, trajectory, final):
+def _assess(case, fixture, before, artifact, trajectory, final):
     issues = []
     document = artifact.get("document") if artifact else None
     if document is None or validate_page_document(document):
@@ -291,7 +308,9 @@ def _assess(case, before, artifact, trajectory, final):
         issues.append("PREVIEW_NOT_DELIVERED")
     elif trajectory[-1]["arguments"].get("artifact_ref") != artifact.get("artifactRef"):
         issues.append("PREVIEW_ARTIFACT_MISMATCH")
-    if case["workflow"] == "create":
+    if case["id"] == "create-complex-report":
+        issues.extend(_assess_complex_report(case, fixture, artifact, trajectory))
+    elif case["workflow"] == "create":
         if document["layout"] != case["layout"]:
             issues.append("LAYOUT_MISMATCH")
         expected_chain = ["read_page_context", "discover_data_context", "query_data", "compose_page", "page_metadata_emit_preview"]
@@ -348,6 +367,105 @@ def _assess(case, before, artifact, trajectory, final):
     if "PRIVATE SQL" in json.dumps(trajectory, ensure_ascii=False):
         issues.append("PHYSICAL_SQL_LEAKED")
     return not issues, issues
+
+
+def _assess_complex_report(case, fixture, artifact, trajectory):
+    """Check the final document's business structure and its exact DQE evidence."""
+    issues = []
+    document = artifact["document"]
+    expected = case["expected"]
+    if document["layout"] != case["layout"] or document.get("schemaVersion") != "6.11":
+        issues.append("PAGE_PROTOCOL_MISMATCH")
+    sections = document["sections"]
+    components = [component for section in sections for component in section["components"]
+                  if not component["id"].startswith("structure-")]
+    if len(sections) < expected["minimumSections"] or len(components) < expected["minimumComponents"]:
+        issues.append("PAGE_COMPLEXITY_TOO_LOW")
+    if not any(component["type"] == "reportHeader" and "".join(component.get("props", {}).get("title", "").split()) == "".join(expected["title"].split())
+               for component in components):
+        issues.append("TITLE_MISMATCH")
+    for component_type, minimum in expected["componentTypes"].items():
+        if sum(component["type"] == component_type for component in components) < minimum:
+            issues.append("COMPONENT_COVERAGE_MISSING:" + component_type)
+    visible_provenance = [component.get("props", {}).get("body", "") for component in components
+                          if component["type"] == "text"]
+    visible_provenance.extend(component.get("props", {}).get("badge", "") for component in components
+                              if component["type"] == "reportHeader")
+    if not any("本地样例" in value and "生产" in value for value in visible_provenance):
+        issues.append("SAMPLE_PROVENANCE_MISSING")
+    if any(section["id"] != "header" and (visible := [component for component in section["components"]
+            if not component["id"].startswith("structure-")]) and all(component["type"] == "text" for component in visible)
+           for section in sections):
+        issues.append("TEXT_ONLY_SECTION")
+    if not any(any(component["type"] == "text" and "华东" in component.get("props", {}).get("body", "")
+                   for component in section["components"])
+               and {"barChart", "table"}.issubset({component["type"] for component in section["components"]
+                   if component.get("data", {}).get("main") == "region"}) for section in sections):
+        issues.append("EAST_FOCUS_NOT_IN_REGION")
+    if expected.get("forbidDerivedPercentages") and any(
+            re.search(r"\d+(?:\.\d+)?\s*[%％]", component.get("props", {}).get("body", ""))
+            for component in components if component["type"] == "text"):
+        issues.append("UNAPPROVED_DERIVED_PERCENTAGE")
+    if set(document["dataSources"]) != set(expected["dataSources"]):
+        issues.append("DATA_SOURCE_SET_MISMATCH")
+    preview_sources = artifact.get("previewJson", {}).get("dataSources", {})
+    for source_id in expected["dataSources"]:
+        source = document["dataSources"].get(source_id, {})
+        query = source.get("source", {}).get("query", {}).get("body")
+        if query != fixture["complexQueries"][source_id]:
+            issues.append("QUERY_SCOPE_MISMATCH:" + source_id)
+        rows = preview_sources.get(source_id, {}).get("source", {}).get("initial", {}).get("rows")
+        if rows != expected["rows"][source_id]:
+            issues.append("BUSINESS_ROWS_MISSING:" + source_id)
+        if not any(component.get("data", {}).get("main") == source_id for component in components):
+            issues.append("UNUSED_DATA_SOURCE:" + source_id)
+    fields = [field for source in document["dataSources"].values() for field in source.get("fields", {}).values()]
+    for metric in expected["metrics"]:
+        if not any(field.get("queryField") == metric["name"] and field.get("unit") == metric["unit"] for field in fields):
+            issues.append("METRIC_UNIT_MISSING:" + metric["name"])
+    for component in components:
+        if component["type"] not in {"lineChart", "barChart"}:
+            continue
+        series = component.get("props", {}).get("series", [])
+        source_id = component.get("data", {}).get("main")
+        if len(series) < 2 or source_id not in document["dataSources"]:
+            continue
+        source_fields = document["dataSources"][source_id]["fields"]
+        rows = expected["rows"].get(source_id, [])
+        peaks = []
+        for entry in series:
+            field = source_fields.get(entry.get("field"), {})
+            values = [abs(row.get(field.get("queryField"), 0)) for row in rows]
+            peaks.append(max(values, default=0))
+        if peaks and min(peaks) > 0 and max(peaks) >= 10 * min(peaks):
+            issues.append("CHART_SCALE_COLLAPSES_SERIES:" + component["id"])
+    for source_id in ("region", "model"):
+        types = {component["type"] for component in components if component.get("data", {}).get("main") == source_id}
+        if not {"barChart", "table"}.issubset(types):
+            issues.append("COMPARISON_DETAIL_RELATION_MISSING:" + source_id)
+        if not any({"barChart", "table"}.issubset({component["type"] for component in section["components"]
+                                                     if component.get("data", {}).get("main") == source_id})
+                   for section in sections):
+            issues.append("COMPARISON_DETAIL_NOT_GROUPED:" + source_id)
+    if not any(component["type"] == "lineChart" and component.get("data", {}).get("main") == "trend" for component in components):
+        issues.append("TREND_RELATION_MISSING")
+    if sum(component["type"] == "metricCard" and component.get("data", {}).get("main") == "summary" for component in components) < 2:
+        issues.append("OVERVIEW_METRICS_MISSING")
+    source_order = {source_id: next((index for index, section in enumerate(sections)
+                                    if any(component.get("data", {}).get("main") == source_id for component in section["components"])),
+                                   len(sections)) for source_id in ("summary", "trend")}
+    if source_order["summary"] > source_order["trend"]:
+        issues.append("READING_ORDER_MISMATCH")
+    tools = [item["tool"] for item in trajectory]
+    requests = [request for item in trajectory if item["tool"] == "query_data" and item["summary"].get("status") == "ready"
+                for request in item["arguments"].get("request", {}).get("requests", [])]
+    if sorted(json.dumps(request, ensure_ascii=False, sort_keys=True) for request in requests) != sorted(
+            json.dumps(request, ensure_ascii=False, sort_keys=True) for request in fixture["complexRequests"]):
+        issues.append("UNAPPROVED_OR_MISSING_DATA_REQUEST")
+    chain = ["read_page_context", "discover_data_context", "query_data", "compose_page", "page_metadata_emit_preview"]
+    if any(tool not in tools for tool in chain) or [tools.index(tool) for tool in chain] != sorted(tools.index(tool) for tool in chain):
+        issues.append("CREATE_EVIDENCE_CHAIN_MISSING")
+    return issues
 
 
 async def run(output: Path, scripted: bool = False, case_ids=None):

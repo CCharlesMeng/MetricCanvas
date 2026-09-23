@@ -119,6 +119,16 @@ export const semanticSurface: readonly BusinessDomain[] = [
         valueRange: { min: 2000, max: 90000, decimals: 0 }
       },
       {
+        name: '失败请求量',
+        aliases: [],
+        description: '统计期内失败的模型调用请求次数',
+        unit: '次',
+        additivity: '可加',
+        timeAggregation: '求和',
+        isRatio: false,
+        valueRange: { min: 0, max: 200, decimals: 0 }
+      },
+      {
         name: '客户数',
         aliases: ['在用客户数', '活跃客户数'],
         description:

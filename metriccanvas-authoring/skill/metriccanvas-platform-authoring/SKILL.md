@@ -47,4 +47,4 @@ saveStatus=saved 且有可核验 ref/draftId 才说已保存。随后调用 page
 
 模型不把 JSON 填入标记。只有保存成功但预览失败时，输出响应标记及准确状态，暂不输出预览标记。计划审核的“确认/可以”仅确认分析计划；明确发布意图继续既有部署的维度实例选择与发布路径，本工具集不发布。
 
-按需读[例子](references/examples.md)、[错误](references/errors.md)、[场景与布局](references/scenarios.md)。参考由部署注入或允许的文件读取提供；缺失时报告，不能用业务发现工具搜索文档。进展播报说明当前阶段和必要缺口，最终标记按交付状态输出。
+完整页面创建或重新组织业务章节时先读[阅读层级与表达](references/reading-design.md)；按需读[例子](references/examples.md)、[错误](references/errors.md)、[场景与布局](references/scenarios.md)。参考由部署注入或允许的文件读取提供；缺失时报告，不能用业务发现工具搜索文档。进展播报说明当前阶段和必要缺口，最终标记按交付状态输出。

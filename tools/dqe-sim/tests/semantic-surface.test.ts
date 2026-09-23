@@ -111,6 +111,34 @@ describe('组合式语义面:合法组合出数与分组语义', () => {
     );
   });
 
+  it('运营分析支持请求量与失败请求量的四种页面取数形状', () => {
+    const metrics = ['Tokens请求量', '失败请求量'];
+    const time = { period: 'month', start: '2026-08', end: '2026-08' };
+    const shapes = [[], ['统计周期'], ['区域'], ['模型']];
+    const results = shapes.map((dims) => executeDqeItem(surfaceItem({ metrics, dims, time })));
+
+    for (const result of results) {
+      expect(result.code).toBe('SUCCESS');
+      expect(result.data.length).toBeGreaterThan(0);
+      expect(result.dqe.columns.map((column) => column.caption)).toEqual([
+        ...(['统计周期', '区域', '模型'].filter((name) =>
+          result.data[0]?.[name] !== undefined
+        )),
+        ...metrics
+      ]);
+      for (const row of result.data) {
+        expect(typeof row['Tokens请求量']).toBe('number');
+        expect(typeof row['失败请求量']).toBe('number');
+        expect(row['失败请求量'] as number).toBeLessThanOrEqual(row['Tokens请求量'] as number);
+      }
+    }
+    expect(results[0]?.data).toHaveLength(1);
+    expect(results[1]?.data).toHaveLength(1);
+    for (const result of results.slice(2)) {
+      expect(sum(metricOf(result, '失败请求量'))).toBe(metricOf(results[0]!, '失败请求量')[0]);
+    }
+  });
+
   it('期末值指标的区间聚合等于时间分组的最后一桶', () => {
     const time = { period: 'month', start: '2026-04', end: '2026-06' };
     const aggregate = executeDqeItem(surfaceItem({ metrics: ['客户数'], dims: ['客户级别'], time }));

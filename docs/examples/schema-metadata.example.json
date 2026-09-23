@@ -195,6 +195,22 @@
               "sensitive": false
             },
             {
+              "name": "失败请求量",
+              "type": "number",
+              "description": "统计期内失败的模型调用请求次数",
+              "unit": "次",
+              "additivity": "可加",
+              "timeAggregation": "求和",
+              "isRatio": false,
+              "dimensions": [
+                "区域",
+                "模型",
+                "统计周期"
+              ],
+              "nullable": false,
+              "sensitive": false
+            },
+            {
               "name": "客户数",
               "type": "number",
               "description": "统计期内发起过模型调用的去重客户数,与客户经营域的期末在册口径不同",

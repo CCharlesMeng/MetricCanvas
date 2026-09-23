@@ -11,6 +11,11 @@ const appRoot=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 const repoRoot=resolve(appRoot,'../..');
 const artifact=resolve(process.argv[2]);
 const output=resolve(process.argv[3]);
+const saved=JSON.parse(await readFile(artifact,'utf8'));
+const pageId=saved.ref.pageId;
+const resourceId=saved.ref.resourceId;
+const header=saved.document.sections.flatMap(section=>section.components).find(component=>component.type==='reportHeader');
+if(!header?.props?.title)throw new Error('Saved document has no report header');
 const python=process.env.METRICCANVAS_AUTHORING_PYTHON || resolve(repoRoot,'metriccanvas-authoring/tool/.venv/bin/python');
 const fixture=resolve(repoRoot,'metriccanvas-authoring/test-harness/fixtures/platform-main-flow.json');
 const httpServer=resolve(repoRoot,'metriccanvas-authoring/test-harness/model-evals/main_flow_http.py');
@@ -47,17 +52,31 @@ await page.addInitScript(({baseUrl})=>{window.__METRICCANVAS__={
 const measurements=[];
   for(const width of [1440,640]){
     await page.setViewportSize({width,height:1000});
-    await page.goto(`${platformUrl}?page=main-flow-report&resource=resource-main-flow-report`);
-    await expect(page.getByText('2026年8月区域运营复盘',{exact:true}).first()).toBeVisible();
+    await page.goto(`${platformUrl}?page=${encodeURIComponent(pageId)}&resource=${encodeURIComponent(resourceId)}`);
+    await expect(page.getByText(header.props.title,{exact:true}).first()).toBeVisible();
     await expect(page.getByText('华东',{exact:true}).first()).toBeVisible();
-    await expect(page.getByText('华南',{exact:true}).first()).toBeVisible();
-    await expect(page.getByText('18',{exact:true}).first()).toBeVisible();
-    await expect(page.getByText('12',{exact:true}).first()).toBeVisible();
+    if(pageId==='main-flow-complex-report'){
+      await expect(page.getByText('通用',{exact:true}).first()).toBeVisible();
+      await expect(page.getByText(/1,?200/).first()).toBeVisible();
+    }else{
+      await expect(page.getByText('华南',{exact:true}).first()).toBeVisible();
+      await expect(page.getByText('18',{exact:true}).first()).toBeVisible();
+      await expect(page.getByText('12',{exact:true}).first()).toBeVisible();
+    }
     await expect(page.locator('.bar-chart canvas').first()).toBeVisible();
     await page.waitForTimeout(1800);
     const content=page.locator('.page-content').first();
     await expect(content).toBeVisible();
     await page.screenshot({path:resolve(output,`main-flow-${width}.png`),fullPage:true});
+    const scroll=page.locator('.page-scroll').first();
+    for(const section of saved.document.sections.filter(section=>section.title)){
+      await page.getByRole('heading',{name:section.title,exact:true}).first().scrollIntoViewIfNeeded();
+      await page.screenshot({path:resolve(output,`main-flow-${width}-${section.id}.png`),fullPage:true});
+    }
+    await scroll.evaluate(element=>{element.scrollTop=element.scrollHeight;});
+    const lastSectionTitle=[...saved.document.sections].reverse().find(section=>section.title)?.title;
+    if(lastSectionTitle)await expect(page.getByText(lastSectionTitle,{exact:true}).first()).toBeVisible();
+    await page.screenshot({path:resolve(output,`main-flow-${width}-bottom.png`),fullPage:true});
     const geometry=await content.evaluate(element=>{
       const parent=element.getBoundingClientRect();
       return {left:parent.left,right:parent.right,scrollWidth:element.scrollWidth,clientWidth:element.clientWidth,
@@ -74,7 +93,7 @@ const measurements=[];
   if(errors.length)throw new Error(`Browser page errors: ${errors.join('; ')}`);
   const exchanges=(await readFile(httpLog,'utf8')).trim().split('\n').filter(Boolean).map(line=>JSON.parse(line));
   if(!exchanges.some(exchange=>exchange.path.endsWith('/dsl/execute')))throw new Error('Saved document did not execute DQE after reopen');
-  const result={ok:true,pageId:'main-flow-report',baseUrl:'local-http-fixture',viewports:measurements.map(item=>item.width),
+  const result={ok:true,pageId,baseUrl:'local-http-fixture',viewports:measurements.map(item=>item.width),
     dqeCalls:exchanges.filter(exchange=>exchange.path.endsWith('/dsl/execute')).length,measurements,errors};
   await writeFile(resolve(output,'browser-report.json'),JSON.stringify(result,null,2)+'\n');
   console.log(JSON.stringify({ok:true,viewports:result.viewports,dqeCalls:result.dqeCalls}));
