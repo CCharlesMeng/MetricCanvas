@@ -2056,7 +2056,7 @@
     },
     {
       "file": "contracts/authored/adapter-interface.md",
-      "sha256": "1b8973d9c1f8a731f581fd92e3e2a963a0843a053f9b5e6370408ba4483d5fce"
+      "sha256": "a39db75c4094c310d7b4ac1166c1f99b6b3d7d75a0a2a28b72aa47572af1d200"
     },
     {
       "file": "contracts/authored/agent-conformance.schema.json",
@@ -2188,19 +2188,23 @@
     },
     {
       "file": "examples/adapter_template/factory.py",
-      "sha256": "9c48e99bfc8cfa871fe58f62c43e8a58f962c298d5553fe10d6c35c9ac4f39fc"
+      "sha256": "cea20720d8ac94352d02842d6a9702956730cec9735b30bd3992cda7175a9bf7"
     },
     {
       "file": "examples/adapter_template/firstparty/__init__.py",
       "sha256": "1c5425519688b3b8bbfc06830f0704e46f75b2259043b694643114a72ccee44b"
     },
     {
+      "file": "examples/adapter_template/firstparty/configuration.py",
+      "sha256": "c087e1606fb504628a5a7ad485c0435e7e8643c087d59d905ebf10f4086cfc5a"
+    },
+    {
       "file": "examples/adapter_template/firstparty/data_context_http.py",
-      "sha256": "b2d8eea3f4c62220db63c8b7a4300a70299a279392e87e42256e0813f3fe4d66"
+      "sha256": "3cd1dacbb5ca400aed679bee079540ac5c971d9bb4b55c345afa292f27c9d023"
     },
     {
       "file": "examples/adapter_template/firstparty/dataset_metadata_http.py",
-      "sha256": "2b7ee7f809be3fc50ccc1d7b68d4d4f705b10a976bfcdbf0b30b565dba6932c9"
+      "sha256": "306e20134ab34df8b54cfd8614e600642c205df99973e80c2b7471d1d804e757"
     },
     {
       "file": "examples/adapter_template/firstparty/dqe_http.py",
@@ -2275,6 +2279,10 @@
       "sha256": "d2df63f82020319ff061e436847bfe307d06f1b69bfb62ad6b841f0afd583c0e"
     },
     {
+      "file": "INTEGRATION-IMPROVEMENTS.md",
+      "sha256": "175e609900d28f497667cfa75f6e76771eb1b069e349311f77a49b0db42bb52b"
+    },
+    {
       "file": "INTERNAL-VALIDATION-0.3.1.md",
       "sha256": "972e9eae61c02d3ee2bd790d2ec38e647828b792ab048d42beeeacc36baaf3d0"
     },
@@ -2284,11 +2292,11 @@
     },
     {
       "file": "README.md",
-      "sha256": "8eda20ba8c23d4aaecb7b581590aac77cdc97b59ae26a54d932e596f57f027d0"
+      "sha256": "a20fb71af306ad8089cdda3b830f6359f35375cef03fd2100fd79a79eb338a7f"
     },
     {
       "file": "RELAY-HANDOFF.md",
-      "sha256": "ec1230fd296a6efd79383318316e26cccb560b7ff2aa354ba2402c8d4d6c23ac"
+      "sha256": "fb28100a7c5012ec599cd8d85ed6603aa283075f5ef2f0558c7fcd976dd84233"
     },
     {
       "file": "scripts/check_adapters.py",
@@ -2297,6 +2305,10 @@
     {
       "file": "scripts/check_bundle.py",
       "sha256": "b6d0fc67fc8e8587d597256bda00be8458dff712394717022c773c5306eb68a2"
+    },
+    {
+      "file": "scripts/check_data_context.py",
+      "sha256": "c6e230c4b291329aadce0ad4c06926a2be4412559e1a99fa96edd00638aa47b1"
     },
     {
       "file": "scripts/sync_upstream.py",
@@ -3840,11 +3852,11 @@
     },
     {
       "file": "test-harness/tests/test_data_context_http.py",
-      "sha256": "4bc90a19b23f4e0536da1d16accbbc7d6b2f8cb298c0d3c5b40ecf2a44db91e9"
+      "sha256": "06a5740882b67357381e33238d8733d24ecc8464a8950629c70cf76286306984"
     },
     {
       "file": "test-harness/tests/test_dataset_metadata_http.py",
-      "sha256": "bee7a0286d344ea42811322b0324ef50fba1b66f55f8f109a5baef69cd260d12"
+      "sha256": "e6523b7caea340cd5691825a669c5ed00680d40365bcad21cb5db748543b6c43"
     },
     {
       "file": "test-harness/tests/test_deployment_sync.py",
@@ -4116,7 +4128,7 @@
     },
     {
       "file": "tool/metriccanvas_authoring/data/ports.py",
-      "sha256": "a30f889bec876db33b56348b3f75d2025b2706c07f180e6f8125c4ac22105caa"
+      "sha256": "b80a39eb03583adeba7c81b2f2378a5ff718d6fca5c7af06ffa38ed1b194455e"
     },
     {
       "file": "tool/metriccanvas_authoring/data/query.py",

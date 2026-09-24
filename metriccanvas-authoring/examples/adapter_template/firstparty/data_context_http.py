@@ -309,6 +309,11 @@ def project_lab_snapshot(
     projection: DataContextProjection,
     values_by_dataset: Mapping[str, Mapping[str, Sequence[str]]],
 ) -> dict[str, Any]:
+    diagnostics = inspect_projection_governance(details, projection)
+    if diagnostics['issues']:
+        raise DataContextError('DATA_CONTEXT_GOVERNANCE_REQUIRED',
+            'Data context governance is missing or invalid; run check_data_context.py for locations',
+            diagnostics=diagnostics)
     environment = projection.environment
     updates = [(_required_string(detail, "id"), _update_value(detail)) for detail in details]
     generated_at = _latest_update_timestamp(updates)
@@ -506,9 +511,9 @@ def _project_dimension(
 def _metric_additivity(
     raw: Mapping[str, Any], governance: Mapping[str, Any]
 ) -> str:
-    direct = raw.get("additivity", governance.get("additivity"))
-    if direct in {"可加", "半可加", "不可加"}:
-        return str(direct)
+    direct = _declared_governance(raw, governance, 'additivity', {'可加', '半可加', '不可加'})
+    if direct is not None:
+        return direct
     aggregator = str(raw.get("aggregator") or "").strip().upper()
     if aggregator in {"SUM", "COUNT"} and raw.get("is_agg", raw.get("isAgg")) is not False:
         return "可加"
@@ -525,9 +530,9 @@ def _metric_additivity(
 def _metric_time_aggregation(
     raw: Mapping[str, Any], governance: Mapping[str, Any]
 ) -> str:
-    direct = raw.get("timeAggregation", governance.get("timeAggregation"))
-    if direct in {"求和", "均值", "期末值"}:
-        return str(direct)
+    direct = _declared_governance(raw, governance, 'timeAggregation', {'求和', '均值', '期末值'})
+    if direct is not None:
+        return direct
     aggregator = str(raw.get("aggregator") or "").strip().upper()
     mapping = {
         "SUM": "求和",
@@ -748,3 +753,52 @@ def _optional_property(value: Mapping[str, Any], key: str) -> dict[str, Any]:
 
 def _deepcopy_json(value: Mapping[str, Any]) -> dict[str, Any]:
     return json.loads(json.dumps(value, ensure_ascii=False))
+
+
+def _declared_governance(raw, governance, key, allowed):
+    """Empty declarations may be supplemented; explicit invalid values fail closed."""
+    for source in (raw, governance):
+        value = source.get(key)
+        if value is None or isinstance(value, str) and not value.strip():
+            continue
+        if isinstance(value, str) and value in allowed:
+            return value
+        raise DataContextError('DATA_CONTEXT_GOVERNANCE_REQUIRED', f'metric {key} is invalid')
+    return None
+
+
+def inspect_projection_governance(details, projection):
+    """Collect bounded metadata locations, never raw values, rows or provider errors."""
+    issues = []
+    total = 0
+    for dataset_index, detail in enumerate(details):
+        dataset_id = _required_string(detail, 'id')
+        fields = _required_mapping(_required_mapping(detail, 'logical_schema'), 'field_schema')
+        for group, governance_root in (('metrics', projection.metric_governance),
+                                        ('dimensions', projection.field_governance)):
+            for index, raw in enumerate(_required_sequence(fields, group)):
+                if not isinstance(raw, Mapping):
+                    raise DataContextError('DATA_CONTEXT_ENVELOPE_ERROR', 'metadata field must be an object')
+                name = _first_string(raw, 'name', 'caption', 'code') or ''
+                governance = _governance_for(governance_root, dataset_id, name)
+                properties = ['nullable', 'sensitive']
+                if group == 'metrics':
+                    properties = ['additivity', 'timeAggregation', 'isRatio', *properties]
+                for key in properties:
+                    try:
+                        if key == 'additivity':
+                            _metric_additivity(raw, governance)
+                        elif key == 'timeAggregation':
+                            _metric_time_aggregation(raw, governance)
+                        else:
+                            _required_bool_value(raw, governance, projection.defaults, key, dataset_id, name)
+                    except DataContextError as error:
+                        if error.code != 'DATA_CONTEXT_GOVERNANCE_REQUIRED':
+                            raise
+                        total += 1
+                        if len(issues) < 100:
+                            issues.append({'datasetId': dataset_id, 'field': name, 'property': key,
+                                'path': f'/models/{dataset_index}/logical_schema/field_schema/{group}/{index}/{key}',
+                                'reason': 'invalid' if 'is invalid' in str(error) else 'missing_or_unusable'})
+    return {'stage': 'field_governance', 'issues': issues, 'issueCount': total,
+            'truncated': total > len(issues)}

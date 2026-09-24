@@ -149,7 +149,12 @@ class JavaDatasetMetadataProvider:
     async def current(self):
         # Discovery does not require execution governance. Queries do, and use
         # exactly the same version as discovery when that governance is present.
-        require(self.projection is not None, 'DATA_CONTEXT_GOVERNANCE_REQUIRED')
+        if self.projection is None:
+            raise DataContextError('DATA_CONTEXT_GOVERNANCE_REQUIRED',
+                'Projection is not injected by adapters.factory; load configuration and pass projection explicitly',
+                diagnostics={'stage': 'projection_configuration', 'issues': [
+                    {'path': '/projection', 'property': 'projection', 'reason': 'not_injected'}],
+                    'issueCount': 1, 'truncated': False})
         value = await self._read()
         require(not value['issues'], 'DATA_CONTEXT_PARTIAL')
         snapshot = project_lab_snapshot(subject_id='java-dataset-metadata', details=value['models'],

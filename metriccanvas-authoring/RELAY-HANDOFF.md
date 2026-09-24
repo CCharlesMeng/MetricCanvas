@@ -58,6 +58,69 @@ return AuthoringAdapters(
 
 普通创建/编辑不要求参数适配。可选的 source_description、metric_relations、parameter_dependencies 根据实际能力提供。若复用公共 SemanticCatalog，在工厂中显式传 `SemanticCatalog(metadata_provider, store)`；其提供方还需 search/detail，不会按 Java 类名自动启用。
 
+## 2.1 发现成功但查询返回 DATA_CONTEXT_GOVERNANCE_REQUIRED
+
+先区分两个阶段：语义发现可以读取原始元数据；执行查询必须取得受治理的数据上下文快照。发现有 matches 不证明查询就绪，更不证明 DQE 已接通。
+
+平台工厂不会自动调用 adapters/environment.py。仅设置 METRICCANVAS_DATA_CONTEXT_PROJECTION_CONFIG 不会自动注入 projection，必须在 factory.py 中显式加载。内部可以采用公共参考 `examples/adapter_template/firstparty/configuration.py`，复制到内部对应位置后这样装配：
+
+```python
+import os
+from metriccanvas_authoring.adapters.firstparty.configuration import create_metadata_provider
+from metriccanvas_authoring.data.semantic_catalog import SemanticCatalog
+
+metadata = create_metadata_provider(
+    java_base_url,
+    identities,
+    projection_path=os.environ.get("METRICCANVAS_DATA_CONTEXT_PROJECTION_CONFIG", ""),
+    dataset_ids=approved_dataset_ids,
+)
+catalog = SemanticCatalog(metadata, store)
+# 在同一个 AuthoringAdapters 中传 data_context=metadata, semantic_catalog=catalog。
+```
+
+变量来自内部可信配置；不要从模型参数取得授权范围。这是装配片段，不是可以绕过身份和轮次实现的完整工厂。参考 helper 只在工厂构造阶段加载本地配置，不发网络请求。
+
+治理配置存放 adapters/config/ 等内部自有位置，复制并核对 `examples/relay/data-context-projection.example.json`。environment.name、security、constraints 等不能省略。示例中的 nullable/sensitive 默认值也需要内部审定，不能当作真实数据事实。
+
+| 内容 | 来源与规则 |
+|---|---|
+| additivity / timeAggregation | 优先采用有效原始声明；原始为 null、空字符串或空白时采用合法治理补充；明确非法声明拒绝，不由聚合函数或后备配置掩盖 |
+| 原始与治理都缺可加性/时间聚合 | 参考代码保留已有 aggregator 推导，但映射必须由指标负责人确认；没有可信依据时拒绝，不设全局默认 |
+| isRatio / nullable / sensitive | 原始布尔值、逐项治理、defaults 依次查找；默认值是治理声明，不是为了过检补的假数据 |
+| metricGovernance / fieldGovernance | 按数据集 ID 与字段名匹配，无通配符；真实字段名不同由内部映射 |
+| 配置覆盖范围 | 所选数据集中的所有指标/维度都会投影，某个未被当前查询使用的指标也可能阻断整个快照 |
+
+可以先限定一组已治理的数据集；注意当前参考接口中 dataset_ids=None 或 [] 表示全量，不能把空列表当作“零权限范围”。真实业务语义由指标/数据治理负责人确认，Java 提供可信字段或内部配置补充，MetricCanvas 负责契约、诊断和公共参考实现。
+
+空值回退不意味着改变已有有效声明的优先级。参考代码不会因为指标使用 SUM 就证明它可以跨时间累加，库存等指标必须核对业务语义；不可加/期末值也不是“未知”的占位值。
+
+配置或范围变化会改变 dataContextVersion。更新后重新发现并重新确认查询，不复用旧版本授权和结果引用。
+
+## 2.2 诊断与采用公共修复
+
+```sh
+.venv/bin/python scripts/check_data_context.py
+```
+
+此命令加载真实内部 factory 并调用 data_context.current()，可能访问内部元数据服务；不调用公共 DQE 执行、页面保存或模型，工厂应只构造对象。成功只表示快照通过校验，报告 DQE/save/relayHandoff=not_checked。
+
+- stage=projection_configuration：配置未注入；检查工厂加载和传入参数。
+- stage=field_governance：查看 issues 中 datasetId、field、property、path、reason；path 相对于适配后的 models/field_schema，不是原始 Java 响应路径。
+- stage=snapshot_validation：快照不符合公共 Schema，检查内部投影。
+- 其他失败只输出稳定错误码，不回显原始异常、HTTP 响应或配置文件内容。
+
+字段诊断最多返回 100 项，并报告 issueCount/truncated。输出包含元数据名称，仅供受信任内部排错，不发送给模型；没有业务行、治理原值、凭据或 SQL。
+
+公共更新不会覆盖现有 adapters，因此已有内部部署要人工采用本批修复：
+
+1. 更新公共源码并重新安装 tool，取得支持 diagnostics 的 DataContextError 和诊断脚本。
+2. 对照 examples/adapter_template/firstparty/data_context_http.py，移植空值回退及治理缺失汇总；保留内部字段映射与认证。
+3. 对照 dataset_metadata_http.py，移植 projection 未注入的结构化诊断；按需加入 configuration.py，并在内部 factory 调用。
+4. 运行内部测试、check_data_context，再重新发现、确认并执行查询，最后创建/编辑验收。
+
+不要求整文件覆盖，特别不要用公共模板覆盖已经接线的内部实现。未移植结构化诊断的旧适配器仍可运行，但诊断脚本只能报告其错误码，无法凭空列出缺失字段。
+
 ## 3. 配置 Relay 并启动
 
 将同一公共提交的 `skill/metriccanvas-platform-authoring/` 整目录安装到 Relay 的 Skill 目录。将 `examples/relay/mcp_configs/metriccanvas-platform-content.json` 复制到内部 `adapters/config/`，替换命令绝对路径，再登记到 Relay 实际 MCP 配置。服务名必须是 `metriccanvas-platform-content`。
@@ -70,7 +133,9 @@ return AuthoringAdapters(
 
 第一条只检查装配，不要求启动时已有用户轮次，不做公共网络探测或页面写入；工厂应仅构造对象，不主动查询。第二条会调用内部轮次提供方。最后一条运行 stdio MCP，等待 Relay 输入；正常启动不应向 stdout 打日志。
 
-每次调用的用户身份由 Relay 已认证上下文注入。可使用调用专属子进程配置或内部安全通道，不能修改 Relay 父进程共享 os.environ 来切换并发用户。不要把 token 放入提交的 JSON、工具参数、日志或模型上下文。数据库与程序通道目录放源码之外。
+Relay 插件的源码维护位置与部署位置不同。轮次插件在 Relay 进程取得用户/会话/页面状态，预览桥接插件在 Relay 进程消费产物时，不能简单搬到 MCP 子进程后删除。源码可归入 adapters/relay/，再部署到 Relay 的 .relay/plugins/ 等指定位置；内部适配器通过可信通道与它们协作。包外的重复 MCP 装配入口可以退役，但需先验证插件职责仍被覆盖。
+
+每次调用的用户身份由 Relay 已认证上下文注入。可使用调用专属子进程配置或内部安全通道，不能修改 Relay 父进程共享 os.environ 来切换并发用户。不要把 token 放入提交的 JSON、工具参数、日志或模型上下文。数据库与程序通道目录放源码之外，必须跨子进程/重启保留所需状态；每次调用新建且退出即删除的临时目录不满足要求。
 
 Relay 必须把 MCP 结果里的 modelSummary 和完整 artifactEnvelope 分开处理；不能把完整页面送回模型再让模型复制。若 Relay 丢弃 structuredContent，内部 relay_preview 需改用已有程序通道接收完整产物。ready 仅证明接收成功，页面实际显示另验。
 
@@ -106,6 +171,12 @@ python3 /path/to/upstream/metriccanvas-authoring/scripts/sync_upstream.py \
 
 公共模板修复会更新 examples/adapter_template，不会覆盖内部实现，内部自行判断是否吸收。工厂契约版本不匹配时先完成内部迁移，不绕过检查。
 
+## 真实接口对账
+
+参考实现的元数据查询使用 X-Auth-Token/x-operator-id 请求头及 body.workspaceId、可选 datasetIds；不是在 body 发送 X-Workspace-Id。DQE 则在请求头传 X-Workspace-Id。页面 POST 新建传 page_id/page_metadata_definition/is_draft，PUT 编辑才传 base_revision_id。
+
+这些是参考实现，不证明真实服务认证相同。appid、Cookie、IAM token，以及是否与其他内部工具调用同一协议，均由内部服务方确认；对账要覆盖响应、资源身份、错误和原子条件更新，不能只比较 URL。
+
 ## 常见故障
 
 | 结果 | 排查位置 |
@@ -115,6 +186,7 @@ python3 /path/to/upstream/metriccanvas-authoring/scripts/sync_upstream.py \
 | ADAPTER_CONTRACT_MISMATCH | 返回类型或接口版本不匹配 |
 | PLATFORM_DEPLOYMENT_NOT_READY / missing | 缺必要方法或页面服务未声明 single_save/current_read |
 | CURRENT_TURN_* / CURRENT_PAGE_* | 身份、轮次、基线或页面当前修订不匹配 |
+| DATA_CONTEXT_GOVERNANCE_REQUIRED | 先运行 check_data_context，区分 projection 未注入与逐字段缺失，按治理负责人确认的事实补充 |
 | ANALYSIS_PLAN_NOT_CONFIRMED | 确认没有绑定精确请求和版本 |
 | SAVE_RECONCILIATION_REQUIRED | 保存结果不明，保留记录并人工/内部程序核对；禁止自动重发 |
 | RELAY_PREVIEW_MISMATCH | 程序接收回执与 artifactRef/ref 不一致 |

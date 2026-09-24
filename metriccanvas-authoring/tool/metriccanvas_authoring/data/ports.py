@@ -15,9 +15,11 @@ JsonObject = Mapping[str, Any]
 class DataContextError(Exception):
     """Stable failure while loading or normalizing governed metadata."""
 
-    def __init__(self, code: str, message: str) -> None:
+    def __init__(self, code: str, message: str, *, diagnostics: dict[str, Any] | None = None) -> None:
         super().__init__(message)
         self.code = code
+        # Trusted local diagnostics only; never automatically sent to the model.
+        self.diagnostics = diagnostics
 
 
 class DataContextPort(Protocol):

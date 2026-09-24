@@ -65,3 +65,13 @@ prepare 输入为 `{binding,operationId,artifactRef,ref,document,previewJson}`�
 适配失败使用对应消费方异常：DataContextError、DqeExecutionError、LifecycleError、ContentBaselineError。不要向模型透传 token、SQL、内部原始响应。内部日志按关联 ID 调查，MCP stdout 只写协议。
 
 公共 test-harness 测试模板和 mock；内部测试应覆盖真实协议映射、拒绝、超时、并发 CAS、跨进程共享与产物回执。完整内部验收顺序见 Bundle 根目录 INTERNAL-VALIDATION-0.3.1.md。
+
+## 数据上下文治理诊断（兼容扩展）
+
+DataContextError 新增可选 diagnostics 属性，默认 None，不改变既有构造调用和模型错误码。只供 scripts/check_data_context.py 等受信任程序读取，MCP 不自动透传。参考结构为 `{stage,issues,issueCount,truncated}`；issues 仅包含 datasetId、field、property、path、reason 等元数据定位，不含原值。字段清单最多 100 项。
+
+当前参考实现中，projection 未注入为 projection_configuration 阶段，逐字段治理不足为 field_governance 阶段，均维持 DATA_CONTEXT_GOVERNANCE_REQUIRED。原始 additivity/timeAggregation 的空值允许治理补充；明确非法值拒绝，不隐式转成有效默认。
+
+projection JSON 是参考适配方式，不是 DataContextPort 的必需实现方式。内部可查询治理服务，只要 current() 返回符合公共 Schema 的受治理快照。真实属性必须由数据治理负责人确认。
+
+详见 Bundle 根目录 RELAY-HANDOFF.md 的治理诊断与人工采用步骤。公共升级保留内部 adapters；旧实现没有 diagnostics 时报告仍可输出错误码。

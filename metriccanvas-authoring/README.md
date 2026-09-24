@@ -20,7 +20,8 @@
 2. [适配接口](contracts/authored/adapter-interface.md)：每项方法、输入输出、错误和行为约束。
 3. [架构](ARCHITECTURE.md)：公共逻辑和内部实现怎样协作。
 4. [内部验收](INTERNAL-VALIDATION-0.3.1.md)：真实环境需要提供的证据。
-5. [源码阅读](tool/README.md)、[契约真源](SOURCES.md)：需要修改公共能力时阅读。
+5. [MC 侧优化清单](INTEGRATION-IMPROVEMENTS.md)：本批治理诊断、参考修复及内部采用方式。
+6. [源码阅读](tool/README.md)、[契约真源](SOURCES.md)：需要修改公共能力时阅读。
 
 ## 交付内容
 

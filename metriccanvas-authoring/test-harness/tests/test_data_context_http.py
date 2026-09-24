@@ -306,6 +306,67 @@ class LabDataContextHttpPortTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(snapshot["id"], "lab-subject:subject one")
         self.assertEqual(attempts, 3)
 
+    async def test_null_governance_uses_confirmed_projection_in_full_snapshot(self):
+        from copy import deepcopy
+        from dataclasses import replace
+        detail = deepcopy(DATASET_DETAIL)
+        metric = detail['logical_schema']['field_schema']['metrics'][0]
+        metric.pop('aggregator')
+        projection = replace(PROJECTION, metric_governance={
+            'operations-dataset': {'Tokens请求量': {
+                'additivity': '不可加', 'timeAggregation': '均值', 'isRatio': False}}})
+        for empty in (None, '', '   '):
+            with self.subTest(empty=empty):
+                metric.update(additivity=empty, timeAggregation=empty)
+                snapshot = await create_port(RoutingTransport(detail=detail), projection).current()
+                result = snapshot['executionEnvironments'][0]['schemas'][0]['metrics'][0]
+                self.assertEqual((result['additivity'], result['timeAggregation']), ('不可加', '均值'))
+        metric.update(additivity='可加', timeAggregation='求和')
+        result = await create_port(RoutingTransport(detail=detail), projection).current()
+        self.assertEqual(result['executionEnvironments'][0]['schemas'][0]['metrics'][0]['additivity'], '可加')
+
+    async def test_governance_diagnostics_collect_properties_without_values(self):
+        from copy import deepcopy
+        from dataclasses import replace
+        detail = deepcopy(DATASET_DETAIL)
+        metric = detail['logical_schema']['field_schema']['metrics'][0]
+        metric.pop('aggregator')
+        metric.update(additivity=None, timeAggregation=None, description='PRIVATE SQL token')
+        detail['logical_schema']['field_schema']['metrics'].append({**metric, 'name': '另一个指标'})
+        projection = replace(PROJECTION, metric_governance={})
+        with self.assertRaises(DataContextError) as caught:
+            await create_port(RoutingTransport(detail=detail), projection).current()
+        report = caught.exception.diagnostics
+        self.assertEqual(report['stage'], 'field_governance')
+        self.assertEqual(report['issueCount'], 6)
+        self.assertEqual({x['property'] for x in report['issues']}, {'additivity', 'timeAggregation', 'isRatio'})
+        self.assertTrue(all(x['datasetId'] == 'operations-dataset' for x in report['issues']))
+        self.assertNotIn('PRIVATE', json.dumps(report))
+        self.assertNotIn('Tokens请求量', str(caught.exception))
+        self.assertFalse(report['truncated'])
+        detail['logical_schema']['field_schema']['metrics'] = [deepcopy(metric) for _ in range(40)]
+        with self.assertRaises(DataContextError) as capped:
+            await create_port(RoutingTransport(detail=detail), projection).current()
+        self.assertEqual(capped.exception.diagnostics['issueCount'], 120)
+        self.assertEqual(len(capped.exception.diagnostics['issues']), 100)
+        self.assertTrue(capped.exception.diagnostics['truncated'])
+
+    async def test_explicit_invalid_governance_is_not_hidden_by_valid_fallback(self):
+        from copy import deepcopy
+        from dataclasses import replace
+        detail = deepcopy(DATASET_DETAIL)
+        metric = detail['logical_schema']['field_schema']['metrics'][0]
+        projection = replace(PROJECTION, metric_governance={
+            'operations-dataset': {'Tokens请求量': {
+                'additivity': '可加', 'timeAggregation': '求和', 'isRatio': False}}})
+        for value in ('unexpected', [], {}):
+            with self.subTest(value=value):
+                metric.update(additivity=value, timeAggregation=value)
+                with self.assertRaises(DataContextError) as caught:
+                    await create_port(RoutingTransport(detail=detail), projection).current()
+                self.assertEqual(caught.exception.code, 'DATA_CONTEXT_GOVERNANCE_REQUIRED')
+                self.assertEqual({x['reason'] for x in caught.exception.diagnostics['issues']}, {'invalid'})
+
     async def test_missing_ratio_governance_fails_closed(self) -> None:
         projection = DataContextProjection.from_mapping(
             {

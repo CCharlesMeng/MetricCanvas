@@ -198,8 +198,11 @@ class DatasetMetadataHttpTest(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn('private', json.dumps(result))
 
     async def test_discovery_query_share_version_and_no_projection_still_allows_discovery(self):
-        with self.assertRaisesRegex(DataContextError, 'GOVERNANCE_REQUIRED'):
+        with self.assertRaisesRegex(DataContextError, 'Projection is not injected') as missing:
             await self.provider.current()
+        self.assertEqual(missing.exception.code, 'DATA_CONTEXT_GOVERNANCE_REQUIRED')
+        self.assertEqual(missing.exception.diagnostics['stage'], 'projection_configuration')
+        self.assertEqual(self.calls, [])
         projected = self.make(projection=PROJECTION)
         found = await projected.search(BINDING, 'Tokens', 5)
         snapshot = await projected.current()
@@ -209,6 +212,47 @@ class DatasetMetadataHttpTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(schemas[0]['objects'][0]['fields'][1]['type'], 'date')
         self.payload['dataset_details'][0]['version'] = 'new-metadata-version'
         self.assertNotEqual((await projected.current())['version'], snapshot['version'])
+
+    async def test_factory_projection_helper_and_diagnostic_command(self):
+        import importlib.util
+        from dataclasses import asdict
+        from adapter_template.firstparty.configuration import create_metadata_provider
+        spec = importlib.util.spec_from_file_location('check_data_context', ROOT/'scripts/check_data_context.py')
+        module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+        missing = await module.inspect_provider(self.provider)
+        self.assertEqual(missing['stage'], 'projection_configuration')
+        config = Path(self.tmp.name)/'projection.json'
+        config.write_text(json.dumps({'environment': PROJECTION.environment, 'defaults': PROJECTION.defaults,
+            'metricGovernance': PROJECTION.metric_governance}))
+        provider = create_metadata_provider(BASE, Identities(), projection_path=str(config),
+                                             dataset_ids=['operations-dataset'])
+        provider.transport = self.transport
+        self.assertEqual(asdict(provider.projection), asdict(PROJECTION))
+        report = await module.inspect_provider(provider)
+        self.assertEqual(report['status'], 'ready')
+        self.assertEqual(report['dqe'], 'not_checked')
+        found = await provider.search(BINDING, '', 5)
+        self.assertEqual(found['dataContextVersion'], report['dataContextVersion'])
+        self.assertNotIn('PRIVATE', json.dumps(report))
+        self.assertNotIn('test-only', json.dumps(report))
+        poisoned = DataContextError('DATA_CONTEXT_GOVERNANCE_REQUIRED', 'token-secret', diagnostics={
+            'stage': 'field_governance', 'issues': [{'property': 'isRatio', 'rawResponse': 'secret'}]})
+        self.assertNotIn('secret', json.dumps(module.diagnostic_report(poisoned)))
+        updated = json.loads(config.read_text()); updated['metricGovernance']['operations-dataset']['Tokens请求量']['isRatio'] = True
+        config.write_text(json.dumps(updated))
+        changed = create_metadata_provider(BASE, Identities(), projection_path=str(config),
+                                            dataset_ids=['operations-dataset'])
+        changed.transport = self.transport
+        self.assertNotEqual((await changed.search(BINDING, '', 5))['dataContextVersion'], report['dataContextVersion'])
+        with self.assertRaises(DataContextError):
+            create_metadata_provider(BASE, Identities(), projection_path='', dataset_ids=['operations-dataset'])
+        config.write_text('{invalid secret content')
+        with self.assertRaises(DataContextError) as invalid:
+            create_metadata_provider(BASE, Identities(), projection_path=str(config))
+        config_report = module.diagnostic_report(invalid.exception)
+        self.assertEqual(config_report['stage'], 'projection_configuration')
+        self.assertEqual(config_report['issues'][0]['reason'], 'unreadable_or_invalid')
+        self.assertNotIn('secret', json.dumps(config_report))
 
     async def test_platform_factory_wires_java_discovery_then_query_with_same_version(self):
         provider = self.make(projection=PROJECTION)
