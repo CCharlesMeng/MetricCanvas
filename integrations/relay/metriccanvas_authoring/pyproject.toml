@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "metriccanvas-relay-authoring"
+version = "0.1.0"
+description = "Relay-owned MetricCanvas platform authoring adapters"
+requires-python = ">=3.12"
+dependencies = ["metriccanvas-authoring==0.3.1"]
+
+[project.scripts]
+metriccanvas-relay-authoring = "metriccanvas_relay_authoring.entrypoint:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/metriccanvas_relay_authoring"]
