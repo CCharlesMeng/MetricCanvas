@@ -60,6 +60,9 @@ jobs:
       - name: 验证创作 Bundle
         run: pnpm authoring:check
 
+      - name: 验证 Relay 独立扩展契约
+        run: python -m unittest discover -s integrations/relay/metriccanvas_authoring/tests -p 'test_*.py'
+
       # 自动包含 apps/platform/tests/dialogue.test.ts；不依赖内网盘古 SDK。
       - name: 单元测试（含对话接缝）
         run: pnpm test
