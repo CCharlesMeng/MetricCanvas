@@ -1,71 +1,121 @@
-# Relay 接入：平台页面创作
+# 公司内部接入：从这里开始
 
-Bundle 0.3.1 的目标入口是 `metriccanvas_authoring.platform_server.create_platform_server`，生产由 Relay 注册的 MCP stdio server 受控启动。这里的 CLI 只表示进程启动方式，不是模型可调用的通用 shell，也不是第二条创作流程。参数与各提供方 Interface 见[平台协议](contracts/authored/platform-v2-protocol.md)。生产不注册历史候选入口，也不在同一轮失败后切换旧流程。
+目标：在本目录内完成 Relay、Java、DQE 和状态存储接线。内部只维护 `tool/metriccanvas_authoring/adapters/`；公共源码由固定 Git 提交更新。当前工厂故意返回 `ADAPTERS_NOT_CONFIGURED`，参考代码不代表真实服务已接通。
 
-普通问数的 metriccanvas-authoring 已移除 build_page 及旧 Java 强保存链，默认即为只返回临时产物的双工具面。旧显式 METRICCANVAS_TOOL_SURFACE=compatibility 会拒绝启动，需移除该配置并将消费者切到 compose_page；不能以新默认行为假装兼容旧 savedRevision 回执。
+## 1. 安装并确认目录完整
 
-平台查询如需展示同比/环比，应注入 ComposePageDependencies.metric_relations。其 resolve 接口接收本轮 binding、数据上下文版本和业务域；现行 QueryResults 验证并按执行期间/字段/对象过滤后持久化。模型只看到受限关系证据，完整关系随对应 resultRef 供装配与编辑核验。未接此能力时，普通取数仍可执行，但需要关系证明的指标卡不能伪造关系生成。
+以下命令在 `metriccanvas-authoring/` 根目录执行，使用 Python ≥3.12。先把该目录提交到公司 Git 仓库，记录取得公共源码的完整 Git 提交号。
 
-## 接入顺序
-
-1. 将用户问题、页面/选中目标随同一次请求交给 Agent。工具执行时从可信宿主取得 current_turns；真实身份、页、基线和 plan confirmation 不由模型自报，不要求工作台先独立调用 MCP。
-2. 注入持久化工作存储、现有数据上下文/DQE、Java 当前资源读取、单次保存服务和身份提供方。普通查询的结果字段契约由本仓派生；确有输出重命名或尺度事实时可注入额外描述扩展，不预设新服务。已有 `KnownLifecycleHttp` 是本仓核验的消费 Adapter；真实 Java 行为仍须部署对账。当前工具协议不要求远端幂等 lookup 或历史 exact-read。Relay 必须把每次调用的可信身份注入 MCP，不能修改主进程共享 `os.environ` 来承载并发用户身份。
-3. 数据创作展示推荐分析计划。用户确认后，授权提供方核对当前 binding、取数请求和版本，并显式许可模型证据通道。计划补充或范围变化须遵守用户授权；配置编辑不强制计划审核。
-4. query_data 返回 modelSummary 中的有界证据；只把摘要交模型。compose/edit 返回摘要与程序 artifactEnvelope，内部已经执行单次草稿保存，Relay/前端不可第二次保存。保存、发布、删除和预览产物注入都由可信程序编排，不暴露为模型可自由组合的低级写工具。
-5. 保存成功后，page_metadata_emit_preview 使用精确 artifactRef，从工作存储拿到对应 document/previewJson/ref；`relay_preview.prepare` 在程序通道接收该产物并回执精确 artifactRef/ref。内部自主实现与既有 Relay 插件/配置相容的通道。工具 `ready` 只证明 Adapter 接收成功；后续卡片替换、前端显示与显示回执由内部页面流程负责。
-6. 模型最终原样输出 `{{RESPONSE_START}}` 和 `{{PAGE_METADATA_PREVIEW_JSON}}`；本仓验收止于 Adapter 接收回执，不把占位符或前端显示作为已完成的本仓交付声明。
-
-## 包外装配与就绪检查
-
-仓内 [包外入口样例](examples/platform-oneshot-host.py) 从 `METRICCANVAS_HOST_ADAPTER_MODULE` 加载 `create_host_adapters()`，复用 `SqlitePlatformState` 和 `KnownLifecycleHttp`。内部模块须提供每次调用的 `current_turns`、`analysis_authorization`、`lifecycle_identities`、`relay_preview`、受治理 `data_context` 和 `dqe`；参数依赖及额外字段描述可选。入口需要稳定的 `METRICCANVAS_WORK_DB`、真实 `METRICCANVAS_LIFECYCLE_COLLECTION_URL`。所有调用同轮保持同一 binding 与工作数据库；不同实例若要共享须自行保证路由与存储可达，不将唯一文件名当恢复方案。
-
-`bootstrap.readiness.platform_readiness` 一次报告缺失提供方、影响操作及配置位置。它只检查装配，不调用模型、DQE 或 Java，不检查连接与业务验收，也不要求启动时已有用户轮次。`current_turn_readiness` 在有 contextRef 的调用中单独核验当前轮次。参数未装配报告为可选能力缺失，不阻塞创建和编辑。随包默认 `metriccanvas-platform-content` 在未装配时以状态 2 拒绝业务启动；只有显式 `METRICCANVAS_PROTOCOL_DISCOVERY=1` 可作九工具协议发现，此模式不能对外宣称业务就绪。
-
-内部 Adapter 的输入输出、错误向量和职责以[正式平台协议](contracts/authored/platform-v2-protocol.md#host-adapter-contract-and-failure-vectors)为准。包外入口是装配模板，不带身份、计划确认、保存回执或交接回执的本地伪实现。oneshot 子进程环境变量可提供该进程的调用配置，不能当作把完整产物回传父进程的通道；若 Relay 丢弃 `structuredContent`，内部应通过已有插件支持的程序通道传递完整产物并回传精确接收回执。
-
-## 原始指标语义层发现
-
-数据集服务契约来自根仓 `service/dataset-detail-java.yaml`，随包副本为 [数据集 YAML](contract-snapshot/data-context/rest-services-dataset-detail.yaml)。平台配置：
-
-```text
-METRICCANVAS_DATASET_DETAIL_BASE_URL=https://<java-host>/rest/cdi/cdinl2databuilderservice/v1
-METRICCANVAS_DATASET_IDS=["<dataset-id>"]
+```sh
+python3.12 -m venv .venv
+.venv/bin/python -m pip install ./tool
+.venv/bin/python -m pip install -r tool/metriccanvas_authoring/adapters/requirements.txt
+.venv/bin/python scripts/check_bundle.py
+.venv/bin/python scripts/check_adapters.py
 ```
 
-配置来自可信部署方；datasetIds 可省略或为空数组，按服务契约表示当前空间全量，非空最多 100 个。工具请求 `POST .../dataset-detail/query-dataset-from-lab`，body 只含 workspaceId 和可选 datasetIds；query/limit 在本地语义卡片投影阶段处理，不伪造 HTTP 搜索参数。普通发现不调用 update-dataset-from-lab，也不将 GET dataset-detail/query 的维度值接口当作语义元数据接口。
+最后一条初次应输出 `ADAPTERS_NOT_CONFIGURED` 并退出 2，这是待接线，不是安装失败。若从公共清单同步得到的目录没有 adapters，先执行：
 
-Java 负责 DB 优先和懒回源 Lab，读取结果可能不是主动刷新后的实时 Lab 状态。适配器不保留跨用户进程级原始元数据缓存。身份由注入的 LifecycleIdentityPort 提供，actorId/workspaceId 必须匹配本轮 binding；发送 X-Auth-Token 与 x-operator-id，workspaceId 写入请求体。无需 Lab 专用 app-code 或直接 Lab URL。进程环境方式读取 METRICCANVAS_OPERATOR_ID、METRICCANVAS_WORKSPACE_ID、METRICCANVAS_AUTH_TOKEN，仍需 Relay 按用户隔离注入。
+```sh
+python3 scripts/sync_upstream.py --target . --init --apply
+```
 
-`create_platform_server` 自动为 Java 元数据提供方装配 SemanticCatalog。整体 retCode 与元素 ret_code 分别校验；部分数据集失败时返回 partial、issues 和 coverage，仍可展示成功数据集的语义卡片，不能将失败当作无指标。所有失败返回 failed。物理 SQL、完整模型与提供方错误原文不进入模型摘要。
+初始化仅在整个 adapters 目录不存在时创建，已有目录一律不填充、不覆盖。它复制 `examples/adapter_template/` 并改为内部包导入路径。新增依赖写 adapters/requirements.txt，不改公共 pyproject.toml。内部源码改动后重新执行安装；开发期可使用 `pip install -e ./tool`。内部 requirements 不自动合入公共包元数据：部署 wheel 时也必须显式安装该依赖文件。
 
-同一 Java 提供方也实现查询使用的 DataContextPort，发现和执行共享基于完整元数据与治理配置计算的本地 dataContextVersion；它不是 Java 的 version 字段。元数据变化后旧引用失效。查询仍需 METRICCANVAS_DATA_CONTEXT_PROJECTION_CONFIG 的显式治理值；缺配置仅阻止执行，不妨碍查看原始定义。部分数据集失败时不构造可执行快照；需恢复访问或由可信程序缩小到明确的数据集范围。单位和定义缺失保持 unknown，不能从名称或物理 SQL 推断。
+## 2. 实现唯一工厂
 
-## 编辑目标与 Java 当前基线
+入口为 `tool/metriccanvas_authoring/adapters/factory.py:create_adapters()`。返回 `bootstrap.adapter_contract.AuthoringAdapters`，接口版本 `authoring-adapters/1.0`。完整方法和数据结构见 [接口说明](contracts/authored/adapter-interface.md)。
 
-平台先依据用户打开的 pageId 解析授权资源，读取 Java 当前完整文档、resourceId 和 revisionId，再构建 current_turns。不能将上一轮会话文档作为本轮创作基线。现有 GET 按 resourceId 读取；pageId 到资源的解析由集成程序负责，不新增或猜测 Java URL。
+按下面顺序分工，每项完成后使用内部单元测试验证：
 
-`read_page_context` 和非重复修改调用都会通过 `lifecycle_service.current_match(identity, ref)` 核对当前资源。模型从读取结果取得 pageId/workVersion，调用 `edit_page(context_ref, page_id, request, expected_version)`；page_id 不匹配、当前修订不匹配、同修订定义变化或读取不可用时停止。由集成程序重读并开启新轮次，不能将旧 operations 自动重放到新基线。
+| 顺序 | 内部实现 | 完成条件 |
+|---|---|---|
+| 1 | relay/ 的身份、current_turns | 能从已认证的调用上下文取得身份、稳定 binding、contextRef、创建空基线或编辑精确基线；不从模型参数推断权限 |
+| 2 | storage/ 的 read/CAS | 多次独立子进程读取同一轮状态；并发 CAS 只有一个成功；退出不清理未知保存记录 |
+| 3 | firstparty/ 的元数据与 DQE | 实际响应转换为 DataContextPort/DqeExecutionResult；字段和版本符合契约 |
+| 4 | relay/ 的 analysis_authorization | 只为已确认的精确请求和数据上下文版本出具授权；错误请求不执行 DQE |
+| 5 | firstparty/ 的页面读写 | 当前修订匹配、服务端条件更新、正确回执与未知结果处理 |
+| 6 | relay/ 的 relay_preview | 程序通道接收完整产物后回执精确 artifactRef/ref；模型只拿摘要 |
 
-同轮保存后以回执 ref 作为下一次编辑基线。Java 保存仍必须原子校验 base_revision_id，覆盖 GET 后发生的竞争。部署至少演练一次“读后他人修改 → 当前编辑拒绝”，以及一次“首次保存 → 下一次编辑读取新修订”。
+firstparty 的 HTTP、relay 的文件/环境和 storage 的 SQLite 都只是可修改的初始实现。逐项核对真实公司接口，不能只填 URL 就宣称接通。不要求重写已符合实际协议的逻辑。
 
-## 三种结果分别报告
+工厂可参考下面的组合形式（变量表示你创建的实际实例，不是可直接运行的 mock）：
 
-- 生成 changed/partial 不等于保存成功；saved 必须有核对通过的草稿回执。
-- 保存成功但预览失败：保留该 artifactRef，仅重试匹配预览；不查数、不保存。
-- saveStatus=unknown/pending/rejected：保留工作与冻结提交，不换 operationId 再发。程序可在当前可信轮次调用 `PlatformAuthoring.recover` 检查；取消后的核对使用 `DraftSaver.recover_authorized` 加现有 RecoveryAuthorityPort，不复活旧轮次写权限。
+```python
+from metriccanvas_authoring.bootstrap.adapter_contract import (
+    ADAPTER_INTERFACE_VERSION, AuthoringAdapters,
+)
 
-只读与运行态不写资产。筛选、排序、翻页使用运行时已有查询，不触发 Agent。明确发布意图继续部署现有的维度实例选择和发布工具流程；计划确认不触发发布。
+return AuthoringAdapters(
+    interface_version=ADAPTER_INTERFACE_VERSION,
+    current_turns=turns, store=store,
+    analysis_authorization=authorization,
+    lifecycle_service=java_pages, lifecycle_identities=identities,
+    relay_preview=preview, data_context=metadata, dqe=dqe,
+    semantic_catalog=catalog,  # 没有指标详情能力可省略；不要假装已装配
+)
+```
 
-## 保存与预览载荷
+普通创建/编辑不要求参数适配。可选的 source_description、metric_relations、parameter_dependencies 根据实际能力提供。若复用公共 SemanticCatalog，在工厂中显式传 `SemanticCatalog(metadata_provider, store)`；其提供方还需 search/detail，不会按 Java 类名自动启用。
 
-`document` 是落库定义，所有 query initial 已剥离；inline 内容仍在定义中。`previewJson` 可以包含本次执行 initial。artifactRef 绑定完整产物、操作与保存修订，禁止回退到缓存中的“最近一个结果”。draftId 映射资源 ID，pageId 与 revisionId 独立。
+## 3. 配置 Relay 并启动
 
-MCP 的结构化结果不是自动安全的模型通道：宿主必须投影 modelSummary。授权证据中的字段、值与 coverage 也属于业务数据，受部署策略保护；凭据、SQL、完整响应和完整页面不得透传。
+将同一公共提交的 `skill/metriccanvas-platform-authoring/` 整目录安装到 Relay 的 Skill 目录。将 `examples/relay/mcp_configs/metriccanvas-platform-content.json` 复制到内部 `adapters/config/`，替换命令绝对路径，再登记到 Relay 实际 MCP 配置。服务名必须是 `metriccanvas-platform-content`。
 
-## 尚需真实部署验收
+```sh
+.venv/bin/python scripts/check_adapters.py
+.venv/bin/python scripts/check_adapters.py --context-ref '<真实可信轮次引用>'
+.venv/bin/metriccanvas-platform-content
+```
 
-本仓没有 Relay 可信轮次注入和内部程序通道实现，不能凭本仓 Python Interface 声称真实交接已完成。内部应完成 prepare Adapter，并验证首次构建、数据修改、样式修改、partial、未知保存、交错请求与交接失败。卡片替换、占位符实际渲染及用户可见状态由内部页面流程另行验收，不属于本批本仓关闭条件。Java 原始指标元数据接口的真实身份、响应和 DQE 执行结果仍须提供实例证据；本地 HTTP 替身不证明服务已接通。
+第一条只检查装配，不要求启动时已有用户轮次，不做公共网络探测或页面写入；工厂应仅构造对象，不主动查询。第二条会调用内部轮次提供方。最后一条运行 stdio MCP，等待 Relay 输入；正常启动不应向 stdout 打日志。
 
-Relay 调查已确认 MCP stdio 是生产入口，但同时发现四项上线阻塞：`agent_context` 尚未注入 MCP 工具调用；当前凭据路径可能退回共享服务账号；子进程内 HTTP 缺少分层超时/取消；写操作缺少贯穿轮次的关联与结果未知处理。远端幂等键和操作结果查询仍未证实，按 ADR-0080 不强制新增；未知写入停止重发并人工核对。以上属于 Relay/Java/部署接线工作，本 Bundle 不把源码调查升级为已验收事实。
+每次调用的用户身份由 Relay 已认证上下文注入。可使用调用专属子进程配置或内部安全通道，不能修改 Relay 父进程共享 os.environ 来切换并发用户。不要把 token 放入提交的 JSON、工具参数、日志或模型上下文。数据库与程序通道目录放源码之外。
 
-本地可运行 `test_platform_v2.py`、`test_semantic_catalog.py`、Skill 契约与 Bundle 检查；`platform_v2_browser.mjs` 使用正式运行时检查本地样例；`run_platform_v2.py` 在明确外部模型授权后执行真实模型/本地夹具评测。后三者均不替代真实 Relay/Java 工作台验收。
+Relay 必须把 MCP 结果里的 modelSummary 和完整 artifactEnvelope 分开处理；不能把完整页面送回模型再让模型复制。若 Relay 丢弃 structuredContent，内部 relay_preview 需改用已有程序通道接收完整产物。ready 仅证明接收成功，页面实际显示另验。
+
+## 4. 验收并回传
+
+公共本地验证（mock，无真实模型）：
+
+```sh
+.venv/bin/python test-harness/run_tests.py --check
+.venv/bin/python -m unittest discover -s test-harness/tests -p 'test_deployment*.py'
+.venv/bin/python -m unittest discover -s test-harness/tests -p 'test_platform_main_flow.py'
+```
+
+真实环境按 [内部验收](INTERNAL-VALIDATION-0.3.1.md) 执行创建和编辑，至少回传：公共提交、内部提交、接口版本、装配报告、各场景结果、脱敏请求关联 ID、DQE/Java 保存/产物接收调用数。禁止回传凭据和真实业务数据。
+
+本地 mock 通过、装配通过、真实服务联通、模型成功、页面实际显示分别记录，不互相替代。
+
+## 5. 后续单向更新
+
+在单独的上游源码检出目录执行 git fetch，选择明确的提交；不要将上游直接 merge 到内部工作目录。使用新上游提交里的同步脚本：
+
+```sh
+python3 /path/to/upstream/metriccanvas-authoring/scripts/sync_upstream.py \
+  --source /path/to/upstream --ref '<公共提交 SHA>' \
+  --target /path/to/internal/metriccanvas-authoring
+```
+
+默认只预览。检查写入、删除列表后，在同一命令末尾加 `--apply`。脚本校验上游公共哈希和当前公共文件；发现本地公共修改、目标冲突或符号链接则停止。同步不操作内部 Git 索引，不提交、不推送，始终保留 adapters。升级前在内部 Git 提交工作区，以便审查与恢复。
+
+更新完成后重新安装、执行 check_bundle 和 check_adapters、运行内部测试与创建/编辑主流程，然后在公司 Git 提交。回退到采用本所有权协议的旧公共提交也使用同一脚本；接口相容性仍须检查。迁移前版本不能自动作为回退源。跨版本内部数据恢复由内部存储实现负责，源码回退不回滚业务数据。
+
+若从迁移前版本升级，旧 adapters 会原样保留；内部需要从新模板手动增加 factory.py，并将旧 service_identity 导入改到公共 data.service_identity。不会自动把旧代码强制改写为新接口。
+
+公共模板修复会更新 examples/adapter_template，不会覆盖内部实现，内部自行判断是否吸收。工厂契约版本不匹配时先完成内部迁移，不绕过检查。
+
+## 常见故障
+
+| 结果 | 排查位置 |
+|---|---|
+| ADAPTERS_NOT_CONFIGURED | factory.py 尚未接线 |
+| ADAPTER_LOAD_FAILED | 内部依赖未安装、导入失败或工厂异常；在内部安全调试环境检查原异常 |
+| ADAPTER_CONTRACT_MISMATCH | 返回类型或接口版本不匹配 |
+| PLATFORM_DEPLOYMENT_NOT_READY / missing | 缺必要方法或页面服务未声明 single_save/current_read |
+| CURRENT_TURN_* / CURRENT_PAGE_* | 身份、轮次、基线或页面当前修订不匹配 |
+| ANALYSIS_PLAN_NOT_CONFIRMED | 确认没有绑定精确请求和版本 |
+| SAVE_RECONCILIATION_REQUIRED | 保存结果不明，保留记录并人工/内部程序核对；禁止自动重发 |
+| RELAY_PREVIEW_MISMATCH | 程序接收回执与 artifactRef/ref 不一致 |
+| Public/local conflicts | 公共区有内部修改；先迁到 adapters 或将公共修复反馈到上游 |

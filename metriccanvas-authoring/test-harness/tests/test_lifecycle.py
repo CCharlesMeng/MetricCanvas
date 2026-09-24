@@ -1,3 +1,7 @@
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 import asyncio
 import json
 import os
@@ -11,7 +15,7 @@ sys.path[:0]=[str(ROOT/'tool'),str(ROOT/'test-harness')]
 from lifecycle_stdio_server import ProposedService, Programs, Identities, save_command, digest
 from metriccanvas_authoring.assets.lifecycle import Lifecycle
 from metriccanvas_authoring.assets.lifecycle_ports import LifecycleIdentity, LifecycleCapabilities, LifecycleError
-from metriccanvas_authoring.adapters.relay.lifecycle_spool import FileLifecyclePrograms
+from adapter_template.relay.lifecycle_spool import FileLifecyclePrograms
 
 
 class LifecycleTest(unittest.IsolatedAsyncioTestCase):

@@ -3,6 +3,10 @@
 State path is trusted startup configuration, never a model argument or tool.
 This adapter establishes no remote identity/latest or restart durability guarantee.
 """
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 from copy import deepcopy
 from dataclasses import replace
 import json
@@ -18,7 +22,7 @@ from metriccanvas_authoring.work.authoring_turns import PreparedAuthoringTurn
 from metriccanvas_authoring.work.content_ports import ContentBaseline, ContentBaselineError
 from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 from metriccanvas_authoring.bootstrap.platform import create_platform_server
-from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
+from adapter_template.storage.platform_state import SqlitePlatformState
 from test_platform_v2 import Authorization, Identities, Service, Preview
 
 
@@ -41,7 +45,7 @@ def fixture_server(state_path):
     deps = dependencies()  # Existing explicitly synthetic Data Context/DQE/descriptor fixtures.
     if state.get('dataProvider') == 'missing-source': deps = replace(deps, source_description=None)
     if state.get('dataProvider') == 'unavailable':
-        from metriccanvas_authoring.bootstrap.environment import unconfigured_data_context, unconfigured_dqe
+        from adapter_template.environment import unconfigured_data_context, unconfigured_dqe
         deps = replace(deps, data_context=unconfigured_data_context('Local fixture intentionally unavailable'),
                        dqe=unconfigured_dqe('Local fixture intentionally unavailable'), source_description=None)
     return create_platform_server(deps, current_turns=turns,

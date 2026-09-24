@@ -1,4 +1,8 @@
 """Trusted query relations survive the public platform compose/edit path."""
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
@@ -11,7 +15,7 @@ from test_authoring_turns import Turns
 from test_platform_v2 import Authorization, Identities, Service, Preview
 from metriccanvas_authoring.pages.platform_authoring import PlatformAuthoring
 from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
-from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
+from adapter_template.storage.platform_state import SqlitePlatformState
 from metriccanvas_authoring.work.state import Limits
 
 

@@ -21,3 +21,5 @@ pnpm authoring:test
 `evaluation` 层测试的是框架；真实模型请求仍由 `model-evals/README.md` 的独立命令发起。`model-evals/evidence/` 与 `history/` 是特定运行的证据，不能用旧记录证明本次成功。`fixtures/` 为本地契约输入。
 
 目录根的 `stdio_*.py` 是交付测试夹具，浏览器入口为 `*.mjs`；它们不是生产入口，也不代替真实 Relay/Java 验收。需要端口、浏览器、模型或外部服务的命令必须在具备对应能力的环境运行；不能将排除后的绿色结果描述为完整门禁通过。
+
+公共适配测试显式使用 `examples/adapter_template`，不依赖内部自有的 `tool/metriccanvas_authoring/adapters`。本地 fakes 和 HTTP fixture 不作为生产回退。内部自己的测试放 adapters/tests。

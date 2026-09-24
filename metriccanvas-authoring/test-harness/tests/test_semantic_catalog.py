@@ -1,9 +1,13 @@
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 import json
 import tempfile
 import unittest
 from pathlib import Path
 from metriccanvas_authoring.data.semantic_catalog import metric_card, SemanticCatalog
-from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
+from adapter_template.storage.platform_state import SqlitePlatformState
 from metriccanvas_authoring.work.content_ports import ContentBaselineError
 
 

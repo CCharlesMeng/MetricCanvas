@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
+
 import asyncio
 import json
 import sys
@@ -12,10 +16,10 @@ import httpx
 BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
-from metriccanvas_authoring.adapters.firstparty.dqe_http import (  # noqa: E402
+from adapter_template.firstparty.dqe_http import (  # noqa: E402
     DqeHttpExecutionPort,
 )
-from metriccanvas_authoring.adapters.service_identity import ServiceIdentity  # noqa: E402
+from metriccanvas_authoring.data.service_identity import ServiceIdentity  # noqa: E402
 from metriccanvas_authoring.data.execution import (  # noqa: E402
     DqeExecutionError,
     DqeExecutionResult,

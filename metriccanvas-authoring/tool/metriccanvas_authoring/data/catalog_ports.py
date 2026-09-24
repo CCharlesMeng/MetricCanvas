@@ -1,0 +1,13 @@
+"""Explicit semantic discovery capability independent of concrete Java clients."""
+from typing import Protocol
+
+
+class SemanticCatalogPort(Protocol):
+    async def discover(self, binding: dict, query: str, limit: int,
+                       detail_refs: list[str]) -> dict: ...
+    async def query_issues(self, binding: dict, request: dict) -> list[dict]: ...
+
+
+class MetricMetadataPort(Protocol):
+    async def search(self, binding: dict, query: str, limit: int) -> dict: ...
+    async def detail(self, binding: dict, source: dict) -> dict: ...

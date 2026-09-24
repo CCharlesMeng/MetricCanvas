@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "internalRoot": "tool/metriccanvas_authoring/adapters",
+  "templateRoot": "examples/adapter_template",
+  "interfaceVersion": "authoring-adapters/1.0",
+  "publicFiles": "bundle.lock.json",
+  "runtimeData": "Keep databases, credentials and runtime artifacts outside the source bundle."
+}

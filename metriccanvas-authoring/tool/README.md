@@ -1,6 +1,6 @@
 # Authoring Tool 阅读指南
 
-这里是一个 Python 服务包，不是一组按顺序执行的脚本。平台创作从一个 MCP 入口进入，其他模块由业务用例调用。先读平台主链，再按问题进入分支；无需逐个阅读所有文件。
+这里是一个 Python 服务包，不是一组按顺序执行的脚本。内部接入先读 [RELAY-HANDOFF.md](../RELAY-HANDOFF.md)：adapters 整个目录归内部维护，本页所列适配文件仅代表初始参考实现。平台创作从一个 MCP 入口进入，其他模块由业务用例调用。先读平台主链，再按问题进入分支；无需逐个阅读所有文件。
 
 ## 第一遍：跟踪一次标题修改
 
@@ -31,7 +31,7 @@
 | 参数提取、无值模板、临时实例 | [pages/parameters/page_parameters.py](metriccanvas_authoring/pages/parameters/page_parameters.py) | 参数引用、失效与程序通道；不自动保存 |
 | 草稿、发布与恢复的职责 | [assets/drafts.py](metriccanvas_authoring/assets/drafts.py)、[assets/lifecycle.py](metriccanvas_authoring/assets/lifecycle.py) | lifecycle_ports.py；发布见 lifecycle_publish.py，不由计划确认触发 |
 | SQLite 状态与进程重启 | [adapters/storage/platform_state.py](metriccanvas_authoring/adapters/storage/platform_state.py) | work/state.py；区分 work、budget、result、submission |
-| 包外最小装配 | [platform-oneshot-host.py](../examples/platform-oneshot-host.py) | bootstrap/readiness.py；内部提供可信轮次、授权、身份和交接 Adapter |
+| 内部接入 | [接入说明](../RELAY-HANDOFF.md) | adapters/factory.py 提供实现，bootstrap/deployment.py 统一装配 |
 | 普通问数的临时页面 | [ask/rules.py](metriccanvas_authoring/ask/rules.py) | bootstrap/compatibility.py、pages/composition/compose_page.py；与平台草稿路径独立 |
 
 ## 文件命名与目录职责

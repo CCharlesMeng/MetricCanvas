@@ -1,4 +1,8 @@
 """Target public behavior and restart tests, independent of legacy candidates."""
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 import asyncio
 import json
 import os
@@ -17,12 +21,12 @@ from authoring_fixtures import plan
 from test_page_editing import title
 from metriccanvas_authoring.pages.platform_authoring import PlatformAuthoring
 from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
-from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
+from adapter_template.storage.platform_state import SqlitePlatformState
 from metriccanvas_authoring.assets.lifecycle_ports import LifecycleCapabilities, LifecycleIdentity
 from metriccanvas_authoring.work.content_ports import ContentBaselineError
 from metriccanvas_authoring.work.state import Limits, digest
 from metriccanvas_authoring.bootstrap.readiness import platform_readiness, current_turn_readiness
-from metriccanvas_authoring.bootstrap.environment import unconfigured_data_context, unconfigured_dqe
+from adapter_template.environment import unconfigured_data_context, unconfigured_dqe
 from metriccanvas_authoring.bootstrap.platform import create_production_platform_server, DeploymentReadinessError
 
 
@@ -120,21 +124,24 @@ class PlatformV2Test(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.deps.dqe.calls, [])
 
     async def test_stock_entry_requires_explicit_discovery_or_host_assembly(self):
-        with self.assertRaises(DeploymentReadinessError) as caught:
-            create_production_platform_server()
-        self.assertIn('current_turns', {item['provider'] for item in caught.exception.report['missing']})
+        from metriccanvas_authoring.bootstrap.adapter_contract import AdapterContractError
+        from unittest.mock import patch
+        with patch('metriccanvas_authoring.bootstrap.deployment.load_adapters',
+                   side_effect=AdapterContractError('ADAPTERS_NOT_CONFIGURED')):
+            with self.assertRaisesRegex(AdapterContractError, 'ADAPTERS_NOT_CONFIGURED'):
+                create_production_platform_server()
         self.assertIsNotNone(create_production_platform_server(protocol_discovery=True))
 
     async def test_sqlite_record_is_visible_to_another_process_and_cas_conflicts(self):
         self.assertTrue(await self.store.compare_and_swap('work', 'shared', 0, {'value': 1}))
         code = (
             'import asyncio, json, sys; '
-            'from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState; '
+            'from adapter_template.storage.platform_state import SqlitePlatformState; '
             's=SqlitePlatformState(sys.argv[1]); '
             'v,x=asyncio.run(s.read("work","shared")); '
             'print(json.dumps([v,x,asyncio.run(s.compare_and_swap("work","shared",v,{"value":2}))]))'
         )
-        env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[2] / 'tool'))
+        env = dict(os.environ, PYTHONPATH=os.pathsep.join(str(Path(__file__).resolve().parents[2] / part) for part in ('tool', 'examples')))
         child = subprocess.run([sys.executable, '-c', code, self.store.path],
                                capture_output=True, text=True, env=env, check=True)
         self.assertEqual(json.loads(child.stdout), [1, {'value': 1}, True])

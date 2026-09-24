@@ -591,9 +591,12 @@ async function buildBundleLock(): Promise<string> {
   };
   // 构建产物不能进入源 Bundle 的锁，否则 ZIP 包含锁文件后会形成自引用，导致每次打包都漂移。
   const localOnlyDirectories = new Set(['.venv', 'venv', '.pytest_cache', '.mypy_cache', '.ruff_cache', 'dist']);
+  const ownership = JSON.parse(await readFile(path.join(bundleRoot, 'ownership.json'), 'utf8')) as { internalRoot: string };
+  if (ownership.internalRoot !== 'tool/metriccanvas_authoring/adapters') throw new Error('Unsupported adapter ownership');
   const artifactPaths = (await listFiles(bundleRoot)).filter(
     (file) =>
       file !== 'bundle.lock.json' &&
+      !file.startsWith(ownership.internalRoot + '/') &&
       !file.startsWith('test-harness/model-evals/local-runs/') &&
       !file.includes('__pycache__') &&
       !file.endsWith('.pyc') &&

@@ -1,4 +1,8 @@
 """Wire contract and platform discovery tests for Java's raw semantic metadata."""
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 import asyncio
 from copy import deepcopy
 from dataclasses import replace
@@ -17,10 +21,10 @@ from test_data_context_http import DATASET_DETAIL, PROJECTION
 from test_platform_v2 import Identities, Authorization, query_request
 from test_authoring_turns import Turns
 from authoring_fixtures import dependencies
-from metriccanvas_authoring.adapters.firstparty.dataset_metadata_http import JavaDatasetMetadataProvider, QUERY_PATH
-from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
+from adapter_template.firstparty.dataset_metadata_http import JavaDatasetMetadataProvider, QUERY_PATH
+from adapter_template.storage.platform_state import SqlitePlatformState
 from metriccanvas_authoring.assets.lifecycle_ports import LifecycleIdentity
-from metriccanvas_authoring.bootstrap.environment import configure_data_context
+from adapter_template.environment import configure_data_context
 from metriccanvas_authoring.bootstrap.platform import create_platform_server
 from metriccanvas_authoring.data.ports import DataContextError
 from metriccanvas_authoring.data.semantic_catalog import SemanticCatalog

@@ -141,6 +141,12 @@ def main() -> None:
     if bundle["bundleVersion"] != bundle_lock["bundleVersion"]:
         raise SystemExit("bundleVersion does not match bundle.lock.json")
 
+    ownership = read_json(BUNDLE_ROOT / 'ownership.json')
+    internal = ownership['internalRoot'] + '/'
+    if internal != 'tool/metriccanvas_authoring/adapters/':
+        raise SystemExit('Unsupported adapter ownership')
+    if any(a['file'].startswith(internal) for a in bundle_lock['artifacts']):
+        raise SystemExit('Internal adapters must not be in the public bundle lock')
     drift = validate_skills(BUNDLE_ROOT, bundle, {entry["file"] for entry in bundle_lock["artifacts"]})
     for artifact in bundle_lock["artifacts"]:
         path = BUNDLE_ROOT / artifact["file"]

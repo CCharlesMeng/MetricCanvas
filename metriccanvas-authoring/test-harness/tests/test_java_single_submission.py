@@ -1,3 +1,7 @@
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 import json
 import sys
 import unittest
@@ -10,7 +14,7 @@ from test_platform_v2 import text_request
 from test_page_editing import title
 from test_authoring_turns import Turns
 from lifecycle_stdio_server import save_command, Identities
-from metriccanvas_authoring.adapters.firstparty.lifecycle_http import KnownLifecycleHttp
+from adapter_template.firstparty.lifecycle_http import KnownLifecycleHttp
 from metriccanvas_authoring.assets.lifecycle import Lifecycle
 
 VECTORS=json.loads((ROOT/'test-harness/fixtures/java-page-assets.json').read_text())

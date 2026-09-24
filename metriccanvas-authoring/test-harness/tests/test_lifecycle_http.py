@@ -1,3 +1,7 @@
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 import json
 import sys
 import unittest
@@ -6,7 +10,7 @@ import httpx
 ROOT=Path(__file__).resolve().parents[2]
 sys.path[:0]=[str(ROOT/'tool'),str(ROOT/'test-harness')]
 from lifecycle_stdio_server import document, Identities
-from metriccanvas_authoring.adapters.firstparty.lifecycle_http import KnownLifecycleHttp
+from adapter_template.firstparty.lifecycle_http import KnownLifecycleHttp
 from metriccanvas_authoring.assets.lifecycle_ports import LifecycleError
 
 

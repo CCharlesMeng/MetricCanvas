@@ -1,4 +1,8 @@
 """Deterministic acceptance plan through the current platform query/compose use case; explicitly not autonomous model evidence."""
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 import argparse
 import asyncio
 import json
@@ -11,7 +15,7 @@ from scenario_flow_server import dependencies
 from authoring_fixtures import presentation_plan as plan
 from test_authoring_turns import Turns
 from metriccanvas_authoring.pages.platform_authoring import PlatformAuthoring
-from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
+from adapter_template.storage.platform_state import SqlitePlatformState
 from test_platform_v2 import Authorization, Identities, Service, Preview
 from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 

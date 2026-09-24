@@ -10,7 +10,7 @@ BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 TOOL_ROOT = BUNDLE_ROOT / "tool"
 PYPROJECT = TOOL_ROOT / "pyproject.toml"
 RELAY_CONFIG = (
-    BUNDLE_ROOT / "relay" / "mcp_configs" / "metriccanvas-authoring.json"
+    BUNDLE_ROOT / "examples" / "relay" / "mcp_configs" / "metriccanvas-authoring.json"
 )
 
 

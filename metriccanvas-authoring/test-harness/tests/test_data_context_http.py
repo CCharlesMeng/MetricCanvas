@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
+
 import asyncio
 import hashlib
 import json
@@ -13,7 +17,7 @@ import httpx
 BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
-from metriccanvas_authoring.adapters.firstparty.data_context_http import (  # noqa: E402
+from adapter_template.firstparty.data_context_http import (  # noqa: E402
     DataContextProjection,
     LabDataContextHttpPort,
 )
@@ -22,7 +26,7 @@ from metriccanvas_authoring.data.discover_data_context import (  # noqa: E402
     DiscoverDataContextDependencies,
     create_discover_data_context,
 )
-from metriccanvas_authoring.adapters.service_identity import ServiceIdentity  # noqa: E402
+from metriccanvas_authoring.data.service_identity import ServiceIdentity  # noqa: E402
 from metriccanvas_authoring.data.ports import DataContextError  # noqa: E402
 from metriccanvas_authoring.data.data_context import parse_data_context  # noqa: E402
 

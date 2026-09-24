@@ -1,3 +1,7 @@
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 import json
 import sys
 import tempfile
@@ -8,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tool"))
 from metriccanvas_authoring.work.content_ports import ContentBaseline, ContentBaselineError
 from metriccanvas_authoring.pages.editing.edit_page import create_edit_page, document_sha256
-from metriccanvas_authoring.adapters.relay.content_baselines import FileContentBaselines
+from adapter_template.relay.content_baselines import FileContentBaselines
 from test_page_editing import page, title
 
 TOKEN = "trusted-baseline-token"

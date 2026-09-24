@@ -7,18 +7,13 @@ them; it never falls back to a compatibility surface to obtain them.
 from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
 from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
 from metriccanvas_authoring.pages.platform_authoring import PlatformAuthoring
-from metriccanvas_authoring.bootstrap import environment
 from metriccanvas_authoring.bootstrap.readiness import platform_readiness
 from metriccanvas_authoring.work.state import Limits
-from metriccanvas_authoring.data.semantic_catalog import SemanticCatalog
-from metriccanvas_authoring.adapters.firstparty.dataset_metadata_http import JavaDatasetMetadataProvider
 
 
 def create_platform_server(dependencies, *, current_turns=None, store=None, analysis_authorization=None,
         lifecycle_service=None, lifecycle_identities=None, relay_preview=None, limits=Limits(),
         summary_config=None, semantic_catalog=None, parameter_dependencies=None):
-    if semantic_catalog is None and isinstance(dependencies.data_context, JavaDatasetMetadataProvider):
-        semantic_catalog = SemanticCatalog(dependencies.data_context, store)
     return create_platform_mcp_server(PlatformAuthoring(dependencies, current_turns, store,
         analysis_authorization=analysis_authorization, lifecycle_service=lifecycle_service,
         lifecycle_identities=lifecycle_identities, relay_preview=relay_preview, limits=limits,
@@ -32,8 +27,8 @@ class DeploymentReadinessError(RuntimeError):
 
 
 def create_production_platform_server(*, protocol_discovery=False):
-    dependencies = ComposePageDependencies(
-        environment.configure_data_context(), environment.configure_dqe())
-    if not protocol_discovery:
-        raise DeploymentReadinessError(platform_readiness(dependencies))
-    return create_platform_server(dependencies)
+    if protocol_discovery:
+        # Schema inspection does not load company code or grant production readiness.
+        return create_platform_server(ComposePageDependencies(None, None))
+    from metriccanvas_authoring.bootstrap.deployment import load_adapters, assemble
+    return assemble(load_adapters())

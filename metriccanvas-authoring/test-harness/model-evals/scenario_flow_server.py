@@ -1,4 +1,8 @@
 """Local-only projection of existing flow fixtures, never a production provider."""
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 import json
 import sys
 import os
@@ -17,7 +21,7 @@ from adapters.fakes import FakeDataContextPort
 from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
 from metriccanvas_authoring.data.execution import DqeExecutionResult, DqeExecutionError
 from metriccanvas_authoring.bootstrap.platform import create_platform_server
-from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
+from adapter_template.storage.platform_state import SqlitePlatformState
 from test_platform_v2 import Authorization, Identities, Service, Preview
 
 # Refuse mixed-version imports before any paid model request can use this server.

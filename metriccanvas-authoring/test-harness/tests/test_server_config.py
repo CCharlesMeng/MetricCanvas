@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
+
 import os
 import sys
 import unittest
@@ -12,7 +16,7 @@ sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
 from metriccanvas_authoring.data.ports import DataContextError  # noqa: E402
 from metriccanvas_authoring.data.execution import DqeExecutionError  # noqa: E402
-from metriccanvas_authoring.bootstrap.environment import (  # noqa: E402
+from adapter_template.environment import (  # noqa: E402
     configure_data_context,
     configure_dqe,
 )

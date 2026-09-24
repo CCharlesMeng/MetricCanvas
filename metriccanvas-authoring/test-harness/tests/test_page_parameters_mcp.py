@@ -1,3 +1,7 @@
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 import hashlib
 import json
 import sys
@@ -13,14 +17,14 @@ from test_authoring_turns import Turns
 from authoring_fixtures import dependencies
 from metriccanvas_authoring.work.authoring_turns import AuthoringTurnGate, SCOPE_KEYS
 from metriccanvas_authoring.work.state import TurnState
-from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
+from adapter_template.storage.platform_state import SqlitePlatformState
 from metriccanvas_authoring.bootstrap.platform import create_platform_server
 from metriccanvas_authoring.pages.validation.grouped_params import declarations as _param_declarations
 from metriccanvas_authoring.work.content_ports import ContentBaseline, ContentBaselineError
 from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 from metriccanvas_authoring.pages.parameters.page_parameters import PageParameters, ParameterDependencies
-from metriccanvas_authoring.adapters.firstparty.parameter_program import SubprocessParameterProgram
-from metriccanvas_authoring.adapters.firstparty.sqlite_parameter_records import SqliteParameterRecords
+from adapter_template.firstparty.parameter_program import SubprocessParameterProgram
+from adapter_template.firstparty.sqlite_parameter_records import SqliteParameterRecords
 
 
 class VerifiedFixture:

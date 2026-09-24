@@ -1,4 +1,8 @@
 """Persistent original publication commands reuse existing exact-confirmation protocol."""
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 import sys
 import tempfile
 import unittest
@@ -11,7 +15,7 @@ from publish_stdio_server import PublicationProvider, PublicationSources, HumanE
 from lifecycle_stdio_server import Identities
 from metriccanvas_authoring.assets.lifecycle_publish import Publication
 from metriccanvas_authoring.assets.publish_ports import PublicationDependencies
-from metriccanvas_authoring.adapters.storage.lifecycle_programs import SqliteLifecyclePrograms
+from adapter_template.storage.lifecycle_programs import SqliteLifecyclePrograms
 
 
 class PublicationRestartTest(unittest.IsolatedAsyncioTestCase):

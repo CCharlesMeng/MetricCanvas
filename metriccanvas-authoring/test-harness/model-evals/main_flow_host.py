@@ -1,14 +1,18 @@
 """Trusted test integration for the create/edit main-flow stdio server."""
+
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 from copy import deepcopy
 import json
 from pathlib import Path
 
-from metriccanvas_authoring.adapters.firstparty.data_context_http import DataContextProjection
-from metriccanvas_authoring.adapters.firstparty.dataset_metadata_http import JavaDatasetMetadataProvider
-from metriccanvas_authoring.adapters.firstparty.dqe_http import DqeHttpExecutionPort
-from metriccanvas_authoring.adapters.firstparty.lifecycle_http import KnownLifecycleHttp
-from metriccanvas_authoring.adapters.service_identity import ServiceIdentity
-from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
+from adapter_template.firstparty.data_context_http import DataContextProjection
+from adapter_template.firstparty.dataset_metadata_http import JavaDatasetMetadataProvider
+from adapter_template.firstparty.dqe_http import DqeHttpExecutionPort
+from adapter_template.firstparty.lifecycle_http import KnownLifecycleHttp
+from metriccanvas_authoring.data.service_identity import ServiceIdentity
+from adapter_template.storage.platform_state import SqlitePlatformState
 from metriccanvas_authoring.assets.lifecycle_ports import LifecycleIdentity
 from metriccanvas_authoring.bootstrap.platform import create_platform_server
 from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
@@ -66,10 +70,13 @@ def create_main_flow_server(state_path: Path, current_turns):
         metadata,
         DqeHttpExecutionPort(base_url, "w", MainFlowDqeIdentity()),
     )
+    from metriccanvas_authoring.data.semantic_catalog import SemanticCatalog
+    store = SqlitePlatformState(state_path.parent / "work.db")
     return create_platform_server(
         dependencies,
         current_turns=current_turns,
-        store=SqlitePlatformState(state_path.parent / "work.db"),
+        store=store,
+        semantic_catalog=SemanticCatalog(metadata, store),
         analysis_authorization=MainFlowAuthorization(
             [fixture["request"], fixture["supplementRequest"], *fixture.get("complexRequests", [])]),
         lifecycle_service=KnownLifecycleHttp(base_url + "/user-page-metadata"),

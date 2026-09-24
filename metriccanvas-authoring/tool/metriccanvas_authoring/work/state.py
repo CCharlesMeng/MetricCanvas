@@ -13,7 +13,7 @@ def require(condition, code):
 
 
 class StateStore(Protocol):
-    async def read(self, namespace: str, key: str):
+    async def read(self, namespace: str, key: str) -> tuple[int, dict | None]:
         """Return (version, isolated JSON value), or (0, None)."""
         ...
     async def compare_and_swap(self, namespace: str, key: str, version: int, value: dict) -> bool: ...

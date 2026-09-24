@@ -25,7 +25,7 @@ metadata:
 运行本 Skill 前，由 Relay 部署侧完成以下注册；这些动作不是 Agent 的运行步骤：
 
 1. 将本 Skill 放入 `.skills/metriccanvas-page-builder/SKILL.md`，由 Relay `SkillLoader` 注册。
-2. 将 Bundle 内 `relay/mcp_configs/metriccanvas-authoring.json` 复制到 Relay 的 `.relay/mcp_configs/`，替换 sdist 路径和环境占位符。
+2. 将 Bundle 内 `examples/relay/mcp_configs/metriccanvas-authoring.json` 复制到 Relay 的 `.relay/mcp_configs/`，替换 sdist 路径和环境占位符。
 3. 安装 Relay Page Artifact Adapter，使其截获 `compose_page` 的完整页面构建产物、写入最新会话检查点，并仅向模型返回安全摘要。
 4. 接通真实 Data Context 与 DQE Adapter。未接通时工具会返回结构化失败，不得使用测试夹具或模型补造数据继续执行。
 
@@ -66,7 +66,7 @@ metadata:
 组件目录和 Page Schema，不依赖 Relay 宿主的源码目录。
 
 `METRICCANVAS_DATA_CONTEXT_PROJECTION_CONFIG` 指向一份按
-`relay/data-context-projection.example.json` 填写的配置。Lab 未显式提供的
+`examples/relay/data-context-projection.example.json` 填写的配置。Lab 未显式提供的
 `isRatio`、可空性和敏感性不得由模型猜测；缺少显式治理值时工具以
 `DATA_CONTEXT_GOVERNANCE_REQUIRED` 停止。维度取值中心保留为
 `DimensionValuePort`；真实 MetricService URL 和 DTO 契约未提供前，不注册伪造的 HTTP Adapter。

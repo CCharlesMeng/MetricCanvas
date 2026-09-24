@@ -25,4 +25,4 @@ pnpm exec vitest run tests/page-reference.test.ts tests/authoring-export-isolati
 pnpm authoring:test
 ```
 
-前两条需在根仓运行；安装后的 Bundle 只消费快照，不反向修改产品协议。`bundle.lock.json` 不散发本地虚拟环境或 Python 缓存。历史归档的 hash 校验使用冻结来源，当前派生物变化不应改写历史证据。
+前两条需在根仓运行；安装后的 Bundle 只消费快照，不反向修改产品协议。`ownership.json` 声明内部自有 adapters 树；`bundle.lock.json` 排除它，并且不散发本地虚拟环境或 Python 缓存。公共参考模板位于 examples/adapter_template，内部复制后独立维护；只修改内部适配无需运行产品导出。历史归档的 hash 校验使用冻结来源，当前派生物变化不应改写历史证据。
