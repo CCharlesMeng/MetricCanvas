@@ -1,0 +1,90 @@
+{
+  "formatVersion": "1.0",
+  "status": "ready",
+  "source": {
+    "namespace": "mock-business-knowledge",
+    "version": "mock-v1"
+  },
+  "coverage": {
+    "retrievalComplete": true,
+    "returnedTruncated": false,
+    "exhaustiveWithinScope": true
+  },
+  "items": [
+    {
+      "id": "term-net-receipts",
+      "kind": "business_term",
+      "businessDomains": ["电商经营"],
+      "canonicalTerm": "净实收",
+      "aliases": ["实际收到的钱", "扣除退款后的实收"],
+      "definition": "本 mock 电商业务中，净实收为支付金额扣除退款金额后的金额。",
+      "relatedTerms": [
+        {"term": "支付金额", "relation": "related"},
+        {"term": "退款金额", "relation": "related"}
+      ],
+      "metricHints": [{"metricName": "净实收金额", "relation": "candidate"}],
+      "reviewStatus": "approved",
+      "provenance": {
+        "documentId": "mock-commerce-glossary",
+        "sectionId": "net-receipts",
+        "revision": "1",
+        "excerpt": "净实收为支付金额扣除退款金额后的金额；退款时间归属须另核实。"
+      }
+    },
+    {
+      "id": "note-receipts-vs-revenue",
+      "kind": "business_note",
+      "businessDomains": ["财务"],
+      "title": "回款与收入的区别",
+      "content": "本 mock 资料中，回款强调款项收取，收入强调收入确认，不可默认等同。",
+      "terms": ["回款", "收入"],
+      "reviewStatus": "approved",
+      "provenance": {
+        "documentId": "mock-finance-guide",
+        "sectionId": "receipts-and-revenue",
+        "revision": "2",
+        "excerpt": "回款与收入采用不同的业务确认口径。"
+      }
+    },
+    {
+      "id": "topic-commerce-operation",
+      "kind": "analysis_topic",
+      "businessDomains": ["电商经营"],
+      "name": "电商经营概况",
+      "aliases": ["经营情况"],
+      "items": [
+        {"requirementId": "sales", "concept": "净实收金额"},
+        {"requirementId": "orders", "concept": "支付订单数"},
+        {"requirementId": "refunds", "concept": "退款金额"}
+      ],
+      "relationships": [
+        {"kind": "independent", "requirementIds": ["sales", "orders", "refunds"]}
+      ],
+      "reviewStatus": "approved",
+      "provenance": {
+        "documentId": "mock-commerce-handbook",
+        "sectionId": "operation-overview",
+        "revision": "1",
+        "excerpt": "经营概况分别呈现实收、订单与退款；不据此自动推断因果。"
+      }
+    },
+    {
+      "id": "draft-sales-is-receipts",
+      "kind": "business_term",
+      "businessDomains": ["电商经营"],
+      "canonicalTerm": "净实收",
+      "aliases": ["销售额"],
+      "definition": "待审核的 mock 同义建议，不允许作为自动选择依据。",
+      "relatedTerms": [],
+      "metricHints": [],
+      "reviewStatus": "draft",
+      "provenance": {
+        "documentId": "mock-pending-glossary",
+        "sectionId": "sales",
+        "revision": "1",
+        "excerpt": "建议将销售额视为净实收，尚未完成业务审核。"
+      }
+    }
+  ],
+  "issues": []
+}

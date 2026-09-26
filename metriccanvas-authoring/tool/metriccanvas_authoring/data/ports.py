@@ -5,7 +5,10 @@ use case depends on a concrete adapter.
 """
 from __future__ import annotations
 
-from typing import Any, Mapping, Protocol, Sequence
+from typing import Any, Mapping, Protocol, Sequence, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from metriccanvas_authoring.data.validation_policy import QueryValidationPolicy
 
 from metriccanvas_authoring.data.execution import DqeExecutionResult
 
@@ -24,6 +27,16 @@ class DataContextError(Exception):
 
 class DataContextPort(Protocol):
     async def current(self) -> JsonObject: ...
+
+
+class PolicyAwareDataContextPort(DataContextPort, Protocol):
+    """Optional query-context/1 extension. The policy is fixed by public code per batch.
+
+    current() remains neutral Schema 1.1; current_for_query may return the marked
+    private execution view with unknown optional governance omitted. It must
+    preserve identity, security, source facts and the discovery version.
+    """
+    async def current_for_query(self, policy: "QueryValidationPolicy") -> JsonObject: ...
 
 
 class DimensionValuePort(Protocol):

@@ -13,6 +13,7 @@ import httpx
 from metriccanvas_authoring.canonical import canonical_sha256
 from metriccanvas_authoring.data.ports import DataContextError
 from metriccanvas_authoring.data.data_context import parse_data_context
+from metriccanvas_authoring.data.validation_policy import QueryValidationPolicy
 from adapter_template.firstparty.data_context_http import project_lab_snapshot
 
 DATASET_DETAIL_BASE_URL_ENV = 'METRICCANVAS_DATASET_DETAIL_BASE_URL'
@@ -119,7 +120,7 @@ class JavaDatasetMetadataProvider:
             'issues': sorted(issues, key=lambda issue: issue['datasetId']),
             'projection': asdict(self.projection) if self.projection is not None else None})
         return {'dataContextVersion': version, 'models': models, 'issues': issues,
-                'coverage': {'complete': not issues, 'returnedDatasets': len(items),
+                'coverage': {'scope': 'authorized', 'complete': not issues, 'returnedDatasets': len(items),
                              'usableDatasets': len(models), 'failedDatasets': len(issues)}}
 
     async def search(self, binding, query, limit):
@@ -147,6 +148,9 @@ class JavaDatasetMetadataProvider:
         return detail
 
     async def current(self):
+        return await self.current_for_query(QueryValidationPolicy(strict=True))
+
+    async def current_for_query(self, policy):
         # Discovery does not require execution governance. Queries do, and use
         # exactly the same version as discovery when that governance is present.
         if self.projection is None:
@@ -158,8 +162,8 @@ class JavaDatasetMetadataProvider:
         value = await self._read()
         require(not value['issues'], 'DATA_CONTEXT_PARTIAL')
         snapshot = project_lab_snapshot(subject_id='java-dataset-metadata', details=value['models'],
-                                     projection=self.projection, values_by_dataset={})
+                                     projection=self.projection, values_by_dataset={}, policy=policy)
         snapshot['version'] = value['dataContextVersion']
-        _, issues = parse_data_context(snapshot)
+        _, issues = parse_data_context(snapshot, policy=policy)
         require(not issues, 'DATA_CONTEXT_PROJECTION_ERROR')
         return snapshot

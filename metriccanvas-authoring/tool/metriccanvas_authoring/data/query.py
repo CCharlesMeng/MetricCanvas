@@ -11,6 +11,7 @@ from typing import Any, Mapping
 
 from metriccanvas_authoring.data.source_description_ports import SourceDescriptionPort
 from metriccanvas_authoring.data.source_mapping import map_source_description, derive_source_fields, validate_mapped_rows, SourceMappingError
+from metriccanvas_authoring.data.validation_policy import (QueryValidationPolicy, current_for_query, normalize_request, governance_warnings)
 from metriccanvas_authoring.data.ports import DataContextError, DataContextPort, DqeExecutionPort
 from metriccanvas_authoring.data.data_context import parse_data_context
 from metriccanvas_authoring.data.execution import (
@@ -34,6 +35,7 @@ class QueryDataDependencies:
     authoring_scope: Mapping[str, Any] | None = None
     require_source_description: bool = False
     stable_field_ids: bool = False
+    validation_policy: QueryValidationPolicy = QueryValidationPolicy()
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,10 +57,12 @@ class QueryDataResult:
     source_descriptions: tuple[Mapping[str, Any], ...] = ()
     issues: tuple[QueryDataIssue, ...] = ()
     completed_stages: tuple[FailureStage, ...] = ()
+    warnings: tuple[Mapping[str, Any], ...] = ()
 
 
 def create_query_data(dependencies: QueryDataDependencies):
     async def query_data(spec: Mapping[str, Any]) -> QueryDataResult:
+        spec, _ = normalize_request(spec)
         spec_issues = validate_page_build_spec(spec)
         if spec_issues:
             return QueryDataResult(
@@ -75,7 +79,7 @@ def create_query_data(dependencies: QueryDataDependencies):
             )
 
         try:
-            data_context_snapshot = await dependencies.data_context.current()
+            data_context_snapshot = await current_for_query(dependencies.data_context, dependencies.validation_policy)
         except DataContextError as error:
             return QueryDataResult(
                 ok=False,
@@ -88,7 +92,7 @@ def create_query_data(dependencies: QueryDataDependencies):
                     ),
                 ),
             )
-        data_context, data_context_issues = parse_data_context(data_context_snapshot)
+        data_context, data_context_issues = parse_data_context(data_context_snapshot, policy=dependencies.validation_policy)
         if data_context_issues:
             return QueryDataResult(
                 ok=False,
@@ -123,8 +127,9 @@ def create_query_data(dependencies: QueryDataDependencies):
                 ),
             )
 
+        warnings = governance_warnings(data_context_snapshot)
         try:
-            units = derive_executable_units(spec, data_context)
+            units = derive_executable_units(spec, data_context, dependencies.validation_policy, warnings)
         except PageBuildingIssue as issue:
             return QueryDataResult(
                 ok=False,
@@ -204,7 +209,7 @@ def create_query_data(dependencies: QueryDataDependencies):
             ok=True, units=tuple(units), executions=tuple(executions),
             data_context_version=data_context.version,
             source_descriptions=tuple(source_descriptions),
-            completed_stages=('discovery', 'generation', 'execution'),
+            completed_stages=('discovery', 'generation', 'execution'), warnings=tuple(warnings),
         )
 
     return query_data

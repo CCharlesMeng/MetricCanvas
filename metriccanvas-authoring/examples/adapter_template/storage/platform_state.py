@@ -32,3 +32,10 @@ class SqlitePlatformState:
             else:
                 result = db.execute('UPDATE platform_state SET version=version+1,value=? WHERE namespace=? AND key=? AND version=?', (encoded, namespace, key, version))
             return result.rowcount == 1
+
+    def purge_expired_discovery(self, now):
+        """Deployment maintenance only; never delete query/save evidence here."""
+        with closing(sqlite3.connect(self.path, timeout=5)) as db, db:
+            result = db.execute("DELETE FROM platform_state WHERE namespace='discovery_task' "
+                                "AND CAST(json_extract(value, '$.expiresAt') AS REAL) <= ?", (now,))
+            return result.rowcount

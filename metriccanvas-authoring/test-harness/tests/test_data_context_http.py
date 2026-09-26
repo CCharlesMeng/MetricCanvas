@@ -4,6 +4,7 @@ import sys as _sys
 from pathlib import Path as _Path
 _sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').resolve()))
 
+from dataclasses import asdict
 import asyncio
 import hashlib
 import json
@@ -88,6 +89,8 @@ DATASET_DETAIL = {
                     "unit": "次",
                     "isAgg": True,
                     "aggregator": "SUM",
+                    "additivity": "可加",
+                    "timeAggregation": "求和",
                     "dimensions": [{"name": "区域"}],
                     "timeDimensions": [{"name": "统计周期"}],
                 }
@@ -176,11 +179,8 @@ class LabDataContextHttpPortTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(snapshot["id"], "lab-subject:subject one")
         expected_version = hashlib.sha256(
             json.dumps(
-                {
-                    key: value
-                    for key, value in snapshot.items()
-                    if key != "version"
-                },
+                {'subjectId': 'subject one', 'details': [DATASET_DETAIL],
+                 'projection': asdict(PROJECTION), 'dimensionValues': {}},
                 ensure_ascii=False,
                 sort_keys=True,
                 separators=(",", ":"),

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from metriccanvas_authoring.data.validation_policy import QueryValidationPolicy
 
 import asyncio
 import hashlib
@@ -493,6 +494,7 @@ class ComposePageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 mutate(spec)
                 compose_page = create_compose_page(
                     ComposePageDependencies(
+                        validation_policy=QueryValidationPolicy(strict=True),
                         data_context=FakeDataContextPort(
                             fixture("data-context.json")
                         ),

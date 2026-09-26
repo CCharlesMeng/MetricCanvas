@@ -35,6 +35,7 @@ def prepare(adapters: AuthoringAdapters):
     if adapters.semantic_catalog is not None and not all(callable(getattr(adapters.semantic_catalog, name, None))
             for name in ('discover', 'query_issues')):
         raise AdapterContractError('SEMANTIC_CATALOG_CONTRACT_MISMATCH')
+    report['discoveryProtocolVersion'] = getattr(adapters.semantic_catalog, 'discovery_protocol_version', None)
     report['adapterInterfaceVersion'] = ADAPTER_INTERFACE_VERSION
     report['semanticCatalog'] = 'assembled' if adapters.semantic_catalog is not None else 'optional_unconfigured'
     return dependencies, inputs, report

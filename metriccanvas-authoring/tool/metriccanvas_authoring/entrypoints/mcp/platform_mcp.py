@@ -39,8 +39,12 @@ def create_platform_mcp_server(application):
                 result, value = result
                 if value is not None:
                     envelope = {'kind': 'metriccanvas.platform-artifact', 'formatVersion': '2.0', 'artifact': value}
-            output = {'ok': result.get('status') not in {'failed', 'rejected', 'unavailable'}, 'modelSummary': result, 'artifactEnvelope': envelope}
-            return ToolResult(content=result, structured_content=output)
+            interaction = result.get('interactionEnvelope')
+            summary = {k: v for k, v in result.items() if k != 'interactionEnvelope'}
+            output = {'ok': result.get('status') not in {'failed', 'rejected', 'unavailable'}, 'modelSummary': summary, 'artifactEnvelope': envelope}
+            if interaction is not None:
+                output['interactionEnvelope'] = interaction
+            return ToolResult(content=summary, structured_content=output)
         except (ContentBaselineError, DataContextError) as error:
             summary = {'status': 'rejected', 'issues': [{'code': error.code, 'path': ''}]}
         except Exception:
@@ -49,7 +53,8 @@ def create_platform_mcp_server(application):
 
     @mcp.resource('metriccanvas://bundle-info')
     def bundle_info():
-        return {**load_bundle_info(), 'platformProtocolVersion': '2.0'}
+        return {**load_bundle_info(), 'platformProtocolVersion': '2.0',
+                'discoveryProtocolVersion': getattr(application.semantic_catalog, 'discovery_protocol_version', None)}
 
     @mcp.tool
     async def read_page_context(context_ref: str, target_component_id: str | None = None, use_selection: bool = False,
@@ -60,7 +65,7 @@ def create_platform_mcp_server(application):
     @mcp.tool
     async def discover_data_context(context_ref: str, query: str = '', limit: Annotated[int, Field(ge=1, le=50)] = 10,
             detail_refs: list[str] | None = None) -> ToolResult:
-        """Find relevant metrics; request identity-matched details only for material gaps."""
+        """Find canonical business domains, metrics, dimensions and time granularities; combinations may be unknown."""
         return await call(application.discover, context_ref, query, limit, detail_refs)
 
     @mcp.tool

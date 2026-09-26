@@ -75,3 +75,28 @@ DataContextError 新增可选 diagnostics 属性，默认 None，不改变既有
 projection JSON 是参考适配方式，不是 DataContextPort 的必需实现方式。内部可查询治理服务，只要 current() 返回符合公共 Schema 的受治理快照。真实属性必须由数据治理负责人确认。
 
 详见 Bundle 根目录 RELAY-HANDOFF.md 的治理诊断与人工采用步骤。公共升级保留内部 adapters；旧实现没有 diagnostics 时报告仍可输出错误码。
+
+## 查询策略兼容扩展 query-context/1
+
+新增可选 `data_context.current_for_query(policy)`，公共代码每批传入固定 QueryValidationPolicy；不存在时回退既有 current()。工厂接口 authoring-adapters/1.0 不增加必填项。current() 保持中立 Schema 1.1；新入口可返回 queryValidationView=1 的私有查询视图，缺少 additivity/timeAggregation/isRatio 保持未知，执行字段及安全事实仍必需。公共投影真源为 data/lab_projection.py，不能继续复制维护。
+
+发现结果新增 kind=dimension 和相关维度/时间能力；授权接收规范化后的请求，模式和规则版本进入结果身份。默认关闭严格语义预检，可信配置按批次热切换。完整调用、兼容限制和内部升级步骤见 [QUERY-VALIDATION-MIGRATION.md](../../QUERY-VALIDATION-MIGRATION.md)。
+
+
+## 可选增强发现 discovery/1.0
+
+AuthoringAdapters 必需字段保持不变。在现有 semantic_catalog 中注入
+`SemanticCatalog(metadata, store, discovery=DiscoveryDependencies(...))`。
+端口定义位于 `data/discovery/contracts.py`，JSON 协议位于 `discovery.schema.json`。
+
+| 可选依赖 | 方法 | 责任 |
+|---|---|---|
+| trusted_context（开启增强时必需） | async current(binding) | 可信原始用户消息、稳定会话、续接/确认事件；不是模型输入 |
+| knowledge | async search(binding, query, business_domains, limit) | 授权范围内术语、片段、主题与来源/覆盖信息 |
+| interpreter | async propose(context) | 有界候选解释，精确Schema与来源引用；不能授权或确认 |
+| retrieval | async retrieve(binding, request, metadata_source, budget) | 当前受信任源版本上的 candidateRefs，供未来内部检索替换 |
+
+新轮重新验证 context_ref；taskRef 只是定位已有需求。StateStore 的 discovery_task
+命名空间保存结构化续接与事件回执，单记录 CAS 防重复/并发覆盖；过期清理由部署方负责。
+增强模式的模型摘要与程序 interactionEnvelope 分离；Relay 必须实现程序通道路由。
+详见 [增强发现接入](../../SEMANTIC-DISCOVERY-HANDOFF.md)。

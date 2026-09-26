@@ -5,11 +5,12 @@
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Mapping, Sequence
 
 from metriccanvas_authoring.build_issues import PageBuildingIssue
 from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+from metriccanvas_authoring.data.validation_policy import QueryValidationPolicy, SUPPORTED_PERIODS
 from metriccanvas_authoring.data.execution import DqeExecutionResult, FormulaTrace
 
 
@@ -51,8 +52,11 @@ class ExecutableUnit:
 def derive_executable_units(
     spec: Mapping[str, Any],
     data_context: DataContext,
+    policy: QueryValidationPolicy = QueryValidationPolicy(strict=True),
+    warnings: list | None = None,
 ) -> list[ExecutableUnit]:
     """Derive DQE requests and field contracts from business-semantic units."""
+    warnings = warnings if warnings is not None else []
     units: list[ExecutableUnit] = []
     question = str(spec["question"]).strip()
     seen_data_source_ids: set[str] = set()
@@ -78,9 +82,30 @@ def derive_executable_units(
                     tuple(data_context.surfaces_by_domain),
                 ),
             )
+        if not policy.strict:
+            metrics = dict(surface.metrics_by_name)
+            for selected in unit['metrics']:
+                name = selected.get('name')
+                if selected['kind'] == 'metric' and name not in metrics and name in surface.declared_measures:
+                    declared = surface.declared_measures[name]
+                    metrics[name] = declared
+                    metrics[declared.name] = declared
+                    warnings.append({'code': 'METRIC_CATALOG_ENTRY_MISSING',
+                        'path': f'/units/{index}/metrics', 'action': 'using_declared_measure_contract'})
+            surface = replace(surface, metrics_by_name=metrics)
+        selected_dimensions = [*unit['groupBy'], *[f['dimension'] for f in unit['filters']]]
+        for metric in unit['metrics']:
+            declaration = surface.metric(metric.get('name', '')) if metric['kind'] == 'metric' else None
+            if declaration is not None and selected_dimensions:
+                names = [surface.dimension(name).name for name in selected_dimensions if surface.dimension(name) is not None]
+                allowed = {surface.dimension(name).name if surface.dimension(name) else name for name in declaration.dimensions}
+                if not allowed or any(name not in allowed for name in names):
+                    _check_semantic(policy, warnings, PageBuildingIssue(
+                        code='METRIC_DIMENSION_COMPATIBILITY_UNKNOWN', path=f'/units/{index}/metrics',
+                        message='Metric dimension compatibility is not established', candidates=tuple(sorted(allowed))))
         formula_traces = _formula_traces(unit, data_context, question, index)
         fields = _field_contracts(unit, surface, index)
-        query_body = _query_body(unit, surface, index)
+        query_body = _query_body(unit, surface, index, policy, warnings)
         units.append(
             ExecutableUnit(
                 data_source_id=data_source_id,
@@ -258,20 +283,25 @@ def _query_body(
     unit: Mapping[str, Any],
     surface: SemanticSurface,
     unit_index: int,
+    policy: QueryValidationPolicy,
+    warnings: list,
 ) -> dict[str, Any]:
     time = unit.get("time")
     if time is not None:
         granularity = str(_mapping(time)["granularity"])
         allowed_granularities = _allowed_granularities(surface)
+        if granularity not in SUPPORTED_PERIODS:
+            raise PageBuildingIssue(code='TIME_GRANULARITY_NOT_IN_DATA_CONTEXT',
+                path=f'/units/{unit_index}/time/granularity', message='Unsupported DQE time period', candidates=allowed_granularities if policy.strict else SUPPORTED_PERIODS)
         if granularity not in allowed_granularities:
-            raise PageBuildingIssue(
+            _check_semantic(policy, warnings, PageBuildingIssue(
                 code="TIME_GRANULARITY_NOT_IN_DATA_CONTEXT",
                 path=f"/units/{unit_index}/time/granularity",
                 message=(
                     f"time granularity is not in data context: {granularity}"
                 ),
                 candidates=allowed_granularities,
-            )
+            ))
     dimension_filters: list[dict[str, Any]] = []
     for filter_index, raw_filter in enumerate(_sequence(unit["filters"])):
         dimension_filter = _mapping(raw_filter)
@@ -296,7 +326,7 @@ def _query_body(
         if declaration.values is not None:
             for value_index, value in enumerate(values):
                 if str(value) not in declaration.values:
-                    raise PageBuildingIssue(
+                    _check_semantic(policy, warnings, PageBuildingIssue(
                         code="DIMENSION_VALUE_NOT_IN_DATA_CONTEXT",
                         path=(
                             f"/units/{unit_index}/filters/{filter_index}"
@@ -307,7 +337,7 @@ def _query_body(
                             f"{declaration.name}={value}"
                         ),
                         candidates=declaration.values,
-                    )
+                    ))
         dimension_filters.append(
             {
                 "dim_name": declaration.name,
@@ -447,3 +477,11 @@ def _allowed_granularities(surface: SemanticSurface) -> tuple[str, ...]:
             for granularity in dimension.granularities
         )
     )
+
+
+def _check_semantic(policy, warnings, issue):
+    if policy.strict:
+        raise issue
+    if len(warnings) < 50:
+        warnings.append({'code': issue.code, 'path': issue.path,
+                         'candidates': list(issue.candidates)[:10], 'action': 'delegated_to_dqe'})

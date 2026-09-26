@@ -58,6 +58,10 @@ return AuthoringAdapters(
 
 普通创建/编辑不要求参数适配。可选的 source_description、metric_relations、parameter_dependencies 根据实际能力提供。若复用公共 SemanticCatalog，在工厂中显式传 `SemanticCatalog(metadata_provider, store)`；其提供方还需 search/detail，不会按 Java 类名自动启用。
 
+## 查询整改采用
+
+本批默认关闭查询语义严格预检；可用可信配置文件在下一批查询切换。采用公共语义投影与可选 current_for_query(policy)，保持公司身份和 HTTP 接线。必须先读 [QUERY-VALIDATION-MIGRATION.md](QUERY-VALIDATION-MIGRATION.md)，其中列出发现输出、规范化授权、私有查询视图及缓存隔离的兼容变化。下文逐字段治理诊断仍用于严格检查与执行必需属性，不能将所有缺失都视为宽松模式的阻断。
+
 ## 2.1 发现成功但查询返回 DATA_CONTEXT_GOVERNANCE_REQUIRED
 
 先区分两个阶段：语义发现可以读取原始元数据；执行查询必须取得受治理的数据上下文快照。发现有 matches 不证明查询就绪，更不证明 DQE 已接通。
@@ -86,7 +90,7 @@ catalog = SemanticCatalog(metadata, store)
 | 内容 | 来源与规则 |
 |---|---|
 | additivity / timeAggregation | 优先采用有效原始声明；原始为 null、空字符串或空白时采用合法治理补充；明确非法声明拒绝，不由聚合函数或后备配置掩盖 |
-| 原始与治理都缺可加性/时间聚合 | 参考代码保留已有 aggregator 推导，但映射必须由指标负责人确认；没有可信依据时拒绝，不设全局默认 |
+| 原始与治理都缺可加性/时间聚合 | 公共投影不再仅凭 aggregator 推导；严格模式要求显式事实，宽松直接查询保留 unknown，不设全局默认 |
 | isRatio / nullable / sensitive | 原始布尔值、逐项治理、defaults 依次查找；默认值是治理声明，不是为了过检补的假数据 |
 | metricGovernance / fieldGovernance | 按数据集 ID 与字段名匹配，无通配符；真实字段名不同由内部映射 |
 | 配置覆盖范围 | 所选数据集中的所有指标/维度都会投影，某个未被当前查询使用的指标也可能阻断整个快照 |
@@ -115,7 +119,7 @@ catalog = SemanticCatalog(metadata, store)
 公共更新不会覆盖现有 adapters，因此已有内部部署要人工采用本批修复：
 
 1. 更新公共源码并重新安装 tool，取得支持 diagnostics 的 DataContextError 和诊断脚本。
-2. 对照 examples/adapter_template/firstparty/data_context_http.py，移植空值回退及治理缺失汇总；保留内部字段映射与认证。
+2. 将通用投影改为调用公共 data.lab_projection；采用参考 HTTP Adapter 的薄接线，保留内部字段映射与认证。不要再复制治理算法。
 3. 对照 dataset_metadata_http.py，移植 projection 未注入的结构化诊断；按需加入 configuration.py，并在内部 factory 调用。
 4. 运行内部测试、check_data_context，再重新发现、确认并执行查询，最后创建/编辑验收。
 
@@ -191,3 +195,12 @@ python3 /path/to/upstream/metriccanvas-authoring/scripts/sync_upstream.py \
 | SAVE_RECONCILIATION_REQUIRED | 保存结果不明，保留记录并人工/内部程序核对；禁止自动重发 |
 | RELAY_PREVIEW_MISMATCH | 程序接收回执与 artifactRef/ref 不一致 |
 | Public/local conflicts | 公共区有内部修改；先迁到 adapters 或将公共修复反馈到上游 |
+
+
+## 可选：语义发现、业务知识与跨轮取数核对
+
+本批增强能力由内部 factory 显式启用，不改变现有 AuthoringAdapters 必需字段。
+接入端口、可信事件示例、一次核对、保留期与降级见
+[SEMANTIC-DISCOVERY-HANDOFF.md](SEMANTIC-DISCOVERY-HANDOFF.md)。
+同轮复用仍有效的 context_ref；新轮由 Relay 提供新值，通过可信 taskRef/事件恢复需求，
+不能直接使用旧 contextRef、旧授权或旧结果引用。首期无需向量数据库，知识库和解释模型均可选。

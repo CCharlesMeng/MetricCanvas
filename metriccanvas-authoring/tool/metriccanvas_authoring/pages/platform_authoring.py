@@ -1,4 +1,5 @@
 """Platform authoring: one work document, internal single-save, referenced data only."""
+from metriccanvas_authoring.data.validation_policy import load_query_validation_policy
 from copy import deepcopy
 from dataclasses import replace
 from uuid import uuid4
@@ -46,7 +47,7 @@ class PlatformAuthoring:
         else:
             require(not detail_refs, 'METRIC_DETAIL_UNAVAILABLE')
             found = await create_discover_data_context(DiscoverDataContextDependencies(self.dependencies.data_context,
-                business_interpretation=self.dependencies.business_interpretation))(DiscoverDataContextCommand(query, limit))
+                business_interpretation=self.dependencies.business_interpretation, validation_policy=load_query_validation_policy()))(DiscoverDataContextCommand(query, limit))
             result = {'ok': found.ok, 'dataContextVersion': found.data_context_version,
                 'businessDomains': list(found.business_domains), 'matches': list(found.matches),
                 'issues': [{'code': i.code, 'path': i.path} for i in found.issues]}

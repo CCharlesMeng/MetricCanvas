@@ -6,6 +6,7 @@ from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
+from metriccanvas_authoring.data.validation_policy import QueryValidationPolicy, current_for_query
 from metriccanvas_authoring.data.ports import DataContextError, DataContextPort
 from metriccanvas_authoring.data.business_interpretation import BusinessInterpretationPort, BusinessInterpretationError, extend_interpretation
 from metriccanvas_authoring.data.business_terms import (
@@ -35,6 +36,7 @@ class DiscoverDataContextDependencies:
     data_context: DataContextPort
     now: Callable[[], datetime] = _utc_now
     business_interpretation: BusinessInterpretationPort | None = None
+    validation_policy: QueryValidationPolicy = QueryValidationPolicy(strict=True)
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,7 +73,7 @@ def create_discover_data_context(
         command: DiscoverDataContextCommand,
     ) -> DiscoverDataContextResult:
         try:
-            snapshot = await dependencies.data_context.current()
+            snapshot = await current_for_query(dependencies.data_context, dependencies.validation_policy)
         except DataContextError as error:
             return DiscoverDataContextResult(
                 ok=False,
@@ -79,7 +81,7 @@ def create_discover_data_context(
                     DiscoverDataContextIssue(error.code, "", str(error)),
                 ),
             )
-        data_context, issues = parse_data_context(snapshot)
+        data_context, issues = parse_data_context(snapshot, policy=dependencies.validation_policy)
         if issues:
             return DiscoverDataContextResult(
                 ok=False,

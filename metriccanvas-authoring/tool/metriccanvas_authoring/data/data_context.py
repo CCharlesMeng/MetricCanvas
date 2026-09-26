@@ -3,13 +3,14 @@ from __future__ import annotations
 import json
 import re
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Mapping, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import ValidationError
 
 from metriccanvas_authoring.runtime_assets import bundle_root
+from metriccanvas_authoring.data.validation_policy import QueryValidationPolicy, query_snapshot_schema
 
 
 BUNDLE_ROOT = bundle_root()
@@ -31,6 +32,7 @@ class SemanticMetric:
     unit: str | None
     nullable: bool
     sensitive: bool
+    dimensions: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -69,6 +71,7 @@ class SemanticSurface:
     business_domain: str
     metrics_by_name: Mapping[str, SemanticMetric]
     dimensions_by_name: Mapping[str, SemanticDimension]
+    declared_measures: Mapping[str, SemanticMetric] = field(default_factory=dict)
 
     def metric(self, name: str) -> SemanticMetric | None:
         return self.metrics_by_name.get(name)
@@ -111,10 +114,11 @@ class DataContext:
 
 def parse_data_context(
     value: Any,
+    *, policy: QueryValidationPolicy | None = None,
 ) -> tuple[DataContext | None, tuple[DataContextIssue, ...]]:
     """Validate the neutral snapshot and project its authoring semantic surface."""
     schema = json.loads(DATA_CONTEXT_SCHEMA.read_text(encoding="utf-8"))
-    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    validator = Draft202012Validator(schema if policy is None else query_snapshot_schema(schema, policy), format_checker=FormatChecker())
     issues = [
         DataContextIssue("DATA_CONTEXT_SCHEMA_ERROR", path, error.message)
         for error in validator.iter_errors(value)
@@ -153,7 +157,9 @@ def parse_data_context(
         for raw_schema in _sequence(environment["schemas"]):
             data_schema = _mapping(raw_schema)
             surface = _project_surface(data_schema)
-            surfaces.setdefault(surface.business_domain, surface)
+            if surface.business_domain in surfaces:
+                return None, (DataContextIssue('DATA_CONTEXT_DOMAIN_AMBIGUOUS', '/executionEnvironments', 'Duplicate business domain'),)
+            surfaces[surface.business_domain] = surface
             metric_entries.extend(_metric_entries_for_schema(data_schema))
             dimension_entries.extend(_dimension_entries_for_schema(data_schema))
             search_candidates.extend(
@@ -237,16 +243,22 @@ def _project_surface(schema: Mapping[str, Any]) -> SemanticSurface:
             unit=_optional_string(declaration.get("unit")),
             nullable=bool(declaration["nullable"]),
             sensitive=bool(declaration["sensitive"]),
+            dimensions=tuple(declaration.get("dimensions", [])),
         )
         _index_name_and_aliases(metrics, metric, declaration)
 
     dimensions: dict[str, SemanticDimension] = {}
+    measures: dict[str, SemanticMetric] = {}
     for raw_object in _sequence(schema["objects"]):
         data_object = _mapping(raw_object)
         for raw_field in _sequence(data_object["fields"]):
             declaration = _mapping(raw_field)
             role_hints = {str(value) for value in _sequence(declaration["roleHints"])}
             is_time = "time" in role_hints
+            if 'measure' in role_hints:
+                measure = SemanticMetric(str(declaration['name']), str(declaration['type']),
+                    _optional_string(declaration.get('unit')), bool(declaration['nullable']), bool(declaration['sensitive']))
+                _index_name_and_aliases(measures, measure, declaration)
             if not is_time and "dimension" not in role_hints:
                 continue
             dimension = SemanticDimension(
@@ -275,7 +287,7 @@ def _project_surface(schema: Mapping[str, Any]) -> SemanticSurface:
     return SemanticSurface(
         business_domain=str(schema["name"]),
         metrics_by_name=metrics,
-        dimensions_by_name=dimensions,
+        dimensions_by_name=dimensions, declared_measures=measures,
     )
 
 
@@ -284,9 +296,12 @@ def _index_name_and_aliases(
     item: SemanticMetric | SemanticDimension,
     declaration: Mapping[str, Any],
 ) -> None:
-    index.setdefault(item.name, item)
-    for alias in _sequence(declaration.get("aliases", [])):
-        index.setdefault(str(alias), item)
+    from metriccanvas_authoring.data.ports import DataContextError
+    for name in (item.name, *[str(alias) for alias in _sequence(declaration.get('aliases', []))]):
+        previous = index.get(name)
+        if previous is not None and previous != item:
+            raise DataContextError('DATA_CONTEXT_NAME_AMBIGUOUS', 'Conflicting semantic names or aliases')
+        index[name] = item
 
 
 def _parse_value_domain(description: str) -> tuple[str, ...] | None:

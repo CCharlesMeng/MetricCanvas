@@ -5,6 +5,7 @@ import asyncio
 import json
 from jsonschema import Draft202012Validator
 from metriccanvas_authoring.data.query import create_query_data
+from metriccanvas_authoring.data.validation_policy import (load_query_validation_policy, normalize_request, current_for_query, FixedQueryContext, normalize_semantic_names)
 from metriccanvas_authoring.data.executable_units import build_query_source
 from metriccanvas_authoring.data.metric_relations import load_relations, query_relations, relation_evidence
 from metriccanvas_authoring.runtime_assets import bundle_root
@@ -40,6 +41,20 @@ class QueryResults:
 
     async def execute(self, prepared, request, current):
         require(Draft202012Validator(QUERY_SCHEMA).is_valid(request), 'QUERY_REQUEST_INVALID')
+        policy = load_query_validation_policy()
+        original = deepcopy(request)
+        request, normalizations = normalize_request(request)
+        async with asyncio.timeout(await self.state.remaining(prepared)):
+            snapshot = await current_for_query(self.dependencies.data_context, policy)
+        await current()
+        from metriccanvas_authoring.data.data_context import parse_data_context
+        context, context_issues = parse_data_context(snapshot, policy=policy)
+        if context_issues:
+            return {'status': 'failed', 'validationMode': policy.mode,
+                    'issues': [{'code': i.code, 'path': i.path} for i in context_issues]}
+        require(context.version == request['dataContextVersion'], 'DATA_CONTEXT_VERSION_CHANGED')
+        request, name_changes = normalize_semantic_names(request, snapshot, context)
+        normalizations.extend(name_changes)
         requests = request['requests']
         require(len({r['dataSourceId'] for r in requests}) == len(requests), 'QUERY_ID_CONFLICT')
         version = request['dataContextVersion']
@@ -48,22 +63,27 @@ class QueryResults:
             await self.authorize(prepared, item, version)
         await current()
         await self.state.consume(prepared, 'query_rounds')
-        async def one(item):
-            signature = digest([self.state.key(prepared), version, {k: v for k, v in item.items() if k != 'dataSourceId'}])
+        async def one(index, item):
+            signature = digest([self.state.key(prepared), version, policy.identity, {k: v for k, v in item.items() if k != 'dataSourceId'}])
             ref = 'result-' + signature
             claimed = {'binding': deepcopy(dict(prepared.binding)), 'dataContextVersion': version,
-                       'request': deepcopy(item), 'status': 'pending', 'resultRef': ref}
+                       'request': deepcopy(item), 'originalRequest': deepcopy(original['requests'][index]),
+                       'validationPolicy': policy.identity, 'validationMode': policy.mode,
+                       'normalizations': [n for n in normalizations if n['path'].startswith(f'/requests/{index}/')],
+                       'status': 'pending', 'resultRef': ref}
             owner = await self.state.store.compare_and_swap('query', ref, 0, claimed)
             if not owner:
                 _, record = await self.state.store.read('query', ref)
                 require(record['binding'] == dict(prepared.binding), 'RESULT_SCOPE_MISMATCH')
                 await current()
                 return self.evidence(record, item['dataSourceId'])
-            deps = replace(self.dependencies, authoring_scope=dict(prepared.binding), stable_field_ids=True)
+            deps = replace(self.dependencies, data_context=FixedQueryContext(snapshot), authoring_scope=dict(prepared.binding), stable_field_ids=True, validation_policy=policy)
             try:
                 await current()
                 if self.semantic_catalog is not None:
-                    issues = await self.semantic_catalog.query_issues(dict(prepared.binding), item)
+                    checker = getattr(self.semantic_catalog, 'query_issues_for_context', None)
+                    issues = (await checker(dict(prepared.binding), item, snapshot) if callable(checker)
+                              else await self.semantic_catalog.query_issues(dict(prepared.binding), item))
                     if issues:
                         claimed.update(status='failed', issues=issues)
                         await self.state.store.compare_and_swap('query', ref, 1, claimed)
@@ -73,6 +93,7 @@ class QueryResults:
                 async with asyncio.timeout(await self.state.remaining(prepared)):
                     result = await create_query_data(deps)(spec)
                 await current()
+                claimed['warnings'] = list(result.warnings)
                 if result.ok:
                     execution = result.executions[0]
                     require(len(json.dumps(list(execution.rows), ensure_ascii=False, allow_nan=False).encode()) <= 2 * 1024 * 1024, 'QUERY_RESULT_SIZE_LIMIT')
@@ -86,17 +107,19 @@ class QueryResults:
                     await current()
                     claimed.update(relations=query_relations(relations, item, claimed['source']), relationStatus=status)
                 else:
-                    claimed.update(status='failed', issues=[{'code': i.code, 'path': i.path} for i in result.issues])
+                    claimed.update(status='failed', issues=[{'code': i.code, 'path': i.path, 'stage': i.stage,
+                        'candidates': list(i.candidates)[:10], 'retrySafe': i.retry_safe,
+                        'action': 'correct_request_or_refresh_context' if i.stage in {'discovery','generation'} else 'inspect_execution_failure'} for i in result.issues])
                 await self.state.store.compare_and_swap('query', ref, 1, claimed)
                 return self.evidence(claimed, item['dataSourceId'])
             except BaseException:
                 claimed.update(status='failed', issues=[{'code': 'QUERY_INTERRUPTED', 'path': ''}])
                 await asyncio.shield(self.state.store.compare_and_swap('query', ref, 1, claimed))
                 raise
-        results = await asyncio.gather(*(one(item) for item in requests))
+        results = await asyncio.gather(*(one(index, item) for index, item in enumerate(requests)))
         await current()
         payload = {'status': 'ready' if all(r['status'] in {'ready', 'empty'} for r in results) else 'partial' if any(r['status'] in {'ready', 'empty'} for r in results) else 'failed',
-                   'dataContextVersion': version, 'results': results}
+                   'dataContextVersion': version, 'validationMode': policy.mode, 'results': results}
         self.bound(payload)
         await self.state.consume(prepared, 'total_evidence_bytes', len(json.dumps(payload, ensure_ascii=False).encode()))
         return payload
@@ -121,6 +144,8 @@ class QueryResults:
     def evidence(self, record, source_id=None):
         result = {'resultRef': record['resultRef'], 'dataSourceId': source_id or record['request']['dataSourceId'],
                   'status': record['status'], 'scope': deepcopy(record['request'])}
+        result.update(validationMode=record.get('validationMode', 'strict'),
+            warnings=deepcopy(record.get('warnings', [])), normalizations=deepcopy(record.get('normalizations', [])))
         result['scope']['dataSourceId'] = result['dataSourceId']
         if record['status'] not in {'ready', 'empty'}:
             result['issues'] = deepcopy(record.get('issues', []))
@@ -145,9 +170,15 @@ class QueryResults:
     async def require(self, prepared, ref, current, *, usable=True):
         _, record = await self.state.store.read('query', ref)
         require(record is not None and record['binding'] == dict(prepared.binding), 'RESULT_SCOPE_MISMATCH')
-        snapshot = await self.dependencies.data_context.current()
+        policy = load_query_validation_policy()
+        if usable:
+            require(record.get('validationPolicy') == policy.identity, 'RESULT_VALIDATION_POLICY_CHANGED')
+        # Reading historical evidence retains its original policy; using it requires current policy identity.
+        from metriccanvas_authoring.data.validation_policy import QueryValidationPolicy
+        recorded_policy = QueryValidationPolicy(strict=record.get('validationMode', 'strict') == 'strict')
+        snapshot = await current_for_query(self.dependencies.data_context, recorded_policy)
         from metriccanvas_authoring.data.data_context import parse_data_context
-        context, issues = parse_data_context(snapshot)
+        context, issues = parse_data_context(snapshot, policy=recorded_policy)
         require(not issues and context.version == record['dataContextVersion'], 'RESULT_VERSION_STALE')
         await self.authorize(prepared, record['request'], record['dataContextVersion'])
         await current()

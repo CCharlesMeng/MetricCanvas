@@ -11,6 +11,10 @@
       "sha256": "c679b08fefba19fb94ef36dd468b9c5e7ad400183f33a04e3392c79108176938"
     },
     {
+      "file": "CHANGELOG-2026-09-26.md",
+      "sha256": "f21db0620a321544516696ff5a848ecba8c17eedfb7346585e8687f80acc1f14"
+    },
+    {
       "file": "contract-lock.json",
       "sha256": "981e79819ae12265d92d42f3f144fb656aafc95c7dd9e1fa95dc1b557e2bead2"
     },
@@ -2056,7 +2060,7 @@
     },
     {
       "file": "contracts/authored/adapter-interface.md",
-      "sha256": "a39db75c4094c310d7b4ac1166c1f99b6b3d7d75a0a2a28b72aa47572af1d200"
+      "sha256": "6c9da562b6d9e867cf3aa6d4a364396ecc11860751ed24143fa4547663192bfa"
     },
     {
       "file": "contracts/authored/agent-conformance.schema.json",
@@ -2101,6 +2105,10 @@
     {
       "file": "contracts/authored/business-term-resolution.schema.json",
       "sha256": "f8ecad1e32c668cf16b7bde3201a6503fef9b7d91783f0e16584428107120b45"
+    },
+    {
+      "file": "contracts/authored/discovery.schema.json",
+      "sha256": "c9c2521c08ddfd84c45874c107eb117eda898be7344a6b142cdcecfbc67d7deb"
     },
     {
       "file": "contracts/authored/lifecycle-request.schema.json",
@@ -2175,6 +2183,22 @@
       "sha256": "7ce89cff3f0bc8e555e9d588dcaa0016db0624581487cddbbca507ba7df9c07f"
     },
     {
+      "file": "docs/plan/semantic-discovery/DESIGN.md",
+      "sha256": "e6fb1cc3751d5cb9c272eadb6c8f22f1bf6e4b733097b4694d335d56e5c4a9f8"
+    },
+    {
+      "file": "docs/plan/semantic-discovery/IMPLEMENTATION.md",
+      "sha256": "2003067b9d978b366b173eed4200505fdd311d57dfb63b88063c3b045b1cc315"
+    },
+    {
+      "file": "docs/plan/semantic-discovery/PLAN.md",
+      "sha256": "4c02c5bc1c08f806cb41f66025b4c82c1f47a809d6bffb6f4986608ad1fd105e"
+    },
+    {
+      "file": "docs/plan/semantic-discovery/SPEC.md",
+      "sha256": "a27ec99cae33bdeb4b0a919f5edcd06935cd723bcc7f2b74580b509a04a5343a"
+    },
+    {
       "file": "examples/adapter_template/__init__.py",
       "sha256": "8d0bf2616eef9bd47430c14d10e3a4a2efd13c486c359e85ad7b159c97538c12"
     },
@@ -2200,11 +2224,19 @@
     },
     {
       "file": "examples/adapter_template/firstparty/data_context_http.py",
-      "sha256": "3cd1dacbb5ca400aed679bee079540ac5c971d9bb4b55c345afa292f27c9d023"
+      "sha256": "a2c5ed9c0a86e4bcc65a8f029b17d6269c3ec7949632df806b9078c6d3d4c8d9"
     },
     {
       "file": "examples/adapter_template/firstparty/dataset_metadata_http.py",
-      "sha256": "306e20134ab34df8b54cfd8614e600642c205df99973e80c2b7471d1d804e757"
+      "sha256": "f3bd29495d9fcfc1f472e98d38a28cbcdce255a99afcec4217ea73571db23966"
+    },
+    {
+      "file": "examples/adapter_template/firstparty/discovery_knowledge.py",
+      "sha256": "84a3ff6bf2a332c39138f83e14fa5b80b7a3a7e28bfbe905f772106d173f2f56"
+    },
+    {
+      "file": "examples/adapter_template/firstparty/discovery_model_http.py",
+      "sha256": "9368c8dd2905f211e571ebbb17878279fd159692a3f6df1642fd05da1bb3865c"
     },
     {
       "file": "examples/adapter_template/firstparty/dqe_http.py",
@@ -2239,6 +2271,10 @@
       "sha256": "db1243aeb4ee4d9172424d91fdd364e43747ac8ffd7f4f1796d801fd7d0d0963"
     },
     {
+      "file": "examples/adapter_template/relay/discovery_context.py",
+      "sha256": "3aaab4f227f85d14bc493cfb8dd755302e751acca273d3b1d050120d935ae1f1"
+    },
+    {
       "file": "examples/adapter_template/relay/env_identity.py",
       "sha256": "da41a3126cb399109b6a8788daadc4f42d98c9fb088f7cf49ddcda23f670e4fa"
     },
@@ -2260,7 +2296,7 @@
     },
     {
       "file": "examples/adapter_template/storage/platform_state.py",
-      "sha256": "5b3dd602fbb9dc2b463968777631b8b1b2df964681e164109587bd69ecd661d6"
+      "sha256": "6f574687120f3d36619c8e085ce76582cb1bad0decda46e40aa080480d604d16"
     },
     {
       "file": "examples/adapter_template/tests/README.md",
@@ -2279,6 +2315,14 @@
       "sha256": "d2df63f82020319ff061e436847bfe307d06f1b69bfb62ad6b841f0afd583c0e"
     },
     {
+      "file": "examples/relay/query-validation.example.json",
+      "sha256": "c295282b2c3c3d71f723acea7e9553ac5b2997d57a4176e3b2d53017e6623914"
+    },
+    {
+      "file": "examples/semantic-discovery/business-knowledge.mock.json",
+      "sha256": "edaf00378a720641228382bb663920e35e27eef90e93031e5462be5964a66910"
+    },
+    {
       "file": "INTEGRATION-IMPROVEMENTS.md",
       "sha256": "175e609900d28f497667cfa75f6e76771eb1b069e349311f77a49b0db42bb52b"
     },
@@ -2291,12 +2335,16 @@
       "sha256": "8cad2a229be26dd9b5c6b73ea71413afcb1a72d7d6976c2b842fc36304ddc8d8"
     },
     {
+      "file": "QUERY-VALIDATION-MIGRATION.md",
+      "sha256": "1c7c671f0e7566c50529a6a65e35c571bf88d321b1eebe4bf3687cd350c505e9"
+    },
+    {
       "file": "README.md",
-      "sha256": "a20fb71af306ad8089cdda3b830f6359f35375cef03fd2100fd79a79eb338a7f"
+      "sha256": "44fe21b53f58b38a7f5a329071527b8e0edceae63bf45ab3bbeeb5e1e2b1ed78"
     },
     {
       "file": "RELAY-HANDOFF.md",
-      "sha256": "fb28100a7c5012ec599cd8d85ed6603aa283075f5ef2f0558c7fcd976dd84233"
+      "sha256": "899c942a6fa4a49e34de01dfa54403f3093405341eb3c1959c526d71f74661ff"
     },
     {
       "file": "scripts/check_adapters.py",
@@ -2308,11 +2356,15 @@
     },
     {
       "file": "scripts/check_data_context.py",
-      "sha256": "c6e230c4b291329aadce0ad4c06926a2be4412559e1a99fa96edd00638aa47b1"
+      "sha256": "caba357bd01d7970983c28e65243d17016c76cf6c67c3a4b29a8c72a92338765"
     },
     {
       "file": "scripts/sync_upstream.py",
       "sha256": "872a15e5e781ca57b04f80f6344b6d6d670450e97f8aaa5230442b9bfb0b7994"
+    },
+    {
+      "file": "SEMANTIC-DISCOVERY-HANDOFF.md",
+      "sha256": "4aecfdfd1b8af00244d14ab48037bb301866b472d69b312747b9bf3515d827c4"
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/actions-and-navigation.md",
@@ -3468,7 +3520,7 @@
     },
     {
       "file": "skill/metriccanvas-platform-authoring/references/errors.md",
-      "sha256": "ca11e25539c3a07d6bdb58fdfc02de71baa355a98e941baa923b1edff4b90eee"
+      "sha256": "7ff9d70d20390a02ce392841cf4e7db60766ce5b15f1dc959b7cb17709a39955"
     },
     {
       "file": "skill/metriccanvas-platform-authoring/references/examples.md",
@@ -3516,7 +3568,7 @@
     },
     {
       "file": "skill/metriccanvas-platform-authoring/workflows/data-analysis.md",
-      "sha256": "b607de9d53f8544f5ab0c3923f5ae00511cc64f86caa0e44ef17127694b1574b"
+      "sha256": "07d061a809410ed328d22dae900d5374d64967c570bb312be1d7bc6d179c9e17"
     },
     {
       "file": "skill/metriccanvas-platform-authoring/workflows/edit.md",
@@ -3711,6 +3763,10 @@
       "sha256": "032a28d06a957a137654c8cfb8a019fdf06a740f416dd3d63a0f7fb02e9d6b7a"
     },
     {
+      "file": "test-harness/model-evals/run_discovery_smoke.py",
+      "sha256": "58611ab5b578a57abc2e1212b1f949cc16948705ba733a2d6438ef5364113690"
+    },
+    {
       "file": "test-harness/model-evals/run_local.py",
       "sha256": "a27439a89b2bbc0adda5f76e854a56f560757fc18e4b69c82984474be0e0138e"
     },
@@ -3784,7 +3840,7 @@
     },
     {
       "file": "test-harness/test-layers.json",
-      "sha256": "36519b5040a6ef5dcff553d7e48870aa93ba7df35fcc68780df09407fd1746f6"
+      "sha256": "be72ee3936f5cb4495006da8486e3e27a80b0b672261aac5e354ad8fcdab938c"
     },
     {
       "file": "test-harness/tests/test_agent_contracts.py",
@@ -3824,7 +3880,7 @@
     },
     {
       "file": "test-harness/tests/test_compose_page.py",
-      "sha256": "93ce2e88e4865fa5b1c0f8daa7b4d72f14672fbffb5a719036786122050d015b"
+      "sha256": "da730438227d2eac9f1c6a6da97e6311598a3355a8875c10c43e03ab7626734f"
     },
     {
       "file": "test-harness/tests/test_container_building.py",
@@ -3852,7 +3908,7 @@
     },
     {
       "file": "test-harness/tests/test_data_context_http.py",
-      "sha256": "06a5740882b67357381e33238d8733d24ecc8464a8950629c70cf76286306984"
+      "sha256": "0eac9095c808190598bd7f82f53aedff35c0e02ca74a087c3a6aa13c63bbceac"
     },
     {
       "file": "test-harness/tests/test_dataset_metadata_http.py",
@@ -3869,6 +3925,10 @@
     {
       "file": "test-harness/tests/test_discover_data_context.py",
       "sha256": "6a5005c07738ae70011bc346b7f2d58fd17062e9c9d8edf6fb50f1eb4c2c346e"
+    },
+    {
+      "file": "test-harness/tests/test_discovery.py",
+      "sha256": "dfb0fff5cadaf63bda8f86f0219553ded1ae5fb8eb544419f7ac529619c3297e"
     },
     {
       "file": "test-harness/tests/test_distribution.py",
@@ -3916,7 +3976,7 @@
     },
     {
       "file": "test-harness/tests/test_page_building_conformance.py",
-      "sha256": "9d74247e451faad2cdb7e4dfe8cd4cfe5e132c3bf26570f9c90217ebd86efd2c"
+      "sha256": "5eae5a26a4350941ed8f19ad8d5f912a6c9e2f46434b03be3c9252ef3fbe93dd"
     },
     {
       "file": "test-harness/tests/test_page_editing.py",
@@ -3961,6 +4021,10 @@
     {
       "file": "test-harness/tests/test_publish_stdio.py",
       "sha256": "efc7d58bcb8138e2b2ddaee1727f97ddf842a49c3c397272d18e56122b6fedbd"
+    },
+    {
+      "file": "test-harness/tests/test_query_validation_policy.py",
+      "sha256": "d00e000406da5d938e1929329686590ce8d99d9940bb5f6c36d4c8dc95ac9dd0"
     },
     {
       "file": "test-harness/tests/test_result_relations.py",
@@ -4056,7 +4120,7 @@
     },
     {
       "file": "tool/metriccanvas_authoring/bootstrap/deployment.py",
-      "sha256": "254ebdfa2358a64882a514941177fc5ce6b74ee1482642e0905022e21680d522"
+      "sha256": "725b880bbf46631674b3f198c513ddd033b9a2f12a755ba293a7982b80efa206"
     },
     {
       "file": "tool/metriccanvas_authoring/bootstrap/environment.py",
@@ -4104,19 +4168,39 @@
     },
     {
       "file": "tool/metriccanvas_authoring/data/data_context.py",
-      "sha256": "095be06d70f89986eb8551ee87193bf7155c31526556554c0f64834b9fe6b898"
+      "sha256": "94b1e6215449013dcae0b276fe1e3c3b01dfb69e2e0ba6f93a6537d7f4d37ae7"
     },
     {
       "file": "tool/metriccanvas_authoring/data/discover_data_context.py",
-      "sha256": "6c9e42f455f1788581cdb39de74aaa014a82b422d8ad701640a0e9ce31dd3207"
+      "sha256": "5981f437c452b4f6e8c989353730c43f4804256a80c67da47ee83e48d0c24d90"
+    },
+    {
+      "file": "tool/metriccanvas_authoring/data/discovery/__init__.py",
+      "sha256": "ac5400bfa0d275212d955304ff3457a7043d1081f38f4515ef1e1c5a095b265a"
+    },
+    {
+      "file": "tool/metriccanvas_authoring/data/discovery/contracts.py",
+      "sha256": "7662783de8d9cab04c4089ced671e1c096d4c5dd25e50cce76a01d7b4de8673c"
+    },
+    {
+      "file": "tool/metriccanvas_authoring/data/discovery/retrieval.py",
+      "sha256": "ca29b557ead4f3f2b3ffb25a5423eb1a798378cd8c5fa58fc99bf81ee0c79a34"
+    },
+    {
+      "file": "tool/metriccanvas_authoring/data/discovery/service.py",
+      "sha256": "570d80c138f14a237347cfb3960f83ec7c49c0833773e81c2d086447d0636f38"
     },
     {
       "file": "tool/metriccanvas_authoring/data/executable_units.py",
-      "sha256": "929eb01c9eb1be34364310081814e309713311f449dde4559b65ec687a21e88b"
+      "sha256": "a7ba72f882a46ebabe8c41dbc604aba15a8903fc012d8df64ead91167554c5e3"
     },
     {
       "file": "tool/metriccanvas_authoring/data/execution.py",
       "sha256": "21228dfe4ec1fbf8fe74e7de3a63e3b2ffa358697ef42545f24482c44c999a7c"
+    },
+    {
+      "file": "tool/metriccanvas_authoring/data/lab_projection.py",
+      "sha256": "0e02d4031adefe00f07eda00fd74dd2d0ac244cab7a3229773a5a74fa4a21eb3"
     },
     {
       "file": "tool/metriccanvas_authoring/data/metric_relations.py",
@@ -4128,19 +4212,19 @@
     },
     {
       "file": "tool/metriccanvas_authoring/data/ports.py",
-      "sha256": "b80a39eb03583adeba7c81b2f2378a5ff718d6fca5c7af06ffa38ed1b194455e"
+      "sha256": "3685c02182e76bde6358d6092dd8efb351e6167fd6c0738e9d087bc0d0b1136d"
     },
     {
       "file": "tool/metriccanvas_authoring/data/query.py",
-      "sha256": "3845ffdb002b58f033532f0a8c88a71450bf419e9dfd5d510cf64bfc2ddfcd52"
+      "sha256": "8f71d9e26c59765d4a92092d510359fa25c8cc0ddabc2b8333ee4602fe2924cf"
     },
     {
       "file": "tool/metriccanvas_authoring/data/results.py",
-      "sha256": "0f21b25891bfc9717972e19f3d87396a3c4e5b317844bfdd8d8667b997242b7a"
+      "sha256": "60bb8c817249cd7c28b275535196dcbcf3cea5f414e5f35565feb4e07d7cefc8"
     },
     {
       "file": "tool/metriccanvas_authoring/data/semantic_catalog.py",
-      "sha256": "859d4afc98f78f735def1d54b862a51cf4a9aa771eed071159428425679c733c"
+      "sha256": "a7e000945a98fa1947bc7bdb7cc8af226b2c33b19851086503ef656a39c89de6"
     },
     {
       "file": "tool/metriccanvas_authoring/data/service_identity.py",
@@ -4153,6 +4237,10 @@
     {
       "file": "tool/metriccanvas_authoring/data/source_mapping.py",
       "sha256": "bd0c24589485bcf63f31882c1f14c74c3214dff9d28e26188049b09677ddec06"
+    },
+    {
+      "file": "tool/metriccanvas_authoring/data/validation_policy.py",
+      "sha256": "be821f6f2e828503e7ce202fff1dd274a9722d60a977c1ad2ceea0a19ec620b0"
     },
     {
       "file": "tool/metriccanvas_authoring/delivery/__init__.py",
@@ -4212,7 +4300,7 @@
     },
     {
       "file": "tool/metriccanvas_authoring/entrypoints/mcp/platform_mcp.py",
-      "sha256": "66ea9b3b47630ff51e1ddc50cbe11ddf5ceabc91ceb3ea0bad82d7095d132700"
+      "sha256": "cf8d278702eedbac4632f5113770fa5c206d25e9c7ed5c787ccd5672eed72440"
     },
     {
       "file": "tool/metriccanvas_authoring/entrypoints/mcp/platform_server.py",
@@ -4328,7 +4416,7 @@
     },
     {
       "file": "tool/metriccanvas_authoring/pages/platform_authoring.py",
-      "sha256": "992f4f8f1ff843fd8f463f1fba7e1ce548f529d1e18d83e68ef9e7c9ad3fd21f"
+      "sha256": "bb83c28c32dc0de9d47d640bd51bf27addd918f237b0798c5ef4d0418b91a43d"
     },
     {
       "file": "tool/metriccanvas_authoring/pages/referenced.py",
@@ -4365,6 +4453,10 @@
     {
       "file": "tool/metriccanvas_authoring/work/content_ports.py",
       "sha256": "701651ab27fe070124bd0a12a32609e3572cddb910520cf56a51e8c8480de3b0"
+    },
+    {
+      "file": "tool/metriccanvas_authoring/work/discovery_tasks.py",
+      "sha256": "e329494778ff010bd01f070005639f867ce6a8f43c6f98e685e5896fda432504"
     },
     {
       "file": "tool/metriccanvas_authoring/work/state.py",

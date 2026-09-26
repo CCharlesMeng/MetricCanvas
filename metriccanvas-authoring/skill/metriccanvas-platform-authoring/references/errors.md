@@ -21,3 +21,7 @@
 - DATASET_METADATA_FAILED / DATASET_METADATA_MISSING：对应数据集未成功读取，说明 partial 覆盖缺口；不将其解释为零指标。
 - DATA_CONTEXT_PARTIAL / DATA_CONTEXT_GOVERNANCE_REQUIRED：当前元数据不足以执行查询；补齐访问或治理配置，不猜单位与执行属性。
 - METRIC_DETAIL_STALE：指标所属模型已变化，重新发现取得新引用，不给旧指标补上新模型的数据。
+
+- DATA_CONTEXT_NAME_NOT_FOUND / DIMENSION_NOT_IN_DATA_CONTEXT / METRIC_NOT_IN_DATA_CONTEXT / TIME_GRANULARITY_NOT_IN_DATA_CONTEXT：读取 candidates 和失败阶段，按发现的规范名与粒度修正；同请求重复调用不解决问题。不得删除地域/时间条件换取成功。
+- RESULT_VALIDATION_POLICY_CHANGED：结果来自不同校验策略，重新确认并取数后用于页面；旧引用仅作带原模式的历史证据。
+- QUERY_VALIDATION_CONFIG_ERROR：交部署方修复可信配置；模型不能切换校验策略或伪造参数。

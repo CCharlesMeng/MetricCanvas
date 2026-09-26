@@ -22,6 +22,7 @@
 4. [内部验收](INTERNAL-VALIDATION-0.3.1.md)：真实环境需要提供的证据。
 5. [MC 侧优化清单](INTEGRATION-IMPROVEMENTS.md)：本批治理诊断、参考修复及内部采用方式。
 6. [源码阅读](tool/README.md)、[契约真源](SOURCES.md)：需要修改公共能力时阅读。
+7. [语义发现 Spec](docs/plan/semantic-discovery/SPEC.md)、[方案与架构影响](docs/plan/semantic-discovery/DESIGN.md)、[实施计划](docs/plan/semantic-discovery/PLAN.md)：无向量发现增强、业务知识接入与跨轮取数核对；实现及内部采用见 [增强发现接入](SEMANTIC-DISCOVERY-HANDOFF.md)。
 
 ## 交付内容
 
@@ -35,3 +36,5 @@
 Bundle 版本仍为 0.3.1；本次接入接口为 `authoring-adapters/1.0`，平台工具协议为 2.0。由于源码在同一 Bundle 版本内发生接入改动，必须固定 Git 提交，不能只凭 0.3.1 判断相容或复用旧产物哈希。实际内部构建记录公共提交、内部提交及产物哈希。
 
 普通问数命令 `metriccanvas-authoring` 只提供发现与临时装配，不替代平台入口；其参考配置在 `examples/relay/`。独立生命周期等兼容入口保留，但不作为这次创建/编辑接入的必需步骤。
+
+本轮交付说明：[2026-09-26 变更与 Adapter 升级清单](CHANGELOG-2026-09-26.md)。

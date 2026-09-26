@@ -1,4 +1,5 @@
 from __future__ import annotations
+from metriccanvas_authoring.data.validation_policy import QueryValidationPolicy
 
 import json
 import sys
@@ -95,6 +96,7 @@ class PageBuildingConformanceTest(unittest.IsolatedAsyncioTestCase):
                 dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
                 compose_page = create_compose_page(
                     ComposePageDependencies(
+                validation_policy=QueryValidationPolicy(strict=True),
                         data_context=data_context,
                         dqe=dqe,
                     )
@@ -967,6 +969,7 @@ class PageBuildingConformanceTest(unittest.IsolatedAsyncioTestCase):
         dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
         compose_page = create_compose_page(
             ComposePageDependencies(
+                validation_policy=QueryValidationPolicy(strict=True),
                 data_context=data_context,
                 dqe=dqe,
             )
@@ -995,6 +998,7 @@ class PageBuildingConformanceTest(unittest.IsolatedAsyncioTestCase):
         dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
         compose_page = create_compose_page(
             ComposePageDependencies(
+                validation_policy=QueryValidationPolicy(strict=True),
                 data_context=data_context,
                 dqe=dqe,
             )

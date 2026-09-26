@@ -56,11 +56,13 @@
       "tests/test_platform_v2.py",
       "tests/test_publication_restart.py",
       "tests/test_publish_stdio.py",
+      "tests/test_query_validation_policy.py",
       "tests/test_result_relations.py",
       "tests/test_semantic_catalog.py",
       "tests/test_skill_contract.py",
       "tests/test_stdio.py",
-      "tests/test_structure_current.py"
+      "tests/test_structure_current.py",
+      "tests/test_discovery.py"
     ]
   }
 }
