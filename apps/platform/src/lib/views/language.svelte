@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { dev } from '$app/environment';
+  const dev = import.meta.env.DEV;
   import PageAuthoringWorkbench from '$lib/PageAuthoringWorkbench.svelte';
   import type { DialogueAdapter } from '$lib/dialogue/port';
   import type { LanguagePort, createAuthoringLanguage } from '$lib/workbench/authoring-language';
   import { confirmedPageAssetCapabilities, type AuthoringPort } from '$lib/workbench/authoring-coordinator';
-  import { pageAuthoringPort } from '$lib/page-assets';
+  import {usePlatformServices} from '../integration/services';
+  const {pageAuthoringPort} = usePlatformServices();
   let openedPage = false;
   let language: ReturnType<typeof createAuthoringLanguage> | null = null;
   async function request(path: string, value: unknown, signal?: AbortSignal) {

@@ -7,17 +7,19 @@ import { createSingleSavePort } from './page-assets/single-save';
 import { PageAssetsError } from './page-assets/contract';
 import { confirmedPageAssetCapabilities, type AuthoringPort } from './workbench/authoring-coordinator';
 
-const javaAssets = createPageAssetsClient();
+export function createPageAssetServices(options: Parameters<typeof createPageAssetsClient>[0] = {}) {
+const readConfig = options.readConfig ?? readPageAssetsRuntimeConfig;
+const javaAssets = createPageAssetsClient(options);
 const actionRecords = createIndexedAuthoringStorage<ActionRecord>();
-export const pageAssets = {
+const pageAssets = {
   ...javaAssets,
   async save(command: SaveAsset): Promise<MutationOutcome<PageRevision>> {
     if (command.target.kind === 'existing') {
-      const config = readPageAssetsRuntimeConfig();
+      const config = readConfig();
       if (!config) return {status:'rejected',code:'UNAUTHENTICATED',message:'身份不可用。'};
       try {
         const record = await actionRecords.read({actorId:config.operatorId,workspaceId:config.workspaceId,...command.target.asset,channel:'management'});
-        const current = readPageAssetsRuntimeConfig();
+        const current = readConfig();
         if (current?.operatorId !== config.operatorId || current?.workspaceId !== config.workspaceId) return {status:'rejected',code:'IDENTITY_CHANGED',message:'身份已变化，未发送保存。'};
         if (record && ['sending','unknown'].includes(record.value.status)) return {status:'unknown',message:'此页面的管理操作结果未确认，保存已停止。'};
       } catch { return {status:'rejected',code:'STORAGE_UNAVAILABLE',message:'无法核实页面操作记录，未发送保存。'}; }
@@ -25,8 +27,8 @@ export const pageAssets = {
     return javaAssets.save(command);
   }
 };
-export const pageSavePort = createSingleSavePort(pageAssets);
-export const pageAuthoringPort: AuthoringPort = {
+const pageSavePort = createSingleSavePort(pageAssets);
+const pageAuthoringPort: AuthoringPort = {
   capabilities: { ...confirmedPageAssetCapabilities, currentRead: true },
   assets: pageAssets,
   async getLatest(pageId, signal, resourceId) {
@@ -48,3 +50,6 @@ export const pageAuthoringPort: AuthoringPort = {
     throw new PageAssetsError(result.status === 'rejected' ? result.code : 'PAGE_ASSETS_RESPONSE_ERROR',result.message,result.status === 'rejected' ? 400 : 200);
   }
 };
+
+return {pageAssets, pageSavePort, pageAuthoringPort};
+}

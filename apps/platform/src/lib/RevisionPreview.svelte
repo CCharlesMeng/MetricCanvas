@@ -3,8 +3,8 @@
   import type { ExecutionBootstrap } from '@metriccanvas/engine';
   import { RuntimeView } from '@metriccanvas/engine/ui';
   import type { PageRevision } from './page-assets/contract';
-  import { createInjectedDqeGateway } from './runtime-config';
-  import { pageAssets } from './page-assets';
+  import {usePlatformServices} from './integration/services';
+  const {pageAssets, dataGateway} = usePlatformServices();
 
   let { pageId, revisionId, readRevision = pageAssets.getRevision, executeRevision }: {
     pageId: string; revisionId: string;
@@ -16,7 +16,7 @@
   let execution = $state<ExecutionBootstrap | undefined>();
   let error = $state('');
   let retry = $state(0);
-  const dataGateway = createInjectedDqeGateway();
+
 
   $effect(() => {
     void retry;

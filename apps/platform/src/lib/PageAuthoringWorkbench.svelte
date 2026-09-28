@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { readAuthoringIntegration } from './dialogue/authoring-integration';
+
   import { createAuthoringLanguageRecovery, type TrustedLanguageRecoveryPort } from './workbench/authoring-language-recovery';
   import { createAuthoringLanguage, type LanguagePort } from './workbench/authoring-language';
   import PublicationReview from './workbench/PublicationReview.svelte';
@@ -12,11 +12,14 @@
   import { createAuthoringPublication, unavailablePublicationPort, unavailableHumanConfirmation, type PublicationPort, type HumanConfirmationPort } from './workbench/authoring-publication';
   import AuthoringHistory from './workbench/AuthoringHistory.svelte';
   import { onMount, tick, untrack } from 'svelte';
-  import { resolve } from '$app/paths';
-  import { pageAuthoringPort, pageSavePort } from '$lib/page-assets';
+  import {usePlatformServices} from './integration/services';
+  const services = usePlatformServices();
+  const {pageAuthoringPort, pageSavePort} = services;
+  const {resolve} = services.navigation;
+  const readRuntimeConfig = services.session.readConfig;
   import { createAuthoringCoordinator, type AuthoringPort, type DraftRef } from './workbench/authoring-coordinator';
   import { MetricCanvas, type AuthoringIntent } from '@metriccanvas/metric-canvas';
-  import { createWorkbenchDqeGateway } from './workbench/data-gateway';
+
   import { workbenchPageViewModel } from './workbench/transient-page';
   import {
     changeComponentType, componentCandidatesFor,
@@ -29,11 +32,11 @@
   import RevisionPreview from './RevisionPreview.svelte';
   import PanguDialogue from './dialogue/PanguDialogue.svelte';
   import { listenForSavedDrafts, unavailableDraftReader, type ReadSavedDraft, type DialogueAdapter } from './dialogue/port';
-  import { readPageAssetsRuntimeConfig as readRuntimeConfig } from './runtime-config';
+
   import { listenForApplyPage } from './workbench/apply-page';
   import { createIndexedAuthoringStorage } from './workbench/authoring-storage';
   import { unavailableStableSave, type StableSavePort, type DurableAuthoringState } from './workbench/authoring-sync';
-  let { parameterInstancePort, parameterContextRef, onParameterInstanceReady, parameterSourcePort, dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = authoringPort === pageAuthoringPort ? pageSavePort : unavailableStableSave, languagePort = readAuthoringIntegration()?.language, onLanguageReady, languageRecoveryPort, onLanguageRecoveryReady, publicationPort = unavailablePublicationPort, humanConfirmation = unavailableHumanConfirmation }: {
+  let { parameterInstancePort, parameterContextRef, onParameterInstanceReady, parameterSourcePort, dialogueAdapter = services.dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = authoringPort === pageAuthoringPort ? pageSavePort : unavailableStableSave, languagePort = services.authoring?.language, onLanguageReady, languageRecoveryPort, onLanguageRecoveryReady, publicationPort = unavailablePublicationPort, humanConfirmation = unavailableHumanConfirmation }: {
     parameterInstancePort?: ParameterInstancePort;
     parameterContextRef?: () => string;
     onParameterInstanceReady?: (api: ReturnType<typeof createParameterInstanceSession>) => void;
@@ -84,22 +87,28 @@
   let flushingInput = false;
   let workbenchElement: HTMLDivElement;
   let selectedComponent = $state<ComponentLocator | null>(null);
-  const dataGateway = createWorkbenchDqeGateway();
+  const dataGateway = services.workbenchGateway;
 
   // Coordinator owns the working copy; UI only projects snapshots and forwards intents.
   onMount(() => {
-    const pageId = new URLSearchParams(window.location.search).get('page');
+    const stopInvalidation = services.session.onInvalidate(() => coordinator.dispose());
+    const hasUnsavedWork = () => {
+      const current = coordinator.snapshot();
+      return current.dirty || (current.sync?.pending ?? 0) > 0 || current.save?.status === 'pending' || current.save?.status === 'unknown' || current.languageLocked;
+    };
+    const stopGuard = services.navigation.registerGuard(() => !hasUnsavedWork() || window.confirm('当前工作尚未确认保存，仍要离开？原恢复记录将保留。'), hasUnsavedWork);
+    const pageId = services.navigation.current().searchParams.get('page');
     let syncEnabled = false;
     const enableSync = () => {
       if (syncEnabled) return;
       syncEnabled = true;
       coordinator.enableAutoSync({ storage: createIndexedAuthoringStorage<DurableAuthoringState>(), port: stableSavePort });
     };
-    const resume = async (targetPageId: string | null) => { enableSync(); if (targetPageId) await coordinator.load(targetPageId, {resourceId:new URLSearchParams(window.location.search).get('resource') ?? undefined}); };
+    const resume = async (targetPageId: string | null) => { enableSync(); if (targetPageId) await coordinator.load(targetPageId, {resourceId:services.navigation.current().searchParams.get('resource') ?? undefined}); };
     if (languageRecoveryPort) {
       languageRecovery = createAuthoringLanguageRecovery({ coordinator, port: languageRecoveryPort,
         identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; },
-        currentPageId: () => new URLSearchParams(window.location.search).get('page'), resume, protectSaved: enableSync });
+        currentPageId: () => services.navigation.current().searchParams.get('page'), resume, protectSaved: enableSync });
       languageRecovery.subscribe(value => { recoveryState = value; });
       void languageRecovery.check(pageId);
       onLanguageRecoveryReady?.(languageRecovery);
@@ -129,7 +138,7 @@
     const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; publication?.invalidate(); parameterReview?.invalidate(); parameterInstance?.invalidate(); });
     let disconnectAuthoring: void | (() => void);
     if (languagePort) {
-      language = createAuthoringLanguage({ coordinator, port: languagePort, target: window,
+      language = createAuthoringLanguage({ coordinator, port: languagePort, target: services.events,
         selection: () => currentDocument && selectedComponent ? { pageId: String(currentDocument.id), componentId: selectedComponent.componentId } : null,
         flushPendingInput: () => {
           const input = document.activeElement;
@@ -140,10 +149,10 @@
         identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; } });
       language.subscribe((value) => { languageState = value; });
       onLanguageReady?.(language);
-      disconnectAuthoring = readAuthoringIntegration()?.connect?.(language);
+      disconnectAuthoring = services.authoring?.connect?.(language);
     }
     const stop = languagePort ? () => {} : listenForSavedDrafts({
-      target: window, read: coordinator.readSavedDraft,
+      target: services.events, read: coordinator.readSavedDraft,
       captureIdentity: () => {
         const identity = readRuntimeConfig();
         return JSON.stringify([identity?.operatorId, identity?.workspaceId]);
@@ -157,7 +166,7 @@
       onerror: (message) => { saveError = message; }
     });
     const stopApplyPage = listenForApplyPage({
-      target: window,
+      target: services.events,
       captureIdentity: () => {
         const config = readRuntimeConfig();
         return JSON.stringify([config?.operatorId, config?.workspaceId]);
@@ -180,7 +189,7 @@
       },
       onerror: (message) => { saveError = message; }
     });
-    return () => { disconnectAuthoring?.(); window.removeEventListener('online', online); window.removeEventListener('offline', offline); stopApplyPage(); stop(); language?.dispose(); languageRecovery?.dispose(); publication?.dispose(); parameterReview?.dispose(); parameterInstance?.dispose(); unsubscribe(); coordinator.dispose(); };
+    return () => { stopGuard(); stopInvalidation(); disconnectAuthoring?.(); window.removeEventListener('online', online); window.removeEventListener('offline', offline); stopApplyPage(); stop(); language?.dispose(); languageRecovery?.dispose(); publication?.dispose(); parameterReview?.dispose(); parameterInstance?.dispose(); unsubscribe(); coordinator.dispose(); };
   });
 
   const currentDocument = $derived(currentDraft?.pageDocument ?? null);
@@ -374,7 +383,7 @@
     {#if recoveryState}
       <p class="notice" role="status" data-testid="language-recovery-status">{recoveryState.message || '正在检查未决操作…'}</p>
       {#if !recoveryState.summary}
-        <button class="btn" disabled={recoveryState.busy} onclick={() => languageRecovery?.check(new URLSearchParams(window.location.search).get('page'))}>再次检查恢复</button>
+        <button class="btn" disabled={recoveryState.busy} onclick={() => languageRecovery?.check(services.navigation.current().searchParams.get('page'))}>再次检查恢复</button>
       {:else}
         <button class="btn" disabled={recoveryState.busy || recoveryState.phase === 'opened'} onclick={() => languageRecovery?.recover()}>查询原操作</button>
         <button class="btn" disabled={recoveryState.busy || recoveryState.summary.cancelRequested || !recoveryState.locked} onclick={() => languageRecovery?.cancel()}>取消未完成操作</button>

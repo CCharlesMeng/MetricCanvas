@@ -1,8 +1,7 @@
 <script lang="ts">
   import type { DialogueAdapter } from './port';
-  import { panguDialogueAdapter } from './runtime';
   import { attachDialogue } from './lifecycle';
-  let { adapter = panguDialogueAdapter }: { adapter?: DialogueAdapter } = $props();
+  let { adapter }: { adapter: DialogueAdapter } = $props();
   let container: HTMLDivElement;
   let error = $state('');
   $effect(() => {

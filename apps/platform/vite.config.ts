@@ -1,48 +1,52 @@
-import { existsSync, readFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { sveltekit } from '@sveltejs/kit/vite';
+import {dirname, resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {svelte} from '@sveltejs/vite-plugin-svelte';
 import basicSsl from '@vitejs/plugin-basic-ssl';
-import { defineConfig } from 'vite';
+import {defineConfig, type Plugin} from 'vite';
 
 const appRoot = dirname(fileURLToPath(import.meta.url));
-const localHuaweiHost = 'ioc.huawei.com';
-
-function localHuaweiTls() {
-  const certificateDirectory = resolve(appRoot, '.local-tls');
-  const pfx = resolve(certificateDirectory, `${localHuaweiHost}.pfx`);
-  const key = resolve(certificateDirectory, `${localHuaweiHost}.key`);
-  const cert = resolve(certificateDirectory, `${localHuaweiHost}.pem`);
-  if (existsSync(pfx)) {
-    return { pfx: readFileSync(pfx) };
-  }
-  if (!existsSync(key) || !existsSync(cert)) {
-    throw new Error(
-      '缺少本地 HTTPS 证书。请执行 create-local-huawei-tls.sh（macOS）或 create-local-huawei-tls.ps1（Windows）。'
-    );
-  }
-  return { key: readFileSync(key), cert: readFileSync(cert) };
+function htmlEntry(): Plugin {
+  return {
+    name: 'platform-html-entry',
+    generateBundle() {
+      this.emitFile({
+        type: 'asset',
+        fileName: 'index.html',
+        source: '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><link rel="stylesheet" href="./assets/platform.css"></head><body><div data-metriccanvas-root style="height:100%"></div><script src="./assets/platform.umd.js"></script></body></html>'
+      });
+    }
+  };
 }
 
-export default defineConfig(() => {
-  const localHuaweiPort = Number(process.env.METRICCANVAS_LOCAL_HUAWEI_PORT ?? '443');
-
+export default defineConfig(({mode}) => {
+  const micro = mode === 'microfrontend';
   return {
-    plugins: [sveltekit(), basicSsl()],
-    server: {
-      // HTTPS 使本地环境可测试 Secure Cookie；macOS 的 `:443` 入口须以管理员权限启动。
-      // 必须使用相对路径 `/aiknow/...`，由 Vite 转发后浏览器才不会发生跨域请求。
-      host: localHuaweiHost,
-      port: localHuaweiPort,
-      strictPort: true,
-      allowedHosts: [localHuaweiHost],
-      proxy: {
-        '/aiknow': {
-          target: 'https://aiknow.huawei.com',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/aiknow/, '')
-        }
+    // Library mode intentionally leaves NODE_ENV untouched unless explicitly defined.
+    define: micro ? {'process.env.NODE_ENV': JSON.stringify('production')} : {},
+    plugins: [svelte(), ...(micro ? [htmlEntry()] : [basicSsl()])],
+    resolve: {alias: {
+      $lib: resolve(appRoot, 'src/lib'),
+      $pages: resolve(appRoot, '../../pages'),
+      $fixtures: resolve(appRoot, '../../docs/examples')
+    }},
+    base: micro ? './' : process.env.METRICCANVAS_BASE_PATH || '/',
+    build: micro ? {
+      outDir: 'dist/microfrontend',
+      target: 'es2022',
+      lib: {
+        entry: 'src/microfrontend/entry.ts', name: 'MetricCanvasPlatform', formats: ['umd'],
+        fileName: () => 'assets/platform.umd.js', cssFileName: 'assets/platform'
       }
+    } : {outDir: 'build', target: 'es2022'},
+    server: {
+      host: 'ioc.huawei.com',
+      port: Number(process.env.METRICCANVAS_LOCAL_HUAWEI_PORT ?? '443'),
+      strictPort: true,
+      allowedHosts: ['ioc.huawei.com'],
+      proxy: {'/aiknow': {
+        target: 'https://aiknow.huawei.com', changeOrigin: true,
+        rewrite: path => path.replace(/^\/aiknow/, '')
+      }}
     }
   };
 });

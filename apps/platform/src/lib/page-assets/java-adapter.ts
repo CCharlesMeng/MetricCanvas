@@ -31,10 +31,11 @@ interface ProviderListResponse extends Record<string, unknown> {
  * 直接消费 CDINL2DataBuilderService 已确认的 user-page-metadata 接口。
  */
 export function createPageAssetsClient({
-  fetchImpl = fetch
-}: { fetchImpl?: typeof fetch } = {}) {
+  fetchImpl = fetch,
+  readConfig = readPageAssetsRuntimeConfig
+}: { fetchImpl?: typeof fetch; readConfig?: () => InjectedRuntimeConfig | null } = {}) {
   function requireConfig(): InjectedRuntimeConfig {
-    const config = readPageAssetsRuntimeConfig();
+    const config = readConfig();
     if (!config) {
       throw new DqeGatewayError('DQE_CONFIG_ERROR', MISSING_RUNTIME_CONFIG_MESSAGE);
     }

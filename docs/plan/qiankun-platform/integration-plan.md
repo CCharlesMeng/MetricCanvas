@@ -1,337 +1,205 @@
-# Platform 双入口改造与 qiankun 2.x 集成方案
+# Platform HTML 微前端改造与 qiankun 集成方案
 
-日期：2026-09-28。状态：按用户确认更新的实施方案，尚未实施。原代码核查基线为 `b0bad83a`，本次在 `d84ebaa4` 再次核对 platform 构建、路由及配置依赖。外部框架、构建器、qiankun 2.x 小版本和发布地址仍待集成方提供。
+> 2026-09-28 实施进度：源码、静态归档及候选 qiankun 2.10.16 测试主应用验收已落地；目标门户与真实服务仍为 NOT_RUN。现行实现、证据与交付摘要见 [实施验收](../../evidence/qiankun-platform/implementation.md)。下文方案阶段状态描述保留为交接基线。
+日期：2026-09-28。状态：按本次用户确认调整的实施方案，尚未实施或验证。本文替代此前“外部子应用消费平台 npm 包、平台内部使用内存导航”的方案。
 
-执行交接：[MC 维护者 handoff](./handoff-mc.md)；[qiankun 服务/子应用维护者 handoff](./handoff-qiankun.md)。
+执行交接：[MC 维护者](./handoff-mc.md)、[主应用维护者](./handoff-qiankun.md)。版本与构建事实参考 [官方研究](./official-research.md)；目标暂按 qiankun 2.x，精确版本以主应用锁文件为准。
 
-## 1. 已确认的方案
+## 1. 已确认目标与范围
 
-直接改造 `apps/platform/`，形成**双入口、双构建、单业务实现**：本地与独立运行继续使用 SvelteKit；现有独立维护的 qiankun 2.x 子应用通过通用挂载入口嵌入平台。MC 提供默认 Adapter 工厂，集成方供给真实配置与必要系统接线。
+直接改造当前 `apps/platform/`，由 platform 自己作为微前端子应用，输出 HTML 入口和完整静态资源，交由主应用注册和加载。保留本地独立运行能力，复用同一份业务实现。
 
-首版由平台自己完成页面管理、页面选择、工作台和内容预览的内部切换。用户从平台内部打开已有页面，集成方无需传页面标识或管理这些视图。
+- 主应用拥有平台路由前缀；platform 拥有该前缀内的具体 URL 路由。
+- 内部导航必须改变地址栏，支持浏览器前进/后退、刷新定位与深链接。
+- qiankun 生命周期、环境变量和门户配置映射集中在接入层，不进入业务视图、页面资产协议或渲染引擎。
+- 首版单活动实例，优先复用已有页面管理、页面搭建工作台、预览、人工保存与发布。
+- AI 沿用已有可信接线，未提供盘古/Relay 时如实显示未接通，单独验收。
+- 不交付平台 npm 包，不要求另一个业务子应用安装平台依赖或包裹平台。
+- 不新增跨服务数据域恢复隔离、存储迁移、多实例、KeepAlive 或 SDK 自动发现能力。
+- 首版按同一部署固定连接服务目标验收；保留原 IndexedDB 记录及恢复规则。服务目标变化仍使活动会话失效，但不承诺换目标后重挂/刷新能隔离同标识草稿；需要切换数据域时另行设计。
 
-此次明确收敛：
-
-- 不新增 `packages/platform`，业务实现保留在 `apps/platform/src/lib`。
-- 默认调用为 `mountPlatform(container, adapter)`，实例只公开 `destroy()`。
-- 不提供初始 `location`、`chrome`、`setLocation` 或 `openPage`；不要求集成方实现平台页面路由映射。
-- 嵌入入口默认采用嵌入外壳；本地入口采用独立外壳，不暴露外观模式开关。
-- 外部子应用继续管理 qiankun 生命周期、整个功能区域的 URL、登录和发布。
-- 交付暂按固定版本 npm 包设计；源码位置与包发布方式互不约束。发布名暂定 `@metriccanvas/platform`，尚不存在。
+这里的主应用承担词汇表中的“集成门户”职责；platform 仍是装载渲染引擎的第一方集成应用。
 
 ```mermaid
-flowchart TB
-  Local[本地 / 独立入口：SvelteKit]
-  Portal[集成门户：qiankun 2.x]
-  Child[独立维护的现有子应用]
-  Entry[嵌入入口：mountPlatform]
-  Factory[MC 默认 Adapter：读取配置、可选系统接线]
-  Shared[apps/platform 共用业务：内部导航、工作台、管理、预览]
-  Services[Java 页面资产 / DQE / 盘古与 Relay]
-  Local --> Shared
-  Portal --> Child --> Entry --> Shared
-  Child --> Factory --> Entry
-  Shared --> Services
+flowchart TD
+  Portal[主应用：前缀激活与登录] -->|HTML entry| Entry[platform 微前端入口]
+  Portal -->|props / 配置通知| Bridge[qiankun 接入与门户配置映射]
+  Entry --> Bridge
+  Bridge --> Instance[平台实例：配置、路由、服务与清理]
+  Local[本地独立入口] --> Instance
+  Instance --> Views[同一份管理、工作台、预览业务]
+  Views --> Services[Java / DQE / 可选盘古与 Relay]
 ```
 
-术语遵循 [CONTEXT.md](../../../CONTEXT.md)：装载 platform 的子应用承担直接集成门户职责，platform 仍是装载渲染引擎的第一方集成应用。本文接口、目录和新增命令均为待实现设计。
+## 2. 路由归属与用户行为
 
-## 2. 范围与当前缺口
+以下 `/metrics` 仅为示例，实际前缀由主应用与平台部署约定；它不是 Java/DQE 地址，也不是静态资源前缀。
 
-首版包含已有页面搭建工作台、页面管理列表与详情、内容预览、人工保存和发布。对话与 AI 创作按提供方能力接入，未接通能力明确不可用；不增加后端接口尚不支持的历史修订读取。DEV 原型、测试入口与开发凭据不进入嵌入产物。
+| 地址示例 | 平台界面 |
+|---|---|
+| `/metrics/` | 页面搭建工作台 |
+| `/metrics/manage` | 页面管理 |
+| `/metrics/manage/pages/abc?resource=xxx` | 页面详情 |
+| `/metrics/?page=abc&resource=xxx` | 编辑当前页面，沿用现有参数形式 |
+| `/metrics/manage/pages/abc/edit?resource=xxx` | 保留现有编辑兼容跳转语义 |
 
-| 核查项 | 当前事实 | 改造任务 |
-|---|---|---|
-| 构建 | [package.json](../../../apps/platform/package.json) 是私有应用；Svelte 5、SvelteKit 2、Vite 8 | 在同目录增加普通 Svelte library 构建，与独立 SPA 分开输出 |
-| 静态部署 | [svelte.config.js](../../../apps/platform/svelte.config.js) 为 adapter-static + index.html fallback，仅有 `METRICCANVAS_BASE_PATH` | 保留独立运行；不要把历史记录中的 assets 配置视为当前实现 |
-| 页面切换 | [布局](../../../apps/platform/src/routes/+layout.svelte) 与[工作台](../../../apps/platform/src/lib/PageAuthoringWorkbench.svelte) 依赖 `$app/paths`，工作台读取 window.location.search | 共用业务使用内部视图状态；独立入口适配 Kit，嵌入入口使用内存导航 |
-| 配置 | [application-runtime](../../../packages/application-runtime/src/runtime-config.ts) 每请求读取全局配置 | 注入每实例配置读取函数，独立入口继续通过 Adapter 使用现有全局源 |
-| 页面资产 | [page-assets.ts](../../../apps/platform/src/lib/page-assets.ts) 为模块级实例；[Java Adapter](../../../apps/platform/src/lib/page-assets/java-adapter.ts) 直接引用全局配置读取函数 | 由实例工厂创建客户端与保存端口，继续复用业务协议 |
-| 对话和创作 | [盘古](../../../apps/platform/src/lib/dialogue/runtime.ts) 使用 document/window；[创作接线](../../../apps/platform/src/lib/dialogue/authoring-integration.ts) 使用全局注入 | 保留现有语义，改为实例注入；系统 SDK 接线明确可选 |
-| 通知 | 工作台监听 window 上的页面通知 | 收敛到实例事件源，保留精确引用和权限核对 |
-| 嵌入能力 | [embed](../../../packages/embed/README.md) 只提供页面渲染 | 完整平台另设入口，不扩充渲染包职责 |
+1. 主应用匹配前缀时加载平台，范围内切换路径保持同一平台实例，离开范围才卸载。前缀匹配须有路径段边界，`/metrics-other` 不属于 `/metrics`。
+2. platform 管理内部路径解析、链接生成、页面加载和编辑离开保护；主应用不维护平台的详情/编辑路由表。
+3. 地址栏是定位依据，不同时维护一套与 URL 竞争的内存路由。前进/后退与点击导航使用相同的路由解析和保护逻辑。
+4. 直接访问或刷新内部深链接时，服务器返回主应用入口；主应用激活平台后，平台读取当前 URL 恢复目标视图。恢复视图不等于恢复未保存内容，后者沿用已有规则。
+5. 平台内部导航在提交 URL/切换业务前检查编辑状态；取消离开应保留原视图及 URL。浏览器后退触发的离开也需验证，不能只保护按钮点击。
+6. 离开整个平台区域的保护通过可选主应用 guard 在导航提交前执行。qiankun unmount 只清理，不通过拒绝/悬挂卸载实现保护。
+7. 页面文档中的跨页下钻沿用已有普通 URL 语义；仅对明确归平台所有的 URL 执行内部导航，不擅自重写业务链接。
+8. 嵌入入口不设置全局 `<base>`，不改写前缀外路由；文档标题默认归主应用，独立入口保持原标题语义。
 
-这次不是把当前 index.html 直接包装给 qiankun。需要解耦共用业务对整页入口的依赖，但不需要迁移到新源码包，也不需要外部子应用维护平台内部导航。
+## 3. SvelteKit 的处理：先验证复用，再决定替换
 
-## 3. 目录与双入口
+已确认的是 URL 路由体验，不是“SvelteKit 必须保留”或“必须删除”。当前独立入口使用 SvelteKit + adapter-static；静态 HTML 输出本身不提供 qiankun 生命周期。
+
+第一项工程工作是有界兼容验证：使用当前平台的生产构建或最小必要入口改造，在目标 qiankun 版本的测试主应用中验证：
+
+- 在主应用容器内启动，平台不接管主应用根节点。
+- 详情→编辑→前进/后退、带页面/资源参数的深链接刷新。
+- 前缀内导航不重复挂载，离开前缀可完整卸载，重新进入正常。
+- 挂载中退出、监听器与请求清理、资源地址和局部样式。
+- Kit 构建期 base 与实际路由前缀一致，并且路由器不接管主应用其他路径。
+
+通过：保留 Kit 路由，使用经验证的入口与构建适配；不为抽象而迁移全部路由业务。
+
+不通过且无法局部解决：采用普通 Svelte 入口与客户端 URL 路由，迁移现有路由业务为共用视图，保持上述路径和使用体验。记录具体失败证据，再决定替换实现；不同时交付两套路由框架，也不退回内存导航。
+
+路由前缀由接入层统一提供/核验；如保留 Kit 且只能使用构建期 base，交付时明确绑定前缀，挂载发现不一致须明确报错。不得承诺同一产物支持任意运行时前缀。移除 Kit 与否、单构建还是双构建，在验证后收敛。
+
+## 4. 接入层与实例接口
+
+建议目录（待实现，最终文件可按验证结果合并）：
 
 ```text
-apps/platform/
-  src/
-    routes/                       # SvelteKit 薄路由包装
-    lib/
-      PlatformRoot.svelte         # 共用业务组合
-      PageAuthoringWorkbench.svelte
-      views/                      # 从路由中提取的管理、详情等唯一实现
-      integration/                # 内部视图状态、实例服务、默认 Adapter
+apps/platform/src/
+  microfrontend/
+    entry.ts                 # bootstrap / mount / unmount
+    qiankun-adapter.ts       # 容器、环境标记、生命周期衔接
+    portal-config.ts         # 主应用 props/变量到平台契约的映射
+  standalone/                # 独立启动接线；保留 Kit 时可落在 routes 层
+  lib/
     integration/
-      index.ts                    # 嵌入公共入口与稳定类型
-  vite.config.ts                  # 现有独立应用构建
-  vite.integration.config.ts      # 新增库构建，无 SvelteKit 插件
-  scripts/                        # 嵌入产物清单和打包脚本
-  package.json                    # 保留 workspace 名 platform 和 private:true
-  build/                          # 现有独立 SPA 输出
-  dist/integration/               # 独立的可发布包根目录
-
-external-child/                    # 集成方独立仓库
-  src/qiankun-entry.*              # 现有子应用生命周期
-  src/routes/metrics.*             # 一个平台功能区域
-  src/metriccanvas/adapter.*       # 使用 MC 工厂，连接真实配置/SDK
+      mount.ts               # 内部启动与可等待销毁
+      services.ts            # 页面资产、DQE、对话等实例组装
+      session.ts             # 会话失效与资源清理
+      navigation.ts          # 统一内部 URL 导航接口
+    views/                   # 按需要从路由提取业务视图
+    PageAuthoringWorkbench.svelte
 ```
 
-所有业务视图只维护一份。独立入口与嵌入入口各自组装导航环境和外壳，平台内部创建实例服务。共用业务不能导入 `$app/*`；这些依赖只留在独立入口 Adapter。构建别名可以用于开发，但不能泄漏到发布 JS 或声明文件中。
+只在 `microfrontend/` 及其构建配置中使用 qiankun 特有变量。门户业务变量只在 `portal-config.ts` 映射，业务不读取原始 props、`window.currentLoginUser` 或 qiankun 标记。不在 platform 内安装并启动第二套 qiankun。
 
-[ADR-0073](../../adr/0073-static-platform-direct-access-with-injected-runtime-config.md) 中“不实现微前端协议、无生产 Node 服务”保持成立；“仅静态 SPA、唯一全局配置、不加回调”的限制需在实施时通过新 ADR 修订为双入口和实例配置源。平台交付物及接口说明同步更新相关 ADR 主题页与 host-contract；不因源码目录未变而跳过契约变更。
+内部可继续使用 `mountPlatform(container, adapter)` 和 `destroy()`，但它们不再是对外 npm 接口。主应用消费 HTML 及生命周期，MC 提供一份正式的 props/事件/配置接入契约，方案只引用该契约。
 
-## 4. 默认接入 Interface
+目标接线语义（字段名在实现时形成正式类型，不是现有接口）：
 
-以下是待实现示例。外部应用消费编译后的包，不深导入本仓源文件。
+| 输入 | 语义 |
+|---|---|
+| `routeBase` | 平台所属的路径前缀，与主应用激活规则、必要构建期 base 一致 |
+| `readConfig` | 每次请求现读 Java/DQE 端点与当前身份；无会话返回 null |
+| `subscribeConfig` | `(changed: () => void) => () => void`，有运行中身份变化时必须连接真实通知源 |
+| `onEvent` | 挂载就绪、需要登录、会话失效等稳定事件码与脱值消息 |
+| `registerLeaveGuard` | 可选，将平台离开检查接入主应用路由，返回注销函数 |
+| 对话/可信创作接线 | 可选，沿用现有端口，不要求提供 AI 才能人工编辑 |
 
-```ts
-import {
-  createPlatformAdapter,
-  mountPlatform
-} from '@metriccanvas/platform';
-import '@metriccanvas/platform/style.css';
+运行配置沿用 `dqeEndpoint`、`pageMetadataBaseUrl`、`authToken`、`operatorId`、`workspaceId` 和可选 `cftk`。页面资产调用保留“不依赖 DQE 端点完整”的现有语义。优先传读取与订阅函数，不把初始凭据快照当成持续同步；确需读取门户全局变量时仅通过映射层。
 
-const adapter = createPlatformAdapter({
-  readConfig: () => appSession.getMetricCanvasConfig()
-});
+## 5. 模块修改、增加与删除范围
 
-const platform = await mountPlatform(container, adapter);
+| 模块 | 整改内容 |
+|---|---|
+| `routes/+layout.svelte`、`+layout.ts` | 保留可复用外壳、局部样式和 DEV 独立接线；按 Kit 验证结论调整入口，嵌入不引入开发配置 |
+| `routes/manage/**` | Kit 可复用时减少迁移；替换路由时将列表、详情提取到 `lib/views/`，删除旧路由里的重复业务 |
+| `PageAuthoringWorkbench.svelte` | 页面选择来自路由输入，导航经统一接口；注入身份、页面资产、DQE 与通知源；删除业务内 Kit/门户环境耦合 |
+| `RevisionPreview.svelte` | 注入实例读取端口和网关，退出默认模块级客户端 |
+| `page-assets.ts` | 模块级客户端/保存端口改为实例工厂，复用保存前管理记录核查 |
+| `page-assets/java-adapter.ts` | 接收配置读取与受控请求依赖，保留现有 Java 协议、凭据和回执核验 |
+| `page-assets/management.ts` | 注入身份与有效性检查，保留删除/回退的未知结果保护 |
+| `packages/application-runtime/src/runtime-config.ts` | 提取配置源注入能力；保留独立入口和页面试验场使用的全局兼容包装 |
+| `workbench/data-gateway.ts` | 使用实例配置，开发查询明细不得进入生产产物 |
+| `workbench/authoring-coordinator.ts` 等 | 仅补实例失效/清理接线，保留编辑、单次保存、恢复与可信创作规则 |
+| `dialogue/PanguDialogue.svelte`、`runtime.ts`、`authoring-integration.ts` | 明确注入；全局读取留在独立/门户接线层；缺 SDK 显示未接通 |
+| `dialogue/lifecycle.ts`、通知端口 | 复用迟到挂载清理，事件源按实例；保留精确引用和权限检查 |
+| `PlatformFrame.svelte`（按需新增）及弹层 | 提取已有容器化样式；嵌入精简外壳保留业务导航，不重设计 UI |
+| 微前端构建配置与静态归档脚本（新增） | 输出 HTML 与全部资源、版本清单和摘要；不生成平台 npm 发布清单 |
 
-// 离开平台功能区域或卸载子应用时
-await platform.destroy();
-```
+删除的是共用业务中的隐式全局接线、模块级活动实例和迁移后重复实现。是否删除 Kit 路由/配置由第 3 节验证决定。开发 fixture/原型不进入生产产物，但不借机删除仓内无关资产。
 
-`appSession` 是集成方现有登录/配置系统的示意名称，不是 MC 提供的对象。MC 工厂负责将读取函数转换为内部配置源，创建 Java/DQE 等既有客户端；不要求集成方手工实现整个 Adapter。
+不修改页面协议、渲染引擎职责、`packages/embed`、Python 创作流程或 Relay 核心。持久化数据库名、key 和恢复记录不做迁移。
 
-```ts
-interface PlatformRuntimeConfig {
-  dqeEndpoint: string;
-  pageMetadataBaseUrl: string;
-  authToken: string;
-  operatorId: string;
-  workspaceId: string;
-  cftk?: string;
-}
+## 6. 配置变化、挂载与卸载
 
-interface PlatformInstance {
-  destroy(): Promise<void>;
-}
-```
+- 工厂只保存接线定义；挂载时创建资源并订阅，导入包不启动平台。
+- 挂载只等待有限本地初始化，不等待 Java/DQE/SDK 网络；失败挂载负责清理。
+- 请求现读配置；同身份刷新 token 不重建。写请求发送前及异步回写前检查活动会话。
+- 退出登录、actor/workspace 或服务目标变化使旧会话失效：停止新操作、取消可取消请求、丢弃旧界面回写，通知主应用按生命周期销毁并重挂。
+- 不使用新凭据提交旧身份草稿；原身份恢复记录保留。停止客户端请求不能保证撤回服务端已经接受的写入，结果不明沿用未知状态，不自动重试。
+- 销毁先失效，再清理请求、路由监听、订阅、观察器、计时器、DOM 和自有对话实例；可等待且幂等。
+- 主应用/接入层串行化进入退出，包括挂载未完成就离开；unmount 不自动保存、发布或删除恢复记录。
+- 共享 SDK 仅清理本实例拥有的资源，不删除其他功能的脚本或实例。首版退出即销毁，不设计暂停恢复。
 
-`readConfig` 返回上述配置或 null；字段语义沿用 [当前契约](../../host-contract.md)。Adapter 的完整内部结构由 MC 工厂封装，集成方不构造它的内部字段。
+## 7. 构建与交付
 
-### 4.1 最小接入与按需接线
-
-| 工厂输入 | 用途 | 首版规则 |
-|---|---|---|
-| `readConfig` | 每次请求读取端点与当前用户凭据 | 基础接入必需；缺配置时 UI 可启动，服务操作明确失败 |
-| `subscribeConfig` | 订阅登录、身份、工作空间或服务目标变化，返回取消订阅函数 | 存在运行中切换的生产环境必须接；最小示例仅适用于配置作用域在挂载期间固定的场景 |
-| `dialogue` / `authoring` | 对话 SDK 与既有可信创作程序接线 | 需要 AI 能力时接；普通管理与人工编辑不因此阻塞 |
-| `registerLeaveGuard` | 向外部路由注册离开检查函数，返回注销函数 | 门户支持离开保护时接；不用扩大 PlatformInstance 的方法集合 |
-| `onEvent` | 接收脱值错误、需要登录、会话失效等通知 | 需要外层处理登录恢复和身份切换时接 |
-
-配置订阅建议签名为 `(changed: () => void) => () => void`：平台挂载时订阅、卸载时取消；回调触发后重新执行 readConfig。MC 不知道某个门户如何通知身份变化，不能通过一个读取函数假装已经实现即时订阅，也不以轮询代替明确通知源。
-
-离开检查由 MC 在平台内部切换视图时自行执行；可选 `registerLeaveGuard(check)` 仅把相同检查接入离开整个平台区域的外部路由。`check` 返回是否允许及原因，UI 决策归外层。缺少外部 guard 时，MC 仍保持已完成的本地恢复记录，但不能承诺强制卸载绝不丢失编辑。
-
-### 4.2 生命周期与身份语义
-
-1. 导入包没有挂载副作用；每容器只允许一个活动实例。首版支持每子应用单活动实例，不承诺盘古 SDK 多实例。
-2. mount 在本地根组件与清理机制就绪后 resolve，不等待 Java、DQE 或 SDK 网络请求；网络失败通过平台状态或通知呈现。失败挂载自行清理已分配资源。
-3. 每请求重新读取配置。同一 actor/workspace/服务目标下刷新 token 不重建工作台。每次写入及异步结果回写前也复核会话作用域，避免身份变化后处理旧结果。
-4. 登录退出、actor/workspace 或服务目标变化时，封住旧会话写入、取消可取消请求并丢弃旧回调，通知会话失效。集成方等待 destroy 后重新挂载；原身份恢复记录保留，不能用新凭据提交旧页面草稿。
-5. destroy 幂等、可等待；清理请求、订阅、观察器、计时器、平台 DOM 与自己拥有的对话实例。不得自动保存、发布或删除恢复记录，且不以拒绝销毁来拦截 qiankun 卸载。
-6. 工厂生成的 Adapter 是连接定义，不在工厂调用时启动监听。每次挂载创建资源并承担清理，避免把复杂度转移成另一个必须调用 dispose 的对象。
-7. 页面通知仍须经可信读取和精确引用核对；身份声明不是权限证明。服务端继续负责鉴权。
-8. 就绪通知仅表示 UI 挂载就绪，不代表真实 Java/DQE/Relay 验收通过。事件不包含 token、业务数据行或原始服务响应。
-
-## 5. 内部导航与嵌入外观
-
-| 行为 | 本地 / 独立入口 | 嵌入入口 |
-|---|---|---|
-| 默认进入 | 保留现有独立入口语义 | 工作台 |
-| 列表、详情、编辑切换 | MC 提供 Kit 导航适配 | MC 提供内存视图状态 |
-| 浏览器地址 | 由独立入口路由维护 | 只显示集成方的平台功能区域，例如 /ops/metrics |
-| 浏览器刷新 | 按独立 URL 恢复路由 | 重新进入默认工作台；草稿仅按原恢复规则处理，不承诺自动恢复上一个内部视图 |
-| 浏览器前进/后退 | 独立入口路由历史 | 外部子应用历史，不记录平台内部切换 |
-| 页面选择 | 平台自己的页面管理 | 平台自己的页面管理 |
-| 外壳 | 独立导航和品牌 | 默认精简外壳，保留业务操作与平台内页面管理入口 |
-
-嵌入入口不修改 history、hash、document.title 或 `<base>`，也不读取子应用 URL 的 page/resource 参数。平台内部提供“页面管理”“返回工作台”等必要操作：精简外壳不能把内部导航一起隐藏，导致只能从外部 API 打开已有页面。
-
-首版没有内部页面深链、外部指定编辑页面和 URL 双向同步。以后确有外部列表直达编辑的需求，再单独设计明确语义的接口；不提前留 openPage 占位。
-
-页面文档中的跨页下钻仍沿用既有导航语义，与平台管理视图切换分开；不得把这些业务 URL 偷偷改写为内存视图。若某个页面依赖独立平台页面地址，需在联调中核实目标真实可达，内部详情深链不作为首版新增承诺。
-
-尺寸由集成方给出：挂载节点和父级必须有明确可用高度，内部采用 width/height:100%、min-width/min-height:0。平台 CSS 限定在根节点，弹层位于平台区域，不锁门户 body；样式仍需在真实全局 CSS 中验证。
-
-不默认对整个平台增加 Shadow DOM，现有盘古 selector/document 行为需先核实。IndexedDB 保持原 actor/workspace/page/resource 作用域和恢复规则；不因改入口直接换存储 key 导致旧记录遗失。
-
-## 6. 双构建、打包与发布
-
-### 6.1 MC 仓
-
-保持 workspace 应用 `platform` 为私有，在 `apps/platform/` 内新增独立的 integration 构建配置与打包脚本。
-
-```bash
-# 现有命令继续保留
-pnpm --filter platform dev
-pnpm --filter platform build
-
-# 以下命令待实现
-pnpm --filter platform build:integration
-pnpm --filter platform pack:integration
-```
-
-`build:integration` 使用普通 Svelte 插件与 Vite library mode，不使用 Kit 插件；输出预编译 ESM、CSS 和完整声明。首版合并平台 JS 单入口，打入 Svelte 与必要浏览器实现，集成方无需 Svelte 编译插件。具体目标语法按外部构建器与浏览器验证；构建器配置参考已有 [Vite 官方资料](https://vite.dev/guide/build.html#library-mode)，实施时以锁定版本为准。
+目标交付目录示例：
 
 ```text
-apps/platform/dist/integration/       # 可发布包根，不进入 workspace 包扫描
-  package.json                       # name: @metriccanvas/platform，独立版本/exports/files
-  platform.js
-  platform.css
-  index.d.ts                         # 所有可达声明一并交付
-  README.md / CHANGELOG.md / LICENSE
+apps/platform/dist/microfrontend/
+  index.html
+  assets/                    # JS、CSS、字体和必要静态资源
+  release.json               # 版本、源码 SHA、路由前缀限制与兼容信息
 ```
 
-`pack:integration` 先生成并校验该目录的发布清单，再在该目录打 tarball。应用根 package.json 保持 private:true；发布清单只允许列出的交付文件、公开依赖及稳定导出，不照抄 workspace 应用清单。输出目录互不清理覆盖；独立 SPA 继续写 build/。
+交付完整目录归档、SHA-256 和接入说明。主应用部署/引用 HTML URL；它不安装平台包、不编译平台源码、不需要 Svelte 插件。平台版本升级通过切换部署入口或版本目录完成，不要求主应用重编译平台业务。
 
-MC 需要同时保证：
+候选命令 `build:microfrontend` / `pack:microfrontend` 待实现，后者表示静态归档，不是 npm pack。独立 `dev/build` 先保留；最终能否共用同一 HTML/构建由兼容验证决定，若分开构建输出必须互不覆盖。
 
-- 运行 JS 无未解析 `$app`、`$lib`、仓路径或私有裸导入；声明文件同样不泄漏私有源码类型。
-- 声明引用公开包时写清兼容依赖；发布清单无 workspace:*。
-- CSS 通过稳定子路径导出，并声明 sideEffects 避免被删除。
-- production 分支固定；产物不含 DEV 注入、fixture、开发凭据与非生产调试明细。
-- tarball 在仓外消费者安装、类型检查与构建通过，不能仅靠 workspace 链接验收。
+qiankun 2.x 下，普通 Svelte + UMD 生命周期入口 + HTML 是候选后备构建路径；Vite 库模式的 UMD 输出不自动生成 HTML，也不代表当前 Kit 产物已兼容。优先验证实际生产加载、生命周期识别与资源路径，不直接采用针对 qiankun 3 的插件配置。
 
-CI 沿用当前仓 Node/pnpm 锁定基线，执行安装、必要依赖构建、platform 类型检查、两种构建与包消费检查后，发布固定版本 RC 到内部 registry。包版本、源码 SHA、摘要、公开契约兼容性及页面 Schema 区间分别记录。
+产物不得含 DEV 凭据、fixture、未解析仓库别名或 workspace 私有导入。不得直接把 ESM JS URL 当成 qiankun 2.x HTML entry。
 
-### 6.2 集成方仓
-
-集成方安装已发布的固定版本，导入 JS 与 CSS，并纳入自己的 qiankun 2.x 子应用生产构建。升级平台依赖后重建子应用；回滚子应用版本同时回滚平台版本。首版不实现远程热升级 loader。
-
-现有子应用仍提供 qiankun 可识别的 bootstrap/mount/unmount。平台 ESM 在构建阶段打入它的产物，不把 ESM 文件直接用作 qiankun HTML entry，也不再嵌套启动一套 qiankun。现网已工作的构建链优先沿用，Vite/UMD/资源路径事实见 [官方研究](./official-research.md)。
-
-## 7. 集成方接入顺序
-
-1. 在现有子应用内增加一个平台功能区域，例如 /ops/metrics；外部菜单只需负责进入该区域。
-2. 创建有明确尺寸的容器；用 MC 工厂将真实配置源及所需订阅/SDK 接线转换为 Adapter。
-3. 区域挂载时调用 mountPlatform，平台自行提供工作台与管理入口。
-4. 离开区域时 await destroy；卸载整个子应用时同样等待平台销毁再移除外层 DOM。
-5. token 同身份刷新继续读取新值；身份/目标改变按通知销毁并重挂。需要 AI 功能再接真实盘古/Relay。
-
-挂载尚未完成就离开也要处理。以下为生命周期顺序示意；调用方须串行化进入与退出，错误交给子应用现有错误展示：
-
-```ts
-let pending: Promise<PlatformInstance> | undefined;
-
-function enterPlatform(container: HTMLElement) {
-  if (pending) throw new Error('平台区域已挂载或正在挂载');
-  pending = mountPlatform(container, adapter);
-  return pending;
-}
-
-async function leavePlatform() {
-  const current = pending;
-  if (!current) return;
-  try {
-    const instance = await current;
-    await instance.destroy();
-  } finally {
-    if (pending === current) pending = undefined;
-  }
-}
-```
-
-mount 必须是有限的本地初始化，不得等 SDK 网络请求才完成；这样退出可以等待其完成后清理，不需要把 signal 或位置输入强塞进默认调用。挂载拒绝已由 MC 清理；集成方仍需处理 Promise 错误。缓存/KeepAlive 默认按退出销毁处理，暂停恢复另行定义。
-
-离开检查要在导航提交前发生；qiankun unmount 只执行清理。若整个功能区域的退出受门户控制，集成方协调门户注册可选 guard。不要通过不 resolve unmount 来阻止退出。
-
-## 8. 生产部署、路径与网关
-
-四类地址分别配置：
+## 8. 部署地址与样式
 
 | 地址 | 示例 | 所有者 |
 |---|---|---|
-| qiankun HTML entry | `/micro/ops/releases/R1/index.html` | 集成门户注册与子应用发布 |
-| 浏览器路由前缀/activeRule | `/ops`，平台区域 `/ops/metrics` | 门户与子应用路由 |
-| 子应用静态资源前缀 | `/micro/ops/releases/R1/` | 子应用构建器/publicPath |
-| Java/DQE/Relay 地址 | `/rest/...` 或经批准的完整服务 URL | 运行配置/系统 Adapter |
+| 用户路由前缀 | `/metrics` | 主应用约定，平台管理内部路径 |
+| 平台 HTML entry | `/micro/metriccanvas/releases/R1/index.html` | 平台发布与主应用注册 |
+| 平台静态资源前缀 | `/micro/metriccanvas/releases/R1/assets/` | 平台构建与静态部署 |
+| Java/DQE/Relay 地址 | `/rest/...` 或批准的完整 URL | 运行配置与网关 |
 
-平台 npm 包没有独立 HTML entry，也不推导任何一类地址。qiankun 2 Webpack 子应用如使用 `__INJECTED_PUBLIC_PATH_BY_QIANKUN__`，必须在加载依赖与异步 chunk 之前设置 `__webpack_public_path__`；Vite 不使用 Webpack 变量，按现有构建器方式配置。资源 URL 不能错误地跟随浏览器 `/ops/metrics` 路由解析。
+平台不能依据浏览器 `/metrics/manage` 拼接静态资源地址。Webpack 注入 publicPath 变量不是 Vite/Kit 的通用配置。
 
-推荐同源网关提供门户、子应用静态资源与业务服务代理。Nginx 示例仅说明路径责任，替换为实际网关配置：
+路由深链接回退主应用 HTML；静态资源缺失必须 404；API 路径不得回退 HTML。平台 standalone 地址与主应用深链接使用各自明确的部署回退规则。
 
-```nginx
-# /srv/www/micro/ops/releases/R1/index.html + assets/...
-root /srv/www;
-location ^~ /micro/ops/releases/ {
-    try_files $uri =404;
-}
-# /ops/... 深链刷新返回最外层门户，由其启动 qiankun。
-location /ops/ {
-    try_files $uri /index.html;
-}
-# /rest/ 与 Relay 前缀应先命中对应网关代理规则，不能回退 HTML。
-```
+版本目录不可变，先上传完整资源再切入口，保留旧目录供回滚及旧会话加载。跨域静态资源与带凭据 API 分别核对 CORS/CSP；本地代理不能证明生产可达。
 
-发布顺序：上传完整不可变版本目录 → 校验 HTML/JS/CSS/字体/chunk → 切换门户发布配置到新 entry → 小流量验证 → 扩大范围。门户 index/动态发布清单使用 no-cache，带版本和 hash 的资源使用 immutable；保留上一版本目录和可能仍被旧会话引用的 chunk，避免滚动发布 404。失败时将 entry 切回旧版本，并让受影响会话重新加载。
+主应用提供明确容器高度；平台沿用根节点局部样式、容器布局和局部弹层，不锁门户 body。默认不新增 Shadow DOM。qiankun 沙箱不替代 CSS/SDK/图表 resize 验证。
 
-若 HTML/资源跨域，需按 loader 实际 fetch 设置资源 CORS 和 CSP。业务 API 跨域与静态资源跨域分别验证。页面资产当前使用 `credentials:'include'` 与可选 cftk；服务须允许具体 Origin、凭据和实际请求头，不能用 `Access-Control-Allow-Origin:*` 搭配凭据。DQE 按现有 token/actor/workspace 头传递。Cookie 仍受 Domain/Path/SameSite 限制，静态资源 URL 与 API base 均不能替代这些要求。参见 [当前契约](../../host-contract.md)。
+## 9. 实施顺序与证据
 
-浏览器仍直接消费服务或网关；没有新增 Node 平台服务。盘古 SDK 的资源 URL、版本、加载所有权由外部 Adapter 明确指定，复用外部已加载实例前核实版本；销毁平台只能销毁自己拥有的对话实例，不能移除其他功能共享的 SDK。
-
-## 9. MC 侧具体工作事项
-
-| 编号 | 工作 | 交付与完成条件 |
+| 阶段 | 工作 | 放行条件 |
 |---|---|---|
-| MC-01 | 收敛并冻结公开契约 | mountPlatform + destroy；默认工厂及配置字段；标明按需订阅/SDK/guard，不暴露页面路由操作 |
-| MC-02 | 在 apps/platform 内提取共用根与业务视图 | 原地改造、单份工作台和管理实现，Kit 只留在独立入口 |
-| MC-03 | 实现平台内导航与双外壳 | 内部页面选择、返回与编辑保护均由 MC 完成；嵌入不改浏览器 URL，仍可访问管理页 |
-| MC-04 | 实现默认 Adapter 与实例服务 | Java/DQE 客户端复用现有协议；配置每次读取；模块级单例与全局依赖收口 |
-| MC-05 | 完成配置变化和资源清理 | 同身份刷新不重建；身份变化封住旧会话；快速卸载和重复销毁不留订阅/请求/DOM |
-| MC-06 | 提供对话/可信创作接缝 | 复用现有语义，系统实现可注入；未接通能力明确不可用 |
-| MC-07 | 完成嵌入尺寸与样式收口 | 有限容器内工作，保留业务入口与工具栏，弹层和样式不影响外围 |
-| MC-08 | 增加双构建和发布清单 | dev/build 保持可用；新增 build:integration/pack:integration，输出独立 JS/CSS/types 包 |
-| MC-09 | 完成必要验证和示例 | 独立入口回归、实例契约测试、干净仓外 tarball 消费、最小集成样例 |
-| MC-10 | 提交架构与交付文档 | ADR 修订、host-contract、发布版本/兼容范围/升级说明和接入手册 |
+| 1 | 锁定主应用版本、前缀与 Kit 兼容验证 | 用事实决定保留 Kit 或迁移客户端路由，保留已确认 URL 体验 |
+| 2 | 接入层、实例配置与必要业务解耦 | 独立入口可用，业务不读 qiankun/门户变量 |
+| 3 | HTML 生产构建、URL 路由与生命周期 | 实际 qiankun 测试主应用完成深链接、导航、卸载重挂 |
+| 4 | 人工业务与服务联调 | 挂载→页面管理→打开→编辑保存→重新打开→卸载→重挂 |
+| 5 | 可选 AI 接线与发布 | AI 单列证据，固定静态版本、部署和回滚说明齐备 |
 
-MC 不要求集成方复制业务代码、改用 Svelte、重写 Java/DQE 客户端或维护平台内部页面标识。内部实现虽需视图状态和配置端口，也不因此全部暴露为外部参数。
+证据分别报告：类型/确定性测试、静态生产构建、测试主应用的真实 qiankun 加载、目标门户浏览器、真实 Java/DQE/盘古/Relay 服务。测试主应用成功不等于真实门户或生产服务成功。
 
-## 10. 集成方具体工作事项
+浏览器检查只覆盖必要风险：前缀边界、内部路由保持实例、前进后退、刷新/深链接、离开取消后的 URL 一致性、卸载重挂、容器/弹层、快速切换及凭据变化。复用已有保存/恢复/对话测试，不扩展全站测试。
 
-| 编号 | 工作 | 交付与完成条件 |
-|---|---|---|
-| INT-01 | 提供现网基线 | 框架、构建工具、qiankun 2.x 小版本、浏览器、现有 entry/生命周期与部署路径 |
-| INT-02 | 安装版本包并接入现有构建 | 固定版本和 lockfile，导入 JS/CSS，生产产物可被现网 qiankun 装载 |
-| INT-03 | 创建一个平台功能区域 | 菜单入口、挂载节点和明确宽高；不需要平台内部页面 URL 映射 |
-| INT-04 | 供给运行配置 | 真实端点、token、用户、工作空间与必要 cftk；使用 MC 工厂，不手写全部 Adapter |
-| INT-05 | 连接会话变化与生命周期 | 有身份切换时提供订阅；区域退出/qiankun 卸载 await destroy；处理挂载中退出和会话失效重挂 |
-| INT-06 | 按需接盘古/Relay 和外部离开保护 | 确认 SDK 版本/资源所有权；有 AI 需求时接程序接口；协调门户导航 guard |
-| INT-07 | 配置资源、网关与权限 | HTML entry/publicPath、功能区域深链、Cookie/CORS/CSP 和服务可达性 |
-| INT-08 | 独立 CI、灰度、发布与回滚 | 用生产构建验收；固定资源版本、保留旧资源，升级与回滚流程可执行 |
+外部输入未齐时继续配置注入、接口和本地验证；缺少精确版本时只能标为候选版本验证，不宣称现网兼容。
 
-最外层门户若由第三方团队维护，INT-05～07 中门户注册、登录通知、应用级离开保护由集成方协调；服务鉴权与跨源配置由服务提供方实施，MC 负责给出实际请求契约。
+## 10. 文档、责任与当前状态
 
-## 11. 共同里程碑与证据
+MC 负责平台入口、生命周期、内部路由、业务整改、静态产物和消费契约。主应用团队负责前缀激活、容器、配置/身份通知、HTML 部署接入、主应用离开保护及门户验证。服务方负责真实鉴权、接口和网关能力。
 
-| 阶段 | MC 侧 | 集成方 | 放行条件 |
-|---|---|---|---|
-| 1. 基线与接口 | 冻结最小契约和默认行为 | 提供技术栈、真实配置形态 | 不再要求外部页面导航和外观参数 |
-| 2. 双入口与载体 | 完成共用业务、默认工厂和双构建 | 准备一个区域及配置接线 | 本地入口正常，RC 可安装构建 |
-| 3. 人工业务闭环 | 修复平台业务/生命周期问题 | 提供真实 Java/DQE 环境和账号 | 挂载→页面管理→打开→编辑→保存→重新打开→卸载→重挂 |
-| 4. AI 接线 | 提供可信创作与对话接口 | 提供真实盘古/Relay 接线 | 单独核验真实创作结果与工作台接受 |
-| 5. 发布 | 提供固定版本和兼容说明 | 灰度及回滚演练 | 生产资源、功能区域刷新、身份变化和清理行为通过 |
+实施时更新正式 `host-contract`、ADR-0073 相关部署结论与主题页：平台业务保持框架隔离，但平台交付入口现在明确实现 qiankun 适配；旧“不实现微前端协议”不能继续作为整个交付物的现行限制。本次只落盘方案，尚未修改正式运行契约或应用代码。
 
-确定性检查集中在接口与真实风险：导入无副作用、重复挂载拒绝、挂载失败清理、挂载中离开、重复销毁、旧请求回写拒绝、身份变化停止写入、内部导航不会混用草稿、内部导航不改外部 history、嵌入管理入口可达、两种产物互不覆盖、types 和 tarball 可独立消费。
+已确认：HTML 微前端交付、前缀归主应用、内部 URL 路由归平台、代码接入隔离、最小业务范围。待验证：Kit 保留与否、最终构建方式、实际前缀/qiankun 小版本/浏览器、主应用真实配置和可选 SDK 接线。
 
-浏览器集成只覆盖必要的微前端风险：真实 qiankun production entry 的挂载/卸载/重挂、外部区域深链刷新（不是平台内部页面深链）、CSS/弹层/SDK、图表 resize、快速切换和带凭据请求。不扩展成无关全站浏览器测试。
-
-真实服务另行记录：Java 页面读取和保存回执、DQE 筛选重查、盘古/Relay 可信产物读取、身份切换和权限拒绝。保存结果未知仍按原恢复规则处理，不能自动重试写请求；替身证据不能替代真实服务验收。
-
-本次状态：方案已更新、代码事实已复核；应用实现未修改。库构建、外部消费构建、qiankun 浏览器、真实服务与回滚验收均为 **NOT_RUN**。
-
-剩余外部输入只有：子应用框架/构建器/2.x 小版本/浏览器范围，真实配置与身份通知源，盘古/Relay 是否需要及其接线资料，发布 registry/资源地址，门户能否注册离开保护。首版单活动实例；多实例和平台内部 URL 同步不列为前置工作。
+当前所有实现、生产构建、浏览器接入和真实服务验收均为 **NOT_RUN**；文档完成不表示功能已实现。

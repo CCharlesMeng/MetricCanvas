@@ -8,7 +8,10 @@
     "dev:local-huawei:unprivileged": "node scripts/start-local-huawei.mjs 5175",
     "build": "vite build",
     "preview": "vite preview --port 4174",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json"
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json",
+    "build:microfrontend": "vite build --mode microfrontend",
+    "pack:microfrontend": "pnpm build:microfrontend && node scripts/pack-microfrontend.mjs",
+    "test:microfrontend": "cd ../.. && node apps/platform/tests/microfrontend/production-browser.mjs"
   },
   "dependencies": {
     "@metriccanvas/application-runtime": "workspace:*",
@@ -17,10 +20,9 @@
     "@metriccanvas/page": "workspace:*"
   },
   "devDependencies": {
-    "@sveltejs/adapter-static": "^3.0.10",
-    "@sveltejs/kit": "^2.70.2",
     "@sveltejs/vite-plugin-svelte": "^7.2.0",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "qiankun": "2.10.16",
     "svelte": "^5.56.6",
     "svelte-check": "^4.7.3",
     "vite": "^8.1.5"

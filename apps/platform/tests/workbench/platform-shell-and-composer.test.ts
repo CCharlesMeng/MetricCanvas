@@ -7,7 +7,7 @@ import {
 } from '../../src/lib/workbench/composer-behavior';
 
 const layoutSource = readFileSync(
-  fileURLToPath(new URL('../../src/routes/+layout.svelte', import.meta.url)),
+  fileURLToPath(new URL('../../src/lib/PlatformFrame.svelte', import.meta.url)),
   'utf8'
 );
 const workbenchSource = readFileSync(

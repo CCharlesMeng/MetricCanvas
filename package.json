@@ -8,7 +8,7 @@
     "dev:playground": "pnpm --filter playground dev",
     "dev:platform": "pnpm --filter platform dev",
     "build": "pnpm build:packages && pnpm --filter @metriccanvas/embed build && pnpm --filter platform build",
-    "test": "pnpm --filter platform --filter playground exec svelte-kit sync && vitest run",
+    "test": "pnpm --filter playground exec svelte-kit sync && vitest run",
     "test:embed": "pnpm --filter @metriccanvas/embed test:browser",
     "validate": "tsx packages/page/src/validate-cli.ts",
     "design:facts": "tsx tools/design-facts/src/cli.ts",

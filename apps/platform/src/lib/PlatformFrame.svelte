@@ -1,13 +1,14 @@
 <script lang="ts">
-  import { resolve } from '$app/paths';
-  import { page } from '$app/state';
+  import {usePlatformServices} from './integration/services';
+  const services = usePlatformServices();
+  const {resolve} = services.navigation;
   import { onMount } from 'svelte';
-  import { readRuntimeConfig } from '$lib/runtime-config';
 
-  let { children }: { children: import('svelte').Snippet } = $props();
+
+  let { children, path }: { children: import('svelte').Snippet; path: string } = $props();
   let operatorId = $state('');
   onMount(() => {
-    operatorId = readRuntimeConfig()?.operatorId ?? '';
+    operatorId = services.session.readConfig()?.operatorId ?? '';
   });
 
   const NAV = [
@@ -16,15 +17,13 @@
   ] as const;
 
   function isActive(href: string): boolean {
-    const route = page.route.id ?? '';
+    const route = path;
     return route === href || (href !== '/' && route.startsWith(`${href}/`));
   }
 
 </script>
 
-<svelte:head>
-  <title>MetricCanvas 指标画布</title>
-</svelte:head>
+
 
 <div class="platform-app" data-testid="platform-app">
 <aside class="global-rail" data-testid="global-rail" aria-label="Platform 全局导航">

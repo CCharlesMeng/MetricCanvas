@@ -1,7 +1,26 @@
 {
-  "extends": "./.svelte-kit/tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "strict": true,
-    "moduleResolution": "bundler"
-  }
+    "moduleResolution": "bundler",
+    "types": [
+      "vite/client"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "$lib/*": [
+        "src/lib/*"
+      ],
+      "$pages/*": [
+        "../../pages/*"
+      ],
+      "$fixtures/*": [
+        "../../docs/examples/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.svelte"
+  ]
 }

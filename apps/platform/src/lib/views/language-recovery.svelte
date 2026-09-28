@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { dev } from '$app/environment';
+  const dev = import.meta.env.DEV;
   import PageAuthoringWorkbench from '$lib/PageAuthoringWorkbench.svelte';
   import type { TrustedLanguageRecoveryPort } from '$lib/workbench/authoring-language-recovery';
   import type { LanguagePort, createAuthoringLanguage } from '$lib/workbench/authoring-language';

@@ -21,7 +21,7 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 
 这一段与上面不同层：上面是渲染引擎对集成应用的要求，这一段是**平台**（第一方集成应用）对装载它的集成门户的要求。平台以纯前端静态产物部署，没有服务端可以藏凭据或代理请求，因此端点与凭据只能由门户在运行时给（[ADR-0073](adr/0073-static-platform-direct-access-with-injected-runtime-config.md)）。
 
-门户在平台的静态产物加载前设置一个全局对象，五个字段：
+微前端通过 `readConfig()` 每次读取以下配置；独立入口与页面试验场仍可使用 `globalThis.__METRICCANVAS__` 包装：
 
 | 字段 | 说明 |
 |---|---|
@@ -32,12 +32,12 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 | `operatorId` | 随请求发出的 `X-Operator-Id` |
 | `workspaceId` | 随请求发出的 `X-Workspace-Id` |
 
-设置方式由部署形态决定：静态产物的入口 HTML 里注入一段脚本、同源父页面直接设置、或本地开发入口设置，平台不区分。
+归档内 `portal-contract.d.ts` 可直接供门户 TypeScript 使用，不依赖 npm 包或 Svelte 插件；可选可信创作扩展使用仓内 AuthoringIntegration 类型。微前端 props 的完整正式类型见 [`portal-config.ts`](../apps/platform/src/microfrontend/portal-config.ts)。读取源由门户转换，业务不读取门户变量。独立入口配置更新后派发 `metriccanvas:config-changed`；页面试验场的既有全局读取语义不变。
 
-- **平台每次请求现读这个对象，不在启动时快照。** 门户刷新 token 后直接改字段即可，不需要重新挂载平台，也不需要回调。平台不提供登录界面、不做刷新重试：HTTP 401 按既有语义呈现为需要登录，重登由门户处理（ADR-0069 已定本仓不建登录体系）。
+- **平台每次请求现读这个对象，不在启动时快照。** 门户刷新 token 后更新读取源并通知订阅者，不需要重新挂载；身份、工作空间、退出登录或服务目标变化须通知订阅者，使旧会话失效后重挂。平台不提供登录界面、不做刷新重试：HTTP 401 按既有语义呈现为需要登录，重登由门户处理（ADR-0069 已定本仓不建登录体系）。
 - **`operatorId` 是门户声明的 actor，不是平台验证过的 actor。** 可信性由同行的 `authToken` 承担，平台不校验二者是否同一人——它解不开 token，也挡不住能改请求头的人改校验代码。服务端应以 token 为准，二者不一致时拒绝。
 - **配置缺失或不完整时平台照常启动**，页面目录与内联页面仍可查看，取数在调用时失败，且错误明确指出是集成应用未注入运行配置，不与网络失败混同。
-- **平台不实现微前端协议。** 它是自包含静态 SPA，门户用 iframe、整页跳转、菜单链接或微前端框架装载它都可以。DQE 与 Java 页面资产需允许上述三个身份请求头跨源并允许携带凭据，这是对服务提供方的要求，对账见 #3 / #105。
+- **平台提供 qiankun HTML 微前端及独立入口。** 业务保持实例化，生命周期适配集中在接入层（ADR-0093）。DQE 与 Java 页面资产需允许上述三个身份请求头跨源并允许携带凭据，这是对服务提供方的要求，对账见 #3 / #105。
 
 ### 平台页面资产访问
 
@@ -47,7 +47,7 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 
 本地 mock 运行配置：将 `apps/platform/.env.example` 复制为 `.env.local`，填写 `VITE_LOCAL_PAGE_METADATA_BASE_URL`、`VITE_LOCAL_CFTK` 及需要的身份字段，重启开发服务。只在 DEV 入口生效，已有完整门户注入优先；生产仍由门户提供运行配置。本地模拟值可以验证头部发送，不能代替真实服务的有效凭据。现有 `/apply-page` 模拟入口使用内存数据，不发 HTTP 请求；联调请求头应使用普通工作台或页面目录。
 
-平台的页面目录、页面详情、保存与更新共用一个浏览器页面资产客户端。客户端按每次请求现读 Java 基址和身份字段，不存在 Node 适配器或同源 `/api/pages` 回退。页面资产请求发送 `X-Auth-Token` 与 `X-Operator-Id`；`workspaceId` 仅供 DQE 请求使用。缺少必需配置时以 `DQE_CONFIG_ERROR` 报告「集成应用未注入运行配置」。
+平台的页面目录、页面详情、保存与更新共用当前实例的浏览器页面资产客户端。客户端按每次请求现读 Java 基址和身份字段，不存在 Node 适配器或同源 `/api/pages` 回退。页面资产请求发送 `X-Auth-Token` 与 `X-Operator-Id`；`workspaceId` 仅供 DQE 请求使用。缺少必需配置时以 `DQE_CONFIG_ERROR` 报告「集成应用未注入运行配置」。
 
 当指定修订就是接口返回的当前修订时，平台客户端将其交给 `RuntimeView` 就地呈现。已确认接口尚未提供历史修订列表、历史详情或 diff；请求非当前修订时显式返回 `REVISION_NOT_FOUND`，不用当前内容伪装历史修订。Java 路径的 `dataContextVersion`、`createdBy` 或 `contentHash` 未提供时显示「接口未提供」，不在前端伪造。
 
@@ -59,7 +59,50 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 
 ### 平台应用路由前缀
 
-平台存活路由的导航使用 SvelteKit `resolve`。构建时通过 `METRICCANVAS_BASE_PATH=/metriccanvas pnpm --filter platform build` 配置前缀，默认空前缀；该值是构建期的 `paths.base`，不是五字段运行配置的一部分。SvelteKit 的构建期 base 与 qiankun 运行时分配的前缀能否对齐仍未验证；本接缝不代表已完成 qiankun 接入。模板库和发布确认路由的退场归 #102。
+平台以 `routeBase` 拥有路径段及其后代，例如 `/metrics` 匹配 `/metrics/manage`，不匹配 `/metrics-other`。内部导航不重挂，详情保留 `/manage/pages/:pageId?resource=...`；`/manage/pages/:pageId/edit` 转到 `/?page=...&resource=...`。取消内部点击或后退会恢复原 URL 与视图。普通跨页下钻 URL 仅在明确属于平台前缀时接管。
+
+嵌入产物支持运行时前缀，资源相对 HTML entry 解析，不按业务 URL 拼接；不设置全局 `<base>`，标题由门户拥有。独立构建通过 `METRICCANVAS_BASE_PATH=/metriccanvas/ pnpm --filter platform build` 绑定静态资源和路由前缀。
+
+### 平台 HTML 微前端契约
+
+`pnpm --filter platform pack:microfrontend` 输出 `apps/platform/dist/microfrontend/` 和同级版本归档、SHA-256；独立构建仍在 `apps/platform/build/`，互不覆盖。`release.json` 包含候选版本、Git 基线、工作区修改标志、源码树 SHA-256 及各资源摘要。工作区产物的基线 SHA 不应冒充全部修改已提交的源码 SHA。
+
+| props | 语义 |
+|---|---|
+| `routeBase` | 必填绝对路径前缀；门户按路径段激活 |
+| `readConfig` | 必填，每请求返回当前配置或 null；不得固化初始凭据 |
+| `subscribeConfig` | 必填 `(changed) => unsubscribe`，连接真实身份/配置通知源 |
+| `onEvent` | 可选，接收 `{code,message}`；code 为 `ready`、`login-required`、`session-invalidated`，消息不含凭据 |
+| `registerLeaveGuard` | 可选 `(guard) => unregister`；guard 返回 boolean 或 Promise<boolean>；门户在区域外导航及浏览器后退提交前调用，取消时恢复 URL |
+| `dialogueAdapter` | 可选，沿用 DialogueAdapter：mount(element) 返回实例清理函数；不能清理门户共享 SDK |
+| `authoring` / `events` | 可选，沿用可信创作 AuthoringIntegration / 实例 EventTarget；缺席时 AI 不可用，人工页面搭建不受阻 |
+
+最小注册示例（在现有门户使用，不在 platform 内另启主应用）：
+
+```ts
+registerMicroApps([{
+  name: 'metriccanvas',
+  entry: '/micro/metriccanvas/releases/1.0.0-rc.1/index.html',
+  container: '#metriccanvas-container',
+  activeRule: ({pathname}) => pathname === '/metrics' || pathname.startsWith('/metrics/'),
+  props: {
+    routeBase: '/metrics',
+    readConfig: () => portal.readMetricCanvasConfig(),
+    subscribeConfig: changed => portal.subscribeIdentityAndConfig(changed),
+    registerLeaveGuard: guard => portal.router.registerRegionLeaveGuard('/metrics', guard),
+    onEvent: event => {
+      if (event.code === 'login-required') portal.requestLogin();
+      if (event.code === 'session-invalidated') portal.schedulePlatformRemount();
+    }
+  }
+}]);
+```
+
+`portal.*` 为门户提供的接线示意，须替换为真实实现。`ready` 只表示本地组件挂载完成，不表示 Java/DQE/AI 已就绪。挂载不等待业务网络；unmount 串行、可等待且幂等，取消请求、清理路由/事件订阅及组件，保留恢复记录。SDK 迟到挂载仍释放自己拥有的实例；提供方应保证 mount 有限返回。unmount 不承担离开确认，不保存、不发布，不保证撤回服务端已接受的写入；未知结果停止且不重试。
+
+同一部署首版固定 Java/DQE 服务目标，端点变化仅用于使旧会话失效；**不承诺跨目标恢复隔离**。门户负责明确容器高度、区域外 guard、真实配置通知、CORS/CSP 与静态发布。部署先上传完整不可变版本目录再切 entry；回滚切回完整旧目录，并保留旧会话所需资源。深链接 `/metrics/...` 回退门户 HTML；`/micro/.../assets/*` 缺失必须 404，API 不回退 HTML。
+
+候选验证：qiankun 2.10.16、Chromium 151；需要浏览器支持 AbortSignal.any、ResizeObserver 与现有渲染引擎能力。其他浏览器、目标门户与真实服务均不得从本地通过推断，详见 [实施验收](evidence/qiankun-platform/implementation.md)。
 
 ## 筛选与 URL 的可选同步
 

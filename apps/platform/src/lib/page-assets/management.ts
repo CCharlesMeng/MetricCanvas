@@ -8,11 +8,12 @@ export interface ActionRecord { status: 'sending' | 'confirmed' | 'rejected' | '
 /** Persist before destructive writes. Reopening never replays an uncertain action. */
 export function createAssetManagement(assets: PageAssets,
   records: AuthoringStorage<ActionRecord> = createIndexedAuthoringStorage(),
-  drafts: AuthoringStorage<DurableAuthoringState> = createIndexedAuthoringStorage()) {
+  drafts: AuthoringStorage<DurableAuthoringState> = createIndexedAuthoringStorage(),
+  readConfig = readPageAssetsRuntimeConfig) {
   let busy = false;
   async function run<T>(asset: AssetRef, action: ActionRecord['action'], execute: () => Promise<MutationOutcome<T>>, version?: number): Promise<MutationOutcome<T>> {
     if (busy) return {status:'rejected',code:'BUSY',message:'当前操作尚未结束。'};
-    const identity = readPageAssetsRuntimeConfig();
+    const identity = readConfig();
     if (!identity) return {status:'rejected',code:'UNAUTHENTICATED',message:'身份配置不可用。'};
     const scope = {actorId:identity.operatorId,workspaceId:identity.workspaceId,...asset};
     const actionScope = {...scope, channel:'management' as const};
@@ -24,10 +25,10 @@ export function createAssetManagement(assets: PageAssets,
       if (draft?.value.queue.length) return {status:'rejected',code:'UNSYNCHRONIZED',message:'此页面仍有未同步工作，请先在工作台处理。'};
       const previous = await records.read(actionScope);
       if (previous && ['sending','unknown'].includes(previous.value.status)) return {status:'unknown',message:'上次管理操作结果未确认，已停止再次写入。'};
-      const current = readPageAssetsRuntimeConfig();
+      const current = readConfig();
       if (current?.operatorId !== scope.actorId || current?.workspaceId !== scope.workspaceId) return {status:'rejected',code:'IDENTITY_CHANGED',message:'身份已变化。'};
       const next = await records.write(actionScope,previous?.version ?? 0,{status:'sending',action,version});
-      const beforeSend = readPageAssetsRuntimeConfig();
+      const beforeSend = readConfig();
       if (beforeSend?.operatorId !== scope.actorId || beforeSend?.workspaceId !== scope.workspaceId) {
         await records.write(actionScope,next,{status:'rejected',action,version});
         return {status:'rejected',code:'IDENTITY_CHANGED',message:'身份已变化，未发送操作。'};
@@ -43,7 +44,7 @@ export function createAssetManagement(assets: PageAssets,
           base:{...asset,revisionId:revision.revisionId},draft:restored.draft,queue:[],confirmed:revision});
       }
       await records.write(actionScope,next,{status:outcome.status,action,version});
-      const afterSend = readPageAssetsRuntimeConfig();
+      const afterSend = readConfig();
       if (afterSend?.operatorId !== scope.actorId || afterSend?.workspaceId !== scope.workspaceId) return {status:'unknown',message:'身份已变化，操作回执已保存在原工作范围，请重新打开页面。'};
       return outcome;
     } catch { return {status:'unknown',message:'操作记录未能确认，已停止再次写入，请保留工作并核实。'}; }

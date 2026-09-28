@@ -34,11 +34,11 @@ describe('纯前端静态平台边界', () => {
     }
   });
 
-  it('使用带 SPA fallback 的 adapter-static', () => {
-    const config = readFileSync(join(appRoot, 'svelte.config.js'), 'utf8');
-    expect(config).toContain("from '@sveltejs/adapter-static'");
-    expect(config).toContain("fallback: 'index.html'");
-    expect(config).not.toContain('adapter-node');
+  it('独立入口与 HTML 微前端有各自静态产物', () => {
+    const manifest = JSON.parse(readFileSync(join(appRoot, 'package.json'), 'utf8'));
+    expect(manifest.scripts['build:microfrontend']).toBe('vite build --mode microfrontend');
+    expect(manifest.devDependencies).not.toHaveProperty('@sveltejs/kit');
+    expect(existsSync(join(appRoot, 'index.html'))).toBe(true);
   });
 
   it('主线不再携带旧页面服务端与离线启动器', () => {

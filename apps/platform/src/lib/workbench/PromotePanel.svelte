@@ -1,7 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { activateApplicationModal } from './application-modal';
-  import { pageAssets } from '$lib/page-assets';
+  import {usePlatformServices} from '../integration/services';
+  const {pageAssets} = usePlatformServices();
   import {
     DATA_APP_ROLLING_TIME_LIMITATION,
     pageIdConfirmationPayload

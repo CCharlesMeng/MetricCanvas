@@ -75,6 +75,9 @@ jobs:
       - name: 产品构建
         run: pnpm build
 
+      - name: 构建平台 HTML 微前端归档
+        run: pnpm --filter platform pack:microfrontend
+
       - name: 检查打包入口、声明与组件
         run: pnpm packages:check
 
@@ -84,6 +87,13 @@ jobs:
         with:
           name: metriccanvas-platform-static-${{ github.sha }}
           path: apps/platform/build
+
+      - name: 上传平台 HTML 微前端
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: metriccanvas-platform-microfrontend-${{ github.sha }}
+          path: apps/platform/dist
 
       # 开发预览应用按需使用，不作为产品构建产物上传。
       # 实际内网载体的 deploy job 仍待部署环境确定。

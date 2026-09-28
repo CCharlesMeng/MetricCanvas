@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { dev } from '$app/environment';
-  import { goto } from '$app/navigation';
-  import { page } from '$app/state';
+  const dev = import.meta.env.DEV;
+  import {usePlatformServices} from '../../integration/services';
+  const navigation = usePlatformServices().navigation;
 
   type Variant = {
     key: string;
@@ -22,9 +22,9 @@
 
   function switchTo(offset: number) {
     const nextIndex = (currentIndex + offset + variants.length) % variants.length;
-    const nextUrl = new URL(page.url);
+    const nextUrl = navigation.current();
     nextUrl.searchParams.set('variant', variants[nextIndex].key);
-    void goto(nextUrl, { replaceState: true, noScroll: true, keepFocus: true });
+    void navigation.navigate(nextUrl, { replaceState: true });
   }
 
   function handleKeydown(event: KeyboardEvent) {

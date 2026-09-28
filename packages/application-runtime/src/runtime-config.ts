@@ -49,8 +49,11 @@ function trimmedField(
  * 每次调用现读注入源，不缓存。缺字段或未注入时返回 null。
  * 只有本模块读写注入源（ADR-0073）。
  */
-export function readRuntimeConfig(): InjectedRuntimeConfig | null {
-  const raw = holder()[RUNTIME_CONFIG_SOURCE_KEY];
+export type RuntimeConfigSource = () => Partial<InjectedRuntimeConfig> | null | undefined;
+const globalConfigSource: RuntimeConfigSource = () => holder()[RUNTIME_CONFIG_SOURCE_KEY];
+
+export function readRuntimeConfig(source: RuntimeConfigSource = globalConfigSource): InjectedRuntimeConfig | null {
+  const raw = source();
   if (!raw || typeof raw !== 'object') return null;
   const dqeEndpoint = trimmedField(raw, 'dqeEndpoint');
   const pageMetadataBaseUrl = trimmedField(raw, 'pageMetadataBaseUrl');
@@ -66,8 +69,8 @@ export function readRuntimeConfig(): InjectedRuntimeConfig | null {
 }
 
 /** Page asset reads do not require a DQE endpoint. */
-export function readPageAssetsRuntimeConfig(): InjectedRuntimeConfig | null {
-  const raw = holder()[RUNTIME_CONFIG_SOURCE_KEY];
+export function readPageAssetsRuntimeConfig(source: RuntimeConfigSource = globalConfigSource): InjectedRuntimeConfig | null {
+  const raw = source();
   if (!raw || typeof raw !== 'object') return null;
   const pageMetadataBaseUrl = trimmedField(raw, 'pageMetadataBaseUrl');
   const authToken = trimmedField(raw, 'authToken');
@@ -106,11 +109,11 @@ export function installLocalDevRuntimeConfig(overrides: Partial<InjectedRuntimeC
   });
 }
 
-function requireDqeRuntimeConfig(): Pick<
+function requireDqeRuntimeConfig(source: RuntimeConfigSource): Pick<
   InjectedRuntimeConfig,
   (typeof DQE_REQUIRED_FIELDS)[number]
 > {
-  const config = readRuntimeConfig();
+  const config = readRuntimeConfig(source);
   if (!config) {
     throw new DqeGatewayError('DQE_CONFIG_ERROR', MISSING_RUNTIME_CONFIG_MESSAGE);
   }
@@ -123,12 +126,13 @@ function requireDqeRuntimeConfig(): Pick<
  */
 export function createInjectedDqeGateway(
   fetchImpl: typeof fetch = fetch,
-  devDetail?: DqeDevDetail
+  devDetail?: DqeDevDetail,
+  source: RuntimeConfigSource = globalConfigSource
 ): DataGateway & DimensionValuesGateway {
   return createDqeGateway({
     devDetail,
     fetchImpl: (async (_input, init) => {
-      const config = requireDqeRuntimeConfig();
+      const config = requireDqeRuntimeConfig(source);
       const headers = new Headers(init?.headers);
       headers.set('X-Auth-Token', config.authToken);
       headers.set('X-Operator-Id', config.operatorId);

@@ -10,22 +10,20 @@ export class AuthoringStorageConflict extends Error {
 }
 const keyOf = (scope: StorageScope) => JSON.stringify([scope.actorId, scope.workspaceId, scope.pageId, ...(scope.resourceId ? [scope.resourceId] : []), ...(scope.channel ? [scope.channel] : [])]);
 export function createIndexedAuthoringStorage<T>(factory?: IDBFactory): AuthoringStorage<T> {
-  let connection: Promise<IDBDatabase> | undefined;
   function open() {
-    connection ??= new Promise<IDBDatabase>((resolve, reject) => {
+    return new Promise<IDBDatabase>((resolve, reject) => {
       const source = factory ?? globalThis.indexedDB;
       if (!source) throw new Error('浏览器未提供创作存储能力。');
       const request = source.open('metriccanvas-authoring', 1);
       request.onupgradeneeded = () => request.result.createObjectStore('work');
       request.onsuccess = () => {
         const db = request.result;
-        db.onversionchange = () => { db.close(); connection = undefined; };
+        db.onversionchange = () => { db.close(); };
         resolve(db);
       };
-      request.onerror = () => { connection = undefined; reject(request.error); };
-      request.onblocked = () => { connection = undefined; reject(new Error('浏览器创作存储升级被其他窗口阻塞。')); };
-    }).catch((error: unknown) => { connection = undefined; throw error; });
-    return connection;
+      request.onerror = () => { reject(request.error); };
+      request.onblocked = () => { reject(new Error('浏览器创作存储升级被其他窗口阻塞。')); };
+    });
   }
   return {
     async read(scope) {
@@ -33,9 +31,9 @@ export function createIndexedAuthoringStorage<T>(factory?: IDBFactory): Authorin
       return new Promise((resolve, reject) => {
         const tx = db.transaction('work', 'readonly');
         const request = tx.objectStore('work').get(keyOf(scope));
-        tx.oncomplete = () => resolve(request.result ?? null);
-        tx.onabort = () => reject(tx.error ?? new Error('浏览器读取失败。'));
-        tx.onerror = () => reject(tx.error ?? request.error);
+        tx.oncomplete = () => {db.close();resolve(request.result ?? null);};
+        tx.onabort = () => {db.close();reject(tx.error ?? new Error('浏览器读取失败。'));};
+        tx.onerror = () => {db.close();reject(tx.error ?? request.error);};
       });
     },
     async write(scope, expectedVersion, value) {
@@ -50,9 +48,9 @@ export function createIndexedAuthoringStorage<T>(factory?: IDBFactory): Authorin
           if ((record?.version ?? 0) !== expectedVersion) { conflict = true; tx.abort(); return; }
           store.put({ version: expectedVersion + 1, value }, keyOf(scope));
         };
-        tx.oncomplete = () => resolve(expectedVersion + 1);
-        tx.onabort = () => reject(conflict ? new AuthoringStorageConflict() : tx.error ?? new Error('浏览器保护失败。'));
-        tx.onerror = () => reject(tx.error ?? request.error);
+        tx.oncomplete = () => {db.close();resolve(expectedVersion + 1);};
+        tx.onabort = () => {db.close();reject(conflict ? new AuthoringStorageConflict() : tx.error ?? new Error('浏览器保护失败。'));};
+        tx.onerror = () => {db.close();reject(tx.error ?? request.error);};
       });
     }
   };

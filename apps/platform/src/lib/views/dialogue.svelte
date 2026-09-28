@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { dev } from '$app/environment';
+  const dev = import.meta.env.DEV;
   import { onMount } from 'svelte';
   import PanguDialogue from '$lib/dialogue/PanguDialogue.svelte';
   import PageAuthoringWorkbench from '$lib/PageAuthoringWorkbench.svelte';

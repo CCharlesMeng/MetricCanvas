@@ -6,6 +6,8 @@ note: #101 已裁决；接线与静态化归 #104，应用外壳归 #110
 
 # 静态平台以自包含 SPA 直连外部服务，运行配置由集成应用注入
 
+> 部分由 [ADR-0093](0093-platform-html-microfrontend-and-instance-lifecycle.md) 修订：平台现提供 qiankun HTML 微前端入口、实例配置与生命周期；全局配置仅保留为独立入口/页面试验场包装。下文的旧部署限制是历史决策，现行接入见 [集成应用契约](../host-contract.md)。
+
 平台要以纯前端静态产物部署（地图 [#95](https://github.com/CCharlesMeng/MetricCanvas/issues/95) 的 [#101](https://github.com/CCharlesMeng/MetricCanvas/issues/101)），静态化后它没有服务端可以藏凭据、代理请求或解析身份。本决策定下浏览器怎么拿到端点与凭据、平台在集成门户里长什么形状，以及为将来接入 qiankun 预留哪些接缝。与 ADR-0066（自包含渲染引擎与集成应用边界）、ADR-0069（请求凭据归集成应用）、ADR-0072（集成应用改名）配套。
 
 ## 两条被推翻的前提

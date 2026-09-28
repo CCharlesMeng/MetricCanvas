@@ -1,24 +1,25 @@
 <script lang="ts">
+  import {usePlatformServices} from "../integration/services";
+  const services = usePlatformServices();
+  const {pageAssets} = services;
+  const {resolve, navigate:goto} = services.navigation;
   import { onMount } from 'svelte';
-  import { page } from '$app/state';
-  import { resolve } from '$app/paths';
-  import { goto } from '$app/navigation';
-  import { pageAssets } from '$lib/page-assets';
   import { createAssetManagement } from '$lib/page-assets/management';
   import type { PageRevision, DraftHistoryEntry, AssetRef } from '$lib/page-assets/contract';
   import RevisionPreview from '$lib/RevisionPreview.svelte';
   let revision = $state<PageRevision | null>(null), history = $state<DraftHistoryEntry[]>([]);
   let loading=$state(true), busy=$state(false), error=$state(''), historyError=$state(''), notice=$state('');
-  const manager = createAssetManagement(pageAssets);
-  const pageId = $derived(page.params.pageId ?? '');
+  const manager = createAssetManagement(pageAssets, undefined, undefined, services.session.readConfig);
+  let {pageId, url}: {pageId: string; url: URL} = $props();
   const asset = (): AssetRef => ({pageId,resourceId:revision!.resourceId!});
-  onMount(() => { void load(); });
+  const controller = new AbortController();
+  onMount(() => { void load(); return () => controller.abort(); });
   async function load() {
     loading=true;error='';historyError='';
     try {
-      const resourceId=page.url.searchParams.get('resource');
-      revision=await pageAssets.read(resourceId ? {pageId,resourceId} : await pageAssets.resolve(pageId));
-      try { history=await pageAssets.history(asset()); } catch(e) {historyError=String(e);}
+      const resourceId=url.searchParams.get('resource');
+      revision=await pageAssets.read(resourceId ? {pageId,resourceId} : await pageAssets.resolve(pageId,controller.signal),controller.signal);
+      try { history=await pageAssets.history(asset(),controller.signal); } catch(e) {historyError=String(e);}
     } catch(e) {error=String(e);} finally {loading=false;}
   }
   async function restore(version:number) {
@@ -26,18 +27,19 @@
     busy=true;error='';
     try {
       const result=await manager.restore(asset(),version);
-      if(result.status==='confirmed') {revision=result.value;notice='已回退，当前页面已更新。';history=await pageAssets.history(asset());}
+      if(controller.signal.aborted)return;
+      if(result.status==='confirmed') {revision=result.value;notice='已回退，当前页面已更新。';history=await pageAssets.history(asset(),controller.signal);}
       else error=result.message;
     } catch(e) {error=String(e);} finally {busy=false;}
   }
   async function remove() {
     if(busy || !window.confirm('删除此页面记录？')) return;
     busy=true;error='';
-    try {const result=await manager.remove(asset());if(result.status==='confirmed') await goto(resolve('/manage'));else error=result.message;}
+    try {const result=await manager.remove(asset());if(controller.signal.aborted)return;if(result.status==='confirmed') await goto(resolve('/manage'));else error=result.message;}
     catch(e) {error=String(e);} finally {busy=false;}
   }
 </script>
-<svelte:head><title>页面管理 | MetricCanvas</title></svelte:head>
+
 <section class="management">
   <a href={resolve('/manage')}>← 页面列表</a>
   <h1>{revision?.document.meta?.description || pageId}</h1>

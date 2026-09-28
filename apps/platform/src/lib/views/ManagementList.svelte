@@ -1,26 +1,27 @@
 <script lang="ts">
-  import { resolve } from '$app/paths';
+  import {usePlatformServices} from "../integration/services";
+  const services = usePlatformServices();
+  const {pageAssets} = services;
+  const {resolve, navigate:goto} = services.navigation;
   import { onMount } from 'svelte';
-  import { pageAssets } from '$lib/page-assets';
   import type { AssetSummary } from '$lib/page-assets/contract';
   let pages = $state<AssetSummary[]>([]);
   let loading = $state(true), error = $state(''), pageNo = $state(1), total = $state(0);
   let statusFilter = $state<'' | 'draft' | 'published'>('');
   let request = 0;
-  onMount(() => { void loadPages(); });
+  const controller = new AbortController();
+  onMount(() => { void loadPages(); return () => {request++;controller.abort();}; });
   async function loadPages() {
     const id = ++request; loading = true; error = '';
     try {
-      const result = await pageAssets.list({page:pageNo,pageSize:20,...(statusFilter ? {state:statusFilter} : {})});
+      const result = await pageAssets.list({page:pageNo,pageSize:20,...(statusFilter ? {state:statusFilter} : {})},controller.signal);
       if (id === request) { pages = result.items; total = result.total; }
     } catch (cause) { if(id === request) error = cause instanceof Error ? cause.message : '目录加载失败'; }
     finally { if(id === request) loading = false; }
   }
 </script>
 
-<svelte:head>
-  <title>页面管理 | MetricCanvas</title>
-</svelte:head>
+
 
 <section class="management">
   <div class="heading">
