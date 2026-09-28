@@ -1,14 +1,31 @@
 import {createRequire} from 'node:module';
 import {createServer} from 'node:http';
-import {readFileSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {composeDeployment} from '../../scripts/compose-deployment.mjs';
 import {resolve,extname} from 'node:path';
 import {chromium,expect} from '../../../../packages/embed/node_modules/@playwright/test/index.mjs';
 const qiankun=process.env.QIANKUN_DIST || createRequire(import.meta.url).resolve('qiankun/dist/index.umd.js');
-const dist=resolve('apps/platform/dist/microfrontend');
+const adapterMode=process.env.DEPLOYMENT_ADAPTER_TEST === '1';
+let dist=resolve('apps/platform/dist/microfrontend');
+let deploymentDirectory;
+if(adapterMode){
+ deploymentDirectory=mkdtempSync(resolve(tmpdir(),'platform-browser-deployment-'));
+ const adapter=resolve(deploymentDirectory,'adapter.js');
+ writeFileSync(adapter,`window.MetricCanvasDeploymentAdapter={contractVersion:'1',connect(input){
+  window.adapterCounters.open++;
+  return {props:typeof input.readConfig==='function'?input:window.testDeploymentProps,
+    disconnect(){window.adapterCounters.closed++;}};
+ }};`);
+ const output=resolve(deploymentDirectory,'composed');
+ composeDeployment({platform:dist,adapter,output});dist=output;
+}
 const host=`<!doctype html><title>Portal title</title><style>html,body{height:100%;margin:0}#container{height:850px}</style><header id="portal">Test portal</header><div id="container"></div><script src="/qiankun.js"></script><script>
 window.events=[];window.subscribers=new Set();window.config={dqeEndpoint:'',pageMetadataBaseUrl:'/fixture-assets',authToken:'fixture',operatorId:'test-user',workspaceId:'test-workspace'};
 window.go=async(path)=>{if(window.guard && !await window.guard())return false;history.pushState({},'',path);return true;};
-qiankun.registerMicroApps([{name:'metriccanvas',entry:'/release/index.html',container:'#container',activeRule:location=>location.pathname==='/metrics'||location.pathname.startsWith('/metrics/'),props:{routeBase:'/metrics',readConfig:()=>window.config,subscribeConfig:fn=>{subscribers.add(fn);return()=>subscribers.delete(fn)},onEvent:event=>events.push(event),registerLeaveGuard:fn=>{window.guard=fn;return()=>{window.guard=undefined}}}}]);
+window.adapterCounters={open:0,closed:0};
+window.testDeploymentProps={routeBase:'/metrics',readConfig:()=>window.config,subscribeConfig:fn=>{subscribers.add(fn);return()=>subscribers.delete(fn)},onEvent:event=>events.push(event),registerLeaveGuard:fn=>{window.guard=fn;return()=>{window.guard=undefined}}};
+qiankun.registerMicroApps([{name:'metriccanvas',entry:'/release/index.html',container:'#container',activeRule:location=>location.pathname==='/metrics'||location.pathname.startsWith('/metrics/'),props:${adapterMode ? "{appList:[],roleList:[]}" : "window.testDeploymentProps"}}]);
 window.addEventListener('single-spa:before-routing-event',event=>{
  const before=new URL(event.detail.oldUrl),after=new URL(event.detail.newUrl);
  const inside=url=>url.pathname==='/metrics'||url.pathname.startsWith('/metrics/');
@@ -115,6 +132,7 @@ try {
   const result={failed,count,roots:element.querySelectorAll('[data-testid="platform-app"]').length};element.remove();return result;
  });
  expect(failureCleanup).toEqual({failed:true,count:0,roots:0});
+ if(adapterMode)expect(await page.evaluate(()=>adapterCounters.open === adapterCounters.closed && adapterCounters.open > 1)).toBe(true);
  expect(errors).toEqual([]);
- console.log(JSON.stringify({status:'PASS',qiankun:'2.10.16',browser:browser.version(),writes,evidence:'production HTML + CSS/UMD, prefix, navigation/back/forward/refresh, manual edit/save/reopen, cancel click/back/cross-prefix back/portal leave, local modal, unknown write retained without replay, token refresh, identity invalidation, unmount/remount/rapid switching, failed mount cleanup; HTTP fixture only'}));
-} catch(error){console.error(await page.locator('body').innerText());console.error(errors);throw error;}finally{await browser.close();await new Promise(r=>server.close(r));}
+ console.log(JSON.stringify({status:'PASS',deploymentAdapter:adapterMode,qiankun:'2.10.16',browser:browser.version(),writes,evidence:'production HTML + CSS/UMD, prefix, navigation/back/forward/refresh, manual edit/save/reopen, cancel click/back/cross-prefix back/portal leave, local modal, unknown write retained without replay, token refresh, identity invalidation, unmount/remount/rapid switching, failed mount cleanup; HTTP fixture only'}));
+} catch(error){console.error(await page.locator('body').innerText());console.error(errors);throw error;}finally{await browser.close();await new Promise(r=>server.close(r));if(deploymentDirectory)rmSync(deploymentDirectory,{recursive:true,force:true});}

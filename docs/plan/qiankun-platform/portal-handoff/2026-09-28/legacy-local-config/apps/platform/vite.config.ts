@@ -38,6 +38,15 @@ export default defineConfig(({mode}) => {
         fileName: () => 'assets/platform.umd.js', cssFileName: 'assets/platform'
       }
     } : {outDir: 'build', target: 'es2022'},
-    server: {host: '127.0.0.1', port: 5174, strictPort: true}
+    server: {
+      host: 'ioc.huawei.com',
+      port: Number(process.env.METRICCANVAS_LOCAL_HUAWEI_PORT ?? '443'),
+      strictPort: true,
+      allowedHosts: ['ioc.huawei.com'],
+      proxy: {'/aiknow': {
+        target: 'https://aiknow.huawei.com', changeOrigin: true,
+        rewrite: path => path.replace(/^\/aiknow/, '')
+      }}
+    }
   };
 });

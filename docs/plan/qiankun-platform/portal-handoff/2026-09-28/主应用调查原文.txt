@@ -1,0 +1,519 @@
+**# MetricCanvas 接入主应用（CBCBICloudBIWebsite）微前端机制调查报告**
+
+\> 只读调查产物：未修改任何代码、未安装依赖、未启动部署、未运行浏览器验证。
+
+\> 目标：为 MetricCanvas 改造为独立 HTML 微前端子应用收集真实工程信息，做保留/移除 SvelteKit 的兼容判断。
+
+**## 调查基准**
+
+\- **\*\*仓库\*\***: \`D:\Code\0TMG\AI辅助研发\CDI\CBCBICloudBIWebsite\`
+
+\- **\*\*分支\*\***: \`fuxi_release_20260911171436\`
+
+\- **\*\*提交 SHA\*\***: \`8e741195b88f3b551acbd0d9134fe3abecf6b5a8\`（2026-09-14 14:38:58 +0800，"merge bugfix_20260909201930_ubaFix into bugfix_20260909201930_ubaFix"）
+
+\- **\*\*工作区\*\***: 仅 \`.gitignore\` 已修改、\`.cac/\` 未跟踪（与本调查无关）
+
+\- **\*\*仓库布局\*\***: \`website-src/\`（Angular 17 前端）、\`service/\`（Java/Spring/Tomcat 后端）、\`deployment/\`、\`model/\`、\`build/\`（CI/部署）
+
+\- 仓库根与 \`website-src/\` 均无 AGENTS.md；\`README.md\` 仅一句"BI统一门户框架服务"；\`website-src/README.md\` 是 Angular CLI 模板占位——**\*\*工作约定文档未找到\*\***
+
+\- 结论性质标注：**\*\*[代码证实]\*\*** / **\*\*[仅文档描述]\*\*** / **\*\*[推断]\*\*** / **\*\*[未找到]\*\*** / **\*\*[运行验证未执行]\*\***
+
+\---
+
+**## A. 一页结论**
+
+**### 推荐采用的接入方式**
+
+1\. **\*\*框架是 qiankun 2.10.16（package.json 精确锁定，带 patch-package 补丁）+ Angular 17（history 路由 + EmptyRoute 通配路由）\*\***。主应用用 \`registerMicroApps()\` 批量注册、\`start()\` 启动，**\*\*不是\*\*** \`loadMicroApp\` 按需挂载。子应用注册数据**\*\*全部来自服务端接口\*\***（\`/rest/cbc/cbcbipermissionservice/v1/apps\` 返回的 \`appList\` 中带 \`entry\`/\`activeRule\` 的应用），前端仅在 \`LoginService\` 中组装 \`{name, entry, container:'#child-container', activeRule, props}\` 后传给 qiankun [代码证实]。
+
+2\. **\*\*前缀分配是服务端下发的\*\***：\`activeRule\` 由 \`/apps\` 接口返回（\`LoginService.ts:366-384,399-424\`），前端 \`main.ts\` 里的 \`preDefinedApps\` 硬编码列表仅用于 prefetch 预加载，不参与注册 [代码证实]。MetricCanvas 的 activeRule（如 \`/metrics/...\`）需在应用注册表（服务端）配置，而不是前端硬编码。
+
+3\. **\*\*子应用必须暴露 qiankun 标准生命周期\*\*** \`bootstrap/mount/unmount\`（入口文件导出），主应用没有自定义生命周期约定；主应用额外监听 single-spa 全局事件（\`single-spa\:first-mount\`、\`single-spa\:before-app-change\`、\`single-spa\:app-change\`）驱动 loading、埋点 [代码证实]。**\*\*未找到\*\***任何子应用源码级接入模板，主应用仓库内**\*\*没有\*\*** Svelte/SvelteKit/Vite/ESM 子应用实例——已接入子应用均为同源 \`/static/\<name>/index.html\` 的 HTML entry，且**\*\*推断\*\***为传统打包（qiankun HTML entry + import-html-entry 抓取静态资源）。
+
+4\. **\*\*props 仅两个：\`appList\`（当前应用权限列表）和 \`roleList\`\*\***（角色列表）[代码证实]。**\*\*没有\*\*** globalState、没有 token、没有用户信息在 props 中下发；用户信息在 \`window\.currentLoginUser\`。
+
+**### 可直接复用的公共能力（主应用已实装，子应用可消费）**
+
+\- \`window\.currentLoginUser\`（用户信息）、\`window\.relogin\`（SSO 重登）、\`window\.pSite\`（站点）、\`window\.biLanguage\`（语言）、\`window\.cftk\`（CSRF）、\`window\.cloudbi.\*\`（导航/双因子/鉴权弹窗/角色变更事件）、\`window\.pangu.\*\`（盘古对话 SDK，主应用动态加载）、\`window\.errorMessageInterceptor.errorProcess\`（HTTP 错误统一处理）、\`window\.iocSysInfo\`/\`window\.doubleCheckFlag\`、URL 级 \`identity=\`/\`appId=\`/\`focusApp=\` 深链参数。
+
+**### 关键限制**
+
+1\. **\*\*静态资源必须同源部署\*\***：子应用 entry 全部是相对路径 \`/static/\<name>/index.html\`（或 \`\_sys_configs\` 覆盖的 \`wcmUrl\`），走主应用 Tomcat 同域；\`SsoFilter\`/\`TokenSetFilter\` 对静态资源 ignore，但非静态请求必须带 \`cftk\` 头 [代码证实]。
+
+2\. **\*\*无独立沙箱\*\***：\`start({sandbox:{strictStyleIsolation\:false, loose\:true}})\`，CSS 不隔离，子应用自带样式默认注入 body（有 \`window\.cloudiocTargetToHead\` 补丁开关强制注入 head）[代码证实]。主应用有 patch 允许 \`window\.top/parent\` 逃逸沙箱（主应用可能嵌在 iframe）。
+
+3\. **\*\*容器滚动在主应用\*\***：\`#child-container\` 由主应用 \`overflow\:auto\`，子应用内容高度由主应用 \`calc(100% - 导航/公告高度)\` 控制 [代码证实]。
+
+4\. **\*\*没有 KeepAlive/页签缓存/多实例\*\***：qiankun 标准单实例，路由切换即卸载重建 [推断：代码未见相关配置]。
+
+5\. **\*\*主应用路由"吞掉"一切 path\*\***：\`path: '\*\*' → EmptyRouteComponent\`（空模板），无 404 重定向逻辑；深链接刷新由**\*\*服务端 \`web.xml\` 的 404 error-page → /index.html\`\*\*** 兜底 [代码证实]。MetricCanvas 内部深路径刷新会被这个机制接回主应用 index.html。
+
+6\. **\*\*子应用刷新后注册依赖登录流程\*\***：刷新 → 服务端 index.html → Angular 启动 → \`APP_INITIALIZER\` 登录/权限查询 → \`registerMicroApps\` 重新注册 → 匹配 activeRule 挂载。深链接（如 \`/metrics/manage/pages/abc\`）默认**\*\*原样保留\*\***（主应用不重写 URL），qiankun 首次挂载即匹配。
+
+\---
+
+**## B. 调用链（真实代码主线）**
+
+\`\`\`
+
+浏览器地址栏  https\://\<host>/metrics/manage/pages/abc
+
+ │
+
+ ├─ 服务端 web.xml: SsoFilter→TokenSetFilter(/rest/\*,/cloudbi/\*)→...→IndexHtmlFilter(/ 和 /index.html)
+
+ │   [web.xml:255-267] IndexHtmlFilter 注入 \_sys_configs 与 loadWCMResources [IndexHtmlFilter.java:41-100]
+
+ │   [web.xml:339-342] 404 error-page → /index.html（深链接刷新兜底）
+
+ │
+
+ ├─ website-src/src/index.html: base href="/"；window.\_sys_configs={configInit:1}；loadWCMResources 脚本 [index.html:6,30-58]
+
+ │
+
+ ├─ main.ts: registerMicroApps([]) 空注册；start({prefetch\:true, sandbox:{strictStyleIsolation\:false,loose\:true},
+
+ │   urlRerouteOnly\:true, excludeAssetFilter: pangu-chat-client|analysis-resource-release})；popstate 捕获 [main.ts:5-22]
+
+ │
+
+ ├─ AppModule: APP_INITIALIZER = LoginServiceFactory → LoginService.login() [app.module.ts:155-161]
+
+ │   login() 按域名分流 [LoginService.ts:101-128] → loginCloudIOC()/loginCloudBI() [LoginService.ts:205-288]
+
+ │    ├─ queryAllApps("/rest/cbc/cbcbipermissionservice/v1/apps?permMark=...") [LoginService.ts:39,213,236]
+
+ │   │    → getAllIocApps/getAllApps: 过滤 entry&&activeRule 的应用，组装 moduleInfoList
+
+ │   │    {name: activeRule去掉"/", entry, container:'#child-container', activeRule} [LoginService.ts:365-433]
+
+ │   │    → entry 可被 \_sys_configs[name].wcmUrl 覆盖 [LoginService.ts:370-374,407-410]
+
+ │   ├─ queryLoinInfo("/rest/cbc/cbcbicloudbiwebsite/v1/logininfo") → setCftk(window\.cftk)、setSysInfo、getLoginInfo
+
+ │   │    → window\.currentLoginUser、window\.relogin、window\.pSite [LoginService.ts:290-303,574-600]
+
+ │   └─ queryUserPermissions → userAppList/roleList/multiRoleAppList [LoginService.ts:174,219,258]
+
+ │
+
+ ├─ AppComponent: 顶层分流 isCloudIOC/isCloudAgent/isHuaweicloudCamp → 渲染 cloudbi/cloudioc/cloudagent homepage [app.component.ts:32-34]
+
+ │
+
+ └─ CloudiocHomepageComponent.ngOnInit → registerChildService(true) [cloudioc-homepage.component.ts:140-147]
+
+     ├─ childrenService ← moduleInfoList [cloudioc-homepage.component.ts:384-391]
+
+     ├─ getUserPermissionsChildService()：按用户权限过滤 activeUrl [cloudioc-homepage.component.ts:472-491]
+
+     ├─ setAppNavigate()：无权访问 → 跳权限申请页 [cloudioc-homepage.component.ts:446-470]
+
+     └─ registerMicroApps(allModules.map(app => { app.props = {appList, roleList}; return app; }),
+
+         {afterMount:[ async (app)=> {initYunBao(); restoreLoaderListeners();} ]})
+
+         [cloudioc-homepage.component.ts:397-427]
+
+         │   （cloudbi 版无 afterMount [cloudbi-homepage.component.ts:317-332]；
+
+         │     cloudagent 版继承 cloudioc 版但重写无 afterMount [cloudagent-homepage.component.ts:17-32]）
+
+         │
+
+         ├─ qiankun 匹配 activeRule=/metrics → 导入 /metrics/index.html → 子应用生命周期
+
+         │    bootstrap → mount(props:{appList, roleList, ...}) → 渲染到 #child-container
+
+         │
+
+         ├─ 子应用内部路由 history.pushState → single-spa urlRerouteOnly 路由事件 → 同一实例保持，
+
+         │    不会重新挂载 [main.ts:13 urlRerouteOnly\:true]
+
+         │
+
+         ├─ 卸载：activeRule 不再匹配 → qiankun 调 unmount，container 清空（无自定义 beforeUnmount/afterUnmount）
+
+         │
+
+         └─ 全局事件：single-spa\:before-app-change/app-change 控制 #ioc-host-loading [cloudioc-homepage.component.ts:207-216]
+
+             single-spa\:first-mount 触发 RTTI 埋点 [app.component.ts:93-97]
+
+\`\`\`
+
+\---
+
+**## C. 公共能力清单 & 环境/全局变量清单**
+
+**### C.1 公共能力（提供方 / 消费方式 / 接口形状 / 同步异步 / 初始化时机 / 销毁责任 / 是否有子应用使用）**
+
+\| 能力 | 提供方 | 消费方式与接口形状 | 同步/异步 | 初始化时机 | 销毁责任 | 子应用使用证据 |
+
+\|---|---|---|---|---|---|---|
+
+\| 当前用户 | \`window\.currentLoginUser\`（\`LoginService.getLoginInfo\` 写入，\`UserModel\` 形状：userNo/userAccount/userName/userId/userNameAndUserNo/multiRole/extendInfo/...）[LoginService.ts:290-303; UserModel.ts:3-32] | 读全局变量 | 同步（登录期赋值一次） | APP_INITIALIZER 登录后 | 无（全局，不随子应用卸载） | 主应用自身消费；子应用 [推断] 读同一 window（沙箱 loose 下可见） |
+
+\| 登录/重登 | \`window\.relogin()\`；\`LoginService.ssoLogin()\`（SAML form POST 到 w3Config.loginUrl）[LoginService.ts:162-164,207-209,247-248,479-485,602-617] | 调用函数 | 异步（跳转） | 登录期挂载 | 无 | cloudioc 盘古 adapter 401 时调用 [cloudioc-homepage.component.ts:908,947] |
+
+\| 登录信息接口 | \`GET /rest/cbc/cbcbicloudbiwebsite/v1/logininfo\`（返回 userInfo + csrfToken + sysInfo）[LoginService.ts:37,574-600] | HTTP | 异步 | 登录期 | — | 主应用专用 |
+
+\| CSRF token | \`window\.cftk\` + \`localStorage.cftk\`；拦截器给 \`/rest/\` 请求带头 \`cftk\` [LoginService.ts:590-593; header-setter.interceptor.ts:18-25] | 全局变量 + HTTP 头 | 同步 | 登录后 | 无 | 子应用业务请求需自行带头（子应用不共享 Angular 拦截器） |
+
+\| 会话 | Cookie \`cloudbi_session_id\` + \`localStorage\` 同步 [LoginService.ts:41,619-627; ConfigItems.java:17] | Cookie | — | 登录期 | — | 子应用请求需带同域 Cookie |
+
+\| 身份切换（ticket/身份） | URL 参数 \`identity=\<id>\`、\`appId=\<id>&focusApp=true\` [LoginService.ts:640-657] | 深链接参数 | 同步 | 页面级 | 无 | 主应用权限查询按 ticket 走 [user-http-manager.ts:76-92] |
+
+\| 角色 | \`props.roleList: {roleId,roleName,appId}[]\`（registerMicroApps 时下发）[cloudbi-homepage.component.ts:325-331; LoginService.ts:66,632-634] | qiankun props | 同步（一次性快照） | 注册时 | 无 | 主应用导航消费；子应用 props 消费 [推断] |
+
+\| 权限/应用列表 | \`props.appList\`（当前应用+菜单权限 menuAuthority，\`/datav\` 特例下发全部）[cloudbi-homepage.component.ts:334-338; cloudioc-homepage.component.ts:429-440] | qiankun props | 同步（一次性快照） | 注册时 | 无 | 子应用 props 消费 [推断] |
+
+\| 角色切换事件 | \`window\.cloudbi.roleChange = EventEmitter\`；个人中心 \`changeRole\` → \`setActiveApp(app,true)\` → emit [cloudioc-homepage.component.ts:588, personal-center.component.ts:230] | 订阅事件 | 同步 | 登录后挂载 | 无注销逻辑（全局） | 主应用内部 |
+
+\| 内容刷新事件 | \`window\.cloudbi.refreshContent = EventEmitter\` [cloudioc-homepage.component.ts:591; personal-center.component.ts:237,245] | 订阅事件 | 同步 | 登录后挂载 | 无注销逻辑 | 主应用内部 |
+
+\| 当前应用变化 | \`LoginService.listenActiveAppChange(cb)\`（\`activeAppChange\` EventEmitter）[LoginService.ts:78,670-682] | Angular 服务订阅 | 同步 | 登录后 | Angular DI 管理 | 导航组件 [leftmenu-navigation.component.ts:67] |
+
+\| 权限变化 | \`CloudiocHomepageComponent.permissionChangeEmitter\`（静态 EventEmitter）[cloudioc-homepage.component.ts:43,200] | 订阅 | 同步 | queryAllPermission 回调 | 无注销 | 导航组件 [leftmenu-navigation.component.ts:84] |
+
+\| 站点（多语言站点） | \`window\.pSite = {currentSite, siteChange\:EventEmitter, setSite(siteId)}\` [LoginService.ts:296-302,443-467] | 全局对象 | 同步/事件 | 登录后 | 无 | 埋点、common-util [cloudbi-homepage.component.ts:515-517] |
+
+\| HTTP 客户端 | Angular \`HttpClient\` + 2 个拦截器（\`ErrorMessageInterceptor\`、\`HeaderSetterInterceptor\`）[app.module.ts:162-171] | Angular DI | 异步 | 模块启动 | Angular 管理 | **\*\*子应用不可用\*\***（不共享 Angular 实例） |
+
+\| 统一错误处理 | \`window\.errorMessageInterceptor.errorProcess(error)\`：401→ssoLogin、双因子/承诺书/验证码/禁登等状态弹窗 [ErrorMessageInterceptor.ts:28-118] | 全局函数（子应用可调用） | 同步/弹窗 | 模块启动 | 无 | [推断] 子应用可复用；401 处理子应用也可用 \`relogin()\` |
+
+\| 请求头约定 | 拦截器自动加 \`x-language\:zh-CN\`、\`X-Requested-With\`、\`Content-type\`、\`cftk\`、\`appId\`（仅 \`/rest/\`）[header-setter.interceptor.ts:13-29] | HTTP 头 | — | 请求时 | — | 子应用需自行实现 |
+
+\| 服务地址发现 | \`/rest\` 前缀同域转发；服务端 \`t_routerinfo\` 数据库路由表按 srcUri 前缀匹配转发（含 APIG/ROMA）[RestRouterFilter.java:66-149; RouterFilterDao.xml:9-28] | HTTP 网关 | 异步 | 启动加载路由表 | — | 子应用业务接口同样走 \`/rest\` |
+
+\| 通知/弹窗/loading | \`TiModalService\`/\`TiMessageService\`（tiny3）、\`#ioc-host-loading\` DOM [cloudioc-homepage.component.ts:207-216; index.html:16-19] | Angular 服务/DOM | — | 运行期 | Angular 管理 | 子应用不可复用 Angular 弹窗，需自带 |
+
+\| 面包屑/页签/标题 | **\*\*未找到\*\***面包屑/页签组件；标题由 index.html 脚本按域名设置 [index.html:35-42] | — | — | — | — | — |
+
+\| 离开保护 | **\*\*未找到\*\***（无 guard；\`beforeunload\` 未见） | — | — | — | — | — |
+
+\| 国际化 | \`window\.biLanguage={language}\` + \`localStorage.BiLanguage\`；\`BiLocaleBase\`/\`BiLocale\` 词条；URL \`language=zh-cn/en-us\` [common-util.ts:82-121; LoginService.ts:766-773] | 全局变量 + 词条类 | 同步 | 登录时 initLanguage | 无 | 主应用组件使用；子应用应自读 \`window\.biLanguage\` |
+
+\| 主题 | \`window\.iocSysInfo.style\`（normal/gray 滤镜）+ \`AnaCommonUtil.setSystemStyle\` [LoginService.ts:595-600] | 全局变量 | 同步 | 登录后 | 无 | 主应用使用 |
+
+\| 水印 | \`WatermarkUtil.loadWatermark\`（DOM 注入，用户 userNo 或"脱敏数据 userNo"）[cloudioc-homepage.component.ts:273-303; cloudbi-homepage.component.ts:145-148] | 全局工具 | 同步 | 路由变化时重建 | 主应用维护 | 子应用可复用（同 window） |
+
+\| 埋点 | \`AnaReportEventService\`（@cloud/ana）+ \`ReportPageViewService\`（页面浏览含 DataAgent 通道）+ Furion (\`\_\_fr\`) + RTTI [cloudioc-homepage.component.ts:149-154; ReportPageViewService.ts:10-84; FurionUtils.ts:4-60] | Angular 服务/全局 | 异步 | 登录后 init | Angular 管理 | 主应用组件使用；子应用自接埋点 [推断] |
+
+\| 日志 | \`TiLog\`（tiny）级别由 environment.production 控制 [app.component.ts:31] | 工具 | 同步 | 启动 | — | 子应用自带日志 |
+
+\| 盘古对话 SDK | 动态加载 \`\_sys_configs.biwebsite.YUNBAO_URL\`（默认 wsr CDN 1.1.13 loader）→ \`window\.pangu.\*\` API：setChatConfig/renderChat/closePangu/updateDraggableZone/renewConversation + 事件 \`Pangu_SendMessage\`、\`Pangu_Panel_Open\`、\`pangu-close\` [cloudioc-homepage.component.ts:824-867,1016-1047] | 全局 SDK + window 事件 | 异步（loader 回调） | 首个子应用 afterMount 后 | 主应用维护；沙箱销毁事件丢失有 restoreLoaderListeners 补偿 [cloudioc-homepage.component.ts:751-813] | 主应用云宝；DataAgent 埋点走 \`reportPageViewEventByDataAgent\` |
+
+\| 双因子/操作授权 | \`window\.cloudbi.twoFactorVerify(callback,params)\`、\`window\.cloudbi.operationAuthorizedVerify(callback,params)\`（TiModal 弹窗）[cloudioc-homepage.component.ts:593-621] | 全局函数 | 异步（回调） | 登录后挂载 | 无 | 子应用可调用（同 window） |
+
+\| 导航显隐 | \`window\.cloudbi.hideNavigator/showNavigator/navigatorIsHide/hideFeedback/showFeedback/hideMenu/showMenu/queryNotice\` [cloudioc-homepage.component.ts:528-634] | 全局函数 | 同步 | 登录后挂载 | 无 | 主应用导航；子应用可调用（同 window） |
+
+**### C.2 环境/全局变量清单**
+
+\| 名称 | 定义位置 | 写入方 | 读取方 | 类型/脱值示例 | 可用时机 | 动态变化 | 变化通知 | 敏感 |
+
+\|---|---|---|---|---|---|---|---|---|
+
+\| \`window.\_sys_configs\` | src/index.html 内联 \`\<script>\`（\`{configInit:1}\` 占位）[index.html:30-32] | **\*\*服务端 IndexHtmlFilter 服务端替换\*\*** \`{configInit:1}\`→ 主干配置 JSON [IndexHtmlFilter.java:79]；另 \`{redirectSwitchStatus:''...}\` 由 ZK 配置替换 [IndexHtmlFilter.java:57-67] | environment.prod.ts、LoginService、cloudioc-homepage [environment.prod.ts:7-24; LoginService.ts:366,401; cloudioc-homepage.component.ts:839,917] | \`\_sys_configs.biwebsite.{TOP_NAVIGATE_GRIDS, SECOND_MENU_ROLEID, FILTER_NEED_GRIDS, MESSAGE_ORIGIN_URLS, W3_LOGIN_URL, W3_LOGOUT_URL, SENTRY_CONFIG_URL, CLOUD_IOC_HOST, CLOUD_BI_HOST, YUNBAO_URL, wcmUrl, env, SHARE_NOTIFY_URL_PC/MB, ...}\`；每子应用键 \`\<name>.wcmUrl\` | **\*\*index.html 解析期（模块 import 前）\*\*** | 否（刷新重注入） | 无（整页刷新） | 含 CDN URL、登录 URL，**\*\*无密钥\*\*** |
+
+\| \`window.\_sys_configs.\*.\<name>.wcmUrl\` | 服务端 IndexHtmlFilter.mergeFuxiAndWcmConfigs，格式 \`${WCM_URL}/${pipelineId}/${env(beta/pro)}/${componentName}/${dcmVersion}\`，可加 \`suffix\`，biwebsite 特例 \`.../biwebsite/assets/entry.js?ttl=\<ts>\` [IndexHtmlFilter.java:109-169] | 服务端 | LoginService.getAllIocApps/getAllApps（覆盖 entry）[LoginService.ts:370-374,407-410] | URL 字符串 | index.html 解析期 | 否 | 无 | 无 |
+
+\| \`window\.currentLoginUser\` | LoginService.getLoginInfo [LoginService.ts:290-303] | 主应用 | app.component、cloudioc-homepage、ReportPageViewService、common-util [app.component.ts:87,108; cloudioc-homepage.component.ts:893-903,984-1003] | \`UserModel\`：userNo/userAccount/userName/.../extendInfo（JSON 串）；额外写 \`currentAppid\` [cloudioc-homepage.component.ts:1084-1096] | 登录后 | 是（currentAppid 随路由更新） | 无（子应用需自行监听路由） | 含工号、姓名、邮箱、手机号——**\*\*脱值示例：userNo: "g00\*\*\*\*\*"\*\*** |
+
+\| \`window\.cftk\` / \`localStorage.cftk\` | LoginService.setCftk [LoginService.ts:590-593] | 主应用 | header-setter.interceptor [header-setter.interceptor.ts:18-20]；服务端 CftkCheckExtFilter [CftkCheckExtFilter.java:124-132] | 脱值：\`csrfToken: "\*\*\*\*"\` | 登录后 | 否 | 无 | **\*\*敏感（CSRF token），子应用 /rest 请求必须携带\*\*** |
+
+\| \`window\.cloudbi_session_id\`（Cookie + localStorage） | LoginService.getCacheSessionId [LoginService.ts:619-627] | 主应用 | 服务端 CookieSessionUtil | Cookie 值脱值 | 登录期 | 否 | 无 | 会话相关 |
+
+\| \`window\.relogin\` | LoginService（loginCloud\* 与 getLoginInfo 多处赋值）[LoginService.ts:162-164,207-209,247-248,293] | 主应用 | 子应用/盘古 401 处理 [cloudioc-homepage.component.ts:908,947] | 函数 | 登录后 | 否 | — | 无 |
+
+\| \`window\.pSite\` | LoginService.getLoginInfo [LoginService.ts:296-302] | 主应用 | 埋点、common-util [cloudbi-homepage.component.ts:515-517] | \`{currentSite:{siteId,siteName,siteLang}, siteChange, setSite}\` | 登录后 | 是（setSite/changeSite 更新 currentSite） | \`siteChange\` EventEmitter [LoginService.ts:63,461-467] | 无 |
+
+\| \`window\.biLanguage\` | LoginService.initLanguage [LoginService.ts:766-773] | 主应用 | common-util、BiLocale、组件 [common-util.ts:82-121] | \`{language:'zh'\\|'en'}\` | 登录时 | 是（切换语言后整页跳转 [personal-center.component.ts:193-201]） | 无 | 无 |
+
+\| \`window\.iocSysInfo\` / \`window\.doubleCheckFlag\` | LoginService.setSysInfo [LoginService.ts:595-600] | 主应用 | 系统样式 | \`{style:'normal'\\|'gray',...}\` / \`'1'\` | 登录后 | 否 | 无 | 无 |
+
+\| \`window\.errorMessageInterceptor\` | ErrorMessageInterceptor [ErrorMessageInterceptor.ts:31-117] | 主应用 | 任何调用方 | \`{errorProcess(error)}\` | 模块启动 | 否 | — | 无 |
+
+\| \`window\.cloudbi\`（命名空间） | LoginService loginCloud\* 初始化 \`{}\` [LoginService.ts:161,206,246]；各组件挂方法 | 主应用 | 导航、子应用 [cloudioc-homepage.component.ts:528-634; leftmenu-navigation.component.ts:108-112] | 函数集合 + \`roleChange\`/\`refreshContent\` EventEmitter + \`hide_menu\` 布尔 | 登录后 | 是 | EventEmitter | 无 |
+
+\| \`window\.pangu\` | initYunBao 动态加载 CDN loader 后 [cloudioc-homepage.component.ts:824-867] | 盘古 SDK | 主应用 | \`{panguInitialized, chatConfig, setChatConfig, renderChat, closePangu, updateDraggableZone, renewConversation}\` | 首个子应用 afterMount 后 | 是 | window 事件（Pangu_Panel_Open / pangu-close） | 无 |
+
+\| \`window\.cloudiocTargetToHead\` | navigation.component [navigation.component.ts:338-339,464] | 主应用 | qiankun patch [patches/qiankun+2.10.16.patch:30] | boolean（true→子应用 style 注入 head） | 公告组件生命周期 | 是 | 无 | 无 |
+
+\| \`window.\_\_POWERED_BY_QIANKUN\_\_\` | LoginService [LoginService.ts:165,210,250] | 主应用 | 任意 | \`true\` | 登录期 | 否 | — | 无 |
+
+\| \`window\.iocNgZone\` | AppModule constructor [app.module.ts:178] | 主应用 | 主应用自身 | NgZone | 模块启动 | 否 | — | 无 |
+
+\| \`window\.rawWindow\` / \`\_\_recordedListeners\` / \`\_\_originalAddEventListener\` | cloudioc-homepage.interceptAddEventListener / restoreLoaderListeners [cloudioc-homepage.component.ts:751-813,869-890] | 主应用 | 主应用 | 沙箱逃逸 & 事件备份 Map | afterMount 后 | 是 | 无 | 无 |
+
+\| \`window\.lowCodeConfig\` | cloudbi-homepage.preLoadLowCodeConfig [cloudbi-homepage.component.ts:163-187] | 主应用 | datav 低码子应用 [推断] | \`[{pageId, appId, config}]\` | dimensity 路由 | 是 | 无 | 无 |
+
+\| \`window\.signModal\` | cloudioc-homepage [cloudioc-homepage.component.ts:628-633] | 主应用 | 承诺书弹窗 | \`{type:'apply', showModal(type,cb)}\` | 登录后 | 否 | — | 无 |
+
+\| 构建期 env（environment.ts / environment.prod.ts） | website-src/src/environments/ | 构建期 | 组件 | 见 environment.prod.ts:7-24（全部读 \`\_sys_configs\`） | 构建期替换 | — | — | prod 无明文敏感；dev 有哨兵 DSN 占位 [environment.ts:18] |
+
+\| \`publicPath\` | extra-webpack.config.js \`output.publicPath='/static/biwebsite/'\` [extra-webpack.config.js:42]；\`build\:prod\` 脚本 \`--deploy-url /static/biwebsite/\` [package.json:14] | 构建期 | 主应用资源加载 | URL 前缀 | 构建期固定 | 否 | — | 无 |
+
+\| 路由 base | \`APP_BASE_HREF='/'\`、\`\<base href="/">\` [app-routing.module.ts:15; index.html:6] | 主应用 | Angular router | 常量 | 构建期/启动 | 否 | — | 无 |
+
+**\*\*重点核实结论\*\***：
+
+\- \`\_sys_configs\` **\*\*必须在模块 import 前就绪\*\***（environment.prod.ts 顶层求值）——服务端 IndexHtmlFilter 在返回 index.html 前注入，天然满足 [代码证实]。
+
+\- **\*\*子应用拿到的只是 props 一次性快照\*\***（appList/roleList）；用户/站点等动态数据只能读全局变量，**\*\*没有提供读取函数\*\***（除 \`relogin()\` 外）[代码证实]。
+
+\- **\*\*token 刷新\*\***：登录信息仅在 APP_INITIALIZER 一次获取，无前端定时刷新；401 统一走 \`ssoLogin()\`（SAML 重登）。身份变化通过 URL \`identity=\` 参数触发整页重新登录 [代码证实]。
+
+\- **\*\*卸载监听注销\*\***：主应用无显式注销；全局 window 监听 + 静态 EventEmitter 不随卸载销毁（主应用也不卸载）。子应用须自行管理自己的监听器（盘古事件靠 \`restoreLoaderListeners\` 反注册再注册以规避沙箱销毁 [代码证实]）。
+
+\---
+
+**## D. 最小子应用接入示例（基于真实代码裁剪、已脱值；不可验证部分已标注）**
+
+**\*\*服务端配置（应用注册表，非前端代码）\*\***——\`/apps\` 接口返回的应用对象需含（形状来自 \`LoginService.getAllIocApps/getAllApps\` 消费的字段 [LoginService.ts:365-433]）：
+
+\`\`\`json
+
+{
+
+  "appId": "A00xxxxx",
+
+  "appName": "MetricCanvas",
+
+  "appUrl": "/metrics",
+
+  "entry": "/static/metricscanvas/index.html",
+
+  "activeRule": "/metrics",
+
+  "deviceType": 1,
+
+  "permMark": "Y",
+
+  "isHidden": 0,
+
+  "appSite": 1,
+
+  "appOrder": 60,
+
+  "urlType": 0,
+
+  "menuAuthority": [
+
+    {"menuId":"...", "menuName":"指标管理", "menuUrl":"manage", "linkType":"0", "childMenuList":[]}
+
+  ]
+
+}
+
+\`\`\`
+
+\> 说明 [代码证实]：主应用用 \`app.activeRule.substring(1)\` 当 name（→ \`metrics\`）、\`app.activeRule\` 当 activeRule、\`entry\` 当 entry、container 固定 \`#child-container\`。entry 也可由主干配置 \`\_sys_configs.metrics.wcmUrl\` 覆盖（WCM 版本化发布），两者取其一。
+
+**\*\*子应用 HTML entry\*\***（\`/static/metricscanvas/index.html\`，与主应用**\*\*同域\*\***）：
+
+\`\`\`html
+
+\<!doctype html>
+
+\<html lang="zh-cn">
+
+\<head>
+
+  \<meta charset="utf-8">
+
+  \<base href="/metrics/">   \<!-- 内部子路径基准，需与部署路径一致 -->
+
+  \<link rel="stylesheet" href="./static/metricscanvas/style.css">
+
+\</head>
+
+\<body>
+
+  \<div id="metric-canvas-root">\</div>
+
+  \<script src="./static/metricscanvas/main.js" entry>\</script>
+
+\</body>
+
+\</html>
+
+\`\`\`
+
+\> [推断]：qiankun HTML entry 模式下 import-html-entry 会抓取上述 JS/CSS；与主应用现有 \`/static/\<name>/index.html\` 形态一致。**\*\*运行验证未执行\*\***。
+
+**\*\*子应用入口 JS\*\***（qiankun 标准生命周期；Svelte 侧仅挂载/卸载 DOM）：
+
+\`\`\`js
+
+// main.js —— 适配层（本文件的职责就是"qiankun + 主应用全局接线"）
+
+import { mount as mountApp, unmount as unmountApp } from './metric-canvas.js'; // 业务 Svelte 应用
+
+let appProps; // 缓存 qiankun props
+
+export async function bootstrap() {
+
+  // 这里只做一次性初始化；注意：此时可能已处于沙箱代理 window 下
+
+}
+
+export async function mount(props) {
+
+  appProps = props; // { name, container, appList, roleList, ... }
+
+  const container = props.container
+
+    ? props.container.querySelector('#metric-canvas-root')   // qiankun 传入的 container
+
+    : document.getElementById('metric-canvas-root');
+
+  mountApp({ target: container });
+
+  // —— 主应用全局接线（全部经适配层，业务代码不直接碰 window）——
+
+  const currentUser = window\.currentLoginUser;               // 用户（登录后可用）
+
+  const locale = window\.biLanguage?.language === 'en' ? 'en-us' : 'zh-cn';
+
+  const site = window\.pSite?.currentSite;
+
+  // 401/登录失效：window\.relogin()；错误弹窗：window\.errorMessageInterceptor?.errorProcess(e)
+
+  // 双因子：window\.cloudbi?.twoFactorVerify(cb, params)
+
+}
+
+export async function unmount() {
+
+  unmountApp();                       // 销毁 Svelte 应用
+
+  // 注销本应用 addEventListener 的全部监听（window 级监听必须显式移除）
+
+}
+
+// 可选：window\.addEventListener('popstate', ...) 驱动 Svelte 路由时，改用 history API 直接导航
+
+\`\`\`
+
+\> 生命周期与挂载点 [代码证实]（qiankun 标准，主应用未自定义）；\`props.container\` 与 \`window.\*\` 全局可用性 [推断]（loose 沙箱 + 主应用全局写入）。
+
+**\*\*内部路由\*\***：子应用用 **\*\*history 模式\*\***与主应用一致（主应用 \`urlRerouteOnly\:true\`，子应用 \`pushState\` 不会触发主应用重新挂载 [main.ts:13 代码证实]）。\`/metrics/manage/pages/abc\` 深链刷新流程见 B 节调用链。
+
+\---
+
+**## E. MetricCanvas 需要满足的要求 & 主应用团队需确认事项**
+
+**### MetricCanvas 侧要求（由本仓库代码推导）**
+
+1\. 产出**\*\*同域可部署的 HTML entry + 完整静态资源\*\***（entry 相对路径 \`/static/metricscanvas/index.html\` 或 WCM 版本化 URL），且 index.html 中资源路径与部署路径匹配。
+
+2\. 入口 JS 导出 \`bootstrap/mount/unmount\` 三个 qiankun 生命周期；\`mount\` 挂到 \`props.container\` 内自己的根节点；\`unmount\` 完整销毁（事件监听、定时器、Svelte 实例）。
+
+3\. **\*\*适配层集中在入口文件/独立 module\*\***：读取 \`window\.currentLoginUser / biLanguage / pSite / relogin / cloudbi.\* / errorMessageInterceptor / cftk(localStorage)\`，业务代码不得直接依赖主应用内部实现。
+
+4\. **\*\*路由 base 正确性\*\***：\`\<base href="/metrics/">\` 或等价配置；内部路由用 history 模式；**\*\*不接受主应用 404 拦截\*\***（主应用 \`\*\*\`→EmptyRoute 空模板不重定向，服务端 404→index.html 兜底，已满足）。
+
+5\. 业务请求：\`/rest/...\` 同域 + Cookie（\`cloudbi_session_id\`）+ \`cftk\` 头 + \`x-language\` + \`appId\` 头（对齐 [header-setter.interceptor.ts:13-29]）；401 时调 \`relogin()\`。
+
+6\. **\*\*样式自洽\*\***：\`strictStyleIsolation\:false\`，子应用样式会与主应用（tiny3/ana）同层作用；避免污染 \`#child-container\`、\`body\` 滚动（滚动在主应用容器）。
+
+7\. 初始化时机约束：**\*\*模块顶层不能依赖 \`window\.currentLoginUser\` 等\*\***（它们登录完成后才存在）；要在 mount 里读。
+
+**### 主应用团队需确认事项（本仓库无法证实）**
+
+1\. **\*\*应用注册表如何维护\*\***：\`/apps\` 接口由 \`cbcbipermissionservice\`（另一服务，本仓库只消费）提供——MetricCanvas 的 \`entry/activeRule\` 由谁、在哪个配置/DB 里登记？\`permMark\`/\`isHidden\`/菜单权限如何分配？
+
+2\. **\*\*\`/static/metricscanvas/\` 目录由谁部署\*\***：主应用 Tomcat webapp 发布（\`build.sh\` 把 dist 拷进 \`service/src/main/webapp\` [build.sh]），子应用是随主应用流水线一起发布，还是独立流水线推 WCM（\`\_sys_configs.metrics.wcmUrl\` 覆盖 entry）？WCM 的 \`suffix\` 规则 [IndexHtmlFilter.java:158-166] 是否可支持 Svelte 产物形态？
+
+3\. **\*\*Svelte/SvelteKit/ESM 子应用兼容性\*\***：本仓库**\*\*没有任何\*\*** Vite/Svelte/ESM 子应用先例；需主应用团队在预发环境验证 qiankun 2.10.16 对 ESM 产物的导入（import-html-entry 对 module script 支持有限，可能需传统 UMD/IIFE 打包或改 entry 结构）。
+
+4\. **\*\*权限白名单\*\***：\`setAppNavigate\` 对无权限 URL 会跳权限申请页 [cloudioc-homepage.component.ts:446-470]——\`/metrics\` 必须配置在用户权限 appList 中；白名单仅个人中心/反馈等 4-5 个 [cloudioc-homepage.component.ts:55-57]。
+
+5\. **\*\*若需 props 增加 token/全局状态\*\***：目前 props 只有 appList/roleList，主应用需改 \`registerChildService\` 下发新 props——需主应用团队排期。
+
+6\. **\*\*盘古对话 SDK\*\***：若 MetricCanvas 想复用云宝/DataAgent，主应用在**\*\*首个子应用 afterMount\*\*** 后才加载 [cloudioc-homepage.component.ts:416-424]；时序与复用边界需确认。
+
+7\. **\*\*dev 联调\*\***：\`proxy.conf.js\` 把 \`/static\` 代理到 \`100.95.135.220:11221\`、\`/rest\` 代理到 \`100.95.135.220:18226\`（apimock）[proxy.conf.js:1-15]——本地子应用 entry 如何接（同源代理目录 or 另配代理规则）需主应用团队给方案。
+
+\---
+
+**## F. 关键证据索引（文件:行号 + 性质）**
+
+\| 结论 | 证据 | 性质 |
+
+\|---|---|---|
+
+\| 主应用 Angular 17.3.12 + qiankun 2.10.16 | website-src/package.json:22-23,31 | 代码证实（package.json 精确锁定） |
+
+\| qiankun 被 patch | patches/qiankun+2.10.16.patch（sandbox top/parent 逃逸、style 注入 head） | 代码证实 |
+
+\| \`registerMicroApps([])\` + \`start\` 配置 | src/main.ts:5-22 | 代码证实 |
+
+\| 真实注册在 homepage \`registerChildService\` | cloudioc-homepage.component.ts:397-427；cloudbi-homepage.component.ts:317-332；cloudagent-homepage.component.ts:17-32 | 代码证实 |
+
+\| 注册数据来自服务端 \`/apps\` 接口 | LoginService.ts:37-39,365-433（\`entry\`/\`activeRule\`/\`container:'#child-container'\`） | 代码证实 |
+
+\| entry 可被 \`\_sys_configs[name].wcmUrl\` 覆盖 | LoginService.ts:370-374,407-410；IndexHtmlFilter.java:109-169 | 代码证实 |
+
+\| props 只有 appList/roleList | cloudbi-homepage.component.ts:325-331；cloudioc-homepage.component.ts:406-411 | 代码证实 |
+
+\| afterMount 钩子（仅 cloudioc 版） | cloudioc-homepage.component.ts:413-425 | 代码证实 |
+
+\| history 路由 + APP_BASE_HREF='/' + EmptyRoute | app-routing.module.ts:6-16；empty-route.component.ts | 代码证实 |
+
+\| 无 404 前端重定向；服务端 404→index.html | web.xml:339-342（error-page） | 代码证实 |
+
+\| IndexHtmlFilter 注入 \`\_sys_configs\` + no-cache | IndexHtmlFilter.java:41-100（no-cache 头 90-94） | 代码证实 |
+
+\| 深链接刷新链路（登录→注册→匹配） | app.module.ts:155-161（APP_INITIALIZER）；LoginService.ts:101-128 | 代码证实 |
+
+\| \`urlRerouteOnly\:true\` 避免子应用 pushState 触发主应用重挂载 | main.ts:13 | 代码证实 |
+
+\| 全局用户/重登/站点/语言 | LoginService.ts:290-303,443-467,766-773 | 代码证实 |
+
+\| cftk 头注入 | header-setter.interceptor.ts:13-29；CftkCheckExtFilter.java:124-132 | 代码证实 |
+
+\| 统一错误处理 | ErrorMessageInterceptor.ts:28-118 | 代码证实 |
+
+\| window\.cloudbi 全量 API | cloudioc-homepage.component.ts:528-634 | 代码证实 |
+
+\| 盘古 SDK | cloudioc-homepage.component.ts:824-867,1016-1047；main.ts:14-16（excludeAssetFilter） | 代码证实 |
+
+\| 容器结构/滚动/高度 | cloudioc-homepage.component.html:8；app.component.scss:35-43；cloudioc-homepage.component.scss:5-12 | 代码证实 |
+
+\| sandbox 配置 | main.ts:12（\`strictStyleIsolation\:false, loose\:true\`） | 代码证实 |
+
+\| 沙箱 patch | patches/qiankun+2.10.16.patch:13-21,30 | 代码证实 |
+
+\| 本地 dev 代理 | proxy.conf.js:1-15 | 代码证实 |
+
+\| 构建输出 publicPath | extra-webpack.config.js:42；package.json:14 | 代码证实 |
+
+\| 无 KeepAlive/页签/多实例 | 全库无 \`keep-alive\`、无 \`loadMicroApp\`、无 \`initGlobalState\`（grep 未命中） | 未找到 |
+
+\| 子应用生命周期自定义约定 | 主应用无 beforeUnmount/afterUnmount 处理（grep 未命中） | 未找到 |
+
+\| Svelte/SvelteKit/Vite/ESM 子应用案例 | 全库无（grep 未命中） | 未找到 |
+
+\| 面包屑/页签/离开 guard | 未找到 | 未找到 |
+
+\| 子应用接入模板/最小示例文档 | website-src/README.md 为 Angular 模板占位 | 未找到 |
+
+\| dev/生产联调运行验证 | 未执行任何浏览器/构建验证 | 运行验证未执行 |
+
+\---
+
+**## G. 调查范围与验证声明**
+
+\- **\*\*调查仓库\*\***：\`D:\Code\0TMG\AI辅助研发\CDI\CBCBICloudBIWebsite\`；**\*\*分支\*\***：\`fuxi_release_20260911171436\`；**\*\*SHA\*\***：\`8e741195b88f3b551acbd0d9134fe3abecf6b5a8\`。
+
+\- **\*\*方法\*\***：只读代码走读（前端 main.ts/app.module/LoginService/homepage 三套注册入口/导航/拦截器/index.html/build 脚本；服务端 web.xml/IndexHtmlFilter/RestRouterFilter/RouterService/web.xml 过滤器链/blueprint.yaml；patch 文件；deployment SQL 与 app_define.json）。未安装依赖、未启动构建/服务、未做浏览器运行验证。
+
+\- **\*\*未覆盖\*\***：\`cbcbipermissionservice\`（应用注册表的实际数据源）、\`t_routerinfo\` 表内具体路由记录、主干配置（WCM）实际注入值、以及任何真实子应用仓库——这些都在本仓库之外，涉及 MetricCanvas 的最终接入点需要主应用团队补充确认（见 E 节）。
+
+\- **\*\*重要声明\*\***：以上"代码已证实"仅表示代码路径如此，**\*\*不等于\*\***运行验收通过；所有运行时行为（qiankun 挂载、深链接刷新、盘古 SDK 时序、Svelte/ESM 兼容）均需预发环境实测。

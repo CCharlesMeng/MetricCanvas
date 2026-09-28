@@ -1,6 +1,8 @@
 # Handoff：主应用维护者集成 Platform HTML 微前端
 
 > 2026-09-28 实施进度：源码、静态归档及候选 qiankun 2.10.16 测试主应用验收已落地；目标门户与真实服务仍为 NOT_RUN。现行实现、证据与交付摘要见 [实施验收](../../evidence/qiankun-platform/implementation.md)。下文方案阶段状态描述保留为交接基线。
+> 当前补充：普通 Svelte 与 URL 路由已按 ADR-0093 实现；先复用最新源码，不重做 Kit 迁移。门户专属接线由仓外独立部署 Adapter 维护，GitHub 只保留版本化契约和组合工具，见 [部署维护边界](./deployment-boundary.md)。本文早期 Kit 验证步骤参考既有实施证据，真实门户验证仍待执行。
+
 ## 目标与职责
 
 将 MetricCanvas platform 直接注册为主应用的微前端子应用，加载 MC 交付的 HTML entry。主应用管理平台路由前缀，平台管理内部 URL 路由。先读 [整体方案](./integration-plan.md)，版本事实参考 [官方研究](./official-research.md)。
@@ -13,7 +15,7 @@
 
 确认运行配置读取与通知源：Java/DQE 地址、token、operatorId、workspaceId、可选 cftk，以及登录退出/身份变化通知。确认主应用 guard、盘古和 Relay 是否需要及接线所有权。
 
-MC 将优先验证现有 Kit 路由能否复用；主应用提供真实前缀，必要时接受产物绑定构建期 base 的明确限制。首版同一部署固定服务目标，不承诺跨目标草稿隔离。
+平台已使用普通 Svelte 客户端路由；主应用提供真实前缀，由独立部署 Adapter 映射为运行时 routeBase。首版同一部署固定服务目标，不承诺跨目标草稿隔离。
 
 ## 2. 接收完整静态交付
 
@@ -31,7 +33,7 @@ MC 将优先验证现有 Kit 路由能否复用；主应用提供真实前缀，
 
 ## 4. 配置与生命周期
 
-按 MC 正式 props 契约传路由前缀、配置读取、订阅和事件接收；字段暂定 routeBase/readConfig/subscribeConfig/onEvent，实际以交付为准。不要将凭据固化在 HTML、构建产物或日志中。
+在独立内网项目实现部署契约 v1，读取主应用已有 props/全局能力，映射为标准 routeBase/readConfig/subscribeConfig/onEvent；无需主应用必须改为直接传这些字段。使用归档内 compose-deployment.mjs 组合自己的经典脚本与平台产物。身份变化保证整页重载时可显式 configChanges: reload，其他情况必须真实订阅。不要将凭据固化在 HTML、构建产物或日志中。
 
 初始 props 里的凭据快照不能替代后续通知。同身份 token 更新无需重挂；登录退出、身份/工作空间变化按会话失效协议销毁重挂。服务目标变化会封住旧会话，但本期不支持跨数据域恢复保证。
 

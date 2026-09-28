@@ -1,7 +1,7 @@
 # Platform HTML 微前端改造与 qiankun 集成方案
 
 > 2026-09-28 实施进度：源码、静态归档及候选 qiankun 2.10.16 测试主应用验收已落地；目标门户与真实服务仍为 NOT_RUN。现行实现、证据与交付摘要见 [实施验收](../../evidence/qiankun-platform/implementation.md)。下文方案阶段状态描述保留为交接基线。
-日期：2026-09-28。状态：按本次用户确认调整的实施方案，尚未实施或验证。本文替代此前“外部子应用消费平台 npm 包、平台内部使用内存导航”的方案。
+日期：2026-09-28。状态：通用 HTML 微前端已实现（ADR-0093）；本次补充独立部署 Adapter 边界，目标门户与真实服务仍未验收。本文替代此前“外部子应用消费平台 npm 包、平台内部使用内存导航”的方案。
 
 执行交接：[MC 维护者](./handoff-mc.md)、[主应用维护者](./handoff-qiankun.md)。版本与构建事实参考 [官方研究](./official-research.md)；目标暂按 qiankun 2.x，精确版本以主应用锁文件为准。
 
@@ -52,34 +52,22 @@ flowchart TD
 7. 页面文档中的跨页下钻沿用已有普通 URL 语义；仅对明确归平台所有的 URL 执行内部导航，不擅自重写业务链接。
 8. 嵌入入口不设置全局 `<base>`，不改写前缀外路由；文档标题默认归主应用，独立入口保持原标题语义。
 
-## 3. SvelteKit 的处理：先验证复用，再决定替换
+## 3. 当前实现与路由选择
 
-已确认的是 URL 路由体验，不是“SvelteKit 必须保留”或“必须删除”。当前独立入口使用 SvelteKit + adapter-static；静态 HTML 输出本身不提供 qiankun 生命周期。
+已按 [ADR-0093](../../adr/0093-platform-html-microfrontend-and-instance-lifecycle.md) 采用普通 Svelte + 客户端 URL 路由，独立与嵌入共用业务视图。Kit 探针发现当前版本公共销毁接口不足，详见 [既有实施证据](../../evidence/qiankun-platform/implementation.md)。不重复迁移或把已完成改造标为待实现；既有候选 loader 证据不等于目标门户验收。
 
-第一项工程工作是有界兼容验证：使用当前平台的生产构建或最小必要入口改造，在目标 qiankun 版本的测试主应用中验证：
-
-- 在主应用容器内启动，平台不接管主应用根节点。
-- 详情→编辑→前进/后退、带页面/资源参数的深链接刷新。
-- 前缀内导航不重复挂载，离开前缀可完整卸载，重新进入正常。
-- 挂载中退出、监听器与请求清理、资源地址和局部样式。
-- Kit 构建期 base 与实际路由前缀一致，并且路由器不接管主应用其他路径。
-
-通过：保留 Kit 路由，使用经验证的入口与构建适配；不为抽象而迁移全部路由业务。
-
-不通过且无法局部解决：采用普通 Svelte 入口与客户端 URL 路由，迁移现有路由业务为共用视图，保持上述路径和使用体验。记录具体失败证据，再决定替换实现；不同时交付两套路由框架，也不退回内存导航。
-
-路由前缀由接入层统一提供/核验；如保留 Kit 且只能使用构建期 base，交付时明确绑定前缀，挂载发现不一致须明确报错。不得承诺同一产物支持任意运行时前缀。移除 Kit 与否、单构建还是双构建，在验证后收敛。
+本轮进一步按 [部署维护边界](./deployment-boundary.md) 收敛：GitHub 提供框架通用输入验证、生命周期和静态组合工具；门户映射由仓外独立项目维护。平台与部署 Adapter 通过版本化契约分别演进，内网调查原文保存在 portal-handoff 资料目录，不进入平台构建。
 
 ## 4. 接入层与实例接口
 
-建议目录（待实现，最终文件可按验证结果合并）：
+目录职责（实现以当前源码为准）：
 
 ```text
 apps/platform/src/
   microfrontend/
     entry.ts                 # bootstrap / mount / unmount
     qiankun-adapter.ts       # 容器、环境标记、生命周期衔接
-    portal-config.ts         # 主应用 props/变量到平台契约的映射
+    portal-config.ts         # 通用契约校验和外部 Adapter 连接，不读取门户变量
   standalone/                # 独立启动接线；保留 Kit 时可落在 routes 层
   lib/
     integration/
@@ -91,17 +79,17 @@ apps/platform/src/
     PageAuthoringWorkbench.svelte
 ```
 
-只在 `microfrontend/` 及其构建配置中使用 qiankun 特有变量。门户业务变量只在 `portal-config.ts` 映射，业务不读取原始 props、`window.currentLoginUser` 或 qiankun 标记。不在 platform 内安装并启动第二套 qiankun。
+只在 `microfrontend/` 及其构建配置中使用 qiankun 特有变量。门户业务变量由仓外独立部署 Adapter 映射，`portal-config.ts` 仅验证标准输入；业务不读取门户变量或 qiankun 标记。不在 platform 内安装并启动第二套 qiankun。
 
 内部可继续使用 `mountPlatform(container, adapter)` 和 `destroy()`，但它们不再是对外 npm 接口。主应用消费 HTML 及生命周期，MC 提供一份正式的 props/事件/配置接入契约，方案只引用该契约。
 
-目标接线语义（字段名在实现时形成正式类型，不是现有接口）：
+接线语义（正式类型以 host-contract 和归档 portal-contract.d.ts 为准；独立 Adapter 转换主应用现有能力）：
 
 | 输入 | 语义 |
 |---|---|
 | `routeBase` | 平台所属的路径前缀，与主应用激活规则、必要构建期 base 一致 |
 | `readConfig` | 每次请求现读 Java/DQE 端点与当前身份；无会话返回 null |
-| `subscribeConfig` | `(changed: () => void) => () => void`，有运行中身份变化时必须连接真实通知源 |
+| `subscribeConfig` | `(changed: () => void) => () => void`，有原地身份变化时必须连接真实通知源；仅显式 `configChanges: reload` 保证整页重载时可省略 |
 | `onEvent` | 挂载就绪、需要登录、会话失效等稳定事件码与脱值消息 |
 | `registerLeaveGuard` | 可选，将平台离开检查接入主应用路由，返回注销函数 |
 | 对话/可信创作接线 | 可选，沿用现有端口，不要求提供 AI 才能人工编辑 |
@@ -112,8 +100,8 @@ apps/platform/src/
 
 | 模块 | 整改内容 |
 |---|---|
-| `routes/+layout.svelte`、`+layout.ts` | 保留可复用外壳、局部样式和 DEV 独立接线；按 Kit 验证结论调整入口，嵌入不引入开发配置 |
-| `routes/manage/**` | Kit 可复用时减少迁移；替换路由时将列表、详情提取到 `lib/views/`，删除旧路由里的重复业务 |
+| `PlatformRoot.svelte`、`standalone/main.ts` | 复用现有外壳和独立接线；门户专属 DEV 接线迁出，嵌入不引入开发配置 |
+| `routes/manage/**` | 原管理路由已迁入共用视图；复用现有实现 |
 | `PageAuthoringWorkbench.svelte` | 页面选择来自路由输入，导航经统一接口；注入身份、页面资产、DQE 与通知源；删除业务内 Kit/门户环境耦合 |
 | `RevisionPreview.svelte` | 注入实例读取端口和网关，退出默认模块级客户端 |
 | `page-assets.ts` | 模块级客户端/保存端口改为实例工厂，复用保存前管理记录核查 |
@@ -127,7 +115,9 @@ apps/platform/src/
 | `PlatformFrame.svelte`（按需新增）及弹层 | 提取已有容器化样式；嵌入精简外壳保留业务导航，不重设计 UI |
 | 微前端构建配置与静态归档脚本（新增） | 输出 HTML 与全部资源、版本清单和摘要；不生成平台 npm 发布清单 |
 
-删除的是共用业务中的隐式全局接线、模块级活动实例和迁移后重复实现。是否删除 Kit 路由/配置由第 3 节验证决定。开发 fixture/原型不进入生产产物，但不借机删除仓内无关资产。
+删除的是共用业务中的隐式全局接线、模块级活动实例和迁移后重复实现。Kit 退场已完成；独立部署项目不拥有这部分业务源码。开发 fixture/原型不进入生产产物，但不借机删除仓内无关资产。
+
+下表中的 Kit 分支为最初执行范围，现已按第 3 节收敛到普通 Svelte；新增独立 Adapter 连接与清理、归档组合工具，移除活动入口内的门户专属开发接线。
 
 不修改页面协议、渲染引擎职责、`packages/embed`、Python 创作流程或 Relay 核心。持久化数据库名、key 和恢复记录不做迁移。
 
@@ -155,9 +145,9 @@ apps/platform/dist/microfrontend/
 
 交付完整目录归档、SHA-256 和接入说明。主应用部署/引用 HTML URL；它不安装平台包、不编译平台源码、不需要 Svelte 插件。平台版本升级通过切换部署入口或版本目录完成，不要求主应用重编译平台业务。
 
-候选命令 `build:microfrontend` / `pack:microfrontend` 待实现，后者表示静态归档，不是 npm pack。独立 `dev/build` 先保留；最终能否共用同一 HTML/构建由兼容验证决定，若分开构建输出必须互不覆盖。
+现有命令 `build:microfrontend` / `pack:microfrontend` 已实现，后者表示静态归档，不是 npm pack。独立 `dev/build` 保留，两种构建输出互不覆盖；内网独立组合工具消费静态归档。
 
-qiankun 2.x 下，普通 Svelte + UMD 生命周期入口 + HTML 是候选后备构建路径；Vite 库模式的 UMD 输出不自动生成 HTML，也不代表当前 Kit 产物已兼容。优先验证实际生产加载、生命周期识别与资源路径，不直接采用针对 qiankun 3 的插件配置。
+qiankun 2.x 下，普通 Svelte + UMD 生命周期入口 + HTML 是已采用的构建路径；Vite 库模式的 UMD 输出不自动生成 HTML，也不代表当前 Kit 产物已兼容。优先验证实际生产加载、生命周期识别与资源路径，不直接采用针对 qiankun 3 的插件配置。
 
 产物不得含 DEV 凭据、fixture、未解析仓库别名或 workspace 私有导入。不得直接把 ESM JS URL 当成 qiankun 2.x HTML entry。
 
@@ -182,7 +172,7 @@ qiankun 2.x 下，普通 Svelte + UMD 生命周期入口 + HTML 是候选后备�
 
 | 阶段 | 工作 | 放行条件 |
 |---|---|---|
-| 1 | 锁定主应用版本、前缀与 Kit 兼容验证 | 用事实决定保留 Kit 或迁移客户端路由，保留已确认 URL 体验 |
+| 1 | 对照既有 Kit 探针与 URL 路由实现，收集实际 loader/身份输入 | 不重复迁移；内部细节留在独立部署项目 |
 | 2 | 接入层、实例配置与必要业务解耦 | 独立入口可用，业务不读 qiankun/门户变量 |
 | 3 | HTML 生产构建、URL 路由与生命周期 | 实际 qiankun 测试主应用完成深链接、导航、卸载重挂 |
 | 4 | 人工业务与服务联调 | 挂载→页面管理→打开→编辑保存→重新打开→卸载→重挂 |
@@ -198,8 +188,8 @@ qiankun 2.x 下，普通 Svelte + UMD 生命周期入口 + HTML 是候选后备�
 
 MC 负责平台入口、生命周期、内部路由、业务整改、静态产物和消费契约。主应用团队负责前缀激活、容器、配置/身份通知、HTML 部署接入、主应用离开保护及门户验证。服务方负责真实鉴权、接口和网关能力。
 
-实施时更新正式 `host-contract`、ADR-0073 相关部署结论与主题页：平台业务保持框架隔离，但平台交付入口现在明确实现 qiankun 适配；旧“不实现微前端协议”不能继续作为整个交付物的现行限制。本次只落盘方案，尚未修改正式运行契约或应用代码。
+实施时更新正式 `host-contract`、ADR-0073 相关部署结论与主题页：平台业务保持框架隔离，但平台交付入口现在明确实现 qiankun 适配；旧“不实现微前端协议”不能继续作为整个交付物的现行限制。现行实现见 ADR-0093；独立部署职责由 ADR-0094 与正式 host-contract 记录。
 
-已确认：HTML 微前端交付、前缀归主应用、内部 URL 路由归平台、代码接入隔离、最小业务范围。待验证：Kit 保留与否、最终构建方式、实际前缀/qiankun 小版本/浏览器、主应用真实配置和可选 SDK 接线。
+已确认：HTML 微前端、普通 Svelte URL 路由、独立部署 Adapter 与最小业务范围。待外部确认：真实身份/网关映射、私有 loader 补丁、实际子应用构建示例、SDK 实例与就绪时序、注册和部署所有者。
 
-当前所有实现、生产构建、浏览器接入和真实服务验收均为 **NOT_RUN**；文档完成不表示功能已实现。
+已有本地实现/测试与候选浏览器证据见实施验收；本轮新增证据另行记录。目标门户私有补丁、真实服务和 SDK 仍为 **NOT_RUN**。

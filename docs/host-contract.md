@@ -32,18 +32,18 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 | `operatorId` | 随请求发出的 `X-Operator-Id` |
 | `workspaceId` | 随请求发出的 `X-Workspace-Id` |
 
-归档内 `portal-contract.d.ts` 可直接供门户 TypeScript 使用，不依赖 npm 包或 Svelte 插件；可选可信创作扩展使用仓内 AuthoringIntegration 类型。微前端 props 的完整正式类型见 [`portal-config.ts`](../apps/platform/src/microfrontend/portal-config.ts)。读取源由门户转换，业务不读取门户变量。独立入口配置更新后派发 `metriccanvas:config-changed`；页面试验场的既有全局读取语义不变。
+归档内 `portal-contract.d.ts` 可直接供门户 TypeScript 使用，不依赖 npm 包或 Svelte 插件；可选可信创作扩展仍须对齐其程序契约；基础部署声明以泛型留出类型位置，当前不把仓内 AuthoringIntegration 深导入当成独立交付方式。AI 接线与完整声明分发需单列验收。微前端 props 的完整正式类型见 [`portal-config.ts`](../apps/platform/src/microfrontend/portal-config.ts)。读取源由门户转换，业务不读取门户变量。独立入口配置更新后派发 `metriccanvas:config-changed`；页面试验场的既有全局读取语义不变。
 
-- **平台每次请求现读这个对象，不在启动时快照。** 门户刷新 token 后更新读取源并通知订阅者，不需要重新挂载；身份、工作空间、退出登录或服务目标变化须通知订阅者，使旧会话失效后重挂。平台不提供登录界面、不做刷新重试：HTTP 401 按既有语义呈现为需要登录，重登由门户处理（ADR-0069 已定本仓不建登录体系）。
+- **平台每次请求现读这个对象，不在启动时快照。** 门户刷新 token 后更新读取源并通知订阅者，不需要重新挂载；身份、工作空间、退出登录或服务目标变化须通知订阅者，使旧会话失效后重挂；显式 reload 部署则由整页重载结束旧实例。平台不提供登录界面、不做刷新重试：HTTP 401 按既有语义呈现为需要登录，重登由门户处理（ADR-0069 已定本仓不建登录体系）。
 - **`operatorId` 是门户声明的 actor，不是平台验证过的 actor。** 可信性由同行的 `authToken` 承担，平台不校验二者是否同一人——它解不开 token，也挡不住能改请求头的人改校验代码。服务端应以 token 为准，二者不一致时拒绝。
 - **配置缺失或不完整时平台照常启动**，页面目录与内联页面仍可查看，取数在调用时失败，且错误明确指出是集成应用未注入运行配置，不与网络失败混同。
 - **平台提供 qiankun HTML 微前端及独立入口。** 业务保持实例化，生命周期适配集中在接入层（ADR-0093）。DQE 与 Java 页面资产需允许上述三个身份请求头跨源并允许携带凭据，这是对服务提供方的要求，对账见 #3 / #105。
 
 ### 平台页面资产访问
 
-页面元数据请求使用 `credentials: 'include'`（Fetch 对应 XHR 的 `withCredentials: true`），配置了 `cftk` 时同时发送该请求头。Cookie 仍由浏览器按目标域、路径等限制选取；前端不能借此把只属于 `ioc.huawei.com` 的 Cookie 发送给 `gray.cloudioc.huawei.com`。
+页面元数据请求使用 `credentials: 'include'`（Fetch 对应 XHR 的 `withCredentials: true`），配置了 `cftk` 时同时发送该请求头。Cookie 仍由浏览器按目标域、路径等限制选取；前端不能借此把只属于 `portal.example.com` 的 Cookie 发送给 `api.example.com`。
 
-从 `https://ioc.huawei.com:443` 直连 `https://gray.cloudioc.huawei.com` 属于跨源请求。服务端需允许实际 Origin `https://ioc.huawei.com`（默认 HTTPS 端口不包含在序列化 Origin 中），返回 `Access-Control-Allow-Credentials: true`，并在 OPTIONS 预检中允许 `cftk`、`X-Auth-Token`、`X-Operator-Id`、`Content-Type` 以及实际请求方法。携带凭据时 `Access-Control-Allow-Origin` 不能是 `*`。仅修改前端凭据设置不保证消除 CORS 错误。
+从 `https://portal.example.com:443` 直连 `https://api.example.com` 属于跨源请求。服务端需允许实际 Origin `https://portal.example.com`（默认 HTTPS 端口不包含在序列化 Origin 中），返回 `Access-Control-Allow-Credentials: true`，并在 OPTIONS 预检中允许 `cftk`、`X-Auth-Token`、`X-Operator-Id`、`Content-Type` 以及实际请求方法。携带凭据时 `Access-Control-Allow-Origin` 不能是 `*`。仅修改前端凭据设置不保证消除 CORS 错误。
 
 本地 mock 运行配置：将 `apps/platform/.env.example` 复制为 `.env.local`，填写 `VITE_LOCAL_PAGE_METADATA_BASE_URL`、`VITE_LOCAL_CFTK` 及需要的身份字段，重启开发服务。只在 DEV 入口生效，已有完整门户注入优先；生产仍由门户提供运行配置。本地模拟值可以验证头部发送，不能代替真实服务的有效凭据。现有 `/apply-page` 模拟入口使用内存数据，不发 HTTP 请求；联调请求头应使用普通工作台或页面目录。
 
@@ -71,13 +71,16 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 |---|---|
 | `routeBase` | 必填绝对路径前缀；门户按路径段激活 |
 | `readConfig` | 必填，每请求返回当前配置或 null；不得固化初始凭据 |
-| `subscribeConfig` | 必填 `(changed) => unsubscribe`，连接真实身份/配置通知源 |
+| `subscribeConfig` | `(changed) => unsubscribe`，原地身份/配置变化时必填 |
+| `configChanges` | 默认订阅模式；部署保证身份/目标变化整页重载时可显式设为 `reload` 并省略订阅 |
 | `onEvent` | 可选，接收 `{code,message}`；code 为 `ready`、`login-required`、`session-invalidated`，消息不含凭据 |
 | `registerLeaveGuard` | 可选 `(guard) => unregister`；guard 返回 boolean 或 Promise<boolean>；门户在区域外导航及浏览器后退提交前调用，取消时恢复 URL |
 | `dialogueAdapter` | 可选，沿用 DialogueAdapter：mount(element) 返回实例清理函数；不能清理门户共享 SDK |
 | `authoring` / `events` | 可选，沿用可信创作 AuthoringIntegration / 实例 EventTarget；缺席时 AI 不可用，人工页面搭建不受阻 |
 
-最小注册示例（在现有门户使用，不在 platform 内另启主应用）：
+独立部署项目可通过 `MetricCanvasDeploymentAdapter` 契约 v1 转换主应用已有 props/全局能力，无需主应用直接提供下列标准 props。接线实现、私有 SDK 和部署资料位于独立仓库，平台只消费标准输入；组合与清理规则见 [部署维护边界](plan/qiankun-platform/deployment-boundary.md)。归档同时提供 `compose-deployment.mjs`，组合结果拥有独立摘要，原平台产物不修改。
+
+以下为主应用已能直接提供标准 props 时的注册示例（另一种接入方式，不在 platform 内另启主应用）：
 
 ```ts
 registerMicroApps([{

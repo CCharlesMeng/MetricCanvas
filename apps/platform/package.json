@@ -4,8 +4,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 5174",
-    "dev:local-huawei": "node scripts/start-local-huawei.mjs",
-    "dev:local-huawei:unprivileged": "node scripts/start-local-huawei.mjs 5175",
     "build": "vite build",
     "preview": "vite preview --port 4174",
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json",

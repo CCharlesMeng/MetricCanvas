@@ -51,3 +51,5 @@ Relay 当前会把 MCP 完整返回值送回模型,所以目标接线必须在 M
 **平台 HTML 微前端与实例生命周期（[ADR-0093](../0093-platform-html-microfrontend-and-instance-lifecycle.md)）：** 平台在 `src/microfrontend` 实现 qiankun 生命周期，交付完整 HTML/UMD/CSS 静态目录；独立入口和嵌入入口共用普通 Svelte 与客户端 URL 路由。Kit 生产探针显示入口需适配且无销毁句柄、卸载残留全局路由监听，故采用交接文档允许的后备路径。门户拥有路径前缀、配置源与区域外 guard，平台拥有内部地址和取消离开后的视图一致性。配置每请求现读，token 刷新不重建；身份/目标变化使旧会话失效。页面资产服务、DQE、通知与对话按实例组装。卸载不保存、不重试未知写入，不迁移恢复记录。候选 qiankun 2.10.16 已用实际生产产物验证；目标门户与真实服务为 NOT_RUN。正式契约见 [`docs/host-contract.md`](../../host-contract.md)。
 
 **[ADR-0073](../0073-static-platform-direct-access-with-injected-runtime-config.md) 保留的数据与身份通路：** 平台仍为静态浏览器应用，直连 Java 与 DQE，凭据由集成门户拥有，每请求现读，不自建登录或刷新重试。DQE 使用用户态 header token，服务端验证身份；Java 页面资产不要求 DQE 端点完整。application-runtime 与页面试验场保留全局包装。0073 的“不实现微前端协议”、只接受全局对象及不提供生命周期限制已被 0093 替换。
+
+**独立部署接线（[ADR-0094](../0094-independent-platform-deployment-adapters.md)）：** 平台 GitHub 只维护通用微前端、实例服务与版本化契约；门户变量、鉴权映射、私有 SDK/补丁及部署配置归仓外独立项目。部署 Adapter 以经典脚本和固定平台静态产物组合，记录双方摘要，不深导入平台源码；配置订阅与显式整页重载模式各自有明确保证，不能凭部署 Adapter 存在推断真实服务已接通。

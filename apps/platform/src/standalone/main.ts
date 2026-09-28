@@ -4,7 +4,6 @@ import {panguDialogueAdapter} from '../lib/dialogue/runtime';
 import {readAuthoringIntegration} from '../lib/dialogue/authoring-integration';
 if(import.meta.env.DEV){
   installLocalDevRuntimeConfig();
-  const {installPanguDevConfig}=await import('../lib/dialogue/dev-inject');installPanguDevConfig();
 }
 const instance=await mountPlatform(document.getElementById('app')!,{
   routeBase:import.meta.env.BASE_URL.replace(/\/$/,'')||'/',readConfig:()=>readPageAssetsRuntimeConfig(),
