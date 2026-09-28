@@ -36,9 +36,8 @@ describe('Platform 样式 token 边界', () => {
 
   it('分析会话轨在所有工作台断点保持 480px 宽', () => {
     expect(layoutSource).toMatch(/--analysis-rail-w:\s*480px;/);
-    const breakpointWidths = [...workbenchSource.matchAll(/--analysis-rail-w:\s*([^;]+);/g)]
-      .map((match) => match[1].trim());
-    expect(breakpointWidths).toEqual(['480px']);
+    expect(workbenchSource).toContain('grid-template-columns: var(--analysis-rail-w)');
+    expect(workbenchSource).not.toMatch(/--analysis-rail-w\s*:/);
   });
 
   it('强调背景前景消费语义 token，页面管理入口只保留在全局导航', () => {
