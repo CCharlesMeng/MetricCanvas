@@ -11,6 +11,7 @@ from urllib.parse import urlsplit
 import httpx
 
 from metriccanvas_authoring.canonical import canonical_sha256
+from metriccanvas_authoring.data.metadata_session import read_turn_metadata, metadata_session_active
 from metriccanvas_authoring.data.ports import DataContextError
 from metriccanvas_authoring.data.data_context import parse_data_context
 from metriccanvas_authoring.data.validation_policy import QueryValidationPolicy
@@ -54,6 +55,51 @@ class JavaDatasetMetadataProvider:
         return identity
 
     async def _read(self, binding=None, dataset_ids=None):
+        identity = self.identity(binding)
+        source = {'url': self.url, 'actor': identity.actor_id, 'workspace': identity.workspace_id,
+                  'credential': canonical_sha256(identity.auth_token),
+                  'datasets': self.dataset_ids if dataset_ids is None else dataset_ids,
+                  'projection': asdict(self.projection) if self.projection is not None else None}
+        value = await read_turn_metadata(source, lambda: self._acquire(binding, dataset_ids), retain_partial=True)
+        require(self.identities.current() == identity, 'DATA_CONTEXT_SCOPE_MISMATCH')
+        return value
+
+    async def _acquire(self, binding, dataset_ids):
+        # Retry only missing/failed sources before publishing an immutable view.
+        # The endpoint is eventually consistent: this is per-dataset evidence,
+        # not an atomic snapshot across datasets.
+        value = await self._fetch(binding, dataset_ids)
+        missing = sorted({issue['datasetId'] for issue in value['issues']})
+        if not missing:
+            return value
+        # One bounded batch; never turn an empty datasetIds list into all scope.
+        if len(missing) > 100:
+            return value
+        try:
+            recovered = await self._fetch(binding, missing)
+        except DataContextError as error:
+            if error.code not in {'DATA_CONTEXT_TIMEOUT', 'DATA_CONTEXT_TRANSPORT_ERROR'}:
+                raise
+            value['coverage']['recovery'] = {'attempts': 1, 'recoveredDatasets': 0,
+                                             'code': error.code}
+            return value
+        models = value['models'] + recovered['models']
+        result = self._snapshot(self.identity(binding), models, recovered['issues'])
+        result['coverage']['recovery'] = {'attempts': 1, 'recoveredDatasets': len(recovered['models'])}
+        return result
+
+    def _snapshot(self, identity, models, issues):
+        models = sorted(models, key=lambda model: model['id'])
+        issues = sorted(issues, key=lambda issue: issue['datasetId'])
+        version = canonical_sha256({'workspaceId': identity.workspace_id, 'models': models,
+            'issues': issues, 'projection': asdict(self.projection) if self.projection is not None else None})
+        return {'dataContextVersion': version, 'models': models, 'issues': issues,
+                'coverage': {'scope': 'authorized', 'complete': not issues,
+                    'consistency': 'per-dataset',
+                    'returnedDatasets': len(models) + sum(issue['code'] != 'DATASET_METADATA_MISSING' for issue in issues),
+                    'usableDatasets': len(models), 'failedDatasets': len(issues)}}
+
+    async def _fetch(self, binding=None, dataset_ids=None):
         identity = self.identity(binding)
         requested = self.dataset_ids if dataset_ids is None else dataset_ids
         body = {'workspaceId': identity.workspace_id}
@@ -113,15 +159,7 @@ class JavaDatasetMetadataProvider:
         for missing in sorted(set(requested or []) - seen):
             issues.append({'code': 'DATASET_METADATA_MISSING', 'datasetId': missing,
                            'path': '/dataset_details', 'retrySafe': False})
-        models.sort(key=lambda model: model['id'])
-        # A local snapshot identifier, not the Java/Lab version field. Includes
-        # governance so discovery and executable context cannot drift silently.
-        version = canonical_sha256({'workspaceId': identity.workspace_id, 'models': models,
-            'issues': sorted(issues, key=lambda issue: issue['datasetId']),
-            'projection': asdict(self.projection) if self.projection is not None else None})
-        return {'dataContextVersion': version, 'models': models, 'issues': issues,
-                'coverage': {'scope': 'authorized', 'complete': not issues, 'returnedDatasets': len(items),
-                             'usableDatasets': len(models), 'failedDatasets': len(issues)}}
+        return self._snapshot(identity, models, issues)
 
     async def search(self, binding, query, limit):
         # The YAML has no keyword/limit parameters. Match and bound metric cards
@@ -133,8 +171,8 @@ class JavaDatasetMetadataProvider:
         dataset_id = source.get('modelId')
         require(identifier(dataset_id) and (not self.dataset_ids or dataset_id in self.dataset_ids),
                 'DATA_CONTEXT_SCOPE_MISMATCH')
-        value = await self._read(binding, [dataset_id])
-        require(not value['issues'], 'DATA_CONTEXT_PARTIAL')
+        # Detail is already present for usable models in the fixed turn snapshot.
+        value = await self._read(binding, None if metadata_session_active() else [dataset_id])
         model = next((model for model in value['models'] if model['id'] == dataset_id), None)
         require(model is not None and canonical_sha256(model) == source.get('modelVersion'), 'METRIC_DETAIL_STALE')
         metric = next((metric for metric in model['logical_schema']['field_schema']['metrics']
@@ -148,7 +186,9 @@ class JavaDatasetMetadataProvider:
         return detail
 
     async def current(self):
-        return await self.current_for_query(QueryValidationPolicy(strict=True))
+        snapshot = await self.current_for_query(QueryValidationPolicy(strict=True))
+        require('metadataCoverage' not in snapshot, 'DATA_CONTEXT_PARTIAL')
+        return snapshot
 
     async def current_for_query(self, policy):
         # Discovery does not require execution governance. Queries do, and use
@@ -160,10 +200,12 @@ class JavaDatasetMetadataProvider:
                     {'path': '/projection', 'property': 'projection', 'reason': 'not_injected'}],
                     'issueCount': 1, 'truncated': False})
         value = await self._read()
-        require(not value['issues'], 'DATA_CONTEXT_PARTIAL')
+        require(bool(value['models']) or not value['issues'], 'DATA_CONTEXT_PARTIAL')
         snapshot = project_lab_snapshot(subject_id='java-dataset-metadata', details=value['models'],
                                      projection=self.projection, values_by_dataset={}, policy=policy)
         snapshot['version'] = value['dataContextVersion']
+        if value['issues']:
+            snapshot['metadataCoverage'] = {'complete': False, 'failedDatasets': len(value['issues'])}
         _, issues = parse_data_context(snapshot, policy=policy)
         require(not issues, 'DATA_CONTEXT_PROJECTION_ERROR')
         return snapshot

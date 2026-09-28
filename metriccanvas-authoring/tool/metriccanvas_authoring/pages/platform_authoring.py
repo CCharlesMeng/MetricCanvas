@@ -1,5 +1,6 @@
 """Platform authoring: one work document, internal single-save, referenced data only."""
 from metriccanvas_authoring.data.validation_policy import load_query_validation_policy
+from metriccanvas_authoring.data.metadata_session import metadata_session
 from copy import deepcopy
 from dataclasses import replace
 from uuid import uuid4
@@ -14,6 +15,7 @@ from metriccanvas_authoring.data.results import QueryResults
 from metriccanvas_authoring.assets.drafts import DraftSaver
 from metriccanvas_authoring.delivery.preview import definition, artifact, prepare_preview
 from metriccanvas_authoring.pages.referenced import compose, edit
+from metriccanvas_authoring.pages.input_tolerance import normalize_compose, normalize_edit, compose_envelope
 from metriccanvas_authoring.pages.parameters.page_parameters import PageParameters, parameter_summary
 
 
@@ -40,6 +42,7 @@ class PlatformAuthoring:
             await self.state.remaining(prepared)
         return check
 
+    @metadata_session
     async def discover(self, context_ref, query, limit=10, detail_refs=None):
         prepared = await self.prepare(context_ref)
         if self.semantic_catalog is not None:
@@ -54,6 +57,7 @@ class PlatformAuthoring:
         await self.current(prepared)()
         return result
 
+    @metadata_session
     async def query(self, context_ref, request=None, result_ref=None):
         prepared = await self.prepare(context_ref)
         require((request is None) != (result_ref is None), 'QUERY_INPUT_INVALID')
@@ -80,8 +84,15 @@ class PlatformAuthoring:
         await self.current(prepared)()
         return result
 
+    @metadata_session
     async def mutate(self, kind, context_ref, request, expected_version=0, *, page_id=None):
         request = deepcopy(request)
+        adjustments = []
+        from metriccanvas_authoring.pages.referenced import COMPOSE_SCHEMA
+        if kind == 'compose':
+            request, adjustments = normalize_compose(request, COMPOSE_SCHEMA)
+        elif kind == 'edit':
+            request, adjustments = normalize_edit(request, COMPOSE_SCHEMA)
         prepared = await self.prepare(context_ref, write=True)
         require(page_id is None or page_id == prepared.binding['pageId'], 'CURRENT_TURN_PAGE_MISMATCH')
         require(kind != 'compose' or prepared.binding['mode'] == 'new', 'CURRENT_TURN_MODE_MISMATCH')
@@ -98,10 +109,13 @@ class PlatformAuthoring:
                 require(work['document'] is None, 'WORK_ALREADY_CREATED')
                 from jsonschema import Draft202012Validator
                 from metriccanvas_authoring.pages.referenced import COMPOSE_SCHEMA
-                require(Draft202012Validator(COMPOSE_SCHEMA).is_valid(request), 'COMPOSE_REQUEST_INVALID')
+                require(Draft202012Validator(compose_envelope(COMPOSE_SCHEMA)).is_valid(request), 'COMPOSE_REQUEST_INVALID')
                 records = {}
                 for source_id, ref in request['sources'].items():
-                    record = await self.results.require(prepared, ref, self.current(prepared, True), usable=False)
+                    try:
+                        record = await self.results.require(prepared, ref, self.current(prepared, True), usable=False)
+                    except ContentBaselineError as error:
+                        raise ContentBaselineError(error.code, path='/sources/' + source_id.replace('~', '~0').replace('/', '~1')) from error
                     records[source_id] = record if record['status'] in {'ready', 'empty'} else None
                 edited = compose(prepared, request, records)
             else:
@@ -111,6 +125,7 @@ class PlatformAuthoring:
                     self.current(prepared, True), summary_enabled=summary_configured(self.summary_config))
             await self.current(prepared, True)()
             summary = {k: edited[k] for k in ('status', 'operations', 'issues')}
+            summary['adjustments'] = adjustments + edited.get('adjustments', [])
             summary.update(saveStatus='not_requested', workVersion=work['workVersion'])
             preview = edited['document']
             if preview is None or work['document'] is not None and definition(preview) == definition(work['document']):

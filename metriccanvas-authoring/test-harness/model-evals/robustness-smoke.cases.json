@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "baseSuite": "platform-authoring.cases.json",
+  "scope": "Simple DS validation of authoring tolerance; no production integration claim",
+  "cases": [
+    {
+      "id": "normal-create",
+      "baseCase": "create-report",
+      "mode": "new",
+      "baseline": "empty",
+      "dataContext": "platform-main-flow.json",
+      "tools": [
+        "read_page_context",
+        "discover_data_context",
+        "query_data",
+        "compose_page",
+        "page_metadata_emit_preview"
+      ],
+      "userRequest": "Use the unchanged create-report prompt in the base suite",
+      "probe": false,
+      "expected": "One metadata fetch and one DQE; saved valid page and matching preview"
+    },
+    {
+      "id": "presentation-tolerance",
+      "baseCase": "create-report",
+      "mode": "new",
+      "baseline": "empty",
+      "dataContext": "platform-main-flow.json",
+      "tools": [
+        "read_page_context",
+        "discover_data_context",
+        "query_data",
+        "compose_page",
+        "page_metadata_emit_preview"
+      ],
+      "userRequest": "Use the unchanged create-report prompt in the base suite",
+      "probe": true,
+      "injectedFaults": [
+        "missing section pattern",
+        "unsupported section container",
+        "width=100%",
+        "purpose=null"
+      ],
+      "expected": "Faults normalized; no new DQE or whole-flow restart; existing business assertions pass"
+    },
+    {
+      "id": "partial-metadata-tolerance",
+      "baseCase": "create-report",
+      "mode": "new",
+      "baseline": "empty",
+      "dataContext": "platform-main-flow.json plus one unavailable unrelated dataset",
+      "tools": [
+        "read_page_context",
+        "discover_data_context",
+        "query_data",
+        "compose_page",
+        "page_metadata_emit_preview"
+      ],
+      "userRequest": "Use the unchanged create-report prompt in the base suite",
+      "metadataPartialProbe": true,
+      "expected": "Exactly two metadata HTTP calls, second only unavailable dataset; query warning; valid saved page without repeated query"
+    }
+  ],
+  "forbidden": [
+    "change metric/filter/time scope",
+    "fabricate result refs",
+    "provide expected page to model",
+    "mask first failures"
+  ],
+  "outOfScope": [
+    "production Relay/Java/DQE",
+    "cross-turn reuse",
+    "full DS suite",
+    "broad visual regression"
+  ]
+}

@@ -138,6 +138,7 @@ class SemanticCatalog:
                 'businessDomains': list(dict.fromkeys(business_domain(m) for m in value['models'])),
                 'matches': cards, 'dimensions': shown_dimensions[:50],
                 'dimensionCombinations': 'unknown unless declared by the metric',
+                'reuse': {'instruction': 'Reuse these canonical names and dataContextVersion for this turn. Discover again only for missing definitions; source IDs and labels are not query names.'},
                 'dimensionCoverage': {'returnedCount': min(len(shown_dimensions), 50), 'matchedCount': len(shown_dimensions), 'truncated': len(shown_dimensions)>50},
                 'executionReadiness': 'not_checked',
                 'matchCoverage': {'returnedCount': len(cards), 'matchedCount': count, 'truncated': count>len(cards)},
@@ -156,5 +157,6 @@ def dimension_card(model, raw):
         'aliases': [s for s in aliases if isinstance(s, str) and s.strip()][:10] if isinstance(aliases, list) else [],
         'source': {'modelId': model['id'], 'dimensionId': raw['id'] if isinstance(raw.get('id'), str) else name, 'modelVersion': digest(model)},
         'isTime': is_time_dimension(raw), 'granularities': time_granularities(raw),
+        'queryBinding': {'groupBy': name, **({'timeGranularities': time_granularities(raw)} if is_time_dimension(raw) else {'filterDimension': name})},
         'filterability': 'time' if is_time_dimension(raw) else 'dimension',
         'values': {'status': 'unknown'}, 'metricCompatibility': 'unknown'}

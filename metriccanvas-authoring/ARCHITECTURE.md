@@ -47,3 +47,9 @@
 参考 [接入说明](RELAY-HANDOFF.md)、[接口](contracts/authored/adapter-interface.md)、[真源](SOURCES.md)。公共同步先校验源锁和目标公共修改，再更新清单文件并删除已退役公共文件；内部树始终保留。内部依赖写 adapters/requirements.txt，由内部安装和固定版本。
 
 本地检查证明公共规则、参考协议和创建/编辑主流程；真实 Relay、Java、DQE、身份与页面可见性需要内部验收。
+
+## 创作容错与元数据生命周期
+
+公共 data/work 层维护可信轮次中的查询结果与元数据状态，使用现有 StateStore/CAS；参考 Java Adapter 提供可信来源身份、覆盖范围与原始读取。首次完整读取正常链只访问一次元数据 HTTP；部分失败可在发布前仅补取失败 dataset 一次，再固定复用可用快照。coverage 始终说明缺口，私有查询视图只投影成功来源并附 warning；不声明跨 dataset 原子一致性，不跨轮复用结果。身份、取消和精确查询授权持续核对。
+
+页面入口吸收有明确默认值的可选展示偏差，坏块和坏查询项局部失败；最终页面仍通过正式 Schema。resultRef 原字符串可直接用于 sources，不需要新的注册步骤。迁移与回滚边界见 [接入说明](AUTHORING-TOLERANCE-MIGRATION.md) 和 [ADR-0092](../docs/adr/0092-authoring-tolerance-and-turn-metadata-snapshots.md)。公共交付只更新参考模板，不覆盖内部 Adapter；部署方采用并验证后才能宣称内部生效。

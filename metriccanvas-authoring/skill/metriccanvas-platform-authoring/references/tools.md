@@ -33,3 +33,5 @@
 Java 原始指标语义层使用批量 query-dataset-from-lab 查询，由部署方指定空间和数据集范围。query 与 limit 用于本地筛选语义卡片，不是后端搜索参数。模型只消费定义、单位、维度及已确认来源，完整模型和物理 SQL 留在程序侧。
 
 检查 status/coverage/issues：部分数据集失败时保留成功结果并说明覆盖缺口；全部失败不解释为“没有这个指标”。查询接口 DB 优先、未命中回源，不能声称已主动刷新 Lab。detailRef 绑定工作区、模型、指标和元数据版本，来源改变后重新发现。缺失单位、frequency、definition 或空维度保持 unknown。
+
+同轮已发布的元数据由已接入快照复用的 Adapter 缓存；查询与组装继续消费同一版本。部分 dataset 失败时，工具可先仅补取失败来源一次，再固定可用部分快照；不要反复发现试图刷掉缺口。已发现的可用业务域仍可查询，DATA_CONTEXT_PARTIAL warning 表示元数据覆盖不完整，不等同于本次结果行被截断。缺失域仍需补充来源，不能猜名替代。摘要未覆盖所需定义时可补发现，已有规范名与版本直接复用。dimensions[].queryBinding 明确 groupBy 与 filterDimension 的输入值，label/source 标识用于说明与来源定位。

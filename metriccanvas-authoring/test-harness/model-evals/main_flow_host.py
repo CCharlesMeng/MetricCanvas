@@ -64,7 +64,7 @@ def create_main_flow_server(state_path: Path, current_turns):
     base_url = state["baseUrl"].rstrip("/")
     identities = MainFlowIdentities()
     metadata = JavaDatasetMetadataProvider(base_url, identities,
-        dataset_ids=[fixture["dataset"]["dataset_id"]],
+        dataset_ids=[fixture["dataset"]["dataset_id"]] + (["unavailable-dataset"] if state.get("metadataPartialProbe") else []),
         projection=DataContextProjection.from_mapping(fixture["projection"]))
     dependencies = ComposePageDependencies(
         metadata,

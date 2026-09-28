@@ -19,3 +19,9 @@ runner 每个 case 输出 `trajectory.json`、`artifact.json`、`document.json`�
 `create-complex-report` 以 [`pages/tokens-report.json`](../../../pages/tokens-report.json) 的多章节、多数据源报告为复杂度参照，但不把该页面文档或预期章节注入模型。它提供四个已确认的取数单元：当月概况、6 至 8 月趋势、区域和模型拆分。评分直接读取最终 `document.json` 与预览数据，检查至少三个业务章节（另有页头）、核心图表与明细、四个页面数据源、两项指标和单位、概况先于趋势、同章区域/模型对比与明细、华东观察融入区域章节、无单独文字说明章、本地样例可见标识、没有未获授权的派生百分比，以及与 DQE 结果完全一致的行数据。章节名称与具体排版由模型决定；脚本模式只证明测试链路和评分器能执行。
 
 这些结果证明本地受控链路和自主模型行为，不证明真实 Java 权限、生产 DQE、Relay 身份注入或生产发布联调。`history/` 与冻结证据保留历史语义，不能计为当前平台通过。
+
+## 容错小范围验证
+
+`robustness-smoke.cases.json` 冻结正常创建与展示偏差两个用例。选 `--cases create-report` 执行正常路径；增加 `--tolerance-probe` 在正式工具调用前注入缺失 pattern、无效 container/width 与 purpose=null。轨迹同时保留模型原始参数、注入路径和实际参数，不能将注入错误称为模型自然犯错。评分要求已有业务断言通过、出现 adjustments、成功保存且 query_data 只调用一次。确定性预检用同样参数加 `--scripted`。本小范围不替代完整 DS 验收或生产联调。
+
+`run_platform_v2.py --cases create-report --metadata-partial-probe --output <new-dir>` 在可信本地 HTTP 夹具中加入持续不可用的无关 dataset，验收只补取失败来源一次、跨 MCP 进程复用 partial、查询携带覆盖 warning 且原需求页面完成；可与 `--tolerance-probe` 组合。加入 `--scripted` 时不调用模型。该探针不模拟生产权限撤销或跨源原子一致性。

@@ -80,6 +80,10 @@ def query_snapshot_schema(schema, policy):
     """
     result = deepcopy(schema)
     result['properties']['queryValidationView'] = {'const': '1'}
+    result['properties']['metadataCoverage'] = {
+        'type': 'object', 'additionalProperties': False,
+        'required': ['complete', 'failedDatasets'],
+        'properties': {'complete': {'const': False}, 'failedDatasets': {'type': 'integer', 'minimum': 1}}}
     def visit(node):
         if isinstance(node, dict):
             props = node.get('properties', {})
@@ -99,6 +103,8 @@ def query_snapshot_schema(schema, policy):
 
 def governance_warnings(snapshot):
     warnings = []
+    if snapshot.get('metadataCoverage'):
+        warnings.append({'code': 'DATA_CONTEXT_PARTIAL', **snapshot['metadataCoverage']})
     for environment in snapshot['executionEnvironments']:
         for schema in environment['schemas']:
             for metric in schema['metrics']:

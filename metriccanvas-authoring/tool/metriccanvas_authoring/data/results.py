@@ -3,6 +3,8 @@ from copy import deepcopy
 from dataclasses import replace
 import asyncio
 import json
+import time
+from metriccanvas_authoring.data.query_attempts import RetryingDqe
 from jsonschema import Draft202012Validator
 from metriccanvas_authoring.data.query import create_query_data
 from metriccanvas_authoring.data.validation_policy import (load_query_validation_policy, normalize_request, current_for_query, FixedQueryContext, normalize_semantic_names)
@@ -40,10 +42,13 @@ class QueryResults:
         return grant
 
     async def execute(self, prepared, request, current):
-        require(Draft202012Validator(QUERY_SCHEMA).is_valid(request), 'QUERY_REQUEST_INVALID')
+        envelope = deepcopy(QUERY_SCHEMA)
+        envelope['properties']['requests']['items'] = {'type': 'object', 'properties': {'dataSourceId': DATA_REQUEST['properties']['dataSourceId']}, 'required': ['dataSourceId']}
+        require(Draft202012Validator(envelope).is_valid(request), 'QUERY_REQUEST_INVALID')
         policy = load_query_validation_policy()
         original = deepcopy(request)
-        request, normalizations = normalize_request(request)
+        invalid = {i for i, item in enumerate(request['requests']) if not Draft202012Validator(DATA_REQUEST).is_valid(item)}
+        request, normalizations = deepcopy(request), []
         async with asyncio.timeout(await self.state.remaining(prepared)):
             snapshot = await current_for_query(self.dependencies.data_context, policy)
         await current()
@@ -53,72 +58,113 @@ class QueryResults:
             return {'status': 'failed', 'validationMode': policy.mode,
                     'issues': [{'code': i.code, 'path': i.path} for i in context_issues]}
         require(context.version == request['dataContextVersion'], 'DATA_CONTEXT_VERSION_CHANGED')
-        request, name_changes = normalize_semantic_names(request, snapshot, context)
-        normalizations.extend(name_changes)
+        for index, item in enumerate(request['requests']):
+            if index in invalid:
+                continue
+            single, changes = normalize_request({'requests': [item]})
+            single, name_changes = normalize_semantic_names(single, snapshot, context)
+            request['requests'][index] = single['requests'][0]
+            for change in changes + name_changes:
+                change['path'] = change['path'].replace('/requests/0/', f'/requests/{index}/', 1)
+                normalizations.append(change)
         requests = request['requests']
         require(len({r['dataSourceId'] for r in requests}) == len(requests), 'QUERY_ID_CONFLICT')
         version = request['dataContextVersion']
         # Authorize the entire batch before starting even one query.
-        for item in requests:
-            await self.authorize(prepared, item, version)
+        for index, item in enumerate(requests):
+            if index not in invalid:
+                await self.authorize(prepared, item, version)
         await current()
         await self.state.consume(prepared, 'query_rounds')
         async def one(index, item):
+            if index in invalid:
+                return {'dataSourceId': item['dataSourceId'], 'status': 'failed', 'issues': [{'code': 'QUERY_ITEM_INVALID', 'path': f'/requests/{index}', 'action': 'correct_affected_request'}]}
             signature = digest([self.state.key(prepared), version, policy.identity, {k: v for k, v in item.items() if k != 'dataSourceId'}])
             ref = 'result-' + signature
             claimed = {'binding': deepcopy(dict(prepared.binding)), 'dataContextVersion': version,
                        'request': deepcopy(item), 'originalRequest': deepcopy(original['requests'][index]),
                        'validationPolicy': policy.identity, 'validationMode': policy.mode,
                        'normalizations': [n for n in normalizations if n['path'].startswith(f'/requests/{index}/')],
-                       'status': 'pending', 'resultRef': ref}
-            owner = await self.state.store.compare_and_swap('query', ref, 0, claimed)
-            if not owner:
-                _, record = await self.state.store.read('query', ref)
-                require(record['binding'] == dict(prepared.binding), 'RESULT_SCOPE_MISMATCH')
+                       'status': 'pending', 'resultRef': ref, 'attempt': 1, 'expiresAt': time.time() + 245}
+            revision = 0
+            wait_until = time.monotonic() + 2
+            while True:
+                owner = await self.state.store.compare_and_swap('query', ref, revision, claimed)
+                if owner:
+                    revision += 1
+                    break
+                revision, record = await self.state.store.read('query', ref)
+                require(record is not None and record['binding'] == dict(prepared.binding), 'RESULT_SCOPE_MISMATCH')
                 await current()
+                interrupted = record['status'] == 'failed' and any(i.get('code') == 'QUERY_INTERRUPTED' or i.get('retrySafe') is True for i in record.get('issues', []))
+                expired = record['status'] == 'pending' and record.get('expiresAt', float('inf')) < time.time()
+                if record['status'] == 'pending' and not expired and time.monotonic() < wait_until:
+                    await asyncio.sleep(.05)
+                    revision = 0
+                    continue
+                if (interrupted or expired) and record.get('attempt', 1) < 2:
+                    claimed['attempt'] = record.get('attempt', 1) + 1
+                    claimed['previousIssues'] = deepcopy(record.get('issues', []))
+                    continue
                 return self.evidence(record, item['dataSourceId'])
-            deps = replace(self.dependencies, data_context=FixedQueryContext(snapshot), authoring_scope=dict(prepared.binding), stable_field_ids=True, validation_policy=policy)
+            async def publish():
+                if await self.state.store.compare_and_swap('query', ref, revision, claimed):
+                    return self.evidence(claimed, item['dataSourceId'])
+                # A late owner must never return different rows under the new owner's ref.
+                _, latest = await self.state.store.read('query', ref)
+                require(latest is not None and latest['binding'] == dict(prepared.binding), 'RESULT_SCOPE_MISMATCH')
+                await current()
+                return self.evidence(latest, item['dataSourceId'])
+            async def current_and_authorized():
+                await current()
+                await self.authorize(prepared, item, version)
+            retrying = RetryingDqe(self.dependencies.dqe, current_and_authorized)
+            deps = replace(self.dependencies, dqe=retrying, data_context=FixedQueryContext(snapshot), authoring_scope=dict(prepared.binding), stable_field_ids=True, validation_policy=policy)
             try:
-                await current()
-                if self.semantic_catalog is not None:
-                    checker = getattr(self.semantic_catalog, 'query_issues_for_context', None)
-                    issues = (await checker(dict(prepared.binding), item, snapshot) if callable(checker)
-                              else await self.semantic_catalog.query_issues(dict(prepared.binding), item))
-                    if issues:
-                        claimed.update(status='failed', issues=issues)
-                        await self.state.store.compare_and_swap('query', ref, 1, claimed)
-                        return self.evidence(claimed, item['dataSourceId'])
-                spec = {'question': request['question'], 'dataContextVersion': version,
-                        'units': [{**item, 'intent': 'detail', 'pinnedComponent': 'table'}]}
-                async with asyncio.timeout(await self.state.remaining(prepared)):
-                    result = await create_query_data(deps)(spec)
-                await current()
-                claimed['warnings'] = list(result.warnings)
-                if result.ok:
-                    execution = result.executions[0]
-                    require(len(json.dumps(list(execution.rows), ensure_ascii=False, allow_nan=False).encode()) <= 2 * 1024 * 1024, 'QUERY_RESULT_SIZE_LIMIT')
-                    claimed.update(status='empty' if not execution.rows else 'ready',
-                        source=build_query_source(result.units[0], execution), rows=[dict(row) for row in execution.rows],
-                        returnedCount=len(execution.rows), totalCount=execution.total_count,
-                        capturedAt=execution.captured_at, sourceDescriptions=list(result.source_descriptions))
-                    async with asyncio.timeout(await self.state.remaining(prepared)):
-                        relations, status = await load_relations(self.dependencies.metric_relations,
-                            dict(prepared.binding), version, item['businessDomain'])
+                async with asyncio.timeout(240):
                     await current()
-                    claimed.update(relations=query_relations(relations, item, claimed['source']), relationStatus=status)
-                else:
-                    claimed.update(status='failed', issues=[{'code': i.code, 'path': i.path, 'stage': i.stage,
-                        'candidates': list(i.candidates)[:10], 'retrySafe': i.retry_safe,
-                        'action': 'correct_request_or_refresh_context' if i.stage in {'discovery','generation'} else 'inspect_execution_failure'} for i in result.issues])
-                await self.state.store.compare_and_swap('query', ref, 1, claimed)
-                return self.evidence(claimed, item['dataSourceId'])
+                    if self.semantic_catalog is not None:
+                        checker = getattr(self.semantic_catalog, 'query_issues_for_context', None)
+                        issues = (await checker(dict(prepared.binding), item, snapshot) if callable(checker)
+                                  else await self.semantic_catalog.query_issues(dict(prepared.binding), item))
+                        if issues:
+                            claimed.update(status='failed', issues=issues)
+                            return await publish()
+                    spec = {'question': request['question'], 'dataContextVersion': version,
+                            'units': [{**item, 'intent': 'detail', 'pinnedComponent': 'table'}]}
+                    remaining = await self.state.remaining(prepared)
+                    async with asyncio.timeout(min(240, remaining) if remaining is not None else 240):
+                        result = await create_query_data(deps)(spec)
+                    await current_and_authorized()
+                    claimed['warnings'] = list(result.warnings)
+                    claimed['retryCount'] = retrying.retries
+                    claimed['executionFailures'] = retrying.failures
+                    if retrying.retries:
+                        claimed['warnings'].append({'code': 'QUERY_TRANSIENT_RETRIED', 'count': retrying.retries})
+                    if result.ok:
+                        execution = result.executions[0]
+                        require(len(json.dumps(list(execution.rows), ensure_ascii=False, allow_nan=False).encode()) <= 2 * 1024 * 1024, 'QUERY_RESULT_SIZE_LIMIT')
+                        claimed.update(status='empty' if not execution.rows else 'ready',
+                            source=build_query_source(result.units[0], execution), rows=[dict(row) for row in execution.rows],
+                            returnedCount=len(execution.rows), totalCount=execution.total_count,
+                            capturedAt=execution.captured_at, sourceDescriptions=list(result.source_descriptions))
+                        async with asyncio.timeout(await self.state.remaining(prepared)):
+                            relations, status = await load_relations(self.dependencies.metric_relations,
+                                dict(prepared.binding), version, item['businessDomain'])
+                        await current()
+                        claimed.update(relations=query_relations(relations, item, claimed['source']), relationStatus=status)
+                    else:
+                        claimed.update(status='failed', issues=[{'code': i.code, 'path': i.path, 'stage': i.stage,
+                            'candidates': list(i.candidates)[:10], 'retrySafe': i.retry_safe,
+                            'action': 'correct_request_or_refresh_context' if i.stage in {'discovery','generation'} else 'inspect_execution_failure'} for i in result.issues])
+                    return await publish()
             except BaseException:
                 claimed.update(status='failed', issues=[{'code': 'QUERY_INTERRUPTED', 'path': ''}])
-                await asyncio.shield(self.state.store.compare_and_swap('query', ref, 1, claimed))
+                await asyncio.shield(self.state.store.compare_and_swap('query', ref, revision, claimed))
                 raise
         results = await asyncio.gather(*(one(index, item) for index, item in enumerate(requests)))
         await current()
-        payload = {'status': 'ready' if all(r['status'] in {'ready', 'empty'} for r in results) else 'partial' if any(r['status'] in {'ready', 'empty'} for r in results) else 'failed',
+        payload = {'status': 'ready' if all(r['status'] in {'ready', 'empty'} for r in results) else 'partial' if any(r['status'] in {'ready', 'empty'} for r in results) else 'pending' if any(r['status'] == 'pending' for r in results) else 'failed',
                    'dataContextVersion': version, 'validationMode': policy.mode, 'results': results}
         self.bound(payload)
         await self.state.consume(prepared, 'total_evidence_bytes', len(json.dumps(payload, ensure_ascii=False).encode()))
@@ -143,12 +189,18 @@ class QueryResults:
 
     def evidence(self, record, source_id=None):
         result = {'resultRef': record['resultRef'], 'dataSourceId': source_id or record['request']['dataSourceId'],
-                  'status': record['status'], 'scope': deepcopy(record['request'])}
+                  'status': record['status'], 'scope': deepcopy(record['request']),
+                  'attempt': record.get('attempt', 1), 'retryCount': record.get('retryCount', 0),
+                  'executionFailures': deepcopy(record.get('executionFailures', []))}
         result.update(validationMode=record.get('validationMode', 'strict'),
             warnings=deepcopy(record.get('warnings', [])), normalizations=deepcopy(record.get('normalizations', [])))
         result['scope']['dataSourceId'] = result['dataSourceId']
         if record['status'] not in {'ready', 'empty'}:
             result['issues'] = deepcopy(record.get('issues', []))
+            if record['status'] == 'pending':
+                expired = record.get('expiresAt', float('inf')) < time.time()
+                result['issues'] = [{'code': 'QUERY_ATTEMPT_EXPIRED' if expired else 'RESULT_NOT_READY', 'path': '',
+                                     'action': 'retry_original_request' if expired and record.get('attempt', 1) < 2 else 'check_execution_owner' if expired else 'read_result_status'}]
             return result
         fields = record['source']['fields']
         # Detail/HTML/recordList values stay in the program channel.

@@ -31,6 +31,7 @@
     ],
     "delivery": [
       "tests/test_agent_contracts.py",
+      "tests/test_authoring_tolerance.py",
       "tests/test_authoring_turns.py",
       "tests/test_bundle_info.py",
       "tests/test_bundle_skills.py",
@@ -42,6 +43,7 @@
       "tests/test_deployment.py",
       "tests/test_deployment_sync.py",
       "tests/test_discover_data_context.py",
+      "tests/test_discovery.py",
       "tests/test_distribution.py",
       "tests/test_harness_inventory.py",
       "tests/test_java_single_submission.py",
@@ -61,8 +63,7 @@
       "tests/test_semantic_catalog.py",
       "tests/test_skill_contract.py",
       "tests/test_stdio.py",
-      "tests/test_structure_current.py",
-      "tests/test_discovery.py"
+      "tests/test_structure_current.py"
     ]
   }
 }

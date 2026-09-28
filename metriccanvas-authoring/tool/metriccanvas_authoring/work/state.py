@@ -78,7 +78,8 @@ class TurnState:
 
     async def reserve(self, prepared, expected_version, request_hash):
         version, work = await self.read(prepared)
-        if work['lastRequest'] == request_hash:
+        failed_before_save = (work['lastResult'] or {}).get('status') == 'failed' and (work['lastResult'] or {}).get('saveStatus') == 'not_requested'
+        if work['lastRequest'] == request_hash and not failed_before_save:
             return None, work, deepcopy(work['lastResult'])
         require(work['active'] is None, 'WORK_BUSY')
         require(work['lastResult'] is None or work['lastResult'].get('saveStatus') not in {'unknown', 'pending', 'rejected'}, 'SAVE_RECONCILIATION_REQUIRED')

@@ -229,7 +229,7 @@ async def _call_oneshot(state_path, name, arguments):
         return await client.call_tool(name, arguments, raise_on_error=False)
 
 
-async def _execute_case(case, fixture, instructions, base_url, output, dependencies, transport):
+async def _execute_case(case, fixture, instructions, base_url, output, dependencies, transport, tolerance_probe=False, metadata_partial_probe=False):
     folder = output / case["id"]
     folder.mkdir(parents=True)
     before = None
@@ -242,7 +242,7 @@ async def _execute_case(case, fixture, instructions, base_url, output, dependenc
         before, ref = await _read_asset(base_url, dependency["ref"])
         dump(folder / "before.json", before)
     binding, document_json = _binding(case, before, ref)
-    state = {"profile": "main-flow-http", "baseUrl": base_url,
+    state = {"profile": "main-flow-http", "baseUrl": base_url, "metadataPartialProbe": metadata_partial_probe,
              "fixturePath": str(FIXTURE_PATH), "binding": binding,
              "scope": {key: binding[key] for key in SCOPE_KEYS}, "documentJson": document_json}
     state_path = folder / "trusted-state.json"
@@ -274,6 +274,19 @@ async def _execute_case(case, fixture, instructions, base_url, output, dependenc
             for call in calls:
                 name = call["function"]["name"]
                 arguments = json.loads(call["function"]["arguments"])
+                model_arguments = deepcopy(arguments)
+                injected = []
+                if tolerance_probe and name == 'compose_page':
+                    request = arguments.get('request', {})
+                    for si, section in enumerate(request.get('sections', [])):
+                        section.pop('pattern', None)
+                        section['container'] = 'unsupported-decoration'
+                        injected.extend([f'/sections/{si}/pattern', f'/sections/{si}/container'])
+                        for bi, block in enumerate(section.get('blocks', [])):
+                            if block.get('type') == 'data':
+                                block['width'] = '100%'
+                                block['purpose'] = None
+                                injected.extend([f'/sections/{si}/blocks/{bi}/width', f'/sections/{si}/blocks/{bi}/purpose'])
                 result = await _call_oneshot(state_path, name, arguments)
                 value = result.structured_content
                 if value is None:
@@ -282,7 +295,8 @@ async def _execute_case(case, fixture, instructions, base_url, output, dependenc
                 if envelope:
                     artifact = envelope["artifact"]
                 summary = value.get("modelSummary", value)
-                trajectory.append({"tool": name, "arguments": arguments, "summary": summary})
+                trajectory.append({"tool": name, "arguments": arguments, "summary": summary,
+                                   **({"modelArguments": model_arguments, "injectedFaultPaths": injected} if injected else {})})
                 dump(folder / "trajectory.json", trajectory)
                 messages.append({"role": "tool", "tool_call_id": call["id"],
                                  "content": json.dumps(summary, ensure_ascii=False)})
@@ -296,6 +310,13 @@ async def _execute_case(case, fixture, instructions, base_url, output, dependenc
     dump(folder / "trajectory.json", trajectory)
     dump(folder / "final.json", {"content": final})
     passed, issues = _assess(case, fixture, before, artifact, trajectory, final)
+    if tolerance_probe:
+        compositions = [t for t in trajectory if t['tool'] == 'compose_page']
+        if not compositions or not all(t.get('injectedFaultPaths') and t['summary'].get('adjustments') and t['summary'].get('saveStatus') == 'saved' for t in compositions):
+            issues.append('TOLERANCE_PROBE_NOT_ABSORBED')
+        if len([t for t in trajectory if t['tool'] == 'query_data']) != 1:
+            issues.append('TOLERANCE_PROBE_REQUERIED')
+        passed = not issues
     result = {"id": case["id"], "workflow": case["workflow"], "passed": passed,
               "status": "pass" if passed else "fail", "issues": issues,
               "toolCalls": len(trajectory), "final": final,
@@ -475,7 +496,7 @@ def _assess_complex_report(case, fixture, artifact, trajectory):
     return issues
 
 
-async def run(output: Path, scripted: bool = False, case_ids=None):
+async def run(output: Path, scripted: bool = False, case_ids=None, tolerance_probe=False, metadata_partial_probe=False):
     output.mkdir(parents=True, exist_ok=False)
     suite = json.loads(SUITE_PATH.read_text())
     fixture = json.loads(FIXTURE_PATH.read_text())
@@ -493,6 +514,8 @@ async def run(output: Path, scripted: bool = False, case_ids=None):
                 if case["id"] in selected and case.get("dependsOn") and case["dependsOn"] not in selected:
                     selected.add(case["dependsOn"]); changed = True
         cases = [case for case in cases if case["id"] in selected]
+    if (tolerance_probe or metadata_partial_probe) and any(case['workflow'] != 'create' for case in cases):
+        raise ValueError('Tolerance probe requires creation cases only')
     skill = AUTHORING / "skill/metriccanvas-platform-authoring"
     sources = [skill / relative for relative in suite["injectionSources"]]
     missing = [str(path) for path in sources if not path.is_file()]
@@ -515,13 +538,14 @@ async def run(output: Path, scripted: bool = False, case_ids=None):
     results, artifacts = [], {}
     log_path = output / "http.jsonl"
     try:
-        with serve_main_flow(FIXTURE_PATH, log_path) as (_, base_url):
+        with serve_main_flow(FIXTURE_PATH, log_path) as (http_state, base_url):
+            http_state.metadata_partial_probe = metadata_partial_probe
             for case in cases:
                 before_lines = log_path.read_text().splitlines() if log_path.exists() else []
                 try:
                     result, artifact = await _execute_case(
                         case, fixture, instructions_by_case[case["id"]], base_url,
-                        output, artifacts, shared_transport)
+                        output, artifacts, shared_transport, tolerance_probe, metadata_partial_probe)
                 except Exception as error:
                     folder = output / case["id"]
                     folder.mkdir(parents=True, exist_ok=True)
@@ -539,6 +563,18 @@ async def run(output: Path, scripted: bool = False, case_ids=None):
                 if result["passed"] and artifact:
                     artifacts[case["id"]] = artifact
                 lines = log_path.read_text().splitlines() if log_path.exists() else []
+                if metadata_partial_probe and result['status'] not in {'error', 'blocked'}:
+                    requests = [json.loads(line) for line in lines[len(before_lines):]]
+                    metadata = [r for r in requests if r['path'].endswith('/query-dataset-from-lab')]
+                    if len(metadata) != 2 or metadata[-1]['body'].get('datasetIds') != ['unavailable-dataset']:
+                        result['issues'].append('METADATA_PARTIAL_REUSE_FAILED')
+                    trajectory = json.loads((output / case['id'] / 'trajectory.json').read_text())
+                    queries = [t for t in trajectory if t['tool'] == 'query_data']
+                    if len(queries) != 1 or 'DATA_CONTEXT_PARTIAL' not in json.dumps(queries):
+                        result['issues'].append('METADATA_PARTIAL_WARNING_MISSING')
+                    result['passed'] = not result['issues']
+                    result['status'] = 'pass' if result['passed'] else 'fail'
+                    dump(output / case['id'] / 'result.json', result)
                 (output / case["id"] / "http.jsonl").write_text("\n".join(lines[len(before_lines):]) + ("\n" if len(lines) > len(before_lines) else ""))
     finally:
         if model_client is not None:
@@ -547,6 +583,7 @@ async def run(output: Path, scripted: bool = False, case_ids=None):
     tokens = 0 if scripted else shared_transport.tokens
     report = {"evidenceKind": "deterministic-main-flow" if scripted else "real-model-local-http-main-flow",
         "model": "scripted-no-model" if scripted else shared_transport.configuration["DEEPSEEK_MODEL"],
+        "toleranceProbe": tolerance_probe, "metadataPartialProbe": metadata_partial_probe,
         "elapsedSeconds": round(time.monotonic() - started, 3), "modelCalls": model_calls,
         "tokens": tokens, "tokenBudget": 600000,
         "requestReserve": "utf8-bytes/2 + 8192 + max_tokens" if not scripted else "not-applicable",
@@ -567,8 +604,10 @@ async def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--scripted", action="store_true")
     parser.add_argument("--cases", nargs="+")
+    parser.add_argument("--tolerance-probe", action="store_true", help="Inject declared presentation-only faults into creation calls; preserve raw model arguments")
+    parser.add_argument("--metadata-partial-probe", action="store_true", help="Keep one unrelated dataset unavailable; verify incremental fetch and usable-source continuity")
     args = parser.parse_args()
-    report = await run(args.output, scripted=args.scripted, case_ids=args.cases)
+    report = await run(args.output, scripted=args.scripted, case_ids=args.cases, tolerance_probe=args.tolerance_probe, metadata_partial_probe=args.metadata_partial_probe)
     if not report["passed"]:
         raise SystemExit(1)
 

@@ -24,6 +24,8 @@
 6. [源码阅读](tool/README.md)、[契约真源](SOURCES.md)：需要修改公共能力时阅读。
 7. [语义发现 Spec](docs/plan/semantic-discovery/SPEC.md)、[方案与架构影响](docs/plan/semantic-discovery/DESIGN.md)、[实施计划](docs/plan/semantic-discovery/PLAN.md)：无向量发现增强、业务知识接入与跨轮取数核对；实现及内部采用见 [增强发现接入](SEMANTIC-DISCOVERY-HANDOFF.md)。
 
+本次创作容错与元数据复用接入见 [整改迁移说明](AUTHORING-TOLERANCE-MIGRATION.md)。
+
 ## 交付内容
 
 - `skill/metriccanvas-platform-authoring/`：平台创建、编辑等工作流，与 Python 只通过 MCP 协作。

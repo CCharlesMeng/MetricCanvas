@@ -8,6 +8,7 @@ from metriccanvas_authoring.pages.editing.page_editing import EDIT_SCHEMA, apply
 from metriccanvas_authoring.pages.editing.section_editing import SECTION_OPERATIONS, SECTION_TYPES, edit_section
 from metriccanvas_authoring.pages.editing.operation_batch import operation_batch
 from metriccanvas_authoring.pages.composition.section_layout import pack_section_spans
+from metriccanvas_authoring.pages.input_tolerance import normalize_compose, compose_envelope
 
 SOURCE_REFS = {'type': 'object', 'propertyNames': ID, 'maxProperties': 6, 'additionalProperties': NAME}
 # Result-reference composition does not repeat the analysis plan's narrative fields.
@@ -42,7 +43,8 @@ def pack_default_widths(components, blocks):
 
 
 def compose(prepared, request, records):
-    require_valid = Draft202012Validator(COMPOSE_SCHEMA).is_valid(request)
+    request, adjustments = normalize_compose(request, COMPOSE_SCHEMA)
+    require_valid = Draft202012Validator(compose_envelope(COMPOSE_SCHEMA)).is_valid(request)
     if not require_valid:
         return {'status': 'failed', 'document': None, 'operations': [], 'issues': [{'code': 'COMPOSE_REQUEST_INVALID', 'path': ''}]}
     sections = request['sections']
@@ -56,12 +58,14 @@ def compose(prepared, request, records):
         'layout': request.get('layout', 'report'), 'dataSources': {}, 'sections': [
             {'id': 'header', 'container': 'plain', 'components': [{'id': 'page-header', 'type': 'reportHeader', 'layout': {'span': 12}, 'props': {'title': request['title']}}]}]}
     outcomes = []
-    for section in sections:
+    for si, section in enumerate(sections):
         target = {k: deepcopy(section[k]) for k in ('id', 'title') if k in section}
         target.update(container=section.get('container', 'panel'), components=[])
         used = []
-        for block in section['blocks']:
+        for bi, block in enumerate(section['blocks']):
             try:
+                if not Draft202012Validator(RESULT_SECTION['properties']['blocks']['items']).is_valid(block):
+                    raise StructureError('STRUCTURE_BLOCK_INVALID', f'/sections/{si}/blocks/{bi}')
                 record = records.get(block.get('source'))
                 component = block_component(block, sources, section['pattern'],
                     relations=record.get('relations', ()) if record else ())
@@ -84,7 +88,7 @@ def compose(prepared, request, records):
     applied = any(o['status'] == 'applied' for o in outcomes)
     if not applied or validate_page_document(document):
         return {'status': 'failed', 'document': None, 'operations': outcomes, 'issues': [{'code': 'COMPOSE_RESULT_INVALID', 'path': ''}]}
-    return {'status': 'partial' if any(o['status'] == 'failed' for o in outcomes) else 'changed', 'document': document, 'operations': outcomes, 'issues': []}
+    return {'status': 'partial' if any(o['status'] == 'failed' for o in outcomes) else 'changed', 'document': document, 'operations': outcomes, 'issues': [], 'adjustments': adjustments}
 
 
 async def edit(baseline, request, resolve, current, summary_enabled=False):

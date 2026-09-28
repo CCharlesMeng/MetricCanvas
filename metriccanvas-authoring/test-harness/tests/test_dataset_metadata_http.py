@@ -91,6 +91,14 @@ class DatasetMetadataHttpTest(unittest.IsolatedAsyncioTestCase):
             await self.make(dataset_ids=['other']).search(BINDING, '', 1)
 
     async def test_partial_element_failures_are_visible_not_zero_matches(self):
+        def handle(request):
+            self.calls.append(request)
+            ids = json.loads(request.content).get('datasetIds')
+            items = [v for v in self.payload['dataset_details'] if not ids or v['dataset_id'] in ids]
+            return httpx.Response(200, json={'retCode': 'CBC.0000', 'dataset_details': items})
+        self.transport = httpx.MockTransport(handle)
+        self.provider = self.make()
+        self.catalog = SemanticCatalog(self.provider, self.store)
         self.payload['dataset_details'].append({'dataset_id': 'unavailable', 'ret_code': 'LAB_DENIED',
                                                 'ret_desc': 'private SQL or credentials'})
         result = await self.catalog.discover(BINDING, 'Tokens', 5, [])
@@ -114,6 +122,7 @@ class DatasetMetadataHttpTest(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(result['coverage']['complete'])
         missing = await self.make(dataset_ids=['operations-dataset']).search(BINDING, '', 5)
         self.assertEqual(missing['issues'][0]['code'], 'DATASET_METADATA_MISSING')
+        self.assertEqual(missing['coverage']['returnedDatasets'], 0)
 
     async def test_envelope_identity_and_element_status_fail_closed(self):
         original = deepcopy(self.payload)
@@ -257,7 +266,8 @@ class DatasetMetadataHttpTest(unittest.IsolatedAsyncioTestCase):
     async def test_platform_factory_wires_java_discovery_then_query_with_same_version(self):
         provider = self.make(projection=PROJECTION)
         deps = replace(dependencies(), data_context=provider)
-        server = create_platform_server(deps, current_turns=Turns('new'), store=self.store,
+        turns = Turns('new')
+        server = create_platform_server(deps, current_turns=turns, store=self.store,
                                         analysis_authorization=Authorization())
         async with Client(server) as client:
             found = (await client.call_tool('discover_data_context', {'context_ref': 'current-context', 'query': 'Tokens'})).structured_content
@@ -267,7 +277,11 @@ class DatasetMetadataHttpTest(unittest.IsolatedAsyncioTestCase):
             result = (await client.call_tool('query_data', {'context_ref': 'current-context', 'request': request})).structured_content
             self.assertEqual(result['modelSummary']['results'][0]['status'], 'ready', result)
             self.assertEqual(result['modelSummary']['dataContextVersion'], version)
+            self.assertEqual(len(self.calls), 1)
             self.status = 401
+            # A new trusted turn refreshes metadata; the existing turn is pinned.
+            turns.binding['turnId'] = 'next-turn'
+            turns.scope['turnId'] = 'next-turn'
             error = (await client.call_tool('discover_data_context', {'context_ref': 'current-context'})).structured_content
             self.assertEqual(error['modelSummary']['issues'][0]['code'], 'DATA_CONTEXT_AUTH_REQUIRED')
         self.assertEqual(len(deps.dqe.calls), 1)

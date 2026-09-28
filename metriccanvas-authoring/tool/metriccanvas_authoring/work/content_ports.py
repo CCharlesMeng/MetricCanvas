@@ -11,8 +11,9 @@ class ContentBaseline:
 
 
 class ContentBaselineError(Exception):
-    def __init__(self, code: str) -> None:
+    def __init__(self, code: str, *, path: str = "") -> None:
         self.code = code
+        self.path = path
         super().__init__(code)
 
 

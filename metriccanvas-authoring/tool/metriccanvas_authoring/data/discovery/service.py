@@ -243,7 +243,8 @@ class DiscoveryService:
         return {'ok': True, 'status': 'partial' if unresolved or blocked or issues else 'ready', 'dataContextVersion': version,
                 'discoveryProtocolVersion': '1.0', 'matches': record['candidateEvidence'][:limit],
                 'details': details, 'businessDomains': sorted({c['businessDomain'] for c in cards}),
-                'dimensions': dimensions[:50], 'coverage': cov, 'executionReadiness': 'not_checked',
+                'dimensions': dimensions[:50], 'dimensionCoverage': {'returnedCount': min(50, len(dimensions)), 'matchedCount': len(dimensions), 'truncated': len(dimensions) > 50},
+                'reuse': {'instruction': 'Reuse canonical dimension queryBinding values; source IDs and labels are not query names. Missing summaries can be retrieved from the same turn metadata.'}, 'coverage': cov, 'executionReadiness': 'not_checked',
                 'knowledgeStatus': knowledge_status, 'knowledgeCoverage': knowledge_coverage, 'interpretationStatus': interpretation_status,
                 'issues': issues, 'discovery': {'taskRef': claim.key, 'status': record['status'],
                     'requirements': summary, 'relationships': relations, 'readyRequirementIds': executable, 'pausedRelations': blocked}, 'interactionEnvelope': interaction}

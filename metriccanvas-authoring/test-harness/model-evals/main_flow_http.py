@@ -26,6 +26,7 @@ class MainFlowState:
     def __init__(self, fixture_path: Path, log_path: Path):
         self.fixture = json.loads(fixture_path.read_text())
         self.log_path = log_path
+        self.metadata_partial_probe = False
         self.assets: dict[str, dict] = {}
         self.lock = Lock()
 
@@ -128,9 +129,13 @@ def _handler(state: MainFlowState):
             if path == METADATA_PATH:
                 if not self._authorized():
                     return
-                expected_ids = [state.fixture["dataset"]["dataset_id"]]
-                valid = isinstance(body, dict) and body.get("workspaceId") == "w" and body.get("datasetIds", expected_ids) == expected_ids
-                payload = {"retCode": "CBC.0000", "dataset_details": [deepcopy(state.fixture["dataset"])]} if valid else {"retCode": "CBC.0400", "dataset_details": []}
+                items = [deepcopy(state.fixture["dataset"])]
+                if state.metadata_partial_probe:
+                    items.append({'dataset_id': 'unavailable-dataset', 'ret_code': 'TEMPORARILY_UNAVAILABLE'})
+                expected_ids = [item['dataset_id'] for item in items]
+                ids = body.get('datasetIds', expected_ids) if isinstance(body, dict) else []
+                valid = isinstance(body, dict) and body.get("workspaceId") == "w" and isinstance(ids, list) and bool(ids) and set(ids) <= set(expected_ids)
+                payload = {"retCode": "CBC.0000", "dataset_details": [item for item in items if item['dataset_id'] in ids]} if valid else {"retCode": "CBC.0400", "dataset_details": []}
                 self._send(200 if valid else 400, payload, request_body=body)
                 return
             if path == DQE_PATH:

@@ -46,7 +46,8 @@ def create_platform_mcp_server(application):
                 output['interactionEnvelope'] = interaction
             return ToolResult(content=summary, structured_content=output)
         except (ContentBaselineError, DataContextError) as error:
-            summary = {'status': 'rejected', 'issues': [{'code': error.code, 'path': ''}]}
+            from metriccanvas_authoring.work.diagnostics import public_issue
+            summary = {'status': 'rejected', 'issues': [public_issue(error)]}
         except Exception:
             summary = {'status': 'unavailable', 'issues': [{'code': 'AUTHORING_PROVIDER_UNAVAILABLE', 'path': ''}]}
         return ToolResult(content=summary, structured_content={'ok': False, 'modelSummary': summary, 'artifactEnvelope': None})
@@ -65,7 +66,7 @@ def create_platform_mcp_server(application):
     @mcp.tool
     async def discover_data_context(context_ref: str, query: str = '', limit: Annotated[int, Field(ge=1, le=50)] = 10,
             detail_refs: list[str] | None = None) -> ToolResult:
-        """Find canonical business domains, metrics, dimensions and time granularities; combinations may be unknown."""
+        """Find canonical business domains, metrics and dimension queryBinding values. Reuse known definitions and version within this turn; discover again only for missing definitions."""
         return await call(application.discover, context_ref, query, limit, detail_refs)
 
     @mcp.tool
@@ -75,7 +76,7 @@ def create_platform_mcp_server(application):
 
     @mcp.tool
     async def compose_page(context_ref: str, request: ComposeRequest, expected_version: Annotated[int, Field(ge=0)] = 0) -> ToolResult:
-        """Create sections from result references or text; save a valid draft internally."""
+        """Create sections; sources maps source IDs directly to query_data resultRef strings. Optional display deviations use defaults, invalid blocks are isolated. Saves a valid draft internally."""
         return await call(application.mutate, 'compose', context_ref, request, expected_version, mutation=True)
 
     @mcp.tool
