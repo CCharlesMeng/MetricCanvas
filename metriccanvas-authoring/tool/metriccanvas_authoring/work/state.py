@@ -21,16 +21,19 @@ class StateStore(Protocol):
 
 @dataclass(frozen=True)
 class Limits:
-    calls: int = 24
-    query_rounds: int = 3
-    mutations: int = 2
-    seconds: int = 300
+    # Cumulative authoring budgets are temporarily opt-in; None means unbounded.
+    calls: int | None = None
+    query_rounds: int | None = None
+    mutations: int | None = None
+    seconds: int | None = None
     evidence_rows: int = 20
     evidence_bytes: int = 16000
-    total_evidence_bytes: int = 96000
+    total_evidence_bytes: int | None = None
 
     def __post_init__(self):
-        require(all(type(v) is int and v > 0 for v in vars(self).values()), 'BUDGET_CONFIG_INVALID')
+        optional = {'calls', 'query_rounds', 'mutations', 'seconds', 'total_evidence_bytes'}
+        require(all((v is None and k in optional) or (type(v) is int and v > 0)
+                    for k, v in vars(self).items()), 'BUDGET_CONFIG_INVALID')
 
 
 class TurnState:
@@ -46,14 +49,18 @@ class TurnState:
         for _ in range(20):
             version, state = await self.store.read('budget', key)
             state = deepcopy(state) if state else {'started': self.clock(), 'calls': 0, 'query_rounds': 0, 'mutations': 0, 'total_evidence_bytes': 0}
-            require(self.clock() - state['started'] < self.limits.seconds, 'AUTHORING_BUDGET_EXHAUSTED')
+            if self.limits.seconds is not None:
+                require(self.clock() - state['started'] < self.limits.seconds, 'AUTHORING_BUDGET_EXHAUSTED')
             state[kind] += amount
-            require(state[kind] <= getattr(self.limits, kind), 'AUTHORING_BUDGET_EXHAUSTED')
+            limit = getattr(self.limits, kind)
+            require(limit is None or state[kind] <= limit, 'AUTHORING_BUDGET_EXHAUSTED')
             if await self.store.compare_and_swap('budget', key, version, state):
                 return
         raise ContentBaselineError('WORK_BUSY')
 
     async def remaining(self, prepared):
+        if self.limits.seconds is None:
+            return None
         _, budget = await self.store.read('budget', self.key(prepared))
         remaining = self.limits.seconds - (self.clock() - budget['started'])
         require(remaining > 0, 'AUTHORING_BUDGET_EXHAUSTED')

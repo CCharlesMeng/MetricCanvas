@@ -208,3 +208,29 @@ class QueryValidationPolicyTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(strict['version'],relaxed['version'])
         self.assertNotIn('queryValidationView',strict)
         self.assertEqual(relaxed['queryValidationView'],'1')
+
+    async def test_both_discovery_paths_supply_canonical_domain_for_query(self):
+        provider = self.make(projection=PROJECTION)
+        domains = []
+        for use_catalog in (False, True):
+            deps = replace(dependencies(), data_context=provider)
+            turns = Turns('new')
+            turns.binding['turnId'] = turns.scope['turnId'] = 'catalog' if use_catalog else 'fallback'
+            server = create_platform_server(deps, current_turns=turns, store=self.store,
+                analysis_authorization=Authorization(),
+                semantic_catalog=SemanticCatalog(provider, self.store) if use_catalog else None)
+            async with Client(server) as client:
+                found = (await client.call_tool('discover_data_context', {
+                    'context_ref': 'current-context', 'query': 'Tokens请求量'})).structured_content['modelSummary']
+                self.assertTrue(found['ok'], found)
+                domain = next(m for m in found['matches'] if m['kind'] == 'metric')['businessDomain']
+                self.assertIn(domain, found['businessDomains'])
+                domains.append(domain)
+                request = query_request()
+                request['dataContextVersion'] = found['dataContextVersion']
+                request['requests'][0]['businessDomain'] = domain
+                result = (await client.call_tool('query_data', {
+                    'context_ref': 'current-context', 'request': request})).structured_content['modelSummary']
+                self.assertEqual(result['results'][0]['status'], 'ready', result)
+                self.assertEqual(result['results'][0]['scope']['businessDomain'], domain)
+        self.assertEqual(domains[0], domains[1])

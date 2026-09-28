@@ -2,6 +2,8 @@
 
 目标：在本目录内完成 Relay、Java、DQE 和状态存储接线。内部只维护 `tool/metriccanvas_authoring/adapters/`；公共源码由固定 Git 提交更新。当前工厂故意返回 `ADAPTERS_NOT_CONFIGURED`，参考代码不代表真实服务已接通。
 
+从 2026-09-23 的 `fd98a71e` 或旧接入形态升级时，先读 [2026-09-28 同步 changelog](CHANGELOG-2026-09-28.md)，其中覆盖目录迁移、内部定向合并、预算变化和验收。
+
 ## 1. 安装并确认目录完整
 
 以下命令在 `metriccanvas-authoring/` 根目录执行，使用 Python ≥3.12。先把该目录提交到公司 Git 仓库，记录取得公共源码的完整 Git 提交号。

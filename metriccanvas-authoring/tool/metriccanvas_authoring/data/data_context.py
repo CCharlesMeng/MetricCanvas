@@ -334,6 +334,7 @@ def _search_candidates_for_schema(
             SearchCandidate(
                 match={
                     "kind": "metric",
+                    "businessDomain": str(schema["name"]),
                     "environmentId": environment_id,
                     "schemaId": schema_id,
                     "metric": deepcopy(dict(metric)),

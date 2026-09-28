@@ -72,6 +72,32 @@ class DiscoveryTest(unittest.IsolatedAsyncioTestCase):
     async def discover(self, catalog=None):
         return await (catalog or self.catalog).discover(self.binding, '模型检索词不覆盖原句', 10, [])
 
+    async def test_default_interpreter_can_resume_after_two_interrupted_calls(self):
+        class Interpreter:
+            calls = 0
+            async def propose(self, context):
+                self.calls += 1
+                raise asyncio.CancelledError()
+        interpreter = Interpreter()
+        catalog = self.make_catalog(interpreter=interpreter)
+        for _ in range(3):
+            with self.assertRaises(asyncio.CancelledError):
+                await self.discover(catalog)
+        self.assertEqual(interpreter.calls, 3)
+
+    async def test_explicit_interpreter_limit_still_applies_after_interruption(self):
+        class Interpreter:
+            calls = 0
+            async def propose(self, context):
+                self.calls += 1
+                raise asyncio.CancelledError()
+        interpreter = Interpreter()
+        catalog = self.make_catalog(interpreter=interpreter, limits=DiscoveryLimits(model_calls=1))
+        with self.assertRaises(asyncio.CancelledError):
+            await self.discover(catalog)
+        await self.discover(catalog)
+        self.assertEqual(interpreter.calls, 1)
+
     async def test_sentence_multi_need_and_eleventh_alias(self):
         self.trusted.value['messageText'] = '比较支付金额和退款金额'
         result = await self.discover()

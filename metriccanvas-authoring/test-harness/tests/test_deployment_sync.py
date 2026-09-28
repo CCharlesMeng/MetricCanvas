@@ -84,3 +84,36 @@ class SyncTest(unittest.TestCase):
             git('add','metriccanvas-authoring/public.py'); git('commit','-m','bad lock')
             with self.assertRaisesRegex(ValueError,'digest mismatch'): sync.snapshot(repo,'HEAD')
             self.assertEqual(sync.snapshot(repo,original)[1]['public.py'],b'original')
+
+
+class DeploymentFingerprintTest(unittest.TestCase):
+    def test_actual_import_digest_drift_and_sensitive_files(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        spec = importlib.util.spec_from_file_location('fingerprint', BUNDLE/'scripts/deployment_fingerprint.py')
+        module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            installed = root/'installed.py'; installed.write_text('old package')
+            source = root/'tool/metriccanvas_authoring/work/state.py'
+            source.parent.mkdir(parents=True); source.write_text('expected package')
+            skill = root/'skill/example/SKILL.md'; skill.parent.mkdir(parents=True); skill.write_text('skill')
+            lock = {'bundleVersion': 'test', 'artifacts': [
+                {'file': str(p.relative_to(root)), 'sha256': module.digest(p)} for p in (source, skill)]}
+            (root/'bundle.lock.json').write_text(json.dumps(lock))
+            adapter = root/'plugin'; adapter.mkdir()
+            (adapter/'factory.py').write_text('private source')
+            (adapter/'.env').write_text('SECRET token')
+            (adapter/'work.db').write_text('SECRET rows')
+            with patch.object(module, 'MODULES', ('metriccanvas_authoring.work.state',)), patch.object(
+                    module.importlib.util, 'find_spec', return_value=SimpleNamespace(origin=str(installed.resolve()))):
+                report = module.fingerprint(root, adapter)
+                self.assertFalse(report['modules'][0]['matchesBundle'])
+                self.assertEqual(report['modules'][0]['path'], str(installed.resolve()))
+                self.assertEqual(report['bundleDrift'], [])
+                self.assertEqual([f['file'] for f in report['adapter']['files']], ['factory.py'])
+                self.assertNotIn('SECRET', json.dumps(report))
+                self.assertNotIn('private source', json.dumps(report))
+                skill.write_text('changed skill')
+                report = module.fingerprint(root)
+                self.assertEqual(report['bundleDrift'], [{'file': 'skill/example/SKILL.md', 'status': 'digest_mismatch'}])

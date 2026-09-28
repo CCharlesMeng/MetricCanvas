@@ -118,7 +118,7 @@ class DiscoveryService:
         rule_ready = all(r['status'] == 'resolved' for r in classify(deepcopy(requirements), question, cov))
         interpretation_status = 'not_needed' if rule_ready else 'unconfigured'
         if deps.interpreter and not rule_ready:
-            if record['analysisBudget']['modelCalls'] >= deps.limits.model_calls:
+            if deps.limits.model_calls is not None and record['analysisBudget']['modelCalls'] >= deps.limits.model_calls:
                 interpretation_status = 'budget_exhausted'
             else:
                 record['analysisBudget']['modelCalls'] += 1

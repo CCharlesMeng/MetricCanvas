@@ -52,3 +52,49 @@ class KnownHttpTest(unittest.IsolatedAsyncioTestCase):
             with self.assertRaises(LifecycleError) as caught: await getattr(self.adapter,operation)(Identities().current(),{})
             self.assertEqual(caught.exception.code,'CAPABILITY_UNAVAILABLE')
         self.assertFalse(self.requests)
+
+    async def test_save_diagnostics_locate_mismatch_without_exposing_payload(self):
+        from lifecycle_stdio_server import save_command
+        events = []
+        command = save_command()
+        self.response.update(is_draft=True, revision_number=1)
+        self.response['page_metadata_definition'] = 'PRIVATE invalid JSON'
+        self.adapter = KnownLifecycleHttp(self.adapter.collection_url, self.adapter.transport,
+                                          diagnostics=events.append)
+        result = await self.adapter.save(Identities().current(), command)
+        self.assertEqual(result, {'status': 'unknown', 'operationId': command['context']['operationId']})
+        self.assertEqual([e['stage'] for e in events], ['send_started', 'response_received', 'receipt_invalid'])
+        self.assertEqual(events[-1]['path'], '/page_metadata_definition')
+        self.assertEqual(events[1]['httpStatus'], 200)
+        self.assertEqual(events[-1]['businessCode'], 'CBC.0000')
+        self.assertTrue(all(e['operationId'] == result['operationId'] for e in events))
+        self.assertNotIn('PRIVATE', json.dumps(events))
+        self.assertNotIn('secret-token', json.dumps(events))
+        self.assertEqual(len(self.requests), 1)
+
+    async def test_save_diagnostics_distinguish_timeout_and_rejection_and_cannot_change_save(self):
+        from lifecycle_stdio_server import save_command
+        events = []
+        def timeout(request):
+            self.requests.append(request)
+            raise httpx.ReadTimeout('PRIVATE token in exception')
+        adapter = KnownLifecycleHttp(self.adapter.collection_url, httpx.MockTransport(timeout),
+                                     diagnostics=events.append)
+        result = await adapter.save(Identities().current(), save_command())
+        self.assertEqual(result['status'], 'unknown')
+        self.assertEqual(events[-1]['stage'], 'transport_unknown')
+        self.assertEqual(events[-1]['code'], 'TIMEOUT')
+        self.assertNotIn('PRIVATE', json.dumps(events))
+        self.assertEqual(len(self.requests), 1)
+        events.clear()
+        self.status = 409
+        self.adapter = KnownLifecycleHttp(self.adapter.collection_url, self.adapter.transport,
+                                          diagnostics=events.append)
+        self.assertEqual((await self.adapter.save(Identities().current(), save_command()))['status'], 'rejected')
+        self.assertEqual(events[-1]['stage'], 'rejected')
+        def broken_sink(event):
+            raise RuntimeError('sink unavailable')
+        self.adapter.diagnostics = broken_sink
+        self.response.update(is_draft=True, revision_number=1)
+        self.status = 200
+        self.assertEqual((await self.adapter.save(Identities().current(), save_command()))['status'], 'saved')

@@ -28,7 +28,7 @@ class DiscoveryLimits:
     seconds: float = 10
     ttl_seconds: int = 86400
     lease_seconds: int = 30
-    model_calls: int = 2
+    model_calls: int | None = None
     requirements: int = 6
     candidates: int = 20
     knowledge_items: int = 20
@@ -36,8 +36,10 @@ class DiscoveryLimits:
 
     def __post_init__(self):
         require(all(isinstance(v, (int, float)) and not isinstance(v, bool) and v > 0
-                    for v in vars(self).values()), 'DISCOVERY_LIMIT_INVALID')
-        require(self.lease_seconds > self.seconds and self.model_calls <= 2
+                    for k, v in vars(self).items() if k != 'model_calls'), 'DISCOVERY_LIMIT_INVALID')
+        require(self.model_calls is None or type(self.model_calls) is int and self.model_calls > 0,
+                'DISCOVERY_LIMIT_INVALID')
+        require(self.lease_seconds > self.seconds
                 and self.requirements <= 6 and self.candidates <= 20 and self.knowledge_items <= 20
                 and self.events <= 32, 'DISCOVERY_LIMIT_INVALID')
 

@@ -16,7 +16,7 @@ sys.path[:0] = [str(ROOT/'metriccanvas-authoring/tool'), str(ROOT/'metriccanvas-
 from test_authoring_turns import Turns
 from authoring_fixtures import dependencies
 from metriccanvas_authoring.work.authoring_turns import AuthoringTurnGate, SCOPE_KEYS
-from metriccanvas_authoring.work.state import TurnState
+from metriccanvas_authoring.work.state import TurnState, Limits
 from adapter_template.storage.platform_state import SqlitePlatformState
 from metriccanvas_authoring.bootstrap.platform import create_platform_server
 from metriccanvas_authoring.pages.validation.grouped_params import declarations as _param_declarations
@@ -220,7 +220,7 @@ class PageParametersMcpTest(unittest.IsolatedAsyncioTestCase):
                 return result
         params = ParameterDependencies(Late(), self.store, VerifiedFixture(), clock=lambda: self.now)
         module = PageParameters(AuthoringTurnGate(self.turns),
-            TurnState(self.work, clock=lambda: self.now), params)
+            TurnState(self.work, limits=Limits(seconds=300), clock=lambda: self.now), params)
         with self.assertRaisesRegex(ContentBaselineError, 'AUTHORING_BUDGET_EXHAUSTED'):
             await module.extract('current-context')
 

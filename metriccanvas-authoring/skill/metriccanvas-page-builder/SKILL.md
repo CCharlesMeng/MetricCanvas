@@ -84,6 +84,8 @@ frontmatter 中的 `metadata.mcp_servers` 只授权 MCP Server，`allowed-tools`
 
 ## 调用边界
 
+查数前逐项核对原需求的指标、地域/时间与维度组合，记录 supported / unknown / unsupported 和来源证据。域级维度并集不证明单个指标可组合；元数据缺失与检索未命中保持 unknown。整体、趋势、占比和交叉明细分别核对；核心地域或时间缺口须先向用户说明并取得范围选择，随后由可信程序授权，不静默使用全域替代。
+
 Relay 使用原生 Skill ReAct 调用模型，不由 Python Tool 再次调用模型。
 每个模型决策按 Bundle 内 `contracts/authored/agent-model-decision.schema.json` 的对应
 `$defs` 输出：
@@ -180,15 +182,15 @@ Tool 会对整句使用确定性指标/维度/时间词解析做一次兜底拆�
 
 Relay Page Artifact Adapter 必须保存 `artifactEnvelope.artifact`，再将模型可见结果替换为 `modelSummary + artifactId + checkpointVersion`。如果模型直接看到 `artifactEnvelope.artifact`、页面 `document` 或数据 `rows`，立即停止且不复述内容，并报告 Relay Adapter 未生效。
 
-## 模型调用与预算
+## 模型调用
 
-每个模型决策只接收当前问题、已治理候选、必要的最新单元摘要和当前 target，不传完整页面、DQE 数据行或无关对话历史。输出必须先通过 `contracts/authored/agent-model-decision.schema.json` 对应 `$defs`，再交给确定性规则；Relay 必须注册完整根 Schema 后通过它的 `$id#/$defs/...` 编译三类决策，不能脱离根 Schema 单独编译子对象。Schema 失败时将错误路径返给同一决策修正一次，第二次失败立即进入 `failed`。
+每个模型决策只接收当前问题、已治理候选、必要的最新单元摘要和当前 target，不传完整页面、DQE 数据行或无关对话历史。输出必须先通过 `contracts/authored/agent-model-decision.schema.json` 对应 `$defs`，再交给确定性规则；Relay 必须注册完整根 Schema 后通过它的 `$id#/$defs/...` 编译三类决策，不能脱离根 Schema 单独编译子对象。Schema 失败时将错误路径返给同一决策；有明确修正依据才继续，相同无进展错误进入 `failed`。
 
 - `route_business_domains`：只输出 1–2 个候选中存在的业务域，并交给 Agent Core `validate_route_decision` 再验真，面外模型输出返回 `MODEL_ROUTE_DECISION_INVALID`。用户显式覆盖优先；全部非法时返回 `DOMAIN_OVERRIDE_INVALID`。多轮沿用旧域零命中时，且本轮没有用户覆盖，才用全域候选重路由。
 - `submit_data_request_units`：首轮可输出 `unit` 或 `operations`，多轮优先输出带稳定 `dataSourceId` 的 `add/modify/replace/remove`。首轮多个视角默认每视角一单元；只有用户明确要求合并才合并，不同单位的指标不得合并。拆分时新单元默认继承原业务域、`groupBy` 和 `time`；标题必须唯一，不得自行扩展用户未要求的视角。
-- `submit_analysis_intent`：只对新增、`intent` 为空或用户明确要改意图的单元调用。即使单元的其他字段本轮被修改，只要用户未提及意图且旧值存在，也必须保留。多单元时用各自 `title` 作为意图输入，避免整句中的“趋势”污染所有单元。两次无效后按形状降级：无 `groupBy` 为 `single_value`；唯一时间分组为 `trend`；其余为 `comparison`。
+- `submit_analysis_intent`：只对新增、`intent` 为空或用户明确要改意图的单元调用。即使单元的其他字段本轮被修改，只要用户未提及意图且旧值存在，也必须保留。多单元时用各自 `title` 作为意图输入，避免整句中的“趋势”污染所有单元。无法形成有效意图且无新修正依据时按形状降级：无 `groupBy` 为 `single_value`；唯一时间分组为 `trend`；其余为 `comparison`。
 
-单轮止损预算：业务域决策最多 2 次，单元决策最多 2 次，每个需要判定意图的单元最多 2 次，`discover_data_context` 最多 12 次，`compose_page` 最多 2 次。到达任一上限后失败关闭，不继续试探。
+暂不设置模型决策与工具调用次数预算。每次继续必须有新增证据或明确修正依据；相同无进展错误停止对应分支并报告缺口。权限、Schema、引用与保存回执的校验继续生效。
 
 ## Agent Core 会话状态与确定性规则
 
@@ -196,7 +198,7 @@ Relay 检查点保存 `entries`、`nextOrdinal`、`routedDomains`、`dataContext
 
 1. 将画布 target 的 `sectionId/componentId` 定向到组件 `data.main`，再校验它是已知 `dataSourceId`。“这个/它”优先作用于该单元。
 2. `modify` 只合并 patch，`replace` 替换业务口径但保留原 `dataSourceId/intent/requestedComponent`，`remove` 不回收序号，`add` 使用单调 `nextOrdinal`。空 patch 不算触及；未触及 entry 保持原状态。
-3. 识别出合并、拆分、增加或删除，但单元决策返回空操作/空 patch/`out_of_scope` 时，带定向反馈修正一次；仍为空则返回 `STRUCTURAL_INTENT_NOT_APPLIED`，绝不假装已应用。
+3. 识别出合并、拆分、增加或删除，但单元决策返回空操作/空 patch/`out_of_scope` 时，根据定向反馈修正；相同无进展错误则返回 `STRUCTURAL_INTENT_NOT_APPLIED`，绝不假装已应用。
 4. 最多保留 6 个单元。超出部分记录 `droppedAdds`，结果中明说未执行的视角并建议用户下轮补充，不得静默截断。
 5. 组件目录中的中文名或别名按问题中最后一次显式出现为准。作用域为 `touched > target > all`；“图表/图形/可视化”等泛词只解除该作用域旧 pin，新显式点名覆盖旧 pin。
 6. 并列消歧确认必须同时携带候选内的精确 `businessDomain + canonicalName`；空确认继续阻塞，面外选择返回 `SCOPE_SELECTION_INVALID`。Agent Core 也接受已持久化 Scope Card 的等价 `metricName` 形状。
@@ -228,9 +230,9 @@ Relay 检查点保存 `entries`、`nextOrdinal`、`routedDomains`、`dataContext
 5. 在 `planning` 作出 `submit_data_request_units`，先用结构意图闸防止空操作被当成成功，再由 Agent Core 归一化并应用定向 `add/modify/replace/remove`。未触及 entry 必须保持原对象和原业务状态。
 6. 将可执行单元、`gaps` 与 `out_of_scope` 分区。有可执行单元时继续交付部分答案，缺口单独等待确认；无可执行单元时不调用 DQE。只有用户明确确认才发出带稳定幂等键的 `metric_gap_recorded`。
 7. 展示取数核对。非阻塞场景用紧凑要素展示后继续；存在歧义、formula 临时指标、模型补出的时间或平台声明的成本阈值时进入 `awaiting_user`。确认只作用于对应取数单元。
-8. 只对新增、`intent` 为空或用户明确要改意图的单元分别作出 `submit_analysis_intent`，使用该单元标题而非整句问题作为输入；失败两次后使用形状降级。其他已有意图保持不变。解析显式组件或解除 pin 语义，未触及单元保留原 pin。
+8. 只对新增、`intent` 为空或用户明确要改意图的单元分别作出 `submit_analysis_intent`，使用该单元标题而非整句问题作为输入；无法形成有效意图且无新修正依据时使用形状降级。其他已有意图保持不变。解析显式组件或解除 pin 语义，未触及单元保留原 pin。
 9. 用当前 `dataContextVersion`、稳定 `dataSourceId` 和最多六个单元形成 Page Build Spec。若 `droppedAdds > 0`，必须先说明未执行的视角和后续补充方式。
-10. 在 `composing` 调用一次 `compose_page`。若返回 `retrySafe: true`，可用完全相同的参数重试一次；当前仅 `DQE_TRANSPORT_ERROR` 和 `DQE_TIMEOUT` 安全。若封闭名称被拒绝且 issue 含 `candidates`，只允许依候选定向修正一次。`retrySafe: false` 或未知错误不得自动重试。
+10. 在 `composing` 调用一次 `compose_page`。若返回 `retrySafe: true`，可用完全相同的参数重试一次；当前仅 `DQE_TRANSPORT_ERROR` 和 `DQE_TIMEOUT` 安全。若封闭名称被拒绝且 issue 含 `candidates`，只能依候选作有依据的定向修正。`retrySafe: false` 或未知错误不得自动重试。
 11. 仅当 Relay 返回 `status: page_composed`，且同时包含 `pageId`、`artifactId`、`checkpointVersion`、`documentSha256`、`dataContextVersion` 和 `bundleVersion` 时进入 `page_composed`。告知用户临时页面态已就绪，另行说明 `gaps/droppedAdds`，不声称已创建页面修订。
 
 ## 持久化与安全

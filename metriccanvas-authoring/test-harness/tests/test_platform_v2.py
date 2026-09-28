@@ -280,6 +280,20 @@ class PlatformV2Test(unittest.IsolatedAsyncioTestCase):
         with self.assertRaisesRegex(ContentBaselineError, 'AUTHORING_BUDGET_EXHAUSTED'):
             await self.make(limits=Limits(calls=1)).read('current-context')
 
+    async def test_default_turn_continues_past_previous_cumulative_limits(self):
+        prepared = await self.app.prepare('current-context')
+        self.app.state.clock = lambda: 10**12
+        for kind, amount in [('calls', 25), ('query_rounds', 4), ('mutations', 3), ('total_evidence_bytes', 96001)]:
+            await self.app.state.consume(prepared, kind, amount)
+        self.assertIsNone(await self.app.state.remaining(prepared))
+        await self.make().read('current-context')
+
+    async def test_four_parallel_query_calls_do_not_exhaust_default_budget(self):
+        results = await asyncio.gather(*(self.app.query('current-context', query_request()) for _ in range(4)))
+        self.assertEqual(len(results), 4)
+        final = await self.app.query('current-context', query_request())
+        self.assertEqual(final['status'], 'ready')
+
     async def test_bounded_evidence_keeps_truncation_and_does_not_leak_query(self):
         from metriccanvas_authoring.data.execution import DqeExecutionResult
         async def many(query):
@@ -460,3 +474,51 @@ class CurrentJavaBaselineTest(unittest.IsolatedAsyncioTestCase):
         with self.assertRaisesRegex(ContentBaselineError, 'CURRENT_PAGE_UNAVAILABLE'):
             await self.app.mutate('edit', 'current-context', {'operations': [title()]})
         self.assertEqual(self.service.calls, [])
+
+    async def test_result_binding_rejects_run_request_and_context_changes(self):
+        result = await self.app.query('current-context', query_request())
+        ref = result['results'][0]['resultRef']
+        original_binding, original_scope = deepcopy(self.turns.binding), deepcopy(self.turns.scope)
+        for field in ('runId', 'requestId', 'contextRef'):
+            self.turns.binding = deepcopy(original_binding)
+            self.turns.scope = deepcopy(original_scope)
+            self.turns.binding[field] = 'changed'
+            if field in self.turns.scope:
+                self.turns.scope[field] = 'changed'
+            with self.subTest(field=field), self.assertRaisesRegex(ContentBaselineError, 'RESULT_SCOPE_MISMATCH'):
+                await self.app.query(self.turns.binding['contextRef'], result_ref=ref)
+        self.turns.binding, self.turns.scope = original_binding, original_scope
+        restored = await self.make().query('current-context', result_ref=ref)
+        self.assertEqual(restored['results'][0]['resultRef'], ref)
+
+    async def test_interleaved_trusted_turns_share_store_without_result_or_work_leak(self):
+        first_turns = self.turns
+        first_app = self.app
+        self.turns = Turns('new')
+        for field in ('turnId', 'runId', 'requestId', 'contextRef'):
+            self.turns.binding[field] = 'second-' + field
+            if field in self.turns.scope:
+                self.turns.scope[field] = self.turns.binding[field]
+        second_app = self.make()
+        context = self.turns.binding['contextRef']
+        first, second = await asyncio.gather(
+            first_app.query('current-context', query_request()),
+            second_app.query(context, query_request()))
+        first_ref, second_ref = first['results'][0]['resultRef'], second['results'][0]['resultRef']
+        self.assertNotEqual(first_ref, second_ref)
+        for app, ctx, foreign in ((first_app, 'current-context', second_ref), (second_app, context, first_ref)):
+            with self.assertRaisesRegex(ContentBaselineError, 'RESULT_SCOPE_MISMATCH'):
+                await app.query(ctx, result_ref=foreign)
+        first_turns.binding['status'] = 'cancelled'
+        with self.assertRaises(ContentBaselineError):
+            await first_app.query('current-context', result_ref=first_ref)
+        # Restart B against the same persisted store; A's cancellation must not affect it.
+        restarted = self.make()
+        await restarted.query(context, result_ref=second_ref)
+        request = {'title': '报告', 'sources': {'result': second_ref}, 'sections': plan()['sections']}
+        summary, _ = await restarted.mutate('compose', context, request)
+        self.assertEqual(summary['saveStatus'], 'saved')
+        await restarted.read(context)
+        await restarted.preview(context, summary['artifactRef'])
+        self.assertEqual(len(self.service.calls), 1)
+        self.assertEqual(len(self.preview.calls), 1)

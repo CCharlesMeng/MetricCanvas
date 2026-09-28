@@ -56,3 +56,9 @@ python metriccanvas-authoring/scripts/check_bundle.py
 ```
 
 测试分层见 [test-harness/README.md](../test-harness/README.md)。排查单个场景可以运行对应 unittest 模块；发布前运行完整清单。真实接线检查见 [RELAY-HANDOFF.md](../RELAY-HANDOFF.md)。检查通过证明本地分发和规则一致，不能把 Java/Relay 替身结果称为生产联调成功。
+
+### 部署文件对账与保存诊断
+
+用实际 Relay 工具的 Python/PYTHONPATH 运行 `scripts/deployment_fingerprint.py --bundle-root <已部署 Bundle> --adapter-root <实际插件源码>`（路径相对 Bundle 根）。脚本记录实际导入路径和摘要、Bundle/Skill 文件摘要、查询校验模式及插件 Python 源码摘要，不强制导入待检查源码；同一版本标签不代表内容一致。退出码 0 只确认公共文件与实际导入检查，真实接线仍需验收。
+
+参考 `KnownLifecycleHttp` 可注入同步 `diagnostics=record_event`，按 operationId 接收发送开始、HTTP 响应、回执校验或传输未知事件。回调需快速写程序日志；事件不含凭据、原始正文或异常消息，失败不改变保存状态。unknown 仍保留冻结提交并停止重发。此能力在 `examples/adapter_template/` 中提供；已有内部 Adapter 需定向合并，公共同步不会覆盖它。
