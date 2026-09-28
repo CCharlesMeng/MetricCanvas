@@ -835,3 +835,5 @@ S2独立detached验证树`/private/tmp/metriccanvas-126-s2-final`，精确产品
 ## GitHub收尾及新增评测授权（2026-09-15）
 
 用户批准收尾，并明确允许自动创建新评测任务，使用已配置DeepSeek v4 flash。总票手册与双Skill本仓项同步，模型评测拆为独立未完成项；#126/#95保持开放。评测职责仅限model-evals目录及model-eval-evidence.md，S0台账不移交；先校准2–3例再14例首轮，消费PR #148后main。启动规范见handoff/model-eval-next.md，真实任务ID以创建工具回执为准，当前尚未创建，不虚构人员分配。
+
+后续评测任务已启动并完成首轮本地运行；当时的逐例结论与边界见[首轮证据](model-eval-evidence.md)。上段“当前尚未创建”仅记录写作当时的状态。
