@@ -73,6 +73,10 @@ class SemanticSurface:
     dimensions_by_name: Mapping[str, SemanticDimension]
     declared_measures: Mapping[str, SemanticMetric] = field(default_factory=dict)
 
+    ambiguous_metrics: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
+    ambiguous_dimensions: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
+    ambiguous_measures: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
+
     def metric(self, name: str) -> SemanticMetric | None:
         return self.metrics_by_name.get(name)
 
@@ -235,6 +239,7 @@ def _dimension_entries_for_schema(
 
 def _project_surface(schema: Mapping[str, Any]) -> SemanticSurface:
     metrics: dict[str, SemanticMetric] = {}
+    metric_aliases, dimension_aliases, measure_aliases = {}, {}, {}
     for raw_metric in _sequence(schema["metrics"]):
         declaration = _mapping(raw_metric)
         metric = SemanticMetric(
@@ -245,7 +250,7 @@ def _project_surface(schema: Mapping[str, Any]) -> SemanticSurface:
             sensitive=bool(declaration["sensitive"]),
             dimensions=tuple(declaration.get("dimensions", [])),
         )
-        _index_name_and_aliases(metrics, metric, declaration)
+        _index_name_and_aliases(metrics, metric, declaration, metric_aliases)
 
     dimensions: dict[str, SemanticDimension] = {}
     measures: dict[str, SemanticMetric] = {}
@@ -258,7 +263,7 @@ def _project_surface(schema: Mapping[str, Any]) -> SemanticSurface:
             if 'measure' in role_hints:
                 measure = SemanticMetric(str(declaration['name']), str(declaration['type']),
                     _optional_string(declaration.get('unit')), bool(declaration['nullable']), bool(declaration['sensitive']))
-                _index_name_and_aliases(measures, measure, declaration)
+                _index_name_and_aliases(measures, measure, declaration, measure_aliases)
             if not is_time and "dimension" not in role_hints:
                 continue
             dimension = SemanticDimension(
@@ -282,26 +287,41 @@ def _project_surface(schema: Mapping[str, Any]) -> SemanticSurface:
                 ),
                 is_time=is_time,
             )
-            _index_name_and_aliases(dimensions, dimension, declaration)
+            _index_name_and_aliases(dimensions, dimension, declaration, dimension_aliases)
 
+    ambiguous_metrics = _resolve_aliases(metrics, metric_aliases)
+    ambiguous_dimensions = _resolve_aliases(dimensions, dimension_aliases)
+    ambiguous_measures = _resolve_aliases(measures, measure_aliases)
     return SemanticSurface(
         business_domain=str(schema["name"]),
         metrics_by_name=metrics,
         dimensions_by_name=dimensions, declared_measures=measures,
+        ambiguous_metrics=ambiguous_metrics, ambiguous_dimensions=ambiguous_dimensions,
+        ambiguous_measures=ambiguous_measures,
     )
 
 
-def _index_name_and_aliases(
-    index: dict[str, Any],
-    item: SemanticMetric | SemanticDimension,
-    declaration: Mapping[str, Any],
-) -> None:
+def _index_name_and_aliases(index, item, declaration, aliases):
     from metriccanvas_authoring.data.ports import DataContextError
-    for name in (item.name, *[str(alias) for alias in _sequence(declaration.get('aliases', []))]):
-        previous = index.get(name)
-        if previous is not None and previous != item:
-            raise DataContextError('DATA_CONTEXT_NAME_AMBIGUOUS', 'Conflicting semantic names or aliases')
-        index[name] = item
+    previous = index.get(item.name)
+    if previous is not None and previous != item:
+        raise DataContextError('DATA_CONTEXT_NAME_AMBIGUOUS', 'Conflicting canonical semantic names')
+    index[item.name] = item
+    for alias in declaration.get('aliases', []):
+        aliases.setdefault(str(alias), set()).add(item.name)
+
+
+def _resolve_aliases(index, aliases):
+    canonical = dict(index)
+    ambiguous = {}
+    for alias, names in aliases.items():
+        if alias in canonical:
+            continue
+        if len(names) == 1:
+            index[alias] = canonical[next(iter(names))]
+        else:
+            ambiguous[alias] = tuple(sorted(names))
+    return ambiguous
 
 
 def _parse_value_domain(description: str) -> tuple[str, ...] | None:

@@ -35,3 +35,26 @@ Java 原始指标语义层使用批量 query-dataset-from-lab 查询，由部署
 检查 status/coverage/issues：部分数据集失败时保留成功结果并说明覆盖缺口；全部失败不解释为“没有这个指标”。查询接口 DB 优先、未命中回源，不能声称已主动刷新 Lab。detailRef 绑定工作区、模型、指标和元数据版本，来源改变后重新发现。缺失单位、frequency、definition 或空维度保持 unknown。
 
 同轮已发布的元数据由已接入快照复用的 Adapter 缓存；查询与组装继续消费同一版本。部分 dataset 失败时，工具可先仅补取失败来源一次，再固定可用部分快照；不要反复发现试图刷掉缺口。已发现的可用业务域仍可查询，DATA_CONTEXT_PARTIAL warning 表示元数据覆盖不完整，不等同于本次结果行被截断。缺失域仍需补充来源，不能猜名替代。摘要未覆盖所需定义时可补发现，已有规范名与版本直接复用。dimensions[].queryBinding 明确 groupBy 与 filterDimension 的输入值，label/source 标识用于说明与来源定位。
+
+
+## 组件与结果证据
+
+先根据 query_data 的字段 ID、行形状和 coverage 选表达，再提交组件：
+
+`coverage.resultComplete` 描述程序保存的查询结果是否完整；`coverage.sampleTruncated` 描述给模型的样本是否缩短。`complete`/`truncated` 仍描述模型证据覆盖。`resultComplete=true` 时，即使 shownCount=20、returnedCount=totalCount=41 且 complete=false，工具仍可用完整 41 行验证饼图；不能写成“查询只返回20行”。totalCount=null 或 returnedCount<totalCount 时，程序结果才缺少完整性证明。
+
+| 目的 | 输入要求与选择 |
+|---|---|
+| 总量卡 | 单行总量直接绑定 measure，可包含多个指标；无需 dimension 或 match |
+| 指定对象卡片 | 多行结果使用 dimension 的 match，工具必须验证恰好命中一行；字段和取值取自证据 |
+| 完整占比 | pieChart 使用工具验证的完整结果；模型只看到 20 行样本并不表示程序只保存 20 行。totalCount 未知或实际分页缺行时无法证明完整占比 |
+| 时间趋势 | lineChart 使用实际时间分组字段；仅有时间筛选的类别分布仍是类别分布 |
+| 类别对比/明细 | barChart/table 可展示返回数据；结果不完整时说明覆盖范围，不能称作全量排名或完整占比 |
+
+STRUCTURE_INCOMPLETE_PROPORTION / STRUCTURE_ROW_SELECTION_UNVERIFIED 时复用现有 resultRef 调整到可验证的表达，或在业务计划允许时重查受影响项。完整性由程序结果证明，模型不提交 rows 或 complete 标志。STRUCTURE_FIELD_NOT_FOUND 时使用返回的字段 ID 修正绑定；不为总量卡虚构账期字段或添加无意义分组。
+
+查询使用发现返回的规范名与 queryBinding。DATA_CONTEXT_NAME_AMBIGUOUS 时从当前授权候选中选择明确指标；意图仍不清楚则澄清。相同别名可能属于多个指标，strict/relaxed 都不会自动选第一个。
+
+独立取数在工具当前批次上限内合并；同轮修改按当前 workVersion 和操作依赖合批。依赖尚未返回的 resultRef 或后续 workVersion 时分步执行。失败按 issues.action/retrySafe 处理，成功结果复用；跨轮引用交集成程序核对，保存 unknown 核对原提交。
+
+格式消费可信字段单位、币种、尺度及受支持的 defaultFormat；原始值保持不变。缺失货币信息时保留未知，“流水”名称不能证明人民币。工具返回 SCOPE_NOTE_REVIEW_REQUIRED 时核对变更后的口径说明；人工修改过或新轮基线中的历史说明需要显式受控编辑，不由工具猜测删除。

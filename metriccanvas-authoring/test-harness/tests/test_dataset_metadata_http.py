@@ -143,12 +143,13 @@ class DatasetMetadataHttpTest(unittest.IsolatedAsyncioTestCase):
         with self.assertRaisesRegex(DataContextError, 'SCOPE_MISMATCH'):
             await self.provider.search(BINDING, '', 5)
 
-    async def test_http_failures_are_structured_and_no_redirect_or_retry(self):
-        for status, code in [(401, 'AUTH_REQUIRED'), (403, 'FORBIDDEN'), (302, 'TRANSPORT_ERROR'), (500, 'TRANSPORT_ERROR')]:
+    async def test_http_failures_retry_only_transient_and_never_redirect(self):
+        for status, code in [(401, 'AUTH_REQUIRED'), (403, 'FORBIDDEN'), (302, 'QUERY_REJECTED'), (500, 'TRANSPORT_ERROR')]:
             self.status = status
-            with self.assertRaisesRegex(DataContextError, code):
+            with self.assertRaises(DataContextError) as raised:
                 await self.provider.search(BINDING, '', 5)
-        self.assertEqual(len(self.calls), 4)
+            self.assertTrue(raised.exception.code.endswith(code))
+        self.assertEqual(len(self.calls), 5)
 
     async def test_identity_mismatch_before_network_and_late_identity_change(self):
         with self.assertRaisesRegex(DataContextError, 'SCOPE_MISMATCH'):
@@ -304,3 +305,58 @@ class DatasetMetadataHttpTest(unittest.IsolatedAsyncioTestCase):
         self.assertIsInstance(provider, JavaDatasetMetadataProvider)
         self.assertIsNone(provider.projection)
         self.assertEqual(provider.dataset_ids, ['operations-dataset'])
+
+class MetadataRetryTest(unittest.IsolatedAsyncioTestCase):
+    async def test_initial_transient_and_recovery_share_three_attempt_budget(self):
+        fixture=DatasetMetadataHttpTest(); fixture.setUp()
+        try:
+            calls=[]
+            def handle(request):
+                calls.append(request)
+                if len(calls)==1 or len(calls)>=3:
+                    return httpx.Response(503)
+                return httpx.Response(200,json={'retCode':'CBC.0000','dataset_details':[
+                    dataset(),{'dataset_id':'missing','ret_code':'failed'}]})
+            fixture.transport=httpx.MockTransport(handle)
+            result=await fixture.make().search(BINDING,'',5)
+            self.assertEqual(len(calls),3)
+            self.assertFalse(result['coverage']['complete'])
+            self.assertEqual(len(result['models']),1)
+        finally: fixture.doCleanups()
+
+    async def test_identity_change_during_retry_never_sends_second_request(self):
+        fixture=DatasetMetadataHttpTest(); fixture.setUp()
+        try:
+            class Identity:
+                value=Identities().current()
+                def current(self): return self.value
+            identities=Identity(); calls=[]
+            def handle(request):
+                calls.append(request)
+                identities.value=LifecycleIdentity('bob','w','other-secret')
+                return httpx.Response(503)
+            provider=JavaDatasetMetadataProvider(BASE,identities,transport=httpx.MockTransport(handle))
+            with self.assertRaises(DataContextError) as raised: await provider.search(BINDING,'',5)
+            self.assertEqual(raised.exception.code,'DATA_CONTEXT_SCOPE_MISMATCH')
+            self.assertEqual(len(calls),1)
+        finally: fixture.doCleanups()
+
+
+    async def test_recovery_deadline_preserves_initial_success(self):
+        import adapter_template.firstparty.dataset_metadata_http as module
+        fixture=DatasetMetadataHttpTest(); fixture.setUp()
+        try:
+            provider=fixture.make(); calls=[]
+            async def fetch(binding, requested):
+                calls.append(requested)
+                if len(calls)==1:
+                    return {'models':[{'id':'good'}],'issues':[{'datasetId':'missing','code':'DATASET_METADATA_MISSING'}],
+                            'coverage':{'complete':False}}
+                await asyncio.sleep(1)
+            provider._fetch=fetch
+            with patch.object(module,'_ACQUISITION_TIMEOUT',.01):
+                result=await provider._acquire(BINDING,None)
+            self.assertEqual(result['models'],[{'id':'good'}])
+            self.assertEqual(result['coverage']['recovery']['code'],'DATA_CONTEXT_TIMEOUT')
+            self.assertEqual(len(calls),2)
+        finally: fixture.doCleanups()

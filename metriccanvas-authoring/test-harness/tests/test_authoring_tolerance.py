@@ -264,7 +264,7 @@ class AuthoringToleranceTest(unittest.IsolatedAsyncioTestCase):
                 calls = []
                 def handle(request):
                     calls.append(request)
-                    if len(calls) == 2:
+                    if len(calls) >= 2:
                         return httpx.Response(failure)
                     return httpx.Response(200, json={'retCode': 'CBC.0000', 'dataset_details': [
                         metadata.dataset(), {'dataset_id': 'missing', 'ret_code': 'failed'}]})
@@ -276,7 +276,7 @@ class AuthoringToleranceTest(unittest.IsolatedAsyncioTestCase):
                     value = await t.make().search(metadata.BINDING, '', 5)
                     self.assertEqual(len(value['models']), 1)
                     self.assertFalse(value['coverage']['complete'])
-                self.assertEqual(len(calls), 2)
+                self.assertEqual(len(calls), 2 if failure == 403 else 3)
         finally:
             t.doCleanups()
 

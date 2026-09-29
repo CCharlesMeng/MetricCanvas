@@ -2,6 +2,7 @@
 from metriccanvas_authoring.data.validation_policy import load_query_validation_policy
 from metriccanvas_authoring.data.metadata_session import metadata_session
 from copy import deepcopy
+from metriccanvas_authoring.work.diagnostics import timed_stage
 from dataclasses import replace
 from uuid import uuid4
 import asyncio
@@ -31,6 +32,7 @@ class PlatformAuthoring:
         self.relay_preview, self.summary_config = relay_preview, summary_config
         self.semantic_catalog = semantic_catalog
 
+    @timed_stage('authoring.prepare')
     async def prepare(self, context_ref, write=False):
         prepared = await self.gate.require(context_ref, write=write)
         await self.state.consume(prepared)
@@ -43,6 +45,7 @@ class PlatformAuthoring:
         return check
 
     @metadata_session
+    @timed_stage('authoring.discover')
     async def discover(self, context_ref, query, limit=10, detail_refs=None):
         prepared = await self.prepare(context_ref)
         if self.semantic_catalog is not None:
@@ -58,6 +61,7 @@ class PlatformAuthoring:
         return result
 
     @metadata_session
+    @timed_stage('authoring.query')
     async def query(self, context_ref, request=None, result_ref=None):
         prepared = await self.prepare(context_ref)
         require((request is None) != (result_ref is None), 'QUERY_INPUT_INVALID')
@@ -65,6 +69,7 @@ class PlatformAuthoring:
             return await self.results.read(prepared, result_ref, self.current(prepared))
         return await self.results.execute(prepared, request, self.current(prepared))
 
+    @timed_stage('authoring.read')
     async def read(self, context_ref, **options):
         prepared = await self.prepare(context_ref)
         _, work = await self.state.read(prepared)
@@ -85,6 +90,7 @@ class PlatformAuthoring:
         return result
 
     @metadata_session
+    @timed_stage('authoring.mutate')
     async def mutate(self, kind, context_ref, request, expected_version=0, *, page_id=None):
         request = deepcopy(request)
         adjustments = []
@@ -113,7 +119,7 @@ class PlatformAuthoring:
                 records = {}
                 for source_id, ref in request['sources'].items():
                     try:
-                        record = await self.results.require(prepared, ref, self.current(prepared, True), usable=False)
+                        record = await self.results.require(prepared, ref, self.current(prepared, True), allow_unready=True)
                     except ContentBaselineError as error:
                         raise ContentBaselineError(error.code, path='/sources/' + source_id.replace('~', '~0').replace('/', '~1')) from error
                     records[source_id] = record if record['status'] in {'ready', 'empty'} else None
@@ -122,7 +128,8 @@ class PlatformAuthoring:
                 require(work['document'] is not None, 'CURRENT_TURN_BASELINE_REQUIRED')
                 edited = await edit(work['document'], request,
                     lambda ref: self.results.require(prepared, ref, self.current(prepared, True)),
-                    self.current(prepared, True), summary_enabled=summary_configured(self.summary_config))
+                    self.current(prepared, True), summary_enabled=summary_configured(self.summary_config),
+                    scope_annotations=work.get('scopeAnnotations'))
             await self.current(prepared, True)()
             summary = {k: edited[k] for k in ('status', 'operations', 'issues')}
             summary['adjustments'] = adjustments + edited.get('adjustments', [])
@@ -133,7 +140,7 @@ class PlatformAuthoring:
                 await self.state.finish(prepared, version, work, request_hash, summary)
                 return summary, None
             operation = str(uuid4())
-            work.update(document=deepcopy(preview), workVersion=work['workVersion'] + 1,
+            work.update(document=deepcopy(preview), scopeAnnotations=edited.get('scopeAnnotations', work.get('scopeAnnotations', {})), workVersion=work['workVersion'] + 1,
                         submission={'operationId': operation, 'requestHash': request_hash, 'summary': deepcopy(summary)})
             # Freeze the work before crossing the remote save seam.
             require(await self.state.store.compare_and_swap('work', self.state.key(prepared), version, work), 'WORK_VERSION_CONFLICT')
@@ -178,6 +185,7 @@ class PlatformAuthoring:
         await self.current(prepared, True)()
         return summary
 
+    @timed_stage('authoring.preview')
     async def preview(self, context_ref, artifact_ref):
         prepared = await self.prepare(context_ref)
         _, work = await self.state.read(prepared)

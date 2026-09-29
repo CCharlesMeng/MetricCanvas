@@ -14,6 +14,14 @@ import subprocess
 import sys
 
 MODULES = (
+    'metriccanvas_authoring.data.data_context',
+    'metriccanvas_authoring.pages.scope_annotations',
+    'metriccanvas_authoring.data.metadata_session',
+    'metriccanvas_authoring.data.results',
+    'metriccanvas_authoring.data.executable_units',
+    'metriccanvas_authoring.pages.referenced',
+    'metriccanvas_authoring.pages.composition.page_structure',
+    'metriccanvas_authoring.pages.validation.page_validation',
     'metriccanvas_authoring.data.semantic_catalog',
     'metriccanvas_authoring.data.discover_data_context',
     'metriccanvas_authoring.data.validation_policy',

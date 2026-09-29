@@ -5,13 +5,15 @@ forwards physical schemas to the model. Identity and dataset scope are trusted
 constructor inputs, never MCP arguments.
 """
 from copy import deepcopy
+import asyncio
+import time
 from dataclasses import asdict
 from urllib.parse import urlsplit
 
 import httpx
 
 from metriccanvas_authoring.canonical import canonical_sha256
-from metriccanvas_authoring.data.metadata_session import read_turn_metadata, metadata_session_active
+from metriccanvas_authoring.data.metadata_session import read_turn_metadata, metadata_session_active, metadata_event
 from metriccanvas_authoring.data.ports import DataContextError
 from metriccanvas_authoring.data.data_context import parse_data_context
 from metriccanvas_authoring.data.validation_policy import QueryValidationPolicy
@@ -20,6 +22,7 @@ from adapter_template.firstparty.data_context_http import project_lab_snapshot
 DATASET_DETAIL_BASE_URL_ENV = 'METRICCANVAS_DATASET_DETAIL_BASE_URL'
 DATASET_IDS_ENV = 'METRICCANVAS_DATASET_IDS'
 QUERY_PATH = '/dataset-detail/query-dataset-from-lab'
+_ACQUISITION_TIMEOUT = 55
 
 
 def require(value, code='DATA_CONTEXT_ENVELOPE_ERROR'):
@@ -65,10 +68,36 @@ class JavaDatasetMetadataProvider:
         return value
 
     async def _acquire(self, binding, dataset_ids):
+        # Initial reads, retries and recovery share one deadline and HTTP budget.
+        # A recovery timeout preserves already acquired models; cancellation does not.
+        deadline = time.monotonic() + _ACQUISITION_TIMEOUT
+        identity = self.identity(binding)
+        budget = [3]
+        async def fetch(requested):
+            for attempt in range(2):
+                require(self.identity(binding) == identity, 'DATA_CONTEXT_SCOPE_MISMATCH')
+                if time.monotonic() >= deadline:
+                    raise DataContextError('DATA_CONTEXT_TIMEOUT', 'Metadata acquisition timed out')
+                budget[0] -= 1
+                started = time.monotonic()
+                try:
+                    async with asyncio.timeout(max(0, deadline - time.monotonic())):
+                        value = await self._fetch(binding, requested)
+                    require(self.identity(binding) == identity, 'DATA_CONTEXT_SCOPE_MISMATCH')
+                    metadata_event('http_ok', started)
+                    return value
+                except TimeoutError:
+                    metadata_event('http_failed', started)
+                    raise DataContextError('DATA_CONTEXT_TIMEOUT', 'Metadata acquisition timed out') from None
+                except DataContextError as error:
+                    metadata_event('http_failed', started)
+                    if attempt or budget[0] <= 0 or error.code not in {'DATA_CONTEXT_TIMEOUT', 'DATA_CONTEXT_TRANSPORT_ERROR'}:
+                        raise
+                    await asyncio.sleep(min(.1, max(0, deadline - time.monotonic())))
         # Retry only missing/failed sources before publishing an immutable view.
         # The endpoint is eventually consistent: this is per-dataset evidence,
         # not an atomic snapshot across datasets.
-        value = await self._fetch(binding, dataset_ids)
+        value = await fetch(dataset_ids)
         missing = sorted({issue['datasetId'] for issue in value['issues']})
         if not missing:
             return value
@@ -76,7 +105,7 @@ class JavaDatasetMetadataProvider:
         if len(missing) > 100:
             return value
         try:
-            recovered = await self._fetch(binding, missing)
+            recovered = await fetch(missing)
         except DataContextError as error:
             if error.code not in {'DATA_CONTEXT_TIMEOUT', 'DATA_CONTEXT_TRANSPORT_ERROR'}:
                 raise
@@ -118,7 +147,9 @@ class JavaDatasetMetadataProvider:
         require(self.identities.current() == identity, 'DATA_CONTEXT_SCOPE_MISMATCH')
         require(response.status_code != 401, 'DATA_CONTEXT_AUTH_REQUIRED')
         require(response.status_code != 403, 'DATA_CONTEXT_FORBIDDEN')
-        require(response.status_code == 200, 'DATA_CONTEXT_TRANSPORT_ERROR')
+        if response.status_code in {408, 429, 500, 502, 503, 504}:
+            raise DataContextError('DATA_CONTEXT_TRANSPORT_ERROR', 'Transient metadata HTTP failure')
+        require(response.status_code == 200, 'DATA_CONTEXT_QUERY_REJECTED')
         try:
             payload = response.json()
         except ValueError:

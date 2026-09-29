@@ -50,7 +50,7 @@
       "id": "create-complex-report",
       "workflow": "create",
       "injectionSources": ["SKILL.md", "references/tools.md", "references/execution.md", "references/scenarios.md", "references/reading-design.md", "references/scenarios/usage-report.md", "references/layouts/report.md", "workflows/create.md", "workflows/data-analysis.md"],
-      "prompt": "新建一份 2026 年 8 月 Tokens 服务运营分析报告，采用 report。面向运营负责人说明当月请求规模和失败请求情况，并分析 6 至 8 月变化、区域与模型差异，重点关注华东；将简短的华东观察融入区域分析，不单设小章节。分析计划已经确认；请先取得证据，再自行组织完整的阅读顺序和内容。只使用本地样例中真实返回的数值；计划没有提供比率指标，页面中不要自行计算占比、失败率等百分比。明确说明本页为本地样例数据，不代表生产；无需单设口径或数据说明。创建草稿并交付预览。",
+      "prompt": "新建一份 2026 年 8 月 Tokens 服务运营分析报告，采用 report，页面标题为“2026年8月Tokens服务运营分析报告”。面向运营负责人说明当月请求规模和失败请求情况，并分析 6 至 8 月变化、区域与模型差异，重点关注华东；将简短的华东观察融入区域分析，不单设小章节。分析计划已经确认；请先取得证据，再自行组织完整的阅读顺序和内容。只使用本地样例中真实返回的数值；计划没有提供比率指标，页面中不要自行计算占比、失败率等百分比。明确说明本页为本地样例数据，不代表生产；无需单设口径或数据说明。创建草稿并交付预览。",
       "layout": "report",
       "pageId": "main-flow-complex-report",
       "creationBaseline": "empty",

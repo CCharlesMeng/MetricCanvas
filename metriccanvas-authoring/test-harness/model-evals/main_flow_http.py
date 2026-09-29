@@ -151,7 +151,7 @@ def _handler(state: MainFlowState):
                 results = []
                 for unit in units:
                     rows = next((rows for query, rows in known if unit == query), None)
-                    results.append({"code": "SUCCESS", "data": deepcopy(rows), "total_count": len(rows)}
+                    results.append({"code": "SUCCESS", "data": deepcopy(rows), "total_count": state.fixture.get("probeTotalCount", len(rows))}
                                    if rows is not None else {"code": "NO_MATCH", "data": [], "total_count": 0,
                                                              "message": "unsupported fixture query"})
                 self._send(200, {"retCode": "CBC.0000", "retDesc": None, "results": results}, request_body=body)

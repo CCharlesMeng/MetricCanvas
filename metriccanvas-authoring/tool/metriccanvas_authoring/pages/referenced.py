@@ -1,5 +1,6 @@
 """Page expression from verified results; this module never executes DQE."""
 from copy import deepcopy
+from metriccanvas_authoring.pages.scope_annotations import scope_body, member, refresh, source_contract, data_locations
 from jsonschema import Draft202012Validator
 from metriccanvas_authoring.bundle_info import load_bundle_info
 from metriccanvas_authoring.pages.composition.page_structure import SECTION, ID, NAME, TEXT, DATA_BLOCK, obj, block_component, scope_note, StructureError
@@ -23,6 +24,11 @@ RESULT_OPERATION = obj({'id': ID, 'type': {'const': 'add_result_component'}, 'se
     'dependsOn': {'type': 'array', 'items': ID}}, ['id', 'type', 'sectionId', 'resultRef', 'block'])
 EDIT_RESULT_SCHEMA = deepcopy(EDIT_SCHEMA)
 EDIT_RESULT_SCHEMA['properties']['operations']['items']['oneOf'].extend([*SECTION_OPERATIONS, RESULT_OPERATION])
+
+
+def incomplete_initial(source, record):
+    initial = source['source'].get('initial', {})
+    return record['totalCount'] is None or len(initial.get('rows', [])) != record['totalCount']
 
 
 def pack_default_widths(components, blocks):
@@ -58,61 +64,95 @@ def compose(prepared, request, records):
         'layout': request.get('layout', 'report'), 'dataSources': {}, 'sections': [
             {'id': 'header', 'container': 'plain', 'components': [{'id': 'page-header', 'type': 'reportHeader', 'layout': {'span': 12}, 'props': {'title': request['title']}}]}]}
     outcomes = []
+    scope_annotations = {}
     for si, section in enumerate(sections):
         target = {k: deepcopy(section[k]) for k in ('id', 'title') if k in section}
         target.update(container=section.get('container', 'panel'), components=[])
         used = []
+        members = {}
         for bi, block in enumerate(section['blocks']):
             try:
                 if not Draft202012Validator(RESULT_SECTION['properties']['blocks']['items']).is_valid(block):
                     raise StructureError('STRUCTURE_BLOCK_INVALID', f'/sections/{si}/blocks/{bi}')
                 record = records.get(block.get('source'))
                 component = block_component(block, sources, section['pattern'],
-                    relations=record.get('relations', ()) if record else ())
+                    relations=record.get('relations', ()) if record else (), evidence=record)
                 trial = deepcopy(document)
                 trial['dataSources'].update(sources)
                 trial['sections'].append({**target, 'components': target['components'] + [component]})
                 if validate_page_document(trial): raise StructureError('STRUCTURE_COMPONENT_INVALID')
                 target['components'].append(component)
-                if block.get('source') in sources: used.append(block['source'])
+                if (block.get('component') == 'pieChart' or block.get('match')) and incomplete_initial(sources[block['source']], record):
+                    # Query again on render; an embedded sample is not a whole.
+                    sources[block['source']]['source'].pop('initial', None)
+                if block.get('source') in sources:
+                    used.append(block['source'])
+                    members.update(member(block['id'], block['source'], record))
                 outcomes.append({'id': block['id'], 'status': 'applied', 'issues': [], 'adjustments': []})
             except StructureError as error:
                 outcomes.append({'id': block['id'], 'status': 'failed', 'issues': [error.issue()], 'adjustments': []})
                 target['components'].append({'id': 'structure-missing-' + block['id'], 'type': 'text', 'layout': {'span': 12}, 'props': {'body': f"未生成「{block.get('title', block['id'])}」：{error.code}。"}})
         if used:
             target['components'].append({'id': 'structure-scope-' + section['id'], 'type': 'text', 'layout': {'span': 12},
-                'props': {'body': '数据口径：\n' + '\n'.join(scope_note(records[k]['request']) for k in dict.fromkeys(used))}})
+                'props': {'body': scope_body([records[k]['request'] for k in dict.fromkeys(used)])}})
+            scope_annotations['structure-scope-' + section['id']] = {
+                'body': target['components'][-1]['props']['body'], 'members': members}
             document['dataSources'].update({k: sources[k] for k in used})
         pack_default_widths(target['components'], section['blocks'])
         document['sections'].append(target)
     applied = any(o['status'] == 'applied' for o in outcomes)
     if not applied or validate_page_document(document):
         return {'status': 'failed', 'document': None, 'operations': outcomes, 'issues': [{'code': 'COMPOSE_RESULT_INVALID', 'path': ''}]}
-    return {'status': 'partial' if any(o['status'] == 'failed' for o in outcomes) else 'changed', 'document': document, 'operations': outcomes, 'issues': [], 'adjustments': adjustments}
+    return {'status': 'partial' if any(o['status'] == 'failed' for o in outcomes) else 'changed', 'document': document, 'operations': outcomes, 'issues': [], 'adjustments': adjustments, 'scopeAnnotations': scope_annotations}
 
 
-async def edit(baseline, request, resolve, current, summary_enabled=False):
+async def edit(baseline, request, resolve, current, summary_enabled=False, scope_annotations=None):
+    notes = deepcopy(scope_annotations or {})
+    new_notes = {}
     batch = operation_batch(baseline, request, EDIT_RESULT_SCHEMA['properties']['operations']['items'])
     result = None
     while True:
         await current()
         try: document, op = batch.send(result)
-        except StopIteration as completed: return completed.value
+        except StopIteration as completed:
+            value = completed.value
+            if value['document'] is not None:
+                for outcome in value['operations']:
+                    if outcome['status'] in {'applied', 'unchanged'} and outcome['id'] in new_notes:
+                        note_id, annotation = new_notes[outcome['id']]
+                        notes[note_id] = annotation
+                notes, adjustments = refresh(value['document'], notes)
+                if (data_locations(baseline) != data_locations(value['document']) or baseline['dataSources'] != value['document']['dataSources']) and any(
+                        c['id'].startswith(('structure-scope-', 'result-scope-', 'scope-')) and c['id'] not in (scope_annotations or {})
+                        for section in baseline['sections'] for c in section['components']):
+                    adjustments.append({'code': 'SCOPE_NOTE_REVIEW_REQUIRED', 'path': '/sections'})
+                value['adjustments'] = adjustments
+                value['scopeAnnotations'] = notes
+                if validate_page_document(value['document']):
+                    return {'status': 'failed', 'document': None, 'operations': value['operations'],
+                            'issues': [{'code': 'EDIT_RESULT_INVALID', 'path': ''}]}
+            return value
         if op['type'] == 'add_result_component':
             from metriccanvas_authoring.work.content_ports import ContentBaselineError
             try:
                 record = await resolve(op['resultRef'])
                 source_id = op['block']['source']
                 source = deepcopy(record['source'])
-                if source_id in document['dataSources'] and document['dataSources'][source_id] != source:
+                if source_id in document['dataSources'] and source_contract(document['dataSources'][source_id]) != source_contract(source):
                     raise StructureError('DATA_SOURCE_CONFLICT')
-                document['dataSources'][source_id] = source
+                if source_id not in document['dataSources']:
+                    document['dataSources'][source_id] = source
                 operation = {k: v for k, v in op.items() if k != 'resultRef'}
                 operation['type'] = 'add_source_component'
-                candidate = edit_section(document, operation, relations=record.get('relations', ()))
+                candidate = edit_section(document, operation, relations=record.get('relations', ()), evidence=record)
+                if (op['block'].get('component') == 'pieChart' or op['block'].get('match')) and incomplete_initial(source, record):
+                    candidate['dataSources'][source_id]['source'].pop('initial', None)
                 target = next(section for section in candidate['sections'] if section['id'] == op['sectionId'])
                 target['components'].append({'id': 'result-scope-' + op['block']['id'], 'type': 'text', 'layout': {'span': 12},
-                    'props': {'body': '数据口径：' + scope_note(record['request'])}})
+                    'props': {'body': scope_body([record['request']])}})
+                new_notes[op['id']] = ('result-scope-' + op['block']['id'], {
+                    'body': target['components'][-1]['props']['body'],
+                    'members': member(op['block']['id'], source_id, record)})
                 result = candidate, [], []
             except (StructureError, ContentBaselineError) as error:
                 result = None, [{'code': error.code, 'path': ''}], []

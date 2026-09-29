@@ -1,5 +1,5 @@
 import { createServer } from 'vite';
-import { sveltekit } from '@sveltejs/kit/vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { chromium, expect } from '../../../../packages/embed/node_modules/@playwright/test/index.mjs';
 import { spawn } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -17,7 +17,9 @@ const resourceId=saved.ref.resourceId;
 const header=saved.document.sections.flatMap(section=>section.components).find(component=>component.type==='reportHeader');
 if(!header?.props?.title)throw new Error('Saved document has no report header');
 const python=process.env.METRICCANVAS_AUTHORING_PYTHON || resolve(repoRoot,'metriccanvas-authoring/tool/.venv/bin/python');
-const fixture=resolve(repoRoot,'metriccanvas-authoring/test-harness/fixtures/platform-main-flow.json');
+const fixture=process.argv[4] ? resolve(process.argv[4]) : resolve(repoRoot,'metriccanvas-authoring/test-harness/fixtures/platform-main-flow.json');
+const fixtureData=JSON.parse(await readFile(fixture,'utf8'));
+const firstRegion=fixtureData.rows[0]['区域'];
 const httpServer=resolve(repoRoot,'metriccanvas-authoring/test-harness/model-evals/main_flow_http.py');
 await mkdir(output,{recursive:true});
 const ready=resolve(output,'http-ready.json');
@@ -33,11 +35,10 @@ let childError='';child.stderr.on('data',chunk=>childError+=String(chunk));
 for(let i=0;i<100&&!existsSync(ready);i++)await new Promise(resolve=>setTimeout(resolve,50));
 if(!existsSync(ready))throw new Error(`Main-flow HTTP server did not start: ${childError}`);
 const {baseUrl}=JSON.parse(await readFile(ready,'utf8'));
-// The SvelteKit plugin resolves svelte.config.js and src/app.html from cwd.
-// Keep the browser acceptance isolated from the repository's HTTPS dev config
-// while presenting the actual Platform application as the Vite root.
+// Exercise the current standalone Vite/Svelte entry on loopback HTTP.
 process.chdir(appRoot);
-vite=await createServer({root:appRoot,configFile:false,plugins:[sveltekit()],
+vite=await createServer({root:appRoot,configFile:false,plugins:[svelte()],
+  resolve:{alias:{$lib:resolve(appRoot,'src/lib'),$pages:resolve(repoRoot,'pages'),$fixtures:resolve(repoRoot,'docs/examples')}},
   server:{host:'127.0.0.1',port:0,strictPort:false}});
 await vite.listen();
 const platformUrl=vite.resolvedUrls?.local?.[0];
@@ -54,16 +55,15 @@ const measurements=[];
     await page.setViewportSize({width,height:1000});
     await page.goto(`${platformUrl}?page=${encodeURIComponent(pageId)}&resource=${encodeURIComponent(resourceId)}`);
     await expect(page.getByText(header.props.title,{exact:true}).first()).toBeVisible();
-    await expect(page.getByText('华东',{exact:true}).first()).toBeVisible();
+    await expect(page.getByText(firstRegion,{exact:true}).first()).toBeVisible();
     if(pageId==='main-flow-complex-report'){
       await expect(page.getByText('通用',{exact:true}).first()).toBeVisible();
       await expect(page.getByText(/1,?200/).first()).toBeVisible();
     }else{
-      await expect(page.getByText('华南',{exact:true}).first()).toBeVisible();
-      await expect(page.getByText('18',{exact:true}).first()).toBeVisible();
-      await expect(page.getByText('12',{exact:true}).first()).toBeVisible();
+      await expect(page.getByText(fixtureData.rows[1]['区域'],{exact:true}).first()).toBeVisible();
+      for(const row of fixtureData.rows.slice(0,2)) await expect(page.getByText(String(row['Tokens请求量']),{exact:true}).first()).toBeVisible();
     }
-    await expect(page.locator('.bar-chart canvas').first()).toBeVisible();
+    await expect(page.locator('.bar-chart canvas, .pie-chart canvas').first()).toBeVisible();
     await page.waitForTimeout(1800);
     const content=page.locator('.page-content').first();
     await expect(content).toBeVisible();

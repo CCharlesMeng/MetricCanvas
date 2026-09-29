@@ -77,7 +77,7 @@ def field_id(fields, reference):
     return found[0]
 
 
-def block_component(block, sources, pattern='custom', *, relations=()):
+def block_component(block, sources, pattern='custom', *, relations=(), evidence=None):
     """Reuse executed sources, never execute queries or aggregate result rows."""
     if block['type'] == 'text':
         props = {'body': block['body']}
@@ -94,6 +94,10 @@ def block_component(block, sources, pattern='custom', *, relations=()):
     initial = source['source'].get('initial', {})
     rows = initial.get('rows', [])
     count = initial.get('totalCount', len(rows))
+    if evidence is not None:
+        # Private authorized result record, never a model-supplied proof.
+        rows = evidence['rows']
+        count = evidence['totalCount']
     component_type = block['component']
     match = block.get('match')
     if match:

@@ -229,7 +229,7 @@ async def _call_oneshot(state_path, name, arguments):
         return await client.call_tool(name, arguments, raise_on_error=False)
 
 
-async def _execute_case(case, fixture, instructions, base_url, output, dependencies, transport, tolerance_probe=False, metadata_partial_probe=False):
+async def _execute_case(case, fixture, instructions, base_url, output, dependencies, transport, tolerance_probe=False, metadata_partial_probe=False, evidence_probe=None):
     folder = output / case["id"]
     folder.mkdir(parents=True)
     before = None
@@ -243,7 +243,7 @@ async def _execute_case(case, fixture, instructions, base_url, output, dependenc
         dump(folder / "before.json", before)
     binding, document_json = _binding(case, before, ref)
     state = {"profile": "main-flow-http", "baseUrl": base_url, "metadataPartialProbe": metadata_partial_probe,
-             "fixturePath": str(FIXTURE_PATH), "binding": binding,
+             "fixturePath": str(output / "evidence-fixture.json" if evidence_probe else FIXTURE_PATH), "binding": binding,
              "scope": {key: binding[key] for key in SCOPE_KEYS}, "documentJson": document_json}
     state_path = folder / "trusted-state.json"
     dump(state_path, state)
@@ -347,14 +347,14 @@ def _assess(case, fixture, before, artifact, trajectory, final):
         components = [component for section in document["sections"] for component in section["components"]]
         if not any(component["type"] == "reportHeader" and component.get("props", {}).get("title") == case["expected"]["title"] for component in components):
             issues.append("TITLE_MISMATCH")
-        if not {"barChart", "table"}.issubset({component["type"] for component in components}):
+        if not set(case.get("requiredComponents", ["barChart", "table"])).issubset({component["type"] for component in components}):
             issues.append("REQUIRED_COMPONENTS_MISSING")
         if document.get("schemaVersion") != "6.11":
             issues.append("SCHEMA_VERSION_MISMATCH")
         preview = artifact.get("previewJson", {})
         sources = preview.get("dataSources", {})
         expected_rows = case["expected"]["rows"]
-        if not any(source.get("source", {}).get("initial", {}).get("rows") == expected_rows for source in sources.values()):
+        if not case.get("evidenceProbe") and not any(source.get("source", {}).get("initial", {}).get("rows") == expected_rows for source in sources.values()):
             issues.append("BUSINESS_ROWS_MISSING")
         fields = [field for source in document.get("dataSources", {}).values() for field in source.get("fields", {}).values()]
         if not any(field.get("queryField") == case["expected"]["metric"] and field.get("unit") == case["expected"]["unit"] for field in fields):
@@ -392,6 +392,24 @@ def _assess(case, fixture, before, artifact, trajectory, final):
         next(component for section in expected["sections"] for component in section["components"] if component["id"] == target)["props"]["title"] = title
         if expected != document:
             issues.append("UNAUTHORIZED_DOCUMENT_CHANGE")
+    if case.get('evidenceProbe'):
+        probe = case['evidenceProbe']
+        components = [c for section in document['sections'] for c in section['components']]
+        queries = [t for t in trajectory if t['tool'] == 'query_data']
+        results = [r for q in queries for r in q['summary'].get('results', []) if r['status'] == 'ready']
+        expected_total = None if probe == 'unknown' else 41
+        if not results or any(r['coverage']['totalCount'] != expected_total or len(r['rows']) > 20 for r in results):
+            issues.append('EVIDENCE_PROBE_COVERAGE_INVALID')
+        if probe != 'complete' and any(c['type'] == 'pieChart' for c in components):
+            issues.append('INCOMPLETE_PROPORTION_PRESENTED')
+        for component in components:
+            if component['type'] == 'pieChart':
+                for source_id in component.get('data', {}).values():
+                    if artifact.get('previewJson', {}).get('dataSources', {}).get(source_id, {}).get('source', {}).get('initial'):
+                        issues.append('PARTIAL_PIE_INITIAL_PRESENTED')
+        if probe != 'complete' and not any(word in json.dumps(document, ensure_ascii=False) + final
+                for word in ('截断', '不完整', '未知', '样本', '返回范围', '覆盖缺口')):
+            issues.append('INCOMPLETE_COVERAGE_NOT_DISCLOSED')
     if "PRIVATE SQL" in json.dumps(trajectory, ensure_ascii=False):
         issues.append("PHYSICAL_SQL_LEAKED")
     return not issues, issues
@@ -496,7 +514,7 @@ def _assess_complex_report(case, fixture, artifact, trajectory):
     return issues
 
 
-async def run(output: Path, scripted: bool = False, case_ids=None, tolerance_probe=False, metadata_partial_probe=False):
+async def run(output: Path, scripted: bool = False, case_ids=None, tolerance_probe=False, metadata_partial_probe=False, evidence_probe=None):
     output.mkdir(parents=True, exist_ok=False)
     suite = json.loads(SUITE_PATH.read_text())
     fixture = json.loads(FIXTURE_PATH.read_text())
@@ -516,6 +534,25 @@ async def run(output: Path, scripted: bool = False, case_ids=None, tolerance_pro
         cases = [case for case in cases if case["id"] in selected]
     if (tolerance_probe or metadata_partial_probe) and any(case['workflow'] != 'create' for case in cases):
         raise ValueError('Tolerance probe requires creation cases only')
+    if evidence_probe:
+        if [case['id'] for case in cases] != ['create-report']:
+            raise ValueError('Evidence probe requires --cases create-report')
+        fixture['rows'] = [{'区域': f'区域{i:02d}', 'Tokens请求量': i+1} for i in range(41 if evidence_probe != 'truncated' else 20)]
+        fixture['probeTotalCount'] = None if evidence_probe == 'unknown' else 41
+        for metric in fixture['dataset']['logical_schema']['field_schema']['metrics']:
+            metric.setdefault('synonyms', []).append('共同别名')
+        case = cases[0]
+        case['evidenceProbe'] = evidence_probe
+        case['requiredComponents'] = ['pieChart' if evidence_probe == 'complete' else 'barChart', 'table']
+        case['prompt'] += ' 页面标题使用“2026年8月区域运营报告”。完整性可验证时使用饼图及明细表；总数未知或返回行不完整时使用条形图和表格，并说明覆盖缺口。仅使用计划指定的规范指标名。'
+        if evidence_probe == 'complete':
+            for section in fixture['sections']:
+                for block in section['blocks']:
+                    if block.get('component') == 'barChart':
+                        block['component'] = 'pieChart'
+        else:
+            fixture['sections'][0]['blocks'].append({'id':'coverage-note','type':'text','body':'返回结果不完整或总数未知，仅展示当前样本。','purpose':'context'})
+        dump(output / 'evidence-fixture.json', fixture)
     skill = AUTHORING / "skill/metriccanvas-platform-authoring"
     sources = [skill / relative for relative in suite["injectionSources"]]
     missing = [str(path) for path in sources if not path.is_file()]
@@ -529,7 +566,8 @@ async def run(output: Path, scripted: bool = False, case_ids=None, tolerance_pro
         for case in cases
     }
     dump(output / "prompt-sources.json", {str(path.relative_to(ROOT)): sha(path) for path in sources})
-    dump(output / "inputs.json", {"suite": sha(SUITE_PATH), "scenario": sha(FIXTURE_PATH)})
+    dump(output / "inputs.json", {"suite": sha(SUITE_PATH), "scenario": sha(output / "evidence-fixture.json" if evidence_probe else FIXTURE_PATH)})
+    dump(output / "effective-cases.json", cases)
     model_client = None if scripted else httpx.AsyncClient(timeout=120)
     shared_transport = None if scripted else HttpTransport(
         config(ROOT / "apps/platform/.env"), 600000, message_auditor=audit_v2,
@@ -538,14 +576,14 @@ async def run(output: Path, scripted: bool = False, case_ids=None, tolerance_pro
     results, artifacts = [], {}
     log_path = output / "http.jsonl"
     try:
-        with serve_main_flow(FIXTURE_PATH, log_path) as (http_state, base_url):
+        with serve_main_flow(output / "evidence-fixture.json" if evidence_probe else FIXTURE_PATH, log_path) as (http_state, base_url):
             http_state.metadata_partial_probe = metadata_partial_probe
             for case in cases:
                 before_lines = log_path.read_text().splitlines() if log_path.exists() else []
                 try:
                     result, artifact = await _execute_case(
                         case, fixture, instructions_by_case[case["id"]], base_url,
-                        output, artifacts, shared_transport, tolerance_probe, metadata_partial_probe)
+                        output, artifacts, shared_transport, tolerance_probe, metadata_partial_probe, evidence_probe)
                 except Exception as error:
                     folder = output / case["id"]
                     folder.mkdir(parents=True, exist_ok=True)
@@ -583,7 +621,7 @@ async def run(output: Path, scripted: bool = False, case_ids=None, tolerance_pro
     tokens = 0 if scripted else shared_transport.tokens
     report = {"evidenceKind": "deterministic-main-flow" if scripted else "real-model-local-http-main-flow",
         "model": "scripted-no-model" if scripted else shared_transport.configuration["DEEPSEEK_MODEL"],
-        "toleranceProbe": tolerance_probe, "metadataPartialProbe": metadata_partial_probe,
+        "toleranceProbe": tolerance_probe, "metadataPartialProbe": metadata_partial_probe, "evidenceProbe": evidence_probe,
         "elapsedSeconds": round(time.monotonic() - started, 3), "modelCalls": model_calls,
         "tokens": tokens, "tokenBudget": 600000,
         "requestReserve": "utf8-bytes/2 + 8192 + max_tokens" if not scripted else "not-applicable",
@@ -606,8 +644,9 @@ async def main():
     parser.add_argument("--cases", nargs="+")
     parser.add_argument("--tolerance-probe", action="store_true", help="Inject declared presentation-only faults into creation calls; preserve raw model arguments")
     parser.add_argument("--metadata-partial-probe", action="store_true", help="Keep one unrelated dataset unavailable; verify incremental fetch and usable-source continuity")
+    parser.add_argument("--evidence-probe", choices=("complete", "truncated", "unknown"), help="41-row completeness and shared-alias fixture, create-report only")
     args = parser.parse_args()
-    report = await run(args.output, scripted=args.scripted, case_ids=args.cases, tolerance_probe=args.tolerance_probe, metadata_partial_probe=args.metadata_partial_probe)
+    report = await run(args.output, scripted=args.scripted, case_ids=args.cases, tolerance_probe=args.tolerance_probe, metadata_partial_probe=args.metadata_partial_probe, evidence_probe=args.evidence_probe)
     if not report["passed"]:
         raise SystemExit(1)
 

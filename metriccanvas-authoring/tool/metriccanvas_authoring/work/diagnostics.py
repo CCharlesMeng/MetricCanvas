@@ -16,3 +16,27 @@ def public_issue(error):
         message, action, owner = _GUIDANCE[error.code]
         result.update(message=message, action=action, recoveryOwner=owner)
     return result
+
+
+def timed_stage(name):
+    """Fixed stage and duration only. Diagnostic failure never changes behavior."""
+    import logging
+    import time
+    from functools import wraps
+    logger = logging.getLogger(__name__)
+    def decorate(method):
+        @wraps(method)
+        async def call(*args, **kwargs):
+            started, succeeded = time.monotonic(), False
+            try:
+                value = await method(*args, **kwargs)
+                succeeded = True
+                return value
+            finally:
+                try:
+                    logger.info('authoring stage=%s completed=%s elapsed_ms=%d',
+                                name, succeeded, (time.monotonic() - started) * 1000)
+                except Exception:
+                    pass
+        return call
+    return decorate

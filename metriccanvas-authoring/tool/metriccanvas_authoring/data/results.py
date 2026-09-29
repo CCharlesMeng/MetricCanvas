@@ -185,6 +185,7 @@ class QueryResults:
             item['rows'].pop()
             item['coverage']['shownCount'] = len(item['rows'])
             item['coverage']['truncated'] = True
+            item['coverage']['sampleTruncated'] = True
             item['coverage']['complete'] = False
 
     def evidence(self, record, source_id=None):
@@ -211,6 +212,8 @@ class QueryResults:
         result['coverage'] = {'shownCount': shown, 'returnedCount': returned, 'totalCount': total,
                               'truncated': shown < returned or total is not None and returned < total,
                               'complete': total is not None and shown == returned == total,
+                              'resultComplete': total is not None and returned == total,
+                              'sampleTruncated': shown < returned,
                               'basis': 'returned rows; no ranking or aggregation inferred'}
         entries = relation_evidence(record.get('relations', []), allowed)
         result['relations'] = entries[:20]
@@ -219,7 +222,7 @@ class QueryResults:
         result['capturedAt'] = record['capturedAt']
         return result
 
-    async def require(self, prepared, ref, current, *, usable=True):
+    async def require(self, prepared, ref, current, *, usable=True, allow_unready=False):
         _, record = await self.state.store.read('query', ref)
         require(record is not None and record['binding'] == dict(prepared.binding), 'RESULT_SCOPE_MISMATCH')
         policy = load_query_validation_policy()
@@ -234,7 +237,7 @@ class QueryResults:
         require(not issues and context.version == record['dataContextVersion'], 'RESULT_VERSION_STALE')
         await self.authorize(prepared, record['request'], record['dataContextVersion'])
         await current()
-        if usable:
+        if usable and not allow_unready:
             require(record['status'] in {'ready', 'empty'}, 'RESULT_NOT_READY')
         return deepcopy(record)
 

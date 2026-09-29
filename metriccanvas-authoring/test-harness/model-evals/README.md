@@ -25,3 +25,9 @@ runner 每个 case 输出 `trajectory.json`、`artifact.json`、`document.json`�
 `robustness-smoke.cases.json` 冻结正常创建与展示偏差两个用例。选 `--cases create-report` 执行正常路径；增加 `--tolerance-probe` 在正式工具调用前注入缺失 pattern、无效 container/width 与 purpose=null。轨迹同时保留模型原始参数、注入路径和实际参数，不能将注入错误称为模型自然犯错。评分要求已有业务断言通过、出现 adjustments、成功保存且 query_data 只调用一次。确定性预检用同样参数加 `--scripted`。本小范围不替代完整 DS 验收或生产联调。
 
 `run_platform_v2.py --cases create-report --metadata-partial-probe --output <new-dir>` 在可信本地 HTTP 夹具中加入持续不可用的无关 dataset，验收只补取失败来源一次、跨 MCP 进程复用 partial、查询携带覆盖 warning 且原需求页面完成；可与 `--tolerance-probe` 组合。加入 `--scripted` 时不调用模型。该探针不模拟生产权限撤销或跨源原子一致性。
+
+## 41 行与完整性探针
+
+`run_platform_v2.py --cases create-report --evidence-probe complete|truncated|unknown --output <new-dir>` 复用主流程 runner，分别提供 41/41、20/41 和 41/未知总数。元数据中两个指标共享别名，计划仍使用唯一规范名。complete 要求饼图与表格并避免截断 initial；其他两项要求可验证的对比/明细及覆盖说明。加入 `--scripted` 执行相同链路的确定性对照。运行目录冻结 `evidence-fixture.json`、`effective-cases.json` 与实际输入摘要；这是假设条件明确的本地验收，不是生产回放。
+
+重开该产物时，将同一运行的 `evidence-fixture.json` 作为 `main-flow-browser.mjs` 的第三个位置参数，避免误用默认两行 fixture。

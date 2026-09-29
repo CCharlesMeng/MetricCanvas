@@ -16,7 +16,7 @@ SECTION_OPERATIONS = [
 SECTION_TYPES = {s['properties']['type']['const'] for s in SECTION_OPERATIONS}
 
 
-def edit_section(document, op, *, relations=()):
+def edit_section(document, op, *, relations=(), evidence=None):
     candidate = deepcopy(document)
     sections = candidate['sections']
     target = next((s for s in sections if s['id'] == op['sectionId']), None)
@@ -58,5 +58,5 @@ def edit_section(document, op, *, relations=()):
         block = op['block']
         if any(c['id'] == block['id'] for s in sections for c in s['components']):
             raise StructureError('COMPONENT_ID_CONFLICT')
-        target['components'].append(block_component(block, candidate['dataSources'], relations=relations))
+        target['components'].append(block_component(block, candidate['dataSources'], relations=relations, evidence=evidence))
     return candidate

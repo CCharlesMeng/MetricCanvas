@@ -82,6 +82,19 @@ def derive_executable_units(
                     tuple(data_context.surfaces_by_domain),
                 ),
             )
+        selected_names = [
+            (m['name'], surface.ambiguous_metrics if m['name'] in surface.ambiguous_metrics else
+             surface.ambiguous_measures if not policy.strict and surface.metric(m['name']) is None else {},
+             f'/units/{index}/metrics/{mi}/name')
+            for mi, m in enumerate(unit['metrics']) if m['kind'] == 'metric'
+        ] + [(name, surface.ambiguous_dimensions, f'/units/{index}/groupBy/{di}')
+             for di, name in enumerate(unit['groupBy'])] + [
+            (f['dimension'], surface.ambiguous_dimensions, f'/units/{index}/filters/{fi}/dimension')
+            for fi, f in enumerate(unit['filters'])]
+        for name, ambiguous, path in selected_names:
+            if name in ambiguous:
+                raise PageBuildingIssue(code='DATA_CONTEXT_NAME_AMBIGUOUS', path=path,
+                    message='Use an exact canonical name', candidates=ambiguous[name][:10])
         if not policy.strict:
             metrics = dict(surface.metrics_by_name)
             for selected in unit['metrics']:
