@@ -1,4 +1,4 @@
-import {cpSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync} from 'node:fs';
+import {cpSync, existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, statSync, writeFileSync} from 'node:fs';
 import {resolve, relative, sep} from 'node:path';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
@@ -40,7 +40,7 @@ export function composeDeployment({platform, adapter, output}) {
   return manifest;
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (process.argv[1] && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [platform, adapter, output] = process.argv.slice(2);
   if (!platform || !adapter || !output) throw Error('Usage: node compose-deployment.mjs PLATFORM_DIR ADAPTER_JS OUTPUT_DIR');
   const manifest = composeDeployment({platform, adapter, output});

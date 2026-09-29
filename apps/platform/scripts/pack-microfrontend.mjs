@@ -9,6 +9,7 @@ const hash=data=>createHash('sha256').update(data).digest('hex');
 const files=directory=>readdirSync(directory).sort().flatMap(name=>{const path=resolve(directory,name);return statSync(path).isDirectory()?files(path):[path];});
 writeFileSync(resolve(dist,'portal-contract.d.ts'),readFileSync(resolve('src/lib/integration/contract.ts')));
 writeFileSync(resolve(dist,'compose-deployment.mjs'),readFileSync(resolve('scripts/compose-deployment.mjs')));
+writeFileSync(resolve(dist,'pack-deployment.mjs'),readFileSync(resolve('scripts/pack-deployment.mjs')));
 const artifacts=files(dist).filter(path=>!path.endsWith('/release.json'));
 const script=artifacts.filter(path=>path.endsWith('.js')).map(path=>readFileSync(path,'utf8')).join('\n');
 for(const forbidden of ['local-dev','developer-1','__fixtures/','__METRICCANVAS_PANGU__','currentLoginUser','node_modules/','process.env.NODE_ENV',root]) {

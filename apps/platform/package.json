@@ -9,6 +9,7 @@
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "build:microfrontend": "vite build --mode microfrontend",
     "pack:microfrontend": "pnpm build:microfrontend && node scripts/pack-microfrontend.mjs",
+    "pack:deployment": "node scripts/pack-deployment.mjs",
     "test:microfrontend": "cd ../.. && node apps/platform/tests/microfrontend/production-browser.mjs"
   },
   "dependencies": {

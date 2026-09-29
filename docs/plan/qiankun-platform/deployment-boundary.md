@@ -48,6 +48,21 @@ Object.assign(window, {MetricCanvasDeploymentAdapter: adapter});
 
 ## 组合与发布
 
+默认发布对象是包含内部 Adapter 的完整子应用包。宿主若将 `app.props` 整体替换为 `appList/roleList`，无需修改注册逻辑，但 `entry` 必须指向组合后的 HTML。原始平台包仍作为上游交付物，不能把仅含权限 props 的直接注册标记为已接通。
+
+完整交付使用平台归档附带的命令（只需 Node.js 和 tar）：
+
+```sh
+node /downloaded/platform/pack-deployment.mjs \
+  /downloaded/platform \
+  /private-adapter/dist/adapter.js \
+  /private-release/new-version
+```
+
+输出新部署目录、`new-version.tar.gz` 和 `new-version.tar.gz.sha256`，拒绝覆盖已有输出。打包失败保留已产生的输出以便检查，重试换新路径。源码工作区也可执行 `pnpm --filter platform pack:deployment PLATFORM_DIR ADAPTER_JS OUTPUT_DIR`；相对路径以平台包目录为准，流水线建议传绝对路径。
+
+只需组合目录时继续使用原命令：
+
 ```sh
 node /downloaded/platform/compose-deployment.mjs \
   /downloaded/platform \

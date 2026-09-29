@@ -78,7 +78,36 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 | `dialogueAdapter` | 可选，沿用 DialogueAdapter：mount(element) 返回实例清理函数；不能清理门户共享 SDK |
 | `authoring` / `events` | 可选，沿用可信创作 AuthoringIntegration / 实例 EventTarget；缺席时 AI 不可用，人工页面搭建不受阻 |
 
-独立部署项目可通过 `MetricCanvasDeploymentAdapter` 契约 v1 转换主应用已有 props/全局能力，无需主应用直接提供下列标准 props。接线实现、私有 SDK 和部署资料位于独立仓库，平台只消费标准输入；组合与清理规则见 [部署维护边界](plan/qiankun-platform/deployment-boundary.md)。归档同时提供 `compose-deployment.mjs`，组合结果拥有独立摘要，原平台产物不修改。
+**默认交付：内部组合后的完整子应用包。** 原始平台归档是内部流水线的输入；若宿主只提供 `appList/roleList`，直接注册原始包会因为缺少 `readConfig` 而失败。独立部署项目通过 `MetricCanvasDeploymentAdapter` 契约 v1 转换主应用已有 props/全局能力，提供上表中的标准配置。接线实现、私有 SDK 和环境配置由内部项目维护，平台只消费标准输入。
+
+平台归档附带 `pack-deployment.mjs` 和 `compose-deployment.mjs`，内部流水线只需 Node.js 和 tar，无需克隆平台仓库或安装其依赖：
+
+```sh
+node /downloaded/platform/pack-deployment.mjs \
+  /downloaded/platform \
+  /private-adapter/dist/adapter.js \
+  /private-release/metriccanvas-20260929-1
+```
+
+命令生成指定的新目录、同名 `.tar.gz` 和 `.tar.gz.sha256`。原平台包保持不变，组合目录记录平台和 Adapter 各自摘要；任何已有输出都不会被覆盖。若打包途中失败，已生成的目录或归档保留以便检查，重试使用新的输出路径。内部流水线另行记录 Adapter 源码提交，并在归档所在目录执行 `shasum -a 256 -c metriccanvas-20260929-1.tar.gz.sha256` 核对传输结果。
+
+宿主可继续从 `moduleInfoList` 直接注册，例如以下**合成示例**（地址、名称、容器和权限菜单记录均须按实际部署填写）：
+
+```ts
+// moduleInfoList 中的注册信息；entry 指向完整组合目录。
+const moduleRegistration = {
+  name: 'metriccanvas',
+  entry: '/micro/metriccanvas/releases/20260929-1/index.html',
+  container: '#metriccanvas-container',
+  activeRule: '/metrics'
+};
+// 保持宿主已有逻辑：注册前整体替换 props。
+app.props = {appList: permittedApps, roleList: currentRoles};
+```
+
+Adapter 在平台脚本之前执行，只注册接线对象，在 mount 时才连接实例。不能依靠上述替换前的 `app.props` 保存配置；不能从 `appList/roleList` 猜 token、用户或工作空间。Adapter 显式提供与 `activeRule` 对齐的 `routeBase`，静态资源 `entry` 与业务路由前缀相互独立。内部须验证实际 loader 的激活规则，包括相邻前缀不会误激活。
+
+宿主若在 `afterMount` 初始化共享 SDK，平台 mount 及 Adapter connect 不得等待该初始化；后续能力按实际就绪通知接通。原地身份变化需真实通知；`reload` 只用于保证整页重载的部署。完整规则见 [部署维护边界](plan/qiankun-platform/deployment-boundary.md)。
 
 以下为主应用已能直接提供标准 props 时的注册示例（另一种接入方式，不在 platform 内另启主应用）：
 
