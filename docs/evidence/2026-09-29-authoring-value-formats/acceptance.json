@@ -1,0 +1,14 @@
+{
+  "scope": "Authoring numeric display defaults using existing Page formats",
+  "baseline": "New page; existing explicit formats and raw query values preserved",
+  "tools": ["read_page_context", "discover_data_context", "query_data", "compose_page", "page_metadata_emit_preview"],
+  "cases": [
+    {"id":"cny", "instruction":"Create a regional Tokens流水 report", "context":"Explicit unit 人民币元, raw values 11030729.634 and 29729963.323", "expected":"cny-adaptive", "mode":"new"},
+    {"id":"quantity", "instruction":"Create a regional Tokens consumption report", "context":"Quantity in Tokens, raw values 11358989639011.566 and 23518208780053.55", "expected":"compact-yi-1", "mode":"new"},
+    {"id":"scaled", "instruction":"Create a regional Tokens流水 report", "context":"Explicit unit 万元, raw values 1103.1 and 2973.0", "expected":"raw values; no additional scale", "mode":"new"},
+    {"id":"small-values", "instruction":"Preserve small values alongside large values", "context":"Mixed magnitudes, zeros, negative numbers", "expected":"Small nonzero values never rounded to zero by selected format", "mode":"deterministic"},
+    {"id":"explicit-format", "instruction":"Preserve upstream formatting", "context":"SourceDescription with explicit defaultFormat or unknown scale", "expected":"Explicit formats unchanged; unknown scale not compacted", "mode":"deterministic"}
+  ],
+  "forbiddenChanges": ["DQE query", "raw rows", "money classification guessed from metric name", "saved baseline fields", "new Page protocol"],
+  "excluded": ["Production Relay/Java/DQE deployment", "Publishing", "New adaptive count preset"]
+}

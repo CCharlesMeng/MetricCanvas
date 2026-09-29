@@ -30,7 +30,8 @@ export function lineOption(
       name: fieldLabel(props.xField, data),
       data: rows.map((row) => formatValue(row[x.field], x.format))
     },
-    yAxis: dualOrSingleAxis(props.dualAxis, props.series.length, props.hideYAxis),
+    yAxis: dualOrSingleAxis(props.dualAxis, props.series.length, props.hideYAxis,
+      props.series.map(series => resolveField(series.field, data).format)),
     series: props.series.map((series, i) => {
       const field = resolveField(series.field, data);
       return {

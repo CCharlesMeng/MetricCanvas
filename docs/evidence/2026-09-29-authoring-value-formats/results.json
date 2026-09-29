@@ -1,0 +1,399 @@
+{
+  "initial": {
+    "passed": true,
+    "cases": [
+      {
+        "id": "cny",
+        "passed": true,
+        "issues": [],
+        "modelCalls": 5,
+        "tokens": 120812
+      },
+      {
+        "id": "quantity",
+        "passed": true,
+        "issues": [],
+        "modelCalls": 5,
+        "tokens": 120199
+      },
+      {
+        "id": "scaled",
+        "passed": true,
+        "issues": [],
+        "modelCalls": 5,
+        "tokens": 120422
+      }
+    ],
+    "evidenceKind": "real-deepseek-local-http",
+    "limitations": [
+      "Synthetic Java/DQE/Relay services; not internal production integration"
+    ],
+    "evidenceRoot": "/tmp/value-formats-20260929-model"
+  },
+  "fixture-corrected": {
+    "passed": true,
+    "cases": [
+      {
+        "id": "cny",
+        "passed": true,
+        "issues": [],
+        "modelCalls": 5,
+        "tokens": 119043
+      },
+      {
+        "id": "quantity",
+        "passed": true,
+        "issues": [],
+        "modelCalls": 5,
+        "tokens": 118988
+      },
+      {
+        "id": "scaled",
+        "passed": true,
+        "issues": [],
+        "modelCalls": 5,
+        "tokens": 119255
+      }
+    ],
+    "evidenceKind": "real-deepseek-local-http",
+    "limitations": [
+      "Synthetic Java/DQE/Relay services; not internal production integration"
+    ],
+    "evidenceRoot": "/tmp/value-formats-20260929-model-v2"
+  },
+  "final": {
+    "passed": true,
+    "cases": [
+      {
+        "id": "cny",
+        "passed": true,
+        "issues": [],
+        "modelCalls": 6,
+        "tokens": 141145
+      },
+      {
+        "id": "quantity",
+        "passed": true,
+        "issues": [],
+        "modelCalls": 5,
+        "tokens": 119179
+      },
+      {
+        "id": "scaled",
+        "passed": true,
+        "issues": [],
+        "modelCalls": 5,
+        "tokens": 119294
+      }
+    ],
+    "evidenceKind": "real-deepseek-local-http",
+    "limitations": [
+      "Synthetic Java/DQE/Relay services; not internal production integration"
+    ],
+    "evidenceRoot": "/tmp/value-formats-20260929-model-final"
+  },
+  "browsers": {
+    "cny": {
+      "ok": true,
+      "pageId": "main-flow-report",
+      "baseUrl": "local-http-fixture",
+      "viewports": [
+        1440,
+        640
+      ],
+      "dqeCalls": 5,
+      "measurements": [
+        {
+          "width": 1440,
+          "geometry": {
+            "left": 540,
+            "right": 1180,
+            "scrollWidth": 640,
+            "clientWidth": 640,
+            "cells": [
+              {
+                "left": 552,
+                "right": 1168,
+                "top": -29,
+                "bottom": 35,
+                "height": 64
+              },
+              {
+                "left": 584,
+                "right": 1136,
+                "top": 156,
+                "bottom": 426,
+                "height": 270
+              },
+              {
+                "left": 584,
+                "right": 1136,
+                "top": 436,
+                "bottom": 479.59375,
+                "height": 43.59375
+              },
+              {
+                "left": 584,
+                "right": 1136,
+                "top": 647.59375,
+                "bottom": 845.59375,
+                "height": 198
+              },
+              {
+                "left": 584,
+                "right": 1136,
+                "top": 855.59375,
+                "bottom": 899.1875,
+                "height": 43.59375
+              }
+            ]
+          }
+        },
+        {
+          "width": 640,
+          "geometry": {
+            "left": 60,
+            "right": 640,
+            "scrollWidth": 580,
+            "clientWidth": 580,
+            "cells": [
+              {
+                "left": 72,
+                "right": 628,
+                "top": -29,
+                "bottom": 35,
+                "height": 64
+              },
+              {
+                "left": 104,
+                "right": 596,
+                "top": 156,
+                "bottom": 426,
+                "height": 270
+              },
+              {
+                "left": 104,
+                "right": 596,
+                "top": 436,
+                "bottom": 479.59375,
+                "height": 43.59375
+              },
+              {
+                "left": 104,
+                "right": 596,
+                "top": 647.59375,
+                "bottom": 845.59375,
+                "height": 198
+              },
+              {
+                "left": 104,
+                "right": 596,
+                "top": 855.59375,
+                "bottom": 899.1875,
+                "height": 43.59375
+              }
+            ]
+          }
+        }
+      ],
+      "errors": []
+    },
+    "quantity": {
+      "ok": true,
+      "pageId": "main-flow-report",
+      "baseUrl": "local-http-fixture",
+      "viewports": [
+        1440,
+        640
+      ],
+      "dqeCalls": 5,
+      "measurements": [
+        {
+          "width": 1440,
+          "geometry": {
+            "left": 540,
+            "right": 1180,
+            "scrollWidth": 640,
+            "clientWidth": 640,
+            "cells": [
+              {
+                "left": 552,
+                "right": 1168,
+                "top": 28,
+                "bottom": 92,
+                "height": 64
+              },
+              {
+                "left": 584,
+                "right": 1136,
+                "top": 213,
+                "bottom": 483,
+                "height": 270
+              },
+              {
+                "left": 584,
+                "right": 1136,
+                "top": 493,
+                "bottom": 691,
+                "height": 198
+              },
+              {
+                "left": 584,
+                "right": 1136,
+                "top": 701,
+                "bottom": 744.59375,
+                "height": 43.59375
+              }
+            ]
+          }
+        },
+        {
+          "width": 640,
+          "geometry": {
+            "left": 60,
+            "right": 640,
+            "scrollWidth": 580,
+            "clientWidth": 580,
+            "cells": [
+              {
+                "left": 72,
+                "right": 628,
+                "top": 28,
+                "bottom": 92,
+                "height": 64
+              },
+              {
+                "left": 104,
+                "right": 596,
+                "top": 213,
+                "bottom": 483,
+                "height": 270
+              },
+              {
+                "left": 104,
+                "right": 596,
+                "top": 493,
+                "bottom": 691,
+                "height": 198
+              },
+              {
+                "left": 104,
+                "right": 596,
+                "top": 701,
+                "bottom": 744.59375,
+                "height": 43.59375
+              }
+            ]
+          }
+        }
+      ],
+      "errors": []
+    },
+    "scaled": {
+      "ok": true,
+      "pageId": "main-flow-report",
+      "baseUrl": "local-http-fixture",
+      "viewports": [
+        1440,
+        640
+      ],
+      "dqeCalls": 5,
+      "measurements": [
+        {
+          "width": 1440,
+          "geometry": {
+            "left": 540,
+            "right": 1180,
+            "scrollWidth": 640,
+            "clientWidth": 640,
+            "cells": [
+              {
+                "left": 552,
+                "right": 1168,
+                "top": -29,
+                "bottom": 35,
+                "height": 64
+              },
+              {
+                "left": 584,
+                "right": 1136,
+                "top": 156,
+                "bottom": 426,
+                "height": 270
+              },
+              {
+                "left": 584,
+                "right": 1136,
+                "top": 436,
+                "bottom": 479.59375,
+                "height": 43.59375
+              },
+              {
+                "left": 584,
+                "right": 1136,
+                "top": 647.59375,
+                "bottom": 845.59375,
+                "height": 198
+              },
+              {
+                "left": 584,
+                "right": 1136,
+                "top": 855.59375,
+                "bottom": 899.1875,
+                "height": 43.59375
+              }
+            ]
+          }
+        },
+        {
+          "width": 640,
+          "geometry": {
+            "left": 60,
+            "right": 640,
+            "scrollWidth": 580,
+            "clientWidth": 580,
+            "cells": [
+              {
+                "left": 72,
+                "right": 628,
+                "top": -29,
+                "bottom": 35,
+                "height": 64
+              },
+              {
+                "left": 104,
+                "right": 596,
+                "top": 156,
+                "bottom": 426,
+                "height": 270
+              },
+              {
+                "left": 104,
+                "right": 596,
+                "top": 436,
+                "bottom": 479.59375,
+                "height": 43.59375
+              },
+              {
+                "left": 104,
+                "right": 596,
+                "top": 647.59375,
+                "bottom": 845.59375,
+                "height": 198
+              },
+              {
+                "left": 104,
+                "right": 596,
+                "top": 855.59375,
+                "bottom": 899.1875,
+                "height": 43.59375
+              }
+            ]
+          }
+        }
+      ],
+      "errors": []
+    }
+  },
+  "finalSkillSha256": "35e1c0e1b682069293f51cc34575c4d405fdbc12318303f4f17f5ff9263d7ccd"
+}

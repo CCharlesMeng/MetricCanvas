@@ -10,6 +10,7 @@ from copy import deepcopy
 from typing import Any, Mapping
 
 from metriccanvas_authoring.data.source_description_ports import SourceDescriptionPort
+from metriccanvas_authoring.data.field_presentation import apply_field_presentation
 from metriccanvas_authoring.data.source_mapping import map_source_description, derive_source_fields, validate_mapped_rows, SourceMappingError
 from metriccanvas_authoring.data.validation_policy import (QueryValidationPolicy, current_for_query, normalize_request, governance_warnings)
 from metriccanvas_authoring.data.ports import DataContextError, DataContextPort, DqeExecutionPort
@@ -204,6 +205,10 @@ def create_query_data(dependencies: QueryDataDependencies):
                 except SourceMappingError as error:
                     return QueryDataResult(ok=False, issues=(QueryDataIssue(error.code, f'/units/{index}', error.code, stage='presentation'),),
                                              completed_stages=('discovery', 'generation', 'execution'))
+
+        units = [apply_field_presentation(unit, execution,
+                    source_descriptions[index] if source_descriptions else None)
+                 for index, (unit, execution) in enumerate(zip(units, executions, strict=True))]
 
         return QueryDataResult(
             ok=True, units=tuple(units), executions=tuple(executions),

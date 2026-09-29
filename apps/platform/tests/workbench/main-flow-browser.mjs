@@ -61,7 +61,8 @@ const measurements=[];
       await expect(page.getByText(/1,?200/).first()).toBeVisible();
     }else{
       await expect(page.getByText(fixtureData.rows[1]['区域'],{exact:true}).first()).toBeVisible();
-      for(const row of fixtureData.rows.slice(0,2)) await expect(page.getByText(String(row['Tokens请求量']),{exact:true}).first()).toBeVisible();
+      const displayValues = fixtureData.displayExpectations ?? fixtureData.rows.slice(0,2).map(row => String(row['Tokens请求量']));
+      for(const value of displayValues) await expect(page.getByText(value,{exact:true}).first()).toBeVisible();
     }
     await expect(page.locator('.bar-chart canvas, .pie-chart canvas').first()).toBeVisible();
     await page.waitForTimeout(1800);

@@ -32,7 +32,8 @@ export function barOption(
     formatValue(row[category.field], category.format)
   );
   const categoryAxis = { type: 'category' as const, data: categories };
-  const baseValueAxis = dualOrSingleAxis(props.dualAxis, props.series.length);
+  const baseValueAxis = dualOrSingleAxis(props.dualAxis, props.series.length, false,
+    props.series.map(series => resolveField(series.field, data).format));
   const reportValueFormat = props.series[0]
     ? resolveField(props.series[0].field, data).format
     : undefined;

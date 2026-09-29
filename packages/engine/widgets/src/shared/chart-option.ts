@@ -1,3 +1,6 @@
+import type { ValueFormatPreset } from '@metriccanvas/page/internal';
+import { formatValue } from './value-format';
+
 /**
  * 直角坐标系图表共用的 ECharts option 片段。
  * 只放被两个以上图表目录消费的部分,单一图表私有的构造留在各自的 options.ts。
@@ -24,10 +27,16 @@ export const CHART_PALETTE = [
 export function dualOrSingleAxis(
   dualAxis: boolean | undefined,
   metricCount: number,
-  hideAxis = false
+  hideAxis = false,
+  formats: Array<ValueFormatPreset | undefined> = []
 ) {
-  const axis = () => ({
+  // One axis has one scale. Mixed formats keep raw ticks rather than choosing
+  // the first series' unit for unrelated values on that axis.
+  const axis = (group: Array<ValueFormatPreset | undefined>) => ({
     type: 'value' as const,
+    ...(group.length && group[0] && group.every(format => format === group[0])
+      ? { axisLabel: { formatter: (value: number) => formatValue(value, group[0]) } }
+      : {}),
     ...(hideAxis
       ? {
           axisLabel: { show: false },
@@ -37,9 +46,9 @@ export function dualOrSingleAxis(
       : {})
   });
   if (dualAxis && metricCount > 1) {
-    return [axis(), axis()];
+    return [axis(formats.slice(0, 1)), axis(formats.slice(1))];
   }
-  return axis();
+  return axis(formats);
 }
 
 /** ECharts 回调载荷(标量或 { value })→ 可交给 formatValue 的标量 */

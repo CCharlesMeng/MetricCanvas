@@ -15,7 +15,8 @@
       "tests/test_platform_layout_policy.py",
       "tests/test_section_layout.py",
       "tests/test_source_mapping.py",
-      "tests/test_text_map_building.py"
+      "tests/test_text_map_building.py",
+      "tests/test_field_presentation.py"
     ],
     "adapters": [
       "tests/test_content_baselines.py",
