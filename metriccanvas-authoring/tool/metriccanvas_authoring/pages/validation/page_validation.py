@@ -123,12 +123,12 @@ def _composite_structure_issues(value: Any) -> list[PageContractIssue]:
     sections = value.get("sections", [])
     if not isinstance(sections, list):
         return issues
-    for section_index, section in enumerate(sections):
+    def check_composite_section(section_index, section):
         if not isinstance(section, Mapping):
-            continue
+            return
         components = section.get("components", [])
         if not isinstance(components, list):
-            continue
+            return
         for component, path in _walk_components(
             components, f"/sections/{section_index}/components"
         ):
@@ -163,6 +163,9 @@ def _composite_structure_issues(value: Any) -> list[PageContractIssue]:
                             f"component type {child_type} is not allowed in a composite card",
                         )
                     )
+
+    for section_index, section in enumerate(sections):
+        check_composite_section(section_index, section)
     return issues
 
 
@@ -203,38 +206,47 @@ def _materialize_validation_text_values(value: Any) -> Any:
 def _capability_floor_issues(value: Any) -> list[PageContractIssue]:
     # Structure (including the supported-version enum) has already been checked.
     issues = []
-    if int(value["schemaVersion"].split(".")[1]) < 5:
-        def visit(node: Any, path: str, key: str) -> None:
-            if isinstance(node, list):
-                for index, child in enumerate(node):
-                    visit(child, f"{path}/{index}", key)
-            elif isinstance(node, Mapping):
-                for name, child in node.items():
-                    child_path = f"{path}/{_escape_pointer(name)}"
-                    if name == key and isinstance(child, str) and child in ("compact-million-0", "compact-million-1", "compact-million-2"):
-                        issues.append(PageContractIssue("SCHEMA_ERROR", child_path, "百万展示格式由6.5引入"))
-                    else:
-                        visit(child, child_path, key)
-        for source_id, source in value.get("dataSources", {}).items():
-            visit(source.get("fields"), f"/dataSources/{_escape_pointer(source_id)}/fields", "defaultFormat")
-        visit(value.get("sections"), "/sections", "format")
-    if int(value["schemaVersion"].split(".")[1]) < 4:
-        paths = [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if any(b.get("window", {}).get("kind") in ("yearToDate", "monthToDate") for b in source.get("source", {}).get("query", {}).get("paramBindings", {}).values())]
-        issues.extend(PageContractIssue("SCHEMA_ERROR", path, "具名年初/月初至报告基准期窗口由6.4引入") for path in paths)
-    if int(value["schemaVersion"].split(".")[1]) < 3:
-        paths = [f"/params/{i}" for i, p in enumerate(_param_declarations(value)) if p["type"] == "time"]
-        paths += [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if any(b.get("target") == "time" for b in source.get("source", {}).get("query", {}).get("paramBindings", {}).values())]
-        issues.extend(PageContractIssue("SCHEMA_ERROR", path, "确定性时间参数绑定由6.3引入") for path in paths)
-    if value["schemaVersion"] == "6.0" and "layout" in value:
-        issues.append(PageContractIssue(
-            "SCHEMA_ERROR", "/layout",
-            "顶层 layout:页面布局形态的规范字段 由 6.1 引入，文档声明的是 6.0",
-        ))
-    if int(value["schemaVersion"].split(".")[1]) < 2:
-        paths = [f"/params/{i}" for i, p in enumerate(_param_declarations(value)) if p["type"] == "dimension"]
-        paths += [f"/filters/{i}/initialParam" for i, f in enumerate(value.get("filters", [])) if "initialParam" in f]
-        paths += [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if "paramBindings" in source.get("source", {}).get("query", {})]
-        issues.extend(PageContractIssue("SCHEMA_ERROR", path, "维度参数绑定由6.2引入") for path in paths)
+    def check_presentation_versions():
+        if int(value["schemaVersion"].split(".")[1]) < 5:
+            def visit(node: Any, path: str, key: str) -> None:
+                if isinstance(node, list):
+                    for index, child in enumerate(node):
+                        visit(child, f"{path}/{index}", key)
+                elif isinstance(node, Mapping):
+                    for name, child in node.items():
+                        child_path = f"{path}/{_escape_pointer(name)}"
+                        if name == key and isinstance(child, str) and child in ("compact-million-0", "compact-million-1", "compact-million-2"):
+                            issues.append(PageContractIssue("SCHEMA_ERROR", child_path, "百万展示格式由6.5引入"))
+                        else:
+                            visit(child, child_path, key)
+            for source_id, source in value.get("dataSources", {}).items():
+                visit(source.get("fields"), f"/dataSources/{_escape_pointer(source_id)}/fields", "defaultFormat")
+            visit(value.get("sections"), "/sections", "format")
+        if int(value["schemaVersion"].split(".")[1]) < 4:
+            paths = [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if any(b.get("window", {}).get("kind") in ("yearToDate", "monthToDate") for b in source.get("source", {}).get("query", {}).get("paramBindings", {}).values())]
+            issues.extend(PageContractIssue("SCHEMA_ERROR", path, "具名年初/月初至报告基准期窗口由6.4引入") for path in paths)
+
+    check_presentation_versions()
+    def check_binding_versions():
+        def check_time_binding_version():
+            if int(value["schemaVersion"].split(".")[1]) < 3:
+                paths = [f"/params/{i}" for i, p in enumerate(_param_declarations(value)) if p["type"] == "time"]
+                paths += [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if any(b.get("target") == "time" for b in source.get("source", {}).get("query", {}).get("paramBindings", {}).values())]
+                issues.extend(PageContractIssue("SCHEMA_ERROR", path, "确定性时间参数绑定由6.3引入") for path in paths)
+
+        check_time_binding_version()
+        if value["schemaVersion"] == "6.0" and "layout" in value:
+            issues.append(PageContractIssue(
+                "SCHEMA_ERROR", "/layout",
+                "顶层 layout:页面布局形态的规范字段 由 6.1 引入，文档声明的是 6.0",
+            ))
+        if int(value["schemaVersion"].split(".")[1]) < 2:
+            paths = [f"/params/{i}" for i, p in enumerate(_param_declarations(value)) if p["type"] == "dimension"]
+            paths += [f"/filters/{i}/initialParam" for i, f in enumerate(value.get("filters", [])) if "initialParam" in f]
+            paths += [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if "paramBindings" in source.get("source", {}).get("query", {})]
+            issues.extend(PageContractIssue("SCHEMA_ERROR", path, "维度参数绑定由6.2引入") for path in paths)
+
+    check_binding_versions()
     if "layout" in value and "layoutForm" in value:
         issues.append(PageContractIssue(
             "SCHEMA_ERROR", "/layoutForm",
@@ -294,23 +306,26 @@ def _page_param_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
     }
     issues: list[PageContractIssue] = []
     by_id: dict[str, Mapping[str, Any]] = {}
-    for index, declaration in enumerate(declarations):
-        if not isinstance(declaration, Mapping):
-            continue
-        param_id = declaration.get("id")
-        if not isinstance(param_id, str):
-            continue
-        path = declaration.get("path", f"/params/{index}")
-        if param_id in by_id:
-            issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/id", "duplicate page parameter"))
-        by_id[param_id] = declaration
-        if param_id in filter_ids:
-            issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/id", "page parameter duplicates filter id"))
-        # 实际值报在声明本身，默认值报在 /default —— 与 TS 侧两条判定一一对应。
-        if "value" in declaration and not _matches_param_value(declaration, declaration["value"]):
-            issues.append(PageContractIssue("SCHEMA_ERROR", path, "page parameter value type mismatch"))
-        if "default" in declaration and not _matches_param_value(declaration, declaration["default"]):
-            issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default", "page parameter default type mismatch"))
+    def check_declarations():
+        for index, declaration in enumerate(declarations):
+            if not isinstance(declaration, Mapping):
+                continue
+            param_id = declaration.get("id")
+            if not isinstance(param_id, str):
+                continue
+            path = declaration.get("path", f"/params/{index}")
+            if param_id in by_id:
+                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/id", "duplicate page parameter"))
+            by_id[param_id] = declaration
+            if param_id in filter_ids:
+                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/id", "page parameter duplicates filter id"))
+            # 实际值报在声明本身，默认值报在 /default —— 与 TS 侧两条判定一一对应。
+            if "value" in declaration and not _matches_param_value(declaration, declaration["value"]):
+                issues.append(PageContractIssue("SCHEMA_ERROR", path, "page parameter value type mismatch"))
+            if "default" in declaration and not _matches_param_value(declaration, declaration["default"]):
+                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default", "page parameter default type mismatch"))
+
+    check_declarations()
 
     consumed: set[str] = set()
     def query_consumers(node):
@@ -331,23 +346,26 @@ def _page_param_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
             for key, child in node.items():
                 if key != "dataSources": navigation_consumers(child)
     navigation_consumers(value)
-    for path, reference in _text_value_references(value):
-        param_id = reference["param"]
-        declaration = by_id.get(param_id)
-        if declaration is None:
-            issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/param", "text value references unknown page parameter"))
-            continue
-        consumed.add(param_id)
-        display_format = reference.get("format")
-        param_type = declaration.get("type")
-        if (
-            isinstance(display_format, str)
-            and (
-                (display_format in NUMERIC_FORMATS and param_type != "number")
-                or (display_format in DATE_FORMATS and param_type != "string")
-            )
-        ):
-            issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/format", "text format does not suit parameter type"))
+    def check_text_references():
+        for path, reference in _text_value_references(value):
+            param_id = reference["param"]
+            declaration = by_id.get(param_id)
+            if declaration is None:
+                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/param", "text value references unknown page parameter"))
+                continue
+            consumed.add(param_id)
+            display_format = reference.get("format")
+            param_type = declaration.get("type")
+            if (
+                isinstance(display_format, str)
+                and (
+                    (display_format in NUMERIC_FORMATS and param_type != "number")
+                    or (display_format in DATE_FORMATS and param_type != "string")
+                )
+            ):
+                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/format", "text format does not suit parameter type"))
+
+    check_text_references()
 
     for index, declaration in enumerate(declarations):
         if not isinstance(declaration, Mapping):
@@ -418,9 +436,9 @@ def _invariant_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
     sections = value.get("sections", [])
     if not isinstance(sections, list):
         return issues
-    for section_index, section in enumerate(sections):
+    def check_section_identity(section_index, section):
         if not isinstance(section, Mapping):
-            continue
+            return
         section_id = section.get("id")
         if isinstance(section_id, str):
             if section_id in section_ids:
@@ -434,7 +452,7 @@ def _invariant_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
             section_ids.add(section_id)
         components = section.get("components", [])
         if not isinstance(components, list):
-            continue
+            return
         issues.extend(_section_issues(section, section_index, components))
         for component, path in _walk_components(
             components, f"/sections/{section_index}/components"
@@ -451,6 +469,9 @@ def _invariant_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
                     )
                 component_ids.add(component_id)
             issues.extend(_component_issues(component, path, value))
+
+    for section_index, section in enumerate(sections):
+        check_section_identity(section_index, section)
     if isinstance(filters, list):
         issues.extend(_hidden_hierarchy_picker_issues(filters, sections))
     issues.extend(_query_pagination_issues(value))
@@ -504,23 +525,26 @@ def _section_issues(
             )
         )
 
-    tracks = section.get("columnTracks")
-    if isinstance(tracks, list):
-        for index, component in enumerate(components):
-            if not isinstance(component, Mapping):
-                continue
-            layout = component.get("layout")
-            if not isinstance(layout, Mapping) or layout.get("layer") == "backdrop":
-                continue
-            span = layout.get("span")
-            if isinstance(span, int) and span > len(tracks):
-                issues.append(
-                    PageContractIssue(
-                        "SCHEMA_ERROR",
-                        f"{base_path}/{index}/layout/span",
-                        "component span exceeds section column tracks",
+    def check_column_tracks():
+        tracks = section.get("columnTracks")
+        if isinstance(tracks, list):
+            for index, component in enumerate(components):
+                if not isinstance(component, Mapping):
+                    continue
+                layout = component.get("layout")
+                if not isinstance(layout, Mapping) or layout.get("layer") == "backdrop":
+                    continue
+                span = layout.get("span")
+                if isinstance(span, int) and span > len(tracks):
+                    issues.append(
+                        PageContractIssue(
+                            "SCHEMA_ERROR",
+                            f"{base_path}/{index}/layout/span",
+                            "component span exceeds section column tracks",
+                        )
                     )
-                )
+
+    check_column_tracks()
     return issues
 
 
@@ -609,22 +633,25 @@ def _filter_declaration_issues(
     filter_type = filter_value.get("type")
     default = filter_value.get("default")
     if filter_type == "timeRange" and isinstance(default, Mapping):
-        if isinstance(default.get("from"), str) and isinstance(default.get("to"), str):
-            precision = filter_value.get("precision", "date")
-            from_value = default["from"]
-            to_value = default["to"]
-            from_valid = _calendar_value_valid(from_value, precision)
-            to_valid = _calendar_value_valid(to_value, precision)
-            if not from_valid:
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default/from", "invalid time range start"))
-            if not to_valid:
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default/to", "invalid time range end"))
-            if from_valid and to_valid and from_value > to_value:
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default", "time range start is after end"))
-        else:
-            anchor = default.get("anchor")
-            if isinstance(anchor, str) and not _is_calendar_date(anchor):
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default/anchor", "invalid relative-time anchor"))
+        def check_time_range_default():
+            if isinstance(default.get("from"), str) and isinstance(default.get("to"), str):
+                precision = filter_value.get("precision", "date")
+                from_value = default["from"]
+                to_value = default["to"]
+                from_valid = _calendar_value_valid(from_value, precision)
+                to_valid = _calendar_value_valid(to_value, precision)
+                if not from_valid:
+                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default/from", "invalid time range start"))
+                if not to_valid:
+                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default/to", "invalid time range end"))
+                if from_valid and to_valid and from_value > to_value:
+                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default", "time range start is after end"))
+            else:
+                anchor = default.get("anchor")
+                if isinstance(anchor, str) and not _is_calendar_date(anchor):
+                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default/anchor", "invalid relative-time anchor"))
+
+        check_time_range_default()
     elif filter_type == "timePoint" and isinstance(default, str):
         granularity = filter_value.get("granularity")
         valid = (
@@ -642,22 +669,25 @@ def _filter_declaration_issues(
         elif isinstance(start, (int, float)) and isinstance(end, (int, float)) and start > end:
             issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default", "number range is inverted"))
     elif filter_type == "dimension":
-        hierarchy = filter_value.get("hierarchy", [])
-        hierarchy = hierarchy if isinstance(hierarchy, list) else []
-        level_ids: set[str] = set()
-        for level_index, level in enumerate(hierarchy):
-            if not isinstance(level, Mapping) or not isinstance(level.get("id"), str):
-                continue
-            level_id = level["id"]
-            if level_id in level_ids:
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/hierarchy/{level_index}/id", "duplicate hierarchy level"))
-            level_ids.add(level_id)
-        default_level = filter_value.get("defaultLevel")
-        if isinstance(default_level, str):
-            if not hierarchy or default_level not in level_ids:
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/defaultLevel", "default level is not declared"))
-        if filter_value.get("hierarchyPicker") is not None and not hierarchy:
-            issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/hierarchyPicker", "hierarchy picker needs hierarchy"))
+        def check_hierarchy_default():
+            hierarchy = filter_value.get("hierarchy", [])
+            hierarchy = hierarchy if isinstance(hierarchy, list) else []
+            level_ids: set[str] = set()
+            for level_index, level in enumerate(hierarchy):
+                if not isinstance(level, Mapping) or not isinstance(level.get("id"), str):
+                    continue
+                level_id = level["id"]
+                if level_id in level_ids:
+                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/hierarchy/{level_index}/id", "duplicate hierarchy level"))
+                level_ids.add(level_id)
+            default_level = filter_value.get("defaultLevel")
+            if isinstance(default_level, str):
+                if not hierarchy or default_level not in level_ids:
+                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/defaultLevel", "default level is not declared"))
+            if filter_value.get("hierarchyPicker") is not None and not hierarchy:
+                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/hierarchyPicker", "hierarchy picker needs hierarchy"))
+
+        check_hierarchy_default()
     return issues
 
 
@@ -716,17 +746,21 @@ def _query_mapping_issues(
         for entry in item.get("output_dims", [])
         if isinstance(entry, str)
     ]
-    filter_value = item.get("filter")
-    time_value = filter_value.get("time") if isinstance(filter_value, Mapping) else None
-    period = time_value.get("period") if isinstance(time_value, Mapping) else None
-    mapped_names = {
-        field.get("queryField") for field in raw_fields.values()
-        if isinstance(field, Mapping) and isinstance(field.get("queryField"), str)
-    }
-    dimensions = [
-        f"{name}({period})" if isinstance(period, str) and f"{name}({period})" in mapped_names else name
-        for name in dimensions
-    ]
+    def map_time_dimensions(dimensions):
+        filter_value = item.get("filter")
+        time_value = filter_value.get("time") if isinstance(filter_value, Mapping) else None
+        period = time_value.get("period") if isinstance(time_value, Mapping) else None
+        mapped_names = {
+            field.get("queryField") for field in raw_fields.values()
+            if isinstance(field, Mapping) and isinstance(field.get("queryField"), str)
+        }
+        dimensions = [
+            f"{name}({period})" if isinstance(period, str) and f"{name}({period})" in mapped_names else name
+            for name in dimensions
+        ]
+        return dimensions
+
+    dimensions = map_time_dimensions(dimensions)
     metrics = _metric_names(item.get("output_metrics", []))
     outputs = set([*dimensions, *metrics])
     fields, field_paths, field_issues = _resolved_fields(
@@ -736,81 +770,90 @@ def _query_mapping_issues(
     issues: list[PageContractIssue] = []
     issues.extend(field_issues)
     source_path = f"/dataSources/{_escape_pointer(source_id)}"
-    for field_id, raw_field in fields.items():
-        if not isinstance(raw_field, Mapping):
-            continue
-        query_field = raw_field.get("queryField")
-        if not isinstance(query_field, str):
-            if str(field_id) not in _compute_output_fields(data_source):
+    def check_output_fields():
+        def check_field_mapping(field_id, raw_field):
+            if not isinstance(raw_field, Mapping):
+                return
+            query_field = raw_field.get("queryField")
+            if not isinstance(query_field, str):
+                if str(field_id) not in _compute_output_fields(data_source):
+                    issues.append(
+                        PageContractIssue(
+                            "QUERY_MAPPING_ERROR",
+                            field_paths[str(field_id)],
+                            f"page field {field_id} has no queryField mapping and is not computed",
+                        )
+                    )
+                return
+            field_path = field_paths[field_id]
+            path = f"{field_path}/queryField"
+            if query_field in mapped:
                 issues.append(
                     PageContractIssue(
                         "QUERY_MAPPING_ERROR",
-                        field_paths[str(field_id)],
-                        f"page field {field_id} has no queryField mapping and is not computed",
+                        path,
+                        f"queryField {query_field} is already mapped",
                     )
                 )
-            continue
-        field_path = field_paths[field_id]
-        path = f"{field_path}/queryField"
-        if query_field in mapped:
-            issues.append(
-                PageContractIssue(
-                    "QUERY_MAPPING_ERROR",
-                    path,
-                    f"queryField {query_field} is already mapped",
+            else:
+                mapped[query_field] = str(field_id)
+            if query_field not in outputs:
+                issues.append(
+                    PageContractIssue(
+                        "QUERY_MAPPING_ERROR",
+                        path,
+                        f"queryField {query_field} is not a DQE output",
+                    )
                 )
-            )
-        else:
-            mapped[query_field] = str(field_id)
-        if query_field not in outputs:
-            issues.append(
-                PageContractIssue(
-                    "QUERY_MAPPING_ERROR",
-                    path,
-                    f"queryField {query_field} is not a DQE output",
-                )
-            )
-        elif raw_field.get("role") == "detail":
-            if raw_field.get("type") == "recordList":
-                item_fields = raw_field.get("items", {}).get("fields", {})
-                if isinstance(item_fields, Mapping):
-                    item_mappings: dict[str, str] = {}
-                    for item_field_id, item_field in item_fields.items():
-                        if not isinstance(item_field, Mapping):
-                            continue
-                        item_query_field = item_field.get("queryField")
-                        if not isinstance(item_query_field, str):
-                            continue
-                        item_path = (
-                            f"{field_path}/items/fields/"
-                            f"{_escape_pointer(item_field_id)}/queryField"
-                        )
-                        if item_query_field in item_mappings:
-                            issues.append(
-                                PageContractIssue(
-                                    "QUERY_MAPPING_ERROR",
-                                    item_path,
-                                    f"nested queryField {item_query_field} is already mapped",
+            elif raw_field.get("role") == "detail":
+                def check_detail_mapping():
+                    if raw_field.get("type") == "recordList":
+                        item_fields = raw_field.get("items", {}).get("fields", {})
+                        if isinstance(item_fields, Mapping):
+                            item_mappings: dict[str, str] = {}
+                            for item_field_id, item_field in item_fields.items():
+                                if not isinstance(item_field, Mapping):
+                                    continue
+                                item_query_field = item_field.get("queryField")
+                                if not isinstance(item_query_field, str):
+                                    continue
+                                item_path = (
+                                    f"{field_path}/items/fields/"
+                                    f"{_escape_pointer(item_field_id)}/queryField"
                                 )
-                            )
-                        else:
-                            item_mappings[item_query_field] = str(item_field_id)
-        elif query_field in dimensions and raw_field.get("role") != "dimension":
-            issues.append(
-                PageContractIssue(
-                    "QUERY_MAPPING_ERROR",
-                    f"{field_path}/role",
-                    f"DQE dimension {query_field} must have dimension role",
+                                if item_query_field in item_mappings:
+                                    issues.append(
+                                        PageContractIssue(
+                                            "QUERY_MAPPING_ERROR",
+                                            item_path,
+                                            f"nested queryField {item_query_field} is already mapped",
+                                        )
+                                    )
+                                else:
+                                    item_mappings[item_query_field] = str(item_field_id)
+
+                check_detail_mapping()
+            elif query_field in dimensions and raw_field.get("role") != "dimension":
+                issues.append(
+                    PageContractIssue(
+                        "QUERY_MAPPING_ERROR",
+                        f"{field_path}/role",
+                        f"DQE dimension {query_field} must have dimension role",
+                    )
                 )
-            )
-        elif query_field in metrics and raw_field.get("role") != "measure":
-            issues.append(
-                PageContractIssue(
-                    "QUERY_MAPPING_ERROR",
-                    f"{field_path}/role",
-                    f"DQE metric {query_field} must have measure role",
+            elif query_field in metrics and raw_field.get("role") != "measure":
+                issues.append(
+                    PageContractIssue(
+                        "QUERY_MAPPING_ERROR",
+                        f"{field_path}/role",
+                        f"DQE metric {query_field} must have measure role",
+                    )
                 )
-            )
+
+        for field_id, raw_field in fields.items():
+            check_field_mapping(field_id, raw_field)
+
+    check_output_fields()
     for output in outputs:
         if output not in mapped:
             issues.append(
@@ -821,54 +864,57 @@ def _query_mapping_issues(
                 )
             )
 
-    bindings = query.get("filterBindings", {})
-    if isinstance(bindings, Mapping):
-        for filter_id, raw_binding in bindings.items():
-            path = (
-                f"{source_path}/source/query/filterBindings/"
-                f"{_escape_pointer(filter_id)}"
-            )
-            declared = filters_by_id.get(str(filter_id))
-            if declared is None:
-                issues.append(
-                    PageContractIssue(
-                        "FILTER_BINDING_ERROR",
-                        path,
-                        f"filter binding references unknown filter: {filter_id}",
-                    )
+    def check_filter_bindings():
+        bindings = query.get("filterBindings", {})
+        if isinstance(bindings, Mapping):
+            for filter_id, raw_binding in bindings.items():
+                path = (
+                    f"{source_path}/source/query/filterBindings/"
+                    f"{_escape_pointer(filter_id)}"
                 )
-                continue
-            if not isinstance(raw_binding, Mapping):
-                continue
-            target = raw_binding.get("target")
-            filter_type = declared.get("type")
-            if target == "time" and filter_type != "timeRange":
-                issues.append(
-                    PageContractIssue(
-                        "FILTER_BINDING_ERROR",
-                        path,
-                        f"time target requires timeRange filter: {filter_id}",
+                declared = filters_by_id.get(str(filter_id))
+                if declared is None:
+                    issues.append(
+                        PageContractIssue(
+                            "FILTER_BINDING_ERROR",
+                            path,
+                            f"filter binding references unknown filter: {filter_id}",
+                        )
                     )
-                )
-            elif target == "dimension" and filter_type != "dimension":
-                issues.append(
-                    PageContractIssue(
-                        "FILTER_BINDING_ERROR",
-                        path,
-                        f"dimension target requires dimension filter: {filter_id}",
+                    continue
+                if not isinstance(raw_binding, Mapping):
+                    continue
+                target = raw_binding.get("target")
+                filter_type = declared.get("type")
+                if target == "time" and filter_type != "timeRange":
+                    issues.append(
+                        PageContractIssue(
+                            "FILTER_BINDING_ERROR",
+                            path,
+                            f"time target requires timeRange filter: {filter_id}",
+                        )
                     )
-                )
-            elif target == "dimension" and filter_type == "dimension":
-                issues.extend(_level_binding_issues(raw_binding, declared, path))
-            elif target in ("timePoint", "boolean", "numberRange") and filter_type != target:
-                # 目标名即筛选器类型:绑错类型的筛选器,取值形状对不上谓词形状。
-                issues.append(
-                    PageContractIssue(
-                        "FILTER_BINDING_ERROR",
-                        path,
-                        f"{target} target requires {target} filter: {filter_id}",
+                elif target == "dimension" and filter_type != "dimension":
+                    issues.append(
+                        PageContractIssue(
+                            "FILTER_BINDING_ERROR",
+                            path,
+                            f"dimension target requires dimension filter: {filter_id}",
+                        )
                     )
-                )
+                elif target == "dimension" and filter_type == "dimension":
+                    issues.extend(_level_binding_issues(raw_binding, declared, path))
+                elif target in ("timePoint", "boolean", "numberRange") and filter_type != target:
+                    # 目标名即筛选器类型:绑错类型的筛选器,取值形状对不上谓词形状。
+                    issues.append(
+                        PageContractIssue(
+                            "FILTER_BINDING_ERROR",
+                            path,
+                            f"{target} target requires {target} filter: {filter_id}",
+                        )
+                    )
+
+    check_filter_bindings()
     return issues
 
 
@@ -1139,52 +1185,70 @@ def _component_issues(
             )
         )
 
-    if component_type == "metricCard":
-        _metric_card_issues(props, path, check, issues)
-    elif component_type == "barChart":
-        check(props.get("categoryField"), f"{path}/props/categoryField", "dimension")
-        for index, series in enumerate(props.get("series", [])):
-            if isinstance(series, Mapping):
-                check(series.get("field"), f"{path}/props/series/{index}/field", "measure")
-        issues.extend(_bar_forecast_issues(component, path, data_sources))
-    elif component_type == "lineChart":
-        check(props.get("xField"), f"{path}/props/xField", "dimension")
-        for index, series in enumerate(props.get("series", [])):
-            if isinstance(series, Mapping):
-                check(series.get("field"), f"{path}/props/series/{index}/field", "measure")
-    elif component_type == "pieChart":
-        check(props.get("categoryField"), f"{path}/props/categoryField", "dimension")
-        check(props.get("valueField"), f"{path}/props/valueField", "measure")
-    elif component_type == "table":
-        issues.extend(_table_component_issues(component, path, data_sources, filters_by_id, check))
-    elif component_type == "keyValuePanel":
-        for index, item in enumerate(props.get("items", [])):
-            if isinstance(item, Mapping):
-                check(item.get("field"), f"{path}/props/items/{index}/field")
-    elif component_type == "categoryBreakdown":
-        _category_breakdown_issues(props, path, page, component, check, issues)
-    elif component_type == "fieldText":
-        check(props.get("field"), f"{path}/props/field", None, "semanticHtml")
-    elif component_type == "aiSummary":
-        issues.extend(_ai_summary_issues(props, path, data_sources))
-    elif component_type == "mapChart":
-        check(props.get("nameField"), f"{path}/props/nameField", "dimension")
-        check(props.get("valueField"), f"{path}/props/valueField", "measure")
-        for index, item in enumerate(props.get("tooltipFields", [])):
-            if isinstance(item, Mapping):
-                check(item.get("field"), f"{path}/props/tooltipFields/{index}/field")
-        issues.extend(_map_component_issues(component, path, filters_by_id, check, slots, data_sources))
-    elif component_type == "gauge":
-        check(props.get("valueField"), f"{path}/props/valueField", "measure")
-    elif component_type == "tabContainer":
-        _tab_container_issues(props, path, issues)
-    elif component_type in {"rankingCard", "rankingDetailCard"}:
-        check(props.get("nameField"), f"{path}/props/nameField", "dimension")
-        check(props.get("valueField"), f"{path}/props/valueField", "measure")
-        if props.get("changeField") is not None:
-            check(props.get("changeField"), f"{path}/props/changeField", "measure")
-        if component_type == "rankingDetailCard":
-            issues.extend(_ranking_detail_issues(props, path, slots, data_sources, check))
+    def check_component_type():
+        if component_type == "metricCard":
+            _metric_card_issues(props, path, check, issues)
+        elif component_type == "barChart":
+            def check_bar_chart():
+                check(props.get("categoryField"), f"{path}/props/categoryField", "dimension")
+                for index, series in enumerate(props.get("series", [])):
+                    if isinstance(series, Mapping):
+                        check(series.get("field"), f"{path}/props/series/{index}/field", "measure")
+                issues.extend(_bar_forecast_issues(component, path, data_sources))
+
+            check_bar_chart()
+        elif component_type == "lineChart":
+            def check_line_chart():
+                check(props.get("xField"), f"{path}/props/xField", "dimension")
+                for index, series in enumerate(props.get("series", [])):
+                    if isinstance(series, Mapping):
+                        check(series.get("field"), f"{path}/props/series/{index}/field", "measure")
+
+            check_line_chart()
+        elif component_type == "pieChart":
+            check(props.get("categoryField"), f"{path}/props/categoryField", "dimension")
+            check(props.get("valueField"), f"{path}/props/valueField", "measure")
+        elif component_type == "table":
+            issues.extend(_table_component_issues(component, path, data_sources, filters_by_id, check))
+        elif component_type == "keyValuePanel":
+            def check_key_value_panel():
+                for index, item in enumerate(props.get("items", [])):
+                    if isinstance(item, Mapping):
+                        check(item.get("field"), f"{path}/props/items/{index}/field")
+
+            check_key_value_panel()
+        elif component_type == "categoryBreakdown":
+            _category_breakdown_issues(props, path, page, component, check, issues)
+        elif component_type == "fieldText":
+            check(props.get("field"), f"{path}/props/field", None, "semanticHtml")
+        elif component_type == "aiSummary":
+            issues.extend(_ai_summary_issues(props, path, data_sources))
+        elif component_type == "mapChart":
+            def check_map_chart():
+                check(props.get("nameField"), f"{path}/props/nameField", "dimension")
+                check(props.get("valueField"), f"{path}/props/valueField", "measure")
+                for index, item in enumerate(props.get("tooltipFields", [])):
+                    if isinstance(item, Mapping):
+                        check(item.get("field"), f"{path}/props/tooltipFields/{index}/field")
+                issues.extend(_map_component_issues(component, path, filters_by_id, check, slots, data_sources))
+
+            check_map_chart()
+        elif component_type == "gauge":
+            check(props.get("valueField"), f"{path}/props/valueField", "measure")
+        elif component_type == "tabContainer":
+            _tab_container_issues(props, path, issues)
+        elif component_type in {"rankingCard", "rankingDetailCard"}:
+            def check_ranking():
+                check(props.get("nameField"), f"{path}/props/nameField", "dimension")
+                check(props.get("valueField"), f"{path}/props/valueField", "measure")
+                if props.get("changeField") is not None:
+                    check(props.get("changeField"), f"{path}/props/changeField", "measure")
+                if component_type == "rankingDetailCard":
+                    issues.extend(_ranking_detail_issues(props, path, slots, data_sources, check))
+
+            check_ranking()
+
+    check_component_type()
 
     issues.extend(_action_issues(component, path, data_sources, filters_by_id, check))
     return issues
@@ -1220,23 +1284,23 @@ def _ai_summary_issues(
     related_data = props.get("relatedData", {})
     if not isinstance(related_data, Mapping):
         return issues
-    for related_id, related in related_data.items():
+    def check_summary_reference(related_id, related):
         if not isinstance(related, Mapping):
-            continue
+            return
         related_path = f"{path}/props/relatedData/{_escape_pointer(related_id)}"
         source_id = related.get("source")
         source = data_sources.get(source_id)
         if not isinstance(source, Mapping):
             issues.append(PageContractIssue("SCHEMA_ERROR", f"{related_path}/source", "related data source is unknown"))
-            continue
+            return
         raw_fields = source.get("fields", {})
         fields, _paths, _field_issues = (
             _resolved_fields(raw_fields, "") if isinstance(raw_fields, Mapping) else ({}, {}, [])
         )
         seen: set[str] = set()
-        for field_index, binding in enumerate(related.get("fields", [])):
+        def check_summary_field(field_index, binding):
             if not isinstance(binding, Mapping):
-                continue
+                return
             field_id = binding.get("field")
             field_path = f"{related_path}/fields/{field_index}"
             field = fields.get(field_id) if isinstance(field_id, str) else None
@@ -1252,6 +1316,12 @@ def _ai_summary_issues(
                     issues.append(PageContractIssue("SCHEMA_ERROR", f"{field_path}/term", "AI summary term mapping conflicts"))
                 elif isinstance(term, str):
                     terms[field_id] = term
+
+        for field_index, binding in enumerate(related.get("fields", [])):
+            check_summary_field(field_index, binding)
+
+    for related_id, related in related_data.items():
+        check_summary_reference(related_id, related)
     return issues
 
 
@@ -1268,77 +1338,86 @@ def _table_component_issues(
     props = component.get("props", {})
     if not isinstance(props, Mapping):
         return issues
-    row_key = props.get("rowKey")
-    if len(slots) > 1:
-        if not isinstance(row_key, str):
-            issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/rowKey", "multi-slot table needs rowKey"))
-        else:
-            expected_type: Any = None
-            for slot, source_id in slots.items():
-                source = data_sources.get(source_id)
-                raw_fields = source.get("fields", {}) if isinstance(source, Mapping) else {}
-                fields, _paths, _field_issues = (
-                    _resolved_fields(raw_fields, "") if isinstance(raw_fields, Mapping) else ({}, {}, [])
-                )
-                field = fields.get(row_key)
-                slot_path = f"{path}/data/{_escape_pointer(slot)}"
-                if field is None or field.get("role") != "dimension":
-                    issues.append(PageContractIssue("SCHEMA_ERROR", slot_path, "rowKey must be a dimension in every slot"))
-                    continue
-                if expected_type is None:
-                    expected_type = field.get("type")
-                elif field.get("type") != expected_type:
-                    issues.append(PageContractIssue("SCHEMA_ERROR", slot_path, "rowKey types must match"))
+    def check_row_key():
+        row_key = props.get("rowKey")
+        if len(slots) > 1:
+            if not isinstance(row_key, str):
+                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/rowKey", "multi-slot table needs rowKey"))
+            else:
+                expected_type: Any = None
+                for slot, source_id in slots.items():
+                    source = data_sources.get(source_id)
+                    raw_fields = source.get("fields", {}) if isinstance(source, Mapping) else {}
+                    fields, _paths, _field_issues = (
+                        _resolved_fields(raw_fields, "") if isinstance(raw_fields, Mapping) else ({}, {}, [])
+                    )
+                    field = fields.get(row_key)
+                    slot_path = f"{path}/data/{_escape_pointer(slot)}"
+                    if field is None or field.get("role") != "dimension":
+                        issues.append(PageContractIssue("SCHEMA_ERROR", slot_path, "rowKey must be a dimension in every slot"))
+                        continue
+                    if expected_type is None:
+                        expected_type = field.get("type")
+                    elif field.get("type") != expected_type:
+                        issues.append(PageContractIssue("SCHEMA_ERROR", slot_path, "rowKey types must match"))
+
+    check_row_key()
 
     main_source = data_sources.get(slots.get("main"))
     main_fields_raw = main_source.get("fields", {}) if isinstance(main_source, Mapping) else {}
     main_fields, _paths, _field_issues = (
         _resolved_fields(main_fields_raw, "") if isinstance(main_fields_raw, Mapping) else ({}, {}, [])
     )
-    row_kind = props.get("rowKindField")
-    if isinstance(row_kind, str):
-        row_kind_path = f"{path}/props/rowKindField"
-        if row_kind not in main_fields:
-            issues.append(PageContractIssue("SCHEMA_ERROR", row_kind_path, "row kind field is unknown"))
-        else:
-            compute = main_source.get("compute", []) if isinstance(main_source, Mapping) else []
-            written = any(
-                isinstance(operator, Mapping)
-                and operator.get("op") in {"groupSubtotal", "grandTotal"}
-                and isinstance(operator.get("rowKind"), Mapping)
-                and operator["rowKind"].get("field") == row_kind
-                for operator in compute
-            )
-            if not written:
-                issues.append(PageContractIssue("SCHEMA_ERROR", row_kind_path, "row kind field is not written by a folding operator"))
+    def check_row_kind():
+        row_kind = props.get("rowKindField")
+        if isinstance(row_kind, str):
+            row_kind_path = f"{path}/props/rowKindField"
+            if row_kind not in main_fields:
+                issues.append(PageContractIssue("SCHEMA_ERROR", row_kind_path, "row kind field is unknown"))
+            else:
+                compute = main_source.get("compute", []) if isinstance(main_source, Mapping) else []
+                written = any(
+                    isinstance(operator, Mapping)
+                    and operator.get("op") in {"groupSubtotal", "grandTotal"}
+                    and isinstance(operator.get("rowKind"), Mapping)
+                    and operator["rowKind"].get("field") == row_kind
+                    for operator in compute
+                )
+                if not written:
+                    issues.append(PageContractIssue("SCHEMA_ERROR", row_kind_path, "row kind field is not written by a folding operator"))
+
+    check_row_kind()
 
     seen: set[str] = set()
     leaf_fields: list[str] = []
-    for column, column_path in _table_leaf_columns(props.get("columns", []), f"{path}/props/columns"):
-        binding = column.get("field")
-        check(binding, f"{column_path}/field", None, "semanticHtml")
-        for property_name in ("secondaryField", "badgeField"):
-            if column.get(property_name) is not None:
-                check(column.get(property_name), f"{column_path}/{property_name}", None, None)
-        selection = column.get("selection")
-        writes = selection.get("writes", {}) if isinstance(selection, Mapping) else {}
-        if isinstance(writes, Mapping):
-            for filter_id, write in writes.items():
-                write_path = f"{column_path}/selection/writes/{_escape_pointer(filter_id)}"
-                target = filters_by_id.get(str(filter_id))
-                if target is None or target.get("type") != "dimension":
-                    issues.append(PageContractIssue("SCHEMA_ERROR", write_path, "selection target must be a declared dimension filter"))
-                if isinstance(write, Mapping) and write.get("field") is not None:
-                    check(write.get("field"), f"{write_path}/field", None, None)
-        key = _binding_key(binding)
-        if key in seen:
-            issues.append(PageContractIssue("SCHEMA_ERROR", f"{column_path}/field", "duplicate table column binding"))
-        seen.add(key)
-        field_name = _binding_field_name(binding)
-        if field_name is not None:
-            leaf_fields.append(field_name)
-        if column.get("filterable") is not None:
-            check(binding, f"{column_path}/filterable", "dimension", None)
+    def check_columns():
+        for column, column_path in _table_leaf_columns(props.get("columns", []), f"{path}/props/columns"):
+            binding = column.get("field")
+            check(binding, f"{column_path}/field", None, "semanticHtml")
+            for property_name in ("secondaryField", "badgeField"):
+                if column.get(property_name) is not None:
+                    check(column.get(property_name), f"{column_path}/{property_name}", None, None)
+            selection = column.get("selection")
+            writes = selection.get("writes", {}) if isinstance(selection, Mapping) else {}
+            if isinstance(writes, Mapping):
+                for filter_id, write in writes.items():
+                    write_path = f"{column_path}/selection/writes/{_escape_pointer(filter_id)}"
+                    target = filters_by_id.get(str(filter_id))
+                    if target is None or target.get("type") != "dimension":
+                        issues.append(PageContractIssue("SCHEMA_ERROR", write_path, "selection target must be a declared dimension filter"))
+                    if isinstance(write, Mapping) and write.get("field") is not None:
+                        check(write.get("field"), f"{write_path}/field", None, None)
+            key = _binding_key(binding)
+            if key in seen:
+                issues.append(PageContractIssue("SCHEMA_ERROR", f"{column_path}/field", "duplicate table column binding"))
+            seen.add(key)
+            field_name = _binding_field_name(binding)
+            if field_name is not None:
+                leaf_fields.append(field_name)
+            if column.get("filterable") is not None:
+                check(binding, f"{column_path}/filterable", "dimension", None)
+
+    check_columns()
 
     merge_by = props.get("mergeBy")
     if isinstance(merge_by, str) and merge_by not in leaf_fields:
@@ -1424,59 +1503,71 @@ def _map_component_issues(
     props = component.get("props", {})
     if not isinstance(props, Mapping):
         return issues
-    summary = props.get("pinnedSummary")
-    if isinstance(summary, Mapping):
-        summary_path = f"{path}/props/pinnedSummary"
-        check(summary.get("matchField"), f"{summary_path}/matchField", "dimension", None)
-        check(summary.get("titleField"), f"{summary_path}/titleField", "dimension", None)
-        for index, item in enumerate(summary.get("fields", [])):
-            if isinstance(item, Mapping):
-                check(item.get("field"), f"{summary_path}/fields/{index}/field", None, None)
-        if props.get("variant") != "regionalOverview":
-            issues.append(PageContractIssue("SCHEMA_ERROR", summary_path, "pinned summary needs regionalOverview"))
-        slot, field_id = _binding_parts(summary.get("matchField"))
-        field = _resolve_binding(slot, field_id, slots, data_sources)
-        if field is not None and _scalar_violation(summary.get("matchValue"), field) is not None:
-            issues.append(PageContractIssue("SCHEMA_ERROR", f"{summary_path}/matchValue", "pinned summary match value has wrong type"))
-        labels: set[str] = set()
-        for index, item in enumerate(summary.get("fields", [])):
-            if not isinstance(item, Mapping):
-                continue
-            label = str(item.get("label"))
-            if label in labels:
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"{summary_path}/fields/{index}/label", "duplicate pinned summary label"))
-            labels.add(label)
-    legend = props.get("legend")
-    bands = legend.get("bands") if isinstance(legend, Mapping) else None
-    if isinstance(bands, list):
-        previous: float | None = None
-        for index, band in enumerate(bands):
-            current = band.get("from") if isinstance(band, Mapping) else None
-            if isinstance(current, (int, float)) and previous is not None and current <= previous:
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/legend/bands/{index}/from", "legend bands must increase"))
-            if isinstance(current, (int, float)):
-                previous = float(current)
+    def check_pinned_summary():
+        summary = props.get("pinnedSummary")
+        if isinstance(summary, Mapping):
+            summary_path = f"{path}/props/pinnedSummary"
+            check(summary.get("matchField"), f"{summary_path}/matchField", "dimension", None)
+            check(summary.get("titleField"), f"{summary_path}/titleField", "dimension", None)
+            for index, item in enumerate(summary.get("fields", [])):
+                if isinstance(item, Mapping):
+                    check(item.get("field"), f"{summary_path}/fields/{index}/field", None, None)
+            if props.get("variant") != "regionalOverview":
+                issues.append(PageContractIssue("SCHEMA_ERROR", summary_path, "pinned summary needs regionalOverview"))
+            slot, field_id = _binding_parts(summary.get("matchField"))
+            field = _resolve_binding(slot, field_id, slots, data_sources)
+            if field is not None and _scalar_violation(summary.get("matchValue"), field) is not None:
+                issues.append(PageContractIssue("SCHEMA_ERROR", f"{summary_path}/matchValue", "pinned summary match value has wrong type"))
+            labels: set[str] = set()
+            for index, item in enumerate(summary.get("fields", [])):
+                if not isinstance(item, Mapping):
+                    continue
+                label = str(item.get("label"))
+                if label in labels:
+                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{summary_path}/fields/{index}/label", "duplicate pinned summary label"))
+                labels.add(label)
+
+    check_pinned_summary()
+    def check_legend():
+        legend = props.get("legend")
+        bands = legend.get("bands") if isinstance(legend, Mapping) else None
+        if isinstance(bands, list):
+            previous: float | None = None
+            for index, band in enumerate(bands):
+                current = band.get("from") if isinstance(band, Mapping) else None
+                if isinstance(current, (int, float)) and previous is not None and current <= previous:
+                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/legend/bands/{index}/from", "legend bands must increase"))
+                if isinstance(current, (int, float)):
+                    previous = float(current)
+
+    check_legend()
     hierarchy_filter = props.get("hierarchyFilter")
-    if not isinstance(hierarchy_filter, str):
-        for name in ("levelField", "parentField", "levelMaps"):
+    def check_hierarchy():
+        if not isinstance(hierarchy_filter, str):
+            for name in ("levelField", "parentField", "levelMaps"):
+                if props.get(name) is not None:
+                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/{name}", f"{name} needs hierarchyFilter"))
+            return issues
+        target = filters_by_id.get(hierarchy_filter)
+        hierarchy = target.get("hierarchy") if isinstance(target, Mapping) else None
+        if target is None or target.get("type") != "dimension" or not isinstance(hierarchy, list) or not hierarchy:
+            issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/hierarchyFilter", "map hierarchy filter is undeclared or not hierarchical"))
+            return issues
+        for name in ("levelField", "parentField", "codeField"):
             if props.get(name) is not None:
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/{name}", f"{name} needs hierarchyFilter"))
-        return issues
-    target = filters_by_id.get(hierarchy_filter)
-    hierarchy = target.get("hierarchy") if isinstance(target, Mapping) else None
-    if target is None or target.get("type") != "dimension" or not isinstance(hierarchy, list) or not hierarchy:
-        issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/hierarchyFilter", "map hierarchy filter is undeclared or not hierarchical"))
-        return issues
-    for name in ("levelField", "parentField", "codeField"):
-        if props.get(name) is not None:
-            check(props.get(name), f"{path}/props/{name}", "dimension", None)
-    level_ids = {item.get("id") for item in hierarchy if isinstance(item, Mapping)}
-    level_maps = props.get("levelMaps")
-    if isinstance(level_maps, Mapping):
-        for level_id in level_maps:
-            if level_id not in level_ids:
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/levelMaps/{_escape_pointer(level_id)}", "level map references unknown level"))
-    return issues
+                check(props.get(name), f"{path}/props/{name}", "dimension", None)
+        def check_hierarchy_levels():
+            level_ids = {item.get("id") for item in hierarchy if isinstance(item, Mapping)}
+            level_maps = props.get("levelMaps")
+            if isinstance(level_maps, Mapping):
+                for level_id in level_maps:
+                    if level_id not in level_ids:
+                        issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/levelMaps/{_escape_pointer(level_id)}", "level map references unknown level"))
+            return issues
+
+        return check_hierarchy_levels()
+
+    return check_hierarchy()
 
 
 def _action_issues(
@@ -1568,24 +1659,27 @@ def _bar_forecast_issues(
     if category_field is None:
         return []
     issues: list[PageContractIssue] = []
-    for row_index, row in enumerate(initial.get("rows", [])):
-        if not isinstance(row, Mapping):
-            continue
-        month_value = row.get(category_field)
-        month_match = re.fullmatch(r"\s*(\d{1,2})月\s*", month_value) if isinstance(month_value, str) else None
-        if month_match is None:
-            continue
-        month = int(month_match.group(1))
-        for series in props.get("series", []):
-            if not isinstance(series, Mapping) or series.get("role") not in {"actual", "forecast"}:
+    def check_forecast_rows():
+        for row_index, row in enumerate(initial.get("rows", [])):
+            if not isinstance(row, Mapping):
                 continue
-            field_id = _binding_field_name(series.get("field"))
-            if field_id is None or row.get(field_id) is None:
+            month_value = row.get(category_field)
+            month_match = re.fullmatch(r"\s*(\d{1,2})月\s*", month_value) if isinstance(month_value, str) else None
+            if month_match is None:
                 continue
-            if (series.get("role") == "forecast" and month <= captured_month) or (
-                series.get("role") == "actual" and month > captured_month
-            ):
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"/dataSources/{_escape_pointer(source_id)}/source/initial/rows/{row_index}/{_escape_pointer(field_id)}", "forecast boundary violation"))
+            month = int(month_match.group(1))
+            for series in props.get("series", []):
+                if not isinstance(series, Mapping) or series.get("role") not in {"actual", "forecast"}:
+                    continue
+                field_id = _binding_field_name(series.get("field"))
+                if field_id is None or row.get(field_id) is None:
+                    continue
+                if (series.get("role") == "forecast" and month <= captured_month) or (
+                    series.get("role") == "actual" and month > captured_month
+                ):
+                    issues.append(PageContractIssue("SCHEMA_ERROR", f"/dataSources/{_escape_pointer(source_id)}/source/initial/rows/{row_index}/{_escape_pointer(field_id)}", "forecast boundary violation"))
+
+    check_forecast_rows()
     return issues
 
 
@@ -1884,29 +1978,31 @@ def _query_pagination_issues(page: Mapping[str, Any]) -> list[PageContractIssue]
         components = section.get("components", [])
         if not isinstance(components, list):
             continue
-        for component, path in _walk_components(
-            components, f"/sections/{section_index}/components"
-        ):
-            slots = component.get("data", {})
-            if isinstance(slots, Mapping):
-                for slot, source_id in slots.items():
-                    add_reference(source_id, f"{path}/data/{_escape_pointer(slot)}")
-            props = component.get("props", {})
-            props = props if isinstance(props, Mapping) else {}
-            if component.get("type") == "aiSummary":
-                related_data = props.get("relatedData", {})
-                if isinstance(related_data, Mapping):
-                    for name, related in related_data.items():
-                        if isinstance(related, Mapping):
-                            add_reference(
-                                related.get("source"),
-                                f"{path}/props/relatedData/{_escape_pointer(name)}/source",
-                            )
+        def check_component_pagination(component, path):
+            def collect_component_references():
+                slots = component.get("data", {})
+                if isinstance(slots, Mapping):
+                    for slot, source_id in slots.items():
+                        add_reference(source_id, f"{path}/data/{_escape_pointer(slot)}")
+                props = component.get("props", {})
+                props = props if isinstance(props, Mapping) else {}
+                if component.get("type") == "aiSummary":
+                    related_data = props.get("relatedData", {})
+                    if isinstance(related_data, Mapping):
+                        for name, related in related_data.items():
+                            if isinstance(related, Mapping):
+                                add_reference(
+                                    related.get("source"),
+                                    f"{path}/props/relatedData/{_escape_pointer(name)}/source",
+                                )
+                return slots, props
+
+            slots, props = collect_component_references()
             if component.get("type") != "table":
-                continue
+                return
             pagination = props.get("pagination")
             if not isinstance(pagination, Mapping):
-                continue
+                return
             source_id = slots.get("main") if isinstance(slots, Mapping) else None
             source = data_sources.get(source_id)
             raw_source = source.get("source") if isinstance(source, Mapping) else None
@@ -1917,48 +2013,64 @@ def _query_pagination_issues(page: Mapping[str, Any]) -> list[PageContractIssue]
                     PageContractIssue("SCHEMA_ERROR", f"{path}/props/pagination/mode", "local pagination requires inline data")
                 )
             if mode != "query":
-                continue
+                return
             if source_type != "query":
                 issues.append(
                     PageContractIssue("SCHEMA_ERROR", f"{path}/props/pagination/mode", "query pagination requires query data")
                 )
-                continue
+                return
             if not isinstance(source_id, str):
-                continue
+                return
             query_tables.append((source_id, path))
-            query = raw_source.get("query")
-            body = query.get("body") if isinstance(query, Mapping) else None
-            dsl_list = body.get("dsl_list") if isinstance(body, Mapping) else None
-            item = dsl_list[0] if isinstance(dsl_list, list) and dsl_list else None
-            order = item.get("order") if isinstance(item, Mapping) else None
-            order = order if isinstance(order, Mapping) else None
-            order_path = f"/dataSources/{_escape_pointer(source_id)}/source/query/body/dsl_list/0/order"
-            if order is None or order.get("offset") != 0:
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"{order_path}/offset", "query pagination offset must be zero"))
-            limit = order.get("limit") if order is not None else None
-            if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"{order_path}/limit", "query pagination limit must be positive"))
-            initial = raw_source.get("initial")
-            if isinstance(initial, Mapping):
-                initial_path = f"/dataSources/{_escape_pointer(source_id)}/source/initial"
-                if "totalCount" not in initial:
-                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{initial_path}/totalCount", "paginated initial rows need totalCount"))
-                elif isinstance(limit, int) and not isinstance(limit, bool):
-                    rows = initial.get("rows")
-                    total_count = initial.get("totalCount")
-                    if (
-                        isinstance(rows, list)
-                        and isinstance(total_count, int)
-                        and len(rows) != min(limit, total_count)
-                    ):
-                        issues.append(PageContractIssue("SCHEMA_ERROR", f"{initial_path}/rows", "initial rows must contain a full first page"))
-            for column, column_path in _table_leaf_columns(
-                props.get("columns", []), f"{path}/props/columns"
-            ):
-                if column.get("sortable"):
-                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{column_path}/sortable", "query pagination does not support sorting"))
-                if column.get("filterable"):
-                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{column_path}/filterable", "query pagination does not support header filters"))
+            def check_pagination_order():
+                query = raw_source.get("query")
+                body = query.get("body") if isinstance(query, Mapping) else None
+                dsl_list = body.get("dsl_list") if isinstance(body, Mapping) else None
+                item = dsl_list[0] if isinstance(dsl_list, list) and dsl_list else None
+                order = item.get("order") if isinstance(item, Mapping) else None
+                order = order if isinstance(order, Mapping) else None
+                order_path = f"/dataSources/{_escape_pointer(source_id)}/source/query/body/dsl_list/0/order"
+                if order is None or order.get("offset") != 0:
+                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{order_path}/offset", "query pagination offset must be zero"))
+                limit = order.get("limit") if order is not None else None
+                if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
+                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{order_path}/limit", "query pagination limit must be positive"))
+
+                return limit
+
+            limit = check_pagination_order()
+            def check_pagination_initial():
+                initial = raw_source.get("initial")
+                if isinstance(initial, Mapping):
+                    initial_path = f"/dataSources/{_escape_pointer(source_id)}/source/initial"
+                    if "totalCount" not in initial:
+                        issues.append(PageContractIssue("SCHEMA_ERROR", f"{initial_path}/totalCount", "paginated initial rows need totalCount"))
+                    elif isinstance(limit, int) and not isinstance(limit, bool):
+                        rows = initial.get("rows")
+                        total_count = initial.get("totalCount")
+                        if (
+                            isinstance(rows, list)
+                            and isinstance(total_count, int)
+                            and len(rows) != min(limit, total_count)
+                        ):
+                            issues.append(PageContractIssue("SCHEMA_ERROR", f"{initial_path}/rows", "initial rows must contain a full first page"))
+
+            check_pagination_initial()
+            def check_pagination_columns():
+                for column, column_path in _table_leaf_columns(
+                    props.get("columns", []), f"{path}/props/columns"
+                ):
+                    if column.get("sortable"):
+                        issues.append(PageContractIssue("SCHEMA_ERROR", f"{column_path}/sortable", "query pagination does not support sorting"))
+                    if column.get("filterable"):
+                        issues.append(PageContractIssue("SCHEMA_ERROR", f"{column_path}/filterable", "query pagination does not support header filters"))
+
+            check_pagination_columns()
+
+        for component, path in _walk_components(
+            components, f"/sections/{section_index}/components"
+        ):
+            check_component_pagination(component, path)
 
     for source_id, component_path in query_tables:
         if len(references.get(source_id, [])) != 1:
@@ -1971,9 +2083,9 @@ def _query_initial_row_issues(value: Any) -> list[PageContractIssue]:
     data_sources = value.get("dataSources", {})
     if not isinstance(data_sources, Mapping):
         return issues
-    for source_id, raw_data_source in data_sources.items():
+    def check_query_initial_source(source_id, raw_data_source):
         if not isinstance(raw_data_source, Mapping):
-            continue
+            return
         source = raw_data_source.get("source")
         raw_fields = raw_data_source.get("fields")
         if (
@@ -1981,10 +2093,10 @@ def _query_initial_row_issues(value: Any) -> list[PageContractIssue]:
             or source.get("type") != "query"
             or not isinstance(raw_fields, Mapping)
         ):
-            continue
+            return
         initial = source.get("initial")
         if not isinstance(initial, Mapping):
-            continue
+            return
         captured_at = initial.get("capturedAt")
         if isinstance(captured_at, str) and not _is_rfc3339_datetime(captured_at):
             issues.append(
@@ -1996,7 +2108,7 @@ def _query_initial_row_issues(value: Any) -> list[PageContractIssue]:
             )
         rows = initial.get("rows")
         if not isinstance(rows, list):
-            continue
+            return
         fields, _field_paths, _field_issues = _resolved_fields(
             raw_fields, f"/dataSources/{_escape_pointer(source_id)}/fields"
         )
@@ -2008,9 +2120,9 @@ def _query_initial_row_issues(value: Any) -> list[PageContractIssue]:
         rows_path = (
             f"/dataSources/{_escape_pointer(source_id)}/source/initial/rows"
         )
-        for row_index, row in enumerate(rows):
+        def check_initial_row(row_index, row):
             if not isinstance(row, Mapping):
-                continue
+                return
             for field_id, raw_field in input_fields.items():
                 if not isinstance(raw_field, Mapping):
                     continue
@@ -2058,6 +2170,12 @@ def _query_initial_row_issues(value: Any) -> list[PageContractIssue]:
                             f"row contains computed field: {field_id}",
                         )
                     )
+
+        for row_index, row in enumerate(rows):
+            check_initial_row(row_index, row)
+
+    for source_id, raw_data_source in data_sources.items():
+        check_query_initial_source(source_id, raw_data_source)
     return issues
 
 
@@ -2066,9 +2184,9 @@ def _inline_row_issues(value: Any) -> list[PageContractIssue]:
     data_sources = value.get("dataSources", {})
     if not isinstance(data_sources, Mapping):
         return issues
-    for source_id, raw_data_source in data_sources.items():
+    def check_inline_source(source_id, raw_data_source):
         if not isinstance(raw_data_source, Mapping):
-            continue
+            return
         source = raw_data_source.get("source")
         raw_fields = raw_data_source.get("fields")
         if (
@@ -2076,10 +2194,10 @@ def _inline_row_issues(value: Any) -> list[PageContractIssue]:
             or source.get("type") != "inline"
             or not isinstance(raw_fields, Mapping)
         ):
-            continue
+            return
         rows = source.get("rows")
         if not isinstance(rows, list):
-            continue
+            return
         fields, _paths, _field_issues = _resolved_fields(
             raw_fields, f"/dataSources/{_escape_pointer(source_id)}/fields"
         )
@@ -2111,6 +2229,9 @@ def _inline_row_issues(value: Any) -> list[PageContractIssue]:
                     )
                     continue
                 issues.extend(_field_value_issues(row[field_id], field, path))
+
+    for source_id, raw_data_source in data_sources.items():
+        check_inline_source(source_id, raw_data_source)
     return issues
 
 
@@ -2141,13 +2262,13 @@ def _field_value_issues(
     if not isinstance(item_fields, Mapping):
         return []
     issues: list[PageContractIssue] = []
-    for item_index, item in enumerate(value):
+    def check_record_item(item_index, item):
         item_path = f"{path}/{item_index}"
         if not isinstance(item, Mapping):
             issues.append(
                 PageContractIssue("SCHEMA_ERROR", item_path, "detail item must be an object")
             )
-            continue
+            return
         if not query_mapping:
             for item_field_id in item:
                 if str(item_field_id) not in item_fields:
@@ -2183,6 +2304,9 @@ def _field_value_issues(
                         "detail item field violates its scalar contract",
                     )
                 )
+
+    for item_index, item in enumerate(value):
+        check_record_item(item_index, item)
     return issues
 
 
@@ -2218,23 +2342,29 @@ def _scalar_violation(
     if field_type in {"string", "semanticHtml"}:
         return None if isinstance(value, str) else "type"
     if field_type in {"number", "money"}:
-        return (
-            None
-            if isinstance(value, (int, float))
-            and not isinstance(value, bool)
-            and math.isfinite(value)
-            else "type"
-        )
+        def numeric_violation():
+            return (
+                None
+                if isinstance(value, (int, float))
+                and not isinstance(value, bool)
+                and math.isfinite(value)
+                else "type"
+            )
+
+        return numeric_violation()
     if field_type == "boolean":
         return None if isinstance(value, bool) else "type"
     if field_type == "date":
         return None if isinstance(value, str) and _is_calendar_date(value) else "type"
     if field_type == "datetime":
-        return (
-            None
-            if isinstance(value, str) and DATETIME_PATTERN.fullmatch(value)
-            else "type"
-        )
+        def datetime_violation():
+            return (
+                None
+                if isinstance(value, str) and DATETIME_PATTERN.fullmatch(value)
+                else "type"
+            )
+
+        return datetime_violation()
     if field_type == "recordList":
         return None if isinstance(value, list) else "type"
     return None
@@ -2304,60 +2434,81 @@ def _navigation_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
     params = {p["id"] for p in _param_declarations(page)}
     def fail(path: str, message: str) -> None:
         issues.append(PageContractIssue("SCHEMA_ERROR", path, message))
-    for section_index, section in enumerate(page.get("sections", [])):
-        for component, path in _walk_components(section.get("components", []), f"/sections/{section_index}/components"):
-            props = component.get("props", {})
-            targets = [(link, f"{path}/props/links/{i}") for i, link in enumerate(props.get("links", []))] if component.get("type") == "text" else [(a["navigate"], f"{path}/props/actions/{i}/navigate") for i, a in enumerate(props.get("actions", [])) if "navigate" in a]
-            for target, target_path in targets:
-                href = target["href"]
-                valid = bool(href) and href == href.strip() and not re.search(r"[\x00-\x1f\x7f\\]", href)
-                try:
-                    url = urlsplit(urljoin("https://metriccanvas.invalid/", href))
-                    valid = valid and url.scheme in ("http", "https") and bool(url.hostname) and not re.search(r"[\s<>]", url.hostname or "") and not re.match(r"https?:(?!//)", href, re.I)
-                    _ = url.port
-                except ValueError:
-                    valid = False
-                if not valid: fail(f"{target_path}/href", "导航只允许 HTTP(S) 或相对 URL")
-                for key, binding in target.get("query", {}).items():
-                    p = f"{target_path}/query/{_escape_pointer(key)}"
-                    if binding["source"] == "param":
-                        if binding["id"] not in params: fail(p+"/id", f"未声明的页面参数:{binding['id']}")
-                    elif binding["source"] == "filter":
-                        f = filters.get(binding["id"])
-                        if f is None:
-                            fail(p+"/id", f"未声明的筛选器:{binding['id']}")
-                            continue
-                        part = binding.get("part", "value")
-                        allowed = ("from", "to") if f["type"] in ("timeRange", "numberRange") else (("value", "level") if f.get("hierarchy") else ("value",))
-                        if part not in allowed: fail(p+"/part", f"筛选器 {binding['id']} 不支持分量 {part}")
-                    else:
-                        linked = [row for row in props.get("rows", []) + props.get("secondaryRows", []) if row.get("link")] if component.get("type") == "metricCard" else []
-                        slots = [(row["valueField"].get("data", "main") if isinstance(row["valueField"], Mapping) else "main") for row in linked] or ["main"]
-                        invalid = False
-                        for slot in slots:
-                            source = page.get("dataSources", {}).get(component.get("data", {}).get(slot), {})
-                            fields, _, _ = _resolved_fields(source.get("fields", {}), "")
-                            field = fields.get(binding["field"])
-                            if not field or field.get("type") not in ("string", "number", "money", "boolean", "date", "datetime"):
-                                invalid = True
-                        if invalid:
-                            fail(p+"/field", f"当前行缺少可传参的标量字段:{binding['field']}")
+    def check_navigation_actions():
+        for section_index, section in enumerate(page.get("sections", [])):
+            def check_component_navigation(component, path):
+                props = component.get("props", {})
+                targets = [(link, f"{path}/props/links/{i}") for i, link in enumerate(props.get("links", []))] if component.get("type") == "text" else [(a["navigate"], f"{path}/props/actions/{i}/navigate") for i, a in enumerate(props.get("actions", [])) if "navigate" in a]
+                def check_navigation_target(target, target_path):
+                    href = target["href"]
+                    valid = bool(href) and href == href.strip() and not re.search(r"[\x00-\x1f\x7f\\]", href)
+                    try:
+                        url = urlsplit(urljoin("https://metriccanvas.invalid/", href))
+                        valid = valid and url.scheme in ("http", "https") and bool(url.hostname) and not re.search(r"[\s<>]", url.hostname or "") and not re.match(r"https?:(?!//)", href, re.I)
+                        _ = url.port
+                    except ValueError:
+                        valid = False
+                    if not valid: fail(f"{target_path}/href", "导航只允许 HTTP(S) 或相对 URL")
+                    def check_navigation_binding(key, binding):
+                        p = f"{target_path}/query/{_escape_pointer(key)}"
+                        if binding["source"] == "param":
+                            if binding["id"] not in params: fail(p+"/id", f"未声明的页面参数:{binding['id']}")
+                        elif binding["source"] == "filter":
+                            f = filters.get(binding["id"])
+                            if f is None:
+                                fail(p+"/id", f"未声明的筛选器:{binding['id']}")
+                                return
+                            part = binding.get("part", "value")
+                            allowed = ("from", "to") if f["type"] in ("timeRange", "numberRange") else (("value", "level") if f.get("hierarchy") else ("value",))
+                            if part not in allowed: fail(p+"/part", f"筛选器 {binding['id']} 不支持分量 {part}")
+                        else:
+                            def check_row_binding():
+                                linked = [row for row in props.get("rows", []) + props.get("secondaryRows", []) if row.get("link")] if component.get("type") == "metricCard" else []
+                                slots = [(row["valueField"].get("data", "main") if isinstance(row["valueField"], Mapping) else "main") for row in linked] or ["main"]
+                                invalid = False
+                                for slot in slots:
+                                    source = page.get("dataSources", {}).get(component.get("data", {}).get(slot), {})
+                                    fields, _, _ = _resolved_fields(source.get("fields", {}), "")
+                                    field = fields.get(binding["field"])
+                                    if not field or field.get("type") not in ("string", "number", "money", "boolean", "date", "datetime"):
+                                        invalid = True
+                                if invalid:
+                                    fail(p+"/field", f"当前行缺少可传参的标量字段:{binding['field']}")
+
+                            check_row_binding()
+
+                    for key, binding in target.get("query", {}).items():
+                        check_navigation_binding(key, binding)
+
+                for target, target_path in targets:
+                    check_navigation_target(target, target_path)
+
+            for component, path in _walk_components(section.get("components", []), f"/sections/{section_index}/components"):
+                check_component_navigation(component, path)
+
+    check_navigation_actions()
     used = set(params)
-    for i, f in enumerate(page.get("filters", [])):
-        names = f.get("urlParams", {})
-        parts = ("from", "to") if f["type"] in ("timeRange", "numberRange") else (("value", "level") if f.get("hierarchy") else ("value",))
-        for part in names:
-            if part not in parts: fail(f"/filters/{i}/urlParams/{part}", "该筛选器不支持此 URL 分量")
-        for part in parts:
-            key = names.get(part, f["id"] if part == "value" else f"{f['id']}.{part}")
-            if key in used: fail(f"/filters/{i}/urlParams/{part}", f"URL 参数名重复:{key}")
-            used.add(key)
+    def check_filter_parameter_names():
+        for i, f in enumerate(page.get("filters", [])):
+            names = f.get("urlParams", {})
+            parts = ("from", "to") if f["type"] in ("timeRange", "numberRange") else (("value", "level") if f.get("hierarchy") else ("value",))
+            for part in names:
+                if part not in parts: fail(f"/filters/{i}/urlParams/{part}", "该筛选器不支持此 URL 分量")
+            for part in parts:
+                key = names.get(part, f["id"] if part == "value" else f"{f['id']}.{part}")
+                if key in used: fail(f"/filters/{i}/urlParams/{part}", f"URL 参数名重复:{key}")
+                used.add(key)
+
+    check_filter_parameter_names()
     return issues
 
 
 def _matches_param_value(declaration: Mapping[str, Any], value: Any) -> bool:
     if declaration["type"] == "timeRange":
-        return isinstance(value, Mapping) and set(value) in ({"start", "end"}, {"start", "end", "granularity"}) and value.get("granularity", declaration.get("granularity")) == declaration.get("granularity") and _matches_time_value(value["start"], declaration.get("granularity")) and _matches_time_value(value["end"], declaration.get("granularity")) and value["start"] <= value["end"]
+        def matches_time_range():
+            return isinstance(value, Mapping) and set(value) in ({"start", "end"}, {"start", "end", "granularity"}) and value.get("granularity", declaration.get("granularity")) == declaration.get("granularity") and _matches_time_value(value["start"], declaration.get("granularity")) and _matches_time_value(value["end"], declaration.get("granularity")) and value["start"] <= value["end"]
+
+        return matches_time_range()
     if declaration["type"] == "time":
         return _matches_time_value(value, declaration.get("granularity"))
     if declaration["type"] != "dimension":
@@ -2417,82 +2568,105 @@ def _param_binding_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
     consumed = set()
     def error(path: str, message: str) -> None:
         issues.append(PageContractIssue("SCHEMA_ERROR", path, message))
-    for source_id, source in page["dataSources"].items():
-        query = source["source"].get("query")
-        if source["source"]["type"] != "query" or not query:
-            continue
-        owners = {}
-        time_owner = None
-        for param_id, binding in query.get("paramBindings", {}).items():
-            path = f"/dataSources/{_escape_pointer(source_id)}/source/query/paramBindings/{_escape_pointer(param_id)}"
-            if binding["target"] == "time":
-                declaration = params.get(param_id, {})
-                if declaration.get("type") != "time" or not declaration.get("required"):
-                    error(path, "时间绑定必须引用必需的time参数")
-                if time_owner is not None:
-                    error(path, "同一查询的时间只能有一个参数来源")
-                time_owner = param_id
-                if any(f["target"] == "time" for f in query.get("filterBindings", {}).values()):
-                    error(path, "固定时间参数不得与页内时间筛选器共同控制查询")
+    def check_source_parameters():
+        def check_source_bindings(source_id, source):
+            query = source["source"].get("query")
+            if source["source"]["type"] != "query" or not query:
+                return
+            owners = {}
+            time_owner = None
+            def check_parameter_binding(param_id, binding):
+                nonlocal time_owner
+                path = f"/dataSources/{_escape_pointer(source_id)}/source/query/paramBindings/{_escape_pointer(param_id)}"
+                if binding["target"] == "time":
+                    def check_time_binding():
+                        nonlocal time_owner
+                        declaration = params.get(param_id, {})
+                        if declaration.get("type") != "time" or not declaration.get("required"):
+                            error(path, "时间绑定必须引用必需的time参数")
+                        if time_owner is not None:
+                            error(path, "同一查询的时间只能有一个参数来源")
+                        time_owner = param_id
+                        if any(f["target"] == "time" for f in query.get("filterBindings", {}).values()):
+                            error(path, "固定时间参数不得与页内时间筛选器共同控制查询")
+                        raw_filter = query["body"]["dsl_list"][0].get("filter")
+                        time = raw_filter.get("time") if isinstance(raw_filter, dict) else None
+                        if not isinstance(time, dict):
+                            error(path, "时间绑定需要显式filter.time，保留查询粒度与聚合设置")
+                        else:
+                            def check_time_filter_shape():
+                                if "start" in time or "end" in time:
+                                    error(path, "时间绑定不得另有查询体起止默认值")
+                                period = "month" if declaration.get("granularity") == "month" else "day"
+                                if time.get("period") != period:
+                                    error(path, f"时间参数精度要求查询period={period}；第一版不隐式转换查询粒度")
+
+                            check_time_filter_shape()
+                        if declaration.get("granularity") and not _time_window_compatible(declaration["granularity"], binding["window"]):
+                            error(path, "时间窗口单位与参数精度不相容")
+                        if isinstance(declaration.get("default"), str) and (declaration.get("granularity") not in ("month", "date") or not _valid_default_time_window(declaration, binding["window"])):
+                            error(path, "默认时间无法生成合法查询窗口")
+                        return
+
+                    return check_time_binding()
+                if params.get(param_id, {}).get("type") != "dimension":
+                    error(path, "查询参数绑定必须引用已声明的dimension参数")
+                field = binding["queryField"]
+                if field in owners:
+                    error(path, "同一查询目标只能有一个参数来源")
+                owners[field] = param_id
                 raw_filter = query["body"]["dsl_list"][0].get("filter")
-                time = raw_filter.get("time") if isinstance(raw_filter, dict) else None
-                if not isinstance(time, dict):
-                    error(path, "时间绑定需要显式filter.time，保留查询粒度与聚合设置")
-                else:
-                    if "start" in time or "end" in time:
-                        error(path, "时间绑定不得另有查询体起止默认值")
-                    period = "month" if declaration.get("granularity") == "month" else "day"
-                    if time.get("period") != period:
-                        error(path, f"时间参数精度要求查询period={period}；第一版不隐式转换查询粒度")
-                if declaration.get("granularity") and not _time_window_compatible(declaration["granularity"], binding["window"]):
-                    error(path, "时间窗口单位与参数精度不相容")
-                if isinstance(declaration.get("default"), str) and (declaration.get("granularity") not in ("month", "date") or not _valid_default_time_window(declaration, binding["window"])):
-                    error(path, "默认时间无法生成合法查询窗口")
-                continue
-            if params.get(param_id, {}).get("type") != "dimension":
-                error(path, "查询参数绑定必须引用已声明的dimension参数")
-            field = binding["queryField"]
-            if field in owners:
-                error(path, "同一查询目标只能有一个参数来源")
-            owners[field] = param_id
-            raw_filter = query["body"]["dsl_list"][0].get("filter")
-            if isinstance(raw_filter, dict) and isinstance(raw_filter.get("dims"), list) and any(isinstance(d, dict) and d.get("dim_name") == field for d in raw_filter["dims"]):
-                error(path, "参数绑定目标不得另有查询体默认条件")
-            matching = [(k, v) for k, v in query.get("filterBindings", {}).items() if v.get("target") == "dimension" and v.get("queryField") == field]
-            if len(matching) > 1:
-                error(path, "参数绑定目标不得由多个筛选器控制")
-            for filter_id, _ in matching:
+                if isinstance(raw_filter, dict) and isinstance(raw_filter.get("dims"), list) and any(isinstance(d, dict) and d.get("dim_name") == field for d in raw_filter["dims"]):
+                    error(path, "参数绑定目标不得另有查询体默认条件")
+                matching = [(k, v) for k, v in query.get("filterBindings", {}).items() if v.get("target") == "dimension" and v.get("queryField") == field]
+                if len(matching) > 1:
+                    error(path, "参数绑定目标不得由多个筛选器控制")
+                def check_initial_filter_owner(filter_id, _):
+                    declaration = filters.get(filter_id, {})
+                    if declaration.get("type") != "dimension" or declaration.get("initialParam") != param_id:
+                        error(path, "查询与筛选必须引用同一参数初值来源")
+                    else:
+                        consumed.add(filter_id)
+
+                for filter_id, _ in matching:
+                    check_initial_filter_owner(filter_id, _)
+
+            for param_id, binding in query.get("paramBindings", {}).items():
+                check_parameter_binding(param_id, binding)
+            for filter_id, binding in query.get("filterBindings", {}).items():
                 declaration = filters.get(filter_id, {})
-                if declaration.get("type") != "dimension" or declaration.get("initialParam") != param_id:
-                    error(path, "查询与筛选必须引用同一参数初值来源")
-                else:
+                if declaration.get("type") == "dimension" and declaration.get("initialParam") and (binding["target"] != "dimension" or owners.get(_initial_query_field(declaration, binding)) != declaration["initialParam"]):
+                    error(f"/dataSources/{_escape_pointer(source_id)}/source/query/filterBindings/{_escape_pointer(filter_id)}", "参数初始化筛选的每个查询目标都必须显式绑定同一参数")
+                if declaration.get("type") == "timePoint" and declaration.get("initialParam") and binding["target"] == "timePoint":
                     consumed.add(filter_id)
-        for filter_id, binding in query.get("filterBindings", {}).items():
-            declaration = filters.get(filter_id, {})
-            if declaration.get("type") == "dimension" and declaration.get("initialParam") and (binding["target"] != "dimension" or owners.get(_initial_query_field(declaration, binding)) != declaration["initialParam"]):
-                error(f"/dataSources/{_escape_pointer(source_id)}/source/query/filterBindings/{_escape_pointer(filter_id)}", "参数初始化筛选的每个查询目标都必须显式绑定同一参数")
-            if declaration.get("type") == "timePoint" and declaration.get("initialParam") and binding["target"] == "timePoint":
-                consumed.add(filter_id)
-    for index, declaration in enumerate(page.get("filters", [])):
-        if declaration["type"] not in ("dimension", "timePoint") or "initialParam" not in declaration:
-            continue
-        path = f"/filters/{index}/initialParam"
-        param = params.get(declaration["initialParam"], {})
-        if "default" in declaration:
-            error(path, "参数初始化与筛选default互斥，默认来源只能声明一次")
-        if declaration["id"] not in consumed:
-            error(path, "参数初始化筛选必须具有匹配的显式查询目标")
-        if declaration["type"] == "dimension":
-            if param.get("type") != "dimension":
-                error(path, "筛选初值必须引用已声明的dimension参数")
-            continue
-        value = param.get("value")
-        if param.get("type") != "timeRange" or not param.get("required"):
-            error(path, "时间点筛选初值必须引用必需的 times 参数")
-        elif param.get("granularity") != declaration.get("granularity"):
-            error(path, "时间点筛选初值的参数精度必须与筛选器一致")
-        elif isinstance(value, Mapping) and value.get("start") != value.get("end"):
-            error(path, "时间点筛选初值要求参数是单点")
+
+        for source_id, source in page["dataSources"].items():
+            check_source_bindings(source_id, source)
+
+    check_source_parameters()
+    def check_filter_initial_parameters():
+        for index, declaration in enumerate(page.get("filters", [])):
+            if declaration["type"] not in ("dimension", "timePoint") or "initialParam" not in declaration:
+                continue
+            path = f"/filters/{index}/initialParam"
+            param = params.get(declaration["initialParam"], {})
+            if "default" in declaration:
+                error(path, "参数初始化与筛选default互斥，默认来源只能声明一次")
+            if declaration["id"] not in consumed:
+                error(path, "参数初始化筛选必须具有匹配的显式查询目标")
+            if declaration["type"] == "dimension":
+                if param.get("type") != "dimension":
+                    error(path, "筛选初值必须引用已声明的dimension参数")
+                continue
+            value = param.get("value")
+            if param.get("type") != "timeRange" or not param.get("required"):
+                error(path, "时间点筛选初值必须引用必需的 times 参数")
+            elif param.get("granularity") != declaration.get("granularity"):
+                error(path, "时间点筛选初值的参数精度必须与筛选器一致")
+            elif isinstance(value, Mapping) and value.get("start") != value.get("end"):
+                error(path, "时间点筛选初值要求参数是单点")
+
+    check_filter_initial_parameters()
     return issues
 
 

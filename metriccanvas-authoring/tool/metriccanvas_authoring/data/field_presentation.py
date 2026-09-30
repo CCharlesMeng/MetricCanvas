@@ -16,39 +16,53 @@ def apply_field_presentation(unit, execution, description=None):
     fields = deepcopy(unit.fields)
     descriptors = {f['queryField']: f for f in (description or {}).get('fields', [])}
     chosen = {}
-    for key, field in fields.items():
+    def choose_field_format(key, field):
         if field.get('role') != 'measure' or field.get('type') not in {'number', 'money'} or field.get('defaultFormat'):
-            continue
+            return
         descriptor = descriptors.get(field['queryField'])
         scale = descriptor.get('scale') if descriptor else None
         unit_name = str(field.get('unit', '')).strip()
         complete = execution.total_count is not None and execution.total_count == len(execution.rows)
-        values = [row.get(field['queryField']) for row in execution.rows]
-        values = [v for v in values if isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)]
-        nonzero = [abs(v) for v in values if v != 0]
-        minimum = min(nonzero, default=0)
+        def finite_magnitudes():
+            values = [row.get(field['queryField']) for row in execution.rows]
+            values = [v for v in values if isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)]
+            nonzero = [abs(v) for v in values if v != 0]
+            minimum = min(nonzero, default=0)
+            return nonzero, minimum
+
+        nonzero, minimum = finite_magnitudes()
         # Unknown/already scaled provider values must not be scaled a second time.
-        if not complete:
-            fmt = 'number'
-        elif descriptor and scale not in {'none', 'currency-base', 'percent'}:
-            fmt = 'number'
-        elif any(token in unit_name.lower() for token in _SCALED_UNITS):
-            fmt = 'number'
-        elif unit_name in {'%', '％'} or scale == 'percent':
-            # Do not assume fractional ratios: percent formats consume percent points.
-            fmt = 'number' if 0 < minimum < 0.005 else 'percent-2'
-        elif nonzero and max(nonzero) >= 1e8 and minimum / 1e8 > 0.05:
-            fmt = 'compact-yi-1'
-        elif nonzero and max(nonzero) >= 1e4 and minimum / 1e4 > 0.05:
-            fmt = 'compact-wan-1'
-        else:
-            fmt = 'number'
+        def choose_scale():
+            if not complete:
+                fmt = 'number'
+            elif descriptor and scale not in {'none', 'currency-base', 'percent'}:
+                fmt = 'number'
+            elif any(token in unit_name.lower() for token in _SCALED_UNITS):
+                fmt = 'number'
+            elif unit_name in {'%', '％'} or scale == 'percent':
+                # Do not assume fractional ratios: percent formats consume percent points.
+                fmt = 'number' if 0 < minimum < 0.005 else 'percent-2'
+            elif nonzero and max(nonzero) >= 1e8 and minimum / 1e8 > 0.05:
+                fmt = 'compact-yi-1'
+            elif nonzero and max(nonzero) >= 1e4 and minimum / 1e4 > 0.05:
+                fmt = 'compact-wan-1'
+            else:
+                fmt = 'number'
+            return fmt
+
+        fmt = choose_scale()
         field['defaultFormat'] = fmt
         # Missing units do not prove that unrelated measures share a scale.
-        currency = unit_name in _CNY_BASE_UNITS or (field.get('type') == 'money' and field.get('currency') == 'CNY')
-        group = 'currency:CNY' if currency else unit_name
-        if group and fmt in {'number', 'compact-wan-1', 'compact-yi-1'}:
-            chosen.setdefault(group, []).append(key)
+        def group_same_unit():
+            currency = unit_name in _CNY_BASE_UNITS or (field.get('type') == 'money' and field.get('currency') == 'CNY')
+            group = 'currency:CNY' if currency else unit_name
+            if group and fmt in {'number', 'compact-wan-1', 'compact-yi-1'}:
+                chosen.setdefault(group, []).append(key)
+
+        group_same_unit()
+
+    for key, field in fields.items():
+        choose_field_format(key, field)
     scale_order = {'number': 0, 'compact-wan-1': 1, 'compact-yi-1': 2}
     for keys in chosen.values():
         common = min((fields[key]['defaultFormat'] for key in keys), key=scale_order.__getitem__)

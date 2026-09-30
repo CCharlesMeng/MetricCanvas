@@ -42,13 +42,17 @@ class QueryResults:
         return grant
 
     async def execute(self, prepared, request, current):
-        envelope = deepcopy(QUERY_SCHEMA)
-        envelope['properties']['requests']['items'] = {'type': 'object', 'properties': {'dataSourceId': DATA_REQUEST['properties']['dataSourceId']}, 'required': ['dataSourceId']}
-        require(Draft202012Validator(envelope).is_valid(request), 'QUERY_REQUEST_INVALID')
-        policy = load_query_validation_policy()
-        original = deepcopy(request)
-        invalid = {i for i, item in enumerate(request['requests']) if not Draft202012Validator(DATA_REQUEST).is_valid(item)}
-        request, normalizations = deepcopy(request), []
+        def prepare_envelope(request):
+            envelope = deepcopy(QUERY_SCHEMA)
+            envelope['properties']['requests']['items'] = {'type': 'object', 'properties': {'dataSourceId': DATA_REQUEST['properties']['dataSourceId']}, 'required': ['dataSourceId']}
+            require(Draft202012Validator(envelope).is_valid(request), 'QUERY_REQUEST_INVALID')
+            policy = load_query_validation_policy()
+            original = deepcopy(request)
+            invalid = {i for i, item in enumerate(request['requests']) if not Draft202012Validator(DATA_REQUEST).is_valid(item)}
+            request, normalizations = deepcopy(request), []
+            return policy, original, invalid, request, normalizations
+
+        policy, original, invalid, request, normalizations = prepare_envelope(request)
         async with asyncio.timeout(await self.state.remaining(prepared)):
             snapshot = await current_for_query(self.dependencies.data_context, policy)
         await current()
@@ -58,15 +62,18 @@ class QueryResults:
             return {'status': 'failed', 'validationMode': policy.mode,
                     'issues': [{'code': i.code, 'path': i.path} for i in context_issues]}
         require(context.version == request['dataContextVersion'], 'DATA_CONTEXT_VERSION_CHANGED')
-        for index, item in enumerate(request['requests']):
-            if index in invalid:
-                continue
-            single, changes = normalize_request({'requests': [item]})
-            single, name_changes = normalize_semantic_names(single, snapshot, context)
-            request['requests'][index] = single['requests'][0]
-            for change in changes + name_changes:
-                change['path'] = change['path'].replace('/requests/0/', f'/requests/{index}/', 1)
-                normalizations.append(change)
+        def normalize_items():
+            for index, item in enumerate(request['requests']):
+                if index in invalid:
+                    continue
+                single, changes = normalize_request({'requests': [item]})
+                single, name_changes = normalize_semantic_names(single, snapshot, context)
+                request['requests'][index] = single['requests'][0]
+                for change in changes + name_changes:
+                    change['path'] = change['path'].replace('/requests/0/', f'/requests/{index}/', 1)
+                    normalizations.append(change)
+
+        normalize_items()
         requests = request['requests']
         require(len({r['dataSourceId'] for r in requests}) == len(requests), 'QUERY_ID_CONFLICT')
         version = request['dataContextVersion']
@@ -114,13 +121,17 @@ class QueryResults:
         version = request['dataContextVersion']
         if index in invalid:
             return {'dataSourceId': item['dataSourceId'], 'status': 'failed', 'issues': [{'code': 'QUERY_ITEM_INVALID', 'path': f'/requests/{index}', 'action': 'correct_affected_request'}]}
-        signature = digest([self.state.key(prepared), version, policy.identity, {k: v for k, v in item.items() if k != 'dataSourceId'}])
-        ref = 'result-' + signature
-        claimed = {'binding': deepcopy(dict(prepared.binding)), 'dataContextVersion': version,
-                   'request': deepcopy(item), 'originalRequest': deepcopy(original['requests'][index]),
-                   'validationPolicy': policy.identity, 'validationMode': policy.mode,
-                   'normalizations': [n for n in normalizations if n['path'].startswith(f'/requests/{index}/')],
-                   'status': 'pending', 'resultRef': ref, 'attempt': 1, 'expiresAt': time.time() + 245}
+        def claim_payload():
+            signature = digest([self.state.key(prepared), version, policy.identity, {k: v for k, v in item.items() if k != 'dataSourceId'}])
+            ref = 'result-' + signature
+            claimed = {'binding': deepcopy(dict(prepared.binding)), 'dataContextVersion': version,
+                       'request': deepcopy(item), 'originalRequest': deepcopy(original['requests'][index]),
+                       'validationPolicy': policy.identity, 'validationMode': policy.mode,
+                       'normalizations': [n for n in normalizations if n['path'].startswith(f'/requests/{index}/')],
+                       'status': 'pending', 'resultRef': ref, 'attempt': 1, 'expiresAt': time.time() + 245}
+            return ref, claimed
+
+        ref, claimed = claim_payload()
         revision, existing = await self._claim_result(prepared, ref, claimed, current)
         if existing is not None:
             return self.evidence(existing, item['dataSourceId'])
@@ -159,17 +170,20 @@ class QueryResults:
                 if retrying.retries:
                     claimed['warnings'].append({'code': 'QUERY_TRANSIENT_RETRIED', 'count': retrying.retries})
                 if result.ok:
-                    execution = result.executions[0]
-                    require(len(json.dumps(list(execution.rows), ensure_ascii=False, allow_nan=False).encode()) <= 2 * 1024 * 1024, 'QUERY_RESULT_SIZE_LIMIT')
-                    claimed.update(status='empty' if not execution.rows else 'ready',
-                        source=build_query_source(result.units[0], execution), rows=[dict(row) for row in execution.rows],
-                        returnedCount=len(execution.rows), totalCount=execution.total_count,
-                        capturedAt=execution.captured_at, sourceDescriptions=list(result.source_descriptions))
-                    async with asyncio.timeout(await self.state.remaining(prepared)):
-                        relations, status = await load_relations(self.dependencies.metric_relations,
-                            dict(prepared.binding), version, item['businessDomain'])
-                    await current()
-                    claimed.update(relations=query_relations(relations, item, claimed['source']), relationStatus=status)
+                    async def capture_execution():
+                        execution = result.executions[0]
+                        require(len(json.dumps(list(execution.rows), ensure_ascii=False, allow_nan=False).encode()) <= 2 * 1024 * 1024, 'QUERY_RESULT_SIZE_LIMIT')
+                        claimed.update(status='empty' if not execution.rows else 'ready',
+                            source=build_query_source(result.units[0], execution), rows=[dict(row) for row in execution.rows],
+                            returnedCount=len(execution.rows), totalCount=execution.total_count,
+                            capturedAt=execution.captured_at, sourceDescriptions=list(result.source_descriptions))
+                        async with asyncio.timeout(await self.state.remaining(prepared)):
+                            relations, status = await load_relations(self.dependencies.metric_relations,
+                                dict(prepared.binding), version, item['businessDomain'])
+                        await current()
+                        claimed.update(relations=query_relations(relations, item, claimed['source']), relationStatus=status)
+
+                    await capture_execution()
                 else:
                     claimed.update(status='failed', issues=[{'code': i.code, 'path': i.path, 'stage': i.stage,
                         'candidates': list(i.candidates)[:10], 'retrySafe': i.retry_safe,
@@ -212,9 +226,13 @@ class QueryResults:
             return result
         fields = record['source']['fields']
         # Detail/HTML/recordList values stay in the program channel.
-        allowed = {key: field for key, field in fields.items() if field.get('role') in {'dimension', 'measure'} and field.get('type') not in {'recordList', 'semanticHtml'}}
-        result['fields'] = {key: {k: deepcopy(v) for k, v in field.items() if k in {'label', 'role', 'type', 'unit', 'defaultFormat'}} for key, field in allowed.items()}
-        result['rows'] = [{key: row.get(field.get('queryField', key)) for key, field in allowed.items()} for row in record['rows']]
+        def project_visible_fields():
+            allowed = {key: field for key, field in fields.items() if field.get('role') in {'dimension', 'measure'} and field.get('type') not in {'recordList', 'semanticHtml'}}
+            result['fields'] = {key: {k: deepcopy(v) for k, v in field.items() if k in {'label', 'role', 'type', 'unit', 'defaultFormat'}} for key, field in allowed.items()}
+            result['rows'] = [{key: row.get(field.get('queryField', key)) for key, field in allowed.items()} for row in record['rows']]
+            return allowed
+
+        allowed = project_visible_fields()
         shown, returned, total = len(result['rows']), record['returnedCount'], record['totalCount']
         result['coverage'] = {'shownCount': shown, 'returnedCount': returned, 'totalCount': total,
                               'truncated': shown < returned or total is not None and returned < total,

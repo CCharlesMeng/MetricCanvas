@@ -18,9 +18,9 @@ def normalize_compose(request, schema):
     optional(value, 'layout', schema['properties']['layout'], '', 'report')
     section_schema = schema['properties']['sections']['items']
     variants = section_schema['properties']['blocks']['items']['oneOf']
-    for si, section in enumerate(value.get('sections', []) if isinstance(value.get('sections'), list) else []):
+    def normalize_section(si, section):
         if not isinstance(section, dict):
-            continue
+            return
         path = f'/sections/{si}'
         if 'pattern' not in section:
             section['pattern'] = 'custom'
@@ -31,13 +31,13 @@ def normalize_compose(request, schema):
             if section.get(key, False) is None:
                 section.pop(key)
                 adjustments.append({'code': 'OPTIONAL_NULL_OMITTED', 'path': path + '/' + key})
-        for bi, block in enumerate(section.get('blocks', []) if isinstance(section.get('blocks'), list) else []):
+        def normalize_block(bi, block):
             if not isinstance(block, dict):
-                continue
+                return
             block_path = path + f'/blocks/{bi}'
             variant = next((v for v in variants if v['properties']['type']['const'] == block.get('type')), None)
             if variant is None:
-                continue
+                return
             for key in ('width', 'purpose'):
                 if key in variant['properties']:
                     optional(block, key, variant['properties'][key], block_path)
@@ -48,23 +48,32 @@ def normalize_compose(request, schema):
                     adjustments.append({'code': 'COMPONENT_FALLBACK_TABLE', 'path': block_path + '/component'})
             presentation = block.get('presentation')
             if isinstance(presentation, dict) and 'presentation' in variant['properties']:
-                styles = variant['properties']['presentation']['oneOf']
-                style = next((v for v in styles if v['properties']['kind']['const'] == presentation.get('kind')), None)
-                if style:
-                    for key in ('variant', 'density', 'horizontal', 'stacked'):
-                        if key in style['properties']:
-                            optional(presentation, key, style['properties'][key], block_path + '/presentation')
-                    columns = presentation.get('columns')
-                    if isinstance(columns, list) and 'columns' in style['properties']:
-                        properties = style['properties']['columns']['items']['properties']
-                        for ci, column in enumerate(columns):
-                            if isinstance(column, dict):
-                                for key in ('align', 'visual'):
-                                    optional(column, key, properties[key], block_path + f'/presentation/columns/{ci}')
+                def normalize_presentation():
+                    styles = variant['properties']['presentation']['oneOf']
+                    style = next((v for v in styles if v['properties']['kind']['const'] == presentation.get('kind')), None)
+                    if style:
+                        for key in ('variant', 'density', 'horizontal', 'stacked'):
+                            if key in style['properties']:
+                                optional(presentation, key, style['properties'][key], block_path + '/presentation')
+                        columns = presentation.get('columns')
+                        if isinstance(columns, list) and 'columns' in style['properties']:
+                            properties = style['properties']['columns']['items']['properties']
+                            for ci, column in enumerate(columns):
+                                if isinstance(column, dict):
+                                    for key in ('align', 'visual'):
+                                        optional(column, key, properties[key], block_path + f'/presentation/columns/{ci}')
+
+                normalize_presentation()
             # A null optional presentation carries no field selection or business intent.
             if block.get('presentation', False) is None:
                 block.pop('presentation')
                 adjustments.append({'code': 'OPTIONAL_NULL_OMITTED', 'path': block_path + '/presentation'})
+
+        for bi, block in enumerate(section.get('blocks', []) if isinstance(section.get('blocks'), list) else []):
+            normalize_block(bi, block)
+
+    for si, section in enumerate(value.get('sections', []) if isinstance(value.get('sections'), list) else []):
+        normalize_section(si, section)
     return value, adjustments
 
 

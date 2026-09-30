@@ -90,3 +90,97 @@ git diff --check
 6. CodeCheck 对单个隔离边界的宽泛捕获是否需要豁免，须拿到原始规则和复扫结果后处理；不加入无法确认有效的 noqa 注解。
 
 当前状态：本次代码整改完成，发布验收未完成。用户已授权将本批源码提交并推送 main；远端 SHA 与 CI 结论以提交后的交付回执为准。未同步 Relay。计划继续保留以便接续发布门禁，不归档为已发布。
+
+
+## 第二批：圈复杂度专项（2026-09-30）
+
+用户确认第一批未完整解决复杂度后，要求继续执行。本节覆盖前面的“仅四个函数”范围限制；第一批结果保留为历史记录。
+
+### 验收标准与实际范围
+
+- 使用固定版本 **Radon 6.0.1**，单函数 CC **≤15**。这是明确的本地工程验收线，未拿到 CodeCheck 原始规则，因此不是 CodeCheck 复扫结论。
+- 扫描 **15 个活跃公共文件的所有函数、类方法与嵌套辅助函数**，无逐函数豁免。类的聚合分数不作为函数分数，方法去重计数。
+- 基线 `b0b20dc94013e53734789298fe2b1306fd4ff5fa`：232 个函数，40 个超过 15，最高 67。
+- 修改后：345 个函数，**0 个超过 15，最高 15**。辅助函数也在扫描中，不能仅把分支搬入未统计的内部函数。
+- 13 个公共源码文件实际重构；其余两份 `data/page_build_spec.py`、`pages/editing/page_editing.py` 已达标，仅纳入持续扫描。
+- 新增 `tools/scripts/check-authoring-complexity.py`，CI 已接入，放在中立契约检查之前。Radon 是检查时依赖，不进入创作运行时依赖。
+
+### 原文路径与归属的最终核对
+
+| 原文条目 | 当前处理 |
+|---|---|
+| discovery/service.py、work、data、assets 及 pages 活跃方法 | 已重构并纳入扫描；同文件中另外发现的超标函数一并处理 |
+| domain/grouped_params、section_presentation、page_editing 等旧路径 | 不恢复旧目录；对应的 pages 活跃实现均纳入扫描 |
+| domain/page_validation 与 page_validation_common | 上游无这两个文件；活跃 pages/validation/page_validation.py 全文件扫描 |
+| domain 独有 _inline_param_issues | 旧目录已不存在；当前受控引用由 pages/validation/grouped_params.py 检查，已处理 |
+| validate_page_build_spec | 文档把长版本归入 data_agent_mcp；本仓同名公共实现存在且 CC=11，已纳入扫描，无需复制对方拆分 |
+| compute_derived_datasource / value_from_extractor.py | 本仓无该文件或实现；属于反馈中的 data_agent_mcp，不能声明已修复 |
+| adapters/firstparty/dqe_http.py::_adapt_body_for_java、execute_batch | 当前内部 Adapter 与公开模板均无这两个函数；按 ownership.json 归内部所有，需 Relay 对照其版本复验，不能声明本仓修复 |
+| _check_query_pagination_table 等 Relay 新增辅助函数 | 当前无同名函数；对应活跃 _query_pagination_issues 及新增辅助函数均纳入扫描 |
+
+### 40 个原超标函数的实测结果
+
+路径均相对 `metriccanvas-authoring/tool/metriccanvas_authoring/`。下表列原函数；新增辅助函数的完整列表可用扫描脚本 `--json` 查看，全部 CC≤15。
+
+| 函数 | 基线 CC | 当前 CC |
+|---|---:|---:|
+| `data/discovery/service.py::DiscoveryService._run` | 64 | 15 |
+| `data/discovery/service.py::DiscoveryService._interpret_requirements` | 23 | 15 |
+| `data/discovery/service.py::DiscoveryService._merge_proposal` | 16 | 8 |
+| `data/discovery/service.py::DiscoveryService.apply_choices` | 16 | 8 |
+| `pages/validation/page_validation.py::_composite_structure_issues` | 17 | 4 |
+| `pages/validation/page_validation.py::_capability_floor_issues` | 27 | 3 |
+| `pages/validation/page_validation.py::_page_param_issues` | 29 | 13 |
+| `pages/validation/page_validation.py::_invariant_issues` | 18 | 11 |
+| `pages/validation/page_validation.py::_section_issues` | 22 | 15 |
+| `pages/validation/page_validation.py::_filter_declaration_issues` | 34 | 15 |
+| `pages/validation/page_validation.py::_query_mapping_issues` | 50 | 13 |
+| `pages/validation/page_validation.py::_component_issues` | 33 | 10 |
+| `pages/validation/page_validation.py::_ai_summary_issues` | 18 | 3 |
+| `pages/validation/page_validation.py::_table_component_issues` | 37 | 7 |
+| `pages/validation/page_validation.py::_map_component_issues` | 34 | 2 |
+| `pages/validation/page_validation.py::_bar_forecast_issues` | 22 | 9 |
+| `pages/validation/page_validation.py::_query_pagination_issues` | 48 | 9 |
+| `pages/validation/page_validation.py::_query_initial_row_issues` | 23 | 3 |
+| `pages/validation/page_validation.py::_inline_row_issues` | 16 | 3 |
+| `pages/validation/page_validation.py::_field_value_issues` | 21 | 11 |
+| `pages/validation/page_validation.py::_scalar_violation` | 19 | 14 |
+| `pages/validation/page_validation.py::_navigation_issues` | 45 | 3 |
+| `pages/validation/page_validation.py::_matches_param_value` | 16 | 11 |
+| `pages/validation/page_validation.py::_param_binding_issues` | 58 | 3 |
+| `pages/validation/grouped_params.py::query_reference_issues` | 45 | 3 |
+| `assets/lifecycle_publish.py::validate_candidate_parameters` | 49 | 12 |
+| `work/authoring_turns.py::read_page_projection` | 67 | 12 |
+| `work/authoring_turns.py::AuthoringTurnGate.require` | 28 | 12 |
+| `data/semantic_catalog.py::metric_card` | 28 | 13 |
+| `data/semantic_catalog.py::SemanticCatalog.discover` | 17 | 13 |
+| `data/results.py::QueryResults.execute` | 18 | 13 |
+| `data/results.py::QueryResults._execute_one` | 18 | 12 |
+| `data/results.py::QueryResults.evidence` | 20 | 12 |
+| `pages/components/section_presentation.py::present_metric_summary` | 33 | 7 |
+| `pages/composition/page_building.py::build_data_component` | 42 | 10 |
+| `ask/rules.py::plan_metric_gap_resolution` | 21 | 7 |
+| `ask/rules.py::apply_unit_operations` | 18 | 8 |
+| `pages/input_tolerance.py::normalize_compose` | 34 | 4 |
+| `pages/editing/operation_batch.py::operation_batch` | 30 | 12 |
+| `data/field_presentation.py::apply_field_presentation` | 38 | 7 |
+
+### 行为验证及发布状态
+
+- 完整 harness：**519 项，518 通过，1 个既有失败**。仍为 `test_generated_shared_extraction_vector` 的 6.11 黄金向量与 6.12 writer 不一致；未隐藏或跳过该测试。
+- 页面差分扩大为 **381 个有效/无效页面输入**；与上述固定基线的完整 issue 列表（含顺序）一致，输入不变。基线 page_validation 和 grouped_params 都隔离加载，避免误用重构后的依赖造成假等价。
+- 首轮测试曾发现地图校验拆分后的返回值漏传，已修复；最终完整 harness 无新增错误。
+- 对此次修改检查无未定义名称或赋值前引用，`git diff --check` 通过。
+- CI 新增的复杂度步骤与本地使用同一个脚本和分析器版本。真实 CodeCheck 未运行，外部 Adapter/data_agent_mcp 未验收。
+- 中立契约检查复验仍报 `Incomplete page reference`；Bundle 摘要校验仍失败。本批不绕过其他批次的创作契约同步顺序，也不手改锁。源码可提交，不能据此宣布 Bundle 可发布。
+
+复验命令：
+
+```sh
+uv run --with radon==6.0.1 --no-project python tools/scripts/check-authoring-complexity.py --baseline b0b20dc9
+uv run --with radon==6.0.1 --no-project python tools/scripts/check-authoring-complexity.py --baseline b0b20dc9 --json
+PYTHONDONTWRITEBYTECODE=1 metriccanvas-authoring/tool/.venv/bin/python tools/scripts/check-authoring-validation-parity.py
+PYTHONDONTWRITEBYTECODE=1 metriccanvas-authoring/tool/.venv/bin/python metriccanvas-authoring/test-harness/run_tests.py
+```
+
+专项结论：当前上游、所列 15 个公共文件内的复杂度已按本地验收线收口；不外推为全仓扫描或 Relay 专有代码完成整改。发布门禁继续等待既有 IOC 契约整合。

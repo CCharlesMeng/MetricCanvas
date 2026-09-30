@@ -14,36 +14,16 @@ def operation_batch(baseline, request, operation_schema):
     if not normalized['ok']:
         return {'status': 'invalid_baseline', 'document': None, 'operations': [],
                 'issues': [{'code': 'BASELINE_INVALID', 'path': e['path']} for e in normalized['errors']]}
-    if (not isinstance(request, dict) or set(request) != {'operations'}
-            or not isinstance(request['operations'], list) or not 1 <= len(request['operations']) <= 50):
-        return {'status': 'invalid_request', 'document': None, 'operations': [],
-                'issues': [{'code': 'EDIT_REQUEST_INVALID', 'path': ''}]}
+    invalid = _batch_request_issue(request)
+    if invalid is not None:
+        return invalid
     operations = request['operations']
-    ids = [op.get('id') if isinstance(op, dict) else None for op in operations]
-    if any(not isinstance(i, str) or not 0 < len(i) <= 128 for i in ids) or len(set(ids)) != len(ids):
-        return {'status': 'invalid_request', 'document': None, 'operations': [],
-                'issues': [{'code': 'OPERATION_IDS_INVALID', 'path': '/operations'}]}
     original = normalized['document']
     document = deepcopy(original)
     results, states = [], {}
     validator = Draft202012Validator(operation_schema)
     for index, op in enumerate(operations):
-        result = {'id': op['id'], 'status': 'failed', 'issues': [], 'adjustments': []}
-        if not validator.is_valid(op):
-            result['issues'] = [{'code': 'OPERATION_INVALID', 'path': f'/operations/{index}'}]
-        elif any(states.get(dep) not in {'applied', 'unchanged'} for dep in op.get('dependsOn', [])):
-            result.update(status='skipped', issues=[{'code': 'DEPENDENCY_NOT_SUCCEEDED', 'path': f'/operations/{index}/dependsOn'}])
-        else:
-            candidate, issues, adjustments = yield deepcopy(document), deepcopy(op)
-            result['issues'] = issues
-            if candidate is not None and not issues:
-                errors = validate_page_document(candidate)
-                if errors:
-                    result['issues'] = [{'code': e.type, 'path': e.path} for e in errors]
-                else:
-                    result['status'] = 'unchanged' if candidate == document else 'applied'
-                    result['adjustments'] = adjustments if result['status'] == 'applied' else []
-                    document = candidate
+        document, result = yield from _apply_operation(document, op, index, validator, states)
         results.append(result)
         states[op['id']] = result['status']
     changed = document != original
@@ -54,3 +34,36 @@ def operation_batch(baseline, request, operation_schema):
         return {'status': 'failed', 'document': None, 'operations': [],
                 'issues': [{'code': 'EDIT_RESULT_INVALID', 'path': ''}]}
     return {'status': status, 'document': document if changed else None, 'operations': results, 'issues': []}
+
+
+def _apply_operation(document, op, index, validator, states):
+    result = {'id': op['id'], 'status': 'failed', 'issues': [], 'adjustments': []}
+    if not validator.is_valid(op):
+        result['issues'] = [{'code': 'OPERATION_INVALID', 'path': f'/operations/{index}'}]
+    elif any(states.get(dep) not in {'applied', 'unchanged'} for dep in op.get('dependsOn', [])):
+        result.update(status='skipped', issues=[{'code': 'DEPENDENCY_NOT_SUCCEEDED', 'path': f'/operations/{index}/dependsOn'}])
+    else:
+        candidate, issues, adjustments = yield deepcopy(document), deepcopy(op)
+        result['issues'] = issues
+        if candidate is not None and not issues:
+            errors = validate_page_document(candidate)
+            if errors:
+                result['issues'] = [{'code': e.type, 'path': e.path} for e in errors]
+            else:
+                result['status'] = 'unchanged' if candidate == document else 'applied'
+                result['adjustments'] = adjustments if result['status'] == 'applied' else []
+                document = candidate
+    return document, result
+
+
+def _batch_request_issue(request):
+    if (not isinstance(request, dict) or set(request) != {'operations'}
+            or not isinstance(request['operations'], list) or not 1 <= len(request['operations']) <= 50):
+        return {'status': 'invalid_request', 'document': None, 'operations': [],
+                'issues': [{'code': 'EDIT_REQUEST_INVALID', 'path': ''}]}
+    operations = request['operations']
+    ids = [op.get('id') if isinstance(op, dict) else None for op in operations]
+    if any(not isinstance(i, str) or not 0 < len(i) <= 128 for i in ids) or len(set(ids)) != len(ids):
+        return {'status': 'invalid_request', 'document': None, 'operations': [],
+                'issues': [{'code': 'OPERATION_IDS_INVALID', 'path': '/operations'}]}
+    return None

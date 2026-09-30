@@ -252,24 +252,31 @@ def validate_candidate_parameters(candidate, source=None):
         require(not candidate['retainDimensionValues'])
         require(not any('initial' in ds['source'] for ds in document['dataSources'].values() if ds['source']['type'] == 'query'))
     require(not validate_page_document(document), 'INVALID_PAGE')
-    if source is not None:
-        require(source['ref'] == candidate['ref']['source'] and source['document']['id'] == source['ref']['pageId'])
-        require(not validate_page_document(source['document']), 'INVALID_PAGE')
-        extracted_types = ('dimension', 'time', 'timeRange') if inline else ('dimension',)
-        non_dimensions = lambda doc: {p['id']: p for p in _param_declarations(doc) if p['type'] not in extracted_types}
-        require(non_dimensions(document) == non_dimensions(source['document']))
+    def check_source_parity():
+        if source is not None:
+            require(source['ref'] == candidate['ref']['source'] and source['document']['id'] == source['ref']['pageId'])
+            require(not validate_page_document(source['document']), 'INVALID_PAGE')
+            extracted_types = ('dimension', 'time', 'timeRange') if inline else ('dimension',)
+            non_dimensions = lambda doc: {p['id']: p for p in _param_declarations(doc) if p['type'] not in extracted_types}
+            require(non_dimensions(document) == non_dimensions(source['document']))
+
+    check_source_parity()
     require(document['id'] == candidate['ref']['source']['pageId'])
-    parameters = {p['id']: p for p in _param_declarations(document)}
-    dimensions = {key: p for key, p in parameters.items() if p['type'] == 'dimension' or inline and p['type'] in ('time', 'timeRange')}
-    summaries = candidate['parameterSummary']
-    ids = [p['parameterId'] for p in summaries]
-    require(len(ids) == len(set(ids)))
-    require({p['parameterId'] for p in summaries if p['selected']} == set(dimensions))
-    require(not (set(ids) & (set(parameters) - set(dimensions))))
-    query_sources = {key for key, value in document['dataSources'].items() if value['source']['type'] == 'query'}
-    affected = candidate['affectedDataSources']
-    require(len(affected) == len(set(affected)) and set(affected) <= query_sources)
-    for summary in summaries:
+    def check_summary_inventory():
+        parameters = {p['id']: p for p in _param_declarations(document)}
+        dimensions = {key: p for key, p in parameters.items() if p['type'] == 'dimension' or inline and p['type'] in ('time', 'timeRange')}
+        summaries = candidate['parameterSummary']
+        ids = [p['parameterId'] for p in summaries]
+        require(len(ids) == len(set(ids)))
+        require({p['parameterId'] for p in summaries if p['selected']} == set(dimensions))
+        require(not (set(ids) & (set(parameters) - set(dimensions))))
+        query_sources = {key for key, value in document['dataSources'].items() if value['source']['type'] == 'query'}
+        affected = candidate['affectedDataSources']
+        require(len(affected) == len(set(affected)) and set(affected) <= query_sources)
+        return parameters, dimensions, summaries, ids, query_sources
+
+    parameters, dimensions, summaries, ids, query_sources = check_summary_inventory()
+    def check_parameter_summary(summary):
         parameter_id = summary['parameterId']
         targets = [(target['dataSourceId'], target['queryField']) for target in summary['targets']]
         require(len(targets) == len(set(targets)))
@@ -280,16 +287,19 @@ def validate_candidate_parameters(candidate, source=None):
         if not summary['selected']:
             require(summary['valueState'] == 'not-selected' and parameter_id not in parameters and 'defaultValue' not in summary)
             require(summary['extractionKind'] is not None)
-            continue
-        if summary['extractionKind'] is None:
-            require(source is not None and source['ref'] == candidate['ref']['source'])
-            old = {p['id']: p for p in _param_declarations(source['document'])}.get(parameter_id)
-            require(old is not None and dimensions.get(parameter_id) == old)
-            require(parameter_targets(source['document'], parameter_id) == set(targets))
-        else:
-            require(summary['extractionKind'] in {'dimension-eq', 'dimension-in', 'time-range'} and bool(targets), 'UNSUPPORTED_EXTRACTION')
-            require(candidate['retainDimensionValues'] or summary['valueState'] != 'retained')
-            require(summary['extractionKind'] == ('time-range' if dimensions[parameter_id]['type'] == 'timeRange' else 'dimension-in' if dimensions[parameter_id].get('multiple', False) else 'dimension-eq'))
+            return
+        def check_extraction_provenance():
+            if summary['extractionKind'] is None:
+                require(source is not None and source['ref'] == candidate['ref']['source'])
+                old = {p['id']: p for p in _param_declarations(source['document'])}.get(parameter_id)
+                require(old is not None and dimensions.get(parameter_id) == old)
+                require(parameter_targets(source['document'], parameter_id) == set(targets))
+            else:
+                require(summary['extractionKind'] in {'dimension-eq', 'dimension-in', 'time-range'} and bool(targets), 'UNSUPPORTED_EXTRACTION')
+                require(candidate['retainDimensionValues'] or summary['valueState'] != 'retained')
+                require(summary['extractionKind'] == ('time-range' if dimensions[parameter_id]['type'] == 'timeRange' else 'dimension-in' if dimensions[parameter_id].get('multiple', False) else 'dimension-eq'))
+
+        check_extraction_provenance()
         require(len(targets) <= 1 or summary['sharing'] == 'identical-values')
         parameter = dimensions[parameter_id]
         require(summary['valueType'] == (parameter['type'] if parameter['type'] in ('time', 'timeRange') else 'string[]' if parameter.get('multiple', False) else 'string'))
@@ -300,6 +310,9 @@ def validate_candidate_parameters(candidate, source=None):
             require(summary['valueState'] == 'retained' and summary.get('defaultValue') == parameter['default'])
         else:
             require(summary['valueState'] == 'missing' and 'defaultValue' not in summary)
+
+    for summary in summaries:
+        check_parameter_summary(summary)
     require(candidate['validation']['valid'] == (not any(i['severity'] == 'blocking' for i in candidate['validation']['issues'])))
 
     for entry in candidate['diff'] + candidate['validation']['issues']:

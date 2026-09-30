@@ -177,75 +177,78 @@ def plan_metric_gap_resolution(
     )
     closest_candidates = _closest_candidate_payloads(candidates)
     occurrences: list[JsonObject] = []
-    if partition.executable_decision is None:
-        business_domain = _first_string(routed_domains)
-        if business_domain is None:
-            raise AgentCoreError(
-                "METRIC_GAP_DOMAIN_REQUIRED",
-                "面外缺口缺少已路由业务域",
-            )
-        search_terms = _dedupe_strings(
-            candidate.get("matchedTerm") for candidate in candidates
-        )
-        occurrences.append(
-            {
-                "idempotencyKey": scope_gap_key(business_domain, question),
-                "question": question,
-                "searchTerms": list(search_terms),
-                "closestCandidates": list(closest_candidates),
-                "adHocDefinition": None,
-                "expectedDimensions": [],
-                "expectedGranularity": None,
-                "businessDomain": business_domain,
-            }
-        )
-    elif partition.gaps:
-        anchor = _gap_anchor(entries, anchor_data_source_id)
-        anchor_unit = (
-            _mapping(anchor.get("unit")) if anchor is not None else None
-        )
-        business_domain = (
-            anchor_unit.get("businessDomain")
-            if anchor_unit is not None
-            else _first_string(routed_domains)
-        )
-        if not isinstance(business_domain, str):
-            raise AgentCoreError(
-                "METRIC_GAP_DOMAIN_REQUIRED",
-                "部分可答缺口缺少业务域",
-            )
-        expected_dimensions = (
-            _dedupe_strings(_sequence(anchor_unit.get("groupBy")))
-            if anchor_unit is not None
-            else ()
-        )
-        time = anchor_unit.get("time") if anchor_unit is not None else None
-        expected_granularity = (
-            time.get("granularity") if isinstance(time, Mapping) else None
-        )
-        if not isinstance(expected_granularity, str):
-            expected_granularity = None
-        for gap in partition.gaps:
-            aspect = gap.get("aspect")
-            if not isinstance(aspect, str) or not aspect:
+    def collect_gap_occurrences():
+        if partition.executable_decision is None:
+            business_domain = _first_string(routed_domains)
+            if business_domain is None:
                 raise AgentCoreError(
-                    "MODEL_UNIT_DECISION_INVALID",
-                    "缺口 aspect 必须是非空字符串",
+                    "METRIC_GAP_DOMAIN_REQUIRED",
+                    "面外缺口缺少已路由业务域",
                 )
+            search_terms = _dedupe_strings(
+                candidate.get("matchedTerm") for candidate in candidates
+            )
             occurrences.append(
                 {
-                    "idempotencyKey": scope_gap_key(
-                        business_domain, aspect
-                    ),
+                    "idempotencyKey": scope_gap_key(business_domain, question),
                     "question": question,
-                    "searchTerms": [aspect],
+                    "searchTerms": list(search_terms),
                     "closestCandidates": list(closest_candidates),
                     "adHocDefinition": None,
-                    "expectedDimensions": list(expected_dimensions),
-                    "expectedGranularity": expected_granularity,
+                    "expectedDimensions": [],
+                    "expectedGranularity": None,
                     "businessDomain": business_domain,
                 }
             )
+        elif partition.gaps:
+            anchor = _gap_anchor(entries, anchor_data_source_id)
+            anchor_unit = (
+                _mapping(anchor.get("unit")) if anchor is not None else None
+            )
+            business_domain = (
+                anchor_unit.get("businessDomain")
+                if anchor_unit is not None
+                else _first_string(routed_domains)
+            )
+            if not isinstance(business_domain, str):
+                raise AgentCoreError(
+                    "METRIC_GAP_DOMAIN_REQUIRED",
+                    "部分可答缺口缺少业务域",
+                )
+            expected_dimensions = (
+                _dedupe_strings(_sequence(anchor_unit.get("groupBy")))
+                if anchor_unit is not None
+                else ()
+            )
+            time = anchor_unit.get("time") if anchor_unit is not None else None
+            expected_granularity = (
+                time.get("granularity") if isinstance(time, Mapping) else None
+            )
+            if not isinstance(expected_granularity, str):
+                expected_granularity = None
+            for gap in partition.gaps:
+                aspect = gap.get("aspect")
+                if not isinstance(aspect, str) or not aspect:
+                    raise AgentCoreError(
+                        "MODEL_UNIT_DECISION_INVALID",
+                        "缺口 aspect 必须是非空字符串",
+                    )
+                occurrences.append(
+                    {
+                        "idempotencyKey": scope_gap_key(
+                            business_domain, aspect
+                        ),
+                        "question": question,
+                        "searchTerms": [aspect],
+                        "closestCandidates": list(closest_candidates),
+                        "adHocDefinition": None,
+                        "expectedDimensions": list(expected_dimensions),
+                        "expectedGranularity": expected_granularity,
+                        "businessDomain": business_domain,
+                    }
+                )
+
+    collect_gap_occurrences()
 
     pending = (
         PendingMetricGapRegistration(occurrences=tuple(occurrences))
@@ -787,14 +790,15 @@ def apply_unit_operations(
         operation.get("op") in {"add", "replace"} for operation in operations
     ) > 1
 
-    for operation in operations:
+    def apply_operation(operation):
+        nonlocal current, ordinal, dropped_adds
         operation_name = operation.get("op")
         if operation_name == "modify":
             data_source_id = str(operation.get("dataSourceId", ""))
             index = _entry_index(current, data_source_id)
             patch = _mapping(operation.get("patch"))
             if not patch:
-                continue
+                return
             entry = current[index]
             current[index] = {
                 **entry,
@@ -802,7 +806,7 @@ def apply_unit_operations(
             }
             if data_source_id not in touched:
                 touched.append(data_source_id)
-            continue
+            return
         if operation_name == "replace":
             data_source_id = str(operation.get("dataSourceId", ""))
             index = _entry_index(current, data_source_id)
@@ -819,7 +823,7 @@ def apply_unit_operations(
             }
             if data_source_id not in touched:
                 touched.append(data_source_id)
-            continue
+            return
         if operation_name == "remove":
             data_source_id = str(operation.get("dataSourceId", ""))
             index = _entry_index(current, data_source_id)
@@ -827,12 +831,12 @@ def apply_unit_operations(
                 entry for entry_index, entry in enumerate(current)
                 if entry_index != index
             ]
-            continue
+            return
         if operation_name != "add":
-            continue
+            return
         if len(current) >= MAX_DATA_REQUEST_UNITS:
             dropped_adds += 1
-            continue
+            return
         raw_unit = _mapping(operation["unit"])
         coerced = _coerce_domain(raw_unit, routed_domains, fallback_domain)
         materialized = {
@@ -851,6 +855,9 @@ def apply_unit_operations(
         )
         touched.append(data_source_id)
         added.append(data_source_id)
+
+    for operation in operations:
+        apply_operation(operation)
 
     live_ids = {str(entry.get("dataSourceId")) for entry in current}
     return UnitOperationResult(

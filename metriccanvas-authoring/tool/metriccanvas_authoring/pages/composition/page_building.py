@@ -69,30 +69,34 @@ def build_data_component(
         intent=unit.intent,
         pinned=unit.pinned_component,
     )
-    if unit.pinned_component is not None:
-        selected = next(
-            (candidate for candidate in candidates if candidate.pinned), None
-        )
-        if selected is None or not selected.ok:
-            reasons = () if selected is None else selected.reasons
-            raise PageBuildingIssue(
-                code="PINNED_COMPONENT_REJECTED",
-                path=f"/units/{unit_index}/pinnedComponent",
-                message=(
-                    f"pinned component {unit.pinned_component} failed the capability gate: "
-                    + "; ".join(reasons)
-                ),
+    def select_component():
+        if unit.pinned_component is not None:
+            selected = next(
+                (candidate for candidate in candidates if candidate.pinned), None
             )
-    else:
-        selected = next(
-            (candidate for candidate in candidates if candidate.recommended), None
-        )
-        if selected is None:
-            raise PageBuildingIssue(
-                code="COMPONENT_GATE_REJECTED",
-                path=f"/units/{unit_index}",
-                message="no component passed the capability gate",
+            if selected is None or not selected.ok:
+                reasons = () if selected is None else selected.reasons
+                raise PageBuildingIssue(
+                    code="PINNED_COMPONENT_REJECTED",
+                    path=f"/units/{unit_index}/pinnedComponent",
+                    message=(
+                        f"pinned component {unit.pinned_component} failed the capability gate: "
+                        + "; ".join(reasons)
+                    ),
+                )
+        else:
+            selected = next(
+                (candidate for candidate in candidates if candidate.recommended), None
             )
+            if selected is None:
+                raise PageBuildingIssue(
+                    code="COMPONENT_GATE_REJECTED",
+                    path=f"/units/{unit_index}",
+                    message="no component passed the capability gate",
+                )
+        return selected
+
+    selected = select_component()
     if selected.component_type not in ASSEMBLED_COMPONENT_TYPES:
         raise PageBuildingIssue(
             code="COMPONENT_ASSEMBLY_UNSUPPORTED",
@@ -112,76 +116,96 @@ def build_data_component(
         {"field": field_id, "label": field.get("label", field_id)}
         for field_id, field in measures
     ]
-    if selected.component_type == "metricCard":
-        props = {
-            **({} if unit.title is None else {"title": unit.title}),
-            "rows": [
-                {"label": field.get("label", field_id), "valueField": field_id}
-                for field_id, field in measures
-            ],
-        }
-    elif selected.component_type == "barChart":
-        props = {
-            **({} if unit.title is None else {"title": unit.title}),
-            "categoryField": dimensions[0][0],
-            "series": series,
-        }
-    elif selected.component_type == "lineChart":
-        time_dimension = next(
-            (
-                field
-                for field in dimensions
-                if field[1]["type"] in {"date", "datetime"}
-            ),
-            dimensions[0],
-        )
-        props = {
-            **({} if unit.title is None else {"title": unit.title}),
-            "xField": time_dimension[0],
-            "series": series,
-        }
-    elif selected.component_type == "table":
-        props = {
-            **({} if unit.title is None else {"title": unit.title}),
-            "columns": [
-                {"field": field_id, "title": field.get("label", field_id)}
-                for field_id, field in scalars
-            ],
-        }
-    elif selected.component_type == "pieChart":
-        props = {
-            **({} if unit.title is None else {"title": unit.title}),
-            "categoryField": dimensions[0][0],
-            "valueField": measures[0][0],
-        }
-    elif selected.component_type == "gauge":
-        props = {
-            **({} if unit.title is None else {"title": unit.title}),
-            "valueField": measures[0][0],
-        }
-    elif selected.component_type == "keyValuePanel":
-        props = {
-            **({} if unit.title is None else {"title": unit.title}),
-            "items": [
-                {"label": field.get("label", field_id), "field": field_id}
-                for field_id, field in scalars
-            ],
-        }
-    elif selected.component_type == "categoryBreakdown":
-        props = {
-            **({} if unit.title is None else {"title": unit.title}),
-            "categoryField": dimensions[0][0],
-            "columns": [
-                {"label": field.get("label", field_id), "field": field_id}
-                for field_id, field in measures
-            ],
-        }
-    else:
-        props = {
-            **({} if unit.title is None else {"title": unit.title}),
-            "nameField": dimensions[0][0],
-            "valueField": measures[0][0],
-        }
+    def component_props():
+        if selected.component_type == "metricCard":
+            def metric_card_props():
+                props = {
+                    **({} if unit.title is None else {"title": unit.title}),
+                    "rows": [
+                        {"label": field.get("label", field_id), "valueField": field_id}
+                        for field_id, field in measures
+                    ],
+                }
+                return props
+
+            props = metric_card_props()
+        elif selected.component_type == "barChart":
+            props = {
+                **({} if unit.title is None else {"title": unit.title}),
+                "categoryField": dimensions[0][0],
+                "series": series,
+            }
+        elif selected.component_type == "lineChart":
+            def line_chart_props():
+                time_dimension = next(
+                    (
+                        field
+                        for field in dimensions
+                        if field[1]["type"] in {"date", "datetime"}
+                    ),
+                    dimensions[0],
+                )
+                props = {
+                    **({} if unit.title is None else {"title": unit.title}),
+                    "xField": time_dimension[0],
+                    "series": series,
+                }
+                return props
+
+            props = line_chart_props()
+        elif selected.component_type == "table":
+            def table_props():
+                props = {
+                    **({} if unit.title is None else {"title": unit.title}),
+                    "columns": [
+                        {"field": field_id, "title": field.get("label", field_id)}
+                        for field_id, field in scalars
+                    ],
+                }
+                return props
+
+            props = table_props()
+        elif selected.component_type == "pieChart":
+            props = {
+                **({} if unit.title is None else {"title": unit.title}),
+                "categoryField": dimensions[0][0],
+                "valueField": measures[0][0],
+            }
+        elif selected.component_type == "gauge":
+            props = {
+                **({} if unit.title is None else {"title": unit.title}),
+                "valueField": measures[0][0],
+            }
+        elif selected.component_type == "keyValuePanel":
+            props = {
+                **({} if unit.title is None else {"title": unit.title}),
+                "items": [
+                    {"label": field.get("label", field_id), "field": field_id}
+                    for field_id, field in scalars
+                ],
+            }
+        elif selected.component_type == "categoryBreakdown":
+            def category_breakdown_props():
+                props = {
+                    **({} if unit.title is None else {"title": unit.title}),
+                    "categoryField": dimensions[0][0],
+                    "columns": [
+                        {"label": field.get("label", field_id), "field": field_id}
+                        for field_id, field in measures
+                    ],
+                }
+                return props
+
+            props = category_breakdown_props()
+        else:
+            props = {
+                **({} if unit.title is None else {"title": unit.title}),
+                "nameField": dimensions[0][0],
+                "valueField": measures[0][0],
+            }
+        return props
+
+    props = component_props()
     return {
         "id": f"{unit.data_source_id}-{_kebab_case(selected.component_type)}",
         "type": selected.component_type,

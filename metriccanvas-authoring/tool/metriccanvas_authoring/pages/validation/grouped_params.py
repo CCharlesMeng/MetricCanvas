@@ -38,9 +38,9 @@ def query_reference_issues(page: Mapping[str, Any]) -> list[tuple[str, str]]:
     issues = []
     def fail(path, message): issues.append((path, message))
     def outside_query_layer(p): return layered and bool(p) and not is_query_input(p)
-    for source_id, source in page.get("dataSources", {}).items():
+    def check_source_references(source_id, source):
         query = source.get("source", {}).get("query")
-        if not query: continue
+        if not query: return
         root = f"/dataSources/{source_id.replace('~', '~0').replace('/', '~1')}/source/query/body"
         allowed = set()
         f = query["body"]["dsl_list"][0].get("filter", {})
@@ -48,36 +48,51 @@ def query_reference_issues(page: Mapping[str, Any]) -> list[tuple[str, str]]:
         dims = f.get("dims", [])
         if not isinstance(dims, list): dims = []
         bindings = list(query.get("paramBindings", {}).values()) + list(query.get("filterBindings", {}).values())
-        for i, dim in enumerate(dims):
-            if not isinstance(dim, Mapping): continue
-            ref = dim.get("dim_value_list")
-            if not isinstance(ref, Mapping) or "param" not in ref: continue
-            path = f"{root}/dsl_list/0/filter/dims/{i}/dim_value_list"
-            allowed.add(path)
-            p = params.get(str(ref.get("param")), {})
-            if set(ref) != {"param"} or not isinstance(ref["param"], str): fail(path, "invalid dimension reference")
-            if outside_query_layer(p): fail(path, "reference points outside params.query")
-            elif p.get("type") != "dimension" or not p.get("required") or not p.get("dimName"): fail(path, "reference requires a required grouped dimension")
-            if p.get("dimName") != dim.get("dim_name"): fail(path, "dimension target mismatch")
-            if any(b.get("target") == "dimension" and b.get("queryField") == dim.get("dim_name") for b in bindings): fail(path, "multiple owners for dimension")
-            if any(j != i and isinstance(d, Mapping) and d.get("dim_name") == dim.get("dim_name") for j, d in enumerate(dims)): fail(path, "duplicate dimension condition")
-        time = f.get("time", {})
-        if not isinstance(time, Mapping): time = {}
-        if isinstance(time.get("param"), str):
-            path = f"{root}/dsl_list/0/filter/time"
-            allowed.add(path)
-            p = params.get(time["param"], {})
-            if any(key not in ("period", "is_aggregate", "param", "window") for key in time): fail(path, "time reference cannot coexist with literal range")
-            if outside_query_layer(p): fail(path, "reference points outside params.query")
-            elif p.get("type") != "timeRange" or not p.get("required"): fail(path, "time reference requires required times input")
-            if time.get("period") != ("month" if p.get("granularity") == "month" else "day"): fail(path, "incompatible time precision")
-            if "window" in time:
-                window = time["window"]
-                value = p.get("value")
-                if not _valid_window(window): fail(f"{path}/window", "invalid named time window")
-                elif p.get("granularity") and not _window_compatible(p["granularity"], window): fail(f"{path}/window", "incompatible window unit")
-                elif isinstance(value, Mapping) and value.get("start") != value.get("end"): fail(f"{path}/window", "window derivation requires a single-point anchor")
-            if any(b.get("target") == "time" for b in bindings): fail(path, "multiple owners for time")
+        def check_dimension_references():
+            def check_dimension_reference(i, dim):
+                if not isinstance(dim, Mapping): return
+                ref = dim.get("dim_value_list")
+                if not isinstance(ref, Mapping) or "param" not in ref: return
+                path = f"{root}/dsl_list/0/filter/dims/{i}/dim_value_list"
+                allowed.add(path)
+                p = params.get(str(ref.get("param")), {})
+                if set(ref) != {"param"} or not isinstance(ref["param"], str): fail(path, "invalid dimension reference")
+                if outside_query_layer(p): fail(path, "reference points outside params.query")
+                elif p.get("type") != "dimension" or not p.get("required") or not p.get("dimName"): fail(path, "reference requires a required grouped dimension")
+                if p.get("dimName") != dim.get("dim_name"): fail(path, "dimension target mismatch")
+                def check_dimension_owners():
+                    if any(b.get("target") == "dimension" and b.get("queryField") == dim.get("dim_name") for b in bindings): fail(path, "multiple owners for dimension")
+                    if any(j != i and isinstance(d, Mapping) and d.get("dim_name") == dim.get("dim_name") for j, d in enumerate(dims)): fail(path, "duplicate dimension condition")
+
+                check_dimension_owners()
+
+            for i, dim in enumerate(dims):
+                check_dimension_reference(i, dim)
+
+        check_dimension_references()
+        def check_time_reference():
+            time = f.get("time", {})
+            if not isinstance(time, Mapping): time = {}
+            if isinstance(time.get("param"), str):
+                path = f"{root}/dsl_list/0/filter/time"
+                allowed.add(path)
+                p = params.get(time["param"], {})
+                if any(key not in ("period", "is_aggregate", "param", "window") for key in time): fail(path, "time reference cannot coexist with literal range")
+                if outside_query_layer(p): fail(path, "reference points outside params.query")
+                elif p.get("type") != "timeRange" or not p.get("required"): fail(path, "time reference requires required times input")
+                if time.get("period") != ("month" if p.get("granularity") == "month" else "day"): fail(path, "incompatible time precision")
+                if "window" in time:
+                    def check_reference_window():
+                        window = time["window"]
+                        value = p.get("value")
+                        if not _valid_window(window): fail(f"{path}/window", "invalid named time window")
+                        elif p.get("granularity") and not _window_compatible(p["granularity"], window): fail(f"{path}/window", "incompatible window unit")
+                        elif isinstance(value, Mapping) and value.get("start") != value.get("end"): fail(f"{path}/window", "window derivation requires a single-point anchor")
+
+                    check_reference_window()
+                if any(b.get("target") == "time" for b in bindings): fail(path, "multiple owners for time")
+
+        check_time_reference()
         def visit(node, path):
             if isinstance(node, list):
                 for i, child in enumerate(node): visit(child, f"{path}/{i}")
@@ -88,6 +103,9 @@ def query_reference_issues(page: Mapping[str, Any]) -> list[tuple[str, str]]:
         if allowed and query.get("paramBindings"):
             fail(root, "inline references cannot mix with paramBindings")
         if allowed and not layered: fail(root, "inline references require grouped inputs")
+
+    for source_id, source in page.get("dataSources", {}).items():
+        check_source_references(source_id, source)
     return issues
 
 

@@ -30,18 +30,30 @@ def metric_card(model, metric):
     definition = text(metric.get('definition'), 4096)
     unit, frequency = text(metric.get('unit')), text(metric.get('frequency'))
     definition_known = isinstance(definition, str) and bool(definition.strip()) and definition != name
-    dimensions = metric.get('dimensions')
-    dimensions = [d for d in dimensions if isinstance(d, dict)] if isinstance(dimensions, list) else []
-    formula = metric.get('formula') if isinstance(metric.get('formula'), str) else None
-    configured = decoded(metric.get('calculate_conf'), {})
-    synonyms = metric.get('synonyms') or []
-    if isinstance(synonyms, str): synonyms = [s.strip() for s in synonyms.split(',') if s.strip()]
-    synonyms = [s for s in synonyms if text(s)] if isinstance(synonyms, list) else []
-    conflicts = []
-    requested = re.search(r'近(\d+)天', name)
-    used = set(re.findall(r'(\d+)天前', formula or ''))
-    if requested and used and requested.group(1) not in used:
-        conflicts.append({'code': 'DECLARED_TIME_FORMULA_CONFLICT', 'declaredDays': int(requested.group(1)), 'referencedDays': sorted(map(int, used))})
+    def metric_execution_description():
+        dimensions = metric.get('dimensions')
+        dimensions = [d for d in dimensions if isinstance(d, dict)] if isinstance(dimensions, list) else []
+        formula = metric.get('formula') if isinstance(metric.get('formula'), str) else None
+        configured = decoded(metric.get('calculate_conf'), {})
+        return dimensions, formula, configured
+
+    dimensions, formula, configured = metric_execution_description()
+    def parse_synonyms():
+        synonyms = metric.get('synonyms') or []
+        if isinstance(synonyms, str): synonyms = [s.strip() for s in synonyms.split(',') if s.strip()]
+        synonyms = [s for s in synonyms if text(s)] if isinstance(synonyms, list) else []
+        return synonyms
+
+    synonyms = parse_synonyms()
+    def formula_conflicts():
+        conflicts = []
+        requested = re.search(r'近(\d+)天', name)
+        used = set(re.findall(r'(\d+)天前', formula or ''))
+        if requested and used and requested.group(1) not in used:
+            conflicts.append({'code': 'DECLARED_TIME_FORMULA_CONFLICT', 'declaredDays': int(requested.group(1)), 'referencedDays': sorted(map(int, used))})
+        return conflicts
+
+    conflicts = formula_conflicts()
     return {'kind': 'metric', 'businessDomain': business_domain(model), 'metricRef': ref, 'source': reference, 'name': name, 'aliases': synonyms[:100],
         'definition': {'status': 'source-known' if definition_known else 'unknown', 'value': definition if definition_known else None},
         'unit': {'status': 'source-known' if unit else 'unknown', 'value': unit},
@@ -125,8 +137,12 @@ class SemanticCatalog:
         metrics, dimensions = self.source_cards(value)
         ranked = rank(query, metrics, max(1, len(metrics)))
         matching_dimensions = [d for d in dimensions if score(query, d)[0]]
-        relevant_domains = {c['businessDomain'] for c in ranked}
-        shown_dimensions = [d for d in dimensions if d['businessDomain'] in relevant_domains or d in matching_dimensions]
+        def dimension_scope():
+            relevant_domains = {c['businessDomain'] for c in ranked}
+            shown_dimensions = [d for d in dimensions if d['businessDomain'] in relevant_domains or d in matching_dimensions]
+            return shown_dimensions
+
+        shown_dimensions = dimension_scope()
         cards = rank(query, [*metrics, *dimensions], limit)
         for card in cards:
             if card['kind'] == 'metric':
