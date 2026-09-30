@@ -12,9 +12,11 @@ from pathlib import Path
 import run_platform_v2 as flow
 
 PROFILES = {
-    'cny': ('Tokens流水', '人民币元', [11030729.634093193, 29729963.32342134], 'cny-adaptive'),
+    'cny': ('Tokens流水', '人民币元', [11030729.634093193, 29729963.32342134], 'compact-wan-1'),
+    'mixed': ('Tokens流水', '人民币元', [5000, 125000000], 'compact-wan-1'),
+    'tiny': ('Tokens流水', '人民币元', [38, 125000000], 'number'),
     'quantity': ('Tokens消耗量', 'Tokens', [11358989639011.566, 23518208780053.55], 'compact-yi-1'),
-    'scaled': ('Tokens流水', '万元', [1103.1, 2973.0], None),
+    'scaled': ('Tokens流水', '万元', [1103.1, 2973.0], 'number'),
 }
 
 
@@ -31,7 +33,9 @@ def prepare(profile, root, fixture, suite):
     fixture['fields'][metric]['unit'] = unit
     fixture['fields'][metric].pop('defaultFormat', None)
     fixture['displayExpectations'] = {
-        'cny': ['1,103万', '2,973万'],
+        'cny': ['1,103.1万', '2,973.0万'],
+        'mixed': ['0.5万', '12,500.0万'],
+        'tiny': ['38', '125000000'],
         'quantity': ['113,589.9亿', '235,182.1亿'],
         'scaled': ['1103.1', '2973'],
     }[profile]
@@ -39,7 +43,7 @@ def prepare(profile, root, fixture, suite):
         row[metric] = value
     case = next(c for c in suite['cases'] if c['id'] == 'create-report')
     case['expected'].update(metric=metric, unit=unit, rows=deepcopy(fixture['rows']))
-    case['prompt'] += ' 请核对业务单位，并确保图表提示值与明细数值便于阅读；保留原始查询结果。'
+    case['prompt'] += ' 请核对业务单位，图表数值轴、提示值和明细列必须共用固定单位，不能逐值变换单位；保留原始查询结果。'
     suite['cases'] = [case]
     flow.dump(root / 'fixture.json', fixture)
     flow.dump(root / 'suite.json', suite)
@@ -64,6 +68,17 @@ async def run(output, scripted):
             fields = [f for s in artifact['document']['dataSources'].values() for f in s['fields'].values() if f.get('queryField') == metric]
             if not fields or any(f.get('defaultFormat') != expected_format for f in fields):
                 issues.append('DISPLAY_FORMAT_MISMATCH')
+            def bindings(value):
+                if isinstance(value, dict):
+                    if 'field' in value and 'format' in value:
+                        yield value
+                    for child in value.values():
+                        yield from bindings(child)
+                elif isinstance(value, list):
+                    for child in value:
+                        yield from bindings(child)
+            if any(b['format'] != expected_format for b in bindings(artifact['document']['sections'])):
+                issues.append('COMPONENT_FORMAT_OVERRIDE_MISMATCH')
             flow.dump(root / 'document.json', artifact['document'])
         else:
             issues.append('PAGE_ARTIFACT_MISSING')

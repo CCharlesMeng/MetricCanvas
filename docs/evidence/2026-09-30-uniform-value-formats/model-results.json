@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "id": "cny",
+      "passed": true,
+      "issues": [],
+      "modelCalls": 5,
+      "tokens": 120058
+    },
+    {
+      "id": "mixed",
+      "passed": true,
+      "issues": [],
+      "modelCalls": 6,
+      "tokens": 144177
+    },
+    {
+      "id": "tiny",
+      "passed": true,
+      "issues": [],
+      "modelCalls": 6,
+      "tokens": 142664
+    },
+    {
+      "id": "quantity",
+      "passed": true,
+      "issues": [],
+      "modelCalls": 5,
+      "tokens": 119886
+    },
+    {
+      "id": "scaled",
+      "passed": true,
+      "issues": [],
+      "modelCalls": 6,
+      "tokens": 142508
+    }
+  ],
+  "evidenceKind": "real-deepseek-local-http",
+  "limitations": [
+    "Synthetic Java/DQE/Relay services; not internal production integration"
+  ]
+}

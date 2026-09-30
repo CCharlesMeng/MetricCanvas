@@ -1,4 +1,4 @@
-import type { Component, DataSnapshot, Row, TableColumn } from '@metriccanvas/page/internal';
+import type { Component, DataSnapshot, Row, TableColumn, TableComponent } from '@metriccanvas/page/internal';
 import type {
   NamedDataSlots,
   TableHeaderFilterValue,
@@ -17,6 +17,7 @@ export interface TableRenderBinding {
   selectedCell?: TableSelectedCell;
   filterOptions: Record<string, string[]>;
   pagination?: TablePaginationState;
+  paginationConfig?: TableComponent['props']['pagination'];
   onpage: (pageIndex: number) => void;
   onpagesize: (pageSize: number) => void;
   onsort: (sort: TableSortRule[]) => void;

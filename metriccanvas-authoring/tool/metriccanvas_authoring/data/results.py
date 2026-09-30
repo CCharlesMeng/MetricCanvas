@@ -171,22 +171,19 @@ class QueryResults:
         return payload
 
     def bound(self, payload):
+        # Deployment limits reject oversized evidence; they never silently
+        # turn an ordinary query into an arbitrary first-N sample.
+        row_limit = self.state.limits.evidence_rows
+        require(row_limit is None or all(len(r.get('rows', [])) <= row_limit
+                                        for r in payload['results']), 'MODEL_EVIDENCE_LIMIT')
+        byte_limit = self.state.limits.evidence_bytes
         def size(): return len(json.dumps(payload, ensure_ascii=False, allow_nan=False).encode())
-        while size() > self.state.limits.evidence_bytes:
-            rows = [r for r in payload['results'] if r.get('rows')]
-            if not rows:
-                related = [r for r in payload['results'] if r.get('relations')]
-                require(bool(related), 'MODEL_EVIDENCE_LIMIT')
-                item = max(related, key=lambda r: len(r['relations']))
-                item['relations'].pop()
-                item['relationCoverage'].update(shownCount=len(item['relations']), truncated=True)
-                continue
-            item = max(rows, key=lambda r: len(r['rows']))
-            item['rows'].pop()
-            item['coverage']['shownCount'] = len(item['rows'])
-            item['coverage']['truncated'] = True
-            item['coverage']['sampleTruncated'] = True
-            item['coverage']['complete'] = False
+        while byte_limit is not None and size() > byte_limit:
+            related = [r for r in payload['results'] if r.get('relations')]
+            require(bool(related), 'MODEL_EVIDENCE_LIMIT')
+            item = max(related, key=lambda r: len(r['relations']))
+            item['relations'].pop()
+            item['relationCoverage'].update(shownCount=len(item['relations']), truncated=True)
 
     def evidence(self, record, source_id=None):
         result = {'resultRef': record['resultRef'], 'dataSourceId': source_id or record['request']['dataSourceId'],
@@ -207,7 +204,7 @@ class QueryResults:
         # Detail/HTML/recordList values stay in the program channel.
         allowed = {key: field for key, field in fields.items() if field.get('role') in {'dimension', 'measure'} and field.get('type') not in {'recordList', 'semanticHtml'}}
         result['fields'] = {key: {k: deepcopy(v) for k, v in field.items() if k in {'label', 'role', 'type', 'unit', 'defaultFormat'}} for key, field in allowed.items()}
-        result['rows'] = [{key: row.get(field.get('queryField', key)) for key, field in allowed.items()} for row in record['rows'][:self.state.limits.evidence_rows]]
+        result['rows'] = [{key: row.get(field.get('queryField', key)) for key, field in allowed.items()} for row in record['rows']]
         shown, returned, total = len(result['rows']), record['returnedCount'], record['totalCount']
         result['coverage'] = {'shownCount': shown, 'returnedCount': returned, 'totalCount': total,
                               'truncated': shown < returned or total is not None and returned < total,

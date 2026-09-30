@@ -55,6 +55,7 @@ const measurements=[];
     await page.setViewportSize({width,height:1000});
     await page.goto(`${platformUrl}?page=${encodeURIComponent(pageId)}&resource=${encodeURIComponent(resourceId)}`);
     await expect(page.getByText(header.props.title,{exact:true}).first()).toBeVisible();
+    if (fixtureData.paginationExpectation) await page.getByRole('button', { name: '当前修订预览', exact: true }).click();
     await expect(page.getByText(firstRegion,{exact:true}).first()).toBeVisible();
     if(pageId==='main-flow-complex-report'){
       await expect(page.getByText('通用',{exact:true}).first()).toBeVisible();
@@ -65,6 +66,33 @@ const measurements=[];
       for(const value of displayValues) await expect(page.getByText(value,{exact:true}).first()).toBeVisible();
     }
     await expect(page.locator('.bar-chart canvas, .pie-chart canvas').first()).toBeVisible();
+    if (fixtureData.paginationExpectation) {
+      const expected = fixtureData.paginationExpectation;
+      const pager = page.locator('.pager').first();
+      await expect(pager).toBeVisible();
+      await expect(pager.locator('.total')).toContainText(String(expected.totalCount));
+      await pager.getByRole('button', { name: '下一页', exact: true }).click();
+      await expect(page.getByText(fixtureData.rows[expected.pageSize]['区域'], { exact: true }).first()).toBeVisible();
+      const lastPage = Math.ceil(expected.totalCount / expected.pageSize);
+      await pager.getByRole('button', { name: String(lastPage), exact: true }).click();
+      await expect(page.getByText(expected.lastCategory, { exact: true }).first()).toBeVisible();
+      await expect(pager.getByRole('button', { name: '下一页', exact: true })).toBeDisabled();
+      await page.screenshot({path:resolve(output, `last-page-${width}.png`), fullPage:true});
+      await pager.getByRole('button', { name: '1', exact: true }).click();
+      const chart = page.locator('.bar-chart .echart').first();
+      await chart.scrollIntoViewIfNeeded();
+      const bounds = await chart.boundingBox();
+      if (!bounds) throw new Error('Chart viewport unavailable');
+      const halfWindow = bounds.width * 0.8 * expected.pageSize / expected.totalCount / 2;
+      await page.mouse.move(bounds.x + bounds.width * 0.1 + halfWindow, bounds.y + bounds.height - 9);
+      await page.mouse.down();
+      await page.mouse.move(bounds.x + bounds.width + 100, bounds.y + bounds.height - 9, { steps: 20 });
+      await page.mouse.up();
+      await page.waitForTimeout(500);
+      await page.screenshot({path:resolve(output, `chart-last-window-${width}.png`), fullPage:true});
+
+    }
+
     await page.waitForTimeout(1800);
     const content=page.locator('.page-content').first();
     await expect(content).toBeVisible();

@@ -1,0 +1,57 @@
+{
+  "formatVersion": 2,
+  "skill": "metriccanvas-platform-authoring",
+  "scope": [
+    "create",
+    "edit"
+  ],
+  "injectionSources": [
+    "SKILL.md",
+    "references/tools.md",
+    "references/execution.md",
+    "references/scenarios.md",
+    "references/reading-design.md",
+    "references/scenarios/usage-report.md",
+    "references/layouts/report.md",
+    "references/layouts/dashboard.md",
+    "workflows/create.md",
+    "workflows/edit.md",
+    "workflows/data-analysis.md"
+  ],
+  "cases": [
+    {
+      "id": "create-report",
+      "workflow": "create",
+      "injectionSources": [
+        "SKILL.md",
+        "references/tools.md",
+        "references/execution.md",
+        "references/scenarios.md",
+        "references/reading-design.md",
+        "references/scenarios/usage-report.md",
+        "references/layouts/report.md",
+        "workflows/create.md",
+        "workflows/data-analysis.md"
+      ],
+      "prompt": "新建一份 2026 年 8 月区域运营报告，采用 report，展示各区域 Tokens流水对比与明细。分析计划已经确认，请先取得证据再创建草稿并交付预览。 请核对业务单位，图表数值轴、提示值和明细列必须共用固定单位，不能逐值变换单位；保留原始查询结果。",
+      "layout": "report",
+      "pageId": "main-flow-report",
+      "expected": {
+        "title": "2026年8月区域运营报告",
+        "metric": "Tokens流水",
+        "unit": "人民币元",
+        "period": "2026-08",
+        "rows": [
+          {
+            "区域": "华东",
+            "Tokens流水": 38
+          },
+          {
+            "区域": "华南",
+            "Tokens流水": 125000000
+          }
+        ]
+      }
+    }
+  ]
+}

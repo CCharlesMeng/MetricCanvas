@@ -389,6 +389,13 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
   const normalizedBuildPage = normalizePageDocument({ ...buildPageVector.expected.document, schemaVersion: versionPolicy.current });
   if (!normalizedBuildPage.ok) throw new Error(`历史页面期望无法升级: ${JSON.stringify(normalizedBuildPage.errors)}`);
   buildPageVector.expected.document = { ...normalizedBuildPage.document, schemaVersion: versionPolicy.current };
+  // This frozen small-count fixture now declares raw numeric presentation explicitly,
+  // so widgets cannot apply legacy implicit 万 scaling. Keep the historical input intact.
+  for (const source of Object.values(buildPageVector.expected.document.dataSources) as Array<{ fields: Record<string, { role: string; type: string; defaultFormat?: string }> }>) {
+    for (const field of Object.values(source.fields)) {
+      if (field.role === 'measure' && field.type === 'number' && !field.defaultFormat) field.defaultFormat = 'number';
+    }
+  }
   const buildPageConformance = json(buildPageVector);
   const agentConformance = await legacyContract('agent-conformance.json');
   outputs.set('exported/analysis-intents.json', analysisIntents);

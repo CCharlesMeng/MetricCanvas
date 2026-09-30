@@ -1,0 +1,40 @@
+{
+  "evidenceKind": "real-model-local-http-main-flow",
+  "model": "deepseek-v4-flash",
+  "toleranceProbe": false,
+  "metadataPartialProbe": false,
+  "evidenceProbe": null,
+  "elapsedSeconds": 19.923,
+  "modelCalls": 6,
+  "tokens": 144177,
+  "tokenBudget": 600000,
+  "requestReserve": "utf8-bytes/2 + 8192 + max_tokens",
+  "requestedCases": [
+    "create-report"
+  ],
+  "executedCases": [
+    "create-report"
+  ],
+  "cases": [
+    {
+      "id": "create-report",
+      "workflow": "create",
+      "passed": true,
+      "status": "pass",
+      "issues": [],
+      "toolCalls": 5,
+      "final": "已完成 2026 年 8 月区域运营报告的新建、保存与预览交接。\n\n**执行结果**\n\n| 步骤 | 状态 |\n|---|---|\n| 读取本轮上下文（空基线，workVersion=0） | ✅ |\n| 语义发现（Tokens流水 / 区域） | ✅ |\n| 查询证据（2026-08，按区域分组） | ✅ 完整 2/2 行 |\n| compose_page 创建草稿 | ✅ saved，workVersion=1 |\n| page_metadata_emit_preview | ✅ ready |\n\n**页面结构（report）**\n- **区域 Tokens 流水对比**（panel）：各区域 Tokens 流水条形图（full）+ 口径说明\n- **区域 Tokens 流水明细**（panel）：各区域 Tokens 流水明细表（full）\n\n**证据与单位核对**\n- 指标 `Tokens流水`，业务单位 **人民币元**（source-known），维度 `区域`。\n- 结果完整：`returnedCount=2, totalCount=2, complete=true`，未截断。\n- 数据：华东 5,000 元；华南 125,000,000 元。\n- 固定单位：工具给出的 `defaultFormat=compact-wan-1`（万元，1 位小数）。核对舍入——华东 5,000 元 → 0.5 万元、华南 125,000,000 元 → 12,500.0 万元，均非零，无值被舍入成零，故万元可用。图表数值轴、提示值与明细列共用同一固定单位，未使用逐值自适应缩放，原始查询结果保留。\n\n**需说明的边界**\n- 两区域量级相差约 4 个数量级（5 千元 vs 1.25 亿元），条形图中华东会贴近零线——这是数据本身的真实分布，非设计错误；精确核对请以明细表为准。\n- 查询返回 `validationMode=relaxed`，并带有 `DATA_CONTEXT_GOVERNANCE_UNKNOWN` 警告（Tokens流水 的 additivity / timeAggregation 治理属性未知）。这不影响本次单期分组结果，但跨期求和或占比结论暂不可据此推断。\n- 预览 ready 表示交接 Adapter 已接收精确产物，不代表用户已在界面看到页面。\n\n{{RESPONSE_START}}\n{{PAGE_METADATA_PREVIEW_JSON}}\n{{RESPONSE_END}}",
+      "ref": {
+        "pageId": "main-flow-report",
+        "revisionId": "r1",
+        "resourceId": "resource-main-flow-report"
+      }
+    }
+  ],
+  "notRun": [],
+  "limitations": [
+    "Local Java, DQE and Relay substitutes",
+    "No production integration evidence"
+  ],
+  "passed": true
+}

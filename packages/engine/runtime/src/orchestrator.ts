@@ -174,6 +174,18 @@ function isQueryBinding(binding: DataSourceBinding): binding is QueryBinding {
   return binding.dataSource.source.type === 'query';
 }
 
+function hasReusableInitial(binding: DataSourceBinding): boolean {
+  if (!isQueryBinding(binding)) return false;
+  const initial = binding.dataSource.source.initial;
+  if (!initial) return false;
+  const { rows, totalCount } = initial;
+  // An explicitly paged query may reuse its complete first page. A preview
+  // sample without paging cannot stand in for the full query result.
+  if (totalCount === undefined || totalCount === rows.length) return true;
+  return binding.pagination !== undefined
+    && rows.length === Math.min(binding.pagination.limit, totalCount);
+}
+
 function initialSnapshots(
   bindings: DataSourceBinding[],
   useEmbeddedInitialRows: boolean
@@ -183,7 +195,7 @@ function initialSnapshots(
       binding.sourceId,
       binding.dataSource.source.type === 'inline'
         ? rowsSnapshot(binding.dataSource, binding.dataSource.source.rows)
-        : useEmbeddedInitialRows && binding.dataSource.source.initial
+        : useEmbeddedInitialRows && hasReusableInitial(binding) && binding.dataSource.source.initial
           ? rowsSnapshot(
               binding.dataSource,
               binding.dataSource.source.initial.rows,
@@ -433,7 +445,7 @@ function startSession(
 
   refetch(
     queryBindings.filter(
-      (binding) => !(executionMatches.has(binding.sourceId)) && !(useEmbeddedInitialRows && binding.dataSource.source.initial)
+      (binding) => !(executionMatches.has(binding.sourceId)) && !(useEmbeddedInitialRows && hasReusableInitial(binding) && binding.dataSource.source.initial)
     ),
     false
   );

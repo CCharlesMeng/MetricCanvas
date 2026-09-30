@@ -1,0 +1,40 @@
+{
+  "evidenceKind": "real-model-local-http-main-flow",
+  "model": "deepseek-v4-flash",
+  "toleranceProbe": false,
+  "metadataPartialProbe": false,
+  "evidenceProbe": null,
+  "elapsedSeconds": 12.486,
+  "modelCalls": 5,
+  "tokens": 119886,
+  "tokenBudget": 600000,
+  "requestReserve": "utf8-bytes/2 + 8192 + max_tokens",
+  "requestedCases": [
+    "create-report"
+  ],
+  "executedCases": [
+    "create-report"
+  ],
+  "cases": [
+    {
+      "id": "create-report",
+      "workflow": "create",
+      "passed": true,
+      "status": "pass",
+      "issues": [],
+      "toolCalls": 5,
+      "final": "已完成 2026 年 8 月区域运营报告（report）的创建与预览交接。\n\n**执行结果**\n- 取数：`运营分析` / `Tokens消耗量`，按 `区域` 分组，时间 2026-08（月）。结果完整（returnedCount=2，totalCount=2，truncated=false，resultComplete=true）。\n- 页面：`main-flow-report`，layout=report，1 个业务章节「各区域 Tokens 消耗量」（panel），含对比条形图 + 明细表。\n- 保存：saveStatus=saved，draftId=`resource-main-flow-report`，revisionId=`r1`。\n- 预览交接：ready，artifactRef 与保存产物一致。\n\n**证据与单位核对**\n- 度量字段 `Tokens消耗量`，业务单位 **Tokens**（元数据 source-known），`defaultFormat=compact-yi-1`（亿，1 位小数）。\n- 两区域值：华东 11,358,989,639,011.57；华南 23,518,208,780,053.55。按亿计为 113,589.9 亿 / 235,182.1 亿，均非零，固定「亿」单位有效，未触发退回较小单位。\n- 图表数值轴、柱条标签、Tooltip 与明细表共用同一固定「亿」单位，未使用逐值变化的 `cny-adaptive`/`compact-adaptive`；原始查询结果保留不变，缩放仅由格式承担。\n\n**说明与缺口**\n- 查询返回 `validationMode=relaxed`，并带 `DATA_CONTEXT_GOVERNANCE_UNKNOWN` 警告（Tokens消耗量 的 additivity、timeAggregation 未确认）。因此本页仅呈现单期各区域对比，未做跨期求和或占比推断。\n- 结果仅含华东、华南两个区域，即当前授权范围内的全部返回行；未声称覆盖其他区域。\n- 预览 ready 表示交接 Adapter 已接收产物，不代表用户已在界面看到页面。\n\n{{RESPONSE_START}}\n{{PAGE_METADATA_PREVIEW_JSON}}\n{{RESPONSE_END}}",
+      "ref": {
+        "pageId": "main-flow-report",
+        "revisionId": "r1",
+        "resourceId": "resource-main-flow-report"
+      }
+    }
+  ],
+  "notRun": [],
+  "limitations": [
+    "Local Java, DQE and Relay substitutes",
+    "No production integration evidence"
+  ],
+  "passed": true
+}

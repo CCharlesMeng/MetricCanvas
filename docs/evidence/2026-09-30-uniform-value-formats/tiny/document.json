@@ -1,0 +1,134 @@
+{
+  "id": "main-flow-report",
+  "schemaVersion": "6.11",
+  "layout": "report",
+  "dataSources": {
+    "result": {
+      "fields": {
+        "result-field-identity-11d0c13dc27c3ea3": {
+          "queryField": "区域",
+          "type": "string",
+          "role": "dimension",
+          "label": "区域",
+          "nullable": false
+        },
+        "result-field-identity-324b0e8b76f1dd27": {
+          "queryField": "Tokens流水",
+          "type": "number",
+          "role": "measure",
+          "label": "Tokens流水",
+          "unit": "人民币元",
+          "nullable": false,
+          "defaultFormat": "number"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "区域"
+                ],
+                "output_metrics": [
+                  "Tokens流水"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-08",
+                    "end": "2026-08"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "2026年8月区域运营报告"
+          }
+        }
+      ]
+    },
+    {
+      "id": "region-tokens",
+      "title": "各区域 Tokens 流水",
+      "container": "panel",
+      "components": [
+        {
+          "id": "region-bar",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "result"
+          },
+          "props": {
+            "title": "各区域 Tokens 流水（元）",
+            "categoryField": "result-field-identity-11d0c13dc27c3ea3",
+            "series": [
+              {
+                "field": "result-field-identity-324b0e8b76f1dd27",
+                "label": "Tokens流水"
+              }
+            ],
+            "horizontal": true
+          }
+        },
+        {
+          "id": "region-detail",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "result"
+          },
+          "props": {
+            "title": "区域 Tokens 流水明细（元）",
+            "columns": [
+              {
+                "field": "result-field-identity-11d0c13dc27c3ea3",
+                "title": "区域"
+              },
+              {
+                "field": "result-field-identity-324b0e8b76f1dd27",
+                "title": "Tokens流水"
+              }
+            ]
+          }
+        },
+        {
+          "id": "structure-scope-region-tokens",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "数据口径：\n运营分析；2026-08 至 2026-08；month；按区域"
+          }
+        }
+      ]
+    }
+  ]
+}

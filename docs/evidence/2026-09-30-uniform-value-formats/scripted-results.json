@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "id": "cny",
+      "passed": true,
+      "issues": [],
+      "modelCalls": 0,
+      "tokens": 0
+    },
+    {
+      "id": "mixed",
+      "passed": true,
+      "issues": [],
+      "modelCalls": 0,
+      "tokens": 0
+    },
+    {
+      "id": "tiny",
+      "passed": true,
+      "issues": [],
+      "modelCalls": 0,
+      "tokens": 0
+    },
+    {
+      "id": "quantity",
+      "passed": true,
+      "issues": [],
+      "modelCalls": 0,
+      "tokens": 0
+    },
+    {
+      "id": "scaled",
+      "passed": true,
+      "issues": [],
+      "modelCalls": 0,
+      "tokens": 0
+    }
+  ],
+  "evidenceKind": "scripted",
+  "limitations": [
+    "Synthetic Java/DQE/Relay services; not internal production integration"
+  ]
+}

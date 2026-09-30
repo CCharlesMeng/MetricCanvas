@@ -1,7 +1,7 @@
 """Choose overridable display defaults after execution; never transform data.
 
-Scale is chosen once per returned field, using its smallest nonzero magnitude
-so a large outlier cannot hide small values. Provider formats always win.
+Scale is chosen once per returned field and aligned across same-unit measures.
+A fixed one-decimal format must not hide a nonzero value. Provider formats win.
 """
 from copy import deepcopy
 from dataclasses import replace
@@ -15,6 +15,7 @@ _SCALED_UNITS = ('万', '亿', '百万', '千', 'million', 'billion', 'thousand'
 def apply_field_presentation(unit, execution, description=None):
     fields = deepcopy(unit.fields)
     descriptors = {f['queryField']: f for f in (description or {}).get('fields', [])}
+    chosen = {}
     for key, field in fields.items():
         if field.get('role') != 'measure' or field.get('type') not in {'number', 'money'} or field.get('defaultFormat'):
             continue
@@ -33,18 +34,24 @@ def apply_field_presentation(unit, execution, description=None):
             fmt = 'number'
         elif any(token in unit_name.lower() for token in _SCALED_UNITS):
             fmt = 'number'
-        elif unit_name in _CNY_BASE_UNITS or (field.get('type') == 'money' and field.get('currency') == 'CNY'):
-            # Existing CNY preset rounds sub-yuan amounts to whole yuan.
-            fmt = 'number' if 0 < minimum < 1 else 'cny-adaptive'
         elif unit_name in {'%', '％'} or scale == 'percent':
             # Do not assume fractional ratios: percent formats consume percent points.
             fmt = 'number' if 0 < minimum < 0.005 else 'percent-2'
-        elif minimum >= 1e8:
+        elif nonzero and max(nonzero) >= 1e8 and minimum / 1e8 > 0.05:
             fmt = 'compact-yi-1'
-        elif minimum >= 1e4:
+        elif nonzero and max(nonzero) >= 1e4 and minimum / 1e4 > 0.05:
             fmt = 'compact-wan-1'
         else:
             fmt = 'number'
-        if fmt != 'number':
-            field['defaultFormat'] = fmt
+        field['defaultFormat'] = fmt
+        # Missing units do not prove that unrelated measures share a scale.
+        currency = unit_name in _CNY_BASE_UNITS or (field.get('type') == 'money' and field.get('currency') == 'CNY')
+        group = 'currency:CNY' if currency else unit_name
+        if group and fmt in {'number', 'compact-wan-1', 'compact-yi-1'}:
+            chosen.setdefault(group, []).append(key)
+    scale_order = {'number': 0, 'compact-wan-1': 1, 'compact-yi-1': 2}
+    for keys in chosen.values():
+        common = min((fields[key]['defaultFormat'] for key in keys), key=scale_order.__getitem__)
+        for key in keys:
+            fields[key]['defaultFormat'] = common
     return replace(unit, fields=fields)

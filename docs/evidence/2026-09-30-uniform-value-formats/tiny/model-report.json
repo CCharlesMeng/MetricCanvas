@@ -1,0 +1,40 @@
+{
+  "evidenceKind": "real-model-local-http-main-flow",
+  "model": "deepseek-v4-flash",
+  "toleranceProbe": false,
+  "metadataPartialProbe": false,
+  "evidenceProbe": null,
+  "elapsedSeconds": 14.75,
+  "modelCalls": 6,
+  "tokens": 142664,
+  "tokenBudget": 600000,
+  "requestReserve": "utf8-bytes/2 + 8192 + max_tokens",
+  "requestedCases": [
+    "create-report"
+  ],
+  "executedCases": [
+    "create-report"
+  ],
+  "cases": [
+    {
+      "id": "create-report",
+      "workflow": "create",
+      "passed": true,
+      "status": "pass",
+      "issues": [],
+      "toolCalls": 5,
+      "final": "已完成 2026 年 8 月区域运营报告草稿并交付预览。\n\n**执行结果**\n- 新建页面（report 布局），页头由工具生成，业务章节「各区域 Tokens 流水」含横向条形图 + 明细表。\n- 两个组件均 `applied`，无 issues/adjustments。\n- 保存：`saveStatus=saved`，draftId=`resource-main-flow-report`，revisionId=`r1`，artifactRef 完整。\n- 预览：`ready`，artifactRef/ref 匹配。\n\n**证据与单位核对**\n- 指标「Tokens流水」业务单位为**人民币元**（source-known），维度「区域」经 queryBinding 验证可分组。\n- 结果完整（returnedCount=2，totalCount=2，truncated=false，resultComplete=true），可用于对比与明细。\n- 数值：华东 38 元、华南 125,000,000 元。\n- **固定单位**：按你的要求，图表数值轴、提示值与明细列统一使用原始单位「元」（`number` 格式），不做逐值自适应缩放，保留原始查询结果。两值量级相差约 6 个数量级，华东在条形图中会贴近零线——这是固定单位下的必然呈现，未通过换单位掩盖。\n\n**需说明的边界**\n- 结果仅返回 2 个区域，页面按返回数据呈现，未声称是全国全量排名。\n- 查询返回 `validationMode=relaxed`，且 Tokens流水 的 additivity/timeAggregation 治理属性为 unknown；本页仅做单期对比与明细，未做跨期求和或占比推算。\n- 预览 `ready` 表示交接 Adapter 已接收产物，不代表你已在界面上看到页面。\n\n{{RESPONSE_START}}\n{{PAGE_METADATA_PREVIEW_JSON}}\n{{RESPONSE_END}}",
+      "ref": {
+        "pageId": "main-flow-report",
+        "revisionId": "r1",
+        "resourceId": "resource-main-flow-report"
+      }
+    }
+  ],
+  "notRun": [],
+  "limitations": [
+    "Local Java, DQE and Relay substitutes",
+    "No production integration evidence"
+  ],
+  "passed": true
+}

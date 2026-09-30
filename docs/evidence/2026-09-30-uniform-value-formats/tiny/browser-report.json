@@ -1,0 +1,91 @@
+{
+  "ok": true,
+  "pageId": "main-flow-report",
+  "baseUrl": "local-http-fixture",
+  "viewports": [
+    1440,
+    640
+  ],
+  "dqeCalls": 5,
+  "measurements": [
+    {
+      "width": 1440,
+      "geometry": {
+        "left": 540,
+        "right": 1180,
+        "scrollWidth": 640,
+        "clientWidth": 640,
+        "cells": [
+          {
+            "left": 552,
+            "right": 1168,
+            "top": 28,
+            "bottom": 92,
+            "height": 64
+          },
+          {
+            "left": 584,
+            "right": 1136,
+            "top": 213,
+            "bottom": 483,
+            "height": 270
+          },
+          {
+            "left": 584,
+            "right": 1136,
+            "top": 493,
+            "bottom": 691,
+            "height": 198
+          },
+          {
+            "left": 584,
+            "right": 1136,
+            "top": 701,
+            "bottom": 744.59375,
+            "height": 43.59375
+          }
+        ]
+      }
+    },
+    {
+      "width": 640,
+      "geometry": {
+        "left": 60,
+        "right": 640,
+        "scrollWidth": 580,
+        "clientWidth": 580,
+        "cells": [
+          {
+            "left": 72,
+            "right": 628,
+            "top": 28,
+            "bottom": 92,
+            "height": 64
+          },
+          {
+            "left": 104,
+            "right": 596,
+            "top": 213,
+            "bottom": 483,
+            "height": 270
+          },
+          {
+            "left": 104,
+            "right": 596,
+            "top": 493,
+            "bottom": 691,
+            "height": 198
+          },
+          {
+            "left": 104,
+            "right": 596,
+            "top": 701,
+            "bottom": 744.59375,
+            "height": 43.59375
+          }
+        ]
+      }
+    }
+  ],
+  "errors": []
+}

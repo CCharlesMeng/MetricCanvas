@@ -183,7 +183,7 @@ class ComposePageHarnessTest(unittest.IsolatedAsyncioTestCase):
             [1, 2],
         )
 
-    async def test_embeds_at_most_twenty_rows_and_keeps_the_returned_count(self) -> None:
+    async def test_embeds_all_returned_rows_without_inventing_unknown_total(self) -> None:
         rows = [
             {"区域": f"区域-{index}", "Tokens请求量": index}
             for index in range(25)
@@ -212,8 +212,8 @@ class ComposePageHarnessTest(unittest.IsolatedAsyncioTestCase):
         initial = result.artifact.document["dataSources"]["result"]["source"][
             "initial"
         ]
-        self.assertEqual(initial["rows"], rows[:20])
-        self.assertEqual(initial["totalCount"], 25)
+        self.assertEqual(initial["rows"], rows)
+        self.assertNotIn("totalCount", initial)
 
     async def test_formula_trace_and_visible_marker_are_part_of_the_artifact(self) -> None:
         spec = fixture("page-build-spec.json")

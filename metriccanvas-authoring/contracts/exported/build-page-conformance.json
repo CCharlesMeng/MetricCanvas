@@ -212,7 +212,8 @@
               "role": "measure",
               "label": "Tokens请求量",
               "unit": "次",
-              "nullable": false
+              "nullable": false,
+              "defaultFormat": "number"
             }
           },
           "source": {

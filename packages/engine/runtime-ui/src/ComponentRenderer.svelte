@@ -194,7 +194,7 @@
       {:else if component.type === 'table' && table}
         <Table
           data={tableData}
-          props={component.props}
+          props={{ ...component.props, pagination: table.paginationConfig }}
           interactive={true}
           view={table.view}
           selectedCell={table.selectedCell}

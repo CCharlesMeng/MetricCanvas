@@ -1,0 +1,62 @@
+{
+  "scope": "Ordinary query completeness; no new value format enum",
+  "cases": {
+    "714-row-evidence": "pass",
+    "explicit-cap-rejects-without-sampling": "pass",
+    "partial-initial-refetch": "pass",
+    "128-row-real-model": "pass",
+    "table-second-and-last-page": "pass",
+    "chart-last-window": "visually-verified",
+    "unknown-upstream-total": "pass"
+  },
+  "coverage": [
+    {
+      "shownCount": 128,
+      "returnedCount": 128,
+      "totalCount": 128,
+      "truncated": false,
+      "complete": true,
+      "resultComplete": true,
+      "sampleTruncated": false,
+      "basis": "returned rows; no ranking or aggregation inferred"
+    }
+  ],
+  "verification": {
+    "engineTests": 522,
+    "pythonFullSuite": {
+      "tests": 510,
+      "skipped": 1
+    },
+    "pythonFinalFocused": 26,
+    "engineTypecheck": "pass",
+    "bundle": "1675 digest checks"
+  },
+  "knownLimitations": [
+    "Numeric adaptive format extension awaits decision; no new enum implemented",
+    "No production Java/DQE/Relay integration",
+    "Editing canvas captures selection clicks; interaction verified in saved revision preview",
+    "Explicit Top N is a policy requirement; this change does not add a Top N query contract"
+  ],
+  "attempts": [
+    {
+      "path": "/tmp/result-completeness-browser-scripted-1",
+      "result": "failed: editor intercepts clicks"
+    },
+    {
+      "path": "/tmp/result-completeness-browser-deepseek-2",
+      "result": "pass: revision preview pagination"
+    },
+    {
+      "path": "/tmp/result-completeness-browser-deepseek-3",
+      "result": "failed: bubbling stop does not override capture; attempted widget change reverted"
+    },
+    {
+      "path": "/tmp/result-completeness-browser-deepseek-4",
+      "result": "drag moved window but not to last category"
+    },
+    {
+      "path": "/tmp/result-completeness-browser-deepseek-5",
+      "result": "pass: last table page and final chart window screenshots"
+    }
+  ]
+}

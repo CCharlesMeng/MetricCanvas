@@ -3,7 +3,7 @@ import type { EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 import { finiteNumber, formatValue, wanUnits } from '../../shared/value-format';
-import { CHART_PALETTE, GRID, dualOrSingleAxis, formatterValue } from '../../shared/chart-option';
+import { CHART_PALETTE, GRID, categoryWindow, dualOrSingleAxis, formatterValue } from '../../shared/chart-option';
 import { serialColor, type ColorList } from '../../shared/chart-palette';
 
 const REPORT_COLORS = ['#1476ff', '#0cb8b2'] as const;
@@ -70,9 +70,11 @@ export function barOption(
   });
   return {
     ...(palette ? { color: [...palette] } : {}),
-    grid: reportForecast
-      ? { top: 44, right: 0, bottom: 20, left: 0, containLabel: true }
-      : GRID,
+    ...categoryWindow(rows.length, props.horizontal),
+    grid: {
+      ...(reportForecast ? { top: 44, right: 0, bottom: 20, left: 0, containLabel: true } : GRID),
+      ...(rows.length > 20 ? (props.horizontal ? { right: 40 } : { bottom: 36 }) : {})
+    },
     tooltip: { trigger: 'axis', confine: true },
     ...(props.series.length > 1
       ? {
@@ -238,12 +240,7 @@ function reportValueAxis(
 ) {
   if (Array.isArray(axis)) return axis;
   if (format !== undefined) {
-    return {
-      ...axis,
-      axisLabel: {
-        formatter: (value: number) => formatValue(value, format)
-      }
-    };
+    return axis;
   }
   return {
     ...axis,

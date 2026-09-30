@@ -3,7 +3,7 @@ import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { fieldLabel, resolveField } from '../../shared/component-data';
 import { finiteNumber, formatValue } from '../../shared/value-format';
-import { CHART_PALETTE, GRID, dualOrSingleAxis, formatterValue } from '../../shared/chart-option';
+import { CHART_PALETTE, GRID, categoryWindow, dualOrSingleAxis, formatterValue } from '../../shared/chart-option';
 import { serialColor, type ColorList } from '../../shared/chart-palette';
 
 /**
@@ -22,7 +22,9 @@ export function lineOption(
 
   return {
     ...(palette ? { color: [...palette] } : {}),
-    grid: props.showPointLabels ? { ...GRID, top: 36, right: 30 } : GRID,
+    ...categoryWindow(rows.length),
+    grid: { ...GRID, ...(props.showPointLabels ? { top: 36, right: 30 } : {}),
+      ...(rows.length > 20 ? { bottom: 36 } : {}) },
     tooltip: { trigger: 'axis', confine: true, hideDelay: 200 },
     ...(props.series.length > 1 ? { legend: { top: 0, left: 0 } } : {}),
     xAxis: {

@@ -1,0 +1,51 @@
+{
+  "modelRequests": 0,
+  "configuration": "not-inspected: no model configuration requested",
+  "dependencies": {
+    "fastmcp": "3.4.7",
+    "httpx": "0.28.1",
+    "jsonschema": "4.26.0",
+    "pydantic": "2.13.5"
+  },
+  "registeredTools": {
+    "read_page_context": "54d810e835ff4fe45eaa7cc5fbf2693f78e79cd6988e56e7206348840a1cfd69",
+    "discover_data_context": "eb73366bccd7e775fc3e49abfa6f1dd87f436d653c5c5e0bf296f112b853cd8e",
+    "query_data": "afa8add8727585a5ea2b9bd6f744acce7ac272ea122ef4bb2dfaa5ff6e9c93b5",
+    "compose_page": "18558345928ae4d84b3f3b35a72251a041eb938d097747e4d7d616d431744275",
+    "edit_page": "2d5799b4f9e942a2c1a0c846347efd18680050380626ab2ce333c42a3d09acb2",
+    "page_metadata_emit_preview": "bc2c6f24c869a9da7601da119aa3b25833ee234433892d9fe25fa9d93aa3a1d0",
+    "extract_page_parameters": "92afe764fb3cfb2a682f2a7dda2421b1409db0181600f1933dfe157e4fe833c5",
+    "apply_page_parameter_selection": "e88261a8fc47da96acdb53662e2c5ed13bd54dc23cf278db4cb524512cd1cb10",
+    "resolve_page_parameters": "a70a3bf29705089205a0a929fcbda23f1c49f573de54a9d8fd2592a6f1c060c1"
+  },
+  "suiteSha256": "8b180d80b722d9de679fc0b9c8305de029c98140c6fe02784351351b45450258",
+  "missingInjectionSources": {
+    "platform": []
+  },
+  "historicalRawFiles": 0,
+  "historicalHashMismatches": [],
+  "historicalSourceHashes": {},
+  "routing": "blocked: local manual Skill assignment",
+  "latest": "blocked: introspection does not verify provider latest semantics",
+  "dataServices": "blocked: not configured in isolated child environment",
+  "surface": "unified-content",
+  "expectedServerName": "metriccanvas-platform-content",
+  "introspection": {
+    "status": "pass",
+    "errors": [],
+    "scope": "Tool names and input schemas only; no content tool invoked"
+  },
+  "modelRunner": {
+    "status": "blocked",
+    "reason": "This introspection did not execute run_platform_v2.py or inject a current-turn provider; real model behavior unverified"
+  },
+  "localHarness": {
+    "runner": "run_platform_v2.py",
+    "support": "local-synthetic trusted port with shared scripted/http loop; not exercised by this preflight"
+  },
+  "trustedCurrentTurn": {
+    "status": "blocked",
+    "reason": "No trusted provider injected by this preflight"
+  },
+  "writeReadiness": "blocked: listing tools does not prove usable write capability"
+}

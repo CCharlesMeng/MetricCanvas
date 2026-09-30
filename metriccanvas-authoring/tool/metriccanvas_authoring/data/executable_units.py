@@ -186,8 +186,8 @@ def build_query_source(unit: ExecutableUnit, execution: DqeExecutionResult) -> d
     if execution.captured_at is not None:
         source["initial"] = {
             "capturedAt": execution.captured_at,
-            "rows": [dict(row) for row in execution.sample_rows],
-            "totalCount": execution.effective_total_count,
+            "rows": [dict(row) for row in execution.rows],
+            **({"totalCount": execution.total_count} if execution.total_count is not None else {}),
         }
     return {"fields": unit.fields, "source": source}
 

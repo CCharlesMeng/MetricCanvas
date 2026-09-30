@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tablePagination } from './table-pagination';
   import {
     parsePage,
     canonicalizeJson,
@@ -820,7 +821,8 @@
 
   function tableSnapshot(
     component: TableComponent,
-    snapshot: Extract<DataSnapshot, { status: 'ready' }>
+    snapshot: Extract<DataSnapshot, { status: 'ready' }>,
+    paginate = true
   ): Extract<DataSnapshot, { status: 'ready' }> {
     const view = tableViewOf(component);
     if (component.props.pagination?.mode === 'query') {
@@ -870,10 +872,11 @@
         return 0;
       });
     }
-    if (component.props.pagination?.mode !== 'local') {
+    const pagination = tablePagination(component, snapshot);
+    if (!paginate || pagination?.mode !== 'local') {
       return { status: 'ready', rows };
     }
-    const pageSize = tablePageSizes[component.id] ?? component.props.pagination.pageSize;
+    const pageSize = tablePageSizes[component.id] ?? pagination.pageSize;
     const offset = view.pageIndex * pageSize;
     return {
       status: 'ready',
@@ -913,14 +916,14 @@
     component: TableComponent,
     snapshotsBySlot: ComponentSnapshots
   ): TablePaginationState | undefined {
-    const pagination = component.props.pagination;
+    const pagination = tablePagination(component, snapshotsBySlot.get('main'));
     if (!pagination || pagination.mode === 'none') return undefined;
     const snapshot = snapshotsBySlot.get('main');
     if (!snapshot || (snapshot.status !== 'ready' && snapshot.status !== 'empty')) {
       return undefined;
     }
     if (pagination.mode === 'local') {
-      const totalCount = snapshot.status === 'ready' ? snapshot.rows.length : 0;
+      const totalCount = snapshot.status === 'ready' ? tableSnapshot(component, snapshot, false).rows.length : 0;
       return {
         pageSize: tablePageSizes[component.id] ?? pagination.pageSize,
         totalCount
@@ -959,6 +962,7 @@
       selectedCell: tableSelectedCell(component),
       filterOptions: tableFilterOptions(component),
       pagination: tablePaginationState(loaded, component, slots),
+      paginationConfig: tablePagination(component, slots.get('main')),
       onpage: (pageIndex) => handleTablePage(component, pageIndex),
       onpagesize: (pageSize) => handleTablePageSize(component, pageSize),
       onsort: (sort) => handleTableSort(component, sort),

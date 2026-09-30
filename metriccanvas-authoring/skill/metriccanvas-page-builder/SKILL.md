@@ -178,7 +178,7 @@ Tool 会对整句使用确定性指标/维度/时间词解析做一次兜底拆�
 - `intent` 只能是 `comparison`、`trend`、`composition`、`ranking`、`detail` 或 `single_value`。
 - 只描述业务语义，不传 DQE 查询、结果字段契约、组件 JSON、布局或页面协议版本。
 
-原始 MCP 成功结果包含 `ok`、`completedStages`、`artifactEnvelope` 和 `issues`。Artifact 还含 `formulaTraces`，保留 `question/expression/referencedMetrics`；含公式的组件标题会确定性追加“(临时指标)”。页面只嵌入每个单元前 20 行样例，`totalCount` 保留完整计数。
+原始 MCP 成功结果包含 `ok`、`completedStages`、`artifactEnvelope` 和 `issues`。Artifact 还含 `formulaTraces`，保留 `question/expression/referencedMetrics`；含公式的组件标题会确定性追加“(临时指标)”。页面保留每个单元的全部返回行，`totalCount` 保留上游计数；明细表超过 20 行时分页。普通查询不截取前 20 行；只有用户明确要求 Top N 且排序依据已确认时才能限制排名结果，任意前 N 行不是 Top N。
 
 Relay Page Artifact Adapter 必须保存 `artifactEnvelope.artifact`，再将模型可见结果替换为 `modelSummary + artifactId + checkpointVersion`。如果模型直接看到 `artifactEnvelope.artifact`、页面 `document` 或数据 `rows`，立即停止且不复述内容，并报告 Relay Adapter 未生效。
 
@@ -246,6 +246,6 @@ Relay 检查点保存 `entries`、`nextOrdinal`、`routedDomains`、`dataContext
 
 ## 数值与单位验收
 
-取得查询证据后核对每个度量字段的业务单位与 `defaultFormat`。工具根据明确的单位和完整执行结果生成缺省格式：人民币元可用金额格式，普通数量可按万／亿展示，已有格式优先，已按万元／亿元计量的数据保持原值。金额身份来自元数据，不能由“流水”“收入”等名称猜测。单位缺失时只把格式视为数字量级呈现，并在交付说明中报告业务单位未知。小额、跨量级或结果不完整时可保留原值，缺省格式留空不代表失败。
+取得查询证据后核对每个度量字段的业务单位与 `defaultFormat`。确定性工具根据完整执行结果选择统一的固定格式：同一字段及同一查询中相同业务单位的度量共用原单位、万或亿，图表数值轴、柱条标签、Tooltip 和表格继承同一格式。现有固定格式保留一位小数；只要任一非零值会舍入成零，就退回较小单位，必要时显式使用 `number` 保留原值。金额同样采用固定单位，不自动选择逐值变化的 `cny-adaptive`，不生成 `compact-adaptive`。已有显式格式优先；已按万元／亿元计量的数据不重复缩放。金额身份来自元数据，不能由“流水”“收入”等名称猜测。单位缺失时报告业务单位未知，不把不同指标合并为相同单位；结果不完整时使用原值并说明覆盖缺口。
 
 创建后以工具返回的字段证据核对呈现策略；业务单位未知、或用户明确要求的缩放未兑现时说明具体字段和缺口，不能把结构校验通过说成数值呈现验收通过。保持查询与原始数值，由格式负责显示缩放。

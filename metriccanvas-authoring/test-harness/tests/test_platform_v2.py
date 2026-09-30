@@ -294,14 +294,14 @@ class PlatformV2Test(unittest.IsolatedAsyncioTestCase):
         final = await self.app.query('current-context', query_request())
         self.assertEqual(final['status'], 'ready')
 
-    async def test_bounded_evidence_keeps_truncation_and_does_not_leak_query(self):
+    async def test_all_returned_evidence_keeps_upstream_incompleteness_and_does_not_leak_query(self):
         from metriccanvas_authoring.data.execution import DqeExecutionResult
         async def many(query):
             return DqeExecutionResult(rows=[{'区域': '区域' + str(i), 'Tokens请求量': i} for i in range(40)], total_count=100, captured_at='2026-09-20T00:00:00Z')
         self.deps.dqe.execute = many
         result = await self.app.query('current-context', query_request())
         evidence = result['results'][0]
-        self.assertEqual(len(evidence['rows']), 20)
+        self.assertEqual(len(evidence['rows']), 40)
         self.assertTrue(evidence['coverage']['truncated']); self.assertFalse(evidence['coverage']['complete'])
         self.assertEqual(evidence['coverage']['totalCount'], 100)
         self.assertNotIn('dsl_list', json.dumps(result)); self.assertNotIn('queryField', json.dumps(result))

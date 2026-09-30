@@ -1,0 +1,40 @@
+{
+  "evidenceKind": "real-model-local-http-main-flow",
+  "model": "deepseek-v4-flash",
+  "toleranceProbe": false,
+  "metadataPartialProbe": false,
+  "evidenceProbe": null,
+  "elapsedSeconds": 13.469,
+  "modelCalls": 6,
+  "tokens": 157924,
+  "tokenBudget": 600000,
+  "requestReserve": "utf8-bytes/2 + 8192 + max_tokens",
+  "requestedCases": [
+    "create-report"
+  ],
+  "executedCases": [
+    "create-report"
+  ],
+  "cases": [
+    {
+      "id": "create-report",
+      "workflow": "create",
+      "passed": true,
+      "status": "pass",
+      "issues": [],
+      "toolCalls": 5,
+      "final": "已完成 2026 年 8 月区域运营报告的创建与交付。\n\n**执行结果**\n\n| 步骤 | 状态 | 说明 |\n|---|---|---|\n| 读取上下文 | ✅ | mode=new 空基线，workVersion=0 |\n| 语义发现 | ✅ | 指标「Tokens请求量」（单位：次）、维度「区域」（groupBy=区域） |\n| 查询证据 | ✅ | 128 个区域，shownCount=returnedCount=totalCount=128，complete=true，未截断 |\n| 创建草稿 | ✅ | saveStatus=saved，workVersion=1，revisionId=r1 |\n| 预览交接 | ✅ | ready，artifactRef 匹配 |\n\n**页面结构**（report 布局）\n- 章节「各区域 Tokens 请求量」（panel）\n  - 柱状图：各区域 Tokens 请求量对比（2026年8月）\n  - 明细表：各区域 Tokens 请求量明细（2026年8月）\n\n**证据与呈现说明**\n- 全部 128 个区域均已展示，未做 Top N 截断或丢弃；柱状图与明细表均绑定完整结果集。\n- 度量单位为「次」，为普通计数，按原值呈现。\n- 查询返回 `validationMode=relaxed`，并带有 `DATA_CONTEXT_GOVERNANCE_UNKNOWN` 警告（Tokens请求量 的 additivity / timeAggregation 治理属性未知）。这不影响本次单期、单维度的直接呈现，但如需跨期求和或与其他口径合并，需先确认可加性口径。\n- 区域取值为「区域000…区域127」的编码形式，未映射为业务区域名称；如需可读名称，请提供区域名称映射。\n\n预览已由 Relay 接收（ready），但这仅表示交接成功，不代表页面已在你的应用中渲染显示。\n\n{{RESPONSE_START}}\n{{PAGE_METADATA_PREVIEW_JSON}}\n{{RESPONSE_END}}",
+      "ref": {
+        "pageId": "main-flow-report",
+        "revisionId": "r1",
+        "resourceId": "resource-main-flow-report"
+      }
+    }
+  ],
+  "notRun": [],
+  "limitations": [
+    "Local Java, DQE and Relay substitutes",
+    "No production integration evidence"
+  ],
+  "passed": true
+}

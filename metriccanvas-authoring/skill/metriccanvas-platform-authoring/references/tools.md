@@ -41,13 +41,13 @@ Java 原始指标语义层使用批量 query-dataset-from-lab 查询，由部署
 
 先根据 query_data 的字段 ID、行形状和 coverage 选表达，再提交组件：
 
-`coverage.resultComplete` 描述程序保存的查询结果是否完整；`coverage.sampleTruncated` 描述给模型的样本是否缩短。`complete`/`truncated` 仍描述模型证据覆盖。`resultComplete=true` 时，即使 shownCount=20、returnedCount=totalCount=41 且 complete=false，工具仍可用完整 41 行验证饼图；不能写成“查询只返回20行”。totalCount=null 或 returnedCount<totalCount 时，程序结果才缺少完整性证明。
+`coverage.resultComplete` 描述程序保存的查询结果是否完整；`coverage.sampleTruncated` 描述给模型的样本是否缩短。`complete`/`truncated` 仍描述模型证据覆盖。普通查询中 shownCount 必须等于 returnedCount；不允许模型侧再截取前 20 行。totalCount=null 或 returnedCount<totalCount 时，程序结果才缺少完整性证明。
 
 | 目的 | 输入要求与选择 |
 |---|---|
 | 总量卡 | 单行总量直接绑定 measure，可包含多个指标；无需 dimension 或 match |
 | 指定对象卡片 | 多行结果使用 dimension 的 match，工具必须验证恰好命中一行；字段和取值取自证据 |
-| 完整占比 | pieChart 使用工具验证的完整结果；模型只看到 20 行样本并不表示程序只保存 20 行。totalCount 未知或实际分页缺行时无法证明完整占比 |
+| 完整占比 | pieChart 使用工具验证的完整结果；模型证据和页面保留全部返回行。totalCount 未知或实际分页缺行时无法证明完整占比 |
 | 时间趋势 | lineChart 使用实际时间分组字段；仅有时间筛选的类别分布仍是类别分布 |
 | 类别对比/明细 | barChart/table 可展示返回数据；结果不完整时说明覆盖范围，不能称作全量排名或完整占比 |
 

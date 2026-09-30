@@ -162,7 +162,7 @@ class CompositionPolicyTest(unittest.IsolatedAsyncioTestCase):
 
 
 class EvidenceCoverageTest(unittest.TestCase):
-    def test_model_sample_and_program_completeness_are_distinct(self):
+    def test_model_evidence_contains_every_returned_row(self):
         from metriccanvas_authoring.data.results import QueryResults
         from metriccanvas_authoring.work.state import Limits
         query=QueryResults(None,SimpleNamespace(limits=Limits()),None)
@@ -170,8 +170,33 @@ class EvidenceCoverageTest(unittest.TestCase):
         r['request']['dataSourceId']='data'
         evidence=query.evidence(r)
         self.assertTrue(evidence['coverage']['resultComplete'])
-        self.assertTrue(evidence['coverage']['sampleTruncated'])
-        self.assertFalse(evidence['coverage']['complete'])
-        self.assertEqual(len(evidence['rows']),20)
+        self.assertFalse(evidence['coverage']['sampleTruncated'])
+        self.assertTrue(evidence['coverage']['complete'])
+        self.assertEqual(len(evidence['rows']),41)
         r['totalCount']=None
         self.assertFalse(query.evidence(r)['coverage']['resultComplete'])
+
+    def test_714_rows_survive_evidence_and_explicit_limits_fail_without_sampling(self):
+        from metriccanvas_authoring.data.results import QueryResults
+        from metriccanvas_authoring.work.state import Limits
+        r = record(714, 714)
+        r.update(resultRef='test', status='ready', capturedAt='2026-09-29T00:00:00Z')
+        r['request']['dataSourceId'] = 'data'
+        query = QueryResults(None, SimpleNamespace(limits=Limits()), None)
+        payload = {'results': [query.evidence(r)]}
+        query.bound(payload)
+        self.assertEqual(len(payload['results'][0]['rows']), 714)
+        self.assertEqual(payload['results'][0]['rows'][-1]['d'], '713')
+        for limits in [Limits(evidence_rows=20), Limits(evidence_bytes=16000)]:
+            query.state.limits = limits
+            with self.assertRaisesRegex(Exception, 'MODEL_EVIDENCE_LIMIT'):
+                query.bound(payload)
+            self.assertEqual(len(payload['results'][0]['rows']), 714)
+
+    def test_initial_does_not_invent_a_total_when_upstream_count_is_unknown(self):
+        from metriccanvas_authoring.data.executable_units import build_query_source
+        from metriccanvas_authoring.data.execution import DqeExecutionResult
+        source = build_query_source(SimpleNamespace(fields={}, query_body={}),
+            DqeExecutionResult(rows=({'d': 'last'},), total_count=None, captured_at='2026-09-30T00:00:00Z'))
+        self.assertNotIn('totalCount', source['source']['initial'])
+        self.assertEqual(source['source']['initial']['rows'], [{'d': 'last'}])

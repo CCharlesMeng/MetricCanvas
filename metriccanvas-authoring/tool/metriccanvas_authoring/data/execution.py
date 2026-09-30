@@ -38,8 +38,6 @@ RETRY_SAFETY_BY_CODE: Mapping[str, bool] = {
     "DQE_ROW_CONTRACT_ERROR": False,
 }
 
-UNIT_SAMPLE_ROW_LIMIT = 20
-
 
 class DqeExecutionError(Exception):
     """Stable DQE failure surfaced through the authoring application boundary."""
@@ -75,12 +73,8 @@ class DqeExecutionResult:
 
     @property
     def returned_row_count(self) -> int:
-        """Number of rows returned by DQE before the embedded sample is capped."""
+        """Number of rows actually returned by DQE."""
         return len(self.rows)
-
-    @property
-    def sample_rows(self) -> Sequence[JsonObject]:
-        return self.rows[:UNIT_SAMPLE_ROW_LIMIT]
 
     @property
     def effective_total_count(self) -> int:

@@ -1,0 +1,133 @@
+{
+  "id": "main-flow-report",
+  "schemaVersion": "6.11",
+  "layout": "report",
+  "dataSources": {
+    "result": {
+      "fields": {
+        "result-field-identity-11d0c13dc27c3ea3": {
+          "queryField": "区域",
+          "type": "string",
+          "role": "dimension",
+          "label": "区域",
+          "nullable": false
+        },
+        "result-field-identity-135ed8c0984fe382": {
+          "queryField": "Tokens请求量",
+          "type": "number",
+          "role": "measure",
+          "label": "Tokens请求量",
+          "unit": "次",
+          "nullable": false,
+          "defaultFormat": "number"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "区域"
+                ],
+                "output_metrics": [
+                  "Tokens请求量"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-08",
+                    "end": "2026-08"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "2026年8月区域运营报告"
+          }
+        }
+      ]
+    },
+    {
+      "id": "region-tokens",
+      "title": "各区域 Tokens 请求量",
+      "container": "panel",
+      "components": [
+        {
+          "id": "region-bar",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "result"
+          },
+          "props": {
+            "title": "各区域 Tokens 请求量对比",
+            "categoryField": "result-field-identity-11d0c13dc27c3ea3",
+            "series": [
+              {
+                "field": "result-field-identity-135ed8c0984fe382",
+                "label": "Tokens请求量"
+              }
+            ]
+          }
+        },
+        {
+          "id": "region-detail",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "result"
+          },
+          "props": {
+            "title": "各区域 Tokens 请求量明细",
+            "columns": [
+              {
+                "field": "result-field-identity-11d0c13dc27c3ea3",
+                "title": "区域"
+              },
+              {
+                "field": "result-field-identity-135ed8c0984fe382",
+                "title": "Tokens请求量"
+              }
+            ]
+          }
+        },
+        {
+          "id": "structure-scope-region-tokens",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "数据口径：\n运营分析；2026-08 至 2026-08；month；按区域"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "evidenceKind": "real-model-local-http-main-flow",
+  "model": "deepseek-v4-flash",
+  "toleranceProbe": false,
+  "metadataPartialProbe": false,
+  "evidenceProbe": null,
+  "elapsedSeconds": 12.387,
+  "modelCalls": 5,
+  "tokens": 136139,
+  "tokenBudget": 600000,
+  "requestReserve": "utf8-bytes/2 + 8192 + max_tokens",
+  "requestedCases": [
+    "create-report"
+  ],
+  "executedCases": [
+    "create-report"
+  ],
+  "cases": [
+    {
+      "id": "create-report",
+      "workflow": "create",
+      "passed": true,
+      "status": "pass",
+      "issues": [],
+      "toolCalls": 5,
+      "final": "已完成 2026 年 8 月区域运营报告的创建与预览交接。\n\n**执行结果**\n- 取数：`Tokens请求量` 按 `区域` 分组，时间 2026-08（月），共返回 **128 个区域**，`resultComplete: true`、`truncated: false`、`totalCount=128`，全部区域保留，未做 Top N 或丢弃。\n- 页面：report 布局，单业务章节「各区域 Tokens 请求量」（panel），含\n  - 柱状图「各区域 Tokens 请求量对比」（通栏，comparison）\n  - 明细表「各区域 Tokens 请求量明细」（通栏，reconciliation，完整 128 行）\n- 保存：`saveStatus=saved`，draftId `resource-main-flow-report`，revisionId `r1`，artifactRef `artifact-8e91f86736db949b87c257b3eddab9f5fdd8b4706cd9371762110f3c914fa734`。\n- 预览：`ready`，artifactRef/ref 匹配。\n\n**数值与单位说明**\n- 度量单位来自元数据：`次`，`defaultFormat: number`，原始值保持不变，未做缩放。\n- 覆盖缺口：查询返回 `validationMode: relaxed`，并带 `DATA_CONTEXT_GOVERNANCE_UNKNOWN` 警告（`Tokens请求量` 的 additivity、timeAggregation 治理属性未知）。这不影响本次单期分组展示，但意味着跨期求和/时间聚合口径未经治理确认，本页未做此类计算。\n\n**验证范围**：结构校验与预览交接已通过；实际视觉呈现需集成应用渲染验收，`ready` 仅表示 Adapter 接收成功，不代表用户已看到页面。\n\n{{RESPONSE_START}}\n{{PAGE_METADATA_PREVIEW_JSON}}\n{{RESPONSE_END}}",
+      "ref": {
+        "pageId": "main-flow-report",
+        "revisionId": "r1",
+        "resourceId": "resource-main-flow-report"
+      }
+    }
+  ],
+  "notRun": [],
+  "limitations": [
+    "Local Java, DQE and Relay substitutes",
+    "No production integration evidence"
+  ],
+  "passed": true
+}

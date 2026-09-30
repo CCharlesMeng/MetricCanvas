@@ -53,11 +53,9 @@ def audit_v2(messages, secret):
         if message["role"] == "tool":
             value = json.loads(message["content"])
             if "results" in value:
-                if len(message["content"].encode()) > 16000:
-                    raise ValueError("Evidence budget exceeded")
                 for item in value["results"]:
                     if "rows" in item:
-                        if not item.get("resultRef") or "coverage" not in item or len(item["rows"]) > 20:
+                        if not item.get("resultRef") or "coverage" not in item or len(item["rows"]) != item["coverage"]["returnedCount"]:
                             raise ValueError("Unbounded evidence")
                         if secret and secret in json.dumps(item["rows"]):
                             raise ValueError("Credential in evidence")
@@ -398,14 +396,15 @@ def _assess(case, fixture, before, artifact, trajectory, final):
         queries = [t for t in trajectory if t['tool'] == 'query_data']
         results = [r for q in queries for r in q['summary'].get('results', []) if r['status'] == 'ready']
         expected_total = None if probe == 'unknown' else 41
-        if not results or any(r['coverage']['totalCount'] != expected_total or len(r['rows']) > 20 for r in results):
+        if not results or any(r['coverage']['totalCount'] != expected_total or len(r['rows']) != r['coverage']['returnedCount'] for r in results):
             issues.append('EVIDENCE_PROBE_COVERAGE_INVALID')
         if probe != 'complete' and any(c['type'] == 'pieChart' for c in components):
             issues.append('INCOMPLETE_PROPORTION_PRESENTED')
         for component in components:
             if component['type'] == 'pieChart':
                 for source_id in component.get('data', {}).values():
-                    if artifact.get('previewJson', {}).get('dataSources', {}).get(source_id, {}).get('source', {}).get('initial'):
+                    initial = artifact.get('previewJson', {}).get('dataSources', {}).get(source_id, {}).get('source', {}).get('initial')
+                    if initial and len(initial.get('rows', [])) != initial.get('totalCount'):
                         issues.append('PARTIAL_PIE_INITIAL_PRESENTED')
         if probe != 'complete' and not any(word in json.dumps(document, ensure_ascii=False) + final
                 for word in ('截断', '不完整', '未知', '样本', '返回范围', '覆盖缺口')):

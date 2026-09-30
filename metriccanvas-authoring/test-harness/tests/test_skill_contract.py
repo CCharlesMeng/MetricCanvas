@@ -151,7 +151,7 @@ class RelaySkillContractTest(unittest.TestCase):
             "metric_gap_recorded",
             "formulaTraces",
             "(临时指标)",
-            "前 20 行样例",
+            "全部返回行",
             "candidates",
         ):
             self.assertIn(fact, body)

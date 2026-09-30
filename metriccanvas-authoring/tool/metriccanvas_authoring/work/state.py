@@ -26,12 +26,12 @@ class Limits:
     query_rounds: int | None = None
     mutations: int | None = None
     seconds: int | None = None
-    evidence_rows: int = 20
-    evidence_bytes: int = 16000
+    evidence_rows: int | None = None
+    evidence_bytes: int | None = None
     total_evidence_bytes: int | None = None
 
     def __post_init__(self):
-        optional = {'calls', 'query_rounds', 'mutations', 'seconds', 'total_evidence_bytes'}
+        optional = {'calls', 'query_rounds', 'mutations', 'seconds', 'total_evidence_bytes', 'evidence_rows', 'evidence_bytes'}
         require(all((v is None and k in optional) or (type(v) is int and v > 0)
                     for k, v in vars(self).items()), 'BUDGET_CONFIG_INVALID')
 

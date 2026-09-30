@@ -60,3 +60,14 @@ export function formatterValue(value: unknown): string | number | null | undefin
     ? candidate
     : undefined;
 }
+
+/** Window categories without discarding any result rows. */
+export function categoryWindow(count: number, horizontal = false) {
+  if (count <= 20) return {};
+  const axis = horizontal ? { yAxisIndex: 0 } : { xAxisIndex: 0 };
+  return { dataZoom: [
+    { type: 'slider' as const, ...axis, startValue: 0, endValue: 19,
+      filterMode: 'none' as const, ...(horizontal ? { right: 0, width: 16 } : { bottom: 0, height: 18 }) },
+    { type: 'inside' as const, ...axis, startValue: 0, endValue: 19, filterMode: 'none' as const }
+  ] };
+}

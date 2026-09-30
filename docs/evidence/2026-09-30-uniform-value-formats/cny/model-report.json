@@ -1,0 +1,40 @@
+{
+  "evidenceKind": "real-model-local-http-main-flow",
+  "model": "deepseek-v4-flash",
+  "toleranceProbe": false,
+  "metadataPartialProbe": false,
+  "evidenceProbe": null,
+  "elapsedSeconds": 12.503,
+  "modelCalls": 5,
+  "tokens": 120058,
+  "tokenBudget": 600000,
+  "requestReserve": "utf8-bytes/2 + 8192 + max_tokens",
+  "requestedCases": [
+    "create-report"
+  ],
+  "executedCases": [
+    "create-report"
+  ],
+  "cases": [
+    {
+      "id": "create-report",
+      "workflow": "create",
+      "passed": true,
+      "status": "pass",
+      "issues": [],
+      "toolCalls": 5,
+      "final": "已完成 2026 年 8 月区域运营报告的创建与交付。\n\n**执行结果**\n- 页面：`main-flow-report`，report 布局，草稿已保存（revisionId `r1`，draftId `resource-main-flow-report`）。\n- 组件：区域 Tokens 流水对比条形图（通栏）+ 区域流水明细表（通栏），均绑定同一查询结果。\n- 预览：交接 Adapter 已接收精确产物，状态 ready。\n\n**证据与单位核对**\n- 查询范围：运营分析 / Tokens流水，按区域分组，2026-08 月度；返回 2 行（华东、华南），`resultComplete: true`、`truncated: false`，覆盖完整。\n- 业务单位：`Tokens流水` 单位为**人民币元**（来源已知），`defaultFormat: compact-wan-1`（万元，1 位小数）。\n- 固定单位验收：华东 11,030,729.63 元 → 1103.1 万元；华南 29,729,963.32 元 → 2973.0 万元。两值均不会舍入为零，万元为安全固定单位；图表数值轴、柱条标签、Tooltip 与明细列共用同一万元格式，未使用逐值自适应单位，原始查询结果保留不变。\n\n**说明与局限**\n- 查询返回 `validationMode: relaxed`，并带有 `DATA_CONTEXT_GOVERNANCE_UNKNOWN` 警告（Tokens流水 的 additivity、timeAggregation 治理属性未知）。这不影响本次单期、单指标的区域对比，但跨期求和或占比结论暂不可据此得出。\n- 本次仅覆盖华东、华南两个区域，即查询返回的全部区域；未做全量排名或占比推断。\n- ready 表示 Adapter 已接收产物，不代表用户已在界面看到页面。\n\n{{RESPONSE_START}}\n{{PAGE_METADATA_PREVIEW_JSON}}\n{{RESPONSE_END}}",
+      "ref": {
+        "pageId": "main-flow-report",
+        "revisionId": "r1",
+        "resourceId": "resource-main-flow-report"
+      }
+    }
+  ],
+  "notRun": [],
+  "limitations": [
+    "Local Java, DQE and Relay substitutes",
+    "No production integration evidence"
+  ],
+  "passed": true
+}

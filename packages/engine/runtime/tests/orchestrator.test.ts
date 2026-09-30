@@ -145,6 +145,27 @@ describe('页面数据源快照编排', () => {
     unsubscribe();
   });
 
+  it('不把截断的内嵌样本当作完整结果，默认入口仍重新取数', async () => {
+    const document = page();
+    const source = document.dataSources.sales?.source;
+    if (source?.type !== 'query') throw new Error('query required');
+    source.initial = {
+      capturedAt: '2026-09-30T00:00:00Z',
+      rows: Array.from({ length: 20 }, (_, i) => ({ region: `区域${i}`, revenue: i })),
+      totalCount: 714
+    };
+    const rows = Array.from({ length: 714 }, (_, i) => ({ region: `区域${i}`, revenue: i }));
+    let calls = 0;
+    const gateway: DataGateway = { async fetchData() { calls++; return { rows, totalCount: 714 }; } };
+    const pushes: PageDataSnapshots[] = [];
+    const stream = orchestrate(document, gateway);
+    const unsubscribe = stream.subscribe(value => pushes.push(value));
+    await flush();
+    expect(calls).toBe(1);
+    expect(pushes.at(-1)?.get('sales')).toEqual({ status: 'ready', rows, totalCount: 714 });
+    unsubscribe();
+  });
+
   it('默认入口直接使用内嵌初始行，非默认入口立即查询', async () => {
     const document = page();
     const source = document.dataSources.sales?.source;

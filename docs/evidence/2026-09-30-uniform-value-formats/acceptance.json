@@ -1,0 +1,59 @@
+{
+  "decision": "Fixed units per query field and same-unit measures; no compact-adaptive enum",
+  "tests": {
+    "python": {
+      "run": 513,
+      "skipped": 1,
+      "result": "pass"
+    },
+    "engine": {
+      "run": 523,
+      "result": "pass"
+    },
+    "engineTypecheck": "pass",
+    "platformTypecheck": "pass",
+    "contracts": "pass",
+    "bundleDigests": 1675,
+    "sdist": "pass"
+  },
+  "realModel": {
+    "model": "deepseek-v4-flash",
+    "cases": 6,
+    "calls": 33,
+    "tokens": 805432,
+    "result": "pass"
+  },
+  "browser": {
+    "cases": 6,
+    "widths": [
+      1440,
+      640
+    ],
+    "result": "pass"
+  },
+  "limitations": [
+    "Java, DQE and Relay are local HTTP substitutes; production integration not run",
+    "Existing explicitly provided formats remain authoritative",
+    "Unknown or partial result coverage uses raw units, without inferring a scale for unseen values"
+  ],
+  "failuresAndRepairs": [
+    {
+      "evidence": "/tmp/uniform-format-red.log",
+      "reason": "old adaptive CNY and missing explicit raw format",
+      "repair": "fixed scale with nonzero safety and same-unit alignment"
+    },
+    {
+      "evidence": "/tmp/uniform-python-tests.log",
+      "reason": "two historical conformance assertions did not include explicit number format",
+      "repair": "source-driven current conformance export adds number; historical frozen fixture preserved"
+    }
+  ],
+  "fullRepositoryTests": {
+    "passed": 1532,
+    "failed": 1,
+    "skipped": 5,
+    "failure": "tests/dev-server-contract.test.ts expects port 443; configured 5174",
+    "baselineCi": "https://github.com/CCharlesMeng/MetricCanvas/actions/runs/36545182521",
+    "baselineSha": "c001b0fc0ac6ec9d1f9ea01e7e8170669381d769"
+  }
+}

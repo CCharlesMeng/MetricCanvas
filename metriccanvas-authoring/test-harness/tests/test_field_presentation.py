@@ -28,7 +28,7 @@ class FieldPresentationTest(unittest.TestCase):
         return result.fields['amount'].get('defaultFormat')
 
     def test_cny_uses_unit_not_caption(self):
-        self.assertEqual(self.present([11030729.634, 29729963.323], unit='人民币元'), 'cny-adaptive')
+        self.assertEqual(self.present([11030729.634, 29729963.323], unit='人民币元'), 'compact-wan-1')
         self.assertEqual(self.present([11030729.634], label='Tokens流水'), 'compact-wan-1')
         self.assertEqual(self.present([11030729.634], unit='美元'), 'compact-wan-1')
 
@@ -37,16 +37,16 @@ class FieldPresentationTest(unittest.TestCase):
         self.assertEqual(self.present([0, -20000, 30000], unit='次'), 'compact-wan-1')
 
     def test_smallest_nonzero_protects_small_values(self):
-        self.assertEqual(self.present([0, 0.0001, 1e13]), None)
+        self.assertEqual(self.present([0, 0.0001, 1e13]), 'number')
         self.assertEqual(self.present([0, -10000, 1e13]), 'compact-wan-1')
-        self.assertEqual(self.present([0.01, 1e8], unit='元'), None)
-        self.assertEqual(self.present([0.0001, 10], unit='%'), None)
+        self.assertEqual(self.present([0.01, 1e8], unit='元'), 'number')
+        self.assertEqual(self.present([0.0001, 10], unit='%'), 'number')
 
     def test_existing_scales_and_empty_values(self):
         for unit in ('万元', '亿元', '百万美元', '千次'):
-            self.assertEqual(self.present([1e8], unit=unit), None)
-        self.assertEqual(self.present([]), None)
-        self.assertEqual(self.present([None, 0]), None)
+            self.assertEqual(self.present([1e8], unit=unit), 'number')
+        self.assertEqual(self.present([]), 'number')
+        self.assertEqual(self.present([None, 0]), 'number')
         self.assertEqual(self.present([12.5], unit='%'), 'percent-2')
 
     def test_explicit_format_always_wins(self):
@@ -56,7 +56,7 @@ class FieldPresentationTest(unittest.TestCase):
         unit = replace(self.unit, fields={'a': {'queryField':'a','role':'measure','type':'number'}})
         result = apply_field_presentation(unit, DqeExecutionResult(rows=[{'a':1e13}], total_count=1),
                                          {'fields':[{'queryField':'a','scale':'unknown'}]})
-        self.assertEqual(result.fields['a'].get('defaultFormat'), None)
+        self.assertEqual(result.fields['a'].get('defaultFormat'), 'number')
 
     def test_dimension_and_text_unchanged(self):
         fields = {'id':{'queryField':'id','role':'dimension','type':'number'},
@@ -69,4 +69,14 @@ class FieldPresentationTest(unittest.TestCase):
         unit = replace(self.unit, fields={'a': {'queryField':'a','role':'measure','type':'number'}})
         for total in (None, 2):
             result = apply_field_presentation(unit, DqeExecutionResult(rows=[{'a':1e13}], total_count=total))
-            self.assertNotIn('defaultFormat', result.fields['a'])
+            self.assertEqual(result.fields['a']['defaultFormat'], 'number')
+
+    def test_fixed_currency_scale_never_changes_between_rows(self):
+        self.assertEqual(self.present([5000, 125000000], unit='元'), 'compact-wan-1')
+        self.assertEqual(self.present([38, 12500, 125000000], unit='元'), 'number')
+        self.assertEqual(self.present([-6000000, 125000000], unit='Tokens'), 'compact-yi-1')
+
+    def test_same_unit_series_share_the_safe_scale(self):
+        unit = replace(self.unit, fields={name: {'queryField': name, 'type': 'number', 'role': 'measure', 'unit': '次'} for name in ['a', 'b']})
+        result = apply_field_presentation(unit, DqeExecutionResult(rows=[{'a': 1e12, 'b': 10000}], total_count=1))
+        self.assertEqual([f['defaultFormat'] for f in result.fields.values()], ['compact-wan-1', 'compact-wan-1'])

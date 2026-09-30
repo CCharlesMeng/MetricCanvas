@@ -1,0 +1,40 @@
+{
+  "evidenceKind": "deterministic-main-flow",
+  "model": "scripted-no-model",
+  "toleranceProbe": false,
+  "metadataPartialProbe": false,
+  "evidenceProbe": null,
+  "elapsedSeconds": 2.703,
+  "modelCalls": 0,
+  "tokens": 0,
+  "tokenBudget": 600000,
+  "requestReserve": "not-applicable",
+  "requestedCases": [
+    "create-report"
+  ],
+  "executedCases": [
+    "create-report"
+  ],
+  "cases": [
+    {
+      "id": "create-report",
+      "workflow": "create",
+      "passed": true,
+      "status": "pass",
+      "issues": [],
+      "toolCalls": 5,
+      "final": "{{RESPONSE_START}}\n{{PAGE_METADATA_PREVIEW_JSON}}",
+      "ref": {
+        "pageId": "main-flow-report",
+        "revisionId": "r1",
+        "resourceId": "resource-main-flow-report"
+      }
+    }
+  ],
+  "notRun": [],
+  "limitations": [
+    "Local Java, DQE and Relay substitutes",
+    "No production integration evidence"
+  ],
+  "passed": true
+}
