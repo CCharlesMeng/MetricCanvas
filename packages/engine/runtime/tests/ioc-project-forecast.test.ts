@@ -54,6 +54,6 @@ describe('项目详情全年销售预测', () => {
     expect(formatValue(5000000, format)).toBe('500万');
     expect(formatValue(100000000, format)).toBe('1.00亿');
     expect(formatValue(0, format)).toBe('0元');
-    expect(formatValue(null, format)).toBe('--');
+    expect(formatValue(null, format)).toBe('—');
   });
 });
