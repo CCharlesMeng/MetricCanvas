@@ -1,9 +1,9 @@
 """Page expression from verified results; this module never executes DQE."""
 from copy import deepcopy
-from metriccanvas_authoring.pages.scope_annotations import scope_body, member, refresh, source_contract, data_locations
+from metriccanvas_authoring.pages.scope_annotations import refresh, source_contract, data_locations
 from jsonschema import Draft202012Validator
 from metriccanvas_authoring.bundle_info import load_bundle_info
-from metriccanvas_authoring.pages.composition.page_structure import SECTION, ID, NAME, TEXT, DATA_BLOCK, obj, block_component, scope_note, StructureError
+from metriccanvas_authoring.pages.composition.page_structure import SECTION, ID, NAME, TEXT, DATA_BLOCK, obj, block_component, StructureError
 from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 from metriccanvas_authoring.pages.editing.page_editing import EDIT_SCHEMA, apply_page_operation
 from metriccanvas_authoring.pages.editing.section_editing import SECTION_OPERATIONS, SECTION_TYPES, edit_section
@@ -69,7 +69,6 @@ def compose(prepared, request, records):
         target = {k: deepcopy(section[k]) for k in ('id', 'title') if k in section}
         target.update(container=section.get('container', 'panel'), components=[])
         used = []
-        members = {}
         for bi, block in enumerate(section['blocks']):
             try:
                 if not Draft202012Validator(RESULT_SECTION['properties']['blocks']['items']).is_valid(block):
@@ -87,16 +86,11 @@ def compose(prepared, request, records):
                     sources[block['source']]['source'].pop('initial', None)
                 if block.get('source') in sources:
                     used.append(block['source'])
-                    members.update(member(block['id'], block['source'], record))
                 outcomes.append({'id': block['id'], 'status': 'applied', 'issues': [], 'adjustments': []})
             except StructureError as error:
                 outcomes.append({'id': block['id'], 'status': 'failed', 'issues': [error.issue()], 'adjustments': []})
                 target['components'].append({'id': 'structure-missing-' + block['id'], 'type': 'text', 'layout': {'span': 12}, 'props': {'body': f"未生成「{block.get('title', block['id'])}」：{error.code}。"}})
         if used:
-            target['components'].append({'id': 'structure-scope-' + section['id'], 'type': 'text', 'layout': {'span': 12},
-                'props': {'body': scope_body([records[k]['request'] for k in dict.fromkeys(used)])}})
-            scope_annotations['structure-scope-' + section['id']] = {
-                'body': target['components'][-1]['props']['body'], 'members': members}
             document['dataSources'].update({k: sources[k] for k in used})
         pack_default_widths(target['components'], section['blocks'])
         document['sections'].append(target)
@@ -108,7 +102,6 @@ def compose(prepared, request, records):
 
 async def edit(baseline, request, resolve, current, summary_enabled=False, scope_annotations=None):
     notes = deepcopy(scope_annotations or {})
-    new_notes = {}
     batch = operation_batch(baseline, request, EDIT_RESULT_SCHEMA['properties']['operations']['items'])
     result = None
     while True:
@@ -117,10 +110,6 @@ async def edit(baseline, request, resolve, current, summary_enabled=False, scope
         except StopIteration as completed:
             value = completed.value
             if value['document'] is not None:
-                for outcome in value['operations']:
-                    if outcome['status'] in {'applied', 'unchanged'} and outcome['id'] in new_notes:
-                        note_id, annotation = new_notes[outcome['id']]
-                        notes[note_id] = annotation
                 notes, adjustments = refresh(value['document'], notes)
                 if (data_locations(baseline) != data_locations(value['document']) or baseline['dataSources'] != value['document']['dataSources']) and any(
                         c['id'].startswith(('structure-scope-', 'result-scope-', 'scope-')) and c['id'] not in (scope_annotations or {})
@@ -147,12 +136,6 @@ async def edit(baseline, request, resolve, current, summary_enabled=False, scope
                 candidate = edit_section(document, operation, relations=record.get('relations', ()), evidence=record)
                 if (op['block'].get('component') == 'pieChart' or op['block'].get('match')) and incomplete_initial(source, record):
                     candidate['dataSources'][source_id]['source'].pop('initial', None)
-                target = next(section for section in candidate['sections'] if section['id'] == op['sectionId'])
-                target['components'].append({'id': 'result-scope-' + op['block']['id'], 'type': 'text', 'layout': {'span': 12},
-                    'props': {'body': scope_body([record['request']])}})
-                new_notes[op['id']] = ('result-scope-' + op['block']['id'], {
-                    'body': target['components'][-1]['props']['body'],
-                    'members': member(op['block']['id'], source_id, record)})
                 result = candidate, [], []
             except (StructureError, ContentBaselineError) as error:
                 result = None, [{'code': error.code, 'path': ''}], []

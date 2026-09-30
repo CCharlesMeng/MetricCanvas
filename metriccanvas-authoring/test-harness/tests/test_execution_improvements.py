@@ -27,6 +27,12 @@ def request():
 
 
 class CompositionEvidenceTest(unittest.TestCase):
+    def test_compose_does_not_append_scope_text(self):
+        value = compose(SimpleNamespace(binding={'pageId': 'test'}), request(), {'data': record()})
+        self.assertEqual(value['status'], 'changed', value)
+        self.assertEqual([c['id'] for c in value['document']['sections'][1]['components']], ['pie'])
+        self.assertEqual(value['scopeAnnotations'], {})
+
     def test_complete_rows_compose_without_publishing_partial_pie_initial(self):
         for count in CASES['fullRowCounts']:
             value = compose(SimpleNamespace(binding={'pageId': 'test'}), request(), {'data': record(count, count)})
@@ -52,7 +58,7 @@ class SemanticAliasTest(unittest.TestCase):
             self.assertEqual(surface.ambiguous_metrics['shared'], ('a', 'b'))
 
 class ReferencedEditTest(unittest.IsolatedAsyncioTestCase):
-    async def test_edit_uses_full_record_and_tracks_scope(self):
+    async def test_edit_uses_full_record_without_automatic_scope_text(self):
         from metriccanvas_authoring.pages.referenced import edit
         r = record()
         base_request = request(); base_request['sections'][0]['blocks'][0]['component'] = 'table'
@@ -66,8 +72,8 @@ class ReferencedEditTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(edited['status'],'changed',edited)
         self.assertNotIn('initial', edited['document']['dataSources']['data']['source'])
         notes=[c['props']['body'] for c in edited['document']['sections'][1]['components'] if c['type']=='text']
-        self.assertEqual(len(notes),1)
-        self.assertEqual(len(edited['scopeAnnotations']),1)
+        self.assertEqual(len(notes),0)
+        self.assertEqual(edited['scopeAnnotations'],{})
 
     async def test_match_beyond_sample_and_total_card(self):
         r=record(); req=request(); b=req['sections'][0]['blocks'][0]
@@ -85,11 +91,21 @@ class ReferencedEditTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(built['status'],'changed',built)
 
 
+def with_legacy_scope(built):
+    from metriccanvas_authoring.pages.scope_annotations import scope_body, member
+    r = record()
+    body = scope_body([r['request']])
+    built['document']['sections'][1]['components'].append({
+        'id': 'structure-scope-main', 'type': 'text', 'layout': {'span': 12}, 'props': {'body': body}})
+    built['scopeAnnotations'] = {'structure-scope-main': {'body': body, 'members': member('pie', 'data', r)}}
+    return built
+
+
 class ScopeOwnershipTest(unittest.TestCase):
     def test_owned_notes_follow_move_remove_and_preserve_manual_text(self):
         from metriccanvas_authoring.pages.scope_annotations import refresh
         req=request(); req['sections'][0]['blocks'][0]['component']='table'
-        built=compose(SimpleNamespace(binding={'pageId':'test'}),req,{'data':record()})
+        built=with_legacy_scope(compose(SimpleNamespace(binding={'pageId':'test'}),req,{'data':record()}))
         doc=built['document']; notes=built['scopeAnnotations']
         original=deepcopy(doc)
         component=doc['sections'][1]['components'].pop(0)
@@ -110,7 +126,7 @@ class ScopeOwnershipTest(unittest.TestCase):
     def test_source_replacement_removes_owned_stale_note_and_requests_review(self):
         from metriccanvas_authoring.pages.scope_annotations import refresh
         req=request(); req['sections'][0]['blocks'][0]['component']='table'
-        built=compose(SimpleNamespace(binding={'pageId':'test'}),req,{'data':record()})
+        built=with_legacy_scope(compose(SimpleNamespace(binding={'pageId':'test'}),req,{'data':record()}))
         built['document']['dataSources']['data']['fields']['v']['unit']='other'
         notes,adjustments=refresh(built['document'],built['scopeAnnotations'])
         self.assertFalse(notes)
