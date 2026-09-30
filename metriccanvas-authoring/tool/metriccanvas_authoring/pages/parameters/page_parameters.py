@@ -86,7 +86,7 @@ class PageParameters:
     async def program(self, request):
         try:
             result = await self.deps.program.prepare(deepcopy(request))
-            if not isinstance(result, dict) or type(result.get('ok')) is not bool:
+            if not isinstance(result, dict) or not isinstance(result.get('ok'), bool):
                 raise ValueError()
             return result
         except ContentBaselineError:

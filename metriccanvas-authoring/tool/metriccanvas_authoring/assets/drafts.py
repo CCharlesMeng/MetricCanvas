@@ -2,11 +2,15 @@
 from copy import deepcopy
 from uuid import uuid4
 import asyncio
+import logging
+from metriccanvas_authoring.diagnostics import safe_log
 from metriccanvas_authoring.assets.lifecycle import Lifecycle, VALIDATOR
 from metriccanvas_authoring.work.state import require, digest
 from metriccanvas_authoring.work.content_ports import ContentBaselineError
 from metriccanvas_authoring.assets.lifecycle_ports import LifecycleError
 from metriccanvas_authoring.bundle_info import load_bundle_info
+
+_logger = logging.getLogger(__name__)
 
 
 class DraftSaver:
@@ -68,8 +72,10 @@ class DraftSaver:
             frozen.update(status='unknown', receipt=result)
             await asyncio.shield(self.store.compare_and_swap('submission', key, 1, frozen))
             raise
-        except Exception:
-            pass
+        except Exception as error:
+            safe_log(_logger, logging.WARNING,
+                     'draft save unknown operation=%s error_type=%s',
+                     operation_id, type(error).__name__)
         frozen.update(status=result['status'], receipt=deepcopy(result))
         await self.store.compare_and_swap('submission', key, 1, frozen)
         return result

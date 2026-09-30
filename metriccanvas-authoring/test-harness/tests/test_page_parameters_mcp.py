@@ -7,6 +7,7 @@ import json
 import sys
 import tempfile
 import unittest
+from unittest.mock import AsyncMock, patch
 from pathlib import Path
 from copy import deepcopy
 from fastmcp import Client
@@ -59,6 +60,28 @@ class PageParametersMcpTest(unittest.IsolatedAsyncioTestCase):
 
     def server(self, params=True):
         return create_platform_server(dependencies(), current_turns=self.turns, store=self.work, parameter_dependencies=self.params if params else None)
+
+    async def test_text_choices_default_preserves_array_contract(self):
+        calls = []
+        async def apply(*args):
+            choices = args[-1]
+            calls.append(list(choices))
+            choices.append({'marker': 'mutation'})
+            return {'modelSummary': {'status': 'ready'}}
+        with patch.object(PageParameters, 'apply', new=AsyncMock(side_effect=apply)):
+            async with Client(self.server()) as client:
+                tool = next(t for t in await client.list_tools() if t.name == 'apply_page_parameter_selection')
+                schema = tool.inputSchema
+                self.assertNotIn('text_choices', schema.get('required', []))
+                self.assertEqual(schema['properties']['text_choices']['type'], 'array')
+                self.assertEqual(schema['properties']['text_choices']['maxItems'], 200)
+                request = {'context_ref': 'current-context', 'extraction_ref': 'extraction', 'selected_ids': []}
+                for extra in ({}, {}, {'text_choices': []}):
+                    await client.call_tool(tool.name, request | extra)
+                for invalid in (None, [{'slot_id': 'slot', 'kind': 'literal'}] * 201):
+                    result = await client.call_tool(tool.name, request | {'text_choices': invalid}, raise_on_error=False)
+                    self.assertTrue(result.is_error)
+        self.assertEqual(calls, [[], [], []])
 
     async def extract(self, client):
         result = await client.call_tool('extract_page_parameters', {'context_ref': 'current-context'})

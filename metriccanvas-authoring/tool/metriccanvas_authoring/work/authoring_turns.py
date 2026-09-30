@@ -93,7 +93,7 @@ class AuthoringTurnGate:
                                     parse_constant=lambda _: (_ for _ in ()).throw(ValueError('non-finite')))
                 if canonical_json(parsed) != canonical_json(baseline.document) or hashlib.sha256(prepared.document_json.encode('utf-8')).hexdigest() != b['documentSha256']:
                     raise ValueError('mismatch')
-            except (ValueError, TypeError, UnicodeError):
+            except (ValueError, TypeError):
                 raise ContentBaselineError('CURRENT_TURN_DOCUMENT_MISMATCH')
             if baseline.ref != b['baseRef'] or baseline.ref['pageId'] != b['pageId']:
                 raise ContentBaselineError('CURRENT_TURN_BASELINE_MISMATCH')

@@ -40,7 +40,7 @@ def load_query_validation_policy():
             if not isinstance(config, dict) or set(config) != {'strict'}:
                 raise ValueError('invalid configuration')
             strict = config['strict']
-            if type(strict) is not bool:
+            if not isinstance(strict, bool):
                 raise ValueError('strict must be boolean')
         else:
             raw = os.environ.get('METRICCANVAS_QUERY_VALIDATION_STRICT', 'false')

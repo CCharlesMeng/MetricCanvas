@@ -64,7 +64,7 @@ class Lifecycle:
             require('ref' not in response)
             result = {'status': status, 'operationId': response['operationId']}
             if status == 'not-applied':
-                require(type(response.get('retrySafe')) is bool)
+                require(isinstance(response.get('retrySafe'), bool))
                 result['retrySafe'] = response['retrySafe']
             if status == 'rejected':
                 result['code'] = response.get('code') if response.get('code') in SAFE_CODES else 'SERVICE_REJECTED'

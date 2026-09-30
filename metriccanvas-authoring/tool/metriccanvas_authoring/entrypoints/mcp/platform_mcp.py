@@ -97,7 +97,7 @@ def create_platform_mcp_server(application):
     @mcp.tool
     async def apply_page_parameter_selection(context_ref: str, extraction_ref: str,
             selected_ids: Annotated[list[str], Field(max_length=100)],
-            text_choices: Annotated[list[ParameterTextChoice], Field(max_length=200)] = []) -> ToolResult:
+            text_choices: Annotated[list[ParameterTextChoice], Field(max_length=200)] = Field(default_factory=list)) -> ToolResult:
         """Prepare an immutable template artifact; does not save or publish."""
         return await call(application.parameters.apply, context_ref, extraction_ref, selected_ids,
                           [choice.model_dump() for choice in text_choices], parameter=True)

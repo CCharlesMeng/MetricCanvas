@@ -13,6 +13,20 @@ from test_dataset_metadata_http import (PROJECTION, SemanticCatalog,
 class QueryValidationPolicyTest(unittest.IsolatedAsyncioTestCase):
     setUp = provider_tests.DatasetMetadataHttpTest.setUp
     make = provider_tests.DatasetMetadataHttpTest.make
+
+    async def test_empty_parser_result_fails_before_execution(self):
+        from metriccanvas_authoring.data.query import create_query_data, QueryDataDependencies
+        from adapters.fakes import FakeDataContextPort, FakeDqeExecutionPort
+        from metriccanvas_authoring.data.execution import DqeExecutionResult
+        snapshot = await self.make(projection=PROJECTION).current()
+        dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
+        spec = {'question': '总量', 'dataContextVersion': snapshot['version'],
+                'units': [{**query_request()['requests'][0], 'intent': 'detail', 'pinnedComponent': 'table'}]}
+        with patch('metriccanvas_authoring.data.query.parse_data_context', return_value=(None, ())):
+            result = await create_query_data(QueryDataDependencies(FakeDataContextPort(snapshot), dqe))(spec)
+        self.assertFalse(result.ok)
+        self.assertEqual((result.issues[0].code, result.issues[0].stage), ('DATA_CONTEXT_UNPARSEABLE', 'discovery'))
+        self.assertEqual(dqe.calls, [])
     # Only run these scenarios; the inherited provider suite remains in its own module.
     async def test_discover_dimensions_and_uppercase_time_then_query(self):
         self.payload['dataset_details'][0]['logical_schema']['field_schema']['dimensions'][1]['dimension_type'] = 'StrDateTypeDimension'

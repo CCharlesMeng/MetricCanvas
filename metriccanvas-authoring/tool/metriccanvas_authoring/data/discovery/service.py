@@ -46,21 +46,7 @@ class DiscoveryService:
             record.update(status='cancelled', pendingInteraction=None)
             return {'status': 'cancelled', 'matches': [], 'discovery': {'taskRef': claim.key, 'requirements': []}}
         source = record['requestRevisions'][-1] if record['requestRevisions'] else record['originalRequest']
-        question = source['messageText']
-        text_selection = None
-        if invocation.get('answer', {}).get('kind') == 'free_text':
-            text = invocation['answer']['text'].strip()
-            pending_items = (record.get('pendingInteraction') or {}).get('items', [])
-            matches = []
-            for item in pending_items:
-                for option in item['options']:
-                    pattern = r'(?:请)?(?:选择|使用|选|用)?' + re.escape(option['label']) + r'(?:吧|即可)?[。！!]?'
-                    if re.fullmatch(pattern, text):
-                        matches.append({'requirementId': item['requirementId'], 'optionId': option['optionId']})
-            if len(matches) == 1:
-                text_selection = {'kind': 'choices', 'choices': matches}
-            else:
-                question += '\n用户补充：' + text
+        question, text_selection = self._resolve_question(source, invocation, record)
         value = await self.catalog.provider.search(deepcopy(binding), '', 50)
         cards, dimensions = self.catalog.source_cards(value)
         require(len(cards) <= 10000, 'DISCOVERY_SOURCE_SIZE_LIMIT')
@@ -101,84 +87,13 @@ class DiscoveryService:
                     requirements, relations = lexical_requirements(question, cards, knowledge, deps.limits.candidates)
                 except Exception:
                     issues.append({'code': 'DISCOVERY_KNOWLEDGE_EXPANSION_UNAVAILABLE'})
-        if deps.retrieval:
-            try:
-                async with asyncio.timeout(max(0, min(deps.limits.seconds / 4, deadline - time.monotonic() - 0.05))):
-                    batch = await deps.retrieval.retrieve(deepcopy(binding), {'question': question, 'businessDomains': domains},
-                                                          self.catalog.provider, {'candidateLimit': 120})
-                found = validate_retrieval(batch, {c['metricRef']: c for c in cards}, version)
-                target = requirements[0]
-                existing = {c['metricRef'] for c in target['candidates']}
-                target['candidates'].extend({**c, 'matchEvidence': [{'kind': 'external', 'term': question}]}
-                                             for c in found if c['metricRef'] not in existing)
-                target['candidateTruncated'] = len(target['candidates']) > deps.limits.candidates
-                target['candidates'] = target['candidates'][:deps.limits.candidates]
-            except Exception:
-                issues.append({'code': 'DISCOVERY_RETRIEVAL_UNAVAILABLE'})
-        rule_ready = all(r['status'] == 'resolved' for r in classify(deepcopy(requirements), question, cov))
-        interpretation_status = 'not_needed' if rule_ready else 'unconfigured'
-        if deps.interpreter and not rule_ready:
-            if deps.limits.model_calls is not None and record['analysisBudget']['modelCalls'] >= deps.limits.model_calls:
-                interpretation_status = 'budget_exhausted'
-            else:
-                record['analysisBudget']['modelCalls'] += 1
-                await self.tasks.checkpoint(claim)
-                try:
-                    candidate_map = {c['metricRef']: c for r in requirements for c in r['candidates']}
-                    payload = {'formatVersion': '1.0', 'question': question, 'dataContextVersion': version,
-                               'candidates': list(candidate_map.values())[:120], 'knowledge': knowledge,
-                               'requirements': [{k: r[k] for k in ('id', 'expression')} |
-                                                {'candidateRefs': [c['metricRef'] for c in r['candidates']]} for r in requirements]}
-                    async with asyncio.timeout(max(0, min(deps.limits.seconds / 2, deadline - time.monotonic() - 0.05))):
-                        proposal = validate('proposal', await deps.interpreter.propose(deepcopy(payload)))
-                    self.validate_proposal(proposal, payload)
-                    if proposal['searchTerms'] and record['analysisBudget']['expansions'] < 1:
-                        record['analysisBudget']['expansions'] += 1
-                        await self.tasks.checkpoint(claim)
-                        for term in proposal['searchTerms']:
-                            supplemental = rank(term, cards, deps.limits.candidates)
-                            target = next((r for r in requirements if term in r['expression'] or r['expression'] in term), requirements[0])
-                            present = {c['metricRef'] for c in target['candidates']}
-                            for c in supplemental:
-                                if c['metricRef'] not in present and len(target['candidates']) < deps.limits.candidates:
-                                    target['candidates'].append({**c, 'matchEvidence': [{'kind': 'model_search', 'term': term}]})
-                    # Keep deterministic needs. A model cannot drop a named need or create authority.
-                    for proposed in proposal['requirements']:
-                        target = next((r for r in requirements if r['expression'] == proposed['expression']), None)
-                        if target is None:
-                            target = {'id': 'model-' + proposed['id'], 'expression': proposed['expression'],
-                                      'candidates': [], 'candidateTruncated': False, 'unresolved': []}
-                            requirements.append(target)
-                        present = {c['metricRef'] for c in target['candidates']}
-                        for ref in proposed['candidateRefs']:
-                            if ref not in present:
-                                target['candidates'].append({**deepcopy(candidate_map[ref]), 'matchEvidence': [
-                                    {'kind': 'model', 'term': proposed['expression'], 'evidenceIds': proposed['evidenceIds']}]})
-                        target['unresolved'] = list(dict.fromkeys(target['unresolved'] + proposed['unresolved']))
-                    # Model relations only add dependencies, never remove existing ones.
-                    mapped = {p['id']: next(r['id'] for r in requirements if r['expression'] == p['expression']) for p in proposal['requirements']}
-                    for rel in proposal['relationships']:
-                        relation = {'kind': rel['kind'], 'requirementIds': [mapped[i] for i in rel['requirementIds']]}
-                        if not any(old['kind'] == relation['kind'] and set(old['requirementIds']) == set(relation['requirementIds']) for old in relations):
-                            relations.append(relation)
-                    interpretation_status = 'applied'
-                except Exception:
-                    interpretation_status = 'unavailable'
-                    issues.append({'code': 'DISCOVERY_INTERPRETATION_UNAVAILABLE'})
+        await self._retrieve_candidates(binding, question, domains, cards, version, requirements, issues, deadline)
+        interpretation_status = await self._interpret_requirements(binding, claim, question, version, cards, knowledge, requirements, relations, cov, issues, deadline)
         if len(requirements) > deps.limits.requirements:
             requirements = [{'id': 'scope', 'expression': question, 'candidates': [],
                              'unresolved': ['requirement_limit'], 'candidateTruncated': True}]
             relations = []
-        # Compare explicit business facts; a conflicting knowledge definition is not an alias override.
-        for r in requirements:
-            for c in r['candidates']:
-                for item in knowledge:
-                    if item['kind'] != 'business_term' or item['reviewStatus'] != 'approved': continue
-                    if c['businessDomain'] not in item['businessDomains']: continue
-                    if not any(h['metricName'] == c['name'] for h in item.get('metricHints', [])): continue
-                    _, conflicts = proposition_conflicts(item['definition'], c['definition'].get('value') or '')
-                    if conflicts:
-                        c['conflicts'].append({'code': 'KNOWLEDGE_DEFINITION_CONFLICT', 'evidenceId': item['id']})
+        self._mark_knowledge_conflicts(requirements, knowledge)
         for r in requirements:
             if len(r['candidates']) > deps.limits.candidates:
                 r['candidateTruncated'] = True
@@ -186,14 +101,7 @@ class DiscoveryService:
         classify(requirements, question, cov)
         old_versions = (record.get('dataContextVersion'), record.get('knowledgeVersion'))
         changed = old_versions[0] is not None and old_versions != (version, knowledge_version)
-        if not changed:
-            old = {r['expression']: r for r in record['requirements']}
-            for r in requirements:
-                previous = old.get(r['expression'])
-                if previous and previous.get('selectedBy') in {'user', 'user_text'}:
-                    selected = next((c for c in r['candidates'] if c['metricRef'] == previous['selectedRef']), None)
-                    if selected and not selected.get('conflicts') and not selected['constraintConflicts'] and not selected['constraintUnknown'] and not r['unresolved']:
-                        r.update(status='resolved', selectedRef=selected['metricRef'], selectedBy=previous['selectedBy'])
+        self._restore_selections(requirements, record, changed)
         answer = invocation.get('answer')
         pending = record.get('pendingInteraction')
         if answer and answer['kind'] == 'choices':
@@ -211,13 +119,7 @@ class DiscoveryService:
             for r in requirements:
                 if r['status'] == 'resolved':
                     r.update(status='needs_choice', selectedRef=None, selectedBy=None)
-        if not record.get('constraints'):
-            now = datetime.fromisoformat(source['receivedAt'].replace('Z', '+00:00')).astimezone(ZoneInfo(source['timezone']))
-            resolved_time = _resolve_relative_time(question, supports_month=any('month' in d.get('granularities', []) for d in dimensions), now=now)
-            record['constraints'] = {'originalText': source['messageText'], 'timezone': source['timezone'],
-                                     'time': resolved_time[1] if resolved_time else None,
-                                     'dimensions': [d['name'] for d in dimensions if d['name'] in question],
-                                     'groupBy': [d['name'] for d in dimensions if any(t + d['name'] in question for t in ('按', '各'))]}
+        self._ensure_constraints(record, source, question, dimensions)
         record.update(requirements=requirements, relationships=relations,
                       candidateEvidence=list({c['metricRef']: c for r in requirements for c in r['candidates']}.values()),
                       dataContextVersion=version, knowledgeVersion=knowledge_version, lastBindingHash=digest(binding))
@@ -248,6 +150,134 @@ class DiscoveryService:
                 'knowledgeStatus': knowledge_status, 'knowledgeCoverage': knowledge_coverage, 'interpretationStatus': interpretation_status,
                 'issues': issues, 'discovery': {'taskRef': claim.key, 'status': record['status'],
                     'requirements': summary, 'relationships': relations, 'readyRequirementIds': executable, 'pausedRelations': blocked}, 'interactionEnvelope': interaction}
+
+    async def _retrieve_candidates(self, binding, question, domains, cards, version, requirements, issues, deadline):
+        deps = self.dependencies
+        if deps.retrieval:
+            try:
+                async with asyncio.timeout(max(0, min(deps.limits.seconds / 4, deadline - time.monotonic() - 0.05))):
+                    batch = await deps.retrieval.retrieve(deepcopy(binding), {'question': question, 'businessDomains': domains},
+                                                          self.catalog.provider, {'candidateLimit': 120})
+                found = validate_retrieval(batch, {c['metricRef']: c for c in cards}, version)
+                target = requirements[0]
+                existing = {c['metricRef'] for c in target['candidates']}
+                target['candidates'].extend({**c, 'matchEvidence': [{'kind': 'external', 'term': question}]}
+                                             for c in found if c['metricRef'] not in existing)
+                target['candidateTruncated'] = len(target['candidates']) > deps.limits.candidates
+                target['candidates'] = target['candidates'][:deps.limits.candidates]
+            except Exception:
+                issues.append({'code': 'DISCOVERY_RETRIEVAL_UNAVAILABLE'})
+
+    async def _interpret_requirements(self, binding, claim, question, version, cards, knowledge, requirements, relations, cov, issues, deadline):
+        record, deps = claim.record, self.dependencies
+        rule_ready = all(r['status'] == 'resolved' for r in classify(deepcopy(requirements), question, cov))
+        interpretation_status = 'not_needed' if rule_ready else 'unconfigured'
+        if deps.interpreter and not rule_ready:
+            if deps.limits.model_calls is not None and record['analysisBudget']['modelCalls'] >= deps.limits.model_calls:
+                interpretation_status = 'budget_exhausted'
+            else:
+                record['analysisBudget']['modelCalls'] += 1
+                await self.tasks.checkpoint(claim)
+                try:
+                    candidate_map = {c['metricRef']: c for r in requirements for c in r['candidates']}
+                    payload = {'formatVersion': '1.0', 'question': question, 'dataContextVersion': version,
+                               'candidates': list(candidate_map.values())[:120], 'knowledge': knowledge,
+                               'requirements': [{k: r[k] for k in ('id', 'expression')} |
+                                                {'candidateRefs': [c['metricRef'] for c in r['candidates']]} for r in requirements]}
+                    async with asyncio.timeout(max(0, min(deps.limits.seconds / 2, deadline - time.monotonic() - 0.05))):
+                        proposal = validate('proposal', await deps.interpreter.propose(deepcopy(payload)))
+                    self.validate_proposal(proposal, payload)
+                    if proposal['searchTerms'] and record['analysisBudget']['expansions'] < 1:
+                        record['analysisBudget']['expansions'] += 1
+                        await self.tasks.checkpoint(claim)
+                        for term in proposal['searchTerms']:
+                            supplemental = rank(term, cards, deps.limits.candidates)
+                            target = next((r for r in requirements if term in r['expression'] or r['expression'] in term), requirements[0])
+                            present = {c['metricRef'] for c in target['candidates']}
+                            for c in supplemental:
+                                if c['metricRef'] not in present and len(target['candidates']) < deps.limits.candidates:
+                                    target['candidates'].append({**c, 'matchEvidence': [{'kind': 'model_search', 'term': term}]})
+                    self._merge_proposal(requirements, relations, proposal, candidate_map)
+                    interpretation_status = 'applied'
+                except Exception:
+                    interpretation_status = 'unavailable'
+                    issues.append({'code': 'DISCOVERY_INTERPRETATION_UNAVAILABLE'})
+        return interpretation_status
+
+    @staticmethod
+    def _resolve_question(source, invocation, record):
+        question = source['messageText']
+        text_selection = None
+        if invocation.get('answer', {}).get('kind') == 'free_text':
+            text = invocation['answer']['text'].strip()
+            pending_items = (record.get('pendingInteraction') or {}).get('items', [])
+            matches = []
+            for item in pending_items:
+                for option in item['options']:
+                    pattern = r'(?:请)?(?:选择|使用|选|用)?' + re.escape(option['label']) + r'(?:吧|即可)?[。！!]?'
+                    if re.fullmatch(pattern, text):
+                        matches.append({'requirementId': item['requirementId'], 'optionId': option['optionId']})
+            if len(matches) == 1:
+                text_selection = {'kind': 'choices', 'choices': matches}
+            else:
+                question += '\n用户补充：' + text
+        return question, text_selection
+
+    @staticmethod
+    def _mark_knowledge_conflicts(requirements, knowledge):
+        # Compare explicit business facts; a conflicting knowledge definition is not an alias override.
+        for r in requirements:
+            for c in r['candidates']:
+                for item in knowledge:
+                    if item['kind'] != 'business_term' or item['reviewStatus'] != 'approved': continue
+                    if c['businessDomain'] not in item['businessDomains']: continue
+                    if not any(h['metricName'] == c['name'] for h in item.get('metricHints', [])): continue
+                    _, conflicts = proposition_conflicts(item['definition'], c['definition'].get('value') or '')
+                    if conflicts:
+                        c['conflicts'].append({'code': 'KNOWLEDGE_DEFINITION_CONFLICT', 'evidenceId': item['id']})
+
+    @staticmethod
+    def _restore_selections(requirements, record, changed):
+        if not changed:
+            old = {r['expression']: r for r in record['requirements']}
+            for r in requirements:
+                previous = old.get(r['expression'])
+                if previous and previous.get('selectedBy') in {'user', 'user_text'}:
+                    selected = next((c for c in r['candidates'] if c['metricRef'] == previous['selectedRef']), None)
+                    if selected and not selected.get('conflicts') and not selected['constraintConflicts'] and not selected['constraintUnknown'] and not r['unresolved']:
+                        r.update(status='resolved', selectedRef=selected['metricRef'], selectedBy=previous['selectedBy'])
+
+    @staticmethod
+    def _ensure_constraints(record, source, question, dimensions):
+        if not record.get('constraints'):
+            now = datetime.fromisoformat(source['receivedAt'].replace('Z', '+00:00')).astimezone(ZoneInfo(source['timezone']))
+            resolved_time = _resolve_relative_time(question, supports_month=any('month' in d.get('granularities', []) for d in dimensions), now=now)
+            record['constraints'] = {'originalText': source['messageText'], 'timezone': source['timezone'],
+                                     'time': resolved_time[1] if resolved_time else None,
+                                     'dimensions': [d['name'] for d in dimensions if d['name'] in question],
+                                     'groupBy': [d['name'] for d in dimensions if any(t + d['name'] in question for t in ('按', '各'))]}
+
+    @staticmethod
+    def _merge_proposal(requirements, relations, proposal, candidate_map):
+        # Keep deterministic needs. A model cannot drop a named need or create authority.
+        for proposed in proposal['requirements']:
+            target = next((r for r in requirements if r['expression'] == proposed['expression']), None)
+            if target is None:
+                target = {'id': 'model-' + proposed['id'], 'expression': proposed['expression'],
+                          'candidates': [], 'candidateTruncated': False, 'unresolved': []}
+                requirements.append(target)
+            present = {c['metricRef'] for c in target['candidates']}
+            for ref in proposed['candidateRefs']:
+                if ref not in present:
+                    target['candidates'].append({**deepcopy(candidate_map[ref]), 'matchEvidence': [
+                        {'kind': 'model', 'term': proposed['expression'], 'evidenceIds': proposed['evidenceIds']}]})
+            target['unresolved'] = list(dict.fromkeys(target['unresolved'] + proposed['unresolved']))
+        # Model relations only add dependencies, never remove existing ones.
+        mapped = {p['id']: next(r['id'] for r in requirements if r['expression'] == p['expression']) for p in proposal['requirements']}
+        for rel in proposal['relationships']:
+            relation = {'kind': rel['kind'], 'requirementIds': [mapped[i] for i in rel['requirementIds']]}
+            if not any(old['kind'] == relation['kind'] and set(old['requirementIds']) == set(relation['requirementIds']) for old in relations):
+                relations.append(relation)
 
     @staticmethod
     def validate_proposal(proposal, payload):

@@ -122,7 +122,7 @@ class MetadataPublicationTest(unittest.IsolatedAsyncioTestCase):
                         await store.compare_and_swap('metadata-snapshot-v1',key,revision,{'status':'ready','value':newer})
                         return {'coverage':{'complete':True},'models':[{'id':'old'}]}
                     return await read_turn_metadata(source,load)
-            with patch('metriccanvas_authoring.data.metadata_session._logger.info',side_effect=RuntimeError('sink down')):
+            with patch('metriccanvas_authoring.data.metadata_session._logger.log',side_effect=RuntimeError('sink down')):
                 self.assertEqual(await App().read('context'),newer)
 
     async def test_cancellation_releases_claim_and_context(self):

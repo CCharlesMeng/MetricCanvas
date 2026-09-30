@@ -1,5 +1,8 @@
 """Small input faults must not discard independent successful work."""
 import unittest
+import asyncio
+import logging
+from unittest.mock import patch
 from copy import deepcopy
 import test_platform_v2 as fixtures
 from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
@@ -9,6 +12,27 @@ from fastmcp import Client
 class AuthoringToleranceTest(unittest.IsolatedAsyncioTestCase):
     setUp = fixtures.PlatformV2Test.setUp
     make = fixtures.PlatformV2Test.make
+
+    async def test_diagnostics_failure_preserves_result_error_and_cancellation(self):
+        from metriccanvas_authoring.work.diagnostics import timed_stage
+        from metriccanvas_authoring.diagnostics import safe_log
+        @timed_stage('test')
+        async def run(error=None):
+            if error is not None:
+                raise error
+            return 'completed'
+        with patch.object(logging.Logger, 'log', side_effect=RuntimeError('sink down')) as log:
+            self.assertEqual(await run(), 'completed')
+            original = ValueError('business error')
+            with self.assertRaises(ValueError) as caught:
+                await run(original)
+            self.assertIs(caught.exception, original)
+            with self.assertRaises(asyncio.CancelledError):
+                await run(asyncio.CancelledError())
+            self.assertEqual(log.call_count, 3)
+        with patch.object(logging.Logger, 'log', side_effect=asyncio.CancelledError()):
+            with self.assertRaises(asyncio.CancelledError):
+                safe_log(logging.getLogger(__name__), logging.INFO, 'test')
 
     async def request(self):
         result = await self.app.query('current-context', fixtures.query_request())

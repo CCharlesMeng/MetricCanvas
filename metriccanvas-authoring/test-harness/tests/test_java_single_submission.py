@@ -5,6 +5,7 @@ _sys.path.insert(0, str((_Path(__file__).resolve().parent / '../../examples').re
 import json
 import sys
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 import httpx
 ROOT=Path(__file__).resolve().parents[2]
@@ -69,6 +70,18 @@ class JavaSingleSubmissionTest(unittest.IsolatedAsyncioTestCase):
             result,_=await app.mutate('edit','current-context',request)
             self.assertEqual(result['saveStatus'],'unknown')
         self.assertEqual(len(self.calls),2)
+
+    async def test_save_exception_and_broken_logging_preserve_unknown_without_resend(self):
+        app = await self.configured()
+        request = {'operations': [title(value='Changed')]}
+        with patch.object(self.service, 'save', side_effect=RuntimeError('private-provider-payload')) as save:
+            with patch('metriccanvas_authoring.assets.drafts._logger.log', side_effect=RuntimeError('sink down')) as log:
+                for current_app in (app, self.make(), self.make()):
+                    result, _ = await current_app.mutate('edit', 'current-context', request)
+                    self.assertEqual(result['saveStatus'], 'unknown')
+                self.assertEqual(save.call_count, 1)
+                self.assertEqual(log.call_count, 1)
+                self.assertNotIn('private-provider-payload', str(log.call_args))
 
     async def test_wire_vectors_and_uncoordinated_tool_cannot_write(self):
         command=save_command()

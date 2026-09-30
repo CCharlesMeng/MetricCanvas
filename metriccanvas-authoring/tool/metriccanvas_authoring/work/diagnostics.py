@@ -1,4 +1,5 @@
 """Safe model-facing guidance; provider text and foreign identities stay private."""
+from metriccanvas_authoring.diagnostics import safe_log
 _GUIDANCE = {
     'RESULT_SCOPE_MISMATCH': ('引用无法在当前创作轮次读取。sources 的值直接使用本轮 query_data 返回的原始 resultRef；由集成程序核对轮次和共享存储。', 'check_current_turn_and_store', 'integration'),
     'RESULT_VERSION_STALE': ('结果对应的数据上下文已变化；保留已有页面，核对所需数据版本后仅重查受影响项。', 'refresh_affected_request', 'model'),
@@ -33,10 +34,7 @@ def timed_stage(name):
                 succeeded = True
                 return value
             finally:
-                try:
-                    logger.info('authoring stage=%s completed=%s elapsed_ms=%d',
-                                name, succeeded, (time.monotonic() - started) * 1000)
-                except Exception:
-                    pass
+                safe_log(logger, logging.INFO, 'authoring stage=%s completed=%s elapsed_ms=%d',
+                         name, succeeded, (time.monotonic() - started) * 1000)
         return call
     return decorate

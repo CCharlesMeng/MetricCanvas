@@ -25,7 +25,7 @@ class TrustedDiscoveryContextPort(Protocol):
 
 @dataclass(frozen=True)
 class DiscoveryLimits:
-    seconds: float = 10
+    seconds: float = 10.0
     ttl_seconds: int = 86400
     lease_seconds: int = 30
     model_calls: int | None = None

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import re
 from copy import deepcopy
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field as dataclass_field
 from typing import Any, Mapping, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker
@@ -71,11 +71,11 @@ class SemanticSurface:
     business_domain: str
     metrics_by_name: Mapping[str, SemanticMetric]
     dimensions_by_name: Mapping[str, SemanticDimension]
-    declared_measures: Mapping[str, SemanticMetric] = field(default_factory=dict)
+    declared_measures: Mapping[str, SemanticMetric] = dataclass_field(default_factory=dict)
 
-    ambiguous_metrics: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
-    ambiguous_dimensions: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
-    ambiguous_measures: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
+    ambiguous_metrics: Mapping[str, tuple[str, ...]] = dataclass_field(default_factory=dict)
+    ambiguous_dimensions: Mapping[str, tuple[str, ...]] = dataclass_field(default_factory=dict)
+    ambiguous_measures: Mapping[str, tuple[str, ...]] = dataclass_field(default_factory=dict)
 
     def metric(self, name: str) -> SemanticMetric | None:
         return self.metrics_by_name.get(name)

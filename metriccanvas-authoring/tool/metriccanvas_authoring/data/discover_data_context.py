@@ -90,7 +90,13 @@ def create_discover_data_context(
                     for issue in issues
                 ),
             )
-        assert data_context is not None
+        if data_context is None:
+            return DiscoverDataContextResult(
+                ok=False,
+                issues=(DiscoverDataContextIssue(
+                    "DATA_CONTEXT_UNPARSEABLE", "", "parsed data context is empty"
+                ),),
+            )
         business_domains = tuple(data_context.surfaces_by_domain)
         metric_resolution = resolve_metric_terms(
             question=command.query,

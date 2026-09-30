@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import sys
 import unittest
+from unittest.mock import patch
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -32,6 +33,15 @@ def fixture(name: str) -> dict[str, object]:
 
 
 class DiscoverDataContextHarnessTest(unittest.IsolatedAsyncioTestCase):
+    async def test_empty_parser_result_fails_explicitly(self):
+        discover = create_discover_data_context(
+            DiscoverDataContextDependencies(data_context=FakeDataContextPort(fixture('data-context.json')))
+        )
+        with patch('metriccanvas_authoring.data.discover_data_context.parse_data_context', return_value=(None, ())):
+            result = await discover(DiscoverDataContextCommand(query='大区'))
+        self.assertFalse(result.ok)
+        self.assertEqual(result.issues[0].code, 'DATA_CONTEXT_UNPARSEABLE')
+
     async def test_alias_query_returns_the_canonical_field_match(self) -> None:
         data_context = FakeDataContextPort(fixture("data-context.json"))
         discover = create_discover_data_context(

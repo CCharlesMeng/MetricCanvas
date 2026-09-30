@@ -1044,6 +1044,50 @@ def _walk_component(
     return result
 
 
+def _metric_card_issues(props, path, check, issues):
+    rows = [*props.get("rows", []), *props.get("secondaryRows", [])]
+    has_navigate = any(
+        isinstance(action, Mapping) and "navigate" in action
+        for action in props.get("actions", [])
+    )
+    for row_index, row in enumerate(rows):
+        if isinstance(row, Mapping):
+            row_group = "rows" if row_index < len(props.get("rows", [])) else "secondaryRows"
+            actual_index = row_index if row_group == "rows" else row_index - len(props.get("rows", []))
+            row_path = f"{path}/props/{row_group}/{actual_index}"
+            check(row.get("valueField"), f"{row_path}/valueField", "measure")
+            for change_index, change in enumerate(row.get("changes", [])):
+                if isinstance(change, Mapping):
+                    check(change.get("field"), f"{row_path}/changes/{change_index}/field", "measure")
+            if row.get("link") is True and not has_navigate:
+                issues.append(PageContractIssue("SCHEMA_ERROR", f"{row_path}/link", "linked metric row needs navigate action"))
+    progress = props.get("progress")
+    if isinstance(progress, Mapping):
+        check(progress.get("valueField"), f"{path}/props/progress/valueField", "measure")
+
+
+def _category_breakdown_issues(props, path, page, component, check, issues):
+    check(props.get("categoryField"), f"{path}/props/categoryField", "dimension")
+    for index, column in enumerate(props.get("columns", [])):
+        if isinstance(column, Mapping):
+            check(column.get("field"), f"{path}/props/columns/{index}/field", "measure")
+    if props.get("swatches") is True and not _has_matching_pie(page, component):
+        issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/swatches", "swatches need a matching pie chart"))
+
+
+def _tab_container_issues(props, path, issues):
+    tab_ids: set[str] = set()
+    for tab_index, tab in enumerate(props.get("tabs", [])):
+        if not isinstance(tab, Mapping) or not isinstance(tab.get("id"), str):
+            continue
+        if tab["id"] in tab_ids:
+            issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/tabs/{tab_index}/id", "duplicate tab id"))
+        tab_ids.add(tab["id"])
+    default_tab = props.get("defaultTab")
+    if isinstance(default_tab, str) and default_tab not in tab_ids:
+        issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/defaultTab", "default tab is unknown"))
+
+
 def _component_issues(
     component: Mapping[str, Any],
     path: str,
@@ -1096,25 +1140,7 @@ def _component_issues(
         )
 
     if component_type == "metricCard":
-        rows = [*props.get("rows", []), *props.get("secondaryRows", [])]
-        has_navigate = any(
-            isinstance(action, Mapping) and "navigate" in action
-            for action in props.get("actions", [])
-        )
-        for row_index, row in enumerate(rows):
-            if isinstance(row, Mapping):
-                row_group = "rows" if row_index < len(props.get("rows", [])) else "secondaryRows"
-                actual_index = row_index if row_group == "rows" else row_index - len(props.get("rows", []))
-                row_path = f"{path}/props/{row_group}/{actual_index}"
-                check(row.get("valueField"), f"{row_path}/valueField", "measure")
-                for change_index, change in enumerate(row.get("changes", [])):
-                    if isinstance(change, Mapping):
-                        check(change.get("field"), f"{row_path}/changes/{change_index}/field", "measure")
-                if row.get("link") is True and not has_navigate:
-                    issues.append(PageContractIssue("SCHEMA_ERROR", f"{row_path}/link", "linked metric row needs navigate action"))
-        progress = props.get("progress")
-        if isinstance(progress, Mapping):
-            check(progress.get("valueField"), f"{path}/props/progress/valueField", "measure")
+        _metric_card_issues(props, path, check, issues)
     elif component_type == "barChart":
         check(props.get("categoryField"), f"{path}/props/categoryField", "dimension")
         for index, series in enumerate(props.get("series", [])):
@@ -1136,12 +1162,7 @@ def _component_issues(
             if isinstance(item, Mapping):
                 check(item.get("field"), f"{path}/props/items/{index}/field")
     elif component_type == "categoryBreakdown":
-        check(props.get("categoryField"), f"{path}/props/categoryField", "dimension")
-        for index, column in enumerate(props.get("columns", [])):
-            if isinstance(column, Mapping):
-                check(column.get("field"), f"{path}/props/columns/{index}/field", "measure")
-        if props.get("swatches") is True and not _has_matching_pie(page, component):
-            issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/swatches", "swatches need a matching pie chart"))
+        _category_breakdown_issues(props, path, page, component, check, issues)
     elif component_type == "fieldText":
         check(props.get("field"), f"{path}/props/field", None, "semanticHtml")
     elif component_type == "aiSummary":
@@ -1156,16 +1177,7 @@ def _component_issues(
     elif component_type == "gauge":
         check(props.get("valueField"), f"{path}/props/valueField", "measure")
     elif component_type == "tabContainer":
-        tab_ids: set[str] = set()
-        for tab_index, tab in enumerate(props.get("tabs", [])):
-            if not isinstance(tab, Mapping) or not isinstance(tab.get("id"), str):
-                continue
-            if tab["id"] in tab_ids:
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/tabs/{tab_index}/id", "duplicate tab id"))
-            tab_ids.add(tab["id"])
-        default_tab = props.get("defaultTab")
-        if isinstance(default_tab, str) and default_tab not in tab_ids:
-            issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/defaultTab", "default tab is unknown"))
+        _tab_container_issues(props, path, issues)
     elif component_type in {"rankingCard", "rankingDetailCard"}:
         check(props.get("nameField"), f"{path}/props/nameField", "dimension")
         check(props.get("valueField"), f"{path}/props/valueField", "measure")
@@ -1681,6 +1693,66 @@ def _resolve_binding(
     return fields.get(field_id)
 
 
+def _pivot_issues(operator, path, declared, output, issues):
+    declared(operator.get("categoryField"), f"{path}/categoryField", "dimension")
+    declared(operator.get("valueField"), f"{path}/valueField", "measure")
+    for key_index, field_id in enumerate(operator.get("keyFields", [])):
+        declared(field_id, f"{path}/keyFields/{key_index}", "dimension")
+    categories: set[str] = set()
+    columns = operator.get("columns", [])
+    if not isinstance(columns, list):
+        columns = []
+    for column_index, column in enumerate(columns):
+        if not isinstance(column, Mapping):
+            continue
+        column_path = f"{path}/columns/{column_index}"
+        output(column.get("output"), f"{column_path}/output", "measure")
+        for category_index, category in enumerate(column.get("categories", [])):
+            if isinstance(category, str) and category in categories:
+                issues.append(
+                    PageContractIssue(
+                        "SCHEMA_ERROR",
+                        f"{column_path}/categories/{category_index}",
+                        f"duplicate pivot category: {category}",
+                    )
+                )
+            if isinstance(category, str):
+                categories.add(category)
+
+
+def _computed_row_issues(data_source, source_path, fields, produced, issues):
+    source = data_source.get("source")
+    if isinstance(source, Mapping):
+        if source.get("type") == "inline":
+            rows = source.get("rows")
+            rows_path = f"{source_path}/source/rows"
+        else:
+            initial = source.get("initial")
+            rows = initial.get("rows") if isinstance(initial, Mapping) else None
+            rows_path = f"{source_path}/source/initial/rows"
+        if isinstance(rows, list):
+            for row_index, row in enumerate(rows):
+                if not isinstance(row, Mapping):
+                    continue
+                for field_id in produced:
+                    field = fields.get(field_id)
+                    raw_key = (
+                        field.get("queryField")
+                        if source.get("type") == "query"
+                        and isinstance(field, Mapping)
+                        and isinstance(field.get("queryField"), str)
+                        else field_id
+                    )
+                    if raw_key in row:
+                        issues.append(
+                            PageContractIssue(
+                                "SCHEMA_ERROR",
+                                f"{rows_path}/{row_index}/{_escape_pointer(field_id)}",
+                                f"computed field {field_id} cannot be present in rows",
+                            )
+                        )
+
+
 def _compute_issues(
     source_id: object, data_source: Mapping[str, Any]
 ) -> list[PageContractIssue]:
@@ -1784,62 +1856,10 @@ def _compute_issues(
             if isinstance(label, Mapping):
                 declared(label.get("field"), f"{path}/label/field", "dimension")
         elif op == "pivot":
-            declared(operator.get("categoryField"), f"{path}/categoryField", "dimension")
-            declared(operator.get("valueField"), f"{path}/valueField", "measure")
-            for key_index, field_id in enumerate(operator.get("keyFields", [])):
-                declared(field_id, f"{path}/keyFields/{key_index}", "dimension")
-            categories: set[str] = set()
-            columns = operator.get("columns", [])
-            if not isinstance(columns, list):
-                columns = []
-            for column_index, column in enumerate(columns):
-                if not isinstance(column, Mapping):
-                    continue
-                column_path = f"{path}/columns/{column_index}"
-                output(column.get("output"), f"{column_path}/output", "measure")
-                for category_index, category in enumerate(column.get("categories", [])):
-                    if isinstance(category, str) and category in categories:
-                        issues.append(
-                            PageContractIssue(
-                                "SCHEMA_ERROR",
-                                f"{column_path}/categories/{category_index}",
-                                f"duplicate pivot category: {category}",
-                            )
-                        )
-                    if isinstance(category, str):
-                        categories.add(category)
+            _pivot_issues(operator, path, declared, output, issues)
 
     produced.update(row_kind_fields)
-    source = data_source.get("source")
-    if isinstance(source, Mapping):
-        if source.get("type") == "inline":
-            rows = source.get("rows")
-            rows_path = f"{source_path}/source/rows"
-        else:
-            initial = source.get("initial")
-            rows = initial.get("rows") if isinstance(initial, Mapping) else None
-            rows_path = f"{source_path}/source/initial/rows"
-        if isinstance(rows, list):
-            for row_index, row in enumerate(rows):
-                if not isinstance(row, Mapping):
-                    continue
-                for field_id in produced:
-                    field = fields.get(field_id)
-                    raw_key = (
-                        field.get("queryField")
-                        if source.get("type") == "query"
-                        and isinstance(field, Mapping)
-                        and isinstance(field.get("queryField"), str)
-                        else field_id
-                    )
-                    if raw_key in row:
-                        issues.append(
-                            PageContractIssue(
-                                "SCHEMA_ERROR",
-                                f"{rows_path}/{row_index}/{_escape_pointer(field_id)}",
-                                f"computed field {field_id} cannot be present in rows",
-                            )
-                        )
+    _computed_row_issues(data_source, source_path, fields, produced, issues)
     return issues
 
 

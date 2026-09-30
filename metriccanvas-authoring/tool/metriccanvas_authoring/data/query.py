@@ -107,7 +107,13 @@ def create_query_data(dependencies: QueryDataDependencies):
                     for issue in data_context_issues
                 ),
             )
-        assert data_context is not None
+        if data_context is None:
+            return QueryDataResult(
+                ok=False,
+                issues=(QueryDataIssue(
+                    "DATA_CONTEXT_UNPARSEABLE", "", "parsed data context is empty", stage="discovery"
+                ),),
+            )
 
         expected_data_context_version = spec.get("dataContextVersion")
         if (
