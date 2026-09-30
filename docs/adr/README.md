@@ -14,7 +14,7 @@
 
 <!-- adr-index:start 由 tools/scripts/adr-index.py 生成，不要手改 -->
 
-共 94 份 ADR（0001–0094）：现行 87、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
+共 96 份 ADR（0001–0096）：现行 89、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
 
 | 编号 | 标题 | 现状 |
 |---|---|---|
@@ -112,6 +112,8 @@
 | [0092](./0092-authoring-tolerance-and-turn-metadata-snapshots.md) | 创作输入容错与同轮元数据快照 | 现行；轻微展示偏差在入口兼容、局部失败隔离；已发布元数据按可信创作轮次复用 |
 | [0093](./0093-platform-html-microfrontend-and-instance-lifecycle.md) | 平台交付 HTML 微前端，配置与生命周期按实例拥有 | 现行；平台 HTML 微前端与独立入口共用客户端 URL 路由；部分修订 0073；目标门户与真实服务待验 |
 | [0094](./0094-independent-platform-deployment-adapters.md) | 平台与门户部署 Adapter 分别维护和发布 | 现行；门户专属接线由独立部署项目维护，平台仅发布版本化契约与静态产物 |
+| [0095](./0095-cross-source-computation-and-ioc-schema-compatibility.md) | 跨源计算仍属于页面数据源，6.12 保留 6.11 读取 | 现行；6.12 增量；用户确认保留 6.11 读取；创作契约按实施顺序最后同步 |
+| [0096](./0096-ioc-view-state-and-post-query-presentation.md) | 内容切换与详情视图共享组件，分别持有状态 | 现行；IOC 已确认行为的 6.12 增量；创作契约待最后阶段同步 |
 
 <!-- adr-index:end -->
 
@@ -123,7 +125,7 @@
 
 | 主题 | 讲什么 | 覆盖的 ADR |
 |---|---|---|
-| [IOC 作战地图批次（0045–0053）](./topics/ioc-operation-map-batch.md) | 一个多页 GraphQL 数据应用触发的九份决策：哪些已生效、哪些仍是提议、以及驱动它们的三条业务裁决。 | 0045 0046 0047 0048 0049 0050 0051 0052 0053 |
+| [IOC 作战地图批次（0045–0053）](./topics/ioc-operation-map-batch.md) | 一个多页 GraphQL 数据应用触发的九份决策：哪些已生效、哪些仍是提议、以及驱动它们的三条业务裁决。 | 0045 0046 0047 0048 0049 0050 0051 0052 0053 0095 0096 |
 | [技术栈与建设策略](./topics/tech-stack-and-strategy.md) | 为什么自研封闭领域 DSL 与 Svelte 运行时，而不是 A2UI 或开源 BI；严格声明式的边界在哪。 | 0001 0002 0003 0005 0035 0046 |
 | [领域建模、包边界与部署形态](./topics/domain-modeling-and-package-boundaries.md) | 聚合根只有「页面」；包按 DDD 分层命名；从 Node 平台迁到静态 Svelte + Java 页面资产 + Relay/Python 的目标形态。 | 0004 0006 0007 0009 0023 0024 0025 0029 0060 0061 0062 0063 0064 0065 0066 0067 0069 0070 0071 0072 0073 0074 0075 0076 0077 0090 0093 0094 |
 | [页面文档结构与书写原则](./topics/page-document-structure.md) | 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。 | 0013 0017 0018 0021 0026 0028 0035 0036 0038 0042 0047 0048 0049 0050 0052 0053 0054 0057 0059 0086 |

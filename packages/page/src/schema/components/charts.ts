@@ -22,6 +22,8 @@ export const barSeriesRoleZ = z.enum(['actual', 'forecast']);
 /** 柱状图独有的业务系列语义；折线图继续使用未扩展的 chartSeriesZ。 */
 export const barChartSeriesZ = chartSeriesZ
   .extend({
+    kind: z.enum(['bar', 'line']).optional(),
+    axis: z.enum(['primary', 'secondary']).optional(),
     role: barSeriesRoleZ.optional(),
     /** 同一 stack 内的绘制顺序；数值越小越靠近数值轴。 */
     stackOrder: z.number().int().optional()
@@ -56,7 +58,7 @@ export const barChartComponentZ = z
 
 componentCatalogRegistry.add(barChartComponentZ, {
   label: '柱状图',
-  aliases: ['条形图', '柱图'],
+  aliases: ['条形图', '柱图', '柱线混合图'],
   purpose: '比较离散类别之间的大小或展示分类分布',
   chooseWhen: ['区域/渠道/产品对比', '分类分布', '多指标类别比较'],
   dataShape: '一个 dimension 类别字段 + 一个或多个 metric 字段',

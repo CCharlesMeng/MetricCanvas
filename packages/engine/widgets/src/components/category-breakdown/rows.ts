@@ -48,7 +48,7 @@ export function categoryBreakdownView(
   }));
   const rows = data.main.snapshot.rows;
   const categories = rows.map((row) =>
-    formatValue(row[category.field], category.format)
+    formatValue(row[category.field], category.format, category.missingText)
   );
   const domain = categoryDomain(categories);
   const categoryLabel =
@@ -69,7 +69,7 @@ export function categoryBreakdownView(
         category: name,
         ...(swatch ? { swatch } : {}),
         values: columns.map((column) =>
-          formatValue(row[column.resolved.field], column.resolved.format)
+          formatValue(row[column.resolved.field], column.resolved.format, column.resolved.missingText)
         )
       };
     })

@@ -47,7 +47,7 @@ describe('ioc-opportunity-list 骨架', () => {
 
   it('页面通过解析，筛选状态可往返', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('6.11');
+    expect(page.schemaVersion).toBe('6.12');
     expect(page.filters).toHaveLength(11);
     const table = page.sections
       .flatMap((section) => section.components)

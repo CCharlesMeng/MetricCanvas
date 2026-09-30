@@ -1,3 +1,4 @@
+import { crossSourceComputeErrors } from './validate-compute-dependencies';
 import { queryParamReferenceErrors } from './query-param-references';
 import { paramBindingErrors } from './param-bindings';
 import { navigationErrors, urlInputErrors } from './navigate';
@@ -11,6 +12,7 @@ import {
 } from './data-source';
 import {
   computeOutputFields,
+  computeDependencies,
   isFoldingOperator,
   type ComputeOperator
 } from './compute';
@@ -263,6 +265,7 @@ function invariantErrors(page: Page): TypedError[] {
     errors.push(...filterDeclarationErrors(filter, index, `/filters/${index}`));
   });
   errors.push(...filterDependsOnErrors(filters));
+  errors.push(...crossSourceComputeErrors(page));
 
   for (const [sourceId, dataSource] of Object.entries(page.dataSources)) {
     const path = `/dataSources/${escapePointer(sourceId)}`;
@@ -293,6 +296,82 @@ function invariantErrors(page: Page): TypedError[] {
       componentIds.add(component.id);
       errors.push(...componentErrors(page, component, path, filterIds));
     });
+  });
+  const groupIds = new Set<string>();
+  const detailIds = new Set<string>();
+  const baseSources = new Set<string>();
+  walkPageComponents({ sections: page.sections, detailViews: page.detailViews?.filter(view => view.mode === 'snapshot') }, component => {
+    Object.values(component.data ?? {}).forEach(id => baseSources.add(id));
+  });
+  for (const id of baseSources) computeDependencies(page.dataSources[id]?.compute ?? []).forEach(id => baseSources.add(id));
+  (page.detailViews ?? []).forEach((view, index) => {
+    const path = `/detailViews/${index}`;
+    if (detailIds.has(view.id)) errors.push(schemaError(`${path}/id`, '详情视图 id 重复'));
+    detailIds.add(view.id);
+    const viewSources = new Set<string>();
+    walkComponents(view.components, `${path}/components`, component => Object.values(component.data ?? {}).forEach(id => viewSources.add(id)));
+    for (const id of viewSources) computeDependencies(page.dataSources[id]?.compute ?? []).forEach(id => viewSources.add(id));
+    if (view.mode === 'snapshot' && view.filters?.length) errors.push(schemaError(`${path}/filters`, '快照详情不得声明独立参数'));
+    for (const id of view.filters ?? []) {
+      const filter = filtersById.get(id);
+      if (!filter || filter.visible !== false || !['dimension', 'timePoint', 'timeRange'].includes(filter.type)) {
+        errors.push(schemaError(`${path}/filters`, '详情参数必须引用隐藏的 dimension/timePoint/timeRange 筛选声明'));
+      }
+      if (filter?.type === 'dimension' && filter.hierarchy) errors.push(schemaError(`${path}/filters`, '详情参数不支持层级维度'));
+      if (![...viewSources].some(sourceId => {
+        const source = page.dataSources[sourceId];
+        return (source?.source.type === 'query' && source.source.query.filterBindings?.[id]) || source?.compute?.some(op =>
+          (op.op === 'selectField' && op.filter === id) || (op.op === 'timeFill' && 'filter' in op.range && op.range.filter === id));
+      })) errors.push(schemaError(`${path}/filters`, '详情参数必须被该视图的数据源显式消费'));
+      for (const sourceId of baseSources) {
+        const source = page.dataSources[sourceId];
+        if ((source?.source.type === 'query' && source.source.query.filterBindings?.[id]) || source?.compute?.some(op =>
+          (op.op === 'selectField' && op.filter === id) || (op.op === 'timeFill' && 'filter' in op.range && op.range.filter === id))) {
+          errors.push(schemaError(`${path}/filters`, '详情独立参数不得被页面主内容或快照视图消费'));
+        }
+      }
+    }
+    walkComponents(view.components, `${path}/components`, (component, componentPath) => {
+      if (componentIds.has(component.id)) errors.push(schemaError(`${componentPath}/id`, 'component id 重复'));
+      componentIds.add(component.id);
+      const props = component.props as { actions?: unknown; pagination?: { mode: string } };
+      if (!['text', 'table', 'barChart', 'lineChart', 'pieChart', 'gauge'].includes(component.type) || props.actions) {
+        errors.push(schemaError(componentPath, '详情只允许说明、图表和表格，不允许递归动作或容器'));
+      }
+      if (props.pagination?.mode === 'query') errors.push(schemaError(componentPath, '详情表格当前只支持完整结果的本地分页'));
+      if (component.type === 'text' && component.props.links?.length) errors.push(schemaError(componentPath, '详情说明不允许跨页链接'));
+      if (component.type === 'table') {
+        const unsupported = (columns: TableColumnNode[]): boolean => columns.some(column => column.kind === 'group'
+          ? unsupported(column.children) : !!(column.filterable || column.selection || column.link || column.openDetail || column.navigate));
+        if (unsupported(component.props.columns)) errors.push(schemaError(componentPath, '详情表格只支持展示、排序与本地分页'));
+        const source = page.dataSources[component.data.main];
+        if (source?.source.type === 'query') {
+          const order = source.source.query.body.dsl_list[0]?.order;
+          if (source.source.resultScope !== 'complete' || (order && typeof order === 'object' && ('limit' in order || 'offset' in order))) errors.push(schemaError(componentPath, '详情表格要求完整结果，不能本地处理查询窗口'));
+        }
+      }
+      errors.push(...componentErrors(page, component, componentPath, filterIds));
+    });
+  });
+  const groupedSections = new Set<string>();
+  (page.sectionGroups ?? []).forEach((group, index) => {
+    if (groupIds.has(group.id)) errors.push(schemaError(`/sectionGroups/${index}/id`, '内容分区组 id 重复'));
+    groupIds.add(group.id);
+    group.sectionIds.forEach((id, childIndex) => {
+      const path = `/sectionGroups/${index}/sectionIds/${childIndex}`;
+      if (!sectionIds.has(id)) errors.push(schemaError(path, '内容分区组引用了不存在的分区'));
+      if (groupedSections.has(id)) errors.push(schemaError(path, '每个分区只能属于一个内容分区组'));
+      groupedSections.add(id);
+    });
+  });
+  if (page.defaultSectionGroup !== undefined && !groupIds.has(page.defaultSectionGroup)) errors.push(schemaError('/defaultSectionGroup', '默认内容分区组不存在'));
+  if (page.sectionGroupParam !== undefined && (!page.sectionGroups?.length || !page.params?.some(param => param.id === page.sectionGroupParam && param.type === 'string'))) {
+    errors.push(schemaError('/sectionGroupParam', '内容组初值必须引用已声明的 string 页面参数且存在内容组'));
+  }
+  const anchored = new Set<string>();
+  (page.sectionAnchors ?? []).forEach((anchor, index) => {
+    if (!sectionIds.has(anchor.sectionId) || anchored.has(anchor.sectionId)) errors.push(schemaError(`/sectionAnchors/${index}/sectionId`, '锚点分区不存在或重复'));
+    anchored.add(anchor.sectionId);
   });
   errors.push(...hiddenHierarchyPickerErrors(page));
   errors.push(...queryPaginationErrors(page));
@@ -935,6 +1014,61 @@ function computeErrors(dataSource: DataSource, sourcePath: string): TypedError[]
   operators.forEach((operator, index) => {
     const path = `${sourcePath}/compute/${index}`;
     switch (operator.op) {
+      case 'timeFill':
+        declared(operator.timeField, `${path}/timeField`, 'dimension');
+        if (!['string', 'date'].includes(fields[operator.timeField]?.type)) errors.push(schemaError(`${path}/timeField`, '补齐时间字段必须为 string 或 date'));
+        for (const field of operator.groupBy ?? []) declared(field, `${path}/groupBy`, 'dimension');
+        if (operator.groupBy?.includes(operator.timeField)) errors.push(schemaError(`${path}/groupBy`, '时间字段不能同时作为分组键'));
+        for (const field of operator.measures) {
+          numericInput(field, `${path}/measures`);
+          if (fields[field]?.nullable === false) errors.push(schemaError(`${path}/measures`, '补齐度量必须允许为空'));
+        }
+        break;
+      case 'selectField': {
+        const first = fields[Object.values(operator.cases)[0]];
+        const target = fields[operator.output];
+        output(operator.output, `${path}/output`, first?.role ?? 'measure');
+        for (const fieldId of Object.values(operator.cases)) {
+          const field = declared(fieldId, `${path}/cases`);
+          if (field && target && (field.role === 'detail' || field.type !== target.type || field.role !== target.role ||
+            ('unit' in field ? field.unit : undefined) !== ('unit' in target ? target.unit : undefined))) errors.push(schemaError(path, '模式候选字段与产出必须为相同类型、角色和单位的标量'));
+        }
+        if (target?.nullable === false) errors.push(schemaError(`${path}/output`, '模式字段缺失时产出 null，字段必须允许为空'));
+        if (!Object.hasOwn(operator.cases, operator.defaultMode)) errors.push(schemaError(`${path}/defaultMode`, '默认模式必须在 cases 内'));
+        break;
+      }
+      case 'sumFields': {
+        operator.fields.forEach((field, fieldIndex) => numericInput(field, `${path}/fields/${fieldIndex}`));
+        output(operator.output, `${path}/output`, 'measure');
+        const target = fields[operator.output];
+        if (target?.nullable === false) errors.push(schemaError(`${path}/output`, '字段合计的缺失产出必须允许为空'));
+        for (const fieldId of operator.fields) {
+          const field = fields[fieldId];
+          if (field && target && (field.type !== target.type ||
+            ('unit' in field ? field.unit : undefined) !== ('unit' in target ? target.unit : undefined))) {
+            errors.push(schemaError(path, '字段合计必须保持相同类型和单位'));
+          }
+        }
+        break;
+      }
+      case 'cagr': {
+        for (const key of ['beginning', 'ending', 'periods'] as const) numericInput(operator[key], `${path}/${key}`);
+        output(operator.output, `${path}/output`, 'measure');
+        if (fields[operator.output]?.nullable === false) errors.push(schemaError(`${path}/output`, 'CAGR 的无效输入产出必须允许为空'));
+        const beginning = fields[operator.beginning];
+        const ending = fields[operator.ending];
+        if (beginning && ending && (beginning.type !== ending.type ||
+          ('unit' in beginning ? beginning.unit : undefined) !== ('unit' in ending ? ending.unit : undefined))) {
+          errors.push(schemaError(path, 'CAGR 的期初与期末字段必须保持相同类型和单位'));
+        }
+        if (fields[operator.periods]?.type !== 'number' || fields[operator.output]?.type !== 'number') {
+          errors.push(schemaError(path, 'CAGR 的期数和产出必须为 number'));
+        }
+        break;
+      }
+      case 'joinAggregate':
+        operator.values.forEach((value, valueIndex) => output(value.output, `${path}/values/${valueIndex}/output`, 'measure'));
+        break;
       case 'ratio':
         numericInput(operator.numerator, `${path}/numerator`);
         numericInput(operator.denominator, `${path}/denominator`);
@@ -1178,14 +1312,14 @@ function componentErrors(
     case 'metricCard':
       {
         const hasNavigateAction = component.props.actions?.some(
-          (action) => 'navigate' in action
+          (action) => 'navigate' in action || 'openDetail' in action
         ) ?? false;
         component.props.rows.forEach((row, rowIndex) => {
           if (row.link === true && !hasNavigateAction) {
             errors.push(
               schemaError(
                 `${componentPath}/props/rows/${rowIndex}/link`,
-                '指标值链接必须至少声明一个 navigate 动作'
+                '指标值链接必须至少声明一个 navigate 或 openDetail 动作'
               )
             );
           }
@@ -1195,7 +1329,7 @@ function componentErrors(
             errors.push(
               schemaError(
                 `${componentPath}/props/secondaryRows/${rowIndex}/link`,
-                '指标值链接必须至少声明一个 navigate 动作'
+                '指标值链接必须至少声明一个 navigate 或 openDetail 动作'
               )
             );
           }
@@ -1225,6 +1359,30 @@ function componentErrors(
       component.props.series.forEach((series, index) =>
         check(series.field, `${componentPath}/props/series/${index}/field`, 'measure')
       );
+      if (component.props.series.some(series => series.kind !== undefined || series.axis !== undefined)) {
+        const props = component.props;
+        const path = `${componentPath}/props`;
+        if (props.horizontal || props.stacked || props.variant || props.showSegmentLabels || props.showStackTotalLabels ||
+          props.series.some(series => series.role !== undefined || series.stackOrder !== undefined)) {
+          errors.push(schemaError(path, '显式混合系列不支持横向、堆叠或预测专属呈现'));
+        }
+        if (!props.series.some(series => series.axis === 'primary')) errors.push(schemaError(`${path}/series`, '显式系列必须有主轴'));
+        const axisUnits = new Map<string, string>();
+        props.series.forEach((series, index) => {
+          const seriesPath = `${path}/series/${index}`;
+          if (!series.axis) errors.push(schemaError(`${seriesPath}/axis`, '显式系列必须声明 primary 或 secondary 轴'));
+          if (series.axis === 'secondary' && !props.dualAxis) errors.push(schemaError(`${seriesPath}/axis`, 'secondary 轴要求 dualAxis: true'));
+          const resolved = resolveBinding(page, component, series.field);
+          if ('error' in resolved) return;
+          const definition = resolved.field;
+          const unit = 'unit' in definition ? definition.unit : undefined;
+          if (!unit) errors.push(schemaError(`${seriesPath}/field`, '显式系列的结果字段契约必须声明单位'));
+          const signature = JSON.stringify([unit, definition.type === 'money' ? definition.currency : null]);
+          const axis = series.axis ?? 'primary';
+          if (axisUnits.has(axis) && axisUnits.get(axis) !== signature) errors.push(schemaError(seriesPath, '同一坐标轴的系列必须使用相同单位和币种'));
+          axisUnits.set(axis, signature);
+        });
+      }
       {
         const sourceId = component.data.main;
         const source = page.dataSources[sourceId];
@@ -1258,6 +1416,18 @@ function componentErrors(
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
     case 'table':
+      {
+        const visit = (columns: TableColumnNode[], path: string) => columns.forEach((column, index) => {
+          if (column.kind === 'group') visit(column.children, `${path}/${index}/children`);
+          else {
+            if ((column.openDetail || column.navigate) && (!column.link || column.selection || (column.openDetail && column.navigate))) errors.push(schemaError(`${path}/${index}`, '列动作要求 link，且 navigate/openDetail/selection 不得冲突'));
+            if (!column.openDetail) return;
+            if (!column.link || column.selection) errors.push(schemaError(`${path}/${index}/openDetail`, '列详情要求 link 且不得与 selection 同用'));
+            errors.push(...actionErrors([{ on: 'click', openDetail: column.openDetail }], `${path}/${index}`, page, component, filterIds, check));
+          }
+        });
+        visit(component.props.columns, `${componentPath}/props/columns`);
+      }
       errors.push(...tableDataErrors(page, component, componentPath));
       errors.push(...tablePresentationErrors(page, component, componentPath));
       errors.push(
@@ -1579,11 +1749,14 @@ function queryPaginationErrors(page: Page): TypedError[] {
       const pagination = component.props.pagination;
       const sourceId = component.data.main;
       const source = page.dataSources[sourceId];
-      if (pagination?.mode === 'local' && source?.source.type !== 'inline') {
+      const localOrder = source?.source.type === 'query' ? source.source.query.body.dsl_list[0]?.order : undefined;
+      const completeQuery = source?.source.type === 'query' && source.source.resultScope === 'complete' &&
+        !(localOrder && typeof localOrder === 'object' && ('limit' in localOrder || 'offset' in localOrder));
+      if (pagination?.mode === 'local' && source?.source.type !== 'inline' && !completeQuery) {
         errors.push(
           schemaError(
             `${componentPath}/props/pagination/mode`,
-            `pagination.mode='local' 只允许绑定 inline 数据源:${sourceId}`
+            `pagination.mode='local' 只允许绑定 inline 或显式 complete 且无分页窗口的数据源:${sourceId}`
           )
         );
       }
@@ -1944,9 +2117,24 @@ function actionErrors(
       if (action.openDetail.titleField !== undefined) {
         check(action.openDetail.titleField, `${path}/openDetail/titleField`);
       }
-      action.openDetail.fields.forEach((item, fieldIndex) => {
-        check(item.field, `${path}/openDetail/fields/${fieldIndex}/field`);
-      });
+      if ('fields' in action.openDetail) {
+        action.openDetail.fields.forEach((item, fieldIndex) => {
+          check(item.field, `${path}/openDetail/fields/${fieldIndex}/field`);
+        });
+      } else {
+        const detail = action.openDetail;
+        const view = page.detailViews?.find(view => view.id === detail.view);
+        if (!view) errors.push(schemaError(`${path}/openDetail/view`, '详情视图不存在'));
+        const required = view?.filters ?? [];
+        if (required.some(id => !detail.bindings?.[id]) || Object.keys(detail.bindings ?? {}).some(id => !required.includes(id))) {
+          errors.push(schemaError(`${path}/openDetail/bindings`, '必须且只能绑定详情视图声明的全部参数'));
+        }
+        for (const binding of Object.values(detail.bindings ?? {})) {
+          if (binding.source === 'row') check(binding.field, `${path}/openDetail/bindings`);
+          else if (binding.source === 'param' && !page.params?.some(param => param.id === binding.id)) errors.push(schemaError(path, '详情绑定页面参数不存在'));
+          else if (binding.source === 'filter' && !page.filters?.some(filter => filter.id === binding.id)) errors.push(schemaError(path, '详情绑定页面筛选不存在'));
+        }
+      }
     }
   });
   return errors;

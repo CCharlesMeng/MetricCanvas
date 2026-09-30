@@ -4,6 +4,8 @@
 
 触发这一批的是一个与既有场景形状不同的需求:一个多页数据应用,包含"概览 → 清单 → 详情"三级下钻,取数协议全部是 GraphQL 而非 DQE,应用外壳由已有门户提供。
 
+**当前正式实施（2026-09-29）：** 历史 GraphQL 提议不属于本轮授权。本轮维持 DQE 查询协议与执行逻辑，迁移查询结果之后的受控能力。[ADR-0095](../0095-cross-source-computation-and-ioc-schema-compatibility.md) 以页面数据源就地 `joinAggregate` 承载完整行集上的跨源关联和聚合，运行时协调依赖与同批结果；6.12 新增能力，保留 6.11 读取。缺行、源失败和分页窗口严格区分，创作契约按用户要求最后整合。[ADR-0096](../0096-ioc-view-state-and-post-query-presentation.md) 记录内容切换、受控详情、时间模式、混合系列与缺失展示的运行时边界。其余 IOC 全量能力仍在实施，来源证据缺口不视为完成。
+
 **已生效:** [ADR-0046](../0046-controlled-computation-with-named-operators.md) 在页面数据源上引入封闭具名算子(第一批),**这是对 ADR-0003 措辞的一次修订与对 ADR-0033 的部分恢复**,但不恢复计算数据集聚合根;[ADR-0047](../0047-first-class-page-parameters.md) 新增顶层 `params`,按"页面打开后还能不能变"把 URL 输入与筛选器分开;[ADR-0048](../0048-navigation-intent-and-host-routing.md) 把跨页路由交给宿主,运行时只上抛导航意图,Canvas 用 sessionStorage 记来源并画返回;[ADR-0050](../0050-filter-type-closure-and-hierarchical-dimensions.md) 把筛选器闭集从两类扩到六类并引入层级维度,顺带偿还 ADR-0035 的落地欠账;[ADR-0051](../0051-additive-minor-versions-for-page-schema.md) 把版本演进定为增量次版本,本批交付 5.1。
 
 **仍为提议:** [ADR-0045](../0045-graphql-query-branch-with-structured-predicates.md) 补齐 ADR-0034 留白的 GraphQL 分支形状,关键是把来源实现里的 WHERE 字符串模板换成结构化谓词,守住 ADR-0003——**本批未落地,`QUERY_LANGUAGES` 仍只有 `dqe`**;[ADR-0049](../0049-table-server-side-and-presentation-capabilities.md) 解除查询分页下的排序与列头筛选限制、改为按数据源模式整体下推(呈现已落地,拒绝规则未删)。

@@ -27,7 +27,7 @@ export function pieOption(
   const value = resolveField(props.valueField, data);
   const showLabelLine = props.labelLine ?? true;
   const compactRing = props.variant === 'compactRing';
-  const names = rows.map((row) => formatValue(row[category.field], category.format));
+  const names = rows.map((row) => formatValue(row[category.field], category.format, category.missingText));
   const domain = categoryDomain(names);
   return {
     tooltip: {
@@ -35,7 +35,7 @@ export function pieOption(
       ...(value.format
         ? {
             valueFormatter: (raw: unknown) =>
-              formatValue(formatterValue(raw), value.format)
+              formatValue(formatterValue(raw), value.format, value.missingText)
           }
         : {})
     },

@@ -11,7 +11,8 @@ import {
   tableDataZ,
   textValueZ
 } from '../primitives';
-import { actionsZ } from '../actions';
+import { actionsZ, openDetailActionZ } from '../actions';
+import { navigationTargetZ, type NavigationTarget } from '../navigation';
 import { componentCatalogRegistry } from '../registry';
 
 /**
@@ -43,6 +44,8 @@ export interface TableColumn {
    * 与 `selection` 同时存在时以 `selection` 为准。
    */
   link?: boolean;
+  openDetail?: z.infer<typeof openDetailActionZ>['openDetail'];
+  navigate?: NavigationTarget;
   align?: 'left' | 'right';
   emphasis?: 'strong';
   visual?: 'plain' | 'rateBar' | 'signed';
@@ -82,6 +85,8 @@ const tableColumnZ: z.ZodType<TableColumn> = z
     sortable: z.boolean().optional(),
     filterable: z.object({ mode: z.enum(['select', 'dateRange']) }).strict().optional(),
     link: z.boolean().optional(),
+    openDetail: openDetailActionZ.shape.openDetail.optional(),
+    navigate: navigationTargetZ.optional(),
     align: z.enum(['left', 'right']).optional(),
     emphasis: z.literal('strong').optional(),
     visual: z.enum(['plain', 'rateBar', 'signed']).optional()

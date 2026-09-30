@@ -9,9 +9,10 @@ const DEFAULT_NULL_TEXT = '—';
  */
 export function formatValue(
   value: FieldValue | undefined,
-  format?: ValueFormatPreset
+  format?: ValueFormatPreset,
+  missingText = DEFAULT_NULL_TEXT
 ): string {
-  if (value == null) return DEFAULT_NULL_TEXT;
+  if (value == null || (typeof value === 'number' && !Number.isFinite(value))) return missingText;
   if (!format || format === 'text') return String(value);
   if (format === 'date') return formatDate(value);
   if (format === 'date-month-day') {

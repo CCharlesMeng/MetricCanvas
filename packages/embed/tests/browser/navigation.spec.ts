@@ -38,33 +38,24 @@ test('层级区域筛选按当前层级选谓词字段，三层各自命中', as
   }
 });
 
-// 页内详情浮层（ADR-0087）：动作闭集此前只有 writeFilter 与 navigate，
-// 详情只能靠跳页。丢单表的丢单原因在页内看才合理——丢掉的项目往往没有
-// 项目详情页可跳。
-test('丢单表点击在页内打开详情抽屉，不离开当前页', async ({ page }) => {
+// 来源 project-overview D8/E4：丢单行应跳项目详情并传页面月份。
+// 通用抽屉能力仍由 detail-views.spec.ts 覆盖，不能用它替代业务导航。
+test('丢单表跳项目详情并传页面月份，保留行立项状态', async ({ page }) => {
   await page.goto('/pages/ioc-project-overview');
   const host = page.locator('[data-metriccanvas-runtime]');
-  const panel = host.locator('[data-detail-panel]');
-  await expect(panel).toHaveCount(0);
-
   await host.getByRole('tab', { name: '丢单项目' }).click();
-  const cell = host.locator('a.link-cell').first();
+  const cell = host.locator('a.link-cell[href*="ioc-project-detail"]').first();
   await expect(cell).toBeVisible();
-  const url = page.url();
+  const href = await cell.getAttribute('href');
+  const target = new URL(href!, page.url());
+  expect(target.searchParams.get('mtime')).toBe('2026-04');
+  expect(target.searchParams.get('page-title')).toBe('海外节点扩容');
+  expect(target.searchParams.get('opportunity-code')).toBe('OPP202604009');
+  expect(target.searchParams.get('ati-status-label')).toBe('无需立项');
   await cell.click();
-
-  await expect(panel).toBeVisible();
-  expect(page.url()).toBe(url);
-  await expect(host.locator('[data-detail-title]')).toHaveText('海外节点扩容');
-  await expect(host.locator('[data-detail-item]')).toHaveCount(7);
-  await expect(host.locator('[data-detail-item]').last()).toContainText('价格竞争力不足');
-  await expect(host.locator('[data-detail-backdrop], .detail-backdrop')).toHaveAttribute(
-    'data-detail-surface',
-    'drawer'
-  );
-
-  await page.keyboard.press('Escape');
-  await expect(panel).toHaveCount(0);
+  await expect(page).toHaveURL(/\/pages\/ioc-project-detail\?/);
+  await expect(page.locator('.runtime-view')).toContainText('海外节点扩容');
+  await expect(page.locator('[data-detail-panel]')).toHaveCount(0);
 });
 
 // 查询分页此前与排序、表头筛选互斥（ADR-0086）。分页下本地排序只能排到

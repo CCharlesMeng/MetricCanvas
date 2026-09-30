@@ -164,6 +164,7 @@ export type FieldBinding =
       data: string;
       field: string;
       format?: ValueFormatPreset;
+      missingText?: string;
       match?: { field: string; equals: ScalarFieldValue };
     };
 

@@ -19,6 +19,7 @@ export interface RuntimeSurfaceProps extends RuntimeViewProps {
  */
 export interface RuntimeSectionProps {
   section: PageSection;
+  hidden?: boolean;
   componentContent: ComponentContent;
   cellAttachment?: (component: Component, index: number) => Attachment<HTMLElement>;
   cellOverlay?: Snippet<[Component, number]>;

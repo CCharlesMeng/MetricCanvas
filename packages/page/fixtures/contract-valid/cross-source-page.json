@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "6.12",
+  "id": "cross-source-page",
+  "dataSources": {
+    "customers": {
+      "fields": {
+        "customerId": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "revenue": {
+          "type": "number",
+          "role": "measure",
+          "unit": "元",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "customerId": "A"
+          },
+          {
+            "customerId": "B"
+          }
+        ]
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "revenue",
+          "keys": [
+            {
+              "local": "customerId",
+              "foreign": "partyNumber"
+            }
+          ],
+          "values": [
+            {
+              "field": "amount",
+              "output": "revenue",
+              "aggregate": "sum"
+            }
+          ],
+          "onMissing": "null"
+        }
+      ]
+    },
+    "revenue": {
+      "fields": {
+        "partyNumber": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "unit": "元",
+          "collapsible": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "partyNumber": "A",
+            "amount": 100
+          },
+          {
+            "partyNumber": "A",
+            "amount": -20
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "customers",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "customers"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "customerId"
+              },
+              {
+                "field": "revenue"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "layout": "report"
+}

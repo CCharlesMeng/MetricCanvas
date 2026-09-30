@@ -52,7 +52,7 @@
           {#if semantic}
             <SemanticHtml source={semantic.source} format={semantic.format} inline />
           {:else}
-            {formatValue(value, resolved.format)}
+            {formatValue(value, resolved.format, resolved.missingText)}
           {/if}
           {#if item.unit}<span class="unit">{item.unit}</span>{/if}
         </dd>

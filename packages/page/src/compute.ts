@@ -5,8 +5,7 @@
  * 计算阶段没有独立 id、没有独立修订、不参与发布治理,数据源仍是数据源。
  *
  * 只提供封闭的具名算子,不提供通用 arithmetic、公式字段或任何表达式:
- * 算子的参数是字段引用与封闭枚举,不是可求值的字符串。第一批只覆盖单
- * 数据源内的计算;跨数据源的 `joinAggregate` 属第二批,形状未定。
+ * 算子的参数是字段引用与封闭枚举,不是可求值的字符串。跨数据源关联通过显式依赖、组合键与封闭聚合方式声明。
  */
 
 /** 折叠已返回数据行的算子写入的行类别取值;表格按它套用呈现档位。 */
@@ -83,7 +82,63 @@ export interface PivotOperator {
   keyFields?: string[];
 }
 
+/** 左关联：依赖已计算的完整行集，成功但缺行输出 null，源失败单独传播。 */
+export interface JoinAggregateOperator {
+  op: 'joinAggregate';
+  source: string;
+  keys: Array<{ local: string; foreign: string }>;
+  values: Array<{ field: string; output: string; aggregate: 'unique' | 'sum' }>;
+  onMissing: 'null';
+}
+
+export function computeDependencies(operators: readonly ComputeOperator[]): string[] {
+  return [...new Set(operators.flatMap(operator => operator.op === 'joinAggregate' ? [operator.source] : []))];
+}
+
+/** 字段相加，缺项策略逐消费者声明；没有任意表达式。 */
+export interface SumFieldsOperator {
+  op: 'sumFields';
+  fields: string[];
+  output: string;
+  onMissing: 'null' | 'ignore';
+}
+
+/** 复合增长率；期数来自已声明字段，不猜测年份差。 */
+export interface CagrOperator {
+  op: 'cagr';
+  beginning: string;
+  ending: string;
+  periods: string;
+  output: string;
+  scale?: RatioScale;
+}
+
+/** 日/月日历补齐；只补 null，不把缺期解释成零。 */
+export interface TimeFillOperator {
+  op: 'timeFill';
+  timeField: string;
+  granularity: 'day' | 'month';
+  format: 'iso' | 'compact';
+  range: { from: string; to: string } | { currentYearOffset: number } | { filter: string };
+  measures: string[];
+  groupBy?: string[];
+}
+
+/** 有限模式选择已返回字段，不改变查询形状，不执行表达式。 */
+export interface SelectFieldOperator {
+  op: 'selectField';
+  filter: string;
+  cases: Record<string, string>;
+  defaultMode: string;
+  output: string;
+}
+
 export type ComputeOperator =
+  | TimeFillOperator
+  | SelectFieldOperator
+  | SumFieldsOperator
+  | CagrOperator
+  | JoinAggregateOperator
   | RatioOperator
   | DeltaOperator
   | GroupSubtotalOperator
@@ -106,6 +161,9 @@ export function computeOutputFields(operators: readonly ComputeOperator[]): stri
   const outputs = new Set<string>();
   for (const operator of operators) {
     switch (operator.op) {
+      case 'selectField':
+      case 'sumFields':
+      case 'cagr':
       case 'ratio':
       case 'delta':
         outputs.add(operator.output);
@@ -113,6 +171,9 @@ export function computeOutputFields(operators: readonly ComputeOperator[]): stri
       case 'groupSubtotal':
       case 'grandTotal':
         outputs.add(operator.rowKind.field);
+        break;
+      case 'joinAggregate':
+        for (const value of operator.values) outputs.add(value.output);
         break;
       case 'pivot':
         for (const column of operator.columns) outputs.add(column.output);

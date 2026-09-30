@@ -1,6 +1,6 @@
 import { resolveDataSourceFields } from './data-source';
 import { walkPageComponents } from './component-walk';
-import type { Page } from './page';
+import type { Page, TableColumnNode } from './page';
 import type { TypedError } from './errors';
 import type { NavigationTarget } from './schema/navigation';
 
@@ -21,6 +21,13 @@ export function navigationErrors(page: Page): TypedError[] {
   const fail = (path: string, message: string) => errors.push({ type: 'SCHEMA_ERROR', path, message });
   walkPageComponents(page, (component, path) => {
     const targets: Array<[NavigationTarget, string]> = [];
+    if (component.type === 'table') {
+      const visit = (columns: TableColumnNode[], columnPath: string) => columns.forEach((column, index) => {
+        if (column.kind === 'group') visit(column.children, `${columnPath}/${index}/children`);
+        else if (column.navigate) targets.push([column.navigate, `${columnPath}/${index}/navigate`]);
+      });
+      visit(component.props.columns, `${path}/props/columns`);
+    }
     if (component.type === 'text') {
       (component.props.links ?? []).forEach((link, i) => targets.push([link, `${path}/props/links/${i}`]));
     } else if ('actions' in component.props) {

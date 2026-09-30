@@ -23,7 +23,7 @@ export interface TableRenderBinding {
   onsort: (sort: TableSortRule[]) => void;
   onheaderfilter: (field: string, value: TableHeaderFilterValue | null) => void;
   oncellselect: (context: { rowIndex: number; column: TableColumn }) => void;
-  linkHref?: (row: Row) => string | undefined;
+  linkHref?: (row: Row, column?: TableColumn) => string | undefined;
   onlink?: (context: { rowIndex: number; column: TableColumn; row: Row }, event: MouseEvent) => void;
 }
 

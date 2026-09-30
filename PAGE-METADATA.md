@@ -20,7 +20,7 @@
 
 ## 版本、初始化与持久化
 
-新文档写6.11和layout；已支持版本的layoutForm在输入边界兼容读取，双字段同时出现拒绝。规范化保留已支持版本的能力边界，旧文档迁移另存新修订；先核验历史原文hash，再规范化。详见[布局迁移](docs/page-metadata/layout-migration.md)。
+新文档写6.12和layout（保留6.11读取）；已支持版本的layoutForm在输入边界兼容读取，双字段同时出现拒绝。规范化保留已支持版本的能力边界，旧文档迁移另存新修订；先核验历史原文hash，再规范化。详见[布局迁移](docs/page-metadata/layout-migration.md)。
 
 当前模板在同一 Page Schema 内以分层 params 与 DQE 取值位置的原位 param 引用表达。无值模板结构合法，输入完整性在执行前验证。6.x 接受 6.5 与当前 6.11，保留 5.0–5.4 兼容读取。提取、解析和旧绑定显式迁移见[页面参数](PAGE-PARAMETERS.md)。
 
@@ -167,6 +167,8 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 4.9 `semanticHtml/detail` 受控语义 HTML → [模块参考](contracts/metriccanvas/page/reference/semantic-html.md)。
 
 <a id="410-受控计算阶段"></a>
+
+6.12 新增完整结果上的跨源 `joinAggregate`；依赖、组合键、聚合和缺行策略显式声明，查询源需要 `source.resultScope: "complete"`。约束与批次规则见 [ADR-0095](docs/adr/0095-cross-source-computation-and-ioc-schema-compatibility.md)。创作契约将在 IOC 实施最后阶段统一生成。
 
 4.10 受控计算阶段 → [模块参考](contracts/metriccanvas/page/reference/compute.md)。
 
@@ -347,3 +349,13 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 6.4新增 `yearToDate` / `monthToDate` 具名窗口，不带unit，终点为绑定参数的报告基准期；保留6.3旧窗口写法兼容。
 
 6.5新增 `compact-million-0/1/2` 数值展示格式，按百万缩放并保留指定小数位；不改变查询与原始数值。
+
+### 6.12 查询结果与页内交互增量
+
+- `sectionGroups` / `defaultSectionGroup` / `sectionGroupParam` / `sectionAnchors`：既有内容分区的有限切换和页内定位。
+- `detailViews`：snapshot 复用快照，query 以必需显式绑定隔离取数；`openDetail.view` 与旧 `fields` 互斥。表格列可声明互斥的独立 `openDetail` / `navigate`。
+- `timeFill` / `selectField`：明确日/月范围补齐和有限模式字段选择。
+- 柱图 series 的 `kind` / `axis`：柱线混合、轴单位校验。
+- 字段绑定 `missingText`：消费者缺失文案，数值类型与刻度不变。
+
+具体约束见 [ADR-0096](docs/adr/0096-ioc-view-state-and-post-query-presentation.md)。6.11继续可读，但使用上述能力的文档必须写6.12。

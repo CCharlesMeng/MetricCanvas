@@ -34,7 +34,7 @@ function instantiate(page: Page): Page {
 describe('ioc-project-overview 骨架', () => {
   it('声明 5.4，能力下限覆盖唯一指标值入口', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('6.11');
+    expect(page.schemaVersion).toBe('6.12');
     expect(requiredMinorVersion(document)).toBe(11);
   });
 
@@ -196,11 +196,11 @@ describe('ioc-project-overview 骨架', () => {
     expect(summary.props.rows).toHaveLength(1);
     expect(summary.props.rows[0]).toMatchObject({
       label: '已立项',
-      valueField: { field: 'initiated-amount', format: 'cny-adaptive' }
+      valueField: { field: 'initiated-cnt', format: 'number-grouped' }, unit: '个'
     });
     expect(summary.props.rows[0]?.changes?.[0]).toMatchObject({
       label: '预签金额', tone: 'neutral',
-      field: { field: 'bidding-amount', format: 'cny-adaptive' }
+      field: { field: 'initiated-amount', format: 'cny-adaptive' }
     });
     expect(rates.props.rows[1]).toMatchObject({
       label: '项目分析会召开率', context: '近60天'
@@ -431,7 +431,7 @@ describe('ioc-project-overview 骨架', () => {
       : {};
     const search = new URL(navigationHref(action.navigate, new Map(), new Map(), row), 'https://host.example').search;
     const params = new URLSearchParams(search);
-    expect(action.navigate.href).toBe('/pages/ioc-project-detail');
+    expect(new URL(action.navigate.href, 'https://host.example').pathname).toBe('/pages/ioc-project-detail');
     expect(params.get('party-number')).toBe('PN10001');
     expect(params.get('opportunity-code')).toBe('OPP202604001');
   });

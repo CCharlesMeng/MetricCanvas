@@ -34,7 +34,7 @@ function snapshotsOf(page: Page): PageDataSnapshots {
 describe('ioc-opportunity-analysis 页面契约', () => {
   it('声明 5.4 看板、紧凑可操作页头和七个已下推的筛选位', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('6.11');
+    expect(page.schemaVersion).toBe('6.12');
     expect(requiredMinorVersion(document)).toBe(11);
     expect(page.layout).toBe('dashboard');
     expect(page.meta).toMatchObject({

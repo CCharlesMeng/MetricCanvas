@@ -1591,7 +1591,7 @@
               {
                 "kind": "group",
                 "id": "forecast-jan",
-                "title": "1月（万）",
+                "title": "1月",
                 "children": [
                   {
                     "field": "object-forecast-jan",
@@ -1616,7 +1616,7 @@
               {
                 "kind": "group",
                 "id": "forecast-feb",
-                "title": "2月（万）",
+                "title": "2月",
                 "children": [
                   {
                     "field": "object-forecast-feb",
@@ -1641,7 +1641,7 @@
               {
                 "kind": "group",
                 "id": "forecast-mar",
-                "title": "3月（万）",
+                "title": "3月",
                 "children": [
                   {
                     "field": "object-forecast-mar",
@@ -1666,7 +1666,7 @@
               {
                 "kind": "group",
                 "id": "forecast-apr",
-                "title": "4月（万）",
+                "title": "4月",
                 "children": [
                   {
                     "field": "object-forecast-apr",
@@ -1691,7 +1691,7 @@
               {
                 "kind": "group",
                 "id": "forecast-may",
-                "title": "5月（万）",
+                "title": "5月",
                 "children": [
                   {
                     "field": "object-forecast-may",
@@ -1716,7 +1716,7 @@
               {
                 "kind": "group",
                 "id": "forecast-jun",
-                "title": "6月（万）",
+                "title": "6月",
                 "children": [
                   {
                     "field": "object-forecast-jun",
@@ -1741,7 +1741,7 @@
               {
                 "kind": "group",
                 "id": "forecast-jul",
-                "title": "7月（万）",
+                "title": "7月",
                 "children": [
                   {
                     "field": "object-forecast-jul",
@@ -1757,6 +1757,131 @@
                   },
                   {
                     "field": "total-forecast-jul",
+                    "title": "合计",
+                    "width": 64,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-aug",
+                "title": "8月",
+                "children": [
+                  {
+                    "field": "object-forecast-aug",
+                    "title": "客观",
+                    "width": 64,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-aug",
+                    "title": "提拉",
+                    "width": 64,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-aug",
+                    "title": "合计",
+                    "width": 64,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-sep",
+                "title": "9月",
+                "children": [
+                  {
+                    "field": "object-forecast-sep",
+                    "title": "客观",
+                    "width": 64,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-sep",
+                    "title": "提拉",
+                    "width": 64,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-sep",
+                    "title": "合计",
+                    "width": 64,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-oct",
+                "title": "10月",
+                "children": [
+                  {
+                    "field": "object-forecast-oct",
+                    "title": "客观",
+                    "width": 64,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-oct",
+                    "title": "提拉",
+                    "width": 64,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-oct",
+                    "title": "合计",
+                    "width": 64,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-nov",
+                "title": "11月",
+                "children": [
+                  {
+                    "field": "object-forecast-nov",
+                    "title": "客观",
+                    "width": 64,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-nov",
+                    "title": "提拉",
+                    "width": 64,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-nov",
+                    "title": "合计",
+                    "width": 64,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-dec",
+                "title": "12月",
+                "children": [
+                  {
+                    "field": "object-forecast-dec",
+                    "title": "客观",
+                    "width": 64,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-dec",
+                    "title": "提拉",
+                    "width": 64,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-dec",
                     "title": "合计",
                     "width": 64,
                     "align": "right"

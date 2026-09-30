@@ -11,7 +11,7 @@ async def run(output, scripted):
     fixture = json.loads(flow.FIXTURE_PATH.read_text())
     suite = json.loads(flow.SUITE_PATH.read_text())
     fixture['rows'] = [{'区域': f'区域{i:03d}', 'Tokens请求量': 1200 + i} for i in range(128)]
-    fixture['paginationExpectation'] = {'pageSize': 20, 'totalCount': 128, 'lastCategory': '区域127'}
+    fixture['paginationExpectation'] = {'pageSize': 10, 'totalCount': 128, 'lastCategory': '区域127'}
     case = deepcopy(next(c for c in suite['cases'] if c['id'] == 'create-report'))
     case['expected']['rows'] = deepcopy(fixture['rows'])
     case['prompt'] += ' 展示全部区域，不能取 Top N 或丢弃区域。请包含柱状图与完整明细表。'

@@ -1,0 +1,19 @@
+{
+  "provenance": "docs/evidence/2026-09-29-ioc-migration-batch1/README.md; supplied report customer-detail B3/B4/C3; anonymous local cases, not production data",
+  "finance": [
+    {"party_number":"CUSTOMER-A","mtime":"202604","rev_ytd_amt":8000,"sgp_ytd_amt":1600},
+    {"party_number":"CUSTOMER-B","mtime":"202604","rev_ytd_amt":-1200,"sgp_ytd_amt":-240},
+    {"party_number":"CUSTOMER-C","mtime":"202604","rev_ytd_amt":100,"sgp_ytd_amt":null}
+  ],
+  "forecast": [
+    {"party_number":"CUSTOMER-A","mtime":"202604","annual_target_amt_sum":10000,"stock_forecast_revenue_amt_sum":2000},
+    {"party_number":"CUSTOMER-A","mtime":"202603","annual_target_amt_sum":99999,"stock_forecast_revenue_amt_sum":99999},
+    {"party_number":"CUSTOMER-B","mtime":"202604","annual_target_amt_sum":6000,"stock_forecast_revenue_amt_sum":3200},
+    {"party_number":"CUSTOMER-C","mtime":"202603","annual_target_amt_sum":99999,"stock_forecast_revenue_amt_sum":99999}
+  ],
+  "expected": [
+    {"party_number":"CUSTOMER-A","annual_forecast_revenue":10000,"forecast_target_gap":0,"target_completion_rate":80,"gross_profit_rate":20},
+    {"party_number":"CUSTOMER-B","annual_forecast_revenue":2000,"forecast_target_gap":-4000,"target_completion_rate":-20,"gross_profit_rate":20},
+    {"party_number":"CUSTOMER-C","annual_forecast_revenue":null,"forecast_target_gap":null,"target_completion_rate":null,"gross_profit_rate":null}
+  ]
+}

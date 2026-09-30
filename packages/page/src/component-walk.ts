@@ -21,16 +21,19 @@ export function walkComponents<T extends { type: string }>(
 }
 
 export function walkPageComponents<T extends { type: string }>(
-  page: { sections: ReadonlyArray<{ components: readonly T[] }> },
+  page: { sections: ReadonlyArray<{ components: readonly T[] }>; detailViews?: ReadonlyArray<{ components: readonly T[] }> },
   visit: (component: T, path: string) => void
 ): void {
   page.sections.forEach((section, sectionIndex) => {
     walkComponents(section.components, `/sections/${sectionIndex}/components`, visit);
   });
+  page.detailViews?.forEach((view, index) => {
+    walkComponents(view.components, `/detailViews/${index}/components`, visit);
+  });
 }
 
 export function flattenPageComponents<T extends { type: string }>(
-  page: { sections: ReadonlyArray<{ components: readonly T[] }> }
+  page: { sections: ReadonlyArray<{ components: readonly T[] }>; detailViews?: ReadonlyArray<{ components: readonly T[] }> }
 ): T[] {
   const components: T[] = [];
   walkPageComponents(page, (component) => {
@@ -95,6 +98,12 @@ export function walkDocumentComponents(
         visit
       );
     });
+  });
+  const views = record(document)?.detailViews;
+  if (Array.isArray(views)) views.forEach((view, index) => {
+    const components = record(view)?.components;
+    if (Array.isArray(components)) components.forEach((child, childIndex) =>
+      visitDocumentTree(child, `/detailViews/${index}/components/${childIndex}`, visit));
   });
 }
 

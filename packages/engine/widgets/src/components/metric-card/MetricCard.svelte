@@ -18,7 +18,7 @@
 
   function fieldText(field: FieldBinding): string {
     const resolved = resolveField(field, data);
-    return formatValue(fieldValue(field, data), resolved.format);
+    return formatValue(fieldValue(field, data), resolved.format, resolved.missingText);
   }
 
   function changeText(
@@ -66,6 +66,13 @@
         {#if row.link === true && rawValue != null && linkHref}
           <a
             href={linkHref?.(fieldRow(row.valueField, data) ?? {})}
+            role={linkHref?.(fieldRow(row.valueField, data) ?? {}) ? undefined : 'button'}
+            tabindex={linkHref?.(fieldRow(row.valueField, data) ?? {}) ? undefined : 0}
+            onkeydown={(event) => {
+              if (!linkHref?.(fieldRow(row.valueField, data) ?? {}) && (event.key === 'Enter' || event.key === ' ')) {
+                event.preventDefault(); event.currentTarget.click();
+              }
+            }}
             class="value-line value-link"
             data-metric-row-link
             aria-label={`${row.label} ${fieldText(row.valueField)}`}

@@ -340,3 +340,18 @@ describe('barOption · 形态类别色板', () => {
     expect(option.series[0]?.itemStyle?.color).toBe('#1476ff');
   });
 });
+
+it('IOC F6 显式柱线共享横轴、正确分轴与单位、缺点不连成0', () => {
+  const data: MainDataSlots = { main: { fields: {
+    month: { type: 'string', role: 'dimension' },
+    income: { type: 'number', role: 'measure', unit: '元' },
+    rate: { type: 'number', role: 'measure', unit: '%', defaultFormat: 'percent-0' }
+  }, snapshot: { status: 'ready', rows: [{ month: '1月', income: 100, rate: 10 }, { month: '2月', income: 200, rate: null }] } } };
+  const result = barOption(data, { categoryField: 'month', dualAxis: true, series: [
+    { field: 'income', kind: 'bar', axis: 'primary' }, { field: 'rate', kind: 'line', axis: 'secondary' }
+  ] });
+  expect(result).toMatchObject({
+    xAxis: { data: ['1月', '2月'] }, yAxis: [{ name: '元' }, { name: '%' }],
+    series: [{ type: 'bar', yAxisIndex: 0, data: [100, 200] }, { type: 'line', yAxisIndex: 1, connectNulls: false, data: [10, null] }]
+  });
+});

@@ -1,4 +1,4 @@
-import { navigationTargetZ } from './navigation';
+import { navigationTargetZ, navigationBindingZ } from './navigation';
 import { z } from 'zod';
 import { fieldReferenceZ, idZ } from './primitives';
 
@@ -31,8 +31,7 @@ export const navigateActionZ = z
 export const openDetailActionZ = z
   .object({
     on: z.literal('click'),
-    openDetail: z
-      .object({
+    openDetail: z.union([z.object({
         surface: z.enum(['modal', 'drawer']),
         /** 标题取被点行的某个字段；省略时用组件标题。 */
         titleField: fieldReferenceZ.optional(),
@@ -44,7 +43,12 @@ export const openDetailActionZ = z
           )
           .min(1)
       })
-      .strict()
+      .strict(), z.object({
+        surface: z.enum(['modal', 'drawer']),
+        titleField: fieldReferenceZ.optional(),
+        view: idZ,
+        bindings: z.record(idZ, navigationBindingZ).optional()
+      }).strict()])
   })
   .strict();
 

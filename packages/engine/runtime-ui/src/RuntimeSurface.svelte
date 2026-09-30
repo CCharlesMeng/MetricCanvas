@@ -1,5 +1,7 @@
 <script lang="ts">
   import { tablePagination } from './table-pagination';
+  import { tick, untrack } from 'svelte';
+  import { initialSectionGroup, selectedSectionGroup, sectionGroupFor, visibleSections } from './section-navigation';
   import {
     parsePage,
     canonicalizeJson,
@@ -60,6 +62,8 @@
     type TableViewState
   } from '../../widgets/src';
   import ComponentRenderer from './ComponentRenderer.svelte';
+  import DetailContent from './DetailContent.svelte';
+  import { detailViewInput } from '../../runtime/src/detail-view';
   import type { NestedComponentRender, TableRenderBinding } from './component-render';
   import {
     filterMapRows,
@@ -78,6 +82,7 @@
     dimensionValueOf
   } from './filters/cascade';
   import { hasVisibleFilters } from './filters/filter-bar';
+  import { changedFilters, resetFilteredTablePages, sortTableRows } from './table-state';
   import { applySearchFilters } from './filters/inline-search';
   import { hostRenderSnapshot, renderableDataSnapshot } from './widget-host-state';
   import RuntimeSection from './RuntimeSection.svelte';
@@ -127,6 +132,22 @@
   /** 筛选候选值快照(维度名 → 显式状态):筛选控件与表头筛选共用。 */
   let dimensionCandidates = $state<DimensionValuesSnapshots>(new Map());
   let tableViews = $state<Record<string, TableViewState>>({});
+  let selectedGroup = $state<string | undefined>();
+  let surfaceRoot: HTMLDivElement;
+
+  async function locateSection(page: Page, sectionId: string) {
+    const currentSession = session;
+    const targetGroup = sectionGroupFor(page, sectionId);
+    if (targetGroup) selectedGroup = targetGroup;
+    await tick();
+    if (session !== currentSession) return;
+    const target = Array.from(surfaceRoot.querySelectorAll<HTMLElement>('[data-section-id]'))
+      .find(element => element.dataset.sectionId === sectionId);
+    if (!target) return;
+    target.tabIndex = -1;
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ block: 'start' });
+  }
   let tablePageSizes = $state<Record<string, number>>({});
   let appliedTableHeaderFilters = $state<
     Record<string, Record<string, TableHeaderFilterValue>>
@@ -146,6 +167,7 @@
   });
 
   function dispose() {
+    untrack(() => closeDetail(false));
     session += 1;
     for (const fn of disposers) fn();
     disposers = [];
@@ -168,6 +190,8 @@
     filterValues = new Map();
     dimensionCandidates = new Map();
     tableViews = {};
+    untrack(() => closeDetail(false));
+    selectedGroup = undefined;
     tablePageSizes = {};
     appliedTableHeaderFilters = {};
 
@@ -220,8 +244,9 @@
     let loaded: typeof parsed.page;
     try {
       loaded = initializePageParams(parsed.page, params.values);
+      selectedGroup = initialSectionGroup(loaded, params.values);
     } catch {
-      pageState = {phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/params',message:'页面参数无法生成合法查询条件，请检查时间值与窗口范围'}]};
+      pageState = {phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/params',message:'页面参数无法生成合法查询条件或内容组，请检查输入值与窗口范围'}]};
       emit?.({type:'invalid',errors:pageState.errors});
       return;
     }
@@ -256,7 +281,8 @@
           navigationAdapter?.replaceSearch?.(nextSearch);
           emit?.({ type: 'filter-change', search: nextSearch });
           try { bootstrap?.recordFilters?.(values); } catch { /* 记录失败不能回滚当前筛选或中止查询 */ }
-          resetTablePages(loaded, previous, values);
+          if (changedFilters(previous, values).size > 0) closeDetail(false);
+          tableViews = resetFilteredTablePages(loaded, tableViews, previous, values);
         }
         primed = true;
       })
@@ -490,30 +516,6 @@
     filterState?.writeMany(updates);
   }
 
-  function resetTablePages(loaded: Page, previous: FilterValues, next: FilterValues) {
-    const changed = new Set<string>();
-    for (const id of new Set([...previous.keys(), ...next.keys()])) {
-      if (JSON.stringify(previous.get(id)) !== JSON.stringify(next.get(id))) changed.add(id);
-    }
-    for (const component of pageComponents(loaded)) {
-      if (
-        component.type !== 'table' ||
-        component.props.pagination?.mode !== 'query'
-      ) {
-        continue;
-      }
-      const view = tableViewOf(component);
-      if (view.pageIndex === 0) continue;
-      const source = loaded.dataSources[component.data.main];
-      const subscriptions =
-        source?.source.type === 'query'
-          ? Object.keys(source.source.query.filterBindings ?? {})
-          : [];
-      if (!subscriptions.some((id) => changed.has(id))) continue;
-      pushTableView(component, { ...view, pageIndex: 0 });
-    }
-  }
-
   function syncQueryTablePages(loaded: Page, next: PageDataSnapshots) {
     for (const component of pageComponents(loaded)) {
       if (component.type !== 'table' || component.props.pagination?.mode !== 'query') {
@@ -642,7 +644,16 @@
     return action && 'navigate' in action ? navigationHref(action.navigate, filterValues, pageParams, row) : undefined;
   }
 
-  function handleTableLink(component: TableComponent, row: Row, event: MouseEvent) {
+  function handleTableLink(component: TableComponent, row: Row, event: MouseEvent, column?: TableColumn) {
+    if (column?.navigate) {
+      navigate(navigationHref(column.navigate, filterValues, pageParams, row), event);
+      return;
+    }
+    if (column?.openDetail) {
+      event.preventDefault();
+      openDetailFor(component, { on: 'click', openDetail: column.openDetail }, row, event.currentTarget as HTMLElement);
+      return;
+    }
     const href = componentHref(component, row);
     if (href) {
       navigate(href, event);
@@ -652,13 +663,17 @@
     const detail = componentOpenDetail(component);
     if (detail) {
       event.preventDefault();
-      openDetailFor(component, detail, row);
+      openDetailFor(component, detail, row, event.currentTarget as HTMLElement);
     }
   }
 
   function handleMetricLink(component: Component, row: Row, event: MouseEvent) {
     const href = componentHref(component, row);
     if (href) navigate(href, event);
+    else {
+      const detail = componentOpenDetail(component);
+      if (detail) { event.preventDefault(); openDetailFor(component, detail, row, event.currentTarget as HTMLElement); }
+    }
   }
 
   function componentOpenDetail(component: Component): OpenDetailAction | undefined {
@@ -678,27 +693,67 @@
     | {
         surface: 'modal' | 'drawer';
         title: string;
-        items: Array<{ label: string; value: string }>;
+        items?: Array<{ label: string; value: string }>;
+        view?: NonNullable<Page['detailViews']>[number];
+        page?: Page;
+        error?: string;
       }
     | undefined
   >(undefined);
+  let detailSnapshots = $state<PageDataSnapshots>(new Map());
+  let detailGeneration = $state(0);
+  let detailDispose: (() => void) | undefined;
+  let detailTrigger: HTMLElement | undefined;
+
+  function closeDetail(restoreFocus = true) {
+    detailGeneration += 1;
+    detailDispose?.();
+    detailDispose = undefined;
+    openDetail = undefined;
+    detailSnapshots = new Map();
+    if (restoreFocus && detailTrigger?.isConnected) detailTrigger.focus();
+    detailTrigger = undefined;
+  }
 
   function detailValue(row: Row, reference: FieldReference): string {
     return formatValue(row[fieldName(reference)]);
   }
 
-  function openDetailFor(component: Component, action: OpenDetailAction, row: Row) {
+  function openDetailFor(component: Component, action: OpenDetailAction, row: Row, trigger?: HTMLElement) {
+    untrack(() => closeDetail(false));
+    const root = surfaceRoot.getRootNode() as Document | ShadowRoot;
+    const sourceCell = Array.from(surfaceRoot.querySelectorAll<HTMLElement>('[data-component]'))
+      .find(element => element.dataset.component?.split('/').at(-1) === component.id);
+    if (sourceCell && !sourceCell.hasAttribute('tabindex')) sourceCell.tabIndex = -1;
+    detailTrigger = trigger ?? sourceCell ?? (root.activeElement instanceof HTMLElement ? root.activeElement : undefined);
     const detail = action.openDetail;
     openDetail = {
       surface: detail.surface,
       title: detail.titleField
         ? detailValue(row, detail.titleField)
         : componentTitle(component) ?? '详情',
-      items: detail.fields.map((item) => ({
+      items: 'fields' in detail ? detail.fields.map((item) => ({
         label: item.label,
         value: detailValue(row, item.field)
-      }))
+      })) : undefined
     };
+    if ('view' in detail && pageState.phase === 'ready') {
+      const page = pageState.page;
+      const view = page.detailViews?.find(candidate => candidate.id === detail.view);
+      try {
+        const input = detailViewInput(page, action, row, filterValues, pageParams);
+        openDetail = { ...openDetail, view, page: input.page };
+        if (view?.mode === 'query') {
+          const generation = detailGeneration;
+          detailDispose = orchestrate(input.page, activeGateway, createFilterState(input.filters)).subscribe(value => {
+            if (generation === detailGeneration && openDetail) detailSnapshots = value;
+          });
+        } else detailSnapshots = snapshots;
+      } catch {
+        openDetail = { ...openDetail, error: '详情参数不完整或无效，请重新选择。' };
+      }
+    }
+    void tick().then(() => surfaceRoot.querySelector<HTMLElement>('[data-detail-close]')?.focus());
   }
 
   function componentTitle(component: Component): string | undefined {
@@ -821,13 +876,20 @@
 
   function tableSnapshot(
     component: TableComponent,
-    snapshot: Extract<DataSnapshot, { status: 'ready' }>,
-    paginate = true
+    snapshot: Extract<DataSnapshot, { status: 'ready' }>
   ): Extract<DataSnapshot, { status: 'ready' }> {
+    if (component.props.pagination?.mode === 'query') return snapshot;
     const view = tableViewOf(component);
-    if (component.props.pagination?.mode === 'query') {
-      return snapshot;
-    }
+    const rows = filteredTableRows(component, snapshot);
+    const pagination = tablePagination(component, snapshot);
+    if (pagination?.mode !== 'local') return { status: 'ready', rows };
+    const pageSize = tablePageSizes[component.id] ?? pagination.pageSize;
+    const offset = view.pageIndex * pageSize;
+    return { status: 'ready', rows: rows.slice(offset, offset + pageSize) };
+  }
+
+  function filteredTableRows(component: TableComponent, snapshot: Extract<DataSnapshot, { status: 'ready' }>): Row[] {
+    const view = tableViewOf(component);
     const applied = appliedHeaderFiltersOf(component);
     const source = pageState.phase === 'ready' ? pageState.page.dataSources[component.data.main] : undefined;
     const searched = applySearchFilters(
@@ -849,39 +911,9 @@
       })
     );
     if (view.sort.length > 0) {
-      rows = [...rows].sort((left, right) => {
-        for (const rule of view.sort) {
-          const a = left[rule.field];
-          const b = right[rule.field];
-          const comparison =
-            a == null && b == null
-              ? 0
-              : a == null
-                ? -1
-                : b == null
-                  ? 1
-                  : a < b
-                    ? -1
-                    : a > b
-                      ? 1
-                      : 0;
-          if (comparison !== 0) {
-            return rule.direction === 'desc' ? -comparison : comparison;
-          }
-        }
-        return 0;
-      });
+      rows = sortTableRows(rows, view.sort);
     }
-    const pagination = tablePagination(component, snapshot);
-    if (!paginate || pagination?.mode !== 'local') {
-      return { status: 'ready', rows };
-    }
-    const pageSize = tablePageSizes[component.id] ?? pagination.pageSize;
-    const offset = view.pageIndex * pageSize;
-    return {
-      status: 'ready',
-      rows: rows.slice(offset, offset + pageSize)
-    };
+    return rows;
   }
 
   /** 表头筛选候选项:只投影 ready 快照的真实候选值;其余状态不给表头假候选。 */
@@ -923,7 +955,7 @@
       return undefined;
     }
     if (pagination.mode === 'local') {
-      const totalCount = snapshot.status === 'ready' ? tableSnapshot(component, snapshot, false).rows.length : 0;
+      const totalCount = snapshot.status === 'ready' ? filteredTableRows(component, snapshot).length : 0;
       return {
         pageSize: tablePageSizes[component.id] ?? pagination.pageSize,
         totalCount
@@ -969,8 +1001,9 @@
       onheaderfilter: (field, value) => handleTableHeaderFilter(component, field, value),
       oncellselect: ({ rowIndex, column }) =>
         handleTableCellSelect(component, rowIndex, column),
-      linkHref: (row) => componentHref(component, row),
-      onlink: ({ row }, event) => handleTableLink(component, row, event)
+      linkHref: (row, column) => column?.navigate ? navigationHref(column.navigate, filterValues, pageParams, row)
+        : column?.openDetail ? undefined : componentHref(component, row),
+      onlink: ({ row, column }, event) => handleTableLink(component, row, event, column)
     };
   }
 
@@ -986,7 +1019,7 @@
     if (
       component.type !== 'metricCard' ||
       !componentCapability(component)?.actions ||
-      !component.props.actions?.some((action) => 'navigate' in action)
+      !component.props.actions?.some((action) => 'navigate' in action || 'openDetail' in action)
     ) {
       return undefined;
     }
@@ -1017,7 +1050,7 @@
   }
 </script>
 
-<div class="runtime-view">
+<div class="runtime-view" bind:this={surfaceRoot}>
   {#if pageState.phase === 'loading'}
     <p class="muted">加载页面…</p>
   {:else if pageState.phase === 'version-error'}
@@ -1128,6 +1161,19 @@
       </div>
     {/if}
 
+    {#if readyPage.sectionGroups || readyPage.sectionAnchors}
+      <nav class="section-navigation" aria-label="内容导航">
+        {#each readyPage.sectionGroups ?? [] as group (group.id)}
+          <button type="button" data-section-group={group.id}
+            aria-pressed={selectedSectionGroup(readyPage, selectedGroup) === group.id}
+            onclick={() => (selectedGroup = group.id)}>{group.label}</button>
+        {/each}
+        {#each readyPage.sectionAnchors ?? [] as anchor (anchor.sectionId)}
+          <button type="button" data-section-anchor={anchor.sectionId}
+            onclick={() => locateSection(readyPage, anchor.sectionId)}>{anchor.label}</button>
+        {/each}
+      </nav>
+    {/if}
     <div class="page-sections">
       {#snippet componentContent(component: Component)}
         {@const slots = componentSnapshots(component)}
@@ -1150,10 +1196,11 @@
         />
       {/snippet}
       {#if sectionsContent}
-        {@render sectionsContent(readyPage.sections, componentContent)}
+        {@render sectionsContent(visibleSections(readyPage, selectedGroup), componentContent)}
       {:else}
         {#each readyPage.sections as section (section.id)}
-          <RuntimeSection {section} {componentContent} />
+          <RuntimeSection {section} {componentContent}
+            hidden={!visibleSections(readyPage, selectedGroup).includes(section)} />
         {/each}
       {/if}
     </div>
@@ -1166,7 +1213,7 @@
       data-detail-surface={openDetail.surface}
       role="presentation"
       onclick={(event) => {
-        if (event.target === event.currentTarget) openDetail = undefined;
+        if (event.target === event.currentTarget) closeDetail();
       }}
     >
       <div
@@ -1178,18 +1225,26 @@
       >
         <header>
           <h2 data-detail-title>{openDetail.title}</h2>
-          <button type="button" data-detail-close aria-label="关闭" onclick={() => (openDetail = undefined)}>
+          <button type="button" data-detail-close aria-label="关闭" onclick={() => closeDetail()}>
             ×
           </button>
         </header>
+        {#if openDetail.error}
+          <p role="alert">{openDetail.error}</p>
+        {:else if openDetail.view && openDetail.page}
+          {#key detailGeneration}
+            <DetailContent page={openDetail.page} components={openDetail.view.components} snapshots={detailSnapshots} />
+          {/key}
+        {:else}
         <dl>
-          {#each openDetail.items as item (item.label)}
+          {#each openDetail.items ?? [] as item (item.label)}
             <div class="detail-item" data-detail-item>
               <dt>{item.label}</dt>
               <dd>{item.value}</dd>
             </div>
           {/each}
         </dl>
+        {/if}
       </div>
     </div>
   {/if}
@@ -1197,11 +1252,45 @@
 
 <svelte:window
   onkeydown={(event) => {
-    if (event.key === 'Escape' && openDetail) openDetail = undefined;
+    if (event.key === 'Escape' && openDetail) closeDetail();
+    if (event.key === 'Tab' && openDetail) {
+      const panel = surfaceRoot.querySelector<HTMLElement>('[data-detail-panel]');
+      const controls = Array.from(panel?.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], [tabindex="0"], input:not([disabled]), select:not([disabled])') ?? []).filter(element => element.getClientRects().length > 0);
+      const first = controls[0], last = controls.at(-1);
+      const active = (surfaceRoot.getRootNode() as Document | ShadowRoot).activeElement;
+      if (first && ((!event.shiftKey && active === last) || (event.shiftKey && active === first) || !panel?.contains(active))) {
+        event.preventDefault(); (event.shiftKey ? last : first)?.focus();
+      }
+    }
   }}
 />
 
 <style>
+  .section-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-sm, 0.5rem);
+    padding: var(--mc-space-sm, 0.5rem) var(--mc-page-content-padding-inline);
+  }
+  .section-navigation button {
+    font: inherit;
+    color: var(--mc-color-text);
+    background: var(--mc-color-surface);
+    border: thin solid var(--mc-color-border);
+    border-radius: var(--mc-radius-cell);
+    padding: var(--mc-space-sm, 0.5rem);
+    overflow-wrap: anywhere;
+    max-width: 100%;
+    cursor: pointer;
+  }
+  .section-navigation button[aria-pressed='true'] {
+    color: var(--mc-color-surface);
+    background: var(--mc-color-primary);
+  }
+  .section-navigation button:focus-visible {
+    outline: auto;
+  }
+  .page-sections :global(.page-section[hidden]) { display: none; }
   .runtime-view {
     container: mc-runtime / inline-size;
 

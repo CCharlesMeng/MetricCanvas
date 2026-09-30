@@ -1487,7 +1487,7 @@ export const invariants: InvariantDefinition[] = [
       {
         case: 'metric-row-link-without-navigate',
         base: 'composite-page',
-        expect: /指标值链接必须至少声明一个 navigate 动作/,
+        expect: /指标值链接必须至少声明一个 navigate 或 openDetail 动作/,
         mutate: (document) => {
           delete firstComponent(document, 0, 1).props.components[0].props.actions;
         }
@@ -1885,13 +1885,13 @@ export const invariants: InvariantDefinition[] = [
   },
   {
     id: 'pagination-local-inline',
-    description: "pagination.mode='local' 只允许绑定 inline 数据源",
+    description: "pagination.mode='local' 只允许绑定 inline 或显式 complete 且无分页窗口的数据源",
     valid: ['composite-page'],
     cases: [
       {
         case: 'pagination-local-on-query',
         base: 'query-dashboard',
-        expect: /pagination\.mode='local' 只允许绑定 inline 数据源:sales/,
+        expect: /pagination\.mode='local' 只允许绑定 inline 或显式 complete 且无分页窗口的数据源:sales/,
         mutate: (document) => {
           firstComponent(document).props.pagination = { mode: 'local', pageSize: 10 };
         }

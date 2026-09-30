@@ -195,6 +195,12 @@ export type PageSection = Omit<z.infer<typeof sectionZ>, 'components'> & {
   components: Component[];
 };
 
+export interface SectionGroup {
+  id: string;
+  label: string;
+  sectionIds: string[];
+}
+
 export interface Page {
   schemaVersion: VersionPolicy['current'];
   id: string;
@@ -207,6 +213,17 @@ export interface Page {
   params?: PageParamDeclaration[];
   dataSources: DataSources;
   filters?: FilterDeclaration[];
+  detailViews?: Array<{
+    id: string;
+    mode: 'snapshot' | 'query';
+    /** Hidden page filter declarations; bound atomically in the overlay scope. */
+    filters?: string[];
+    components: Component[];
+  }>;
+  sectionGroups?: SectionGroup[];
+  defaultSectionGroup?: string;
+  sectionGroupParam?: string;
+  sectionAnchors?: Array<{ sectionId: string; label: string }>;
   sections: PageSection[];
 }
 
@@ -346,6 +363,8 @@ export function deriveComponentCapabilities(
   const hasNavigate = (props.actions ?? []).some((action) => 'navigate' in action);
   // 页内详情与 navigate 同理:读当前行、不依赖 query 重跑,inline 组件也可声明。
   const hasOpenDetail = (props.actions ?? []).some((action) => 'openDetail' in action);
+  const columnDetail = (columns: TableColumnNode[]): boolean => columns.some(column => column.kind === 'group'
+    ? columnDetail(column.children) : column.openDetail !== undefined || column.navigate !== undefined);
   const hasMapHierarchy =
     component.type === 'mapChart' && component.props.hierarchyFilter !== undefined;
   return {
@@ -361,6 +380,7 @@ export function deriveComponentCapabilities(
       (hasQuery && ((props.actions?.length ?? 0) > 0 || tableSelection)) ||
       hasNavigate ||
       hasOpenDetail ||
+      (component.type === 'table' && columnDetail(component.props.columns)) ||
       hasMapHierarchy,
     remotePagination:
       component.type === 'table' && component.props.pagination?.mode === 'query'

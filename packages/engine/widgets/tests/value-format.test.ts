@@ -61,8 +61,8 @@ describe('formatValue', () => {
     expect(formatValue(0, 'cny-adaptive')).toBe('0元');
     expect(formatValue(-0, 'cny-adaptive')).toBe('0元');
     expect(formatValue(null, 'cny-adaptive')).toBe('—');
-    expect(formatValue(Number.NaN, 'cny-adaptive')).toBe('NaN');
-    expect(formatValue(Number.POSITIVE_INFINITY, 'cny-adaptive')).toBe('Infinity');
+    expect(formatValue(Number.NaN, 'cny-adaptive')).toBe('—');
+    expect(formatValue(Number.POSITIVE_INFINITY, 'cny-adaptive')).toBe('—');
   });
 
   it('百分比不乘 100,并接受数据快照中的数值字符串', () => {
@@ -89,4 +89,14 @@ describe('valuePolarity', () => {
     expect(valuePolarity(null)).toBe('neutral');
     expect(valuePolarity('暂无')).toBe('neutral');
   });
+});
+
+it('IOC F9 preserves zero and negative values while binding-specific missing text stays presentation-only', () => {
+  expect(formatValue(null, 'number', '暂无数据')).toBe('暂无数据');
+  expect(formatValue(undefined, 'number', '暂无数据')).toBe('暂无数据');
+  expect(formatValue(0, 'number', '暂无数据')).toBe('0');
+  expect(formatValue(-1200, 'number-grouped', '暂无数据')).toBe('-1,200');
+  expect(formatValue(0.5, 'percent-1')).toBe('0.5%');
+  expect(formatValue(50, 'percent-1')).toBe('50.0%');
+  expect(formatValue(Infinity, 'number', '暂无数据')).toBe('暂无数据');
 });

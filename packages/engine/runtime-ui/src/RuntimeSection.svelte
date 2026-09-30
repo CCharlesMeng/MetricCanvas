@@ -23,7 +23,7 @@
    */
   /* IOC 参考视口的 [29,29,22] 三轨在通用 gap 下产出 580px / 580px / 440px；
      数字是验收事实，运行时仍只消费页面声明的权重。 */
-  let { section, componentContent, cellAttachment, cellOverlay, emptyContent }: RuntimeSectionProps = $props();
+  let { section, hidden = false, componentContent, cellAttachment, cellOverlay, emptyContent }: RuntimeSectionProps = $props();
   let sectionGrid = $state<HTMLElement | null>(null);
   const container = $derived(section.container);
   const backdropId = $derived(sectionBackdrop(section)?.id);
@@ -139,6 +139,7 @@
 </script>
 
 <section
+  {hidden}
   class:container-plain={container === 'plain'}
   class:container-panel={container === 'panel'}
   class:container-card={container === 'card'}

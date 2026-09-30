@@ -178,7 +178,7 @@ Tool 会对整句使用确定性指标/维度/时间词解析做一次兜底拆�
 - `intent` 只能是 `comparison`、`trend`、`composition`、`ranking`、`detail` 或 `single_value`。
 - 只描述业务语义，不传 DQE 查询、结果字段契约、组件 JSON、布局或页面协议版本。
 
-原始 MCP 成功结果包含 `ok`、`completedStages`、`artifactEnvelope` 和 `issues`。Artifact 还含 `formulaTraces`，保留 `question/expression/referencedMetrics`；含公式的组件标题会确定性追加“(临时指标)”。页面保留每个单元的全部返回行，`totalCount` 保留上游计数；明细表超过 20 行时分页。普通查询不截取前 20 行；只有用户明确要求 Top N 且排序依据已确认时才能限制排名结果，任意前 N 行不是 Top N。
+原始 MCP 成功结果包含 `ok`、`completedStages`、`artifactEnvelope` 和 `issues`。Artifact 还含 `formulaTraces`，保留 `question/expression/referencedMetrics`；含公式的组件标题会确定性追加“(临时指标)”。页面保留每个单元的全部返回行，`totalCount` 保留上游计数；明细表默认每页 10 行，超过 10 行时分页。普通查询不截取前 20 行；只有用户明确要求 Top N 且排序依据已确认时才能限制排名结果，任意前 N 行不是 Top N。
 
 Relay Page Artifact Adapter 必须保存 `artifactEnvelope.artifact`，再将模型可见结果替换为 `modelSummary + artifactId + checkpointVersion`。如果模型直接看到 `artifactEnvelope.artifact`、页面 `document` 或数据 `rows`，立即停止且不复述内容，并报告 Relay Adapter 未生效。
 

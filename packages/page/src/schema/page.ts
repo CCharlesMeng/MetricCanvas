@@ -107,6 +107,16 @@ export const pageDocumentSchemaZ = z
     params: z.union([z.array(pageParamZ).min(1), groupedPageParamsZ]).optional(),
     dataSources: z.record(idZ, dataSourceDocumentZ),
     filters: z.array(filterDeclarationZ).optional(),
+    detailViews: z.array(z.object({
+      id: idZ,
+      mode: z.enum(['snapshot', 'query']),
+      filters: z.array(idZ).min(1).meta({ uniqueItems: true }).optional(),
+      components: z.array(componentZ).min(1)
+    }).strict()).min(1).optional(),
+    sectionGroups: z.array(z.object({ id: idZ, label: z.string().min(1), sectionIds: z.array(idZ).min(1).meta({ uniqueItems: true }) }).strict()).min(1).optional(),
+    defaultSectionGroup: idZ.optional(),
+    sectionGroupParam: idZ.optional(),
+    sectionAnchors: z.array(z.object({ sectionId: idZ, label: z.string().min(1) }).strict()).min(1).optional(),
     sections: z.array(sectionZ).min(1)
   })
   .strict()

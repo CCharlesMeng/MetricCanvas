@@ -216,7 +216,8 @@ export function pageParamErrors(
     if (typeof node.param === 'string') consumed.add(node.param);
     Object.values(node).forEach(queryConsumers);
   }
-  const raw = document as { dataSources?: Record<string, {source?: {query?: {body?: unknown; paramBindings?: Record<string, unknown>}}}>; filters?: Array<{initialParam?: string}> };
+  const raw = document as { sectionGroupParam?: string; dataSources?: Record<string, {source?: {query?: {body?: unknown; paramBindings?: Record<string, unknown>}}}>; filters?: Array<{initialParam?: string}> };
+  if (raw.sectionGroupParam) consumed.add(raw.sectionGroupParam);
   for (const source of Object.values(raw.dataSources ?? {})) {
     queryConsumers(source.source?.query?.body);
     for (const id of Object.keys(source.source?.query?.paramBindings ?? {})) consumed.add(id);

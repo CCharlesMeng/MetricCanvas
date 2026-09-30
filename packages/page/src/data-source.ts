@@ -21,6 +21,8 @@ export interface EmbeddedInitialRows {
 }
 
 export interface QuerySource {
+  /** 完整结果声明；跨源计算必须同时拒绝分页窗口和运行时截断。 */
+  resultScope?: 'complete';
   type: 'query';
   initial?: EmbeddedInitialRows;
   /** 以 language 为判别符的页面查询定义(判别联合,ADR-0034)。 */

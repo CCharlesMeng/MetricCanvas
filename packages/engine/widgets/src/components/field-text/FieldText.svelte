@@ -45,7 +45,7 @@
   {#if semantic}
     <SemanticHtml source={semantic.source} format={semantic.format} />
   {:else}
-    <p>{formatValue(value, resolved.format)}</p>
+    <p>{formatValue(value, resolved.format, resolved.missingText)}</p>
   {/if}
 </section>
 

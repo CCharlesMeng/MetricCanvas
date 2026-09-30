@@ -283,3 +283,34 @@ describe('算子按声明顺序作用', () => {
     expect(rows[0]).toEqual({ current: 120, last: 100 });
   });
 });
+
+describe('IOC F1 已确认的缺失与数值边界', () => {
+  it('T-11/T-31：缺上期不当零，明确零才参与减法', () => {
+    expect(applyComputation([{ op: 'delta', minuend: 'current', subtrahend: 'last', output: 'delta' }],
+      [{ current: 100, last: null }, { current: 100 }, { current: 100, last: 0 }, { current: 100, last: 80 }]
+    ).map(row => row.delta)).toEqual([null, null, 100, 20]);
+  });
+
+  it('负数保留；有效输入计算溢出不向展示传递 Infinity', () => {
+    const ratio: ComputeOperator = { op: 'ratio', numerator: 'a', denominator: 'b', output: 'rate', onZeroDenominator: 'null' };
+    expect(applyComputation([ratio], [{ a: -1200, b: 100 }, { a: 1e308, b: 1e-308 }]).map(r => r.rate)).toEqual([-12, null]);
+    expect(applyComputation([{ op: 'delta', minuend: 'a', subtrahend: 'b', output: 'gap' }],
+      [{ a: 1e308, b: -1e308 }])[0].gap).toBeNull();
+  });
+});
+
+describe('6.12 字段合计与 CAGR', () => {
+  it('合计保留真实0/负数，全空为null，部分缺失按消费者声明', () => {
+    const rows: DataRow[] = [{ a: 8000, b: 2000 }, { a: null, b: null }, { a: -1200, b: 0 }, { a: 100 }];
+    const op: ComputeOperator = { op: 'sumFields', fields: ['a', 'b'], output: 'total', onMissing: 'null' };
+    expect(applyComputation([op], rows).map(r => r.total)).toEqual([10000, null, -1200, null]);
+    expect(applyComputation([{ ...op, onMissing: 'ignore' }], rows).map(r => r.total)).toEqual([10000, null, -1200, 100]);
+  });
+  it('CAGR 用显式期数字段，零基期/非正期数/缺失不输出 Infinity', () => {
+    const op: ComputeOperator = { op: 'cagr', beginning: 'begin', ending: 'end', periods: 'n', output: 'rate', scale: 100 };
+    const result = applyComputation([op], [{ begin: 100, end: 200, n: 6 }, { begin: 0, end: 200, n: 6 },
+      { begin: 100, end: 200, n: 0 }, { begin: 100, end: 0, n: 6 }, { begin: 100, n: 6 }]);
+    expect(result[0].rate).toBeCloseTo(12.2462, 4);
+    expect(result.slice(1).map(r => r.rate)).toEqual([null, null, -100, null]);
+  });
+});

@@ -1,3 +1,5 @@
+import { timeFill, type ComputationContext } from './time-fill';
+import { joinAggregate, ComputationError } from './join-aggregate';
 import type {
   ComputeOperator,
   DataRow,
@@ -20,17 +22,40 @@ import type {
  */
 export function applyComputation(
   operators: readonly ComputeOperator[],
-  rows: ReadonlyArray<DataRow>
+  rows: ReadonlyArray<DataRow>,
+  dependencies: ReadonlyMap<string, readonly DataRow[]> = new Map(),
+  context?: ComputationContext
 ): DataRow[] {
   let current: DataRow[] = rows as DataRow[];
   for (const operator of operators) {
-    current = applyOperator(operator, current);
+    current = operator.op === 'joinAggregate'
+      ? joinAggregate(operator, current, dependencyRows(dependencies, operator.source))
+      : operator.op === 'timeFill' ? timeFill(operator, current, context)
+      : operator.op === 'selectField' ? selectField(operator, current, context)
+      : applyOperator(operator, current);
   }
   return current;
 }
 
-function applyOperator(operator: ComputeOperator, rows: DataRow[]): DataRow[] {
+function applyOperator(operator: Exclude<ComputeOperator, { op: 'joinAggregate' | 'timeFill' | 'selectField' }>, rows: DataRow[]): DataRow[] {
   switch (operator.op) {
+    case 'sumFields':
+      return rows.map(row => {
+        const values = operator.fields.map(field => numeric(row[field]));
+        const missing = values.some(value => value === undefined);
+        const present = values.filter((value): value is number => value !== undefined);
+        return { ...row, [operator.output]: !present.length || (missing && operator.onMissing === 'null')
+          ? null : finiteOrNull(present.reduce((sum, value) => sum + value, 0)) };
+      });
+    case 'cagr':
+      return rows.map(row => {
+        const beginning = numeric(row[operator.beginning]);
+        const ending = numeric(row[operator.ending]);
+        const periods = numeric(row[operator.periods]);
+        return { ...row, [operator.output]: beginning === undefined || beginning <= 0 ||
+          ending === undefined || ending < 0 || periods === undefined || periods <= 0
+          ? null : finiteOrNull((Math.pow(ending / beginning, 1 / periods) - 1) * (operator.scale ?? 1)) };
+      });
     case 'ratio':
       return rows.map((row) => ({
         ...row,
@@ -48,7 +73,7 @@ function applyOperator(operator: ComputeOperator, rows: DataRow[]): DataRow[] {
         return {
           ...row,
           [operator.output]:
-            minuend === undefined || subtrahend === undefined ? null : minuend - subtrahend
+            minuend === undefined || subtrahend === undefined ? null : finiteOrNull(minuend - subtrahend)
         };
       });
     case 'groupSubtotal':
@@ -77,7 +102,7 @@ function ratio(
   }
   if (numerator === undefined) return null;
   const quotient = numerator / denominator;
-  return scale === undefined ? quotient : quotient * scale;
+  return finiteOrNull(scale === undefined ? quotient : quotient * scale);
 }
 
 /**
@@ -190,7 +215,7 @@ function sums(measures: readonly string[], group: DataRow[]): DataRow {
       total += value;
       seen = true;
     }
-    totals[measure] = seen ? total : null;
+    totals[measure] = seen ? finiteOrNull(total) : null;
   }
   return totals;
 }
@@ -211,4 +236,22 @@ function groupKey(values: ReadonlyArray<FieldValue | undefined>): string {
 function numeric(value: FieldValue | undefined): number | undefined {
   if (typeof value === 'number') return Number.isFinite(value) ? value : undefined;
   return undefined;
+}
+
+function finiteOrNull(value: number): number | null {
+  return Number.isFinite(value) ? value : null;
+}
+
+function dependencyRows(dependencies: ReadonlyMap<string, readonly DataRow[]>, id: string): readonly DataRow[] {
+  const rows = dependencies.get(id);
+  if (!rows) throw new ComputationError('缺少已完成的数据依赖');
+  return rows;
+}
+
+function selectField(operator: Extract<ComputeOperator, { op: 'selectField' }>, rows: DataRow[], context?: ComputationContext): DataRow[] {
+  const selected = context?.modes.get(operator.filter) ?? [];
+  if (selected.length > 1) throw new ComputationError('字段模式仅允许单选');
+  const mode = selected[0] ?? operator.defaultMode;
+  if (!Object.hasOwn(operator.cases, mode)) throw new ComputationError('字段模式不在声明的闭集内');
+  return rows.map(row => ({ ...row, [operator.output]: row[operator.cases[mode]] ?? null }));
 }

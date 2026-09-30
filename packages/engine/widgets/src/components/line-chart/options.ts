@@ -30,7 +30,7 @@ export function lineOption(
     xAxis: {
       type: 'category',
       name: fieldLabel(props.xField, data),
-      data: rows.map((row) => formatValue(row[x.field], x.format))
+      data: rows.map((row) => formatValue(row[x.field], x.format, x.missingText))
     },
     yAxis: dualOrSingleAxis(props.dualAxis, props.series.length, props.hideYAxis,
       props.series.map(series => resolveField(series.field, data).format)),
@@ -51,7 +51,7 @@ export function lineOption(
                 color: '#191919',
                 fontSize: 12,
                 formatter: (params: unknown) =>
-                  formatValue(formatterValue(params), field.format)
+                  formatValue(formatterValue(params), field.format, field.missingText)
               }
             }
           : {}),
@@ -59,7 +59,7 @@ export function lineOption(
           ? {
               tooltip: {
                 valueFormatter: (value: unknown) =>
-                  formatValue(formatterValue(value), field.format)
+                  formatValue(formatterValue(value), field.format, field.missingText)
               }
             }
           : {}),

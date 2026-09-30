@@ -1,0 +1,289 @@
+{
+  "schemaVersion": "6.12",
+  "id": "detail-views",
+  "layout": "dashboard",
+  "meta": {
+    "title": "详情视图验收样例",
+    "description": "匿名合成数据，仅验证快照与参数化详情作用域，不作为业务页面验收。"
+  },
+  "filters": [
+    {
+      "id": "search",
+      "type": "search",
+      "label": "搜索"
+    },
+    {
+      "id": "detail-customer",
+      "type": "dimension",
+      "dimension": "customer",
+      "visible": false
+    }
+  ],
+  "dataSources": {
+    "rows": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "客户01",
+            "amount": 1
+          },
+          {
+            "name": "客户02",
+            "amount": 2
+          },
+          {
+            "name": "客户03",
+            "amount": 3
+          },
+          {
+            "name": "客户04",
+            "amount": 4
+          },
+          {
+            "name": "客户05",
+            "amount": 5
+          },
+          {
+            "name": "客户06",
+            "amount": 6
+          },
+          {
+            "name": "客户07",
+            "amount": 7
+          },
+          {
+            "name": "客户08",
+            "amount": 8
+          },
+          {
+            "name": "客户09",
+            "amount": 9
+          },
+          {
+            "name": "客户10",
+            "amount": 10
+          },
+          {
+            "name": "客户11",
+            "amount": 11
+          },
+          {
+            "name": "客户12",
+            "amount": 12
+          },
+          {
+            "name": "客户13",
+            "amount": 13
+          },
+          {
+            "name": "客户14",
+            "amount": 14
+          },
+          {
+            "name": "客户15",
+            "amount": 15
+          },
+          {
+            "name": "客户16",
+            "amount": 16
+          },
+          {
+            "name": "客户17",
+            "amount": 17
+          },
+          {
+            "name": "客户18",
+            "amount": 18
+          },
+          {
+            "name": "客户19",
+            "amount": 19
+          },
+          {
+            "name": "客户20",
+            "amount": 20
+          },
+          {
+            "name": "客户21",
+            "amount": 21
+          },
+          {
+            "name": "客户22",
+            "amount": 22
+          },
+          {
+            "name": "客户23",
+            "amount": 23
+          },
+          {
+            "name": "客户24",
+            "amount": 24
+          },
+          {
+            "name": "客户25",
+            "amount": 25
+          }
+        ]
+      }
+    },
+    "detail": {
+      "fields": {
+        "period": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "period"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "value"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "period"
+                ],
+                "output_metrics": [
+                  "value"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "detail-customer": {
+              "target": "dimension",
+              "queryField": "customer"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "common",
+      "components": [
+        {
+          "id": "intro",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "匿名功能验收：内容切换保留局部状态。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "main",
+      "title": "分区A",
+      "components": [
+        {
+          "id": "main-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rows"
+          },
+          "props": {
+            "title": "明细A",
+            "columns": [
+              {
+                "field": "name",
+                "title": "名称",
+                "link": true
+              },
+              {
+                "field": "amount",
+                "sortable": true,
+                "title": "金额"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            },
+            "actions": [
+              {
+                "on": "click",
+                "openDetail": {
+                  "surface": "drawer",
+                  "titleField": "name",
+                  "view": "trend",
+                  "bindings": {
+                    "detail-customer": {
+                      "source": "row",
+                      "field": "name"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "detailViews": [
+    {
+      "id": "trend",
+      "mode": "query",
+      "filters": [
+        "detail-customer"
+      ],
+      "components": [
+        {
+          "id": "detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "detail"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "period"
+              },
+              {
+                "field": "value",
+                "sortable": true
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

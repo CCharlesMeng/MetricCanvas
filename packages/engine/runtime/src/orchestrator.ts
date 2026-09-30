@@ -2,6 +2,7 @@ import { executionSourceKey } from './execution';
 import type { Page } from '@metriccanvas/page';
 import {
   bindingQueryField,
+  computeDependencies,
   declaredPaginationLimit,
   hasQueryFieldMapping,
   timePointPredicateValue,
@@ -12,7 +13,8 @@ import {
   type QueryDataSource,
   flattenPageComponents
 } from '@metriccanvas/page/internal';
-import { applyComputation } from './compute';
+import type { ComputationContext } from './compute/time-fill';
+import { computedSnapshots } from './compute/snapshots';
 import {
   initialFilterValues,
   type FilterState,
@@ -138,7 +140,8 @@ interface InFlightRequest {
 function collectReferencedSources(page: Page): DataSourceBinding[] {
   const sourceIds = new Set<string>();
   const paginationLimits = new Map<string, number>();
-  for (const component of flattenPageComponents(page)) {
+  for (const component of flattenPageComponents({ sections: page.sections,
+    detailViews: page.detailViews?.filter(view => view.mode === 'snapshot') })) {
     for (const sourceId of Object.values(component.data ?? {})) {
       sourceIds.add(sourceId);
     }
@@ -157,6 +160,10 @@ function collectReferencedSources(page: Page): DataSourceBinding[] {
     if (limit !== undefined) {
       paginationLimits.set(component.data.main, limit);
     }
+  }
+  // Set 迭代会访问新加入的项，收集整个依赖闭包（含无组件直连的辅助源）。
+  for (const id of sourceIds) {
+    for (const dependency of computeDependencies(page.dataSources[id]?.compute ?? [])) sourceIds.add(dependency);
   }
   return [...sourceIds].flatMap((sourceId) => {
     const dataSource = page.dataSources[sourceId];
@@ -188,38 +195,21 @@ function hasReusableInitial(binding: DataSourceBinding): boolean {
 
 function initialSnapshots(
   bindings: DataSourceBinding[],
-  useEmbeddedInitialRows: boolean
+  useEmbeddedInitialRows: boolean,
+  skipInitial: ReadonlySet<string> = new Set()
 ): Map<string, DataSnapshot> {
   return new Map(
     bindings.map((binding) => [
       binding.sourceId,
       binding.dataSource.source.type === 'inline'
-        ? rowsSnapshot(binding.dataSource, binding.dataSource.source.rows)
-        : useEmbeddedInitialRows && hasReusableInitial(binding) && binding.dataSource.source.initial
-          ? rowsSnapshot(
-              binding.dataSource,
+        ? rawSnapshot(binding.dataSource.source.rows)
+        : useEmbeddedInitialRows && !skipInitial.has(binding.sourceId) && hasReusableInitial(binding) && binding.dataSource.source.initial
+          ? rawSnapshot(
               binding.dataSource.source.initial.rows,
               binding.dataSource.source.initial.totalCount
             )
         : { status: 'loading' }
     ])
-  );
-}
-
-/**
- * 行集 → 数据快照,受控计算阶段在这里生效。
- *
- * 收敛在这一处是刻意的:inline 行、内嵌初始行与远程执行结果都必须过算子,
- * 只在远程执行侧加算子会让 inline 骨架与线上行为分叉(ADR-0046)。
- */
-function rowsSnapshot(
-  dataSource: DataSource,
-  rows: ReadonlyArray<Record<string, unknown>>,
-  totalCount?: number
-): DataSnapshot {
-  return rawSnapshot(
-    applyComputation(dataSource.compute ?? [], rows as ReadonlyArray<DataRow>),
-    totalCount
   );
 }
 
@@ -234,18 +224,6 @@ function rawSnapshot(
         rows: rows as Extract<DataSnapshot, { status: 'ready' }>['rows'],
         ...(totalCount === undefined ? {} : { totalCount })
       };
-}
-
-/**
- * 远程执行结果 → 该数据源的快照。生效查询去重后一次执行可服务多个数据源,
- * 但计算阶段属各自的数据源,因此在落地时按成员分别求值,缓存里存的是
- * 未经计算的原始结果。
- */
-function computedSnapshot(dataSource: DataSource, snapshot: DataSnapshot): DataSnapshot {
-  if (snapshot.status !== 'ready' || (dataSource.compute ?? []).length === 0) {
-    return snapshot;
-  }
-  return rowsSnapshot(dataSource, snapshot.rows, snapshot.totalCount);
 }
 
 function notify(run: (value: PageDataSnapshots) => void, snapshots: PageDataSnapshots): void {
@@ -275,15 +253,43 @@ function startSession(
     }
   });
   const useEmbeddedInitialRows = !execution && sameFilterValues(values, defaults);
-  let snapshots = initialSnapshots(bindings, useEmbeddedInitialRows);
+  const joinedSources = new Set<string>();
+  const bindingMap = new Map(bindings.map(binding => [binding.sourceId, binding]));
+  function includeDependencies(id: string) {
+    if (joinedSources.has(id)) return;
+    joinedSources.add(id);
+    for (const dependency of computeDependencies(bindingMap.get(id)?.dataSource.compute ?? [])) includeDependencies(dependency);
+  }
+  for (const binding of bindings) if (computeDependencies(binding.dataSource.compute ?? []).length) includeDependencies(binding.sourceId);
+  const joinedQueries = queryBindings.filter(binding => joinedSources.has(binding.sourceId));
+  const captureTimes = new Set(joinedQueries.map(binding => binding.dataSource.source.initial?.capturedAt));
+  // 初始快照不能和本轮查询混合；无法证明同一采集批次时统一走当前查询。
+  const skipInitial = captureTimes.size > 1 || captureTimes.has(undefined)
+    ? new Set(joinedQueries.map(binding => binding.sourceId)) : new Set<string>();
+  let rawSnapshots = initialSnapshots(bindings, useEmbeddedInitialRows, skipInitial);
+  const sources = new Map(bindings.map(binding => [binding.sourceId, binding.dataSource]));
   const executionMatches = new Set<string>();
   if (execution && sameFilterValues(values, execution.filters)) for (const binding of queryBindings) {
     const snapshot = execution.snapshots.get(binding.sourceId);
     if (snapshot && execution.sourceKeys.get(binding.sourceId) === executionSourceKey(binding.dataSource)) {
       executionMatches.add(binding.sourceId);
-      snapshots.set(binding.sourceId, computedSnapshot(binding.dataSource, snapshot));
+      rawSnapshots.set(binding.sourceId, snapshot);
     }
   }
+  if (execution && joinedQueries.some(binding => !executionMatches.has(binding.sourceId))) {
+    for (const binding of joinedQueries) {
+      executionMatches.delete(binding.sourceId);
+      rawSnapshots.set(binding.sourceId, { status: 'loading' });
+      skipInitial.add(binding.sourceId);
+    }
+  }
+  const currentYear = new Date().getFullYear();
+  const computationContext = (): ComputationContext => ({
+    currentYear,
+    modes: new Map([...values].flatMap(([id, value]) => value.type === 'dimension' ? [[id, value.values] as const] : [])),
+    ranges: new Map([...values].flatMap(([id, value]) => value.type === 'timeRange' ? [[id, { from: value.from, to: value.to }] as const] : []))
+  });
+  let snapshots = computedSnapshots(sources, rawSnapshots, computationContext());
   const sequences = new Map<string, number>();
   const inFlightRequests = new Set<InFlightRequest>();
   const cache = new Map<string, DataSnapshot>();
@@ -339,11 +345,12 @@ function startSession(
 
   function publish(updates: ReadonlyArray<[QueryBinding, DataSnapshot]>): void {
     if (updates.length === 0) return;
-    const next = new Map(snapshots);
+    const next = new Map(rawSnapshots);
     for (const [binding, snapshot] of updates) {
       next.set(binding.sourceId, snapshot);
     }
-    snapshots = next;
+    rawSnapshots = next;
+    snapshots = computedSnapshots(sources, rawSnapshots, computationContext());
     push(snapshots);
   }
 
@@ -381,7 +388,7 @@ function startSession(
         publish(
           members
             .filter(([binding, sequence]) => !isStale(binding, sequence))
-            .map(([binding]) => [binding, computedSnapshot(binding.dataSource, snapshot)])
+            .map(([binding]) => [binding, snapshot])
         );
       };
       const cached = cache.get(cacheKey);
@@ -440,12 +447,15 @@ function startSession(
     for (const binding of targets) {
       if (binding.pagination) pageIndexes.set(binding.sourceId, 0);
     }
-    refetch(targets, true);
+    if (targets.length === 0 && changed.size > 0) {
+      snapshots = computedSnapshots(sources, rawSnapshots, computationContext());
+      push(snapshots);
+    } else refetch(targets, true);
   });
 
   refetch(
     queryBindings.filter(
-      (binding) => !(executionMatches.has(binding.sourceId)) && !(useEmbeddedInitialRows && hasReusableInitial(binding) && binding.dataSource.source.initial)
+      (binding) => !(executionMatches.has(binding.sourceId)) && !(useEmbeddedInitialRows && !skipInitial.has(binding.sourceId) && hasReusableInitial(binding) && binding.dataSource.source.initial)
     ),
     false
   );

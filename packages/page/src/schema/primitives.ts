@@ -307,6 +307,7 @@ export const fieldBindingZ = z
       .object({
         data: idZ,
         field: fieldNameZ,
+        missingText: z.string().min(1).max(100).optional(),
         format: valueFormatPresetZ.optional().meta({
           description: '只控制当前组件中这一次字段绑定的展示格式'
         }),

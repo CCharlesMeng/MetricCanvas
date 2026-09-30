@@ -29,7 +29,7 @@
   const category = $derived(resolveField(props.categoryField, data));
   const categories = $derived(
     data.main.snapshot.rows
-      .map((row) => formatValue(row[category.field], category.format))
+      .map((row) => formatValue(row[category.field], category.format, category.missingText))
       .filter(Boolean)
   );
 </script>

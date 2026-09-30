@@ -1755,8 +1755,8 @@
                       "label": "已立项",
                       "valueField": {
                         "data": "main",
-                        "field": "initiated-amount",
-                        "format": "cny-adaptive"
+                        "field": "initiated-cnt",
+                        "format": "number-grouped"
                       },
                       "changes": [
                         {
@@ -1764,11 +1764,12 @@
                           "tone": "neutral",
                           "field": {
                             "data": "main",
-                            "field": "bidding-amount",
+                            "field": "initiated-amount",
                             "format": "cny-adaptive"
                           }
                         }
-                      ]
+                      ],
+                      "unit": "个"
                     }
                   ]
                 }
@@ -2146,23 +2147,19 @@
                       {
                         "on": "click",
                         "navigate": {
-                          "href": "/pages/ioc-project-detail",
+                          "href": "/pages/ioc-project-detail?ati-status-label=已立项",
                           "query": {
                             "page-title": {
                               "source": "row",
-                              "field": "page-title"
+                              "field": "project-initiation-name"
                             },
                             "opportunity-code": {
                               "source": "row",
                               "field": "opportunity-code"
                             },
                             "mtime": {
-                              "source": "row",
-                              "field": "mtime"
-                            },
-                            "ati-status-label": {
-                              "source": "row",
-                              "field": "ati-status-label"
+                              "source": "filter",
+                              "id": "mtime"
                             },
                             "project-initiation-level": {
                               "source": "row",
@@ -2224,39 +2221,42 @@
                     "actions": [
                       {
                         "on": "click",
-                        "openDetail": {
-                          "surface": "drawer",
-                          "titleField": "opportunity-name",
-                          "fields": [
-                            {
-                              "label": "机会点编码",
+                        "navigate": {
+                          "href": "/pages/ioc-project-detail",
+                          "query": {
+                            "page-title": {
+                              "source": "row",
+                              "field": "opportunity-name"
+                            },
+                            "opportunity-code": {
+                              "source": "row",
                               "field": "opportunity-code"
                             },
-                            {
-                              "label": "客户",
-                              "field": "party-number"
+                            "mtime": {
+                              "source": "filter",
+                              "id": "mtime"
                             },
-                            {
-                              "label": "NA 类型",
-                              "field": "public-cloud-na-level-name"
+                            "ati-status-label": {
+                              "source": "row",
+                              "field": "ati-status-label"
                             },
-                            {
-                              "label": "云行业",
-                              "field": "sub-industry-level1-name"
-                            },
-                            {
-                              "label": "立项等级",
+                            "project-initiation-level": {
+                              "source": "row",
                               "field": "project-initiation-level"
                             },
-                            {
-                              "label": "预签金额",
-                              "field": "bidding-amount"
+                            "public-cloud-na-level-name": {
+                              "source": "row",
+                              "field": "public-cloud-na-level-name"
                             },
-                            {
-                              "label": "丢单原因",
-                              "field": "lost-order-reason"
+                            "sub-industry-level1-name": {
+                              "source": "row",
+                              "field": "sub-industry-level1-name"
+                            },
+                            "party-number": {
+                              "source": "row",
+                              "field": "party-number"
                             }
-                          ]
+                          }
                         }
                       }
                     ]

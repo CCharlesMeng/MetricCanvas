@@ -58,7 +58,7 @@
     onsort?: (sort: TableSortRule[]) => void;
     onheaderfilter?: (field: string, value: TableHeaderFilterValue | null) => void;
     oncellselect?: (context: { rowIndex: number; column: TableColumn }) => void;
-    linkHref?: (row: Row) => string | undefined;
+    linkHref?: (row: Row, column?: TableColumn) => string | undefined;
     onlink?: (context: { rowIndex: number; column: TableColumn; row: Row }, event: MouseEvent) => void;
   }
 
@@ -449,14 +449,22 @@
                             inline
                           />
                         {:else}
-                          <span class="cell-primary-value">{formatValue(rawValue, resolved.format)}</span>
+                          <span class="cell-primary-value">{formatValue(rawValue, resolved.format, resolved.missingText)}</span>
                         {/if}
                       </span>
                     </button>
                   {:else if column.link && interactive && !column.selection}
                     <a
-                      href={linkHref?.(row.main)}
+                      href={linkHref?.(row.main, column)}
+                      role={linkHref?.(row.main, column) ? undefined : 'button'}
+                      tabindex={linkHref?.(row.main, column) ? undefined : 0}
                       class="link-cell"
+                      onkeydown={(event) => {
+                        if (!linkHref?.(row.main, column) && (event.key === 'Enter' || event.key === ' ')) {
+                          event.preventDefault();
+                          event.currentTarget.click();
+                        }
+                      }}
                       onclick={(event) => onlink?.({ rowIndex: i, column, row: row.main }, event)}
                     >
                       <span class="cell-stack">
@@ -468,7 +476,7 @@
                             inline
                           />
                         {:else}
-                          <span class="cell-primary-value">{formatValue(rawValue, resolved.format)}</span>
+                          <span class="cell-primary-value">{formatValue(rawValue, resolved.format, resolved.missingText)}</span>
                         {/if}
                       </span>
                     </a>
@@ -479,7 +487,7 @@
                         class="rate-bar"
                         style={`width: ${rateBarWidth(column, rawValue)}%;`}
                       ></span>
-                      <span class="cell-value">{formatValue(rawValue, resolved.format)}</span>
+                      <span class="cell-value">{formatValue(rawValue, resolved.format, resolved.missingText)}</span>
                     </span>
                   {:else}
                     <div class="cell-stack">
@@ -491,18 +499,18 @@
                           inline
                         />
                       {:else}
-                        <span class="cell-primary-value">{formatValue(rawValue, resolved.format)}</span>
+                        <span class="cell-primary-value">{formatValue(rawValue, resolved.format, resolved.missingText)}</span>
                       {/if}
                       {#if column.secondaryField}
                         {@const secondary = resolveField(column.secondaryField, data)}
                         <small>
-                          {formatValue(alignedFieldValue(column.secondaryField, data, row), secondary.format)}
+                          {formatValue(alignedFieldValue(column.secondaryField, data, row), secondary.format, secondary.missingText)}
                         </small>
                       {/if}
                       {#if column.badgeField}
                         {@const badge = resolveField(column.badgeField, data)}
                         <small class="cell-badge">
-                          {formatValue(alignedFieldValue(column.badgeField, data, row), badge.format)}
+                          {formatValue(alignedFieldValue(column.badgeField, data, row), badge.format, badge.missingText)}
                         </small>
                       {/if}
                     </div>

@@ -116,6 +116,7 @@ export const embeddedInitialRowsZ = z
 export const querySourceZ = z
   .object({
     type: z.literal('query'),
+    resultScope: z.literal('complete').optional(),
     initial: embeddedInitialRowsZ.optional(),
     query: pageQueryZ
   })

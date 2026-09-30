@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { rowKinds } from '../compute';
-import { fieldNameZ } from './primitives';
+import { idZ, fieldNameZ } from './primitives';
 
 /**
  * 受控计算阶段的封闭具名算子(ADR-0046)。
@@ -88,8 +88,48 @@ const pivotOperatorZ = z
   })
   .strict();
 
+const joinAggregateOperatorZ = z.object({
+  op: z.literal('joinAggregate'),
+  source: idZ,
+  keys: z.array(z.object({ local: fieldNameZ, foreign: fieldNameZ }).strict()).min(1),
+  values: z.array(z.object({
+    field: fieldNameZ, output: fieldNameZ, aggregate: z.enum(['unique', 'sum'])
+  }).strict()).min(1),
+  onMissing: z.literal('null')
+}).strict();
+
+const sumFieldsOperatorZ = z.object({
+  op: z.literal('sumFields'), fields: z.array(fieldNameZ).min(2).meta({ uniqueItems: true }),
+  output: fieldNameZ, onMissing: z.enum(['null', 'ignore'])
+}).strict();
+const cagrOperatorZ = z.object({
+  op: z.literal('cagr'), beginning: fieldNameZ, ending: fieldNameZ, periods: fieldNameZ,
+  output: fieldNameZ, scale: z.literal(100).optional()
+}).strict();
+
+const timeFillOperatorZ = z.object({
+  op: z.literal('timeFill'), timeField: fieldNameZ, granularity: z.enum(['day', 'month']),
+  format: z.enum(['iso', 'compact']),
+  range: z.union([
+    z.object({ from: z.string().min(1), to: z.string().min(1) }).strict(),
+    z.object({ currentYearOffset: z.int().min(-100).max(100) }).strict(),
+    z.object({ filter: idZ }).strict()
+  ]),
+  measures: z.array(fieldNameZ).min(1).meta({ uniqueItems: true }),
+  groupBy: z.array(fieldNameZ).min(1).meta({ uniqueItems: true }).optional()
+}).strict();
+const selectFieldOperatorZ = z.object({
+  op: z.literal('selectField'), filter: idZ, cases: z.record(z.string().min(1), fieldNameZ).meta({ minProperties: 1 }),
+  defaultMode: z.string().min(1), output: fieldNameZ
+}).strict();
+
 export const computeOperatorZ = z
   .discriminatedUnion('op', [
+    joinAggregateOperatorZ,
+    sumFieldsOperatorZ,
+    cagrOperatorZ,
+    timeFillOperatorZ,
+    selectFieldOperatorZ,
     ratioOperatorZ,
     deltaOperatorZ,
     groupSubtotalOperatorZ,

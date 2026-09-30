@@ -29,6 +29,7 @@ export interface ResolvedField {
   definition?: ResolvedFieldDefinition;
   /** 当前组件绑定最终生效的展示格式。 */
   format?: ValueFormatPreset;
+  missingText?: string;
 }
 
 export interface SemanticHtmlFieldPresentation {
@@ -52,6 +53,7 @@ export function resolveField(
     data: dataName,
     field,
     definition,
+    missingText: typeof binding === 'string' ? undefined : binding.missingText,
     format:
       (typeof binding === 'string' ? undefined : binding.format) ??
       (definition?.role === 'detail' ? undefined : definition?.defaultFormat)

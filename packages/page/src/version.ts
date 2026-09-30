@@ -14,7 +14,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 11;
+const CURRENT_MINOR = 12;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -36,6 +36,38 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'table-column-actions': {
+    minor: 12, description: '表格列独立的导航或详情动作',
+    usedAt: document => componentPaths(document, component => component.type === 'table' && columnDetailUsed(props(component)?.columns))
+  },
+  'binding-missing-text': {
+    minor: 12, description: '字段绑定的缺失值展示文案',
+    usedAt: document => componentPaths(document, component => containsMissingText(props(component)))
+  },
+  'detail-views': {
+    minor: 12, description: '复用图表和表格的单层受控详情视图',
+    usedAt: document => has(record(document), 'detailViews') ? ['/detailViews'] :
+      componentPaths(document, component => (Array.isArray(props(component)?.actions) &&
+        (props(component)!.actions as unknown[]).some(action => has(record(record(action)?.openDetail), 'view'))) ||
+        columnDetailUsed(props(component)?.columns))
+  },
+  'section-navigation': {
+    minor: 12, description: '内容分区组切换与章节锚点',
+    usedAt: document => ['sectionGroups', 'defaultSectionGroup', 'sectionGroupParam', 'sectionAnchors'].filter(key => has(record(document), key)).map(key => `/${key}`)
+  },
+  'mixed-chart-series': {
+    minor: 12, description: '柱线混合系列与显式坐标轴',
+    usedAt: (document) => componentPaths(document, component => component.type === 'barChart' &&
+      Array.isArray(props(component)?.series) && (props(component)!.series as unknown[]).some(series =>
+        has(record(series), 'kind') || has(record(series), 'axis')))
+  },
+  'cross-source-computation': {
+    minor: 12, description: '跨源关联、字段合计和复合增长率具名算子',
+    usedAt: (document) => dataSourcePaths(document, source =>
+      record(source.source)?.resultScope !== undefined ||
+      (Array.isArray(source.compute) && source.compute.some(op => ['joinAggregate', 'sumFields', 'cagr', 'timeFill', 'selectField'].includes(String(record(op)?.op))))
+    )
+  },
   'initial-param-beyond-flat-dimensions': {
     minor: 11, description: '时间点筛选器与层级维度筛选器的参数初值',
     usedAt: (document) => filterPaths(document, f =>
@@ -485,7 +517,7 @@ export const versionPolicy: VersionPolicy = {
  * 能力引入历史仍可查询，但不代表旧 6.x 文档可读。
  */
 export function supportedVersions(policy: VersionPolicy = versionPolicy): string[] {
-  const currentMajor = policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 ? ['6.5', policy.current] : [policy.current];
+  const currentMajor = policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 ? [...new Set(['6.5', ...(policy.minor >= 12 ? ['6.11'] : []), policy.current])] : [policy.current];
   return policy.major === PAGE_SCHEMA_MAJOR
     ? [...LEGACY_READABLE_PAGE_SCHEMA_VERSIONS, ...currentMajor]
     : currentMajor;
@@ -500,6 +532,7 @@ export function versionErrors(
   const parsed = parseVersion(version);
   if (parsed !== undefined && (
     version === policy.current || (policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 && version === '6.5') ||
+    (policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 12 && version === '6.11') ||
     (policy.major === PAGE_SCHEMA_MAJOR && LEGACY_READABLE_PAGE_SCHEMA_VERSIONS.includes(
       version as (typeof LEGACY_READABLE_PAGE_SCHEMA_VERSIONS)[number]
     ))
@@ -791,6 +824,16 @@ function visitColumns(columns: unknown, path: string, paths: string[]): void {
     if (column.link !== undefined) paths.push(`${columnPath}/link`);
     visitColumns(column.children, `${columnPath}/children`, paths);
   });
+}
+
+function containsMissingText(value: unknown): boolean {
+  if (Array.isArray(value)) return value.some(containsMissingText);
+  const object = record(value);
+  return object !== undefined && (has(object, 'missingText') || Object.values(object).some(containsMissingText));
+}
+
+function columnDetailUsed(columns: unknown): boolean {
+  return Array.isArray(columns) && columns.some(column => has(record(column), 'openDetail') || has(record(column), 'navigate') || columnDetailUsed(record(column)?.children));
 }
 
 function componentPaths(

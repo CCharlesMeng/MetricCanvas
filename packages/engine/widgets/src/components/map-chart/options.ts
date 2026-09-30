@@ -123,7 +123,8 @@ export function mapOption(
     return {
       label: entry.label,
       field: resolved.field,
-      ...(resolved.format === undefined ? {} : { format: resolved.format })
+      ...(resolved.format === undefined ? {} : { format: resolved.format }),
+      missingText: resolved.missingText
     };
   });
   // 区域着色系列上抛底图区域名,散点系列上抛原始维度值,两种都要能查回行
@@ -146,7 +147,7 @@ export function mapOption(
               return mapTooltipMarkup(title, [
                 {
                   label: fieldLabel(props.valueField, data),
-                  value: formatValue(hovered?.[value.field], value.format)
+                  value: formatValue(hovered?.[value.field], value.format, value.missingText)
                 },
                 ...mapTooltipRows(hovered, tooltipFields)
               ]);
@@ -157,7 +158,7 @@ export function mapOption(
             ...(value.format
               ? {
                   valueFormatter: (raw: unknown) =>
-                    formatValue(mapFormatterValue(raw), value.format)
+                    formatValue(mapFormatterValue(raw), value.format, value.missingText)
                 }
               : {})
           },

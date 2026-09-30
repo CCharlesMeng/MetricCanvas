@@ -26,10 +26,11 @@ export function barOption(
   props: BarChartProps,
   palette?: ColorList
 ): EChartsOption {
+  if (props.series.some(series => series.kind !== undefined || series.axis !== undefined)) return mixedOption(data, props, palette);
   const rows = data.main.snapshot.rows;
   const category = resolveField(props.categoryField, data);
   const categories = rows.map((row) =>
-    formatValue(row[category.field], category.format)
+    formatValue(row[category.field], category.format, category.missingText)
   );
   const categoryAxis = { type: 'category' as const, data: categories };
   const baseValueAxis = dualOrSingleAxis(props.dualAxis, props.series.length, false,
@@ -197,7 +198,7 @@ export function barOption(
           ? {
               tooltip: {
                 valueFormatter: (value: unknown) =>
-                  formatValue(formatterValue(value), field.format)
+                  formatValue(formatterValue(value), field.format, field.missingText)
               }
             }
           : {}),
@@ -256,4 +257,31 @@ function reportValueAxis(
 /** 圆角只加在堆叠整体的"生长端"；底层色块保持直角以便连接边缘齐平。 */
 function roundedCorners(props: BarChartProps): number[] {
   return props.horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0];
+}
+
+/** 显式系列只翻译封闭角色和轴声明；不接受外部 ECharts option。 */
+function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorList): EChartsOption {
+  const rows = data.main.snapshot.rows;
+  const category = resolveField(props.categoryField, data);
+  const axis = (name: 'primary' | 'secondary') => {
+    const series = props.series.find(series => series.axis === name);
+    const field = series ? resolveField(series.field, data) : undefined;
+    return { type: 'value' as const, name: field?.definition && 'unit' in field.definition ? field.definition.unit : undefined };
+  };
+  return {
+    color: [...(palette ?? CHART_PALETTE)], grid: GRID,
+    legend: { top: 0, left: 0 }, tooltip: { trigger: 'axis', confine: true },
+    xAxis: { type: 'category', data: rows.map(row => formatValue(row[category.field], category.format, category.missingText)) },
+    yAxis: props.dualAxis ? [axis('primary'), axis('secondary')] : axis('primary'),
+    series: props.series.map(series => {
+      const field = resolveField(series.field, data);
+      return {
+        type: series.kind ?? 'bar', name: series.label ?? field.definition?.label ?? field.field,
+        yAxisIndex: series.axis === 'secondary' ? 1 : 0,
+        ...(series.kind === 'line' ? { connectNulls: false } : {}),
+        tooltip: { valueFormatter: (value: unknown) => formatValue(formatterValue(value), field.format, field.missingText) },
+        data: rows.map(row => finiteNumber(row[field.field]) ?? null)
+      };
+    })
+  };
 }

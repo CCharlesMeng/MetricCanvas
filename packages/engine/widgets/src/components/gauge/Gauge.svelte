@@ -23,7 +23,7 @@
   const min = $derived(props.min ?? 0);
   const max = $derived(props.max ?? 100);
   const progress = $derived(numeric === undefined ? 0 : gaugeProgress(numeric, min, max));
-  const display = $derived(formatValue(raw, resolved.format));
+  const display = $derived(formatValue(raw, resolved.format, resolved.missingText));
   const track = gaugeArc(1, 36);
   const valueArc = $derived(gaugeArc(progress, 36));
 </script>

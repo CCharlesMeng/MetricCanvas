@@ -57,19 +57,19 @@ export function buildRankingDetailRows(
 
   return data.main.snapshot.rows.map((row, index) => ({
     rank: index + 1,
-    name: formatValue(row[name.field], name.format),
-    value: formatValue(row[value.field], value.format),
+    name: formatValue(row[name.field], name.format, name.missingText),
+    value: formatValue(row[value.field], value.format, value.missingText),
     badges: badges.flatMap((field) => badgeText(row[field.field], field)),
     ...(change
       ? {
           change: {
-            text: formatValue(row[change.field], change.format),
+            text: formatValue(row[change.field], change.format, change.missingText),
             polarity: valuePolarity(row[change.field])
           }
         }
       : {}),
     ...(description && hasDisplayValue(row[description.field])
-      ? { description: formatValue(row[description.field], description.format) }
+      ? { description: formatValue(row[description.field], description.format, description.missingText) }
       : {}),
     ...(semanticDescription
       ? buildSemanticDescription(row, semanticDescription)
@@ -139,7 +139,7 @@ function nestedItem(
 }
 
 function badgeText(value: FieldValue | undefined, field: ResolvedField): string[] {
-  return hasDisplayValue(value) ? [formatValue(value, field.format)] : [];
+  return hasDisplayValue(value) ? [formatValue(value, field.format, field.missingText)] : [];
 }
 
 function hasDisplayValue(value: unknown): boolean {

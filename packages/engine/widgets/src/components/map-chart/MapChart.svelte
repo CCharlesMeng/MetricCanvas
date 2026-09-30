@@ -108,12 +108,12 @@
     if (!row) return undefined;
     const title = resolveField(declaration.titleField, data);
     return {
-      title: formatValue(row[title.field], title.format),
+      title: formatValue(row[title.field], title.format, title.missingText),
       fields: declaration.fields.map((entry) => {
         const field = resolveField(entry.field, data);
         return {
           label: entry.label,
-          value: formatValue(row[field.field], field.format)
+          value: formatValue(row[field.field], field.format, field.missingText)
         };
       })
     };

@@ -6,6 +6,7 @@ export interface MapTooltipField {
   label: string;
   field: string;
   format?: ValueFormatPreset;
+  missingText?: string;
 }
 
 export interface MapTooltipRow {
@@ -20,7 +21,7 @@ export function mapTooltipRows(
 ): MapTooltipRow[] {
   return fields.map((entry) => ({
     label: entry.label,
-    value: formatValue(row?.[entry.field], entry.format)
+    value: formatValue(row?.[entry.field], entry.format, entry.missingText)
   }));
 }
 

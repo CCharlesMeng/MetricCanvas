@@ -1,0 +1,242 @@
+{
+  "schemaVersion": "6.12",
+  "id": "ioc-content-navigation",
+  "layout": "dashboard",
+  "meta": {
+    "title": "内容导航验收样例",
+    "description": "匿名合成行集，只验证运行时行为，不作为IOC来源页面。"
+  },
+  "filters": [
+    {
+      "id": "search",
+      "type": "search",
+      "label": "搜索"
+    }
+  ],
+  "dataSources": {
+    "rows": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "客户01",
+            "amount": 1
+          },
+          {
+            "name": "客户02",
+            "amount": 2
+          },
+          {
+            "name": "客户03",
+            "amount": 3
+          },
+          {
+            "name": "客户04",
+            "amount": 4
+          },
+          {
+            "name": "客户05",
+            "amount": 5
+          },
+          {
+            "name": "客户06",
+            "amount": 6
+          },
+          {
+            "name": "客户07",
+            "amount": 7
+          },
+          {
+            "name": "客户08",
+            "amount": 8
+          },
+          {
+            "name": "客户09",
+            "amount": 9
+          },
+          {
+            "name": "客户10",
+            "amount": 10
+          },
+          {
+            "name": "客户11",
+            "amount": 11
+          },
+          {
+            "name": "客户12",
+            "amount": 12
+          },
+          {
+            "name": "客户13",
+            "amount": 13
+          },
+          {
+            "name": "客户14",
+            "amount": 14
+          },
+          {
+            "name": "客户15",
+            "amount": 15
+          },
+          {
+            "name": "客户16",
+            "amount": 16
+          },
+          {
+            "name": "客户17",
+            "amount": 17
+          },
+          {
+            "name": "客户18",
+            "amount": 18
+          },
+          {
+            "name": "客户19",
+            "amount": 19
+          },
+          {
+            "name": "客户20",
+            "amount": 20
+          },
+          {
+            "name": "客户21",
+            "amount": 21
+          },
+          {
+            "name": "客户22",
+            "amount": 22
+          },
+          {
+            "name": "客户23",
+            "amount": 23
+          },
+          {
+            "name": "客户24",
+            "amount": 24
+          },
+          {
+            "name": "客户25",
+            "amount": 25
+          }
+        ]
+      }
+    }
+  },
+  "sectionGroups": [
+    {
+      "id": "a",
+      "label": "内容A",
+      "sectionIds": [
+        "a"
+      ]
+    },
+    {
+      "id": "b",
+      "label": "内容B",
+      "sectionIds": [
+        "b"
+      ]
+    }
+  ],
+  "sectionAnchors": [
+    {
+      "sectionId": "b",
+      "label": "定位内容B"
+    }
+  ],
+  "sections": [
+    {
+      "id": "common",
+      "components": [
+        {
+          "id": "intro",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "匿名功能验收：内容切换保留局部状态。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "a",
+      "title": "分区A",
+      "components": [
+        {
+          "id": "table-a",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rows"
+          },
+          "props": {
+            "title": "明细A",
+            "columns": [
+              {
+                "field": "name",
+                "title": "名称"
+              },
+              {
+                "field": "amount",
+                "sortable": true,
+                "title": "金额"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "b",
+      "title": "分区B",
+      "components": [
+        {
+          "id": "table-b",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rows"
+          },
+          "props": {
+            "title": "明细B",
+            "columns": [
+              {
+                "field": "name",
+                "title": "名称"
+              },
+              {
+                "field": "amount",
+                "sortable": true,
+                "title": "金额"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -34,3 +34,12 @@ describe('普通 URL 导航', () => {
     for (const href of ['javascript:alert(1)','data:text/html,x','file:///tmp/x',' java\nscript:x','\\evil']) expect(() => navigationHref({href},new Map(),new Map())).toThrow();
   });
 });
+
+it('IOC F8 separates row month and page month without inventing a fallback date', () => {
+  const params = new Map([['mtime', '202604']]);
+  const project: NavigationTarget = { href: '/pages/ioc-project-detail', query: { mtime: { source: 'row', field: 'mtime' } } };
+  const customer: NavigationTarget = { href: '/pages/ioc-customer-detail', query: { mtime: { source: 'param', id: 'mtime' } } };
+  expect(navigationHref(project, new Map(), params, { mtime: '202603' })).toBe('/pages/ioc-project-detail?mtime=202603');
+  expect(navigationHref(customer, new Map(), params, { mtime: '202603' })).toBe('/pages/ioc-customer-detail?mtime=202604');
+  expect(navigationHref(project, new Map(), params, {})).toBe('/pages/ioc-project-detail');
+});

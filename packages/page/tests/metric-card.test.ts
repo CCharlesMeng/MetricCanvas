@@ -56,7 +56,7 @@ describe('指标卡页面', () => {
     });
   });
 
-  it('值级链接必须绑定至少一个 navigate 动作', () => {
+  it('值级链接必须绑定至少一个 navigate 或 openDetail 动作', () => {
     const document: any = {
       schemaVersion: '6.5',
       id: 'metric-row-link-contract',
@@ -83,7 +83,7 @@ describe('指标卡页面', () => {
     expect(validate(document)).toContainEqual({
       type: 'SCHEMA_ERROR',
       path: '/sections/0/components/0/props/rows/0/link',
-      message: '指标值链接必须至少声明一个 navigate 动作'
+      message: '指标值链接必须至少声明一个 navigate 或 openDetail 动作'
     });
 
     document.sections[0].components[0].props.actions = [
