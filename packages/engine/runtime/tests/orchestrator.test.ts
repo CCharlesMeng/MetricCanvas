@@ -145,7 +145,7 @@ describe('页面数据源快照编排', () => {
     unsubscribe();
   });
 
-  it('不把截断的内嵌样本当作完整结果，默认入口仍重新取数', async () => {
+  it('部分内嵌初始行直接呈现，保留真实总数且默认入口不补查', async () => {
     const document = page();
     const source = document.dataSources.sales?.source;
     if (source?.type !== 'query') throw new Error('query required');
@@ -161,9 +161,60 @@ describe('页面数据源快照编排', () => {
     const stream = orchestrate(document, gateway);
     const unsubscribe = stream.subscribe(value => pushes.push(value));
     await flush();
-    expect(calls).toBe(1);
-    expect(pushes.at(-1)?.get('sales')).toEqual({ status: 'ready', rows, totalCount: 714 });
+    expect(calls).toBe(0);
+    expect(pushes.at(-1)?.get('sales')).toEqual({ status: 'ready', rows: source.initial.rows, totalCount: 714 });
     unsubscribe();
+  });
+
+  it.each([0, 714])('空 initial 保持空态且不查询，总数 %s', async (totalCount) => {
+    const document = page();
+    const source = document.dataSources.sales.source;
+    if (source.type !== 'query') throw new Error('query required');
+    source.initial = { capturedAt: '2026-10-08T00:00:00Z', rows: [], totalCount };
+    let calls = 0;
+    const pushes: PageDataSnapshots[] = [];
+    const stop = orchestrate(document, { async fetchData() { calls++; return { rows: [] }; } })
+      .subscribe(value => pushes.push(value));
+    await flush();
+    expect(calls).toBe(0);
+    expect(pushes.at(-1)?.get('sales')).toEqual({ status: 'empty', totalCount });
+    stop();
+  });
+
+  it('五个数据源各自复用完整或部分 initial；仅缺失 initial 的源查询', async () => {
+    const document = page();
+    const base = document.dataSources.sales;
+    const table = document.sections[0].components[1];
+    if (table.type !== 'table') throw new Error('table required');
+    document.dataSources = {};
+    document.sections[0].components = [];
+    for (const [index, totalCount] of [6, 6, 30, 41, 714].entries()) {
+      const id = `source-${index}`;
+      const source = structuredClone(base);
+      if (source.source.type !== 'query') throw new Error('query required');
+      source.source.initial = {
+        capturedAt: '2026-10-08T00:00:00Z', totalCount,
+        rows: Array.from({ length: Math.min(20, totalCount) }, (_, revenue) => ({ region: '首屏', revenue }))
+      };
+      document.dataSources[id] = source;
+      document.sections[0].components.push({ ...structuredClone(table), id: `table-${index}`, data: { main: id } });
+    }
+    const calls: string[] = [];
+    const gateway: DataGateway = { async fetchData(_query, context) {
+      calls.push(...context?.dataSourceIds ?? []);
+      return { rows: [], totalCount: 0 };
+    } };
+    const stop = orchestrate(document, gateway).subscribe(() => {});
+    await flush();
+    expect(calls).toEqual([]);
+    stop();
+    const source = document.dataSources['source-4'].source;
+    if (source.type !== 'query') throw new Error('query required');
+    delete source.initial;
+    const stopMissing = orchestrate(document, gateway).subscribe(() => {});
+    await flush();
+    expect(calls).toEqual(['source-4']);
+    stopMissing();
   });
 
   it('默认入口直接使用内嵌初始行，非默认入口立即查询', async () => {

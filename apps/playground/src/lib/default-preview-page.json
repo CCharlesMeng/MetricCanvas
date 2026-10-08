@@ -1,38 +1,846 @@
 {
-  "schemaVersion": "6.5",
-  "id": "playground-preview-example",
-  "meta": {
-    "description": "页面试验场 JSON 即时预览的内部最小示例"
+  "id": "new-page",
+  "schemaVersion": "6.11",
+  "layout": "report",
+  "dataSources": {
+    "ds-overview-monthly": {
+      "fields": {
+        "ds-overview-monthly-field-identity-544cdc58462690bd": {
+          "queryField": "账期(month)",
+          "type": "string",
+          "role": "dimension",
+          "label": "账期",
+          "nullable": false
+        },
+        "ds-overview-monthly-field-identity-04259747f4b11d27": {
+          "queryField": "Tokens消耗量",
+          "type": "number",
+          "role": "measure",
+          "label": "Tokens消耗量",
+          "nullable": false,
+          "defaultFormat": "compact-yi-1"
+        },
+        "ds-overview-monthly-field-identity-757aa38dd4c7f930": {
+          "queryField": "Tokens流水",
+          "type": "number",
+          "role": "measure",
+          "label": "Tokens流水",
+          "nullable": false,
+          "defaultFormat": "compact-wan-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "账期(month)"
+                ],
+                "output_metrics": [
+                  "Tokens消耗量",
+                  "Tokens流水"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-01",
+                    "end": "2026-06"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "8513a4_地区部",
+                      "dim_value_list": [
+                        "中国地区部"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-10-08T01:35:18.507Z",
+          "rows": [
+            {
+              "Tokens消耗量": 11358989639011.566,
+              "Tokens流水": 11030729.634093193,
+              "账期(month)": "2026-01"
+            },
+            {
+              "Tokens消耗量": 10333774570516.56,
+              "Tokens流水": 9273871.57881195,
+              "账期(month)": "2026-02"
+            },
+            {
+              "Tokens消耗量": 15741474123039.73,
+              "Tokens流水": 14157001.695272196,
+              "账期(month)": "2026-03"
+            },
+            {
+              "Tokens消耗量": 19438944359851.46,
+              "Tokens流水": 23317018.374370154,
+              "账期(month)": "2026-04"
+            },
+            {
+              "Tokens消耗量": 22381225866735.242,
+              "Tokens流水": 27333439.856934015,
+              "账期(month)": "2026-05"
+            },
+            {
+              "Tokens消耗量": 23518208780053.55,
+              "Tokens流水": 29729963.32342134,
+              "账期(month)": "2026-06"
+            }
+          ],
+          "totalCount": 6
+        }
+      }
+    },
+    "ds-trend-monthly": {
+      "fields": {
+        "ds-trend-monthly-field-identity-544cdc58462690bd": {
+          "queryField": "账期(month)",
+          "type": "string",
+          "role": "dimension",
+          "label": "账期",
+          "nullable": false
+        },
+        "ds-trend-monthly-field-identity-04259747f4b11d27": {
+          "queryField": "Tokens消耗量",
+          "type": "number",
+          "role": "measure",
+          "label": "Tokens消耗量",
+          "nullable": false,
+          "defaultFormat": "compact-yi-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "账期(month)"
+                ],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-01",
+                    "end": "2026-06"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "8513a4_地区部",
+                      "dim_value_list": [
+                        "中国地区部"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-10-08T01:35:19.781Z",
+          "rows": [
+            {
+              "Tokens消耗量": 11358989639011.566,
+              "账期(month)": "2026-01"
+            },
+            {
+              "Tokens消耗量": 10333774570516.56,
+              "账期(month)": "2026-02"
+            },
+            {
+              "Tokens消耗量": 15741474123039.73,
+              "账期(month)": "2026-03"
+            },
+            {
+              "Tokens消耗量": 19438944359851.46,
+              "账期(month)": "2026-04"
+            },
+            {
+              "Tokens消耗量": 22381225866735.242,
+              "账期(month)": "2026-05"
+            },
+            {
+              "Tokens消耗量": 23518208780053.55,
+              "账期(month)": "2026-06"
+            }
+          ],
+          "totalCount": 6
+        }
+      }
+    },
+    "ds-repoffice-compare": {
+      "fields": {
+        "ds-repoffice-compare-field-identity-17723b316ebce317": {
+          "queryField": "代表处",
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "nullable": false
+        },
+        "ds-repoffice-compare-field-identity-04259747f4b11d27": {
+          "queryField": "Tokens消耗量",
+          "type": "number",
+          "role": "measure",
+          "label": "Tokens消耗量",
+          "nullable": false,
+          "defaultFormat": "compact-wan-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处"
+                ],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-01",
+                    "end": "2026-06"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "8513a4_地区部",
+                      "dim_value_list": [
+                        "中国地区部"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-10-08T01:35:21.215Z",
+          "rows": [
+            {
+              "Tokens消耗量": 1950779676947.6677,
+              "代表处": "安徽代表处"
+            },
+            {
+              "Tokens消耗量": 83659959788566.64,
+              "代表处": "北京代表处"
+            },
+            {
+              "Tokens消耗量": 1427676406032.107,
+              "代表处": "福建代表处"
+            },
+            {
+              "Tokens消耗量": 1439051879.081787,
+              "代表处": "甘肃代表处"
+            },
+            {
+              "Tokens消耗量": 1224614804084.4258,
+              "代表处": "广东代表处"
+            },
+            {
+              "Tokens消耗量": 5539946870.458496,
+              "代表处": "广西代表处"
+            },
+            {
+              "Tokens消耗量": 7102413896.007324,
+              "代表处": "贵州代表处"
+            },
+            {
+              "Tokens消耗量": 9679816040.518799,
+              "代表处": "河北代表处"
+            },
+            {
+              "Tokens消耗量": 7379005589.659424,
+              "代表处": "河南代表处"
+            },
+            {
+              "Tokens消耗量": 6517745577.869385,
+              "代表处": "黑龙江代表处"
+            },
+            {
+              "Tokens消耗量": 257674995613.02832,
+              "代表处": "湖北代表处"
+            },
+            {
+              "Tokens消耗量": 152658689392.1941,
+              "代表处": "湖南代表处"
+            },
+            {
+              "Tokens消耗量": 2022062840.291504,
+              "代表处": "吉林代表处"
+            },
+            {
+              "Tokens消耗量": 89630318475.20117,
+              "代表处": "江苏代表处"
+            },
+            {
+              "Tokens消耗量": 4667155658.702393,
+              "代表处": "江西代表处"
+            },
+            {
+              "Tokens消耗量": 6292552600.643311,
+              "代表处": "辽宁代表处"
+            },
+            {
+              "Tokens消耗量": 1354159980.1992188,
+              "代表处": "内蒙古代表处"
+            },
+            {
+              "Tokens消耗量": 379370.0,
+              "代表处": "青海代表处"
+            },
+            {
+              "Tokens消耗量": 29919316211.576904,
+              "代表处": "山东代表处"
+            },
+            {
+              "Tokens消耗量": 664297359.7521973,
+              "代表处": "山西代表处"
+            }
+          ],
+          "totalCount": 30
+        }
+      }
+    },
+    "ds-model-service-share": {
+      "fields": {
+        "ds-model-service-share-field-identity-796b62f616bcaeb9": {
+          "queryField": "模型服务",
+          "type": "string",
+          "role": "dimension",
+          "label": "模型服务",
+          "nullable": false
+        },
+        "ds-model-service-share-field-identity-04259747f4b11d27": {
+          "queryField": "Tokens消耗量",
+          "type": "number",
+          "role": "measure",
+          "label": "Tokens消耗量",
+          "nullable": false,
+          "defaultFormat": "compact-wan-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "模型服务"
+                ],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-01",
+                    "end": "2026-06"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "8513a4_地区部",
+                      "dim_value_list": [
+                        "中国地区部"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-10-08T01:35:22.492Z",
+          "rows": [
+            {
+              "Tokens消耗量": 30009494587.02368,
+              "模型服务": "BGE-M3"
+            },
+            {
+              "Tokens消耗量": 2510074037.9868164,
+              "模型服务": "BGE-Reranker-V2"
+            },
+            {
+              "Tokens消耗量": 48301510.06542969,
+              "模型服务": "deepseek-new-0206"
+            },
+            {
+              "Tokens消耗量": 380673848786.9253,
+              "模型服务": "DeepSeek-R1"
+            },
+            {
+              "Tokens消耗量": 6624225566566.772,
+              "模型服务": "DeepSeek-R1-0528"
+            },
+            {
+              "Tokens消耗量": 42381530511197.945,
+              "模型服务": "DeepSeek-V3"
+            },
+            {
+              "Tokens消耗量": 636895433964.7295,
+              "模型服务": "DeepSeek-V3.1"
+            },
+            {
+              "Tokens消耗量": 342427152506.31934,
+              "模型服务": "DeepSeek-V3.1-Terminus"
+            },
+            {
+              "Tokens消耗量": 25681797386453.465,
+              "模型服务": "DeepSeek-V3.2"
+            },
+            {
+              "Tokens消耗量": 752025274649.1592,
+              "模型服务": "DeepSeek-V3.2-Exp"
+            },
+            {
+              "Tokens消耗量": 175674089635.75854,
+              "模型服务": "DeepSeek-V4-Flash"
+            },
+            {
+              "Tokens消耗量": 224552090.02905273,
+              "模型服务": "deepseek-v4-lite"
+            },
+            {
+              "Tokens消耗量": 8548135541.030029,
+              "模型服务": "DeepSeek-V4-Pro"
+            },
+            {
+              "Tokens消耗量": 1384556032964.2812,
+              "模型服务": "GLM-4.7"
+            },
+            {
+              "Tokens消耗量": 11063089997073.139,
+              "模型服务": "GLM-5"
+            },
+            {
+              "Tokens消耗量": 9350379154539.475,
+              "模型服务": "GLM-5.1"
+            },
+            {
+              "Tokens消耗量": 67107275752.5437,
+              "模型服务": "GLM-5.2"
+            },
+            {
+              "Tokens消耗量": 240653675756.85938,
+              "模型服务": "K2"
+            },
+            {
+              "Tokens消耗量": 59188670.0,
+              "模型服务": "K2.5"
+            },
+            {
+              "Tokens消耗量": 667001929924.29,
+              "模型服务": "Kimi-K2.6"
+            }
+          ],
+          "totalCount": 41
+        }
+      }
+    },
+    "ds-repoffice-model-detail": {
+      "fields": {
+        "ds-repoffice-model-detail-field-identity-17723b316ebce317": {
+          "queryField": "代表处",
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "nullable": false
+        },
+        "ds-repoffice-model-detail-field-identity-796b62f616bcaeb9": {
+          "queryField": "模型服务",
+          "type": "string",
+          "role": "dimension",
+          "label": "模型服务",
+          "nullable": false
+        },
+        "ds-repoffice-model-detail-field-identity-04259747f4b11d27": {
+          "queryField": "Tokens消耗量",
+          "type": "number",
+          "role": "measure",
+          "label": "Tokens消耗量",
+          "nullable": false,
+          "defaultFormat": "compact-million-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处",
+                  "模型服务"
+                ],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-01",
+                    "end": "2026-06"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "8513a4_地区部",
+                      "dim_value_list": [
+                        "中国地区部"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-10-08T01:35:23.776Z",
+          "rows": [
+            {
+              "Tokens消耗量": 5931099.9951171875,
+              "代表处": "安徽代表处",
+              "模型服务": "BGE-Reranker-V2"
+            },
+            {
+              "Tokens消耗量": 81919.9990234375,
+              "代表处": "安徽代表处",
+              "模型服务": "Qwen Image"
+            },
+            {
+              "Tokens消耗量": 135100.0,
+              "代表处": "安徽代表处",
+              "模型服务": "longcat-flash-chat-new"
+            },
+            {
+              "Tokens消耗量": 117228750.12963867,
+              "代表处": "安徽代表处",
+              "模型服务": "K2"
+            },
+            {
+              "Tokens消耗量": 821498342005.4512,
+              "代表处": "安徽代表处",
+              "模型服务": "GLM-5"
+            },
+            {
+              "Tokens消耗量": 87017469.99902344,
+              "代表处": "安徽代表处",
+              "模型服务": "DeepSeek-R1-0528"
+            },
+            {
+              "Tokens消耗量": 1117926562386.671,
+              "代表处": "安徽代表处",
+              "模型服务": "GLM-5.1"
+            },
+            {
+              "Tokens消耗量": 10950.0,
+              "代表处": "安徽代表处",
+              "模型服务": "DeepSeek-R1"
+            },
+            {
+              "Tokens消耗量": 504134275.9760742,
+              "代表处": "安徽代表处",
+              "模型服务": "Qwen3-30B"
+            },
+            {
+              "Tokens消耗量": 159875099.97558594,
+              "代表处": "安徽代表处",
+              "模型服务": "DeepSeek-V3.1"
+            },
+            {
+              "Tokens消耗量": 69989050.00195312,
+              "代表处": "安徽代表处",
+              "模型服务": "Kimi-K2.6"
+            },
+            {
+              "Tokens消耗量": 186281170.0197754,
+              "代表处": "安徽代表处",
+              "模型服务": "Qwen3-32B"
+            },
+            {
+              "Tokens消耗量": 645330249.6486816,
+              "代表处": "安徽代表处",
+              "模型服务": "longcat-flash-chat"
+            },
+            {
+              "Tokens消耗量": 6725790.0,
+              "代表处": "安徽代表处",
+              "模型服务": "Qwen2.5-VL-72B"
+            },
+            {
+              "Tokens消耗量": 1629454315.5,
+              "代表处": "安徽代表处",
+              "模型服务": "GLM-5.2"
+            },
+            {
+              "Tokens消耗量": 107316299.86572266,
+              "代表处": "安徽代表处",
+              "模型服务": "DeepSeek-V4-Pro"
+            },
+            {
+              "Tokens消耗量": 212539239.8701172,
+              "代表处": "安徽代表处",
+              "模型服务": "DeepSeek-V4-Flash"
+            },
+            {
+              "Tokens消耗量": 2561493130.300537,
+              "代表处": "安徽代表处",
+              "模型服务": "DeepSeek-V3.2"
+            },
+            {
+              "Tokens消耗量": 113968289.9584961,
+              "代表处": "安徽代表处",
+              "模型服务": "Qwen3-235B-a22b"
+            },
+            {
+              "Tokens消耗量": 8282970.00390625,
+              "代表处": "安徽代表处",
+              "模型服务": "BGE-M3"
+            }
+          ],
+          "totalCount": 714
+        }
+      }
+    }
   },
-  "dataSources": {},
   "sections": [
     {
-      "id": "preview",
+      "id": "header",
+      "container": "plain",
       "components": [
         {
-          "id": "header",
+          "id": "page-header",
           "type": "reportHeader",
           "layout": {
             "span": 12
           },
           "props": {
-            "title": "MetricCanvas 页面预览",
-            "subtitle": "编辑左侧 JSON，并在此查看统一运行时结果"
+            "title": "2026年中国区上半年Tokens运营月报"
+          }
+        }
+      ]
+    },
+    {
+      "id": "overview",
+      "title": "Tokens总览",
+      "container": "panel",
+      "components": [
+        {
+          "id": "overview-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "ds-overview-monthly"
+          },
+          "props": {
+            "title": "各月Tokens消耗量与流水",
+            "columns": [
+              {
+                "field": "ds-overview-monthly-field-identity-544cdc58462690bd",
+                "title": "账期",
+                "align": "left"
+              },
+              {
+                "field": "ds-overview-monthly-field-identity-04259747f4b11d27",
+                "title": "Tokens消耗量（Token）",
+                "align": "right"
+              },
+              {
+                "field": "ds-overview-monthly-field-identity-757aa38dd4c7f930",
+                "title": "Tokens流水",
+                "align": "right"
+              }
+            ]
           }
         },
         {
-          "id": "guidance",
+          "id": "trend-chart",
+          "type": "lineChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "ds-trend-monthly"
+          },
+          "props": {
+            "title": "Tokens消耗量月度走势",
+            "xField": "ds-trend-monthly-field-identity-544cdc58462690bd",
+            "series": [
+              {
+                "field": "ds-trend-monthly-field-identity-04259747f4b11d27",
+                "label": "Tokens消耗量"
+              }
+            ]
+          }
+        },
+        {
+          "id": "structure-scope-overview",
           "type": "text",
           "layout": {
             "span": 12
           },
           "props": {
-            "title": "声明式页面",
-            "body": "默认示例仅用于演示 Schema 4.0 的编辑与校验，不代表任何正式页面。"
+            "body": "数据口径：\n助手-现网-作战地图-产品地图-Tokens流水；2026-01 至 2026-06；month；按8513a4_账期；8513a4_地区部=中国地区部"
+          }
+        }
+      ]
+    },
+    {
+      "id": "repoffice-comparison",
+      "title": "各代表处Tokens消耗量对比",
+      "container": "panel",
+      "components": [
+        {
+          "id": "repoffice-bar",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "ds-repoffice-compare"
+          },
+          "props": {
+            "title": "各代表处Tokens消耗量",
+            "categoryField": "ds-repoffice-compare-field-identity-17723b316ebce317",
+            "series": [
+              {
+                "field": "ds-repoffice-compare-field-identity-04259747f4b11d27",
+                "label": "Tokens消耗量"
+              }
+            ],
+            "horizontal": true
+          }
+        },
+        {
+          "id": "structure-scope-repoffice-comparison",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "数据口径：\n助手-现网-作战地图-产品地图-Tokens流水；2026-01 至 2026-06；month；按8513a4_代表处；8513a4_地区部=中国地区部"
+          }
+        }
+      ]
+    },
+    {
+      "id": "model-service-distribution",
+      "title": "各模型服务Tokens消耗量占比",
+      "container": "panel",
+      "components": [
+        {
+          "id": "model-service-bar",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "ds-model-service-share"
+          },
+          "props": {
+            "title": "各模型服务Tokens消耗量",
+            "categoryField": "ds-model-service-share-field-identity-796b62f616bcaeb9",
+            "series": [
+              {
+                "field": "ds-model-service-share-field-identity-04259747f4b11d27",
+                "label": "Tokens消耗量"
+              }
+            ],
+            "horizontal": true
+          }
+        },
+        {
+          "id": "structure-scope-model-service-distribution",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "数据口径：\n助手-现网-作战地图-产品地图-Tokens流水；2026-01 至 2026-06；month；按8513a4_模型服务；8513a4_地区部=中国地区部"
+          }
+        }
+      ]
+    },
+    {
+      "id": "detail",
+      "title": "各代表处各模型服务Tokens消耗量明细",
+      "container": "panel",
+      "components": [
+        {
+          "id": "detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "ds-repoffice-model-detail"
+          },
+          "props": {
+            "title": "代表处×模型服务消耗量明细",
+            "columns": [
+              {
+                "field": "ds-repoffice-model-detail-field-identity-17723b316ebce317",
+                "title": "代表处",
+                "align": "left"
+              },
+              {
+                "field": "ds-repoffice-model-detail-field-identity-796b62f616bcaeb9",
+                "title": "模型服务",
+                "align": "left"
+              },
+              {
+                "field": "ds-repoffice-model-detail-field-identity-04259747f4b11d27",
+                "title": "Tokens消耗量（Token）",
+                "align": "right"
+              }
+            ]
+          }
+        },
+        {
+          "id": "structure-scope-detail",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "数据口径：\n助手-现网-作战地图-产品地图-Tokens流水；2026-01 至 2026-06；month；按8513a4_代表处、8513a4_模型服务；8513a4_地区部=中国地区部"
           }
         }
       ]
     }
-  ],
-  "layout": "report"
+  ]
 }

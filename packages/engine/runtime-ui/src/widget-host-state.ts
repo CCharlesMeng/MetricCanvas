@@ -101,3 +101,20 @@ export function queryErrorView(error: QueryError): QueryErrorView {
     message: error.message
   };
 }
+
+/** Read source snapshots, never the locally paginated table projection. */
+export function partialDataNotices(
+  component: Component,
+  snapshots: ReadonlyMap<string, DataSnapshot>
+): string[] {
+  if (component.type === 'table' && component.props.pagination?.mode === 'query') return [];
+  const notices: string[] = [];
+  for (const id of new Set(Object.values(component.data ?? {}))) {
+    const snapshot = snapshots.get(id);
+    if (!snapshot || (snapshot.status !== 'ready' && snapshot.status !== 'empty')) continue;
+    const count = snapshot.status === 'ready' ? snapshot.rows.length : 0;
+    if (snapshot.totalCount === undefined || count >= snapshot.totalCount) continue;
+    notices.push(`当前载入 ${count} 条，共 ${snapshot.totalCount} 条（部分数据）`);
+  }
+  return notices;
+}

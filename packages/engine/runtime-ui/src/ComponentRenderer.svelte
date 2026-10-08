@@ -37,6 +37,7 @@
   import AiSummaryHost from './ai-summary/AiSummaryHost.svelte';
   import type { AiSummaryConfig } from './ai-summary/pangu-sse';
   import WidgetHost from './WidgetHost.svelte';
+  import { partialDataNotices } from './widget-host-state';
   import {
     rendersWithoutWidgetHost,
     type NestedComponentRender,
@@ -157,7 +158,7 @@
     </CompositeCard>
   {/if}
 {:else}
-  <WidgetHost {snapshot}>
+  <WidgetHost {snapshot} notices={partialDataNotices(component, pageSnapshots)}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
         <MetricCard data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />

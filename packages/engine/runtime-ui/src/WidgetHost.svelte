@@ -11,11 +11,12 @@
    */
   interface Props {
     snapshot: DataSnapshot;
+    notices?: string[];
     /** 就绪态渲染内容 */
     ready: Snippet<[Extract<DataSnapshot, { status: 'ready' }>]>;
   }
 
-  let { snapshot, ready }: Props = $props();
+  let { snapshot, ready, notices = [] }: Props = $props();
   const renderable = $derived(renderableDataSnapshot(snapshot));
 </script>
 
@@ -30,10 +31,19 @@
 {:else if !renderable}
   <div class="skeleton"></div>
 {:else}
+  {#each notices as notice}
+    <div class="data-notice" role="status">{notice}</div>
+  {/each}
   {@render ready(renderable)}
 {/if}
 
 <style>
+  .data-notice {
+    padding: 4px 8px;
+    color: var(--mc-color-muted, #71717a);
+    font-size: 12px;
+    flex: none;
+  }
   .skeleton {
     flex: 1;
     border-radius: 6px;

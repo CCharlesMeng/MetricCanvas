@@ -186,8 +186,10 @@ function hasReusableInitial(binding: DataSourceBinding): boolean {
   const initial = binding.dataSource.source.initial;
   if (!initial) return false;
   const { rows, totalCount } = initial;
-  // An explicitly paged query may reuse its complete first page. A preview
-  // sample without paging cannot stand in for the full query result.
+  // Unpaged initial rows are a first-screen snapshot, even when partial.
+  // Completeness is presented separately; it must not trigger a background query.
+  if (!binding.pagination) return true;
+  // Explicit query pagination still requires a complete first page.
   if (totalCount === undefined || totalCount === rows.length) return true;
   return binding.pagination !== undefined
     && rows.length === Math.min(binding.pagination.limit, totalCount);
