@@ -761,7 +761,7 @@
     return typeof title === 'string' ? title : undefined;
   }
 
-  function handleChartClick(component: ChartComponent, row: Row) {
+  function handleChartClick(component: ChartComponent | Extract<Component, { type: 'gauge' | 'rankingCard' }>, row: Row) {
     if (!componentCapability(component)?.actions) return;
     if (component.type === 'mapChart' && component.props.hierarchyFilter) {
       const declaration = declarations.find(
@@ -1008,11 +1008,11 @@
   }
 
   function chartClickHandler(component: Component): ((row: Row) => void) | undefined {
-    if (!componentCapability(component)?.actions || !isChartComponent(component)) {
+    if (!componentCapability(component)?.actions ||
+      !(isChartComponent(component) || component.type === 'gauge' || component.type === 'rankingCard')) {
       return undefined;
     }
-    const chart: ChartComponent = component;
-    return (row: Row) => handleChartClick(chart, row);
+    return (row: Row) => handleChartClick(component, row);
   }
 
   function metricLinkHandler(component: Component): ((row: Row, event: MouseEvent) => void) | undefined {

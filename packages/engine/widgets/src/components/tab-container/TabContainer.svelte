@@ -9,7 +9,7 @@
   interface Props {
     title?: string;
     variant?: 'compact' | 'analysisStack';
-    tabs: readonly TabLabel[];
+    tabs: readonly (TabLabel & { contentCount?: number })[];
     defaultTab?: string;
     children: Snippet<[string]>;
   }
@@ -17,6 +17,7 @@
   let { title, variant, tabs, defaultTab, children }: Props = $props();
   let selected = $state<string | undefined>(undefined);
   const activeId = $derived(resolveActiveTab(tabs, selected, defaultTab));
+  const multipleContent = $derived((tabs.find(tab => tab.id === activeId)?.contentCount ?? 1) > 1);
 </script>
 
 <div
@@ -39,7 +40,7 @@
     {/each}
   </div>
   {#if activeId}
-    <div class="tab-panel" role="tabpanel">
+    <div class:multiple-content={multipleContent} class="tab-panel" role="tabpanel">
       {@render children(activeId)}
     </div>
   {/if}
@@ -99,6 +100,7 @@
     gap: 4px;
     padding: 0;
     margin: 14px 18px 0;
+    overflow-x: auto;
   }
   .analysis-stack .tab-list {
     flex: none;
@@ -107,8 +109,10 @@
     padding: 0;
     margin: 0 0 16px;
     border-bottom: 2px solid #f0f0f0;
+    overflow-x: auto;
   }
   button {
+    flex-shrink: 0;
     padding: 6px 12px;
     color: #595959;
     background: transparent;
@@ -153,6 +157,14 @@
     height: 464px;
     flex: none;
     padding: 16px 18px 0;
+  }
+  /* A tab may declare several tables. Keep each table's intrinsic body height
+     and scroll the panel, instead of dividing a fixed card into zero-height bodies. */
+  .tab-panel.multiple-content {
+    overflow: auto;
+  }
+  .multiple-content :global(.table-widget) {
+    flex: none;
   }
   .analysis-stack .tab-panel {
     display: flex;

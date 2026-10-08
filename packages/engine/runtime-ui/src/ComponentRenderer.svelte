@@ -36,6 +36,7 @@
   } from '../../widgets/src';
   import AiSummaryHost from './ai-summary/AiSummaryHost.svelte';
   import type { AiSummaryConfig } from './ai-summary/pangu-sse';
+  import { fieldRow } from '../../widgets/src/shared/component-data';
   import WidgetHost from './WidgetHost.svelte';
   import { partialDataNotices } from './widget-host-state';
   import {
@@ -56,7 +57,7 @@
     aiSummary?: AiSummaryConfig;
     /** text 组件的跨页链接,已由运行时解析为可点击目标。 */
     textLinks?: TextBlockLink[];
-    /** 图表点击回调;组件不具备 actions 能力时缺席。 */
+    /** 数据项点击回调;组件不具备 actions 能力时缺席。 */
     onchartclick?: (row: Row) => void;
     /** MetricCard 显式值级链接回调;未声明时缺席。 */
     onmetriclink?: (row: Row, event: MouseEvent) => void;
@@ -131,7 +132,8 @@
     <TabContainer
       title={component.props.title}
       variant={component.props.variant}
-      tabs={component.props.tabs.map((tab) => ({ id: tab.id, label: tab.label }))}
+      tabs={component.props.tabs.map((tab) => ({ id: tab.id, label: tab.label,
+        contentCount: 'components' in tab ? tab.components.length : 1 }))}
       defaultTab={component.props.defaultTab}
     >
       {#snippet children(activeId)}
@@ -158,7 +160,7 @@
     </CompositeCard>
   {/if}
 {:else}
-  <WidgetHost {snapshot} notices={partialDataNotices(component, pageSnapshots)}>
+  <WidgetHost {snapshot} title={component.props.title} notices={partialDataNotices(component, pageSnapshots)}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
         <MetricCard data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />
@@ -181,7 +183,7 @@
           onsliceclick={onchartclick && (({ row }) => onchartclick?.(row))}
         />
       {:else if component.type === 'rankingCard'}
-        <RankingCard data={mainData} props={component.props} />
+        <RankingCard data={mainData} props={component.props} onrowclick={onchartclick} />
       {:else if component.type === 'rankingDetailCard'}
         <RankingDetailCard data={mainData} props={component.props} />
       {:else if component.type === 'keyValuePanel'}
@@ -191,7 +193,11 @@
       {:else if component.type === 'fieldText'}
         <FieldText data={mainData} props={component.props} />
       {:else if component.type === 'gauge'}
-        <Gauge data={mainData} props={component.props} />
+        {@const gauge = component}
+        <Gauge data={mainData} props={component.props} onclick={onchartclick && (() => {
+          const row = fieldRow(gauge.props.valueField, mainData);
+          if (row) onchartclick?.(row);
+        })} />
       {:else if component.type === 'table' && table}
         <Table
           data={tableData}

@@ -380,6 +380,13 @@
     left: 0;
   }
 
+  /* Removing cell decoration must not remove drawing space. Text and tables
+     have intrinsic content height; ECharts needs its layout owner to supply it. */
+  .container-plain .chart-cell,
+  .container-card .chart-cell {
+    min-height: 320px;
+  }
+
   /* plain:无容器,组件完全自带外观 */
   .page-section.container-plain {
     padding: 0;

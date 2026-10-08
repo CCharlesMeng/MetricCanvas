@@ -32,7 +32,7 @@
 
 {#snippet entries()}
   <dl style:--key-value-columns={columns}>
-    {#each props.items as item (item.label)}
+    {#each props.items as item, itemIndex (itemIndex)}
       {@const resolved = resolveField(item.field, data)}
       {@const value = fieldValue(item.field, data)}
       {@const semantic = semanticHtmlFieldPresentation(resolved, value)}
@@ -218,7 +218,7 @@
     width: calc(100% - 46px);
     height: 284px;
     padding: 11px 0 17px 15px;
-    overflow: hidden;
+    overflow: auto;
     color: #595959;
     background: rgb(0 0 0 / 0.03);
     border-radius: 8px;
@@ -233,10 +233,10 @@
   }
   .summary-body .entry {
     display: flex;
-    height: 32px;
+    min-height: 32px;
     align-items: baseline;
     gap: 0;
-    white-space: nowrap;
+    white-space: normal;
   }
   .summary-body dt,
   .summary-body dd {
@@ -270,9 +270,9 @@
   .detail-norm-matrix dl {
     box-sizing: border-box;
     width: 100%;
-    height: 90px;
+    min-height: 90px;
     gap: 0;
-    overflow: hidden;
+    overflow: visible;
     border-left: 1px solid rgb(0 0 0 / 0.15);
   }
   .detail-norm-matrix .entry {
@@ -294,8 +294,8 @@
     text-align: center;
   }
   .detail-norm-matrix dt {
-    height: 32px;
-    flex: 0 0 32px;
+    min-height: 32px;
+    flex: 0 0 auto;
     border-top: 1px solid rgb(0 0 0 / 0.15);
     color: #595959;
     background: rgb(0 0 0 / 0.05);
@@ -307,8 +307,8 @@
     content: none;
   }
   .detail-norm-matrix dd {
-    height: 58px;
-    flex: 0 0 58px;
+    min-height: 58px;
+    flex: 0 0 auto;
     gap: 8px;
     color: #191919;
     background: #fff;
@@ -332,7 +332,7 @@
       overflow: visible;
     }
     .detail-norm-matrix .entry {
-      height: 90px;
+      min-height: 90px;
     }
     .detail-norm-matrix .entry:nth-child(n + 4) dt {
       border-top: 0;
@@ -341,12 +341,12 @@
     .detail-norm-matrix dd {
       padding-right: 4px;
       padding-left: 4px;
-      overflow: hidden;
+      overflow: visible;
     }
     .detail-norm-matrix dt > span,
     .detail-norm-matrix dd {
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      overflow-wrap: anywhere;
+      white-space: normal;
     }
   }
   /* responsive-contract: key-value-detail-norm-two-columns */

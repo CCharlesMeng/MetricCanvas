@@ -1872,7 +1872,8 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
       );
     })
   ).toBe(true);
-  await expect(reportRankingTitles).toHaveCount(1);
+  // Both configured titles remain visible, including a query-error placeholder.
+  await expect(reportRankingTitles).toHaveCount(2);
   await expect(reportRankingTitles.first()).toHaveCSS('margin-bottom', '6px');
   await expect(reportRankingFrames.first()).toHaveCSS('padding', '18px 12px');
   await expect.poll(async () => {

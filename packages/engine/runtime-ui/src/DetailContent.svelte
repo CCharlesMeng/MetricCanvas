@@ -7,6 +7,7 @@
   import { sortTableRows } from './table-state';
   import { hostRenderSnapshot, renderableDataSnapshot } from './widget-host-state';
   import ComponentRenderer from './ComponentRenderer.svelte';
+  import RuntimeSection from './RuntimeSection.svelte';
 
   let { page, components, snapshots }: { page: Page; components: Component[]; snapshots: PageDataSnapshots } = $props();
   let views = $state<Record<string, TableViewState>>({});
@@ -44,7 +45,7 @@
     const source = snapshots.get(component.data.main);
     const pagination = component.props.pagination;
     return {
-      view: current, filterOptions: {},
+      view: current, filterOptions: {}, paginationConfig: pagination,
       pagination: pagination?.mode === 'local' ? {
         pageSize: sizes[component.id] ?? pagination.pageSize,
         totalCount: source?.status === 'ready' ? source.rows.length : 0
@@ -57,7 +58,22 @@
   }
 </script>
 
-{#each components as component (component.id)}
-  <ComponentRenderer {component} data={data(component)} snapshot={hostRenderSnapshot(component, slots(component))}
-    pageSnapshots={snapshots} table={table(component)} />
-{/each}
+<!-- Detail components use the same layout owner as main-page components,
+     including declared span, chart drawing space and direct component boxes. -->
+<div class="detail-layout">
+  <RuntimeSection section={{ id: 'detail-view', container: 'plain', components }}>
+    {#snippet componentContent(component: Component)}
+      <ComponentRenderer {component} data={data(component)} snapshot={hostRenderSnapshot(component, slots(component))}
+        pageSnapshots={snapshots} table={table(component)} />
+    {/snippet}
+  </RuntimeSection>
+</div>
+
+<style>
+  .detail-layout {
+    width: 100%;
+    min-width: 0;
+    flex: none;
+    container: mc-runtime / inline-size;
+  }
+</style>

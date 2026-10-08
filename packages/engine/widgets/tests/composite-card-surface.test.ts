@@ -199,7 +199,7 @@ describe('组合卡的卡内表面压平', () => {
     expect(card).not.toContain('机会点');
   });
 
-  it('详情页指标矩阵把四条边框都收在 90px 容器内', () => {
+  it('详情页指标矩阵保留 90px 下限并允许配置的多行内容增高', () => {
     const css = source('key-value-panel/KeyValuePanel.svelte');
     const matrixList = /\.detail-norm-matrix dl\s*\{([^}]*)\}/.exec(css)?.[1] ?? '';
     const matrixHeader = /\.detail-norm-matrix dt\s*\{([^}]*)\}/.exec(css)?.[1] ?? '';
@@ -207,12 +207,12 @@ describe('组合卡的卡内表面压平', () => {
       .map((match) => match[1] ?? '')
       .find((block) => block.includes('height: 58px;')) ?? '';
 
-    expect(matrixList).toContain('height: 90px;');
-    expect(matrixList).toContain('overflow: hidden;');
+    expect(matrixList).toContain('min-height: 90px;');
+    expect(matrixList).toContain('overflow: visible;');
     expect(matrixList).not.toContain('border-top:');
-    expect(matrixHeader).toContain('height: 32px;');
+    expect(matrixHeader).toContain('min-height: 32px;');
     expect(matrixHeader).toContain('border-top: 1px solid rgb(0 0 0 / 0.15);');
-    expect(matrixValue).toContain('height: 58px;');
+    expect(matrixValue).toContain('min-height: 58px;');
   });
 
   it('详情页头使用可操作的返回箭头，两个标签按 12px 紧凑排列', () => {

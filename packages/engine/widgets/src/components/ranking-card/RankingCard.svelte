@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { RankingCardProps } from '@metriccanvas/page/internal';
+  import type { RankingCardProps, Row } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import { fieldLabel, resolveField } from '../../shared/component-data';
   import { formatValue, valuePolarity } from '../../shared/value-format';
@@ -8,9 +8,10 @@
     /** 已由统一运行时确定顺序的 main 数据槽；组件不排序、不取数。 */
     data: MainDataSlots;
     props: RankingCardProps;
+    onrowclick?: (row: Row) => void;
   }
 
-  let { data, props }: Props = $props();
+  let { data, props, onrowclick }: Props = $props();
 
   const name = $derived(resolveField(props.nameField, data));
   const value = $derived(resolveField(props.valueField, data));
@@ -31,7 +32,11 @@
       >
         {index + 1}
       </span>
-      <span class="name">{formatValue(row[name.field], name.format, name.missingText)}</span>
+      {#if onrowclick}
+        <button class="name" type="button" onclick={() => onrowclick?.(row)}>{formatValue(row[name.field], name.format, name.missingText)}</button>
+      {:else}
+        <span class="name">{formatValue(row[name.field], name.format, name.missingText)}</span>
+      {/if}
       <span class="ranking-value">
         {formatValue(row[value.field], value.format, value.missingText)}
       </span>
@@ -97,11 +102,18 @@
   .name {
     flex: 1;
     min-width: 0;
-    overflow: hidden;
     color: #191919;
     font-size: 14px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+  button.name {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    text-decoration: underline;
   }
   .ranking-value {
     color: #191919;

@@ -41,6 +41,9 @@ export function barOption(
   const valueAxis = props.variant === 'reportForecast'
     ? reportValueAxis(baseValueAxis, reportValueFormat)
     : baseValueAxis;
+  const horizontalAxis = Array.isArray(valueAxis)
+    ? valueAxis.map(horizontalValueLabels)
+    : horizontalValueLabels(valueAxis);
   const reportForecast = props.variant === 'reportForecast';
   const roleIndexes = { actual: 0, forecast: 0 };
   const seriesEntries = props.series
@@ -91,7 +94,7 @@ export function barOption(
         }
       : {}),
     // 横向条形:类目轴与数值轴对调(覆盖存量两个水平条形组件的场景)
-    xAxis: props.horizontal ? valueAxis : categoryAxis,
+    xAxis: props.horizontal ? horizontalAxis : categoryAxis,
     yAxis: props.horizontal ? categoryAxis : valueAxis,
     series: seriesEntries.map((entry) => {
       const { series, originalIndex, roleIndex } = entry;
@@ -206,6 +209,13 @@ export function barOption(
       };
     })
   };
+}
+
+/** Keep long formatted ticks inside narrow horizontal drawing areas. All data
+ * remain in the series and tooltip; only colliding automatic ticks are omitted. */
+function horizontalValueLabels<T extends { axisLabel?: object }>(axis: T) {
+  return { ...axis, axisLabel: { ...axis.axisLabel, hideOverlap: true,
+    alignMinLabel: 'left' as const, alignMaxLabel: 'right' as const } };
 }
 
 function valueLabelFormatter(format?: ValueFormatPreset) {

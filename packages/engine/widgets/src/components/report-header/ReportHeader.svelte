@@ -35,9 +35,21 @@
       <h1>{props.title}</h1>
       {#if props.tags?.length}
         <div class="tags" aria-label="项目标签">
-          {#each props.tags.slice(0, 2) as tag, index (`${tag}:${index}`)}
+          {#each props.tags as tag, index (`${tag}:${index}`)}
             <span>{tag}</span>
           {/each}
+        </div>
+      {/if}
+      {#if props.badge || props.generatedBy || props.subtitle || props.asOf}
+        <div class="project-detail-metadata">
+          {#if props.badge}<span class="badge">{props.badge}</span>{/if}
+          {#if props.generatedBy}<p class="generated-by">{props.generatedBy}</p>{/if}
+          {#if props.subtitle && props.subtitleFormat === 'semanticHtml'}
+            <div class="subtitle-content"><SemanticHtml source={props.subtitle} /></div>
+          {:else if props.subtitle}<p>{props.subtitle}</p>{/if}
+          {#if props.asOf}
+            <div class="as-of"><span>{props.asOf.label}</span><strong>{props.asOf.value}</strong></div>
+          {/if}
         </div>
       {/if}
     </div>
@@ -147,7 +159,7 @@
     display: block;
     width: 100%;
     min-width: 0;
-    height: 80px;
+    height: auto;
     min-height: 80px;
     flex: none;
     padding: 0;
@@ -156,8 +168,14 @@
   }
   .project-detail-heading {
     position: relative;
+    box-sizing: border-box;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 24px;
     width: 100%;
-    height: 100%;
+    min-height: 80px;
+    padding: 22px 32px 22px 56px;
   }
   .project-detail .report-icon {
     position: absolute;
@@ -189,21 +207,20 @@
     stroke-width: 1.8;
   }
   .project-detail h1 {
-    position: absolute;
-    top: 22px;
-    left: 56px;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
     color: #191919;
     font-size: 24px;
     font-weight: 500;
     line-height: 36px;
     letter-spacing: 0;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
   .project-detail .tags {
-    position: absolute;
-    top: 26px;
-    left: 264px;
+    min-width: 0;
+    max-width: 100%;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -216,8 +233,18 @@
     font-size: 16px;
     font-weight: 400;
     line-height: 22px;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
+  .project-detail-metadata {
+    display: flex;
+    min-width: 0;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 12px;
+    overflow-wrap: anywhere;
+  }
+  .project-detail-metadata > p { margin: 0; }
   .project-detail .tags span:nth-child(1) {
     color: #3cc6c1;
     background: rgb(60 198 193 / 0.1);
@@ -512,32 +539,27 @@
   /* responsive-contract: report-header-project-detail-flow */
   @container mc-component-box (max-width: 760px) {
     .report-header.project-detail {
-      height: 112px;
       min-height: 112px;
+    }
+    .project-detail-heading {
+      min-height: 112px;
+      flex-direction: column;
+      gap: 6px;
+      padding: 16px 20px 16px 52px;
     }
     .project-detail .report-icon {
       top: 21px;
       left: 20px;
     }
     .project-detail h1 {
-      top: 16px;
-      right: 20px;
-      left: 52px;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      width: 100%;
     }
     .project-detail .tags {
-      top: 58px;
-      right: 20px;
-      left: 52px;
       gap: 8px;
       max-width: none;
-      overflow: hidden;
     }
     .project-detail .tags span {
       min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
   }
 </style>

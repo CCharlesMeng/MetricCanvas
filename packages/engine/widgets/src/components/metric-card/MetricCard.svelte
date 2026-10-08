@@ -142,8 +142,13 @@
 >
   {#if props.variant === 'compactSummary' || props.variant === 'dualSummary' || props.variant === 'compactStrip' || props.variant === 'compactStack'}
     {@render metricPanel(props.title, props.rows)}
-    {#if props.variant === 'dualSummary'}
+    {#if props.variant === 'dualSummary' || props.secondaryRows || props.secondaryTitle}
       {@render metricPanel(props.secondaryTitle, props.secondaryRows)}
+    {/if}
+    {#if props.progress}
+      <div class="progress-slot">
+        <ProgressRing value={progressValue} ringPercent={props.progress.ringPercent} label={props.progress.label ?? '完成率'} />
+      </div>
     {/if}
   {:else}
     {#if props.title}<h3>{props.title}</h3>{/if}
@@ -159,6 +164,9 @@
         </div>
       {/if}
     </div>
+    {#if props.secondaryRows || props.secondaryTitle}
+      {@render metricPanel(props.secondaryTitle, props.secondaryRows)}
+    {/if}
   {/if}
 </div>
 

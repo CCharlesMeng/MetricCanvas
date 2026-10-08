@@ -419,6 +419,16 @@
                   rawValue,
                   column.visual === 'signed' ? 'signed' : undefined
                 )}
+                {#snippet supplementaryFields()}
+                  {#if column.secondaryField}
+                    {@const secondary = resolveField(column.secondaryField, data)}
+                    <small>{formatValue(alignedFieldValue(column.secondaryField, data, row), secondary.format, secondary.missingText)}</small>
+                  {/if}
+                  {#if column.badgeField}
+                    {@const badge = resolveField(column.badgeField, data)}
+                    <small class="cell-badge">{formatValue(alignedFieldValue(column.badgeField, data, row), badge.format, badge.missingText)}</small>
+                  {/if}
+                {/snippet}
                 <td
                   class:align-right={column.align === 'right'}
                   class:fixed={!!column.fixed}
@@ -451,6 +461,7 @@
                         {:else}
                           <span class="cell-primary-value">{formatValue(rawValue, resolved.format, resolved.missingText)}</span>
                         {/if}
+                        {@render supplementaryFields()}
                       </span>
                     </button>
                   {:else if column.link && interactive && !column.selection}
@@ -478,9 +489,11 @@
                         {:else}
                           <span class="cell-primary-value">{formatValue(rawValue, resolved.format, resolved.missingText)}</span>
                         {/if}
+                        {@render supplementaryFields()}
                       </span>
                     </a>
                   {:else if column.visual === 'rateBar' && semanticPresentation === undefined}
+                    <div class="cell-stack">
                     <span class="rate-cell">
                       <span
                         aria-hidden="true"
@@ -489,6 +502,8 @@
                       ></span>
                       <span class="cell-value">{formatValue(rawValue, resolved.format, resolved.missingText)}</span>
                     </span>
+                    {@render supplementaryFields()}
+                    </div>
                   {:else}
                     <div class="cell-stack">
                       {#if semanticPresentation}
@@ -501,18 +516,7 @@
                       {:else}
                         <span class="cell-primary-value">{formatValue(rawValue, resolved.format, resolved.missingText)}</span>
                       {/if}
-                      {#if column.secondaryField}
-                        {@const secondary = resolveField(column.secondaryField, data)}
-                        <small>
-                          {formatValue(alignedFieldValue(column.secondaryField, data, row), secondary.format, secondary.missingText)}
-                        </small>
-                      {/if}
-                      {#if column.badgeField}
-                        {@const badge = resolveField(column.badgeField, data)}
-                        <small class="cell-badge">
-                          {formatValue(alignedFieldValue(column.badgeField, data, row), badge.format, badge.missingText)}
-                        </small>
-                      {/if}
+                      {@render supplementaryFields()}
                     </div>
                   {/if}
                 </td>
@@ -725,11 +729,11 @@
     box-sizing: border-box;
     height: 48px;
     padding: 0 6px;
-    overflow: hidden;
+    overflow: visible;
     border-right: 0;
     line-height: 20px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
   .embedded thead th {
     box-sizing: border-box;
@@ -751,10 +755,10 @@
     display: block;
     min-width: 0;
     max-width: 100%;
-    overflow: hidden;
+    overflow: visible;
     line-height: 20px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
   .embedded .link-cell {
     color: #191919;
@@ -1336,7 +1340,7 @@
     min-height: 703px;
     flex: 0 0 703px;
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: auto;
     overscroll-behavior-inline: contain;
     -webkit-overflow-scrolling: touch;
     border: 0;
@@ -1371,7 +1375,7 @@
     box-sizing: border-box;
     height: 58px;
     padding: 0 4px;
-    overflow: hidden;
+    overflow: visible;
     color: #191919;
     background: #fff;
     border-right: 1px solid rgb(0 0 0 / 0.15);
@@ -1380,8 +1384,8 @@
     font-weight: 400;
     line-height: 20px;
     text-align: center;
-    text-overflow: clip;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
   .forecast-matrix tbody tr.subtotal-row td,
   .forecast-matrix tbody tr.total-row td,
@@ -1395,10 +1399,10 @@
     display: block;
     min-width: 0;
     max-width: 100%;
-    overflow: hidden;
+    overflow: visible;
     line-height: 20px;
-    text-overflow: clip;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
   .fit-container .cell-stack,
   .fit-container .rate-cell {

@@ -74,7 +74,7 @@
   {/if}
   {#if links.length > 0}
     <nav class="links">
-      {#each links as link (link.label + link.href)}
+      {#each links as link, linkIndex (linkIndex)}
         <a href={link.href} onclick={link.onclick}>{link.label} →</a>
       {/each}
     </nav>

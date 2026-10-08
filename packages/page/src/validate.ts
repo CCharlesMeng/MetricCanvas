@@ -1335,16 +1335,18 @@ function componentErrors(
           }
         });
       }
-      component.props.rows.forEach((row, rowIndex) => {
-        check(row.valueField, `${componentPath}/props/rows/${rowIndex}/valueField`, 'measure');
-        (row.changes ?? []).forEach((change, changeIndex) =>
-          check(
-            change.field,
-            `${componentPath}/props/rows/${rowIndex}/changes/${changeIndex}/field`,
-            'measure'
-          )
-        );
-      });
+      for (const rowsKey of ['rows', 'secondaryRows'] as const) {
+        (component.props[rowsKey] ?? []).forEach((row, rowIndex) => {
+          check(row.valueField, `${componentPath}/props/${rowsKey}/${rowIndex}/valueField`, 'measure');
+          (row.changes ?? []).forEach((change, changeIndex) =>
+            check(
+              change.field,
+              `${componentPath}/props/${rowsKey}/${rowIndex}/changes/${changeIndex}/field`,
+              'measure'
+            )
+          );
+        });
+      }
       if (component.props.progress) {
         check(
           component.props.progress.valueField,

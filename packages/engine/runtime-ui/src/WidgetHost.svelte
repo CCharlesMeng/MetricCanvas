@@ -12,14 +12,17 @@
   interface Props {
     snapshot: DataSnapshot;
     notices?: string[];
+    /** Configured content remains identifiable while data is loading or unavailable. */
+    title?: string;
     /** 就绪态渲染内容 */
     ready: Snippet<[Extract<DataSnapshot, { status: 'ready' }>]>;
   }
 
-  let { snapshot, ready, notices = [] }: Props = $props();
+  let { snapshot, ready, notices = [], title }: Props = $props();
   const renderable = $derived(renderableDataSnapshot(snapshot));
 </script>
 
+{#if title && (snapshot.status === 'error' || !renderable)}<h3>{title}</h3>{/if}
 {#if snapshot.status === 'error'}
   {@const view = queryErrorView(snapshot.error)}
   <!-- 标题按错误分类的处理语义选择,不解析错误字符串(issue #51)。 -->
@@ -38,6 +41,14 @@
 {/if}
 
 <style>
+  h3 {
+    flex: none;
+    margin: 0 0 6px;
+    overflow-wrap: anywhere;
+    color: var(--mc-card-title-color, #18181b);
+    font-size: var(--mc-card-title-font-size, 16px);
+    font-weight: var(--mc-card-title-font-weight, 500);
+  }
   .data-notice {
     padding: 4px 8px;
     color: var(--mc-color-muted, #71717a);
@@ -46,6 +57,7 @@
   }
   .skeleton {
     flex: 1;
+    min-height: 72px;
     border-radius: 6px;
     background: linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%);
     background-size: 200% 100%;
