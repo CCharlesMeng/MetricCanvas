@@ -16,8 +16,7 @@ describe('本地开发服务端口契约', () => {
     });
   });
 
-  it.each([['', 443], ['5174', 5174]] as const)('Platform 使用 HTTPS 默认端口或显式覆盖 %s', (override, expectedPort) => {
-    vi.stubEnv('METRICCANVAS_LOCAL_HUAWEI_PORT', override || undefined);
+  it('Platform 固定占用 5174，端口冲突时禁止静默漂移', () => {
     const config = typeof platformViteConfig === 'function'
       ? platformViteConfig({
           command: 'serve',
@@ -27,7 +26,7 @@ describe('本地开发服务端口契约', () => {
         })
       : platformViteConfig;
     expect(config).toMatchObject({
-      server: { port: expectedPort, strictPort: true }
+      server: { port: 5174, strictPort: true }
     });
   });
 

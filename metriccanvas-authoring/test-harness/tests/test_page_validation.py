@@ -117,7 +117,7 @@ class PageContractConformanceTest(unittest.TestCase):
                 original = json.loads(path.read_text())
                 baseline = deepcopy(original)
                 expected = deepcopy(original)
-                expected["schemaVersion"] = "6." + str(max(1, int(original["schemaVersion"].split(".")[1])))
+                expected["schemaVersion"] = "6.5" if original["schemaVersion"] == "6.5" else json.loads((CONTRACT_ROOT / "manifest.json").read_text())["pageSchemaVersion"]
                 expected["layout"] = expected.pop("layoutForm", expected.get("layout", "report"))
                 result = normalize_page_document(original)
                 self.assertEqual(result, {"ok": True, "document": expected, "errors": []})

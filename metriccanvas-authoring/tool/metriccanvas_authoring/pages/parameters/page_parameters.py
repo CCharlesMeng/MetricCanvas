@@ -20,7 +20,7 @@ from metriccanvas_authoring.pages.validation.page_validation import validate_pag
 
 class VerifiedParameterContext(Protocol):
     async def verify(self, prepared, document: dict, artifact_ref: str | None) -> dict:
-        """Prove exact DQE-verified source; return sourceSha256, baseline, dimensionIdentities.
+        """Prove exact DQE-verified source; return sourceSha256, baseline, dimensionIdentities and optional trusted timeIdentities/timePointFields.
 
         Hash alone is not evidence. Implementations must consult their verification
         records, enforce current authorization and bind the exact supplied document.
@@ -149,7 +149,7 @@ class PageParameters:
                 raise ValueError()
         except Exception:
             raise ContentBaselineError('PARAMETER_VERIFICATION_UNAVAILABLE') from None
-        context = {k: deepcopy(context[k]) for k in ('baseline', 'dimensionIdentities') if k in context}
+        context = {k: deepcopy(context[k]) for k in ('baseline', 'dimensionIdentities', 'timeIdentities', 'timePointFields') if k in context}
         result = await self.program({'action': 'extract', 'document': document, 'context': context})
         await self.state.remaining(prepared)
         await self.gate.unchanged(prepared)
@@ -169,7 +169,7 @@ class PageParameters:
             'candidates': [{'candidate_id': ids[c['id']], 'param_id': c['id'],
                 **{k: c['declaration'][k] for k in ('type', 'label', 'multiple', 'granularity') if k in c['declaration']},
                 'coveredQueries': c['coveredQueries'], 'uncoveredQueries': c['uncoveredQueries'],
-                'defaultSelected': c['defaultSelected']} for c in result['candidates']],
+                'dateForm': c.get('dateForm'), 'filterIds': list(dict.fromkeys(l['filterId'] for l in c['locations'] if l.get('filterId'))), 'windows': [l['window'] for l in c['locations'] if l.get('window')], 'defaultSelected': c['defaultSelected']} for c in result['candidates']],
             'text_slots': [{'slot_id': s['id'], 'location': s['path'], 'candidate_ids': [ids[c] for c in s['candidates']]}
                            for s in result['textSlots']],
             'skipped': result['skipped'][:100], 'skippedCount': len(result['skipped']), 'valuesOmitted': True}
@@ -186,7 +186,7 @@ class PageParameters:
         try:
             evidence = await self.deps.verified_context.verify(prepared, deepcopy(source), data['artifactRef'])
             if (evidence.get('sourceSha256') != document_sha256(source) or
-                any(evidence.get(k) != data['context'].get(k) for k in ('baseline', 'dimensionIdentities'))):
+                any(evidence.get(k) != data['context'].get(k) for k in ('baseline', 'dimensionIdentities', 'timeIdentities', 'timePointFields'))):
                 raise ValueError()
         except Exception:
             raise ContentBaselineError('PARAMETER_VERIFICATION_UNAVAILABLE') from None

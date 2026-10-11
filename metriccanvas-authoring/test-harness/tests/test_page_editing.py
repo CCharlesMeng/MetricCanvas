@@ -169,6 +169,7 @@ class PageEditingTest(unittest.TestCase):
                 baseline = json.loads((ROOT / f"contract-snapshot/page/conformance/valid/{name}.json").read_text())
                 target = next(c for c in walk_components(baseline) if c["type"] in {"reportHeader", "table", "barChart", "metricCard"})
                 expected = deepcopy(baseline)
+                expected["schemaVersion"] = "6.5" if baseline["schemaVersion"] == "6.5" else json.loads((ROOT / "contract-snapshot/manifest.json").read_text())["pageSchemaVersion"]
                 next(c for c in walk_components(expected) if c["id"] == target["id"])["props"]["title"] = "changed"
                 result = edit(baseline, title(component=target["id"], value="changed"))
                 self.assertEqual(result["document"], expected)

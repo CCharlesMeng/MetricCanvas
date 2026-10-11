@@ -4,7 +4,7 @@ import {extractPageParams,applyPageParamSelection,resolvePageParams,validate} fr
 
 export function tokensTemplate(){
   const identities=Object.fromEntries(Object.keys(source.dataSources).map(id=>[id,{'区域':'region'}]));
-  const e=extractPageParams(source,{baseline:'tokens-r1',dimensionIdentities:identities});
+  const e=extractPageParams(source,{baseline:'tokens-r1',timeIdentities:Object.fromEntries(Object.keys(source.dataSources).map(id=>[id,'tokens-business-period'])),dimensionIdentities:identities});
   if(!e.ok)throw Error(JSON.stringify(e.issues));
   const s=applyPageParamSelection(e,e.candidates.map(c=>c.id));
   if(!s.ok)throw Error(JSON.stringify(s.issues));
@@ -24,14 +24,16 @@ it('Tokens: all five verified queries round-trip, changed region/period changes 
       const before=structuredClone((source.dataSources as any)[id].source.query.body);
       before.dsl_list[0].filter.dims[0].dim_value_list=inputs.region;
       Object.assign(before.dsl_list[0].filter.time,{start:(inputs['report-period'] as any).start,end:(inputs['report-period'] as any).end});
+      const time=before.dsl_list[0].filter.time;delete time.start;delete time.end;
       expect(ds.source.query.body).toEqual(before);
+      expect(r.resolvedPage.filters?.find(f=>f.type==='timeRange')?.default).toEqual({from:(inputs['report-period'] as any).start,to:(inputs['report-period'] as any).end});
     }
   }
   expect(source).toEqual(original);
 });
 it('stable ids survive label changes and repeated preparation; stale source and unknown selections fail closed',()=>{
   const {e}=tokensTemplate();const previous=structuredClone(e.candidates);previous[0].declaration.label='不同显示名';
-  const next=extractPageParams(source,{baseline:'tokens-r2',dimensionIdentities:Object.fromEntries(Object.keys(source.dataSources).map(id=>[id,{'区域':'region'}])),previousCandidates:previous});
+  const next=extractPageParams(source,{baseline:'tokens-r2',timeIdentities:Object.fromEntries(Object.keys(source.dataSources).map(id=>[id,'tokens-business-period'])),dimensionIdentities:Object.fromEntries(Object.keys(source.dataSources).map(id=>[id,{'区域':'region'}])),previousCandidates:previous});
   expect(next.ok&&next.candidates.map(c=>c.id)).toEqual(e.candidates.map(c=>c.id));
   expect(applyPageParamSelection(e,['report_period']).ok).toBe(false);
   e.source.id='changed';expect(applyPageParamSelection(e,[]).ok).toBe(false);
@@ -42,7 +44,7 @@ it('coverage defaults require a strict majority and more than one query, without
     raw.dataSources[id].source.query.body.dsl_list[0].filter.dims[0].dim_value_list=[i<3?'中国区':'欧洲区'];
     raw.dataSources[id].source.query.body.dsl_list[0].filter.metrics=[{metric_name:'Tokens消耗量',operator:'gt',value:100}];
   }
-  const e=extractPageParams(raw,{baseline:'coverage-r1',dimensionIdentities:Object.fromEntries(ids.map(id=>[id,{'区域':'region'}]))});if(!e.ok)throw Error(JSON.stringify(e.issues));
+  const e=extractPageParams(raw,{baseline:'coverage-r1',timeIdentities:Object.fromEntries(ids.map(id=>[id,'tokens-business-period'])),dimensionIdentities:Object.fromEntries(ids.map(id=>[id,{'区域':'region'}]))});if(!e.ok)throw Error(JSON.stringify(e.issues));
   const dimensions=e.candidates.filter(c=>c.declaration.type==='dimension');expect(dimensions).toHaveLength(2);
   expect(dimensions.find(c=>c.originalValue==='中国区')).toMatchObject({defaultSelected:true,uncoveredQueries:expect.any(Array)});
   expect(dimensions.find(c=>c.originalValue==='欧洲区')?.defaultSelected).toBe(false);

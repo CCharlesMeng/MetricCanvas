@@ -10,6 +10,8 @@
    * 那几个类型:两处各列一遍时,新增一个纯容器只改了模板、判定函数就落在后面
    * (组合卡这次正是这么漏的)。
    */
+  import type { Snippet } from 'svelte';
+  import ReportHeaderView from './ReportHeaderView.svelte';
   import type { Component, DataSnapshot, Row } from '@metriccanvas/page/internal';
   import type { PageDataSnapshots } from '../../runtime/src';
   import {
@@ -25,7 +27,6 @@
     PieChart,
     RankingCard,
     RankingDetailCard,
-    ReportHeader,
     TabContainer,
     Table,
     TextBlock,
@@ -34,6 +35,7 @@
     type NamedDataSlots,
     type TextBlockLink
   } from '../../widgets/src';
+  import AiSummaryView from './ai-summary/AiSummaryView.svelte';
   import AiSummaryHost from './ai-summary/AiSummaryHost.svelte';
   import type { AiSummaryConfig } from './ai-summary/pangu-sse';
   import { fieldRow } from '../../widgets/src/shared/component-data';
@@ -48,6 +50,10 @@
 
   interface Props {
     component: Component;
+    summarySnapshot?: import('./ai-summary/session').AiSummarySnapshot;
+    exportMode?: boolean;
+    headerControls?: Snippet<[string[]]>;
+    headerPeriod?: (component: Extract<Component,{type:"reportHeader"}>) => string | undefined;
     /** 已投影的数据槽:表格的 main 槽已按当前视图状态裁剪。 */
     data: NamedDataSlots;
     /** WidgetHost 呈现的宿主态(加载 / 错误 / 空 / 就绪)。 */
@@ -72,6 +78,7 @@
 
   let {
     component,
+    exportMode = false, headerControls, headerPeriod, summarySnapshot,
     data,
     snapshot,
     pageSnapshots,
@@ -102,6 +109,7 @@
   {#if nested}
     <Self
       component={nestedComponent}
+      {exportMode} {headerControls} {headerPeriod}
       data={nested.data(nestedComponent)}
       snapshot={nested.snapshot(nestedComponent)}
       {pageSnapshots}
@@ -119,15 +127,28 @@
 
 {#if rendersWithoutWidgetHost(component)}
   {#if component.type === 'reportHeader'}
-    <ReportHeader props={component.props} {onback} />
+    <ReportHeaderView props={component.props} period={headerPeriod?.(component)} controls={headerControls} {onback} {exportMode} />
   {:else if component.type === 'text'}
     <TextBlock props={component.props} links={textLinks} />
+  {:else if component.type === 'aiSummary' && exportMode}
+    <AiSummaryView props={component.props} data={summarySnapshot ?? {status:'empty'}} onretry={()=>{}}/>
   {:else if component.type === 'aiSummary'}
     <AiSummaryHost
+      componentId={component.id}
       props={component.props}
       sourceSnapshots={pageSnapshots}
       config={aiSummary}
     />
+  {:else if component.type === 'tabContainer' && exportMode}
+    <div data-export-tabs>
+      {#each component.props.tabs as tab (tab.id)}
+        <section data-export-tab={tab.id}><h3>{tab.label}</h3>
+          {#each 'components' in tab ? tab.components : [tab.component] as tabChild (tabChild.id)}
+            {@render child(tabChild)}
+          {/each}
+        </section>
+      {/each}
+    </div>
   {:else if component.type === 'tabContainer'}
     <TabContainer
       title={component.props.title}
@@ -202,7 +223,7 @@
         <Table
           data={tableData}
           props={{ ...component.props, pagination: table.paginationConfig }}
-          interactive={true}
+          interactive={!exportMode}
           view={table.view}
           selectedCell={table.selectedCell}
           filterOptions={table.filterOptions}
@@ -226,3 +247,7 @@
     {/snippet}
   </WidgetHost>
 {/if}
+
+<style>
+  [data-export-tabs] > section { margin-bottom:24px; }
+</style>

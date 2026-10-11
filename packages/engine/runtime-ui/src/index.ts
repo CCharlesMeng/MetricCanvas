@@ -11,3 +11,5 @@ export type {
   RuntimeNavigationTarget,
   RuntimeViewEvent
 } from './types';
+
+export type { ExportViewOptions, PreparedExportView, ExportViewConsumer } from './export-types';

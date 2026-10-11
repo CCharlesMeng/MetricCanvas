@@ -11,11 +11,14 @@ DimensionValuesResult
 DimensionValuesSnapshot
 DimensionValuesSnapshots
 DimensionValuesStream
+EXPORT_MAX_ROWS
+EXPORT_PREPARATION_TIMEOUT_MS
 ExecutionBootstrap
 ExecutionError
 ExecutionPort
 ExecutionRequest
 ExecutionTarget
+ExportViewError
 FilterState
 FilterValue
 FilterValues
@@ -102,6 +105,9 @@ tableRowTier
 
 ## ./ui
 AiSummaryConfig
+ExportViewConsumer
+ExportViewOptions
+PreparedExportView
 RuntimeConfigurationError
 RuntimeConfigurationErrorCode
 RuntimeNavigation
@@ -114,6 +120,9 @@ isDataGateway
 ## ./ui/types
 AiSummaryConfig
 DataErrorEvent
+ExportViewConsumer
+ExportViewOptions
+PreparedExportView
 RuntimeConfigurationError
 RuntimeConfigurationErrorCode
 RuntimeNavigation

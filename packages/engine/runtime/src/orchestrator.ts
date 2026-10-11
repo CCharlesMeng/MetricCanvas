@@ -6,6 +6,7 @@ import {
   declaredPaginationLimit,
   hasQueryFieldMapping,
   timePointPredicateValue,
+  resolveTimeWindow,
   type DataRow,
   type DataSnapshot,
   type DataSource,
@@ -40,6 +41,8 @@ export type QueryHeaderFilters = Readonly<
 >;
 
 export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
+  captureQueries(): ReadonlyMap<string, EffectiveQuery>;
+  captureComputeYear(): number;
   setQueryPage(dataSourceId: string, pageIndex: number): void;
   setQueryPageSize(dataSourceId: string, pageSize: number): void;
   /** 服务端排序;数组序即优先级,空数组表示恢复查询定义自带的顺序。 */
@@ -100,6 +103,10 @@ export function orchestrate(
         }
       };
     },
+    captureQueries() {
+      return session?.captureQueries() ?? new Map();
+    },
+    captureComputeYear() { return session?.captureComputeYear() ?? new Date().getFullYear(); },
     setQueryPage(dataSourceId, pageIndex) {
       session?.setQueryPage(dataSourceId, pageIndex);
     },
@@ -117,6 +124,8 @@ export function orchestrate(
 
 interface Session {
   current(): PageDataSnapshots;
+  captureQueries(): ReadonlyMap<string, EffectiveQuery>;
+  captureComputeYear(): number;
   setQueryPage(dataSourceId: string, pageIndex: number): void;
   setQueryPageSize(dataSourceId: string, pageSize: number): void;
   setQuerySort(
@@ -464,6 +473,10 @@ function startSession(
 
   return {
     current: () => snapshots,
+    captureComputeYear: () => currentYear,
+    captureQueries() {
+      return new Map(queryBindings.map(binding => [binding.sourceId, structuredClone(composeEffectiveQuery(binding, values, 0, sortRules.get(binding.sourceId) ?? [], headerFilters.get(binding.sourceId) ?? {}))]));
+    },
     setQueryPage(dataSourceId, pageIndex) {
       if (!Number.isInteger(pageIndex) || pageIndex < 0) return;
       const binding = queryBindings.find(
@@ -552,6 +565,9 @@ function composeEffectiveQuery(
         target: 'time',
         value: { from: value.from, to: value.to }
       });
+    } else if (binding.target === 'time' && binding.window && value?.type === 'timePoint') {
+      const range = resolveTimeWindow(value.value, binding.window);
+      filterValues.push({ target: 'time', value: { from: range.start, to: range.end } });
     } else if (binding.target === 'timePoint' && value?.type === 'timePoint') {
       // 时间点是等值谓词,按绑定声明的格式落到维度字段上(ADR-0085)。
       filterValues.push({

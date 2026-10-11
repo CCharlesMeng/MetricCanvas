@@ -14,7 +14,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 12;
+const CURRENT_MINOR = 13;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -36,6 +36,14 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'report-header-date-filters': {
+    minor: 13, description: '报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口',
+    usedAt: document => [
+      ...componentPaths(document, c => c.type === 'reportHeader' && has(props(c), 'filterIds')),
+      ...filterPaths(document, f => f.precision === 'month' || (f.type === 'timeRange' && has(f, 'initialParam')) || has(f, 'required')),
+      ...dataSourcePaths(document, d => Object.values(record(record(record(d.source)?.query)?.filterBindings) ?? {}).some(b => record(b)?.target === 'time' && has(record(b), 'window')))
+    ]
+  },
   'table-column-actions': {
     minor: 12, description: '表格列独立的导航或详情动作',
     usedAt: document => componentPaths(document, component => component.type === 'table' && columnDetailUsed(props(component)?.columns))
@@ -517,7 +525,7 @@ export const versionPolicy: VersionPolicy = {
  * 能力引入历史仍可查询，但不代表旧 6.x 文档可读。
  */
 export function supportedVersions(policy: VersionPolicy = versionPolicy): string[] {
-  const currentMajor = policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 ? [...new Set(['6.5', ...(policy.minor >= 12 ? ['6.11'] : []), policy.current])] : [policy.current];
+  const currentMajor = policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 ? [...new Set(['6.5', ...(policy.minor >= 12 ? ['6.11', ...(policy.minor >= 13 ? ['6.12'] : [])] : []), policy.current])] : [policy.current];
   return policy.major === PAGE_SCHEMA_MAJOR
     ? [...LEGACY_READABLE_PAGE_SCHEMA_VERSIONS, ...currentMajor]
     : currentMajor;
@@ -530,13 +538,7 @@ export function versionErrors(
   const version = schemaVersionOf(document);
   if (version === undefined) return [];
   const parsed = parseVersion(version);
-  if (parsed !== undefined && (
-    version === policy.current || (policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 && version === '6.5') ||
-    (policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 12 && version === '6.11') ||
-    (policy.major === PAGE_SCHEMA_MAJOR && LEGACY_READABLE_PAGE_SCHEMA_VERSIONS.includes(
-      version as (typeof LEGACY_READABLE_PAGE_SCHEMA_VERSIONS)[number]
-    ))
-  )) {
+  if (parsed !== undefined && supportedVersions(policy).includes(version)) {
     return [];
   }
   return [

@@ -1,0 +1,523 @@
+{
+  "claim_ledger": [],
+  "code_fingerprint": "483b6f2cbe34cd875686838525c1c85396ebb964bf1993eb38210d4889c2378f",
+  "counts": {
+    "blocker": 0,
+    "claims_deferred": 0,
+    "claims_unverified": 0,
+    "decided": 0,
+    "deferred": 0,
+    "handoff": 0,
+    "manual_acceptance": 0,
+    "manual_pending": 0,
+    "norm_candidate": 0,
+    "open_question": 0,
+    "skipped": 0,
+    "suggestion": 0,
+    "unplanned_carry": 0
+  },
+  "coverage": {
+    "review-convention": [
+      {
+        "dimension": "C1",
+        "evidence_ids": [
+          "PATTERN-STRUCT-1",
+          "packages/engine/runtime/src/export-snapshots.ts:L1-L4"
+        ],
+        "result": "clear",
+        "scope": "按 PATTERN-STRUCT-1 核对新增目录职责和单向依赖，未发现违反；不补造文件命名偏好。 人工验收宿主已移到 platform/tests/browser，playground 不引用 sibling app 源码。"
+      },
+      {
+        "dimension": "C2",
+        "evidence_ids": [
+          "PATTERN-COMP-2",
+          "packages/engine/runtime-ui/src/ReportHeaderView.svelte:L1-L18"
+        ],
+        "result": "clear",
+        "scope": "widgets 不新增取数或可变交互状态，runtime-ui 持有草稿，组件经 props/snippet 消费捕获状态。"
+      },
+      {
+        "dimension": "C4",
+        "evidence_ids": [
+          "REQ-DEC-1",
+          "packages/engine/runtime-ui/src/export-view.ts:L10-L53"
+        ],
+        "result": "clear",
+        "scope": "网关、取消、完整性拒绝与临时 DOM 清理符合冻结职责。"
+      },
+      {
+        "dimension": "C5",
+        "evidence_ids": [
+          "PATTERN-DATA-1",
+          "PATTERN-DATA-2",
+          "PATTERN-DATA-4",
+          "packages/engine/runtime-ui/src/table-state.ts:L44-L68"
+        ],
+        "result": "clear",
+        "scope": "复用 FilterBar、WidgetHost、ComponentRenderer；live/export 共用表头筛选纯函数。"
+      }
+    ],
+    "review-layout": [
+      {
+        "dimension": "L1",
+        "evidence_ids": [
+          "BE-6"
+        ],
+        "result": "clear",
+        "scope": "三处日期输入高度、字号、间距、内边距与边框一致。"
+      },
+      {
+        "dimension": "L2",
+        "evidence_ids": [
+          "BE-1",
+          "BE-4"
+        ],
+        "result": "clear",
+        "scope": "320 输入边界和 1440 完整长列表未发现冻结声明问题；复用宽/窄/导出截图。"
+      },
+      {
+        "dimension": "L5",
+        "evidence_ids": [
+          "BE-2",
+          "BE-6"
+        ],
+        "result": "clear",
+        "scope": "非法草稿有 aria-invalid、可见红色错误文字，已应用期间保持可区分。"
+      }
+    ],
+    "review-quality": [
+      {
+        "dimension": "Q2",
+        "evidence_ids": [
+          "packages/engine/runtime-ui/src/table-state.ts:L62-L68"
+        ],
+        "result": "clear",
+        "scope": "Q2-1 已消除：读取与导出共用 filterTableRowsByHeaders，未发现剩余适用重复。 Platform 验收宿主复用正式配置 UI 与编辑函数，无另写算法。"
+      },
+      {
+        "dimension": "Q5",
+        "evidence_ids": [
+          "BE-4",
+          "BE-5",
+          "packages/engine/runtime-ui/src/export-view.ts:L11-L53"
+        ],
+        "result": "clear",
+        "scope": "捕获、更新/销毁取消、计时器、finally 与静态图表冻结的清理完整，未发现覆盖、持续泄漏或无限循环。"
+      },
+      {
+        "dimension": "Q6",
+        "evidence_ids": [
+          "BE-3",
+          "BE-5",
+          "ts-regression",
+          "packages/engine/runtime/src/export-snapshots.ts:L50-L78",
+          "BE-7"
+        ],
+        "result": "clear",
+        "scope": "缺少完整性凭据、非法总数、分页不完整、超限、渲染失败、提取失败和编辑失败均有明确拒绝路径。"
+      }
+    ],
+    "self-test": [
+      {
+        "dimension": "F1-1",
+        "evidence_ids": [
+          "BE-1"
+        ],
+        "result": "clear",
+        "scope": "1440/390/320 工具带、标题与换行"
+      },
+      {
+        "dimension": "F2-1",
+        "evidence_ids": [
+          "BE-2",
+          "BE-6",
+          "ts-regression"
+        ],
+        "result": "clear",
+        "scope": "四形态、公历、非法及半范围保留旧期间与恢复"
+      },
+      {
+        "dimension": "F3-1",
+        "evidence_ids": [
+          "BE-3",
+          "ts-regression",
+          "authoring-regression"
+        ],
+        "result": "clear",
+        "scope": "提取确认、既有身份复用及无值模板"
+      },
+      {
+        "dimension": "F4-1",
+        "evidence_ids": [
+          "BE-4",
+          "BE-5",
+          "ts-regression"
+        ],
+        "result": "clear",
+        "scope": "全部正文和Tabs、完整行、静态图表及捕获期间"
+      },
+      {
+        "dimension": "F5-1",
+        "evidence_ids": [
+          "BE-5",
+          "ts-regression",
+          "engine-check",
+          "embed-build"
+        ],
+        "result": "clear",
+        "scope": "本地公共方法并发、取消、超时、超限与清理"
+      },
+      {
+        "dimension": "F6-1",
+        "evidence_ids": [
+          "BE-7",
+          "ts-regression",
+          "authoring-regression",
+          "platform-check",
+          "playground-check",
+          "contract-check",
+          "bundle-check"
+        ],
+        "result": "clear",
+        "scope": "platform 所属正式属性面板新增/修改/删除/非法回滚；本地MCP及契约分发"
+      }
+    ]
+  },
+  "decisions": [],
+  "deferred_candidates": [],
+  "evidence_epoch": "review-1",
+  "findings": [],
+  "handoff": [],
+  "judged_files": {
+    "review-convention": [
+      "packages/page/src/extract-page-params.ts",
+      "packages/page/src/report-date-filters.ts",
+      "packages/page/src/filter.ts",
+      "packages/page/src/page-param.ts",
+      "packages/page/src/param-bindings.ts",
+      "packages/page/src/resolve-page-params.ts",
+      "packages/page/src/query.ts",
+      "packages/page/src/validate.ts",
+      "packages/page/src/version.ts",
+      "packages/page/src/schema/components/report-header.ts",
+      "packages/page/src/schema/filter.ts",
+      "packages/page/src/schema/data-source.ts",
+      "packages/page/src/parameter-program.ts",
+      "packages/engine/runtime/src/export-snapshots.ts",
+      "packages/engine/runtime/src/orchestrator.ts",
+      "packages/engine/runtime/src/filter-state.ts",
+      "packages/engine/runtime/src/page-params.ts",
+      "packages/engine/runtime-ui/src/ExportView.svelte",
+      "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+      "packages/engine/runtime-ui/src/export-types.ts",
+      "packages/engine/runtime-ui/src/export-render-state.ts",
+      "packages/engine/runtime-ui/src/export-view.ts",
+      "packages/engine/runtime-ui/src/report-date-header.ts",
+      "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "packages/engine/runtime-ui/src/RuntimeView.svelte",
+      "packages/engine/runtime-ui/src/ComponentRenderer.svelte",
+      "packages/engine/runtime-ui/src/ai-summary/AiSummaryHost.svelte",
+      "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+      "packages/engine/widgets/src/shared/EChart.svelte",
+      "packages/engine/widgets/src/shared/export-context.ts",
+      "packages/engine/widgets/src/components/table/Table.svelte",
+      "packages/engine/widgets/src/components/map-chart/MapChart.svelte",
+      "packages/embed/src/EmbedRoot.svelte",
+      "packages/embed/src/index.ts",
+      "packages/embed/src/types.ts",
+      "apps/playground/src/lib/ReportDateExample.svelte",
+      "apps/platform/src/lib/workbench/report-date-edit.ts",
+      "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+      "apps/platform/src/lib/workbench/Inspector.svelte",
+      "apps/platform/src/lib/workbench/property-edit.ts",
+      "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "packages/engine/runtime-ui/src/table-state.ts",
+      "apps/platform/tests/browser/ReportDateEditorHarness.svelte",
+      "apps/platform/tests/browser/report-date-editor.ts",
+      "apps/platform/tests/browser/report-date-editor.html",
+      "apps/platform/tests/browser/report-date.vite.config.ts"
+    ],
+    "review-layout": [
+      "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+      "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+      "packages/engine/runtime-ui/src/ExportView.svelte",
+      "packages/engine/runtime-ui/src/ComponentRenderer.svelte",
+      "packages/embed/examples/report-export.html"
+    ],
+    "review-quality": [
+      "packages/page/src/extract-page-params.ts",
+      "packages/page/src/report-date-filters.ts",
+      "packages/engine/runtime/src/export-snapshots.ts",
+      "packages/engine/runtime/src/orchestrator.ts",
+      "packages/engine/runtime/tests/report-export.test.ts",
+      "packages/engine/runtime-ui/src/table-state.ts",
+      "packages/engine/runtime-ui/src/export-view.ts",
+      "packages/engine/runtime-ui/src/export-render-state.ts",
+      "packages/engine/runtime-ui/src/ExportView.svelte",
+      "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "packages/engine/runtime-ui/src/RuntimeView.svelte",
+      "packages/engine/runtime-ui/src/ai-summary/AiSummaryHost.svelte",
+      "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "packages/engine/widgets/src/shared/EChart.svelte",
+      "packages/engine/widgets/src/components/map-chart/MapChart.svelte",
+      "packages/embed/src/EmbedRoot.svelte",
+      "packages/embed/src/index.ts",
+      "apps/platform/src/lib/workbench/report-date-edit.ts",
+      "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+      "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "apps/playground/src/lib/ReportDateExample.svelte",
+      "apps/platform/tests/browser/ReportDateEditorHarness.svelte",
+      "apps/platform/tests/browser/report-date-editor.ts"
+    ],
+    "self-test": [
+      "packages/page/tests/report-date-filters.test.ts",
+      "packages/engine/runtime/tests/report-export.test.ts",
+      "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+      "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+      "packages/engine/runtime-ui/src/report-date-header.ts",
+      "packages/engine/runtime-ui/src/ExportView.svelte",
+      "packages/engine/runtime-ui/src/export-view.ts",
+      "packages/engine/runtime/src/export-snapshots.ts",
+      "packages/engine/runtime-ui/src/RuntimeView.svelte",
+      "apps/playground/src/lib/ReportDateExample.svelte",
+      "apps/platform/tests/workbench/report-date-edit.test.ts",
+      "apps/platform/src/lib/workbench/report-date-edit.ts",
+      "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+      "apps/platform/src/lib/workbench/Inspector.svelte",
+      "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "apps/platform/tests/browser/ReportDateEditorHarness.svelte",
+      "apps/platform/tests/browser/report-date-editor.ts",
+      "apps/platform/tests/browser/report-date-editor.html"
+    ]
+  },
+  "known_gaps": {
+    "review-convention": [],
+    "review-layout": [],
+    "review-quality": [],
+    "self-test": [
+      "正式属性面板及本地整链已验证；完整平台保存流程和真人手工验收未执行。",
+      "本轮不覆盖集成应用PDF编码、真实Relay/Java/DQE/DS联通或生产部署；真实模型调用为0。"
+    ]
+  },
+  "manual_acceptance": [],
+  "norm_candidates": [],
+  "open_questions": [],
+  "portfolio_narrowed": [],
+  "restore_contract": null,
+  "roles": {
+    "review-convention": "executed",
+    "review-layout": "executed",
+    "review-quality": "executed",
+    "self-test": "executed"
+  },
+  "schema_version": 1,
+  "skipped": {
+    "review-convention": [],
+    "review-layout": [],
+    "review-quality": [],
+    "self-test": []
+  },
+  "unplanned_carry": [],
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-1",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "工具带在封面上方，宽容器右对齐，窄容器换行，标题不被日期挤压",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-2",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "四种形态、公历校验、完整输入才提交；参数不随筛选改变",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-3",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "无参数创作；确认同时生成 times/filter/binding/header 引用，复用已有身份，原值查询等价",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-4",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "全分区、全部 Tabs、完整筛选行集、静态图表、无日期控件和详情浮层",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-5",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "Svelte/embed 共享实例方法，回调期间 target 有效，成功失败取消均清理，固定行数和准备超时",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-6",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "AI/人工入口共用协议，绑定引用增删改原子化，生成契约与 Bundle 自洽",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      }
+    ],
+    "facts": {
+      "cross_page": true,
+      "frozen_r": false,
+      "frozen_r5": false,
+      "frozen_r6": false,
+      "has_f3": true,
+      "has_s3_claim": true,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "story",
+      "regression",
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "story",
+        "review-convention",
+        "review-quality",
+        "self-test"
+      ],
+      "phase": "initial",
+      "required_profiles": {
+        "AT-1": "contract",
+        "AT-2": "mock",
+        "AT-3": "contract",
+        "AT-4": "contract",
+        "AT-5": "contract",
+        "AT-6": "contract"
+      },
+      "review_roles": [
+        "review-convention",
+        "review-quality",
+        "self-test"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C2",
+        "C4",
+        "C5"
+      ],
+      "review-layout": [
+        "L1",
+        "L2",
+        "L5"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q5",
+        "Q6"
+      ],
+      "self-test": [
+        "F1-1",
+        "F2-1",
+        "F3-1",
+        "F4-1",
+        "F5-1",
+        "F6-1"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "risk_triggers": [
+      "async-state",
+      "navigation",
+      "new-pattern",
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "navigation",
+        "new-pattern",
+        "shared-boundary"
+      ],
+      "changed_files": 54,
+      "max_changed_files": 5,
+      "restore_tasks": [],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "async-state": [
+        "plan"
+      ],
+      "navigation": [
+        "diff"
+      ],
+      "new-pattern": [
+        "plan"
+      ],
+      "shared-boundary": [
+        "diff"
+      ],
+      "visual": [
+        "diff"
+      ]
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "evidence_epoch": "review-1",
+  "code_fingerprint": "483b6f2cbe34cd875686838525c1c85396ebb964bf1993eb38210d4889c2378f",
+  "status": "executed",
+  "findings": [],
+  "skipped": [],
+  "open_questions": [],
+  "deferred_candidates": [],
+  "evidence_added": [],
+  "known_gaps": [],
+  "role": "review-layout",
+  "judged_files": [
+    "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+    "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+    "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+    "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+    "packages/engine/runtime-ui/src/ExportView.svelte",
+    "packages/engine/runtime-ui/src/ComponentRenderer.svelte",
+    "packages/embed/examples/report-export.html"
+  ],
+  "coverage": [
+    {
+      "dimension": "L1",
+      "scope": "三处日期输入高度、字号、间距、内边距与边框一致。",
+      "evidence_ids": [
+        "BE-6"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "L2",
+      "scope": "320 输入边界和 1440 完整长列表未发现冻结声明问题；复用宽/窄/导出截图。",
+      "evidence_ids": [
+        "BE-1",
+        "BE-4"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "L5",
+      "scope": "非法草稿有 aria-invalid、可见红色错误文字，已应用期间保持可区分。",
+      "evidence_ids": [
+        "BE-2",
+        "BE-6"
+      ],
+      "result": "clear"
+    }
+  ],
+  "evidence_reused": [
+    "BE-1",
+    "BE-2",
+    "BE-4",
+    "BE-6"
+  ]
+}

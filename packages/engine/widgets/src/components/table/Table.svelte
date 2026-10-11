@@ -11,6 +11,9 @@
 </script>
 
 <script lang="ts">
+  import { getContext } from 'svelte';
+  import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
+  const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
   import type {
     FieldValue,
     Row,
@@ -283,6 +286,7 @@
   class:embedded={props.variant === 'embedded'}
   class:forecast-matrix={props.variant === 'forecastMatrix'}
   class:compound-inline={props.compoundCellLayout === 'inline'}
+  class:static-export={staticExport}
   class="table-widget"
   data-table-title={props.title}
   style:--table-header-row-height={`${headerRowHeight}px`}
@@ -1040,6 +1044,7 @@
   }
   .pager-actions {
     display: flex;
+    flex-wrap:wrap; max-width:100%;
     align-items: center;
     min-height: 32px;
   }
@@ -1412,4 +1417,10 @@
   .fit-container .rate-cell {
     width: 100%;
   }
+  .table-widget.static-export, .static-export .scroll, .static-export .content-frame { height:auto!important; min-height:0!important; max-height:none!important; overflow:visible!important; }
+  .static-export table { height:auto!important; }
+  .static-export th, .static-export td { position:static!important; }
+  .static-export thead { display:table-header-group; }
+  .static-export tr { break-inside:avoid; }
+  .static-export .bottom-fade, .static-export .pager { display:none!important; }
 </style>

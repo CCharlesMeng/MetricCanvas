@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MetricCanvas · 日期与完整导出验收</title><style>body{font-family:system-ui;margin:24px;background:#f8fafc;color:#191919}nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}button{padding:8px 12px;border:1px solid #d4d4d8;border-radius:6px;background:#fff}#result{white-space:pre-wrap;line-height:1.6}#dashboard{max-width:1200px;margin:auto}</style></head><body>
+<h1>HTML 集成应用 · 导出方法验收</h1><p>本地合成数据，验证独立实例、冻结日期和异常清理。</p>
+<nav><button id="success">完整导出</button><button id="failure">编码失败</button><button id="cancel">取消准备</button><button id="limit">超过 10000 行</button><button id="timeout">准备超时</button><button id="wide">设置宽表格</button><button id="consume-cancel">消费期间取消</button><button id="bar">普通筛选栏对照</button></nav>
+<p id="result" role="status">正在挂载…</p><div id="dashboard"></div>
+<script src="../dist/metriccanvas-runtime.global.js"></script>
+<script>
+(async()=>{
+  const documentPage=await (await fetch('/fixtures/report-date-filters-page.json')).json();
+  let mode='normal';
+  const calls=[];
+  const gateway={async fetchData(query,_diagnostics,signal){
+    calls.push(query);
+    if(mode==='timeout')return new Promise((_,reject)=>signal?.addEventListener('abort',()=>reject(signal.reason),{once:true}));
+    const capturedMode=mode;
+    await new Promise((resolve,reject)=>{const timer=setTimeout(resolve,100);signal?.addEventListener('abort',()=>{clearTimeout(timer);reject(signal.reason)},{once:true});});
+    const total=capturedMode==='limit'?10001:53;
+    const offset=query.pagination?.offset??0,limit=query.pagination?.limit??10;
+    const range=query.filterValues.find(value=>value.target==='time');
+    const period=range?`${range.value.from} 至 ${range.value.to}`:'固定期间';
+    return {rows:Array.from({length:Math.min(limit,total-offset)},(_,i)=>({entry:`项目 ${offset+i+1} · ${period}`,amount:offset+i+1})),totalCount:total};
+  }};
+  window.runtime=MetricCanvas.mount('#dashboard',{document:documentPage,dataGateway:gateway});
+  const result=document.getElementById('result');result.textContent='页面已挂载；默认期间 2026-01 至 2026-06。';
+  async function run(kind){
+    mode=kind;result.textContent='准备导出…';
+    const controller=new AbortController();
+    if(kind==='cancel')setTimeout(()=>controller.abort(new Error('集成应用取消准备')),10);
+    try{
+      const facts=await window.runtime.withExportView(async({target,paper,wideElements})=>{
+        const connected=target.isConnected;
+        let busyCode;
+        try{await window.runtime.withExportView(async()=>{});}catch(error){busyCode=error.code;}
+        if(kind==='consume-cancel'){setTimeout(()=>controller.abort(),10);return await new Promise(()=>{});}
+        if(kind==='failure')throw Error('集成应用 PDF 编码失败');
+        return {connected,paper,wideSections:wideElements.length,rows:target.querySelectorAll('tbody tr').length,inputs:target.querySelectorAll('input,select,button').length,period:target.querySelector('.as-of')?.textContent?.trim(),busyCode};
+      },{signal:controller.signal});
+      result.textContent=JSON.stringify({...facts,temporaryNodes:document.querySelector('#dashboard [data-metriccanvas-runtime]').shadowRoot.querySelectorAll('[data-metriccanvas-export-stage]').length});
+    }catch(error){result.textContent=JSON.stringify({code:error.code??'HOST_ERROR',message:error.message,temporaryNodes:document.querySelector('#dashboard [data-metriccanvas-runtime]').shadowRoot.querySelectorAll('[data-metriccanvas-export-stage]').length});}
+    finally{mode='normal';}
+  }
+  for(const id of ['success','failure','cancel','limit','timeout','consume-cancel'])document.getElementById(id).onclick=()=>run(id==='success'?'normal':id);
+  document.getElementById('bar').onclick=()=>{const plain=structuredClone(documentPage);delete plain.sections[0].components[0].props.filterIds;window.runtime.update({document:plain,dataGateway:gateway});result.textContent='日期控件已移到普通筛选栏，可对照字号和高度。';};
+  document.getElementById('wide').onclick=()=>{const wide=structuredClone(documentPage);wide.sections[1].components[0].props.fit='content';for(const col of wide.sections[1].components[0].props.columns)col.width=700;window.runtime.update({document:wide,dataGateway:gateway});result.textContent='已设置宽表格；点击完整导出验证横向标记。';};
+})();
+</script></body></html>

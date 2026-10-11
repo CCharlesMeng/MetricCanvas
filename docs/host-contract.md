@@ -217,3 +217,7 @@ const runtime = MetricCanvas.mount('#dashboard', {
 
 
 6.1 的布局兼容读取与存量迁移见 [迁移说明](page-metadata/layout-migration.md)：旧 `layoutForm` 仅在文档输入边界接受，双字段同时出现拒绝，规范化后只写6.1 `layout`。先核验原始修订hash，再规范化；历史修订不原地重写。
+
+## 报告完整导出
+
+集成应用通过每个运行时实例的 `withExportView` 消费静态导出 DOM，负责 PDF 编码、A4 分页及保存。引擎重取捕获查询作用域内的完整数据、展开正文、移除日期输入、固定资源并在方法结束后清理。见 [公共方法与完整性边界](report-export.md)。

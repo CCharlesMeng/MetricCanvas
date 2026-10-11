@@ -1,0 +1,35 @@
+{
+  "case": "detail-component-reject-aisummary",
+  "invariant": "detail-view-component-types",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "详情只允许说明、图表和表格，不允许递归动作或容器",
+      "paths": [
+        "/detailViews/0/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "detailViews": [
+      {
+        "components": [
+          {
+            "id": "detail-negative-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "promptTemplate": "总结 GMV 表现",
+              "relatedData": {
+                "…": "共1个键"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/detail-component-reject-aisummary.json"
+}

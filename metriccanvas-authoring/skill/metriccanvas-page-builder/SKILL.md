@@ -20,6 +20,10 @@ metadata:
 
 安装本 Skill 时复制整个 `metriccanvas-page-builder/` 目录，保留 `references/page-metadata/`。该参考目录自包含，单独安装后也可查阅，无需回到 Bundle 或仓库根目录。
 
+## 报告日期筛选
+
+初次创作没有日期参数时保持纯展示页头；只有业务规格明确要求日期选择或后续参数提取确认后才增加筛选器。显式配置日期时，在 Page Build Spec 的 `dateFilters` 声明四种固定形态中的一种、合法初值、查询绑定与页头位置；单点映射查询时间必须给出窗口。日期字段来自可信数据上下文，多个查询的时间关系由业务规格确认。协议细节查 [日期筛选与初值](references/page-metadata/filters.md) 和 [查询绑定](references/page-metadata/queries-and-bindings.md)。
+
 ## 运行前提与工具注册
 
 运行本 Skill 前，由 Relay 部署侧完成以下注册；这些动作不是 Agent 的运行步骤：

@@ -49,7 +49,9 @@ describe('项目详情全年销售预测', () => {
 
   it('沿用金额契约的自适应单位，显示不修改元计量的原始值', () => {
     const source = load().dataSources['sales-forecast']!;
-    const format = source.fields['object-forecast-dec']!.defaultFormat;
+    const field = source.fields['object-forecast-dec']!;
+    if (field.type !== 'money') throw new Error('预测字段必须为金额');
+    const format = field.defaultFormat;
     expect(format).toBe('cny-adaptive');
     expect(formatValue(5000000, format)).toBe('500万');
     expect(formatValue(100000000, format)).toBe('1.00亿');

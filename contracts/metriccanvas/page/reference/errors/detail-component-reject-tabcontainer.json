@@ -1,0 +1,61 @@
+{
+  "case": "detail-component-reject-tabcontainer",
+  "invariant": "detail-view-component-types",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "详情只允许说明、图表和表格，不允许递归动作或容器",
+      "paths": [
+        "/detailViews/0/components/0"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "详情表格要求完整结果，不能本地处理查询窗口",
+      "paths": [
+        "/detailViews/0/components/0/props/tabs/0/component"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "detailViews": [
+      {
+        "components": [
+          {
+            "id": "detail-negative-tab-container",
+            "type": "tabContainer",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "variant": "analysisStack",
+              "defaultTab": "top",
+              "tabs": [
+                {
+                  "component": {
+                    "id": "detail-negative-top-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "top"
+                    },
+                    "props": {
+                      "variant": "embedded",
+                      "bottomFade": true,
+                      "columns": [
+                        "…（共2项）"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/detail-component-reject-tabcontainer.json"
+}

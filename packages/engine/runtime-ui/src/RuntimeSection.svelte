@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getContext } from 'svelte';
+  import { STATIC_EXPORT_CONTEXT } from '../../widgets/src/shared/export-context';
+  const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
   import {
     isChartComponent,
     sectionBackdrop,
@@ -143,6 +146,7 @@
   class:container-plain={container === 'plain'}
   class:container-panel={container === 'panel'}
   class:container-card={container === 'card'}
+  class:static-export={staticExport}
   class="page-section"
   data-section-id={section.id}
   data-section-container={container}
@@ -200,6 +204,7 @@
 </section>
 
 <style>
+  .page-section[hidden] { display:none!important; }
   /* ==== 缺省容器:通用看板外观 ====
      报表形态下是「白色分区 + 带边框组件单元格」;看板形态把分区外壳让给画布,
      由单元格自己成为模块卡片。两者都是「通用看板外观」的同一档,只是形态不同,
@@ -524,4 +529,6 @@
       inset: auto;
     }
   }
+  .page-section.static-export { margin-bottom:24px; break-inside:auto; }
+  .static-export .section-grid, .static-export .cell { height:auto!important; max-height:none!important; overflow:visible!important; }
 </style>

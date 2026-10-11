@@ -12,7 +12,10 @@
       ],
       "examples": [
         "inline-report",
-        "reference-branches-page"
+        "reference-branches-page",
+        "detail-views",
+        "report-date-filters-page",
+        "reference-export-detail-branches"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -22,7 +25,8 @@
       "rules": [
         "page-layout-compatibility",
         "schema-structure",
-        "schema-version-supported"
+        "schema-version-supported",
+        "detail-view-component-types"
       ]
     },
     "params-and-text-values.md": {
@@ -171,7 +175,9 @@
         "具名算子"
       ],
       "examples": [
-        "compute-page"
+        "compute-page",
+        "cross-source-page",
+        "reference-export-compute-branches"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -298,7 +304,8 @@
         "交互与导航"
       ],
       "examples": [
-        "url-navigation-page"
+        "url-navigation-page",
+        "reference-export-detail-bindings"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -559,7 +566,8 @@
       ],
       "examples": [
         "query-dashboard",
-        "reference-branches-page"
+        "reference-branches-page",
+        "reference-export-column-actions"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -1058,9 +1066,41 @@
     "#/definitions/groupedPageParams/properties/display": "只供呈现的输入层：被文本取值和导航消费，不能进入查询；实际取值用 value 保存。",
     "#/definitions/pageParam/anyOf/3/properties/value/properties/start": "timeRange 参数的包含起点；与 end 一起表达一次页面实例的明确时间区间。",
     "#/definitions/pageParam/anyOf/3/properties/value/properties/end": "timeRange 参数的包含终点；必须与 start 使用相同粒度且不早于起点。",
-    "#/definitions/timePointFilter/properties/initialParam": "初值取自一个单点 times 参数；与 default 互斥，打开后仍可在页内改。"
+    "#/definitions/timePointFilter/properties/initialParam": "初值取自一个单点 times 参数；与 default 互斥，打开后仍可在页内改。",
+    "#/definitions/computeOperator/oneOf/0/properties/keys": "按 local/foreign 显式声明跨源匹配字段。",
+    "#/definitions/computeOperator/oneOf/0/properties/keys/items/properties/local": "当前数据源关联键字段。",
+    "#/definitions/computeOperator/oneOf/0/properties/keys/items/properties/foreign": "被关联数据源的匹配字段。",
+    "#/definitions/computeOperator/oneOf/0/properties/values": "聚合字段、输出字段及封闭聚合方式。",
+    "#/definitions/computeOperator/oneOf/0/properties/values/items/properties/aggregate": "unique 要求唯一值，sum 按可加度量求和；不推断口径。",
+    "#/definitions/computeOperator/oneOf/0/properties/onMissing": "明确关联或字段缺失时的处理方式。",
+    "#/definitions/computeOperator/oneOf/1/properties/onMissing": "明确关联或字段缺失时的处理方式。",
+    "#/definitions/computeOperator/oneOf/2/properties/beginning": "复合增长率的起始字段。",
+    "#/definitions/computeOperator/oneOf/2/properties/ending": "复合增长率的结束字段。",
+    "#/definitions/computeOperator/oneOf/2/properties/periods": "复合增长率的正周期数。",
+    "#/definitions/computeOperator/oneOf/3/properties/timeField": "补齐时间轴的时间字段。",
+    "#/definitions/computeOperator/oneOf/3/properties/range/anyOf/1/properties/currentYearOffset": "相对打开页面时自然年的显式偏移。",
+    "#/definitions/computeOperator/oneOf/3/properties/range/anyOf/2/properties/filter": "显式引用本页筛选器状态。",
+    "#/definitions/computeOperator/oneOf/4/properties/filter": "显式引用本页筛选器状态。",
+    "#/definitions/computeOperator/oneOf/4/properties/cases": "按筛选值显式映射要投影的字段。",
+    "#/definitions/computeOperator/oneOf/4/properties/defaultMode": "无匹配筛选值时的声明模式。",
+    "#/definitions/querySource/properties/resultScope": "complete 声明完整结果；计算不把分页窗口当作全量。",
+    "#/properties/detailViews": "按 id 声明快照或独立查询详情；导出页面不包含详情浮层。",
+    "#/definitions/reportHeaderComponent/properties/props/properties/filterIds": "页头按序引用已声明的日期筛选器；同一控件只出现一次，期间文字使用当前已应用筛选。",
+    "#/definitions/fieldBinding/anyOf/1/properties/missingText": "字段缺值时的展示文字，不生成业务数值。",
+    "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/view": "引用已经声明的详情视图 id。",
+    "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/bindings": "显式映射详情参数来源，支持行、页面参数或筛选器。",
+    "#/definitions/barChartSeries/properties/axis": "系列使用 primary 或 secondary 坐标轴。",
+    "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/view": "引用已经声明的详情视图 id。",
+    "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/bindings": "显式映射详情参数来源，支持行、页面参数或筛选器。",
+    "#/properties/sectionGroups": "声明互斥内容分区组；导出展开全部分区。",
+    "#/properties/sectionGroups/items/properties/sectionIds": "该组包含的分区 id 有序列表。",
+    "#/properties/defaultSectionGroup": "默认内容分区组 id。",
+    "#/properties/sectionGroupParam": "初始化内容分区组的 URL 参数名。",
+    "#/properties/sectionAnchors": "章节定位项；不隐式改变日期筛选。",
+    "#/properties/sectionAnchors/items/properties/sectionId": "定位目标内容分区 id。"
   },
   "enumNotes": {
+    "100": "ratio输出乘100，匹配百分比原值展示。",
     "5.0": "历史5.0文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
     "5.1": "历史5.1文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
     "5.2": "历史5.2文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
@@ -1141,7 +1181,6 @@
     "container": "当前容器作为交互/呈现作用域。",
     "search": "普通文本搜索输入。",
     "mini": "紧凑环形仪表，值域计算不变。",
-    "100": "ratio输出乘100，匹配百分比原值展示。",
     "activityProgress": "活动进展呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
     "analysisStack": "分析纵向堆叠呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
     "compact": "时间点去掉分隔符后送出，例如 202604。",
@@ -1191,7 +1230,18 @@
     "6.10": "新增页内详情浮层动作。",
     "modal": "居中模态浮层。",
     "drawer": "右侧贴边抽屉。",
-    "6.11": "当前作者写出版本，新增时间点与层级维度筛选器的参数初值。"
+    "6.11": "当前作者写出版本，新增时间点与层级维度筛选器的参数初值。",
+    "6.12": "增加跨源计算、内容导航、详情视图和展示字段；保留 6.11 读取。",
+    "6.13": "增加页头日期筛选、月份范围、范围参数初值及时间点查询窗口。",
+    "unique": "要求唯一非空值，歧义时拒绝计算。",
+    "sum": "按声明可加度量求和。",
+    "ignore": "忽略缺失输入；其余值参与求和。",
+    "snapshot": "消费主页面同一份快照，不另查详情数据。",
+    "query": "详情显式独立参数和查询，打开时执行。",
+    "bar": "柱系列。",
+    "line": "线系列。",
+    "primary": "主坐标轴。",
+    "secondary": "次坐标轴。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -1199,6 +1249,72 @@
       "rule": "url-navigation-source-contract",
       "reason": "text不绑定行数据；结构共享的row来源分支被页面导航语义明确拒绝，只有反例，没有合法页面见证。",
       "source": "packages/page/src/navigate.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/0": {
+      "case": "detail-component-reject-reportheader",
+      "rule": "detail-view-component-types",
+      "reason": "详情的展示闭集拒绝 reportHeader；共享组件 Schema 分支只存在语义反例。",
+      "source": "packages/page/src/validate.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/1": {
+      "case": "detail-component-reject-metriccard",
+      "rule": "detail-view-component-types",
+      "reason": "详情的展示闭集拒绝 metricCard；共享组件 Schema 分支只存在语义反例。",
+      "source": "packages/page/src/validate.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/6": {
+      "case": "detail-component-reject-mapchart",
+      "rule": "detail-view-component-types",
+      "reason": "详情的展示闭集拒绝 mapChart；共享组件 Schema 分支只存在语义反例。",
+      "source": "packages/page/src/validate.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/8": {
+      "case": "detail-component-reject-tabcontainer",
+      "rule": "detail-view-component-types",
+      "reason": "详情的展示闭集拒绝 tabContainer；共享组件 Schema 分支只存在语义反例。",
+      "source": "packages/page/src/validate.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/9": {
+      "case": "detail-component-reject-compositecard",
+      "rule": "detail-view-component-types",
+      "reason": "详情的展示闭集拒绝 compositeCard；共享组件 Schema 分支只存在语义反例。",
+      "source": "packages/page/src/validate.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/10": {
+      "case": "detail-component-reject-rankingcard",
+      "rule": "detail-view-component-types",
+      "reason": "详情的展示闭集拒绝 rankingCard；共享组件 Schema 分支只存在语义反例。",
+      "source": "packages/page/src/validate.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/11": {
+      "case": "detail-component-reject-rankingdetailcard",
+      "rule": "detail-view-component-types",
+      "reason": "详情的展示闭集拒绝 rankingDetailCard；共享组件 Schema 分支只存在语义反例。",
+      "source": "packages/page/src/validate.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/12": {
+      "case": "detail-component-reject-keyvaluepanel",
+      "rule": "detail-view-component-types",
+      "reason": "详情的展示闭集拒绝 keyValuePanel；共享组件 Schema 分支只存在语义反例。",
+      "source": "packages/page/src/validate.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/13": {
+      "case": "detail-component-reject-categorybreakdown",
+      "rule": "detail-view-component-types",
+      "reason": "详情的展示闭集拒绝 categoryBreakdown；共享组件 Schema 分支只存在语义反例。",
+      "source": "packages/page/src/validate.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/14": {
+      "case": "detail-component-reject-fieldtext",
+      "rule": "detail-view-component-types",
+      "reason": "详情的展示闭集拒绝 fieldText；共享组件 Schema 分支只存在语义反例。",
+      "source": "packages/page/src/validate.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/16": {
+      "case": "detail-component-reject-aisummary",
+      "rule": "detail-view-component-types",
+      "reason": "详情的展示闭集拒绝 aiSummary；共享组件 Schema 分支只存在语义反例。",
+      "source": "packages/page/src/validate.ts"
     }
   }
 }

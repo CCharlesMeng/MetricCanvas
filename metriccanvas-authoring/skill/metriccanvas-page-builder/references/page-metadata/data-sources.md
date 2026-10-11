@@ -2,7 +2,7 @@
 
 页面数据源使用inline静态行或query受控查询。源id来自dataSources对象键，组件data槽引用它。每个数据源声明结果字段契约；数据快照ready/empty/error是运行态，不回写文档。
 
-query.initial保存捕获时间和匹配该查询的初始行，只能在当前条件与声明初值匹配时使用；变更后由网关查询。执行bootstrap初始结果另走执行端口，条件标识与查询定义一致才复用，不与旧initial混用。查询分页需有效totalCount，失败源沿现有错误分类隔离。
+query.initial保存捕获时间和匹配该查询的初始行，只能在当前条件与声明初值匹配时使用；变更后由网关查询。执行bootstrap初始结果另走执行端口，条件标识与查询定义一致才复用，不与旧initial混用。非查询分页数据源即使 initial.rows.length 小于 initial.totalCount，也直接呈现内嵌初始行，不为补齐数据自动查询；组件提示当前载入条数与总数，不将部分数据当成完整结果。空 initial.rows 同样是可复用快照；未知总数不推断完整性。查询分页需有效totalCount与完整第一页，失败源沿现有错误分类隔离。跨数据源计算仍保留采集批次与结果完整性检查。
 
 可选compute作用于已归一化行集。inline行使用页面字段id；query结果经queryField映射。静态JSON通过校验不证明真实DQE成功。
 
@@ -11,7 +11,7 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `508780df9e2561af9705f7ed2b0d07038e8f2d97027d66f0ae69b5a02a6cb75e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.13。结构真源为本册[schema.json](schema.json)，SHA256 `a3070d52695f46a1c96cd22ed236f0adcc0574384064615d2654d875b7b1f698`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -251,7 +251,21 @@ Schema位置：`#/definitions/querySource/properties/type`。
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "query" | 用于选择@querySource.type分支；同分支其它约束同时成立。 |
+| "query" | 详情显式独立参数和查询，打开时执行。 |
+
+<a id="schema-232f646566696e6974696f6e732f7175657279536f757263652f70726f706572746965732f726573756c7453636f7065"></a>
+
+### `@querySource.resultScope`
+
+Schema位置：`#/definitions/querySource/properties/resultScope`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | const="complete" | Schema未设默认；装配/运行时默认见语义说明 | complete 声明完整结果；计算不把分页窗口当作全量。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "complete" | 用于选择@querySource.resultScope分支；同分支其它约束同时成立。 |
 
 <a id="schema-232f646566696e6974696f6e732f7175657279536f757263652f70726f706572746965732f696e697469616c"></a>
 

@@ -59,7 +59,9 @@ const timeRangeFilterZ = z
     urlParams: z.object({ value: z.string().min(1).optional(), from: z.string().min(1).optional(), to: z.string().min(1).optional(), level: z.string().min(1).optional() }).strict().optional(),
     type: z.literal('timeRange'),
     label: z.string().optional(),
-    precision: z.enum(['date', 'datetime']).optional(),
+    precision: z.enum(['month', 'date', 'datetime']).optional(),
+    initialParam: idZ.optional(),
+    required: z.boolean().optional(),
     visible: z.boolean().optional(),
     default: z
       .union([
@@ -79,6 +81,7 @@ const timePointFilterZ = z
     label: z.string().optional(),
     visible: z.boolean().optional(),
     granularity: z.enum(['month', 'date']),
+    required: z.boolean().optional(),
     default: z.string().optional(),
     initialParam: idZ.optional()
   })

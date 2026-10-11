@@ -22,7 +22,7 @@ class NodeProgram:
 class ParameterPreparationTest(unittest.IsolatedAsyncioTestCase):
     async def test_tokens_selected_template_and_resolution_use_real_ts_program(self):
         source = json.loads((ROOT / 'packages/page/fixtures/parameter-extraction/tokens-parameter-source.json').read_text())
-        context = {'baseline': 'tokens-r1', 'dimensionIdentities': {key: {'区域': 'region'} for key in source['dataSources']}}
+        context = {'baseline': 'tokens-r1', 'dimensionIdentities': {key: {'区域': 'region'} for key in source['dataSources']}, 'timeIdentities': {key: 'business-report-period' for key in source['dataSources']}}
         result = await prepare_page_parameters(source, context, NodeProgram())
         self.assertTrue(result['ok'], result)
         self.assertEqual(result['relay_summary']['selectedIds'], ['region', 'report-period'])
@@ -30,7 +30,8 @@ class ParameterPreparationTest(unittest.IsolatedAsyncioTestCase):
         resolved = await NodeProgram().prepare({'action': 'resolve', 'document': artifact['document'], 'suppliedValues': artifact['originalValues']})
         self.assertTrue(resolved['ok'], resolved)
         for key, ds in source['dataSources'].items():
-            self.assertEqual(resolved['resolvedPage']['dataSources'][key]['source']['query']['body'], ds['source']['query']['body'])
+            self.assertNotIn('start', resolved['resolvedPage']['dataSources'][key]['source']['query']['body']['dsl_list'][0]['filter']['time'])
+        self.assertEqual(resolved['resolvedPage']['filters'][0]['default'], {'from': '2026-01', 'to': '2026-06'})
         self.assertNotIn('originalValues', result['relay_summary'])
 
     async def test_generated_shared_extraction_vector(self):

@@ -1,0 +1,854 @@
+{
+  "code": {
+    "base_ref": "HEAD",
+    "code_fingerprint": "483b6f2cbe34cd875686838525c1c85396ebb964bf1993eb38210d4889c2378f",
+    "files": [
+      {
+        "path": "packages/page/src/extract-page-params.ts",
+        "sha256": "4a1640ccab3b72fcf3fd99aea3c3b0b7bf142ec74ba9bb3729daf3f6f56b35b5"
+      },
+      {
+        "path": "packages/page/src/report-date-filters.ts",
+        "sha256": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      {
+        "path": "packages/page/src/filter.ts",
+        "sha256": "087b76966282fd2a8969873ce6a85f76585f99c804a000b3cc9433fa4ff4b671"
+      },
+      {
+        "path": "packages/page/src/page-param.ts",
+        "sha256": "725928d3eef08bbbb292d9a3562b3d23df3f0b2034f1bff2469aa28a4704bc2c"
+      },
+      {
+        "path": "packages/page/src/param-bindings.ts",
+        "sha256": "a9581315bbe0246aa9f08c8dc036cc944b03140c82c5c1a929f163eca6db91b8"
+      },
+      {
+        "path": "packages/page/src/resolve-page-params.ts",
+        "sha256": "b82744a4170cfd49a292144f18722ac1ad962177f314ab811cb3103bc9c88db8"
+      },
+      {
+        "path": "packages/page/src/query.ts",
+        "sha256": "df1825a725ea94b897dbc570c244ce312aa3666b17b30cb0235870b663ba64cb"
+      },
+      {
+        "path": "packages/page/src/validate.ts",
+        "sha256": "cb628d7f2701a5cf90669d19697885dd86a9480fce829564aa09894110aa9115"
+      },
+      {
+        "path": "packages/page/src/version.ts",
+        "sha256": "b51642e72d65ecb7dfffcfd9a24e1b2466b6bf96958fd410110985813aec2c4d"
+      },
+      {
+        "path": "packages/page/src/schema/components/report-header.ts",
+        "sha256": "a0271cef3858a0964cffc677106cc991c8b75792b2899374dc830ef37d8b479e"
+      },
+      {
+        "path": "packages/page/src/schema/filter.ts",
+        "sha256": "3286a10200ebbcb686aa9e199dda68d3d0caf7c955e5c09ca678756b5553a603"
+      },
+      {
+        "path": "packages/page/src/schema/data-source.ts",
+        "sha256": "86461573f90ee03a6fdd118d3ac037847b7ab1c4e3d2a1f394db5b42349169dc"
+      },
+      {
+        "path": "packages/page/src/parameter-program.ts",
+        "sha256": "01373d5663d42720691a1e740ce7cb18ebeb2e73c0b00a463b013c5757194ee4"
+      },
+      {
+        "path": "packages/page/tests/report-date-filters.test.ts",
+        "sha256": "8beea2f99d610993243e23e6dd8e2cda69df899e8fd245fb0e9503d6f379c526"
+      },
+      {
+        "path": "packages/engine/runtime/src/export-snapshots.ts",
+        "sha256": "96792e13b57357fa857bced476942b04bc9696fd9fc81fe59d9084d1de557625"
+      },
+      {
+        "path": "packages/engine/runtime/src/orchestrator.ts",
+        "sha256": "5c03bd3afe814ce41c8c80f58b15c2670b0a56065bed7e2e0ec2011d22b5fa88"
+      },
+      {
+        "path": "packages/engine/runtime/src/filter-state.ts",
+        "sha256": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978"
+      },
+      {
+        "path": "packages/engine/runtime/src/page-params.ts",
+        "sha256": "05ee52477d7aec0c081da5d132bd01ce31d26d14c791a412dd2a7226a05f967e"
+      },
+      {
+        "path": "packages/engine/runtime/tests/report-export.test.ts",
+        "sha256": "9dcdbdf61c71f35eb8478233300f044e9ad38cb97ed4584c3b4ce6e40afb04f0"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/ExportView.svelte",
+        "sha256": "69529031da85403eca0e7664eadc6dc1b066f5e90dca7e7e98c71ce4ada2b128"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "sha256": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/export-types.ts",
+        "sha256": "6ac4abdf15f656628902594234f52ce1dced6629575f8e7e15a992b820577286"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/export-render-state.ts",
+        "sha256": "992f95a2bb046a89f1c8b5e7ba04ef8b3ea3bdb57783a4c65a3049ff3200a9ec"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/export-view.ts",
+        "sha256": "c7efc27fa8f6032c9f84d09174a14a85dc6c0b2d68e25f6533000e1bdd45871c"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/report-date-header.ts",
+        "sha256": "d066c2f336416bfa84ac59711c0296f200a13ee46947f39c584778a265543a6f"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "sha256": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/RuntimeView.svelte",
+        "sha256": "d5b02cdb4ee61f605475a8333289fc6b4998f1568840140075ec564de35cc696"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/ComponentRenderer.svelte",
+        "sha256": "7d134bfa3c6bfc966394124ca0d9615884cae70278c123e6d2810d4c9c714744"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/ai-summary/AiSummaryHost.svelte",
+        "sha256": "7d13373d505a30906189e73e42329d753f7f973ca408720ee01b53fee622e396"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "sha256": "bc841f685990de3f182981a03822939a4007de949e75d08661b6b33cacdca859"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "sha256": "00c84755ba66cd6a8aa34c1752ed61b38c20a4b92489d381df5aaf61b0087bba"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "sha256": "db7d3bfc3aa349015258d002442aaf06ef4680f7f032780993f3859d018dfd76"
+      },
+      {
+        "path": "packages/engine/widgets/src/shared/EChart.svelte",
+        "sha256": "2841374beabc6ae39732e44ce0101603a3c8bc984892d3267b691ed6f21843a7"
+      },
+      {
+        "path": "packages/engine/widgets/src/shared/export-context.ts",
+        "sha256": "a1d34ee3b6c1ce3fc40d55afb941a4b29b153f256dd62af5f109ecbfb7d348b6"
+      },
+      {
+        "path": "packages/engine/widgets/src/components/table/Table.svelte",
+        "sha256": "c635fcbb86c1280c4334407c8bcf79d8261f68545ac4aef424f405837173b494"
+      },
+      {
+        "path": "packages/engine/widgets/src/components/map-chart/MapChart.svelte",
+        "sha256": "b6ce46b76b1fa026ac295b6a0ed22e0d2a2642c008efe6b119abb0be68ecfa8f"
+      },
+      {
+        "path": "packages/embed/src/EmbedRoot.svelte",
+        "sha256": "257dd958bdb6395a4ff20a6358b80a1674c38add1bb0f4ae75109b82b5613db1"
+      },
+      {
+        "path": "packages/embed/src/index.ts",
+        "sha256": "4babbd6b38c5f37fcac61efe38e12f82321b24a817cd79e1a56e472ef42dcf6f"
+      },
+      {
+        "path": "packages/embed/src/types.ts",
+        "sha256": "6f94b11206d55995c9506e6032abea8405c5c7ac7001327bae93c4eb34f5d9a1"
+      },
+      {
+        "path": "packages/embed/examples/report-export.html",
+        "sha256": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef"
+      },
+      {
+        "path": "apps/playground/src/lib/ReportDateExample.svelte",
+        "sha256": "1f223e23646ba9d3daa5118fcbc8d474808eabc2fca03e58a13548798b0ebc4f"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/report-date-edit.ts",
+        "sha256": "09c007073bd3e2779491638a5c70da34459d562ce9a346c9621dc46ffec3a953"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+        "sha256": "d5f2af3fac9c52764c25d04db68cb86028576afd2ffa5c9b7394153b45b84615"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/Inspector.svelte",
+        "sha256": "18108a89cae267fe4ee488c5644c1fa481c4bb1a8d3ddf6bd3b23aa8bef97a68"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/property-edit.ts",
+        "sha256": "df99789d23f992ba0d6a462e19d2915b2e36332697d41b06ad7f2730299ec174"
+      },
+      {
+        "path": "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+        "sha256": "8fc18cf97477e99c8935ed4deedcbda70e29cfee93078730661563a6b9cb2fac"
+      },
+      {
+        "path": "apps/platform/tests/workbench/report-date-edit.test.ts",
+        "sha256": "5a886b68238768c71c67f2c2b7e8619eab26115b47daaa748574c90d7182886c"
+      },
+      {
+        "path": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/interaction_editing.py",
+        "sha256": "c7799cdc6955e385afc8052159570a4ff2ac6f528702826fa89fb1f8b75f8409"
+      },
+      {
+        "path": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/report_date_filters.py",
+        "sha256": "c47be5ac67f1bf9d6ffde6f8cb4a9159e270bbfd4dd531bd60967a032bc0ed78"
+      },
+      {
+        "path": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+        "sha256": "96e508b73f39caf580c09da52946a2d4c575fdd8f3372a557d289112d3cb4679"
+      },
+      {
+        "path": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/parameters/page_parameters.py",
+        "sha256": "ad2747445aadf09c0a465593bbff204a1237e021ae2ac1f681645ab2fbd4eee4"
+      },
+      {
+        "path": "metriccanvas-authoring/contracts/authored/page-edit-request.schema.json",
+        "sha256": "857a6b2d36888e70da54acfed6d2604a2c0079c19878ab2345ea2e03ae9ed635"
+      },
+      {
+        "path": "packages/page/fixtures/contract-valid/report-date-filters-page.json",
+        "sha256": "e536b3da53f1c8e91bd115a7fc8309f6d22bd179402cd12c4b36042d16d8c334"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/table-state.ts",
+        "sha256": "cd0931c39ebf4011d294a42491ba57eae4148c4383952b6af9ee178f66958abc"
+      },
+      {
+        "path": "packages/engine/runtime-ui/tests/table-state.test.ts",
+        "sha256": "8c19f4bd7f5078f1d803cfb44f3d3aa3d46a0db15f0140525074f1dc641958e4"
+      },
+      {
+        "path": "apps/platform/tests/browser/ReportDateEditorHarness.svelte",
+        "sha256": "b38c8a6f8c449c022119f986afa034e610cbbfcac1911928862b38c0c33e71a4"
+      },
+      {
+        "path": "apps/platform/tests/browser/report-date-editor.ts",
+        "sha256": "6e9778db6a648829044458e601a93a0e7859dc060842d2a13b7ee3c2d3fa8ad2"
+      },
+      {
+        "path": "apps/platform/tests/browser/report-date-editor.html",
+        "sha256": "52bc82fe21a0c1858c233c94e4ceac76ed7987d46d40e2410646e3075f371247"
+      },
+      {
+        "path": "apps/platform/tests/browser/report-date.vite.config.ts",
+        "sha256": "83adf4bbb8f46cacb4199d4ac5037df9efe76ee590662a52efd8a12a2463b58e"
+      }
+    ],
+    "head": "e95086c988e5de3b93c00f949f662e083fa27ac3"
+  },
+  "evidence_epoch": "review-1",
+  "ownership_note": "Mixed working tree. Review only listed story files and incremental report-date/export behavior; do not interpret unrelated IOC/chart/compute changes as this story. Source conformance maintenance is separately documented.",
+  "quality_gate": {
+    "code_fingerprint": "483b6f2cbe34cd875686838525c1c85396ebb964bf1993eb38210d4889c2378f",
+    "commands": [
+      {
+        "artifact": "docs/plan/report-date-filters/evidence/logs/ts-regression.txt",
+        "command": "pnpm exec vitest run packages/page/tests packages/engine/runtime/tests packages/engine/runtime-ui/tests apps/platform/tests/workbench",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "name": "ts-regression"
+      },
+      {
+        "artifact": "docs/plan/report-date-filters/evidence/logs/authoring-regression.txt",
+        "command": "PATH=/private/tmp/report-date-authoring-env/bin:$PATH python metriccanvas-authoring/test-harness/run_tests.py",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "name": "authoring-regression"
+      },
+      {
+        "artifact": "docs/plan/report-date-filters/evidence/logs/engine-check.txt",
+        "command": "pnpm --filter @metriccanvas/engine check",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "name": "engine-check"
+      },
+      {
+        "artifact": "docs/plan/report-date-filters/evidence/logs/platform-check.txt",
+        "command": "pnpm --filter platform check",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "name": "platform-check"
+      },
+      {
+        "artifact": "docs/plan/report-date-filters/evidence/logs/playground-check.txt",
+        "command": "pnpm --filter playground check",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "name": "playground-check"
+      },
+      {
+        "artifact": "docs/plan/report-date-filters/evidence/logs/embed-build.txt",
+        "command": "pnpm --filter @metriccanvas/embed build",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "name": "embed-build"
+      },
+      {
+        "artifact": "docs/plan/report-date-filters/evidence/logs/contract-check.txt",
+        "command": "pnpm authoring:contracts:check",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "name": "contract-check"
+      },
+      {
+        "artifact": "docs/plan/report-date-filters/evidence/logs/bundle-check.txt",
+        "command": "python3 metriccanvas-authoring/scripts/check_bundle.py",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "name": "bundle-check"
+      }
+    ]
+  },
+  "runtime": {
+    "account": "local-example",
+    "api_mode": "synthetic local gateway",
+    "browser": "Codex in-app browser (exact version unavailable)",
+    "dpr": 1,
+    "driver": "CUA in-app browser; real engine with synthetic gateway",
+    "font_fingerprint": "system-ui",
+    "role": "reader",
+    "tenant": "synthetic",
+    "url": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C"
+  },
+  "scenarios": [
+    {
+      "artifacts": [
+        "docs/plan/report-date-filters/evidence/implemented-C-wide.jpg",
+        "docs/plan/report-date-filters/evidence/implemented-C-mobile.jpg",
+        "docs/plan/report-date-filters/evidence/implemented-C-320.jpg"
+      ],
+      "captured_at_code_fingerprint": "483b6f2cbe34cd875686838525c1c85396ebb964bf1993eb38210d4889c2378f",
+      "captured_dependency_hashes": {
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "bc841f685990de3f182981a03822939a4007de949e75d08661b6b33cacdca859",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "00c84755ba66cd6a8aa34c1752ed61b38c20a4b92489d381df5aaf61b0087bba"
+      },
+      "captured_runtime": {
+        "account": "local-example",
+        "api_mode": "synthetic local gateway",
+        "browser": "Codex in-app browser (exact version unavailable)",
+        "dpr": 1,
+        "driver": "CUA in-app browser; real engine with synthetic gateway",
+        "font_fingerprint": "system-ui",
+        "role": "reader",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte"
+      ],
+      "fixture": {
+        "name": "report-date-filters-page",
+        "sha256": "e536b3da53f1c8e91bd115a7fc8309f6d22bd179402cd12c4b36042d16d8c334"
+      },
+      "id": "BE-1",
+      "observations": [
+        "1440: toolbar ends y=276, cover starts y=288; inputs on right",
+        "320: bodyWidth=320; toolbar inside x32..288; inputs within bounds"
+      ],
+      "page": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C",
+      "source": "phase-c",
+      "steps": [
+        "Select monthRange; inspect toolbar/header at 1440; set viewport 390 and 320"
+      ],
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [],
+      "captured_at_code_fingerprint": "483b6f2cbe34cd875686838525c1c85396ebb964bf1993eb38210d4889c2378f",
+      "captured_dependency_hashes": {
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "db7d3bfc3aa349015258d002442aaf06ef4680f7f032780993f3859d018dfd76",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "00c84755ba66cd6a8aa34c1752ed61b38c20a4b92489d381df5aaf61b0087bba",
+        "packages/engine/runtime-ui/src/report-date-header.ts": "d066c2f336416bfa84ac59711c0296f200a13ee46947f39c584778a265543a6f"
+      },
+      "captured_runtime": {
+        "account": "local-example",
+        "api_mode": "synthetic local gateway",
+        "browser": "Codex in-app browser (exact version unavailable)",
+        "dpr": 1,
+        "driver": "CUA in-app browser; real engine with synthetic gateway",
+        "font_fingerprint": "system-ui",
+        "role": "reader",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/report-date-header.ts"
+      ],
+      "fixture": {
+        "name": "report-date-filters-page",
+        "sha256": "e536b3da53f1c8e91bd115a7fc8309f6d22bd179402cd12c4b36042d16d8c334"
+      },
+      "id": "BE-2",
+      "observations": [
+        "Input counts 2/1/2/1; period strings match respective month/date precision",
+        "Invalid draft has aria-invalid=true and old applied period 2026-01..06; valid end changes period to 2026-07..09",
+        "Clear start endpoint: visible 请填写完整的起止期间; applied period remains 2026-01..06; refill 2026-01 recovers"
+      ],
+      "page": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C",
+      "source": "phase-c",
+      "steps": [
+        "Select each of monthRange/month/dateRange/date; enter 2026-07 while old end is 2026-06; set end 2026-09"
+      ],
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [],
+      "captured_at_code_fingerprint": "483b6f2cbe34cd875686838525c1c85396ebb964bf1993eb38210d4889c2378f",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "1f223e23646ba9d3daa5118fcbc8d474808eabc2fca03e58a13548798b0ebc4f",
+        "packages/page/src/extract-page-params.ts": "4a1640ccab3b72fcf3fd99aea3c3b0b7bf142ec74ba9bb3729daf3f6f56b35b5"
+      },
+      "captured_runtime": {
+        "account": "local-example",
+        "api_mode": "synthetic local gateway",
+        "browser": "Codex in-app browser (exact version unavailable)",
+        "dpr": 1,
+        "driver": "CUA in-app browser; real engine with synthetic gateway",
+        "font_fingerprint": "system-ui",
+        "role": "reader",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C"
+      },
+      "depends_on": [
+        "packages/page/src/extract-page-params.ts",
+        "apps/playground/src/lib/ReportDateExample.svelte"
+      ],
+      "fixture": {
+        "name": "report-date-filters-page",
+        "sha256": "e536b3da53f1c8e91bd115a7fc8309f6d22bd179402cd12c4b36042d16d8c334"
+      },
+      "id": "BE-3",
+      "observations": [
+        "Date input counts 0 then 0 then 2; extraction status identifies one candidate"
+      ],
+      "page": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C",
+      "source": "phase-c",
+      "steps": [
+        "Click initial creation; extract; confirm"
+      ],
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-filters/evidence/export-complete.jpg"
+      ],
+      "captured_at_code_fingerprint": "483b6f2cbe34cd875686838525c1c85396ebb964bf1993eb38210d4889c2378f",
+      "captured_dependency_hashes": {
+        "packages/engine/runtime-ui/src/ExportView.svelte": "69529031da85403eca0e7664eadc6dc1b066f5e90dca7e7e98c71ce4ada2b128",
+        "packages/engine/runtime-ui/src/export-render-state.ts": "992f95a2bb046a89f1c8b5e7ba04ef8b3ea3bdb57783a4c65a3049ff3200a9ec",
+        "packages/engine/runtime-ui/src/table-state.ts": "cd0931c39ebf4011d294a42491ba57eae4148c4383952b6af9ee178f66958abc",
+        "packages/engine/widgets/src/shared/EChart.svelte": "2841374beabc6ae39732e44ce0101603a3c8bc984892d3267b691ed6f21843a7"
+      },
+      "captured_runtime": {
+        "account": "local-example",
+        "api_mode": "synthetic local gateway",
+        "browser": "Codex in-app browser (exact version unavailable)",
+        "dpr": 1,
+        "driver": "CUA in-app browser; real engine with synthetic gateway",
+        "font_fingerprint": "system-ui",
+        "role": "reader",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/ExportView.svelte",
+        "packages/engine/runtime-ui/src/export-render-state.ts",
+        "packages/engine/widgets/src/shared/EChart.svelte",
+        "packages/engine/runtime-ui/src/table-state.ts"
+      ],
+      "fixture": {
+        "name": "report-date-filters-page",
+        "sha256": "e536b3da53f1c8e91bd115a7fc8309f6d22bd179402cd12c4b36042d16d8c334"
+      },
+      "id": "BE-4",
+      "observations": [
+        "159 tbody rows, 2 expanded Tabs sections, 1 static chart image, 0 inputs, 0 temporary staging nodes"
+      ],
+      "page": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C",
+      "source": "phase-c",
+      "steps": [
+        "Click prepare complete export view; inspect static output"
+      ],
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-filters/evidence/embed-timeout.jpg",
+        "docs/plan/report-date-filters/evidence/embed-wide.jpg"
+      ],
+      "captured_at_code_fingerprint": "483b6f2cbe34cd875686838525c1c85396ebb964bf1993eb38210d4889c2378f",
+      "captured_dependency_hashes": {
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/embed/src/EmbedRoot.svelte": "257dd958bdb6395a4ff20a6358b80a1674c38add1bb0f4ae75109b82b5613db1",
+        "packages/embed/src/index.ts": "4babbd6b38c5f37fcac61efe38e12f82321b24a817cd79e1a56e472ef42dcf6f",
+        "packages/engine/runtime-ui/src/export-view.ts": "c7efc27fa8f6032c9f84d09174a14a85dc6c0b2d68e25f6533000e1bdd45871c"
+      },
+      "captured_runtime": {
+        "account": "local-example",
+        "api_mode": "synthetic local gateway",
+        "browser": "Codex in-app browser (exact version unavailable)",
+        "dpr": 1,
+        "driver": "CUA in-app browser; real engine with synthetic gateway",
+        "font_fingerprint": "system-ui",
+        "role": "reader",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/export-view.ts",
+        "packages/embed/src/EmbedRoot.svelte",
+        "packages/embed/src/index.ts",
+        "packages/embed/examples/report-export.html"
+      ],
+      "fixture": {
+        "name": "report-date-filters-page",
+        "sha256": "e536b3da53f1c8e91bd115a7fc8309f6d22bd179402cd12c4b36042d16d8c334"
+      },
+      "id": "BE-5",
+      "observations": [
+        "Callback target connected=true, A4, 53 rows, 0 input/select/button, period=2026-01..06, nested call EXPORT_BUSY",
+        "HOST_ERROR, EXPORT_CANCELLED, EXPORT_ROW_LIMIT, EXPORT_TIMEOUT all with temporaryNodes=0",
+        "Consumer promise that never resolves still cancelled: EXPORT_CANCELLED, temporaryNodes=0",
+        "Wide-table example: wideSections=1, 53 rows, inputs=0, temporaryNodes=0",
+        "During preparation live date changed to 2026-07..09; callback period remained captured 2026-01..06, complete 53 rows"
+      ],
+      "page": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C",
+      "source": "phase-c",
+      "steps": [
+        "HTML mount; complete export; encoding failure; preparation cancel; row limit; timeout; consumer cancellation"
+      ],
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [],
+      "captured_at_code_fingerprint": "483b6f2cbe34cd875686838525c1c85396ebb964bf1993eb38210d4889c2378f",
+      "captured_dependency_hashes": {
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "bc841f685990de3f182981a03822939a4007de949e75d08661b6b33cacdca859",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "00c84755ba66cd6a8aa34c1752ed61b38c20a4b92489d381df5aaf61b0087bba"
+      },
+      "captured_runtime": {
+        "account": "local-example",
+        "api_mode": "synthetic local gateway",
+        "browser": "Codex in-app browser (exact version unavailable)",
+        "dpr": 1,
+        "driver": "CUA in-app browser; real engine with synthetic gateway",
+        "font_fingerprint": "system-ui",
+        "role": "reader",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/embed/examples/report-export.html"
+      ],
+      "fixture": {
+        "name": "report-date-filters-page",
+        "sha256": "e536b3da53f1c8e91bd115a7fc8309f6d22bd179402cd12c4b36042d16d8c334"
+      },
+      "id": "BE-6",
+      "observations": [
+        "Three input placements: height 32.5px, font 13px, parent gap 8px, padding 5px 8px, border 1px",
+        "Invalid draft visible status: 时间范围 from 不得晚于 to; color rgb(185, 28, 28)"
+      ],
+      "page": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C",
+      "source": "phase-c",
+      "steps": [
+        "HTML page measure header date input; move same filter to ordinary FilterBar; measure again; measure Svelte example input; create invalid draft"
+      ],
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-filters/evidence/manual-editor.jpg"
+      ],
+      "captured_at_code_fingerprint": "483b6f2cbe34cd875686838525c1c85396ebb964bf1993eb38210d4889c2378f",
+      "captured_dependency_hashes": {
+        "apps/platform/src/lib/workbench/ReportDateProperties.svelte": "d5f2af3fac9c52764c25d04db68cb86028576afd2ffa5c9b7394153b45b84615",
+        "apps/platform/src/lib/workbench/report-date-edit.ts": "09c007073bd3e2779491638a5c70da34459d562ce9a346c9621dc46ffec3a953",
+        "apps/platform/tests/browser/ReportDateEditorHarness.svelte": "b38c8a6f8c449c022119f986afa034e610cbbfcac1911928862b38c0c33e71a4",
+        "apps/platform/tests/browser/report-date-editor.ts": "6e9778db6a648829044458e601a93a0e7859dc060842d2a13b7ee3c2d3fa8ad2"
+      },
+      "captured_runtime": {
+        "account": "local-example",
+        "api_mode": "synthetic local gateway",
+        "browser": "Codex in-app browser (exact version unavailable)",
+        "dpr": 1,
+        "driver": "CUA in-app browser; real engine with synthetic gateway",
+        "font_fingerprint": "system-ui",
+        "role": "reader",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5187/tests/browser/report-date-editor.html"
+      },
+      "depends_on": [
+        "apps/platform/tests/browser/ReportDateEditorHarness.svelte",
+        "apps/platform/tests/browser/report-date-editor.ts",
+        "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+        "apps/platform/src/lib/workbench/report-date-edit.ts"
+      ],
+      "fixture": {
+        "name": "report-date-filters-page",
+        "sha256": "e536b3da53f1c8e91bd115a7fc8309f6d22bd179402cd12c4b36042d16d8c334"
+      },
+      "id": "BE-7",
+      "observations": [
+        "After update: one month control; current period 2026-04; no alert",
+        "After delete: header has no date control or period",
+        "After add: two month inputs; period 2026-01..06",
+        "Invalid edit alert 时间范围 from 不得晚于 to; applied page and period remain 2026-01..06",
+        "Harness is in platform; playground has no sibling-app imports"
+      ],
+      "page": "http://127.0.0.1:5187/tests/browser/report-date-editor.html",
+      "source": "phase-c",
+      "steps": [
+        "Platform-owned local harness opens formal ReportDateProperties component; rest of sequence repeated at this entry",
+        "Select existing period-filter; month; clear initialParam; set 2026-04; yearToDate; apply",
+        "Delete this date filter",
+        "Select new; monthRange 2026-01..06; bind sales query time; apply",
+        "Set start to 2026-09; apply invalid range"
+      ],
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      }
+    }
+  ],
+  "schema_version": 1,
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-1",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "工具带在封面上方，宽容器右对齐，窄容器换行，标题不被日期挤压",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-2",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "四种形态、公历校验、完整输入才提交；参数不随筛选改变",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-3",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "无参数创作；确认同时生成 times/filter/binding/header 引用，复用已有身份，原值查询等价",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-4",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "全分区、全部 Tabs、完整筛选行集、静态图表、无日期控件和详情浮层",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-5",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "Svelte/embed 共享实例方法，回调期间 target 有效，成功失败取消均清理，固定行数和准备超时",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-6",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "AI/人工入口共用协议，绑定引用增删改原子化，生成契约与 Bundle 自洽",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      }
+    ],
+    "facts": {
+      "cross_page": true,
+      "frozen_r": false,
+      "frozen_r5": false,
+      "frozen_r6": false,
+      "has_f3": true,
+      "has_s3_claim": true,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "story",
+      "regression",
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "story",
+        "review-convention",
+        "review-quality",
+        "self-test"
+      ],
+      "phase": "initial",
+      "required_profiles": {
+        "AT-1": "contract",
+        "AT-2": "mock",
+        "AT-3": "contract",
+        "AT-4": "contract",
+        "AT-5": "contract",
+        "AT-6": "contract"
+      },
+      "review_roles": [
+        "review-convention",
+        "review-quality",
+        "self-test"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C2",
+        "C4",
+        "C5"
+      ],
+      "review-layout": [
+        "L1",
+        "L2",
+        "L5"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q5",
+        "Q6"
+      ],
+      "self-test": [
+        "F1-1",
+        "F2-1",
+        "F3-1",
+        "F4-1",
+        "F5-1",
+        "F6-1"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "risk_triggers": [
+      "async-state",
+      "navigation",
+      "new-pattern",
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "navigation",
+        "new-pattern",
+        "shared-boundary"
+      ],
+      "changed_files": 54,
+      "max_changed_files": 5,
+      "restore_tasks": [],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "async-state": [
+        "plan"
+      ],
+      "navigation": [
+        "diff"
+      ],
+      "new-pattern": [
+        "plan"
+      ],
+      "shared-boundary": [
+        "diff"
+      ],
+      "visual": [
+        "diff"
+      ]
+    }
+  }
+}

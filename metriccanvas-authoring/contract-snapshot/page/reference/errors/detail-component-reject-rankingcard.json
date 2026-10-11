@@ -1,0 +1,37 @@
+{
+  "case": "detail-component-reject-rankingcard",
+  "invariant": "detail-view-component-types",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "详情只允许说明、图表和表格，不允许递归动作或容器",
+      "paths": [
+        "/detailViews/0/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "detailViews": [
+      {
+        "components": [
+          {
+            "id": "detail-negative-ranking",
+            "type": "rankingCard",
+            "layout": {
+              "span": 8
+            },
+            "data": {
+              "main": "ranking"
+            },
+            "props": {
+              "title": "排行",
+              "nameField": "name",
+              "valueField": "score"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/detail-component-reject-rankingcard.json"
+}

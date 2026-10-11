@@ -11,9 +11,11 @@
         "5.3",
         "5.4",
         "6.5",
-        "6.11"
+        "6.11",
+        "6.12",
+        "6.13"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13"
     },
     "id": {
       "type": "string",
@@ -103,6 +105,162 @@
             "$ref": "#/definitions/searchFilter"
           }
         ]
+      }
+    },
+    "detailViews": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "snapshot",
+              "query"
+            ]
+          },
+          "filters": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "uniqueItems": true
+          },
+          "components": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/reportHeaderComponent"
+                },
+                {
+                  "$ref": "#/definitions/metricCardComponent"
+                },
+                {
+                  "$ref": "#/definitions/barChartComponent"
+                },
+                {
+                  "$ref": "#/definitions/lineChartComponent"
+                },
+                {
+                  "$ref": "#/definitions/pieChartComponent"
+                },
+                {
+                  "$ref": "#/definitions/tableComponent"
+                },
+                {
+                  "$ref": "#/definitions/mapChartComponent"
+                },
+                {
+                  "$ref": "#/definitions/gaugeComponent"
+                },
+                {
+                  "$ref": "#/definitions/tabContainerComponent"
+                },
+                {
+                  "$ref": "#/definitions/compositeCardComponent"
+                },
+                {
+                  "$ref": "#/definitions/rankingCardComponent"
+                },
+                {
+                  "$ref": "#/definitions/rankingDetailCardComponent"
+                },
+                {
+                  "$ref": "#/definitions/keyValuePanelComponent"
+                },
+                {
+                  "$ref": "#/definitions/categoryBreakdownComponent"
+                },
+                {
+                  "$ref": "#/definitions/fieldTextComponent"
+                },
+                {
+                  "$ref": "#/definitions/textComponent"
+                },
+                {
+                  "$ref": "#/definitions/aiSummaryComponent"
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "mode",
+          "components"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "sectionGroups": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sectionIds": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "sectionIds"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "defaultSectionGroup": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "sectionGroupParam": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "sectionAnchors": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sectionId": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "sectionId",
+          "label"
+        ],
+        "additionalProperties": false
       }
     },
     "sections": {
@@ -828,6 +986,300 @@
     },
     "computeOperator": {
       "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "joinAggregate"
+            },
+            "source": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "keys": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "local": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  },
+                  "foreign": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  }
+                },
+                "required": [
+                  "local",
+                  "foreign"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "values": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "field": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  },
+                  "output": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  },
+                  "aggregate": {
+                    "type": "string",
+                    "enum": [
+                      "unique",
+                      "sum"
+                    ]
+                  }
+                },
+                "required": [
+                  "field",
+                  "output",
+                  "aggregate"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "onMissing": {
+              "type": "string",
+              "const": "null"
+            }
+          },
+          "required": [
+            "op",
+            "source",
+            "keys",
+            "values",
+            "onMissing"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "sumFields"
+            },
+            "fields": {
+              "minItems": 2,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              },
+              "uniqueItems": true
+            },
+            "output": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "onMissing": {
+              "type": "string",
+              "enum": [
+                "null",
+                "ignore"
+              ]
+            }
+          },
+          "required": [
+            "op",
+            "fields",
+            "output",
+            "onMissing"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "cagr"
+            },
+            "beginning": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "ending": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "periods": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "output": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "scale": {
+              "type": "number",
+              "const": 100
+            }
+          },
+          "required": [
+            "op",
+            "beginning",
+            "ending",
+            "periods",
+            "output"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "timeFill"
+            },
+            "timeField": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "granularity": {
+              "type": "string",
+              "enum": [
+                "day",
+                "month"
+              ]
+            },
+            "format": {
+              "type": "string",
+              "enum": [
+                "iso",
+                "compact"
+              ]
+            },
+            "range": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "from": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "to": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "from",
+                    "to"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "currentYearOffset": {
+                      "type": "integer",
+                      "minimum": -100,
+                      "maximum": 100
+                    }
+                  },
+                  "required": [
+                    "currentYearOffset"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "filter": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    }
+                  },
+                  "required": [
+                    "filter"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "measures": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              },
+              "uniqueItems": true
+            },
+            "groupBy": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "op",
+            "timeField",
+            "granularity",
+            "format",
+            "range",
+            "measures"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "selectField"
+            },
+            "filter": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "cases": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "minLength": 1
+              },
+              "additionalProperties": {
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              },
+              "minProperties": 1
+            },
+            "defaultMode": {
+              "type": "string",
+              "minLength": 1
+            },
+            "output": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            }
+          },
+          "required": [
+            "op",
+            "filter",
+            "cases",
+            "defaultMode",
+            "output"
+          ],
+          "additionalProperties": false
+        },
         {
           "type": "object",
           "properties": {
@@ -1650,6 +2102,10 @@
           "type": "string",
           "const": "query"
         },
+        "resultScope": {
+          "type": "string",
+          "const": "complete"
+        },
         "initial": {
           "allOf": [
             {
@@ -1837,6 +2293,13 @@
                   "target": {
                     "type": "string",
                     "const": "time"
+                  },
+                  "window": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/timeWindow"
+                      }
+                    ]
                   }
                 },
                 "required": [
@@ -2190,9 +2653,17 @@
         "precision": {
           "type": "string",
           "enum": [
+            "month",
             "date",
             "datetime"
           ]
+        },
+        "initialParam": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "required": {
+          "type": "boolean"
         },
         "visible": {
           "type": "boolean"
@@ -2357,6 +2828,9 @@
             "month",
             "date"
           ]
+        },
+        "required": {
+          "type": "boolean"
         },
         "default": {
           "type": "string"
@@ -2529,120 +3003,6 @@
       ],
       "additionalProperties": false
     },
-    "section": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "pattern": "^[a-z0-9][a-z0-9-]*$"
-        },
-        "title": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/nonEmptyTextValue"
-            }
-          ]
-        },
-        "container": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/sectionContainer"
-            }
-          ]
-        },
-        "columnTracks": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/sectionColumnTracks"
-            }
-          ]
-        },
-        "components": {
-          "minItems": 1,
-          "type": "array",
-          "items": {
-            "oneOf": [
-              {
-                "$ref": "#/definitions/reportHeaderComponent"
-              },
-              {
-                "$ref": "#/definitions/metricCardComponent"
-              },
-              {
-                "$ref": "#/definitions/barChartComponent"
-              },
-              {
-                "$ref": "#/definitions/lineChartComponent"
-              },
-              {
-                "$ref": "#/definitions/pieChartComponent"
-              },
-              {
-                "$ref": "#/definitions/tableComponent"
-              },
-              {
-                "$ref": "#/definitions/mapChartComponent"
-              },
-              {
-                "$ref": "#/definitions/gaugeComponent"
-              },
-              {
-                "$ref": "#/definitions/tabContainerComponent"
-              },
-              {
-                "$ref": "#/definitions/compositeCardComponent"
-              },
-              {
-                "$ref": "#/definitions/rankingCardComponent"
-              },
-              {
-                "$ref": "#/definitions/rankingDetailCardComponent"
-              },
-              {
-                "$ref": "#/definitions/keyValuePanelComponent"
-              },
-              {
-                "$ref": "#/definitions/categoryBreakdownComponent"
-              },
-              {
-                "$ref": "#/definitions/fieldTextComponent"
-              },
-              {
-                "$ref": "#/definitions/textComponent"
-              },
-              {
-                "$ref": "#/definitions/aiSummaryComponent"
-              }
-            ]
-          }
-        }
-      },
-      "required": [
-        "id",
-        "components"
-      ],
-      "additionalProperties": false
-    },
-    "sectionContainer": {
-      "type": "string",
-      "enum": [
-        "plain",
-        "panel",
-        "card"
-      ],
-      "description": "plain 无容器组件自带外观；panel 渐变章节面板+居中图标标题+内层白底；card 白色小节卡片+左对齐小标题"
-    },
-    "sectionColumnTracks": {
-      "minItems": 1,
-      "maxItems": 12,
-      "type": "array",
-      "items": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 1000
-      },
-      "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
-    },
     "reportHeaderComponent": {
       "type": "object",
       "properties": {
@@ -2661,6 +3021,14 @@
           "properties": {
             "title": {
               "$ref": "#/definitions/nonEmptyTextValue"
+            },
+            "filterIds": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              }
             },
             "subtitle": {
               "allOf": [
@@ -3060,6 +3428,11 @@
               "type": "string",
               "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
             },
+            "missingText": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
             "format": {
               "description": "只控制当前组件中这一次字段绑定的展示格式",
               "type": "string",
@@ -3250,49 +3623,155 @@
               "const": "click"
             },
             "openDetail": {
-              "type": "object",
-              "properties": {
-                "surface": {
-                  "type": "string",
-                  "enum": [
-                    "modal",
-                    "drawer"
-                  ]
-                },
-                "titleField": {
-                  "allOf": [
-                    {
-                      "$ref": "#/definitions/fieldReference"
-                    }
-                  ]
-                },
-                "fields": {
-                  "minItems": 1,
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "label": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "field": {
-                        "$ref": "#/definitions/fieldReference"
-                      }
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "surface": {
+                      "type": "string",
+                      "enum": [
+                        "modal",
+                        "drawer"
+                      ]
                     },
-                    "required": [
-                      "label",
-                      "field"
-                    ],
-                    "additionalProperties": false
-                  }
+                    "titleField": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/fieldReference"
+                        }
+                      ]
+                    },
+                    "fields": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "field": {
+                            "$ref": "#/definitions/fieldReference"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "field"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "surface",
+                    "fields"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "surface": {
+                      "type": "string",
+                      "enum": [
+                        "modal",
+                        "drawer"
+                      ]
+                    },
+                    "titleField": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/fieldReference"
+                        }
+                      ]
+                    },
+                    "view": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    },
+                    "bindings": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "additionalProperties": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "source": {
+                                "type": "string",
+                                "const": "row"
+                              },
+                              "field": {
+                                "type": "string",
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                              }
+                            },
+                            "required": [
+                              "source",
+                              "field"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "source": {
+                                "type": "string",
+                                "const": "param"
+                              },
+                              "id": {
+                                "type": "string",
+                                "pattern": "^[a-z0-9][a-z0-9-]*$"
+                              }
+                            },
+                            "required": [
+                              "source",
+                              "id"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "source": {
+                                "type": "string",
+                                "const": "filter"
+                              },
+                              "id": {
+                                "type": "string",
+                                "pattern": "^[a-z0-9][a-z0-9-]*$"
+                              },
+                              "part": {
+                                "type": "string",
+                                "enum": [
+                                  "value",
+                                  "from",
+                                  "to",
+                                  "level"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "source",
+                              "id"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "surface",
+                    "view"
+                  ],
+                  "additionalProperties": false
                 }
-              },
-              "required": [
-                "surface",
-                "fields"
-              ],
-              "additionalProperties": false
+              ]
             }
           },
           "required": [
@@ -3435,6 +3914,20 @@
             {
               "$ref": "#/definitions/textValue"
             }
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "bar",
+            "line"
+          ]
+        },
+        "axis": {
+          "type": "string",
+          "enum": [
+            "primary",
+            "secondary"
           ]
         },
         "role": {
@@ -3913,6 +4406,244 @@
         },
         "link": {
           "type": "boolean"
+        },
+        "openDetail": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "surface": {
+                  "type": "string",
+                  "enum": [
+                    "modal",
+                    "drawer"
+                  ]
+                },
+                "titleField": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/fieldReference"
+                    }
+                  ]
+                },
+                "fields": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "field": {
+                        "$ref": "#/definitions/fieldReference"
+                      }
+                    },
+                    "required": [
+                      "label",
+                      "field"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "surface",
+                "fields"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "surface": {
+                  "type": "string",
+                  "enum": [
+                    "modal",
+                    "drawer"
+                  ]
+                },
+                "titleField": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/fieldReference"
+                    }
+                  ]
+                },
+                "view": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "bindings": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "additionalProperties": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "type": "string",
+                            "const": "row"
+                          },
+                          "field": {
+                            "type": "string",
+                            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "field"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "type": "string",
+                            "const": "param"
+                          },
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[a-z0-9][a-z0-9-]*$"
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "id"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "type": "string",
+                            "const": "filter"
+                          },
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[a-z0-9][a-z0-9-]*$"
+                          },
+                          "part": {
+                            "type": "string",
+                            "enum": [
+                              "value",
+                              "from",
+                              "to",
+                              "level"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "id"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "surface",
+                "view"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "navigate": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "type": "string",
+              "minLength": 1
+            },
+            "query": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "minLength": 1
+              },
+              "additionalProperties": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "type": "string",
+                        "const": "row"
+                      },
+                      "field": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "field"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "type": "string",
+                        "const": "param"
+                      },
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "type": "string",
+                        "const": "filter"
+                      },
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "part": {
+                        "type": "string",
+                        "enum": [
+                          "value",
+                          "from",
+                          "to",
+                          "level"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "id"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "href"
+          ],
+          "additionalProperties": false
         },
         "align": {
           "type": "string",
@@ -5207,7 +5938,121 @@
         "term"
       ],
       "additionalProperties": false
+    },
+    "section": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "title": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nonEmptyTextValue"
+            }
+          ]
+        },
+        "container": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/sectionContainer"
+            }
+          ]
+        },
+        "columnTracks": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/sectionColumnTracks"
+            }
+          ]
+        },
+        "components": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/reportHeaderComponent"
+              },
+              {
+                "$ref": "#/definitions/metricCardComponent"
+              },
+              {
+                "$ref": "#/definitions/barChartComponent"
+              },
+              {
+                "$ref": "#/definitions/lineChartComponent"
+              },
+              {
+                "$ref": "#/definitions/pieChartComponent"
+              },
+              {
+                "$ref": "#/definitions/tableComponent"
+              },
+              {
+                "$ref": "#/definitions/mapChartComponent"
+              },
+              {
+                "$ref": "#/definitions/gaugeComponent"
+              },
+              {
+                "$ref": "#/definitions/tabContainerComponent"
+              },
+              {
+                "$ref": "#/definitions/compositeCardComponent"
+              },
+              {
+                "$ref": "#/definitions/rankingCardComponent"
+              },
+              {
+                "$ref": "#/definitions/rankingDetailCardComponent"
+              },
+              {
+                "$ref": "#/definitions/keyValuePanelComponent"
+              },
+              {
+                "$ref": "#/definitions/categoryBreakdownComponent"
+              },
+              {
+                "$ref": "#/definitions/fieldTextComponent"
+              },
+              {
+                "$ref": "#/definitions/textComponent"
+              },
+              {
+                "$ref": "#/definitions/aiSummaryComponent"
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "components"
+      ],
+      "additionalProperties": false
+    },
+    "sectionContainer": {
+      "type": "string",
+      "enum": [
+        "plain",
+        "panel",
+        "card"
+      ],
+      "description": "plain 无容器组件自带外观；panel 渐变章节面板+居中图标标题+内层白底；card 白色小节卡片+左对齐小标题"
+    },
+    "sectionColumnTracks": {
+      "minItems": 1,
+      "maxItems": 12,
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1000
+      },
+      "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.11"
+  "$id": "https://metriccanvas/page/v6.13"
 }

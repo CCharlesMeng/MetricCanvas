@@ -6,12 +6,14 @@
 
 urlParams仅映射该类允许的value/from/to/level键，不能与本页其它参数或筛选输入冲突。候选值来自受控数据能力，业务维度值不是协议枚举。
 
+6.13 的 timeRange.precision=month 使用 YYYY-MM 两端；date 使用 YYYY-MM-DD，datetime 保留 YYYY-MM-DDTHH:mm。timeRange.initialParam 与 default 互斥，接受精度匹配的必需 times 参数；timePoint 仅接受单点 times。required 日期筛选器保留已应用值，完整合法的输入才提交；页头引用只改变位置。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `508780df9e2561af9705f7ed2b0d07038e8f2d97027d66f0ae69b5a02a6cb75e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.13。结构真源为本册[schema.json](schema.json)，SHA256 `a3070d52695f46a1c96cd22ed236f0adcc0574384064615d2654d875b7b1f698`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -373,12 +375,33 @@ Schema位置：`#/definitions/timeRangeFilter/properties/precision`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["date","datetime"] | Schema未设默认；装配/运行时默认见语义说明 | 显示精度，不改原始数据。 |
+| "string" | 本分支可选 | enum=["month","date","datetime"] | Schema未设默认；装配/运行时默认见语义说明 | 显示精度，不改原始数据。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "datetime" | 带时间部分的日期时间字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f696e697469616c506172616d"></a>
+
+### `@timeRangeFilter.initialParam`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/initialParam`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 只初始化筛选状态的维度参数id。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f7265717569726564"></a>
+
+### `@timeRangeFilter.required`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/required`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 参数是否必需；缺值时是否阻止初始化。 |
 
 <a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f76697369626c65"></a>
 
@@ -715,6 +738,16 @@ Schema位置：`#/definitions/timePointFilter/properties/granularity`。
 |---|---|
 | "month" | 月粒度；timePoint使用YYYY-MM。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f7265717569726564"></a>
+
+### `@timePointFilter.required`
+
+Schema位置：`#/definitions/timePointFilter/properties/required`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 参数是否必需；缺值时是否阻止初始化。 |
 
 <a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f64656661756c74"></a>
 
@@ -1122,7 +1155,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 ## 联合分支见证（生成）
 
 - `#/definitions/timeRangeFilter/properties/default/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/1/default`。
-- `#/definitions/timeRangeFilter/properties/default/anyOf/1`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/filters/2/default`。
+- `#/definitions/timeRangeFilter/properties/default/anyOf/1`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/filters/1/default`。
 - `#/definitions/timeRangeFilter/properties/default/anyOf/2`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/2/default`。
 - `#/definitions/relativeTimeExpression/properties/range/oneOf/0`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/filters/3/default/range`。
 - `#/definitions/relativeTimeExpression/properties/range/oneOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/2/default/range`。

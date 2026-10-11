@@ -1,0 +1,126 @@
+{
+  "contract_sha256": "dce219e2f0017c3559cd3bd7d2e8c8924dc7a9d97eda075c5a3cdb51a60ba240",
+  "environment": {
+    "dpr": 1,
+    "scroll": {
+      "height": 1000,
+      "width": 1440
+    },
+    "user_agent": "unavailable-in-read-only-cua-dom-scope",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  "inputValue": "2026-01-31",
+  "observed": {
+    "route": "/packages/engine/runtime-ui/tests/browser/date-picker.html",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  "page_available": true,
+  "rules": {
+    "R1-3-adjacent-month-dates": {
+      "actual": true,
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table .pre-month,[data-harness-primary] .mc-date-popover table .next-month",
+        "strategy": "css"
+      },
+      "matched": 11,
+      "status": "ok"
+    },
+    "R1-3-single-calendar-count": {
+      "actual": 1,
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R1-3-weekday-count": {
+      "actual": 7,
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table th",
+        "strategy": "css"
+      },
+      "matched": 7,
+      "status": "ok"
+    },
+    "R2-1-date-value": {
+      "actual": "2026-01-31",
+      "locator_used": {
+        "selector": "[data-harness-primary] input",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R2-1-weekday-order": {
+      "actual": [
+        "日",
+        "一",
+        "二",
+        "三",
+        "四",
+        "五",
+        "六"
+      ],
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table th",
+        "strategy": "css"
+      },
+      "matched": 7,
+      "status": "ok"
+    },
+    "R3-4-single-date-panel": {
+      "actual": {
+        "bottom": 507,
+        "height": 307,
+        "left": 342,
+        "right": 702,
+        "top": 200,
+        "width": 360,
+        "x": 342,
+        "y": 200
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R3-6-single-grid": {
+      "actual": {
+        "bottom": 499,
+        "height": 240,
+        "left": 358,
+        "right": 686,
+        "top": 259,
+        "width": 328,
+        "x": 358,
+        "y": 259
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R3-6-weekday-height": {
+      "actual": 32,
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table tr:first-child",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    }
+  },
+  "schema_version": 1,
+  "state": "date"
+}

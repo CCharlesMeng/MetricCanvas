@@ -1,6 +1,6 @@
 <script lang="ts">
   import { tablePagination } from './table-pagination';
-  import { tick, untrack } from 'svelte';
+  import { tick, untrack, setContext, onDestroy } from 'svelte';
   import { initialSectionGroup, selectedSectionGroup, sectionGroupFor, visibleSections } from './section-navigation';
   import {
     parsePage,
@@ -61,6 +61,10 @@
     type TableSelectedCell,
     type TableViewState
   } from '../../widgets/src';
+  import { withPreparedExportView } from './export-view';
+  import type { ExportViewConsumer, ExportViewOptions } from './export-types';
+  import { SUMMARY_EXPORT_CAPTURE, type SummaryCapture } from './export-render-state';
+  import { ExportViewError } from '../../runtime/src/export-snapshots';
   import ComponentRenderer from './ComponentRenderer.svelte';
   import DetailContent from './DetailContent.svelte';
   import { detailViewInput } from '../../runtime/src/detail-view';
@@ -73,6 +77,8 @@
   } from './map-hierarchy';
   import { collectDataErrors } from './data-error-events';
   import { runtimeVersionError } from './version-error';
+  import { contentFilterDeclarations, headerPeriod } from './report-date-header';
+  import { validateCalendarTimeRange } from '@metriccanvas/page/internal';
   import FilterBar from './filters/FilterBar.svelte';
   import DashboardToolbar from './dashboard/DashboardToolbar.svelte';
   import { dashboardFilterGroups } from './dashboard/filter-groups';
@@ -82,7 +88,7 @@
     dimensionValueOf
   } from './filters/cascade';
   import { hasVisibleFilters } from './filters/filter-bar';
-  import { changedFilters, resetFilteredTablePages, sortTableRows } from './table-state';
+  import { changedFilters, resetFilteredTablePages, sortTableRows, filterTableRowsByHeaders } from './table-state';
   import { applySearchFilters } from './filters/inline-search';
   import { hostRenderSnapshot, renderableDataSnapshot } from './widget-host-state';
   import RuntimeSection from './RuntimeSection.svelte';
@@ -125,6 +131,23 @@
     execution
   }: RuntimeSurfaceProps = $props();
 
+  const summaryCapture:SummaryCapture=new Map();
+  setContext(SUMMARY_EXPORT_CAPTURE,summaryCapture);
+  let exporting:AbortController|undefined;
+  onDestroy(()=>exporting?.abort(new ExportViewError('EXPORT_CANCELLED','页面实例已销毁')));
+  export async function withExportView<T>(consume:ExportViewConsumer<T>,options?:ExportViewOptions):Promise<T> {
+    if(pageState.phase!=='ready'||!stream||!surfaceRoot)throw new ExportViewError('EXPORT_NOT_READY','页面实例尚未就绪');
+    if(exporting)throw new ExportViewError('EXPORT_BUSY','该页面已有导出任务');
+    // Capture every runtime value before the first await; later interactions stay independent.
+    const page=JSON.parse(JSON.stringify(pageState.page)) as Page;
+    const summaries=Object.fromEntries([...summaryCapture].map(([id,get])=>[id,JSON.parse(JSON.stringify(get()))]));
+    for(const component of flattenPageComponents({sections:page.sections})) if(component.type==='aiSummary' && !['ready','empty'].includes(summaries[component.id]?.status))throw new ExportViewError('EXPORT_NOT_READY','AI 总结尚未完成，不能导出不完整页面');
+    const controller=new AbortController();exporting=controller;
+    const state={page,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:new Map(),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries};
+    const queries=stream.captureQueries();
+    try {return await withPreparedExportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller},consume,options);}
+    finally {if(exporting===controller)exporting=undefined;}
+  }
   let pageState = $state<PageState>({ phase: 'loading' });
   let snapshots = $state<PageDataSnapshots>(new Map());
   let filterValues = $state<FilterValues>(new Map());
@@ -184,6 +207,7 @@
     revisionId: string | undefined,
     bootstrap: import('../../runtime/src').ExecutionBootstrap | undefined
   ) {
+    exporting?.abort(new ExportViewError('EXPORT_CANCELLED','页面实例已更新'));
     const mySession = ++session;
     pageState = { phase: 'loading' };
     snapshots = new Map();
@@ -582,6 +606,8 @@
 
   function writeTimeRange(filterId: string, range: TimeRangeValue | null) {
     if (pageState.phase !== 'ready' || !pageState.capabilities.filters) return;
+    const declaration = declarations.find(f=>f.id===filterId);
+    if (declaration?.type !== 'timeRange' || (!range && declaration.required) || (range && validateCalendarTimeRange(range,declaration.precision ?? 'date').length)) return;
     filterState?.write(filterId, range ? { type: 'timeRange', ...range } : null);
   }
 
@@ -591,6 +617,8 @@
     value: string | null
   ) {
     if (pageState.phase !== 'ready' || !pageState.capabilities.filters) return;
+    const declaration = declarations.find(f=>f.id===filterId);
+    if (!value && declaration?.type === 'timePoint' && declaration.required) return;
     filterState?.write(filterId, value ? { type: 'timePoint', granularity, value } : null);
   }
 
@@ -897,19 +925,7 @@
       filterValues,
       source ? resolveDataSourceFields(source) : {}
     );
-    let rows = searched.filter((row) =>
-      Object.entries(applied).every(([field, filter]) => {
-        const value = row[field];
-        if (filter.mode === 'select') {
-          return filter.values.includes(String(value ?? ''));
-        }
-        const comparable = String(value ?? '');
-        return (
-          (!filter.from || comparable >= filter.from) &&
-          (!filter.to || comparable <= filter.to)
-        );
-      })
-    );
+    let rows = filterTableRowsByHeaders(searched,applied);
     if (view.sort.length > 0) {
       rows = sortTableRows(rows, view.sort);
     }
@@ -1093,6 +1109,7 @@
     </div>
   {:else}
     {@const readyPage = pageState.page}
+    {@const contentFilters = contentFilterDeclarations(readyPage, declarations)}
     {@const layoutForm = readyPage.layout ?? 'report'}
     {@const dashboardToolbar = readyPage.dashboardToolbar ?? 'visible'}
     {@const dashboardToolbarConfig =
@@ -1129,9 +1146,9 @@
         note={dashboardToolbarConfig?.note}
         onback={navigation?.back}
       />
-    {:else if pageState.capabilities.filters && hasVisibleFilters(declarations)}
+    {:else if pageState.capabilities.filters && hasVisibleFilters(contentFilters)}
       <FilterBar
-        {declarations}
+        declarations={contentFilters}
         values={filterValues}
         candidates={dimensionCandidates}
         ondimension={writeDimension}
@@ -1175,10 +1192,17 @@
       </nav>
     {/if}
     <div class="page-sections">
+      {#snippet headerControls(ids: string[])}
+        <FilterBar declarations={ids.flatMap(id=>declarations.find(f=>f.id===id)??[])} values={filterValues}
+          candidates={dimensionCandidates} ondimension={writeDimension} ontimerange={writeTimeRange}
+          ontimepoint={writeTimePoint} onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
+      {/snippet}
       {#snippet componentContent(component: Component)}
         {@const slots = componentSnapshots(component)}
         <ComponentRenderer
           {component}
+          {headerControls}
+          headerPeriod={(header)=>headerPeriod(header.props,declarations,filterValues)}
           data={componentData(readyPage, component, slots)}
           snapshot={hostRenderSnapshot(component, slots)}
           pageSnapshots={snapshots}
@@ -1290,7 +1314,6 @@
   .section-navigation button:focus-visible {
     outline: auto;
   }
-  .page-sections :global(.page-section[hidden]) { display: none; }
   .runtime-view {
     container: mc-runtime / inline-size;
 

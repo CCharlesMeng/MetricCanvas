@@ -1,0 +1,73 @@
+{
+  "contract_sha256": "dce219e2f0017c3559cd3bd7d2e8c8924dc7a9d97eda075c5a3cdb51a60ba240",
+  "environment": {
+    "dpr": 1,
+    "scroll": {
+      "height": 1000,
+      "width": 1440
+    },
+    "user_agent": "unavailable-in-read-only-cua-dom-scope",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  "inputValue": "2026-10-01",
+  "observed": {
+    "route": "/packages/engine/runtime-ui/tests/browser/date-picker.html",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  "page_available": true,
+  "rules": {
+    "R1-3-range-calendar-count": {
+      "actual": 2,
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table",
+        "strategy": "css"
+      },
+      "matched": 2,
+      "status": "ok"
+    },
+    "R3-4-range-date-panel": {
+      "actual": {
+        "bottom": 507,
+        "height": 307,
+        "left": 342,
+        "right": 900,
+        "top": 200,
+        "width": 558,
+        "x": 342,
+        "y": 200
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R3-6-range-grid": {
+      "actual": {
+        "bottom": 499,
+        "height": 240,
+        "left": 358,
+        "right": 617,
+        "top": 259,
+        "width": 259,
+        "x": 358,
+        "y": 259
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table",
+        "strategy": "css"
+      },
+      "matched": 2,
+      "status": "ok"
+    }
+  },
+  "schema_version": 1,
+  "state": "daterange"
+}

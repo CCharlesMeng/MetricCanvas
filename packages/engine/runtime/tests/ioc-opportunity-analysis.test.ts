@@ -1,3 +1,4 @@
+import { versionPolicy } from '@metriccanvas/page';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
@@ -34,7 +35,7 @@ function snapshotsOf(page: Page): PageDataSnapshots {
 describe('ioc-opportunity-analysis 页面契约', () => {
   it('声明 5.4 看板、紧凑可操作页头和七个已下推的筛选位', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('6.12');
+    expect(page.schemaVersion).toBe(versionPolicy.current);
     expect(requiredMinorVersion(document)).toBe(11);
     expect(page.layout).toBe('dashboard');
     expect(page.meta).toMatchObject({

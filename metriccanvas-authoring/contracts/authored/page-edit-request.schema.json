@@ -1547,6 +1547,534 @@
               "componentId",
               "fieldId"
             ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "type": {
+                "const": "add_date_filter"
+              },
+              "filterId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "declaration": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "type": {
+                        "const": "timePoint"
+                      },
+                      "granularity": {
+                        "enum": [
+                          "month",
+                          "date"
+                        ]
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "default": {
+                        "type": "string"
+                      },
+                      "initialParam": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                      },
+                      "required": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "granularity"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "type": {
+                        "const": "timeRange"
+                      },
+                      "precision": {
+                        "enum": [
+                          "month",
+                          "date",
+                          "datetime"
+                        ]
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "default": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "from": {
+                            "type": "string"
+                          },
+                          "to": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "from",
+                          "to"
+                        ]
+                      },
+                      "initialParam": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                      },
+                      "required": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ]
+                  }
+                ]
+              },
+              "bindings": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "dataSourceId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "target": {
+                      "enum": [
+                        "time",
+                        "timePoint"
+                      ]
+                    },
+                    "queryField": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "valueFormat": {
+                      "enum": [
+                        "iso",
+                        "compact"
+                      ]
+                    },
+                    "window": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "kind": {
+                              "const": "period"
+                            },
+                            "unit": {
+                              "enum": [
+                                "day",
+                                "month",
+                                "year"
+                              ]
+                            },
+                            "offset": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "unit"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "kind": {
+                              "const": "lastN"
+                            },
+                            "unit": {
+                              "enum": [
+                                "day",
+                                "month"
+                              ]
+                            },
+                            "n": {
+                              "type": "integer",
+                              "minimum": 1
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "unit",
+                            "n"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "kind": {
+                              "enum": [
+                                "yearToDate",
+                                "monthToDate"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "kind"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "dataSourceId",
+                    "target"
+                  ]
+                }
+              },
+              "headerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "filterId",
+              "declaration",
+              "bindings"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "type": {
+                "const": "update_date_filter"
+              },
+              "filterId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "declaration": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "type": {
+                        "const": "timePoint"
+                      },
+                      "granularity": {
+                        "enum": [
+                          "month",
+                          "date"
+                        ]
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "default": {
+                        "type": "string"
+                      },
+                      "initialParam": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                      },
+                      "required": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "granularity"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "type": {
+                        "const": "timeRange"
+                      },
+                      "precision": {
+                        "enum": [
+                          "month",
+                          "date",
+                          "datetime"
+                        ]
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "default": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "from": {
+                            "type": "string"
+                          },
+                          "to": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "from",
+                          "to"
+                        ]
+                      },
+                      "initialParam": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                      },
+                      "required": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ]
+                  }
+                ]
+              },
+              "bindings": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "dataSourceId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "target": {
+                      "enum": [
+                        "time",
+                        "timePoint"
+                      ]
+                    },
+                    "queryField": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "valueFormat": {
+                      "enum": [
+                        "iso",
+                        "compact"
+                      ]
+                    },
+                    "window": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "kind": {
+                              "const": "period"
+                            },
+                            "unit": {
+                              "enum": [
+                                "day",
+                                "month",
+                                "year"
+                              ]
+                            },
+                            "offset": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "unit"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "kind": {
+                              "const": "lastN"
+                            },
+                            "unit": {
+                              "enum": [
+                                "day",
+                                "month"
+                              ]
+                            },
+                            "n": {
+                              "type": "integer",
+                              "minimum": 1
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "unit",
+                            "n"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "kind": {
+                              "enum": [
+                                "yearToDate",
+                                "monthToDate"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "kind"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "dataSourceId",
+                    "target"
+                  ]
+                }
+              },
+              "headerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "filterId",
+              "declaration",
+              "bindings"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "type": {
+                "const": "remove_date_filter"
+              },
+              "filterId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "filterId"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "type": {
+                "const": "set_report_header_filters"
+              },
+              "headerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "filterIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "headerId",
+              "filterIds"
+            ]
           }
         ]
       }

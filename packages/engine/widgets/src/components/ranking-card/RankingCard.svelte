@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getContext } from 'svelte';
+  import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
+  const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
   import type { RankingCardProps, Row } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import { fieldLabel, resolveField } from '../../shared/component-data';
@@ -21,7 +24,8 @@
 </script>
 
 {#if props.title}<h3>{props.title}</h3>{/if}
-<ol class="ranking-card">
+<ol class:static-export={staticExport}
+  class="ranking-card">
   {#each data.main.snapshot.rows as row, index (index)}
     {@const changePolarity = valuePolarity(change ? row[change.field] : undefined)}
     <li class="ranking-item">
@@ -144,4 +148,5 @@
     color: #71717a;
     text-align: center;
   }
+  .ranking-card.static-export { height:auto!important; max-height:none!important; overflow:visible!important; }
 </style>

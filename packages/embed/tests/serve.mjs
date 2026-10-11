@@ -22,6 +22,11 @@ createServer(async (request, response) => {
       response.writeHead(204).end();
       return;
     }
+    if (pathname === '/fixtures/report-date-filters-page.json') {
+      response.writeHead(200, {'content-type':'application/json; charset=utf-8'});
+      createReadStream(resolve(root,'../page/fixtures/contract-valid/report-date-filters-page.json')).pipe(response);
+      return;
+    }
     if (pathname === DQE_EXECUTE_PATH) {
       await respondDqe(request, response);
       return;
@@ -50,8 +55,8 @@ createServer(async (request, response) => {
   } catch {
     response.writeHead(404).end('Not found');
   }
-}).listen(4175, '127.0.0.1', () => {
-  const origin = 'http://127.0.0.1:4175';
+}).listen(Number(process.env.MC_EMBED_EXAMPLE_PORT ?? 4175), '127.0.0.1', () => {
+  const origin = `http://127.0.0.1:${process.env.MC_EMBED_EXAMPLE_PORT ?? 4175}`;
   console.log(`嵌入示例内容服务已启动：${origin}（Ctrl+C 停止）`);
   console.log(`  DQE 端点：${origin}${DQE_EXECUTE_PATH}`);
   for (const id of pageIds()) console.log(`  页面：${origin}/pages/${id}`);

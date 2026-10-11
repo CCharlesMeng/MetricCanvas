@@ -1,0 +1,542 @@
+{
+  "controls": [
+    {
+      "class": "tiny-date-editor tiny-date-editor--date tiny-input tiny-input-suffix",
+      "inputs": [
+        {
+          "placeholder": "请选择日期",
+          "style": {
+            "background-color": "rgb(255, 255, 255)",
+            "border": "1px solid rgb(194, 194, 194)",
+            "border-radius": "6px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "height": "32px",
+            "line-height": "32px",
+            "padding": "0px 40px 0px 12px",
+            "width": "360px"
+          }
+        }
+      ],
+      "rect": {
+        "bottom": 409,
+        "height": 32,
+        "left": 342,
+        "right": 702,
+        "top": 377,
+        "width": 360,
+        "x": 342,
+        "y": 377
+      },
+      "style": {
+        "background-color": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(25, 25, 25)",
+        "border-radius": "0px",
+        "box-shadow": "none",
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "height": "32px",
+        "line-height": "14px",
+        "padding": "0px",
+        "width": "360px"
+      }
+    },
+    {
+      "class": "tiny-date-editor tiny-date-editor--datetime tiny-input tiny-input-suffix",
+      "inputs": [
+        {
+          "placeholder": "请选择日期",
+          "style": {
+            "background-color": "rgb(255, 255, 255)",
+            "border": "1px solid rgb(194, 194, 194)",
+            "border-radius": "6px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "height": "32px",
+            "line-height": "32px",
+            "padding": "0px 40px 0px 12px",
+            "width": "360px"
+          }
+        }
+      ],
+      "rect": {
+        "bottom": 453,
+        "height": 32,
+        "left": 342,
+        "right": 702,
+        "top": 421,
+        "width": 360,
+        "x": 342,
+        "y": 421
+      },
+      "style": {
+        "background-color": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(25, 25, 25)",
+        "border-radius": "0px",
+        "box-shadow": "none",
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "height": "32px",
+        "line-height": "14px",
+        "padding": "0px",
+        "width": "360px"
+      }
+    },
+    {
+      "class": "tiny-date-editor tiny-date-editor--week tiny-input tiny-input-suffix",
+      "inputs": [
+        {
+          "placeholder": "请选择周",
+          "style": {
+            "background-color": "rgb(255, 255, 255)",
+            "border": "1px solid rgb(194, 194, 194)",
+            "border-radius": "6px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "height": "32px",
+            "line-height": "32px",
+            "padding": "0px 40px 0px 12px",
+            "width": "360px"
+          }
+        }
+      ],
+      "rect": {
+        "bottom": 497,
+        "height": 32,
+        "left": 342,
+        "right": 702,
+        "top": 465,
+        "width": 360,
+        "x": 342,
+        "y": 465
+      },
+      "style": {
+        "background-color": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(25, 25, 25)",
+        "border-radius": "0px",
+        "box-shadow": "none",
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "height": "32px",
+        "line-height": "14px",
+        "padding": "0px",
+        "width": "360px"
+      }
+    },
+    {
+      "class": "tiny-date-editor tiny-date-editor--month tiny-input tiny-input-suffix",
+      "inputs": [
+        {
+          "placeholder": "请选择月份",
+          "style": {
+            "background-color": "rgb(255, 255, 255)",
+            "border": "1px solid rgb(194, 194, 194)",
+            "border-radius": "6px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "height": "32px",
+            "line-height": "32px",
+            "padding": "0px 40px 0px 12px",
+            "width": "360px"
+          }
+        }
+      ],
+      "rect": {
+        "bottom": 541,
+        "height": 32,
+        "left": 342,
+        "right": 702,
+        "top": 509,
+        "width": 360,
+        "x": 342,
+        "y": 509
+      },
+      "style": {
+        "background-color": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(25, 25, 25)",
+        "border-radius": "0px",
+        "box-shadow": "none",
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "height": "32px",
+        "line-height": "14px",
+        "padding": "0px",
+        "width": "360px"
+      }
+    },
+    {
+      "class": "tiny-date-editor tiny-date-editor--quarter tiny-input tiny-input-suffix",
+      "inputs": [
+        {
+          "placeholder": "请选择季度",
+          "style": {
+            "background-color": "rgb(255, 255, 255)",
+            "border": "1px solid rgb(194, 194, 194)",
+            "border-radius": "6px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "height": "32px",
+            "line-height": "32px",
+            "padding": "0px 40px 0px 12px",
+            "width": "360px"
+          }
+        }
+      ],
+      "rect": {
+        "bottom": 585,
+        "height": 32,
+        "left": 342,
+        "right": 702,
+        "top": 553,
+        "width": 360,
+        "x": 342,
+        "y": 553
+      },
+      "style": {
+        "background-color": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(25, 25, 25)",
+        "border-radius": "0px",
+        "box-shadow": "none",
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "height": "32px",
+        "line-height": "14px",
+        "padding": "0px",
+        "width": "360px"
+      }
+    },
+    {
+      "class": "tiny-date-editor tiny-date-editor--year tiny-input tiny-input-suffix",
+      "inputs": [
+        {
+          "placeholder": "请选择年份",
+          "style": {
+            "background-color": "rgb(255, 255, 255)",
+            "border": "1px solid rgb(194, 194, 194)",
+            "border-radius": "6px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "height": "32px",
+            "line-height": "32px",
+            "padding": "0px 40px 0px 12px",
+            "width": "360px"
+          }
+        }
+      ],
+      "rect": {
+        "bottom": 629,
+        "height": 32,
+        "left": 342,
+        "right": 702,
+        "top": 597,
+        "width": 360,
+        "x": 342,
+        "y": 597
+      },
+      "style": {
+        "background-color": "rgba(0, 0, 0, 0)",
+        "border": "0px none rgb(25, 25, 25)",
+        "border-radius": "0px",
+        "box-shadow": "none",
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "height": "32px",
+        "line-height": "14px",
+        "padding": "0px",
+        "width": "360px"
+      }
+    },
+    {
+      "class": "tiny-date-editor tiny-range-editor tiny-input tiny-input__inner tiny-date-editor--daterange",
+      "inputs": [
+        {
+          "placeholder": "开始日期",
+          "style": {
+            "background-color": "rgb(255, 255, 255)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "height": "24px",
+            "line-height": "14px",
+            "padding": "0px",
+            "width": "131.812px"
+          }
+        },
+        {
+          "placeholder": "结束日期",
+          "style": {
+            "background-color": "rgb(255, 255, 255)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "height": "24px",
+            "line-height": "14px",
+            "padding": "0px",
+            "width": "131.812px"
+          }
+        }
+      ],
+      "rect": {
+        "bottom": 862,
+        "height": 32,
+        "left": 342,
+        "right": 702,
+        "top": 830,
+        "width": 360,
+        "x": 342,
+        "y": 830
+      },
+      "style": {
+        "background-color": "rgb(255, 255, 255)",
+        "border": "1px solid rgb(194, 194, 194)",
+        "border-radius": "6px",
+        "box-shadow": "none",
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "height": "32px",
+        "line-height": "32px",
+        "padding": "3px 10px",
+        "width": "360px"
+      }
+    },
+    {
+      "class": "tiny-date-editor tiny-range-editor tiny-input tiny-input__inner tiny-date-editor--datetimerange",
+      "inputs": [
+        {
+          "placeholder": "开始日期",
+          "style": {
+            "background-color": "rgb(255, 255, 255)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "height": "24px",
+            "line-height": "14px",
+            "padding": "0px",
+            "width": "131.812px"
+          }
+        },
+        {
+          "placeholder": "结束日期",
+          "style": {
+            "background-color": "rgb(255, 255, 255)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "height": "24px",
+            "line-height": "14px",
+            "padding": "0px",
+            "width": "131.812px"
+          }
+        }
+      ],
+      "rect": {
+        "bottom": 906,
+        "height": 32,
+        "left": 342,
+        "right": 702,
+        "top": 874,
+        "width": 360,
+        "x": 342,
+        "y": 874
+      },
+      "style": {
+        "background-color": "rgb(255, 255, 255)",
+        "border": "1px solid rgb(194, 194, 194)",
+        "border-radius": "6px",
+        "box-shadow": "none",
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "height": "32px",
+        "line-height": "32px",
+        "padding": "3px 10px",
+        "width": "360px"
+      }
+    },
+    {
+      "class": "tiny-date-editor tiny-range-editor tiny-input tiny-input__inner tiny-date-editor--monthrange",
+      "inputs": [
+        {
+          "placeholder": "开始月份",
+          "style": {
+            "background-color": "rgb(255, 255, 255)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "height": "24px",
+            "line-height": "14px",
+            "padding": "0px",
+            "width": "131.812px"
+          }
+        },
+        {
+          "placeholder": "结束月份",
+          "style": {
+            "background-color": "rgb(255, 255, 255)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "height": "24px",
+            "line-height": "14px",
+            "padding": "0px",
+            "width": "131.812px"
+          }
+        }
+      ],
+      "rect": {
+        "bottom": 950,
+        "height": 32,
+        "left": 342,
+        "right": 702,
+        "top": 918,
+        "width": 360,
+        "x": 342,
+        "y": 918
+      },
+      "style": {
+        "background-color": "rgb(255, 255, 255)",
+        "border": "1px solid rgb(194, 194, 194)",
+        "border-radius": "6px",
+        "box-shadow": "none",
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "height": "32px",
+        "line-height": "32px",
+        "padding": "3px 10px",
+        "width": "360px"
+      }
+    },
+    {
+      "class": "tiny-date-editor tiny-range-editor tiny-input tiny-input__inner tiny-date-editor--yearrange",
+      "inputs": [
+        {
+          "placeholder": "开始年份",
+          "style": {
+            "background-color": "rgb(255, 255, 255)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "height": "24px",
+            "line-height": "14px",
+            "padding": "0px",
+            "width": "131.812px"
+          }
+        },
+        {
+          "placeholder": "结束年份",
+          "style": {
+            "background-color": "rgb(255, 255, 255)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "height": "24px",
+            "line-height": "14px",
+            "padding": "0px",
+            "width": "131.812px"
+          }
+        }
+      ],
+      "rect": {
+        "bottom": 994,
+        "height": 32,
+        "left": 342,
+        "right": 702,
+        "top": 962,
+        "width": 360,
+        "x": 342,
+        "y": 962
+      },
+      "style": {
+        "background-color": "rgb(255, 255, 255)",
+        "border": "1px solid rgb(194, 194, 194)",
+        "border-radius": "6px",
+        "box-shadow": "none",
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "height": "32px",
+        "line-height": "32px",
+        "padding": "3px 10px",
+        "width": "360px"
+      }
+    }
+  ],
+  "stylesheets": [
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-3fd79811.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-3b1f13af.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-371308ea.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-5c86830a.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-128469e9.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-953e3bf0.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/responsive-index-21064541.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-099d797a.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-5098694c.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-a6cd1bda.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-79910755.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-014741fd.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-fa1574ca.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-9354f852.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-c7e11a93.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-8a0de827.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-b8677c4f.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-7607951e.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-0a28d810.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-d2f1f210.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-6b596188.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-0c2ae6be.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-fe2f3ac0.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-bb667855.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/index-e3b0c442.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/basic-usage-composition-api-7e7a5198.css",
+    "//res-static.opentiny.design/tiny-vue-web-doc/3.32.0/assets/date-range-composition-api-9d1cf492.css"
+  ],
+  "url": "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/date-picker",
+  "viewport": {
+    "height": 1000,
+    "width": 1440
+  }
+}

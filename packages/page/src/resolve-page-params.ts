@@ -59,6 +59,15 @@ export function materializePageParams(page:Page,values:ReadonlyMap<string,PagePa
     source.source.query=initializeQueryParams(source.source.query,values);
     if(page.params && (Array.isArray(page.params) ? page.params.length > 0 : Object.keys(page.params).length > 0)) delete source.source.initial;
   }
+  for (const filter of resolved.filters ?? []) {
+    if (filter.type !== 'timePoint' && filter.type !== 'timeRange') continue;
+    if (!filter.initialParam) continue;
+    const value = values.get(filter.initialParam);
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      if (filter.type === 'timePoint') filter.default = value.start;
+      else filter.default = { from: value.start, to: value.end };
+    }
+  }
   return resolved;
 }
 function issue(e:TypedError,code:ParamResolutionIssue['code']='INVALID_PAGE'):ParamResolutionIssue{return {code,path:e.path,message:e.message};}

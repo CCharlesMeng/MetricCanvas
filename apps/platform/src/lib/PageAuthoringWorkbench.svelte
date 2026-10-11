@@ -26,6 +26,7 @@
     editComponent, locatorOfComponent, moveComponent,
     type ComponentLocator, type DocumentEditResult
   } from './workbench/document-edit';
+  import { editReportDate } from './workbench/report-date-edit';
   import { propertyControls, editProperty } from './workbench/property-edit';
   import Inspector from './workbench/Inspector.svelte';
   import MetadataJsonDrawer from './workbench/MetadataJsonDrawer.svelte';
@@ -463,6 +464,8 @@
       {selectedView}
       {selectedSpan}
       {selectedColumnCount}
+      dateDraft={currentDraft}
+      onDateEdit={(edit)=>{if(currentDraft&&selectedComponent&&!previewOpen&&!loading)applyDocumentEdit(editReportDate(currentDraft,selectedComponent,edit));}}
       properties={propertyControls(currentDraft, selectedComponent)}
       onPropertyEdit={(edit) => { if (currentDraft && selectedComponent && !previewOpen && !loading) applyDocumentEdit(editProperty(currentDraft, selectedComponent, edit)); }}
       candidates={typeCandidates}

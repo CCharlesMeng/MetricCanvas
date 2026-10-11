@@ -1,0 +1,34 @@
+{
+  "case": "detail-component-reject-reportheader",
+  "invariant": "detail-view-component-types",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "详情只允许说明、图表和表格，不允许递归动作或容器",
+      "paths": [
+        "/detailViews/0/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "detailViews": [
+      {
+        "components": [
+          {
+            "id": "detail-negative-heading",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": {
+                "…": "共1个键"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/detail-component-reject-reportheader.json"
+}

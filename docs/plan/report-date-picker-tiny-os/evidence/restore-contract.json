@@ -1,0 +1,623 @@
+{
+  "baseline_sha256": "4299c2fe0b0fd86304563dae9eef4d613a9f86125c7f3ee892022e570b9928cf",
+  "contract_sha256": "dce219e2f0017c3559cd3bd7d2e8c8924dc7a9d97eda075c5a3cdb51a60ba240",
+  "rules": [
+    {
+      "baseline_id": "R1-1",
+      "check_mode": "exact",
+      "expected": 1,
+      "id": "R1-1-single-input-count",
+      "scenario": "打开独立夹具单选形态",
+      "subject": "单选外框文本输入数量"
+    },
+    {
+      "baseline_id": "R1-1",
+      "check_mode": "exact",
+      "expected": 2,
+      "id": "R1-1-range-input-count",
+      "scenario": "打开独立夹具范围形态",
+      "subject": "范围整体外框文本输入数量"
+    },
+    {
+      "baseline_id": "R1-1",
+      "check_mode": "exact",
+      "expected": 1,
+      "id": "R1-1-range-separator-count",
+      "scenario": "范围形态",
+      "subject": "范围整体外框分隔符数量"
+    },
+    {
+      "baseline_id": "R1-1",
+      "check_mode": "exact",
+      "expected": 1,
+      "id": "R1-1-right-icon-count",
+      "scenario": "默认未 hover、无值状态",
+      "subject": "输入右侧可见 SVG 图标数量"
+    },
+    {
+      "baseline_id": "R1-2",
+      "check_mode": "exact",
+      "expected": 12,
+      "id": "R1-2-single-month-cell-count",
+      "scenario": "单月份面板展开",
+      "subject": "单月份可选月份数量"
+    },
+    {
+      "baseline_id": "R1-2",
+      "check_mode": "exact",
+      "expected": 2,
+      "id": "R1-2-range-year-grid-count",
+      "scenario": "月份范围面板展开",
+      "subject": "月份范围年份网格数量"
+    },
+    {
+      "baseline_id": "R1-2",
+      "check_mode": "exact",
+      "expected": 24,
+      "id": "R1-2-range-month-cell-count",
+      "scenario": "月份范围面板展开",
+      "subject": "月份范围可选月份总数量"
+    },
+    {
+      "baseline_id": "R1-2",
+      "check_mode": "exact",
+      "expected": 4,
+      "id": "R1-2-grid-columns",
+      "scenario": "月份面板展开",
+      "subject": "月份网格列数量"
+    },
+    {
+      "baseline_id": "R1-2",
+      "check_mode": "exact",
+      "expected": 3,
+      "id": "R1-2-grid-rows",
+      "scenario": "月份面板展开",
+      "subject": "月份网格行数量"
+    },
+    {
+      "baseline_id": "R1-3",
+      "check_mode": "exact",
+      "expected": 1,
+      "id": "R1-3-single-calendar-count",
+      "scenario": "单日期面板展开",
+      "subject": "单日期日历数量"
+    },
+    {
+      "baseline_id": "R1-3",
+      "check_mode": "exact",
+      "expected": 2,
+      "id": "R1-3-range-calendar-count",
+      "scenario": "日期范围面板展开",
+      "subject": "日期范围日历数量"
+    },
+    {
+      "baseline_id": "R1-3",
+      "check_mode": "exact",
+      "expected": 7,
+      "id": "R1-3-weekday-count",
+      "scenario": "日期面板展开",
+      "subject": "每个日历星期标签数量"
+    },
+    {
+      "baseline_id": "R1-3",
+      "check_mode": "exact",
+      "expected": true,
+      "id": "R1-3-adjacent-month-dates",
+      "scenario": "日期视图导航至 2026 年 10 月",
+      "subject": "固定 2026 年 10 月视图的相邻月份日期存在"
+    },
+    {
+      "baseline_id": "R2-1",
+      "check_mode": "exact",
+      "expected": "-",
+      "id": "R2-1-separator",
+      "scenario": "范围形态",
+      "subject": "范围分隔符文案"
+    },
+    {
+      "baseline_id": "R2-1",
+      "check_mode": "exact",
+      "expected": [
+        "日",
+        "一",
+        "二",
+        "三",
+        "四",
+        "五",
+        "六"
+      ],
+      "id": "R2-1-weekday-order",
+      "scenario": "日期面板展开",
+      "subject": "星期标签排列"
+    },
+    {
+      "baseline_id": "R2-1",
+      "check_mode": "exact",
+      "expected": [
+        "1 月",
+        "2 月",
+        "3 月",
+        "4 月",
+        "5 月",
+        "6 月",
+        "7 月",
+        "8 月",
+        "9 月",
+        "10 月",
+        "11 月",
+        "12 月"
+      ],
+      "id": "R2-1-month-label-order",
+      "scenario": "月份面板展开",
+      "subject": "月份标签排列"
+    },
+    {
+      "baseline_id": "R2-1",
+      "check_mode": "exact",
+      "expected": "2026-01",
+      "fixture_required": true,
+      "id": "R2-1-month-value",
+      "scenario": "单月份应用值 2026-01",
+      "subject": "月份显示格式"
+    },
+    {
+      "baseline_id": "R2-1",
+      "check_mode": "exact",
+      "expected": "2026-01-31",
+      "fixture_required": true,
+      "id": "R2-1-date-value",
+      "scenario": "单日期应用值 2026-01-31",
+      "subject": "日期显示格式"
+    },
+    {
+      "baseline_id": "R3-1",
+      "check_mode": "numeric",
+      "expected": 32,
+      "id": "R3-1-height",
+      "subject": "输入外框高度",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-1",
+      "check_mode": "numeric",
+      "expected": {
+        "border-bottom-left-radius": "6px",
+        "border-bottom-right-radius": "6px",
+        "border-top-left-radius": "6px",
+        "border-top-right-radius": "6px"
+      },
+      "id": "R3-1-radius",
+      "subject": "输入外框四角圆角",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-1",
+      "check_mode": "numeric",
+      "expected": {
+        "border-bottom-color": "#c2c2c2",
+        "border-bottom-style": "solid",
+        "border-bottom-width": "1px",
+        "border-left-color": "#c2c2c2",
+        "border-left-style": "solid",
+        "border-left-width": "1px",
+        "border-right-color": "#c2c2c2",
+        "border-right-style": "solid",
+        "border-right-width": "1px",
+        "border-top-color": "#c2c2c2",
+        "border-top-style": "solid",
+        "border-top-width": "1px"
+      },
+      "id": "R3-1-border",
+      "scenario": "默认未 hover、未 focus",
+      "subject": "输入外框默认边框",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-1",
+      "check_mode": "numeric",
+      "expected": {
+        "color": "#191919",
+        "font-size": "14px"
+      },
+      "id": "R3-1-text",
+      "subject": "输入文字字号与颜色",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-2",
+      "check_mode": "numeric",
+      "expected": {
+        "padding-bottom": "0px",
+        "padding-left": "12px",
+        "padding-right": "40px",
+        "padding-top": "0px"
+      },
+      "id": "R3-2-padding",
+      "subject": "单选输入内边距",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-2",
+      "check_mode": "numeric",
+      "expected": {
+        "line-height": "32px"
+      },
+      "id": "R3-2-line-height",
+      "subject": "单选输入行高",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-3",
+      "check_mode": "numeric",
+      "expected": {
+        "padding-bottom": "3px",
+        "padding-left": "10px",
+        "padding-right": "10px",
+        "padding-top": "3px"
+      },
+      "id": "R3-3-outer-padding",
+      "subject": "范围外框内边距",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-3",
+      "check_mode": "numeric",
+      "expected": {
+        "border-bottom-width": "0px",
+        "border-left-width": "0px",
+        "border-right-width": "0px",
+        "border-top-width": "0px"
+      },
+      "id": "R3-3-input-border",
+      "subject": "范围内部输入无独立边框",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-3",
+      "check_mode": "numeric",
+      "expected": {
+        "padding-bottom": "0px",
+        "padding-left": "0px",
+        "padding-right": "0px",
+        "padding-top": "0px"
+      },
+      "id": "R3-3-input-padding",
+      "subject": "范围内部输入内边距",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-3",
+      "check_mode": "numeric",
+      "expected": 24,
+      "id": "R3-3-input-height",
+      "subject": "范围内部输入高度",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-3",
+      "check_mode": "numeric",
+      "expected": {
+        "font-size": "14px",
+        "line-height": "14px"
+      },
+      "id": "R3-3-input-type",
+      "subject": "范围内部输入字号和行高",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-4",
+      "check_mode": "numeric",
+      "expected": {
+        "height": 245,
+        "width": 360
+      },
+      "id": "R3-4-single-month-panel",
+      "scenario": "1440×1000，单月份展开",
+      "subject": "单月份面板尺寸",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-4",
+      "check_mode": "numeric",
+      "expected": {
+        "height": 307,
+        "width": 360
+      },
+      "id": "R3-4-single-date-panel",
+      "scenario": "1440×1000，单日期展开",
+      "subject": "单日期面板尺寸",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-4",
+      "check_mode": "numeric",
+      "expected": {
+        "height": 245,
+        "width": 558
+      },
+      "id": "R3-4-range-month-panel",
+      "scenario": "1440×1000，月份范围展开",
+      "subject": "月份范围面板尺寸",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-4",
+      "check_mode": "numeric",
+      "expected": {
+        "height": 307,
+        "width": 558
+      },
+      "id": "R3-4-range-date-panel",
+      "scenario": "1440×1000，日期范围展开",
+      "subject": "日期范围面板尺寸",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-4",
+      "check_mode": "numeric",
+      "expected": {
+        "background-color": "#ffffff",
+        "border-bottom-left-radius": "6px",
+        "border-bottom-right-radius": "6px",
+        "border-top-left-radius": "6px",
+        "border-top-right-radius": "6px",
+        "font-size": "14px",
+        "line-height": "21px"
+      },
+      "id": "R3-4-surface",
+      "scenario": "面板展开",
+      "subject": "面板表面与文字",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-4",
+      "check_mode": "numeric",
+      "expected": {
+        "box-shadow": "0px 4px 16px 0px rgba(0,0,0,0.08)"
+      },
+      "id": "R3-4-shadow",
+      "scenario": "面板展开",
+      "subject": "面板阴影",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-5",
+      "check_mode": "numeric",
+      "expected": {
+        "height": 180,
+        "width": 328
+      },
+      "id": "R3-5-single-grid",
+      "scenario": "1440×1000，单月份展开",
+      "subject": "单月份网格尺寸",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-5",
+      "check_mode": "numeric",
+      "expected": {
+        "height": 180,
+        "width": 259
+      },
+      "id": "R3-5-range-grid",
+      "scenario": "1440×1000，月份范围展开",
+      "subject": "月份范围单个网格尺寸",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-5",
+      "check_mode": "numeric",
+      "expected": 60,
+      "id": "R3-5-row-height",
+      "scenario": "月份面板展开",
+      "subject": "月份行高度",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-6",
+      "check_mode": "numeric",
+      "expected": {
+        "height": 240,
+        "width": 328
+      },
+      "id": "R3-6-single-grid",
+      "scenario": "1440×1000，单日期展开",
+      "subject": "单日期网格尺寸",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-6",
+      "check_mode": "numeric",
+      "expected": {
+        "height": 240,
+        "width": 259
+      },
+      "id": "R3-6-range-grid",
+      "scenario": "1440×1000，日期范围展开",
+      "subject": "日期范围单个网格尺寸",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-6",
+      "check_mode": "numeric",
+      "expected": 32,
+      "id": "R3-6-weekday-height",
+      "scenario": "日期面板展开",
+      "subject": "星期栏高度",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "numeric",
+      "expected": {
+        "border-bottom-color": "#191919",
+        "border-left-color": "#191919",
+        "border-right-color": "#191919",
+        "border-top-color": "#191919"
+      },
+      "fixture_required": true,
+      "id": "R4-1-focus-border",
+      "scenario": "应用 2026-01 至 2026-06，聚焦输入",
+      "subject": "已聚焦月份范围外框边框颜色",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "numeric",
+      "expected": 32,
+      "fixture_required": true,
+      "id": "R4-1-focus-height",
+      "scenario": "应用 2026-01 至 2026-06，聚焦输入",
+      "subject": "已聚焦月份范围外框高度",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "numeric",
+      "expected": {
+        "border-bottom-left-radius": "6px",
+        "border-bottom-right-radius": "6px",
+        "border-top-left-radius": "6px",
+        "border-top-right-radius": "6px"
+      },
+      "fixture_required": true,
+      "id": "R4-1-focus-radius",
+      "scenario": "应用 2026-01 至 2026-06，聚焦输入",
+      "subject": "已聚焦月份范围外框圆角",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R6-1",
+      "check_mode": "overflow",
+      "id": "R6-1-page-overflow",
+      "scenario": "分别在 1440、390、320px 的报告、普通筛选栏、HTML 嵌入中展开面板",
+      "subject": "目标视口页面横向溢出"
+    },
+    {
+      "baseline_id": "R6-1",
+      "check_mode": "overlap",
+      "id": "R6-1-input-overlap",
+      "scenario": "分别在 1440、390、320px 检查报告工具带和普通筛选栏",
+      "subject": "输入与相邻控件重叠"
+    },
+    {
+      "baseline_id": "R6-1",
+      "check_mode": "clip",
+      "id": "R6-1-panel-clip",
+      "scenario": "分别在 1440、390、320px 的右边缘、底边及滚动场景检查面板与可选内容",
+      "subject": "展开面板被容器截断"
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "numeric",
+      "expected": {
+        "background-color": "#1476ff",
+        "color": "#ffffff"
+      },
+      "id": "R4-1-selected",
+      "subject": "selected 官方状态样式",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "numeric",
+      "expected": {
+        "background-color": "#deecff"
+      },
+      "id": "R4-1-inrange",
+      "subject": "inrange 官方状态样式",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "numeric",
+      "expected": {
+        "box-shadow": "0px 0px 1px 1px rgb(25, 25, 25)"
+      },
+      "id": "R4-1-today",
+      "subject": "today 官方状态样式",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "numeric",
+      "expected": {
+        "background-color": "#f0f0f0",
+        "color": "#c2c2c2"
+      },
+      "id": "R4-1-disabled",
+      "subject": "disabled 官方状态样式",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R4-1",
+      "id": "R4-1-hover",
+      "static_check": {
+        "kind": "state_selector",
+        "value": ".cell:hover) { background:#deecff"
+      },
+      "subject": "月份 hover 官方底色状态选择器"
+    }
+  ],
+  "schema_version": 3
+}

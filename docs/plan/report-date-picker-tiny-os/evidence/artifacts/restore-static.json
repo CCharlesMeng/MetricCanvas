@@ -1,0 +1,17 @@
+{
+  "contract_sha256": "dce219e2f0017c3559cd3bd7d2e8c8924dc7a9d97eda075c5a3cdb51a60ba240",
+  "result_sha256": "55d55297c71f1da633d01c98f28c244d445a11ef2276d89535bfe42abf9e471a",
+  "rules": {
+    "R4-1-hover": {
+      "actual": {
+        "matched_via": "exact",
+        "matching_files": [
+          "packages/engine/runtime-ui/src/filters/DatePicker.svelte"
+        ],
+        "needle": ".cell:hover) { background:#deecff"
+      },
+      "status": "pass"
+    }
+  },
+  "schema_version": 1
+}

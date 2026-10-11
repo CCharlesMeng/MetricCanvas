@@ -1,0 +1,379 @@
+{
+  "claim_ledger": [
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "restore-report-green.json；BE-1、BE-9、BE-12、BE-13、BE-15",
+      "id": "AT-1",
+      "note": "GREEN 52/52，尺寸容差0px；code=616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "focused-tests.txt；BE-2、BE-3",
+      "id": "AT-2",
+      "note": "6文件30项；半范围保持已应用值，跨年完整提交、倒置/非法/required清空拒绝、可选null、闰日与键盘"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "BE-5、BE-6、BE-7、BE-10、BE-11、BE-14",
+      "id": "AT-3",
+      "note": "正式期间与明细联动、创作提取确认、ShadowRoot、只读、多实例重挂、390/320页面无横溢出；最右月份可达"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "BE-8；output/pdf/report-date-picker-tiny-os.pdf",
+      "id": "AT-4",
+      "note": "打开面板后点击正式导出；8页渲染检视，无日期输入或日历。PDF为位图，不能用空文本层证明隐藏"
+    }
+  ],
+  "code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+  "counts": {
+    "blocker": 0,
+    "claims_deferred": 0,
+    "claims_unverified": 0,
+    "decided": 0,
+    "deferred": 0,
+    "handoff": 1,
+    "manual_acceptance": 0,
+    "manual_pending": 0,
+    "norm_candidate": 0,
+    "open_question": 0,
+    "skipped": 0,
+    "suggestion": 1,
+    "unplanned_carry": 0
+  },
+  "coverage": {
+    "review-convention": [
+      {
+        "dimension": "C1",
+        "evidence_ids": [
+          "PATTERN-STRUCT-1",
+          "PATTERN-STRUCT-2",
+          "packages/engine/runtime-ui/src/filters/DatePicker.svelte:L1-L5",
+          "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte:L1-L5",
+          "packages/engine/runtime-ui/tests/browser/main.ts:L1-L3"
+        ],
+        "result": "clear",
+        "scope": "Story 新增组件、纯逻辑、测试夹具及其导入；测试夹具位于 engine 自有 tests 目录，同包相对引用未跨工作区边界。"
+      },
+      {
+        "dimension": "C5",
+        "evidence_ids": [
+          "PATTERN-DATA-4",
+          "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte:L13-L14",
+          "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte:L29-L30",
+          "packages/engine/runtime-ui/src/filters/FilterBar.svelte:L110-L115",
+          "packages/engine/runtime-ui/src/filters/FilterBar.svelte:L147-L161",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L606-L623",
+          "packages/engine/runtime-ui/src/filters/date-picker.ts:L50-L56"
+        ],
+        "result": "clear",
+        "scope": "正式单值、范围及只读入口复用同一 DatePicker；提交经 FilterBar 既有回调进入 RuntimeSurface 的筛选状态写入口，日期合法性调用 page 既有校验器。"
+      }
+    ],
+    "review-layout": [
+      {
+        "dimension": "L2",
+        "evidence_ids": [
+          "BE-4",
+          "BE-10",
+          "BE-11",
+          "BE-14"
+        ],
+        "result": "clear",
+        "scope": "声明的 fixture 在390/320px中：输入与页面保持视口宽度，558px范围内容由面板内横滚承接；HTML普通栏320px实际命中最右2027-12，scrollLeft233，页面仍320px"
+      },
+      {
+        "dimension": "L3",
+        "evidence_ids": [
+          "BE-1",
+          "BE-4",
+          "BE-10",
+          "BE-11",
+          "BE-14"
+        ],
+        "result": "clear",
+        "scope": "R6-1：1440px独立四形态的面板与输入几何；390/320px正式报告工具带、HTML报告及普通筛选栏的页面宽度、输入分离、面板顶底和左右边界；320px横滚后右侧选择内容可达"
+      },
+      {
+        "dimension": "L5",
+        "evidence_ids": [
+          "BE-1",
+          "BE-2",
+          "BE-5",
+          "BE-10",
+          "BE-11",
+          "BE-12",
+          "BE-13"
+        ],
+        "result": "clear",
+        "scope": "正式报告及HTML报告/普通栏聚焦边框可区分；夹具真实hover、四形态选中、禁用与只读DOM状态；共享正式适配器使用同一状态样式"
+      }
+    ],
+    "review-quality": [
+      {
+        "dimension": "Q2",
+        "evidence_ids": [
+          "packages/engine/runtime-ui/src/filters/DatePicker.svelte:L311-L344",
+          "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte:L13-L14",
+          "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte:L29-L30",
+          "packages/engine/runtime-ui/src/filters/date-picker.ts:L50-L56",
+          "packages/engine/runtime-ui/src/filters/FilterBar.svelte:L110-L115"
+        ],
+        "result": "finding",
+        "scope": "Story scoped diff 的共享日期选择器、业务日期工具、图标及三个正式适配文件；单值/范围共用 DatePicker，月份/年份网格样式仍有一组可抽取重复"
+      }
+    ]
+  },
+  "decisions": [],
+  "deferred_candidates": [],
+  "evidence_epoch": "review-1",
+  "findings": [
+    {
+      "artifacts": [],
+      "basis": "Q2 duplicated-code：L311-L327 与 L328-L344 除 tiny-year-table / tiny-month-table 选择器名称外逐条相同，共 34 行维护两份 17 条规则；已选 PATTERN-STRUCT-1、PATTERN-DATA-4、PATTERN-STYLE-4 均未提供对应公共网格样式能力。",
+      "canonical_key": "file:packages/engine/runtime-ui/src/filters/DatePicker.svelte|duplicated-month-year-grid-css",
+      "dimension": "Q2",
+      "evidence_ids": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte:L311-L344"
+      ],
+      "id": "Q2-1",
+      "impact": "同一项网格状态样式调整必须同步修改两处；若只修改其中一处，年份与月份面板的 today、hover、范围端点或选中背景会呈现不同规则。当前两组规则一致，此项为维护建议，不认定现有视觉失败。",
+      "level": "suggestion",
+      "location": "packages/engine/runtime-ui/src/filters/DatePicker.svelte:L311-L344",
+      "roles": [
+        "review-quality"
+      ],
+      "source_ids": [
+        "Q2-1"
+      ],
+      "suggested_action": "将这 17 条共同声明合并为同时匹配 tiny-year-table 与 tiny-month-table 的选择器，例如用 :is(.tiny-year-table, .tiny-month-table) 保持原选择器权重；保留有差异的规则及原有覆盖顺序，复用现有冻结样式事实确认合并前后等价。",
+      "summary": "月份与年份网格分别复制了同一组 17 条样式规则。"
+    }
+  ],
+  "handoff": [
+    {
+      "id": "Q2-1",
+      "kind": "suggestion",
+      "needs_decision": false,
+      "user_visible_text": "月份与年份网格分别复制了同一组 17 条样式规则。（同一项网格状态样式调整必须同步修改两处；若只修改其中一处，年份与月份面板的 today、hover、范围端点或选中背景会呈现不同规则。当前两组规则一致，此项为维护建议，不认定现有视觉失败。）"
+    }
+  ],
+  "judged_files": {
+    "review-convention": [
+      "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+      "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+      "packages/engine/runtime-ui/src/filters/date-picker.ts",
+      "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "packages/engine/runtime-ui/tests/date-picker.test.ts",
+      "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+      "packages/engine/runtime-ui/tests/browser/main.ts",
+      "packages/engine/runtime-ui/tests/browser/date-picker.html",
+      "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+      "packages/engine/runtime-ui/src/RuntimeSurface.svelte"
+    ],
+    "review-layout": [
+      "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+      "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+      "packages/engine/runtime-ui/src/ReportHeaderView.svelte"
+    ],
+    "review-quality": [
+      "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+      "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+      "packages/engine/runtime-ui/src/filters/date-picker.ts",
+      "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/FilterBar.svelte"
+    ]
+  },
+  "known_gaps": {
+    "review-convention": [],
+    "review-layout": [],
+    "review-quality": []
+  },
+  "manual_acceptance": [],
+  "norm_candidates": [],
+  "open_questions": [],
+  "portfolio_narrowed": [],
+  "restore_contract": {
+    "contract_sha256": "dce219e2f0017c3559cd3bd7d2e8c8924dc7a9d97eda075c5a3cdb51a60ba240",
+    "overall": "green",
+    "summary": {
+      "green": 52,
+      "red": 0,
+      "total": 52,
+      "yellow": 0
+    }
+  },
+  "roles": {
+    "review-convention": "executed",
+    "review-layout": "executed",
+    "review-quality": "executed"
+  },
+  "schema_version": 1,
+  "skipped": {
+    "review-convention": [],
+    "review-layout": [],
+    "review-quality": []
+  },
+  "unplanned_carry": [],
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-1",
+        "modules": [
+          "causal",
+          "render"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1,2",
+        "verification_method": "restore_contract",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-2",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1,2",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-3",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "2,3",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-4",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "2,3",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      }
+    ],
+    "facts": {
+      "cross_page": false,
+      "frozen_r": true,
+      "frozen_r5": false,
+      "frozen_r6": true,
+      "has_f3": false,
+      "has_s3_claim": false,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "restore-final",
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "render",
+        "regression",
+        "review-layout",
+        "review-convention",
+        "review-quality"
+      ],
+      "phase": "initial",
+      "required_profiles": {
+        "AT-1": "mock",
+        "AT-2": "mock",
+        "AT-3": "mock",
+        "AT-4": "mock"
+      },
+      "review_roles": [
+        "review-layout",
+        "review-convention",
+        "review-quality"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C5"
+      ],
+      "review-layout": [
+        "L2",
+        "L3",
+        "L5"
+      ],
+      "review-quality": [
+        "Q2"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "risk_triggers": [
+      "build-config",
+      "interaction",
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "shared-boundary"
+      ],
+      "changed_files": 12,
+      "max_changed_files": 5,
+      "restore_tasks": [
+        "Task-1",
+        "Task-2"
+      ],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "build-config": [
+        "diff"
+      ],
+      "interaction": [
+        "plan"
+      ],
+      "shared-boundary": [
+        "plan"
+      ],
+      "visual": [
+        "diff",
+        "plan"
+      ]
+    }
+  }
+}

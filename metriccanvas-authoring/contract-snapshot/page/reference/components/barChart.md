@@ -9,7 +9,7 @@
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.11。结构真源为本册[schema.json](../schema.json)，SHA256 `508780df9e2561af9705f7ed2b0d07038e8f2d97027d66f0ae69b5a02a6cb75e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.13。结构真源为本册[schema.json](../schema.json)，SHA256 `a3070d52695f46a1c96cd22ed236f0adcc0574384064615d2654d875b7b1f698`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -180,6 +180,36 @@ Schema位置：`#/definitions/barChartSeries/properties/label/allOf/0`。目标�
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f62617243686172745365726965732f70726f706572746965732f6b696e64"></a>
+
+### `@barChartSeries.kind`
+
+Schema位置：`#/definitions/barChartSeries/properties/kind`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["bar","line"] | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "bar" | 柱系列。 |
+| "line" | 线系列。 |
+
+<a id="schema-232f646566696e6974696f6e732f62617243686172745365726965732f70726f706572746965732f61786973"></a>
+
+### `@barChartSeries.axis`
+
+Schema位置：`#/definitions/barChartSeries/properties/axis`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["primary","secondary"] | Schema未设默认；装配/运行时默认见语义说明 | 系列使用 primary 或 secondary 坐标轴。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "primary" | 主坐标轴。 |
+| "secondary" | 次坐标轴。 |
 
 <a id="schema-232f646566696e6974696f6e732f62617243686172745365726965732f70726f706572746965732f726f6c65"></a>
 

@@ -1,0 +1,261 @@
+{
+  "contract_sha256": "dce219e2f0017c3559cd3bd7d2e8c8924dc7a9d97eda075c5a3cdb51a60ba240",
+  "environment": {
+    "dpr": 1,
+    "scroll": {
+      "height": 1000,
+      "width": 1440
+    },
+    "user_agent": "unavailable-in-read-only-cua-dom-scope",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  "inputValue": "2026-01",
+  "observed": {
+    "route": "/packages/engine/runtime-ui/tests/browser/date-picker.html",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  "page_available": true,
+  "rules": {
+    "R1-1-range-input-count": {
+      "actual": 2,
+      "locator_used": {
+        "selector": "[data-harness-primary] input",
+        "strategy": "css"
+      },
+      "matched": 2,
+      "status": "ok"
+    },
+    "R1-1-range-separator-count": {
+      "actual": 1,
+      "locator_used": {
+        "selector": "[data-harness-primary] .tiny-range-separator",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R1-2-range-month-cell-count": {
+      "actual": 24,
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table td .cell",
+        "strategy": "css"
+      },
+      "matched": 24,
+      "status": "ok"
+    },
+    "R1-2-range-year-grid-count": {
+      "actual": 2,
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table",
+        "strategy": "css"
+      },
+      "matched": 2,
+      "status": "ok"
+    },
+    "R2-1-separator": {
+      "actual": "-",
+      "locator_used": {
+        "selector": "[data-harness-primary] .tiny-range-separator",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R3-3-input-border": {
+      "actual": {
+        "border-bottom-width": "0px",
+        "border-left-width": "0px",
+        "border-right-width": "0px",
+        "border-top-width": "0px"
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] input",
+        "strategy": "css"
+      },
+      "matched": 2,
+      "status": "ok"
+    },
+    "R3-3-input-height": {
+      "actual": 24,
+      "locator_used": {
+        "selector": "[data-harness-primary] input",
+        "strategy": "css"
+      },
+      "matched": 2,
+      "status": "ok"
+    },
+    "R3-3-input-padding": {
+      "actual": {
+        "padding-bottom": "0px",
+        "padding-left": "0px",
+        "padding-right": "0px",
+        "padding-top": "0px"
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] input",
+        "strategy": "css"
+      },
+      "matched": 2,
+      "status": "ok"
+    },
+    "R3-3-input-type": {
+      "actual": {
+        "font-size": "14px",
+        "line-height": "14px"
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] input",
+        "strategy": "css"
+      },
+      "matched": 2,
+      "status": "ok"
+    },
+    "R3-3-outer-padding": {
+      "actual": {
+        "padding-bottom": "3px",
+        "padding-left": "10px",
+        "padding-right": "10px",
+        "padding-top": "3px"
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .tiny-date-editor",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R3-4-range-month-panel": {
+      "actual": {
+        "bottom": 445,
+        "height": 245,
+        "left": 342,
+        "right": 900,
+        "top": 200,
+        "width": 558,
+        "x": 342,
+        "y": 200
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R3-5-range-grid": {
+      "actual": {
+        "bottom": 438,
+        "height": 180,
+        "left": 357,
+        "right": 616,
+        "top": 258,
+        "width": 259,
+        "x": 357,
+        "y": 258
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table",
+        "strategy": "css"
+      },
+      "matched": 2,
+      "status": "ok"
+    },
+    "R4-1-focus-border": {
+      "actual": {
+        "border-bottom-color": "rgb(25, 25, 25)",
+        "border-left-color": "rgb(25, 25, 25)",
+        "border-right-color": "rgb(25, 25, 25)",
+        "border-top-color": "rgb(25, 25, 25)"
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .tiny-date-editor",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R4-1-focus-height": {
+      "actual": 32,
+      "locator_used": {
+        "selector": "[data-harness-primary] .tiny-date-editor",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R4-1-focus-radius": {
+      "actual": {
+        "border-bottom-left-radius": "6px",
+        "border-bottom-right-radius": "6px",
+        "border-top-left-radius": "6px",
+        "border-top-right-radius": "6px"
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .tiny-date-editor",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R4-1-inrange": {
+      "actual": {
+        "background-color": "rgb(222, 236, 255)"
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover td.in-range:not(.start-date):not(.end-date) div",
+        "strategy": "css"
+      },
+      "matched": 4,
+      "status": "ok"
+    },
+    "R4-1-selected": {
+      "actual": {
+        "background-color": "rgb(20, 118, 255)",
+        "color": "rgb(255, 255, 255)"
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover .start-date .cell",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R4-1-today": {
+      "actual": {
+        "box-shadow": "rgb(25, 25, 25) 0px 0px 1px 1px"
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover td.today .cell",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R6-1-input-overlap": {
+      "actual": 0,
+      "locator_used": {
+        "selector": "[data-harness-primary] input:first-child",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R6-1-page-overflow": {
+      "actual": 0,
+      "locator_used": {
+        "selector": "html",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    }
+  },
+  "schema_version": 1,
+  "state": "monthrange"
+}

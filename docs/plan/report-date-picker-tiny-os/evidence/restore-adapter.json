@@ -1,0 +1,696 @@
+{
+  "schema_version": 2,
+  "rules": {
+    "R1-1-single-input-count": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-1-range-input-count": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-1-range-separator-count": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .tiny-range-separator"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-1-right-icon-count": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-calendar-icon svg"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-2-single-month-cell-count": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table td .cell"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-2-range-year-grid-count": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-2-range-month-cell-count": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table td .cell"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-2-grid-columns": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table tr:first-child td"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-2-grid-rows": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table tr"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-3-single-calendar-count": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-3-range-calendar-count": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-3-weekday-count": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table th"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-3-adjacent-month-dates": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table .pre-month,[data-harness-primary] .mc-date-popover table .next-month"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R2-1-separator": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .tiny-range-separator"
+        }
+      ],
+      "collect": {
+        "kind": "text",
+        "single": true
+      }
+    },
+    "R2-1-weekday-order": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table th"
+        }
+      ],
+      "collect": {
+        "kind": "text"
+      }
+    },
+    "R2-1-month-label-order": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table td .cell"
+        }
+      ],
+      "collect": {
+        "kind": "text"
+      }
+    },
+    "R2-1-month-value": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "order"
+      }
+    },
+    "R2-1-date-value": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "order"
+      }
+    },
+    "R3-1-height": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "rect",
+        "single": true
+      }
+    },
+    "R3-1-radius": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "border-top-left-radius",
+          "border-top-right-radius",
+          "border-bottom-left-radius",
+          "border-bottom-right-radius"
+        ],
+        "single": true
+      }
+    },
+    "R3-1-border": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "border-top-width",
+          "border-right-width",
+          "border-bottom-width",
+          "border-left-width",
+          "border-top-style",
+          "border-right-style",
+          "border-bottom-style",
+          "border-left-style",
+          "border-top-color",
+          "border-right-color",
+          "border-bottom-color",
+          "border-left-color"
+        ],
+        "single": true
+      }
+    },
+    "R3-1-text": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "font-size",
+          "color"
+        ],
+        "single": true
+      }
+    },
+    "R3-2-padding": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "padding-top",
+          "padding-right",
+          "padding-bottom",
+          "padding-left"
+        ],
+        "single": true
+      }
+    },
+    "R3-2-line-height": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "line-height"
+        ],
+        "single": true
+      }
+    },
+    "R3-3-outer-padding": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .tiny-date-editor"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "padding-top",
+          "padding-right",
+          "padding-bottom",
+          "padding-left"
+        ],
+        "single": true
+      }
+    },
+    "R3-3-input-border": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "border-top-width",
+          "border-right-width",
+          "border-bottom-width",
+          "border-left-width"
+        ],
+        "single": true
+      }
+    },
+    "R3-3-input-padding": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "padding-top",
+          "padding-right",
+          "padding-bottom",
+          "padding-left"
+        ],
+        "single": true
+      }
+    },
+    "R3-3-input-height": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "rect",
+        "single": true
+      }
+    },
+    "R3-3-input-type": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "font-size",
+          "line-height"
+        ],
+        "single": true
+      }
+    },
+    "R3-4-single-month-panel": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover"
+        }
+      ],
+      "collect": {
+        "kind": "rect",
+        "single": true
+      }
+    },
+    "R3-4-single-date-panel": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover"
+        }
+      ],
+      "collect": {
+        "kind": "rect",
+        "single": true
+      }
+    },
+    "R3-4-range-month-panel": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover"
+        }
+      ],
+      "collect": {
+        "kind": "rect",
+        "single": true
+      }
+    },
+    "R3-4-range-date-panel": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover"
+        }
+      ],
+      "collect": {
+        "kind": "rect",
+        "single": true
+      }
+    },
+    "R3-4-surface": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "background-color",
+          "border-top-left-radius",
+          "border-top-right-radius",
+          "border-bottom-left-radius",
+          "border-bottom-right-radius",
+          "font-size",
+          "line-height"
+        ],
+        "single": true
+      }
+    },
+    "R3-4-shadow": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "box-shadow"
+        ],
+        "single": true
+      }
+    },
+    "R3-5-single-grid": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table"
+        }
+      ],
+      "collect": {
+        "kind": "rect",
+        "single": true
+      }
+    },
+    "R3-5-range-grid": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table"
+        }
+      ],
+      "collect": {
+        "kind": "rect",
+        "single": true
+      }
+    },
+    "R3-5-row-height": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table tr:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "rect",
+        "single": true
+      }
+    },
+    "R3-6-single-grid": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table"
+        }
+      ],
+      "collect": {
+        "kind": "rect",
+        "single": true
+      }
+    },
+    "R3-6-range-grid": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table"
+        }
+      ],
+      "collect": {
+        "kind": "rect",
+        "single": true
+      }
+    },
+    "R3-6-weekday-height": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover table tr:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "rect",
+        "single": true
+      }
+    },
+    "R4-1-focus-border": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .tiny-date-editor"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "border-top-color",
+          "border-right-color",
+          "border-bottom-color",
+          "border-left-color"
+        ],
+        "single": true
+      }
+    },
+    "R4-1-focus-height": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .tiny-date-editor"
+        }
+      ],
+      "collect": {
+        "kind": "rect",
+        "single": true
+      }
+    },
+    "R4-1-focus-radius": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .tiny-date-editor"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "border-top-left-radius",
+          "border-top-right-radius",
+          "border-bottom-left-radius",
+          "border-bottom-right-radius"
+        ],
+        "single": true
+      }
+    },
+    "R6-1-page-overflow": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "html"
+        }
+      ],
+      "collect": {
+        "kind": "overflow"
+      }
+    },
+    "R6-1-input-overlap": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "overlap",
+        "with_selector": "[data-harness-primary] input:nth-of-type(2)"
+      }
+    },
+    "R6-1-panel-clip": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover"
+        }
+      ],
+      "collect": {
+        "kind": "clip"
+      }
+    },
+    "R4-1-selected": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover .start-date .cell"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "background-color",
+          "color"
+        ],
+        "single": true
+      }
+    },
+    "R4-1-inrange": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover td.in-range:not(.start-date):not(.end-date) div"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "background-color"
+        ],
+        "single": true
+      }
+    },
+    "R4-1-today": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] .mc-date-popover td.today .cell"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "box-shadow"
+        ],
+        "single": true
+      }
+    },
+    "R4-1-disabled": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-harness-primary] input"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "background-color",
+          "color"
+        ],
+        "single": true
+      }
+    },
+    "R4-1-hover": {
+      "source_files": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte"
+      ]
+    }
+  }
+}

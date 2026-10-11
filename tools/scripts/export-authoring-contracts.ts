@@ -249,7 +249,7 @@ async function buildProductOutputs(): Promise<OutputMap> {
   outputs.set('page/conformance/inline-params.json',json({cases:inlineCases}));
 
   const tokensInput=JSON.parse(await readFile(path.join(repoRoot,'packages/page/fixtures/parameter-extraction/tokens-parameter-source.json'),'utf8'));
-  const extractionContext={baseline:'tokens-local-verified-fixture',dimensionIdentities:Object.fromEntries(Object.keys(tokensInput.dataSources).map(id=>[id,{'区域':'region'}]))};
+  const extractionContext={baseline:'tokens-local-verified-fixture',timeIdentities:Object.fromEntries(Object.keys(tokensInput.dataSources).map(id=>[id,'tokens-report-period'])),dimensionIdentities:Object.fromEntries(Object.keys(tokensInput.dataSources).map(id=>[id,{'区域':'region'}]))};
   const extraction=extractPageParams(tokensInput,extractionContext);
   if(!extraction.ok)throw Error(JSON.stringify(extraction.issues));
   const selection=extraction.candidates.map(c=>c.id);

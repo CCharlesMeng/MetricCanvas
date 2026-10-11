@@ -32,6 +32,7 @@ BarChartSeries
 BarForecastBoundaryIssue
 BarSeriesRole
 BooleanFilterDeclaration
+CagrOperator
 CalendarTimeRangeIssue
 CategoryBreakdownColumn
 CategoryBreakdownComponent
@@ -96,6 +97,7 @@ GroupedQueryDataSource
 GroupedQueryFields
 InlineDataSource
 InlineSource
+JoinAggregateOperator
 JsonObject
 JsonValue
 KeyValuePanelComponent
@@ -189,9 +191,12 @@ ScalarFieldType
 ScalarFieldValue
 SearchFilterDeclaration
 SectionContainer
+SectionGroup
+SelectFieldOperator
 SemanticHtmlFieldDefinition
 StandardFieldType
 StandardScalarFieldDefinition
+SumFieldsOperator
 TabContainerComponent
 TabContainerProps
 TabItem
@@ -211,12 +216,15 @@ TextValueFormatter
 TextValueReference
 TextValueReferenceUsage
 TextValueResolution
+TimeFillOperator
+TimeParamGranularity
 TimePointFilterDeclaration
 TimeRangeFilterDeclaration
 TimeRangeParamValue
 TimeRangePrecision
 TimeRangePreset
 TimeRangeValue
+TimeWindow
 TypedError
 ValueFormatPreset
 VersionPolicy
@@ -232,6 +240,7 @@ collectTextValueReferences
 componentCatalog
 componentCatalogEntry
 compositeCardChildTypes
+computeDependencies
 computeOutputFields
 dataSourceMode
 daysInGregorianMonth
@@ -268,6 +277,7 @@ isTimeRangeValue
 isValueFormatPreset
 matchesFieldValue
 matchesParamDeclaration
+matchesTimeValue
 materializePageParams
 navigationErrors
 normalizePageDocument
@@ -285,12 +295,14 @@ resolveInlineQueryParams
 resolvePageParams
 resolveRelativeTime
 resolveTextValues
+resolveTimeWindow
 rowKinds
 runPageParameterProgram
 sectionBackdrop
 supportedVersions
 textValueScope
 timePointPredicateValue
+timeWindowCompatible
 toLocalDate
 toLocalTime
 urlInputErrors

@@ -887,7 +887,7 @@
     },
     {
       "id": "pagination-local-inline",
-      "description": "pagination.mode='local' 只允许绑定 inline 数据源",
+      "description": "pagination.mode='local' 只允许绑定 inline 或显式 complete 且无分页窗口的数据源",
       "valid": [
         "composite-page"
       ],
@@ -938,6 +938,26 @@
       ],
       "invalid": [
         "pagination-shared-source"
+      ]
+    },
+    {
+      "id": "detail-view-component-types",
+      "description": "详情只允许说明、图表和表格；共享 Schema 其它组件分支有显式拒绝见证",
+      "valid": [
+        "detail-views"
+      ],
+      "invalid": [
+        "detail-component-reject-reportheader",
+        "detail-component-reject-metriccard",
+        "detail-component-reject-mapchart",
+        "detail-component-reject-tabcontainer",
+        "detail-component-reject-compositecard",
+        "detail-component-reject-rankingcard",
+        "detail-component-reject-rankingdetailcard",
+        "detail-component-reject-keyvaluepanel",
+        "detail-component-reject-categorybreakdown",
+        "detail-component-reject-fieldtext",
+        "detail-component-reject-aisummary"
       ]
     }
   ]

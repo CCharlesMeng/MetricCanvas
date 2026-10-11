@@ -152,3 +152,40 @@ class InteractionEditingTest(unittest.TestCase):
         child=result['document']['sections'][0]['components'][-1]['props']['tabs'][0]['components'][0]
         self.assertTrue(child['props']['columns'][0]['link'])
         self.assertEqual(child['props']['actions'][0]['navigate'],link()['navigate'])
+
+
+class ReportDateEditingTest(unittest.TestCase):
+    def page(self):
+        p=json.loads((Path(__file__).resolve().parents[3]/'packages/page/fixtures/contract-valid/report-date-filters-page.json').read_text())
+        p.pop('params')
+        p['filters'][0].pop('initialParam')
+        p['filters'][0]['default']={'from':'2026-01','to':'2026-06'}
+        return p
+
+    def test_update_and_remove_date_filter_keep_bindings_and_header_references_atomic(self):
+        p=self.page();original=deepcopy(p)
+        self.assertEqual(validate_page_document(p),[])
+        updated=run(p,{'id':'update','type':'update_date_filter','filterId':'period-filter',
+            'declaration':{'type':'timePoint','granularity':'month','default':'2026-04','required':True},
+            'bindings':[{'dataSourceId':'sales','target':'time','window':{'kind':'yearToDate'}}],'headerId':'page-header'})
+        self.assertEqual(updated['status'],'changed',updated)
+        self.assertEqual(p,original)
+        removed=run(updated['document'],{'id':'remove','type':'remove_date_filter','filterId':'period-filter'})
+        self.assertEqual(removed['status'],'changed',removed)
+        self.assertNotIn('filterIds',removed['document']['sections'][0]['components'][0]['props'])
+        self.assertNotIn('filterBindings',removed['document']['dataSources']['sales']['source']['query'])
+
+    def test_invalid_date_configuration_rolls_back_whole_operation(self):
+        p=self.page();original=deepcopy(p)
+        result=run(p,{'id':'bad','type':'update_date_filter','filterId':'period-filter',
+            'declaration':{'type':'timeRange','precision':'date','default':{'from':'2026-06-30','to':'2026-01-01'}},
+            'bindings':[{'dataSourceId':'sales','target':'time'}]})
+        self.assertEqual(result['status'],'failed',result)
+        self.assertEqual(p,original)
+
+    def test_placement_moves_existing_control_without_duplicate_reference(self):
+        p=self.page();p['sections'].append({'id':'other-header','components':[{'id':'other-title','type':'reportHeader','layout':{'span':12},'props':{'title':'另一个页头'}}]})
+        moved=run(p,{'id':'move','type':'set_report_header_filters','headerId':'other-title','filterIds':['period-filter']})
+        self.assertEqual(moved['status'],'changed',moved)
+        self.assertNotIn('filterIds',moved['document']['sections'][0]['components'][0]['props'])
+        self.assertEqual(moved['document']['sections'][-1]['components'][0]['props']['filterIds'],['period-filter'])

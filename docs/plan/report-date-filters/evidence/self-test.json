@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "evidence_epoch": "review-1",
+  "code_fingerprint": "483b6f2cbe34cd875686838525c1c85396ebb964bf1993eb38210d4889c2378f",
+  "status": "executed",
+  "findings": [],
+  "skipped": [],
+  "open_questions": [],
+  "deferred_candidates": [],
+  "evidence_added": [],
+  "known_gaps": [
+    "正式属性面板及本地整链已验证；完整平台保存流程和真人手工验收未执行。",
+    "本轮不覆盖集成应用PDF编码、真实Relay/Java/DQE/DS联通或生产部署；真实模型调用为0。"
+  ],
+  "role": "self-test",
+  "judged_files": [
+    "packages/page/tests/report-date-filters.test.ts",
+    "packages/engine/runtime/tests/report-export.test.ts",
+    "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+    "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+    "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+    "packages/engine/runtime-ui/src/report-date-header.ts",
+    "packages/engine/runtime-ui/src/ExportView.svelte",
+    "packages/engine/runtime-ui/src/export-view.ts",
+    "packages/engine/runtime/src/export-snapshots.ts",
+    "packages/engine/runtime-ui/src/RuntimeView.svelte",
+    "apps/playground/src/lib/ReportDateExample.svelte",
+    "apps/platform/tests/workbench/report-date-edit.test.ts",
+    "apps/platform/src/lib/workbench/report-date-edit.ts",
+    "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+    "apps/platform/src/lib/workbench/Inspector.svelte",
+    "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+    "apps/platform/tests/browser/ReportDateEditorHarness.svelte",
+    "apps/platform/tests/browser/report-date-editor.ts",
+    "apps/platform/tests/browser/report-date-editor.html"
+  ],
+  "coverage": [
+    {
+      "dimension": "F1-1",
+      "scope": "1440/390/320 工具带、标题与换行",
+      "evidence_ids": [
+        "BE-1"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F2-1",
+      "scope": "四形态、公历、非法及半范围保留旧期间与恢复",
+      "evidence_ids": [
+        "BE-2",
+        "BE-6",
+        "ts-regression"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F3-1",
+      "scope": "提取确认、既有身份复用及无值模板",
+      "evidence_ids": [
+        "BE-3",
+        "ts-regression",
+        "authoring-regression"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F4-1",
+      "scope": "全部正文和Tabs、完整行、静态图表及捕获期间",
+      "evidence_ids": [
+        "BE-4",
+        "BE-5",
+        "ts-regression"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F5-1",
+      "scope": "本地公共方法并发、取消、超时、超限与清理",
+      "evidence_ids": [
+        "BE-5",
+        "ts-regression",
+        "engine-check",
+        "embed-build"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F6-1",
+      "scope": "platform 所属正式属性面板新增/修改/删除/非法回滚；本地MCP及契约分发",
+      "evidence_ids": [
+        "BE-7",
+        "ts-regression",
+        "authoring-regression",
+        "platform-check",
+        "playground-check",
+        "contract-check",
+        "bundle-check"
+      ],
+      "result": "clear"
+    }
+  ],
+  "evidence_reused": [
+    "BE-1",
+    "BE-2",
+    "BE-3",
+    "BE-4",
+    "BE-5",
+    "BE-6",
+    "BE-7",
+    "ts-regression",
+    "authoring-regression",
+    "engine-check",
+    "platform-check",
+    "playground-check",
+    "embed-build",
+    "contract-check",
+    "bundle-check"
+  ]
+}

@@ -1,3 +1,4 @@
+import { reportDateFilterErrors } from './report-date-filters';
 import { crossSourceComputeErrors } from './validate-compute-dependencies';
 import { queryParamReferenceErrors } from './query-param-references';
 import { paramBindingErrors } from './param-bindings';
@@ -265,6 +266,7 @@ function invariantErrors(page: Page): TypedError[] {
     errors.push(...filterDeclarationErrors(filter, index, `/filters/${index}`));
   });
   errors.push(...filterDependsOnErrors(filters));
+  errors.push(...reportDateFilterErrors(page));
   errors.push(...crossSourceComputeErrors(page));
 
   for (const [sourceId, dataSource] of Object.entries(page.dataSources)) {
@@ -825,12 +827,12 @@ function queryContractErrors(
           `筛选绑定引用了未知筛选器:${filterId}`
         )
       );
-    } else if (binding.target === 'time' && filter.type !== 'timeRange') {
+    } else if (binding.target === 'time' && (binding.window ? filter.type !== 'timePoint' : filter.type !== 'timeRange')) {
       errors.push(
         typedError(
           'FILTER_BINDING_ERROR',
           path,
-          `time 目标必须绑定 timeRange 筛选器:${filterId}`
+          binding.window ? `time 窗口目标必须绑定 timePoint 筛选器:${filterId}` : `time 目标必须绑定 timeRange 筛选器:${filterId}`
         )
       );
     } else if (binding.target === 'dimension' && filter.type !== 'dimension') {

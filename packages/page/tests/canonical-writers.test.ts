@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { expect, it } from 'vitest';
-import { normalizePageDocument } from '../src/index';
+import { normalizePageDocument, versionPolicy } from '../src/index';
 
 it('当前页面与样例使用受支持版本/layout，旧兼容夹具明确隔离', () => {
   for (const directory of ['pages', 'packages/page/fixtures/contract-valid']) {
@@ -13,9 +13,9 @@ it('当前页面与样例使用受支持版本/layout，旧兼容夹具明确隔
         expect(raw.schemaVersion).toBe('6.5');
         expect(raw).toHaveProperty('layoutForm');
       } else {
-        expect(['6.1', '6.2', '6.3', '6.4', '6.5', '6.6', '6.7', '6.8', '6.9', '6.10', '6.11', '6.12'], name).toContain(raw.schemaVersion);
+        expect(['6.1', '6.2', '6.3', '6.4', '6.5', '6.6', '6.7', '6.8', '6.9', '6.10', '6.11', '6.12', '6.13'], name).toContain(raw.schemaVersion);
         expect(raw, name).not.toHaveProperty('layoutForm');
-        if (normalized.ok) expect(normalized.document, name).toEqual({ ...raw, schemaVersion: raw.schemaVersion === '6.11' ? '6.12' : raw.schemaVersion });
+        if (normalized.ok) expect(normalized.document, name).toEqual({ ...raw, schemaVersion: ['6.11','6.12'].includes(raw.schemaVersion) ? versionPolicy.current : raw.schemaVersion });
       }
     }
   }

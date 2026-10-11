@@ -17,8 +17,10 @@ RESULT_SECTION = deepcopy(SECTION)
 RESULT_SECTION['required'] = ['id', 'pattern', 'blocks']
 for block_schema in RESULT_SECTION['properties']['blocks']['items']['oneOf']:
     block_schema['required'] = [key for key in block_schema['required'] if key != 'purpose']
+DATE_FILTER_OPERATIONS = [o for o in EDIT_SCHEMA['properties']['operations']['items']['oneOf'] if o['properties']['type']['const'] == 'add_date_filter']
 COMPOSE_SCHEMA = obj({'title': TEXT, 'layout': {'enum': ['report', 'dashboard']}, 'sources': SOURCE_REFS,
-                      'sections': {'type': 'array', 'minItems': 1, 'maxItems': 12, 'items': RESULT_SECTION}}, ['title', 'sources', 'sections'])
+                      'sections': {'type': 'array', 'minItems': 1, 'maxItems': 12, 'items': RESULT_SECTION},
+                      'dateFilters': {'type': 'array', 'maxItems': 8, 'items': {'oneOf': DATE_FILTER_OPERATIONS}}}, ['title', 'sources', 'sections'])
 RESULT_OPERATION = obj({'id': ID, 'type': {'const': 'add_result_component'}, 'sectionId': ID,
     'resultRef': NAME, 'block': DATA_BLOCK,
     'dependsOn': {'type': 'array', 'items': ID}}, ['id', 'type', 'sectionId', 'resultRef', 'block'])
@@ -94,6 +96,11 @@ def compose(prepared, request, records):
             document['dataSources'].update({k: sources[k] for k in used})
         pack_default_widths(target['components'], section['blocks'])
         document['sections'].append(target)
+    for op in request.get('dateFilters', []):
+        candidate, issues, _ = apply_page_operation(deepcopy(document), op)
+        if candidate is None or validate_page_document(candidate):
+            return {'status': 'failed', 'document': None, 'operations': outcomes, 'issues': [{'code': 'COMPOSE_DATE_FILTER_INVALID', 'path': '/dateFilters'}]}
+        document = candidate
     applied = any(o['status'] == 'applied' for o in outcomes)
     if not applied or validate_page_document(document):
         return {'status': 'failed', 'document': None, 'operations': outcomes, 'issues': [{'code': 'COMPOSE_RESULT_INVALID', 'path': ''}]}

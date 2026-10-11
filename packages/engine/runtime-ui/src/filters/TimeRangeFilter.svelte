@@ -1,62 +1,79 @@
 <script lang="ts">
-  import type { TimeRangeValue } from '@metriccanvas/page/internal';
-
-  /**
-   * 时间范围筛选器(纯渲染):当前范围由运行时传入,变更只上抛事件。
-   * precision 决定日期或日期时间精度;起止都填妥才上抛,清除上抛 null。
-   */
+  import { untrack } from 'svelte';
+  import DatePicker from './DatePicker.svelte';
+  import { validateCalendarTimeRange, type TimeRangePrecision, type TimeRangeValue } from '@metriccanvas/page/internal';
   interface Props {
     label?: string;
-    precision?: 'date' | 'datetime';
-    /** 当前范围;null 表示不筛选 */
+    precision?: TimeRangePrecision;
+    required?: boolean;
+    readOnly?: boolean;
     value: TimeRangeValue | null;
     onchange: (range: TimeRangeValue | null) => void;
   }
-
-  let { label, precision = 'date', value, onchange }: Props = $props();
-
-  const inputType = $derived(precision === 'datetime' ? 'datetime-local' : 'date');
-
-  function emit(from: string, to: string) {
-    if (from && to) onchange({ from, to });
-    else if (!from && !to) onchange(null);
-    // 只填了一端:等另一端填妥再上抛,避免半成品范围触发重查
+  let { label, precision = 'date', required = false, readOnly = false, value, onchange }: Props = $props();
+  let from = $state(untrack(() => value?.from ?? ''));
+  let to = $state(untrack(() => value?.to ?? ''));
+  let error = $state('');
+  const inputType = $derived(precision === 'datetime' ? 'datetime-local' : precision);
+  $effect(() => { from = value?.from ?? ''; to = value?.to ?? ''; error = ''; });
+  function emit() {
+    if (!from && !to && !required) { error = ''; onchange(null); return; }
+    if (!from || !to) { error = '请填写完整的起止期间'; return; }
+    const issues = validateCalendarTimeRange({ from, to }, precision);
+    error = issues[0]?.message ?? '';
+    if (!error) onchange({ from, to });
   }
+  function clear() { from = ''; to = ''; error = ''; onchange(null); }
 </script>
 
+{#if precision !== 'datetime'}
+  <DatePicker {label} {required} {precision} range disabled={readOnly} {value} {onchange} />
+{:else}
 <div class="filter">
   {#if label}<span class="label">{label}</span>{/if}
   <input
     type={inputType}
-    value={value?.from ?? ''}
-    onchange={(e) => emit(e.currentTarget.value, value?.to ?? '')}
+    disabled={readOnly}
+    aria-label={`${label ?? "期间"}开始`}
+    aria-invalid={!!error}
+    value={from}
+    onchange={(e) => { from = e.currentTarget.value; emit(); }}
   />
   <span class="sep">至</span>
   <input
     type={inputType}
-    value={value?.to ?? ''}
-    onchange={(e) => emit(value?.from ?? '', e.currentTarget.value)}
+    disabled={readOnly}
+    aria-label={`${label ?? "期间"}结束`}
+    aria-invalid={!!error}
+    value={to}
+    onchange={(e) => { to = e.currentTarget.value; emit(); }}
   />
-  {#if value}
-    <button type="button" class="clear" title="清除时间范围" onclick={() => onchange(null)}>✕</button>
+  {#if value && !required && !readOnly}
+    <button type="button" class="clear" title="清除时间范围" onclick={clear}>✕</button>
   {/if}
+  {#if error}<span class="error" role="status">{error}</span>{/if}
 </div>
+{/if}
 
 <style>
   /* 控件铬与外置字段名标签的可见性经 --mc-filter-* 下发,真源在统一运行时根部。
      区间控件是并排两个输入框,不吃单值控件的 --mc-filter-control-min-width。 */
   .filter {
+    min-width:0; max-width:100%;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 8px;
     font-size: var(--mc-filter-font-size, 13px);
   }
+  .error { flex-basis: 100%; color: #b91c1c; font-size: 12px; }
   .label {
     display: var(--mc-filter-label-display, inline);
     color: #71717a;
     white-space: nowrap;
   }
   input {
+    min-width:0; max-width:100%; box-sizing:border-box;
     height: var(--mc-filter-control-height, auto);
     padding: 5px 8px;
     border: 1px solid var(--mc-filter-control-border-color, #e4e4e7);

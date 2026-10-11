@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { getContext } from 'svelte';
+  import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
   import type { MapChartProps, Row } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import { resolveField } from '../../shared/component-data';
@@ -32,6 +34,7 @@
   }
 
   let { data, props, map, onregionclick }: Props = $props();
+  const staticExport=getContext<boolean>(STATIC_EXPORT_CONTEXT)??false;
   const basemapId = $derived(map ?? props.map);
 
   /**
@@ -196,7 +199,7 @@
 
 <!-- `display: contents` 的读样式锚点:自定义属性靠继承可读,而它不生成盒,
      所以既拿到了 `getComputedStyle` 的入口,又不改变单元格内的布局。 -->
-<div class="safe-area-probe" bind:this={host}>
+<div class="safe-area-probe" bind:this={host} data-export-pending={staticExport ? !basemap : undefined}>
   {#if props.title}<h3>{props.title}</h3>{/if}
   {#if basemap}
     <!-- 图例贴在绘图区左下角(图表库自带那块视觉映射条原来的位置),所以

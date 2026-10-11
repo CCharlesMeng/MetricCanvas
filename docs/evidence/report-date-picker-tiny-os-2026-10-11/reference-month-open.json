@@ -1,0 +1,513 @@
+{
+  "dialogs": [
+    {
+      "elements": [
+        {
+          "class": "tiny-picker-panel__icon-btn tiny-date-picker__prev-btn tiny-icon-d-arrow-left",
+          "rect": {
+            "bottom": 578.5,
+            "height": 21,
+            "left": 358,
+            "right": 378,
+            "top": 557.5,
+            "width": 20,
+            "x": 358,
+            "y": 557.5
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(0, 0, 0)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(0, 0, 0)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "13.3333px",
+            "gap": "normal",
+            "height": "21px",
+            "line-height": "normal",
+            "padding": "0px 4px 0px 0px",
+            "width": "20px"
+          },
+          "text": ""
+        },
+        {
+          "class": "tiny-picker-panel__icon-btn tiny-date-picker__prev-btn tiny-icon-arrow-left",
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(0, 0, 0)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(0, 0, 0)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "13.3333px",
+            "gap": "normal",
+            "height": "21px",
+            "line-height": "normal",
+            "padding": "0px 4px 0px 0px",
+            "width": "auto"
+          },
+          "text": ""
+        },
+        {
+          "class": "tiny-picker-panel__icon-btn tiny-date-picker__next-btn tiny-icon-d-arrow-right",
+          "rect": {
+            "bottom": 578.5,
+            "height": 21,
+            "left": 666,
+            "right": 686,
+            "top": 557.5,
+            "width": 20,
+            "x": 666,
+            "y": 557.5
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(0, 0, 0)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(0, 0, 0)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "13.3333px",
+            "gap": "normal",
+            "height": "21px",
+            "line-height": "normal",
+            "padding": "0px 4px 0px 0px",
+            "width": "20px"
+          },
+          "text": ""
+        },
+        {
+          "class": "tiny-picker-panel__icon-btn tiny-date-picker__next-btn tiny-icon-arrow-right",
+          "rect": {
+            "bottom": 0,
+            "height": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(0, 0, 0)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(0, 0, 0)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "13.3333px",
+            "gap": "normal",
+            "height": "21px",
+            "line-height": "normal",
+            "padding": "0px 4px 0px 0px",
+            "width": "auto"
+          },
+          "text": ""
+        },
+        {
+          "class": "tiny-month-table",
+          "rect": {
+            "bottom": 783,
+            "height": 180,
+            "left": 357,
+            "right": 685,
+            "top": 603,
+            "width": 328,
+            "x": 357,
+            "y": 603
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "gap": "normal",
+            "height": "180px",
+            "line-height": "21px",
+            "padding": "0px",
+            "width": "328px"
+          },
+          "text": "1 月2 月3 月4 月5 月6 月7 月8 月9 月10 月11 月12 月"
+        },
+        {
+          "class": "",
+          "rect": {
+            "bottom": 663,
+            "height": 60,
+            "left": 357,
+            "right": 439,
+            "top": 603,
+            "width": 82,
+            "x": 357,
+            "y": 603
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "gap": "normal",
+            "height": "60px",
+            "line-height": "21px",
+            "padding": "16px 0px",
+            "width": "82px"
+          },
+          "text": "1 月"
+        },
+        {
+          "class": "",
+          "rect": {
+            "bottom": 663,
+            "height": 60,
+            "left": 439,
+            "right": 521,
+            "top": 603,
+            "width": 82,
+            "x": 439,
+            "y": 603
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "gap": "normal",
+            "height": "60px",
+            "line-height": "21px",
+            "padding": "16px 0px",
+            "width": "82px"
+          },
+          "text": "2 月"
+        },
+        {
+          "class": "",
+          "rect": {
+            "bottom": 663,
+            "height": 60,
+            "left": 521,
+            "right": 603,
+            "top": 603,
+            "width": 82,
+            "x": 521,
+            "y": 603
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "gap": "normal",
+            "height": "60px",
+            "line-height": "21px",
+            "padding": "16px 0px",
+            "width": "82px"
+          },
+          "text": "3 月"
+        },
+        {
+          "class": "",
+          "rect": {
+            "bottom": 663,
+            "height": 60,
+            "left": 603,
+            "right": 685,
+            "top": 603,
+            "width": 82,
+            "x": 603,
+            "y": 603
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "gap": "normal",
+            "height": "60px",
+            "line-height": "21px",
+            "padding": "16px 0px",
+            "width": "82px"
+          },
+          "text": "4 月"
+        },
+        {
+          "class": "",
+          "rect": {
+            "bottom": 723,
+            "height": 60,
+            "left": 357,
+            "right": 439,
+            "top": 663,
+            "width": 82,
+            "x": 357,
+            "y": 663
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "gap": "normal",
+            "height": "60px",
+            "line-height": "21px",
+            "padding": "16px 0px",
+            "width": "82px"
+          },
+          "text": "5 月"
+        },
+        {
+          "class": "",
+          "rect": {
+            "bottom": 723,
+            "height": 60,
+            "left": 439,
+            "right": 521,
+            "top": 663,
+            "width": 82,
+            "x": 439,
+            "y": 663
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "gap": "normal",
+            "height": "60px",
+            "line-height": "21px",
+            "padding": "16px 0px",
+            "width": "82px"
+          },
+          "text": "6 月"
+        },
+        {
+          "class": "",
+          "rect": {
+            "bottom": 723,
+            "height": 60,
+            "left": 521,
+            "right": 603,
+            "top": 663,
+            "width": 82,
+            "x": 521,
+            "y": 663
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "gap": "normal",
+            "height": "60px",
+            "line-height": "21px",
+            "padding": "16px 0px",
+            "width": "82px"
+          },
+          "text": "7 月"
+        },
+        {
+          "class": "",
+          "rect": {
+            "bottom": 723,
+            "height": 60,
+            "left": 603,
+            "right": 685,
+            "top": 663,
+            "width": 82,
+            "x": 603,
+            "y": 663
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "gap": "normal",
+            "height": "60px",
+            "line-height": "21px",
+            "padding": "16px 0px",
+            "width": "82px"
+          },
+          "text": "8 月"
+        },
+        {
+          "class": "",
+          "rect": {
+            "bottom": 783,
+            "height": 60,
+            "left": 357,
+            "right": 439,
+            "top": 723,
+            "width": 82,
+            "x": 357,
+            "y": 723
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "gap": "normal",
+            "height": "60px",
+            "line-height": "21px",
+            "padding": "16px 0px",
+            "width": "82px"
+          },
+          "text": "9 月"
+        },
+        {
+          "class": "today",
+          "rect": {
+            "bottom": 783,
+            "height": 60,
+            "left": 439,
+            "right": 521,
+            "top": 723,
+            "width": 82,
+            "x": 439,
+            "y": 723
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "gap": "normal",
+            "height": "60px",
+            "line-height": "21px",
+            "padding": "16px 0px",
+            "width": "82px"
+          },
+          "text": "10 月"
+        },
+        {
+          "class": "",
+          "rect": {
+            "bottom": 783,
+            "height": 60,
+            "left": 521,
+            "right": 603,
+            "top": 723,
+            "width": 82,
+            "x": 521,
+            "y": 723
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "gap": "normal",
+            "height": "60px",
+            "line-height": "21px",
+            "padding": "16px 0px",
+            "width": "82px"
+          },
+          "text": "11 月"
+        },
+        {
+          "class": "",
+          "rect": {
+            "bottom": 783,
+            "height": 60,
+            "left": 603,
+            "right": 685,
+            "top": 723,
+            "width": 82,
+            "x": 603,
+            "y": 723
+          },
+          "style": {
+            "background-color": "rgba(0, 0, 0, 0)",
+            "border": "0px none rgb(25, 25, 25)",
+            "border-radius": "0px",
+            "box-shadow": "none",
+            "color": "rgb(25, 25, 25)",
+            "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "font-size": "14px",
+            "gap": "normal",
+            "height": "60px",
+            "line-height": "21px",
+            "padding": "16px 0px",
+            "width": "82px"
+          },
+          "text": "12 月"
+        }
+      ],
+      "panel": {
+        "class": "tiny-picker-panel tiny-date-picker tiny-popper",
+        "rect": {
+          "bottom": 790,
+          "height": 245,
+          "left": 342,
+          "right": 702,
+          "top": 545,
+          "width": 360,
+          "x": 342,
+          "y": 545
+        },
+        "style": {
+          "background-color": "rgb(255, 255, 255)",
+          "border": "0px none rgb(25, 25, 25)",
+          "border-radius": "6px",
+          "box-shadow": "rgba(0, 0, 0, 0.08) 0px 4px 16px 0px",
+          "color": "rgb(25, 25, 25)",
+          "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+          "font-size": "14px",
+          "gap": "normal",
+          "height": "245px",
+          "line-height": "21px",
+          "padding": "0px",
+          "width": "360px"
+        },
+        "text": "2026 年10 月1 月2 月3 月4 月5 月6 月7 月8 月9 月10 月11 月12 月"
+      }
+    }
+  ],
+  "url": "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/date-picker"
+}

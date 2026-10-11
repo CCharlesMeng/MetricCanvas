@@ -1,0 +1,40 @@
+{
+  "contract_sha256": "dce219e2f0017c3559cd3bd7d2e8c8924dc7a9d97eda075c5a3cdb51a60ba240",
+  "environment": {
+    "dpr": 1,
+    "scroll": {
+      "height": 1000,
+      "width": 1440
+    },
+    "user_agent": "unavailable-in-read-only-cua-dom-scope",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  "inputValue": "2026-01",
+  "observed": {
+    "route": "/packages/engine/runtime-ui/tests/browser/date-picker.html",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  "page_available": true,
+  "rules": {
+    "R4-1-disabled": {
+      "actual": {
+        "background-color": "rgb(240, 240, 240)",
+        "color": "rgb(194, 194, 194)"
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] input",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    }
+  },
+  "schema_version": 1,
+  "state": "disabled"
+}

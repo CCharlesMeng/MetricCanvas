@@ -1,3 +1,6 @@
+import { flattenPageComponents } from './component-walk';
+import { versionPolicy } from './version';
+import type { TimeWindow } from './time-param';
 import { bindingQueryFields } from './query';
 import { parsePage } from './validate';
 import { canonicalizeJson } from './canonical-json';
@@ -8,12 +11,15 @@ import type { PageDocument } from './page-document';
 
 export interface ParameterCandidate {
   id:string; identity:string; declaration:PageParamDeclaration; originalValue:PageParamValue;
-  locations:Array<{dataSourceId:string;path:string;queryField?:string}>;
+  locations:Array<{dataSourceId:string;path:string;queryField?:string;filterId?:string;window?:TimeWindow;valueFormat?:"iso"|"compact";datePredicate?:boolean}>;
+  existingParamId?:string; dateForm?:"month"|"monthRange"|"date"|"dateRange";
   coveredQueries:string[]; uncoveredQueries:string[]; defaultSelected:boolean;
 }
 export interface ExtractionContext {
   /** Exact verified revision; authenticity and DQE verification belong to the calling trusted program. */
   baseline:string;
+  timePointFields?:Readonly<Record<string,Readonly<Record<string,{granularity:"month"|"date";valueFormat?:"iso"|"compact";identity?:string}>>>>;
+  timeIdentities?:Readonly<Record<string,string>>;
   dimensionIdentities?:Readonly<Record<string,Readonly<Record<string,string>>>>;
   previousCandidates?:readonly ParameterCandidate[];
 }
@@ -45,6 +51,18 @@ export function extractPageParams(input:unknown, context:ExtractionContext):Page
     if(Array.isArray(f.dims))for(const [index,d] of f.dims.entries()) {
       const path=`${base}/dims/${index}/dim_value_list`;
       if(!record(d)||Object.keys(d).some(k=>!['dim_name','dim_value_list'].includes(k))||typeof d.dim_name!=='string'||!Array.isArray(d.dim_value_list)||!d.dim_value_list.length||!d.dim_value_list.every((x:unknown)=>typeof x==='string'&&x.length)||new Set(d.dim_value_list).size!==d.dim_value_list.length||f.dims.filter((x:any)=>x?.dim_name===d.dim_name).length!==1){skipped.push({path,reason:'仅提取无歧义的简单字符串维度谓词'});continue;}
+      const typed = Object.values(ds.fields).find((field:any)=>field.type==='date'&&field.queryField===d.dim_name);
+      const dateField=context.timePointFields?.[id]?.[d.dim_name]??(typed?{granularity:'date' as const}:undefined);
+      if(Object.values(q.filterBindings??{}).some(b=>b.target==='timePoint'&&b.queryField===d.dim_name))continue;
+      if(dateField&&d.dim_value_list.length===1&&typeof d.dim_value_list[0]==='string') {
+        const raw=d.dim_value_list[0];
+        const value=dateField.valueFormat==='compact' ? dateField.granularity==='month' ? `${raw.slice(0,4)}-${raw.slice(4)}` : `${raw.slice(0,4)}-${raw.slice(4,6)}-${raw.slice(6)}` : raw;
+        const declaration:PageParamDeclaration={id:'',type:'timeRange',required:true,label:d.dim_name,granularity:dateField.granularity};
+        if(matchesParamDeclaration({start:value,end:value},declaration)) {
+          add(dateField.identity??`date:${id}:${d.dim_name}`,declaration,{start:value,end:value},{dataSourceId:id,path,queryField:d.dim_name,valueFormat:dateField.valueFormat,datePredicate:true});
+          continue;
+        }
+      }
       const multiple=d.dim_value_list.length>1;
       const identity=context.dimensionIdentities?.[id]?.[d.dim_name]??`${id}:${d.dim_name}`;
       add(identity,{id:'',type:'dimension',required:true,label:d.dim_name,...(multiple?{multiple:true}:{})},multiple?[...d.dim_value_list]:d.dim_value_list[0],{dataSourceId:id,path,queryField:d.dim_name});
@@ -54,8 +72,26 @@ export function extractPageParams(input:unknown, context:ExtractionContext):Page
       const granularity=t.period==='month'?'month':t.period==='day'?'date':undefined;
       const declaration:PageParamDeclaration={id:'',type:'timeRange',required:true,label:'报告期间',granularity};
       const value={start:t.start,end:t.end,granularity};
-      if(granularity&&matchesParamDeclaration(value,declaration))add(`time:${granularity}`,declaration,value,{dataSourceId:id,path:`${base}/time`});
+      if(granularity&&matchesParamDeclaration(value,declaration)&&!Object.values(q.filterBindings??{}).some(b=>b.target==='time'))add(context.timeIdentities?.[id]??`time:${id}:${granularity}`,declaration,value,{dataSourceId:id,path:`${base}/time`});
       else skipped.push({path:`${base}/time`,reason:'只提取明确合法的固定月/日区间，不推断窗口关系'});
+    }
+  }
+  for (const filter of source.filters ?? []) {
+    if ((filter.type !== 'timePoint' && filter.type !== 'timeRange')) continue;
+    const granularity = filter.type === 'timePoint' ? filter.granularity : filter.precision ?? 'date';
+    if (granularity === 'datetime') continue;
+    const existing = filter.initialParam ? pageParamDeclarations(source.params).find(p=>p.id===filter.initialParam) : undefined;
+    const initial = existing?.type === 'timeRange' && typeof existing.value==='object' && !Array.isArray(existing.value) ? existing.value : filter.type === 'timePoint' ? {start:filter.default,end:filter.default} :
+      filter.default && typeof filter.default === 'object' && 'from' in filter.default ? {start:filter.default.from,end:filter.default.to} : undefined;
+    if (!initial || !matchesParamDeclaration(initial,{id:'',type:'timeRange',required:true,granularity})) { skipped.push({path:`/filters/${filter.id}/default`,reason:'相对时间须先在可信基线中明确为绝对日期'}); continue; }
+    const declaration:PageParamDeclaration = {id:'',type:'timeRange',required:true,label:filter.label??'报告期间',granularity};
+    for (const id of queries) {
+      const ds = source.dataSources[id]; if (ds.source.type !== 'query') continue;
+      const binding = ds.source.query.filterBindings?.[filter.id];
+      if (!binding || (filter.type === 'timePoint' ? binding.target !== 'timePoint' && !(binding.target === 'time' && binding.window) : binding.target !== 'time')) continue;
+      add(`filter:${filter.id}`,declaration,initial as PageParamValue,{dataSourceId:id,path:`/filters/${filter.id}/default`,filterId:filter.id,
+        ...(binding.target === 'timePoint' ? {queryField:binding.queryField}:{}),
+        ...(binding.target === 'time' && binding.window ? {window:binding.window}:{})});
     }
   }
   const occupied=new Set(pageParamDeclarations(source.params).map(p=>p.id));
@@ -63,7 +99,11 @@ export function extractPageParams(input:unknown, context:ExtractionContext):Page
   for(const c of candidates) {
     const previous=context.previousCandidates?.find(p=>p.identity===c.identity&&canonicalizeJson(p.locations)===canonicalizeJson(c.locations));
     const hint=c.declaration.type==='timeRange'?'report-period':String(JSON.parse(c.identity).identity).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'dimension';
-    const base=previous?.id??hint;let id=base,n=2;while(occupied.has(id))id=`${base}-${n++}`;
+    const filterId=c.locations.find(l=>l.filterId)?.filterId;
+    const existingId=source.filters?.find(f=>f.id===filterId&&'initialParam' in f);
+    c.existingParamId=existingId&&'initialParam' in existingId?existingId.initialParam:undefined;
+    if(c.declaration.type==='timeRange') {const original=c.originalValue as {start:string;end:string};c.dateForm=`${c.declaration.granularity}${original.start===original.end?'':'Range'}` as ParameterCandidate['dateForm'];}
+    const base=c.existingParamId??previous?.id??hint;let id=base,n=2;while(occupied.has(id)&&id!==c.existingParamId)id=`${base}-${n++}`;
     occupied.add(id);c.id=id;c.declaration.id=id;
     c.coveredQueries=[...new Set(c.locations.map(l=>l.dataSourceId))].sort();
     c.uncoveredQueries=queries.filter(id=>!c.coveredQueries.includes(id));
@@ -77,9 +117,20 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
   if(new Set(selectedIds).size!==selectedIds.length||selectedIds.some(id=>!extraction.candidates.some(c=>c.id===id)))return fail('选择包含未知或重复参数');
   const selected=extraction.candidates.filter(c=>selectedIds.includes(c.id));
   const document=structuredClone(extraction.source);
-  document.schemaVersion='6.11';
+  document.schemaVersion=selected.some(c=>c.declaration.type==='timeRange') ? versionPolicy.current : selected.length && Number(document.schemaVersion.split('.')[1])<11 ? '6.11' : document.schemaVersion;
   if (Array.isArray(document.params) && document.params.length) return fail('已有旧参数须先显式迁移，不能在提取时丢弃');
   if (selected.length && (!document.params || Array.isArray(document.params))) document.params={query:{}};
+  const textPaths=new Set<string>();
+  function collectText(value:unknown,path:string) {
+    if(typeof value==='string')textPaths.add(path);
+    else if(Array.isArray(value))value.forEach((v,i)=>collectText(v,`${path}/${i}`));
+    else if(record(value))for(const [key,v] of Object.entries(value))if(!['id','type','param','filterIds','data','layout','actions','links','navigate','writeFilter','hierarchyFilter'].includes(key))collectText(v,`${path}/${pointer(key)}`);
+  }
+  collectText(document.sections,'/sections');collectText(document.meta,'/meta');
+  for(const [path,value] of Object.entries(textReplacements)) {
+    if(!textPaths.has(path))return fail('只能替换现有文本槽位',path);
+    setAt(document,path,value);
+  }
   const originalValues:Record<string,PageParamValue>={};
   for(const c of selected) {
     if (document.params && !Array.isArray(document.params)) {
@@ -91,9 +142,44 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
         (queryParams.dimensions ??= []).push({id:c.id, dim_name:c.locations[0].queryField, label:c.declaration.label});
         originalValues[c.id]=Array.isArray(c.originalValue) ? [...c.originalValue] : [String(c.originalValue)];
       } else if (c.declaration.type === 'timeRange' && c.declaration.granularity && typeof c.originalValue === 'object' && !Array.isArray(c.originalValue)) {
-        (queryParams.times ??= []).push({id:c.id, granularity:c.declaration.granularity, label:c.declaration.label});
+        if (!queryParams.times?.some(t=>t.id===c.id)) (queryParams.times ??= []).push({id:c.id, granularity:c.declaration.granularity, label:c.declaration.label});
+        const existing=queryParams.times?.find(t=>t.id===c.id);if(existing){delete existing.start;delete existing.end;}
         originalValues[c.id]={start:c.originalValue.start,end:c.originalValue.end};
       } else return fail('分组参数不支持此提取类型');
+    }
+    let dateFilterId:string|undefined;
+    if (c.declaration.type === 'timeRange') {
+      dateFilterId = c.locations.find(l=>l.filterId)?.filterId;
+      if (!dateFilterId) {
+        const occupied = new Set((document.filters ?? []).map(f=>f.id));
+        const base = `${c.id}-filter`; dateFilterId=base; let suffix=2;
+        while(occupied.has(dateFilterId)) dateFilterId=`${base}-${suffix++}`;
+        const original = c.originalValue as {start:string;end:string};
+        (document.filters ??= []).push(original.start === original.end ?
+          {id:dateFilterId,type:'timePoint',granularity:c.declaration.granularity!,label:c.declaration.label,required:true,initialParam:c.id} :
+          {id:dateFilterId,type:'timeRange',precision:c.declaration.granularity!,label:c.declaration.label,required:true,initialParam:c.id});
+      } else {
+        const filter=document.filters!.find(f=>f.id===dateFilterId)!;
+        if(filter.type !== 'timeRange' && filter.type !== 'timePoint') return fail('日期筛选类型不匹配');
+        delete filter.default;filter.initialParam=c.id;filter.required=true;
+      }
+      if (document.layout !== 'dashboard') {
+        const headers=document.sections.flatMap(section=>section.components).filter(c=>c.type==='reportHeader');
+        let header=headers.find(c=>c.type==='reportHeader'&&c.props.filterIds?.includes(dateFilterId!))??headers[0];
+        if (!header) {
+          const ids = new Set(flattenPageComponents(document).map(c=>c.id));
+          let id='report-header';let suffix=2;while(ids.has(id))id=`report-header-${suffix++}`;
+          header={id,type:'reportHeader',layout:{span:12},props:{title:document.meta?.title??document.id}};
+          const sectionIds=new Set(document.sections.map(s=>s.id));
+          let sectionId=`${id}-section`;let sectionSuffix=2;while(sectionIds.has(sectionId))sectionId=`${id}-section-${sectionSuffix++}`;
+          document.sections.unshift({id:sectionId,components:[header]});
+        }
+        if(header.type==='reportHeader') {
+          header.props.filterIds=[...new Set([...(header.props.filterIds??[]),dateFilterId])];
+          // Runtime period owns this caption once a date filter is placed.
+          delete header.props.asOf;
+        }
+      }
     }
     for(const location of c.locations) {
       if(c.declaration.type==='dimension') {
@@ -110,18 +196,27 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
       else {
         const source = document.dataSources[location.dataSourceId].source;
         if (source.type !== 'query') return fail('来源查询已改变');
+        if (location.filterId) continue;
+        if (location.datePredicate && location.queryField) {
+          const filter = source.query.body.dsl_list[0].filter as Record<string, any>;
+          filter.dims=filter.dims.filter((dim:any)=>dim.dim_name!==location.queryField);
+          (source.query.filterBindings ??= {})[dateFilterId!]={target:'timePoint',queryField:location.queryField,valueFormat:location.valueFormat};
+          continue;
+        }
         const time = (source.query.body.dsl_list[0].filter as Record<string, any>).time;
-        delete time.start; delete time.end; time.param = c.id;
+        delete time.start; delete time.end;
+        const original=c.originalValue as {start:string;end:string};
+        (source.query.filterBindings ??= {})[dateFilterId!] = original.start === original.end ?
+          {target:'time',window:{kind:'period',unit:c.declaration.granularity==='month'?'month':'day'}} : {target:'time'};
       }
     }
   }
   const pending:string[]=[];
   function textWalk(v:unknown,path:string) {
     if(typeof v==='string') {
-      if(Object.hasOwn(textReplacements,path)){setAt(document,path,textReplacements[path]);return;}
       if(selected.some(c=>(typeof c.originalValue==='string'?[c.originalValue]:Array.isArray(c.originalValue)?c.originalValue:typeof c.originalValue==='object'?[c.originalValue.start,c.originalValue.end]:[]).some(x=>v.includes(x))))pending.push(path);
     } else if(Array.isArray(v))v.forEach((x,i)=>textWalk(x,`${path}/${i}`));
-    else if(record(v))for(const [k,x] of Object.entries(v))if(!['id','type','param'].includes(k))textWalk(x,`${path}/${pointer(k)}`);
+    else if(record(v))for(const [k,x] of Object.entries(v))if(!['id','type','param','filterIds','data','layout','actions','links','navigate','writeFilter','hierarchyFilter'].includes(k))textWalk(x,`${path}/${pointer(k)}`);
   }
   textWalk(document.sections,'/sections');textWalk(document.meta,'/meta');
   if(pending.length)return fail(`以下文本仍含原值，须显式替换或改为参数引用：${pending.join('、')}`,pending[0]);
@@ -134,11 +229,16 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
     // Filter-owned targets are checked with their initialized value reinstated.
     const body=structuredClone(after.query.body);
     const f:Record<string,any>=record(body.dsl_list[0].filter)?body.dsl_list[0].filter:{};
-    const restored=selected.flatMap(c=>c.locations.filter(l=>l.dataSourceId===id&&l.queryField&&Object.values(after.query.filterBindings??{}).some(b=>bindingQueryFields(b).includes(l.queryField ?? ''))).map(l=>({c,l,index:Number(l.path.split('/').at(-2))}))).sort((a,b)=>a.index-b.index);
+    const restored=selected.flatMap(c=>c.locations.filter(l=>!l.filterId&&l.dataSourceId===id&&l.queryField&&Object.values(after.query.filterBindings??{}).some(b=>bindingQueryFields(b).includes(l.queryField ?? '')||(b.target==='timePoint'&&b.queryField===l.queryField))).map(l=>({c,l,index:Number(l.path.split('/').at(-2))}))).sort((a,b)=>a.index-b.index);
     for(const {c,l,index} of restored) {
       f.dims??=[];
-      f.dims.splice(index,0,{dim_name:l.queryField,dim_value_list:Array.isArray(c.originalValue)?c.originalValue:[c.originalValue]});
+      f.dims.splice(index,0,{dim_name:l.queryField,dim_value_list:c.declaration.type==='timeRange' ? [(c.originalValue as {start:string}).start.replaceAll('-',l.valueFormat==='compact'?'':'-')] : Array.isArray(c.originalValue)?c.originalValue:[c.originalValue]});
       body.dsl_list[0].filter=f;
+    }
+    for(const c of selected) for(const location of c.locations) {
+      if(c.declaration.type !== 'timeRange' || location.dataSourceId !== id || location.filterId || location.datePredicate) continue;
+      const original=c.originalValue as {start:string;end:string};
+      const time=f.time; if(record(time)) {time.start=original.start;time.end=original.end;}
     }
     if(canonicalizeJson(body)!==canonicalizeJson(before.query.body))return fail('原值回填与已验证查询不等价',`/dataSources/${pointer(id)}`);
   }

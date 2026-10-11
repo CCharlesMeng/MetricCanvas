@@ -1,5 +1,6 @@
+import { versionPolicy } from '@metriccanvas/page';
 import { projectCanvasDraft, type CanvasAuthoringDraft, type ComponentLocator, type DocumentEditResult } from './document-edit';
-type PropertyName = 'subtitle' | 'badge' | 'tags' | 'showTrendArrows' | 'horizontal' | 'stacked' | 'rounded' | 'showSegmentLabels' | 'showStackTotalLabels' | 'smooth' | 'areaGradient' | 'showPointLabels' | 'hideYAxis' | 'ring' | 'labelLine' | 'fit';
+type PropertyName = 'filterIds' | 'subtitle' | 'badge' | 'tags' | 'showTrendArrows' | 'horizontal' | 'stacked' | 'rounded' | 'showSegmentLabels' | 'showStackTotalLabels' | 'smooth' | 'areaGradient' | 'showPointLabels' | 'hideYAxis' | 'ring' | 'labelLine' | 'fit';
 export type PropertyTarget =
   | { kind: 'property'; name: PropertyName }
   | { kind: 'series-label'; index: number }
@@ -8,11 +9,11 @@ export type PropertyTarget =
 export type PropertyEdit = PropertyTarget & { value: unknown };
 export interface PropertyControl { id: string; label: string; kind: 'text' | 'tags' | 'boolean' | 'number' | 'choice'; target: PropertyTarget; value: unknown; choices?: string[] }
 const names: Record<string, readonly PropertyName[]> = {
-  reportHeader: ['subtitle', 'badge', 'tags'], metricCard: ['showTrendArrows'],
+  reportHeader: ['subtitle', 'badge', 'tags', 'filterIds'], metricCard: ['showTrendArrows'],
   barChart: ['horizontal', 'stacked', 'rounded', 'showSegmentLabels', 'showStackTotalLabels'],
   lineChart: ['smooth', 'areaGradient', 'showPointLabels', 'hideYAxis'], pieChart: ['ring', 'labelLine'], table: ['subtitle', 'fit']
 };
-const labels: Record<PropertyName, string> = { subtitle: '副标题', badge: '徽标', tags: '标签（每行一个）', showTrendArrows: '趋势箭头', horizontal: '横向显示', stacked: '堆叠', rounded: '圆角', showSegmentLabels: '分段标签', showStackTotalLabels: '堆叠合计标签', smooth: '平滑曲线', areaGradient: '面积渐变', showPointLabels: '数据点标签', hideYAxis: '隐藏纵轴', ring: '环形内径（如 50%）', labelLine: '引导线', fit: '表格适配' };
+const labels: Record<PropertyName, string> = { filterIds: '页头日期筛选器 ID（按显示顺序，每行一个）', subtitle: '副标题', badge: '徽标', tags: '标签（每行一个）', showTrendArrows: '趋势箭头', horizontal: '横向显示', stacked: '堆叠', rounded: '圆角', showSegmentLabels: '分段标签', showStackTotalLabels: '堆叠合计标签', smooth: '平滑曲线', areaGradient: '面积渐变', showPointLabels: '数据点标签', hideYAxis: '隐藏纵轴', ring: '环形内径（如 50%）', labelLine: '引导线', fit: '表格适配' };
 const object = (value: unknown): Record<string, unknown> | null => value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null;
 function componentOf(document: Record<string, unknown>, locator: ComponentLocator) {
   const section = (Array.isArray(document.sections) ? document.sections : []).map(object).find((value) => value?.id === locator.sectionId);
@@ -22,7 +23,7 @@ export function propertyControls(draft: CanvasAuthoringDraft | null, locator: Co
   if (!draft || !locator) return [];
   const component = componentOf(draft.canvasDocument, locator), props = object(component?.props), type = String(component?.type);
   if (!props || !names[type]) return [];
-  const controls: PropertyControl[] = names[type].map((name) => ({ id: name, label: labels[name], target: { kind: 'property', name }, value: props[name], kind: name === 'tags' ? 'tags' : name === 'fit' ? 'choice' : ['subtitle', 'badge', 'ring'].includes(name) ? 'text' : 'boolean', ...(name === 'fit' ? { choices: ['content', 'container'] } : {}) }));
+  const controls: PropertyControl[] = names[type].map((name) => ({ id: name, label: labels[name], target: { kind: 'property', name }, value: props[name], kind: ['tags','filterIds'].includes(name) ? 'tags' : name === 'fit' ? 'choice' : ['subtitle', 'badge', 'ring'].includes(name) ? 'text' : 'boolean', ...(name === 'fit' ? { choices: ['content', 'container'] } : {}) }));
   if (type === 'barChart' || type === 'lineChart') (Array.isArray(props.series) ? props.series : []).forEach((series, index) => controls.push({ id: `series-${index}`, label: `系列 ${index + 1} 标签`, kind: 'text', target: { kind: 'series-label', index }, value: object(series)?.label }));
   if (type === 'metricCard') for (const rows of ['rows', 'secondaryRows'] as const) (Array.isArray(props[rows]) ? props[rows] : []).forEach((row, index) => {
     for (const field of ['label', 'context', 'unit'] as const) controls.push({ id: `${rows}-${index}-${field}`, label: `${rows === 'rows' ? '主' : '次'}指标 ${index + 1} ${{ label: '行说明', context: '上下文', unit: '单位' }[field]}`, kind: 'text', target: { kind: 'metric-row', rows, index, field }, value: object(row)?.[field] });
@@ -66,6 +67,7 @@ export function editProperty(draft: CanvasAuthoringDraft, locator: ComponentLoca
     if (!target || target.kind === 'group') return fail(); key = edit.field;
   } else return fail();
   if (!target) return fail();
+  if(edit.kind==='property' && edit.name==='filterIds') { next.schemaVersion=versionPolicy.current; if(Array.isArray(edit.value)&&edit.value.length===0) edit={...edit,value:undefined}; }
   if (edit.value === undefined) delete target[key]; else target[key] = structuredClone(edit.value);
   return projectCanvasDraft(next);
 }

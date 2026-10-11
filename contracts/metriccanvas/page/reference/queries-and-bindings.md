@@ -4,12 +4,14 @@
 
 未绑定到某源的筛选变化不触发该源；绑定字段须存在于合法查询位置。paramBindings用于6.2维度初始化，目标唯一、共享源显式声明，不与同目标静态条件或多个参数竞争。页面只声明目标，不声明服务权限。
 
+6.13 的 filterBindings `{target:"time",window:...}` 引用 timePoint，窗口使用明确的 period/yearToDate/monthToDate/lastN 等声明，保留查询 period/is_aggregate。没有 window 的 time 目标仍引用 timeRange。查询时间只能有一个筛选来源；窗口精度不隐式转换，绑定不得与固定起止/参数引用并存。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `508780df9e2561af9705f7ed2b0d07038e8f2d97027d66f0ae69b5a02a6cb75e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.13。结构真源为本册[schema.json](schema.json)，SHA256 `a3070d52695f46a1c96cd22ed236f0adcc0574384064615d2654d875b7b1f698`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -337,6 +339,26 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 |---|---|
 | "time" | 用于选择@dqeQuery.filterBindings{key} · anyOf[2].target分支；同分支其它约束同时成立。 |
 
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f77696e646f77"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].window`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/window`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 确定性查询时间窗口：由绑定参数推导起止，起止包含；不决定指标口径。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f77696e646f772f616c6c4f662f30"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].window · allOf[0]`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/window/allOf/0`。目标：[#/definitions/timeWindow](params-and-text-values.md#schema-232f646566696e6974696f6e732f74696d6557696e646f77)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/timeWindow | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f33"></a>
 
 ### `@dqeQuery.filterBindings{key} · anyOf[3]`
@@ -525,7 +547,7 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/propertyNames`�
 - `#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/current/source/query/paramBindings/report-month`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/dataSources/sales/source/query/filterBindings/region-filter`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/dataSources/regions/source/query/filterBindings/area`。
-- `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/dataSources/orders/source/query/filterBindings/period`。
+- `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2`：[合法完整页面](examples/report-date-filters-page.json)，JSON Pointer `#/dataSources/sales/source/query/filterBindings/period-filter`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/3`：[合法完整页面](examples/non-dimension-bindings-page.json)，JSON Pointer `#/dataSources/sales/source/query/filterBindings/month`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/4`：[合法完整页面](examples/non-dimension-bindings-page.json)，JSON Pointer `#/dataSources/sales/source/query/filterBindings/only-key`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5`：[合法完整页面](examples/non-dimension-bindings-page.json)，JSON Pointer `#/dataSources/sales/source/query/filterBindings/amount-range`。

@@ -68,7 +68,7 @@ export const dqeQueryZ = z
                   .meta({ minProperties: 2 })
               })
               .strict(),
-            z.object({ target: z.literal('time') }).strict(),
+            z.object({ target: z.literal('time'), window: timeWindowZ.optional() }).strict(),
             // 非维度筛选器的三支谓词(ADR-0085)。
             z
               .object({

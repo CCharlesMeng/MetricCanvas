@@ -26,7 +26,7 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `508780df9e2561af9705f7ed2b0d07038e8f2d97027d66f0ae69b5a02a6cb75e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.13。结构真源为本册[schema.json](schema.json)，SHA256 `a3070d52695f46a1c96cd22ed236f0adcc0574384064615d2654d875b7b1f698`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -119,6 +119,16 @@ Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/field`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f6d697373696e6754657874"></a>
+
+### `@fieldBinding · anyOf[1].missingText`
+
+Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/missingText`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | minLength=1; maxLength=100 | Schema未设默认；装配/运行时默认见语义说明 | 字段缺值时的展示文字，不生成业务数值。 |
 
 <a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f666f726d6174"></a>
 

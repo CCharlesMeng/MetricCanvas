@@ -66,13 +66,13 @@ export function paramBindingErrors(document: unknown): TypedError[] {
         error(`/dataSources/${pointer(sourceId)}/source/query/filterBindings/${pointer(filterId)}`, '参数初始化筛选的每个查询目标都必须显式绑定同一参数');
       }
       // timePoint 在 paramBindings 里没有对应目标，显式查询目标就是这条筛选绑定本身。
-      if (declaration?.type === 'timePoint' && declaration.initialParam && binding.target === 'timePoint') {
+      if ((declaration?.type === 'timePoint' || declaration?.type === 'timeRange') && declaration.initialParam && (binding.target === 'timePoint' || binding.target === 'time')) {
         filterConsumers.add(filterId);
       }
     }
   }
   (page.filters ?? []).forEach((filter, index) => {
-    if (filter.type !== 'dimension' && filter.type !== 'timePoint') return;
+    if (filter.type !== 'dimension' && filter.type !== 'timePoint' && filter.type !== 'timeRange') return;
     if (filter.initialParam === undefined) return;
     const path = `/filters/${index}/initialParam`;
     const declaration = params.get(filter.initialParam);
@@ -84,8 +84,8 @@ export function paramBindingErrors(document: unknown): TypedError[] {
     }
     // 时间点筛选器的初值来自一个退化成单点的 times 输入:区间没有唯一的点可取。
     if (declaration?.type !== 'timeRange' || !declaration.required) error(path, '时间点筛选初值必须引用必需的 times 参数');
-    else if (declaration.granularity !== filter.granularity) error(path, '时间点筛选初值的参数精度必须与筛选器一致');
-    else if (isRange(declaration.value) && declaration.value.start !== declaration.value.end) error(path, '时间点筛选初值要求参数是单点');
+    else if (declaration.granularity !== (filter.type === 'timePoint' ? filter.granularity : filter.precision ?? 'date')) error(path, '时间点筛选初值的参数精度必须与筛选器一致');
+    else if (filter.type === 'timePoint' && isRange(declaration.value) && declaration.value.start !== declaration.value.end) error(path, '时间点筛选初值要求参数是单点');
   });
   return errors;
 }

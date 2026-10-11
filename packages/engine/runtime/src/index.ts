@@ -49,3 +49,5 @@ export { prepareExecution, loadExecution, ExecutionError } from './execution';
 export type { ExecutionBootstrap, ExecutionRequest, ExecutionTarget, ExecutionPort } from './execution';
 export { createLastFilterRecorder } from './filter-history';
 export type { LastFilterContext, LastFilterRequest, LastFilterPort, LastFilterStatus } from './filter-history';
+
+export { ExportViewError, EXPORT_MAX_ROWS, EXPORT_PREPARATION_TIMEOUT_MS } from './export-snapshots';

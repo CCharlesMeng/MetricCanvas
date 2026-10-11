@@ -1,4 +1,4 @@
-import { normalizePageDocument, type PageDocument, type TypedError } from '@metriccanvas/page';
+import { normalizePageDocument, type TypedError } from '@metriccanvas/page';
 import defaultPreviewPage from './default-preview-page.json';
 
 export type PreviewDocumentResult =
@@ -30,6 +30,8 @@ export function parsePreviewDocument(
     : { status: 'contract-error', errors: normalized.errors };
 }
 
-export const DEFAULT_PREVIEW_PAGE = defaultPreviewPage as PageDocument;
+const defaultPreview = normalizePageDocument(defaultPreviewPage);
+if (!defaultPreview.ok) throw new Error('默认预览页面不符合页面契约');
+export const DEFAULT_PREVIEW_PAGE = defaultPreview.document;
 
 export const DEFAULT_PREVIEW_JSON = JSON.stringify(DEFAULT_PREVIEW_PAGE, null, 2);

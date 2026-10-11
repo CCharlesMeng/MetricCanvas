@@ -11,7 +11,7 @@ groupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `508780df9e2561af9705f7ed2b0d07038e8f2d97027d66f0ae69b5a02a6cb75e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.13。结构真源为本册[schema.json](schema.json)，SHA256 `a3070d52695f46a1c96cd22ed236f0adcc0574384064615d2654d875b7b1f698`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -53,7 +53,7 @@ Schema位置：`#/definitions/computeOperator/oneOf/0`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 独立分支（不合并required） | required=["op","numerator","denominator","output","onZeroDenominator"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "object" | 独立分支（不合并required） | required=["op","source","keys","values","onMissing"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f6f70"></a>
 
@@ -63,70 +63,130 @@ Schema位置：`#/definitions/computeOperator/oneOf/0/properties/op`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | const="ratio" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
+| "string" | 本分支必填 | const="joinAggregate" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "ratio" | 用于选择@computeOperator · oneOf[0].op分支；同分支其它约束同时成立。 |
+| "joinAggregate" | 用于选择@computeOperator · oneOf[0].op分支；同分支其它约束同时成立。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f6e756d657261746f72"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f736f75726365"></a>
 
-### `@computeOperator · oneOf[0].numerator`
+### `@computeOperator · oneOf[0].source`
 
-Schema位置：`#/definitions/computeOperator/oneOf/0/properties/numerator`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | ratio分子数值字段。 |
-
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f64656e6f6d696e61746f72"></a>
-
-### `@computeOperator · oneOf[0].denominator`
-
-Schema位置：`#/definitions/computeOperator/oneOf/0/properties/denominator`。
+Schema位置：`#/definitions/computeOperator/oneOf/0/properties/source`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | ratio分母数值字段。 |
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f6f7574707574"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f6b657973"></a>
 
-### `@computeOperator · oneOf[0].output`
+### `@computeOperator · oneOf[0].keys`
 
-Schema位置：`#/definitions/computeOperator/oneOf/0/properties/output`。
+Schema位置：`#/definitions/computeOperator/oneOf/0/properties/keys`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 按 local/foreign 显式声明跨源匹配字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f6b6579732f6974656d73"></a>
+
+### `@computeOperator · oneOf[0].keys[]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/0/properties/keys/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["local","foreign"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f6b6579732f6974656d732f70726f706572746965732f6c6f63616c"></a>
+
+### `@computeOperator · oneOf[0].keys[].local`
+
+Schema位置：`#/definitions/computeOperator/oneOf/0/properties/keys/items/properties/local`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 当前数据源关联键字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f6b6579732f6974656d732f70726f706572746965732f666f726569676e"></a>
+
+### `@computeOperator · oneOf[0].keys[].foreign`
+
+Schema位置：`#/definitions/computeOperator/oneOf/0/properties/keys/items/properties/foreign`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 被关联数据源的匹配字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f76616c756573"></a>
+
+### `@computeOperator · oneOf[0].values`
+
+Schema位置：`#/definitions/computeOperator/oneOf/0/properties/values`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 聚合字段、输出字段及封闭聚合方式。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f76616c7565732f6974656d73"></a>
+
+### `@computeOperator · oneOf[0].values[]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/0/properties/values/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["field","output","aggregate"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f76616c7565732f6974656d732f70726f706572746965732f6669656c64"></a>
+
+### `@computeOperator · oneOf[0].values[].field`
+
+Schema位置：`#/definitions/computeOperator/oneOf/0/properties/values/items/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f76616c7565732f6974656d732f70726f706572746965732f6f7574707574"></a>
+
+### `@computeOperator · oneOf[0].values[].output`
+
+Schema位置：`#/definitions/computeOperator/oneOf/0/properties/values/items/properties/output`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 算子写入的已声明页面字段。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f6f6e5a65726f44656e6f6d696e61746f72"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f76616c7565732f6974656d732f70726f706572746965732f616767726567617465"></a>
 
-### `@computeOperator · oneOf[0].onZeroDenominator`
+### `@computeOperator · oneOf[0].values[].aggregate`
 
-Schema位置：`#/definitions/computeOperator/oneOf/0/properties/onZeroDenominator`。
+Schema位置：`#/definitions/computeOperator/oneOf/0/properties/values/items/properties/aggregate`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["null","zero"] | Schema未设默认；装配/运行时默认见语义说明 | 分母为零或缺失时取空还是取零；必须显式声明，默认值会静默改数 |
+| "string" | 本分支必填 | enum=["unique","sum"] | Schema未设默认；装配/运行时默认见语义说明 | unique 要求唯一值，sum 按可加度量求和；不推断口径。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "unique" | 要求唯一非空值，歧义时拒绝计算。 |
+| "sum" | 按声明可加度量求和。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f6f6e4d697373696e67"></a>
+
+### `@computeOperator · oneOf[0].onMissing`
+
+Schema位置：`#/definitions/computeOperator/oneOf/0/properties/onMissing`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="null" | Schema未设默认；装配/运行时默认见语义说明 | 明确关联或字段缺失时的处理方式。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "null" | 零/缺分母时输出空值。 |
-| "zero" | 零/缺分母时输出0。 |
-
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f302f70726f706572746965732f7363616c65"></a>
-
-### `@computeOperator · oneOf[0].scale`
-
-Schema位置：`#/definitions/computeOperator/oneOf/0/properties/scale`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "number" | 本分支可选 | const=100 | Schema未设默认；装配/运行时默认见语义说明 | 输出刻度；缺省产出 0–1 分数，100 产出 0–100。闭集只有 100，开放数值等于在算子里引入乘法表达式 |
-
-| 允许值 | 解释与适用条件 |
-|---|---|
-| 100 | ratio输出乘100，匹配百分比原值展示。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f31"></a>
 
@@ -136,7 +196,7 @@ Schema位置：`#/definitions/computeOperator/oneOf/1`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 独立分支（不合并required） | required=["op","minuend","subtrahend","output"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "object" | 独立分支（不合并required） | required=["op","fields","output","onMissing"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f312f70726f706572746965732f6f70"></a>
 
@@ -146,31 +206,31 @@ Schema位置：`#/definitions/computeOperator/oneOf/1/properties/op`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | const="delta" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
+| "string" | 本分支必填 | const="sumFields" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "delta" | 用于选择@computeOperator · oneOf[1].op分支；同分支其它约束同时成立。 |
+| "sumFields" | 用于选择@computeOperator · oneOf[1].op分支；同分支其它约束同时成立。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f312f70726f706572746965732f6d696e75656e64"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f312f70726f706572746965732f6669656c6473"></a>
 
-### `@computeOperator · oneOf[1].minuend`
+### `@computeOperator · oneOf[1].fields`
 
-Schema位置：`#/definitions/computeOperator/oneOf/1/properties/minuend`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | delta被减数数值字段。 |
-
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f312f70726f706572746965732f73756274726168656e64"></a>
-
-### `@computeOperator · oneOf[1].subtrahend`
-
-Schema位置：`#/definitions/computeOperator/oneOf/1/properties/subtrahend`。
+Schema位置：`#/definitions/computeOperator/oneOf/1/properties/fields`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | delta减数数值字段。 |
+| "array" | 本分支必填 | minItems=2; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 结果字段契约；对象键就是页面字段id。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f312f70726f706572746965732f6669656c64732f6974656d73"></a>
+
+### `@computeOperator · oneOf[1].fields[]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/1/properties/fields/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f312f70726f706572746965732f6f7574707574"></a>
 
@@ -182,6 +242,21 @@ Schema位置：`#/definitions/computeOperator/oneOf/1/properties/output`。
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 算子写入的已声明页面字段。 |
 
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f312f70726f706572746965732f6f6e4d697373696e67"></a>
+
+### `@computeOperator · oneOf[1].onMissing`
+
+Schema位置：`#/definitions/computeOperator/oneOf/1/properties/onMissing`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["null","ignore"] | Schema未设默认；装配/运行时默认见语义说明 | 明确关联或字段缺失时的处理方式。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "null" | 零/缺分母时输出空值。 |
+| "ignore" | 忽略缺失输入；其余值参与求和。 |
+
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f32"></a>
 
 ### `@computeOperator · oneOf[2]`
@@ -190,7 +265,7 @@ Schema位置：`#/definitions/computeOperator/oneOf/2`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 独立分支（不合并required） | required=["op","groupBy","measures","rowKind"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "object" | 独立分支（不合并required） | required=["op","beginning","ending","periods","output"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f322f70726f706572746965732f6f70"></a>
 
@@ -200,47 +275,530 @@ Schema位置：`#/definitions/computeOperator/oneOf/2/properties/op`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | const="groupSubtotal" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
+| "string" | 本分支必填 | const="cagr" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "groupSubtotal" | 用于选择@computeOperator · oneOf[2].op分支；同分支其它约束同时成立。 |
+| "cagr" | 用于选择@computeOperator · oneOf[2].op分支；同分支其它约束同时成立。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f322f70726f706572746965732f67726f75704279"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f322f70726f706572746965732f626567696e6e696e67"></a>
 
-### `@computeOperator · oneOf[2].groupBy`
+### `@computeOperator · oneOf[2].beginning`
 
-Schema位置：`#/definitions/computeOperator/oneOf/2/properties/groupBy`。
+Schema位置：`#/definitions/computeOperator/oneOf/2/properties/beginning`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 折叠分组的维度字段。 |
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 复合增长率的起始字段。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f322f70726f706572746965732f6d65617375726573"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f322f70726f706572746965732f656e64696e67"></a>
 
-### `@computeOperator · oneOf[2].measures`
+### `@computeOperator · oneOf[2].ending`
 
-Schema位置：`#/definitions/computeOperator/oneOf/2/properties/measures`。
+Schema位置：`#/definitions/computeOperator/oneOf/2/properties/ending`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 复合增长率的结束字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f322f70726f706572746965732f706572696f6473"></a>
+
+### `@computeOperator · oneOf[2].periods`
+
+Schema位置：`#/definitions/computeOperator/oneOf/2/properties/periods`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 复合增长率的正周期数。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f322f70726f706572746965732f6f7574707574"></a>
+
+### `@computeOperator · oneOf[2].output`
+
+Schema位置：`#/definitions/computeOperator/oneOf/2/properties/output`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 算子写入的已声明页面字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f322f70726f706572746965732f7363616c65"></a>
+
+### `@computeOperator · oneOf[2].scale`
+
+Schema位置：`#/definitions/computeOperator/oneOf/2/properties/scale`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 本分支可选 | const=100 | Schema未设默认；装配/运行时默认见语义说明 | ratio输出刻度；显式100转换为百分刻度。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| 100 | ratio输出乘100，匹配百分比原值展示。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f33"></a>
+
+### `@computeOperator · oneOf[3]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["op","timeField","granularity","format","range","measures"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f6f70"></a>
+
+### `@computeOperator · oneOf[3].op`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/op`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="timeFill" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "timeFill" | 用于选择@computeOperator · oneOf[3].op分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f74696d654669656c64"></a>
+
+### `@computeOperator · oneOf[3].timeField`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/timeField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 补齐时间轴的时间字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f6772616e756c6172697479"></a>
+
+### `@computeOperator · oneOf[3].granularity`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/granularity`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["day","month"] | Schema未设默认；装配/运行时默认见语义说明 | 时间值的粒度。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "day" | 日粒度。 |
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f666f726d6174"></a>
+
+### `@computeOperator · oneOf[3].format`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/format`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["iso","compact"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "iso" | 时间点原样送 YYYY-MM / YYYY-MM-DD。 |
+| "compact" | 时间点去掉分隔符后送出，例如 202604。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f72616e6765"></a>
+
+### `@computeOperator · oneOf[3].range`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/range`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 受控范围结构。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f72616e67652f616e794f662f30"></a>
+
+### `@computeOperator · oneOf[3].range · anyOf[0]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/range/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["from","to"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f72616e67652f616e794f662f302f70726f706572746965732f66726f6d"></a>
+
+### `@computeOperator · oneOf[3].range · anyOf[0].from`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/range/anyOf/0/properties/from`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 范围起点；与to的顺序和精度须匹配。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f72616e67652f616e794f662f302f70726f706572746965732f746f"></a>
+
+### `@computeOperator · oneOf[3].range · anyOf[0].to`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/range/anyOf/0/properties/to`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 范围终点；与from的顺序和精度须匹配。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f72616e67652f616e794f662f31"></a>
+
+### `@computeOperator · oneOf[3].range · anyOf[1]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/range/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["currentYearOffset"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f72616e67652f616e794f662f312f70726f706572746965732f63757272656e74596561724f6666736574"></a>
+
+### `@computeOperator · oneOf[3].range · anyOf[1].currentYearOffset`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/range/anyOf/1/properties/currentYearOffset`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支必填 | minimum=-100; maximum=100 | Schema未设默认；装配/运行时默认见语义说明 | 相对打开页面时自然年的显式偏移。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f72616e67652f616e794f662f32"></a>
+
+### `@computeOperator · oneOf[3].range · anyOf[2]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/range/anyOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["filter"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f72616e67652f616e794f662f322f70726f706572746965732f66696c746572"></a>
+
+### `@computeOperator · oneOf[3].range · anyOf[2].filter`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/range/anyOf/2/properties/filter`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 显式引用本页筛选器状态。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f6d65617375726573"></a>
+
+### `@computeOperator · oneOf[3].measures`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/measures`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "array" | 本分支必填 | minItems=1; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 度量字段集合或分组。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f322f70726f706572746965732f6d656173757265732f6974656d73"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f6d656173757265732f6974656d73"></a>
 
-### `@computeOperator · oneOf[2].measures[]`
+### `@computeOperator · oneOf[3].measures[]`
 
-Schema位置：`#/definitions/computeOperator/oneOf/2/properties/measures/items`。
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/measures/items`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 每个数组项 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f322f70726f706572746965732f726f774b696e64"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f67726f75704279"></a>
 
-### `@computeOperator · oneOf[2].rowKind`
+### `@computeOperator · oneOf[3].groupBy`
 
-Schema位置：`#/definitions/computeOperator/oneOf/2/properties/rowKind`。目标：[#/definitions/rowKindMark](compute.md#schema-232f646566696e6974696f6e732f726f774b696e644d61726b)。
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/groupBy`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 折叠分组的维度字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f67726f757042792f6974656d73"></a>
+
+### `@computeOperator · oneOf[3].groupBy[]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/3/properties/groupBy/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f34"></a>
+
+### `@computeOperator · oneOf[4]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/4`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["op","filter","cases","defaultMode","output"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f6f70"></a>
+
+### `@computeOperator · oneOf[4].op`
+
+Schema位置：`#/definitions/computeOperator/oneOf/4/properties/op`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="selectField" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "selectField" | 用于选择@computeOperator · oneOf[4].op分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f66696c746572"></a>
+
+### `@computeOperator · oneOf[4].filter`
+
+Schema位置：`#/definitions/computeOperator/oneOf/4/properties/filter`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 显式引用本页筛选器状态。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f6361736573"></a>
+
+### `@computeOperator · oneOf[4].cases`
+
+Schema位置：`#/definitions/computeOperator/oneOf/4/properties/cases`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | propertyNames={"type":"string","minLength":1}; minProperties=1 | Schema未设默认；装配/运行时默认见语义说明 | 按筛选值显式映射要投影的字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f63617365732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@computeOperator · oneOf[4].cases{key}`
+
+Schema位置：`#/definitions/computeOperator/oneOf/4/properties/cases/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 动态键的值 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f63617365732f70726f70657274794e616d6573"></a>
+
+### `@computeOperator · oneOf[4].cases · propertyNames`
+
+Schema位置：`#/definitions/computeOperator/oneOf/4/properties/cases/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f64656661756c744d6f6465"></a>
+
+### `@computeOperator · oneOf[4].defaultMode`
+
+Schema位置：`#/definitions/computeOperator/oneOf/4/properties/defaultMode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 无匹配筛选值时的声明模式。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f6f7574707574"></a>
+
+### `@computeOperator · oneOf[4].output`
+
+Schema位置：`#/definitions/computeOperator/oneOf/4/properties/output`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 算子写入的已声明页面字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f35"></a>
+
+### `@computeOperator · oneOf[5]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/5`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["op","numerator","denominator","output","onZeroDenominator"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f352f70726f706572746965732f6f70"></a>
+
+### `@computeOperator · oneOf[5].op`
+
+Schema位置：`#/definitions/computeOperator/oneOf/5/properties/op`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="ratio" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "ratio" | 用于选择@computeOperator · oneOf[5].op分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f352f70726f706572746965732f6e756d657261746f72"></a>
+
+### `@computeOperator · oneOf[5].numerator`
+
+Schema位置：`#/definitions/computeOperator/oneOf/5/properties/numerator`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | ratio分子数值字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f352f70726f706572746965732f64656e6f6d696e61746f72"></a>
+
+### `@computeOperator · oneOf[5].denominator`
+
+Schema位置：`#/definitions/computeOperator/oneOf/5/properties/denominator`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | ratio分母数值字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f352f70726f706572746965732f6f7574707574"></a>
+
+### `@computeOperator · oneOf[5].output`
+
+Schema位置：`#/definitions/computeOperator/oneOf/5/properties/output`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 算子写入的已声明页面字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f352f70726f706572746965732f6f6e5a65726f44656e6f6d696e61746f72"></a>
+
+### `@computeOperator · oneOf[5].onZeroDenominator`
+
+Schema位置：`#/definitions/computeOperator/oneOf/5/properties/onZeroDenominator`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["null","zero"] | Schema未设默认；装配/运行时默认见语义说明 | 分母为零或缺失时取空还是取零；必须显式声明，默认值会静默改数 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "null" | 零/缺分母时输出空值。 |
+| "zero" | 零/缺分母时输出0。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f352f70726f706572746965732f7363616c65"></a>
+
+### `@computeOperator · oneOf[5].scale`
+
+Schema位置：`#/definitions/computeOperator/oneOf/5/properties/scale`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 本分支可选 | const=100 | Schema未设默认；装配/运行时默认见语义说明 | 输出刻度；缺省产出 0–1 分数，100 产出 0–100。闭集只有 100，开放数值等于在算子里引入乘法表达式 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| 100 | ratio输出乘100，匹配百分比原值展示。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f36"></a>
+
+### `@computeOperator · oneOf[6]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/6`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["op","minuend","subtrahend","output"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f362f70726f706572746965732f6f70"></a>
+
+### `@computeOperator · oneOf[6].op`
+
+Schema位置：`#/definitions/computeOperator/oneOf/6/properties/op`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="delta" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "delta" | 用于选择@computeOperator · oneOf[6].op分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f362f70726f706572746965732f6d696e75656e64"></a>
+
+### `@computeOperator · oneOf[6].minuend`
+
+Schema位置：`#/definitions/computeOperator/oneOf/6/properties/minuend`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | delta被减数数值字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f362f70726f706572746965732f73756274726168656e64"></a>
+
+### `@computeOperator · oneOf[6].subtrahend`
+
+Schema位置：`#/definitions/computeOperator/oneOf/6/properties/subtrahend`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | delta减数数值字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f362f70726f706572746965732f6f7574707574"></a>
+
+### `@computeOperator · oneOf[6].output`
+
+Schema位置：`#/definitions/computeOperator/oneOf/6/properties/output`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 算子写入的已声明页面字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f37"></a>
+
+### `@computeOperator · oneOf[7]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/7`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["op","groupBy","measures","rowKind"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f372f70726f706572746965732f6f70"></a>
+
+### `@computeOperator · oneOf[7].op`
+
+Schema位置：`#/definitions/computeOperator/oneOf/7/properties/op`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="groupSubtotal" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "groupSubtotal" | 用于选择@computeOperator · oneOf[7].op分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f372f70726f706572746965732f67726f75704279"></a>
+
+### `@computeOperator · oneOf[7].groupBy`
+
+Schema位置：`#/definitions/computeOperator/oneOf/7/properties/groupBy`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 折叠分组的维度字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f372f70726f706572746965732f6d65617375726573"></a>
+
+### `@computeOperator · oneOf[7].measures`
+
+Schema位置：`#/definitions/computeOperator/oneOf/7/properties/measures`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 度量字段集合或分组。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f372f70726f706572746965732f6d656173757265732f6974656d73"></a>
+
+### `@computeOperator · oneOf[7].measures[]`
+
+Schema位置：`#/definitions/computeOperator/oneOf/7/properties/measures/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f372f70726f706572746965732f726f774b696e64"></a>
+
+### `@computeOperator · oneOf[7].rowKind`
+
+Schema位置：`#/definitions/computeOperator/oneOf/7/properties/rowKind`。目标：[#/definitions/rowKindMark](compute.md#schema-232f646566696e6974696f6e732f726f774b696e644d61726b)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
@@ -281,31 +839,31 @@ Schema位置：`#/definitions/rowKindMark/properties/value`。
 | "subtotal" | 分组小计行标记。 |
 | "total" | 全局合计行标记。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f322f70726f706572746965732f6c6162656c537566666978"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f372f70726f706572746965732f6c6162656c537566666978"></a>
 
-### `@computeOperator · oneOf[2].labelSuffix`
+### `@computeOperator · oneOf[7].labelSuffix`
 
-Schema位置：`#/definitions/computeOperator/oneOf/2/properties/labelSuffix`。
+Schema位置：`#/definitions/computeOperator/oneOf/7/properties/labelSuffix`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 分组小计标签后缀。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f33"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f38"></a>
 
-### `@computeOperator · oneOf[3]`
+### `@computeOperator · oneOf[8]`
 
-Schema位置：`#/definitions/computeOperator/oneOf/3`。
+Schema位置：`#/definitions/computeOperator/oneOf/8`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 独立分支（不合并required） | required=["op","measures","rowKind","label"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f6f70"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f382f70726f706572746965732f6f70"></a>
 
-### `@computeOperator · oneOf[3].op`
+### `@computeOperator · oneOf[8].op`
 
-Schema位置：`#/definitions/computeOperator/oneOf/3/properties/op`。
+Schema位置：`#/definitions/computeOperator/oneOf/8/properties/op`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
@@ -313,83 +871,83 @@ Schema位置：`#/definitions/computeOperator/oneOf/3/properties/op`。
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "grandTotal" | 用于选择@computeOperator · oneOf[3].op分支；同分支其它约束同时成立。 |
+| "grandTotal" | 用于选择@computeOperator · oneOf[8].op分支；同分支其它约束同时成立。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f6d65617375726573"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f382f70726f706572746965732f6d65617375726573"></a>
 
-### `@computeOperator · oneOf[3].measures`
+### `@computeOperator · oneOf[8].measures`
 
-Schema位置：`#/definitions/computeOperator/oneOf/3/properties/measures`。
+Schema位置：`#/definitions/computeOperator/oneOf/8/properties/measures`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "array" | 本分支必填 | minItems=1; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 度量字段集合或分组。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f6d656173757265732f6974656d73"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f382f70726f706572746965732f6d656173757265732f6974656d73"></a>
 
-### `@computeOperator · oneOf[3].measures[]`
+### `@computeOperator · oneOf[8].measures[]`
 
-Schema位置：`#/definitions/computeOperator/oneOf/3/properties/measures/items`。
+Schema位置：`#/definitions/computeOperator/oneOf/8/properties/measures/items`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 每个数组项 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f726f774b696e64"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f382f70726f706572746965732f726f774b696e64"></a>
 
-### `@computeOperator · oneOf[3].rowKind`
+### `@computeOperator · oneOf[8].rowKind`
 
-Schema位置：`#/definitions/computeOperator/oneOf/3/properties/rowKind`。目标：[#/definitions/rowKindMark](compute.md#schema-232f646566696e6974696f6e732f726f774b696e644d61726b)。
+Schema位置：`#/definitions/computeOperator/oneOf/8/properties/rowKind`。目标：[#/definitions/rowKindMark](compute.md#schema-232f646566696e6974696f6e732f726f774b696e644d61726b)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/rowKindMark | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 算子写入汇总行类别的声明。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f6c6162656c"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f382f70726f706572746965732f6c6162656c"></a>
 
-### `@computeOperator · oneOf[3].label`
+### `@computeOperator · oneOf[8].label`
 
-Schema位置：`#/definitions/computeOperator/oneOf/3/properties/label`。
+Schema位置：`#/definitions/computeOperator/oneOf/8/properties/label`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 本分支必填 | required=["field","value"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f6c6162656c2f70726f706572746965732f6669656c64"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f382f70726f706572746965732f6c6162656c2f70726f706572746965732f6669656c64"></a>
 
-### `@computeOperator · oneOf[3].label.field`
+### `@computeOperator · oneOf[8].label.field`
 
-Schema位置：`#/definitions/computeOperator/oneOf/3/properties/label/properties/field`。
+Schema位置：`#/definitions/computeOperator/oneOf/8/properties/label/properties/field`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f6c6162656c2f70726f706572746965732f76616c7565"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f382f70726f706572746965732f6c6162656c2f70726f706572746965732f76616c7565"></a>
 
-### `@computeOperator · oneOf[3].label.value`
+### `@computeOperator · oneOf[8].label.value`
 
-Schema位置：`#/definitions/computeOperator/oneOf/3/properties/label/properties/value`。
+Schema位置：`#/definitions/computeOperator/oneOf/8/properties/label/properties/value`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f34"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f39"></a>
 
-### `@computeOperator · oneOf[4]`
+### `@computeOperator · oneOf[9]`
 
-Schema位置：`#/definitions/computeOperator/oneOf/4`。
+Schema位置：`#/definitions/computeOperator/oneOf/9`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 独立分支（不合并required） | required=["op","categoryField","valueField","columns"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f6f70"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f392f70726f706572746965732f6f70"></a>
 
-### `@computeOperator · oneOf[4].op`
+### `@computeOperator · oneOf[9].op`
 
-Schema位置：`#/definitions/computeOperator/oneOf/4/properties/op`。
+Schema位置：`#/definitions/computeOperator/oneOf/9/properties/op`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
@@ -397,93 +955,93 @@ Schema位置：`#/definitions/computeOperator/oneOf/4/properties/op`。
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "pivot" | 用于选择@computeOperator · oneOf[4].op分支；同分支其它约束同时成立。 |
+| "pivot" | 用于选择@computeOperator · oneOf[9].op分支；同分支其它约束同时成立。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f63617465676f72794669656c64"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f392f70726f706572746965732f63617465676f72794669656c64"></a>
 
-### `@computeOperator · oneOf[4].categoryField`
+### `@computeOperator · oneOf[9].categoryField`
 
-Schema位置：`#/definitions/computeOperator/oneOf/4/properties/categoryField`。
+Schema位置：`#/definitions/computeOperator/oneOf/9/properties/categoryField`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 类别维度字段绑定。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f76616c75654669656c64"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f392f70726f706572746965732f76616c75654669656c64"></a>
 
-### `@computeOperator · oneOf[4].valueField`
+### `@computeOperator · oneOf[9].valueField`
 
-Schema位置：`#/definitions/computeOperator/oneOf/4/properties/valueField`。
+Schema位置：`#/definitions/computeOperator/oneOf/9/properties/valueField`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 主要数值字段绑定。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f636f6c756d6e73"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f392f70726f706572746965732f636f6c756d6e73"></a>
 
-### `@computeOperator · oneOf[4].columns`
+### `@computeOperator · oneOf[9].columns`
 
-Schema位置：`#/definitions/computeOperator/oneOf/4/properties/columns`。
+Schema位置：`#/definitions/computeOperator/oneOf/9/properties/columns`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "array" | 本分支必填 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 列或透视输出列的有序声明，按所属分支解释。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f636f6c756d6e732f6974656d73"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f392f70726f706572746965732f636f6c756d6e732f6974656d73"></a>
 
-### `@computeOperator · oneOf[4].columns[]`
+### `@computeOperator · oneOf[9].columns[]`
 
-Schema位置：`#/definitions/computeOperator/oneOf/4/properties/columns/items`。
+Schema位置：`#/definitions/computeOperator/oneOf/9/properties/columns/items`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 每个数组项 | required=["output","categories"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f636f6c756d6e732f6974656d732f70726f706572746965732f6f7574707574"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f392f70726f706572746965732f636f6c756d6e732f6974656d732f70726f706572746965732f6f7574707574"></a>
 
-### `@computeOperator · oneOf[4].columns[].output`
+### `@computeOperator · oneOf[9].columns[].output`
 
-Schema位置：`#/definitions/computeOperator/oneOf/4/properties/columns/items/properties/output`。
+Schema位置：`#/definitions/computeOperator/oneOf/9/properties/columns/items/properties/output`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 算子写入的已声明页面字段。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f636f6c756d6e732f6974656d732f70726f706572746965732f63617465676f72696573"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f392f70726f706572746965732f636f6c756d6e732f6974656d732f70726f706572746965732f63617465676f72696573"></a>
 
-### `@computeOperator · oneOf[4].columns[].categories`
+### `@computeOperator · oneOf[9].columns[].categories`
 
-Schema位置：`#/definitions/computeOperator/oneOf/4/properties/columns/items/properties/categories`。
+Schema位置：`#/definitions/computeOperator/oneOf/9/properties/columns/items/properties/categories`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "array" | 本分支必填 | minItems=1; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 有序类别取值，取第一个命中的 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f636f6c756d6e732f6974656d732f70726f706572746965732f63617465676f726965732f6974656d73"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f392f70726f706572746965732f636f6c756d6e732f6974656d732f70726f706572746965732f63617465676f726965732f6974656d73"></a>
 
-### `@computeOperator · oneOf[4].columns[].categories[]`
+### `@computeOperator · oneOf[9].columns[].categories[]`
 
-Schema位置：`#/definitions/computeOperator/oneOf/4/properties/columns/items/properties/categories/items`。
+Schema位置：`#/definitions/computeOperator/oneOf/9/properties/columns/items/properties/categories/items`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 每个数组项 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f6b65794669656c6473"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f392f70726f706572746965732f6b65794669656c6473"></a>
 
-### `@computeOperator · oneOf[4].keyFields`
+### `@computeOperator · oneOf[9].keyFields`
 
-Schema位置：`#/definitions/computeOperator/oneOf/4/properties/keyFields`。
+Schema位置：`#/definitions/computeOperator/oneOf/9/properties/keyFields`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "array" | 本分支可选 | uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | pivot保留的分组键字段。 |
 
-<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f342f70726f706572746965732f6b65794669656c64732f6974656d73"></a>
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f392f70726f706572746965732f6b65794669656c64732f6974656d73"></a>
 
-### `@computeOperator · oneOf[4].keyFields[]`
+### `@computeOperator · oneOf[9].keyFields[]`
 
-Schema位置：`#/definitions/computeOperator/oneOf/4/properties/keyFields/items`。
+Schema位置：`#/definitions/computeOperator/oneOf/9/properties/keyFields/items`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
@@ -501,14 +1059,24 @@ Schema位置：`#/definitions/computeOperator/oneOf/4/properties/keyFields/items
 ## 示例与溯源（生成）
 
 - [compute-page](examples/compute-page.json)：完整合法页面；查询仅为静态契约证据。
+- [cross-source-page](examples/cross-source-page.json)：完整合法页面；查询仅为静态契约证据。
+- [reference-export-compute-branches](examples/reference-export-compute-branches.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/compute.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 
-- `#/definitions/computeOperator/oneOf/0`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/0`。
-- `#/definitions/computeOperator/oneOf/1`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/1`。
-- `#/definitions/computeOperator/oneOf/2`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/2`。
-- `#/definitions/computeOperator/oneOf/3`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/3`。
-- `#/definitions/computeOperator/oneOf/4`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/pivoted/compute/0`。
+- `#/definitions/computeOperator/oneOf/0`：[合法完整页面](examples/cross-source-page.json)，JSON Pointer `#/dataSources/customers/compute/0`。
+- `#/definitions/computeOperator/oneOf/1`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/calc/compute/0`。
+- `#/definitions/computeOperator/oneOf/2`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/calc/compute/1`。
+- `#/definitions/computeOperator/oneOf/3`：[合法完整页面](examples/component-table.json)，JSON Pointer `#/dataSources/fill-1/compute/0`。
+- `#/definitions/computeOperator/oneOf/3/properties/range/anyOf/0`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/fill-0/compute/0/range`。
+- `#/definitions/computeOperator/oneOf/3/properties/range/anyOf/1`：[合法完整页面](examples/component-table.json)，JSON Pointer `#/dataSources/fill-1/compute/0/range`。
+- `#/definitions/computeOperator/oneOf/3/properties/range/anyOf/2`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/fill-2/compute/0/range`。
+- `#/definitions/computeOperator/oneOf/4`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/calc/compute/2`。
+- `#/definitions/computeOperator/oneOf/5`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/0`。
+- `#/definitions/computeOperator/oneOf/6`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/1`。
+- `#/definitions/computeOperator/oneOf/7`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/2`。
+- `#/definitions/computeOperator/oneOf/8`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/3`。
+- `#/definitions/computeOperator/oneOf/9`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/pivoted/compute/0`。

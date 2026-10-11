@@ -71,13 +71,16 @@ export interface TimeRangeFilterDeclaration {
   label?: string;
   /** 时间精度:date=日期(默认)| datetime=日期时间 */
   precision?: TimeRangePrecision;
+  /** 只在实例化时读取 times 参数，与 default 互斥。 */
+  initialParam?: string;
+  required?: boolean;
   /** false 时仅作为组件联动使用，不在页面筛选器区呈现控件。 */
   visible?: boolean;
   /** 初始范围:相对预设、结构化相对时间或绝对范围;缺省为不筛选 */
   default?: TimeRangePreset | TimeRangeValue | RelativeTimeExpression;
 }
 
-export type TimeRangePrecision = 'date' | 'datetime';
+export type TimeRangePrecision = 'month' | 'date' | 'datetime';
 
 /** 相对时间预设,由运行时在筛选状态初始化时解析为绝对范围 */
 export type TimeRangePreset = 'today' | 'last7d' | 'last30d' | 'last90d';
@@ -122,6 +125,7 @@ export interface TimePointFilterDeclaration {
   visible?: boolean;
   /** 单个时间点的粒度。谓词是等值,不是区间。 */
   granularity: 'month' | 'date';
+  required?: boolean;
   /** month 为 YYYY-MM,date 为 YYYY-MM-DD */
   default?: string;
   /** 只在实例化时读取参数；与default互斥。引用的 times 参数必须是单点。 */
@@ -372,10 +376,11 @@ function parseCalendarValue(
   if (typeof value !== 'string') {
     return { valid: false, reason: 'format' };
   }
+  const monthMatch = /^(\d{4})-(\d{2})$/.exec(value);
   const dateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
   const datetimeMatch = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value);
-  const precision = datetimeMatch ? 'datetime' : dateMatch ? 'date' : undefined;
-  const match = datetimeMatch ?? dateMatch;
+  const precision = datetimeMatch ? 'datetime' : dateMatch ? 'date' : monthMatch ? 'month' : undefined;
+  const match = datetimeMatch ?? dateMatch ?? monthMatch;
 
   if (!match || (requiredPrecision !== undefined && precision !== requiredPrecision)) {
     return { valid: false, reason: 'format', precision };
@@ -383,7 +388,7 @@ function parseCalendarValue(
 
   const year = Number(match[1]);
   const month = Number(match[2]);
-  const day = Number(match[3]);
+  const day = monthMatch ? 1 : Number(match[3]);
   const hour = datetimeMatch ? Number(datetimeMatch[4]) : undefined;
   const minute = datetimeMatch ? Number(datetimeMatch[5]) : undefined;
   if (
@@ -408,7 +413,7 @@ function calendarValueMessage(
     return `时间范围 ${field} 不是有效的公历${parsed.precision === 'datetime' ? '日期时间' : '日期'}`;
   }
   const expected =
-    precision === 'datetime'
+    precision === 'month' ? 'YYYY-MM' : precision === 'datetime'
       ? 'YYYY-MM-DDTHH:mm'
       : precision === 'date'
         ? 'YYYY-MM-DD'
@@ -432,7 +437,7 @@ export function validateTimePointValue(
     const match = /^(\d{4})-(\d{2})$/.exec(value);
     if (!match) return '时间点须为 YYYY-MM 格式';
     const month = Number(match[2]);
-    if (month < 1 || month > 12) return '时间点不是有效月份';
+    if (Number(match[1]) < 1 || month < 1 || month > 12) return '时间点不是有效月份';
     return undefined;
   }
   const parsed = parseCalendarValue(value, 'date');

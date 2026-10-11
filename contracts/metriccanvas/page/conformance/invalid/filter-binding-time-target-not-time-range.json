@@ -368,6 +368,11 @@
   },
   "expected": [
     {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/orders/source/query/filterBindings",
+      "message": "查询时间目标只能由一个筛选器控制"
+    },
+    {
       "type": "FILTER_BINDING_ERROR",
       "path": "/dataSources/orders/source/query/filterBindings/city",
       "message": "time 目标必须绑定 timeRange 筛选器:city"

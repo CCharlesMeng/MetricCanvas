@@ -44,7 +44,7 @@ describe('页面参考手册生成与分发', () => {
     expect(index.semanticGaps.enums).toEqual([]);
     expect(index.semanticGaps.examples).toEqual([]);
     expect(index.semanticGaps.branches).toEqual([]);
-    expect(index.branchCoverage.filter((b:any)=>b.negativeWitness)).toHaveLength(1);
+    expect(index.branchCoverage.filter((b:any)=>b.negativeWitness)).toHaveLength(12);
     for(const example of index.exampleCoverage) {
       const document=JSON.parse(reference.get(example.file)!);
       expect(atPointer(document,example.pointer).type).toBe(example.type);

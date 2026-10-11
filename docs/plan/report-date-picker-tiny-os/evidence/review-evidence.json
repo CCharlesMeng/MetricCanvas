@@ -1,0 +1,1872 @@
+{
+  "code": {
+    "base_ref": "authorized story starting snapshots",
+    "code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+    "files": [
+      {
+        "path": "apps/playground/src/lib/ReportDateExample.svelte",
+        "sha256": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51"
+      },
+      {
+        "path": "packages/embed/examples/report-export.html",
+        "sha256": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "sha256": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "sha256": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "sha256": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "sha256": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "sha256": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "sha256": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "sha256": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "sha256": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "sha256": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d"
+      },
+      {
+        "path": "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      {
+        "path": "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "sha256": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581"
+      },
+      {
+        "path": "packages/engine/runtime-ui/tests/browser/main.ts",
+        "sha256": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8"
+      },
+      {
+        "path": "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "sha256": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54"
+      },
+      {
+        "path": "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "sha256": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4"
+      },
+      {
+        "path": "packages/engine/runtime/src/filter-state.ts",
+        "sha256": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978"
+      },
+      {
+        "path": "packages/page/src/report-date-filters.ts",
+        "sha256": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      }
+    ],
+    "head": "e95086c988e5de3b93c00f949f662e083fa27ac3"
+  },
+  "evidence_epoch": "review-1",
+  "quality_gate": {
+    "code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+    "commands": [
+      {
+        "artifact": "docs/plan/report-date-picker-tiny-os/evidence/engine-check.txt",
+        "command": "pnpm --filter @metriccanvas/engine check",
+        "duration_ms": null,
+        "exit_code": 0,
+        "failures": [],
+        "name": "engine-check",
+        "scope": "authorized picker and existing report/filters regression",
+        "toolchain": "workspace pnpm/Svelte/Vitest"
+      },
+      {
+        "artifact": "docs/plan/report-date-picker-tiny-os/evidence/playground-check.txt",
+        "command": "pnpm --filter @metriccanvas/playground check",
+        "duration_ms": null,
+        "exit_code": 0,
+        "failures": [],
+        "name": "playground-check",
+        "scope": "authorized picker and existing report/filters regression",
+        "toolchain": "workspace pnpm/Svelte/Vitest"
+      },
+      {
+        "artifact": "docs/plan/report-date-picker-tiny-os/evidence/embed-build.txt",
+        "command": "pnpm --filter @metriccanvas/embed build",
+        "duration_ms": null,
+        "exit_code": 0,
+        "failures": [],
+        "name": "embed-build",
+        "scope": "authorized picker and existing report/filters regression",
+        "toolchain": "workspace pnpm/Svelte/Vitest"
+      },
+      {
+        "artifact": "docs/plan/report-date-picker-tiny-os/evidence/embed-check.txt",
+        "command": "pnpm --filter @metriccanvas/embed check",
+        "duration_ms": null,
+        "exit_code": 0,
+        "failures": [],
+        "name": "embed-check",
+        "scope": "authorized picker and existing report/filters regression",
+        "toolchain": "workspace pnpm/Svelte/Vitest"
+      },
+      {
+        "artifact": "docs/plan/report-date-picker-tiny-os/evidence/focused-tests.txt",
+        "command": "pnpm exec vitest run packages/engine/runtime-ui/tests/date-picker.test.ts packages/engine/runtime-ui/tests/filter-bar.test.ts packages/engine/runtime-ui/tests/filter-cascade.test.ts packages/engine/runtime-ui/tests/assemble-request.test.ts packages/engine/runtime/tests/report-export.test.ts packages/page/tests/report-date-filters.test.ts",
+        "duration_ms": null,
+        "exit_code": 0,
+        "failures": [],
+        "name": "focused-tests",
+        "scope": "authorized picker and existing report/filters regression",
+        "toolchain": "workspace pnpm/Svelte/Vitest"
+      }
+    ]
+  },
+  "runtime": {
+    "account": "local",
+    "api_mode": "synthetic data + formal runtime",
+    "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+    "dpr": 1,
+    "driver": "Codex CUA in-app browser",
+    "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+    "role": "local author",
+    "tenant": "synthetic",
+    "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+  },
+  "scenarios": [
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/final-shapes.json",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/final-month.png",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/final-date.png",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/final-monthrange.png",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/final-daterange.png"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-1",
+      "observations": [
+        [
+          {
+            "font": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "input": {
+              "height": 32,
+              "width": 360,
+              "x": 342,
+              "y": 164
+            },
+            "panel": {
+              "height": 245,
+              "width": 360,
+              "x": 342,
+              "y": 200
+            },
+            "selected": [
+              {
+                "background": "rgb(20, 118, 255)",
+                "text": "1 月",
+                "width": 68
+              }
+            ],
+            "shape": "month",
+            "tables": [
+              {
+                "height": 180,
+                "width": 328,
+                "x": 357,
+                "y": 258
+              }
+            ]
+          },
+          {
+            "font": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "input": {
+              "height": 32,
+              "width": 360,
+              "x": 342,
+              "y": 164
+            },
+            "panel": {
+              "height": 307,
+              "width": 360,
+              "x": 342,
+              "y": 200
+            },
+            "selected": [],
+            "shape": "date",
+            "tables": [
+              {
+                "height": 240,
+                "width": 328,
+                "x": 358,
+                "y": 259
+              }
+            ]
+          },
+          {
+            "font": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "input": {
+              "height": 32,
+              "width": 360,
+              "x": 342,
+              "y": 164
+            },
+            "panel": {
+              "height": 245,
+              "width": 558,
+              "x": 342,
+              "y": 200
+            },
+            "selected": [
+              {
+                "background": "rgb(20, 118, 255)",
+                "text": "1 月",
+                "width": 60.75
+              },
+              {
+                "background": "rgb(20, 118, 255)",
+                "text": "6 月",
+                "width": 60.75
+              }
+            ],
+            "shape": "monthrange",
+            "tables": [
+              {
+                "height": 180,
+                "width": 259,
+                "x": 357,
+                "y": 258
+              },
+              {
+                "height": 180,
+                "width": 259,
+                "x": 624,
+                "y": 258
+              }
+            ]
+          },
+          {
+            "font": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "input": {
+              "height": 32,
+              "width": 360,
+              "x": 342,
+              "y": 164
+            },
+            "panel": {
+              "height": 307,
+              "width": 558,
+              "x": 342,
+              "y": 200
+            },
+            "selected": [],
+            "shape": "daterange",
+            "tables": [
+              {
+                "height": 240,
+                "width": 259,
+                "x": 358,
+                "y": 259
+              },
+              {
+                "height": 240,
+                "width": 259,
+                "x": 625,
+                "y": 259
+              }
+            ]
+          }
+        ]
+      ],
+      "page": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html",
+      "source": "phase-c",
+      "steps": [
+        "四形态预设值、打开面板、测量尺寸及单元样式"
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/report-narrow.json",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/report-narrow-320.png"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-10",
+      "observations": [
+        [
+          {
+            "focusBorder": "rgb(25, 25, 25)",
+            "inputs": [
+              {
+                "height": 24,
+                "left": 60,
+                "right": 165.296875
+              },
+              {
+                "height": 24,
+                "left": 197.6953125,
+                "right": 302.9921875
+              }
+            ],
+            "page": 390,
+            "panel": {
+              "bottom": 687,
+              "left": 8,
+              "right": 382,
+              "scrollWidth": 558,
+              "top": 442,
+              "width": 374
+            },
+            "width": 390
+          },
+          {
+            "focusBorder": "rgb(25, 25, 25)",
+            "inputs": [
+              {
+                "height": 24,
+                "left": 60,
+                "right": 138
+              },
+              {
+                "height": 24,
+                "left": 162,
+                "right": 240
+              }
+            ],
+            "page": 320,
+            "panel": {
+              "bottom": 687,
+              "left": 8,
+              "right": 312,
+              "scrollWidth": 558,
+              "top": 442,
+              "width": 304
+            },
+            "width": 320
+          }
+        ]
+      ],
+      "page": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C",
+      "source": "phase-c",
+      "steps": [
+        "报告390/320测量"
+      ],
+      "viewport": {
+        "width": 320,
+        "height": 844
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/ordinary-narrow.json",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/ordinary-narrow.png"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-11",
+      "observations": [
+        [
+          {
+            "entry": "report-header",
+            "focusBorder": "rgb(25, 25, 25)",
+            "inputs": [
+              {
+                "height": 24,
+                "left": 64,
+                "right": 166.1796875
+              },
+              {
+                "height": 24,
+                "left": 197.6171875,
+                "right": 299.796875
+              }
+            ],
+            "page": 390,
+            "panel": {
+              "bottom": 687.03125,
+              "left": 8,
+              "right": 382,
+              "scrollWidth": 558,
+              "top": 442.03125,
+              "width": 374
+            },
+            "width": 390
+          },
+          {
+            "entry": "report-header",
+            "focusBorder": "rgb(25, 25, 25)",
+            "inputs": [
+              {
+                "height": 24,
+                "left": 64,
+                "right": 138.875
+              },
+              {
+                "height": 24,
+                "left": 161.9140625,
+                "right": 236.7890625
+              }
+            ],
+            "page": 320,
+            "panel": {
+              "bottom": 687.125,
+              "left": 8,
+              "right": 312,
+              "scrollWidth": 558,
+              "top": 442.125,
+              "width": 304
+            },
+            "width": 320
+          },
+          {
+            "entry": "ordinary-filterbar",
+            "focusBorder": "rgb(25, 25, 25)",
+            "inputs": [
+              {
+                "height": 24,
+                "left": 64,
+                "right": 138.875
+              },
+              {
+                "height": 24,
+                "left": 161.9140625,
+                "right": 236.7890625
+              }
+            ],
+            "page": 320,
+            "panel": {
+              "bottom": 687.125,
+              "left": 8,
+              "right": 312,
+              "scrollWidth": 558,
+              "top": 442.125,
+              "width": 304
+            },
+            "width": 320
+          },
+          {
+            "entry": "ordinary-filterbar",
+            "focusBorder": "rgb(25, 25, 25)",
+            "inputs": [
+              {
+                "height": 24,
+                "left": 64,
+                "right": 166.1796875
+              },
+              {
+                "height": 24,
+                "left": 197.6171875,
+                "right": 299.796875
+              }
+            ],
+            "page": 390,
+            "panel": {
+              "bottom": 687.125,
+              "left": 8,
+              "right": 382,
+              "scrollWidth": 558,
+              "top": 442.125,
+              "width": 374
+            },
+            "width": 390
+          }
+        ]
+      ],
+      "page": "http://127.0.0.1:4175/examples/report-export.html",
+      "source": "phase-c",
+      "steps": [
+        "HTML报告与普通筛选栏390/320测量"
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/hover-focus.json"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-12",
+      "observations": [
+        {
+          "background": "rgb(222, 236, 255)",
+          "focusBorder": "rgb(25, 25, 25)",
+          "hover": true,
+          "selected": "rgb(20, 118, 255)"
+        }
+      ],
+      "page": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html",
+      "source": "phase-c",
+      "steps": [
+        "非范围月份右键进入hover，读取真实: hover匹配与底色"
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/date-selected.json"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-13",
+      "observations": [
+        [
+          {
+            "focusBorder": "rgb(25, 25, 25)",
+            "mode": "date",
+            "selected": [
+              {
+                "background": "rgb(20, 118, 255)",
+                "color": "rgb(255, 255, 255)",
+                "text": "31"
+              }
+            ]
+          },
+          {
+            "focusBorder": "rgb(25, 25, 25)",
+            "mode": "daterange",
+            "selected": [
+              {
+                "background": "rgb(20, 118, 255)",
+                "color": "rgb(255, 255, 255)",
+                "text": "1"
+              },
+              {
+                "background": "rgb(20, 118, 255)",
+                "color": "rgb(255, 255, 255)",
+                "text": "6"
+              }
+            ]
+          }
+        ]
+      ],
+      "page": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html",
+      "source": "phase-c",
+      "steps": [
+        "单日期及日期范围预设后打开，读取选中span实际背景/前景"
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/narrow-reach.json"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-14",
+      "observations": [
+        {
+          "clientWidth": 304,
+          "from": "2026-01",
+          "page": 320,
+          "rightmostCell": {
+            "ariaPressed": "true",
+            "left": 251.25,
+            "right": 316
+          },
+          "scrollLeft": 233,
+          "scrollWidth": 558,
+          "width": 320
+        }
+      ],
+      "page": "http://127.0.0.1:4175/examples/report-export.html",
+      "source": "phase-c",
+      "steps": [
+        "HTML320普通筛选栏点击2027-12，面板滚动并命中右侧月份"
+      ],
+      "viewport": {
+        "height": 844,
+        "width": 320
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/restore-render-0.json",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/restore-render-1.json",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/restore-render-2.json",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/restore-render-3.json",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/restore-render-4.json",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/restore-render-5.json"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-15",
+      "observations": [
+        "规则原始实测值详见六份 restore-render 工件；数值标量取DOM rect.height；相邻日期存在由count>0归一；输入显示值取input.value。navigator.userAgent在CUA只读DOM scope不可用，原样记录缺口。"
+      ],
+      "page": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html",
+      "source": "phase-c",
+      "steps": [
+        "按四形态、默认、禁用状态执行只读契约采集"
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/behavior-batch.json"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-2",
+      "observations": [
+        [
+          {
+            "actual": "{\"value\":{\"from\":\"2026-01\",\"to\":\"2026-06\"},\"events\":[]}",
+            "case": "half-range"
+          },
+          {
+            "actual": "{\"value\":{\"from\":\"2026-12\",\"to\":\"2027-01\"},\"events\":[{\"from\":\"2026-12\",\"to\":\"2027-01\"}]}",
+            "case": "cross-year-complete"
+          },
+          {
+            "actual": "{\"value\":null,\"events\":[{\"from\":\"2026-12\",\"to\":\"2027-01\"},null]}",
+            "case": "optional-clear"
+          },
+          {
+            "actual": "{\"value\":{\"from\":\"2026-01\",\"to\":\"2026-06\"},\"events\":[{\"from\":\"2026-12\",\"to\":\"2027-01\"},null]}",
+            "case": "required-clear-rejected",
+            "error": null
+          },
+          {
+            "actual": "{\"value\":null,\"events\":[]}",
+            "case": "inverted-text-rejected",
+            "error": "时间范围 from 不得晚于 to"
+          },
+          {
+            "actual": "{\"value\":{\"from\":\"2026-10-12\",\"to\":\"2026-10-12\"},\"events\":[{\"from\":\"2026-10-12\",\"to\":\"2026-10-12\"}]}",
+            "case": "keyboard-day"
+          },
+          {
+            "actual": "{\"value\":{\"from\":\"2024-02-29\",\"to\":\"2024-02-29\"},\"events\":[{\"from\":\"2026-10-12\",\"to\":\"2026-10-12\"},{\"from\":\"2024-02-29\",\"to\":\"2024-02-29\"}]}",
+            "case": "year-month-leap-day"
+          },
+          {
+            "actual": {
+              "bg": "rgb(240, 240, 240)",
+              "border": "rgba(0, 0, 0, 0)",
+              "color": "rgb(194, 194, 194)",
+              "disabled": true
+            },
+            "case": "disabled",
+            "dialogs": 0
+          }
+        ]
+      ],
+      "page": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html",
+      "source": "phase-c",
+      "steps": [
+        "半范围、跨年、清除、required、倒置、键盘、闰日及禁用"
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/final-value-events.json"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-3",
+      "observations": [
+        {
+          "full": "{\"value\":{\"from\":\"2026-12\",\"to\":\"2027-01\"},\"events\":[{\"from\":\"2026-12\",\"to\":\"2027-01\"}]}",
+          "half": "{\"value\":{\"from\":\"2026-01\",\"to\":\"2026-06\"},\"events\":[]}"
+        }
+      ],
+      "page": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html",
+      "source": "phase-c",
+      "steps": [
+        "最终候选重验半范围与完整跨年回调"
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/narrow-facts.json",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/local-narrow-390.png",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/local-narrow-320.png"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-4",
+      "observations": [
+        [
+          {
+            "inputWidth": 358,
+            "page": 390,
+            "panel": {
+              "clientWidth": 374,
+              "left": 8,
+              "right": 382,
+              "scrollWidth": 558,
+              "width": 374
+            },
+            "viewport": 390
+          },
+          {
+            "inputWidth": 288,
+            "page": 320,
+            "panel": {
+              "clientWidth": 304,
+              "left": 8,
+              "right": 312,
+              "scrollWidth": 558,
+              "width": 304
+            },
+            "viewport": 320
+          }
+        ]
+      ],
+      "page": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html",
+      "source": "phase-c",
+      "steps": [
+        "390/320 viewport 与面板滚动宽度"
+      ],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/instances.json"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-5",
+      "observations": [
+        {
+          "open": 1,
+          "popovers": 1,
+          "readonly": [
+            {
+              "disabled": true,
+              "value": "2026-01"
+            },
+            {
+              "disabled": true,
+              "value": "2026-06"
+            },
+            {
+              "disabled": true,
+              "value": "2026-01-31"
+            }
+          ],
+          "roots": 4
+        }
+      ],
+      "page": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html",
+      "source": "phase-c",
+      "steps": [
+        "两实例切换、销毁重挂、只读"
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/report-period.json",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/report-open.png"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-6",
+      "observations": [
+        {
+          "period": " 当前期间：2026-12 至 2027-01 报告期间  -          经营分析报告 当前期间：2026-12 至 2027-01 日期改变后更新当前期间与明细数据 ",
+          "row": "项目 01 · 2026-12 至 2027-01  10  "
+        }
+      ],
+      "page": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C",
+      "source": "phase-c",
+      "steps": [
+        "正式报告跨年选择、期间文案与明细变化、提取确认"
+      ],
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/embed-shadow.json",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/embed-shadow.png"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-7",
+      "observations": [
+        {
+          "panel": {
+            "background": "rgb(255, 255, 255)",
+            "font": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+            "height": 245,
+            "width": 558
+          },
+          "popoverOpen": true,
+          "shadowHost": "DIV"
+        }
+      ],
+      "page": "http://127.0.0.1:4175/examples/report-export.html",
+      "source": "phase-c",
+      "steps": [
+        "构建后的 HTML open ShadowRoot 打开面板"
+      ],
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/pdf-facts.json"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-8",
+      "observations": [
+        {
+          "download": "output/pdf/report-date-picker-tiny-os.pdf",
+          "encoding": "bitmap PDF; empty text extraction cannot prove absence",
+          "export_trigger": "calendar was open immediately before export button; outside click closes it, prepared export excludes date toolbar",
+          "pages": 8,
+          "rendered_observation": "All 8 rendered pages inspected; first page has period 2026-01 至 2026-06. Three detail tables end at item 53. No date input or open calendar is visible."
+        }
+      ],
+      "page": "http://127.0.0.1:5186/preview?prototype=report-date&variant=C",
+      "source": "phase-c",
+      "steps": [
+        "面板打开后点击真实导出，Poppler 检视8页PDF"
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/pixel-comparison.json",
+        "docs/plan/report-date-picker-tiny-os/evidence/artifacts/selected-comparison.png"
+      ],
+      "captured_at_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ReportDateExample.svelte": "0c566a0fbaca0241f9915a157901deed9bb0f7efbd0a82591f61857869402b51",
+        "packages/embed/examples/report-export.html": "659f39ec6787233614cae9bd76875714a801bcbd3ac92844fbd720ef307b94ef",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte": "ddbea6005ea912cef6565e3addee5852500ac8194c78384c735699116910ba0e",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "85da8a487fec80bb8828c79f00c314ffc72bd6f53433399c8e2b32dc2c10ba27",
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte": "4d7f21776afa2c7a17b7124bfeb94149f7749bfc07a2266c03085e2cfc8239dd",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "b7b75e5541f3c9d984a1f22fee67a7902e4bc44bffeb6bab0ee31fd1a126e0f1",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte": "b19326bd1e469f00fa53c67a9fe1f6ee4a620c9802e2783eb35271e547d0d5b4",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte": "e5a29dce2a53e400ab2cdcf64b71f7a6c751973b860541ff27bcc762888e72f1",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts": "4a3c57568b3e839821878037b157670ff994dd1a8e95ca072cfad417dea9505e",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt": "7aaa1edbf9976e85b6ff6ecd91a2c0e54c621ce54b2f57f4fd9144b0edbeea0d",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html": "ce813335ed424cd06b0d96c1ac7b041fd2d78d10f1db3bfe942e8650564ac581",
+        "packages/engine/runtime-ui/tests/browser/main.ts": "25b3f91bc0467abeccd9f19915ad38e58def8d04da83a32e944f8b49d4aa00a8",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts": "5ad20c99a2e3e64569dd41ed760d4748b3a966936cacb4cb14169a9b04636d54",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts": "2774457dd9feb92b2ae8af749aa7f34c0a5a9242b074f8a8edbc13c13c44b2e4",
+        "packages/engine/runtime/src/filter-state.ts": "00891fff833ec253c376bd32c1e03e445980b77b83bb0d7a90b60ce83c6f5978",
+        "packages/page/src/report-date-filters.ts": "d1165a47fb0744a53ce7f5de9003f9fed97bdb846c4224852b3b4ed9c0c52280"
+      },
+      "captured_runtime": {
+        "account": "local",
+        "api_mode": "synthetic data + formal runtime",
+        "browser": "Codex IAB; exact user-agent unavailable in read-only DOM scope",
+        "dpr": 1,
+        "driver": "Codex CUA in-app browser",
+        "font_fingerprint": "Helvetica, Arial, PingFangSC-Regular, Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Microsoft JhengHei",
+        "role": "local author",
+        "tenant": "synthetic",
+        "url": "http://127.0.0.1:5188/packages/engine/runtime-ui/tests/browser/date-picker.html"
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+        "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "packages/engine/runtime-ui/tests/browser/main.ts",
+        "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "apps/playground/src/lib/ReportDateExample.svelte",
+        "packages/embed/examples/report-export.html",
+        "packages/engine/runtime/src/filter-state.ts",
+        "packages/page/src/report-date-filters.ts"
+      ],
+      "fixture": {
+        "name": "DatePickerHarness / report-date synthetic fixture",
+        "sha256": "c9cca559eab1e32db1e27e3757ce40bcef25d43e1a6d889e3ca6fb7c7d5e3fe6"
+      },
+      "id": "BE-9",
+      "observations": [
+        {
+          "meanAbsDifference": 0.9620876307512253,
+          "note": "Same browser/viewport/font/date/value. Browser screenshot source is JPEG; residual raster differences are retained, not relabeled zero.",
+          "pixelsAbove20": 666,
+          "size": [
+            558,
+            245
+          ]
+        }
+      ],
+      "page": "http://127.0.0.1:4175/examples/report-export.html",
+      "source": "phase-c",
+      "steps": [
+        "相同558×245面板截图比较，JPEG存在编码误差"
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    }
+  ],
+  "schema_version": 1,
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-1",
+        "modules": [
+          "causal",
+          "render"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1,2",
+        "verification_method": "restore_contract",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-2",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1,2",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-3",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "2,3",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-4",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "2,3",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      }
+    ],
+    "facts": {
+      "cross_page": false,
+      "frozen_r": true,
+      "frozen_r5": false,
+      "frozen_r6": true,
+      "has_f3": false,
+      "has_s3_claim": false,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "restore-final",
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "render",
+        "regression",
+        "review-layout",
+        "review-convention",
+        "review-quality"
+      ],
+      "phase": "initial",
+      "required_profiles": {
+        "AT-1": "mock",
+        "AT-2": "mock",
+        "AT-3": "mock",
+        "AT-4": "mock"
+      },
+      "review_roles": [
+        "review-layout",
+        "review-convention",
+        "review-quality"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C5"
+      ],
+      "review-layout": [
+        "L2",
+        "L3",
+        "L5"
+      ],
+      "review-quality": [
+        "Q2"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "risk_triggers": [
+      "build-config",
+      "interaction",
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "shared-boundary"
+      ],
+      "changed_files": 12,
+      "max_changed_files": 5,
+      "restore_tasks": [
+        "Task-1",
+        "Task-2"
+      ],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "build-config": [
+        "diff"
+      ],
+      "interaction": [
+        "plan"
+      ],
+      "shared-boundary": [
+        "plan"
+      ],
+      "visual": [
+        "diff",
+        "plan"
+      ]
+    }
+  }
+}

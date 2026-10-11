@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getContext } from 'svelte';
+  import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
+  const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
   import type { ReportHeaderProps } from '@metriccanvas/page/internal';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
   import sectionTitleLeftUrl from '../../assets/section-title-left.svg?inline';
@@ -17,6 +20,7 @@
 <header
   class:project-detail={props.variant === 'projectDetail'}
   class:short-bar={props.decoration === 'shortBar'}
+  class:static-export={staticExport}
   class="report-header"
 >
   {#if props.variant === 'projectDetail'}
@@ -562,4 +566,6 @@
       min-width: 0;
     }
   }
+  .report-header.static-export { break-inside:avoid; }
+  .static-export .report-icon { display:none!important; }
 </style>

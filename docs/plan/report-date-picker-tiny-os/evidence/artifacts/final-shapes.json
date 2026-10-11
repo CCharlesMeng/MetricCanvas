@@ -1,0 +1,131 @@
+[
+  {
+    "shape": "month",
+    "font": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+    "input": {
+      "height": 32,
+      "width": 360,
+      "x": 342,
+      "y": 164
+    },
+    "panel": {
+      "height": 245,
+      "width": 360,
+      "x": 342,
+      "y": 200
+    },
+    "selected": [
+      {
+        "background": "rgb(20, 118, 255)",
+        "text": "1 月",
+        "width": 68
+      }
+    ],
+    "tables": [
+      {
+        "height": 180,
+        "width": 328,
+        "x": 357,
+        "y": 258
+      }
+    ]
+  },
+  {
+    "shape": "date",
+    "font": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+    "input": {
+      "height": 32,
+      "width": 360,
+      "x": 342,
+      "y": 164
+    },
+    "panel": {
+      "height": 307,
+      "width": 360,
+      "x": 342,
+      "y": 200
+    },
+    "selected": [],
+    "tables": [
+      {
+        "height": 240,
+        "width": 328,
+        "x": 358,
+        "y": 259
+      }
+    ]
+  },
+  {
+    "shape": "monthrange",
+    "font": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+    "input": {
+      "height": 32,
+      "width": 360,
+      "x": 342,
+      "y": 164
+    },
+    "panel": {
+      "height": 245,
+      "width": 558,
+      "x": 342,
+      "y": 200
+    },
+    "selected": [
+      {
+        "background": "rgb(20, 118, 255)",
+        "text": "1 月",
+        "width": 60.75
+      },
+      {
+        "background": "rgb(20, 118, 255)",
+        "text": "6 月",
+        "width": 60.75
+      }
+    ],
+    "tables": [
+      {
+        "height": 180,
+        "width": 259,
+        "x": 357,
+        "y": 258
+      },
+      {
+        "height": 180,
+        "width": 259,
+        "x": 624,
+        "y": 258
+      }
+    ]
+  },
+  {
+    "shape": "daterange",
+    "font": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+    "input": {
+      "height": 32,
+      "width": 360,
+      "x": 342,
+      "y": 164
+    },
+    "panel": {
+      "height": 307,
+      "width": 558,
+      "x": 342,
+      "y": 200
+    },
+    "selected": [],
+    "tables": [
+      {
+        "height": 240,
+        "width": 259,
+        "x": 358,
+        "y": 259
+      },
+      {
+        "height": 240,
+        "width": 259,
+        "x": 625,
+        "y": 259
+      }
+    ]
+  }
+]

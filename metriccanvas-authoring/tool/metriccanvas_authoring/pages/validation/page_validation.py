@@ -54,11 +54,7 @@ def validate_page_document(value: Any) -> list[PageContractIssue]:
             ]
             issues = [*guided, *issues]
         return sorted(issues, key=lambda issue: (issue.path, issue.message))
-    if isinstance(value.get("params"), Mapping) and not value["params"]:
-        return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs cannot be empty")]
-    if isinstance(value.get("params"), Mapping) and int(value["schemaVersion"].split(".")[1]) < 6:
-        return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs require 6.6")]
-    capability_issues = _capability_floor_issues(value)
+    capability_issues = _parameter_capability_issues(value) or _capability_floor_issues(value)
     if capability_issues:
         return capability_issues
     # 与页面包相同：先验证原始参数契约，再物化文本做第二次结构校验。
@@ -77,7 +73,21 @@ def validate_page_document(value: Any) -> list[PageContractIssue]:
         )
         return optional_issues
     row_issues = [*_query_initial_row_issues(value), *_inline_row_issues(value)]
-    return [*row_issues, *_invariant_issues(value), *_navigation_issues(value)]
+    from .report_date_filters import report_date_issues
+    return [*row_issues, *_invariant_issues(value), *_navigation_issues(value), *[PageContractIssue(*issue) for issue in report_date_issues(value)]]
+
+
+def _parameter_capability_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
+    if isinstance(value.get("params"), Mapping) and not value["params"]:
+        return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs cannot be empty")]
+    minor = int(value["schemaVersion"].split(".")[1])
+    if isinstance(value.get("params"), Mapping) and minor < 6:
+        return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs require 6.6")]
+    from .report_date_filters import date_capability_paths
+    if minor < 13:
+        return [PageContractIssue("SCHEMA_ERROR", path, "report date filters require 6.13")
+                for path in date_capability_paths(value)]
+    return []
 
 
 def normalize_page_document(value: Any) -> dict[str, Any]:
@@ -475,6 +485,40 @@ def _invariant_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
     if isinstance(filters, list):
         issues.extend(_hidden_hierarchy_picker_issues(filters, sections))
     issues.extend(_query_pagination_issues(value))
+    issues.extend(_detail_view_issues(value))
+    return issues
+
+
+def _detail_query_table_issues(component, path, value):
+    source = value.get("dataSources", {}).get(component.get("data", {}).get("main"), {}).get("source", {})
+    if source.get("type") != "query":
+        return []
+    order = source.get("query", {}).get("body", {}).get("dsl_list", [{}])[0].get("order", {})
+    if source.get("resultScope") != "complete" or "limit" in order or "offset" in order:
+        return [PageContractIssue("SCHEMA_ERROR", path, "detail table requires complete results")]
+    return []
+
+
+def _detail_component_issues(component, path, value):
+    props = component.get("props", {})
+    issues = []
+    if component.get("type") not in {"text", "table", "barChart", "lineChart", "pieChart", "gauge"} or props.get("actions"):
+        issues.append(PageContractIssue("SCHEMA_ERROR", path, "detail views allow only static text, charts and tables"))
+    if props.get("pagination", {}).get("mode") == "query":
+        issues.append(PageContractIssue("SCHEMA_ERROR", path, "detail table requires complete local rows"))
+    if component.get("type") == "text" and props.get("links"):
+        issues.append(PageContractIssue("SCHEMA_ERROR", path, "detail text cannot navigate"))
+    if component.get("type") == "table":
+        issues.extend(_detail_query_table_issues(component, path, value))
+    issues.extend(_component_issues(component, path, value))
+    return issues
+
+
+def _detail_view_issues(value):
+    issues = []
+    for index, view in enumerate(value.get("detailViews", [])):
+        for component, path in _walk_components(view.get("components", []), f"/detailViews/{index}/components"):
+            issues.extend(_detail_component_issues(component, path, value))
     return issues
 
 
@@ -707,6 +751,7 @@ def _has_filter_cycle(
 
 
 def _calendar_value_valid(value: str, precision: object) -> bool:
+    if precision == "month": return _valid_month(value)
     if precision == "datetime":
         match = re.fullmatch(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})", value)
         if match is None:
@@ -718,7 +763,7 @@ def _calendar_value_valid(value: str, precision: object) -> bool:
 
 def _valid_month(value: str) -> bool:
     match = re.fullmatch(r"\d{4}-(\d{2})", value)
-    return match is not None and 1 <= int(match.group(1)) <= 12
+    return match is not None and int(value[:4]) >= 1 and 1 <= int(match.group(1)) <= 12
 
 
 def _query_mapping_issues(
@@ -886,7 +931,7 @@ def _query_mapping_issues(
                     continue
                 target = raw_binding.get("target")
                 filter_type = declared.get("type")
-                if target == "time" and filter_type != "timeRange":
+                if target == "time" and filter_type != ("timePoint" if raw_binding.get("window") else "timeRange"):
                     issues.append(
                         PageContractIssue(
                             "FILTER_BINDING_ERROR",
@@ -1926,6 +1971,11 @@ def _compute_issues(
                 PageContractIssue("SCHEMA_ERROR", f"{path}/field", "row kind field must be nullable")
             )
 
+    def joined_outputs(operator, path):
+        for item in operator.get("values", []):
+            if isinstance(item, Mapping) and isinstance(item.get("output"), str):
+                output(item["output"], f"{path}/values/output", "measure")
+
     for index, operator in enumerate(operators):
         if not isinstance(operator, Mapping):
             continue
@@ -1949,6 +1999,8 @@ def _compute_issues(
             label = operator.get("label")
             if isinstance(label, Mapping):
                 declared(label.get("field"), f"{path}/label/field", "dimension")
+        elif op == "joinAggregate":
+            joined_outputs(operator, path)
         elif op == "pivot":
             _pivot_issues(operator, path, declared, output, issues)
 
@@ -2060,10 +2112,10 @@ def _query_pagination_issues(page: Mapping[str, Any]) -> list[PageContractIssue]
                 for column, column_path in _table_leaf_columns(
                     props.get("columns", []), f"{path}/props/columns"
                 ):
-                    if column.get("sortable"):
-                        issues.append(PageContractIssue("SCHEMA_ERROR", f"{column_path}/sortable", "query pagination does not support sorting"))
-                    if column.get("filterable"):
-                        issues.append(PageContractIssue("SCHEMA_ERROR", f"{column_path}/filterable", "query pagination does not support header filters"))
+                    if column.get("sortable") or column.get("filterable"):
+                        field = _resolved_fields(source.get("fields", {}), "")[0].get(column.get("field"))
+                        if not field or not field.get("queryField"):
+                            issues.append(PageContractIssue("SCHEMA_ERROR", f"{column_path}/field", "query table interactions require queryField"))
 
             check_pagination_columns()
 
@@ -2319,17 +2371,21 @@ def _compute_output_fields(data_source: Mapping[str, Any]) -> set[str]:
         if not isinstance(operator, Mapping):
             continue
         op = operator.get("op")
-        if op in {"ratio", "delta"} and isinstance(operator.get("output"), str):
+        if op in {"ratio", "delta", "sumFields", "cagr", "selectField"} and isinstance(operator.get("output"), str):
             outputs.add(operator["output"])
         elif op in {"groupSubtotal", "grandTotal"}:
             row_kind = operator.get("rowKind")
             if isinstance(row_kind, Mapping) and isinstance(row_kind.get("field"), str):
                 outputs.add(row_kind["field"])
-        elif op == "pivot":
-            for column in operator.get("columns", []):
-                if isinstance(column, Mapping) and isinstance(column.get("output"), str):
-                    outputs.add(column["output"])
+        elif op in {"joinAggregate", "pivot"}:
+            key = "values" if op == "joinAggregate" else "columns"
+            outputs.update(_named_compute_outputs(operator.get(key, [])))
     return outputs
+
+
+def _named_compute_outputs(items):
+    return {item["output"] for item in items
+            if isinstance(item, Mapping) and isinstance(item.get("output"), str)}
 
 
 def _scalar_violation(
@@ -2637,7 +2693,7 @@ def _param_binding_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
                 declaration = filters.get(filter_id, {})
                 if declaration.get("type") == "dimension" and declaration.get("initialParam") and (binding["target"] != "dimension" or owners.get(_initial_query_field(declaration, binding)) != declaration["initialParam"]):
                     error(f"/dataSources/{_escape_pointer(source_id)}/source/query/filterBindings/{_escape_pointer(filter_id)}", "参数初始化筛选的每个查询目标都必须显式绑定同一参数")
-                if declaration.get("type") == "timePoint" and declaration.get("initialParam") and binding["target"] == "timePoint":
+                if declaration.get("type") in ("timePoint", "timeRange") and declaration.get("initialParam") and binding["target"] in ("timePoint", "time"):
                     consumed.add(filter_id)
 
         for source_id, source in page["dataSources"].items():
@@ -2646,7 +2702,7 @@ def _param_binding_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
     check_source_parameters()
     def check_filter_initial_parameters():
         for index, declaration in enumerate(page.get("filters", [])):
-            if declaration["type"] not in ("dimension", "timePoint") or "initialParam" not in declaration:
+            if declaration["type"] not in ("dimension", "timePoint", "timeRange") or "initialParam" not in declaration:
                 continue
             path = f"/filters/{index}/initialParam"
             param = params.get(declaration["initialParam"], {})
@@ -2661,9 +2717,9 @@ def _param_binding_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
             value = param.get("value")
             if param.get("type") != "timeRange" or not param.get("required"):
                 error(path, "时间点筛选初值必须引用必需的 times 参数")
-            elif param.get("granularity") != declaration.get("granularity"):
+            elif param.get("granularity") != (declaration.get("granularity") if declaration["type"] == "timePoint" else declaration.get("precision", "date")):
                 error(path, "时间点筛选初值的参数精度必须与筛选器一致")
-            elif isinstance(value, Mapping) and value.get("start") != value.get("end"):
+            elif declaration["type"] == "timePoint" and isinstance(value, Mapping) and value.get("start") != value.get("end"):
                 error(path, "时间点筛选初值要求参数是单点")
 
     check_filter_initial_parameters()

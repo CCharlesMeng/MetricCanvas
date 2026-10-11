@@ -4,7 +4,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "指标值链接必须至少声明一个 navigate 动作",
+      "message": "指标值链接必须至少声明一个 navigate 或 openDetail 动作",
       "paths": [
         "/sections/0/components/1/props/components/0/props/rows/0/link"
       ]

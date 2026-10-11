@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getContext } from 'svelte';
+  import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
+  const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
   import type { Snippet } from 'svelte';
   import { compositeCardFlow } from './flow';
   import opportunityIconUrl from '../../assets/ioc-card-title-opportunity.svg?inline';
@@ -37,6 +40,7 @@
   class:compact={variant === 'compact'}
   class:project-norms={variant === 'projectNorms'}
   class:metric-grid={variant === 'metricGrid'}
+  class:static-export={staticExport}
   class="composite-card"
 >
   {#if title}<h3>
@@ -243,4 +247,5 @@
       grid-auto-rows: auto;
     }
   }
+  .composite-card.static-export { height:auto!important; max-height:none!important; overflow:visible!important; }
 </style>

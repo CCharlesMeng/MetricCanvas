@@ -25,6 +25,7 @@ export interface MountOptions extends RuntimeInput {
 }
 
 export interface RuntimeHandle {
+  withExportView<T>(consume: import('@metriccanvas/engine/ui').ExportViewConsumer<T>, options?: import('@metriccanvas/engine/ui').ExportViewOptions): Promise<T>;
   update(input: RuntimeInput): void;
   destroy(): void;
 }

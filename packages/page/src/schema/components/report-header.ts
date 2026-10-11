@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  idZ,
   componentIdZ,
   componentLayoutZ,
   nonEmptyTextValueZ,
@@ -15,6 +16,7 @@ export const reportHeaderComponentZ = z
     props: z
       .object({
         title: nonEmptyTextValueZ,
+        filterIds: z.array(idZ).min(1).optional(),
         subtitle: textValueZ.optional(),
         subtitleFormat: z.literal('semanticHtml').optional(),
         generatedBy: textValueZ.optional(),

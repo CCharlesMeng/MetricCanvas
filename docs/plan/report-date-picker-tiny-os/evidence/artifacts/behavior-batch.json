@@ -1,0 +1,42 @@
+[
+  {
+    "case": "half-range",
+    "actual": "{\"value\":{\"from\":\"2026-01\",\"to\":\"2026-06\"},\"events\":[]}"
+  },
+  {
+    "case": "cross-year-complete",
+    "actual": "{\"value\":{\"from\":\"2026-12\",\"to\":\"2027-01\"},\"events\":[{\"from\":\"2026-12\",\"to\":\"2027-01\"}]}"
+  },
+  {
+    "case": "optional-clear",
+    "actual": "{\"value\":null,\"events\":[{\"from\":\"2026-12\",\"to\":\"2027-01\"},null]}"
+  },
+  {
+    "case": "required-clear-rejected",
+    "actual": "{\"value\":{\"from\":\"2026-01\",\"to\":\"2026-06\"},\"events\":[{\"from\":\"2026-12\",\"to\":\"2027-01\"},null]}",
+    "error": null
+  },
+  {
+    "case": "inverted-text-rejected",
+    "actual": "{\"value\":null,\"events\":[]}",
+    "error": "时间范围 from 不得晚于 to"
+  },
+  {
+    "case": "keyboard-day",
+    "actual": "{\"value\":{\"from\":\"2026-10-12\",\"to\":\"2026-10-12\"},\"events\":[{\"from\":\"2026-10-12\",\"to\":\"2026-10-12\"}]}"
+  },
+  {
+    "case": "year-month-leap-day",
+    "actual": "{\"value\":{\"from\":\"2024-02-29\",\"to\":\"2024-02-29\"},\"events\":[{\"from\":\"2026-10-12\",\"to\":\"2026-10-12\"},{\"from\":\"2024-02-29\",\"to\":\"2024-02-29\"}]}"
+  },
+  {
+    "case": "disabled",
+    "actual": {
+      "bg": "rgb(240, 240, 240)",
+      "border": "rgba(0, 0, 0, 0)",
+      "color": "rgb(194, 194, 194)",
+      "disabled": true
+    },
+    "dialogs": 0
+  }
+]

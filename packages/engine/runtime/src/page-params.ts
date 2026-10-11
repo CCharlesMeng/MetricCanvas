@@ -118,11 +118,13 @@ export function initializePageParams(page: import('@metriccanvas/page').Page, va
   }
   const initialized = structuredClone(page);
   for (const declaration of initialized.filters ?? []) {
-    if (declaration.type !== 'dimension' && declaration.type !== 'timePoint') continue;
+    if (declaration.type !== 'dimension' && declaration.type !== 'timePoint' && declaration.type !== 'timeRange') continue;
     if (!declaration.initialParam) continue;
     const value = values.get(declaration.initialParam);
     if (declaration.type === 'dimension') {
       declaration.default = value === undefined ? [] : Array.isArray(value) ? [...value] : [String(value)];
+    } else if (declaration.type === 'timeRange') {
+      if (value && typeof value === 'object' && !Array.isArray(value)) declaration.default = { from: value.start, to: value.end };
     } else if (declaration.type === 'timePoint') {
       // 单点 times 输入的两端相同，取哪一端都一样；缺值时不写初值＝不筛。
       const point = value as { start?: string } | undefined;

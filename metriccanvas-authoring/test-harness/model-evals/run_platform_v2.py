@@ -347,7 +347,7 @@ def _assess(case, fixture, before, artifact, trajectory, final):
             issues.append("TITLE_MISMATCH")
         if not set(case.get("requiredComponents", ["barChart", "table"])).issubset({component["type"] for component in components}):
             issues.append("REQUIRED_COMPONENTS_MISSING")
-        if document.get("schemaVersion") != "6.11":
+        if document.get("schemaVersion") != json.loads((AUTHORING / "contract-snapshot/manifest.json").read_text())["pageSchemaVersion"]:
             issues.append("SCHEMA_VERSION_MISMATCH")
         preview = artifact.get("previewJson", {})
         sources = preview.get("dataSources", {})
@@ -419,7 +419,7 @@ def _assess_complex_report(case, fixture, artifact, trajectory):
     issues = []
     document = artifact["document"]
     expected = case["expected"]
-    if document["layout"] != case["layout"] or document.get("schemaVersion") != "6.11":
+    if document["layout"] != case["layout"] or document.get("schemaVersion") != json.loads((AUTHORING / "contract-snapshot/manifest.json").read_text())["pageSchemaVersion"]:
         issues.append("PAGE_PROTOCOL_MISMATCH")
     sections = document["sections"]
     components = [component for section in sections for component in section["components"]

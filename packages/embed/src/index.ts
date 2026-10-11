@@ -29,6 +29,7 @@ export type {
 export type { AiSummaryConfig, RuntimeNavigation, RuntimeNavigationTarget } from '@metriccanvas/engine/ui';
 
 interface EmbedRootExports {
+  withExportView: RuntimeHandle["withExportView"];
   update(input: RuntimeInput): void;
 }
 
@@ -67,6 +68,10 @@ export function mount(
 
   let destroyed = false;
   const handle: RuntimeHandle = {
+    withExportView(consume,options) {
+      if(destroyed)return Promise.reject(mountError("MetricCanvas 实例已销毁，不能导出。"));
+      return root.withExportView(consume,options);
+    },
     update(input) {
       if (destroyed) {
         throw mountError('MetricCanvas 实例已销毁，不能再次更新。');
@@ -136,3 +141,6 @@ function mountError(message: string): Error {
   error.name = 'MetricCanvasMountError';
   return error;
 }
+
+export type { ExportViewOptions, PreparedExportView, ExportViewConsumer } from '@metriccanvas/engine/ui';
+export { ExportViewError } from '@metriccanvas/engine';

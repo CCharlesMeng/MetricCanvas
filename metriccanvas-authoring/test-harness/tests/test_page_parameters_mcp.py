@@ -31,7 +31,8 @@ from adapter_template.firstparty.sqlite_parameter_records import SqliteParameter
 class VerifiedFixture:
     async def verify(self, prepared, document, artifact_ref):
         return {'baseline': 'verified-fixture-r1', 'sourceSha256': document_sha256(document),
-                'dimensionIdentities': {key: {'区域': 'region'} for key in document['dataSources']}}
+                'dimensionIdentities': {key: {'区域': 'region'} for key in document['dataSources']},
+                'timeIdentities': {key: 'business-report-period' for key in document['dataSources']}}
 
 
 class PageParametersMcpTest(unittest.IsolatedAsyncioTestCase):
@@ -123,7 +124,8 @@ class PageParametersMcpTest(unittest.IsolatedAsyncioTestCase):
             for d in instance['payload']['resolvedPage']['dataSources'].values():
                 f=d['source']['query']['body']['dsl_list'][0]['filter']
                 self.assertEqual(f['dims'][0]['dim_value_list'], ['欧洲区'])
-                self.assertEqual(f['time']['end'], '2026-09')
+                self.assertNotIn('end', f['time'])
+            self.assertEqual(instance['payload']['resolvedPage']['filters'][0]['default'], {'from':'2026-07','to':'2026-09'})
             self.assertEqual(template, original)
             module = PageParameters(AuthoringTurnGate(self.turns), TurnState(self.work), self.params)
             self.assertEqual(await module.read_template('current-context', ref), output['artifactEnvelope']['artifact'])

@@ -1,52 +1,42 @@
 {
-  "schemaVersion": "6.11",
-  "id": "composite-page",
-  "layout": "dashboard",
-  "dashboardToolbar": {
-    "variant": "compact",
-    "readOnly": true,
-    "note": "只读"
-  },
+  "schemaVersion": "6.13",
+  "id": "reference-export-compute-branches",
+  "layout": "report",
   "dataSources": {
-    "top": {
+    "fill-1": {
       "fields": {
-        "name": {
-          "queryField": "name",
+        "time": {
           "type": "string",
           "role": "dimension"
         },
-        "value": {
-          "queryField": "value",
+        "amount": {
           "type": "number",
           "role": "measure"
         }
       },
       "source": {
-        "type": "query",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "name"
-                ],
-                "output_metrics": [
-                  "value"
-                ],
-                "filter": {
-                  "dims": [],
-                  "metrics": []
-                },
-                "order": {
-                  "offset": 0,
-                  "limit": 10
-                }
-              }
-            ]
+        "type": "inline",
+        "rows": [
+          {
+            "time": "2026-01",
+            "amount": 1
           }
+        ]
+      },
+      "compute": [
+        {
+          "op": "timeFill",
+          "timeField": "time",
+          "granularity": "month",
+          "format": "iso",
+          "range": {
+            "currentYearOffset": 0
+          },
+          "measures": [
+            "amount"
+          ]
         }
-      }
+      ]
     }
   },
   "sections": [
@@ -54,25 +44,24 @@
       "id": "main",
       "components": [
         {
-          "id": "top-table",
+          "id": "table-fill-1",
           "type": "table",
           "layout": {
             "span": 12
           },
           "data": {
-            "main": "top"
+            "main": "fill-1"
           },
           "props": {
-            "variant": "embedded",
-            "bottomFade": true,
             "columns": [
               {
-                "field": "name"
+                "field": "time"
               },
               {
-                "field": "value"
+                "field": "amount"
               }
-            ]
+            ],
+            "variant": "embedded"
           }
         }
       ]

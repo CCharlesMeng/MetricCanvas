@@ -105,7 +105,7 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/0/props/pagination/mode",
-      "message": "pagination.mode='local' 只允许绑定 inline 数据源:sales"
+      "message": "pagination.mode='local' 只允许绑定 inline 或显式 complete 且无分页窗口的数据源:sales"
     }
   ]
 }

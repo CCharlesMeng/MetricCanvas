@@ -12,7 +12,7 @@ function concrete() {
 }
 it('extracts identical trusted dimension identity/range, selects explicitly and round-trips original DQE',()=>{
   const p=concrete();
-  const extraction=extractPageParams(p,{baseline:'revision-1',dimensionIdentities:{tokens:{'区域':'region'},trend:{'区域':'region'}}});
+  const extraction=extractPageParams(p,{baseline:'revision-1',timeIdentities:{tokens:'report-period',trend:'report-period'},dimensionIdentities:{tokens:{'区域':'region'},trend:{'区域':'region'}}});
   expect(extraction.ok).toBe(true);if(!extraction.ok)throw Error(JSON.stringify(extraction.issues));
   expect(extraction.candidates).toHaveLength(2);
   expect(extraction.candidates.every(c=>c.defaultSelected)).toBe(true);
@@ -23,7 +23,14 @@ it('extracts identical trusted dimension identity/range, selects explicitly and 
   expect(selected.document.params.query?.times?.every(p=>p.start===undefined&&p.end===undefined)).toBe(true);
   const result=resolvePageParams(selected.document,selected.originalValues);
   expect(result.ok).toBe(true);if(!result.ok)return;
-  for(const id of Object.keys(p.dataSources))expect((result.resolvedPage.dataSources[id].source as any).query.body).toEqual(p.dataSources[id].source.query.body);
+  for(const id of Object.keys(p.dataSources)) {
+    const after=(result.resolvedPage.dataSources[id].source as any).query;
+    const original=p.dataSources[id].source.query.body.dsl_list[0].filter.time;
+    const filter=result.resolvedPage.filters?.find(f=>f.type==='timeRange');
+    expect(filter?.default).toEqual({from:original.start,to:original.end});
+    expect(after.body.dsl_list[0].filter.time).toEqual({period:original.period,is_aggregate:original.is_aggregate});
+    expect(after.filterBindings).toBeDefined();
+  }
   expect(p.params).toBeUndefined();
 });
 it('does not merge same-named dimensions without identity or different values; single-source is unselected',()=>{

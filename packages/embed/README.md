@@ -4,7 +4,7 @@
 
 这是渲染引擎的 JS 挂载入口，不是独立应用或自定义元素。集成应用通过 JS 地址加载并调用 `mount`；视觉呈现由引擎统一提供，集成应用不配置字体/主题。文档获取、数据网关与登录恢复等边界见[集成应用契约](../../docs/host-contract.md)。
 
-当前页面协议为 **6.1**（读取支持6.0/6.1）：页面声明普通 URL 与显式动态参数，默认浏览器导航；集成应用可选接管。协议与旧版本迁移见 [ADR-0068](../../docs/adr/0068-plain-url-navigation-protocol.md)。
+当前页面协议为 **6.13**（读取支持 6.13/6.12/6.11/6.5/旧布局兼容分支）：页面声明普通 URL 与显式动态参数，默认浏览器导航；集成应用可选接管。协议与旧版本迁移见 [ADR-0068](../../docs/adr/0068-plain-url-navigation-protocol.md)。
 
 构建产物：
 
@@ -240,3 +240,7 @@ const runtime = MetricCanvas.mount('#dashboard', {
 ESM 同名导出也可用。初始实际参数/筛选及逐源快照来自执行回执，URL 不覆盖它们。缺源、错目标、错条件、非法文档拒绝；部分源失败保留其它源。执行端口缺席返回 `CAPABILITY_UNAVAILABLE`。未传 execution 时沿用现有流程。
 
 需要最后筛选记录时，由可信宿主创建 `createLastFilterRecorder(context, port, onStatus)`，将其 `record` 传给 `prepareExecution` 第三个参数。宿主在销毁或身份切换时调用 recorder.dispose，并给新实例新的 clientId。记录失败不回滚当前筛选；服务须保证历史写入顺序及权限复核。内部 DTO、来源核对、精确预览及待提供方确认的边界见 [执行消费契约](../../docs/archive/authoring-tickets-126/t18-execution-contract.md)。
+
+## 完整 PDF 接入
+
+`RuntimeHandle.withExportView` 向异步回调提供已准备的静态 DOM，集成应用负责 PDF 编码与保存。日期控件被移除，静态期间保留。完整范围、固定限额、错误码与生命周期见 [接入说明](../../docs/report-export.md)。

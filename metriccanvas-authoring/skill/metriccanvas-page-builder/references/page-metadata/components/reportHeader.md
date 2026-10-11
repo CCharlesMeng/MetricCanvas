@@ -4,12 +4,14 @@
 
 页面内容页头；title为必需文本取值，可引用必需页面参数。页面meta.title是另一个页面级声明，不替代该组件必填title。
 
+filterIds（6.13）按序引用页面 timePoint/timeRange 筛选器，采用封面上方独立工具带；宽容器右对齐，窄容器换行。控件使用运行时筛选状态，不拥有查询。引用日期筛选后 asOf 的期间文字由当前已应用值派生；导出只保留该静态期间文字。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.11。结构真源为本册[schema.json](../schema.json)，SHA256 `508780df9e2561af9705f7ed2b0d07038e8f2d97027d66f0ae69b5a02a6cb75e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.13。结构真源为本册[schema.json](../schema.json)，SHA256 `a3070d52695f46a1c96cd22ed236f0adcc0574384064615d2654d875b7b1f698`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -76,6 +78,26 @@ Schema位置：`#/definitions/reportHeaderComponent/properties/props/properties/
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/nonEmptyTextValue | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 展示标题；是否必需由此处Schema分支决定，不能推断为空时的行为。 |
+
+<a id="schema-232f646566696e6974696f6e732f7265706f7274486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f66696c746572496473"></a>
+
+### `@reportHeaderComponent.props.filterIds`
+
+Schema位置：`#/definitions/reportHeaderComponent/properties/props/properties/filterIds`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 页头按序引用已声明的日期筛选器；同一控件只出现一次，期间文字使用当前已应用筛选。 |
+
+<a id="schema-232f646566696e6974696f6e732f7265706f7274486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f66696c7465724964732f6974656d73"></a>
+
+### `@reportHeaderComponent.props.filterIds[]`
+
+Schema位置：`#/definitions/reportHeaderComponent/properties/props/properties/filterIds/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7265706f7274486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7375627469746c65"></a>
 

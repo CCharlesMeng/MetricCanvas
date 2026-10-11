@@ -419,6 +419,13 @@
   },
   "context": {
     "baseline": "tokens-local-verified-fixture",
+    "timeIdentities": {
+      "consumption": "tokens-report-period",
+      "trend": "tokens-report-period",
+      "representatives": "tokens-report-period",
+      "model-share": "tokens-report-period",
+      "regional-model-detail": "tokens-report-period"
+    },
     "dimensionIdentities": {
       "consumption": {
         "区域": "region"
@@ -487,7 +494,7 @@
     },
     {
       "id": "report-period",
-      "identity": "{\"identity\":\"time:month\",\"type\":\"timeRange\",\"value\":{\"end\":\"2026-06\",\"granularity\":\"month\",\"start\":\"2026-01\"}}",
+      "identity": "{\"identity\":\"tokens-report-period\",\"type\":\"timeRange\",\"value\":{\"end\":\"2026-06\",\"granularity\":\"month\",\"start\":\"2026-01\"}}",
       "declaration": {
         "id": "report-period",
         "type": "timeRange",
@@ -530,7 +537,8 @@
         "trend"
       ],
       "uncoveredQueries": [],
-      "defaultSelected": true
+      "defaultSelected": true,
+      "dateForm": "monthRange"
     }
   ],
   "selectedIds": [
@@ -538,7 +546,7 @@
     "report-period"
   ],
   "template": {
-    "schemaVersion": "6.11",
+    "schemaVersion": "6.13",
     "id": "tokens-report",
     "layout": "report",
     "dataSources": {
@@ -572,8 +580,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": true,
-                      "param": "report-period"
+                      "is_aggregate": true
                     }
                   },
                   "order": {
@@ -582,6 +589,11 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }
@@ -623,8 +635,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": false,
-                      "param": "report-period"
+                      "is_aggregate": false
                     }
                   },
                   "order": {
@@ -633,6 +644,11 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }
@@ -674,8 +690,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": true,
-                      "param": "report-period"
+                      "is_aggregate": true
                     }
                   },
                   "order": {
@@ -684,6 +699,11 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }
@@ -725,8 +745,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": true,
-                      "param": "report-period"
+                      "is_aggregate": true
                     }
                   },
                   "order": {
@@ -735,6 +754,11 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }
@@ -782,8 +806,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": true,
-                      "param": "report-period"
+                      "is_aggregate": true
                     }
                   },
                   "order": {
@@ -792,12 +815,35 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }
       }
     },
     "sections": [
+      {
+        "id": "report-header-section",
+        "components": [
+          {
+            "id": "report-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "tokens-report",
+              "filterIds": [
+                "report-period-filter"
+              ]
+            }
+          }
+        ]
+      },
       {
         "id": "overview",
         "components": [
@@ -941,7 +987,17 @@
           }
         ]
       }
-    }
+    },
+    "filters": [
+      {
+        "id": "report-period-filter",
+        "type": "timeRange",
+        "precision": "month",
+        "label": "报告期间",
+        "required": true,
+        "initialParam": "report-period"
+      }
+    ]
   },
   "originalValues": {
     "region": [
@@ -953,7 +1009,7 @@
     }
   },
   "filled": {
-    "schemaVersion": "6.11",
+    "schemaVersion": "6.13",
     "id": "tokens-report",
     "layout": "report",
     "dataSources": {
@@ -987,8 +1043,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": true,
-                      "param": "report-period"
+                      "is_aggregate": true
                     }
                   },
                   "order": {
@@ -997,6 +1052,11 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }
@@ -1038,8 +1098,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": false,
-                      "param": "report-period"
+                      "is_aggregate": false
                     }
                   },
                   "order": {
@@ -1048,6 +1107,11 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }
@@ -1089,8 +1153,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": true,
-                      "param": "report-period"
+                      "is_aggregate": true
                     }
                   },
                   "order": {
@@ -1099,6 +1162,11 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }
@@ -1140,8 +1208,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": true,
-                      "param": "report-period"
+                      "is_aggregate": true
                     }
                   },
                   "order": {
@@ -1150,6 +1217,11 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }
@@ -1197,8 +1269,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": true,
-                      "param": "report-period"
+                      "is_aggregate": true
                     }
                   },
                   "order": {
@@ -1207,12 +1278,35 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }
       }
     },
     "sections": [
+      {
+        "id": "report-header-section",
+        "components": [
+          {
+            "id": "report-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "tokens-report",
+              "filterIds": [
+                "report-period-filter"
+              ]
+            }
+          }
+        ]
+      },
       {
         "id": "overview",
         "components": [
@@ -1361,13 +1455,41 @@
           }
         ]
       }
-    }
+    },
+    "filters": [
+      {
+        "id": "report-period-filter",
+        "type": "timeRange",
+        "precision": "month",
+        "label": "报告期间",
+        "required": true,
+        "initialParam": "report-period"
+      }
+    ]
   },
   "execution": {
-    "schemaVersion": "6.11",
+    "schemaVersion": "6.13",
     "id": "tokens-report",
     "layout": "report",
     "sections": [
+      {
+        "id": "report-header-section",
+        "components": [
+          {
+            "id": "report-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "tokens-report",
+              "filterIds": [
+                "report-period-filter"
+              ]
+            }
+          }
+        ]
+      },
       {
         "id": "overview",
         "components": [
@@ -1520,6 +1642,20 @@
         "path": "/params/query/times/0"
       }
     ],
+    "filters": [
+      {
+        "id": "report-period-filter",
+        "type": "timeRange",
+        "precision": "month",
+        "label": "报告期间",
+        "required": true,
+        "initialParam": "report-period",
+        "default": {
+          "from": "2026-01",
+          "to": "2026-06"
+        }
+      }
+    ],
     "dataSources": {
       "consumption": {
         "fields": {
@@ -1551,9 +1687,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": true,
-                      "start": "2026-01",
-                      "end": "2026-06"
+                      "is_aggregate": true
                     }
                   },
                   "order": {
@@ -1562,6 +1696,11 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }
@@ -1603,9 +1742,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": false,
-                      "start": "2026-01",
-                      "end": "2026-06"
+                      "is_aggregate": false
                     }
                   },
                   "order": {
@@ -1614,6 +1751,11 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }
@@ -1655,9 +1797,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": true,
-                      "start": "2026-01",
-                      "end": "2026-06"
+                      "is_aggregate": true
                     }
                   },
                   "order": {
@@ -1666,6 +1806,11 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }
@@ -1707,9 +1852,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": true,
-                      "start": "2026-01",
-                      "end": "2026-06"
+                      "is_aggregate": true
                     }
                   },
                   "order": {
@@ -1718,6 +1861,11 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }
@@ -1765,9 +1913,7 @@
                     ],
                     "time": {
                       "period": "month",
-                      "is_aggregate": true,
-                      "start": "2026-01",
-                      "end": "2026-06"
+                      "is_aggregate": true
                     }
                   },
                   "order": {
@@ -1776,6 +1922,11 @@
                   }
                 }
               ]
+            },
+            "filterBindings": {
+              "report-period-filter": {
+                "target": "time"
+              }
             }
           }
         }

@@ -1,0 +1,177 @@
+{
+  "contract_sha256": "dce219e2f0017c3559cd3bd7d2e8c8924dc7a9d97eda075c5a3cdb51a60ba240",
+  "environment": {
+    "dpr": 1,
+    "scroll": {
+      "height": 1000,
+      "width": 1440
+    },
+    "user_agent": "unavailable-in-read-only-cua-dom-scope",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  "inputValue": "2026-01",
+  "observed": {
+    "route": "/packages/engine/runtime-ui/tests/browser/date-picker.html",
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  },
+  "page_available": true,
+  "rules": {
+    "R1-1-single-input-count": {
+      "actual": 1,
+      "locator_used": {
+        "selector": "[data-harness-primary] input",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R1-2-grid-columns": {
+      "actual": 4,
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table tr:first-child td",
+        "strategy": "css"
+      },
+      "matched": 4,
+      "status": "ok"
+    },
+    "R1-2-grid-rows": {
+      "actual": 3,
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table tr",
+        "strategy": "css"
+      },
+      "matched": 3,
+      "status": "ok"
+    },
+    "R1-2-single-month-cell-count": {
+      "actual": 12,
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table td .cell",
+        "strategy": "css"
+      },
+      "matched": 12,
+      "status": "ok"
+    },
+    "R2-1-month-label-order": {
+      "actual": [
+        "1 月",
+        "2 月",
+        "3 月",
+        "4 月",
+        "5 月",
+        "6 月",
+        "7 月",
+        "8 月",
+        "9 月",
+        "10 月",
+        "11 月",
+        "12 月"
+      ],
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table td .cell",
+        "strategy": "css"
+      },
+      "matched": 12,
+      "status": "ok"
+    },
+    "R2-1-month-value": {
+      "actual": "2026-01",
+      "locator_used": {
+        "selector": "[data-harness-primary] input",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R3-4-shadow": {
+      "actual": {
+        "box-shadow": "rgba(0, 0, 0, 0.08) 0px 4px 16px 0px"
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R3-4-single-month-panel": {
+      "actual": {
+        "bottom": 445,
+        "height": 245,
+        "left": 342,
+        "right": 702,
+        "top": 200,
+        "width": 360,
+        "x": 342,
+        "y": 200
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R3-4-surface": {
+      "actual": {
+        "background-color": "rgb(255, 255, 255)",
+        "border-bottom-left-radius": "6px",
+        "border-bottom-right-radius": "6px",
+        "border-top-left-radius": "6px",
+        "border-top-right-radius": "6px",
+        "font-size": "14px",
+        "line-height": "21px"
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R3-5-row-height": {
+      "actual": 60,
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table tr:first-child",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R3-5-single-grid": {
+      "actual": {
+        "bottom": 438,
+        "height": 180,
+        "left": 357,
+        "right": 685,
+        "top": 258,
+        "width": 328,
+        "x": 357,
+        "y": 258
+      },
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover table",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    },
+    "R6-1-panel-clip": {
+      "actual": 0,
+      "locator_used": {
+        "selector": "[data-harness-primary] .mc-date-popover",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    }
+  },
+  "schema_version": 1,
+  "state": "month"
+}

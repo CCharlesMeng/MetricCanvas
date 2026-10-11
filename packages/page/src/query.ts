@@ -80,7 +80,7 @@ export type DqeNumberRangeFilterBinding = {
 
 export type DqeFilterBinding =
   | DqeDimensionFilterBinding
-  | { target: 'time' }
+  | { target: 'time'; window?: TimeWindow }
   | DqeTimePointFilterBinding
   | DqeBooleanFilterBinding
   | DqeNumberRangeFilterBinding;

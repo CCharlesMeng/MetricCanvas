@@ -108,13 +108,11 @@
         <span data-filter-display>{declaration.label ?? '布尔筛选'}</span>
       </label>
     {:else if readOnly && declaration.type === 'timePoint'}
-      <input
-        class="readonly-date"
-        type={declaration.granularity === 'month' ? 'month' : 'date'}
-        value={timePointValue(declaration.id) ?? ''}
-        aria-label={declaration.label ?? '日期'}
-        disabled
-      />
+      <TimePointFilter label={declaration.label} required={declaration.required} granularity={declaration.granularity}
+        value={timePointValue(declaration.id)} readOnly onchange={() => {}} />
+    {:else if readOnly && declaration.type === 'timeRange'}
+      <TimeRangeFilter label={declaration.label} required={declaration.required} precision={declaration.precision ?? 'date'}
+        value={timeRangeValue(declaration.id)} readOnly onchange={() => {}} />
     {:else if readOnly && declaration.type === 'dimension'}
       <button type="button" class="readonly-select" aria-label={declaration.label} disabled>
         <span data-filter-display>{dimensionDisplay(declaration)}</span>
@@ -149,6 +147,7 @@
     {:else if declaration.type === 'timeRange'}
       <TimeRangeFilter
         label={declaration.label}
+        required={declaration.required}
         precision={declaration.precision ?? 'date'}
         value={timeRangeValue(declaration.id)}
         onchange={(range) => ontimerange(declaration.id, range)}
@@ -156,6 +155,7 @@
     {:else if declaration.type === 'timePoint'}
       <TimePointFilter
         label={declaration.label}
+        required={declaration.required}
         granularity={declaration.granularity}
         value={timePointValue(declaration.id)}
         onchange={(value) => ontimepoint(declaration.id, declaration.granularity, value)}
@@ -188,6 +188,7 @@
 
 <style>
   .filter-bar {
+    min-width:0; max-width:100%; box-sizing:border-box;
     display: flex;
     flex: var(--mc-filter-bar-flex, 0 1 auto);
     flex-wrap: var(--mc-filter-bar-wrap, wrap);
@@ -201,7 +202,8 @@
     border-radius: var(--mc-filter-bar-radius, var(--mc-radius-cell));
   }
   .filter-control {
-    flex: none;
+    flex: var(--mc-filter-control-flex, none);
+    min-width:0; max-width:100%;
   }
   .readonly-boolean {
     display: inline-flex;
@@ -211,7 +213,6 @@
     font-size: 14px;
     white-space: nowrap;
   }
-  .readonly-date,
   .readonly-select {
     box-sizing: border-box;
     height: 32px;
@@ -230,7 +231,6 @@
     justify-content: space-between;
     gap: 12px;
   }
-  .readonly-date:disabled,
   .readonly-select:disabled,
   .readonly-boolean input:disabled {
     cursor: not-allowed;

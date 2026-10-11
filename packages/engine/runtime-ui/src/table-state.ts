@@ -1,7 +1,7 @@
 import type { Page } from '@metriccanvas/page';
 import { flattenPageComponents, computeDependencies, type Row } from '@metriccanvas/page/internal';
 import type { FilterValues } from '../../runtime/src';
-import type { TableViewState } from '../../widgets/src/components/table/view-state';
+import type { TableHeaderFilterValue, TableViewState } from '../../widgets/src/components/table/view-state';
 
 export function changedFilters(previous: FilterValues, next: FilterValues): Set<string> {
   return new Set([...new Set([...previous.keys(), ...next.keys()])].filter(
@@ -57,4 +57,12 @@ export function sortTableRows(rows: readonly Row[], rules: TableViewState['sort'
     }
     return 0;
   });
+}
+
+/** Shared live/export predicate; callers retain ownership of sorting and paging. */
+export function filterTableRowsByHeaders(rows:readonly Row[],filters:Readonly<Record<string,TableHeaderFilterValue>>):Row[] {
+  return rows.filter(row=>Object.entries(filters).every(([field,filter])=>{
+    const comparable=String(row[field]??'');
+    return filter.mode==='select'?filter.values.includes(comparable):(!filter.from||comparable>=filter.from)&&(!filter.to||comparable<=filter.to);
+  }));
 }

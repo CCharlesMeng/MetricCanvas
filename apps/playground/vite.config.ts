@@ -1,6 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig, type Plugin } from 'vite';
 import { fileURLToPath } from 'node:url';
+import { reportPdfDemo } from './report-pdf-demo';
 
 const pagesDir = fileURLToPath(new URL('../../pages', import.meta.url));
 
@@ -26,7 +27,7 @@ function watchPageAssets(directory: string): Plugin {
 }
 
 export default defineConfig({
-  plugins: [sveltekit(), watchPageAssets(pagesDir)],
+  plugins: [sveltekit(), watchPageAssets(pagesDir), reportPdfDemo()],
   resolve: {
     alias: {
       // 页面资产目录固定别名,避免源码内的多级相对路径

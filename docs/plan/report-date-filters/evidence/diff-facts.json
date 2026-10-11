@@ -1,0 +1,477 @@
+{
+  "base_ref": "HEAD",
+  "changed_files": [
+    {
+      "path": "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/Inspector.svelte",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+      "status": "A"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/property-edit.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/report-date-edit.ts",
+      "status": "A"
+    },
+    {
+      "path": "apps/platform/tests/workbench/report-date-edit.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "apps/playground/src/lib/ReportDateExample.svelte",
+      "status": "A"
+    },
+    {
+      "path": "apps/playground/src/lib/preview-document.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/playground/src/routes/(viewer)/preview/+page.svelte",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contracts/authored/page-edit-request.schema.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/interaction_editing.py",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/parameters/page_parameters.py",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/report_date_filters.py",
+      "status": "A"
+    },
+    {
+      "path": "packages/embed/examples/report-export.html",
+      "status": "A"
+    },
+    {
+      "path": "packages/embed/src/EmbedRoot.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/embed/src/index.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/embed/src/types.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/ComponentRenderer.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/ExportView.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/RuntimeView.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/ai-summary/AiSummaryHost.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/export-render-state.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/export-types.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/export-view.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/report-date-header.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime/src/export-snapshots.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime/src/filter-state.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/src/orchestrator.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/src/page-params.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/report-export.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/map-chart/MapChart.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/table/Table.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/shared/EChart.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/shared/export-context.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/fixtures/contract-valid/report-date-filters-page.json",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/src/extract-page-params.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/filter.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/param-bindings.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/parameter-program.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/query.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/report-date-filters.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/src/resolve-page-params.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/schema/components/report-header.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/schema/data-source.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/schema/filter.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/validate.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/version.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/tests/report-date-filters.test.ts",
+      "status": "A"
+    }
+  ],
+  "head": "e95086c988e5de3b93c00f949f662e083fa27ac3",
+  "risk_triggers": {
+    "navigation": [
+      {
+        "evidence": "apps/playground/src/routes/(viewer)/preview/+page.svelte",
+        "rule": "route-file"
+      }
+    ],
+    "shared-boundary": [
+      {
+        "evidence": "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "apps/platform/src/lib/workbench/Inspector.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "apps/platform/src/lib/workbench/property-edit.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "apps/platform/src/lib/workbench/report-date-edit.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "apps/playground/src/lib/ReportDateExample.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "apps/playground/src/lib/preview-document.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/map-chart/MapChart.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/table/Table.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/shared/EChart.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/shared/export-context.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/page/src/schema/components/report-header.ts",
+        "rule": "shared-path"
+      }
+    ],
+    "visual": [
+      {
+        "evidence": "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "apps/platform/src/lib/workbench/Inspector.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "apps/playground/src/lib/ReportDateExample.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "apps/playground/src/routes/(viewer)/preview/+page.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/embed/examples/report-export.html",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/embed/src/EmbedRoot.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/ComponentRenderer.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/ExportView.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/RuntimeView.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/ai-summary/AiSummaryHost.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/map-chart/MapChart.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/table/Table.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/shared/EChart.svelte",
+        "rule": "template-file"
+      }
+    ]
+  },
+  "schema_version": 1,
+  "shared_paths": [
+    "*/shared/*",
+    "*/common/*",
+    "*/components/*",
+    "*/hooks/*",
+    "*/utils/*",
+    "*/lib/*",
+    "*/api/*",
+    "*/store/*",
+    "*/styles/*"
+  ],
+  "skip_rebuttals": {
+    "C1": [
+      {
+        "evidence": "apps/platform/src/lib/workbench/ReportDateProperties.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "apps/platform/src/lib/workbench/report-date-edit.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "apps/platform/tests/workbench/report-date-edit.test.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "apps/playground/src/lib/ReportDateExample.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/embed/examples/report-export.html (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/ExportView.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/ReportHeaderView.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/export-render-state.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/export-types.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/export-view.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/report-date-header.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime/src/export-snapshots.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime/tests/report-export.test.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/shared/export-context.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/page/src/report-date-filters.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/page/tests/report-date-filters.test.ts (A)",
+        "rule": "added-or-renamed-file"
+      }
+    ],
+    "C4": [
+      {
+        "evidence": "packages/engine/runtime-ui/src/RuntimeSurface.svelte: let exporting:AbortController|undefined;",
+        "rule": "request-or-cancellation"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/RuntimeSurface.svelte: const controller=new AbortController();exporting=controller;",
+        "rule": "request-or-cancellation"
+      },
+      {
+        "evidence": "packages/embed/examples/report-export.html: const documentPage=await (await fetch('/fixtures/report-date-filters-page.json')).json();",
+        "rule": "request-or-cancellation"
+      },
+      {
+        "evidence": "packages/embed/examples/report-export.html: const controller=new AbortController();",
+        "rule": "request-or-cancellation"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/export-view.ts: export async function withPreparedExportView<T>(input:{state:ExportRenderState;queries:ReadonlyMap<string,EffectiveQuery",
+        "rule": "request-or-cancellation"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/export-view.ts: if(signal.aborted){void work.catch(()=>{});return Promise.reject(signal.reason);}",
+        "rule": "request-or-cancellation"
+      },
+      {
+        "evidence": "packages/engine/runtime/tests/report-export.test.ts: const result=await prepareExportSnapshots(page,gateway,frozen,initialFilterValues(page.filters??[]),new AbortController(",
+        "rule": "request-or-cancellation"
+      },
+      {
+        "evidence": "packages/engine/runtime/tests/report-export.test.ts: await expect(prepareExportSnapshots(page,gateway,stream.captureQueries(),initialFilterValues(page.filters??[]),new Abort",
+        "rule": "request-or-cancellation"
+      },
+      {
+        "evidence": "packages/engine/runtime/tests/report-export.test.ts: const result=await prepareExportSnapshots(page,gateway,stream.captureQueries(),initialFilterValues(page.filters??[]),new",
+        "rule": "request-or-cancellation"
+      }
+    ]
+  },
+  "ownership_scope": "Report-date/export source allowlist; full mixed-worktree facts preserved separately."
+}

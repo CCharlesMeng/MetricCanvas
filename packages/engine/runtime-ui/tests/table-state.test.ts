@@ -4,7 +4,7 @@ import { applySearchFilters } from '../src/filters/inline-search';
 import type { Page } from '@metriccanvas/page';
 import type { FilterValues } from '../../runtime/src';
 import type { TableViewState } from '../../widgets/src/components/table/view-state';
-import { resetFilteredTablePages, sortTableRows } from '../src/table-state';
+import { resetFilteredTablePages, sortTableRows, filterTableRowsByHeaders } from '../src/table-state';
 
 const view: TableViewState = {
   pageIndex: 2, sort: [{ field: 'amount', direction: 'desc' }],
@@ -51,4 +51,10 @@ describe('IOC F4/F7 表格状态', () => {
       .toEqual(['c', 'a', 'e', 'b', 'd', 'f']);
     expect(rows[0].id).toBe('a');
   });
+});
+
+it('applies identical select and date range semantics to live and export rows',()=>{
+  const rows=[{kind:1,date:'2026-01-01'},{kind:1,date:'2026-06-30'},{kind:2,date:'2026-05-01'},{kind:null,date:null}];
+  expect(filterTableRowsByHeaders(rows,{kind:{mode:'select',values:['1']},date:{mode:'dateRange',from:'2026-02-01',to:'2026-06-30'}})).toEqual([rows[1]]);
+  expect(filterTableRowsByHeaders(rows,{kind:{mode:'select',values:['']}})).toEqual([rows[3]]);
 });

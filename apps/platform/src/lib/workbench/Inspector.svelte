@@ -1,4 +1,7 @@
 <script lang="ts">
+  import ReportDateProperties from './ReportDateProperties.svelte';
+  import type { CanvasAuthoringDraft } from './document-edit';
+  import type { ReportDateEdit } from './report-date-edit';
   import ComponentProperties from './ComponentProperties.svelte';
   import type { PropertyControl, PropertyEdit } from './property-edit';
   import type { ComponentCandidate } from './component-selection';
@@ -23,8 +26,10 @@
     onSelectComponent,
     onEdit,
     properties = [],
-    onPropertyEdit
+    onPropertyEdit, dateDraft, onDateEdit
   }: {
+    dateDraft?: CanvasAuthoringDraft | null;
+    onDateEdit?: (edit:ReportDateEdit)=>void;
     pageModel: WorkbenchPageViewModel | null;
     selected: ComponentLocator | null;
     selectedView: PageComponentView | null;
@@ -121,6 +126,7 @@
       </section>
 
       {#if onPropertyEdit}<ComponentProperties controls={properties} {busy} onEdit={onPropertyEdit} />{/if}
+      {#if selectedView.componentType==='reportHeader' && selected && dateDraft && onDateEdit}<ReportDateProperties draft={dateDraft} locator={selected} {busy} onEdit={onDateEdit}/>{/if}
 
       {#if selectedView.dataSourceId}
         <section>

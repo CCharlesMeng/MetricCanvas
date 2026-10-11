@@ -289,7 +289,7 @@ function initialValue(decl: FilterDeclaration, now: Date): FilterValue | undefin
     if (!decl.default) return undefined;
     const precision = decl.precision ?? 'date';
     if (typeof decl.default === 'string') {
-      const range = resolvePreset(decl.default, now, precision);
+      const range = resolvePreset(decl.default, now, precision === "month" ? "date" : precision);
       return { type: 'timeRange', from: range.from, to: range.to };
     }
     if (isRelativeTimeExpression(decl.default)) {

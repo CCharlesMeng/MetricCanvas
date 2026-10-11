@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { getContext } from 'svelte';
+  import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
+  const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
   import type { KeyValuePanelProps } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import { fieldValue, resolveField, semanticHtmlFieldPresentation } from '../../shared/component-data';
@@ -65,6 +68,7 @@
   class:counter-strip={props.variant === 'counterStrip'}
   class:detail-summary={props.variant === 'detailSummary'}
   class:detail-norm-matrix={props.variant === 'detailNormMatrix'}
+  class:static-export={staticExport}
   class="key-value-panel"
 >
   {#if props.title}<h3>
@@ -358,4 +362,5 @@
       border-top: 0;
     }
   }
+  .key-value-panel.static-export, .static-export dl { height:auto!important; max-height:none!important; overflow:visible!important; }
 </style>

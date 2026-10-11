@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { getContext, onMount } from 'svelte';
+  import { STATIC_EXPORT_CONTEXT } from './export-context';
   import * as echarts from 'echarts';
   import type { EChartsOption } from 'echarts';
 
@@ -31,6 +32,7 @@
     onitemclick
   }: Props = $props();
 
+  const staticExport = getContext<boolean>(STATIC_EXPORT_CONTEXT) ?? false;
   let chart = $state<echarts.ECharts>();
 
   /* 容器在 DOM 生成时就绑定,早于 onMount 与任何 effect:调用方的色板
@@ -53,19 +55,32 @@
       });
     });
     observer.observe(el);
+    const freeze = () => {
+      observer.disconnect();
+      if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame);
+      if (!instance.isDisposed()) instance.dispose();
+    };
+    if (staticExport) el.addEventListener('metriccanvas:freeze-export-chart', freeze, {once:true});
     return () => {
       observer.disconnect();
       if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame);
-      instance.dispose();
+      el.removeEventListener('metriccanvas:freeze-export-chart', freeze);
+      if (!instance.isDisposed()) instance.dispose();
     };
   });
 
   $effect(() => {
-    chart?.setOption(option, { notMerge: updateMode === 'replace' });
+    if (!chart || chart.isDisposed()) return;
+    if (staticExport) {
+      container!.dataset.exportChartReady = 'false';
+      const series = option.series === undefined ? undefined : (Array.isArray(option.series) ? option.series : [option.series]).map(series => ({...series,animation:false}));
+      chart.setOption({...option,animation:false,...(series?{series}:{})},{notMerge:true});
+      container!.dataset.exportChartReady = 'true';
+    } else chart.setOption(option, { notMerge: updateMode === 'replace' });
   });
 </script>
 
-<div bind:this={container} class="echart"></div>
+<div bind:this={container} class="echart" data-export-chart={staticExport ? "" : undefined}></div>
 
 <style>
   .echart {

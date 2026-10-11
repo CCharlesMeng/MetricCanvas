@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { dev } from '$app/environment';
+  import { page } from '$app/state';
+  import ReportDateExample from '$lib/ReportDateExample.svelte';
   import { validate } from '@metriccanvas/page';
   import {
     DEFAULT_PREVIEW_JSON,
@@ -17,6 +20,9 @@
   <title>JSON 即时预览 · 页面试验场</title>
 </svelte:head>
 
+{#if dev && page.url.searchParams.get('prototype') === 'report-date'}
+  <ReportDateExample />
+{:else}
 <div class="preview-page">
   <div class="preview-heading">
     <div>
@@ -85,6 +91,7 @@
     </section>
   </div>
 </div>
+{/if}
 
 <style>
   /* 宽度与另两条查看器路由同一条语义:1440 是内容盒基准,左右各 24 的内边距

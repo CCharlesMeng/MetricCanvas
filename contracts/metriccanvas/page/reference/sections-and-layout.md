@@ -11,9 +11,83 @@ Tab和组合卡是受控容器组件，子项允许类型由各自Schema分支�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `508780df9e2561af9705f7ed2b0d07038e8f2d97027d66f0ae69b5a02a6cb75e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.13。结构真源为本册[schema.json](schema.json)，SHA256 `a3070d52695f46a1c96cd22ed236f0adcc0574384064615d2654d875b7b1f698`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e744964"></a>
+
+### `@componentId`
+
+Schema位置：`#/definitions/componentId`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 类型/分支 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796f7574"></a>
+
+### `@componentLayout`
+
+Schema位置：`#/definitions/componentLayout`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | required=["span"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796f75742f70726f706572746965732f7370616e"></a>
+
+### `@componentLayout.span`
+
+Schema位置：`#/definitions/componentLayout/properties/span`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支必填 | minimum=1; maximum=12 | Schema未设默认；装配/运行时默认见语义说明 | 占用列轨数量，不是百分比或像素。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796f75742f70726f706572746965732f636f6e6e65637450726576696f7573"></a>
+
+### `@componentLayout.connectPrevious`
+
+Schema位置：`#/definitions/componentLayout/properties/connectPrevious`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 与前一个内容块的连接关系，删除须考虑该依赖。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796f75742f70726f706572746965732f6c61796572"></a>
+
+### `@componentLayout.layer`
+
+Schema位置：`#/definitions/componentLayout/properties/layer`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | content正常内容层或backdrop铺底层。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796f75742f70726f706572746965732f6c617965722f616c6c4f662f30"></a>
+
+### `@componentLayout.layer · allOf[0]`
+
+Schema位置：`#/definitions/componentLayout/properties/layer/allOf/0`。目标：[#/definitions/componentLayer](sections-and-layout.md#schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796572)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/componentLayer | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796572"></a>
+
+### `@componentLayer`
+
+Schema位置：`#/definitions/componentLayer`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 类型/分支 | enum=["backdrop"] | Schema未设默认；装配/运行时默认见语义说明 | backdrop 铺满分区并置于同分区其余组件之下；省略为普通流 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "backdrop" | 铺底层，不占正常内容流。 |
 
 <a id="schema-232f646566696e6974696f6e732f73656374696f6e"></a>
 
@@ -160,80 +234,6 @@ Schema位置：`#/definitions/section/properties/components/items/oneOf/0`。目
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/reportHeaderComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
-
-<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e744964"></a>
-
-### `@componentId`
-
-Schema位置：`#/definitions/componentId`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "string" | 类型/分支 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
-
-<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796f7574"></a>
-
-### `@componentLayout`
-
-Schema位置：`#/definitions/componentLayout`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "object" | 类型/分支 | required=["span"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
-
-<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796f75742f70726f706572746965732f7370616e"></a>
-
-### `@componentLayout.span`
-
-Schema位置：`#/definitions/componentLayout/properties/span`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "integer" | 本分支必填 | minimum=1; maximum=12 | Schema未设默认；装配/运行时默认见语义说明 | 占用列轨数量，不是百分比或像素。 |
-
-<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796f75742f70726f706572746965732f636f6e6e65637450726576696f7573"></a>
-
-### `@componentLayout.connectPrevious`
-
-Schema位置：`#/definitions/componentLayout/properties/connectPrevious`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 与前一个内容块的连接关系，删除须考虑该依赖。 |
-
-<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796f75742f70726f706572746965732f6c61796572"></a>
-
-### `@componentLayout.layer`
-
-Schema位置：`#/definitions/componentLayout/properties/layer`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | content正常内容层或backdrop铺底层。 |
-
-<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796f75742f70726f706572746965732f6c617965722f616c6c4f662f30"></a>
-
-### `@componentLayout.layer · allOf[0]`
-
-Schema位置：`#/definitions/componentLayout/properties/layer/allOf/0`。目标：[#/definitions/componentLayer](sections-and-layout.md#schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796572)。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| 引用 #/definitions/componentLayer | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
-
-<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796572"></a>
-
-### `@componentLayer`
-
-Schema位置：`#/definitions/componentLayer`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "string" | 类型/分支 | enum=["backdrop"] | Schema未设默认；装配/运行时默认见语义说明 | backdrop 铺满分区并置于同分区其余组件之下；省略为普通流 |
-
-| 允许值 | 解释与适用条件 |
-|---|---|
-| "backdrop" | 铺底层，不占正常内容流。 |
 
 <a id="schema-232f646566696e6974696f6e732f73656374696f6e2f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f31"></a>
 

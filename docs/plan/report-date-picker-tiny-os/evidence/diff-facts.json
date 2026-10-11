@@ -1,0 +1,140 @@
+{
+  "base_ref": "HEAD",
+  "changed_files": [
+    {
+      "path": "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/date-picker.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/tiny-vue-LICENSE.txt",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/tests/browser/date-picker.html",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/tests/browser/main.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/tests/date-picker.test.ts",
+      "status": "A"
+    }
+  ],
+  "head": "a5a3c6f1cc6b3b088976c80b433f5e937f02225a",
+  "risk_triggers": {
+    "build-config": [
+      {
+        "evidence": "packages/engine/runtime-ui/tests/browser/vite.config.ts",
+        "rule": "build-config-file"
+      }
+    ],
+    "visual": [
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "rule": "template-file"
+      }
+    ]
+  },
+  "schema_version": 1,
+  "shared_paths": [
+    "*/shared/*",
+    "*/common/*",
+    "*/components/*",
+    "*/hooks/*",
+    "*/utils/*",
+    "*/lib/*",
+    "*/api/*",
+    "*/store/*",
+    "*/styles/*"
+  ],
+  "skip_rebuttals": {
+    "C1": [
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/DatePicker.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/date-picker.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/tests/browser/date-picker.html (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/tests/browser/main.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/tests/browser/vite.config.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/tests/date-picker.test.ts (A)",
+        "rule": "added-or-renamed-file"
+      }
+    ]
+  }
+}

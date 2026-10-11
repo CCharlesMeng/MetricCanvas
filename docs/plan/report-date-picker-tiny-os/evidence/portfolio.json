@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "phase": "final",
+  "tier": {
+    "value": "standard",
+    "restore_tasks": [
+      "Task-1",
+      "Task-2"
+    ],
+    "blocking_triggers": [
+      "shared-boundary"
+    ],
+    "changed_files": 12,
+    "max_changed_files": 5
+  },
+  "risk_triggers": [
+    "build-config",
+    "interaction",
+    "shared-boundary",
+    "visual"
+  ],
+  "trigger_sources": {
+    "visual": [
+      "diff",
+      "plan"
+    ],
+    "interaction": [
+      "plan"
+    ],
+    "shared-boundary": [
+      "plan"
+    ],
+    "build-config": [
+      "diff"
+    ]
+  },
+  "portfolio_narrowed": [],
+  "facts": {
+    "cross_page": false,
+    "shared_style": false,
+    "overflow_state": true,
+    "frozen_r": true,
+    "frozen_r5": false,
+    "frozen_r6": true,
+    "has_f3": false,
+    "has_s3_claim": false
+  },
+  "modules": [
+    "causal",
+    "targeted-quality",
+    "render",
+    "regression",
+    "restore-final",
+    "review-layout",
+    "review-convention",
+    "review-quality"
+  ],
+  "review_roles": [
+    "review-layout",
+    "review-convention",
+    "review-quality"
+  ],
+  "review_dimensions": {
+    "review-layout": [
+      "L2",
+      "L3",
+      "L5"
+    ],
+    "review-convention": [
+      "C1",
+      "C5"
+    ],
+    "review-quality": [
+      "Q2"
+    ]
+  },
+  "claims": [
+    {
+      "id": "AT-1",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "restore_contract",
+      "task": "1,2",
+      "modules": [
+        "causal",
+        "render"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-2",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "test_case",
+      "task": "1,2",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-3",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "test_case",
+      "task": "2,3",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-4",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "test_case",
+      "task": "2,3",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "previous": {
+    "phase": "initial",
+    "tier": "standard",
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "required_profiles": {
+      "AT-1": "mock",
+      "AT-2": "mock",
+      "AT-3": "mock",
+      "AT-4": "mock"
+    }
+  }
+}

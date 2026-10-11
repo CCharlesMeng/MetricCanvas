@@ -3,6 +3,13 @@
   "invariant": "filter-binding",
   "expected": [
     {
+      "type": "SCHEMA_ERROR",
+      "message": "查询时间目标只能由一个筛选器控制",
+      "paths": [
+        "/dataSources/orders/source/query/filterBindings"
+      ]
+    },
+    {
       "type": "FILTER_BINDING_ERROR",
       "message": "time 目标必须绑定 timeRange 筛选器:city",
       "paths": [
@@ -16,6 +23,15 @@
         "source": {
           "query": {
             "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "…": "共2个键"
+                }
+              },
+              "period": {
+                "target": "time"
+              },
               "city": {
                 "target": "time"
               }

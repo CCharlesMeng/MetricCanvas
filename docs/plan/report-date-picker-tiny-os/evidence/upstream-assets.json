@@ -1,0 +1,11 @@
+{
+  "source": "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/date-picker",
+  "date": "2026-10-11",
+  "assetNamespace": "3.32.0 (deployment URL namespace, component semantic version not independently confirmed)",
+  "license": "https://github.com/opentiny/tiny-vue/blob/v3.32.0/LICENSE",
+  "styles": {
+    "0c2ae6be.css": "0c2ae6beba35ac7fc0082b8a58b40440f747275adf8473f6fc0d3c3b069864bd",
+    "fe2f3ac0.css": "fe2f3ac04a5d20f5103c4abd5ee748bb7a910b2f876bc07924701e0984170c95"
+  },
+  "adaptation": "Only relevant date/month/year/panel styles scoped to mc-date-picker; default OS tokens resolved to frozen values; Svelte style injection for ShadowRoot."
+}

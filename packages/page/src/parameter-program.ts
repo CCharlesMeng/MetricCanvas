@@ -30,7 +30,7 @@ export function runPageParameterProgram(request:ParameterProgramRequest) {
       }).map(c=>c.id);
       if(candidates.length)textSlots.push({id:`text-${textSlots.length+1}`,path,candidates});
     } else if(Array.isArray(value))value.forEach((v,i)=>visit(v,`${path}/${i}`));
-    else if(value&&typeof value==='object')for(const [key,v] of Object.entries(value))if(!['id','type','param'].includes(key))visit(v,`${path}/${key.replaceAll('~','~0').replaceAll('/','~1')}`);
+    else if(value&&typeof value==='object')for(const [key,v] of Object.entries(value))if(!['id','type','param','filterIds','data','layout','actions','links','navigate','writeFilter','hierarchyFilter'].includes(key))visit(v,`${path}/${key.replaceAll('~','~0').replaceAll('/','~1')}`);
   };
   visit(extraction.source.sections,'/sections');visit(extraction.source.meta,'/meta');
   return {...extraction,textSlots};

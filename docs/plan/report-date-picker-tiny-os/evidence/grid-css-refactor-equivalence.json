@@ -1,0 +1,31 @@
+{
+  "scope": "17 duplicated month/year CSS rules and two shared final overrides",
+  "before_sha256": "d0b2ab5fbee3646d72dfe364d9e935c3c028d4a61f84404378f6552b8752f0f4",
+  "after_sha256": "830f48c12aa018832aa4b6fefd299234eee3addc748c30a67892edcc21b2bca6",
+  "source_lines_removed": 17,
+  "svelte_version": "5.56.6",
+  "js_identical_with_fixed_css_hash": true,
+  "expanded_css_selectors": 190,
+  "expanded_css_declarations_and_per_selector_order_identical": true,
+  "specificity": ":is() max specificity is one class, equal to replaced class; table classes mutually exclusive",
+  "compiled_css_bytes": {
+    "before": 19008,
+    "after": 16767
+  },
+  "warnings": 0,
+  "browser_verification": "not rerun; compiler-level equivalence checked for this behavior-preserving refactor",
+  "prior_validation_code_fingerprint": "616ead21db764d050c70dd0f933d96006535ef31b687ae0276060108750d8694",
+  "other_prior_dependency_hash_changes": [],
+  "checks": [
+    {
+      "command": "pnpm --filter @metriccanvas/engine check",
+      "exit_code": 0,
+      "artifact": "grid-refactor-engine-check.txt"
+    },
+    {
+      "command": "pnpm --filter @metriccanvas/embed build",
+      "exit_code": 0,
+      "artifact": "grid-refactor-embed-build.txt"
+    }
+  ]
+}

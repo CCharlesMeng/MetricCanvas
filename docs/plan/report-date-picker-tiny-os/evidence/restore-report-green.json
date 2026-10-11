@@ -1,0 +1,495 @@
+{
+  "contract_sha256": "dce219e2f0017c3559cd3bd7d2e8c8924dc7a9d97eda075c5a3cdb51a60ba240",
+  "entries": [
+    {
+      "actual": 1,
+      "rule_id": "R1-1-single-input-count",
+      "status": "green"
+    },
+    {
+      "actual": 2,
+      "rule_id": "R1-1-range-input-count",
+      "status": "green"
+    },
+    {
+      "actual": 1,
+      "rule_id": "R1-1-range-separator-count",
+      "status": "green"
+    },
+    {
+      "actual": 1,
+      "rule_id": "R1-1-right-icon-count",
+      "status": "green"
+    },
+    {
+      "actual": 12,
+      "rule_id": "R1-2-single-month-cell-count",
+      "status": "green"
+    },
+    {
+      "actual": 2,
+      "rule_id": "R1-2-range-year-grid-count",
+      "status": "green"
+    },
+    {
+      "actual": 24,
+      "rule_id": "R1-2-range-month-cell-count",
+      "status": "green"
+    },
+    {
+      "actual": 4,
+      "rule_id": "R1-2-grid-columns",
+      "status": "green"
+    },
+    {
+      "actual": 3,
+      "rule_id": "R1-2-grid-rows",
+      "status": "green"
+    },
+    {
+      "actual": 1,
+      "rule_id": "R1-3-single-calendar-count",
+      "status": "green"
+    },
+    {
+      "actual": 2,
+      "rule_id": "R1-3-range-calendar-count",
+      "status": "green"
+    },
+    {
+      "actual": 7,
+      "rule_id": "R1-3-weekday-count",
+      "status": "green"
+    },
+    {
+      "actual": true,
+      "rule_id": "R1-3-adjacent-month-dates",
+      "status": "green"
+    },
+    {
+      "actual": "-",
+      "rule_id": "R2-1-separator",
+      "status": "green"
+    },
+    {
+      "actual": [
+        "日",
+        "一",
+        "二",
+        "三",
+        "四",
+        "五",
+        "六"
+      ],
+      "rule_id": "R2-1-weekday-order",
+      "status": "green"
+    },
+    {
+      "actual": [
+        "1 月",
+        "2 月",
+        "3 月",
+        "4 月",
+        "5 月",
+        "6 月",
+        "7 月",
+        "8 月",
+        "9 月",
+        "10 月",
+        "11 月",
+        "12 月"
+      ],
+      "rule_id": "R2-1-month-label-order",
+      "status": "green"
+    },
+    {
+      "actual": "2026-01",
+      "rule_id": "R2-1-month-value",
+      "status": "green"
+    },
+    {
+      "actual": "2026-01-31",
+      "rule_id": "R2-1-date-value",
+      "status": "green"
+    },
+    {
+      "actual": 32,
+      "rule_id": "R3-1-height",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "border-bottom-left-radius": "6px",
+        "border-bottom-right-radius": "6px",
+        "border-top-left-radius": "6px",
+        "border-top-right-radius": "6px"
+      },
+      "rule_id": "R3-1-radius",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "border-bottom-color": "rgb(194, 194, 194)",
+        "border-bottom-style": "solid",
+        "border-bottom-width": "1px",
+        "border-left-color": "rgb(194, 194, 194)",
+        "border-left-style": "solid",
+        "border-left-width": "1px",
+        "border-right-color": "rgb(194, 194, 194)",
+        "border-right-style": "solid",
+        "border-right-width": "1px",
+        "border-top-color": "rgb(194, 194, 194)",
+        "border-top-style": "solid",
+        "border-top-width": "1px"
+      },
+      "rule_id": "R3-1-border",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "color": "rgb(25, 25, 25)",
+        "font-size": "14px"
+      },
+      "rule_id": "R3-1-text",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "padding-bottom": "0px",
+        "padding-left": "12px",
+        "padding-right": "40px",
+        "padding-top": "0px"
+      },
+      "rule_id": "R3-2-padding",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "line-height": "32px"
+      },
+      "rule_id": "R3-2-line-height",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "padding-bottom": "3px",
+        "padding-left": "10px",
+        "padding-right": "10px",
+        "padding-top": "3px"
+      },
+      "rule_id": "R3-3-outer-padding",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "border-bottom-width": "0px",
+        "border-left-width": "0px",
+        "border-right-width": "0px",
+        "border-top-width": "0px"
+      },
+      "rule_id": "R3-3-input-border",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "padding-bottom": "0px",
+        "padding-left": "0px",
+        "padding-right": "0px",
+        "padding-top": "0px"
+      },
+      "rule_id": "R3-3-input-padding",
+      "status": "green"
+    },
+    {
+      "actual": 24,
+      "rule_id": "R3-3-input-height",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "font-size": "14px",
+        "line-height": "14px"
+      },
+      "rule_id": "R3-3-input-type",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "bottom": 445,
+        "height": 245,
+        "left": 342,
+        "right": 702,
+        "top": 200,
+        "width": 360,
+        "x": 342,
+        "y": 200
+      },
+      "rule_id": "R3-4-single-month-panel",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "bottom": 507,
+        "height": 307,
+        "left": 342,
+        "right": 702,
+        "top": 200,
+        "width": 360,
+        "x": 342,
+        "y": 200
+      },
+      "rule_id": "R3-4-single-date-panel",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "bottom": 445,
+        "height": 245,
+        "left": 342,
+        "right": 900,
+        "top": 200,
+        "width": 558,
+        "x": 342,
+        "y": 200
+      },
+      "rule_id": "R3-4-range-month-panel",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "bottom": 507,
+        "height": 307,
+        "left": 342,
+        "right": 900,
+        "top": 200,
+        "width": 558,
+        "x": 342,
+        "y": 200
+      },
+      "rule_id": "R3-4-range-date-panel",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "background-color": "rgb(255, 255, 255)",
+        "border-bottom-left-radius": "6px",
+        "border-bottom-right-radius": "6px",
+        "border-top-left-radius": "6px",
+        "border-top-right-radius": "6px",
+        "font-size": "14px",
+        "line-height": "21px"
+      },
+      "rule_id": "R3-4-surface",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "box-shadow": "rgba(0, 0, 0, 0.08) 0px 4px 16px 0px"
+      },
+      "rule_id": "R3-4-shadow",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "bottom": 438,
+        "height": 180,
+        "left": 357,
+        "right": 685,
+        "top": 258,
+        "width": 328,
+        "x": 357,
+        "y": 258
+      },
+      "rule_id": "R3-5-single-grid",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "bottom": 438,
+        "height": 180,
+        "left": 357,
+        "right": 616,
+        "top": 258,
+        "width": 259,
+        "x": 357,
+        "y": 258
+      },
+      "rule_id": "R3-5-range-grid",
+      "status": "green"
+    },
+    {
+      "actual": 60,
+      "rule_id": "R3-5-row-height",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "bottom": 499,
+        "height": 240,
+        "left": 358,
+        "right": 686,
+        "top": 259,
+        "width": 328,
+        "x": 358,
+        "y": 259
+      },
+      "rule_id": "R3-6-single-grid",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "bottom": 499,
+        "height": 240,
+        "left": 358,
+        "right": 617,
+        "top": 259,
+        "width": 259,
+        "x": 358,
+        "y": 259
+      },
+      "rule_id": "R3-6-range-grid",
+      "status": "green"
+    },
+    {
+      "actual": 32,
+      "rule_id": "R3-6-weekday-height",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "border-bottom-color": "rgb(25, 25, 25)",
+        "border-left-color": "rgb(25, 25, 25)",
+        "border-right-color": "rgb(25, 25, 25)",
+        "border-top-color": "rgb(25, 25, 25)"
+      },
+      "rule_id": "R4-1-focus-border",
+      "status": "green"
+    },
+    {
+      "actual": 32,
+      "rule_id": "R4-1-focus-height",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "border-bottom-left-radius": "6px",
+        "border-bottom-right-radius": "6px",
+        "border-top-left-radius": "6px",
+        "border-top-right-radius": "6px"
+      },
+      "rule_id": "R4-1-focus-radius",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R6-1-page-overflow",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R6-1-input-overlap",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R6-1-panel-clip",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "background-color": "rgb(20, 118, 255)",
+        "color": "rgb(255, 255, 255)"
+      },
+      "rule_id": "R4-1-selected",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "background-color": "rgb(222, 236, 255)"
+      },
+      "rule_id": "R4-1-inrange",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "box-shadow": "rgb(25, 25, 25) 0px 0px 1px 1px"
+      },
+      "rule_id": "R4-1-today",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "background-color": "rgb(240, 240, 240)",
+        "color": "rgb(194, 194, 194)"
+      },
+      "rule_id": "R4-1-disabled",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "matched_via": "exact",
+        "matching_files": [
+          "packages/engine/runtime-ui/src/filters/DatePicker.svelte"
+        ],
+        "needle": ".cell:hover) { background:#deecff"
+      },
+      "rule_id": "R4-1-hover",
+      "status": "green"
+    }
+  ],
+  "observed": {
+    "captures": [
+      {
+        "route": "/packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "viewport": {
+          "height": 1000,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "viewport": {
+          "height": 1000,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "viewport": {
+          "height": 1000,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "viewport": {
+          "height": 1000,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "viewport": {
+          "height": 1000,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/packages/engine/runtime-ui/tests/browser/date-picker.html",
+        "viewport": {
+          "height": 1000,
+          "width": 1440
+        }
+      }
+    ]
+  },
+  "overall": "green",
+  "phase": "green",
+  "schema_version": 3,
+  "summary": {
+    "green": 52,
+    "red": 0,
+    "total": 52,
+    "yellow": 0
+  }
+}
