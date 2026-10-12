@@ -21,6 +21,8 @@
 
 | 证据 | 引用及范围 |
 |---|---|
+| [显式数字颜色与图表标签](./2026-10-12-explicit-presentation/result.md) | ADR-0101的本仓实现和本地验收；原query导出及生产联调未通过或未执行 |
+| [表格正常尺寸适配与数值间距修正](./2026-10-12-table-fit-chart-distance/result.md) | ADR-0101后续实现证据；正常桌面全列、窄屏内部滚动及贴近节点标签 |
 | [创作最小流程决策基线](./2026-09-20-authoring-minimal-flow-and-skill-plan.md) | ADR-0083的历史决策依据；当前创作计划不继续按此旧分稿执行 |
 | [IOC真数据缺口基线](./2026-09-21-ioc-live-data-gaps.md) | ADR-0085的依赖背景；inline等阶段描述不作为当前实现状态 |
 | [执行整改M0–M7报告](./2026-09-29-authoring-mc-execution-report.md) | 当前接入待办的本仓完成证据；生产采用未执行 |

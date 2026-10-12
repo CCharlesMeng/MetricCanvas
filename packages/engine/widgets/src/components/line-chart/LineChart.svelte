@@ -24,6 +24,8 @@
 {#if props.title}<h3>{props.title}</h3>{/if}
 <EChart
   {option}
+  cartesian
+  expandForLabels={props.showValueLabels === true || props.categoryLabels?.mode === 'all'}
   bind:container={chartContainer}
   onitemclick={onpointclick
     ? (dataIndex) => onpointclick({ row: data.main.snapshot.rows[dataIndex] })

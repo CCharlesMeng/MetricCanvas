@@ -55,6 +55,33 @@ function longString(length: number): string {
 
 export const invariants: InvariantDefinition[] = [
   {
+    id: 'explicit-color-local', description: '显式颜色只绑定数字且不与旧染色声明冲突',
+    valid: ['explicit-presentation-page'], cases: [
+      { case: 'color-rule-legacy-conflict', base: 'explicit-presentation-page', expect: /colorRule 不得/,
+        mutate: d => { firstComponent(d).props.columns[1].visual = 'signed'; } },
+      { case: 'color-rule-nonnumeric', base: 'explicit-presentation-page', expect: /colorRule 只支持/,
+        mutate: d => { firstComponent(d).props.columns[0].colorRule = {mode:'fixed',color:'red'}; } },
+      { case: 'color-rule-tone-conflict', base: 'explicit-presentation-page', expect: /colorRule 不得/,
+        mutate: d => { firstComponent(d,0,1).props.rows[0].changes[0].tone = 'auto'; } }
+    ]
+  },
+  {
+    id: 'chart-value-label-exclusive', description: '常驻数值标签不与旧标签重复启用',
+    valid: ['explicit-presentation-page'], cases: [
+      { case: 'value-label-bar-conflict', base: 'explicit-presentation-page', expect: /showValueLabels 不得/,
+        mutate: d => { firstComponent(d,0,2).props.showSegmentLabels = true; } },
+      { case: 'value-label-line-conflict', base: 'explicit-presentation-page', expect: /showValueLabels 不得/,
+        mutate: d => { firstComponent(d,0,3).props.showPointLabels = true; } }
+    ]
+  },
+  {
+    id: 'presentation-capability', description: '颜色与图表标签声明由6.16引入',
+    valid: ['explicit-presentation-page'], cases: [
+      { case: 'presentation-before-6.16', base: 'explicit-presentation-page', expect: /由 6.16 引入/,
+        mutate: d => { d.schemaVersion = '6.15'; } }
+    ]
+  },
+  {
     id: 'filter-text-declared', description: '筛选文本必须引用已声明筛选器',
     valid: ['report-filter-text-page'], cases: [
       { case: 'filter-text-unknown', base: 'report-filter-text-page', expect: /文本取值引用了未声明的筛选器/,

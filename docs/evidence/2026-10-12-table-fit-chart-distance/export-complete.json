@@ -1,0 +1,73 @@
+{
+  "canvasCount": 0,
+  "charts": [
+    {
+      "image": true,
+      "ready": "true"
+    },
+    {
+      "image": true,
+      "ready": "true"
+    },
+    {
+      "image": true,
+      "ready": "true"
+    },
+    {
+      "image": true,
+      "ready": "true"
+    },
+    {
+      "image": true,
+      "ready": "true"
+    }
+  ],
+  "status": "快照静态导出已冻结",
+  "tables": [
+    {
+      "cellOverflow": 0,
+      "parentWidth": 686,
+      "rows": 10,
+      "scrollWidth": 686,
+      "title": "代表处SDT决策效率Top10"
+    },
+    {
+      "cellOverflow": 0,
+      "parentWidth": 686,
+      "rows": 12,
+      "scrollWidth": 686,
+      "title": "地区部SDT决策效率"
+    },
+    {
+      "cellOverflow": 0,
+      "parentWidth": 975,
+      "rows": 5,
+      "scrollWidth": 975,
+      "title": "项目决策时长最快Top5"
+    },
+    {
+      "cellOverflow": 0,
+      "parentWidth": 975,
+      "rows": 5,
+      "scrollWidth": 975,
+      "title": "项目决策时长最慢Top5"
+    },
+    {
+      "cellOverflow": 0,
+      "parentWidth": 462,
+      "rows": 10,
+      "scrollWidth": 462,
+      "title": "平均决策时长最快Top10"
+    },
+    {
+      "cellOverflow": 0,
+      "parentWidth": 462,
+      "rows": 10,
+      "scrollWidth": 462,
+      "title": "平均决策时长最慢Top10"
+    }
+  ],
+  "wideSections": [
+    "project-efficiency-section"
+  ]
+}

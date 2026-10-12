@@ -27,6 +27,8 @@
 
 | 批次 | 整理日期 | 结论及未完成事项去向 | 移动件数 |
 |---|---|---|---|
+| [`2026-10-12-explicit-presentation/`](./2026-10-12-explicit-presentation/README.md) | 2026-10-12实施收口 | 6.16数字颜色与图表标签、本地验收；真实集成/发布未执行 | 5 |
+| [`2026-10-12-table-fit-chart-distance/`](./2026-10-12-table-fit-chart-distance/README.md) | 2026-10-12实施收口 | 正常尺寸六表适配、窄屏内部滚动、数字间距修正；本地验收 | 13 |
 | [`authoring-foundation-2026-09/`](./authoring-foundation-2026-09/README.md) | 2026-10-12整理 | 创作基础与公共整改历史；未验证接入已转当前待办 | 64 |
 | [`page-parameters-2026-09/`](./page-parameters-2026-09/README.md) | 2026-10-12整理 | 参数阶段实现与旧规格；E1及旧页迁移未完成项另列 | 8 |
 | [`ioc-planning-2026-09/`](./ioc-planning-2026-09/README.md) | 2026-10-12整理 | 旧五页计划被四页顺序替代；全量迁移仍未完成 | 3 |

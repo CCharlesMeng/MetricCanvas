@@ -21,6 +21,22 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 
 原始值必须以基础单位提供：金额字段若存人民币元，1,234,567元显示“1.23百万”，货币含义由字段标签或标题说明。不要把已经换算为百万的数据再次应用该格式；`unit: "百万"` 只是单位描述，不执行换算。`cny-adaptive` 保持原有自适应规则。
 
+## 显式数字颜色与图表标签（6.16）
+
+表格数字列及指标卡变化项可就地声明 `colorRule`。`{"mode":"fixed","color":"green"}` 对全部有效数字（包括零）固定染色；`{"mode":"sign","positive":"red","negative":"green"}` 按原始正负值映射。颜色只接受 `red` / `green`；正负模式的零和所有模式的缺失值保持普通文字颜色。字段绑定必须为 `number` / `money`。同一字段在不同展示位置可使用不同规则，不从数据源或页面继承颜色。
+
+`colorRule` 与表格 `visual: "signed"`、`dangerValues` 或指标卡旧 `tone` 同时声明时校验失败。旧页未使用新规则时保留旧染色与箭头行为；使用新规则的指标卡箭头独立按原始正负值显示 ↑ / ↓，颜色不控制方向。
+
+柱状图、折线图和柱线混合图可声明 `categoryLabels: {"mode":"all","rotate":45}`，全部展示完整类别名称，不自动抽样隐藏或默认缩放到前20个类别。`mode: "auto"` 保留原有类别显示策略；`rotate` 范围为 -90—90。横向柱状图作用于类别Y轴。
+
+同类图表可声明 `showValueLabels: true`，逐柱或逐节点常驻显示对应格式化数值，零值显示，缺失不伪造节点。混合图逐系列显示。堆叠柱显示各段值。数字格式服从字段绑定 `format` 优先于 `defaultFormat`，与 tooltip 一致。不得同时开启旧 `showPointLabels` / `showSegmentLabels` / `showStackTotalLabels`，以免重复显示。旧开关继续可读。
+
+常驻数字贴近对应柱端或折线节点；密集场景也不把数字移到远离节点的交错行，不使用全局垂直避让拉开距离。图例和绘图区的空间仍独立预留，不能用移动数字代替图例布局。
+
+表格需要优先在正常尺寸容器内展示全部列时，显式声明 `fit: "container"`。列 `width` 在此模式下作为比例权重，表头及内容允许完整换行；保留文字和短数字所需的最小列宽，窄容器允许表格内部横向滚动，不强制均分或无限压缩。普通表格高度可随内容增长，适配不删除列、不以省略号替代正文；embedded 与 forecastMatrix 仍保留其专用呈现约束。`fit: "content"` 保留内容及像素列宽优先的行为。
+
+旋转标签与数值标签可以使图表高度增加，数字标签不会通过隐藏重叠标签自动省略。系列图例、坐标轴名称与绘图区的间距由统一运行时根据直接容器计算；页面不声明像素位置。静态导出保留这些标签。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
@@ -28,7 +44,7 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 6.15 新增 `period`：用于时间输入的统一展示，单点原值显示，范围“开始 至 结束”，同端点折叠为单点。`{filter, format:"period"}` 读取已应用状态；`{param, format:"period"}` 读取打开时的参数值。没有 period-compact 或自定义连接词。
 
 
-页面协议 6.15。结构真源为本册[schema.json](schema.json)，SHA256 `61b985d2cb66bd50b9259e5f4fbc66f39cd42ec320b45b2a8f5f8506fad6887a`。字段表自动生成；可选不等于有默认值。
+页面协议 6.16。结构真源为本册[schema.json](schema.json)，SHA256 `52c95c06cc28cf1dcfc3fe2b7bc6797fccc9f89920f8949a9c54568159f4c89d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -194,6 +210,109 @@ Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/match/properties/e
 |---|---|---|---|---|
 | 引用 #/definitions/scalar | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 显式相等匹配值。 |
 
+<a id="schema-232f646566696e6974696f6e732f636f6c6f7252756c65"></a>
+
+### `@colorRule`
+
+Schema位置：`#/definitions/colorRule`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| oneOf联合 | 类型/分支 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6c6f7252756c652f6f6e654f662f30"></a>
+
+### `@colorRule · oneOf[0]`
+
+Schema位置：`#/definitions/colorRule/oneOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["mode","color"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6c6f7252756c652f6f6e654f662f302f70726f706572746965732f6d6f6465"></a>
+
+### `@colorRule · oneOf[0].mode`
+
+Schema位置：`#/definitions/colorRule/oneOf/0/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="fixed" | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "fixed" | 用于选择@colorRule · oneOf[0].mode分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6c6f7252756c652f6f6e654f662f302f70726f706572746965732f636f6c6f72"></a>
+
+### `@colorRule · oneOf[0].color`
+
+Schema位置：`#/definitions/colorRule/oneOf/0/properties/color`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["red","green"] | Schema未设默认；装配/运行时默认见语义说明 | 固定数字颜色，只接受red/green；缺失值不染色。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "red" | 统一主题的红色，业务含义由当前声明确定。 |
+| "green" | 统一主题的绿色，业务含义由当前声明确定。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6c6f7252756c652f6f6e654f662f31"></a>
+
+### `@colorRule · oneOf[1]`
+
+Schema位置：`#/definitions/colorRule/oneOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["mode","positive","negative"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6c6f7252756c652f6f6e654f662f312f70726f706572746965732f6d6f6465"></a>
+
+### `@colorRule · oneOf[1].mode`
+
+Schema位置：`#/definitions/colorRule/oneOf/1/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="sign" | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "sign" | 用于选择@colorRule · oneOf[1].mode分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6c6f7252756c652f6f6e654f662f312f70726f706572746965732f706f736974697665"></a>
+
+### `@colorRule · oneOf[1].positive`
+
+Schema位置：`#/definitions/colorRule/oneOf/1/properties/positive`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["red","green"] | Schema未设默认；装配/运行时默认见语义说明 | 原始数值大于零时使用的颜色。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "red" | 统一主题的红色，业务含义由当前声明确定。 |
+| "green" | 统一主题的绿色，业务含义由当前声明确定。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6c6f7252756c652f6f6e654f662f312f70726f706572746965732f6e65676174697665"></a>
+
+### `@colorRule · oneOf[1].negative`
+
+Schema位置：`#/definitions/colorRule/oneOf/1/properties/negative`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["red","green"] | Schema未设默认；装配/运行时默认见语义说明 | 原始数值小于零时使用的颜色。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "red" | 统一主题的红色，业务含义由当前声明确定。 |
+| "green" | 统一主题的绿色，业务含义由当前声明确定。 |
+
 <a id="schema-232f646566696e6974696f6e732f6669656c645265666572656e6365"></a>
 
 ### `@fieldReference`
@@ -264,6 +383,41 @@ Schema位置：`#/definitions/mainData/properties/main`。
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 主数据槽，值引用已声明页面数据源。 |
 
+<a id="schema-232f646566696e6974696f6e732f63617465676f72794c6162656c73"></a>
+
+### `@categoryLabels`
+
+Schema位置：`#/definitions/categoryLabels`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | required=["mode"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f63617465676f72794c6162656c732f70726f706572746965732f6d6f6465"></a>
+
+### `@categoryLabels.mode`
+
+Schema位置：`#/definitions/categoryLabels/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["auto","all"] | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "auto" | 由当前组件既有自动规则选择。 |
+| "all" | 全部类别名称同时呈现，不自动隐藏或只展示前20个。 |
+
+<a id="schema-232f646566696e6974696f6e732f63617465676f72794c6162656c732f70726f706572746965732f726f74617465"></a>
+
+### `@categoryLabels.rotate`
+
+Schema位置：`#/definitions/categoryLabels/properties/rotate`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 本分支可选 | minimum=-90; maximum=90 | Schema未设默认；装配/运行时默认见语义说明 | 类别标签旋转角度，范围-90到90。 |
+
 <a id="schema-232f646566696e6974696f6e732f7461626c6544617461"></a>
 
 ### `@tableData`
@@ -300,19 +454,26 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - `field-binding-resolves`：字段绑定引用组件已声明的数据槽与数据源中存在的字段。反例：[field-binding-undeclared-slot](errors/field-binding-undeclared-slot.json)、[unknown-component-field](errors/unknown-component-field.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `field-binding-role`：字段绑定的角色符合组件属性要求。反例：[field-binding-role-mismatch](errors/field-binding-role-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `field-binding-match`：行匹配字段必须是 dimension，匹配值符合其类型。反例：[match-field-unknown](errors/match-field-unknown.json)、[match-field-not-dimension](errors/match-field-not-dimension.json)、[match-value-type-mismatch](errors/match-value-type-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `explicit-color-local`：显式颜色只绑定数字且不与旧染色声明冲突。反例：[color-rule-legacy-conflict](errors/color-rule-legacy-conflict.json)、[color-rule-nonnumeric](errors/color-rule-nonnumeric.json)、[color-rule-tone-conflict](errors/color-rule-tone-conflict.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `chart-value-label-exclusive`：常驻数值标签不与旧标签重复启用。反例：[value-label-bar-conflict](errors/value-label-bar-conflict.json)、[value-label-line-conflict](errors/value-label-line-conflict.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `presentation-capability`：颜色与图表标签声明由6.16引入。反例：[presentation-before-6.16](errors/presentation-before-6.16.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
 - [million-formats-page](examples/million-formats-page.json)：完整合法页面；查询仅为静态契约证据。
 - [compute-page](examples/compute-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
+- [explicit-presentation-page](examples/explicit-presentation-page.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/primitives.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/schema/presentation.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 
 - `#/definitions/fieldBinding/anyOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/sections/0/components/0/props/categoryField`。
 - `#/definitions/fieldBinding/anyOf/1`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
+- `#/definitions/colorRule/oneOf/0`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/colorRule`。
+- `#/definitions/colorRule/oneOf/1`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/colorRule`。
 - `#/definitions/fieldReference/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/2/props/actions/0/field`。
 - `#/definitions/fieldReference/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/1/props/actions/0/field`。

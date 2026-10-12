@@ -24,6 +24,7 @@
 
 | 工作 | 完成范围 | 查看结论或证据 |
 |---|---|---|
+| 显式数字颜色与图表标签 | 6.16声明、商务SDT迁移及本地验收完成；真实集成/发布未执行 | [批次结论](../archive/2026-10-12-explicit-presentation/README.md)、[验收](../evidence/2026-10-12-explicit-presentation/result.md) |
 | 早期创作架构/模块收敛 | 本仓实现及各批次本地检查；外部待办已转当前接入入口 | [批次结论](../archive/authoring-foundation-2026-09/README.md)、[部署就绪证据](../evidence/2026-09-23-authoring-deployment-readiness-report.md) |
 | 9235/9236执行整改 M0–M7 | 本地回归、真实模型分批复验及本地浏览器；内部采用/生产未执行 | [执行报告](../evidence/2026-09-29-authoring-mc-execution-report.md) |
 | 页面参数本仓实现 | 提取、实例、引用与正交化等历史实现；外部链路和旧页整批迁移单列待办 | [批次结论](../archive/page-parameters-2026-09/README.md)、[现行参数文档](../../PAGE-PARAMETERS.md) |

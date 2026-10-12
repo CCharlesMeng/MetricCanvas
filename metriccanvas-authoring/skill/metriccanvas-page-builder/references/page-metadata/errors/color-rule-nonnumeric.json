@@ -1,0 +1,34 @@
+{
+  "case": "color-rule-nonnumeric",
+  "invariant": "explicit-color-local",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "colorRule 只支持 number 或 money 字段",
+      "paths": [
+        "/sections/0/components/0/props/columns/0/colorRule"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                {
+                  "colorRule": {
+                    "mode": "fixed",
+                    "color": "red"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/color-rule-nonnumeric.json"
+}

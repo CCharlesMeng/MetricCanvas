@@ -1,0 +1,30 @@
+{
+  "case": "value-label-line-conflict",
+  "invariant": "chart-value-label-exclusive",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "showValueLabels 不得与 showPointLabels 同时启用",
+      "paths": [
+        "/sections/0/components/3/props/showValueLabels"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          "…",
+          {
+            "props": {
+              "showValueLabels": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/value-label-line-conflict.json"
+}

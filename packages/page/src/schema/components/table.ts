@@ -14,6 +14,7 @@ import {
 import { actionsZ, openDetailActionZ } from '../actions';
 import { navigationTargetZ, type NavigationTarget } from '../navigation';
 import { componentCatalogRegistry } from '../registry';
+import { colorRuleZ, type ColorRule } from '../presentation';
 
 /**
  * 表格列是递归形状（分组列的 children 复用 TableColumnNode），zod 的类型推导
@@ -49,6 +50,7 @@ export interface TableColumn {
   align?: 'left' | 'right';
   emphasis?: 'strong';
   visual?: 'plain' | 'rateBar' | 'signed';
+  colorRule?: ColorRule;
 }
 
 export interface TableColumnGroup {
@@ -89,7 +91,8 @@ const tableColumnZ: z.ZodType<TableColumn> = z
     navigate: navigationTargetZ.optional(),
     align: z.enum(['left', 'right']).optional(),
     emphasis: z.literal('strong').optional(),
-    visual: z.enum(['plain', 'rateBar', 'signed']).optional()
+    visual: z.enum(['plain', 'rateBar', 'signed']).optional(),
+    colorRule: colorRuleZ.optional()
   })
   .strict()
   .meta({ id: 'tableColumn' });

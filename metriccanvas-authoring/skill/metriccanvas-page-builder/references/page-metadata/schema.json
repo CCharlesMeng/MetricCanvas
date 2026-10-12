@@ -15,9 +15,10 @@
         "6.12",
         "6.13",
         "6.14",
-        "6.15"
+        "6.15",
+        "6.16"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16"
     },
     "id": {
       "type": "string",
@@ -3340,6 +3341,13 @@
                             "positive",
                             "danger"
                           ]
+                        },
+                        "colorRule": {
+                          "allOf": [
+                            {
+                              "$ref": "#/definitions/colorRule"
+                            }
+                          ]
                         }
                       },
                       "required": [
@@ -3411,6 +3419,13 @@
                             "neutral",
                             "positive",
                             "danger"
+                          ]
+                        },
+                        "colorRule": {
+                          "allOf": [
+                            {
+                              "$ref": "#/definitions/colorRule"
+                            }
                           ]
                         }
                       },
@@ -3575,6 +3590,60 @@
           "required": [
             "data",
             "field"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "colorRule": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "fixed"
+            },
+            "color": {
+              "type": "string",
+              "enum": [
+                "red",
+                "green"
+              ]
+            }
+          },
+          "required": [
+            "mode",
+            "color"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "sign"
+            },
+            "positive": {
+              "type": "string",
+              "enum": [
+                "red",
+                "green"
+              ]
+            },
+            "negative": {
+              "type": "string",
+              "enum": [
+                "red",
+                "green"
+              ]
+            }
+          },
+          "required": [
+            "mode",
+            "positive",
+            "negative"
           ],
           "additionalProperties": false
         }
@@ -3963,6 +4032,16 @@
             "dualAxis": {
               "type": "boolean"
             },
+            "categoryLabels": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/categoryLabels"
+                }
+              ]
+            },
+            "showValueLabels": {
+              "type": "boolean"
+            },
             "actions": {
               "allOf": [
                 {
@@ -4045,6 +4124,27 @@
       ],
       "additionalProperties": false
     },
+    "categoryLabels": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "all"
+          ]
+        },
+        "rotate": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "additionalProperties": false
+    },
     "lineChartComponent": {
       "type": "object",
       "properties": {
@@ -4094,6 +4194,16 @@
               "type": "boolean"
             },
             "showPointLabels": {
+              "type": "boolean"
+            },
+            "categoryLabels": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/categoryLabels"
+                }
+              ]
+            },
+            "showValueLabels": {
               "type": "boolean"
             },
             "hideYAxis": {
@@ -4759,6 +4869,13 @@
             "plain",
             "rateBar",
             "signed"
+          ]
+        },
+        "colorRule": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/colorRule"
+            }
           ]
         }
       },
@@ -6152,5 +6269,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.15"
+  "$id": "https://metriccanvas/page/v6.16"
 }

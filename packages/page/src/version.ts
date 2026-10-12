@@ -15,7 +15,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 15;
+const CURRENT_MINOR = 16;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -37,6 +37,17 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'explicit-value-colors': {
+    minor: 16, description: '数字展示位置显式声明固定颜色或正负颜色映射',
+    usedAt: document => componentPaths(document, component =>
+      (component.type === 'table' || component.type === 'metricCard') && containsPresentationKey(props(component), 'colorRule'))
+  },
+  'chart-label-presentation': {
+    minor: 16, description: '类别标签全量展示与旋转、常驻节点数值标签',
+    usedAt: document => componentPaths(document, component =>
+      (component.type === 'barChart' || component.type === 'lineChart') &&
+      (has(props(component), 'categoryLabels') || has(props(component), 'showValueLabels')))
+  },
   'filter-text-values': {
     minor: 15, description: '显式筛选文本引用及统一 period 日期格式',
     usedAt: document => [...new Set([
@@ -542,10 +553,16 @@ export const versionPolicy: VersionPolicy = {
  * 能力引入历史仍可查询，但不代表旧 6.x 文档可读。
  */
 export function supportedVersions(policy: VersionPolicy = versionPolicy): string[] {
-  const currentMajor = policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 ? [...new Set(['6.5', ...(policy.minor >= 12 ? ['6.11', ...(policy.minor >= 13 ? ['6.12', ...(policy.minor >= 14 ? ['6.13', ...(policy.minor >= 15 ? ['6.14'] : [])] : [])] : [])] : []), policy.current])] : [policy.current];
+  const currentMajor = policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 ? [...new Set(['6.5', ...(policy.minor >= 12 ? ['6.11', ...(policy.minor >= 13 ? ['6.12', ...(policy.minor >= 14 ? ['6.13', ...(policy.minor >= 15 ? ['6.14', ...(policy.minor >= 16 ? ['6.15'] : [])] : [])] : [])] : [])] : []), policy.current])] : [policy.current];
   return policy.major === PAGE_SCHEMA_MAJOR
     ? [...LEGACY_READABLE_PAGE_SCHEMA_VERSIONS, ...currentMajor]
     : currentMajor;
+}
+
+function containsPresentationKey(value: unknown, key: string): boolean {
+  if (Array.isArray(value)) return value.some(item => containsPresentationKey(item, key));
+  const object = record(value);
+  return object !== undefined && (has(object, key) || Object.values(object).some(item => containsPresentationKey(item, key)));
 }
 
 export function versionErrors(

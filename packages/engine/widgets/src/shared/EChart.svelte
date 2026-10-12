@@ -3,6 +3,7 @@
   import { STATIC_EXPORT_CONTEXT } from './export-context';
   import * as echarts from 'echarts';
   import type { EChartsOption } from 'echarts';
+  import { cartesianFrame } from './chart-presentation';
 
   /**
    * ECharts 宿主(包内私有):初始化/尺寸自适应/销毁与点击上抛。
@@ -10,6 +11,8 @@
    */
   interface Props {
     option: EChartsOption;
+    cartesian?: boolean;
+    expandForLabels?: boolean;
     /** replace 用于完整图表快照；merge 用于需要保留前后状态的数值过渡。 */
     updateMode?: 'replace' | 'merge';
     /**
@@ -27,6 +30,8 @@
 
   let {
     option,
+    cartesian = false,
+    expandForLabels = false,
     updateMode = 'replace',
     container = $bindable(),
     onitemclick
@@ -34,11 +39,14 @@
 
   const staticExport = getContext<boolean>(STATIC_EXPORT_CONTEXT) ?? false;
   let chart = $state<echarts.ECharts>();
+  let width = $state(0);
+  const frame = $derived(cartesian ? cartesianFrame(option, width, expandForLabels) : { option, minHeight: undefined });
 
   /* 容器在 DOM 生成时就绑定,早于 onMount 与任何 effect:调用方的色板
      因此在**第一次** setOption 之前就已可读,图表不会先按内置色画一遍再重画。 */
   onMount(() => {
     const el = container!;
+    width = el.clientWidth;
     const instance = echarts.init(el);
     chart = instance;
     if (onitemclick) {
@@ -51,6 +59,7 @@
       if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame);
       resizeFrame = requestAnimationFrame(() => {
         resizeFrame = undefined;
+        width = el.clientWidth;
         instance.resize();
       });
     });
@@ -73,14 +82,14 @@
     if (!chart || chart.isDisposed()) return;
     if (staticExport) {
       container!.dataset.exportChartReady = 'false';
-      const series = option.series === undefined ? undefined : (Array.isArray(option.series) ? option.series : [option.series]).map(series => ({...series,animation:false}));
-      chart.setOption({...option,animation:false,...(series?{series}:{})},{notMerge:true});
+      const series = frame.option.series === undefined ? undefined : (Array.isArray(frame.option.series) ? frame.option.series : [frame.option.series]).map(series => ({...series,animation:false}));
+      chart.setOption({...frame.option,animation:false,...(series?{series}:{})},{notMerge:true});
       container!.dataset.exportChartReady = 'true';
-    } else chart.setOption(option, { notMerge: updateMode === 'replace' });
+    } else chart.setOption(frame.option, { notMerge: updateMode === 'replace' });
   });
 </script>
 
-<div bind:this={container} class="echart" data-export-chart={staticExport ? "" : undefined}></div>
+<div bind:this={container} class="echart" style:min-height={frame.minHeight ? `${frame.minHeight}px` : undefined} data-export-chart={staticExport ? "" : undefined}></div>
 
 <style>
   .echart {

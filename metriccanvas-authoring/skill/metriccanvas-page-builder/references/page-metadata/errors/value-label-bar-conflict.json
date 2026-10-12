@@ -1,0 +1,29 @@
+{
+  "case": "value-label-bar-conflict",
+  "invariant": "chart-value-label-exclusive",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "showValueLabels 不得与旧柱状图标签同时启用",
+      "paths": [
+        "/sections/0/components/2/props/showValueLabels"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          {
+            "props": {
+              "showValueLabels": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/value-label-bar-conflict.json"
+}

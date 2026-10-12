@@ -106,9 +106,10 @@ describe('buildTableColumnLayout', () => {
 });
 
 describe('shouldWrapTableHeaders', () => {
-  it('只让高列数的 container 表格换行，保护存量紧凑报表的单行表头', () => {
+  it('container 表格允许完整表头换行，不受列数限制；content 保留原行为', () => {
     expect(shouldWrapTableHeaders('container', 8)).toBe(true);
-    expect(shouldWrapTableHeaders('container', 5)).toBe(false);
+    expect(shouldWrapTableHeaders('container', 5)).toBe(true);
+    expect(shouldWrapTableHeaders('container', 0)).toBe(false);
     expect(shouldWrapTableHeaders('content', 8)).toBe(false);
     expect(shouldWrapTableHeaders(undefined, 8)).toBe(false);
   });

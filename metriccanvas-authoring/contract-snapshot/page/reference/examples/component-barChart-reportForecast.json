@@ -1,71 +1,53 @@
 {
-  "schemaVersion": "6.5",
+  "schemaVersion": "6.16",
+  "id": "explicit-presentation-page",
   "layout": "report",
-  "id": "forecast-page",
   "dataSources": {
-    "monthly": {
+    "sample": {
       "fields": {
-        "month": {
-          "queryField": "month",
+        "name": {
           "type": "string",
           "role": "dimension"
         },
-        "actual": {
-          "queryField": "actual",
+        "delta": {
           "type": "number",
           "role": "measure",
+          "unit": "天",
+          "defaultFormat": "number-1",
           "nullable": true
         },
-        "forecast": {
-          "queryField": "forecast",
+        "count": {
           "type": "number",
           "role": "measure",
+          "unit": "次",
+          "defaultFormat": "number",
           "nullable": true
         }
       },
       "source": {
-        "type": "query",
-        "initial": {
-          "capturedAt": "2026-06-15T00:00:00Z",
-          "rows": [
-            {
-              "month": "5月",
-              "actual": 10,
-              "forecast": null
-            },
-            {
-              "month": "6月",
-              "actual": 12,
-              "forecast": null
-            },
-            {
-              "month": "7月",
-              "actual": null,
-              "forecast": 15
-            }
-          ]
-        },
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "month"
-                ],
-                "output_metrics": [
-                  "actual",
-                  "forecast"
-                ],
-                "filter": {
-                  "dims": [],
-                  "metrics": []
-                },
-                "order": {}
-              }
-            ]
+        "type": "inline",
+        "rows": [
+          {
+            "name": "甲代表处",
+            "delta": 2.5,
+            "count": 10
+          },
+          {
+            "name": "乙代表处",
+            "delta": -2,
+            "count": 0
+          },
+          {
+            "name": "丙代表处",
+            "delta": 0,
+            "count": 8
+          },
+          {
+            "name": "丁代表处",
+            "delta": null,
+            "count": null
           }
-        }
+        ]
       }
     }
   },
@@ -74,27 +56,27 @@
       "id": "main",
       "components": [
         {
-          "id": "trend",
+          "id": "sample-bar",
           "type": "barChart",
           "layout": {
-            "span": 8
+            "span": 12
           },
           "data": {
-            "main": "monthly"
+            "main": "sample"
           },
           "props": {
-            "variant": "reportForecast",
-            "categoryField": "month",
+            "categoryField": "name",
             "series": [
               {
-                "field": "actual",
-                "role": "actual"
-              },
-              {
-                "field": "forecast",
-                "role": "forecast"
+                "field": "delta"
               }
-            ]
+            ],
+            "categoryLabels": {
+              "mode": "all",
+              "rotate": 45
+            },
+            "showValueLabels": true,
+            "variant": "reportForecast"
           }
         }
       ]

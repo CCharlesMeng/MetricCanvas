@@ -9,7 +9,7 @@
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.15。结构真源为本册[schema.json](../schema.json)，SHA256 `61b985d2cb66bd50b9259e5f4fbc66f39cd42ec320b45b2a8f5f8506fad6887a`。字段表自动生成；可选不等于有默认值。
+页面协议 6.16。结构真源为本册[schema.json](../schema.json)，SHA256 `52c95c06cc28cf1dcfc3fe2b7bc6797fccc9f89920f8949a9c54568159f4c89d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -216,6 +216,36 @@ Schema位置：`#/definitions/lineChartComponent/properties/props/properties/sho
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 显示各数据点标签。 |
+
+<a id="schema-232f646566696e6974696f6e732f6c696e654368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f63617465676f72794c6162656c73"></a>
+
+### `@lineChartComponent.props.categoryLabels`
+
+Schema位置：`#/definitions/lineChartComponent/properties/props/properties/categoryLabels`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 类别轴名称展示策略；all保留完整类别，不抽样或默认窗口。 |
+
+<a id="schema-232f646566696e6974696f6e732f6c696e654368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f63617465676f72794c6162656c732f616c6c4f662f30"></a>
+
+### `@lineChartComponent.props.categoryLabels · allOf[0]`
+
+Schema位置：`#/definitions/lineChartComponent/properties/props/properties/categoryLabels/allOf/0`。目标：[#/definitions/categoryLabels](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f63617465676f72794c6162656c73)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/categoryLabels | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6c696e654368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f73686f7756616c75654c6162656c73"></a>
+
+### `@lineChartComponent.props.showValueLabels`
+
+Schema位置：`#/definitions/lineChartComponent/properties/props/properties/showValueLabels`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 为每个有效柱值或折线节点常驻显示格式化数字；与旧标签开关互斥。 |
 
 <a id="schema-232f646566696e6974696f6e732f6c696e654368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f686964655941786973"></a>
 

@@ -37,6 +37,7 @@
 <div
   class:forecast
   class:report-forecast={props.variant === 'reportForecast'}
+  class:expanded={props.showValueLabels === true || props.categoryLabels?.mode === 'all'}
   class="bar-chart"
   data-series-count={props.series.length}
   data-month-count={data.main.snapshot.rows.length}
@@ -53,6 +54,8 @@
   </span>
   <EChart
     {option}
+    cartesian
+    expandForLabels={props.showValueLabels === true || props.categoryLabels?.mode === 'all'}
     bind:container={chartContainer}
     onitemclick={onbarclick
       ? (dataIndex) => onbarclick({ row: data.main.snapshot.rows[dataIndex] })
@@ -83,6 +86,10 @@
     height: 270px;
     min-height: 270px;
     flex: none;
+  }
+  .report-forecast.expanded {
+    height: auto;
+    flex: 1;
   }
   .chart-semantics {
     position: absolute;

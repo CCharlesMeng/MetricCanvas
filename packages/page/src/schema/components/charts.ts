@@ -8,6 +8,7 @@ import {
 } from '../primitives';
 import { actionsZ } from '../actions';
 import { componentCatalogRegistry } from '../registry';
+import { categoryLabelsZ } from '../presentation';
 
 export const chartSeriesZ = z
   .object({
@@ -49,6 +50,8 @@ export const barChartComponentZ = z
         showStackTotalLabels: z.boolean().optional(),
         horizontal: z.boolean().optional(),
         dualAxis: z.boolean().optional(),
+        categoryLabels: categoryLabelsZ.optional(),
+        showValueLabels: z.boolean().optional(),
         actions: actionsZ.optional()
       })
       .strict()
@@ -87,6 +90,8 @@ export const lineChartComponentZ = z
         stacked: z.boolean().optional(),
         dualAxis: z.boolean().optional(),
         showPointLabels: z.boolean().optional(),
+        categoryLabels: categoryLabelsZ.optional(),
+        showValueLabels: z.boolean().optional(),
         hideYAxis: z.boolean().optional(),
         actions: actionsZ.optional()
       })

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.15",
-  "schemaSha256": "61b985d2cb66bd50b9259e5f4fbc66f39cd42ec320b45b2a8f5f8506fad6887a",
+  "schemaVersion": "6.16",
+  "schemaSha256": "52c95c06cc28cf1dcfc3fe2b7bc6797fccc9f89920f8949a9c54568159f4c89d",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -48,7 +48,7 @@
     },
     {
       "file": "packages/page/src/schema/components/charts.ts",
-      "sha256": "4650bcb29662e653b62784907c3675a9a094abf19a235d83a7836aab926051ea"
+      "sha256": "33a60e87da0adade09a40d2fc7e205099a522f149d2f88f080bf0ab6ce7fa1c8"
     },
     {
       "file": "packages/page/src/schema/components/composite-card.ts",
@@ -72,7 +72,7 @@
     },
     {
       "file": "packages/page/src/schema/components/metric-card.ts",
-      "sha256": "c1f5ab7bdc1fc3f23f976a5d4dbf189b50cb631a6c97d3530165af5b844b5b3d"
+      "sha256": "1042d255be12987bbde6c9a8f551c1e53ef18df2126409662bea561b2af8a891"
     },
     {
       "file": "packages/page/src/schema/components/ranking-card.ts",
@@ -92,7 +92,7 @@
     },
     {
       "file": "packages/page/src/schema/components/table.ts",
-      "sha256": "a19afcee7a8fb020c4f14e825f856ac69c88daa3361830e728cfa80f2453f3b3"
+      "sha256": "f1c4cfbef9b44a1ff93308bcdeab3e6ccd3cd9056710663702e9642e5d197124"
     },
     {
       "file": "packages/page/src/schema/components/text.ts",
@@ -115,6 +115,10 @@
       "sha256": "703eff703756da0bf9814522eb68a7a75871b795aeb8709d916c8b64c0ac50bb"
     },
     {
+      "file": "packages/page/src/schema/presentation.ts",
+      "sha256": "8ccee681f800ea4d09da97d8cba8f7d9862ae74cc1537592d4e613ae97d8b5c9"
+    },
+    {
       "file": "packages/page/src/schema/primitives.ts",
       "sha256": "493f9aaae1703e05ca01f5b6581cd2a21a2d54f860a2d61316b985b0b478824d"
     },
@@ -128,11 +132,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "58fd5bd6d25989c8b58a6ef32549bd7433db57abb29cf729751cedcb16fcc75d"
+      "sha256": "b99b211f991f03615c89446055e5e8e7f7c60d1a228d04fcf4cbe2e78bfdce2a"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "3db1aea23c5f03d88fac2226eaa285137c3318b0c8062e1107c9e0c7825e6249"
+      "sha256": "2891f1d1e0e8ee4064c92deb250fbd9033acdc35c635649efef120e253df45b9"
     }
   ],
   "modules": {
@@ -413,7 +417,9 @@
         "mainData",
         "tableData",
         "fieldBinding",
-        "fieldReference"
+        "fieldReference",
+        "colorRule",
+        "categoryLabels"
       ],
       "keywords": [
         "field-bindings-and-formats",
@@ -422,18 +428,23 @@
       "examples": [
         "million-formats-page",
         "compute-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "explicit-presentation-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/primitives.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/page/src/schema/presentation.ts"
       ],
       "rules": [
         "data-slot-known-source",
         "field-binding-resolves",
         "field-binding-role",
-        "field-binding-match"
+        "field-binding-match",
+        "explicit-color-local",
+        "chart-value-label-exclusive",
+        "presentation-capability"
       ]
     },
     "actions-and-navigation.md": {
@@ -1085,7 +1096,8 @@
         "6.12",
         "6.13",
         "6.14",
-        "6.15"
+        "6.15",
+        "6.16"
       ]
     },
     {
@@ -5435,6 +5447,81 @@
       ]
     },
     {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/changes/items/properties/colorRule",
+      "path": "@metricCardComponent.props.rows[].changes[].colorRule",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/changes/items/properties/colorRule/allOf/0",
+      "path": "@metricCardComponent.props.rows[].changes[].colorRule · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/metricCard.md",
+      "ref": "#/definitions/colorRule"
+    },
+    {
+      "pointer": "#/definitions/colorRule",
+      "path": "@colorRule",
+      "required": "类型/分支",
+      "module": "field-bindings-and-formats.md"
+    },
+    {
+      "pointer": "#/definitions/colorRule/oneOf/0",
+      "path": "@colorRule · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "field-bindings-and-formats.md"
+    },
+    {
+      "pointer": "#/definitions/colorRule/oneOf/0/properties/mode",
+      "path": "@colorRule · oneOf[0].mode",
+      "required": "本分支必填",
+      "module": "field-bindings-and-formats.md",
+      "const": "fixed"
+    },
+    {
+      "pointer": "#/definitions/colorRule/oneOf/0/properties/color",
+      "path": "@colorRule · oneOf[0].color",
+      "required": "本分支必填",
+      "module": "field-bindings-and-formats.md",
+      "enum": [
+        "red",
+        "green"
+      ]
+    },
+    {
+      "pointer": "#/definitions/colorRule/oneOf/1",
+      "path": "@colorRule · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "field-bindings-and-formats.md"
+    },
+    {
+      "pointer": "#/definitions/colorRule/oneOf/1/properties/mode",
+      "path": "@colorRule · oneOf[1].mode",
+      "required": "本分支必填",
+      "module": "field-bindings-and-formats.md",
+      "const": "sign"
+    },
+    {
+      "pointer": "#/definitions/colorRule/oneOf/1/properties/positive",
+      "path": "@colorRule · oneOf[1].positive",
+      "required": "本分支必填",
+      "module": "field-bindings-and-formats.md",
+      "enum": [
+        "red",
+        "green"
+      ]
+    },
+    {
+      "pointer": "#/definitions/colorRule/oneOf/1/properties/negative",
+      "path": "@colorRule · oneOf[1].negative",
+      "required": "本分支必填",
+      "module": "field-bindings-and-formats.md",
+      "enum": [
+        "red",
+        "green"
+      ]
+    },
+    {
       "pointer": "#/definitions/metricCardComponent/properties/props/properties/secondaryRows",
       "path": "@metricCardComponent.props.secondaryRows",
       "required": "本分支可选",
@@ -5542,6 +5629,19 @@
         "positive",
         "danger"
       ]
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/changes/items/properties/colorRule",
+      "path": "@metricCardComponent.props.secondaryRows[].changes[].colorRule",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/changes/items/properties/colorRule/allOf/0",
+      "path": "@metricCardComponent.props.secondaryRows[].changes[].colorRule · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/metricCard.md",
+      "ref": "#/definitions/colorRule"
     },
     {
       "pointer": "#/definitions/metricCardComponent/properties/props/properties/panelLayout",
@@ -6184,6 +6284,47 @@
       "module": "components/barChart.md"
     },
     {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/categoryLabels",
+      "path": "@barChartComponent.props.categoryLabels",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/categoryLabels/allOf/0",
+      "path": "@barChartComponent.props.categoryLabels · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md",
+      "ref": "#/definitions/categoryLabels"
+    },
+    {
+      "pointer": "#/definitions/categoryLabels",
+      "path": "@categoryLabels",
+      "required": "类型/分支",
+      "module": "field-bindings-and-formats.md"
+    },
+    {
+      "pointer": "#/definitions/categoryLabels/properties/mode",
+      "path": "@categoryLabels.mode",
+      "required": "本分支必填",
+      "module": "field-bindings-and-formats.md",
+      "enum": [
+        "auto",
+        "all"
+      ]
+    },
+    {
+      "pointer": "#/definitions/categoryLabels/properties/rotate",
+      "path": "@categoryLabels.rotate",
+      "required": "本分支可选",
+      "module": "field-bindings-and-formats.md"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/showValueLabels",
+      "path": "@barChartComponent.props.showValueLabels",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
       "pointer": "#/definitions/barChartComponent/properties/props/properties/actions",
       "path": "@barChartComponent.props.actions",
       "required": "本分支可选",
@@ -6329,6 +6470,25 @@
     {
       "pointer": "#/definitions/lineChartComponent/properties/props/properties/showPointLabels",
       "path": "@lineChartComponent.props.showPointLabels",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/lineChartComponent/properties/props/properties/categoryLabels",
+      "path": "@lineChartComponent.props.categoryLabels",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/lineChartComponent/properties/props/properties/categoryLabels/allOf/0",
+      "path": "@lineChartComponent.props.categoryLabels · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md",
+      "ref": "#/definitions/categoryLabels"
+    },
+    {
+      "pointer": "#/definitions/lineChartComponent/properties/props/properties/showValueLabels",
+      "path": "@lineChartComponent.props.showValueLabels",
       "required": "本分支可选",
       "module": "components/lineChart.md"
     },
@@ -7098,6 +7258,19 @@
         "rateBar",
         "signed"
       ]
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/colorRule",
+      "path": "@tableColumn.colorRule",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/colorRule/allOf/0",
+      "path": "@tableColumn.colorRule · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/colorRule"
     },
     {
       "pointer": "#/definitions/tableColumnNode/anyOf/1",
@@ -9400,14 +9573,14 @@
       "type": "barChart",
       "file": "examples/component-barChart.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/forecast-page.json"
+      "source": "page/conformance/valid/explicit-presentation-page.json"
     },
     {
       "type": "barChart",
       "variant": "reportForecast",
       "file": "examples/component-barChart-reportForecast.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/forecast-page.json"
+      "source": "page/conformance/valid/explicit-presentation-page.json"
     },
     {
       "type": "lineChart",
@@ -9959,7 +10132,7 @@
       "schemaPointer": "#/definitions/scalar/anyOf/0",
       "module": "fields.md",
       "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/monthly/source/initial/rows/0/month"
+      "pointer": "#/dataSources/sample/source/rows/0/name"
     },
     {
       "schemaPointer": "#/definitions/scalar/anyOf/1",
@@ -9977,7 +10150,7 @@
       "schemaPointer": "#/definitions/scalar/anyOf/3",
       "module": "fields.md",
       "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/monthly/source/initial/rows/0/forecast"
+      "pointer": "#/dataSources/sample/source/rows/3/delta"
     },
     {
       "schemaPointer": "#/definitions/fieldValue/anyOf/1",
@@ -9988,26 +10161,26 @@
     {
       "schemaPointer": "#/definitions/dataSource/anyOf/1",
       "module": "data-sources.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/monthly"
+      "file": "examples/component-lineChart.json",
+      "pointer": "#/dataSources/live-sales"
     },
     {
       "schemaPointer": "#/definitions/queryDataSource/properties/fields/anyOf/0",
       "module": "data-sources.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/monthly/fields"
+      "file": "examples/component-lineChart.json",
+      "pointer": "#/dataSources/live-sales/fields"
     },
     {
       "schemaPointer": "#/definitions/queryField/anyOf/0",
       "module": "fields.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/monthly/fields/month"
+      "file": "examples/component-lineChart.json",
+      "pointer": "#/dataSources/live-sales/fields/stat-date"
     },
     {
       "schemaPointer": "#/definitions/queryScalarField/oneOf/0",
       "module": "fields.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/monthly/fields/month"
+      "file": "examples/component-lineChart.json",
+      "pointer": "#/dataSources/live-sales/fields/stat-date"
     },
     {
       "schemaPointer": "#/definitions/queryScalarField/oneOf/1",
@@ -10066,8 +10239,8 @@
     {
       "schemaPointer": "#/definitions/pageQuery/oneOf/0",
       "module": "queries-and-bindings.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/monthly/source/query"
+      "file": "examples/component-lineChart.json",
+      "pointer": "#/dataSources/live-sales/source/query"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/0",
@@ -10268,6 +10441,18 @@
       "module": "field-bindings-and-formats.md",
       "file": "examples/component-metricCard.json",
       "pointer": "#/sections/0/components/0/props/rows/0/valueField"
+    },
+    {
+      "schemaPointer": "#/definitions/colorRule/oneOf/0",
+      "module": "field-bindings-and-formats.md",
+      "file": "examples/explicit-presentation-page.json",
+      "pointer": "#/sections/0/components/0/props/columns/2/colorRule"
+    },
+    {
+      "schemaPointer": "#/definitions/colorRule/oneOf/1",
+      "module": "field-bindings-and-formats.md",
+      "file": "examples/explicit-presentation-page.json",
+      "pointer": "#/sections/0/components/0/props/columns/1/colorRule"
     },
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/0",

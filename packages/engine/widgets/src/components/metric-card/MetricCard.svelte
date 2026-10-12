@@ -3,6 +3,7 @@
   import type { MetricDataSlots } from '../../shared/component-data';
   import { fieldRow, fieldValue, resolveField } from '../../shared/component-data';
   import { formatValue, valuePolarity } from '../../shared/value-format';
+  import { changeValueColor, valueColorStyle } from '../../shared/value-color';
   import ProgressRing from './ProgressRing.svelte';
 
   interface Props {
@@ -39,16 +40,6 @@
     if (row) onlink?.(row, event);
   }
 
-  function toneClass(
-    tone: 'auto' | 'neutral' | 'positive' | 'danger' | undefined,
-    raw: ReturnType<typeof fieldValue>
-  ): 'positive' | 'negative' | '' {
-    if (tone === 'positive') return 'positive';
-    if (tone === 'danger') return 'negative';
-    if (tone === 'neutral') return '';
-    const polarity = valuePolarity(raw);
-    return polarity === 'positive' ? 'positive' : polarity === 'negative' ? 'negative' : '';
-  }
 </script>
 
 {#snippet metricValue(row: MetricCardProps['rows'][number])}
@@ -87,17 +78,18 @@
           <div class="changes">
             {#each row.changes as change, changeIndex (`${change.label}:${changeIndex}`)}
               {@const raw = fieldValue(change.field, data)}
-              {@const tone = toneClass(change.tone, raw)}
-              <span class:positive={tone === 'positive'} class:negative={tone === 'negative'} class="change">
+              {@const color = changeValueColor(raw, change)}
+              {@const direction = change.colorRule ? valuePolarity(raw) : color === 'green' ? 'positive' : color === 'red' ? 'negative' : 'neutral'}
+              <span class:positive={color === 'green'} class:negative={color === 'red'} class:explicit-color={change.colorRule !== undefined} style:color={change.colorRule ? valueColorStyle(color) : undefined} class="change">
                 <span class="change-label">{change.label}</span>
                 <span class="change-value">
-                  {#if props.showTrendArrows && tone}
+                  {#if props.showTrendArrows && direction !== 'neutral'}
                     <span
-                      class:up={tone === 'positive'}
-                      class:down={tone === 'negative'}
+                      class:up={direction === 'positive'}
+                      class:down={direction === 'negative'}
                       class="trend-arrow"
                       aria-hidden="true"
-                    >{tone === 'positive' ? '↑' : '↓'}</span>
+                    >{direction === 'positive' ? '↑' : '↓'}</span>
                   {/if}
                   <span>{changeText(change.field, change.tone)}{#if change.unit}<span class="change-unit">{change.unit}</span>{/if}</span>
                 </span>
@@ -431,6 +423,9 @@
   .compact-strip .change.negative .change-value {
     color: #f23030;
     background: rgb(242 48 48 / 0.08);
+  }
+  .compact-strip .change.explicit-color .change-value {
+    color: inherit;
   }
   .metric-panel .placeholder-values .row-value,
   .metric-panel .placeholder-values .change {

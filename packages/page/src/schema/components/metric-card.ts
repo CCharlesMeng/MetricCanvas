@@ -9,13 +9,15 @@ import {
 } from '../primitives';
 import { actionsZ } from '../actions';
 import { componentCatalogRegistry } from '../registry';
+import { colorRuleZ } from '../presentation';
 
 const metricCardChangeZ = z
   .object({
     label: nonEmptyTextValueZ,
     field: fieldBindingZ,
     unit: textValueZ.optional(),
-    tone: z.enum(['auto', 'neutral', 'positive', 'danger']).optional()
+    tone: z.enum(['auto', 'neutral', 'positive', 'danger']).optional(),
+    colorRule: colorRuleZ.optional()
   })
   .strict();
 

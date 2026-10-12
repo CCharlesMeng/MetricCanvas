@@ -35,7 +35,8 @@
     TableViewState
   } from './view-state';
   import { shouldShowTablePaginationControls } from './view-state';
-  import { finiteNumber, formatValue, valuePolarity } from '../../shared/value-format';
+  import { finiteNumber, formatValue } from '../../shared/value-format';
+  import { tableValueColor, valueColorStyle } from '../../shared/value-color';
   import { readPixelLength } from '../../shared/inherited-style';
 
   /**
@@ -92,6 +93,11 @@
   const mergedColumnField = $derived(props.mergeBy);
   const columnWidthTotal = $derived(
     leaves.reduce((total, column) => total + (column.width ?? 120), 0)
+  );
+  // Preserve proportional columns, with room for a short number plus cell padding.
+  // Below this width the table owns horizontal scrolling rather than crushing text.
+  const fitMinWidth = $derived(
+    leaves.length ? columnWidthTotal * 52 / Math.min(...leaves.map(column => column.width ?? 120)) : 0
   );
 
   function columnField(column: TableColumn): string {
@@ -291,6 +297,7 @@
   data-table-title={props.title}
   style:--table-header-row-height={`${headerRowHeight}px`}
   style:--table-content-min-width={`${columnWidthTotal}px`}
+  style:--table-fit-min-width={`${fitMinWidth}px`}
 >
   {#if props.title || props.subtitle}
     <div class="table-heading">
@@ -417,7 +424,7 @@
               {#if columnField(column) !== mergedColumnField || rowSpans[i] !== 0}
                 {@const resolved = resolveField(column.field, data)}
                 {@const rawValue = alignedFieldValue(column.field, data, row)}
-                {@const polarity = valuePolarity(rawValue)}
+                {@const color = tableValueColor(rawValue, column)}
                 {@const semanticPresentation = semanticHtmlFieldPresentation(
                   resolved,
                   rawValue,
@@ -441,11 +448,13 @@
                   class:linkable={Boolean(column.link && interactive && !column.selection)}
                   class:selected={isSelected(i, column)}
                   class:danger={isDanger(column, rawValue)}
-                  class:negative={semanticPresentation === undefined && column.visual === 'signed' && polarity === 'negative'}
-                  class:positive={semanticPresentation === undefined && column.visual === 'signed' && polarity === 'positive'}
+                  class:negative={semanticPresentation === undefined && color === 'red'}
+                  class:positive={semanticPresentation === undefined && color === 'green'}
+                  class:explicit-color={column.colorRule !== undefined}
                   data-column-field={columnField(column)}
                   rowspan={columnField(column) === mergedColumnField ? rowSpans[i] : undefined}
                   style={cellStyle(column)}
+                  style:color={column.colorRule ? valueColorStyle(color) : undefined}
                 >
                   {#if column.selection && interactive}
                     <button
@@ -861,6 +870,11 @@
     outline-offset: 1px;
     border-radius: 4px;
   }
+  tbody td.explicit-color .selectable-cell,
+  tbody td.explicit-color .link-cell,
+  tbody td.explicit-color .cell-primary-value {
+    color: inherit;
+  }
   td.linkable {
     cursor: pointer;
   }
@@ -1270,10 +1284,11 @@
     color: #71717a;
   }
   .fit-container .scroll {
-    overflow-x: hidden;
+    overflow-x: auto;
   }
   .fit-container table {
     table-layout: fixed;
+    min-width: var(--table-fit-min-width);
   }
   .fit-container thead th {
     min-width: 0;

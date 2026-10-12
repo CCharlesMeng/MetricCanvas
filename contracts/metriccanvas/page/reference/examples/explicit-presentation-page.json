@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "6.16",
+  "id": "explicit-presentation-page",
+  "layout": "report",
+  "dataSources": {
+    "sample": {
+      "fields": {
+        "name": { "type": "string", "role": "dimension" },
+        "delta": { "type": "number", "role": "measure", "unit": "天", "defaultFormat": "number-1", "nullable": true },
+        "count": { "type": "number", "role": "measure", "unit": "次", "defaultFormat": "number", "nullable": true }
+      },
+      "source": { "type": "inline", "rows": [
+        { "name": "甲代表处", "delta": 2.5, "count": 10 },
+        { "name": "乙代表处", "delta": -2, "count": 0 },
+        { "name": "丙代表处", "delta": 0, "count": 8 },
+        { "name": "丁代表处", "delta": null, "count": null }
+      ] }
+    }
+  },
+  "sections": [{ "id": "sample", "components": [
+    { "id": "sample-table", "type": "table", "layout": { "span": 12 }, "data": { "main": "sample" }, "props": {
+      "columns": [
+        { "field": "name" },
+        { "field": "delta", "colorRule": { "mode": "sign", "positive": "red", "negative": "green" } },
+        { "field": "count", "colorRule": { "mode": "fixed", "color": "green" } }
+      ]
+    } },
+    { "id": "sample-card", "type": "metricCard", "layout": { "span": 12 }, "data": { "main": "sample" }, "props": {
+      "showTrendArrows": true, "rows": [{ "label": "时长", "valueField": "delta", "changes": [
+        { "label": "变化", "field": "delta", "colorRule": { "mode": "sign", "positive": "red", "negative": "green" } }
+      ] }]
+    } },
+    { "id": "sample-bar", "type": "barChart", "layout": { "span": 12 }, "data": { "main": "sample" }, "props": {
+      "categoryField": "name", "series": [{ "field": "delta" }], "categoryLabels": { "mode": "all", "rotate": 45 }, "showValueLabels": true
+    } },
+    { "id": "sample-line", "type": "lineChart", "layout": { "span": 12 }, "data": { "main": "sample" }, "props": {
+      "xField": "name", "series": [{ "field": "delta" }], "categoryLabels": { "mode": "all", "rotate": 45 }, "showValueLabels": true
+    } },
+    { "id": "sample-mixed", "type": "barChart", "layout": { "span": 12 }, "data": { "main": "sample" }, "props": {
+      "categoryField": "name", "dualAxis": true, "series": [
+        { "field": "delta", "kind": "bar", "axis": "primary" },
+        { "field": "count", "kind": "line", "axis": "secondary" }
+      ], "categoryLabels": { "mode": "all", "rotate": 45 }, "showValueLabels": true
+    } }
+  ] }]
+}

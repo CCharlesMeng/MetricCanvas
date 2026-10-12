@@ -33,6 +33,7 @@ export { fileNameErrors } from './file-name';
 export { navigationErrors, isNavigationHref, filterURLKeys, urlInputErrors } from './navigate';
 export type { NavigationTarget, NavigationBinding } from './schema/navigation';
 export * from './version';
+export type { ColorRule, CategoryLabels } from './schema/presentation';
 export {
   flattenPageComponents,
   walkComponents,

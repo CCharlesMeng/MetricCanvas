@@ -1186,6 +1186,13 @@ function componentErrors(
   filterIds: ReadonlySet<string>
 ): TypedError[] {
   const errors: TypedError[] = [];
+  const checkColor = (binding: FieldBinding, path: string, legacy: boolean) => {
+    if (legacy) errors.push(schemaError(`${path}/colorRule`, 'colorRule 不得与旧染色声明同时使用'));
+    const resolved = resolveBinding(page, component, binding);
+    if (!('error' in resolved) && !['number', 'money'].includes(resolved.field.type)) {
+      errors.push(schemaError(`${path}/colorRule`, 'colorRule 只支持 number 或 money 字段'));
+    }
+  };
   for (const [slot, sourceId] of Object.entries(component.data ?? {})) {
     if (!Object.hasOwn(page.dataSources, sourceId)) {
       errors.push(
@@ -1353,13 +1360,15 @@ function componentErrors(
       for (const rowsKey of ['rows', 'secondaryRows'] as const) {
         (component.props[rowsKey] ?? []).forEach((row, rowIndex) => {
           check(row.valueField, `${componentPath}/props/${rowsKey}/${rowIndex}/valueField`, 'measure');
-          (row.changes ?? []).forEach((change, changeIndex) =>
+          (row.changes ?? []).forEach((change, changeIndex) => {
             check(
               change.field,
               `${componentPath}/props/${rowsKey}/${rowIndex}/changes/${changeIndex}/field`,
               'measure'
-            )
-          );
+            );
+            if (change.colorRule) checkColor(change.field,
+              `${componentPath}/props/${rowsKey}/${rowIndex}/changes/${changeIndex}`, change.tone !== undefined);
+          });
         });
       }
       if (component.props.progress) {
@@ -1372,6 +1381,7 @@ function componentErrors(
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
     case 'barChart':
+      if (component.props.showValueLabels && (component.props.showSegmentLabels || component.props.showStackTotalLabels)) errors.push(schemaError(`${componentPath}/props/showValueLabels`, 'showValueLabels 不得与旧柱状图标签同时启用'));
       check(component.props.categoryField, `${componentPath}/props/categoryField`, 'dimension');
       component.props.series.forEach((series, index) =>
         check(series.field, `${componentPath}/props/series/${index}/field`, 'measure')
@@ -1421,6 +1431,7 @@ function componentErrors(
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
     case 'lineChart':
+      if (component.props.showValueLabels && component.props.showPointLabels) errors.push(schemaError(`${componentPath}/props/showValueLabels`, 'showValueLabels 不得与 showPointLabels 同时启用'));
       check(component.props.xField, `${componentPath}/props/xField`, 'dimension');
       component.props.series.forEach((series, index) =>
         check(series.field, `${componentPath}/props/series/${index}/field`, 'measure')
@@ -1437,6 +1448,8 @@ function componentErrors(
         const visit = (columns: TableColumnNode[], path: string) => columns.forEach((column, index) => {
           if (column.kind === 'group') visit(column.children, `${path}/${index}/children`);
           else {
+            if (column.colorRule) checkColor(column.field, `${path}/${index}`,
+              column.visual === 'signed' || column.dangerValues !== undefined);
             if ((column.openDetail || column.navigate) && (!column.link || column.selection || (column.openDetail && column.navigate))) errors.push(schemaError(`${path}/${index}`, '列动作要求 link，且 navigate/openDetail/selection 不得冲突'));
             if (!column.openDetail) return;
             if (!column.link || column.selection) errors.push(schemaError(`${path}/${index}/openDetail`, '列详情要求 link 且不得与 selection 同用'));

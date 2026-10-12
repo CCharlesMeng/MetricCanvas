@@ -11,7 +11,7 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.15。结构真源为本册[schema.json](schema.json)，SHA256 `61b985d2cb66bd50b9259e5f4fbc66f39cd42ec320b45b2a8f5f8506fad6887a`。字段表自动生成；可选不等于有默认值。
+页面协议 6.16。结构真源为本册[schema.json](schema.json)，SHA256 `52c95c06cc28cf1dcfc3fe2b7bc6797fccc9f89920f8949a9c54568159f4c89d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -384,6 +384,6 @@ Schema位置：`#/definitions/querySource/properties/query`。目标：[#/defini
 ## 联合分支见证（生成）
 
 - `#/definitions/dataSource/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/dataSources/fixed-target`。
-- `#/definitions/dataSource/anyOf/1`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/monthly`。
-- `#/definitions/queryDataSource/properties/fields/anyOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/monthly/fields`。
+- `#/definitions/dataSource/anyOf/1`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/dataSources/live-sales`。
+- `#/definitions/queryDataSource/properties/fields/anyOf/0`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/dataSources/live-sales/fields`。
 - `#/definitions/queryDataSource/properties/fields/anyOf/1`：[合法完整页面](examples/grouped-fields-page.json)，JSON Pointer `#/dataSources/grouped/fields`。

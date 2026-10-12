@@ -9,7 +9,7 @@ columns区分普通字段列和kind:group递归列，分组列children保持层�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.15。结构真源为本册[schema.json](../schema.json)，SHA256 `61b985d2cb66bd50b9259e5f4fbc66f39cd42ec320b45b2a8f5f8506fad6887a`。字段表自动生成；可选不等于有默认值。
+页面协议 6.16。结构真源为本册[schema.json](../schema.json)，SHA256 `52c95c06cc28cf1dcfc3fe2b7bc6797fccc9f89920f8949a9c54568159f4c89d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1018,6 +1018,26 @@ Schema位置：`#/definitions/tableColumn/properties/visual`。
 | "plain" | 普通呈现；分区为无额外容器，文本/单元格按各模块普通样式解释。 |
 | "rateBar" | 在单元格内用比例条呈现。 |
 | "signed" | 显示正负语义的数值呈现。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f636f6c6f7252756c65"></a>
+
+### `@tableColumn.colorRule`
+
+Schema位置：`#/definitions/tableColumn/properties/colorRule`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 数字展示位置的显式颜色规则，只支持number/money；与旧染色声明互斥。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f636f6c6f7252756c652f616c6c4f662f30"></a>
+
+### `@tableColumn.colorRule · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/colorRule/allOf/0`。目标：[#/definitions/colorRule](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f636f6c6f7252756c65)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/colorRule | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e4e6f64652f616e794f662f31"></a>
 

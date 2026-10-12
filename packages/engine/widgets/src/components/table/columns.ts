@@ -28,13 +28,13 @@ export interface TableColumnLayout {
 }
 
 /**
- * 容器适配表格只有在高列数时才允许表头换行；常规报表继续保持单行表头。
+ * 显式容器适配时，表头可换行；列少但标题长的窄容器也不能截断。
  */
 export function shouldWrapTableHeaders(
   fit: 'content' | 'container' | undefined,
   columnCount: number
 ): boolean {
-  return fit === 'container' && columnCount >= 8;
+  return fit === 'container' && columnCount > 0;
 }
 
 /**

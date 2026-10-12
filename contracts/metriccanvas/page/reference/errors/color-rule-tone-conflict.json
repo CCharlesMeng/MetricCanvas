@@ -1,0 +1,40 @@
+{
+  "case": "color-rule-tone-conflict",
+  "invariant": "explicit-color-local",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "colorRule 不得与旧染色声明同时使用",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/changes/0/colorRule"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "rows": [
+                {
+                  "changes": [
+                    {
+                      "colorRule": {
+                        "mode": "sign",
+                        "positive": "red",
+                        "negative": "green"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/color-rule-tone-conflict.json"
+}

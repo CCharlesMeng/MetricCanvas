@@ -84,6 +84,10 @@ def _parameter_capability_issues(value: Mapping[str, Any]) -> list[PageContractI
     if isinstance(value.get("params"), Mapping) and not value["params"]:
         return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs cannot be empty")]
     minor = int(value["schemaVersion"].split(".")[1])
+    from .presentation import capability_paths as presentation_paths
+    paths = presentation_paths(value, minor)
+    if paths:
+        return [PageContractIssue("SCHEMA_ERROR", path, "explicit colors and chart labels require 6.16") for path in paths]
     if minor < 15:
         paths = _filter_text_capability_paths(value)
         if paths:
@@ -1220,6 +1224,8 @@ def _component_issues(
     props = component.get("props")
     if not isinstance(props, Mapping):
         return issues
+    from .presentation import component_issues as presentation_issues
+    issues.extend(PageContractIssue(*issue) for issue in presentation_issues(component, path, data_sources, _resolve_binding))
     component_type = component.get("type")
     filters = page.get("filters", [])
     filters = filters if isinstance(filters, list) else []

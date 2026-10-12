@@ -5,6 +5,7 @@ import { resolveField } from '../../shared/component-data';
 import { finiteNumber, formatValue, wanUnits } from '../../shared/value-format';
 import { CHART_PALETTE, GRID, categoryWindow, dualOrSingleAxis, formatterValue } from '../../shared/chart-option';
 import { serialColor, type ColorList } from '../../shared/chart-palette';
+import { categoryLabelOption, pointValueLabel, valueLabelLayout } from '../../shared/chart-presentation';
 
 const REPORT_COLORS = ['#1476ff', '#0cb8b2'] as const;
 const REPORT_FORECAST_COLORS = [
@@ -32,7 +33,7 @@ export function barOption(
   const categories = rows.map((row) =>
     formatValue(row[category.field], category.format, category.missingText)
   );
-  const categoryAxis = { type: 'category' as const, data: categories };
+  const categoryAxis = { type: 'category' as const, data: categories, ...categoryLabelOption(props.categoryLabels, props.showValueLabels) };
   const baseValueAxis = dualOrSingleAxis(props.dualAxis, props.series.length, false,
     props.series.map(series => resolveField(series.field, data).format));
   const reportValueFormat = props.series[0]
@@ -74,10 +75,10 @@ export function barOption(
   });
   return {
     ...(palette ? { color: [...palette] } : {}),
-    ...categoryWindow(rows.length, props.horizontal),
+    ...(props.categoryLabels?.mode === 'all' ? {} : categoryWindow(rows.length, props.horizontal)),
     grid: {
       ...(reportForecast ? { top: 44, right: 0, bottom: 20, left: 0, containLabel: true } : GRID),
-      ...(rows.length > 20 ? (props.horizontal ? { right: 40 } : { bottom: 36 }) : {})
+      ...(rows.length > 20 && props.categoryLabels?.mode !== 'all' ? (props.horizontal ? { right: 40 } : { bottom: 36 }) : {})
     },
     tooltip: { trigger: 'axis', confine: true },
     ...(props.series.length > 1
@@ -133,7 +134,9 @@ export function barOption(
       };
       const values = rows.map((row) => finiteNumber(row[field.field]));
       const segmentLabelFormatter = valueLabelFormatter(field.format);
-      const displayedValues = props.showSegmentLabels
+      const displayedValues = props.showValueLabels ? values.map(value => value === undefined ? null : {
+        value, label: { position: props.horizontal ? (value < 0 ? 'left' as const : 'right' as const) : (value < 0 ? 'bottom' as const : 'top' as const) }
+      }) : props.showSegmentLabels
         ? values.map((value) => {
             if (value === undefined) return undefined;
             return isFloatingLabel(segmentLabelFormatter({ value }))
@@ -156,6 +159,7 @@ export function barOption(
         ...(reportForecast ? { barWidth: 40 } : {}),
         ...(props.dualAxis && originalIndex > 0 ? { yAxisIndex: 1 } : {}),
         ...(Object.keys(itemStyle).length > 0 ? { itemStyle } : {}),
+        ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText), labelLayout: valueLabelLayout(values, false, props.horizontal) } : {}),
         ...(props.showSegmentLabels
           ? {
               // 短金额保持柱内居中；长金额才横向避让，避免在画布边缘被截断。
@@ -281,7 +285,7 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
   return {
     color: [...(palette ?? CHART_PALETTE)], grid: GRID,
     legend: { top: 0, left: 0 }, tooltip: { trigger: 'axis', confine: true },
-    xAxis: { type: 'category', data: rows.map(row => formatValue(row[category.field], category.format, category.missingText)) },
+    xAxis: { type: 'category', data: rows.map(row => formatValue(row[category.field], category.format, category.missingText)), ...categoryLabelOption(props.categoryLabels, props.showValueLabels) },
     yAxis: props.dualAxis ? [axis('primary'), axis('secondary')] : axis('primary'),
     series: props.series.map(series => {
       const field = resolveField(series.field, data);
@@ -289,8 +293,17 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
         type: series.kind ?? 'bar', name: series.label ?? field.definition?.label ?? field.field,
         yAxisIndex: series.axis === 'secondary' ? 1 : 0,
         ...(series.kind === 'line' ? { connectNulls: false } : {}),
+        ...(props.showValueLabels ? {
+          label: pointValueLabel(field.format, field.missingText), labelLayout: valueLabelLayout(rows.map(row => finiteNumber(row[field.field])), series.kind === 'line'),
+          ...(series.kind === 'line' ? { showAllSymbol: true } : {})
+        } : {}),
         tooltip: { valueFormatter: (value: unknown) => formatValue(formatterValue(value), field.format, field.missingText) },
-        data: rows.map(row => finiteNumber(row[field.field]) ?? null)
+        data: rows.map(row => {
+          const value = finiteNumber(row[field.field]);
+          if (value === undefined) return null;
+          return props.showValueLabels && series.kind !== 'line'
+            ? { value, label: { position: value < 0 ? 'bottom' as const : 'top' as const } } : value;
+        })
       };
     })
   };

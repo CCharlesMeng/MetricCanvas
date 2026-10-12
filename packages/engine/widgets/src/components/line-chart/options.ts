@@ -5,6 +5,7 @@ import { fieldLabel, resolveField } from '../../shared/component-data';
 import { finiteNumber, formatValue } from '../../shared/value-format';
 import { CHART_PALETTE, GRID, categoryWindow, dualOrSingleAxis, formatterValue } from '../../shared/chart-option';
 import { serialColor, type ColorList } from '../../shared/chart-palette';
+import { categoryLabelOption, pointValueLabel, valueLabelLayout } from '../../shared/chart-presentation';
 
 /**
  * 已解析命名数据槽 + 折线图 props → ECharts option 的纯翻译。
@@ -22,15 +23,16 @@ export function lineOption(
 
   return {
     ...(palette ? { color: [...palette] } : {}),
-    ...categoryWindow(rows.length),
+    ...(props.categoryLabels?.mode === 'all' ? {} : categoryWindow(rows.length)),
     grid: { ...GRID, ...(props.showPointLabels ? { top: 36, right: 30 } : {}),
-      ...(rows.length > 20 ? { bottom: 36 } : {}) },
+      ...(rows.length > 20 && props.categoryLabels?.mode !== 'all' ? { bottom: 36 } : {}) },
     tooltip: { trigger: 'axis', confine: true, hideDelay: 200 },
     ...(props.series.length > 1 ? { legend: { top: 0, left: 0 } } : {}),
     xAxis: {
       type: 'category',
       name: fieldLabel(props.xField, data),
-      data: rows.map((row) => formatValue(row[x.field], x.format, x.missingText))
+      data: rows.map((row) => formatValue(row[x.field], x.format, x.missingText)),
+      ...categoryLabelOption(props.categoryLabels, props.showValueLabels)
     },
     yAxis: dualOrSingleAxis(props.dualAxis, props.series.length, props.hideYAxis,
       props.series.map(series => resolveField(series.field, data).format)),
@@ -40,6 +42,8 @@ export function lineOption(
         name: series.label ?? field.definition?.label ?? field.field,
         type: 'line' as const,
         smooth: props.smooth ?? false,
+        ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText),
+          labelLayout: valueLabelLayout(rows.map(row => finiteNumber(row[field.field])), true), showAllSymbol: true } : {}),
         ...(props.stacked ? { stack: 'total' } : {}),
         ...(props.dualAxis && i > 0 ? { yAxisIndex: 1 } : {}),
         ...(props.areaGradient ? { areaStyle: gradientArea(i, palette) } : {}),
@@ -63,7 +67,7 @@ export function lineOption(
               }
             }
           : {}),
-        data: rows.map((row) => finiteNumber(row[field.field]))
+        data: rows.map((row) => props.showValueLabels ? finiteNumber(row[field.field]) ?? null : finiteNumber(row[field.field]))
       };
     })
   };

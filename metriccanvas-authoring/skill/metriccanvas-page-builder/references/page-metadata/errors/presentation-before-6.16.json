@@ -1,0 +1,124 @@
+{
+  "case": "presentation-before-6.16",
+  "invariant": "presentation-capability",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "数字展示位置显式声明固定颜色或正负颜色映射 由 6.16 引入，文档声明的是 6.15",
+      "paths": [
+        "/sections/0/components/0",
+        "/sections/0/components/1"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "类别标签全量展示与旋转、常驻节点数值标签 由 6.16 引入，文档声明的是 6.15",
+      "paths": [
+        "/sections/0/components/2",
+        "/sections/0/components/3",
+        "/sections/0/components/4"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "sample-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "columns": [
+                "…（共3项）"
+              ]
+            }
+          },
+          {
+            "id": "sample-card",
+            "type": "metricCard",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "showTrendArrows": true,
+              "rows": [
+                "…（共1项）"
+              ]
+            }
+          },
+          {
+            "id": "sample-bar",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "categoryField": "name",
+              "series": [
+                "…（共1项）"
+              ],
+              "categoryLabels": {
+                "…": "共2个键"
+              },
+              "showValueLabels": true
+            }
+          },
+          {
+            "id": "sample-line",
+            "type": "lineChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "xField": "name",
+              "series": [
+                "…（共1项）"
+              ],
+              "categoryLabels": {
+                "…": "共2个键"
+              },
+              "showValueLabels": true
+            }
+          },
+          {
+            "id": "sample-mixed",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "categoryField": "name",
+              "dualAxis": true,
+              "series": [
+                "…（共2项）"
+              ],
+              "categoryLabels": {
+                "…": "共2个键"
+              },
+              "showValueLabels": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/presentation-before-6.16.json"
+}

@@ -1,0 +1,231 @@
+{
+  "case": "presentation-before-6.16",
+  "invariant": "presentation-capability",
+  "input": {
+    "schemaVersion": "6.15",
+    "id": "explicit-presentation-page",
+    "layout": "report",
+    "dataSources": {
+      "sample": {
+        "fields": {
+          "name": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "delta": {
+            "type": "number",
+            "role": "measure",
+            "unit": "天",
+            "defaultFormat": "number-1",
+            "nullable": true
+          },
+          "count": {
+            "type": "number",
+            "role": "measure",
+            "unit": "次",
+            "defaultFormat": "number",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "name": "甲代表处",
+              "delta": 2.5,
+              "count": 10
+            },
+            {
+              "name": "乙代表处",
+              "delta": -2,
+              "count": 0
+            },
+            {
+              "name": "丙代表处",
+              "delta": 0,
+              "count": 8
+            },
+            {
+              "name": "丁代表处",
+              "delta": null,
+              "count": null
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "sample",
+        "components": [
+          {
+            "id": "sample-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "name"
+                },
+                {
+                  "field": "delta",
+                  "colorRule": {
+                    "mode": "sign",
+                    "positive": "red",
+                    "negative": "green"
+                  }
+                },
+                {
+                  "field": "count",
+                  "colorRule": {
+                    "mode": "fixed",
+                    "color": "green"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "sample-card",
+            "type": "metricCard",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "showTrendArrows": true,
+              "rows": [
+                {
+                  "label": "时长",
+                  "valueField": "delta",
+                  "changes": [
+                    {
+                      "label": "变化",
+                      "field": "delta",
+                      "colorRule": {
+                        "mode": "sign",
+                        "positive": "red",
+                        "negative": "green"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "sample-bar",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "categoryField": "name",
+              "series": [
+                {
+                  "field": "delta"
+                }
+              ],
+              "categoryLabels": {
+                "mode": "all",
+                "rotate": 45
+              },
+              "showValueLabels": true
+            }
+          },
+          {
+            "id": "sample-line",
+            "type": "lineChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "xField": "name",
+              "series": [
+                {
+                  "field": "delta"
+                }
+              ],
+              "categoryLabels": {
+                "mode": "all",
+                "rotate": 45
+              },
+              "showValueLabels": true
+            }
+          },
+          {
+            "id": "sample-mixed",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "categoryField": "name",
+              "dualAxis": true,
+              "series": [
+                {
+                  "field": "delta",
+                  "kind": "bar",
+                  "axis": "primary"
+                },
+                {
+                  "field": "count",
+                  "kind": "line",
+                  "axis": "secondary"
+                }
+              ],
+              "categoryLabels": {
+                "mode": "all",
+                "rotate": 45
+              },
+              "showValueLabels": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0",
+      "message": "数字展示位置显式声明固定颜色或正负颜色映射 由 6.16 引入，文档声明的是 6.15"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1",
+      "message": "数字展示位置显式声明固定颜色或正负颜色映射 由 6.16 引入，文档声明的是 6.15"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/2",
+      "message": "类别标签全量展示与旋转、常驻节点数值标签 由 6.16 引入，文档声明的是 6.15"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3",
+      "message": "类别标签全量展示与旋转、常驻节点数值标签 由 6.16 引入，文档声明的是 6.15"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/4",
+      "message": "类别标签全量展示与旋转、常驻节点数值标签 由 6.16 引入，文档声明的是 6.15"
+    }
+  ]
+}

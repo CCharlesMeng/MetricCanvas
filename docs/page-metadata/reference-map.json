@@ -277,7 +277,9 @@
         "mainData",
         "tableData",
         "fieldBinding",
-        "fieldReference"
+        "fieldReference",
+        "colorRule",
+        "categoryLabels"
       ],
       "keywords": [
         "field-bindings-and-formats",
@@ -286,18 +288,23 @@
       "examples": [
         "million-formats-page",
         "compute-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "explicit-presentation-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/primitives.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/page/src/schema/presentation.ts"
       ],
       "rules": [
         "data-slot-known-source",
         "field-binding-resolves",
         "field-binding-role",
-        "field-binding-match"
+        "field-binding-match",
+        "explicit-color-local",
+        "chart-value-label-exclusive",
+        "presentation-capability"
       ]
     },
     "actions-and-navigation.md": {
@@ -1107,7 +1114,14 @@
     "#/properties/sectionAnchors/items/properties/sectionId": "定位目标内容分区 id。",
     "resultBindings": "查询原始维度集合到下游维度谓词的显式绑定；空集合跳过请求。",
     "maxValues": "去重集合的正整数上限，最大1000；超限报错而非截断。",
-    "#/definitions/filterTextValueReference/properties/filter": "已声明的页面筛选器 id；读取当前已应用状态，不读取参数初值。"
+    "#/definitions/filterTextValueReference/properties/filter": "已声明的页面筛选器 id；读取当前已应用状态，不读取参数初值。",
+    "colorRule": "数字展示位置的显式颜色规则，只支持number/money；与旧染色声明互斥。",
+    "color": "固定数字颜色，只接受red/green；缺失值不染色。",
+    "positive": "原始数值大于零时使用的颜色。",
+    "negative": "原始数值小于零时使用的颜色。",
+    "categoryLabels": "类别轴名称展示策略；all保留完整类别，不抽样或默认窗口。",
+    "rotate": "类别标签旋转角度，范围-90到90。",
+    "showValueLabels": "为每个有效柱值或折线节点常驻显示格式化数字；与旧标签开关互斥。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1264,7 +1278,11 @@
     "#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/0/properties/defaultFormat=\"period\"": "日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。",
     "#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/1/properties/defaultFormat=\"period\"": "日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。",
     "#/definitions/fieldBinding/anyOf/1/properties/format=\"period\"": "日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。",
-    "#/definitions/rankingDetailCardComponent/properties/props/properties/details/properties/valueField/properties/format=\"period\"": "日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。"
+    "#/definitions/rankingDetailCardComponent/properties/props/properties/details/properties/valueField/properties/format=\"period\"": "日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。",
+    "red": "统一主题的红色，业务含义由当前声明确定。",
+    "green": "统一主题的绿色，业务含义由当前声明确定。",
+    "all": "全部类别名称同时呈现，不自动隐藏或只展示前20个。",
+    "6.16": "新增显式数字颜色、全部类别标签及常驻数值标签。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
