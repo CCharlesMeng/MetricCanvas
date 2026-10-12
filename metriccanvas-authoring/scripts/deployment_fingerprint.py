@@ -14,6 +14,9 @@ import subprocess
 import sys
 
 MODULES = (
+    'metriccanvas_authoring.data.query',
+    'metriccanvas_authoring.data.field_presentation',
+    'metriccanvas_authoring.data.source_mapping',
     'metriccanvas_authoring.data.data_context',
     'metriccanvas_authoring.pages.scope_annotations',
     'metriccanvas_authoring.data.metadata_session',
