@@ -58,4 +58,10 @@ describe('项目详情全年销售预测', () => {
     expect(formatValue(0, format)).toBe('0元');
     expect(formatValue(null, format)).toBe('—');
   });
+  it('实际预测页面显式采用全空汇总为零，明细仍为空', () => {
+    const source = load().dataSources['sales-forecast']!;
+    const rows = applyComputation(source.compute ?? [], [{ 'business-type': 'A', 'object-forecast-jan': null }]);
+    expect(rows[0]?.['object-forecast-jan']).toBeNull();
+    expect(rows.filter(row => row['row-kind'] != null).map(row => row['object-forecast-jan'])).toEqual([0, 0]);
+  });
 });

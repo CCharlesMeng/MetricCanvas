@@ -63,6 +63,8 @@ test('丢单表跳项目详情并传页面月份，保留行立项状态', async
 // 最大值，而不是首页那 5 行里的最大值。
 test('查询分页与服务端排序共存，排序作用于全表而不是当前页', async ({ page }) => {
   await page.goto('/pages/ioc-opportunity-list');
+  await expect(page.getByRole('searchbox')).toHaveCount(0);
+  await expect(page.getByText('搜索机会点 / 客户', { exact: true })).toHaveCount(0);
   const table = page.locator('[data-component="list/opportunity-table"]');
   const firstCode = table.locator('tbody tr').first().locator('td').first();
   await expect(table.locator('tbody tr')).toHaveCount(5);

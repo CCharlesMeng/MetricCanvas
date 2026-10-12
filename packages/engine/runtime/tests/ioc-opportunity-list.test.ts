@@ -49,7 +49,7 @@ describe('ioc-opportunity-list 骨架', () => {
   it('页面通过解析，筛选状态可往返', () => {
     const page = loadPage();
     expect(page.schemaVersion).toBe(versionPolicy.current);
-    expect(page.filters).toHaveLength(11);
+    expect(page.filters).toHaveLength(10);
     const table = page.sections
       .flatMap((section) => section.components)
       .find((component) => component.type === 'table');
@@ -67,7 +67,6 @@ describe('ioc-opportunity-list 骨架', () => {
     });
 
     const state = createFilterState(initial);
-    state.write('keyword', { type: 'search', query: '云迁移' });
     state.write('key-office', { type: 'boolean', value: true });
     state.write('region', {
       type: 'dimension',
@@ -81,13 +80,13 @@ describe('ioc-opportunity-list 骨架', () => {
     restored.subscribe((next) => {
       values = new Map(next);
     })();
-    expect(values.get('keyword')).toEqual({ type: 'search', query: '云迁移' });
+    expect(page.filters?.some(filter => filter.type === 'search')).toBe(false);
     expect(values.get('key-office')).toEqual({ type: 'boolean', value: true });
     expect(values.get('region')).toMatchObject({ level: 'region-dept', values: ['R01'] });
     expect(values.get('mtime')).toMatchObject({ value: '2026-04' });
   });
 
-  // 十一个筛选器里十个下推到查询；只剩 search 没有绑定目标，仍走客户端。
+  // 查询分页只保留可下推的筛选；全量搜索尚未实现，不展示当前页搜索。
   it('明细走受控查询，各类筛选器按各自的谓词形状绑定', () => {
     const page = loadPage();
     const source = page.dataSources['opportunity-list'];
@@ -106,9 +105,7 @@ describe('ioc-opportunity-list 骨架', () => {
       'opportunity-stage',
       'bidding-amount'
     ]);
-    expect((page.filters ?? []).filter((f) => !(f.id in bindings)).map((f) => f.id)).toEqual([
-      'keyword'
-    ]);
+    expect((page.filters ?? []).filter((f) => !(f.id in bindings)).map((f) => f.id)).toEqual([]);
     expect(bindings['industry-l2']).toEqual({
       target: 'dimension',
       queryField: 'sub_industry_level2'

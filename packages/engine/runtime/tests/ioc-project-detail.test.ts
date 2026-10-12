@@ -54,10 +54,10 @@ function readyRows(snapshots: PageDataSnapshots, sourceId: string) {
 describe('ioc-project-detail 骨架', () => {
   it('声明 5.3 看板形态并关闭统一工具栏，基本信息与项目规范性按冻结轨道并排', () => {
     const page = loadPage('');
-    // 详情页没有筛选器，也就用不到任何新能力：声明的是它真实的能力下限。
+    // 详情页声明汇总全空策略所需的版本，读取后归一化为当前版本。
     expect(page.schemaVersion).toBe(versionPolicy.current);
-    // 声明当前版本,但实际只用到 6.6 的分层参数:这一页没有筛选器可初始化。
-    expect(requiredMinorVersion(document)).toBe(6);
+    // 预测汇总显式使用6.12全空策略，旧版本不得静默忽略。
+    expect(requiredMinorVersion(document)).toBe(12);
     expect(page.layout).toBe('dashboard');
     expect(page.dashboardToolbar).toBe('hidden');
     expect(page.sections.map((section) => section.id)).toEqual([
