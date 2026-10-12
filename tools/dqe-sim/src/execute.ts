@@ -1,3 +1,4 @@
+import { executeBusinessSdt } from './business-sdt';
 import customerActivityRiskFixtureJson from '../fixtures/customer-activity-risk.json';
 import customerActivityRiskTop100FixtureJson from '../fixtures/customer-activity-risk-top100.json';
 import customerActivityInspectionFixtureJson from '../fixtures/customer-activity-inspection.json';
@@ -142,6 +143,8 @@ const customerActivityDetailDimensions = [
 ];
 
 export function executeDqeItem(item: unknown): DqeSimItemResult {
+  const sdt = executeBusinessSdt(item, process.env.DQE_SDT_SCENARIO);
+  if (sdt) return sdt;
   const exactResult = executeExactScenarios(item);
   if (exactResult.code === 'SUCCESS' || !isRecord(item)) return exactResult;
   // 维度候选值查询:只输出一个语义面维度、不取指标(issue #54)。

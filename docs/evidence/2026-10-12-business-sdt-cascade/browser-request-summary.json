@@ -1,0 +1,252 @@
+{
+  "empty": {
+    "postRequests": 1,
+    "corsPreflights": 1,
+    "phases": [
+      {
+        "phase": "main",
+        "queries": [
+          {
+            "dims": [
+              "客户名称",
+              "项目名称",
+              "商务编号"
+            ],
+            "time": {
+              "period": "month",
+              "start": "202609",
+              "end": "202609"
+            },
+            "identifiers": []
+          },
+          {
+            "dims": [
+              "客户名称",
+              "项目名称",
+              "商务编号"
+            ],
+            "time": {
+              "period": "month",
+              "start": "202609",
+              "end": "202609"
+            },
+            "identifiers": []
+          }
+        ]
+      }
+    ]
+  },
+  "main-error": {
+    "postRequests": 1,
+    "corsPreflights": 1,
+    "phases": [
+      {
+        "phase": "main",
+        "queries": [
+          {
+            "dims": [
+              "客户名称",
+              "项目名称",
+              "商务编号"
+            ],
+            "time": {
+              "period": "month",
+              "start": "202609",
+              "end": "202609"
+            },
+            "identifiers": []
+          },
+          {
+            "dims": [
+              "客户名称",
+              "项目名称",
+              "商务编号"
+            ],
+            "time": {
+              "period": "month",
+              "start": "202609",
+              "end": "202609"
+            },
+            "identifiers": []
+          }
+        ]
+      }
+    ]
+  },
+  "detail-error": {
+    "postRequests": 2,
+    "corsPreflights": 1,
+    "phases": [
+      {
+        "phase": "main",
+        "queries": [
+          {
+            "dims": [
+              "客户名称",
+              "项目名称",
+              "商务编号"
+            ],
+            "time": {
+              "period": "month",
+              "start": "202609",
+              "end": "202609"
+            },
+            "identifiers": []
+          },
+          {
+            "dims": [
+              "客户名称",
+              "项目名称",
+              "商务编号"
+            ],
+            "time": {
+              "period": "month",
+              "start": "202609",
+              "end": "202609"
+            },
+            "identifiers": []
+          }
+        ]
+      },
+      {
+        "phase": "detail",
+        "queries": [
+          {
+            "dims": [
+              "商务编号",
+              "阶段名称"
+            ],
+            "time": {
+              "period": "month",
+              "start": "202609",
+              "end": "202609"
+            },
+            "identifiers": [
+              {
+                "dim_name": "商务编号",
+                "dim_value_list": [
+                  "0CPIMX2610010P",
+                  "1CCC0026101S03",
+                  "1CCC0026101T0H",
+                  "1CCC0026101U0G",
+                  "1CPC5126101K01"
+                ]
+              }
+            ]
+          },
+          {
+            "dims": [
+              "商务编号",
+              "阶段名称"
+            ],
+            "time": {
+              "period": "month",
+              "start": "202609",
+              "end": "202609"
+            },
+            "identifiers": [
+              {
+                "dim_name": "商务编号",
+                "dim_value_list": [
+                  "0CCING2610010U",
+                  "0CCING2610010V",
+                  "0CPIAR26100109",
+                  "0CPIEG2510030T",
+                  "0CPITH2610050T"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "final": {
+    "postRequests": 2,
+    "corsPreflights": 1,
+    "phases": [
+      {
+        "phase": "main",
+        "queries": [
+          {
+            "dims": [
+              "客户名称",
+              "项目名称",
+              "商务编号"
+            ],
+            "time": {
+              "period": "month",
+              "start": "202609",
+              "end": "202609"
+            },
+            "identifiers": []
+          },
+          {
+            "dims": [
+              "客户名称",
+              "项目名称",
+              "商务编号"
+            ],
+            "time": {
+              "period": "month",
+              "start": "202609",
+              "end": "202609"
+            },
+            "identifiers": []
+          }
+        ]
+      },
+      {
+        "phase": "detail",
+        "queries": [
+          {
+            "dims": [
+              "商务编号",
+              "阶段名称"
+            ],
+            "time": {
+              "period": "month",
+              "start": "202609",
+              "end": "202609"
+            },
+            "identifiers": [
+              {
+                "dim_name": "商务编号",
+                "dim_value_list": [
+                  "0CPIMX2610010P",
+                  "1CCC0026101S03",
+                  "1CCC0026101T0H",
+                  "1CCC0026101U0G",
+                  "1CPC5126101K01"
+                ]
+              }
+            ]
+          },
+          {
+            "dims": [
+              "商务编号",
+              "阶段名称"
+            ],
+            "time": {
+              "period": "month",
+              "start": "202609",
+              "end": "202609"
+            },
+            "identifiers": [
+              {
+                "dim_name": "商务编号",
+                "dim_value_list": [
+                  "0CCING2610010U",
+                  "0CCING2610010V",
+                  "0CPIAR26100109",
+                  "0CPIEG2510030T",
+                  "0CPITH2610050T"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

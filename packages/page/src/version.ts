@@ -14,7 +14,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 13;
+const CURRENT_MINOR = 14;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -36,6 +36,14 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'query-result-bindings': {
+    minor: 14, description: '上游原始查询维度集合作为下游查询输入',
+    usedAt: document => dataSourcePaths(document, source => Array.isArray(record(record(source.source)?.query)?.resultBindings))
+  },
+  'multi-value-pivot': {
+    minor: 14, description: '透视列独立声明度量字段',
+    usedAt: document => dataSourcePaths(document, source => Array.isArray(source.compute) && source.compute.some(op => record(op)?.op === 'pivot' && Array.isArray(record(op)?.columns) && (record(op)!.columns as unknown[]).some(column => has(record(column), 'valueField'))))
+  },
   'report-header-date-filters': {
     minor: 13, description: '报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口',
     usedAt: document => [
@@ -525,7 +533,7 @@ export const versionPolicy: VersionPolicy = {
  * 能力引入历史仍可查询，但不代表旧 6.x 文档可读。
  */
 export function supportedVersions(policy: VersionPolicy = versionPolicy): string[] {
-  const currentMajor = policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 ? [...new Set(['6.5', ...(policy.minor >= 12 ? ['6.11', ...(policy.minor >= 13 ? ['6.12'] : [])] : []), policy.current])] : [policy.current];
+  const currentMajor = policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 ? [...new Set(['6.5', ...(policy.minor >= 12 ? ['6.11', ...(policy.minor >= 13 ? ['6.12', ...(policy.minor >= 14 ? ['6.13'] : [])] : [])] : []), policy.current])] : [policy.current];
   return policy.major === PAGE_SCHEMA_MAJOR
     ? [...LEGACY_READABLE_PAGE_SCHEMA_VERSIONS, ...currentMajor]
     : currentMajor;

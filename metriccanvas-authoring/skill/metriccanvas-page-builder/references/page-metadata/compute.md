@@ -10,8 +10,12 @@ groupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
+## 多度量透视与有限主集合左关联 6.14
 
-页面协议 6.13。结构真源为本册[schema.json](schema.json)，SHA256 `a3070d52695f46a1c96cd22ed236f0adcc0574384064615d2654d875b7b1f698`。字段表自动生成；可选不等于有默认值。
+pivot.columns可指定valueField覆盖算子默认字段。同类别可用于不同度量，重复的有效valueField与类别组合拒绝；新多度量透视的分组键与类别必须唯一。缺阶段产出null，0保持0。有限主结果仅在被结果绑定引用且声明正整数limit、无offset/查询分页时允许左关联；辅助源仍须complete，无分页窗口。导出保持此选择范围并使用本轮原始结果重建明细输入。
+
+
+页面协议 6.14。结构真源为本册[schema.json](schema.json)，SHA256 `9a360374f2991e04fe431b01b1de635533cf6de167a6aa399769e7cc15bca828`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -996,6 +1000,16 @@ Schema位置：`#/definitions/computeOperator/oneOf/9/properties/columns/items`�
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 每个数组项 | required=["output","categories"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f392f70726f706572746965732f636f6c756d6e732f6974656d732f70726f706572746965732f76616c75654669656c64"></a>
+
+### `@computeOperator · oneOf[9].columns[].valueField`
+
+Schema位置：`#/definitions/computeOperator/oneOf/9/properties/columns/items/properties/valueField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 主要数值字段绑定。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f392f70726f706572746965732f636f6c756d6e732f6974656d732f70726f706572746965732f6f7574707574"></a>
 

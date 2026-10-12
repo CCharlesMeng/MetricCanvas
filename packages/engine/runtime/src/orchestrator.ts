@@ -1,7 +1,10 @@
+import { resolveQueryResultInputs } from './query-result-inputs';
 import { executionSourceKey } from './execution';
 import type { Page } from '@metriccanvas/page';
 import {
   bindingQueryField,
+  queryResultDependencies,
+  cascadeSourceIds,
   computeDependencies,
   declaredPaginationLimit,
   hasQueryFieldMapping,
@@ -172,7 +175,7 @@ function collectReferencedSources(page: Page): DataSourceBinding[] {
   }
   // Set 迭代会访问新加入的项，收集整个依赖闭包（含无组件直连的辅助源）。
   for (const id of sourceIds) {
-    for (const dependency of computeDependencies(page.dataSources[id]?.compute ?? [])) sourceIds.add(dependency);
+    for (const dependency of [...computeDependencies(page.dataSources[id]?.compute ?? []), ...queryResultDependencies(page.dataSources[id])]) sourceIds.add(dependency);
   }
   return [...sourceIds].flatMap((sourceId) => {
     const dataSource = page.dataSources[sourceId];
@@ -277,12 +280,14 @@ function startSession(
   // 初始快照不能和本轮查询混合；无法证明同一采集批次时统一走当前查询。
   const skipInitial = captureTimes.size > 1 || captureTimes.has(undefined)
     ? new Set(joinedQueries.map(binding => binding.sourceId)) : new Set<string>();
+  const cascaded = cascadeSourceIds(Object.fromEntries(bindings.map(binding => [binding.sourceId, binding.dataSource])));
+  for (const id of cascaded) skipInitial.add(id);
   let rawSnapshots = initialSnapshots(bindings, useEmbeddedInitialRows, skipInitial);
   const sources = new Map(bindings.map(binding => [binding.sourceId, binding.dataSource]));
   const executionMatches = new Set<string>();
   if (execution && sameFilterValues(values, execution.filters)) for (const binding of queryBindings) {
     const snapshot = execution.snapshots.get(binding.sourceId);
-    if (snapshot && execution.sourceKeys.get(binding.sourceId) === executionSourceKey(binding.dataSource)) {
+    if (!cascaded.has(binding.sourceId) && snapshot && execution.sourceKeys.get(binding.sourceId) === executionSourceKey(binding.dataSource)) {
       executionMatches.add(binding.sourceId);
       rawSnapshots.set(binding.sourceId, snapshot);
     }
@@ -304,6 +309,7 @@ function startSession(
   const sequences = new Map<string, number>();
   const inFlightRequests = new Set<InFlightRequest>();
   const cache = new Map<string, DataSnapshot>();
+  const waitingQueries = new Set<string>();
   const pageIndexes = new Map(
     queryBindings
       .filter((binding) => binding.pagination)
@@ -363,23 +369,39 @@ function startSession(
     rawSnapshots = next;
     snapshots = computedSnapshots(sources, rawSnapshots, computationContext());
     push(snapshots);
+    if (updates.some(([, snapshot]) => snapshot.status !== 'loading')) {
+      const ready = queryBindings.filter(binding => waitingQueries.has(binding.sourceId) &&
+        resolveQueryResultInputs(binding.dataSource, rawSnapshots, sources).status !== 'waiting');
+      if (ready.length) refetch(ready, false);
+    }
   }
 
   function refetch(targets: QueryBinding[], publishLoading: boolean): void {
     if (targets.length === 0 || disposed) return;
     if (publishLoading) {
-      publish(targets.map((binding) => [binding, { status: 'loading' }]));
+      const ids = new Set(targets.map(binding => binding.sourceId));
+      let size = -1;
+      while (size !== ids.size) {
+        size = ids.size;
+        for (const binding of queryBindings) if (queryResultDependencies(binding.dataSource).some(id => ids.has(id))) ids.add(binding.sourceId);
+      }
+      targets = queryBindings.filter(binding => ids.has(binding.sourceId));
     }
     for (const binding of targets) {
+      waitingQueries.delete(binding.sourceId);
       sequences.set(binding.sourceId, (sequences.get(binding.sourceId) ?? 0) + 1);
     }
     abortStaleRequests();
+    if (publishLoading) publish(targets.map((binding) => [binding, { status: 'loading' }]));
 
     const groups = new Map<
       string,
       { query: EffectiveQuery; members: Array<[QueryBinding, number]> }
     >();
     for (const binding of targets) {
+      const input = resolveQueryResultInputs(binding.dataSource, rawSnapshots, sources);
+      if (input.status === 'waiting') { waitingQueries.add(binding.sourceId); continue; }
+      if (input.status === 'terminal') { publish([[binding, input.snapshot]]); continue; }
       const query = composeEffectiveQuery(
         binding,
         values,
@@ -387,6 +409,7 @@ function startSession(
         sortRules.get(binding.sourceId) ?? [],
         headerFilters.get(binding.sourceId) ?? {}
       );
+      query.filterValues.push(...input.values);
       const key = JSON.stringify(query);
       const group = groups.get(key) ?? { query, members: [] };
       group.members.push([binding, sequences.get(binding.sourceId)!]);
@@ -475,7 +498,12 @@ function startSession(
     current: () => snapshots,
     captureComputeYear: () => currentYear,
     captureQueries() {
-      return new Map(queryBindings.map(binding => [binding.sourceId, structuredClone(composeEffectiveQuery(binding, values, 0, sortRules.get(binding.sourceId) ?? [], headerFilters.get(binding.sourceId) ?? {}))]));
+      return new Map(queryBindings.map(binding => {
+        const query = composeEffectiveQuery(binding, values, 0, sortRules.get(binding.sourceId) ?? [], headerFilters.get(binding.sourceId) ?? {});
+        const input = resolveQueryResultInputs(binding.dataSource, rawSnapshots, sources);
+        if (input.status === 'ready') query.filterValues.push(...input.values);
+        return [binding.sourceId, structuredClone(query)];
+      }));
     },
     setQueryPage(dataSourceId, pageIndex) {
       if (!Number.isInteger(pageIndex) || pageIndex < 0) return;
@@ -500,7 +528,7 @@ function startSession(
     // 看新排序的第 5 页是没有意义的。
     setQuerySort(dataSourceId, sort) {
       const binding = queryBindings.find((candidate) => candidate.sourceId === dataSourceId);
-      if (!binding) return;
+      if (!binding || queryBindings.some(candidate => queryResultDependencies(candidate.dataSource).includes(dataSourceId))) return;
       const next = sort.map((rule) => ({ ...rule }));
       if (JSON.stringify(sortRules.get(dataSourceId) ?? []) === JSON.stringify(next)) return;
       sortRules.set(dataSourceId, next);
@@ -509,7 +537,7 @@ function startSession(
     },
     setQueryHeaderFilters(dataSourceId, filters) {
       const binding = queryBindings.find((candidate) => candidate.sourceId === dataSourceId);
-      if (!binding) return;
+      if (!binding || queryBindings.some(candidate => queryResultDependencies(candidate.dataSource).includes(dataSourceId))) return;
       if (JSON.stringify(headerFilters.get(dataSourceId) ?? {}) === JSON.stringify(filters)) return;
       headerFilters.set(dataSourceId, filters);
       pageIndexes.set(dataSourceId, 0);

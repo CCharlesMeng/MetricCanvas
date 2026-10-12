@@ -1,3 +1,4 @@
+import { queryResultBindingErrors } from './validate-query-results';
 import { reportDateFilterErrors } from './report-date-filters';
 import { crossSourceComputeErrors } from './validate-compute-dependencies';
 import { queryParamReferenceErrors } from './query-param-references';
@@ -268,6 +269,7 @@ function invariantErrors(page: Page): TypedError[] {
   errors.push(...filterDependsOnErrors(filters));
   errors.push(...reportDateFilterErrors(page));
   errors.push(...crossSourceComputeErrors(page));
+  errors.push(...queryResultBindingErrors(page));
 
   for (const [sourceId, dataSource] of Object.entries(page.dataSources)) {
     const path = `/dataSources/${escapePointer(sourceId)}`;
@@ -1101,8 +1103,17 @@ function computeErrors(dataSource: DataSource, sourcePath: string): TypedError[]
         operator.columns.forEach((column, columnIndex) => {
           const columnPath = `${path}/columns/${columnIndex}`;
           output(column.output, `${columnPath}/output`, 'measure');
+          const valueField = column.valueField ?? operator.valueField;
+          const input = declared(valueField, `${columnPath}/valueField`, 'measure');
+          const target = fields[column.output];
+          if (operator.columns.some(c => c.valueField !== undefined) && input && target &&
+            (input.type !== target.type || !['number', 'money'].includes(input.type) ||
+             ('unit' in input ? input.unit : undefined) !== ('unit' in target ? target.unit : undefined) ||
+             ('currency' in input ? input.currency : undefined) !== ('currency' in target ? target.currency : undefined) || target.nullable === false)) {
+            errors.push(schemaError(columnPath, '透视产出与输入必须保持数值类型、单位、币种并允许为空'));
+          }
           column.categories.forEach((category, categoryIndex) => {
-            if (categories.has(category)) {
+            if (categories.has(JSON.stringify([valueField, category]))) {
               errors.push(
                 schemaError(
                   `${columnPath}/categories/${categoryIndex}`,
@@ -1110,7 +1121,7 @@ function computeErrors(dataSource: DataSource, sourcePath: string): TypedError[]
                 )
               );
             }
-            categories.add(category);
+            categories.add(JSON.stringify([valueField, category]));
           });
         });
         break;

@@ -34,6 +34,17 @@ class PageContractConformanceTest(unittest.TestCase):
     pending 注册表现在为空；新向量必须直接命中，不得通过扩大清单静默豁免。
     """
 
+    def test_query_result_shared_vectors(self) -> None:
+        matrix = json.loads((CONTRACT_ROOT / 'page/conformance/query-result-bindings.json').read_text())
+        for case in matrix['cases']:
+            with self.subTest(case=case['name']):
+                original = deepcopy(case['input'])
+                issues = validate_page_document(case['input'])
+                self.assertEqual(not issues, case['expected']['ok'])
+                if 'path' in case['expected']:
+                    self.assertTrue(any(issue.path.startswith(case['expected']['path']) for issue in issues), issues)
+                self.assertEqual(original, case['input'])
+
     def test_inline_parameter_shared_vectors(self) -> None:
         matrix = json.loads((CONTRACT_ROOT / 'page/conformance/inline-params.json').read_text())
         for case in matrix['cases']:

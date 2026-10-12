@@ -1,3 +1,4 @@
+import { isBoundedResultSource } from './query-dependencies';
 import type { Page } from './page';
 import type { TypedError } from './errors';
 import { computeDependencies, computeOutputFields } from './compute';
@@ -27,7 +28,7 @@ export function crossSourceComputeErrors(page: Page): TypedError[] {
 
   for (const [id, source] of Object.entries(page.dataSources)) {
     if (!(source.compute ?? []).some(op => ['joinAggregate', 'sumFields', 'cagr', 'timeFill', 'selectField'].includes(op.op))) continue;
-    if ((source.compute ?? []).some(op => op.op === 'joinAggregate' || op.op === 'timeFill')) full(id, source, pointer(id));
+    if ((source.compute ?? []).some(op => op.op === 'timeFill' || (op.op === 'joinAggregate' && !isBoundedResultSource(page.dataSources, id)))) full(id, source, pointer(id));
     const produced = new Set(computeOutputFields(source.compute ?? []));
     const available = new Set(Object.keys(source.fields).filter(field => !produced.has(field)));
     for (const [index, op] of (source.compute ?? []).entries()) {
@@ -73,7 +74,7 @@ export function crossSourceComputeErrors(page: Page): TypedError[] {
         : op.op === 'cagr' ? [op.beginning, op.ending, op.periods]
         : op.op === 'ratio' ? [op.numerator, op.denominator]
         : op.op === 'delta' ? [op.minuend, op.subtrahend]
-        : op.op === 'pivot' ? [op.categoryField, op.valueField, ...(op.keyFields ?? [])]
+        : op.op === 'pivot' ? [op.categoryField, op.valueField, ...op.columns.flatMap(c => c.valueField ? [c.valueField] : []), ...(op.keyFields ?? [])]
         : op.op === 'grandTotal' ? op.measures
         : op.op === 'groupSubtotal' ? [op.groupBy, ...op.measures] : [];
       for (const field of inputs) if (!available.has(field)) error(path, `算子输入尚不可用:${field}`);

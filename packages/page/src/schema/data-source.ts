@@ -1,3 +1,4 @@
+import { MAX_QUERY_RESULT_VALUES } from '../query-result-limits';
 import { z } from 'zod';
 import { computeZ } from './compute';
 import {
@@ -42,6 +43,10 @@ export const timeWindowZ = z.discriminatedUnion('kind', [
 export const dqeQueryZ = z
   .object({
     language: z.literal('dqe'),
+    resultBindings: z.array(z.object({
+      source: idZ, field: fieldNameZ, target: z.literal('dimension'),
+      queryField: z.string().min(1), maxValues: z.int().min(1).max(MAX_QUERY_RESULT_VALUES)
+    }).strict()).min(1).optional(),
     body: z
       .object({
         dsl_list: z.array(dslItemZ).length(1)

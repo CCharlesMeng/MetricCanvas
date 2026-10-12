@@ -1,0 +1,3 @@
+# Preserve captured DOM and tool output verbatim, including whitespace.
+# Code, JSON and prose continue to use the normal whitespace check.
+*.txt -whitespace

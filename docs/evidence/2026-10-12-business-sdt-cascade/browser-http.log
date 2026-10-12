@@ -1,0 +1,4255 @@
+$ tsx tools/dqe-sim/src/server.ts
+DQE Sim 已启动:http://127.0.0.1:18228/rest/cdi/cdinl2databuilderservice/v1/dsl/execute(Ctrl+C 停止)
+[DQE Sim][dqe-sim-1] OPTIONS /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 204 2ms
+{
+  "request": null,
+  "response": null
+}
+[DQE Sim][dqe-sim-2] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 1ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "asc",
+          "limit": 5
+        }
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "desc",
+          "limit": 5
+        }
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "Aaneti Consultoria",
+            "项目名称": "alfar 365",
+            "商务编号": "0CPIMX2610010P",
+            "SDT成员决策时长": 0
+          },
+          {
+            "客户名称": "广州富米科技有限公司",
+            "项目名称": "富米第四季度企业支持计划",
+            "商务编号": "1CPC5126101K01",
+            "SDT成员决策时长": 0.000024801587301587298
+          },
+          {
+            "客户名称": "毛培胤",
+            "项目名称": "毛培胤20260921",
+            "商务编号": "1CCC0026101T0H",
+            "SDT成员决策时长": 0.0009507275132275133
+          },
+          {
+            "客户名称": "王旭成",
+            "项目名称": "chengrong613-20260914",
+            "商务编号": "1CCC0026101S03",
+            "SDT成员决策时长": 0.001802248677248677
+          },
+          {
+            "客户名称": "谢岳禹",
+            "项目名称": "hw029274613",
+            "商务编号": "1CCC0026101U0G",
+            "SDT成员决策时长": 0.0020916005291005293
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "บริษัท ซีพีเอฟ ไอทีเซ็นเตอร์ จำกัด",
+            "项目名称": "CPF_Mendix Landing Zone (Master Account)",
+            "商务编号": "0CPITH2610050T",
+            "SDT成员决策时长": 22.988401124338623
+          },
+          {
+            "客户名称": null,
+            "项目名称": "TE 2B Frame Contract",
+            "商务编号": "0CPIEG2510030T",
+            "SDT成员决策时长": 22.487731481481486
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO项目专业服务",
+            "商务编号": "0CCING2610010V",
+            "SDT成员决策时长": 21.397635582010583
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO专业服务2",
+            "商务编号": "0CCING2610010U",
+            "SDT成员决策时长": 21.391468253968256
+          },
+          {
+            "客户名称": "Mercadolibre S.R.L.",
+            "项目名称": "Poicenot MIgration Coupon for August",
+            "商务编号": "0CPIAR26100109",
+            "SDT成员决策时长": 19.10560515873016
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-3] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 1ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CPIMX2610010P",
+                "1CCC0026101S03",
+                "1CCC0026101T0H",
+                "1CCC0026101U0G",
+                "1CPC5126101K01"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CCING2610010U",
+                "0CCING2610010V",
+                "0CPIAR26100109",
+                "0CPIEG2510030T",
+                "0CPITH2610050T"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 10
+          },
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CPC5126101K01",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.000024801587301587298,
+            "SDT成员决策次数": 12
+          },
+          {
+            "商务编号": "1CCC0026101T0H",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0009507275132275133,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CCC0026101S03",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.001802248677248677,
+            "SDT成员决策次数": 3
+          },
+          {
+            "商务编号": "1CCC0026101U0G",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0020916005291005293,
+            "SDT成员决策次数": 2
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 18
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.13,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.21,
+            "SDT成员决策次数": 14
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.22,
+            "SDT成员决策次数": 11
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.23,
+            "SDT成员决策次数": 15
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.31,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.32,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.33,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.41,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.42,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.43,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.51,
+            "SDT成员决策次数": 8
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.52,
+            "SDT成员决策次数": 1
+          }
+        ],
+        "total_count": 14,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-4] OPTIONS /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 204 0ms
+{
+  "request": null,
+  "response": null
+}
+[DQE Sim][dqe-sim-5] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 1ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "asc",
+          "limit": 5
+        }
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "desc",
+          "limit": 5
+        }
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "Aaneti Consultoria",
+            "项目名称": "alfar 365",
+            "商务编号": "0CPIMX2610010P",
+            "SDT成员决策时长": 0
+          },
+          {
+            "客户名称": "广州富米科技有限公司",
+            "项目名称": "富米第四季度企业支持计划",
+            "商务编号": "1CPC5126101K01",
+            "SDT成员决策时长": 0.000024801587301587298
+          },
+          {
+            "客户名称": "毛培胤",
+            "项目名称": "毛培胤20260921",
+            "商务编号": "1CCC0026101T0H",
+            "SDT成员决策时长": 0.0009507275132275133
+          },
+          {
+            "客户名称": "王旭成",
+            "项目名称": "chengrong613-20260914",
+            "商务编号": "1CCC0026101S03",
+            "SDT成员决策时长": 0.001802248677248677
+          },
+          {
+            "客户名称": "谢岳禹",
+            "项目名称": "hw029274613",
+            "商务编号": "1CCC0026101U0G",
+            "SDT成员决策时长": 0.0020916005291005293
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "บริษัท ซีพีเอฟ ไอทีเซ็นเตอร์ จำกัด",
+            "项目名称": "CPF_Mendix Landing Zone (Master Account)",
+            "商务编号": "0CPITH2610050T",
+            "SDT成员决策时长": 22.988401124338623
+          },
+          {
+            "客户名称": null,
+            "项目名称": "TE 2B Frame Contract",
+            "商务编号": "0CPIEG2510030T",
+            "SDT成员决策时长": 22.487731481481486
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO项目专业服务",
+            "商务编号": "0CCING2610010V",
+            "SDT成员决策时长": 21.397635582010583
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO专业服务2",
+            "商务编号": "0CCING2610010U",
+            "SDT成员决策时长": 21.391468253968256
+          },
+          {
+            "客户名称": "Mercadolibre S.R.L.",
+            "项目名称": "Poicenot MIgration Coupon for August",
+            "商务编号": "0CPIAR26100109",
+            "SDT成员决策时长": 19.10560515873016
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-6] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CPIMX2610010P",
+                "1CCC0026101S03",
+                "1CCC0026101T0H",
+                "1CCC0026101U0G",
+                "1CPC5126101K01"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CCING2610010U",
+                "0CCING2610010V",
+                "0CPIAR26100109",
+                "0CPIEG2510030T",
+                "0CPITH2610050T"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 10
+          },
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CPC5126101K01",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.000024801587301587298,
+            "SDT成员决策次数": 12
+          },
+          {
+            "商务编号": "1CCC0026101T0H",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0009507275132275133,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CCC0026101S03",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.001802248677248677,
+            "SDT成员决策次数": 3
+          },
+          {
+            "商务编号": "1CCC0026101U0G",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0020916005291005293,
+            "SDT成员决策次数": 2
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 18
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.13,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.21,
+            "SDT成员决策次数": 14
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.22,
+            "SDT成员决策次数": 11
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.23,
+            "SDT成员决策次数": 15
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.31,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.32,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.33,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.41,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.42,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.43,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.51,
+            "SDT成员决策次数": 8
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.52,
+            "SDT成员决策次数": 1
+          }
+        ],
+        "total_count": 14,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-7] OPTIONS /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 204 0ms
+{
+  "request": null,
+  "response": null
+}
+[DQE Sim][dqe-sim-8] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "asc",
+          "limit": 5
+        }
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "desc",
+          "limit": 5
+        }
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "Aaneti Consultoria",
+            "项目名称": "alfar 365",
+            "商务编号": "0CPIMX2610010P",
+            "SDT成员决策时长": 0
+          },
+          {
+            "客户名称": "广州富米科技有限公司",
+            "项目名称": "富米第四季度企业支持计划",
+            "商务编号": "1CPC5126101K01",
+            "SDT成员决策时长": 0.000024801587301587298
+          },
+          {
+            "客户名称": "毛培胤",
+            "项目名称": "毛培胤20260921",
+            "商务编号": "1CCC0026101T0H",
+            "SDT成员决策时长": 0.0009507275132275133
+          },
+          {
+            "客户名称": "王旭成",
+            "项目名称": "chengrong613-20260914",
+            "商务编号": "1CCC0026101S03",
+            "SDT成员决策时长": 0.001802248677248677
+          },
+          {
+            "客户名称": "谢岳禹",
+            "项目名称": "hw029274613",
+            "商务编号": "1CCC0026101U0G",
+            "SDT成员决策时长": 0.0020916005291005293
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "บริษัท ซีพีเอฟ ไอทีเซ็นเตอร์ จำกัด",
+            "项目名称": "CPF_Mendix Landing Zone (Master Account)",
+            "商务编号": "0CPITH2610050T",
+            "SDT成员决策时长": 22.988401124338623
+          },
+          {
+            "客户名称": null,
+            "项目名称": "TE 2B Frame Contract",
+            "商务编号": "0CPIEG2510030T",
+            "SDT成员决策时长": 22.487731481481486
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO项目专业服务",
+            "商务编号": "0CCING2610010V",
+            "SDT成员决策时长": 21.397635582010583
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO专业服务2",
+            "商务编号": "0CCING2610010U",
+            "SDT成员决策时长": 21.391468253968256
+          },
+          {
+            "客户名称": "Mercadolibre S.R.L.",
+            "项目名称": "Poicenot MIgration Coupon for August",
+            "商务编号": "0CPIAR26100109",
+            "SDT成员决策时长": 19.10560515873016
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-9] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 1ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CPIMX2610010P",
+                "1CCC0026101S03",
+                "1CCC0026101T0H",
+                "1CCC0026101U0G",
+                "1CPC5126101K01"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CCING2610010U",
+                "0CCING2610010V",
+                "0CPIAR26100109",
+                "0CPIEG2510030T",
+                "0CPITH2610050T"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 10
+          },
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CPC5126101K01",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.000024801587301587298,
+            "SDT成员决策次数": 12
+          },
+          {
+            "商务编号": "1CCC0026101T0H",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0009507275132275133,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CCC0026101S03",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.001802248677248677,
+            "SDT成员决策次数": 3
+          },
+          {
+            "商务编号": "1CCC0026101U0G",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0020916005291005293,
+            "SDT成员决策次数": 2
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 18
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.13,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.21,
+            "SDT成员决策次数": 14
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.22,
+            "SDT成员决策次数": 11
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.23,
+            "SDT成员决策次数": 15
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.31,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.32,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.33,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.41,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.42,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.43,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.51,
+            "SDT成员决策次数": 8
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.52,
+            "SDT成员决策次数": 1
+          }
+        ],
+        "total_count": 14,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-10] OPTIONS /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 204 0ms
+{
+  "request": null,
+  "response": null
+}
+[DQE Sim][dqe-sim-11] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "asc",
+          "limit": 5
+        }
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "desc",
+          "limit": 5
+        }
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "Aaneti Consultoria",
+            "项目名称": "alfar 365",
+            "商务编号": "0CPIMX2610010P",
+            "SDT成员决策时长": 0
+          },
+          {
+            "客户名称": "广州富米科技有限公司",
+            "项目名称": "富米第四季度企业支持计划",
+            "商务编号": "1CPC5126101K01",
+            "SDT成员决策时长": 0.000024801587301587298
+          },
+          {
+            "客户名称": "毛培胤",
+            "项目名称": "毛培胤20260921",
+            "商务编号": "1CCC0026101T0H",
+            "SDT成员决策时长": 0.0009507275132275133
+          },
+          {
+            "客户名称": "王旭成",
+            "项目名称": "chengrong613-20260914",
+            "商务编号": "1CCC0026101S03",
+            "SDT成员决策时长": 0.001802248677248677
+          },
+          {
+            "客户名称": "谢岳禹",
+            "项目名称": "hw029274613",
+            "商务编号": "1CCC0026101U0G",
+            "SDT成员决策时长": 0.0020916005291005293
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "บริษัท ซีพีเอฟ ไอทีเซ็นเตอร์ จำกัด",
+            "项目名称": "CPF_Mendix Landing Zone (Master Account)",
+            "商务编号": "0CPITH2610050T",
+            "SDT成员决策时长": 22.988401124338623
+          },
+          {
+            "客户名称": null,
+            "项目名称": "TE 2B Frame Contract",
+            "商务编号": "0CPIEG2510030T",
+            "SDT成员决策时长": 22.487731481481486
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO项目专业服务",
+            "商务编号": "0CCING2610010V",
+            "SDT成员决策时长": 21.397635582010583
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO专业服务2",
+            "商务编号": "0CCING2610010U",
+            "SDT成员决策时长": 21.391468253968256
+          },
+          {
+            "客户名称": "Mercadolibre S.R.L.",
+            "项目名称": "Poicenot MIgration Coupon for August",
+            "商务编号": "0CPIAR26100109",
+            "SDT成员决策时长": 19.10560515873016
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-12] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CPIMX2610010P",
+                "1CCC0026101S03",
+                "1CCC0026101T0H",
+                "1CCC0026101U0G",
+                "1CPC5126101K01"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CCING2610010U",
+                "0CCING2610010V",
+                "0CPIAR26100109",
+                "0CPIEG2510030T",
+                "0CPITH2610050T"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 10
+          },
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CPC5126101K01",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.000024801587301587298,
+            "SDT成员决策次数": 12
+          },
+          {
+            "商务编号": "1CCC0026101T0H",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0009507275132275133,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CCC0026101S03",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.001802248677248677,
+            "SDT成员决策次数": 3
+          },
+          {
+            "商务编号": "1CCC0026101U0G",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0020916005291005293,
+            "SDT成员决策次数": 2
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 18
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.13,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.21,
+            "SDT成员决策次数": 14
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.22,
+            "SDT成员决策次数": 11
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.23,
+            "SDT成员决策次数": 15
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.31,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.32,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.33,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.41,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.42,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.43,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.51,
+            "SDT成员决策次数": 8
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.52,
+            "SDT成员决策次数": 1
+          }
+        ],
+        "total_count": 14,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-13] OPTIONS /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 204 0ms
+{
+  "request": null,
+  "response": null
+}
+[DQE Sim][dqe-sim-14] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 1ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "asc",
+          "limit": 5
+        }
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "desc",
+          "limit": 5
+        }
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "Aaneti Consultoria",
+            "项目名称": "alfar 365",
+            "商务编号": "0CPIMX2610010P",
+            "SDT成员决策时长": 0
+          },
+          {
+            "客户名称": "广州富米科技有限公司",
+            "项目名称": "富米第四季度企业支持计划",
+            "商务编号": "1CPC5126101K01",
+            "SDT成员决策时长": 0.000024801587301587298
+          },
+          {
+            "客户名称": "毛培胤",
+            "项目名称": "毛培胤20260921",
+            "商务编号": "1CCC0026101T0H",
+            "SDT成员决策时长": 0.0009507275132275133
+          },
+          {
+            "客户名称": "王旭成",
+            "项目名称": "chengrong613-20260914",
+            "商务编号": "1CCC0026101S03",
+            "SDT成员决策时长": 0.001802248677248677
+          },
+          {
+            "客户名称": "谢岳禹",
+            "项目名称": "hw029274613",
+            "商务编号": "1CCC0026101U0G",
+            "SDT成员决策时长": 0.0020916005291005293
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "บริษัท ซีพีเอฟ ไอทีเซ็นเตอร์ จำกัด",
+            "项目名称": "CPF_Mendix Landing Zone (Master Account)",
+            "商务编号": "0CPITH2610050T",
+            "SDT成员决策时长": 22.988401124338623
+          },
+          {
+            "客户名称": null,
+            "项目名称": "TE 2B Frame Contract",
+            "商务编号": "0CPIEG2510030T",
+            "SDT成员决策时长": 22.487731481481486
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO项目专业服务",
+            "商务编号": "0CCING2610010V",
+            "SDT成员决策时长": 21.397635582010583
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO专业服务2",
+            "商务编号": "0CCING2610010U",
+            "SDT成员决策时长": 21.391468253968256
+          },
+          {
+            "客户名称": "Mercadolibre S.R.L.",
+            "项目名称": "Poicenot MIgration Coupon for August",
+            "商务编号": "0CPIAR26100109",
+            "SDT成员决策时长": 19.10560515873016
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-15] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CPIMX2610010P",
+                "1CCC0026101S03",
+                "1CCC0026101T0H",
+                "1CCC0026101U0G",
+                "1CPC5126101K01"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CCING2610010U",
+                "0CCING2610010V",
+                "0CPIAR26100109",
+                "0CPIEG2510030T",
+                "0CPITH2610050T"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 10
+          },
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CPC5126101K01",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.000024801587301587298,
+            "SDT成员决策次数": 12
+          },
+          {
+            "商务编号": "1CCC0026101T0H",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0009507275132275133,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CCC0026101S03",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.001802248677248677,
+            "SDT成员决策次数": 3
+          },
+          {
+            "商务编号": "1CCC0026101U0G",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0020916005291005293,
+            "SDT成员决策次数": 2
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 18
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.13,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.21,
+            "SDT成员决策次数": 14
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.22,
+            "SDT成员决策次数": 11
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.23,
+            "SDT成员决策次数": 15
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.31,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.32,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.33,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.41,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.42,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.43,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.51,
+            "SDT成员决策次数": 8
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.52,
+            "SDT成员决策次数": 1
+          }
+        ],
+        "total_count": 14,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-16] OPTIONS /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 204 1ms
+{
+  "request": null,
+  "response": null
+}
+[DQE Sim][dqe-sim-17] OPTIONS /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 204 0ms
+{
+  "request": null,
+  "response": null
+}
+[DQE Sim][dqe-sim-18] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "asc",
+          "limit": 5
+        }
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "desc",
+          "limit": 5
+        }
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "Aaneti Consultoria",
+            "项目名称": "alfar 365",
+            "商务编号": "0CPIMX2610010P",
+            "SDT成员决策时长": 0
+          },
+          {
+            "客户名称": "广州富米科技有限公司",
+            "项目名称": "富米第四季度企业支持计划",
+            "商务编号": "1CPC5126101K01",
+            "SDT成员决策时长": 0.000024801587301587298
+          },
+          {
+            "客户名称": "毛培胤",
+            "项目名称": "毛培胤20260921",
+            "商务编号": "1CCC0026101T0H",
+            "SDT成员决策时长": 0.0009507275132275133
+          },
+          {
+            "客户名称": "王旭成",
+            "项目名称": "chengrong613-20260914",
+            "商务编号": "1CCC0026101S03",
+            "SDT成员决策时长": 0.001802248677248677
+          },
+          {
+            "客户名称": "谢岳禹",
+            "项目名称": "hw029274613",
+            "商务编号": "1CCC0026101U0G",
+            "SDT成员决策时长": 0.0020916005291005293
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "บริษัท ซีพีเอฟ ไอทีเซ็นเตอร์ จำกัด",
+            "项目名称": "CPF_Mendix Landing Zone (Master Account)",
+            "商务编号": "0CPITH2610050T",
+            "SDT成员决策时长": 22.988401124338623
+          },
+          {
+            "客户名称": null,
+            "项目名称": "TE 2B Frame Contract",
+            "商务编号": "0CPIEG2510030T",
+            "SDT成员决策时长": 22.487731481481486
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO项目专业服务",
+            "商务编号": "0CCING2610010V",
+            "SDT成员决策时长": 21.397635582010583
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO专业服务2",
+            "商务编号": "0CCING2610010U",
+            "SDT成员决策时长": 21.391468253968256
+          },
+          {
+            "客户名称": "Mercadolibre S.R.L.",
+            "项目名称": "Poicenot MIgration Coupon for August",
+            "商务编号": "0CPIAR26100109",
+            "SDT成员决策时长": 19.10560515873016
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-19] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 1ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CPIMX2610010P",
+                "1CCC0026101S03",
+                "1CCC0026101T0H",
+                "1CCC0026101U0G",
+                "1CPC5126101K01"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CCING2610010U",
+                "0CCING2610010V",
+                "0CPIAR26100109",
+                "0CPIEG2510030T",
+                "0CPITH2610050T"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 10
+          },
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CPC5126101K01",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.000024801587301587298,
+            "SDT成员决策次数": 12
+          },
+          {
+            "商务编号": "1CCC0026101T0H",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0009507275132275133,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CCC0026101S03",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.001802248677248677,
+            "SDT成员决策次数": 3
+          },
+          {
+            "商务编号": "1CCC0026101U0G",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0020916005291005293,
+            "SDT成员决策次数": 2
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 18
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.13,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.21,
+            "SDT成员决策次数": 14
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.22,
+            "SDT成员决策次数": 11
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.23,
+            "SDT成员决策次数": 15
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.31,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.32,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.33,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.41,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.42,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.43,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.51,
+            "SDT成员决策次数": 8
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.52,
+            "SDT成员决策次数": 1
+          }
+        ],
+        "total_count": 14,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-20] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "asc",
+          "limit": 5
+        }
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "desc",
+          "limit": 5
+        }
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "Aaneti Consultoria",
+            "项目名称": "alfar 365",
+            "商务编号": "0CPIMX2610010P",
+            "SDT成员决策时长": 0
+          },
+          {
+            "客户名称": "广州富米科技有限公司",
+            "项目名称": "富米第四季度企业支持计划",
+            "商务编号": "1CPC5126101K01",
+            "SDT成员决策时长": 0.000024801587301587298
+          },
+          {
+            "客户名称": "毛培胤",
+            "项目名称": "毛培胤20260921",
+            "商务编号": "1CCC0026101T0H",
+            "SDT成员决策时长": 0.0009507275132275133
+          },
+          {
+            "客户名称": "王旭成",
+            "项目名称": "chengrong613-20260914",
+            "商务编号": "1CCC0026101S03",
+            "SDT成员决策时长": 0.001802248677248677
+          },
+          {
+            "客户名称": "谢岳禹",
+            "项目名称": "hw029274613",
+            "商务编号": "1CCC0026101U0G",
+            "SDT成员决策时长": 0.0020916005291005293
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "บริษัท ซีพีเอฟ ไอทีเซ็นเตอร์ จำกัด",
+            "项目名称": "CPF_Mendix Landing Zone (Master Account)",
+            "商务编号": "0CPITH2610050T",
+            "SDT成员决策时长": 22.988401124338623
+          },
+          {
+            "客户名称": null,
+            "项目名称": "TE 2B Frame Contract",
+            "商务编号": "0CPIEG2510030T",
+            "SDT成员决策时长": 22.487731481481486
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO项目专业服务",
+            "商务编号": "0CCING2610010V",
+            "SDT成员决策时长": 21.397635582010583
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO专业服务2",
+            "商务编号": "0CCING2610010U",
+            "SDT成员决策时长": 21.391468253968256
+          },
+          {
+            "客户名称": "Mercadolibre S.R.L.",
+            "项目名称": "Poicenot MIgration Coupon for August",
+            "商务编号": "0CPIAR26100109",
+            "SDT成员决策时长": 19.10560515873016
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-21] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CPIMX2610010P",
+                "1CCC0026101S03",
+                "1CCC0026101T0H",
+                "1CCC0026101U0G",
+                "1CPC5126101K01"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CCING2610010U",
+                "0CCING2610010V",
+                "0CPIAR26100109",
+                "0CPIEG2510030T",
+                "0CPITH2610050T"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 10
+          },
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CPC5126101K01",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.000024801587301587298,
+            "SDT成员决策次数": 12
+          },
+          {
+            "商务编号": "1CCC0026101T0H",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0009507275132275133,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CCC0026101S03",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.001802248677248677,
+            "SDT成员决策次数": 3
+          },
+          {
+            "商务编号": "1CCC0026101U0G",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0020916005291005293,
+            "SDT成员决策次数": 2
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 18
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.13,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.21,
+            "SDT成员决策次数": 14
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.22,
+            "SDT成员决策次数": 11
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.23,
+            "SDT成员决策次数": 15
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.31,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.32,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.33,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.41,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.42,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.43,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.51,
+            "SDT成员决策次数": 8
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.52,
+            "SDT成员决策次数": 1
+          }
+        ],
+        "total_count": 14,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-22] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 2ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "asc",
+          "limit": 5
+        }
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "desc",
+          "limit": 5
+        }
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "Aaneti Consultoria",
+            "项目名称": "alfar 365",
+            "商务编号": "0CPIMX2610010P",
+            "SDT成员决策时长": 0
+          },
+          {
+            "客户名称": "广州富米科技有限公司",
+            "项目名称": "富米第四季度企业支持计划",
+            "商务编号": "1CPC5126101K01",
+            "SDT成员决策时长": 0.000024801587301587298
+          },
+          {
+            "客户名称": "毛培胤",
+            "项目名称": "毛培胤20260921",
+            "商务编号": "1CCC0026101T0H",
+            "SDT成员决策时长": 0.0009507275132275133
+          },
+          {
+            "客户名称": "王旭成",
+            "项目名称": "chengrong613-20260914",
+            "商务编号": "1CCC0026101S03",
+            "SDT成员决策时长": 0.001802248677248677
+          },
+          {
+            "客户名称": "谢岳禹",
+            "项目名称": "hw029274613",
+            "商务编号": "1CCC0026101U0G",
+            "SDT成员决策时长": 0.0020916005291005293
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "บริษัท ซีพีเอฟ ไอทีเซ็นเตอร์ จำกัด",
+            "项目名称": "CPF_Mendix Landing Zone (Master Account)",
+            "商务编号": "0CPITH2610050T",
+            "SDT成员决策时长": 22.988401124338623
+          },
+          {
+            "客户名称": null,
+            "项目名称": "TE 2B Frame Contract",
+            "商务编号": "0CPIEG2510030T",
+            "SDT成员决策时长": 22.487731481481486
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO项目专业服务",
+            "商务编号": "0CCING2610010V",
+            "SDT成员决策时长": 21.397635582010583
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO专业服务2",
+            "商务编号": "0CCING2610010U",
+            "SDT成员决策时长": 21.391468253968256
+          },
+          {
+            "客户名称": "Mercadolibre S.R.L.",
+            "项目名称": "Poicenot MIgration Coupon for August",
+            "商务编号": "0CPIAR26100109",
+            "SDT成员决策时长": 19.10560515873016
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-23] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 1ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CPIMX2610010P",
+                "1CCC0026101S03",
+                "1CCC0026101T0H",
+                "1CCC0026101U0G",
+                "1CPC5126101K01"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CCING2610010U",
+                "0CCING2610010V",
+                "0CPIAR26100109",
+                "0CPIEG2510030T",
+                "0CPITH2610050T"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 10
+          },
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CPC5126101K01",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.000024801587301587298,
+            "SDT成员决策次数": 12
+          },
+          {
+            "商务编号": "1CCC0026101T0H",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0009507275132275133,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CCC0026101S03",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.001802248677248677,
+            "SDT成员决策次数": 3
+          },
+          {
+            "商务编号": "1CCC0026101U0G",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0020916005291005293,
+            "SDT成员决策次数": 2
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 18
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.13,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.21,
+            "SDT成员决策次数": 14
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.22,
+            "SDT成员决策次数": 11
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.23,
+            "SDT成员决策次数": 15
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.31,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.32,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.33,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.41,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.42,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.43,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.51,
+            "SDT成员决策次数": 8
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.52,
+            "SDT成员决策次数": 1
+          }
+        ],
+        "total_count": 14,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-24] OPTIONS /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 204 0ms
+{
+  "request": null,
+  "response": null
+}
+[DQE Sim][dqe-sim-25] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 1ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "asc",
+          "limit": 5
+        }
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "desc",
+          "limit": 5
+        }
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "Aaneti Consultoria",
+            "项目名称": "alfar 365",
+            "商务编号": "0CPIMX2610010P",
+            "SDT成员决策时长": 0
+          },
+          {
+            "客户名称": "广州富米科技有限公司",
+            "项目名称": "富米第四季度企业支持计划",
+            "商务编号": "1CPC5126101K01",
+            "SDT成员决策时长": 0.000024801587301587298
+          },
+          {
+            "客户名称": "毛培胤",
+            "项目名称": "毛培胤20260921",
+            "商务编号": "1CCC0026101T0H",
+            "SDT成员决策时长": 0.0009507275132275133
+          },
+          {
+            "客户名称": "王旭成",
+            "项目名称": "chengrong613-20260914",
+            "商务编号": "1CCC0026101S03",
+            "SDT成员决策时长": 0.001802248677248677
+          },
+          {
+            "客户名称": "谢岳禹",
+            "项目名称": "hw029274613",
+            "商务编号": "1CCC0026101U0G",
+            "SDT成员决策时长": 0.0020916005291005293
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "客户名称": "บริษัท ซีพีเอฟ ไอทีเซ็นเตอร์ จำกัด",
+            "项目名称": "CPF_Mendix Landing Zone (Master Account)",
+            "商务编号": "0CPITH2610050T",
+            "SDT成员决策时长": 22.988401124338623
+          },
+          {
+            "客户名称": null,
+            "项目名称": "TE 2B Frame Contract",
+            "商务编号": "0CPIEG2510030T",
+            "SDT成员决策时长": 22.487731481481486
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO项目专业服务",
+            "商务编号": "0CCING2610010V",
+            "SDT成员决策时长": 21.397635582010583
+          },
+          {
+            "客户名称": "ADG ENVEZA FZCO",
+            "项目名称": "尼日利亚Moniepoint HCSO专业服务2",
+            "商务编号": "0CCING2610010U",
+            "SDT成员决策时长": 21.391468253968256
+          },
+          {
+            "客户名称": "Mercadolibre S.R.L.",
+            "项目名称": "Poicenot MIgration Coupon for August",
+            "商务编号": "0CPIAR26100109",
+            "SDT成员决策时长": 19.10560515873016
+          }
+        ],
+        "total_count": 5,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-26] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CPIMX2610010P",
+                "1CCC0026101S03",
+                "1CCC0026101T0H",
+                "1CCC0026101U0G",
+                "1CPC5126101K01"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长",
+          "SDT成员决策次数"
+        ],
+        "output_dims": [
+          "商务编号",
+          "阶段名称"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [
+            {
+              "dim_name": "商务编号",
+              "dim_value_list": [
+                "0CCING2610010U",
+                "0CCING2610010V",
+                "0CPIAR26100109",
+                "0CPIEG2510030T",
+                "0CPITH2610050T"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 10
+          },
+          {
+            "商务编号": "0CPIMX2610010P",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CPC5126101K01",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.000024801587301587298,
+            "SDT成员决策次数": 12
+          },
+          {
+            "商务编号": "1CCC0026101T0H",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0009507275132275133,
+            "SDT成员决策次数": 2
+          },
+          {
+            "商务编号": "1CCC0026101S03",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.001802248677248677,
+            "SDT成员决策次数": 3
+          },
+          {
+            "商务编号": "1CCC0026101U0G",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.0020916005291005293,
+            "SDT成员决策次数": 2
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.11,
+            "SDT成员决策次数": 18
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.12,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPITH2610050T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.13,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.21,
+            "SDT成员决策次数": 14
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.22,
+            "SDT成员决策次数": 11
+          },
+          {
+            "商务编号": "0CPIEG2510030T",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.23,
+            "SDT成员决策次数": 15
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.31,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.32,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010V",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.33,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.41,
+            "SDT成员决策次数": 4
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.42,
+            "SDT成员决策次数": 7
+          },
+          {
+            "商务编号": "0CCING2610010U",
+            "阶段名称": "华为云计算SDT",
+            "SDT成员决策时长": 0.43,
+            "SDT成员决策次数": 6
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "代表处SDT",
+            "SDT成员决策时长": 0.51,
+            "SDT成员决策次数": 8
+          },
+          {
+            "商务编号": "0CPIAR26100109",
+            "阶段名称": "地区部SDT",
+            "SDT成员决策时长": 0.52,
+            "SDT成员决策次数": 1
+          }
+        ],
+        "total_count": 14,
+        "dqe": {
+          "columns": [
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "阶段名称",
+              "caption": "阶段名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            },
+            {
+              "id": "SDT成员决策次数",
+              "caption": "SDT成员决策次数",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[ELIFECYCLE] Command failed with exit code 143.

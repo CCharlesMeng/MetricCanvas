@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.6**，6.x 支持 6.5 和 6.6，公开读取仍兼容5.0—5.4；读取5.x后规范化为6.6运行态文档，读取6.5保留其版本，新分组参数文档写6.6。结构事实由 `packages/page/src/schema/` 单向导出；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.14**，读取支持5.0—5.4、6.5、6.11、6.12、6.13和6.14；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
 
 ## 从需求到页面
 
@@ -12,6 +12,8 @@
 
 维度与时间参数的统一现行说明见[页面参数：维度与时间](PAGE-PARAMETERS.md)，包含概念、字段用途、查询绑定、时间窗口及保存行为。
 
+级联查询的定义、完整数据源示例、执行顺序与边界见[级联查询：元数据定义与使用逻辑](docs/cascading-queries.md)。
+
 1. 从[模块参考](contracts/metriccanvas/page/reference/README.md)按任务或JSON路径定位；[组件选型](contracts/metriccanvas/page/reference/components/README.md)说明用途与数据形状。
 2. 选择模块内的完整JSON例子，保留其显式数据/参数/筛选依赖；字段表中的联合分支分别阅读，不能合并必填项。
 3. 使用仓库现有 `pnpm validate <页面 JSON 所在目录>` 进行完整页面校验。静态例子不证明真实DQE或SSE成功；执行结果仍须经过受控端口。
@@ -20,9 +22,9 @@
 
 ## 版本、初始化与持久化
 
-新文档写6.12和layout（保留6.11读取）；已支持版本的layoutForm在输入边界兼容读取，双字段同时出现拒绝。规范化保留已支持版本的能力边界，旧文档迁移另存新修订；先核验历史原文hash，再规范化。详见[布局迁移](docs/page-metadata/layout-migration.md)。
+新文档写6.14和layout（保留上述旧版本读取）；已支持版本的layoutForm在输入边界兼容读取，双字段同时出现拒绝。规范化保留已支持版本的能力边界，旧文档迁移另存新修订；先核验历史原文hash，再规范化。详见[布局迁移](docs/page-metadata/layout-migration.md)。
 
-当前模板在同一 Page Schema 内以分层 params 与 DQE 取值位置的原位 param 引用表达。无值模板结构合法，输入完整性在执行前验证。6.x 接受 6.5 与当前 6.11，保留 5.0–5.4 兼容读取。提取、解析和旧绑定显式迁移见[页面参数](PAGE-PARAMETERS.md)。
+当前模板在同一 Page Schema 内以分层 params 与 DQE 取值位置的原位 param 引用表达。无值模板结构合法，输入完整性在执行前验证。可读版本范围以上方版本说明与生成契约为准。提取、解析和旧绑定显式迁移见[页面参数](PAGE-PARAMETERS.md)。
 
 页面参数是一次初始化的不可变输入，筛选器是页内可变状态。6.6 新增 `params.query.{dimensions,times}` 与 `params.display` 分层声明：按消费位置分层，多组时间按 ID 独立引用，实际值用 `dim_value_list`、`start/end`、`value` 表达；查询侧在 `filter.time` 上整段引用时间输入，写 `window` 即以该值为基准点派生区间。新结构规则见[分层参数](PAGE-PARAMETERS.md#当前分层参数新页面)，以下 default/paramBindings 说明保留旧数组兼容语义。6.2维度参数支持单值/多值和显式query.paramBindings/filter.initialParam；实际执行值与URL初始化的边界见[参数与文本](contracts/metriccanvas/page/reference/params-and-text-values.md)及[执行消费契约](docs/archive/authoring-tickets-126/t18-execution-contract.md)。运行时替换后的副本不作为模板原文保存。
 

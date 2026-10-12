@@ -13,6 +13,7 @@ import {
 } from '../../packages/page/src/internal.ts';
 import { buildPageReference, validateReferenceLinks } from './page-reference.ts';
 import { invariants, type InvariantDefinition } from './page-conformance-vectors.ts';
+import { queryResultCases } from './query-result-conformance-vectors.ts';
 import {extractPageParams,applyPageParamSelection,resolvePageParams} from '../../packages/page/src/index.ts';
 
 const repoRoot = path.resolve(import.meta.dirname, '../..');
@@ -247,6 +248,7 @@ async function buildProductOutputs(): Promise<OutputMap> {
   inlineCase('anchor-window',anchorReference);
   inlineCase('mismatched-windows',p=>{anchorReference(p);p.dataSources.tokens.source.query.body.dsl_list[0].filter.time.end={param:'report-period',part:'end',window:{kind:'lastN',unit:'month',n:6}};});
   outputs.set('page/conformance/inline-params.json',json({cases:inlineCases}));
+  outputs.set('page/conformance/query-result-bindings.json', json({cases: queryResultCases(fixtures.get('query-cascade-page'))}));
 
   const tokensInput=JSON.parse(await readFile(path.join(repoRoot,'packages/page/fixtures/parameter-extraction/tokens-parameter-source.json'),'utf8'));
   const extractionContext={baseline:'tokens-local-verified-fixture',timeIdentities:Object.fromEntries(Object.keys(tokensInput.dataSources).map(id=>[id,'tokens-report-period'])),dimensionIdentities:Object.fromEntries(Object.keys(tokensInput.dataSources).map(id=>[id,{'区域':'region'}]))};

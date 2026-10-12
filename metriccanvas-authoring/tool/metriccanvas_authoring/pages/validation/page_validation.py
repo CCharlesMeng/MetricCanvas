@@ -74,13 +74,19 @@ def validate_page_document(value: Any) -> list[PageContractIssue]:
         return optional_issues
     row_issues = [*_query_initial_row_issues(value), *_inline_row_issues(value)]
     from .report_date_filters import report_date_issues
-    return [*row_issues, *_invariant_issues(value), *_navigation_issues(value), *[PageContractIssue(*issue) for issue in report_date_issues(value)]]
+    from .query_results import query_result_issues
+    return [*row_issues, *_invariant_issues(value), *_navigation_issues(value), *[PageContractIssue(*issue) for issue in report_date_issues(value)], *[PageContractIssue(*issue) for issue in query_result_issues(value, _resolved_fields)]]
 
 
 def _parameter_capability_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
     if isinstance(value.get("params"), Mapping) and not value["params"]:
         return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs cannot be empty")]
     minor = int(value["schemaVersion"].split(".")[1])
+    from .query_results import capability_paths
+    if minor < 14:
+        paths = capability_paths(value)
+        if paths:
+            return [PageContractIssue("SCHEMA_ERROR", path, "级联查询或多度量透视由6.14引入") for path in paths]
     if isinstance(value.get("params"), Mapping) and minor < 6:
         return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs require 6.6")]
     from .report_date_filters import date_capability_paths
@@ -1837,7 +1843,7 @@ def _pivot_issues(operator, path, declared, output, issues):
     declared(operator.get("valueField"), f"{path}/valueField", "measure")
     for key_index, field_id in enumerate(operator.get("keyFields", [])):
         declared(field_id, f"{path}/keyFields/{key_index}", "dimension")
-    categories: set[str] = set()
+    categories: set[tuple[str, str]] = set()
     columns = operator.get("columns", [])
     if not isinstance(columns, list):
         columns = []
@@ -1846,8 +1852,10 @@ def _pivot_issues(operator, path, declared, output, issues):
             continue
         column_path = f"{path}/columns/{column_index}"
         output(column.get("output"), f"{column_path}/output", "measure")
+        effective_field = column.get("valueField", operator.get("valueField"))
+        declared(effective_field, f"{column_path}/valueField", "measure")
         for category_index, category in enumerate(column.get("categories", [])):
-            if isinstance(category, str) and category in categories:
+            if isinstance(category, str) and (effective_field, category) in categories:
                 issues.append(
                     PageContractIssue(
                         "SCHEMA_ERROR",
@@ -1856,7 +1864,7 @@ def _pivot_issues(operator, path, declared, output, issues):
                     )
                 )
             if isinstance(category, str):
-                categories.add(category)
+                categories.add((effective_field, category))
 
 
 def _computed_row_issues(data_source, source_path, fields, produced, issues):

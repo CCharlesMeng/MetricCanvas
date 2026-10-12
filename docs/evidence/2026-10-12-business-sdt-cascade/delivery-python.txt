@@ -1,0 +1,15 @@
+
+[10/12/26 14:38:26] INFO     Starting MCP server                transport.py:241
+                             'metriccanvas-authoring' with                      
+                             transport 'stdio'                                  
+.Close running child process: kill <_UnixSubprocessTransport closed pid=13125 running stdin=<_UnixWritePipeTransport closed fd=7 closed> stdout=<_UnixReadPipeTransport closed fd=9 closed>>
+......................................
+----------------------------------------------------------------------
+Ran 523 tests in 64.085s
+
+OK (skipped=1)
+{"passed": true, "model": "scripted-no-model", "modelCalls": 0, "tokens": 0, "cases": {"create-complex-report": "pass"}}
+{"passed": true, "model": "scripted-no-model", "modelCalls": 0, "tokens": 0, "cases": {"create-complex-report": "pass"}}
+{"passed": true, "model": "scripted-no-model", "modelCalls": 0, "tokens": 0, "cases": {"create-complex-report": "pass"}}
+{"passed": true, "model": "scripted-no-model", "modelCalls": 0, "tokens": 0, "cases": {"create-report": "pass", "create-dashboard": "pass", "create-complex-report": "pass", "edit-report": "pass", "edit-dashboard": "pass", "edit-add-data": "pass"}}
+{"status": "blocked", "reason": "UNSUPPORTED_SKILL_PROTOCOL", "modelRequests": 0}

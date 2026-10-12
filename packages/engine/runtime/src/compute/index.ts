@@ -163,6 +163,14 @@ function grandTotal(operator: GrandTotalOperator, rows: DataRow[]): DataRow[] {
 function pivot(operator: PivotOperator, rows: DataRow[]): DataRow[] {
   if (rows.length === 0) return rows;
   const keyFields = operator.keyFields ?? [];
+  if (operator.columns.some(column => column.valueField !== undefined)) {
+    const seen = new Set<string>();
+    for (const row of rows) {
+      const key = JSON.stringify([...keyFields.map(field => row[field]), row[operator.categoryField]]);
+      if (seen.has(key)) throw new ComputationError('透视源存在重复分组键与类别');
+      seen.add(key);
+    }
+  }
   const groups = new Map<string, DataRow[]>();
   for (const row of rows) {
     const key = groupKey(keyFields.map((field) => row[field]));
@@ -177,7 +185,7 @@ function pivot(operator: PivotOperator, rows: DataRow[]): DataRow[] {
       result[field] = (group[0]?.[field] ?? null) as ScalarFieldValue;
     }
     for (const column of operator.columns) {
-      result[column.output] = firstMatchingCategory(column.categories, operator, group);
+      result[column.output] = firstMatchingCategory(column.categories, operator, group, column.valueField ?? operator.valueField);
     }
     return result;
   });
@@ -186,11 +194,12 @@ function pivot(operator: PivotOperator, rows: DataRow[]): DataRow[] {
 function firstMatchingCategory(
   categories: readonly string[],
   operator: PivotOperator,
-  group: DataRow[]
+  group: DataRow[],
+  valueField: string
 ): ScalarFieldValue {
   for (const category of categories) {
     const match = group.find((row) => row[operator.categoryField] === category);
-    if (match) return (match[operator.valueField] ?? null) as ScalarFieldValue;
+    if (match) return (match[valueField] ?? null) as ScalarFieldValue;
   }
   return null;
 }

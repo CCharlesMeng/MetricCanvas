@@ -68,6 +68,7 @@ export interface GrandTotalOperator {
 }
 
 export interface PivotColumn {
+  valueField?: string;
   output: string;
   /** 有序类别取值,取第一个命中的;择一逻辑就地显式声明,不引入条件。 */
   categories: string[];

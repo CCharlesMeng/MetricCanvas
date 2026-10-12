@@ -1,0 +1,143 @@
+$ tsx tools/dqe-sim/src/server.ts
+DQE Sim 已启动:http://127.0.0.1:18228/rest/cdi/cdinl2databuilderservice/v1/dsl/execute(Ctrl+C 停止)
+[DQE Sim][dqe-sim-1] OPTIONS /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 204 3ms
+{
+  "request": null,
+  "response": null
+}
+[DQE Sim][dqe-sim-2] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 1ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "asc",
+          "limit": 5
+        }
+      },
+      {
+        "output_metrics": [
+          "SDT成员决策时长"
+        ],
+        "output_dims": [
+          "客户名称",
+          "项目名称",
+          "商务编号"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "202609",
+            "end": "202609"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {
+          "order_by_field": "SDT成员决策时长",
+          "type": "desc",
+          "limit": 5
+        }
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [],
+        "total_count": 0,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [],
+        "total_count": 0,
+        "dqe": {
+          "columns": [
+            {
+              "id": "客户名称",
+              "caption": "客户名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "项目名称",
+              "caption": "项目名称",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "商务编号",
+              "caption": "商务编号",
+              "data_type": "STRING",
+              "type": "dimension"
+            },
+            {
+              "id": "SDT成员决策时长",
+              "caption": "SDT成员决策时长",
+              "data_type": "NUMBER",
+              "type": "metric"
+            }
+          ],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[ELIFECYCLE] Command failed with exit code 143.

@@ -120,7 +120,19 @@ export function bindingQueryFields(binding: DqeFilterBinding): string[] {
     : [binding.queryField];
 }
 
+export { MAX_QUERY_RESULT_VALUES } from './query-result-limits';
+
+/** Raw normalized query dimensions become bounded downstream predicates. */
+export interface QueryResultBinding {
+  source: string;
+  field: string;
+  target: 'dimension';
+  queryField: string;
+  maxValues: number;
+}
+
 export interface DqeQueryDefinition {
+  resultBindings?: QueryResultBinding[];
   language: 'dqe';
   body: DqeRequestBody;
   filterBindings?: Record<string, DqeFilterBinding>;

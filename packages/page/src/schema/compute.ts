@@ -70,6 +70,7 @@ const grandTotalOperatorZ = z
 
 const pivotColumnZ = z
   .object({
+    valueField: fieldNameZ.optional(),
     output: fieldNameZ,
     categories: z.array(z.string().min(1)).min(1).meta({
       uniqueItems: true,

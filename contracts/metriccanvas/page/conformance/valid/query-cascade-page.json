@@ -1,0 +1,451 @@
+{
+  "schemaVersion": "6.14",
+  "id": "query-cascade-page",
+  "layout": "report",
+  "meta": {
+    "description": "级联执行契约夹具"
+  },
+  "filters": [],
+  "dataSources": {
+    "project-efficiency-bottom5": {
+      "fields": {
+        "customer-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "nullable": true,
+          "queryField": "客户名称"
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "nullable": true,
+          "queryField": "项目名称"
+        },
+        "commerce-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号",
+          "nullable": false,
+          "queryField": "商务编号"
+        },
+        "decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务决策时长",
+          "defaultFormat": "number-1",
+          "unit": "天",
+          "nullable": true,
+          "queryField": "SDT成员决策时长"
+        },
+        "rep-office-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-1",
+          "unit": "天",
+          "nullable": true
+        },
+        "rep-office-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批人次",
+          "defaultFormat": "number",
+          "unit": "次",
+          "nullable": true
+        },
+        "region-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-1",
+          "unit": "天",
+          "nullable": true
+        },
+        "region-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批人次",
+          "defaultFormat": "number",
+          "unit": "次",
+          "nullable": true
+        },
+        "cloud-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-1",
+          "unit": "天",
+          "nullable": true
+        },
+        "cloud-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批人次",
+          "defaultFormat": "number",
+          "unit": "次",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "SDT成员决策时长"
+                ],
+                "output_dims": [
+                  "客户名称",
+                  "项目名称",
+                  "商务编号"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "202609",
+                    "end": "202609"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "order_by_field": "SDT成员决策时长",
+                  "type": "asc",
+                  "limit": 5
+                }
+              }
+            ]
+          }
+        }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "project-efficiency-bottom5-stages",
+          "keys": [
+            {
+              "local": "commerce-id",
+              "foreign": "commerce-id"
+            }
+          ],
+          "values": [
+            {
+              "field": "rep-office-time",
+              "output": "rep-office-time",
+              "aggregate": "unique"
+            },
+            {
+              "field": "rep-office-count",
+              "output": "rep-office-count",
+              "aggregate": "unique"
+            },
+            {
+              "field": "region-time",
+              "output": "region-time",
+              "aggregate": "unique"
+            },
+            {
+              "field": "region-count",
+              "output": "region-count",
+              "aggregate": "unique"
+            },
+            {
+              "field": "cloud-time",
+              "output": "cloud-time",
+              "aggregate": "unique"
+            },
+            {
+              "field": "cloud-count",
+              "output": "cloud-count",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        }
+      ]
+    },
+    "project-efficiency-bottom5-stages": {
+      "fields": {
+        "commerce-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号",
+          "nullable": false,
+          "queryField": "商务编号"
+        },
+        "stage-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "阶段名称",
+          "nullable": false,
+          "queryField": "阶段名称"
+        },
+        "decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "阶段决策时长",
+          "defaultFormat": "number-1",
+          "unit": "天",
+          "nullable": true,
+          "queryField": "SDT成员决策时长"
+        },
+        "decision-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "阶段审批人次",
+          "defaultFormat": "number",
+          "unit": "次",
+          "nullable": true,
+          "queryField": "SDT成员决策次数"
+        },
+        "rep-office-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-1",
+          "unit": "天",
+          "nullable": true
+        },
+        "rep-office-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批人次",
+          "defaultFormat": "number",
+          "unit": "次",
+          "nullable": true
+        },
+        "region-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-1",
+          "unit": "天",
+          "nullable": true
+        },
+        "region-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批人次",
+          "defaultFormat": "number",
+          "unit": "次",
+          "nullable": true
+        },
+        "cloud-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-1",
+          "unit": "天",
+          "nullable": true
+        },
+        "cloud-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批人次",
+          "defaultFormat": "number",
+          "unit": "次",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "SDT成员决策时长",
+                  "SDT成员决策次数"
+                ],
+                "output_dims": [
+                  "商务编号",
+                  "阶段名称"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "202609",
+                    "end": "202609"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "resultBindings": [
+            {
+              "source": "project-efficiency-bottom5",
+              "field": "commerce-id",
+              "target": "dimension",
+              "queryField": "商务编号",
+              "maxValues": 5
+            }
+          ]
+        }
+      },
+      "compute": [
+        {
+          "op": "pivot",
+          "categoryField": "stage-name",
+          "valueField": "decision-time",
+          "keyFields": [
+            "commerce-id"
+          ],
+          "columns": [
+            {
+              "output": "rep-office-time",
+              "categories": [
+                "代表处SDT"
+              ]
+            },
+            {
+              "output": "rep-office-count",
+              "categories": [
+                "代表处SDT"
+              ],
+              "valueField": "decision-count"
+            },
+            {
+              "output": "region-time",
+              "categories": [
+                "地区部SDT"
+              ]
+            },
+            {
+              "output": "region-count",
+              "categories": [
+                "地区部SDT"
+              ],
+              "valueField": "decision-count"
+            },
+            {
+              "output": "cloud-time",
+              "categories": [
+                "华为云计算SDT"
+              ]
+            },
+            {
+              "output": "cloud-count",
+              "categories": [
+                "华为云计算SDT"
+              ],
+              "valueField": "decision-count"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "id": "projects",
+      "components": [
+        {
+          "id": "project-bottom5-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "project-efficiency-bottom5"
+          },
+          "props": {
+            "title": "项目决策时长最快Top5",
+            "fit": "container",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "customer-name",
+                "title": "客户名称",
+                "width": 120
+              },
+              {
+                "field": "project-name",
+                "title": "项目名称",
+                "width": 120
+              },
+              {
+                "field": "commerce-id",
+                "title": "商务编号",
+                "width": 80
+              },
+              {
+                "field": "decision-time",
+                "title": "商务决策时长",
+                "align": "right",
+                "width": 60
+              },
+              {
+                "kind": "group",
+                "id": "rep-office-sdt",
+                "title": "代表处SDT决策效率",
+                "children": [
+                  {
+                    "field": "rep-office-count",
+                    "title": "审批人次",
+                    "align": "right",
+                    "width": 95
+                  },
+                  {
+                    "field": "rep-office-time",
+                    "title": "决策时长",
+                    "align": "right",
+                    "width": 95
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "region-sdt",
+                "title": "地区部SDT决策效率",
+                "children": [
+                  {
+                    "field": "region-count",
+                    "title": "审批人次",
+                    "align": "right",
+                    "width": 95
+                  },
+                  {
+                    "field": "region-time",
+                    "title": "决策时长",
+                    "align": "right",
+                    "width": 95
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "cloud-sdt",
+                "title": "华为云计算SDT决策效率",
+                "children": [
+                  {
+                    "field": "cloud-count",
+                    "title": "审批人次",
+                    "align": "right",
+                    "width": 95
+                  },
+                  {
+                    "field": "cloud-time",
+                    "title": "决策时长",
+                    "align": "right",
+                    "width": 95
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

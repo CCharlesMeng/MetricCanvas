@@ -99,7 +99,7 @@
       "expected": {
         "ok": true,
         "document": {
-          "schemaVersion": "6.13",
+          "schemaVersion": "6.14",
           "id": "inline-params-page",
           "layout": "report",
           "params": {
@@ -299,7 +299,7 @@
       "expected": {
         "ok": true,
         "document": {
-          "schemaVersion": "6.13",
+          "schemaVersion": "6.14",
           "id": "inline-params-page",
           "layout": "report",
           "params": {
@@ -502,7 +502,7 @@
           {
             "type": "SCHEMA_ERROR",
             "path": "/schemaVersion",
-            "message": "不支持的文档格式版本 6.4:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
+            "message": "不支持的文档格式版本 6.4:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
           }
         ]
       }
@@ -1723,7 +1723,7 @@
       "expected": {
         "ok": true,
         "document": {
-          "schemaVersion": "6.13",
+          "schemaVersion": "6.14",
           "id": "inline-params-page",
           "layout": "report",
           "params": {

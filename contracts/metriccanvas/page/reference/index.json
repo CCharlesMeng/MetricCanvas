@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.13",
-  "schemaSha256": "a3070d52695f46a1c96cd22ed236f0adcc0574384064615d2654d875b7b1f698",
+  "schemaVersion": "6.14",
+  "schemaSha256": "9a360374f2991e04fe431b01b1de635533cf6de167a6aa399769e7cc15bca828",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -28,7 +28,7 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "df1825a725ea94b897dbc570c244ce312aa3666b17b30cb0235870b663ba64cb"
+      "sha256": "4fc77af5a1961f3c8bc77004c7b5f0329b76f5c67717bfc4523bcbead8338007"
     },
     {
       "file": "packages/page/src/schema/actions.ts",
@@ -96,11 +96,11 @@
     },
     {
       "file": "packages/page/src/schema/compute.ts",
-      "sha256": "b90fcfa95e03bff5b92263fc6360e27fff23a5cf01b88822525d1669d0c48e2a"
+      "sha256": "8413102bdd53b8b7b14e42fe8a65325e21f21d98ad4622fdfa1ee070bb4fb61a"
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "86461573f90ee03a6fdd118d3ac037847b7ab1c4e3d2a1f394db5b42349169dc"
+      "sha256": "1bc26fac843ca65026d1956704794cf6d2a9e9851862ba0da441112027f4c4c6"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -120,7 +120,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "cb628d7f2701a5cf90669d19697885dd86a9480fce829564aa09894110aa9115"
+      "sha256": "437bccba5f591ea345cbc9c16c776f65c44fa81dafc6bdba85f7a0f35fa88577"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
@@ -1068,7 +1068,8 @@
         "6.5",
         "6.11",
         "6.12",
-        "6.13"
+        "6.13",
+        "6.14"
       ]
     },
     {
@@ -2678,6 +2679,12 @@
       "module": "compute.md"
     },
     {
+      "pointer": "#/definitions/computeOperator/oneOf/9/properties/columns/items/properties/valueField",
+      "path": "@computeOperator · oneOf[9].columns[].valueField",
+      "required": "本分支可选",
+      "module": "compute.md"
+    },
+    {
       "pointer": "#/definitions/computeOperator/oneOf/9/properties/columns/items/properties/output",
       "path": "@computeOperator · oneOf[9].columns[].output",
       "required": "本分支必填",
@@ -3623,6 +3630,49 @@
       "required": "本分支必填",
       "module": "queries-and-bindings.md",
       "const": "dqe"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/resultBindings",
+      "path": "@dqeQuery.resultBindings",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/resultBindings/items",
+      "path": "@dqeQuery.resultBindings[]",
+      "required": "每个数组项",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/resultBindings/items/properties/source",
+      "path": "@dqeQuery.resultBindings[].source",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/resultBindings/items/properties/field",
+      "path": "@dqeQuery.resultBindings[].field",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/resultBindings/items/properties/target",
+      "path": "@dqeQuery.resultBindings[].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "dimension"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/resultBindings/items/properties/queryField",
+      "path": "@dqeQuery.resultBindings[].queryField",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/resultBindings/items/properties/maxValues",
+      "path": "@dqeQuery.resultBindings[].maxValues",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/body",

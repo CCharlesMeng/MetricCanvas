@@ -10,8 +10,12 @@
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
+## 查询结果绑定 6.14
 
-页面协议 6.13。结构真源为本册[schema.json](schema.json)，SHA256 `a3070d52695f46a1c96cd22ed236f0adcc0574384064615d2654d875b7b1f698`。字段表自动生成；可选不等于有默认值。
+query.resultBindings在下游查询声明source、field、target dimension、queryField和maxValues；读取上游查询的原始归一化string/number维度，去重集合作为普通维度谓词。每查询仍只有一项dsl_list。空上游不发请求；未知字段、计算产出、目标冲突、循环和超限拒绝；最大集合1000。上游须完整或声明有限limit且无offset/查询分页，局部表格视图不改变输入。新增级联链不复用缺输入证明的initial。
+
+
+页面协议 6.14。结构真源为本册[schema.json](schema.json)，SHA256 `9a360374f2991e04fe431b01b1de635533cf6de167a6aa399769e7cc15bca828`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -58,6 +62,80 @@ Schema位置：`#/definitions/dqeQuery/properties/language`。
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "dqe" | 用于选择@dqeQuery.language分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f726573756c7442696e64696e6773"></a>
+
+### `@dqeQuery.resultBindings`
+
+Schema位置：`#/definitions/dqeQuery/properties/resultBindings`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 查询原始维度集合到下游维度谓词的显式绑定；空集合跳过请求。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f726573756c7442696e64696e67732f6974656d73"></a>
+
+### `@dqeQuery.resultBindings[]`
+
+Schema位置：`#/definitions/dqeQuery/properties/resultBindings/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["source","field","target","queryField","maxValues"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f726573756c7442696e64696e67732f6974656d732f70726f706572746965732f736f75726365"></a>
+
+### `@dqeQuery.resultBindings[].source`
+
+Schema位置：`#/definitions/dqeQuery/properties/resultBindings/items/properties/source`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f726573756c7442696e64696e67732f6974656d732f70726f706572746965732f6669656c64"></a>
+
+### `@dqeQuery.resultBindings[].field`
+
+Schema位置：`#/definitions/dqeQuery/properties/resultBindings/items/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f726573756c7442696e64696e67732f6974656d732f70726f706572746965732f746172676574"></a>
+
+### `@dqeQuery.resultBindings[].target`
+
+Schema位置：`#/definitions/dqeQuery/properties/resultBindings/items/properties/target`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="dimension" | Schema未设默认；装配/运行时默认见语义说明 | 写回目标或查询绑定目标，按所在结构明确类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "dimension" | 分类维度或维度目标；不是数值度量。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f726573756c7442696e64696e67732f6974656d732f70726f706572746965732f71756572794669656c64"></a>
+
+### `@dqeQuery.resultBindings[].queryField`
+
+Schema位置：`#/definitions/dqeQuery/properties/resultBindings/items/properties/queryField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f726573756c7442696e64696e67732f6974656d732f70726f706572746965732f6d617856616c756573"></a>
+
+### `@dqeQuery.resultBindings[].maxValues`
+
+Schema位置：`#/definitions/dqeQuery/properties/resultBindings/items/properties/maxValues`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支必填 | minimum=1; maximum=1000 | Schema未设默认；装配/运行时默认见语义说明 | 去重集合的正整数上限，最大1000；超限报错而非截断。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f626f6479"></a>
 

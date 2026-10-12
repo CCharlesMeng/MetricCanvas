@@ -107,6 +107,7 @@ LEGACY_READABLE_PAGE_SCHEMA_VERSIONS
 LineChartComponent
 LineChartProps
 MAX_DETAIL_RECORDS
+MAX_QUERY_RESULT_VALUES
 MAX_SEMANTIC_HTML_LENGTH
 MainDataBinding
 MapChartComponent
@@ -160,6 +161,7 @@ QueryFieldDefinition
 QueryLanguage
 QueryMoneyFieldDefinition
 QueryRecordListFieldDefinition
+QueryResultBinding
 QueryRowNormalizationIssue
 QueryRowsNormalizationResult
 QueryScalarFieldDefinition
@@ -236,6 +238,7 @@ bindingQueryField
 bindingQueryFields
 canonicalizeJson
 capabilityFloorErrors
+cascadeSourceIds
 collectTextValueReferences
 componentCatalog
 componentCatalogEntry
@@ -260,6 +263,7 @@ hasQueryFieldMapping
 hasQueryParamReferences
 hierarchyLevelOf
 initializeQueryParams
+isBoundedResultSource
 isChartComponent
 isDataComponent
 isDqeQueryDefinition
@@ -289,6 +293,7 @@ pageParamErrors
 pageSchema
 parsePage
 queryErrorDisposition
+queryResultDependencies
 requiredMinorVersion
 resolveDataSourceFields
 resolveInlineQueryParams
