@@ -314,3 +314,29 @@ describe('6.12 字段合计与 CAGR', () => {
     expect(result.slice(1).map(r => r.rate)).toEqual([null, null, -100, null]);
   });
 });
+
+describe('折叠汇总的显式全空策略', () => {
+  const operators: ComputeOperator[] = [
+    { op: 'groupSubtotal', groupBy: 'group', measures: ['amount'], rowKind: { field: 'kind', value: 'subtotal' } },
+    { op: 'grandTotal', measures: ['amount'], rowKind: { field: 'kind', value: 'total' }, label: { field: 'group', value: '合计' } }
+  ];
+  it('缺省/显式null保留空；zero只影响汇总，不改明细或空行集', () => {
+    const input: DataRow[] = [{ group: 'A', amount: null }, { group: 'A' }];
+    for (const policy of [undefined, 'null', 'zero'] as const) {
+      const configured = operators.map(op => ({ ...op, allMissing: policy }));
+      const result = applyComputation(configured, input);
+      expect(result.slice(0, 2).map(row => row.amount)).toEqual([null, undefined]);
+      expect(result.slice(2).map(row => row.amount)).toEqual(policy === 'zero' ? [0, 0] : [null, null]);
+      expect(applyComputation(configured, [])).toEqual([]);
+    }
+    expect(input).toEqual([{ group: 'A', amount: null }, { group: 'A' }]);
+  });
+  it('zero策略仍保留负数、真实零、溢出null，不重复累加小计', () => {
+    const configured = operators.map(op => ({ ...op, allMissing: 'zero' as const }));
+    expect(applyComputation(configured, [{ group: 'A', amount: -20 }, { group: 'A', amount: 0 }, { group: 'B', amount: 5 }]).at(-1)?.amount).toBe(-15);
+    for (const amount of [NaN, Infinity, 'bad']) {
+      expect(applyComputation(configured, [{ group: 'A', amount }]).at(-1)?.amount).toBeNull();
+    }
+    expect(applyComputation(configured, [{ group: 'A', amount: Number.MAX_VALUE }, { group: 'A', amount: Number.MAX_VALUE }]).at(-1)?.amount).toBeNull();
+  });
+});

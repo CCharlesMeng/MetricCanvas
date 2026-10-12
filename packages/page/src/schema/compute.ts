@@ -50,6 +50,7 @@ const deltaOperatorZ = z
 const groupSubtotalOperatorZ = z
   .object({
     op: z.literal('groupSubtotal'),
+    allMissing: z.enum(['null', 'zero']).optional(),
     groupBy: fieldNameZ,
     measures: z.array(fieldNameZ).min(1).meta({ uniqueItems: true }),
     rowKind: rowKindMarkZ,
@@ -60,6 +61,7 @@ const groupSubtotalOperatorZ = z
 const grandTotalOperatorZ = z
   .object({
     op: z.literal('grandTotal'),
+    allMissing: z.enum(['null', 'zero']).optional(),
     measures: z.array(fieldNameZ).min(1).meta({ uniqueItems: true }),
     rowKind: rowKindMarkZ,
     label: z

@@ -1097,6 +1097,8 @@
     "#/definitions/computeOperator/oneOf/4/properties/filter": "显式引用本页筛选器状态。",
     "#/definitions/computeOperator/oneOf/4/properties/cases": "按筛选值显式映射要投影的字段。",
     "#/definitions/computeOperator/oneOf/4/properties/defaultMode": "无匹配筛选值时的声明模式。",
+    "#/definitions/computeOperator/oneOf/7/properties/allMissing": "折叠输入全为空时显式选择 null 或 zero，缺省 null。",
+    "#/definitions/computeOperator/oneOf/8/properties/allMissing": "折叠输入全为空时显式选择 null 或 zero，缺省 null。",
     "#/definitions/querySource/properties/resultScope": "complete 声明完整结果；计算不把分页窗口当作全量。",
     "#/properties/detailViews": "按 id 声明快照或独立查询详情；导出页面不包含详情浮层。",
     "#/definitions/reportHeaderComponent/properties/props/properties/filterIds": "页头按序引用已声明的日期筛选器；同一控件只出现一次，期间文字使用当前已应用筛选。",

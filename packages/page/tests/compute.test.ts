@@ -237,3 +237,14 @@ describe('计算阶段校验', () => {
     );
   });
 });
+
+describe('汇总全空策略协议', () => {
+  it('6.12接受闭集策略，旧版本拒绝显式策略但保持旧算子可读', () => {
+    const source = foldingSource();
+    const withPolicy = { ...source, compute: source.compute.map(op => ({ ...op, allMissing: 'zero' })) };
+    expect(validate({ ...page(withPolicy), schemaVersion: '6.12' })).toEqual([]);
+    expect(validate({ ...page(withPolicy), schemaVersion: '6.11' }).length).toBeGreaterThan(0);
+    expect(validate({ ...page(source), schemaVersion: '6.11' })).toEqual([]);
+    expect(validate({ ...page({ ...source, compute: source.compute.map(op => ({ ...op, allMissing: 'guess' })) }), schemaVersion: '6.12' }).length).toBeGreaterThan(0);
+  });
+});

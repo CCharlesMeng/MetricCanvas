@@ -10,12 +10,16 @@ groupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
+## 汇总的全空结果（6.12）
+
+`groupSubtotal`和`grandTotal`可声明`allMissing: "null" | "zero"`。省略或null保持原行为：某项度量整组没有数值时输出null；zero仅将全部为null/缺失的汇总输出0，不改明细。无效非空输入不因此变成0；溢出仍为null。空行集不生成汇总，总计继续排除小计行。策略属于该次计算，不属于字段的全局缺失规则。6.11不能使用该声明。
+
 ## 多度量透视与有限主集合左关联 6.14
 
 pivot.columns可指定valueField覆盖算子默认字段。同类别可用于不同度量，重复的有效valueField与类别组合拒绝；新多度量透视的分组键与类别必须唯一。缺阶段产出null，0保持0。有限主结果仅在被结果绑定引用且声明正整数limit、无offset/查询分页时允许左关联；辅助源仍须complete，无分页窗口。导出保持此选择范围并使用本轮原始结果重建明细输入。
 
 
-页面协议 6.16。结构真源为本册[schema.json](schema.json)，SHA256 `52c95c06cc28cf1dcfc3fe2b7bc6797fccc9f89920f8949a9c54568159f4c89d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.16。结构真源为本册[schema.json](schema.json)，SHA256 `dcadb25a05482ffc03090b4d88f20b510da884519112de4f65646ee8658e9875`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -768,6 +772,21 @@ Schema位置：`#/definitions/computeOperator/oneOf/7/properties/op`。
 |---|---|
 | "groupSubtotal" | 用于选择@computeOperator · oneOf[7].op分支；同分支其它约束同时成立。 |
 
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f372f70726f706572746965732f616c6c4d697373696e67"></a>
+
+### `@computeOperator · oneOf[7].allMissing`
+
+Schema位置：`#/definitions/computeOperator/oneOf/7/properties/allMissing`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["null","zero"] | Schema未设默认；装配/运行时默认见语义说明 | 折叠输入全为空时显式选择 null 或 zero，缺省 null。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "null" | 零/缺分母时输出空值。 |
+| "zero" | 零/缺分母时输出0。 |
+
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f372f70726f706572746965732f67726f75704279"></a>
 
 ### `@computeOperator · oneOf[7].groupBy`
@@ -876,6 +895,21 @@ Schema位置：`#/definitions/computeOperator/oneOf/8/properties/op`。
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "grandTotal" | 用于选择@computeOperator · oneOf[8].op分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f382f70726f706572746965732f616c6c4d697373696e67"></a>
+
+### `@computeOperator · oneOf[8].allMissing`
+
+Schema位置：`#/definitions/computeOperator/oneOf/8/properties/allMissing`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["null","zero"] | Schema未设默认；装配/运行时默认见语义说明 | 折叠输入全为空时显式选择 null 或 zero，缺省 null。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "null" | 零/缺分母时输出空值。 |
+| "zero" | 零/缺分母时输出0。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f382f70726f706572746965732f6d65617375726573"></a>
 

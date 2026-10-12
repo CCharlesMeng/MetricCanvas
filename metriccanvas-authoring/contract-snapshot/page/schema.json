@@ -1404,6 +1404,13 @@
               "type": "string",
               "const": "groupSubtotal"
             },
+            "allMissing": {
+              "type": "string",
+              "enum": [
+                "null",
+                "zero"
+              ]
+            },
             "groupBy": {
               "type": "string",
               "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
@@ -1439,6 +1446,13 @@
             "op": {
               "type": "string",
               "const": "grandTotal"
+            },
+            "allMissing": {
+              "type": "string",
+              "enum": [
+                "null",
+                "zero"
+              ]
             },
             "measures": {
               "minItems": 1,

@@ -51,6 +51,8 @@ export interface DeltaOperator {
 
 export interface GroupSubtotalOperator {
   op: 'groupSubtotal';
+  /** 整组均缺失时的汇总结果；省略保持null，不改明细。 */
+  allMissing?: 'null' | 'zero';
   groupBy: string;
   /** 被折叠的度量字段;每个都必须在结果字段契约上声明 collapsible。 */
   measures: string[];
@@ -61,6 +63,8 @@ export interface GroupSubtotalOperator {
 
 export interface GrandTotalOperator {
   op: 'grandTotal';
+  /** 全部明细均缺失时的汇总结果；省略保持null。 */
+  allMissing?: 'null' | 'zero';
   measures: string[];
   rowKind: RowKindMark;
   /** 合计行的标签:写入哪个字段、写什么字面量。 */

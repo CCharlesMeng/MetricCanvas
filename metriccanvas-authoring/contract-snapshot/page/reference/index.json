@@ -1,6 +1,6 @@
 {
   "schemaVersion": "6.16",
-  "schemaSha256": "52c95c06cc28cf1dcfc3fe2b7bc6797fccc9f89920f8949a9c54568159f4c89d",
+  "schemaSha256": "dcadb25a05482ffc03090b4d88f20b510da884519112de4f65646ee8658e9875",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -100,7 +100,7 @@
     },
     {
       "file": "packages/page/src/schema/compute.ts",
-      "sha256": "8413102bdd53b8b7b14e42fe8a65325e21f21d98ad4622fdfa1ee070bb4fb61a"
+      "sha256": "c922e46f94e2ac5e751ede7ecacf4404dbca6d718c8cf5cfea4b7ff45604edd1"
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
@@ -2616,6 +2616,16 @@
       "const": "groupSubtotal"
     },
     {
+      "pointer": "#/definitions/computeOperator/oneOf/7/properties/allMissing",
+      "path": "@computeOperator · oneOf[7].allMissing",
+      "required": "本分支可选",
+      "module": "compute.md",
+      "enum": [
+        "null",
+        "zero"
+      ]
+    },
+    {
       "pointer": "#/definitions/computeOperator/oneOf/7/properties/groupBy",
       "path": "@computeOperator · oneOf[7].groupBy",
       "required": "本分支必填",
@@ -2680,6 +2690,16 @@
       "required": "本分支必填",
       "module": "compute.md",
       "const": "grandTotal"
+    },
+    {
+      "pointer": "#/definitions/computeOperator/oneOf/8/properties/allMissing",
+      "path": "@computeOperator · oneOf[8].allMissing",
+      "required": "本分支可选",
+      "module": "compute.md",
+      "enum": [
+        "null",
+        "zero"
+      ]
     },
     {
       "pointer": "#/definitions/computeOperator/oneOf/8/properties/measures",

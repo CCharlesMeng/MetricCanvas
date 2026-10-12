@@ -130,7 +130,7 @@ function groupSubtotal(operator: GroupSubtotalOperator, rows: DataRow[]): DataRo
         typeof label === 'string' && operator.labelSuffix !== undefined
           ? `${label}${operator.labelSuffix}`
           : (label as ScalarFieldValue),
-      ...sums(operator.measures, group),
+      ...sums(operator.measures, group, operator.allMissing),
       [operator.rowKind.field]: operator.rowKind.value
     });
   }
@@ -148,7 +148,7 @@ function grandTotal(operator: GrandTotalOperator, rows: DataRow[]): DataRow[] {
     ...rows.map((row) => withRowKind(row, operator.rowKind.field)),
     {
       ...blankRow(rows),
-      ...sums(operator.measures, details),
+      ...sums(operator.measures, details, operator.allMissing),
       [operator.label.field]: operator.label.value,
       [operator.rowKind.field]: operator.rowKind.value
     }
@@ -212,19 +212,23 @@ function withRowKind(row: DataRow, field: string): DataRow {
   return row[field] === undefined ? { ...row, [field]: null } : row;
 }
 
-/** 折叠求和:空值视为 0 参与累加;整组都没有数值时取空。 */
-function sums(measures: readonly string[], group: DataRow[]): DataRow {
+/** 折叠求和跳过缺失；整组缺失默认取空，仅显式zero策略返回0。 */
+function sums(measures: readonly string[], group: DataRow[], allMissing: 'null' | 'zero' = 'null'): DataRow {
   const totals: DataRow = {};
   for (const measure of measures) {
     let total = 0;
     let seen = false;
+    let invalid = false;
     for (const row of group) {
       const value = numeric(row[measure]);
-      if (value === undefined) continue;
+      if (value === undefined) {
+        if (row[measure] != null) invalid = true;
+        continue;
+      }
       total += value;
       seen = true;
     }
-    totals[measure] = seen ? finiteOrNull(total) : null;
+    totals[measure] = seen ? finiteOrNull(total) : allMissing === 'zero' && !invalid ? 0 : null;
   }
   return totals;
 }

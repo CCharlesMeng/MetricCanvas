@@ -72,6 +72,11 @@ export const pageCapabilities = {
       ...dataSourcePaths(document, d => Object.values(record(record(record(d.source)?.query)?.filterBindings) ?? {}).some(b => record(b)?.target === 'time' && has(record(b), 'window')))
     ]
   },
+  'folding-all-missing': {
+    minor: 12, description: '小计与总计显式声明全空结果，缺省仍为null',
+    usedAt: document => dataSourcePaths(document, source => Array.isArray(source.compute) &&
+      source.compute.some(op => ['groupSubtotal', 'grandTotal'].includes(String(record(op)?.op)) && has(record(op), 'allMissing')))
+  },
   'table-column-actions': {
     minor: 12, description: '表格列独立的导航或详情动作',
     usedAt: document => componentPaths(document, component => component.type === 'table' && columnDetailUsed(props(component)?.columns))

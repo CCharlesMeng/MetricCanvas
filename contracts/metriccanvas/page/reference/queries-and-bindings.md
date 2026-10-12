@@ -15,7 +15,7 @@
 query.resultBindings在下游查询声明source、field、target dimension、queryField和maxValues；读取上游查询的原始归一化string/number维度，去重集合作为普通维度谓词。每查询仍只有一项dsl_list。空上游不发请求；未知字段、计算产出、目标冲突、循环和超限拒绝；最大集合1000。上游须完整或声明有限limit且无offset/查询分页，局部表格视图不改变输入。新增级联链不复用缺输入证明的initial。
 
 
-页面协议 6.16。结构真源为本册[schema.json](schema.json)，SHA256 `52c95c06cc28cf1dcfc3fe2b7bc6797fccc9f89920f8949a9c54568159f4c89d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.16。结构真源为本册[schema.json](schema.json)，SHA256 `dcadb25a05482ffc03090b4d88f20b510da884519112de4f65646ee8658e9875`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
