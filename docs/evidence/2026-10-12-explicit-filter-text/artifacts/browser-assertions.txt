@@ -1,0 +1,5 @@
+PASS: page period follows applied Jan-May filter with five query rows.
+PASS: generic section/body/tag text follows the filter; parameter subtitle stays Jan-June.
+PASS: static asOf is preserved; missing asOf does not auto-create a caption.
+PASS: complete export contains 159 rows across all groups/tabs and no date controls; captured Jan-Apr text remains after live filter changes to Jan-May.
+Environment: CUA IAB / local DQE simulation or deterministic export demo gateway.

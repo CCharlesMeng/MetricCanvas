@@ -13,6 +13,7 @@ from jsonschema.exceptions import ValidationError
 
 from metriccanvas_authoring.runtime_assets import bundle_root
 from .grouped_params import declarations as _param_declarations, query_reference_issues
+from .filter_text_values import capability_paths as _filter_text_capability_paths, reference_issues as _filter_text_reference_issues
 
 
 BUNDLE_ROOT = bundle_root()
@@ -59,6 +60,7 @@ def validate_page_document(value: Any) -> list[PageContractIssue]:
         return capability_issues
     # 与页面包相同：先验证原始参数契约，再物化文本做第二次结构校验。
     param_issues = [*_param_binding_issues(value), *_page_param_issues(value), *[PageContractIssue("SCHEMA_ERROR", path, message) for path, message in query_reference_issues(value)]]
+    param_issues += [PageContractIssue(*issue) for issue in _filter_text_reference_issues(value, NUMERIC_FORMATS, DATE_FORMATS)]
     if param_issues:
         return param_issues
     optional_materialized = _materialize_validation_text_values(value)
@@ -82,6 +84,10 @@ def _parameter_capability_issues(value: Mapping[str, Any]) -> list[PageContractI
     if isinstance(value.get("params"), Mapping) and not value["params"]:
         return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs cannot be empty")]
     minor = int(value["schemaVersion"].split(".")[1])
+    if minor < 15:
+        paths = _filter_text_capability_paths(value)
+        if paths:
+            return [PageContractIssue("SCHEMA_ERROR", path, "filter text and period format require 6.15") for path in paths]
     from .query_results import capability_paths
     if minor < 14:
         paths = capability_paths(value)
@@ -109,7 +115,8 @@ def normalize_page_document(value: Any) -> dict[str, Any]:
     document = deepcopy(value)
     schema = json.loads((PRODUCT_CONTRACT_ROOT / "page" / "schema.json").read_text(encoding="utf-8"))
     versions = schema["properties"]["schemaVersion"]["enum"]
-    document["schemaVersion"] = "6.5" if document["schemaVersion"] == "6.5" else max(versions, key=lambda v: tuple(map(int, v.split("."))))
+    if document["schemaVersion"] not in ("6.5", "6.13", "6.14"):
+        document["schemaVersion"] = max(versions, key=lambda v: tuple(map(int, v.split("."))))
     document["layout"] = document.get("layout", document.get("layoutForm", "report"))
     document.pop("layoutForm", None)
     return {"ok": True, "document": document, "errors": []}
@@ -210,13 +217,15 @@ def _materialize_validation_text_values(value: Any) -> Any:
             if param_id not in required:
                 return dict(child)
             return "validation-value" if required[param_id] else _MISSING_TEXT_VALUE
+        if isinstance(child.get("filter"), str) and set(child).issubset({"filter", "format"}):
+            return "validation-value"
         return {
             key: resolved
             for key, item in child.items()
             if (resolved := visit(item)) is not _MISSING_TEXT_VALUE
         }
 
-    return visit(value)
+    return {key: child if key == "dataSources" else visit(child) for key, child in value.items()}
 
 
 def _capability_floor_issues(value: Any) -> list[PageContractIssue]:
@@ -377,6 +386,7 @@ def _page_param_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
                 and (
                     (display_format in NUMERIC_FORMATS and param_type != "number")
                     or (display_format in DATE_FORMATS and param_type != "string")
+                    or (display_format == "period" and param_type not in ("time", "timeRange"))
                 )
             ):
                 issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/format", "text format does not suit parameter type"))

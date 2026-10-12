@@ -1,0 +1,858 @@
+$ PYTHONDONTWRITEBYTECODE=1 python3 metriccanvas-authoring/test-harness/run_tests.py
+Layers: rules, adapters, delivery, evaluation; 59 files; 101 tests
+EEEE...EEEEEE...EEEEEEEE.EEEE........EEEEEE......EE......EEEEEEEEEEEEEE.EEEEEFFFF.............s......
+======================================================================
+ERROR: test_ask_rules (unittest.loader._FailedTest.test_ask_rules)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_ask_rules
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_ask_rules.py", line 9, in <module>
+    from jsonschema import Draft202012Validator
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_business_terms (unittest.loader._FailedTest.test_business_terms)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_business_terms
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_business_terms.py", line 9, in <module>
+    from jsonschema import Draft202012Validator
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_component_building (unittest.loader._FailedTest.test_component_building)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_component_building
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_component_building.py", line 11, in <module>
+    from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitScope  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py", line 12, in <module>
+    from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py", line 9, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_component_capabilities (unittest.loader._FailedTest.test_component_capabilities)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_component_capabilities
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_component_capabilities.py", line 19, in <module>
+    from metriccanvas_authoring.pages.components.component_editing import (  # noqa: E402
+        PROPERTY_WHITELIST,
+    )
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py", line 6, in <module>
+    from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitScope
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py", line 12, in <module>
+    from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py", line 9, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_container_building (unittest.loader._FailedTest.test_container_building)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_container_building
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_container_building.py", line 3, in <module>
+    from test_text_map_building import content_page, recipe
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_text_map_building.py", line 4, in <module>
+    from test_page_editing import page, edit
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_editing.py", line 9, in <module>
+    from metriccanvas_authoring.pages.editing.page_editing import edit_page_document, EDIT_SCHEMA
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/page_editing.py", line 5, in <module>
+    from metriccanvas_authoring.pages.components.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py", line 6, in <module>
+    from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitScope
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py", line 12, in <module>
+    from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py", line 9, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_interaction_editing (unittest.loader._FailedTest.test_interaction_editing)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_interaction_editing
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_interaction_editing.py", line 5, in <module>
+    from test_text_map_building import content_page
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_text_map_building.py", line 4, in <module>
+    from test_page_editing import page, edit
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_editing.py", line 9, in <module>
+    from metriccanvas_authoring.pages.editing.page_editing import edit_page_document, EDIT_SCHEMA
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/page_editing.py", line 5, in <module>
+    from metriccanvas_authoring.pages.components.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py", line 6, in <module>
+    from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitScope
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py", line 12, in <module>
+    from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py", line 9, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_page_build_spec (unittest.loader._FailedTest.test_page_build_spec)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_page_build_spec
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_build_spec.py", line 12, in <module>
+    from metriccanvas_authoring.data.page_build_spec import (  # noqa: E402
+        validate_page_build_spec,
+    )
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/page_build_spec.py", line 7, in <module>
+    from jsonschema import Draft202012Validator
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_page_editing (unittest.loader._FailedTest.test_page_editing)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_page_editing
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_editing.py", line 9, in <module>
+    from metriccanvas_authoring.pages.editing.page_editing import edit_page_document, EDIT_SCHEMA
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/page_editing.py", line 5, in <module>
+    from metriccanvas_authoring.pages.components.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py", line 6, in <module>
+    from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitScope
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py", line 12, in <module>
+    from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py", line 9, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_page_validation (unittest.loader._FailedTest.test_page_validation)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_page_validation
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_validation.py", line 15, in <module>
+    from metriccanvas_authoring.pages.validation.page_validation import (  # noqa: E402
+    ...<2 lines>...
+    )
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py", line 11, in <module>
+    from jsonschema import Draft202012Validator
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_platform_layout_policy (unittest.loader._FailedTest.test_platform_layout_policy)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_platform_layout_policy
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_platform_layout_policy.py", line 5, in <module>
+    from test_page_editing import page, edit, title
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_editing.py", line 9, in <module>
+    from metriccanvas_authoring.pages.editing.page_editing import edit_page_document, EDIT_SCHEMA
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/page_editing.py", line 5, in <module>
+    from metriccanvas_authoring.pages.components.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py", line 6, in <module>
+    from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitScope
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py", line 12, in <module>
+    from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py", line 9, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_source_mapping (unittest.loader._FailedTest.test_source_mapping)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_source_mapping
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_source_mapping.py", line 12, in <module>
+    from test_authoring_turns import Turns
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_authoring_turns.py", line 10, in <module>
+    from test_page_editing import page
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_editing.py", line 9, in <module>
+    from metriccanvas_authoring.pages.editing.page_editing import edit_page_document, EDIT_SCHEMA
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/page_editing.py", line 5, in <module>
+    from metriccanvas_authoring.pages.components.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py", line 6, in <module>
+    from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitScope
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py", line 12, in <module>
+    from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py", line 9, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_text_map_building (unittest.loader._FailedTest.test_text_map_building)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_text_map_building
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_text_map_building.py", line 4, in <module>
+    from test_page_editing import page, edit
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_editing.py", line 9, in <module>
+    from metriccanvas_authoring.pages.editing.page_editing import edit_page_document, EDIT_SCHEMA
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/page_editing.py", line 5, in <module>
+    from metriccanvas_authoring.pages.components.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py", line 6, in <module>
+    from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitScope
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py", line 12, in <module>
+    from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py", line 9, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_field_presentation (unittest.loader._FailedTest.test_field_presentation)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_field_presentation
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_field_presentation.py", line 6, in <module>
+    from test_source_mapping import fixture
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_source_mapping.py", line 12, in <module>
+    from test_authoring_turns import Turns
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_authoring_turns.py", line 10, in <module>
+    from test_page_editing import page
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_editing.py", line 9, in <module>
+    from metriccanvas_authoring.pages.editing.page_editing import edit_page_document, EDIT_SCHEMA
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/page_editing.py", line 5, in <module>
+    from metriccanvas_authoring.pages.components.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py", line 6, in <module>
+    from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitScope
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py", line 12, in <module>
+    from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py", line 9, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_content_baselines (unittest.loader._FailedTest.test_content_baselines)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_content_baselines
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_content_baselines.py", line 14, in <module>
+    from metriccanvas_authoring.pages.editing.edit_page import create_edit_page, document_sha256
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/edit_page.py", line 9, in <module>
+    from metriccanvas_authoring.pages.editing.page_editing import edit_page_document
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/page_editing.py", line 5, in <module>
+    from metriccanvas_authoring.pages.components.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py", line 6, in <module>
+    from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitScope
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py", line 12, in <module>
+    from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py", line 9, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_data_context_http (unittest.loader._FailedTest.test_data_context_http)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_data_context_http
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_data_context_http.py", line 15, in <module>
+    import httpx
+ModuleNotFoundError: No module named 'httpx'
+
+
+======================================================================
+ERROR: test_dataset_metadata_http (unittest.loader._FailedTest.test_dataset_metadata_http)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_dataset_metadata_http
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_dataset_metadata_http.py", line 16, in <module>
+    import httpx
+ModuleNotFoundError: No module named 'httpx'
+
+
+======================================================================
+ERROR: test_dqe_http (unittest.loader._FailedTest.test_dqe_http)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_dqe_http
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_dqe_http.py", line 13, in <module>
+    import httpx
+ModuleNotFoundError: No module named 'httpx'
+
+
+======================================================================
+ERROR: test_lifecycle_http (unittest.loader._FailedTest.test_lifecycle_http)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_lifecycle_http
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_lifecycle_http.py", line 9, in <module>
+    import httpx
+ModuleNotFoundError: No module named 'httpx'
+
+
+======================================================================
+ERROR: test_server_config (unittest.loader._FailedTest.test_server_config)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_server_config
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_server_config.py", line 19, in <module>
+    from adapter_template.environment import (  # noqa: E402
+    ...<2 lines>...
+    )
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/examples/adapter_template/environment.py", line 15, in <module>
+    from adapter_template.firstparty.data_context_http import (
+    ...<8 lines>...
+    )
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/examples/adapter_template/firstparty/data_context_http.py", line 11, in <module>
+    import httpx
+ModuleNotFoundError: No module named 'httpx'
+
+
+======================================================================
+ERROR: test_agent_contracts (unittest.loader._FailedTest.test_agent_contracts)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_agent_contracts
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_agent_contracts.py", line 7, in <module>
+    from jsonschema import Draft202012Validator
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_authoring_tolerance (unittest.loader._FailedTest.test_authoring_tolerance)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_authoring_tolerance
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_authoring_tolerance.py", line 7, in <module>
+    import test_platform_v2 as fixtures
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_platform_v2.py", line 16, in <module>
+    from fastmcp import Client
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_authoring_turns (unittest.loader._FailedTest.test_authoring_turns)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_authoring_turns
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_authoring_turns.py", line 10, in <module>
+    from test_page_editing import page
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_editing.py", line 9, in <module>
+    from metriccanvas_authoring.pages.editing.page_editing import edit_page_document, EDIT_SCHEMA
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/page_editing.py", line 5, in <module>
+    from metriccanvas_authoring.pages.components.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py", line 6, in <module>
+    from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitScope
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py", line 12, in <module>
+    from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py", line 9, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_compose_page (unittest.loader._FailedTest.test_compose_page)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_compose_page
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_compose_page.py", line 11, in <module>
+    from jsonschema import Draft202012Validator
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_content_containers (unittest.loader._FailedTest.test_content_containers)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_content_containers
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_content_containers.py", line 6, in <module>
+    from fastmcp import Client
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_content_creation (unittest.loader._FailedTest.test_content_creation)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_content_creation
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_content_creation.py", line 5, in <module>
+    from fastmcp import Client
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_content_interactions (unittest.loader._FailedTest.test_content_interactions)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_content_interactions
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_content_interactions.py", line 4, in <module>
+    from fastmcp import Client
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_content_mcp (unittest.loader._FailedTest.test_content_mcp)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_content_mcp
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_content_mcp.py", line 8, in <module>
+    from fastmcp import Client
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_deployment (unittest.loader._FailedTest.test_deployment)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_deployment
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_deployment.py", line 12, in <module>
+    from fastmcp import Client
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_discover_data_context (unittest.loader._FailedTest.test_discover_data_context)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_discover_data_context
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_discover_data_context.py", line 16, in <module>
+    from metriccanvas_authoring.data.discover_data_context import (  # noqa: E402
+    ...<3 lines>...
+    )
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/discover_data_context.py", line 11, in <module>
+    from metriccanvas_authoring.data.business_interpretation import BusinessInterpretationPort, BusinessInterpretationError, extend_interpretation
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/business_interpretation.py", line 6, in <module>
+    from jsonschema import Draft202012Validator
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_discovery (unittest.loader._FailedTest.test_discovery)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_discovery
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_discovery.py", line 15, in <module>
+    from adapter_template.firstparty.discovery_knowledge import MockBusinessKnowledge
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/examples/adapter_template/firstparty/discovery_knowledge.py", line 5, in <module>
+    from metriccanvas_authoring.data.discovery.contracts import validate
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/__init__.py", line 2, in <module>
+    from .contracts import DiscoveryDependencies, DiscoveryLimits
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/contracts.py", line 5, in <module>
+    from jsonschema import Draft202012Validator
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_java_single_submission (unittest.loader._FailedTest.test_java_single_submission)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_java_single_submission
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_java_single_submission.py", line 10, in <module>
+    import httpx
+ModuleNotFoundError: No module named 'httpx'
+
+
+======================================================================
+ERROR: test_lifecycle (unittest.loader._FailedTest.test_lifecycle)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_lifecycle
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_lifecycle.py", line 15, in <module>
+    from lifecycle_stdio_server import ProposedService, Programs, Identities, save_command, digest
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/lifecycle_stdio_server.py", line 10, in <module>
+    from metriccanvas_authoring.entrypoints.compat.lifecycle_mcp import create_lifecycle_mcp_server
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/entrypoints/compat/lifecycle_mcp.py", line 2, in <module>
+    from fastmcp import FastMCP
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_lifecycle_publish (unittest.loader._FailedTest.test_lifecycle_publish)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_lifecycle_publish
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_lifecycle_publish.py", line 9, in <module>
+    from publish_stdio_server import PublicationProvider, HumanEvents, candidate, signed, context, prepare_request, SOURCE, PublicationSources
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/publish_stdio_server.py", line 10, in <module>
+    from lifecycle_stdio_server import Identities, Programs, ProposedService, digest
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/lifecycle_stdio_server.py", line 10, in <module>
+    from metriccanvas_authoring.entrypoints.compat.lifecycle_mcp import create_lifecycle_mcp_server
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/entrypoints/compat/lifecycle_mcp.py", line 2, in <module>
+    from fastmcp import FastMCP
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_lifecycle_stdio (unittest.loader._FailedTest.test_lifecycle_stdio)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_lifecycle_stdio
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_lifecycle_stdio.py", line 7, in <module>
+    from fastmcp import Client
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_page_building_conformance (unittest.loader._FailedTest.test_page_building_conformance)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_page_building_conformance
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_building_conformance.py", line 18, in <module>
+    from metriccanvas_authoring.pages.composition.compose_page import (  # noqa: E402
+    ...<3 lines>...
+    )
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/compose_page.py", line 16, in <module>
+    from metriccanvas_authoring.pages.composition.page_building import (
+        assemble_page_document,
+    )
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_building.py", line 13, in <module>
+    from metriccanvas_authoring.data.executable_units import (
+    ...<3 lines>...
+    )
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py", line 12, in <module>
+    from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py", line 9, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_page_parameters_mcp (unittest.loader._FailedTest.test_page_parameters_mcp)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_page_parameters_mcp
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_parameters_mcp.py", line 13, in <module>
+    from fastmcp import Client
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_parameter_preparation (unittest.loader._FailedTest.test_parameter_preparation)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_parameter_preparation
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_parameter_preparation.py", line 9, in <module>
+    from metriccanvas_authoring.pages.parameters.parameter_preparation import prepare_page_parameters
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/parameters/parameter_preparation.py", line 6, in <module>
+    from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py", line 11, in <module>
+    from jsonschema import Draft202012Validator
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_platform_authoring_flows (unittest.loader._FailedTest.test_platform_authoring_flows)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_platform_authoring_flows
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_platform_authoring_flows.py", line 8, in <module>
+    from fastmcp import Client
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_platform_main_flow (unittest.loader._FailedTest.test_platform_main_flow)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_platform_main_flow
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_platform_main_flow.py", line 8, in <module>
+    import httpx
+ModuleNotFoundError: No module named 'httpx'
+
+
+======================================================================
+ERROR: test_platform_v2 (unittest.loader._FailedTest.test_platform_v2)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_platform_v2
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_platform_v2.py", line 16, in <module>
+    from fastmcp import Client
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_publication_restart (unittest.loader._FailedTest.test_publication_restart)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_publication_restart
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_publication_restart.py", line 14, in <module>
+    from publish_stdio_server import PublicationProvider, PublicationSources, HumanEvents, prepare_request, context
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/publish_stdio_server.py", line 10, in <module>
+    from lifecycle_stdio_server import Identities, Programs, ProposedService, digest
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/lifecycle_stdio_server.py", line 10, in <module>
+    from metriccanvas_authoring.entrypoints.compat.lifecycle_mcp import create_lifecycle_mcp_server
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/entrypoints/compat/lifecycle_mcp.py", line 2, in <module>
+    from fastmcp import FastMCP
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_publish_stdio (unittest.loader._FailedTest.test_publish_stdio)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_publish_stdio
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_publish_stdio.py", line 7, in <module>
+    from fastmcp import Client
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_query_validation_policy (unittest.loader._FailedTest.test_query_validation_policy)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_query_validation_policy
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_query_validation_policy.py", line 4, in <module>
+    import test_dataset_metadata_http as provider_tests
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_dataset_metadata_http.py", line 16, in <module>
+    import httpx
+ModuleNotFoundError: No module named 'httpx'
+
+
+======================================================================
+ERROR: test_result_relations (unittest.loader._FailedTest.test_result_relations)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_result_relations
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_result_relations.py", line 11, in <module>
+    from fastmcp import Client
+ModuleNotFoundError: No module named 'fastmcp'
+
+
+======================================================================
+ERROR: test_unmatched_detail_cannot_fill_units_and_missing_is_cached (test_semantic_catalog.SemanticCatalogTest.test_unmatched_detail_cannot_fill_units_and_missing_is_cached)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/asyncio/runners.py", line 128, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/asyncio/base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_semantic_catalog.py", line 36, in test_unmatched_detail_cannot_fill_units_and_missing_is_cached
+    first = await catalog.discover({'actorId':'a'}, 'Tokens', 5, [])
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/semantic_catalog.py", line 134, in discover
+    from metriccanvas_authoring.data.discovery.retrieval import rank, score
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/__init__.py", line 2, in <module>
+    from .contracts import DiscoveryDependencies, DiscoveryLimits
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/discovery/contracts.py", line 5, in <module>
+    from jsonschema import Draft202012Validator
+ModuleNotFoundError: No module named 'jsonschema'
+
+======================================================================
+ERROR: test_skill_contract (unittest.loader._FailedTest.test_skill_contract)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_skill_contract
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_skill_contract.py", line 8, in <module>
+    import yaml
+ModuleNotFoundError: No module named 'yaml'
+
+
+======================================================================
+ERROR: test_stdio (unittest.loader._FailedTest.test_stdio)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_stdio
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_stdio.py", line 8, in <module>
+    from jsonschema import Draft202012Validator
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_structure_current (unittest.loader._FailedTest.test_structure_current)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_structure_current
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_structure_current.py", line 3, in <module>
+    from authoring_fixtures import plan
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/authoring_fixtures.py", line 3, in <module>
+    from test_source_mapping import DescriptorFixture
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_source_mapping.py", line 12, in <module>
+    from test_authoring_turns import Turns
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_authoring_turns.py", line 10, in <module>
+    from test_page_editing import page
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_editing.py", line 9, in <module>
+    from metriccanvas_authoring.pages.editing.page_editing import edit_page_document, EDIT_SCHEMA
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/page_editing.py", line 5, in <module>
+    from metriccanvas_authoring.pages.components.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py", line 6, in <module>
+    from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitScope
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py", line 12, in <module>
+    from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py", line 9, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+ERROR: test_execution_improvements (unittest.loader._FailedTest.test_execution_improvements)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_execution_improvements
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 141, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_execution_improvements.py", line 9, in <module>
+    from metriccanvas_authoring.pages.referenced import compose
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/referenced.py", line 3, in <module>
+    from metriccanvas_authoring.pages.scope_annotations import refresh, source_contract, data_locations
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/scope_annotations.py", line 6, in <module>
+    from metriccanvas_authoring.pages.components.component_editing import walk_components
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py", line 6, in <module>
+    from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitScope
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/executable_units.py", line 12, in <module>
+    from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/data/data_context.py", line 9, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'
+
+
+======================================================================
+FAIL: test_concurrent_processes_and_restart_share_one_http_read (test_metadata_processes.MetadataProcessesTest.test_concurrent_processes_and_restart_share_one_http_read)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_metadata_processes.py", line 60, in test_concurrent_processes_and_restart_share_one_http_read
+    first = self.start(); self.assertTrue(self.entered.wait(10))
+                          ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_every_binding_and_source_change_isolated (test_metadata_processes.MetadataProcessesTest.test_every_binding_and_source_change_isolated)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_metadata_processes.py", line 73, in test_every_binding_and_source_change_isolated
+    self.finish(self.start())
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_metadata_processes.py", line 55, in finish
+    self.assertEqual(child.returncode, 0, err)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/metadata_worker.py", line 8, in <module>
+    import httpx
+ModuleNotFoundError: No module named 'httpx'
+
+
+======================================================================
+FAIL: test_expired_dead_owner_can_be_recovered_by_new_process (test_metadata_processes.MetadataProcessesTest.test_expired_dead_owner_can_be_recovered_by_new_process)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_metadata_processes.py", line 87, in test_expired_dead_owner_can_be_recovered_by_new_process
+    self.finish(self.start()); self.finish(self.start())
+    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_metadata_processes.py", line 55, in finish
+    self.assertEqual(child.returncode, 0, err)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/metadata_worker.py", line 8, in <module>
+    import httpx
+ModuleNotFoundError: No module named 'httpx'
+
+
+======================================================================
+FAIL: test_killed_process_recovers_after_lease_expiry (test_metadata_processes.MetadataProcessesTest.test_killed_process_recovers_after_lease_expiry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_metadata_processes.py", line 92, in test_killed_process_recovers_after_lease_expiry
+    child=self.start(); self.assertTrue(self.entered.wait(10))
+                        ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 101 tests in 21.630s
+
+FAILED (failures=4, errors=49, skipped=1)
+[ELIFECYCLE] Command failed with exit code 1.

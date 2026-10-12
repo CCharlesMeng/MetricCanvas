@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.14**，读取支持5.0—5.4、6.5、6.11、6.12、6.13和6.14；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.15**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14和6.15；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
 
 ## 从需求到页面
 
@@ -22,7 +22,7 @@
 
 ## 版本、初始化与持久化
 
-新文档写6.14和layout（保留上述旧版本读取）；已支持版本的layoutForm在输入边界兼容读取，双字段同时出现拒绝。规范化保留已支持版本的能力边界，旧文档迁移另存新修订；先核验历史原文hash，再规范化。详见[布局迁移](docs/page-metadata/layout-migration.md)。
+新文档写6.15和layout（保留上述旧版本读取）；已支持版本的layoutForm在输入边界兼容读取，双字段同时出现拒绝。规范化保留已支持版本的能力边界，旧文档迁移另存新修订；先核验历史原文hash，再规范化。详见[布局迁移](docs/page-metadata/layout-migration.md)。
 
 当前模板在同一 Page Schema 内以分层 params 与 DQE 取值位置的原位 param 引用表达。无值模板结构合法，输入完整性在执行前验证。可读版本范围以上方版本说明与生成契约为准。提取、解析和旧绑定显式迁移见[页面参数](PAGE-PARAMETERS.md)。
 

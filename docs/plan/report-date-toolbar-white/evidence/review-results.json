@@ -1,0 +1,163 @@
+{
+  "claim_ledger": [
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "BE-1、BE-2、BE-3；artifacts/geometry-check.txt",
+      "id": "AT-1",
+      "note": "白底及顶边、左右边缘对齐；工具带与封面间隙为 0"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "BE-2、BE-3、BE-4；artifacts/geometry-check.txt",
+      "id": "AT-2",
+      "note": "390/320px 无横向溢出；月份范围改为 1—5 月后，期间文本更新且表格为 5 行"
+    }
+  ],
+  "code_fingerprint": "cad7d71c4c36ac6ccb25df7e1b87d2e9f6383d37835e9c5257845b126c3429f2",
+  "counts": {
+    "blocker": 0,
+    "claims_deferred": 0,
+    "claims_unverified": 0,
+    "decided": 0,
+    "deferred": 0,
+    "handoff": 0,
+    "manual_acceptance": 0,
+    "manual_pending": 0,
+    "norm_candidate": 0,
+    "open_question": 0,
+    "skipped": 0,
+    "suggestion": 0,
+    "unplanned_carry": 0
+  },
+  "coverage": {
+    "review-layout": [
+      {
+        "dimension": "L2",
+        "evidence_ids": [
+          "BE-1",
+          "BE-2",
+          "BE-3"
+        ],
+        "result": "clear",
+        "scope": "/pages/report-date-filter-example；1280×720、390×844、320×720；已声明月份范围及报告文案 fixture"
+      }
+    ]
+  },
+  "decisions": [],
+  "deferred_candidates": [],
+  "evidence_epoch": "review-1",
+  "findings": [],
+  "handoff": [],
+  "judged_files": {
+    "review-layout": [
+      "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+      "packages/engine/runtime-ui/src/RuntimeSurface.svelte"
+    ]
+  },
+  "known_gaps": {
+    "review-layout": []
+  },
+  "manual_acceptance": [],
+  "norm_candidates": [],
+  "open_questions": [],
+  "portfolio_narrowed": [],
+  "restore_contract": null,
+  "roles": {
+    "review-layout": "executed"
+  },
+  "schema_version": 1,
+  "skipped": {
+    "review-layout": []
+  },
+  "unplanned_carry": [],
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-1",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-2",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      }
+    ],
+    "facts": {
+      "cross_page": false,
+      "frozen_r": false,
+      "frozen_r5": false,
+      "frozen_r6": false,
+      "has_f3": false,
+      "has_s3_claim": false,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "review-layout"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "render",
+        "review-layout"
+      ],
+      "phase": "initial",
+      "required_profiles": {
+        "AT-1": "mock",
+        "AT-2": "mock"
+      },
+      "review_roles": [
+        "review-layout"
+      ],
+      "tier": "lite"
+    },
+    "review_dimensions": {
+      "review-layout": [
+        "L2"
+      ]
+    },
+    "review_roles": [
+      "review-layout"
+    ],
+    "risk_triggers": [
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [],
+      "changed_files": 2,
+      "max_changed_files": 5,
+      "restore_tasks": [],
+      "value": "lite"
+    },
+    "trigger_sources": {
+      "visual": [
+        "diff",
+        "plan"
+      ]
+    }
+  }
+}

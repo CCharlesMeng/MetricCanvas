@@ -1,0 +1,59 @@
+......FFFFFF....
+======================================================================
+FAIL: test_normalization_preserves_all_valid_source_content (test_page_validation.PageContractConformanceTest.test_normalization_preserves_all_valid_source_content) (fixture='query-cascade-page.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_validation.py", line 134, in test_normalization_preserves_all_valid_source_content
+    self.assertEqual(result, {"ok": True, "document": expected, "errors": []})
+AssertionError: {'ok'[37 chars] '6.14', 'id': 'query-cascade-page', 'layout':[6018 chars]: []} != {'ok'[37 chars] '6.15', 'id': 'query-cascade-page', 'layout':[6018 chars]: []}
+Diff is 28024 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_normalization_preserves_all_valid_source_content (test_page_validation.PageContractConformanceTest.test_normalization_preserves_all_valid_source_content) (fixture='reference-export-column-actions.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_validation.py", line 134, in test_normalization_preserves_all_valid_source_content
+    self.assertEqual(result, {"ok": True, "document": expected, "errors": []})
+AssertionError: {'ok'[37 chars] '6.13', 'id': 'reference-export-column-action[7150 chars]: []} != {'ok'[37 chars] '6.15', 'id': 'reference-export-column-action[7150 chars]: []}
+Diff is 24486 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_normalization_preserves_all_valid_source_content (test_page_validation.PageContractConformanceTest.test_normalization_preserves_all_valid_source_content) (fixture='reference-export-compute-branches.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_validation.py", line 134, in test_normalization_preserves_all_valid_source_content
+    self.assertEqual(result, {"ok": True, "document": expected, "errors": []})
+AssertionError: {'ok'[37 chars] '6.13', 'id': 'reference-export-compute-branc[2685 chars]: []} != {'ok'[37 chars] '6.15', 'id': 'reference-export-compute-branc[2685 chars]: []}
+Diff is 8237 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_normalization_preserves_all_valid_source_content (test_page_validation.PageContractConformanceTest.test_normalization_preserves_all_valid_source_content) (fixture='reference-export-detail-bindings.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_validation.py", line 134, in test_normalization_preserves_all_valid_source_content
+    self.assertEqual(result, {"ok": True, "document": expected, "errors": []})
+AssertionError: {'ok'[37 chars] '6.13', 'id': 'reference-export-detail-bindin[3953 chars]: []} != {'ok'[37 chars] '6.15', 'id': 'reference-export-detail-bindin[3953 chars]: []}
+Diff is 13568 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_normalization_preserves_all_valid_source_content (test_page_validation.PageContractConformanceTest.test_normalization_preserves_all_valid_source_content) (fixture='reference-export-detail-branches.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_validation.py", line 134, in test_normalization_preserves_all_valid_source_content
+    self.assertEqual(result, {"ok": True, "document": expected, "errors": []})
+AssertionError: {'ok'[37 chars] '6.13', 'id': 'reference-export-detail-branch[1413 chars]: []} != {'ok'[37 chars] '6.15', 'id': 'reference-export-detail-branch[1413 chars]: []}
+Diff is 4349 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_normalization_preserves_all_valid_source_content (test_page_validation.PageContractConformanceTest.test_normalization_preserves_all_valid_source_content) (fixture='report-date-filters-page.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/test-harness/tests/test_page_validation.py", line 134, in test_normalization_preserves_all_valid_source_content
+    self.assertEqual(result, {"ok": True, "document": expected, "errors": []})
+AssertionError: {'ok'[37 chars] '6.13', 'id': 'report-date-filters-page', 'la[1373 chars]: []} != {'ok'[37 chars] '6.15', 'id': 'report-date-filters-page', 'la[1373 chars]: []}
+Diff is 4094 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 11 tests in 3.944s
+
+FAILED (failures=6)

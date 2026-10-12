@@ -42,7 +42,8 @@ export const valueFormatPresets = [
   'percent-2',
   'percent-2-signed',
   'date',
-  'date-month-day'
+  'date-month-day',
+  'period'
 ] as const;
 
 export type ValueFormatPreset = (typeof valueFormatPresets)[number];

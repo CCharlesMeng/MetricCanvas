@@ -1,6 +1,36 @@
 {
   "invariants": [
     {
+      "id": "filter-text-declared",
+      "description": "筛选文本必须引用已声明筛选器",
+      "valid": [
+        "report-filter-text-page"
+      ],
+      "invalid": [
+        "filter-text-unknown"
+      ]
+    },
+    {
+      "id": "filter-text-format-compatible",
+      "description": "period 只接受时间输入，禁止数值日期格式混用",
+      "valid": [
+        "report-filter-text-page"
+      ],
+      "invalid": [
+        "filter-text-format-mismatch"
+      ]
+    },
+    {
+      "id": "filter-text-capability",
+      "description": "筛选文本引用与 period 格式需要 6.15",
+      "valid": [
+        "report-filter-text-page"
+      ],
+      "invalid": [
+        "filter-text-before-6.15"
+      ]
+    },
+    {
       "id": "page-layout-compatibility",
       "description": "6.1 layout 能力下限与单布局真源；6.0 layoutForm 仍可读取",
       "valid": [

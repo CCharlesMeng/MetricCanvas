@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.14",
-  "schemaSha256": "9a360374f2991e04fe431b01b1de635533cf6de167a6aa399769e7cc15bca828",
+  "schemaVersion": "6.15",
+  "schemaSha256": "61b985d2cb66bd50b9259e5f4fbc66f39cd42ec320b45b2a8f5f8506fad6887a",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -17,6 +17,10 @@
     {
       "file": "packages/engine/widgets/src/shared/semantic-html.ts",
       "sha256": "094d79a9d3fa928f49994caf5c97b50713e152920bb676ab50343f8d21f01ee7"
+    },
+    {
+      "file": "packages/page/src/filter-text-value.ts",
+      "sha256": "619e1b4f1884cf6a4e8963b4134e91804f3588400561346a3d4ebfc94b8b1d7e"
     },
     {
       "file": "packages/page/src/navigate.ts",
@@ -112,7 +116,11 @@
     },
     {
       "file": "packages/page/src/schema/primitives.ts",
-      "sha256": "3b511ab9fea1653464a5ea59e25c4f27f8e35fddc4aa6e8c59d67762bbf2900c"
+      "sha256": "493f9aaae1703e05ca01f5b6581cd2a21a2d54f860a2d61316b985b0b478824d"
+    },
+    {
+      "file": "packages/page/src/text-value.ts",
+      "sha256": "f9c3f80b460da4c1b23ee794969c4aad3395f2a92272b556be4ea7bad94c6016"
     },
     {
       "file": "packages/page/src/time-param.ts",
@@ -120,11 +128,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "437bccba5f591ea345cbc9c16c776f65c44fa81dafc6bdba85f7a0f35fa88577"
+      "sha256": "58fd5bd6d25989c8b58a6ef32549bd7433db57abb29cf729751cedcb16fcc75d"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "d2aa4a1f2776ef0eb26c5c920a83721936e327fd4c3b873612bcdd7361fec515"
+      "sha256": "3db1aea23c5f03d88fac2226eaa285137c3318b0c8062e1107c9e0c7825e6249"
     }
   ],
   "modules": {
@@ -165,7 +173,8 @@
         "textValue",
         "pageParam",
         "groupedPageParams",
-        "timeWindow"
+        "timeWindow",
+        "filterTextValueReference"
       ],
       "keywords": [
         "params-and-text-values",
@@ -176,14 +185,17 @@
         "reference-branches-page",
         "time-params-page",
         "grouped-params-page",
-        "grouped-scalar-params-page"
+        "grouped-scalar-params-page",
+        "report-filter-text-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/primitives.ts",
         "tools/scripts/page-conformance-vectors.ts",
         "packages/page/src/time-param.ts",
-        "packages/page/src/param-bindings.ts"
+        "packages/page/src/param-bindings.ts",
+        "packages/page/src/filter-text-value.ts",
+        "packages/page/src/text-value.ts"
       ],
       "rules": [
         "page-param-id-unique",
@@ -192,7 +204,10 @@
         "text-value-param-declared",
         "text-value-format-compatible",
         "page-param-consumed",
-        "optional-param-not-in-required-text"
+        "optional-param-not-in-required-text",
+        "filter-text-declared",
+        "filter-text-format-compatible",
+        "filter-text-capability"
       ]
     },
     "data-sources.md": {
@@ -1069,7 +1084,8 @@
         "6.11",
         "6.12",
         "6.13",
-        "6.14"
+        "6.14",
+        "6.15"
       ]
     },
     {
@@ -1151,7 +1167,54 @@
         "percent-2",
         "percent-2-signed",
         "date",
-        "date-month-day"
+        "date-month-day",
+        "period"
+      ]
+    },
+    {
+      "pointer": "#/definitions/nonEmptyTextValue/anyOf/2",
+      "path": "@nonEmptyTextValue · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "ref": "#/definitions/filterTextValueReference"
+    },
+    {
+      "pointer": "#/definitions/filterTextValueReference",
+      "path": "@filterTextValueReference",
+      "required": "类型/分支",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/filterTextValueReference/properties/filter",
+      "path": "@filterTextValueReference.filter",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/filterTextValueReference/properties/format",
+      "path": "@filterTextValueReference.format",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "enum": [
+        "text",
+        "number",
+        "number-1",
+        "number-2",
+        "number-grouped",
+        "compact-wan-0",
+        "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
+        "compact-yi-1",
+        "cny-adaptive",
+        "percent-0",
+        "percent-1",
+        "percent-2",
+        "percent-2-signed",
+        "date",
+        "date-month-day",
+        "period"
       ]
     },
     {
@@ -1896,7 +1959,8 @@
         "percent-2",
         "percent-2-signed",
         "date",
-        "date-month-day"
+        "date-month-day",
+        "period"
       ]
     },
     {
@@ -1973,7 +2037,8 @@
         "percent-2",
         "percent-2-signed",
         "date",
-        "date-month-day"
+        "date-month-day",
+        "period"
       ]
     },
     {
@@ -2975,7 +3040,8 @@
         "percent-2",
         "percent-2-signed",
         "date",
-        "date-month-day"
+        "date-month-day",
+        "period"
       ]
     },
     {
@@ -3058,7 +3124,8 @@
         "percent-2",
         "percent-2-signed",
         "date",
-        "date-month-day"
+        "date-month-day",
+        "period"
       ]
     },
     {
@@ -3299,7 +3366,8 @@
         "percent-2",
         "percent-2-signed",
         "date",
-        "date-month-day"
+        "date-month-day",
+        "period"
       ]
     },
     {
@@ -3405,7 +3473,8 @@
         "percent-2",
         "percent-2-signed",
         "date",
-        "date-month-day"
+        "date-month-day",
+        "period"
       ]
     },
     {
@@ -3481,7 +3550,8 @@
         "percent-2",
         "percent-2-signed",
         "date",
-        "date-month-day"
+        "date-month-day",
+        "period"
       ]
     },
     {
@@ -4976,6 +5046,13 @@
       "ref": "#/definitions/textValueReference"
     },
     {
+      "pointer": "#/definitions/textValue/anyOf/2",
+      "path": "@textValue · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "ref": "#/definitions/filterTextValueReference"
+    },
+    {
       "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/subtitleFormat",
       "path": "@reportHeaderComponent.props.subtitleFormat",
       "required": "本分支可选",
@@ -5264,7 +5341,8 @@
         "percent-2",
         "percent-2-signed",
         "date",
-        "date-month-day"
+        "date-month-day",
+        "period"
       ]
     },
     {
@@ -8516,7 +8594,8 @@
         "percent-2",
         "percent-2-signed",
         "date",
-        "date-month-day"
+        "date-month-day",
+        "period"
       ]
     },
     {
@@ -9625,6 +9704,12 @@
       "pointer": "#/sections/0/components/0/props/title"
     },
     {
+      "schemaPointer": "#/definitions/nonEmptyTextValue/anyOf/2",
+      "module": "params-and-text-values.md",
+      "file": "examples/report-filter-text-page.json",
+      "pointer": "#/sections/0/components/0/props/asOf/value"
+    },
+    {
       "schemaPointer": "#/definitions/dashboardToolbar/anyOf/0",
       "module": "page.md",
       "file": "examples/reference-branches-page.json",
@@ -10155,6 +10240,12 @@
       "module": "params-and-text-values.md",
       "file": "examples/reference-branches-page.json",
       "pointer": "#/sections/0/components/4/props/title"
+    },
+    {
+      "schemaPointer": "#/definitions/textValue/anyOf/2",
+      "module": "params-and-text-values.md",
+      "file": "examples/report-filter-text-page.json",
+      "pointer": "#/sections/2/components/0/props/body"
     },
     {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/1",

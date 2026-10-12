@@ -2,6 +2,7 @@ export * from './page';
 export * from './page-document';
 export * from './page-param';
 export * from './text-value';
+export * from './filter-text-value';
 export * from './page-list-entry';
 export * from './data-source';
 export * from './field';

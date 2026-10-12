@@ -1,5 +1,6 @@
 import type { TypedError } from './errors';
 import { collectTextValueReferences } from './page-param';
+import { collectFilterTextValueReferences } from './filter-text-value';
 import { walkDocumentComponents } from './component-walk';
 
 /**
@@ -14,7 +15,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 14;
+const CURRENT_MINOR = 15;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -36,6 +37,14 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'filter-text-values': {
+    minor: 15, description: '显式筛选文本引用及统一 period 日期格式',
+    usedAt: document => [...new Set([
+      ...collectFilterTextValueReferences(document).map(usage => usage.path),
+      ...collectTextValueReferences(document).filter(usage => usage.reference.format === 'period').map(usage => `${usage.path}/format`),
+      ...periodFormatPaths(document)
+    ])]
+  },
   'query-result-bindings': {
     minor: 14, description: '上游原始查询维度集合作为下游查询输入',
     usedAt: document => dataSourcePaths(document, source => Array.isArray(record(record(source.source)?.query)?.resultBindings))
@@ -533,7 +542,7 @@ export const versionPolicy: VersionPolicy = {
  * 能力引入历史仍可查询，但不代表旧 6.x 文档可读。
  */
 export function supportedVersions(policy: VersionPolicy = versionPolicy): string[] {
-  const currentMajor = policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 ? [...new Set(['6.5', ...(policy.minor >= 12 ? ['6.11', ...(policy.minor >= 13 ? ['6.12', ...(policy.minor >= 14 ? ['6.13'] : [])] : [])] : []), policy.current])] : [policy.current];
+  const currentMajor = policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 ? [...new Set(['6.5', ...(policy.minor >= 12 ? ['6.11', ...(policy.minor >= 13 ? ['6.12', ...(policy.minor >= 14 ? ['6.13', ...(policy.minor >= 15 ? ['6.14'] : [])] : [])] : [])] : []), policy.current])] : [policy.current];
   return policy.major === PAGE_SCHEMA_MAJOR
     ? [...LEGACY_READABLE_PAGE_SCHEMA_VERSIONS, ...currentMajor]
     : currentMajor;
@@ -863,6 +872,14 @@ function escapePointer(segment: string): string {
 
 /** 只检查格式声明；原始数据行中的同名键不声明展示能力。 */
 function millionFormatPaths(document: unknown): string[] {
+  return namedFormatPaths(document, /^compact-million-[012]$/);
+}
+
+function periodFormatPaths(document: unknown): string[] {
+  return namedFormatPaths(document, /^period$/);
+}
+
+function namedFormatPaths(document: unknown, pattern: RegExp): string[] {
   const paths: string[] = [];
   function visit(value: unknown, path: string, key: string): void {
     if (Array.isArray(value)) {
@@ -873,7 +890,7 @@ function millionFormatPaths(document: unknown): string[] {
     if (!node) return;
     for (const [name, child] of Object.entries(node)) {
       const childPath = `${path}/${escapePointer(name)}`;
-      if (name === key && typeof child === 'string' && /^compact-million-[012]$/.test(child)) paths.push(childPath);
+      if (name === key && typeof child === 'string' && pattern.test(child)) paths.push(childPath);
       else visit(child, childPath, key);
     }
   }
@@ -882,7 +899,7 @@ function millionFormatPaths(document: unknown): string[] {
   }
   walkDocumentComponents(document, (component, path) => visit(component.props, `${path}/props`, 'format'));
   for (const { path, reference } of collectTextValueReferences(document)) {
-    if (reference.format?.startsWith('compact-million-')) paths.push(`${path}/format`);
+    if (reference.format && pattern.test(reference.format)) paths.push(`${path}/format`);
   }
   return [...new Set(paths)];
 }

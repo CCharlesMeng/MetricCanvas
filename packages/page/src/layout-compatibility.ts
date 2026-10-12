@@ -17,6 +17,8 @@ export function canonicalLayoutDocument<T extends {
   schemaVersion: string; layout?: PageLayoutForm; layoutForm?: PageLayoutForm
 }>(document: T): Omit<T, 'layoutForm'> & { layout: PageLayoutForm } {
   const { layoutForm, ...rest } = document;
-  const canonicalMinor = document.schemaVersion === '6.5' ? 5 : versionPolicy.minor;
+  // 6.13/6.14 的页头日期文字语义必须保留；不能升级版本后静默取消旧联动。
+  const canonicalMinor = document.schemaVersion === '6.5' ? 5 :
+    ['6.13', '6.14'].includes(document.schemaVersion) ? Number(document.schemaVersion.split('.')[1]) : versionPolicy.minor;
   return { ...rest, schemaVersion: `${versionPolicy.major}.${canonicalMinor}`, layout: document.layout ?? layoutForm ?? 'report' };
 }

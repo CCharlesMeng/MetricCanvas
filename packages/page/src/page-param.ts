@@ -77,8 +77,14 @@ export interface TextValueReference {
   format?: ValueFormatPreset;
 }
 
+/** 页内可变筛选值的整值引用；与不可变参数引用互斥。 */
+export interface FilterTextValueReference {
+  filter: string;
+  format?: ValueFormatPreset;
+}
+
 /** 文本取值:字面量,或对页面参数的整值引用。 */
-export type TextValue = string | TextValueReference;
+export type TextValue = string | TextValueReference | FilterTextValueReference;
 
 /**
  * 文本取值引用按形状识别。页面协议里没有第二个使用 `param` 键的对象,
@@ -123,6 +129,7 @@ export function formatSuitsParamType(
   format: ValueFormatPreset,
   type: PageParamType
 ): boolean {
+  if (format === 'period') return type === 'time' || type === 'timeRange';
   if (NUMERIC_FORMATS.has(format)) return type === 'number';
   if (DATE_FORMATS.has(format)) return type === 'string';
   return true;

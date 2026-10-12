@@ -1,0 +1,31 @@
+{
+  "case": "filter-text-unknown",
+  "invariant": "filter-text-declared",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "文本取值引用了未声明的筛选器:missing",
+      "paths": [
+        "/sections/0/components/0/props/asOf/value/filter"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "asOf": {
+                "value": {
+                  "filter": "missing"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/filter-text-unknown.json"
+}

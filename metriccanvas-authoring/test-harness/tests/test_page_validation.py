@@ -89,6 +89,25 @@ class PageContractConformanceTest(unittest.TestCase):
                     self.assertEqual({(e["type"], e["path"]) for e in actual["errors"]}, {(e["type"], e["path"]) for e in expected["errors"]})
                 self.assertEqual(case["input"], before)
 
+    def test_filter_text_period_semantics(self) -> None:
+        page = json.loads((CONTRACT_ROOT / "page/conformance/valid/report-filter-text-page.json").read_text())
+        self.assertFalse(validate_page_document(page))
+        for reference in ({"filter": "missing", "format": "period"},
+                          {"filter": "period-filter", "format": "number-2"},
+                          {"filter": "period-filter", "format": "period-compact"},
+                          {"filter": "period-filter", "param": "period"}):
+            candidate = deepcopy(page)
+            candidate["sections"][0]["components"][0]["props"]["asOf"]["value"] = reference
+            self.assertTrue(validate_page_document(candidate))
+        for version in ("6.13", "6.14"):
+            candidate = deepcopy(page)
+            candidate["schemaVersion"] = version
+            self.assertTrue(validate_page_document(candidate))
+        candidate = deepcopy(page)
+        candidate["params"]["display"] = [{"id": "numeric", "type": "number", "value": 1}]
+        candidate["sections"][0]["components"][0]["props"]["subtitle"] = {"param": "numeric", "format": "period"}
+        self.assertTrue(validate_page_document(candidate))
+
     def test_million_formats_require_65(self) -> None:
         page = json.loads((CONTRACT_ROOT / "page/conformance/valid/million-formats-page.json").read_text())
         self.assertFalse(validate_page_document(page))
@@ -128,7 +147,7 @@ class PageContractConformanceTest(unittest.TestCase):
                 original = json.loads(path.read_text())
                 baseline = deepcopy(original)
                 expected = deepcopy(original)
-                expected["schemaVersion"] = "6.5" if original["schemaVersion"] == "6.5" else json.loads((CONTRACT_ROOT / "manifest.json").read_text())["pageSchemaVersion"]
+                expected["schemaVersion"] = original["schemaVersion"] if original["schemaVersion"] in ("6.5", "6.13", "6.14") else json.loads((CONTRACT_ROOT / "manifest.json").read_text())["pageSchemaVersion"]
                 expected["layout"] = expected.pop("layoutForm", expected.get("layout", "report"))
                 result = normalize_page_document(original)
                 self.assertEqual(result, {"ok": True, "document": expected, "errors": []})

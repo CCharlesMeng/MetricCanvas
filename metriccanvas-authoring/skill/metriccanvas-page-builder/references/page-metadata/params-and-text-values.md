@@ -35,8 +35,25 @@ params 增加对象分支，按消费位置分两层：params.query.{dimensions,
 
 文本区间显示 start 至 end，相同起止显示一次，维度多值用顿号连接。URL 维度用重复键；时间是纯文本，单点写 2026-03，区间写 2026-01..2026-06，未传使用保存实际值，显式非法不回退。旧数组/default/time-window 保持兼容，规范化保存不把分层结构改写为数组。
 
+## 筛选文本取值（6.15）
 
-页面协议 6.14。结构真源为本册[schema.json](schema.json)，SHA256 `9a360374f2991e04fe431b01b1de635533cf6de167a6aa399769e7cc15bca828`。字段表自动生成；可选不等于有默认值。
+文本取值增加 `{filter: "筛选器id", format?: "格式预设"}` 分支，与 `{param: "参数id", format?: ...}` 互斥。两者均为整值替换，不支持拼接、模板表达式或自定义分隔符。筛选引用允许在所有既有文本取值位置声明，包括页头、副标题、内容分区标题、普通文本与嵌套组件；dataSources 内的请求体和业务数据不参与文本解析。
+
+filter 读取当前已应用筛选状态，初次从 default/initialParam/URL 或执行回执初始化，随后随筛选变化更新；param 在打开时确定，页内筛选不能修改它。静态字面量不被筛选覆盖；控件位置和文本引用分别声明。未应用的输入草稿不改变期间。
+
+统一格式 `period` 只用于 time/timeRange 参数和 timePoint/timeRange 筛选器：月份/日期单点原样显示，区间为“开始 至 结束”，两端相同只显示一个值，清空 period 筛选引用显示“全部期间”。其他筛选文本缺值显示“—”；维度多值以“、”连接，布尔为 true/false，数值范围可对两端应用既有数值格式，单端范围使用 ≥/≤。不提供 period-compact 或 rangeSeparator。
+
+```json
+"asOf": {
+  "label": "报告期间",
+  "value": { "filter": "report-period-filter", "format": "period" }
+}
+```
+
+参数提取确认后，原子增加筛选器、查询绑定、页头位置以及显式期间引用；保留已有静态文字或已声明引用，只有对应日期字面量可以改为期间引用。导出捕获当前已解析的文字和筛选状态，在等待完整数据期间不会跟随后续筛选变化。
+
+
+页面协议 6.15。结构真源为本册[schema.json](schema.json)，SHA256 `61b985d2cb66bd50b9259e5f4fbc66f39cd42ec320b45b2a8f5f8506fad6887a`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -98,7 +115,7 @@ Schema位置：`#/definitions/textValueReference/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day"] | Schema未设默认；装配/运行时默认见语义说明 | 引用处的展示格式；复用组件字段绑定的同一套封闭闭集 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 引用处的展示格式；复用组件字段绑定的同一套封闭闭集 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -120,6 +137,69 @@ Schema位置：`#/definitions/textValueReference/properties/format`。
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
+| "period" | 日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c75652f616e794f662f32"></a>
+
+### `@nonEmptyTextValue · anyOf[2]`
+
+Schema位置：`#/definitions/nonEmptyTextValue/anyOf/2`。目标：[#/definitions/filterTextValueReference](params-and-text-values.md#schema-232f646566696e6974696f6e732f66696c7465725465787456616c75655265666572656e6365)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/filterTextValueReference | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f66696c7465725465787456616c75655265666572656e6365"></a>
+
+### `@filterTextValueReference`
+
+Schema位置：`#/definitions/filterTextValueReference`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | required=["filter"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 对当前已应用筛选值的整值引用；不是参数初值或模板插值 |
+
+<a id="schema-232f646566696e6974696f6e732f66696c7465725465787456616c75655265666572656e63652f70726f706572746965732f66696c746572"></a>
+
+### `@filterTextValueReference.filter`
+
+Schema位置：`#/definitions/filterTextValueReference/properties/filter`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 已声明的页面筛选器 id；读取当前已应用状态，不读取参数初值。 |
+
+<a id="schema-232f646566696e6974696f6e732f66696c7465725465787456616c75655265666572656e63652f70726f706572746965732f666f726d6174"></a>
+
+### `@filterTextValueReference.format`
+
+Schema位置：`#/definitions/filterTextValueReference/properties/format`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["text","number","number-1","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "text" | 普通文本格式，不能执行HTML。 |
+| "number" | 数值标量或原数值格式，按所在字段解释。 |
+| "number-1" | 保留1位小数。 |
+| "number-2" | 保留2位小数。 |
+| "number-grouped" | 千分位数值展示。 |
+| "compact-wan-0" | 按万缩放，0位小数。 |
+| "compact-wan-1" | 按万缩放，1位小数。 |
+| "compact-million-0" | 按百万缩放，0位小数，附加百万后缀。 |
+| "compact-million-1" | 按百万缩放，1位小数，附加百万后缀。 |
+| "compact-million-2" | 按百万缩放，2位小数，附加百万后缀。 |
+| "compact-yi-1" | 按亿缩放，1位小数。 |
+| "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
+| "percent-0" | 原数值加百分号，0位小数。 |
+| "percent-1" | 原数值加百分号，1位小数。 |
+| "percent-2" | 原数值加百分号，2位小数。 |
+| "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
+| "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
+| "date-month-day" | 只展示月日的日期格式。 |
+| "period" | 日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765506172616d"></a>
 
@@ -1131,6 +1211,16 @@ Schema位置：`#/definitions/textValue/anyOf/1`。目标：[#/definitions/textV
 |---|---|---|---|---|
 | 引用 #/definitions/textValueReference | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f7465787456616c75652f616e794f662f32"></a>
+
+### `@textValue · anyOf[2]`
+
+Schema位置：`#/definitions/textValue/anyOf/2`。目标：[#/definitions/filterTextValueReference](params-and-text-values.md#schema-232f646566696e6974696f6e732f66696c7465725465787456616c75655265666572656e6365)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/filterTextValueReference | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 ## 语义规则与反例（生成）
 
 - `page-param-id-unique`：页面参数 id 唯一。反例：[duplicate-page-param-id](errors/duplicate-page-param-id.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -1140,6 +1230,9 @@ Schema位置：`#/definitions/textValue/anyOf/1`。目标：[#/definitions/textV
 - `text-value-format-compatible`：文本取值引用的展示格式与参数类型相容。反例：[text-value-format-mismatch](errors/text-value-format-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `page-param-consumed`：每个页面参数至少被一处文本取值消费。反例：[page-param-unconsumed](errors/page-param-unconsumed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `optional-param-not-in-required-text`：必填文本属性只能引用必需参数。反例：[required-title-references-optional-param](errors/required-title-references-optional-param.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `filter-text-declared`：筛选文本必须引用已声明筛选器。反例：[filter-text-unknown](errors/filter-text-unknown.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `filter-text-format-compatible`：period 只接受时间输入，禁止数值日期格式混用。反例：[filter-text-format-mismatch](errors/filter-text-format-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `filter-text-capability`：筛选文本引用与 period 格式需要 6.15。反例：[filter-text-before-6.15](errors/filter-text-before-6.15.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -1148,16 +1241,20 @@ Schema位置：`#/definitions/textValue/anyOf/1`。目标：[#/definitions/textV
 - [time-params-page](examples/time-params-page.json)：完整合法页面；查询仅为静态契约证据。
 - [grouped-params-page](examples/grouped-params-page.json)：完整合法页面；查询仅为静态契约证据。
 - [grouped-scalar-params-page](examples/grouped-scalar-params-page.json)：完整合法页面；查询仅为静态契约证据。
+- [report-filter-text-page](examples/report-filter-text-page.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/primitives.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/time-param.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/param-bindings.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/filter-text-value.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/text-value.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 
 - `#/definitions/nonEmptyTextValue/anyOf/0`：[合法完整页面](examples/component-reportHeader.json)，JSON Pointer `#/sections/0/components/0/props/title`。
 - `#/definitions/nonEmptyTextValue/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/0/props/title`。
+- `#/definitions/nonEmptyTextValue/anyOf/2`：[合法完整页面](examples/report-filter-text-page.json)，JSON Pointer `#/sections/0/components/0/props/asOf/value`。
 - `#/definitions/pageParam/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/2`。
 - `#/definitions/pageParam/anyOf/0/properties/default/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/2/default`。
 - `#/definitions/pageParam/anyOf/0/properties/default/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/3/default`。
@@ -1182,3 +1279,4 @@ Schema位置：`#/definitions/textValue/anyOf/1`。目标：[#/definitions/textV
 - `#/definitions/timeWindow/oneOf/4`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/legacy-to-date/source/query/paramBindings/report-month/window`。
 - `#/definitions/textValue/anyOf/0`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/0/props/legend/title`。
 - `#/definitions/textValue/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/4/props/title`。
+- `#/definitions/textValue/anyOf/2`：[合法完整页面](examples/report-filter-text-page.json)，JSON Pointer `#/sections/2/components/0/props/body`。

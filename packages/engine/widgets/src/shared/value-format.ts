@@ -1,4 +1,5 @@
 import type { FieldValue, ValueFormatPreset } from '@metriccanvas/page/internal';
+import { formatPeriod } from '@metriccanvas/page/internal';
 
 export type ValuePolarity = 'positive' | 'negative' | 'neutral';
 
@@ -14,6 +15,7 @@ export function formatValue(
 ): string {
   if (value == null || (typeof value === 'number' && !Number.isFinite(value))) return missingText;
   if (!format || format === 'text') return String(value);
+  if (format === 'period') return formatPeriod(String(value));
   if (format === 'date') return formatDate(value);
   if (format === 'date-month-day') {
     const date = formatDate(value);

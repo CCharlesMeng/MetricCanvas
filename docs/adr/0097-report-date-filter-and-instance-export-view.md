@@ -1,5 +1,6 @@
 ---
 status: accepted
+revised-by: [0100]
 date: 2026-10-11
 note: 用户批准 C 工具带及实例 DOM 导出；6.13 增量，生产 PDF 与真实服务联通待验
 ---

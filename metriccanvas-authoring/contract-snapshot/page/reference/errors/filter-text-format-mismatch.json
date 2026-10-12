@@ -1,0 +1,31 @@
+{
+  "case": "filter-text-format-mismatch",
+  "invariant": "filter-text-format-compatible",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "格式 number-2 与筛选器 period-filter 的类型 timeRange 不相容",
+      "paths": [
+        "/sections/0/components/0/props/asOf/value/format"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "asOf": {
+                "value": {
+                  "format": "number-2"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/filter-text-format-mismatch.json"
+}

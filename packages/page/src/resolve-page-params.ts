@@ -4,6 +4,8 @@ import { parsePage } from './validate';
 import type { Page } from './page';
 import type { PageDocument } from './page-document';
 import type { TypedError } from './errors';
+import { applyFilterTextValues, collectFilterTextValueReferences, initialFilterTextValues } from './filter-text-value';
+import { resolveFilterTextValue, resolveParamTextValues } from './text-value';
 
 export interface ParamResolutionIssue { code: 'INVALID_PAGE'|'UNKNOWN_INPUT'|'MISSING_INPUT'|'INVALID_VALUE'|'INVALID_TIME_RULE'|'INVALID_MATERIALIZATION'; path: string; param?: string; message: string; }
 export type ResolvePageParamsResult =
@@ -45,6 +47,9 @@ export function resolvePageParams(page:unknown, suppliedValues:Readonly<Record<s
   let resolvedPage:Page;
   try {
     resolvedPage=materializePageParams(parsed.page,values);
+    const filterValues = initialFilterTextValues(resolvedPage.filters ?? []);
+    resolvedPage = applyFilterTextValues(resolvedPage, collectFilterTextValueReferences(resolveParamTextValues(document, { values })),
+      reference => resolveFilterTextValue(reference, { values, filterValues }));
   } catch(cause) {return {ok:false,issues:[{code:'INVALID_TIME_RULE',path:'/dataSources',message:String(cause)}]};}
   return {ok:true,document,resolvedPage,effectiveInputs:values,issues:[]};
 }

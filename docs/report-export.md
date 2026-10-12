@@ -48,3 +48,5 @@ await handle.withExportView(async ({ target, paper, wideElements, signal }) => {
 默认查找本机 Playwright 缓存中的 Chromium headless shell；也可用 `MC_PDF_CHROMIUM` 指定已安装的 Chromium 可执行文件。预览使用 PATH 中的 `pdftoppm`，也可用 `MC_PDF_RENDERER` 指定路径；缺失时明确报错。这个接入示例覆盖当前报告的竖向 A4 分页，宽分区明确拒绝；生产编码器对任意宽分区的横向编排仍需消费 `wideElements` 并独立验收。示例用文字色替代封面的渐变文字，并按纵向内容流分页，避免 PDF 合成器的渐变描边及 Grid 分页重叠。
 
 部署 Adapter 的日期身份证明提供方可以返回 `timeIdentities`（按数据源 ID）和 `timePointFields`（按数据源 ID/查询字段，含 granularity、valueFormat、identity），证明必须绑定精确页面摘要和 DQE 验证基线。未提供时算法保持独立日期身份；字符串月份分区不由模型猜测。真实部署接入由集成应用/Relay Adapter 配置，不改变 Java 页面资产接口。
+
+6.15 使用显式筛选文本引用：`asOf.value: {filter: "period-filter", format: "period"}`。filterIds 只负责控件位置，不自动创建或覆盖期间文字；导出捕获页头、副标题和其他文本位置的已解析文字，之后的筛选变化不改变本次导出。6.13/6.14 保留旧的期间派生读取。

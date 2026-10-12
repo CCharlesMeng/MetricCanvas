@@ -1,9 +1,11 @@
 import type { ValueFormatPreset } from './field';
+import { isFilterTextValueReference } from './filter-text-value';
 import {
   isTextValueReference,
   textValueScope,
   type PageParamDeclaration,
-  type PageParamValue
+  type PageParamValue,
+  type FilterTextValueReference
 } from './page-param';
 
 /**
@@ -24,6 +26,8 @@ export type TextValueFormatter = (
 export interface TextValueResolution {
   /** 参数 id → 取值;缺席表示该参数在本次打开时没有取值。 */
   values: ReadonlyMap<string, PageParamValue>;
+  /** 已应用筛选值；缺席只用于解析占位，运行时按原引用持续投影。 */
+  filterValues?: ReadonlyMap<string, PageParamValue>;
   format?: TextValueFormatter;
 }
 
@@ -37,6 +41,15 @@ export function resolveTextValues(
   document: unknown,
   resolution: TextValueResolution
 ): unknown {
+  return resolveTexts(document, resolution, false);
+}
+
+/** 编译运行时筛选引用前先解析参数，保持被移除的可选数组项与引用路径一致。 */
+export function resolveParamTextValues(document: unknown, resolution: TextValueResolution): unknown {
+  return resolveTexts(document, resolution, true);
+}
+
+function resolveTexts(document: unknown, resolution: TextValueResolution, preserveFilters: boolean): unknown {
   const format = resolution.format ?? defaultFormatter;
   if (typeof document !== 'object' || document === null || Array.isArray(document)) {
     return document;
@@ -56,6 +69,9 @@ export function resolveTextValues(
       const resolvedValue = resolution.values.get(value.param);
       return resolvedValue === undefined ? ABSENT : format(resolvedValue, value.format);
     }
+    if (isFilterTextValueReference(value)) {
+      return preserveFilters ? value : resolveFilterTextValue(value, resolution);
+    }
     const next: Record<string, unknown> = {};
     for (const [key, child] of Object.entries(value)) {
       const item = visit(child);
@@ -63,6 +79,12 @@ export function resolveTextValues(
     }
     return next;
   }
+}
+
+export function resolveFilterTextValue(reference: FilterTextValueReference, resolution: TextValueResolution): string {
+  const selected = resolution.filterValues?.get(reference.filter);
+  return selected === undefined ? (reference.format === 'period' ? '全部期间' : '—') :
+    (resolution.format ?? defaultFormatter)(selected, reference.format);
 }
 
 /**
@@ -92,8 +114,12 @@ function placeholderFor(declaration: PageParamDeclaration): PageParamValue {
   return declaration.label ?? declaration.id;
 }
 
+export function formatPeriod(value: string | { start: string; end: string }): string {
+  return typeof value === 'string' ? value : value.start === value.end ? value.start : `${value.start} 至 ${value.end}`;
+}
+
 function defaultFormatter(value: PageParamValue): string {
-  if (typeof value === 'object' && !Array.isArray(value)) return value.start === value.end ? value.start : `${value.start} 至 ${value.end}`;
+  if (typeof value === 'object' && !Array.isArray(value)) return formatPeriod(value);
   if (Array.isArray(value)) return value.join('、');
   return String(value);
 }

@@ -1,0 +1,39 @@
+{
+  "base_ref": "HEAD",
+  "changed_files": [
+    {
+      "path": "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "status": "M"
+    }
+  ],
+  "head": "91254d8857dd41b1dc25f32d8c7fb59bab8e52a8",
+  "risk_triggers": {
+    "visual": [
+      {
+        "evidence": "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "rule": "template-file"
+      }
+    ]
+  },
+  "schema_version": 1,
+  "shared_paths": [
+    "*/shared/*",
+    "*/common/*",
+    "*/components/*",
+    "*/hooks/*",
+    "*/utils/*",
+    "*/lib/*",
+    "*/api/*",
+    "*/store/*",
+    "*/styles/*"
+  ],
+  "skip_rebuttals": {}
+}

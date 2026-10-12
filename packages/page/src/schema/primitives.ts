@@ -50,6 +50,14 @@ export const textValueReferenceZ = z
     description: '对一个页面参数的整值引用；不是模板插值，不参与拼接'
   });
 
+export const filterTextValueReferenceZ = z.object({
+  filter: idZ,
+  format: valueFormatPresetZ.optional()
+}).strict().meta({
+  id: 'filterTextValueReference',
+  description: '对当前已应用筛选值的整值引用；不是参数初值或模板插值'
+});
+
 /*
  * 文本取值（ADR-0047）：一切渲染为用户可见文本的属性位置都接受字面量或
  * 对页面参数的整值引用。规则落在位置上，不按组件类型维护白名单。
@@ -62,12 +70,12 @@ export const textValueReferenceZ = z
 type TextValueSchema = z.ZodType<string>;
 
 export const textValueZ = z
-  .union([z.string(), textValueReferenceZ])
+  .union([z.string(), textValueReferenceZ, filterTextValueReferenceZ])
   .meta({ id: 'textValue' }) as unknown as TextValueSchema;
 
 /** 非空文本取值：字面量必须非空；引用的非空性由参数取值保证。 */
 export const nonEmptyTextValueZ = z
-  .union([z.string().min(1), textValueReferenceZ])
+  .union([z.string().min(1), textValueReferenceZ, filterTextValueReferenceZ])
   .meta({ id: 'nonEmptyTextValue' }) as unknown as TextValueSchema;
 
 const parameterValueZ = z.union([z.string(), z.number(), z.boolean()]);

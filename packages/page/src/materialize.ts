@@ -4,8 +4,10 @@ import type {
   QueryScalarFieldDefinition
 } from './field';
 import type { GroupedQueryFields } from './page-document';
+import type { FilterDeclaration } from './filter';
 import type { TypedError } from './errors';
 import { pageParamDeclarations, type GroupedPageParams } from './page-param';
+import { initialFilterTextValues } from './filter-text-value';
 import {
   normalizeQueryRows,
   type QueryRowNormalizationIssue
@@ -39,7 +41,8 @@ export function materializePageDocument(
   const declarations = pageParamDeclarations(cloned.params as GroupedPageParams | undefined);
   const document = resolveTextValues(
     cloned,
-    textValues ?? validationResolution(declarations)
+    { ...textValues ?? validationResolution(declarations),
+      filterValues: textValues?.filterValues ?? initialFilterTextValues((cloned.filters ?? []) as FilterDeclaration[]) }
   ) as Record<string, unknown>;
   const errors: TypedError[] = [];
 

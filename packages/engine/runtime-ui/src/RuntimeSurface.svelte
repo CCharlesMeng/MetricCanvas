@@ -78,6 +78,8 @@
   import { collectDataErrors } from './data-error-events';
   import { runtimeVersionError } from './version-error';
   import { contentFilterDeclarations, headerPeriod } from './report-date-header';
+  import { collectFilterTextValueReferences, formatPeriod, resolveParamTextValues } from '@metriccanvas/page/internal';
+  import { filterTextPage } from './filter-text';
   import { validateCalendarTimeRange } from '@metriccanvas/page/internal';
   import FilterBar from './filters/FilterBar.svelte';
   import DashboardToolbar from './dashboard/DashboardToolbar.svelte';
@@ -258,7 +260,7 @@
     const parsed =
       paramDeclarations.length === 0
         ? declared
-        : parsePage(raw, { textValues: { values: params.values, format: (value, format) => Array.isArray(value) ? value.join('、') : typeof value === 'object' ? value.start === value.end ? value.start : `${value.start} 至 ${value.end}` : formatValue(value, format) } });
+        : parsePage(raw, { textValues: { values: params.values, format: (value, format) => Array.isArray(value) ? value.join('、') : typeof value === 'object' ? formatPeriod(value) : formatValue(value, format) } });
     if (!parsed.ok) {
       pageState = { phase: 'invalid', errors: parsed.errors };
       emit?.({ type: 'invalid', errors: parsed.errors });
@@ -285,6 +287,7 @@
     activeGateway = gatewayOverride ?? inlineGateway;
 
     const capabilities = derivePageCapabilities(loaded);
+    const textBindings = collectFilterTextValueReferences(resolveParamTextValues(raw, { values: params.values }));
     declarations = loaded.filters ?? [];
 
     const fromDeclarations = initialFilterValues(declarations);
@@ -300,6 +303,9 @@
       state.subscribe((values) => {
         const previous = filterValues;
         filterValues = values;
+        const presentation = filterTextPage(loaded, textBindings, values);
+        declarations = presentation.filters ?? [];
+        pageState = { phase: 'ready', page: presentation, capabilities };
         if (primed && capabilities.filters) {
           const nextSearch = mergedSearch(state, search);
           navigationAdapter?.replaceSearch?.(nextSearch);
@@ -323,7 +329,7 @@
       };
     }
     tableViews = initialViews;
-    pageState = { phase: 'ready', page: loaded, capabilities };
+    pageState = { phase: 'ready', page: filterTextPage(loaded, textBindings, filterValues), capabilities };
 
     const pageStream = orchestrate(
       loaded,
@@ -1111,6 +1117,8 @@
     {@const readyPage = pageState.page}
     {@const contentFilters = contentFilterDeclarations(readyPage, declarations)}
     {@const layoutForm = readyPage.layout ?? 'report'}
+    {@const firstComponent = readyPage.sections[0]?.components[0]}
+    {@const leadingDateToolbar = layoutForm === 'report' && !readyPage.sections[0]?.title && firstComponent?.type === 'reportHeader' && firstComponent.layout.span === 12 && !!firstComponent.props.filterIds?.length}
     {@const dashboardToolbar = readyPage.dashboardToolbar ?? 'visible'}
     {@const dashboardToolbarConfig =
       typeof dashboardToolbar === 'object' ? dashboardToolbar : undefined}
@@ -1120,6 +1128,7 @@
     )}
     <div
       class:layout-dashboard={layoutForm === 'dashboard'}
+      class:with-report-date-toolbar={leadingDateToolbar}
       class:dashboard-toolbar-hidden={
         layoutForm === 'dashboard' && dashboardToolbar === 'hidden'
       }
@@ -1202,7 +1211,7 @@
         <ComponentRenderer
           {component}
           {headerControls}
-          headerPeriod={(header)=>headerPeriod(header.props,declarations,filterValues)}
+          headerPeriod={(header)=>headerPeriod(header.props,declarations,filterValues,readyPage.schemaVersion)}
           data={componentData(readyPage, component, slots)}
           snapshot={hostRenderSnapshot(component, slots)}
           pageSnapshots={snapshots}
@@ -1401,6 +1410,10 @@
     padding: var(--mc-page-content-padding-block-start)
       var(--mc-page-content-padding-inline) 54px;
     background: var(--mc-color-canvas);
+  }
+  .page-content.with-report-date-toolbar {
+    --mc-page-content-padding-block-start: 0px;
+    --mc-report-date-toolbar-margin-inline: calc(-1 * var(--mc-page-content-padding-inline));
   }
   /* 看板形态:占满宿主给出的全部宽度,中性画布,分区之间只靠间距分隔。
      报表形态的定宽居中与浅蓝画布留在 `.page-content` 缺省规则里不动,

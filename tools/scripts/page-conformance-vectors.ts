@@ -55,6 +55,27 @@ function longString(length: number): string {
 
 export const invariants: InvariantDefinition[] = [
   {
+    id: 'filter-text-declared', description: '筛选文本必须引用已声明筛选器',
+    valid: ['report-filter-text-page'], cases: [
+      { case: 'filter-text-unknown', base: 'report-filter-text-page', expect: /文本取值引用了未声明的筛选器/,
+        mutate: d => { firstComponent(d).props.asOf.value.filter = 'missing'; } }
+    ]
+  },
+  {
+    id: 'filter-text-format-compatible', description: 'period 只接受时间输入，禁止数值日期格式混用',
+    valid: ['report-filter-text-page'], cases: [
+      { case: 'filter-text-format-mismatch', base: 'report-filter-text-page', expect: /格式 number-2 与筛选器/,
+        mutate: d => { firstComponent(d).props.asOf.value.format = 'number-2'; } }
+    ]
+  },
+  {
+    id: 'filter-text-capability', description: '筛选文本引用与 period 格式需要 6.15',
+    valid: ['report-filter-text-page'], cases: [
+      { case: 'filter-text-before-6.15', base: 'report-filter-text-page', expect: /由 6.15 引入/,
+        mutate: d => { d.schemaVersion = '6.14'; } }
+    ]
+  },
+  {
     id: 'page-layout-compatibility',
     description: '6.1 layout 能力下限与单布局真源；6.0 layoutForm 仍可读取',
     valid: ['legacy-layout-report', 'legacy-layout-dashboard', 'layout-6-1-report', 'layout-6-1-dashboard'],

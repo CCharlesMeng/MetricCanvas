@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "phase": "final",
+  "tier": {
+    "value": "lite",
+    "restore_tasks": [],
+    "blocking_triggers": [],
+    "changed_files": 2,
+    "max_changed_files": 5
+  },
+  "risk_triggers": [
+    "visual"
+  ],
+  "trigger_sources": {
+    "visual": [
+      "diff",
+      "plan"
+    ]
+  },
+  "portfolio_narrowed": [],
+  "facts": {
+    "cross_page": false,
+    "shared_style": false,
+    "overflow_state": true,
+    "frozen_r": false,
+    "frozen_r5": false,
+    "frozen_r6": false,
+    "has_f3": false,
+    "has_s3_claim": false
+  },
+  "modules": [
+    "causal",
+    "targeted-quality",
+    "render",
+    "review-layout"
+  ],
+  "review_roles": [
+    "review-layout"
+  ],
+  "review_dimensions": {
+    "review-layout": [
+      "L2"
+    ]
+  },
+  "claims": [
+    {
+      "id": "AT-1",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "test_case",
+      "task": "1",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-2",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "test_case",
+      "task": "1",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "previous": {
+    "phase": "initial",
+    "tier": "lite",
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "review-layout"
+    ],
+    "review_roles": [
+      "review-layout"
+    ],
+    "required_profiles": {
+      "AT-1": "mock",
+      "AT-2": "mock"
+    }
+  }
+}

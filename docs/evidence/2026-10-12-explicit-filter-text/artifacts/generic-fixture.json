@@ -1,0 +1,190 @@
+{
+  "schemaVersion": "6.15",
+  "id": "report-date-filter-example",
+  "layout": "report",
+  "meta": {
+    "title": "报告页头时间筛选示例",
+    "description": "月份范围：页面参数提供初值，页头展示日期框，筛选绑定驱动月度查询；数据来自本地 DQE 仿真。"
+  },
+  "params": {
+    "query": {
+      "times": [
+        {
+          "id": "report-period",
+          "granularity": "month",
+          "start": "2026-01",
+          "end": "2026-06"
+        }
+      ]
+    },
+    "display": [
+      {
+        "id": "optional-tag",
+        "type": "string",
+        "required": false
+      }
+    ]
+  },
+  "filters": [
+    {
+      "id": "report-period-filter",
+      "type": "timeRange",
+      "precision": "month",
+      "label": "报告期间",
+      "required": true,
+      "initialParam": "report-period"
+    }
+  ],
+  "dataSources": {
+    "monthly-usage": {
+      "fields": {
+        "month": {
+          "type": "string",
+          "role": "dimension",
+          "label": "月份",
+          "queryField": "统计周期"
+        },
+        "tokens": {
+          "type": "number",
+          "role": "measure",
+          "label": "Tokens 消耗量",
+          "queryField": "Tokens消耗量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "统计周期"
+                ],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "report-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "Tokens 月度用量报告",
+            "subtitle": {
+              "param": "report-period",
+              "format": "period"
+            },
+            "decoration": "shortBar",
+            "asOf": {
+              "label": "当前期间",
+              "value": {
+                "filter": "report-period-filter",
+                "format": "period"
+              }
+            },
+            "filterIds": [
+              "report-period-filter"
+            ],
+            "tags": [
+              {
+                "param": "optional-tag"
+              },
+              {
+                "filter": "report-period-filter",
+                "format": "period"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "monthly-detail",
+      "container": "plain",
+      "title": "月度明细",
+      "components": [
+        {
+          "id": "monthly-usage-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "monthly-usage"
+          },
+          "props": {
+            "title": "月度 Tokens 消耗量",
+            "columns": [
+              {
+                "field": "month",
+                "title": "月份"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "tokens",
+                  "format": "number-grouped"
+                },
+                "title": "Tokens 消耗量"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "period-caption",
+      "container": "plain",
+      "title": {
+        "filter": "report-period-filter",
+        "format": "period"
+      },
+      "components": [
+        {
+          "id": "period-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "filter": "report-period-filter",
+              "format": "period"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

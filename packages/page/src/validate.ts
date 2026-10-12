@@ -53,6 +53,7 @@ import { compositeCardChildTypes } from './schema/component';
 import { materializePageDocument } from './materialize';
 import { pageParamErrors, pageParamDeclarations as normalizeParams, type PageParamDeclaration, type GroupedPageParams } from './page-param';
 import type { TextValueResolution } from './text-value';
+import { filterTextValueErrors } from './filter-text-value';
 import {
   matchesFieldValue,
   validateContractRows,
@@ -104,6 +105,7 @@ export function parsePage(
     ...layoutCompatibilityErrors(compatibleDocument),
     ...paramBindingErrors(compatibleDocument),
     ...queryParamReferenceErrors(compatibleDocument),
+    ...filterTextValueErrors(compatibleDocument, filterDeclarations(compatibleDocument)),
     ...pageParamErrors(
       declarations,
       new Set(filterDeclarations(compatibleDocument).map((filter) => filter.id)),

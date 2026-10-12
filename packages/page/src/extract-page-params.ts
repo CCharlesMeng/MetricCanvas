@@ -124,7 +124,7 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
   function collectText(value:unknown,path:string) {
     if(typeof value==='string')textPaths.add(path);
     else if(Array.isArray(value))value.forEach((v,i)=>collectText(v,`${path}/${i}`));
-    else if(record(value))for(const [key,v] of Object.entries(value))if(!['id','type','param','filterIds','data','layout','actions','links','navigate','writeFilter','hierarchyFilter'].includes(key))collectText(v,`${path}/${pointer(key)}`);
+    else if(record(value))for(const [key,v] of Object.entries(value))if(!['id','type','param','filter','format','filterIds','data','layout','actions','links','navigate','writeFilter','hierarchyFilter'].includes(key))collectText(v,`${path}/${pointer(key)}`);
   }
   collectText(document.sections,'/sections');collectText(document.meta,'/meta');
   for(const [path,value] of Object.entries(textReplacements)) {
@@ -176,8 +176,17 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
         }
         if(header.type==='reportHeader') {
           header.props.filterIds=[...new Set([...(header.props.filterIds??[]),dateFilterId])];
-          // Runtime period owns this caption once a date filter is placed.
-          delete header.props.asOf;
+          // Placement does not own text: declare the filter consumer explicitly.
+          // Preserve authored static captions; replace only a matching literal date caption.
+          const original = c.originalValue as { start: string; end: string };
+          const value = header.props.asOf?.value;
+          if (!header.props.asOf || (typeof value === 'string' &&
+            (value === original.start || value === `${original.start} 至 ${original.end}`))) {
+            header.props.asOf = {
+              label: header.props.asOf?.label ?? '当前期间',
+              value: { filter: dateFilterId, format: 'period' } as unknown as string
+            };
+          }
         }
       }
     }
@@ -216,7 +225,7 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
     if(typeof v==='string') {
       if(selected.some(c=>(typeof c.originalValue==='string'?[c.originalValue]:Array.isArray(c.originalValue)?c.originalValue:typeof c.originalValue==='object'?[c.originalValue.start,c.originalValue.end]:[]).some(x=>v.includes(x))))pending.push(path);
     } else if(Array.isArray(v))v.forEach((x,i)=>textWalk(x,`${path}/${i}`));
-    else if(record(v))for(const [k,x] of Object.entries(v))if(!['id','type','param','filterIds','data','layout','actions','links','navigate','writeFilter','hierarchyFilter'].includes(k))textWalk(x,`${path}/${pointer(k)}`);
+    else if(record(v))for(const [k,x] of Object.entries(v))if(!['id','type','param','filter','format','filterIds','data','layout','actions','links','navigate','writeFilter','hierarchyFilter'].includes(k))textWalk(x,`${path}/${pointer(k)}`);
   }
   textWalk(document.sections,'/sections');textWalk(document.meta,'/meta');
   if(pending.length)return fail(`以下文本仍含原值，须显式替换或改为参数引用：${pending.join('、')}`,pending[0]);

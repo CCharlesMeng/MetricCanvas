@@ -10,7 +10,6 @@
 </script>
 {#if props.filterIds?.length && !exportMode && controls}
   <div class="date-toolbar" data-report-date-toolbar>
-    <span data-report-period>当前期间：{period}</span>
     <div class="controls">{@render controls(props.filterIds)}</div>
   </div>
 {/if}
@@ -20,7 +19,6 @@
 <style>
   .header-content { display:contents; }
   .with-toolbar { --mc-page-content-padding-block-start:0px; }
-  .date-toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; padding:12px 16px; border:1px solid var(--mc-color-border,#e4e4e7); border-radius:var(--mc-radius-cell,8px); background:var(--mc-color-surface,#fff); }
-  .date-toolbar > span { font-size:13px; color:var(--mc-color-text-muted,#71717a); }
+  .date-toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:12px; margin-inline:var(--mc-report-date-toolbar-margin-inline,0px); margin-bottom:0; padding:12px var(--mc-page-content-padding-inline,16px); border:0; border-radius:0; background:var(--mc-color-surface,#fff); }
   .controls { margin-left:auto; min-width:0; max-width:100%; --mc-filter-bar-padding:0; --mc-filter-bar-margin:0; --mc-filter-bar-border:0; --mc-filter-bar-gap:12px; --mc-filter-bar-justify-content:flex-end; --mc-filter-control-flex:0 1 auto; }
 </style>

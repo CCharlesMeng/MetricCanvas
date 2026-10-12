@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "role": "review-layout",
+  "evidence_epoch": "review-1",
+  "code_fingerprint": "cad7d71c4c36ac6ccb25df7e1b87d2e9f6383d37835e9c5257845b126c3429f2",
+  "judged_files": [
+    "packages/engine/runtime-ui/src/ReportHeaderView.svelte",
+    "packages/engine/runtime-ui/src/RuntimeSurface.svelte"
+  ],
+  "status": "executed",
+  "coverage": [
+    {
+      "dimension": "L2",
+      "scope": "/pages/report-date-filter-example；1280×720、390×844、320×720；已声明月份范围及报告文案 fixture",
+      "evidence_ids": [
+        "BE-1",
+        "BE-2",
+        "BE-3"
+      ],
+      "result": "clear"
+    }
+  ],
+  "findings": [],
+  "skipped": [],
+  "open_questions": [],
+  "deferred_candidates": [],
+  "evidence_reused": [
+    "BE-1",
+    "BE-2",
+    "BE-3"
+  ],
+  "evidence_added": [],
+  "known_gaps": []
+}

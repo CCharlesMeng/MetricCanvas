@@ -20,7 +20,7 @@
     <ComponentRenderer {component} data={exportComponentData(state,component)} snapshot={exportComponentSnapshot(state,component)}
       pageSnapshots={state.snapshots} map={exportComponentMap(state,component)} exportMode={true} {nested} table={table(component)}
       summarySnapshot={component.type==='aiSummary'?state.summaries[component.id]:undefined}
-      headerPeriod={header=>headerPeriod(header.props,state.page.filters??[],state.filters)}/>
+      headerPeriod={header=>headerPeriod(header.props,state.page.filters??[],state.filters,state.page.schemaVersion)}/>
     </div>
   {/snippet}
   {#each state.page.sections as section (section.id)}
