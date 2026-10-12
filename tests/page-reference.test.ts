@@ -22,7 +22,7 @@ describe('页面参考手册生成与分发', () => {
     const manifest = JSON.parse(await readFile('docs/archive/unified-authoring/2026-09-15-unified-authoring-s0-sources.json', 'utf8'));
     expect(manifest.files).toHaveLength(275);
     // Generated contract paths continue to evolve; verify the original bytes archived from sourceCommit.
-    const frozen = JSON.parse(gunzipSync(await readFile('docs/plan/2026-09-15-unified-authoring-s0-frozen.json.gz')).toString('utf8'));
+    const frozen = JSON.parse(gunzipSync(await readFile('docs/archive/authoring-foundation-2026-09/2026-09-15-unified-authoring-s0-frozen.json.gz')).toString('utf8'));
     for (const entry of manifest.files) {
       const bytes = Object.hasOwn(frozen, entry.source) ? Buffer.from(frozen[entry.source], 'utf8') : await readFile(entry.retainedSource);
       expect(createHash('sha256').update(bytes).digest('hex'), entry.reference).toBe(entry.sha256);

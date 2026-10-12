@@ -4,6 +4,6 @@
 
 现行原则查[ADR-0083](../../adr/0083-platform-evidence-work-and-internal-draft-save.md)与[ADR-0090](../../adr/0090-authoring-flow-hard-cutover-and-version-vocabulary.md)，模块与接口查[authoring维护入口](../../../metriccanvas-authoring/README.md)。本仓部署证据见[0.3.1交付](../../evidence/2026-09-23-authoring-deployment-readiness-report.md)，M0–M7结果见[执行报告](../../evidence/2026-09-29-authoring-mc-execution-report.md)。仍未完成的内部接入/参数外部验收/原故障复验/候选事项已转[当前待办F01–F08](../../plan/authoring-current-status.md)；新生成路径只读[统一主计划](../../plan/2026-10-12-report-dashboard-authoring-plan.md)。
 
-早期五工具、结构计划多版本并行和多候选提交方向被后续九工具/单份工作稿/工具内单次保存及整体切换取代；不得从旧方案恢复生产fallback。场景首期与后续refinement有不同证据层级，模型预算失败及已删除原始轨迹按原记录保留，不改写为成功。冻结gzip和各证据JSON保留原字节；当前未发现测试直接消费本批移动文件，不为整理搬动消费者旁夹具。
+早期五工具、结构计划多版本并行和多候选提交方向被后续九工具/单份工作稿/工具内单次保存及整体切换取代；不得从旧方案恢复生产fallback。场景首期与后续refinement有不同证据层级，模型预算失败及已删除原始轨迹按原记录保留，不改写为成功。冻结gzip和各证据JSON保留原字节；其中gzip被tests/page-reference.test.ts直接读取，用于核对退役来源清单的275项字节摘要；沿用历史冻结批次的归档例外，消费者路径同步指向归档。首次交付漏更新此引用已由CI识别并修复，不将该夹具误当成未被消费的文档。
 
 历史阶段入口：[模块实施](2026-09-20-authoring-implementation-progress.md)、[续跑记录](2026-09-22-authoring-resume.md)、[场景交付](scenario-guided-authoring/README.md)、[旧refinement提议](scenario-guided-refinement/design.md)。
