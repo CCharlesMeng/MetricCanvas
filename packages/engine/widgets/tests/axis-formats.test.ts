@@ -68,3 +68,28 @@ it('uses the same fixed unit for numeric axes, bar labels, and tooltips', () => 
     }
   }
 });
+
+it('explicit mixed series use each axis group format, including reordered primary series', () => {
+  const mixed: MainDataSlots = { main: {
+    fields: { ...data.main.fields,
+      amount: { type: 'number', role: 'measure', unit: '元', defaultFormat: 'compact-wan-1' },
+      rate: { type: 'number', role: 'measure', unit: '%', defaultFormat: 'percent-2' } },
+    snapshot: { status: 'ready', rows: [{ month: 'a', amount: 125000000, rate: 12 }] }
+  } };
+  const option = barOption(mixed, { categoryField: 'month', dualAxis: true, series: [
+    { field: 'rate', kind: 'line', axis: 'secondary' },
+    { field: 'amount', kind: 'bar', axis: 'primary' }
+  ] });
+  const axes = option.yAxis as Array<{ axisLabel: { formatter: (v: number) => string } }>;
+  expect(axes[0]?.axisLabel?.formatter(125000000)).toBe('12,500.0万');
+  expect(axes[1]?.axisLabel?.formatter(12)).toBe('12.00%');
+  expect(option.series).toMatchObject([{ yAxisIndex: 1, data: [12] }, { yAxisIndex: 0, data: [125000000] }]);
+});
+
+it.each(['bar', 'line'] as const)('explicit %s respects binding override on the numeric axis', kind => {
+  const option = barOption(data, { categoryField: 'month', series: [
+    { field: { data: 'main', field: 'tokens', format: 'compact-wan-1' }, kind, axis: 'primary' }
+  ] });
+  const axis = option.yAxis as { axisLabel: { formatter: (v: number) => string } };
+  expect(axis.axisLabel?.formatter(100000000)).toBe('10,000.0万');
+});

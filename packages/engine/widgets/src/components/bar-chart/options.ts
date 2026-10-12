@@ -3,7 +3,7 @@ import type { EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 import { finiteNumber, formatValue, wanUnits } from '../../shared/value-format';
-import { CHART_PALETTE, GRID, categoryWindow, dualOrSingleAxis, formatterValue } from '../../shared/chart-option';
+import { CHART_PALETTE, GRID, categoryWindow, dualOrSingleAxis, formattedValueAxis, formatterValue } from '../../shared/chart-option';
 import { serialColor, type ColorList } from '../../shared/chart-palette';
 import { categoryLabelOption, pointValueLabel, valueLabelLayout } from '../../shared/chart-presentation';
 
@@ -280,9 +280,11 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
   const rows = data.main.snapshot.rows;
   const category = resolveField(props.categoryField, data);
   const axis = (name: 'primary' | 'secondary') => {
-    const series = props.series.find(series => series.axis === name);
-    const field = series ? resolveField(series.field, data) : undefined;
-    return { type: 'value' as const, name: field?.definition && 'unit' in field.definition ? field.definition.unit : undefined };
+    const fields = props.series.filter(series => (series.axis ?? 'primary') === name)
+      .map(series => resolveField(series.field, data));
+    const field = fields[0];
+    return { ...formattedValueAxis(fields.map(field => field.format)),
+      name: field?.definition && 'unit' in field.definition ? field.definition.unit : undefined };
   };
   return {
     color: [...(palette ?? CHART_PALETTE)], grid: GRID,

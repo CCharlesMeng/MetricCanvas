@@ -30,9 +30,17 @@ export function dualOrSingleAxis(
   hideAxis = false,
   formats: Array<ValueFormatPreset | undefined> = []
 ) {
+  if (dualAxis && metricCount > 1) {
+    return [formattedValueAxis(formats.slice(0, 1), hideAxis), formattedValueAxis(formats.slice(1), hideAxis)];
+  }
+  return formattedValueAxis(formats, hideAxis);
+}
+
+/** All numeric chart branches share the same format consensus and hidden-axis policy. */
+export function formattedValueAxis(group: Array<ValueFormatPreset | undefined>, hideAxis = false) {
   // One axis has one scale. Mixed formats keep raw ticks rather than choosing
   // the first series' unit for unrelated values on that axis.
-  const axis = (group: Array<ValueFormatPreset | undefined>) => ({
+  return {
     type: 'value' as const,
     ...(group.length && group[0] && group.every(format => format === group[0])
       ? { axisLabel: { formatter: (value: number) => formatValue(value, group[0]) } }
@@ -44,11 +52,7 @@ export function dualOrSingleAxis(
           axisLine: { show: false }
         }
       : {})
-  });
-  if (dualAxis && metricCount > 1) {
-    return [axis(formats.slice(0, 1)), axis(formats.slice(1))];
-  }
-  return axis(formats);
+  };
 }
 
 /** ECharts 回调载荷(标量或 { value })→ 可交给 formatValue 的标量 */
