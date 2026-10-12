@@ -250,6 +250,18 @@ export function declaredPaginationLimit(query: PageQuery): number | undefined {
   return undefined;
 }
 
+/** A first window can be paged without discarding a caller's explicit offset. */
+export function isFirstQueryWindow(query: PageQuery): boolean {
+  switch (query.language) {
+    case 'dqe': {
+      const order = query.body.dsl_list[0].order;
+      return order === undefined || (typeof order === 'object' && order !== null &&
+        !Array.isArray(order) && (order.offset === undefined || order.offset === 0));
+    }
+  }
+  return false;
+}
+
 /** 参数对查询定义的协议内初始化；有筛选绑定的目标由筛选状态接管。 */
 export function initializeQueryParams(query: PageQuery, values: ReadonlyMap<string, import('./page-param').PageParamValue>): PageQuery {
   const initialized = structuredClone(query);

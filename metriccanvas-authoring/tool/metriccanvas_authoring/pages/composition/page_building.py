@@ -17,6 +17,7 @@ from metriccanvas_authoring.data.executable_units import (
 )
 from metriccanvas_authoring.data.execution import DqeExecutionResult
 from metriccanvas_authoring.pages.composition.section_layout import pack_section_spans
+from metriccanvas_authoring.pages.composition.table_pagination import add_query_table_pagination
 
 
 def assemble_page_document(
@@ -43,14 +44,14 @@ def assemble_page_document(
     if issues:
         raise PageBuildingIssues(tuple(issues))
 
-    return {
+    return add_query_table_pagination({
         "schemaVersion": schema_version,
         "layout": "report",
         "id": page_id,
         **({} if description is None else {"meta": {"description": description}}),
         "dataSources": data_sources,
         "sections": _sections_of(units, components),
-    }
+    })
 
 
 def build_data_component(

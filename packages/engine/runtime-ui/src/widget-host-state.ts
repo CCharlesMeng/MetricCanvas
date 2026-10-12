@@ -105,9 +105,10 @@ export function queryErrorView(error: QueryError): QueryErrorView {
 /** Read source snapshots, never the locally paginated table projection. */
 export function partialDataNotices(
   component: Component,
-  snapshots: ReadonlyMap<string, DataSnapshot>
+  snapshots: ReadonlyMap<string, DataSnapshot>,
+  queryPaginated = false
 ): string[] {
-  if (component.type === 'table' && component.props.pagination?.mode === 'query') return [];
+  if (component.type === 'table' && (queryPaginated || component.props.pagination?.mode === 'query')) return [];
   const notices: string[] = [];
   for (const id of new Set(Object.values(component.data ?? {}))) {
     const snapshot = snapshots.get(id);

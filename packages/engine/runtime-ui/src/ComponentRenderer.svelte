@@ -181,7 +181,7 @@
     </CompositeCard>
   {/if}
 {:else}
-  <WidgetHost {snapshot} title={component.props.title} notices={partialDataNotices(component, pageSnapshots)}>
+  <WidgetHost {snapshot} title={component.props.title} notices={partialDataNotices(component, pageSnapshots, table?.paginationConfig?.mode === 'query')}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
         <MetricCard data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />

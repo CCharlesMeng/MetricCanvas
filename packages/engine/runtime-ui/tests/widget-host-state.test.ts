@@ -139,5 +139,6 @@ describe('部分数据提示', () => {
     const paged = structuredClone(table);
     paged.props.pagination = { mode: 'query' };
     expect(partialDataNotices(paged, new Map([['sales', { status: 'ready', rows: [{ value: 1 }], totalCount: 30 }]]))).toEqual([]);
+    expect(partialDataNotices(table, new Map([['sales', { status: 'ready', rows: [{ value: 1 }], totalCount: 30 }]]), true)).toEqual([]);
   });
 });

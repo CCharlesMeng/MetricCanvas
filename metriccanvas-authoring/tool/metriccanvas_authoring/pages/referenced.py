@@ -9,6 +9,7 @@ from metriccanvas_authoring.pages.editing.page_editing import EDIT_SCHEMA, apply
 from metriccanvas_authoring.pages.editing.section_editing import SECTION_OPERATIONS, SECTION_TYPES, edit_section
 from metriccanvas_authoring.pages.editing.operation_batch import operation_batch
 from metriccanvas_authoring.pages.composition.section_layout import pack_section_spans
+from metriccanvas_authoring.pages.composition.table_pagination import add_query_table_pagination, _components
 from metriccanvas_authoring.pages.input_tolerance import normalize_compose, compose_envelope
 
 SOURCE_REFS = {'type': 'object', 'propertyNames': ID, 'maxProperties': 6, 'additionalProperties': NAME}
@@ -101,6 +102,7 @@ def compose(prepared, request, records):
         if candidate is None or validate_page_document(candidate):
             return {'status': 'failed', 'document': None, 'operations': outcomes, 'issues': [{'code': 'COMPOSE_DATE_FILTER_INVALID', 'path': '/dateFilters'}]}
         document = candidate
+    add_query_table_pagination(document)
     applied = any(o['status'] == 'applied' for o in outcomes)
     if not applied or validate_page_document(document):
         return {'status': 'failed', 'document': None, 'operations': outcomes, 'issues': [{'code': 'COMPOSE_RESULT_INVALID', 'path': ''}]}
@@ -134,16 +136,40 @@ async def edit(baseline, request, resolve, current, summary_enabled=False, scope
                 record = await resolve(op['resultRef'])
                 source_id = op['block']['source']
                 source = deepcopy(record['source'])
-                if source_id in document['dataSources'] and source_contract(document['dataSources'][source_id]) != source_contract(source):
-                    raise StructureError('DATA_SOURCE_CONFLICT')
+                existing = document['dataSources'].get(source_id)
+                paginated = any(c.get('type') == 'table' and c.get('data', {}).get('main') == source_id
+                                and c['props'].get('pagination', {}).get('mode') == 'query'
+                                for c in _components(document))
+                if existing is not None:
+                    existing_contract, requested_contract = source_contract(existing), source_contract(source)
+                    if paginated and source['source']['type'] == 'query':
+                        # Only the table's first-window offset/limit may differ.
+                        # Fields, filters, sorting and the remaining query stay exact.
+                        existing_order = existing_contract['source']['query']['body']['dsl_list'][0].get('order', {})
+                        requested_order = requested_contract['source']['query']['body']['dsl_list'][0].get('order', {})
+                        for key in ('offset', 'limit'):
+                            if key not in requested_order:
+                                existing_order.pop(key, None)
+                    if existing_contract != requested_contract:
+                        raise StructureError('DATA_SOURCE_CONFLICT')
+                operation = deepcopy({k: v for k, v in op.items() if k != 'resultRef'})
+                adjustments = []
+                if paginated:
+                    base = f"{source_id[:48]}-{op['block']['id'][:48]}"
+                    source_id = base
+                    suffix = 1
+                    while source_id in document['dataSources']:
+                        source_id = f'{base}-{suffix}'
+                        suffix += 1
+                    operation['block']['source'] = source_id
+                    adjustments.append({'code': 'SOURCE_ISOLATED_FOR_QUERY_PAGINATION', 'path': '/dataSources/' + source_id})
                 if source_id not in document['dataSources']:
                     document['dataSources'][source_id] = source
-                operation = {k: v for k, v in op.items() if k != 'resultRef'}
                 operation['type'] = 'add_source_component'
                 candidate = edit_section(document, operation, relations=record.get('relations', ()), evidence=record)
                 if (op['block'].get('component') == 'pieChart' or op['block'].get('match')) and incomplete_initial(source, record):
                     candidate['dataSources'][source_id]['source'].pop('initial', None)
-                result = candidate, [], []
+                result = candidate, [], adjustments
             except (StructureError, ContentBaselineError) as error:
                 result = None, [{'code': error.code, 'path': ''}], []
         elif op['type'] in SECTION_TYPES:

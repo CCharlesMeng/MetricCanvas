@@ -7,6 +7,7 @@ partial/unchanged aggregation; operation handlers do not schedule batches.
 from copy import deepcopy
 from jsonschema import Draft202012Validator
 from metriccanvas_authoring.pages.validation.page_validation import normalize_page_document, validate_page_document
+from metriccanvas_authoring.pages.composition.table_pagination import add_query_table_pagination, _components
 
 
 def operation_batch(baseline, request, operation_schema):
@@ -46,6 +47,10 @@ def _apply_operation(document, op, index, validator, states):
         candidate, issues, adjustments = yield deepcopy(document), deepcopy(op)
         result['issues'] = issues
         if candidate is not None and not issues:
+            prior_types = {component['id']: component['type'] for component in _components(document)}
+            new_tables = {component['id'] for component in _components(candidate)
+                          if component['type'] == 'table' and prior_types.get(component['id']) != 'table'}
+            add_query_table_pagination(candidate, new_tables)
             errors = validate_page_document(candidate)
             if errors:
                 result['issues'] = [{'code': e.type, 'path': e.path} for e in errors]

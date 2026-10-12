@@ -26,6 +26,7 @@ import {
 } from './filter-state';
 import type { DataGateway, QueryDiagnosticContext } from './ports';
 import { preservedQueryError } from './query-error';
+import { automaticQueryPageSize, automaticQueryTableSources } from './table-pagination';
 
 /** 页面数据快照的唯一真元：页面数据源 id → 快照。 */
 export type PageDataSnapshots = ReadonlyMap<string, DataSnapshot>;
@@ -46,6 +47,7 @@ export type QueryHeaderFilters = Readonly<
 export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
   captureQueries(): ReadonlyMap<string, EffectiveQuery>;
   captureComputeYear(): number;
+  getQueryPageSize(dataSourceId: string): number | undefined;
   setQueryPage(dataSourceId: string, pageIndex: number): void;
   setQueryPageSize(dataSourceId: string, pageSize: number): void;
   /** 服务端排序;数组序即优先级,空数组表示恢复查询定义自带的顺序。 */
@@ -64,6 +66,7 @@ interface DataSourceBinding {
 interface QueryBinding extends DataSourceBinding {
   dataSource: QueryDataSource;
   pagination?: { limit: number };
+  automaticPagination?: boolean;
 }
 
 /**
@@ -110,6 +113,7 @@ export function orchestrate(
       return session?.captureQueries() ?? new Map();
     },
     captureComputeYear() { return session?.captureComputeYear() ?? new Date().getFullYear(); },
+    getQueryPageSize(dataSourceId) { return session?.getQueryPageSize(dataSourceId); },
     setQueryPage(dataSourceId, pageIndex) {
       session?.setQueryPage(dataSourceId, pageIndex);
     },
@@ -129,6 +133,7 @@ interface Session {
   current(): PageDataSnapshots;
   captureQueries(): ReadonlyMap<string, EffectiveQuery>;
   captureComputeYear(): number;
+  getQueryPageSize(dataSourceId: string): number | undefined;
   setQueryPage(dataSourceId: string, pageIndex: number): void;
   setQueryPageSize(dataSourceId: string, pageSize: number): void;
   setQuerySort(
@@ -152,6 +157,7 @@ interface InFlightRequest {
 function collectReferencedSources(page: Page): DataSourceBinding[] {
   const sourceIds = new Set<string>();
   const paginationLimits = new Map<string, number>();
+  const automaticSources = automaticQueryTableSources(page);
   for (const component of flattenPageComponents({ sections: page.sections,
     detailViews: page.detailViews?.filter(view => view.mode === 'snapshot') })) {
     for (const sourceId of Object.values(component.data ?? {})) {
@@ -184,6 +190,7 @@ function collectReferencedSources(page: Page): DataSourceBinding[] {
     return [{
       sourceId,
       dataSource,
+      ...(automaticSources.has(sourceId) ? { automaticPagination: true } : {}),
       ...(limit === undefined ? {} : { pagination: { limit } })
     }];
   });
@@ -191,6 +198,14 @@ function collectReferencedSources(page: Page): DataSourceBinding[] {
 
 function isQueryBinding(binding: DataSourceBinding): binding is QueryBinding {
   return binding.dataSource.source.type === 'query';
+}
+
+function activateAutomaticPagination(binding: QueryBinding, snapshot: DataSnapshot | undefined): boolean {
+  if (!binding.automaticPagination || binding.pagination) return false;
+  const limit = automaticQueryPageSize(binding.dataSource, snapshot);
+  if (limit === undefined) return false;
+  binding.pagination = { limit };
+  return true;
 }
 
 function hasReusableInitial(binding: DataSourceBinding): boolean {
@@ -299,6 +314,9 @@ function startSession(
       skipInitial.add(binding.sourceId);
     }
   }
+  for (const binding of queryBindings) {
+    activateAutomaticPagination(binding, rawSnapshots.get(binding.sourceId));
+  }
   const currentYear = new Date().getFullYear();
   const computationContext = (): ComputationContext => ({
     currentYear,
@@ -364,6 +382,7 @@ function startSession(
     if (updates.length === 0) return;
     const next = new Map(rawSnapshots);
     for (const [binding, snapshot] of updates) {
+      if (activateAutomaticPagination(binding, snapshot)) pageIndexes.set(binding.sourceId, 0);
       next.set(binding.sourceId, snapshot);
     }
     rawSnapshots = next;
@@ -497,6 +516,7 @@ function startSession(
   return {
     current: () => snapshots,
     captureComputeYear: () => currentYear,
+    getQueryPageSize: id => queryBindings.find(binding => binding.sourceId === id)?.pagination?.limit,
     captureQueries() {
       return new Map(queryBindings.map(binding => {
         const query = composeEffectiveQuery(binding, values, 0, sortRules.get(binding.sourceId) ?? [], headerFilters.get(binding.sourceId) ?? {});

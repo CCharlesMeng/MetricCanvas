@@ -17,3 +17,10 @@ it('paginates eleven rows by default and retains explicit page sizes', () => {
   const explicit = { ...table, props: { ...table.props, pagination: { mode: 'local' as const, pageSize: 50 } } };
   expect(tablePagination(explicit, { status: 'ready', rows })).toEqual({ mode: 'local', pageSize: 50 });
 });
+
+it('uses the orchestrator query window even on short, loading, empty or failed pages', () => {
+  expect(tablePagination(table, { status: 'ready', rows: [{ n: 700 }], totalCount: 714 }, 20)).toEqual({ mode: 'query' });
+  expect(tablePagination(table, { status: 'loading' }, 20)).toEqual({ mode: 'query' });
+  expect(tablePagination(table, { status: 'empty', totalCount: 0 }, 20)).toEqual({ mode: 'query' });
+  expect(tablePagination({ ...table, props: { ...table.props, pagination: { mode: 'none' } } }, undefined, 20)).toEqual({ mode: 'none' });
+});

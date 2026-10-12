@@ -58,6 +58,28 @@ class SemanticAliasTest(unittest.TestCase):
             self.assertEqual(surface.ambiguous_metrics['shared'], ('a', 'b'))
 
 class ReferencedEditTest(unittest.IsolatedAsyncioTestCase):
+    async def test_paginated_reuse_still_rejects_field_filter_and_sort_changes(self):
+        from metriccanvas_authoring.pages.referenced import edit
+        r = record()
+        req = request(); req['sections'][0]['blocks'][0]['component'] = 'table'
+        baseline = compose(SimpleNamespace(binding={'pageId': 'test'}), req, {'data': r})['document']
+        before = deepcopy(baseline)
+        block = request()['sections'][0]['blocks'][0]
+        block.update(id='new-pie', purpose='comparison')
+        async def current(): pass
+        for change in ('field', 'filter', 'sort'):
+            with self.subTest(change=change):
+                changed = deepcopy(r)
+                query = changed['source']['source']['query']['body']['dsl_list'][0]
+                if change == 'field': changed['source']['fields']['v']['unit'] = 'other'
+                elif change == 'filter': query['filter'] = {'dims': [{'dim_name': 'd', 'dim_value_list': ['1']}]}
+                else: query['order'] = {'order_by_field': 'v', 'type': 'desc'}
+                async def resolve(ref): return changed
+                result = await edit(baseline, {'operations': [{'id': 'add', 'type': 'add_result_component',
+                    'sectionId': 'main', 'resultRef': 'verified', 'block': block}]}, resolve, current)
+                self.assertEqual(result['operations'][0]['issues'][0]['code'], 'DATA_SOURCE_CONFLICT')
+                self.assertEqual(baseline, before)
+
     async def test_edit_uses_full_record_without_automatic_scope_text(self):
         from metriccanvas_authoring.pages.referenced import edit
         r = record()
@@ -70,7 +92,13 @@ class ReferencedEditTest(unittest.IsolatedAsyncioTestCase):
             'sectionId':'main','resultRef':'verified','block':block}]},resolve,current,
             scope_annotations=built['scopeAnnotations'])
         self.assertEqual(edited['status'],'changed',edited)
-        self.assertNotIn('initial', edited['document']['dataSources']['data']['source'])
+        doc = edited['document']
+        added = next(c for c in doc['sections'][1]['components'] if c['id'] == 'added-pie')
+        self.assertNotEqual(added['data']['main'], 'data')
+        self.assertNotIn('initial', doc['dataSources'][added['data']['main']]['source'])
+        self.assertNotIn('limit', doc['dataSources'][added['data']['main']]['source']['query']['body']['dsl_list'][0]['order'])
+        self.assertEqual(doc['dataSources']['data'], built['document']['dataSources']['data'])
+        self.assertEqual(doc['sections'][1]['components'][0]['props']['pagination'], {'mode': 'query'})
         notes=[c['props']['body'] for c in edited['document']['sections'][1]['components'] if c['type']=='text']
         self.assertEqual(len(notes),0)
         self.assertEqual(edited['scopeAnnotations'],{})
@@ -94,6 +122,8 @@ class ReferencedEditTest(unittest.IsolatedAsyncioTestCase):
 def with_legacy_scope(built):
     from metriccanvas_authoring.pages.scope_annotations import scope_body, member
     r = record()
+    # Ownership binds the declared source, including its table window.
+    r['source'] = deepcopy(built['document']['dataSources']['data'])
     body = scope_body([r['request']])
     built['document']['sections'][1]['components'].append({
         'id': 'structure-scope-main', 'type': 'text', 'layout': {'span': 12}, 'props': {'body': body}})

@@ -379,7 +379,7 @@
       if (component.type !== 'table' || !capabilities.components[component.id]?.live) {
         continue;
       }
-      if (component.props.pagination?.mode === 'query') continue;
+      if (resolvedTablePagination(component)?.mode === 'query') continue;
       const source = loaded.dataSources[component.data.main];
       for (const column of buildTableColumnLayout(
         component.props.columns,
@@ -445,7 +445,7 @@
 
   function handleTablePage(component: TableComponent, pageIndex: number) {
     pushTableView(component, { ...tableViewOf(component), pageIndex });
-    if (component.props.pagination?.mode === 'query') {
+    if (resolvedTablePagination(component)?.mode === 'query') {
       stream?.setQueryPage(component.data.main, pageIndex);
     }
   }
@@ -454,7 +454,7 @@
     if (!Number.isInteger(pageSize) || pageSize <= 0) return;
     tablePageSizes = { ...tablePageSizes, [component.id]: pageSize };
     pushTableView(component, { ...tableViewOf(component), pageIndex: 0 });
-    if (component.props.pagination?.mode === 'query') {
+    if (resolvedTablePagination(component)?.mode === 'query') {
       stream?.setQueryPageSize(component.data.main, pageSize);
     }
   }
@@ -462,7 +462,7 @@
   function handleTableSort(component: TableComponent, sort: TableViewState['sort']) {
     pushTableView(component, { ...tableViewOf(component), sort, pageIndex: 0 });
     // 查询分页下本地排序只能排到当前页，必须由上游执行（ADR-0086）。
-    if (component.props.pagination?.mode === 'query') {
+    if (resolvedTablePagination(component)?.mode === 'query') {
       stream?.setQuerySort(component.data.main, sort);
     }
   }
@@ -489,7 +489,7 @@
     };
     const next = { ...draft, pageIndex: 0 };
     setTableView(component, next);
-    if (component.props.pagination?.mode === 'query') {
+    if (resolvedTablePagination(component)?.mode === 'query') {
       stream?.setQueryHeaderFilters(component.data.main, applied);
     }
   }
@@ -548,7 +548,7 @@
 
   function syncQueryTablePages(loaded: Page, next: PageDataSnapshots) {
     for (const component of pageComponents(loaded)) {
-      if (component.type !== 'table' || component.props.pagination?.mode !== 'query') {
+      if (component.type !== 'table' || resolvedTablePagination(component)?.mode !== 'query') {
         continue;
       }
       const snapshot = next.get(component.data.main);
@@ -912,10 +912,10 @@
     component: TableComponent,
     snapshot: Extract<DataSnapshot, { status: 'ready' }>
   ): Extract<DataSnapshot, { status: 'ready' }> {
-    if (component.props.pagination?.mode === 'query') return snapshot;
+    if (resolvedTablePagination(component)?.mode === 'query') return snapshot;
     const view = tableViewOf(component);
     const rows = filteredTableRows(component, snapshot);
-    const pagination = tablePagination(component, snapshot);
+    const pagination = resolvedTablePagination(component, snapshot);
     if (pagination?.mode !== 'local') return { status: 'ready', rows };
     const pageSize = tablePageSizes[component.id] ?? pagination.pageSize;
     const offset = view.pageIndex * pageSize;
@@ -950,7 +950,7 @@
   }
 
   function tableFilterOptions(component: TableComponent): Record<string, string[]> {
-    if (component.props.pagination?.mode === 'query') return {};
+    if (resolvedTablePagination(component)?.mode === 'query') return {};
     const snapshot = componentSnapshots(component).get('main');
     if (snapshot?.status !== 'ready') return remoteHeaderOptions();
     const fields = buildTableColumnLayout(component.props.columns).leaves
@@ -965,12 +965,16 @@
     return { ...local, ...remoteHeaderOptions() };
   }
 
+  function resolvedTablePagination(component: TableComponent, snapshot = componentSnapshots(component).get('main')) {
+    return tablePagination(component, snapshot, stream?.getQueryPageSize(component.data.main));
+  }
+
   function tablePaginationState(
     loaded: Page,
     component: TableComponent,
     snapshotsBySlot: ComponentSnapshots
   ): TablePaginationState | undefined {
-    const pagination = tablePagination(component, snapshotsBySlot.get('main'));
+    const pagination = resolvedTablePagination(component, snapshotsBySlot.get('main'));
     if (!pagination || pagination.mode === 'none') return undefined;
     const snapshot = snapshotsBySlot.get('main');
     if (!snapshot || (snapshot.status !== 'ready' && snapshot.status !== 'empty')) {
@@ -1002,7 +1006,7 @@
     loaded: Page,
     component: TableComponent
   ): number | undefined {
-    return tablePageSizes[component.id] ?? queryPageSize(loaded, component);
+    return tablePageSizes[component.id] ?? stream?.getQueryPageSize(component.data.main) ?? queryPageSize(loaded, component);
   }
 
   function tableBinding(
@@ -1016,7 +1020,7 @@
       selectedCell: tableSelectedCell(component),
       filterOptions: tableFilterOptions(component),
       pagination: tablePaginationState(loaded, component, slots),
-      paginationConfig: tablePagination(component, slots.get('main')),
+      paginationConfig: resolvedTablePagination(component, slots.get('main')),
       onpage: (pageIndex) => handleTablePage(component, pageIndex),
       onpagesize: (pageSize) => handleTablePageSize(component, pageSize),
       onsort: (sort) => handleTableSort(component, sort),

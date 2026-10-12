@@ -33,7 +33,9 @@ export function barOption(
   const categories = rows.map((row) =>
     formatValue(row[category.field], category.format, category.missingText)
   );
-  const categoryAxis = { type: 'category' as const, data: categories, ...categoryLabelOption(props.categoryLabels, props.showValueLabels) };
+  const categoryAxis = { type: 'category' as const, data: categories,
+    ...(props.horizontal ? { inverse: true } : {}),
+    ...categoryLabelOption(props.categoryLabels, props.showValueLabels) };
   const baseValueAxis = dualOrSingleAxis(props.dualAxis, props.series.length, false,
     props.series.map(series => resolveField(series.field, data).format));
   const reportValueFormat = props.series[0]
