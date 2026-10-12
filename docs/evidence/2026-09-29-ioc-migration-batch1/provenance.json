@@ -1,0 +1,15 @@
+{
+  "report_path": "调查报告/ioc看板迁移证据补全.md",
+  "report_sha256": "2e2d6f312af6a3f268086a2a3130dde76c6f1543331b5330f53a0c8504226373",
+  "reported_source_commit": "a260c10744add7fe013d5e4591fa1ecc407f8083",
+  "source_repository_accessed": false,
+  "extraction": "JSON leading NBSP indentation normalized to ASCII spaces, parsed and pretty-printed; verification JavaScript extracted without semantic changes",
+  "files": [
+    "datasets.json",
+    "transformations.json",
+    "navigation.json",
+    "dialogs.json",
+    "dictionaries.json",
+    "source-verify-calculate.mjs"
+  ]
+}

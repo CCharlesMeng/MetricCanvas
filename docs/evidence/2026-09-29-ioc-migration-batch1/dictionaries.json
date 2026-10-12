@@ -1,0 +1,316 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "a260c10744add7fe013d5e4591fa1ecc407f8083",
+  "note": "第一批页面涉及的枚举字典。值为 SOURCE-READ 直接读取；标 UNKNOWN 的需接口字典补充。",
+  "dictionaries": [
+    {
+      "id": "DICT-001",
+      "name": "ProjectStatus（立项状态）",
+      "source": "constant/filtering-items-set.ts:28-40",
+      "usage": "opportunity-list 立项状态列 headFilter options + ati_status_label 映射；project-overview 丢单/TOP 跳转",
+      "entries": [
+        {
+          "value": "Not_Initiated",
+          "label": "无需立项"
+        },
+        {
+          "value": "Waiting_Ati",
+          "label": "达标待立项"
+        },
+        {
+          "value": "In_Project_Initiation",
+          "label": "立项中"
+        },
+        {
+          "value": "Initiated",
+          "label": "已立项"
+        }
+      ],
+      "unknownValue": "未知值→label undefined→显示空（无兜底）"
+    },
+    {
+      "id": "DICT-002",
+      "name": "ati_status 显示字典（getAtiStatusLabel）",
+      "source": "project-detail/project-detail.config.ts:165-179",
+      "usage": "customer-detail 机会点立项情况列；project-detail 标题",
+      "entries": [
+        {
+          "value": [
+            "Not_Initiated",
+            "无需立项"
+          ],
+          "label": "无需立项"
+        },
+        {
+          "value": [
+            "Waiting_Ati",
+            "达标待立项"
+          ],
+          "label": "达标待立项"
+        },
+        {
+          "value": [
+            "In_Project_Initiation",
+            "立项中"
+          ],
+          "label": "立项中"
+        },
+        {
+          "value": [
+            "Initiated",
+            "已立项"
+          ],
+          "label": "已立项"
+        }
+      ],
+      "unknownValue": "其他→''"
+    },
+    {
+      "id": "DICT-003",
+      "name": "projectLevelItems（项目级别）",
+      "source": "common/operation-map-header/config.ts（level_name 映射用）",
+      "usage": "project-overview TOP表 level_name 徽标",
+      "entries": "待补：common/operation-map-header/config.ts 内 projectLevelItems（UNKNOWN 完整值集，本批未逐行读取）"
+    },
+    {
+      "id": "DICT-004",
+      "name": "ActivityTypeItems（活动类型）",
+      "source": "constant/filtering-items-set.ts（ActivityTypeItems）",
+      "usage": "customer-detail 活动指标按中文名匹配（高层拜访/公司考察/技术交流/高层峰会/圈层活动/例行拜访/POC/其他活动）",
+      "entries": [
+        {
+          "label": "圈层活动",
+          "code": "9"
+        },
+        {
+          "label": "其他活动",
+          "code": "5"
+        },
+        {
+          "label": "例行拜访",
+          "code": "1"
+        },
+        {
+          "label": "技术交流",
+          "code": "7"
+        },
+        {
+          "label": "公司考察",
+          "code": "6"
+        },
+        {
+          "label": "高层峰会",
+          "code": "8"
+        },
+        {
+          "label": "高层拜访",
+          "code": "2"
+        },
+        {
+          "label": "商务宴请",
+          "code": "3"
+        },
+        {
+          "label": "华为参观",
+          "code": "4"
+        }
+      ],
+      "note": "customer_activity_summary fitFunction 用 activity_type 中文名直匹配；'POC' 映射 poc_test_count"
+    },
+    {
+      "id": "DICT-005",
+      "name": "站点映射（getTargetSite）",
+      "source": "customer-detail/config.ts:17-34",
+      "usage": "customer-detail 站别（影响客户声音数据源选择、partyNumbers 组装）",
+      "entries": [
+        {
+          "value": "中国站",
+          "site": "china"
+        },
+        {
+          "value": "china",
+          "site": "china"
+        },
+        {
+          "value": "国际站",
+          "site": "oversea"
+        },
+        {
+          "value": "oversea",
+          "site": "oversea"
+        },
+        {
+          "value": "欧洲站",
+          "site": "europe"
+        },
+        {
+          "value": "europe",
+          "site": "europe"
+        }
+      ]
+    },
+    {
+      "id": "DICT-006",
+      "name": "区域地图名映射（regionMap）",
+      "source": "business-overview.datasource.ts:917-925；project-home-page.datasource.ts:785-793",
+      "usage": "地图气泡名（地区部→区域名）",
+      "entries": [
+        {
+          "region_cn_name": "欧洲地区部",
+          "mapName": "欧洲"
+        },
+        {
+          "region_cn_name": "中东中亚地区部",
+          "mapName": "中东中亚"
+        },
+        {
+          "region_cn_name": "中国地区部",
+          "mapName": "中国区"
+        },
+        {
+          "region_cn_name": "南部非洲地区部",
+          "mapName": "南部非洲"
+        },
+        {
+          "region_cn_name": "拉美地区部",
+          "mapName": "拉美"
+        },
+        {
+          "region_cn_name": "亚太地区部",
+          "mapName": "亚太"
+        },
+        {
+          "region_cn_name": "北部非洲地区部",
+          "mapName": "北部非洲"
+        }
+      ]
+    },
+    {
+      "id": "DICT-007",
+      "name": "地图地区部编码（7区）",
+      "source": "business-overview.datasource.ts:1059, 1316",
+      "usage": "地图收入/销毛率 REST REGION_CODE_INPUT 固定集合",
+      "entries": [
+        "R43",
+        "R22",
+        "R21",
+        "R99",
+        "R01",
+        "R42",
+        "R30"
+      ]
+    },
+    {
+      "id": "DICT-008",
+      "name": "repMap 过滤码（概览表剔除）",
+      "source": "business-overview.datasource.ts:24-35",
+      "usage": "filterRepData 剔除的代表处编码",
+      "entries": [
+        "1000",
+        "61W",
+        "SNULL",
+        "12J",
+        "61V",
+        "16M",
+        "15Z",
+        "20L",
+        "17A",
+        "19N",
+        "15D",
+        "NOT EXISTS",
+        "59F",
+        "19K",
+        "13D"
+      ]
+    },
+    {
+      "id": "DICT-009",
+      "name": "REPORT_ITEM_CODE 报表项",
+      "source": "business-overview.datasource.ts / customer-detail.datasource.ts",
+      "usage": "财经 REST 指标选择",
+      "entries": [
+        {
+          "code": "GEO_PL_91000",
+          "meaning": "收入（ytd_amt/yoy_y/budget_completion_y_ratio）"
+        },
+        {
+          "code": "GEO_PL_10997",
+          "meaning": "销毛率（ytd_amt/yoy_y）"
+        },
+        {
+          "code": "CCC_EXP_10001",
+          "meaning": "销管费用（ytd_amt/yoy_y）"
+        },
+        {
+          "code": "CCC_PL_91000",
+          "meaning": "中国收入（customer-detail 年累计收入查询双码之一）"
+        },
+        {
+          "code": "STD_AR_91320",
+          "meaning": "逾期AR（customer-detail 授信卡）"
+        },
+        {
+          "code": "gyy",
+          "meaning": "流水（地图合并专用伪码，非接口值）"
+        }
+      ]
+    },
+    {
+      "id": "DICT-010",
+      "name": "filterType → SQL（机会点清单）",
+      "source": "opportunity-list.component.ts:38-45",
+      "usage": "路由 type 参数",
+      "entries": [
+        {
+          "type": "valid_opportunity_cnt",
+          "sql": " and is_valid = 1"
+        },
+        {
+          "type": "qualified_unprojected_opportunity_cnt",
+          "sql": " and is_operating_to_be_issued  = 1  and is_operating_issued !=1"
+        },
+        {
+          "type": "project_initiated",
+          "sql": " and project_initiation_status = 'Issued'"
+        }
+      ]
+    },
+    {
+      "id": "DICT-011",
+      "name": "机会点阶段 opportunityStage（CSSC 等）",
+      "source": "HeaderOptionService（services/HeaderOptionService.ts 未在本批细读）",
+      "usage": "project-overview 丢单→opportunity-list 阶段传递；opportunity-list opportunity_step 过滤",
+      "entries": "UNKNOWN（CSSC 为已确认用例；完整字典需 HeaderOptionService 实现 + 上游字典）"
+    },
+    {
+      "id": "DICT-012",
+      "name": "TOKEN 模式字段映射",
+      "source": "token-specific-page.datasource.ts:5-15",
+      "usage": "Token 指标卡 pre 值选择",
+      "entries": [
+        {
+          "mode": "current_day",
+          "token": "total_tokens_prev_sum",
+          "revenue": "revenue_amt_prev_sum"
+        },
+        {
+          "mode": "seven_day",
+          "token": "total_tokens_7days_ago_sum",
+          "revenue": "revenue_amt_7days_ago_sum"
+        },
+        {
+          "mode": "thirty_day",
+          "token": "total_tokens_30days_ago_sum",
+          "revenue": "revenue_amt_30days_ago_sum"
+        }
+      ]
+    },
+    {
+      "id": "DICT-013",
+      "name": "h_tag 小时标识",
+      "source": "token-specific-page.config.ts:36-38 注释（hour:'00'-'23'）",
+      "usage": "Token 总量趋势/浮层 x 轴（HOUR 粒度）",
+      "entries": "UNKNOWN（接口字典；代码解析 trend_data 用 x_time 字段，与注释 hour/date 不一致）"
+    }
+  ]
+}

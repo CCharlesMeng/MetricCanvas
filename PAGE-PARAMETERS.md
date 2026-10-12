@@ -25,7 +25,7 @@
 
 维度在 `filter.dims[].dim_value_list` 上原位引用 `{param: id}`；`period` 与 `is_aggregate` 始终留在查询侧。引用不得与筛选绑定或旧 `paramBindings` 共同控制同一条件，也不得与查询体里的字面量起止并存。
 
-完整字段、引用、URL 与兼容规则见[正交化形状](docs/plan/2026-09-21-page-params-orthogonal-shape.md)，完整页面见[时间参数示例](packages/page/fixtures/contract-valid/grouped-params-page.json)。URL 里时间是纯文本——单点写 `?report-month=2026-03`，区间写 `?report-period=2026-01..2026-06`；维度仍使用重复键；显式非法输入不回退保存值。
+完整字段、引用、URL 与兼容规则见[现行参数声明](docs/page-metadata/params-and-text-values.md)；[正交化设计背景](docs/evidence/page-parameters/2026-09-21-page-params-orthogonal-shape.md)保留当时形状与spike，完整页面见[时间参数示例](packages/page/fixtures/contract-valid/grouped-params-page.json)。URL 里时间是纯文本——单点写 `?report-month=2026-03`，区间写 `?report-period=2026-01..2026-06`；维度仍使用重复键；显式非法输入不回退保存值。
 
 6.x 接受 6.5 兼容输入与当前 6.11；中间未使用版本不作为可读契约，5.0–5.4 的兼容读取保留。
 

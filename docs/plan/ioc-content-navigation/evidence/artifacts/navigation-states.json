@@ -1,0 +1,77 @@
+{
+  "browser": "154.0.8037.58",
+  "buttons": [
+    {
+      "label": "内容A",
+      "selected": "true",
+      "focused": true,
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(8, 53, 158)",
+      "outline": "rgb(255, 255, 255) auto 3px",
+      "outlineOffset": "0px",
+      "rect": {
+        "x": 8,
+        "y": 134,
+        "width": 60.46875,
+        "height": 40,
+        "top": 134,
+        "right": 68.46875,
+        "bottom": 174,
+        "left": 8
+      }
+    },
+    {
+      "label": "内容B",
+      "selected": "false",
+      "focused": false,
+      "color": "rgb(24, 24, 27)",
+      "background": "rgb(255, 255, 255)",
+      "outline": "rgb(24, 24, 27) none 3px",
+      "outlineOffset": "0px",
+      "rect": {
+        "x": 76.46875,
+        "y": 134,
+        "width": 60.203125,
+        "height": 40,
+        "top": 134,
+        "right": 136.671875,
+        "bottom": 174,
+        "left": 76.46875
+      }
+    },
+    {
+      "label": "定位内容B",
+      "selected": null,
+      "focused": false,
+      "color": "rgb(24, 24, 27)",
+      "background": "rgb(255, 255, 255)",
+      "outline": "rgb(24, 24, 27) none 3px",
+      "outlineOffset": "0px",
+      "rect": {
+        "x": 144.671875,
+        "y": 134,
+        "width": 92.203125,
+        "height": 40,
+        "top": 134,
+        "right": 236.875,
+        "bottom": 174,
+        "left": 144.671875
+      }
+    }
+  ],
+  "rect": {
+    "x": 8,
+    "y": 126,
+    "width": 359,
+    "height": 56,
+    "top": 126,
+    "right": 367,
+    "bottom": 182,
+    "left": 8
+  },
+  "viewport": {
+    "width": 375,
+    "height": 800
+  },
+  "overflow": "visible"
+}

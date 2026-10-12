@@ -14,4 +14,4 @@
 
 ## 后续质量修订
 
-上方勾选仅记录首期技术实现。用户复核提出的业务章节合理性、指标主辅组合与视觉层次问题尚未解决；后续按 [修订实现计划](../../plan/scenario-guided-refinement/tasks.md) 执行，该计划全部未开始。
+上方勾选仅记录首期技术实现。用户复核提出的业务章节合理性、指标主辅组合与视觉层次问题尚未解决；后续按 [修订实现计划](../authoring-foundation-2026-09/scenario-guided-refinement/tasks.md) 执行，该计划全部未开始。

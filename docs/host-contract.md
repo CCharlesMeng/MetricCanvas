@@ -107,7 +107,7 @@ app.props = {appList: permittedApps, roleList: currentRoles};
 
 Adapter 在平台脚本之前执行，只注册接线对象，在 mount 时才连接实例。不能依靠上述替换前的 `app.props` 保存配置；不能从 `appList/roleList` 猜 token、用户或工作空间。Adapter 显式提供与 `activeRule` 对齐的 `routeBase`，静态资源 `entry` 与业务路由前缀相互独立。内部须验证实际 loader 的激活规则，包括相邻前缀不会误激活。
 
-宿主若在 `afterMount` 初始化共享 SDK，平台 mount 及 Adapter connect 不得等待该初始化；后续能力按实际就绪通知接通。原地身份变化需真实通知；`reload` 只用于保证整页重载的部署。完整规则见 [部署维护边界](plan/qiankun-platform/deployment-boundary.md)。
+宿主若在 `afterMount` 初始化共享 SDK，平台 mount 及 Adapter connect 不得等待该初始化；后续能力按实际就绪通知接通。原地身份变化需真实通知；`reload` 只用于保证整页重载的部署。完整规则见 [部署维护边界](evidence/qiankun-platform/design-baseline/deployment-boundary.md)。
 
 以下为主应用已能直接提供标准 props 时的注册示例（另一种接入方式，不在 platform 内另启主应用）：
 

@@ -1,0 +1,564 @@
+{
+  "base_ref": "6954c77d",
+  "changed_files": [
+    {
+      "path": "CONTEXT.md",
+      "status": "M"
+    },
+    {
+      "path": "PAGE-METADATA.md",
+      "status": "M"
+    },
+    {
+      "path": "docs/adr/0095-cross-source-computation-and-ioc-schema-compatibility.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/adr/0096-ioc-view-state-and-post-query-presentation.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/adr/README.md",
+      "status": "M"
+    },
+    {
+      "path": "docs/adr/topics/ioc-operation-map-batch.md",
+      "status": "M"
+    },
+    {
+      "path": "docs/plan/2026-09-23-ioc-full-page-capability-gap.md",
+      "status": "M"
+    },
+    {
+      "path": "docs/plan/2026-09-29-ioc-implementation.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/ioc-content-navigation/alpha-tests.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/ioc-content-navigation/dev-baseline.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/ioc-content-navigation/evidence/portfolio.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/ioc-content-navigation/story-delta-frontend-design.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/ioc-content-navigation/tasks.md",
+      "status": "A"
+    },
+    {
+      "path": "packages/embed/tests/browser/detail-views.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/embed/tests/browser/section-navigation.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/DetailContent.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/RuntimeSection.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/component-render.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/composition-types.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/section-navigation.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/table-state.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/tests/section-navigation.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/tests/table-state.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/tests/version-error.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/src/compute/index.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/src/compute/join-aggregate.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime/src/compute/snapshots.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime/src/compute/time-fill.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime/src/detail-view.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime/src/orchestrator.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/compute-dependencies.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime/tests/compute.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/detail-view.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime/tests/ioc-opportunity-analysis.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/ioc-opportunity-list.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/ioc-project-detail.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/ioc-project-overview.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/navigate.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/time-computation.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/bar-chart/BarChart.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/bar-chart/options.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/category-breakdown/rows.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/field-text/FieldText.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/gauge/Gauge.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/key-value-panel/KeyValuePanel.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/line-chart/options.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/map-chart/MapChart.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/map-chart/options.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/map-chart/tooltip.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/metric-card/MetricCard.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/pie-chart/options.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/ranking-card/RankingCard.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/ranking-detail-card/rows.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/table/Table.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/shared/component-data.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/shared/value-format.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/tests/bar-chart-options.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/tests/value-format.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/fixtures/contract-valid/cross-source-page.json",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/fixtures/contract-valid/detail-views.json",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/src/component-walk.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/compute.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/data-source.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/field.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/navigate.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/page-param.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/page.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/schema/actions.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/schema/components/charts.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/schema/components/table.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/schema/compute.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/schema/data-source.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/schema/page.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/schema/primitives.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/validate-compute-dependencies.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/src/validate.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/version.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/tests/canonical-writers.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/tests/compute-dependencies.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/tests/detail-views.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/tests/layout-compatibility.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/tests/metric-card.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/tests/section-navigation.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/tests/version.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "pages/ioc-content-navigation.json",
+      "status": "A"
+    }
+  ],
+  "head": "6954c77d035d2c10548e51ba6e8b1e1c6412be12",
+  "risk_triggers": {
+    "shared-boundary": [
+      {
+        "evidence": "packages/engine/widgets/src/components/bar-chart/BarChart.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/bar-chart/options.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/category-breakdown/rows.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/field-text/FieldText.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/gauge/Gauge.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/key-value-panel/KeyValuePanel.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/line-chart/options.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/map-chart/MapChart.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/map-chart/options.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/map-chart/tooltip.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/metric-card/MetricCard.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/pie-chart/options.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/ranking-card/RankingCard.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/ranking-detail-card/rows.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/table/Table.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/shared/component-data.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/shared/value-format.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/page/src/schema/components/charts.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/page/src/schema/components/table.ts",
+        "rule": "shared-path"
+      }
+    ],
+    "visual": [
+      {
+        "evidence": "packages/engine/runtime-ui/src/DetailContent.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/RuntimeSection.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/bar-chart/BarChart.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/field-text/FieldText.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/gauge/Gauge.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/key-value-panel/KeyValuePanel.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/map-chart/MapChart.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/metric-card/MetricCard.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/ranking-card/RankingCard.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/components/table/Table.svelte",
+        "rule": "template-file"
+      }
+    ]
+  },
+  "schema_version": 1,
+  "shared_paths": [
+    "*/shared/*",
+    "*/common/*",
+    "*/components/*",
+    "*/hooks/*",
+    "*/utils/*",
+    "*/lib/*",
+    "*/api/*",
+    "*/store/*",
+    "*/styles/*"
+  ],
+  "skip_rebuttals": {
+    "C1": [
+      {
+        "evidence": "packages/embed/tests/browser/detail-views.spec.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/embed/tests/browser/section-navigation.spec.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/DetailContent.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/section-navigation.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/table-state.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/tests/section-navigation.test.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/tests/table-state.test.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime/src/compute/join-aggregate.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime/src/compute/snapshots.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime/src/compute/time-fill.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime/src/detail-view.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime/tests/compute-dependencies.test.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime/tests/detail-view.test.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/engine/runtime/tests/time-computation.test.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/page/src/validate-compute-dependencies.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/page/tests/compute-dependencies.test.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/page/tests/detail-views.test.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/page/tests/section-navigation.test.ts (A)",
+        "rule": "added-or-renamed-file"
+      }
+    ]
+  }
+}

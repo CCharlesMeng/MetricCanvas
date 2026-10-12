@@ -2,7 +2,7 @@
 
 日期：2026-09-17。状态：用户随后明确“开工，进行实现”，首期代码与本地验收已完成。实现与证据见 [实施记录](verification.md)。下文保留已确认方案；接口示意以实际工具 Schema 为准。
 
-后续用户复核发现业务组织与卡片呈现不足，最新修订方向与实现安排见 [模型与 tool 协作改进方案](../../plan/scenario-guided-refinement/design.md)。首期技术验证保持原记录，不代表这些质量问题已解决。
+后续用户复核发现业务组织与卡片呈现不足，最新修订方向与实现安排见 [模型与 tool 协作改进方案](../authoring-foundation-2026-09/scenario-guided-refinement/design.md)。首期技术验证保持原记录，不代表这些质量问题已解决。
 
 ## 1. 要解决的问题与已有证据
 
@@ -19,9 +19,9 @@
 
 本次本地真实模型产物与记录：
 
-- [最终页面](../../../.scratch/flow-report-connected/delivery/flow-analysis-report.json)
-- [评测摘要](../../../.scratch/flow-report-connected/delivery/evaluation-summary.json)
-- [首次模型循环](../../../.scratch/flow-report-connected/raw-01/flow-analysis-report/result.json)
+- 最终页面（本地材料 `.scratch/flow-report-connected/delivery/flow-analysis-report.json`，未随仓交付）
+- 评测摘要（本地材料 `.scratch/flow-report-connected/delivery/evaluation-summary.json`，未随仓交付）
+- 首次模型循环（本地材料 `.scratch/flow-report-connected/raw-01/flow-analysis-report/result.json`，未随仓交付）
 
 这些是 git 忽略的本地证据，不构成可移植的仓库验收材料。正式实施时需把不含业务数据的最小复现及脱敏证据固化到测试仓位。测试用了独立的流水样例投影，未证明生产查询、刷新、保存或发布可用。
 

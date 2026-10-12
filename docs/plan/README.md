@@ -1,8 +1,44 @@
-# 在执行中的计划
+# 计划总览
 
-这里**只放还在做的东西**：还有人按它干活，或者还有未完成的任务。一份计划不再被改、也不再被当论据引，它就该离开这个目录。
+更新：2026-10-12。先按下表选择任务；**plan只保留未完成工作**，已完成实施记录和被替代的分稿移到证据或归档。这里的完成状态区分方案、本仓实现、本地验收与真实集成，不按文档日期或旧勾选推断生产完成。
 
-过程文档真正的问题从来不是「文件多」，是**没有退场机制**——2026-09-21 清理前，`docs/plan/` 里 175 份文件只有 24 份是活的，其余是已收口批次的交接和机器证据，却和活计划同级摆着。下面这套判据就是为了不再发生这件事。
+## 当前未完成工作
+
+| 主题 | 当前状态 | 唯一主入口及剩余工作 |
+|---|---|---|
+| **本次Report与Dashboard生成** | **方案已认可，生产实现未开始** | **[统一主计划](2026-10-12-report-dashboard-authoring-plan.md)**：六份分稿合并，集中目标、文本流程、computed、架构、C00–C11、协议、R/J/D依赖和验收；接口/部署选型仍待冻结 |
+| 创作基线的内部接入 | 本仓主要批次已完成，真实接入待验证 | [创作基线与接入待办](authoring-current-status.md)：F01–F08承接版本采用、轮次/状态、授权、保存/预览、参数、原故障复验及旧页盘点 |
+| 现有IOC四页优化 | 部分实现，整批未验收 | [四页主计划](2026-09-30-ioc-project-map-optimization.md) → [执行状态](ioc-project-map-execution/README.md)；查询键、区域映射、来源输入、导航/返回及整页验收仍有缺口 |
+| IOC全量来源与能力迁移 | 未完成，部分来源/设计待核对 | [全量主计划](2026-09-23-ioc-full-page-capability-gap.md)；[M0/M1设计材料](ioc-m0-m1-2026-09-30/README.md)仍待评审；不得以四页或本次两页代替21入口验收 |
+| IOC页内内容导航 | 功能验收完成，SDD汇总未收口 | [收口状态](ioc-content-navigation/README.md)：角色审阅clear，aggregate报告仍缺真实基线映射 |
+| CodeCheck整改发布/复验 | 本仓整改完成，发布及外部复验待补证 | [当前整改记录](2026-09-30-codecheck-remediation.md)；旧IOC契约阻塞需按当前版本复核，不能把旧失败直接当成今日结论 |
+| 页面管理与MetricCanvas UI | 交互/架构原则已确认，工程计划待决策 | [实施主入口](2026-10-12-platform-ui-management-implementation.md)，[交互规格](2026-10-12-platform-page-management-design.md)与[视觉/组件架构](2026-10-12-platform-os-theme-component-architecture.md)为基线；尚未实施产品代码 |
+| 创作自动格式策略 | 待设计收口及实施 | [格式策略交接](2026-10-08-authoring-format-policy-handoff.md)；不以同期字段/坐标轴修复反推整套自动策略完成 |
+| 目标门户微前端接入 | 通用实现本地完成，真实门户/服务未验证 | [接入状态](qiankun-platform/README.md)；不重复已完成的平台框架迁移 |
+
+三组IOC范围独立：本次是**生成两页**，四页优化是**修现有业务页**，全量迁移是**覆盖全部来源入口**；它们可以共享能力和证据，不能互相代替完成判据。
+
+其他独立在途批次的运行时实现与验收由对应提交交付，不包含在本次文档整理提交中。
+
+## 已完成的本仓工作
+
+| 工作 | 完成范围 | 查看结论或证据 |
+|---|---|---|
+| 早期创作架构/模块收敛 | 本仓实现及各批次本地检查；外部待办已转当前接入入口 | [批次结论](../archive/authoring-foundation-2026-09/README.md)、[部署就绪证据](../evidence/2026-09-23-authoring-deployment-readiness-report.md) |
+| 9235/9236执行整改 M0–M7 | 本地回归、真实模型分批复验及本地浏览器；内部采用/生产未执行 | [执行报告](../evidence/2026-09-29-authoring-mc-execution-report.md) |
+| 页面参数本仓实现 | 提取、实例、引用与正交化等历史实现；外部链路和旧页整批迁移单列待办 | [批次结论](../archive/page-parameters-2026-09/README.md)、[现行参数文档](../../PAGE-PARAMETERS.md) |
+| 报告日期筛选及完整实例导出 | Schema 6.13范围、本地测试和浏览器/PDF验收 | [验收](../evidence/report-date-filters/acceptance.md)、[本地交付记录](../evidence/report-date-filters/main-delivery.md)；CI/部署不由本表推断 |
+| Tiny OS日期选择器及白色工具带 | 指定范围内本地视觉/行为验收已收口 | [批次结论](../archive/report-date-ui-2026-10/README.md) |
+| 通用HTML微前端及候选loader | 本地实施、构建及候选主应用验收 | [实施证据](../evidence/qiankun-platform/implementation.md)；真实门户仍在上表 |
+| 本次创作流程设计 | 两页范围、整体文本流程和D1–D7；生产实现尚未开始 | [主计划完成状态](2026-10-12-report-dashboard-authoring-plan.md#1-完成状态)、[ADR-0098](../adr/0098-profiled-page-composition-and-incremental-navigation.md) |
+
+## 历史分稿与本次整理
+
+- [本次六份方案的历史快照](../archive/report-dashboard-design-2026-10-12/README.md)：已被统一主计划替代，不再作为执行入口。
+- [旧IOC阶段计划](../archive/ioc-planning-2026-09/README.md)：旧五页推进顺序被四页主计划替代，未完成缺口仍保留。
+- [整理记录与移动表](../archive/plan-cleanup-2026-10-12/README.md)：可追溯原路径；归档不代表相关产品能力全部完成。
+
+后续一个批次只维护一份执行主计划。已确认原则链接ADR；详细证据链接evidence。主计划就地更新流程、任务和状态，不再为每次补充新增独立方案；移走旧计划前先转移仍未完成的任务。
 
 ## 四种寿命，四个去处
 

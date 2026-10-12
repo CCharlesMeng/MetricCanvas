@@ -1,0 +1,289 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "a260c10744add7fe013d5e4591fa1ecc407f8083",
+  "note": "第一批五个页面的查询后计算与转换契约。每项给出页面、消费者、源码、输入、处理、输出、边界。比例统一注明 0.5=50% 或 0.5=0.5%。",
+  "transformations": [
+    {
+      "id": "T-cd-001",
+      "page": "customer-detail",
+      "consumer": "空间格局份额占比（8列+上年份额）",
+      "source": "customer-detail-page.component.ts:318-342",
+      "input": "share_xxx[i]、space[i]（同表同index）；lastYearLastMonthPercent",
+      "process": "percent = DIVIDE(value,total)；isNull→'--'；否则 percent*100 → PERCENT_WITH_TWO_POINT",
+      "output": "'xx.xx%' 或 '--'",
+      "edge": "total=0 → DIVIDE null → '--'；value=0 → '0.00%'",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-cd-002",
+      "page": "customer-detail",
+      "consumer": "当年整体空间求和",
+      "source": "customer-detail-page.component.ts:326-332",
+      "input": "layoutSpaces[]",
+      "process": "含非null/非0值才求和；TEN_THOUSAND+POINT_TWO+THOUSAND_SIGN",
+      "output": "格式化字符串（模板后缀'万'）或 null",
+      "edge": "全null→null；含0→参与求和",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-cd-003",
+      "page": "customer-detail",
+      "consumer": "经营进展派生（预测/GAP/完成率/销毛率）",
+      "source": "customer-detail.datasource.ts:478-501",
+      "input": "rev_ytd_amt, sgp_ytd_amt, annual_target_amt_sum, stock_forecast_revenue_amt_sum",
+      "process": "annual_forecast=rev+stock；gap=annual_forecast-target；completion=DIVIDE(rev,target)*100；gross=DIVIDE(sgp,rev)*100",
+      "output": "4 个数值（×100仅非null）",
+      "edge": "分母0→null；空行→[{}]→字段undefined",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-cd-004",
+      "page": "customer-detail",
+      "consumer": "年累计收入求和+同比",
+      "source": "customer-detail.datasource.ts:540-561",
+      "input": "rows[{rmb_ptd_amt, rmb_py_ptd_amt}]",
+      "process": "全null→null；否则reduce求和（单行null→NaN风险）；yoy=DIVIDE(SUBTRACT(cur,py),py)*100",
+      "output": "{rmb_ptd_amt, rmb_py_ptd_amt, rmb_ptd_amt_yoy}",
+      "edge": "混合null→NaN（UNKNOWN 接口保证）",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-cd-005",
+      "page": "customer-detail",
+      "consumer": "近12月趋势分组聚合",
+      "source": "customer-detail.datasource.ts:622-650",
+      "input": "rows[{period_id, rmb_ytd_amt, rmb_py_ytd_amt}]",
+      "process": "groupBy period_id → 组内非null求和（全null→null）→ period_id 升序 → pop=DIVIDE(SUBTRACT(cur,py),py)*100",
+      "output": "月序数组 {period_id, rmb_ytd_amt, rmb_py_ytd_amt, rmb_ytd_amt_pop}",
+      "edge": "缺月不补；乱序按字符串升序=时间序",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-cd-006",
+      "page": "customer-detail",
+      "consumer": "流水卡环比/同比/CAGR",
+      "source": "customer-detail.datasource.ts:706-733 + commercial-market.config.ts:407-411",
+      "input": "revenue_amt_sum, pre_revenue_amt_sum, revenue_amt_yoy_sum, cagr_*",
+      "process": "diff=SUBTRACT（null保留）；rate=DIVIDE(diff,pre)*100；cagr=(pow(end/begin,1/Number(periods))-1)*100",
+      "output": "revenue_pop_diff/pop/yoy_diff/yoy/cagr_value",
+      "edge": "pre=0→rate null；begin=0→cagr Infinity（无保护）",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-cd-007",
+      "page": "customer-detail",
+      "consumer": "页面收入趋势（系统当前年双年对齐）",
+      "source": "customer-detail.datasource.ts:754-800",
+      "input": "rows[{mtime, revenue_amt_sum}]（窗口=页面月年±1）",
+      "process": "currentYear=new Date().getFullYear()；当年/上年各按mtime排序；12月标签固定；find月份；growth=(cur-last)/last*100 仅当 last>0 且 cur非null",
+      "output": "12点 {x_time, current_year_revenue, last_year_revenue, growth_rate}",
+      "edge": "页面年≠系统年→窗口与页面无关；重复月份→find第一条",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-cd-008",
+      "page": "customer-detail",
+      "consumer": "云服务明细投影+排序+前端分页+合计行置顶",
+      "source": "customer-detail-page.component.ts:511-548, 602-624",
+      "input": "cloud_service mapArray + cloud_service_summary 单行",
+      "process": "投影（null→'--'）→ frontendSortData（null置末）→ slice(pageSize=10) → format*生成_show → 合计行格式化后插首行",
+      "output": "≤11行",
+      "edge": "明细空→仅合计行",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-cd-009",
+      "page": "customer-detail",
+      "consumer": "云服务合计（先求和后算比率）",
+      "source": "customer-detail.datasource.ts:924-954",
+      "input": "Σ revenue_amt_cny_sum / Σ pre / Σ yoy",
+      "process": "totalPop=DIVIDE(Σcur-Σpre,Σpre)*100；totalYoy同理；ratio=1.0",
+      "output": "合计行",
+      "edge": "Σpre=0→null；空数据→固定合计行(revenue=0,ratio=1.0)",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-cd-010",
+      "page": "customer-detail",
+      "consumer": "云服务趋势浮层（最后一行年份推导双年）",
+      "source": "customer-detail.datasource.ts:975-1047",
+      "input": "rows[{mtime, revenue_amt_cny_sum, pre_revenue_amt_cny_sum}]（窗口=页面月年±1 + 行服务码过滤）",
+      "process": "sort(parseInt mtime) → currentYear=最后一行年份；当年/上年按月find；pop=DIVIDE(SUBTRACT(cur,pre),pre)*100",
+      "output": "12点 {x_time, current_year_revenue, last_year_revenue, pop_current, pop_last}",
+      "edge": "最后一行=最大月份的排序保证依赖查询侧orderAsc(mtime)+前端二次sort；窗口受 trendStart/End 限制",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-cd-011",
+      "page": "customer-detail",
+      "consumer": "机会点年预测求和+合计行",
+      "source": "customer-detail.datasource.ts:1189-1218, 1264-1317",
+      "input": "forecast_jan..dec（明细）；forecast_xx_sum（汇总）",
+      "process": "yearForecast=Σ(forecast_xx||0)；yearForecastSum=Σ(forecast_xx_sum||0)；合计行插首行",
+      "output": "年预测列 + 合计行",
+      "edge": "null→0参与求和",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-bo-001",
+      "page": "business-overview",
+      "consumer": "概览表合并（收入+销毛率）",
+      "source": "business-overview.component.ts:1762-1812",
+      "input": "income_table_data[](GEO_PL_91000) + salesRate_table_data[](GEO_PL_10997)",
+      "process": "合并→groupBy repoffice_code→取[0]为基础→按report_item_code取值→frontendSortTableData(income_budget_completion_y_ratio,desc)→rank",
+      "output": "每代表处1行 {rank, repoffice_cn_name, income_ytd_amt, income_yoy_y, income_budget_completion_y_ratio, gross_profit_margin_ytd_amt}",
+      "edge": "缺行→null；重复键→[0]丢失其余；report_item_code只是取值选择非关联条件",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-bo-002",
+      "page": "business-overview",
+      "consumer": "日期三口径",
+      "source": "business-overview.component.ts:1557-1575",
+      "input": "revenueInitTime/fastFinInitTime/finInitTime + headerOpt.dateValue",
+      "process": "无date→各用maxTime；有date→各口径取较早者",
+      "output": "mtime/fastFinTime/finTime",
+      "edge": "未来日期→用maxTime；过去日期→用所选",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-bo-003",
+      "page": "business-overview",
+      "consumer": "地图数据合并（region/repOffice）",
+      "source": "business-overview.datasource.ts:915-977, 1092-1144",
+      "input": "收入[] + 销毛率[] + gyy流水[]（report_item_code='gyy'）",
+      "process": "合并→groupBy(region_code/repoffice_code)→按report_item_code取3指标",
+      "output": "mergedItem {region_cn_name(映射), region_code, income_ytd_amt, income_budget_completion_y_ratio, salesRate_ytd_amt, salesRate_yoy_y, revenue_ptd, revenue_mom}",
+      "edge": "缺行→null/''；区域名映射7个地区部",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-bo-004",
+      "page": "business-overview",
+      "consumer": "calcMom 环比（0/null 强制0）",
+      "source": "business-overview.datasource.ts:3-11",
+      "input": "currentMonth, preMonth",
+      "process": "pre真值且≠0 → (cur-pre)/pre*100；否则0",
+      "output": "0 或 百分比",
+      "edge": "pre=null→0；pre=0→0（区别于 customer-detail 的 null 保留）",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-po-001",
+      "page": "project-overview",
+      "consumer": "管道支撑率（三处消费者）",
+      "source": "project-home-page.datasource.ts:626-653（指标卡）、project-home-page.component.ts:451-518（概览表）、datasource.ts:830-847/928-946（地图）",
+      "input": "target=Σtarget_revenue_amt_cny；realized=Σytd_amt；flow=Σstock_forecast_revenue_amt_sum；effective=Σeffective_opportunity_remaining_amount_current_sum",
+      "process": "denominator=target-flow-realized；[0,null,undefined].includes(denominator)?0:effective/denominator；×100仅指标卡/地图",
+      "output": "指标卡×100；概览表小数+label×100；地图×100",
+      "edge": "缺源行→0；重复键→累加不判重；分母0→0（非null）",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-po-002",
+      "page": "project-overview",
+      "consumer": "立项率/赢单率（null vs 0 双消费者）",
+      "source": "project-home-page.datasource.ts:59-76（指标卡null）、component.ts:504-506（概览表0）",
+      "input": "operating_projected_opportunity_cnt_sum/should_projected_opportunity_cnt_sum；won/resulted",
+      "process": "分母[0,null,undefined]→指标卡null/概览表0；否则分子/分母×100",
+      "output": "指标卡 null 或 %；概览表 0 或小数",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-po-003",
+      "page": "project-overview",
+      "consumer": "机会点增量（直接减法）",
+      "source": "project-home-page.datasource.ts:12-20, 59-76",
+      "input": "valid_opportunity_cnt_sum, last_valid_opportunity_cnt_sum；bidding_amount_sum, last_bidding_amount_sum",
+      "process": "cur-last（无保护）",
+      "output": "差值",
+      "edge": "任一null→NaN（UNKNOWN）",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-ts-001",
+      "page": "token-specific",
+      "consumer": "客户数环比",
+      "source": "token-specific-page.datasource.ts:23-53",
+      "input": "customer_count, pre_customer_count",
+      "process": "target=DIVIDE(SUBTRACT(cur,pre),pre)；target?target*100:target",
+      "output": "null 或 ×100 值",
+      "edge": "null/0 分支保持原值",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-ts-002",
+      "page": "token-specific",
+      "consumer": "Token指标汇总后比率",
+      "source": "token-specific-page.datasource.ts:100-121, 140-159",
+      "input": "rows[{total_tokens_sum, total_tokens_prev/7days/30days_ago_sum}]（或 revenue_*）",
+      "process": "Σcur、Σpre（无判空）→ target=DIVIDE(SUBTRACT(Σcur,Σpre),Σpre)；target?target*100:target",
+      "output": "pop 值",
+      "edge": "混合null→NaN（UNKNOWN）",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-ts-003",
+      "page": "token-specific",
+      "consumer": "补日 completeDailyData",
+      "source": "token-specific-page.config.ts:392-458",
+      "input": "data[], startTime, endTime（yyyyMMdd）",
+      "process": "生成全日期→Map(dateValue→item)（重复覆盖）→逐日取，缺日→默认空对象",
+      "output": "完整日序数组",
+      "edge": "非8位→原样返回；跨月/跨年自动",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-ts-004",
+      "page": "token-specific",
+      "consumer": "饼图 TOP5+其他 / 客户分布置底",
+      "source": "token-specific-page.config.ts:257-323, 355-378",
+      "input": "model_name, total_tokens_sum / customer_count",
+      "process": "五级排序→totalSum=Σ→≤5全出/>5 TOP5+其他；percent=DIVIDE(value,totalSum)",
+      "output": "饼图行 + 占比（0.5=50%展示×100）",
+      "edge": "null→NaN风险；'其他'置底条件（其余=5且其他>0）",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-ts-005",
+      "page": "token-specific",
+      "consumer": "表格分组/合并单元格/窗口内排序",
+      "source": "token-specific-page.component.ts:501-586",
+      "input": "服务端窗口行（TableQueryResult[]）",
+      "process": "分组(customer_name_account_name)→合计置末→非合计按total_tokens降序(null末)→rowSpan/rowHide→序号(offset+1+i)",
+      "output": "ProcessedTableData[]",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-ol-001",
+      "page": "opportunity-list",
+      "consumer": "行派生（序号/枚举/金额/赢率）",
+      "source": "opportunity-list.component.ts:400-428",
+      "input": "窗口行",
+      "process": "index=offset+1+i；ati_status_label=ProjectStatus映射；is_unupdated 1→'是'否则'否'；金额OPERATION_BILLION；winodds=×100 POINT_ONE+'%'（无null保护）",
+      "output": "派生行",
+      "edge": "ati_status未知→空；winodds null→NaN",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-ol-002",
+      "page": "opportunity-list",
+      "consumer": "搜索转义",
+      "source": "opportunity-list.component.ts:431-439",
+      "input": "keyword",
+      "process": "toLowerCase().replace(/'/g,\"''\") → LOWER(opportunity_name/party_company_name) like %..%",
+      "output": "searchParam SQL",
+      "verified": "verification/verify-calculate.mjs"
+    },
+    {
+      "id": "T-ol-003",
+      "page": "opportunity-list",
+      "consumer": "日期列筛选窗口",
+      "source": "opportunity-list.component.ts:481-532",
+      "input": "所选月份 Date",
+      "process": "start=当月1日00:00:00；end=月末23:59:59；between/≥/≤",
+      "output": "fieldFilterParams SQL",
+      "verified": "verification/verify-calculate.mjs"
+    }
+  ]
+}

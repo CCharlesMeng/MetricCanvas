@@ -8,7 +8,7 @@
 
 **提案没有按原样落地。** 同一个需求由 **Schema 6.6 的分组参数**解决：`params.dimensions/times/scalars` 分组声明，多组时间按 ID 独立引用，实际值用 `dim_value_list`、`start/end`、`value` 表达。
 
-现行入口是 [`PAGE-PARAMETERS.md`](../../../PAGE-PARAMETERS.md)（`#66-分组参数新页面` 段），已实现方案的完整字段与兼容规则见 [`docs/plan/2026-09-20-grouped-page-params.md`](../../plan/2026-09-20-grouped-page-params.md)。
+现行入口是 [`PAGE-PARAMETERS.md`](../../../PAGE-PARAMETERS.md)（`#66-分组参数新页面` 段），已实现方案的完整字段与兼容规则见 [`docs/archive/page-parameters-2026-09/2026-09-20-grouped-page-params.md`](../page-parameters-2026-09/2026-09-20-grouped-page-params.md)。
 
 `PAGE-PARAMETERS.md` 正文两处明确写了：**本提案不属于现行协议**，只作历史讨论。
 

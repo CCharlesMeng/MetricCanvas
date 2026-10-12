@@ -6,7 +6,7 @@ note: 平台 HTML 微前端与独立入口共用客户端 URL 路由；部分修
 
 # 平台交付 HTML 微前端，配置与生命周期按实例拥有
 
-按 [MC 交接](../plan/qiankun-platform/handoff-mc.md) 在 `apps/platform` 原地实施。集成门户管理平台路径前缀和区域外离开保护，平台管理前缀内 URL、浏览器历史、深链接与业务视图；交付 HTML、UMD、CSS 的完整静态目录，不发布平台 npm 包，不使用内存导航，不在平台里启动第二层 qiankun。
+按 [MC 交接](../evidence/qiankun-platform/design-baseline/handoff-mc.md) 在 `apps/platform` 原地实施。集成门户管理平台路径前缀和区域外离开保护，平台管理前缀内 URL、浏览器历史、深链接与业务视图；交付 HTML、UMD、CSS 的完整静态目录，不发布平台 npm 包，不使用内存导航，不在平台里启动第二层 qiankun。
 
 实际 Kit 生产产物在候选 qiankun 2.10.16 下因 `document.currentScript` 失败。最小生命周期适配绕过入口与 ESM 全局隔离后可显示，但 Kit `start` 返回 `undefined`，仅导出 `start/load_css`，卸载仍留下 `beforeunload/visibilitychange/popstate/hashchange/pageshow` 监听。完整清理需要侵入 Kit 内部运行时，而非局部入口适配。因此选择普通 Svelte 入口，独立和微前端共用客户端 URL 路由与原有业务视图。证据及复现见 [实施验收](../evidence/qiankun-platform/implementation.md)。这不是对所有 Kit/qiankun 版本兼容性的断言。
 

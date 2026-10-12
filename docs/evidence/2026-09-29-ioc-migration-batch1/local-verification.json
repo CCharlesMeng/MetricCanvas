@@ -1,0 +1,84 @@
+{
+  "scope": "Supplied report JavaScript extraction only; original source repository and browser not accessed",
+  "node": "v24.11.1",
+  "originalAssertionsPassed": 48,
+  "typedAssertionsPassed": 48,
+  "supplementalAssertionsPassed": 15,
+  "checks": [
+    {
+      "name": "null multiplication is zero",
+      "expression": "null * 100",
+      "actual": 0
+    },
+    {
+      "name": "missing multiplication is NaN",
+      "expression": "Number.isNaN(undefined * 100)",
+      "actual": true
+    },
+    {
+      "name": "mixed null sum preserves numbers",
+      "expression": "[100, null, 200].reduce((sum, value) => sum + value, 0)",
+      "actual": 300
+    },
+    {
+      "name": "mixed missing sum is NaN",
+      "expression": "Number.isNaN([100, undefined, 200].reduce((sum, value) => sum + value, 0))",
+      "actual": true
+    },
+    {
+      "name": "direct subtraction coerces null to zero",
+      "expression": "100 - null",
+      "actual": 100
+    },
+    {
+      "name": "controlled subtraction preserves null",
+      "expression": "calculator.SUBTRACT(100, null)",
+      "actual": null
+    },
+    {
+      "name": "JSON comparator hides Infinity vs null",
+      "expression": "JSON.stringify(Infinity) === JSON.stringify(null)",
+      "actual": true
+    },
+    {
+      "name": "CAGR zero beginning really produces Infinity",
+      "expression": "getCAGR(0, 100, 6) === Infinity",
+      "actual": true
+    },
+    {
+      "name": "cloud trend sorts before selecting reference year",
+      "expression": "buildCloudServiceTrend([{mtime:'202603',revenue_amt_cny_sum:30},{mtime:'202501',revenue_amt_cny_sum:10},{mtime:'202601',revenue_amt_cny_sum:20}])[0].current_year_revenue",
+      "actual": 20
+    },
+    {
+      "name": "page trend loses zero through OR-null",
+      "expression": "buildRevenueTrend([{mtime: String(new Date().getFullYear())+'01',revenue_amt_sum:0}])[0].current_year_revenue",
+      "actual": null
+    },
+    {
+      "name": "cloud trend retains zero through nullish operator",
+      "expression": "buildCloudServiceTrend([{mtime:'202601',revenue_amt_cny_sum:0}])[0].current_year_revenue",
+      "actual": 0
+    },
+    {
+      "name": "overview same report item takes last metric row",
+      "expression": "mergeOverviewTable([{repoffice_code:'A',report_item_code:'GEO_PL_91000',ytd_amt:10},{repoffice_code:'A',report_item_code:'GEO_PL_91000',ytd_amt:20}],[])[0].income_ytd_amt",
+      "actual": 20
+    },
+    {
+      "name": "overview retains sales-only representative",
+      "expression": "mergeOverviewTable([],[{repoffice_code:'A',report_item_code:'GEO_PL_10997',ytd_amt:0.5}]).length",
+      "actual": 1
+    },
+    {
+      "name": "date example correction",
+      "expression": "getDateRange('20260302',5).startDate",
+      "actual": "20260225"
+    },
+    {
+      "name": "daily duplicate keeps last row",
+      "expression": "completeDailyData({data:[{dtime:'20260501',revenue_amt_sum:1},{dtime:'20260501',revenue_amt_sum:2}],startTime:'20260501',endTime:'20260501'})[0].revenue_amt_sum",
+      "actual": 2
+    }
+  ]
+}

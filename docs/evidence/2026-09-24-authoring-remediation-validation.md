@@ -1,6 +1,6 @@
 # 公共查询对接整改：本地验收证据
 
-日期：2026-09-24。范围为当前工作区源码；尚未提交、发布或部署。对应[整改计划](../plan/2026-09-24-authoring-ioc-remediation.md)及[Adapter 迁移说明](../../metriccanvas-authoring/QUERY-VALIDATION-MIGRATION.md)。
+日期：2026-09-24。范围为当前工作区源码；尚未提交、发布或部署。对应[整改计划](../archive/authoring-foundation-2026-09/2026-09-24-authoring-ioc-remediation.md)及[Adapter 迁移说明](../../metriccanvas-authoring/QUERY-VALIDATION-MIGRATION.md)。
 
 ## 已执行
 

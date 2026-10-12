@@ -1,0 +1,43 @@
+{
+  "viewport": {
+    "width": 375,
+    "height": 800
+  },
+  "geometry": [
+    {
+      "x": 8,
+      "y": 118,
+      "right": 367,
+      "bottom": 180,
+      "clipped": false
+    },
+    {
+      "x": 8,
+      "y": 188,
+      "right": 367,
+      "bottom": 250,
+      "clipped": false
+    },
+    {
+      "x": 8,
+      "y": 258,
+      "right": 100.203125,
+      "bottom": 298,
+      "clipped": false
+    }
+  ],
+  "browser": "154.0.8037.58",
+  "runtime": {
+    "dpr": 1,
+    "font": "16px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", sans-serif",
+    "labels": [
+      "内容A较长标签验证内容导航换行且不遮挡其他入口",
+      "内容B较长标签验证内容导航换行且不遮挡其他入口",
+      "定位内容B"
+    ],
+    "scrollWidth": 359,
+    "clientWidth": 359,
+    "gap": "8px",
+    "flexWrap": "wrap"
+  }
+}

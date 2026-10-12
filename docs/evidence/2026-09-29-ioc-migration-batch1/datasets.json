@@ -1,0 +1,1518 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "a260c10744add7fe013d5e4591fa1ecc407f8083",
+  "note": "本文件为第一批五个页面的数据集输入契约。字段类型/可空性/单位以源码读取为准；标 UNKNOWN 的项需接口字典或上游口径。字段名前缀说明：`ds.<数据源id>.<表>.<字段>` 对应 datav-lowcode globalVars 槽位。",
+  "datasets": [
+    {
+      "id": "customer-detail.kpi",
+      "page": "customer-detail",
+      "consumer": "顶部5指标卡+标签",
+      "source": "graphql CUSTOMER_MAP_CUSTOMER_DETAILS",
+      "returnShape": "mapArray 单行",
+      "fields": [
+        {
+          "name": "party_number",
+          "type": "string",
+          "nullable": true,
+          "meaning": "客户编码"
+        },
+        {
+          "name": "party_company_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "客户名称"
+        },
+        {
+          "name": "mtime",
+          "type": "string yyyyMM",
+          "nullable": true,
+          "meaning": "数据月份"
+        },
+        {
+          "name": "data_site_type",
+          "type": "string 中国站/国际站/欧洲站",
+          "nullable": true,
+          "meaning": "站点（getTargetSite 映射 china/oversea/europe）"
+        },
+        {
+          "name": "is_parent_company_name",
+          "type": "string|number",
+          "nullable": true,
+          "meaning": "是否父客户 1/0/父客户"
+        },
+        {
+          "name": "is_breakthrough_customer",
+          "type": "string|number",
+          "nullable": true,
+          "meaning": "是否突破 1/0/是/否"
+        },
+        {
+          "name": "public_cloud_na_level_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "NA级别名"
+        },
+        {
+          "name": "contact_person_long_no_contact",
+          "type": "number",
+          "nullable": true,
+          "meaning": "联系人超长期未接触（人）"
+        },
+        {
+          "name": "contact_person_total",
+          "type": "number",
+          "nullable": true,
+          "meaning": "总联系人（人）"
+        },
+        {
+          "name": "kc_long_no_contact",
+          "type": "number",
+          "nullable": true,
+          "meaning": "KC超长期未接触（人）"
+        },
+        {
+          "name": "kc_total",
+          "type": "number",
+          "nullable": true,
+          "meaning": "总KC数量"
+        },
+        {
+          "name": "service_conference_this_month",
+          "type": "number",
+          "nullable": true,
+          "meaning": "未闭环工单数（当月）"
+        },
+        {
+          "name": "service_conference_year_total",
+          "type": "number",
+          "nullable": true,
+          "meaning": "工单总数（年）"
+        },
+        {
+          "name": "high_risk_project_count",
+          "type": "number",
+          "nullable": true,
+          "meaning": "超期项目数"
+        },
+        {
+          "name": "risk_contract_count",
+          "type": "number",
+          "nullable": true,
+          "meaning": "框架偏差金额"
+        },
+        {
+          "name": "overdue_amount",
+          "type": "number",
+          "nullable": true,
+          "meaning": "逾期总金额（元）"
+        },
+        {
+          "name": "customer_credit_limit",
+          "type": "number",
+          "nullable": true,
+          "meaning": "授信额度（万，fitFunction 未换算，展示层 TEN_THOUSAND）"
+        }
+      ],
+      "uniqueKey": "party_number+mtime",
+      "sortGuarantee": "无",
+      "computedFrontend": "KPI fitFunction 包装为列式数组；credit secondary 不走本数据源（走 REST balances）"
+    },
+    {
+      "id": "customer-detail.layout",
+      "page": "customer-detail",
+      "consumer": "空间格局指标/堆叠图/份额表",
+      "source": "graphql CUSTOMER_MAP_MARKET_SHARE_DETAIL（customer_layout_detail：mtime=页面月；customer_layout_last_year_huawei：mtime=上年12月）",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "sub_business_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "业务子类"
+        },
+        {
+          "name": "total_space_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "该类空间（元，展示万）"
+        },
+        {
+          "name": "huawei_cloud_space_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "华为云空间"
+        },
+        {
+          "name": "alibaba_cloud_space_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "阿里云空间"
+        },
+        {
+          "name": "tencent_cloud_space_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "腾讯云空间"
+        },
+        {
+          "name": "idc_space_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "IDC空间"
+        },
+        {
+          "name": "aws_space_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "AWS空间"
+        },
+        {
+          "name": "azure_space_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "Azure空间"
+        },
+        {
+          "name": "google_space_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "Google空间"
+        },
+        {
+          "name": "others_space_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "其他空间"
+        }
+      ],
+      "uniqueKey": "sub_business_name+mtime",
+      "sortGuarantee": "无（按业务子类顺序展示）",
+      "ratioScale": "份额=比例，0.5=50%（展示×100）",
+      "computedFrontend": "份额占比=share/sum；当年整体空间=Σspace；上年份额=DIVIDE(huawei,total)"
+    },
+    {
+      "id": "customer-detail.business-progress",
+      "page": "customer-detail",
+      "consumer": "经营进展4指标+2仪表+趋势图",
+      "sources": [
+        "REST CLOUDBI_AP_DM_CCCRG_IOC_PL_R2BD2BG_CUST_SORT（年度预测/GAP/销毛率/目标完成率，PERIOD_ID=mtime）",
+        "REST IOC_CDI_Customer360_DM_CCCRG_IOC_PL_CUST（年累计收入+近12月趋势，CUST_CODE=partyNumbers，START=当年01，END=mtime）",
+        "graphql PROJECT_MAP_CUSTOMER_REVENUE_FORECAST_M（annual_target_amt_sum / stock_forecast_revenue_amt_sum）"
+      ],
+      "fields": [
+        {
+          "name": "rev_ytd_amt",
+          "type": "number",
+          "nullable": true,
+          "meaning": "年累计收入（元）"
+        },
+        {
+          "name": "rev_yoy_y",
+          "type": "number",
+          "nullable": true,
+          "meaning": "收入年同比（比例）"
+        },
+        {
+          "name": "sgp_ytd_amt",
+          "type": "number",
+          "nullable": true,
+          "meaning": "销毛额年累计（元）"
+        },
+        {
+          "name": "rmb_ptd_amt",
+          "type": "number",
+          "nullable": true,
+          "meaning": "月累计收入-人民币（元）"
+        },
+        {
+          "name": "rmb_py_ptd_amt",
+          "type": "number",
+          "nullable": true,
+          "meaning": "去年同期月累计-人民币（元）"
+        },
+        {
+          "name": "rmb_ytd_amt",
+          "type": "number",
+          "nullable": true,
+          "meaning": "月累计收入-人民币（趋势，元）"
+        },
+        {
+          "name": "rmb_py_ytd_amt",
+          "type": "number",
+          "nullable": true,
+          "meaning": "去年同期月累计-人民币（趋势，元）"
+        },
+        {
+          "name": "period_id",
+          "type": "string yyyyMM",
+          "nullable": true,
+          "meaning": "会计月"
+        },
+        {
+          "name": "annual_target_amt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "年度目标（元）"
+        },
+        {
+          "name": "stock_forecast_revenue_amt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "本年剩余月份存量预测_当月（元）"
+        }
+      ],
+      "computedFrontend": "annual_forecast_revenue=rev_ytd+stock；gap=预测-目标；完成率=DIVIDE(rev_ytd,target)×100；销毛率=DIVIDE(sgp,rev)×100；年累计Σ（全null→null）；趋势按period_id分组聚合",
+      "uniqueKey": "period_id（趋势）/单行（卡）"
+    },
+    {
+      "id": "customer-detail.revenue",
+      "page": "customer-detail",
+      "consumer": "流水4指标+页面收入趋势图",
+      "source": "graphql IOC_OPERATION_MAP_CUSTOMER_REVENUE_DETAILS",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "revenue_amt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "当期流水（元，展示万）"
+        },
+        {
+          "name": "pre_revenue_amt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "上期流水"
+        },
+        {
+          "name": "revenue_amt_yoy_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "去年同期流水"
+        },
+        {
+          "name": "cagr_ending_value_public_region_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "CAGR终值"
+        },
+        {
+          "name": "cagr_beginning_value_public_region_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "CAGR初值"
+        },
+        {
+          "name": "cagr_periods_public_region",
+          "type": "string",
+          "nullable": true,
+          "meaning": "CAGR期数（字符串，Number() 转换）"
+        },
+        {
+          "name": "mtime",
+          "type": "string yyyyMM",
+          "nullable": true,
+          "meaning": "月份（趋势查询窗口=上年01..当年12）"
+        }
+      ],
+      "computedFrontend": "环比diff/率、同比diff/率（SUBTRACT/DIVIDE，null保留）；CAGR=(pow(end/begin,1/periods)-1)×100；趋势双年对齐用 new Date().getFullYear()",
+      "trendWindowNote": "页面收入趋势按系统当前年双年对齐（非页面年份）"
+    },
+    {
+      "id": "customer-detail.cloud-service",
+      "page": "customer-detail",
+      "consumer": "云服务流水表（明细+合计）",
+      "source": "graphql CUSTOMER_MAP_SERVICE_REVENUE_DETAILS（cloud_service 与 cloud_service_summary 同表两查询）",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "cloud_service_type_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "云服务名（null→'--'）"
+        },
+        {
+          "name": "cloud_service_type_code",
+          "type": "string",
+          "nullable": true,
+          "meaning": "云服务编码（趋势浮层过滤键）"
+        },
+        {
+          "name": "revenue_amt_cny_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "流水（人民币元）"
+        },
+        {
+          "name": "pre_revenue_amt_cny_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "上期流水"
+        },
+        {
+          "name": "revenue_amt_yoy_cny_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "去年同期流水"
+        },
+        {
+          "name": "revenue_pop_cny",
+          "type": "number",
+          "nullable": true,
+          "meaning": "环比（查询侧函数：pre=0或cur=null→null，否则×100）"
+        },
+        {
+          "name": "revenue_pop_diff_cny",
+          "type": "number",
+          "nullable": true,
+          "meaning": "环比增长量（查询侧减法）"
+        },
+        {
+          "name": "revenue_yoy_cny",
+          "type": "number",
+          "nullable": true,
+          "meaning": "同比（查询侧函数）"
+        },
+        {
+          "name": "revenue_yoy_diff_cny",
+          "type": "number",
+          "nullable": true,
+          "meaning": "同比增长量"
+        },
+        {
+          "name": "mtime",
+          "type": "string yyyyMM",
+          "nullable": true,
+          "meaning": "月份（null→'--'）"
+        }
+      ],
+      "uniqueKey": "cloud_service_type_code+mtime",
+      "computedFrontend": "占比=DIVIDE(行流水,Σ流水)（前端）；合计=先求和后算比率；排序/分页前端（pageSize 10）",
+      "sortGuarantee": "默认按 revenue 降序（前端 sort，null 行置末）"
+    },
+    {
+      "id": "customer-detail.income-detail",
+      "page": "customer-detail",
+      "consumer": "云服务明细浮层",
+      "source": "API CDI_IOC_Customer360_Income_Detail / _Sum / _Count",
+      "returnShape": "列式数组（8 字段各一个数组）+ Sum 的 CURINCOME 列式 + Count 的 count",
+      "fields": [
+        {
+          "name": "DTIME",
+          "type": "string",
+          "nullable": true,
+          "meaning": "账期"
+        },
+        {
+          "name": "PARTY_NUMBER_CODE",
+          "type": "string",
+          "nullable": true,
+          "meaning": "客户编码"
+        },
+        {
+          "name": "END_CUST_OFFICE",
+          "type": "string",
+          "nullable": true,
+          "meaning": "最终客户代表处"
+        },
+        {
+          "name": "CUSTOMER_NAME_C",
+          "type": "string",
+          "nullable": true,
+          "meaning": "用户名（华为云账号）"
+        },
+        {
+          "name": "CBP_CDH_NUMBER",
+          "type": "string",
+          "nullable": true,
+          "meaning": "报备CDH编码"
+        },
+        {
+          "name": "CBP_CUSTOMER_COMPANY_NAME",
+          "type": "string",
+          "nullable": true,
+          "meaning": "报备CDH客户名称"
+        },
+        {
+          "name": "PRODUCTCLASSNAME",
+          "type": "string",
+          "nullable": true,
+          "meaning": "云服务名称"
+        },
+        {
+          "name": "CURINCOME",
+          "type": "number",
+          "nullable": true,
+          "meaning": "流水金额（元）"
+        }
+      ],
+      "sortGuarantee": "服务端 ORDERBY=CURINCOME DESC",
+      "pagination": "服务端分页（PAGESIZE/OFFSET），总数 count",
+      "computedFrontend": "按 index 重组行（空→'--'）；合计行（Sum 接口）置顶"
+    },
+    {
+      "id": "customer-detail.opportunity",
+      "page": "customer-detail",
+      "consumer": "机会点表+合计行+总数",
+      "source": "graphql PROJECT_MAP_OPPORTUNITY_DETAILS_M（明细/汇总/cnt 三查询）",
+      "returnShape": "mapArray + mapArray(汇总单行) + cnt",
+      "fields": [
+        {
+          "name": "opportunity_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "机会点名称"
+        },
+        {
+          "name": "opportunity_step_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "机会点阶段"
+        },
+        {
+          "name": "ati_status",
+          "type": "string",
+          "nullable": true,
+          "meaning": "立项状态（getAtiStatusLabel 字典）"
+        },
+        {
+          "name": "project_initiation_level",
+          "type": "string",
+          "nullable": true,
+          "meaning": "项目级别"
+        },
+        {
+          "name": "latest_analysis_meeting_time",
+          "type": "string",
+          "nullable": true,
+          "meaning": "最近分析会时间"
+        },
+        {
+          "name": "bidding_amount",
+          "type": "number",
+          "nullable": true,
+          "meaning": "总预签金额（元）"
+        },
+        {
+          "name": "project_progress",
+          "type": "string",
+          "nullable": true,
+          "meaning": "当前进展"
+        },
+        {
+          "name": "forecast_jan..forecast_dec",
+          "type": "number",
+          "nullable": true,
+          "meaning": "1-12月销售预测（元）"
+        },
+        {
+          "name": "bidding_amount_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "合计行总预签"
+        },
+        {
+          "name": "forecast_jan_sum..forecast_dec_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "合计行月预测"
+        },
+        {
+          "name": "cnt",
+          "type": "number",
+          "nullable": true,
+          "meaning": "总条数（服务端）"
+        }
+      ],
+      "uniqueKey": "opportunity_code+mtime（本查询未取 opportunity_code）",
+      "pagination": "服务端 limit=10/offset",
+      "computedFrontend": "年预测=Σ月预测（||0）；合计行插当页首行"
+    },
+    {
+      "id": "customer-detail.voice",
+      "page": "customer-detail",
+      "consumer": "客户声音表",
+      "source": "API QueryCustomerVoiceDetail（中国站）/ CDI_IOC_Customer360_Voice_Detail_Intl（国际站）",
+      "returnShape": "列式数组 16 字段 + totalrecordcnt",
+      "fields": [
+        {
+          "name": "incidentid",
+          "type": "string",
+          "nullable": true,
+          "meaning": "工单编号"
+        },
+        {
+          "name": "customername",
+          "type": "string",
+          "nullable": true,
+          "meaning": "用户名（华为云账号）"
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "nullable": true,
+          "meaning": "类型"
+        },
+        {
+          "name": "root_cause_id",
+          "type": "string",
+          "nullable": true,
+          "meaning": "问题归属方"
+        },
+        {
+          "name": "level",
+          "type": "string",
+          "nullable": true,
+          "meaning": "定级"
+        },
+        {
+          "name": "customerlevel",
+          "type": "string",
+          "nullable": true,
+          "meaning": "客户权益等级"
+        },
+        {
+          "name": "simpledescribe",
+          "type": "string",
+          "nullable": true,
+          "meaning": "标题"
+        },
+        {
+          "name": "detaileddescribe",
+          "type": "string",
+          "nullable": true,
+          "meaning": "描述"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "nullable": true,
+          "meaning": "状态"
+        },
+        {
+          "name": "createtime",
+          "type": "string",
+          "nullable": true,
+          "meaning": "发生时间"
+        },
+        {
+          "name": "currenthandlerid",
+          "type": "string",
+          "nullable": true,
+          "meaning": "当前责任人"
+        },
+        {
+          "name": "updatetime",
+          "type": "string",
+          "nullable": true,
+          "meaning": "更新时间"
+        },
+        {
+          "name": "sourcename",
+          "type": "string",
+          "nullable": true,
+          "meaning": "反馈来源类型"
+        },
+        {
+          "name": "solvedtime",
+          "type": "string",
+          "nullable": true,
+          "meaning": "处理总时长"
+        },
+        {
+          "name": "datacentername",
+          "type": "string",
+          "nullable": true,
+          "meaning": "局点"
+        },
+        {
+          "name": "creatorid",
+          "type": "string",
+          "nullable": true,
+          "meaning": "客户ID"
+        },
+        {
+          "name": "totalrecordcnt",
+          "type": "number",
+          "nullable": true,
+          "meaning": "总数"
+        }
+      ],
+      "pagination": "服务端 PAGESIZE/OFFSET；orderBy=createtime DESC",
+      "warning": "列式数组按 index 拼接，接口需保证数组同序同长（UNKNOWN）"
+    },
+    {
+      "id": "business-overview.gyy",
+      "page": "business-overview",
+      "consumer": "公有云流水卡",
+      "source": "graphql IOC_OPERATION_MAP_POFFICE_BUSINESS_TYPE_REVENUE_DETAILS",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "mtime",
+          "type": "string yyyyMM",
+          "nullable": true
+        },
+        {
+          "name": "revenue_amt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "当期流水（元）"
+        },
+        {
+          "name": "pre_revenue_amt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "上期流水"
+        },
+        {
+          "name": "accum_revenue_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "当年累计流水"
+        },
+        {
+          "name": "last_year_accum_revenue_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "去年同期累计流水"
+        }
+      ],
+      "computedFrontend": "rmb_/usd_ 按币种映射；rate=calcMom（上期为0/null→强制0）；yoy=calcMom(累计,去年累计)",
+      "ratioScale": "0.5=50%"
+    },
+    {
+      "id": "business-overview.region-revenue",
+      "page": "business-overview",
+      "consumer": "公网Region流水卡+表格",
+      "source": "graphql IOC_OPERATION_MAP_POFFICE_REVENUE_DETAILS（public_region_revenue 卡 / public_region_revenue_table 表）",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "rep_office_name_cn_fin",
+          "type": "string",
+          "nullable": true,
+          "meaning": "代表处"
+        },
+        {
+          "name": "rep_office_code_fin",
+          "type": "string",
+          "nullable": true,
+          "meaning": "代表处编码"
+        },
+        {
+          "name": "revenue_amt_public_cloud_region_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "公网region当期流水"
+        },
+        {
+          "name": "pre_revenue_amt_public_cloud_region_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "上期流水"
+        },
+        {
+          "name": "accum_revenue_public_cloud_region_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "当年累计流水"
+        },
+        {
+          "name": "last_year_accum_revenue_public_cloud_region_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "去年同期累计流水"
+        },
+        {
+          "name": "cagr_ending_value_public_region_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "CAGR终值"
+        },
+        {
+          "name": "cagr_beginning_value_public_region_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "CAGR初值"
+        }
+      ],
+      "computedFrontend": "near_6_cagr=(pow(end/begin,1/6)-1)×100（begin≤0→null）；表排序 accum 降序默认",
+      "sortGuarantee": "表数据 accum_revenue_public_cloud_region_sum orderDesc（priority1）"
+    },
+    {
+      "id": "business-overview.top-down-customer",
+      "page": "business-overview",
+      "consumer": "增长/下降TOP10表",
+      "source": "graphql IOC_OPERATION_MAP_CUSTOMER_REVENUE_DETAILS（customer_revenue_top_table / customer_revenue_down_table）",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "parent_party_company_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "父客户名称"
+        },
+        {
+          "name": "revenue_amt_public_cloud_region_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "公网region当期流水"
+        },
+        {
+          "name": "pre_revenue_amt_public_cloud_region_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "上期流水"
+        },
+        {
+          "name": "region_revenue_growth",
+          "type": "number",
+          "nullable": true,
+          "meaning": "较上月增长量（查询侧 cur-pre）"
+        },
+        {
+          "name": "cagr_ending_value_public_region_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "CAGR终值"
+        },
+        {
+          "name": "cagr_beginning_value_public_region_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "CAGR初值"
+        }
+      ],
+      "computedFrontend": "cagr=calcCagr；top 过滤 growth>0、down 过滤 growth<0；limit=10",
+      "sortGuarantee": "top orderDesc / down orderAsc（region_revenue_growth）"
+    },
+    {
+      "id": "business-overview.finance-income",
+      "page": "business-overview",
+      "consumer": "收入卡/概览表/地图收入",
+      "source": "REST AP_DM_CCCG_IOC_REV_QR_ABF_SUM（income_express_data / overview_table_data / business_overview_region_map / business_overview_repOffice_map）",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "report_item_code",
+          "type": "string",
+          "nullable": true,
+          "meaning": "报表项（GEO_PL_91000=收入）"
+        },
+        {
+          "name": "ytd_amt",
+          "type": "number",
+          "nullable": true,
+          "meaning": "本年累计（元）"
+        },
+        {
+          "name": "yoy_y",
+          "type": "number",
+          "nullable": true,
+          "meaning": "年同比（比例）"
+        },
+        {
+          "name": "budget_completion_y_ratio",
+          "type": "number",
+          "nullable": true,
+          "meaning": "预算完成率（比例）"
+        },
+        {
+          "name": "repoffice_code",
+          "type": "string",
+          "nullable": true,
+          "meaning": "代表处编码"
+        },
+        {
+          "name": "repoffice_cn_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "代表处名"
+        },
+        {
+          "name": "region_cn_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "地区部名"
+        },
+        {
+          "name": "region_code",
+          "type": "string",
+          "nullable": true,
+          "meaning": "地区部编码"
+        }
+      ],
+      "pagination": "无（全量行）",
+      "computedFrontend": "rmb_/usd_ 映射；概览表按 repoffice_code 合并收入+销毛率"
+    },
+    {
+      "id": "business-overview.finance-salesrate",
+      "page": "business-overview",
+      "consumer": "销毛率卡/概览表/地图销毛率",
+      "source": "REST CLOUDBI_DM_CCCRG_IOC_PL_SUM_COMMON（sales_rate_data / salesRate_table_data / *_map_salesRate）",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "report_item_code",
+          "type": "string",
+          "nullable": true,
+          "meaning": "报表项（GEO_PL_10997=销毛率）"
+        },
+        {
+          "name": "ytd_amt",
+          "type": "number",
+          "nullable": true,
+          "meaning": "销毛率值（比例，0.5=50%）"
+        },
+        {
+          "name": "yoy_y",
+          "type": "number",
+          "nullable": true,
+          "meaning": "同比（比例）"
+        },
+        {
+          "name": "repoffice_code",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "repoffice_cn_name",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "region_cn_name",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "region_code",
+          "type": "string",
+          "nullable": true
+        }
+      ],
+      "note": "REST 参数 pageIndex 实为 NA 档位（'1'全部/'2'NA），语义 INFERRED"
+    },
+    {
+      "id": "business-overview.finance-expense",
+      "page": "business-overview",
+      "consumer": "销管费用卡",
+      "source": "REST AP_DM_CCCRG_IOC_EXP_REGION",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "report_item_code",
+          "type": "string",
+          "nullable": true,
+          "meaning": "CCC_EXP_10001=销管费用"
+        },
+        {
+          "name": "ytd_amt",
+          "type": "number",
+          "nullable": true,
+          "meaning": "本年累计（元）"
+        },
+        {
+          "name": "yoy_y",
+          "type": "number",
+          "nullable": true,
+          "meaning": "同比（比例）"
+        }
+      ]
+    },
+    {
+      "id": "business-overview.updatetime",
+      "page": "business-overview",
+      "consumer": "三口径日期",
+      "source": "REST IOC_COCKPIT_FINANCE_UPDATETIME",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "period_id",
+          "type": "string",
+          "nullable": true,
+          "meaning": "会计期"
+        },
+        {
+          "name": "api_update_time",
+          "type": "string",
+          "nullable": true,
+          "meaning": "接口更新时间（收入快报用）"
+        },
+        {
+          "name": "last_update_date",
+          "type": "string",
+          "nullable": true,
+          "meaning": "数据最后更新日期"
+        },
+        {
+          "name": "api_name",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "api_id",
+          "type": "string",
+          "nullable": true
+        }
+      ],
+      "sortGuarantee": "前端按 period_id 降序排序后取 [0]"
+    },
+    {
+      "id": "project-overview.opportunity-index",
+      "page": "project-overview",
+      "consumer": "指标卡/地图/概览表",
+      "source": "graphql PROJECT_MAP_OPPORTUNITY_INDEX_SUMMARY（queryOpportunityPointIndicator / queryOpportunityOverviewMetrics / queryOverviewSummaryData / customer_overview_region_map / customer_overview_repOffice_map）",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "valid_opportunity_cnt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "机会点数"
+        },
+        {
+          "name": "last_valid_opportunity_cnt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "上月有效机会点数"
+        },
+        {
+          "name": "bidding_amount_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "本月有效机会点总预签金额（元）"
+        },
+        {
+          "name": "last_bidding_amount_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "上月有效机会点总预签金额"
+        },
+        {
+          "name": "product_yearly_fee_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "年度销售预测（元）"
+        },
+        {
+          "name": "projected_opportunity_cnt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "已立项机会点数"
+        },
+        {
+          "name": "edproject_opportunity_amount_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "运作中已立项机会点预签金额"
+        },
+        {
+          "name": "operating_projected_opportunity_cnt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "运作中已立项机会点数"
+        },
+        {
+          "name": "should_projected_opportunity_cnt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "运作中应立项机会点数"
+        },
+        {
+          "name": "won_project_cnt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "已立项赢单机会点数"
+        },
+        {
+          "name": "resulted_project_cnt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "已立项结果机会点数"
+        },
+        {
+          "name": "should_review_project_cnt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "应复盘项目数"
+        },
+        {
+          "name": "reviewed_project_cnt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "已复盘项目数"
+        },
+        {
+          "name": "effective_opportunity_remaining_amount_current_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "有效机会点本年剩余预签金额（当月）"
+        },
+        {
+          "name": "region_dept_code_fin",
+          "type": "string",
+          "nullable": true,
+          "meaning": "地区部编码"
+        },
+        {
+          "name": "rep_office_code_fin",
+          "type": "string",
+          "nullable": true,
+          "meaning": "代表处编码"
+        },
+        {
+          "name": "region_dept_name_cn_fin",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "rep_office_name_cn_fin",
+          "type": "string",
+          "nullable": true
+        }
+      ],
+      "computedFrontend": "增量=减上月；立项率/赢单率（分母0→null）；管道支撑率（分母0→0）"
+    },
+    {
+      "id": "project-overview.flow-target-realized",
+      "page": "project-overview",
+      "consumer": "管道支撑率（flow/target/realized 三源）",
+      "sources": [
+        "graphql PROJECT_MAP_CUSTOMER_REVENUE_FORECAST_M（flow：region_dept_code_fin,rep_office_code_fin,stock_forecast_revenue_amt_sum）",
+        "graphql PROJECT_MAP_REVENUE_BUSINESS_TARGET（target：target_revenue_amt_cny, target_revenue_amt_usd）",
+        "REST AP_DM_CCC_IOC_PL_EXP_AR_ABF_R2（realized：region_code, repoffice_code, ytd_amt, geo_pc_code）"
+      ],
+      "returnShape": "mapArray（各源）",
+      "joinKey": "flow/target 用 `${region_dept_code_fin}_${rep_office_code_fin}`；realized 用 `${region_code}_${repoffice_code}`（两套 key 语义待接口确认 UNKNOWN）",
+      "computedFrontend": "支撑率=effective/(target−flow−realized)×100（分母0/null/undefined→0）",
+      "unit": "金额元；CURRENCY_CODE_INPUT='RMB'"
+    },
+    {
+      "id": "project-overview.top-lost",
+      "page": "project-overview",
+      "consumer": "TOP已立项/丢单表",
+      "source": "graphql PROJECT_MAP_OPPORTUNITY_DETAILS_M",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "project_initiation_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "立项项目名"
+        },
+        {
+          "name": "project_level",
+          "type": "string",
+          "nullable": true,
+          "meaning": "项目级别（level_name 字典）"
+        },
+        {
+          "name": "bidding_amount_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "预签金额（元）"
+        },
+        {
+          "name": "amount_estimated_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "年度销售预测（元）"
+        },
+        {
+          "name": "winodds",
+          "type": "number",
+          "nullable": true,
+          "meaning": "赢率（0-1，×100 显示）"
+        },
+        {
+          "name": "opportunity_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "机会点名称（丢单表）"
+        },
+        {
+          "name": "lost_order_reason",
+          "type": "string",
+          "nullable": true,
+          "meaning": "丢单原因"
+        },
+        {
+          "name": "opportunity_code",
+          "type": "string",
+          "nullable": true,
+          "meaning": "机会点编码（跳转键）"
+        },
+        {
+          "name": "ati_status",
+          "type": "string",
+          "nullable": true,
+          "meaning": "立项状态"
+        }
+      ],
+      "pagination": "limit=10/offset=0（固定）",
+      "sortGuarantee": "TOP：bidding_amount_sum orderDesc(1)+project_initiation_name orderDesc(2)；丢单：动态条件模板"
+    },
+    {
+      "id": "token-specific.customer-indicator",
+      "page": "token-specific",
+      "consumer": "客户数量/近7天日均卡",
+      "source": "API PRODUCT_MAP_CUSTOMER_INDICATOR",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "customer_count",
+          "type": "number",
+          "nullable": true,
+          "meaning": "客户数"
+        },
+        {
+          "name": "pre_customer_count",
+          "type": "number",
+          "nullable": true,
+          "meaning": "前值客户数"
+        },
+        {
+          "name": "seven_customer_count",
+          "type": "number",
+          "nullable": true,
+          "meaning": "近7天客户数"
+        },
+        {
+          "name": "pre_seven_customer_count",
+          "type": "number",
+          "nullable": true,
+          "meaning": "近7天前值"
+        }
+      ],
+      "computedFrontend": "pop=DIVIDE(SUBTRACT(cur,pre),pre)×100（null保留）"
+    },
+    {
+      "id": "token-specific.token-metrics",
+      "page": "token-specific",
+      "consumer": "Tokens消耗总量卡/分布饼图/总量趋势/模型列表",
+      "source": "graphql PRODUCT_MAP_TOKENS_DAILY",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "dtime",
+          "type": "string yyyyMMdd",
+          "nullable": true,
+          "meaning": "日期"
+        },
+        {
+          "name": "h_tag",
+          "type": "string",
+          "nullable": true,
+          "meaning": "小时标识（HOUR粒度x轴，字典UNKNOWN）"
+        },
+        {
+          "name": "model_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "模型名"
+        },
+        {
+          "name": "total_tokens_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "Token消耗量（个token）"
+        },
+        {
+          "name": "total_tokens_prev_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "前日值（昨日模式）"
+        },
+        {
+          "name": "total_tokens_7days_ago_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "7天前值"
+        },
+        {
+          "name": "total_tokens_30days_ago_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "30天前值"
+        }
+      ],
+      "computedFrontend": "Σ求和后算 pop；饼图 TOP5+其他"
+    },
+    {
+      "id": "token-specific.revenue-daily",
+      "page": "token-specific",
+      "consumer": "Tokens总流水卡/近30天趋势",
+      "source": "graphql PRODUCT_MAP_TOKENS_REVENUE_DAILY",
+      "returnShape": "mapArray",
+      "fields": [
+        {
+          "name": "dtime",
+          "type": "string yyyyMMdd",
+          "nullable": true
+        },
+        {
+          "name": "revenue_amt_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "流水（元）"
+        },
+        {
+          "name": "revenue_amt_prev_sum",
+          "type": "number",
+          "nullable": true,
+          "meaning": "前日流水"
+        },
+        {
+          "name": "revenue_amt_7days_ago_sum",
+          "type": "number",
+          "nullable": true
+        },
+        {
+          "name": "revenue_amt_30days_ago_sum",
+          "type": "number",
+          "nullable": true
+        }
+      ],
+      "computedFrontend": "completeDailyData 补日（缺日填null）→ pop=DIVIDE(SUBTRACT(cur,prev),prev)×100"
+    },
+    {
+      "id": "token-specific.table-detail",
+      "page": "token-specific",
+      "consumer": "客户模型开通表（服务端分页+本地分组）",
+      "source": "API PRODUCT_MAP_CUSTOMER_MODEL_TABLE_DETAIL / _TOTAL",
+      "returnShape": "mapArray + total(customer_count)",
+      "fields": [
+        {
+          "name": "customer_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "客户名称（分组键1）"
+        },
+        {
+          "name": "account_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "账号（分组键2）"
+        },
+        {
+          "name": "revenue_amt",
+          "type": "number",
+          "nullable": true,
+          "meaning": "Token专项流水金额（元）"
+        },
+        {
+          "name": "model_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "模型名或'合计'"
+        },
+        {
+          "name": "total_tokens",
+          "type": "number",
+          "nullable": true,
+          "meaning": "Token消耗量"
+        },
+        {
+          "name": "is_total_row",
+          "type": "number",
+          "nullable": true,
+          "meaning": "0明细/1合计"
+        },
+        {
+          "name": "trend_data",
+          "type": "string(JSON)",
+          "nullable": true,
+          "meaning": "趋势数据（hour:[{x_time,tokens}] / day:[...]）"
+        },
+        {
+          "name": "customer_total_tokens",
+          "type": "number",
+          "nullable": true,
+          "meaning": "客户总token（排序键）"
+        }
+      ],
+      "pagination": "服务端 pageSize/offset；总数=API customer_count",
+      "warning": "trend_data 字段名与代码解析字段 x_time 不一致（接口注释 hour/date）UNKNOWN"
+    },
+    {
+      "id": "opportunity-list.main",
+      "page": "opportunity-list",
+      "consumer": "机会点清单表（服务端分页/排序/搜索/筛选）",
+      "source": "graphql PROJECT_MAP_OPPORTUNITY_DETAILS_M（列表 + cnt 两查询）",
+      "returnShape": "mapArray + cnt",
+      "fields": [
+        {
+          "name": "mtime",
+          "type": "string yyyyMM",
+          "nullable": true,
+          "meaning": "机会点月份（跳项目详情用行mtime）"
+        },
+        {
+          "name": "opportunity_code",
+          "type": "string",
+          "nullable": true,
+          "meaning": "机会点编码（跳转键）"
+        },
+        {
+          "name": "opportunity_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "机会点名称"
+        },
+        {
+          "name": "party_company_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "客户名称（含子客户）"
+        },
+        {
+          "name": "party_number",
+          "type": "string",
+          "nullable": true,
+          "meaning": "客户编码"
+        },
+        {
+          "name": "public_cloud_na_level_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "客户级别"
+        },
+        {
+          "name": "cloud_class",
+          "type": "string",
+          "nullable": true,
+          "meaning": "产业类型"
+        },
+        {
+          "name": "bidding_amount",
+          "type": "number",
+          "nullable": true,
+          "meaning": "总预签金额（元）"
+        },
+        {
+          "name": "amount_estimated",
+          "type": "number",
+          "nullable": true,
+          "meaning": "本年度预计收入（元）"
+        },
+        {
+          "name": "winodds",
+          "type": "number",
+          "nullable": true,
+          "meaning": "赢率（0-1，×100 无null保护）"
+        },
+        {
+          "name": "opportunity_step",
+          "type": "string",
+          "nullable": true,
+          "meaning": "机会点阶段"
+        },
+        {
+          "name": "opportunity_type_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "机会点类型"
+        },
+        {
+          "name": "region_dept_name_cn_fin",
+          "type": "string",
+          "nullable": true,
+          "meaning": "地区部"
+        },
+        {
+          "name": "rep_office_name_cn_fin",
+          "type": "string",
+          "nullable": true,
+          "meaning": "代表处"
+        },
+        {
+          "name": "sub_industry_level1_name / sub_industry_level2_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "云行业/云子行业"
+        },
+        {
+          "name": "create_time / update_time",
+          "type": "string",
+          "nullable": true,
+          "meaning": "创建/进展更新时间（yyyy-MM）"
+        },
+        {
+          "name": "is_unupdated_opportunity",
+          "type": "number",
+          "nullable": true,
+          "meaning": "是否未刷新 1/0"
+        },
+        {
+          "name": "order_date_estimated",
+          "type": "string",
+          "nullable": true,
+          "meaning": "预签时间"
+        },
+        {
+          "name": "overdue_status",
+          "type": "string",
+          "nullable": true,
+          "meaning": "超期状态"
+        },
+        {
+          "name": "opportunity_owner",
+          "type": "string",
+          "nullable": true,
+          "meaning": "机会点责任人"
+        },
+        {
+          "name": "ati_status",
+          "type": "string",
+          "nullable": true,
+          "meaning": "立项状态（label 字典4值，未知→空）"
+        },
+        {
+          "name": "should_project_level_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "应立项级别"
+        },
+        {
+          "name": "project_progress / project_risks / project_help_required",
+          "type": "string",
+          "nullable": true
+        },
+        {
+          "name": "latest_analysis_meeting_time",
+          "type": "string",
+          "nullable": true,
+          "meaning": "最近分析会时间"
+        },
+        {
+          "name": "sales_mode",
+          "type": "string",
+          "nullable": true,
+          "meaning": "销售模式"
+        },
+        {
+          "name": "partner_real_customer_name",
+          "type": "string",
+          "nullable": true,
+          "meaning": "伙伴名称"
+        },
+        {
+          "name": "forecast_jan..forecast_dec",
+          "type": "number",
+          "nullable": true,
+          "meaning": "1-12月客观预测（元）"
+        },
+        {
+          "name": "cnt",
+          "type": "number",
+          "nullable": true,
+          "meaning": "总数（服务端）"
+        }
+      ],
+      "uniqueKey": "opportunity_code+mtime",
+      "pagination": "服务端 limit/offset（limit=10默认）",
+      "sortGuarantee": "默认 opportunity_name/party_company_name orderDesc；业务列排序仅预声明字段有服务端 order 条件"
+    }
+  ]
+}

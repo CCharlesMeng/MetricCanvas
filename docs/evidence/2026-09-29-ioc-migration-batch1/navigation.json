@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "a260c10744add7fe013d5e4591fa1ecc407f8083",
+  "note": "第一批五个页面的导航契约。参数来源统一用：点击行(row.*)/页面参数(queryParams)/全页筛选(headerOpt)/共享服务(HeaderOptionService)。",
+  "navigations": [
+    {
+      "id": "N-cd-001",
+      "from": "customer-detail",
+      "trigger": "（外部入口）jumpCustomerDetail",
+      "target": "/operation-map/customer-detail",
+      "params": {
+        "from": "来源页+decodeURIComponent(location.search)",
+        "customerId": "row.party_number",
+        "customerName": "row.party_company_name",
+        "mtime": "调用方传入（见各来源页）",
+        "site": "row.data_site_type",
+        "public_cloud_na_level_name": "row.public_cloud_na_level_name",
+        "is_parent_company_name": "row.is_parent_company_name",
+        "is_breakthrough_customer": "row.is_breakthrough_customer"
+      },
+      "missing": "customerId缺失→页面空数据（跳转仍发生）",
+      "back": "面包屑=/operation-map/{from}"
+    },
+    {
+      "id": "N-cd-002",
+      "from": "customer-detail",
+      "trigger": "KPI卡详情链接（模板注释）",
+      "target": "禁用：无跳转",
+      "note": "onKpiCardDetailClick 路由表存在（long-term-contactless/customer-voice-list/risk-project-list/risk-contract-list/credit-detail）但模板注释且多目标路由未注册"
+    },
+    {
+      "id": "N-bo-001",
+      "from": "business-overview",
+      "trigger": "收入卡点击（income_value/income_value_usd）",
+      "target": "/operation-map/business-revenue?tab=income",
+      "params": {
+        "tab": "income（固定）"
+      },
+      "guard": "globalVars.income_value_usd_value 与 income_value_value 均非0/null才跳",
+      "missing": "两值缺失→不跳"
+    },
+    {
+      "id": "N-bo-002",
+      "from": "business-overview",
+      "trigger": "增长/下降表客户名点击（parent_party_company_name）",
+      "target": "/operation-map/customer-detail",
+      "params": {
+        "from": "business-overview+search",
+        "customerId": "row.party_number",
+        "customerName": "row.parent_party_company_name（重命名）",
+        "mtime": "headerOpt.dateValue（页面日期）",
+        "site": "row.data_site_type"
+      },
+      "missing": "party_number缺失→详情页无数据"
+    },
+    {
+      "id": "N-po-001",
+      "from": "project-overview",
+      "trigger": "机会点数卡",
+      "target": "/operation-map/opportunity-page",
+      "guard": "globalVars.opportunity_cnt_total_value null→不跳"
+    },
+    {
+      "id": "N-po-002",
+      "from": "project-overview",
+      "trigger": "已立项卡",
+      "target": "/operation-map/project-page",
+      "guard": "globalVars.projected_opportunity_cnt_sum_value null→不跳"
+    },
+    {
+      "id": "N-po-003",
+      "from": "project-overview",
+      "trigger": "TOP已立项表行点击（项目名称）",
+      "target": "/operation-map/project-detail",
+      "params": {
+        "from": "project-overview+search",
+        "page_title": "ati_status==='Initiated' ? project_initiation_name : opportunity_name",
+        "opportunity_code": "row.opportunity_code",
+        "mtime": "localVars.opportunity_outline_end（页面月）",
+        "ati_status_label": "getAtiStatusLabel(ati_status)",
+        "project_initiation_level": "row.project_initiation_level",
+        "public_cloud_na_level_name": "row.public_cloud_na_level_name",
+        "sub_industry_level1_name": "row.sub_industry_level1_name"
+      },
+      "missing": "opportunity_code缺失→详情页无数据"
+    },
+    {
+      "id": "N-po-004",
+      "from": "project-overview",
+      "trigger": "丢单表行点击（机会点名称）",
+      "target": "/operation-map/project-detail",
+      "params": "同N-po-003但 page_title=opportunity_name（ati_status强置false→保留行值）",
+      "note": "jumpOpportunityDetail(row, false)：ati_status 用行原值"
+    },
+    {
+      "id": "N-po-005",
+      "from": "project-overview",
+      "trigger": "TOP表'查看项目清单'",
+      "target": "/operation-map/sales-project-list",
+      "params": {
+        "title": "已立项销售项目清单",
+        "routeFilterParams": "and project_initiation_status = 'Issued'"
+      }
+    },
+    {
+      "id": "N-po-006",
+      "from": "project-overview",
+      "trigger": "丢单表'查看项目清单'",
+      "target": "/operation-map/opportunity-list",
+      "params": "无 queryParams；经 HeaderOptionService.getHeaderOptions().opportunityStage=[{label:'CSSC',value:'CSSC'}] 共享服务传递",
+      "note": "CSSC=机会点阶段字典值（完整字典UNKNOWN）；TOP场景传 projectInitiationStatus=Initiated（queryParams）而非 opportunityStage"
+    },
+    {
+      "id": "N-ol-001",
+      "from": "opportunity-list",
+      "trigger": "机会点名称行点击（clickable）",
+      "target": "/operation-map/project-detail",
+      "params": {
+        "from": "opportunity-list+search",
+        "page_title": "ati_status==='Initiated' ? project_initiation_name : opportunity_name",
+        "opportunity_code": "row.opportunity_code",
+        "mtime": "row.mtime（点击行日期）",
+        "ati_status_label": "getAtiStatusLabel(ati_status)",
+        "project_initiation_level": "row.project_initiation_level",
+        "public_cloud_na_level_name": "row.public_cloud_na_level_name",
+        "sub_industry_level1_name": "row.sub_industry_level1_name"
+      },
+      "missing": "opportunity_code缺失→详情页无数据"
+    },
+    {
+      "id": "N-ol-002",
+      "from": "opportunity-list",
+      "trigger": "客户名称行点击",
+      "target": "禁用：config.ts clickable:false（含子客户暂不支持）",
+      "note": "component.ts:586-591 jumpCustomerDetail 分支为死代码（模板 @if(column.clickable) 不触发）"
+    },
+    {
+      "id": "N-ol-003",
+      "from": "opportunity-list",
+      "trigger": "面包屑返回",
+      "target": "上一页URL（sessionStorage FROM_PAGE_KEY；详情页返回时用记忆上游页）",
+      "note": "非详情页来源写 FROM_PAGE_KEY；详情页来源不覆盖"
+    }
+  ]
+}

@@ -15,7 +15,7 @@ Python authoring 446 项、Bundle 1483 个摘要检查、契约导出漂移 479 
 
 - **「技术通过」不等于「业务组织与视觉达标」。** 用户复核指出顶部指标过碎、缺少示例卡片层次、「结构分析」命名与表达重复。首期的技术结果仍成立，但不能用作质量证明。
 - **更要紧的一条**：旧模型提示里预设了「概览 / 趋势 / 结构分析」这三段，因此**首期结果证明不了模型能自主设计章节**——提示给了答案，产出符合答案，这不是自主性证据。
-- 修订方案在 [`docs/plan/scenario-guided-refinement/`](../../plan/scenario-guided-refinement/design.md)，**全部未开始**。它落地后，那批文件会随之进这里。
+- 修订方案在 [`docs/plan/scenario-guided-refinement/`](../authoring-foundation-2026-09/scenario-guided-refinement/design.md)，**全部未开始**。它落地后，那批文件会随之进这里。
 - 资源用量场景只走了公开工具回归，没做独立的真实模型专项评测。
 
 ## 里面有什么

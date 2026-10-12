@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "role": "review-convention",
+  "evidence_epoch": "ioc-navigation-20260929-1",
+  "code_fingerprint": "249e6c41a1b9acb3bcaf13266b04f58080cbd0c02bd0c23ce92944a719d8bb84",
+  "judged_files": [
+    "packages/page/src/page.ts",
+    "packages/page/src/schema/page.ts",
+    "packages/page/src/page-param.ts",
+    "packages/page/src/validate.ts",
+    "packages/page/src/version.ts",
+    "packages/engine/runtime-ui/src/section-navigation.ts",
+    "packages/engine/runtime-ui/src/table-state.ts",
+    "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+    "packages/engine/runtime-ui/src/RuntimeSection.svelte",
+    "packages/engine/runtime-ui/src/composition-types.ts",
+    "packages/engine/runtime-ui/src/component-render.ts",
+    "packages/engine/widgets/src/components/table/Table.svelte",
+    "pages/ioc-content-navigation.json"
+  ],
+  "status": "executed",
+  "coverage": [
+    {
+      "dimension": "C1",
+      "scope": "分区导航声明、初始组参数与新增导航和表格状态模块的目录职责及依赖方向；页面样例沿用页面文档入口。",
+      "evidence_ids": [
+        "PATTERN-STRUCT-1",
+        "PATTERN-ROUTE-2",
+        "packages/page/src/schema/page.ts:L116-L119",
+        "packages/page/src/page-param.ts:L211-L225",
+        "packages/engine/runtime-ui/src/section-navigation.ts:L1-L28",
+        "packages/engine/runtime-ui/src/table-state.ts:L1-L4",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L1-L62"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "C2",
+      "scope": "组选择和表格交互状态归页面实例持有；数据快照仅作投影；分区和表格接收声明、状态及回调。",
+      "evidence_ids": [
+        "PATTERN-COMP-2",
+        "PATTERN-DATA-2",
+        "PATTERN-DATA-4",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L127-L149",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L186-L195",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L273-L300",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L876-L914",
+        "packages/engine/runtime-ui/src/RuntimeSection.svelte:L24-L32",
+        "packages/engine/runtime-ui/src/table-state.ts:L13-L41",
+        "packages/engine/runtime-ui/src/table-state.ts:L45-L60"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "C5",
+      "scope": "继续复用既有分区渲染、组件分发、筛选状态和页面参数解析；没有为导航新增第二套渲染树或 URL 编解码。",
+      "evidence_ids": [
+        "PATTERN-COMP-2",
+        "PATTERN-DATA-2",
+        "PATTERN-DATA-4",
+        "PATTERN-ROUTE-1",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L137-L149",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L243-L246",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L270-L284",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L1174-L1202",
+        "packages/engine/runtime-ui/src/table-state.ts:L22-L39",
+        "packages/page/src/page-param.ts:L211-L225"
+      ],
+      "result": "clear"
+    }
+  ],
+  "findings": [],
+  "skipped": [],
+  "open_questions": [],
+  "deferred_candidates": [],
+  "evidence_reused": [],
+  "evidence_added": [],
+  "known_gaps": []
+}

@@ -64,9 +64,9 @@ EOF
 fi
 
 delivery_files=(
-  docs/plan/2026-09-21-structure-plan-convergence.md
-  docs/plan/2026-09-22-authoring-resume.md
-  docs/plan/2026-09-22-main-merge-strategy.md
+  docs/archive/authoring-foundation-2026-09/2026-09-21-structure-plan-convergence.md
+  docs/archive/authoring-foundation-2026-09/2026-09-22-authoring-resume.md
+  docs/archive/authoring-foundation-2026-09/2026-09-22-main-merge-strategy.md
   metriccanvas-authoring/SOURCES.md
   metriccanvas-authoring/test-harness/README.md
   metriccanvas-authoring/test-harness/run_tests.py

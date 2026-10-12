@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "a260c10744add7fe013d5e4591fa1ecc407f8083",
+  "note": "第一批五个页面业务浮层/弹框清单。区分：直接复用页面已有结果 vs 使用点击行/页面参数独立加载。",
+  "dialogs": [
+    {
+      "id": "DLG-cd-001",
+      "page": "customer-detail",
+      "name": "云服务流水趋势",
+      "enabled": true,
+      "open": "云服务表行'趋势'链接",
+      "loadMode": "独立加载（cloud_service_trend 数据源）",
+      "params": {
+        "rowKey": "cloud_service_type_code（合计行→''）",
+        "customer": "localVars.customerId",
+        "currency": "固定RMB（cny字段）",
+        "window": "trendStartTime=页面年-1年01月；trendEndTime=页面年12月（页面日期推导）"
+      },
+      "dataSlots": "current_year_revenue, last_year_revenue, pop_current, pop_last",
+      "chartBinding": "双柱（当年/上一年流水）+双线（当年/上一年环比），双y轴（左万元右%），12月x轴",
+      "close": "closeModal：trendModalVisible=false、detailModalVisible=false、selectedCloudService=null、hideAllModals",
+      "lateResponse": "关闭后数据返回不重开（无订阅重开）",
+      "yearDerivation": "currentYear=最后一行mtime年份（排序保证：查询orderAsc(mtime)+前端二次sort；窗口受trendStart/End限制）"
+    },
+    {
+      "id": "DLG-cd-002",
+      "page": "customer-detail",
+      "name": "云服务流水明细",
+      "enabled": true,
+      "open": "云服务表行'明细'链接",
+      "loadMode": "独立加载（income_detail + income_detail_summary + income_detail_count）",
+      "params": {
+        "rowKey": "selectedCloudServiceName（合计行→''）",
+        "customer": "cdhCodes（CDH_CODE去重|拼接）",
+        "window": "incomeDetailStartTime/EndTime=页面月01..月末",
+        "pagination": "currentPage=1、offset=0"
+      },
+      "dataSlots": "8列列式数组 + Sum合计 + Count总数",
+      "tableBinding": "modalDetailColumns 8列 + 合计行首行 + 分页",
+      "sort": "服务端 ORDERBY=CURINCOME DESC",
+      "close": "closeModal（同DLG-cd-001）"
+    },
+    {
+      "id": "DLG-cd-003",
+      "page": "customer-detail",
+      "name": "月累计收入趋势放大（经营进展缩略图）",
+      "enabled": true,
+      "open": "经营进展'近12月趋势'缩略图点击",
+      "loadMode": "复用页面已有结果（business_progress_trend 数据，无新请求）",
+      "params": "无",
+      "dataSlots": "period_id, rmb_ytd_amt, rmb_ytd_amt_pop",
+      "chartBinding": "柱=收入（万）+线=同比（%），双y轴；period_id yyyyMM→yyyy/MM",
+      "close": "showEchartsTrendDialogBox=false（×或遮罩）"
+    },
+    {
+      "id": "DLG-cd-004",
+      "page": "customer-detail",
+      "name": "客户接触详情",
+      "enabled": false,
+      "note": "用户明确延期：不实现详情、不猜测替代跳转目标、不发起详情请求、不填虚构记录。入口不得表现为可用跳转。KPI卡'客户接触'详情链接模板注释。"
+    },
+    {
+      "id": "DLG-ts-001",
+      "page": "token-specific",
+      "name": "开通表趋势浮层",
+      "enabled": true,
+      "open": "客户模型开通表'Token用量波形图'列点击",
+      "loadMode": "独立加载（trendModalTokenTotalUsageData）",
+      "params": {
+        "rowKey": "account_name + (非合计行) model_name",
+        "area": "areaString（地区部/代表处SQL）",
+        "window": "默认24小时：dtime between dtime±0（HOUR）；7/14天：initTime±6/13（DAY）"
+      },
+      "dataSlots": "x_time(h_tag/dtime), total_tokens_sum",
+      "chartBinding": "dv-echarts 波形（component.config 内配置）",
+      "close": "hideDetailDialog：showDetailDialog=false、selectedCustomerInfo=null、重置日期选项"
+    }
+  ]
+}

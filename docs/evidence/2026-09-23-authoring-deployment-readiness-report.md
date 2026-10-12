@@ -1,6 +1,6 @@
 # 平台创作 0.3.1 本仓交付与轻量验收
 
-日期：2026-09-23。范围依据 `docs/plan/2026-09-23-authoring-deployment-readiness-plan.md` 及用户确认的轻量验收边界。结论为**本仓完成，待内部 Adapter 接线与真实环境验证**。`ready` 仅表示页面产物已由内部 Adapter 精确接收，不表示用户已看到页面。
+日期：2026-09-23。范围依据 `docs/archive/authoring-foundation-2026-09/2026-09-23-authoring-deployment-readiness-plan.md` 及用户确认的轻量验收边界。结论为**本仓完成，待内部 Adapter 接线与真实环境验证**。`ready` 仅表示页面产物已由内部 Adapter 精确接收，不表示用户已看到页面。
 
 ## 本仓实施
 

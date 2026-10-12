@@ -84,7 +84,7 @@ git diff --check
 
 1. `test_parameter_preparation.ParameterPreparationTest.test_generated_shared_extraction_vector` 预期 schemaVersion=6.11，实际 TS 参数程序返回 6.12。这部分生产代码、测试和黄金向量均未在本次修改。
 2. `tools/scripts/page-reference.ts:329` 报 IOC 6.12 参考文档未覆盖：跨源 compute 算子、detailViews、sectionGroups、sectionAnchors 等字段、枚举和分支。生成器先建立全部输出再写入，本次失败未刷新生成文件。
-3. 本地 IOC 实施计划（docs/plan/2026-09-29-ioc-implementation.md，其他会话未提交材料） 明确创作契约最后整合。不能为了本批变绿提前改写该批协议或绕过参考文档覆盖检查。
+3. 本地 IOC 实施计划（docs/archive/ioc-planning-2026-09/2026-09-29-ioc-implementation.md，其他会话未提交材料） 明确创作契约最后整合。不能为了本批变绿提前改写该批协议或绕过参考文档覆盖检查。
 4. Bundle 校验还报告原已提交但锁未同步的 `skill/metriccanvas-page-builder/SKILL.md`、`test-harness/model-evals/run_result_completeness.py`、`test-harness/tests/test_execution_improvements.py`、`pages/referenced.py`，这些文件本次未修改。其余源码摘要变化由本次整改产生，两者分开记录。
 5. IOC 责任批次补齐参考文档并进入创作整合后，运行正式生成器，再检查完整 harness、两个契约命令及 Bundle。锁必须包含新 diagnostics.py 与全部实际改动；门禁通过前不可将此工作区作为可同步发布包。
 6. CodeCheck 对单个隔离边界的宽泛捕获是否需要豁免，须拿到原始规则和复扫结果后处理；不加入无法确认有效的 noqa 注解。

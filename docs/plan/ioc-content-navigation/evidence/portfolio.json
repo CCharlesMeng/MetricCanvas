@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "phase": "initial",
+  "tier": {
+    "value": "standard",
+    "restore_tasks": [],
+    "blocking_triggers": [
+      "new-pattern"
+    ],
+    "changed_files": 10,
+    "max_changed_files": 5
+  },
+  "risk_triggers": [
+    "async-state",
+    "new-pattern"
+  ],
+  "trigger_sources": {
+    "async-state": [
+      "agent",
+      "plan"
+    ],
+    "new-pattern": [
+      "agent",
+      "plan"
+    ]
+  },
+  "portfolio_narrowed": [],
+  "facts": {
+    "cross_page": false,
+    "shared_style": false,
+    "overflow_state": true,
+    "frozen_r": false,
+    "frozen_r5": false,
+    "frozen_r6": false,
+    "has_f3": false,
+    "has_s3_claim": false
+  },
+  "modules": [
+    "causal",
+    "targeted-quality",
+    "review-convention",
+    "review-quality"
+  ],
+  "review_roles": [
+    "review-convention",
+    "review-quality"
+  ],
+  "review_dimensions": {
+    "review-convention": [
+      "C2"
+    ],
+    "review-quality": [
+      "Q5"
+    ]
+  },
+  "claims": [
+    {
+      "id": "AT-01",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "test_case",
+      "task": "T1",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-02",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "test_case",
+      "task": "T2,T3",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-03",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "test_case",
+      "task": "T2,T3",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-04",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "test_case",
+      "task": "T2,T3",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "previous": null
+}

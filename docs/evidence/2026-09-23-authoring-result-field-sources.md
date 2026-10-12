@@ -6,7 +6,7 @@
 
 - `调查报告/数据/tokens的dqe查询结果.json`：`results[0].data` 的实际行键为 `Tokens流量` 和 `周期(month)`；`columns` 同时给出 `caption`、`alias`、`id`、`level_type` 和格式 JSON。该样本的时间请求使用 month 粒度。
 - `调查报告/dqe.md`：DSL 的 `output_dims` 使用基础维度名，公式指标使用 `{formula, alias}`；执行项返回 `data` 和 `total_count`。
-- `docs/plan/2026-09-20-data-context-semantic-evidence.json`：公式中存在除零时返回 null 的表达式，并记录一处名称与公式时段冲突。该文件声明为讨论证据，不充当执行契约。
+- `docs/evidence/authoring-data-context-2026-09/2026-09-20-data-context-semantic-evidence.json`：公式中存在除零时返回 null 的表达式，并记录一处名称与公式时段冲突。该文件声明为讨论证据，不充当执行契约。
 - `调查报告/DataFilterType 数字格式规则说明.md`：同为百分比或金额存在不同缩放和显示规则，不能由单位或名称唯一确定。
 - 中立 Schema 元数据、`data/executable_units.py`、`data/source_mapping.py`、`data/query.py`、DQE HTTP Adapter 和页面字段校验。
 

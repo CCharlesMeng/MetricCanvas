@@ -17,6 +17,19 @@
 | [`architecture-formal-model.md`](./architecture-formal-model.md) | [ADR-0074](../adr/0074-browser-component-building-and-isolated-legacy-baseline.md) 与 [ADR-0076](../adr/0076-formal-architecture-contract-scope-and-enforcement.md) 正文，是形式化架构的模型草案；**草案未收口，校验器未实现** |
 | [`wayfinder-107-pangu-integration-baseline.md`](./wayfinder-107-pangu-integration-baseline.md) | [ADR-0077](../adr/0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) 正文与[问数编排主题页](../adr/topics/ask-orchestration-and-scope-governance.md)，是盘古接入的可验收行为清单 |
 
+## 2026-10-12迁入证据
+
+| 证据 | 引用及范围 |
+|---|---|
+| [创作最小流程决策基线](./2026-09-20-authoring-minimal-flow-and-skill-plan.md) | ADR-0083的历史决策依据；当前创作计划不继续按此旧分稿执行 |
+| [IOC真数据缺口基线](./2026-09-21-ioc-live-data-gaps.md) | ADR-0085的依赖背景；inline等阶段描述不作为当前实现状态 |
+| [执行整改M0–M7报告](./2026-09-29-authoring-mc-execution-report.md) | 当前接入待办的本仓完成证据；生产采用未执行 |
+| [数据上下文讨论证据](./authoring-data-context-2026-09/README.md) | 结果字段来源对账；原JSON不是生产接口契约 |
+| [参数正交化设计证据](./page-parameters/README.md) | 参数协议的设计背景和spike事实，现行规范另有入口 |
+| [报告日期筛选与导出](./report-date-filters/README.md) | ADR-0097的本地实现、浏览器和PDF验收依据 |
+| [微前端部署基线](./qiankun-platform/design-baseline/deployment-boundary.md)、[MC实施交接](./qiankun-platform/design-baseline/handoff-mc.md) | ADR-0093/0094的设计依据；目标门户仍待实证 |
+| [门户调查与历史配置](./qiankun-platform/portal-handoff/README.md) | 用户提供的来源材料；保留原报告与备份，不参与运行构建 |
+
 ## 读它们时注意
 
 **证据附件记的是当时看到的事实，不是当前结论。** 现行结论一律以 ADR 与[主题页](../adr/topics/)为准；这些文件只回答「那条结论的依据是什么」。历史正文不改写——发现某份证据已经过期，改的是引用它的 ADR，不是回头改证据。

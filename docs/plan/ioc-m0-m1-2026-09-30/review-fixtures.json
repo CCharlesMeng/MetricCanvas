@@ -1,0 +1,368 @@
+{
+  "status": "proposed-design-oracle-only",
+  "financeFixture": "packages/engine/runtime/tests/fixtures/ioc-customer-finance.json",
+  "threeReturns": {
+    "consumer": "客户详情/云服务明细浮层",
+    "normalizedOnly": true,
+    "scope": {
+      "customer": "CUSTOMER-A",
+      "month": "202504",
+      "service": {
+        "kind": "all"
+      }
+    },
+    "details": [
+      {
+        "date": "2025-04-01",
+        "customer": "CUSTOMER-A",
+        "office": "OFFICE-A",
+        "endCustomer": "匿名客户",
+        "cdh": "CDH-A",
+        "partner": "匿名伙伴",
+        "service": "匿名服务",
+        "income": 10
+      },
+      {
+        "date": "2025-04-01",
+        "customer": "CUSTOMER-A",
+        "office": "OFFICE-A",
+        "endCustomer": "匿名客户",
+        "cdh": "CDH-A",
+        "partner": "匿名伙伴",
+        "service": "匿名服务",
+        "income": 20
+      },
+      {
+        "date": "2025-04-01",
+        "customer": "CUSTOMER-A",
+        "office": "OFFICE-A",
+        "endCustomer": "匿名客户",
+        "cdh": "CDH-A",
+        "partner": "匿名伙伴",
+        "service": "匿名服务",
+        "income": 30
+      },
+      {
+        "date": "2025-04-01",
+        "customer": "CUSTOMER-A",
+        "office": "OFFICE-A",
+        "endCustomer": "匿名客户",
+        "cdh": "CDH-A",
+        "partner": "匿名伙伴",
+        "service": "匿名服务",
+        "income": 40
+      },
+      {
+        "date": "2025-04-01",
+        "customer": "CUSTOMER-A",
+        "office": "OFFICE-A",
+        "endCustomer": "匿名客户",
+        "cdh": "CDH-A",
+        "partner": "匿名伙伴",
+        "service": "匿名服务",
+        "income": 50
+      },
+      {
+        "date": "2025-04-01",
+        "customer": "CUSTOMER-A",
+        "office": "OFFICE-A",
+        "endCustomer": "匿名客户",
+        "cdh": "CDH-A",
+        "partner": "匿名伙伴",
+        "service": "匿名服务",
+        "income": 60
+      },
+      {
+        "date": "2025-04-01",
+        "customer": "CUSTOMER-A",
+        "office": "OFFICE-A",
+        "endCustomer": "匿名客户",
+        "cdh": "CDH-A",
+        "partner": "匿名伙伴",
+        "service": "匿名服务",
+        "income": 70
+      },
+      {
+        "date": "2025-04-01",
+        "customer": "CUSTOMER-A",
+        "office": "OFFICE-A",
+        "endCustomer": "匿名客户",
+        "cdh": "CDH-A",
+        "partner": "匿名伙伴",
+        "service": "匿名服务",
+        "income": 80
+      },
+      {
+        "date": "2025-04-01",
+        "customer": "CUSTOMER-A",
+        "office": "OFFICE-A",
+        "endCustomer": "匿名客户",
+        "cdh": "CDH-A",
+        "partner": "匿名伙伴",
+        "service": "匿名服务",
+        "income": 90
+      },
+      {
+        "date": "2025-04-01",
+        "customer": "CUSTOMER-A",
+        "office": "OFFICE-A",
+        "endCustomer": "匿名客户",
+        "cdh": "CDH-A",
+        "partner": "匿名伙伴",
+        "service": "匿名服务",
+        "income": 100
+      }
+    ],
+    "sum": [
+      {
+        "totalIncome": 3000
+      }
+    ],
+    "count": 25,
+    "page2": {
+      "offset": 10,
+      "limit": 10
+    },
+    "expected": {
+      "visibleRows": 11,
+      "detailCount": 10,
+      "totalCount": 25,
+      "summaryIncome": 3000
+    },
+    "emptyRules": {
+      "云服务流水主表": "show",
+      "云服务明细浮层": "hide"
+    },
+    "negative": [
+      "missing-count",
+      "summary-two-rows",
+      "column-length-mismatch",
+      "stale-summary-scope",
+      "summary-error",
+      "window-as-complete"
+    ]
+  },
+  "timeCases": [
+    {
+      "consumer": "客户详情/流水双年趋势",
+      "clockYear": 2026,
+      "pageMonth": "202504",
+      "queryWindow": [
+        "202401",
+        "202512"
+      ],
+      "reference": "system",
+      "referenceYear": 2026,
+      "rows": [
+        {
+          "mtime": "202502",
+          "value": 80
+        },
+        {
+          "mtime": "202402",
+          "value": 999
+        }
+      ],
+      "feb": {
+        "current": null,
+        "previous": 80
+      }
+    },
+    {
+      "consumer": "客户详情/云服务趋势浮层",
+      "clockYear": 2026,
+      "pageMonth": "202504",
+      "queryWindow": [
+        "202401",
+        "202512"
+      ],
+      "reference": "maxValidData",
+      "referenceYear": 2025,
+      "rows": [
+        {
+          "mtime": "202503",
+          "value": 30
+        },
+        {
+          "mtime": "202401",
+          "value": 10
+        },
+        {
+          "mtime": "202501",
+          "value": 20
+        }
+      ],
+      "jan": {
+        "current": 20,
+        "previous": 10
+      },
+      "feb": {
+        "current": null,
+        "previous": null
+      }
+    },
+    {
+      "consumer": "客户详情/经营进展缩略图",
+      "clockYear": 2026,
+      "pageMonth": "202504",
+      "queryWindow": [
+        "202501",
+        "202504"
+      ],
+      "reference": "page",
+      "referenceYear": 2025,
+      "rows": [
+        {
+          "period_id": "202503",
+          "value": null
+        },
+        {
+          "period_id": "202501",
+          "value": 100
+        },
+        {
+          "period_id": "202501",
+          "value": 200
+        }
+      ],
+      "expected": [
+        {
+          "period_id": "202501",
+          "value": 300
+        },
+        {
+          "period_id": "202503",
+          "value": null
+        }
+      ],
+      "fillMissingMonths": false
+    }
+  ],
+  "numericCases": {
+    "allMissingForecast": {
+      "input": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "expected": 0,
+      "currentDefault": null
+    },
+    "partialForecast": {
+      "input": [
+        100,
+        null,
+        -20,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "expected": 80
+    },
+    "directSubtract": [
+      {
+        "current": 100,
+        "previous": null,
+        "expected": null
+      },
+      {
+        "current": 100,
+        "expected": null
+      },
+      {
+        "current": 100,
+        "previous": 0,
+        "expected": 100
+      },
+      {
+        "current": 100,
+        "previous": 80,
+        "expected": 20
+      }
+    ],
+    "growth": [
+      {
+        "consumer": "经营概览/流水环比",
+        "base": 0,
+        "current": 100,
+        "expected": 0
+      },
+      {
+        "consumer": "经营概览/流水环比",
+        "base": null,
+        "current": 100,
+        "expected": 0
+      },
+      {
+        "consumer": "客户详情/流水环比",
+        "base": 0,
+        "current": 100,
+        "expected": null
+      }
+    ],
+    "topN": {
+      "input": [
+        9,
+        80,
+        1000,
+        50,
+        20,
+        30
+      ],
+      "n": 5,
+      "expected": [
+        1000,
+        80,
+        50,
+        30,
+        20
+      ],
+      "other": 9
+    }
+  },
+  "states": [
+    {
+      "event": "openA",
+      "expected": "A:loading"
+    },
+    {
+      "event": "close",
+      "expected": "closed"
+    },
+    {
+      "event": "openB",
+      "expected": "B:loading"
+    },
+    {
+      "event": "resolveA",
+      "expected": "B:loading"
+    },
+    {
+      "event": "resolveB",
+      "expected": "B:ready"
+    },
+    {
+      "event": "pageFilterChange",
+      "expected": "closed"
+    },
+    {
+      "event": "resolveB",
+      "expected": "closed"
+    }
+  ]
+}

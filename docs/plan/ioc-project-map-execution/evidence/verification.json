@@ -1,0 +1,26 @@
+{
+  "checkedFiles": 138,
+  "changedBaselineFiles": [
+    "docs/plan/2026-09-30-ioc-project-map-optimization.md",
+    "packages/engine/runtime/tests/ioc-project-overview.test.ts",
+    "pages/ioc-project-overview.json"
+  ],
+  "unexpectedChanges": [],
+  "additionalTrackedFileEdited": "packages/embed/tests/browser/navigation.spec.ts (clean at start; reviewed targeted diff)",
+  "productTests": {
+    "files": 5,
+    "tests": 28,
+    "status": "pass"
+  },
+  "browserScenarios": {
+    "executed": 2,
+    "status": "pass"
+  },
+  "pageValidation": {
+    "documents": 13,
+    "status": "pass"
+  },
+  "testTypes": "pass",
+  "realIntegration": "not-run",
+  "authoring": "untouched"
+}
