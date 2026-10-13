@@ -2,7 +2,7 @@ import {expect,test} from '@playwright/test';
 import {readFileSync} from 'node:fs';
 import {extractPageParams,applyPageParamSelection,resolvePageParams} from '@metriccanvas/page';
 
-test('Tokens grouped params: HTTP requests, URL overrides, missing inputs and empty periods',async({page})=>{
+test('Tokens grouped params: HTTP requests, URL overrides, missing inputs and empty periods',async({page},testInfo)=>{
   const raw=JSON.parse(readFileSync(new URL('../../../page/fixtures/parameter-extraction/tokens-parameter-source.json',import.meta.url),'utf8'));
   const extraction=extractPageParams(raw,{baseline:'local-verified-fixture',timeIdentities:Object.fromEntries(Object.keys(raw.dataSources).map(id=>[id,'tokens-report-period'])),dimensionIdentities:Object.fromEntries(Object.keys(raw.dataSources).map(id=>[id,{'区域':'region'}]))});
   if(!extraction.ok)throw Error(JSON.stringify(extraction.issues));
@@ -39,5 +39,5 @@ test('Tokens grouped params: HTTP requests, URL overrides, missing inputs and em
   await expect(page.getByRole('paragraph').filter({hasText:/^2026-07 至 2026-12$/})).toBeVisible();
   await expect(page.getByText('123456',{exact:true})).toHaveCount(0);
   for(const q of requests.slice(5)){expect(q.filter.dims[0].dim_value_list).toEqual(['欧洲区']);expect(q.filter.time.start).toBe('2026-07');}
-  await page.screenshot({path:'/private/tmp/metriccanvas-inline-params-empty.png',fullPage:true});
+  await page.screenshot({path:testInfo.outputPath('metriccanvas-inline-params-empty.png'),fullPage:true});
 });
