@@ -84,13 +84,14 @@ test('查询分页与服务端排序共存，排序作用于全表而不是当�
 test('时间点、布尔与数值区间筛选各自下推到查询', async ({ page }) => {
   const table = page.locator('[data-component="list/opportunity-table"]');
   const rows = table.locator('tbody tr');
-  // 每页 5 行，所以用页码数读总量：10 行两页、5 行一页、0 行没有行。
+  // 每页 5 行，所以用页码数读总量：10 行两页、5 行一页；空结果显示提示行。
   const pages = table.locator('.page-button');
   // 数据列是 202604，筛选值是 2026-04：格式声明错了就一行都取不到。
   await page.goto('/pages/ioc-opportunity-list?mtime=2026-04');
   await expect(pages).toHaveCount(2);
   await page.goto('/pages/ioc-opportunity-list?mtime=2026-05');
-  await expect(rows).toHaveCount(0);
+  await expect(table.getByRole('cell', { name: '暂无数据', exact: true })).toBeVisible();
+  await expect(rows.filter({ hasNot: page.locator('td.empty-row') })).toHaveCount(0);
   // 勾上才加条件；不勾等于无条件，不是筛「为假」。
   await page.goto('/pages/ioc-opportunity-list?key-office=true');
   await expect(rows).toHaveCount(5);
