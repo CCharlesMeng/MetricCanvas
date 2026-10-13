@@ -1,8 +1,16 @@
-# 报告日期筛选与完整 PDF 接入
+# 报告完整导出与 PDF 下载接入
 
-Schema 6.13 增加可选 `reportHeader.props.filterIds`。报告页头上方工具带消费已声明的月/日单选或范围筛选器，宽容器右对齐、窄容器换行。页面参数通过 `initialParam` 初始化筛选器；期间文字和关联查询随后使用已应用筛选值。未提交的半范围或非法范围不会改变查询和期间文字。
+本文是集成应用的报告导出与下载接入专题，维护下载操作、公共方法、编码接线和运行边界。页面协议概览见[PAGE-METADATA.md](../PAGE-METADATA.md)，参数与期间筛选配置见[PAGE-PARAMETERS.md](../PAGE-PARAMETERS.md#时间参数与顶部筛选)。
 
-初次创作保持无日期参数状态。日期提取确认原子生成时间参数、筛选器、查询绑定和页头引用；多个查询只有可信时间身份一致才合并。已有身份复用，单点驱动多个窗口需明确 `window`，不能从不同的日期字面量推断关系。修改或删除日期筛选器会清理其失去消费者的初始化时间参数；其它消费者仍引用时保留。
+## 下载操作
+
+从仓库根目录运行 `pnpm dev:playground`，打开[PDF下载演示](http://localhost:5173/preview?prototype=report-date)。选择并提交期间后点击“导出 PDF”，浏览器下载 `经营分析报告.pdf`；页面显示实际PDF第一页，并提供“再次下载 PDF”和“打开 PDF”链接。点击“准备完整导出视图”可先检查静态DOM。
+
+演示使用本地合成数据和开发态编码服务。普通样例页面路由消费页面JSON，下载按钮由集成应用接入；页面JSON无需新增下载配置字段。编码所需Chromium与PDF预览所需Poppler的配置见下文。
+
+## 与时间筛选配合
+
+参数初值、筛选声明、查询绑定、页头位置和显式期间文字统一按[时间参数与顶部筛选](../PAGE-PARAMETERS.md#时间参数与顶部筛选)配置。导出开始时捕获已应用筛选与已经解析的页头、副标题和正文文字；未提交的输入草稿不参与，之后的页内筛选变化不改变本次导出。
 
 ## 公共方法
 
@@ -29,6 +37,7 @@ await handle.withExportView(async ({ target, paper, wideElements, signal }) => {
 ## 导出范围与完整性
 
 - 全部内容分区、内容分区组和 Tabs 均展开，表格包含当前已应用筛选范围内的全部匹配行。
+- 声明为Top5等有限选择的主查询保留其集合范围；级联明细完整性按[查询结果绑定规则](cascading-queries.md#4-主集合与完整明细的边界)核验。
 - 日期输入、分页、选择、链接和详情浮层不进入导出；期间文字保留捕获值。详情专用查询不执行。
 - 使用同一已认证数据网关；不复用初始快照或当前分页。排序与表头筛选也保留。
 - 每个导出结果上限 10,000 行，整次准备上限 60 秒；PDF 编码和保存时间不计入。超限、提前结束、分页总数缺失或变化明确失败；无分页查询需 totalCount 或显式 resultScope: complete 完整结果契约，无截断或当前页降级。
@@ -37,16 +46,14 @@ await handle.withExportView(async ({ target, paper, wideElements, signal }) => {
 
 错误码：`EXPORT_NOT_READY`、`EXPORT_BUSY`、`EXPORT_CANCELLED`、`EXPORT_TIMEOUT`、`EXPORT_ROW_LIMIT`、`EXPORT_INCOMPLETE_DATA`、`EXPORT_RENDER_FAILED`。集成应用编码错误原样抛出；两类错误均清理临时 DOM。
 
-可运行的接入示例：[HTML 示例](../packages/embed/examples/report-export.html)。本地报告示例位于 `/preview?prototype=report-date&variant=C`，提供“准备完整导出视图”和“导出 PDF”两个入口。前者查看静态 DOM；后者通过本地集成应用编码、下载和预览真实 A4 多页 PDF。两者使用本地合成数据；验收不代表真实 Relay/Java/DQE 联通或生产 PDF 编码器验收。
+可运行的接入示例：[HTML 示例](../packages/embed/examples/report-export.html)。[本地报告示例](http://localhost:5173/preview?prototype=report-date)提供“准备完整导出视图”和“导出 PDF”两个入口。前者查看静态 DOM；后者通过本地集成应用编码、下载和预览真实 A4 多页 PDF。两者使用本地合成数据；验收不代表真实 Relay/Java/DQE 联通或生产 PDF 编码器验收。
 
 ## 本地 PDF 端到端示例
 
-从仓根运行 `pnpm --filter playground dev --port 5186`，打开上述地址，点击“导出 PDF”。示例中的“主要明细”和“补充明细”是内容分区组导航，分别显示经营明细及趋势、区域及项目分析；导出包含两个分组和全部 Tabs。
+从仓根运行 `pnpm dev:playground`，打开上述5173地址，点击“导出 PDF”。示例中的“主要明细”和“补充明细”是内容分区组导航，分别显示经营明细及趋势、区域及项目分析；导出包含两个分组和全部 Tabs。
 
 调用链：`RuntimeView.withExportView` → [示例编码客户端](../apps/playground/src/lib/report-pdf-client.ts) 将已准备 DOM 的外观和静态图表序列化 → [Vite 本地编码服务](../apps/playground/report-pdf-demo.ts) 用已安装 Chromium 编排 A4 多页 → Poppler 从实际 PDF 渲染第一页 → 浏览器下载完整文件并展示第一页预览。编码服务仅在页面试验场开发模式提供，限定本地同源请求、禁止文档脚本及远程资源，临时文件在结束时清理；不进入引擎或生产构建。
 
 默认查找本机 Playwright 缓存中的 Chromium headless shell；也可用 `MC_PDF_CHROMIUM` 指定已安装的 Chromium 可执行文件。预览使用 PATH 中的 `pdftoppm`，也可用 `MC_PDF_RENDERER` 指定路径；缺失时明确报错。这个接入示例覆盖当前报告的竖向 A4 分页，宽分区明确拒绝；生产编码器对任意宽分区的横向编排仍需消费 `wideElements` 并独立验收。示例用文字色替代封面的渐变文字，并按纵向内容流分页，避免 PDF 合成器的渐变描边及 Grid 分页重叠。
 
 部署 Adapter 的日期身份证明提供方可以返回 `timeIdentities`（按数据源 ID）和 `timePointFields`（按数据源 ID/查询字段，含 granularity、valueFormat、identity），证明必须绑定精确页面摘要和 DQE 验证基线。未提供时算法保持独立日期身份；字符串月份分区不由模型猜测。真实部署接入由集成应用/Relay Adapter 配置，不改变 Java 页面资产接口。
-
-6.15 使用显式筛选文本引用：`asOf.value: {filter: "period-filter", format: "period"}`。filterIds 只负责控件位置，不自动创建或覆盖期间文字；导出捕获页头、副标题和其他文本位置的已解析文字，之后的筛选变化不改变本次导出。6.13/6.14 保留旧的期间派生读取。

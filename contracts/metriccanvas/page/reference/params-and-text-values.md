@@ -1,6 +1,6 @@
 # 页面参数与文本取值
 
-当前创作使用 Schema 6.11 的分层参数：params.query 定义查询输入，params.display 定义呈现输入；无值模板与填值实例共用页面协议。
+当前创作使用分层参数：params.query 定义查询输入，params.display 定义呈现输入；无值模板与填值实例共用页面协议。作者版本与能力下限见[页面、版本与布局](page.md)，本模块维护参数和文本取值的字段语义，使用流程由仓库根目录 `PAGE-PARAMETERS.md` 维护。
 
 旧数组参数：页面参数是一次初始化的不可变取值；筛选器是页内可变状态。标量参数保留string/number/boolean；6.2的dimension单值使用非空string，multiple:true使用非空、无重复string[]。URL多值用重复键，不拆逗号。标量/维度参数的非法URL输入回退唯一default；必需参数缺值会阻止呈现和查数。
 
@@ -17,7 +17,9 @@
 
 ## 确定性时间参数
 
-时间参数声明 `type: "time"`、`granularity: "month" | "date"`，值分别为真实日历的 YYYY-MM / YYYY-MM-DD（0001—9999年）。仅未提供URL键时使用default；显式非法、空串或重复时间键阻止初始化，不回退默认月份。时间文本引用当前支持原值展示，不接受数值或日期格式预设。
+本节描述兼容的旧数组 `type:"time"` 与 `paramBindings` 分支；当前分层参数的声明与原位引用见下文“分层参数与查询侧时间窗口”。两者共用窗口日历算术。
+
+时间参数声明 `type: "time"`、`granularity: "month" | "date"`，值分别为真实日历的 YYYY-MM / YYYY-MM-DD（0001—9999年）。仅未提供URL键时使用default；显式非法、空串或重复时间键阻止初始化，不回退默认月份。时间文本引用可显示原值，6.15起可显式使用period格式，不接受数值格式。
 
 查询通过 `paramBindings.<参数id> = {target:"time",window:...}` 引用必需时间参数。每个查询只有一个时间参数来源，不与时间filterBindings共同控制；query.body内必须保留filter.time，不能同时声明start/end。month参数要求period=month，date参数要求period=day；这只是第一版接入限制，不是把输入精度与指标统计周期等同。
 

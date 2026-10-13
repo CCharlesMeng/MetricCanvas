@@ -23,11 +23,11 @@ MetricCanvas 是以页面为核心资产的 AI 原生数据分析与可视化平
   └─ 数据快照 → AI 总结组件 → AI 总结快照 → 纯渲染 View
 ```
 
-当前页面协议版本为 `6.4`，读取兼容6.0—6.4。维度与时间参数的现行方案见 [PAGE-PARAMETERS.md](PAGE-PARAMETERS.md)，整体协议见 [PAGE-METADATA.md](PAGE-METADATA.md)。页面顶层结构示意为：
+页面协议版本与可读范围以 [PAGE-METADATA.md](PAGE-METADATA.md) 和生成契约为准。维度与时间参数的现行方案见 [PAGE-PARAMETERS.md](PAGE-PARAMETERS.md)，整体协议见 [PAGE-METADATA.md](PAGE-METADATA.md)。页面顶层结构示意为：
 
 ```json
 {
-  "schemaVersion": "6.4",
+  "schemaVersion": "6.16",
   "layout": "report",
   "id": "page-id",
   "meta": {},
@@ -183,7 +183,10 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 |---|---|
 | [产品目标与边界](./origin.md) | 产品定位、能力和非目标 |
 | [领域词汇表](./CONTEXT.md) | 当前领域术语 |
-| [页面协议](./PAGE-METADATA.md) | `dataSources`、`filters`、`sections` 及组件规则 |
+| [页面协议](./PAGE-METADATA.md) | 协议概览、版本边界、模块参考与专题导航 |
+| [页面参数与筛选](./PAGE-PARAMETERS.md) | 分层参数、顶部时间筛选、期间文字、窗口与旧数组兼容 |
+| [级联查询](./docs/cascading-queries.md) | 查询结果绑定、执行顺序及完整声明示例 |
+| [报告导出与PDF下载](./docs/report-export.md) | 集成应用公共方法、下载范围与编码接线 |
 | [数据上下文 Schema 元数据](./docs/schema-metadata.md) | 创作期 Schema 元数据规则 |
 | [整体解决方案](./docs/solution.md) | 当前架构和模块职责 |
 | [页面构建流程](./docs/page-building-process.md) | 从需求到发布的业务工作流 |

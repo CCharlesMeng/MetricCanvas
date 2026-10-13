@@ -8,180 +8,78 @@
 
 页面拥有命名数据源、筛选器和内容分区；组件的数据槽引用数据源，字段绑定引用结果字段契约。queryField属于查询字段空间，页面字段id和筛选器dimension不能靠同名隐式绑定。数据快照是运行状态，不是作者文档。
 
+## 文档结构与维护分工
+
+本文件维护页面协议概览、版本边界与阅读导航。使用步骤与跨字段示例由专题文档维护，字段语义由模块维护，精确结构表从Schema生成；同一规则在所属文档维护后由其他入口引用。
+
+| 文档层次 | 职责与入口 |
+|---|---|
+| 协议总览 | 本文件：页面组成、能力边界、版本与专题导航 |
+| 参数与筛选专题 | [PAGE-PARAMETERS.md](PAGE-PARAMETERS.md)：维度与时间输入、初始化、页内筛选、期间文字、时间窗口和兼容用法 |
+| 查询依赖专题 | [级联查询](docs/cascading-queries.md)：结果绑定、请求顺序、明细完整性、计算与完整示例 |
+| 集成应用接入专题 | [报告导出与PDF下载](docs/report-export.md)：实例方法、下载范围、编码器、取消及失败处理 |
+| 模块语义源与生成参考 | `docs/page-metadata/`维护作者语义；[模块参考](contracts/metriccanvas/page/reference/README.md)提供Schema生成的字段表、分支、合法示例和反例，同时分发到Authoring Bundle与Skill |
+
+[机器索引](contracts/metriccanvas/page/reference/index.json)记录Schema位置、模块与示例覆盖；[完整Schema](contracts/metriccanvas/page/reference/schema.json)与参考正文同时生成。修改模块语义或示例索引后运行 `pnpm authoring:contracts`，不要手工维护分发副本。
+
 ## 快速查阅与验证
 
-本文件是页面元数据的统一阅读入口：先按下表找到使用场景，再按需查字段表。模块参考维护字段细节，ADR记录决策，验收记录说明验证范围。
-
-| 使用场景 | 从这里开始 | 完整页面示例 |
+| 使用场景 | 规则与用法 | 完整页面或接入示例 |
 |---|---|---|
-| 打开页面时指定业务范围与报告期间 | [页面参数：维度与时间](PAGE-PARAMETERS.md) | [流水分析报告参数版](pages/flow-analysis-report-params.json) |
-| 阅读时在顶部切换月份或日期，并同步查询与期间文字 | [顶部时间筛选](#顶部时间筛选) | [报告页头时间筛选示例](pages/report-date-filter-example.json) |
-| 先查对象集合，再用结果查询明细并关联展示 | [级联查询](#级联查询) | [商务SDT报告](pages/business-sdt-report.json) |
+| 声明页面结构、布局与组件 | [页面与布局](contracts/metriccanvas/page/reference/page.md)、[组件参考](contracts/metriccanvas/page/reference/components/README.md) | [完整页面示例索引](contracts/metriccanvas/page/reference/examples/README.md) |
+| 打开时指定维度范围与报告期间 | [当前分层参数](PAGE-PARAMETERS.md#当前分层参数新页面) | [分层参数页面](packages/page/fixtures/contract-valid/grouped-params-page.json) |
+| 顶部切换月份或日期并联动查询与文字 | [时间参数与顶部筛选](PAGE-PARAMETERS.md#时间参数与顶部筛选) | [报告页头时间筛选页面](pages/report-date-filter-example.json) |
+| 先查对象集合，再查明细并关联展示 | [级联查询](docs/cascading-queries.md) | [商务SDT报告](pages/business-sdt-report.json) |
+| 下载当前筛选范围内的完整报告PDF | [导出与PDF下载接入](docs/report-export.md) | [HTML接入示例](packages/embed/examples/report-export.html) |
 
-1. 从[模块参考](contracts/metriccanvas/page/reference/README.md)按任务或JSON路径定位；[组件选型](contracts/metriccanvas/page/reference/components/README.md)说明用途与数据形状。
-2. 选择模块内的完整JSON例子，保留其显式数据/参数/筛选依赖；字段表中的联合分支分别阅读，不能合并必填项。
-3. 使用仓库现有 `pnpm validate <页面 JSON 所在目录>` 进行完整页面校验。静态例子不证明真实DQE或SSE成功；执行结果仍须经过受控端口。
+1. 按场景进入专题；按JSON路径查[模块参考](contracts/metriccanvas/page/reference/README.md)。
+2. 使用完整JSON示例，保留显式数据、参数与筛选依赖；局部片段不能单独当作页面文档。
+3. 使用 `pnpm validate <页面 JSON 所在目录>` 校验。开发工具的入口与启动命令见[页面试验场](apps/playground/README.md)。静态校验、开发态演示和真实DQE/集成应用接通分别举证。
 
-[机器索引](contracts/metriccanvas/page/reference/index.json)记录Schema位置、模块、枚举和示例覆盖；[完整Schema](contracts/metriccanvas/page/reference/schema.json)与参考正文同时生成。作者语义位于 `docs/page-metadata/`，详细字段表只在生成参考维护一份。
+## 页面参数与筛选
 
-## 顶部时间筛选
+<a id="参数场景索引与使用"></a>
+<a id="维度参数"></a>
+<a id="时间参数"></a>
+<a id="时间场景索引"></a>
+<a id="时间初始化与保存"></a>
+<a id="无数据与时间约束"></a>
+<a id="参数的打开保存与显示"></a>
 
-页面参数确定打开时的输入；时间筛选器保存页内可变状态。需要读者切换期间时，应同时声明筛选器、查询绑定、控件位置和期间文字。以下用法对应报告页头 `reportHeader`；dashboard 的顶部工具栏消费页面筛选声明，布局形态本身不能代替查询绑定。
+页面参数是打开时确定的不可变输入，筛选器是页内可变状态。当前分层参数以 `params.query.{dimensions,times}` 与 `params.display` 区分消费位置，查询在受控DQE位置显式引用参数；参数可以只为筛选器提供初值。声明、初始化、查询消费、保存与文本取值统一见[参数专题](PAGE-PARAMETERS.md)，旧数组兼容也在该专题内说明。
 
-### 配置步骤
+### 顶部时间筛选
 
-1. 在 `filters` 声明 `timeRange` 或 `timePoint`。范围用 `precision`，单点用 `granularity`；月份值使用 `YYYY-MM`，日期值使用 `YYYY-MM-DD`。
-2. 设置初值。可以用 `default`，也可以用 `initialParam` 引用 `params.query.times` 中精度匹配的必需时间参数，两者互斥。单点筛选要求参数 `start` 与 `end` 相同；参数只提供初值，后续筛选不回写参数。
-3. 在每个需要联动的页面数据源的 `source.query.filterBindings` 中绑定筛选器。范围使用 `{target:"time"}`；单点驱动时间窗口时使用 `{target:"time",window:...}`。同一查询时间目标不能再有固定起止或参数引用。
-4. 在 `reportHeader.props.filterIds` 按顺序引用筛选器，将控件放在封面上方工具带，宽容器右对齐、窄容器换行。
-5. 要显示当前已应用期间，在 `reportHeader.props.asOf.value` 显式写 `{filter:"筛选器id",format:"period"}`。`filterIds` 只决定控件位置；字面量保持静态，`param` 引用仍显示打开时的参数值。
+<a id="配置步骤"></a>
+<a id="月份范围示例"></a>
+<a id="运行行为与预览"></a>
 
-### 月份范围示例
-
-[完整页面 JSON](pages/report-date-filter-example.json)包含参数、筛选器、DQE查询、结果字段契约、报告页头和月度明细表。以下摘录关键配置；省略的字段契约、查询体和表格声明请从完整页面读取，不能将此片段单独提交校验。
-
-```json
-{
-  "schemaVersion": "6.15",
-  "params": {
-    "query": {
-      "times": [
-        {"id": "report-period", "granularity": "month", "start": "2026-01", "end": "2026-06"}
-      ]
-    }
-  },
-  "filters": [
-    {"id": "report-period-filter", "type": "timeRange", "precision": "month", "label": "报告期间", "required": true, "initialParam": "report-period"}
-  ],
-  "dataSources": {
-    "monthly-usage": {
-      "source": {
-        "type": "query",
-        "query": {
-          "filterBindings": {"report-period-filter": {"target": "time"}}
-        }
-      }
-    }
-  },
-  "sections": [
-    {
-      "id": "header",
-      "container": "plain",
-      "components": [
-        {
-          "id": "report-header",
-          "type": "reportHeader",
-          "layout": {"span": 12},
-          "props": {
-            "title": "Tokens 月度用量报告",
-            "filterIds": ["report-period-filter"],
-            "asOf": {"label": "当前期间", "value": {"filter": "report-period-filter", "format": "period"}}
-          }
-        }
-      ]
-    }
-  ]
-}
-```
-
-该示例保留6.15能力版本；新建页面使用当前作者版本。页头日期筛选与月份范围要求至少6.13，显式筛选文本引用要求至少6.15。6.13/6.14页面继续按旧期间派生规则读取，不应将新版文本引用直接加进旧版本文档。
-
-月份或日期范围使用 `timeRange`；单个月份或单个日期使用 `timePoint`，如 `granularity:"month"` 配合 `window:{kind:"period",unit:"month"}`。单点也可通过显式窗口驱动当年、近N期或年初至基准期查询；各查询独立声明窗口，不改变指标统计口径。
-
-### 运行行为与预览
-
-打开示例时期间为2026-01至2026-06。读者提交完整合法的范围后，期间文字与绑定查询同步更新；未提交的输入草稿不改变已应用状态，未绑定的查询不随之重查。`period` 将区间显示为“开始 至 结束”，相同端点折叠成单点。导出捕获当时已应用的筛选状态与文字，隐藏日期控件；完整数据准备和PDF编码边界见[报告导出](docs/report-export.md)。
-
-在仓库根目录运行 `pnpm dev:dqe`，可打开[报告页头时间筛选示例](http://localhost:5173/pages/report-date-filter-example)，也可从5173首页点击同名卡片。在[JSON即时预览](http://localhost:5173/preview)粘贴完整页面JSON可以修改并预览；[日期筛选验收演示](http://localhost:5173/preview?prototype=report-date)仅在开发态提供月/日单点与范围、参数提取和PDF导出演示。完整页面使用本地DQE仿真，验收演示使用本地合成数据。
-
-需要逐字段查阅时，分别进入[报告页头](contracts/metriccanvas/page/reference/components/reportHeader.md)、[筛选声明](contracts/metriccanvas/page/reference/filters.md)、[查询绑定](contracts/metriccanvas/page/reference/queries-and-bindings.md)与[期间文字](contracts/metriccanvas/page/reference/params-and-text-values.md)。实施证据见[报告日期筛选验收](docs/evidence/report-date-filters/README.md)。
+`filters` 声明输入，`filterBindings` 声明查询消费，`reportHeader.props.filterIds` 声明控件位置，文本取值显式引用当前参数或筛选状态。版本下限与完整配置统一见[时间参数与顶部筛选](PAGE-PARAMETERS.md#时间参数与顶部筛选)；字段表见[筛选声明](contracts/metriccanvas/page/reference/filters.md)和[报告页头](contracts/metriccanvas/page/reference/components/reportHeader.md)。
 
 ## 级联查询
 
-级联查询用于“先选择一批对象，再查询这些对象的明细”。从6.14起，下游页面数据源通过 `source.query.resultBindings` 读取上游原始查询结果的维度值集合，生成下游维度条件；自动查询输入不写入用户筛选状态。
+查询结果绑定自6.14起由下游 `source.query.resultBindings` 声明，读取上游原始维度集合形成查询输入；与用户筛选状态分别管理。完整声明、执行顺序、边界及与 `pivot`/`joinAggregate` 的协作见[级联查询专题](docs/cascading-queries.md)，字段表见[查询定义与显式绑定](contracts/metriccanvas/page/reference/queries-and-bindings.md)。
 
-以[商务SDT报告](pages/business-sdt-report.json)为例：主查询先选最快/最慢Top5，阶段查询读取本轮商务编号集合并查询阶段明细，`pivot`展开阶段字段，主源再通过 `joinAggregate`左关联回原来的项目行。每个页面数据源仍只有一项 `dsl_list`，阶段查询必须等待自己的上游原始结果。
+## 报告下载与完整导出
 
-| 需要配置的内容 | 页面位置 | 作用 |
-|---|---|---|
-| 上游查询 | 上游 `source.query.body` | 明确对象范围与顺序；Top5显式声明 `order.limit` |
-| 下游输入 | 下游 `source.query.resultBindings` | 声明 `source`、原始维度 `field`、`target:"dimension"`、下游 `queryField` 与 `maxValues` |
-| 明细查询与完整性 | 下游 `source.query.body` 与 `source.resultScope` | 在本轮集合条件下查询完整明细 |
-| 计算与展示 | `compute`、`fields` 与组件数据槽 | 明确展开、关联和最终字段消费 |
-
-上游空集合跳过下游请求，不放宽成全量查询；上游失败向下游传播。绑定只读取原始查询维度，不能读取计算产出；循环、目标冲突、集合超限和不完整输入均拒绝，集合声明上限最大1000。这里的查询结果绑定与维度筛选器的 `dependsOn` 候选值级联是两种声明。
-
-字段逐项解释、两个数据源的完整声明、调度顺序与完整性边界统一见[级联查询：元数据定义与使用逻辑](docs/cascading-queries.md)。可直接打开[商务SDT报告预览](http://localhost:5173/pages/business-sdt-report)，或阅读[最小完整合法页面](packages/page/fixtures/contract-valid/query-cascade-page.json)。字段表见[查询定义与显式绑定](contracts/metriccanvas/page/reference/queries-and-bindings.md)，决策见[ADR-0099](docs/adr/0099-raw-query-result-bindings-and-bounded-left-joins.md)。
+下载属于集成应用接入：页面JSON声明内容及查询，引擎实例通过 `withExportView` 提供完整静态视图，集成应用负责PDF编码、分页与文件保存。公共方法、下载范围、限制与演示统一见[报告导出与PDF下载接入](docs/report-export.md)；页面协议没有下载配置开关。
 
 ## 版本、初始化与持久化
 
-新文档写6.16和layout（保留上述旧版本读取）；已支持版本的layoutForm在输入边界兼容读取，双字段同时出现拒绝。规范化保留已支持版本的能力边界，旧文档迁移另存新修订；先核验历史原文hash，再规范化。详见[布局迁移](docs/page-metadata/layout-migration.md)。
+新文档写当前作者版本和 `layout`。已支持版本的 `layoutForm` 在输入边界兼容读取，双字段同时出现拒绝；布局兼容规范化不自动升级其他能力。历史修订先核验原文hash，迁移结果另存新修订。详见[布局迁移](docs/page-metadata/layout-migration.md)。
 
-当前模板在同一 Page Schema 内以分层 params 与 DQE 取值位置的原位 param 引用表达。无值模板结构合法，输入完整性在执行前验证。可读版本范围以上方版本说明与生成契约为准。提取、解析和旧绑定显式迁移见[页面参数](PAGE-PARAMETERS.md)。
-
-页面参数是一次初始化的不可变输入，筛选器是页内可变状态。6.6 新增 `params.query.{dimensions,times}` 与 `params.display` 分层声明：按消费位置分层，多组时间按 ID 独立引用，实际值用 `dim_value_list`、`start/end`、`value` 表达；查询侧在 `filter.time` 上整段引用时间输入，写 `window` 即以该值为基准点派生区间。新结构规则见[分层参数](PAGE-PARAMETERS.md#当前分层参数新页面)，以下 default/paramBindings 说明保留旧数组兼容语义。6.2维度参数支持单值/多值和显式query.paramBindings/filter.initialParam；实际执行值与URL初始化的边界见[参数与文本](contracts/metriccanvas/page/reference/params-and-text-values.md)及[执行消费契约](docs/archive/authoring-tickets-126/t18-execution-contract.md)。运行时替换后的副本不作为模板原文保存。
+无值参数模板可以结构合法，必需输入完整性在执行前验证。执行时的查询副本与可变筛选状态不作为模板原文保存；提取、填值及旧绑定迁移见[参数专题](PAGE-PARAMETERS.md#程序化提取与填值)。
 
 Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面构建规格与工具能力另见[Authoring Bundle](metriccanvas-authoring/README.md)。
 
-## 参数场景索引与使用
+## 字段绑定与展示格式
 
-按场景进入[维度参数](#维度参数)、[时间参数](#时间参数)或[参数的打开保存与显示](#参数的打开保存与显示)。创作时按“声明 → 消费 → 打开/显示”的顺序配置，不能只声明参数。完整规则见[页面参数现行方案](PAGE-PARAMETERS.md)。
+<a id="百万单位的使用65"></a>
 
-## 维度参数
-
-维度参数确定“看哪个业务范围”。完整用法见[维度参数专章](PAGE-PARAMETERS.md#4-维度参数)。
-
-| 场景 | 页面元数据怎样使用 | 规则与示例 |
-|---|---|---|
-| 多地区输入 | 维度参数声明 `multiple: true`，默认值为非空、无重复字符串数组；URL用重复键 `?regions=EU&regions=APAC` | [维度的值](PAGE-PARAMETERS.md#维度的值)、[URL初始化规则](PAGE-PARAMETERS.md#url初始化规则) |
-| 同一月份驱动当月、全年、上期与趋势 | `type: "time"` 配置 `granularity: "month"` 或 `"date"`；各查询独立声明时间窗口 | [窗口与指标口径](PAGE-PARAMETERS.md#报告基准期查询时间窗口与指标口径) |
-| URL打开另一份报告 | URL键为参数id；未传取保存的 `default`，非法时间输入阻止初始化；新实例不覆盖保存默认值 | [打开与保存](PAGE-PARAMETERS.md#6-打开页面保存页面与显示参数) |
-
-## 时间参数
-
-时间参数确定“本次看哪一期”，完整用法见[时间参数专章](PAGE-PARAMETERS.md#5-时间参数)。配置时明确区分三层：
-
-| 层次 | 配置位置或依据 | 示例 |
-|---|---|---|
-| 报告基准期 | `params` 的 `type: "time"`、`granularity` 和实际输入 | `2026-03`，表示本次看2026年3月 |
-| 查询时间窗口 | 各查询 `paramBindings` 的 `target: "time"` 与 `window` | 当月、全年、近12个月、年初至3月 |
-| 指标统计口径 | 指标定义与数据服务契约 | 月流水、年累计流水、同比；不会随窗口自动改写 |
-
-### 时间场景索引
-
-| 场景 | 页面元数据怎样使用 | 规则与示例 |
-|---|---|---|
-| 当月/全年/上一年/前一天 | `window: {kind:"period",unit:"month"}`；全年改 `year`，上一年增加 `offset:-1`；日参数前一天用 `day` 与 `offset:-1` | [全部窗口示例](PAGE-PARAMETERS.md#已支持的窗口) |
-| 近12个月/近7天 | `window: {kind:"lastN",unit:"month",n:12}`；日参数近7天用 `day` 与 `n:7`，包含基准期 | [全部窗口示例](PAGE-PARAMETERS.md#已支持的窗口) |
-| 年初/月初至报告基准期 | `window: {kind:"yearToDate"}` 或 `{kind:"monthToDate"}`，不带 `unit`，不读取系统今天 | [时间窗口](PAGE-PARAMETERS.md#已支持的窗口) |
-| 参数给页内筛选初值 | 筛选器写 `initialParam`；查询的 `paramBindings` 与 `filterBindings` 指向同一维度，后续修改/清空由筛选状态控制 | [参数与筛选配合](PAGE-PARAMETERS.md#参数与页内筛选怎样配合) |
-
-### 时间初始化与保存
-
-`?report-month=2026-03` 将本次基准期设为2026年3月，各绑定查询按自己的窗口取数。未传该键时使用保存的默认值；显式空值、非法日期/月或重复键阻止初始化，不回退默认值。URL值只影响本次页面实例，改变保存的默认月份需要显式保存。详见[时间初始化与保存](PAGE-PARAMETERS.md#时间初始化与保存)。
-
-### 无数据与时间约束
-
-按指定期间查询，无数据就呈现空结果，不回退最新期；服务故障、权限错误或查询被拒绝仍显示对应错误。时间绑定必须引用必需参数，每个查询只允许一个时间参数来源，不能同时保留静态 `start/end` 或绑定时间筛选器。月份输入对应查询 `period=month`，日期输入对应 `period=day`，不隐式转换粒度。
-
-窗口不改变指标统计口径。例如3月分区已经返回年累计值时，应查询3月，不能因“年累计”再查询1—3月求和。更多边界见[无数据如何处理](PAGE-PARAMETERS.md#无数据如何处理)与[时间绑定约束](PAGE-PARAMETERS.md#时间绑定约束)。
-
-## 参数的打开、保存与显示
-
-| 场景 | 页面元数据怎样使用 | 规则与示例 |
-|---|---|---|
-| 页头显示当前代表处与月份 | 报告页头 `badge: {param:"representative-office"}`、`asOf.value: {param:"report-month"}`，引用整个属性，不拼模板字符串 | [页面显示](PAGE-PARAMETERS.md#页面显示) |
-| 指定期间没有数据 | 查询指定窗口，显示空结果，不回退最新期；查询错误仍按错误呈现 | [无数据处理](PAGE-PARAMETERS.md#无数据如何处理) |
-
-完整业务用法见[流水分析报告参数版](pages/flow-analysis-report-params.json)：12个查询共用代表处和月份输入，分别消费当月、全年、上月、近12个月和年初至报告月份窗口。可直接参考其中的 `params`、`paramBindings` 与页头引用。
-
-## 百万单位的使用（6.5）
-
-在组件字段绑定中设置 `"format": "compact-million-2"`，例如 `{ "data": "main", "field": "revenue", "format": "compact-million-2" }`，即可将原始值1,234,567呈现为“1.23百万”。另有 `compact-million-0/1`，分别保留0/1位小数；字段 `defaultFormat` 与数值参数文本引用同样支持。原始数据保留基础单位，不能预先除以百万再套用格式。
-
-精确规则、优先级和金额用法见[字段绑定与格式](contracts/metriccanvas/page/reference/field-bindings-and-formats.md#按百万呈现65)。
+格式由组件字段绑定声明，页面数据源可以提供 `defaultFormat` 建议，原始数据保留基础单位。格式清单、覆盖优先级及百万单位的用法统一见[字段绑定与格式](contracts/metriccanvas/page/reference/field-bindings-and-formats.md)。
 
 ## 旧锚点导航
+
 
 原章节已迁入模块，以下锚点保留旧链接定位；字段表以生成参考为准。
 
