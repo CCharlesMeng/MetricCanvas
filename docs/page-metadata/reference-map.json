@@ -158,7 +158,8 @@
       "examples": [
         "dimension-params-page",
         "hierarchy-binding-page",
-        "non-dimension-bindings-page"
+        "non-dimension-bindings-page",
+        "query-cascade-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",

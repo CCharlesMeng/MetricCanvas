@@ -1,5 +1,7 @@
 # 级联查询：元数据定义与使用逻辑
 
+页面元数据的统一入口见[PAGE-METADATA.md](../PAGE-METADATA.md)，其中并列说明顶部时间筛选与级联查询，并提供完整页面及5173预览入口。
+
 本文说明Schema6.14的查询结果绑定，以及它与具名算子、组件数据槽的协作方式。适用于“先选择一批对象，再查询这些对象的明细”的集合式查询，例如商务SDT报告的项目Top5。现行决策见[ADR-0099](adr/0099-raw-query-result-bindings-and-bounded-left-joins.md)，协议见[查询定义](page-metadata/queries-and-bindings.md)和[具名算子](page-metadata/compute.md)。
 
 ## 1. 声明分别放在哪里

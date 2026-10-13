@@ -1515,7 +1515,7 @@ Schema位置：`#/definitions/groupedQueryFields/anyOf/1`。
 - `#/definitions/queryScalarField/oneOf/1`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/dataSources/orders/fields/amount`。
 - `#/definitions/queryField/anyOf/1`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/events`。
 - `#/definitions/queryField/anyOf/2`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/reason`。
-- `#/definitions/queryField/anyOf/3`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/pivoted/fields/online`。
+- `#/definitions/queryField/anyOf/3`：[合法完整页面](examples/query-cascade-page.json)，JSON Pointer `#/dataSources/project-efficiency-bottom5/fields/rep-office-time`。
 - `#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/0`：[合法完整页面](examples/grouped-fields-page.json)，JSON Pointer `#/dataSources/grouped/fields/measures/growth`。
 - `#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/1`：[合法完整页面](examples/grouped-fields-page.json)，JSON Pointer `#/dataSources/grouped/fields/measures/revenue`。
 - `#/definitions/groupedQueryFields/anyOf/0`：[合法完整页面](examples/grouped-fields-page.json)，JSON Pointer `#/dataSources/grouped/fields`。

@@ -10,15 +10,108 @@
 
 ## 快速查阅与验证
 
-维度与时间参数的统一现行说明见[页面参数：维度与时间](PAGE-PARAMETERS.md)，包含概念、字段用途、查询绑定、时间窗口及保存行为。
+本文件是页面元数据的统一阅读入口：先按下表找到使用场景，再按需查字段表。模块参考维护字段细节，ADR记录决策，验收记录说明验证范围。
 
-级联查询的定义、完整数据源示例、执行顺序与边界见[级联查询：元数据定义与使用逻辑](docs/cascading-queries.md)。
+| 使用场景 | 从这里开始 | 完整页面示例 |
+|---|---|---|
+| 打开页面时指定业务范围与报告期间 | [页面参数：维度与时间](PAGE-PARAMETERS.md) | [流水分析报告参数版](pages/flow-analysis-report-params.json) |
+| 阅读时在顶部切换月份或日期，并同步查询与期间文字 | [顶部时间筛选](#顶部时间筛选) | [报告页头时间筛选示例](pages/report-date-filter-example.json) |
+| 先查对象集合，再用结果查询明细并关联展示 | [级联查询](#级联查询) | [商务SDT报告](pages/business-sdt-report.json) |
 
 1. 从[模块参考](contracts/metriccanvas/page/reference/README.md)按任务或JSON路径定位；[组件选型](contracts/metriccanvas/page/reference/components/README.md)说明用途与数据形状。
 2. 选择模块内的完整JSON例子，保留其显式数据/参数/筛选依赖；字段表中的联合分支分别阅读，不能合并必填项。
 3. 使用仓库现有 `pnpm validate <页面 JSON 所在目录>` 进行完整页面校验。静态例子不证明真实DQE或SSE成功；执行结果仍须经过受控端口。
 
 [机器索引](contracts/metriccanvas/page/reference/index.json)记录Schema位置、模块、枚举和示例覆盖；[完整Schema](contracts/metriccanvas/page/reference/schema.json)与参考正文同时生成。作者语义位于 `docs/page-metadata/`，详细字段表只在生成参考维护一份。
+
+## 顶部时间筛选
+
+页面参数确定打开时的输入；时间筛选器保存页内可变状态。需要读者切换期间时，应同时声明筛选器、查询绑定、控件位置和期间文字。以下用法对应报告页头 `reportHeader`；dashboard 的顶部工具栏消费页面筛选声明，布局形态本身不能代替查询绑定。
+
+### 配置步骤
+
+1. 在 `filters` 声明 `timeRange` 或 `timePoint`。范围用 `precision`，单点用 `granularity`；月份值使用 `YYYY-MM`，日期值使用 `YYYY-MM-DD`。
+2. 设置初值。可以用 `default`，也可以用 `initialParam` 引用 `params.query.times` 中精度匹配的必需时间参数，两者互斥。单点筛选要求参数 `start` 与 `end` 相同；参数只提供初值，后续筛选不回写参数。
+3. 在每个需要联动的页面数据源的 `source.query.filterBindings` 中绑定筛选器。范围使用 `{target:"time"}`；单点驱动时间窗口时使用 `{target:"time",window:...}`。同一查询时间目标不能再有固定起止或参数引用。
+4. 在 `reportHeader.props.filterIds` 按顺序引用筛选器，将控件放在封面上方工具带，宽容器右对齐、窄容器换行。
+5. 要显示当前已应用期间，在 `reportHeader.props.asOf.value` 显式写 `{filter:"筛选器id",format:"period"}`。`filterIds` 只决定控件位置；字面量保持静态，`param` 引用仍显示打开时的参数值。
+
+### 月份范围示例
+
+[完整页面 JSON](pages/report-date-filter-example.json)包含参数、筛选器、DQE查询、结果字段契约、报告页头和月度明细表。以下摘录关键配置；省略的字段契约、查询体和表格声明请从完整页面读取，不能将此片段单独提交校验。
+
+```json
+{
+  "schemaVersion": "6.15",
+  "params": {
+    "query": {
+      "times": [
+        {"id": "report-period", "granularity": "month", "start": "2026-01", "end": "2026-06"}
+      ]
+    }
+  },
+  "filters": [
+    {"id": "report-period-filter", "type": "timeRange", "precision": "month", "label": "报告期间", "required": true, "initialParam": "report-period"}
+  ],
+  "dataSources": {
+    "monthly-usage": {
+      "source": {
+        "type": "query",
+        "query": {
+          "filterBindings": {"report-period-filter": {"target": "time"}}
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "report-header",
+          "type": "reportHeader",
+          "layout": {"span": 12},
+          "props": {
+            "title": "Tokens 月度用量报告",
+            "filterIds": ["report-period-filter"],
+            "asOf": {"label": "当前期间", "value": {"filter": "report-period-filter", "format": "period"}}
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+该示例保留6.15能力版本；新建页面使用当前作者版本。页头日期筛选与月份范围要求至少6.13，显式筛选文本引用要求至少6.15。6.13/6.14页面继续按旧期间派生规则读取，不应将新版文本引用直接加进旧版本文档。
+
+月份或日期范围使用 `timeRange`；单个月份或单个日期使用 `timePoint`，如 `granularity:"month"` 配合 `window:{kind:"period",unit:"month"}`。单点也可通过显式窗口驱动当年、近N期或年初至基准期查询；各查询独立声明窗口，不改变指标统计口径。
+
+### 运行行为与预览
+
+打开示例时期间为2026-01至2026-06。读者提交完整合法的范围后，期间文字与绑定查询同步更新；未提交的输入草稿不改变已应用状态，未绑定的查询不随之重查。`period` 将区间显示为“开始 至 结束”，相同端点折叠成单点。导出捕获当时已应用的筛选状态与文字，隐藏日期控件；完整数据准备和PDF编码边界见[报告导出](docs/report-export.md)。
+
+在仓库根目录运行 `pnpm dev:dqe`，可打开[报告页头时间筛选示例](http://localhost:5173/pages/report-date-filter-example)，也可从5173首页点击同名卡片。在[JSON即时预览](http://localhost:5173/preview)粘贴完整页面JSON可以修改并预览；[日期筛选验收演示](http://localhost:5173/preview?prototype=report-date)仅在开发态提供月/日单点与范围、参数提取和PDF导出演示。完整页面使用本地DQE仿真，验收演示使用本地合成数据。
+
+需要逐字段查阅时，分别进入[报告页头](contracts/metriccanvas/page/reference/components/reportHeader.md)、[筛选声明](contracts/metriccanvas/page/reference/filters.md)、[查询绑定](contracts/metriccanvas/page/reference/queries-and-bindings.md)与[期间文字](contracts/metriccanvas/page/reference/params-and-text-values.md)。实施证据见[报告日期筛选验收](docs/evidence/report-date-filters/README.md)。
+
+## 级联查询
+
+级联查询用于“先选择一批对象，再查询这些对象的明细”。从6.14起，下游页面数据源通过 `source.query.resultBindings` 读取上游原始查询结果的维度值集合，生成下游维度条件；自动查询输入不写入用户筛选状态。
+
+以[商务SDT报告](pages/business-sdt-report.json)为例：主查询先选最快/最慢Top5，阶段查询读取本轮商务编号集合并查询阶段明细，`pivot`展开阶段字段，主源再通过 `joinAggregate`左关联回原来的项目行。每个页面数据源仍只有一项 `dsl_list`，阶段查询必须等待自己的上游原始结果。
+
+| 需要配置的内容 | 页面位置 | 作用 |
+|---|---|---|
+| 上游查询 | 上游 `source.query.body` | 明确对象范围与顺序；Top5显式声明 `order.limit` |
+| 下游输入 | 下游 `source.query.resultBindings` | 声明 `source`、原始维度 `field`、`target:"dimension"`、下游 `queryField` 与 `maxValues` |
+| 明细查询与完整性 | 下游 `source.query.body` 与 `source.resultScope` | 在本轮集合条件下查询完整明细 |
+| 计算与展示 | `compute`、`fields` 与组件数据槽 | 明确展开、关联和最终字段消费 |
+
+上游空集合跳过下游请求，不放宽成全量查询；上游失败向下游传播。绑定只读取原始查询维度，不能读取计算产出；循环、目标冲突、集合超限和不完整输入均拒绝，集合声明上限最大1000。这里的查询结果绑定与维度筛选器的 `dependsOn` 候选值级联是两种声明。
+
+字段逐项解释、两个数据源的完整声明、调度顺序与完整性边界统一见[级联查询：元数据定义与使用逻辑](docs/cascading-queries.md)。可直接打开[商务SDT报告预览](http://localhost:5173/pages/business-sdt-report)，或阅读[最小完整合法页面](packages/page/fixtures/contract-valid/query-cascade-page.json)。字段表见[查询定义与显式绑定](contracts/metriccanvas/page/reference/queries-and-bindings.md)，决策见[ADR-0099](docs/adr/0099-raw-query-result-bindings-and-bounded-left-joins.md)。
 
 ## 版本、初始化与持久化
 

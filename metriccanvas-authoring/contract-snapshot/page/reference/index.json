@@ -298,7 +298,8 @@
       "examples": [
         "dimension-params-page",
         "hierarchy-binding-page",
-        "non-dimension-bindings-page"
+        "non-dimension-bindings-page",
+        "query-cascade-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -10067,8 +10068,8 @@
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/0",
       "module": "compute.md",
-      "file": "examples/cross-source-page.json",
-      "pointer": "#/dataSources/customers/compute/0"
+      "file": "examples/query-cascade-page.json",
+      "pointer": "#/dataSources/project-efficiency-bottom5/compute/0"
     },
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/1",
@@ -10139,8 +10140,8 @@
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/9",
       "module": "compute.md",
-      "file": "examples/compute-page.json",
-      "pointer": "#/dataSources/pivoted/compute/0"
+      "file": "examples/query-cascade-page.json",
+      "pointer": "#/dataSources/project-efficiency-bottom5-stages/compute/0"
     },
     {
       "schemaPointer": "#/definitions/fieldValue/anyOf/0",
@@ -10223,8 +10224,8 @@
     {
       "schemaPointer": "#/definitions/queryField/anyOf/3",
       "module": "fields.md",
-      "file": "examples/compute-page.json",
-      "pointer": "#/dataSources/pivoted/fields/online"
+      "file": "examples/query-cascade-page.json",
+      "pointer": "#/dataSources/project-efficiency-bottom5/fields/rep-office-time"
     },
     {
       "schemaPointer": "#/definitions/queryDataSource/properties/fields/anyOf/1",

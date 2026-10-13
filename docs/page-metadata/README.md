@@ -1,6 +1,17 @@
 # 页面元数据模块参考
 
-按任务或JSON路径查阅；当前6.3，支持读取6.0/6.1/6.2/6.3。结构来自Schema，语义来自模块作者。页面协议可表达、确定性工具可装配、外部服务已接通是三份独立证据。
+按任务或JSON路径查阅；作者协议版本、可读范围与能力下限以[页面、版本与布局](page.md)及本册[index.json](../../contracts/metriccanvas/page/reference/index.json)、[schema.json](../../contracts/metriccanvas/page/reference/schema.json)为准。结构来自Schema，语义来自模块作者。页面协议可表达、确定性工具可装配、外部服务已接通是三份独立证据。
+
+## 按使用场景查阅
+
+仓库中的统一使用入口为根目录 `PAGE-METADATA.md`，集中说明顶部时间筛选、级联查询及预览方式。本模块索引也分发到独立Bundle/Skill；下表中的模块与完整页面示例均随本册提供。
+
+| 使用场景 | 需要连起来配置的声明 | 完整页面示例 |
+|---|---|---|
+| 顶部切换时间并同步期间文字 | [报告页头](components/reportHeader.md)的 `filterIds` → [时间筛选](filters.md) → [查询绑定](queries-and-bindings.md)；[文本取值](params-and-text-values.md)显式引用已应用筛选 | [报告日期筛选](../../contracts/metriccanvas/page/reference/examples/report-date-filters-page.json)、[显式期间文字](../../contracts/metriccanvas/page/reference/examples/report-filter-text-page.json) |
+| 上游查询结果驱动下游明细 | [查询结果绑定](queries-and-bindings.md)的 `resultBindings` → [具名算子](compute.md) → 组件数据槽 | [级联查询](../../contracts/metriccanvas/page/reference/examples/query-cascade-page.json) |
+
+## 按模块查阅
 
 - [页面、版本与布局](page.md)：page
 - [页面参数与文本取值](params-and-text-values.md)：params-and-text-values

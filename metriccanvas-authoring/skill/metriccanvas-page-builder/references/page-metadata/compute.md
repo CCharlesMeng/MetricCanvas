@@ -1115,7 +1115,7 @@ Schema位置：`#/definitions/computeOperator/oneOf/9/properties/keyFields/items
 
 ## 联合分支见证（生成）
 
-- `#/definitions/computeOperator/oneOf/0`：[合法完整页面](examples/cross-source-page.json)，JSON Pointer `#/dataSources/customers/compute/0`。
+- `#/definitions/computeOperator/oneOf/0`：[合法完整页面](examples/query-cascade-page.json)，JSON Pointer `#/dataSources/project-efficiency-bottom5/compute/0`。
 - `#/definitions/computeOperator/oneOf/1`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/calc/compute/0`。
 - `#/definitions/computeOperator/oneOf/2`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/calc/compute/1`。
 - `#/definitions/computeOperator/oneOf/3`：[合法完整页面](examples/component-table.json)，JSON Pointer `#/dataSources/fill-1/compute/0`。
@@ -1127,4 +1127,4 @@ Schema位置：`#/definitions/computeOperator/oneOf/9/properties/keyFields/items
 - `#/definitions/computeOperator/oneOf/6`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/1`。
 - `#/definitions/computeOperator/oneOf/7`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/2`。
 - `#/definitions/computeOperator/oneOf/8`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/targets/compute/3`。
-- `#/definitions/computeOperator/oneOf/9`：[合法完整页面](examples/compute-page.json)，JSON Pointer `#/dataSources/pivoted/compute/0`。
+- `#/definitions/computeOperator/oneOf/9`：[合法完整页面](examples/query-cascade-page.json)，JSON Pointer `#/dataSources/project-efficiency-bottom5-stages/compute/0`。
