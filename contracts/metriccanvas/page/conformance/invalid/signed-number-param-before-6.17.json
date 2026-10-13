@@ -1,0 +1,94 @@
+{
+  "case": "signed-number-param-before-6.17",
+  "invariant": "signed-number-format-capability",
+  "input": {
+    "schemaVersion": "6.16",
+    "layout": "report",
+    "id": "inline-report",
+    "meta": {
+      "title": {
+        "param": "target",
+        "format": "number-signed"
+      }
+    },
+    "dataSources": {
+      "overview": {
+        "fields": {
+          "gmv": {
+            "type": "number",
+            "role": "measure",
+            "label": "成交总额",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "gmv": 632300000000
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "overview",
+        "components": [
+          {
+            "id": "report-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "经营简报",
+              "asOf": {
+                "label": "数据截至",
+                "value": "2026-07-21"
+              }
+            }
+          },
+          {
+            "id": "gmv-card",
+            "type": "metricCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "overview"
+            },
+            "props": {
+              "title": "GMV",
+              "rows": [
+                {
+                  "label": "当日",
+                  "valueField": {
+                    "data": "main",
+                    "field": "gmv",
+                    "format": "compact-yi-1"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "params": [
+      {
+        "id": "target",
+        "type": "number",
+        "required": true,
+        "default": 3
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/meta/title/format",
+      "message": "带符号普通数值格式，按展示精度统一零值方向 由 6.17 引入，文档声明的是 6.16"
+    }
+  ]
+}

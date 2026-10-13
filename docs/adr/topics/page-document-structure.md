@@ -2,6 +2,8 @@
 
 > 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。
 
+**带符号普通数值（[ADR-0103](../0103-signed-numbers-use-displayed-polarity.md)）：** 6.17 新增 `number-signed` 与 `number-1-signed`。新格式按展示精度统一符号、正负颜色与变化箭头，舍入到零时无符号、普通颜色、无箭头；固定颜色仍含有效零，已有格式保持原始方向规则。组件绑定拥有最终格式，数据与计算不变，6.16继续读取。
+
 **现行结论:** 页面文档局部、顺序地自描述:每个页面数据源在当前位置声明完整的结果字段契约,每个表格在当前组件中声明完整列;不提供 `fieldDefaults`、`fieldSets`、`columnSets` 或顶层 `definitions` 这类需要跳转才能理解含义的机制。`query` 数据源的标量字段可按 `dimensions`/`measures` 分组作为角色简写,结构化明细字段使用 `recordList/detail` 并就地声明项字段契约,DQE 已完成内容组合的受控富内容使用 `semanticHtml/detail`;查询字段须就地声明 `queryField`、`type` 等完整信息,具名算子产出字段就地声明类型与角色但不声明 `queryField`,不引入默认值、模板插值或表达式。
 
 查询结果绑定自6.14起以稳定数据源与原始维度字段显式声明下游维度集合输入，计算产出不作为查询输入；透视列可覆盖默认取值字段，有限主集合左关联与完整辅助源分别校验，保留此前可读版本（[ADR-0099](../0099-raw-query-result-bindings-and-bounded-left-joins.md)）。

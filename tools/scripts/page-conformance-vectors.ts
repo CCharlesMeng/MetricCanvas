@@ -55,6 +55,17 @@ function longString(length: number): string {
 
 export const invariants: InvariantDefinition[] = [
   {
+    id: 'signed-number-format-capability', description: '带符号普通数值格式由6.17引入',
+    valid: ['signed-number-page'], cases: [
+      { case: 'signed-number-binding-before-6.17', base: 'inline-report', expect: /由 6.17 引入/,
+        mutate: d => { d.schemaVersion = '6.16'; firstComponent(d,0,1).props.rows[0].valueField.format = 'number-1-signed'; } },
+      { case: 'signed-number-default-before-6.17', base: 'inline-report', expect: /由 6.17 引入/,
+        mutate: d => { d.schemaVersion = '6.16'; d.dataSources.overview.fields.gmv.defaultFormat = 'number-signed'; } },
+      { case: 'signed-number-param-before-6.17', base: 'inline-report', expect: /由 6.17 引入/,
+        mutate: d => { d.schemaVersion = '6.16'; d.params = [{ id:'target',type:'number',required:true,default:3 }]; d.meta = {title:{param:'target',format:'number-signed'}}; } }
+    ]
+  },
+  {
     id: 'explicit-color-local', description: '显式颜色只绑定数字且不与旧染色声明冲突',
     valid: ['explicit-presentation-page'], cases: [
       { case: 'color-rule-legacy-conflict', base: 'explicit-presentation-page', expect: /colorRule 不得/,

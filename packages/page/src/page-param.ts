@@ -107,6 +107,8 @@ export function isTextValueReference(value: unknown): value is TextValueReferenc
 const NUMERIC_FORMATS = new Set<ValueFormatPreset>([
   'number',
   'number-1',
+  'number-signed',
+  'number-1-signed',
   'number-2',
   'number-grouped',
   'compact-wan-0',

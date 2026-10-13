@@ -1,5 +1,5 @@
-import type { ColorRule, FieldValue, MetricCardChange, TableColumn } from '@metriccanvas/page/internal';
-import { finiteNumber, valuePolarity } from './value-format';
+import type { ColorRule, FieldValue, MetricCardChange, TableColumn, ValueFormatPreset } from '@metriccanvas/page/internal';
+import { finiteNumber, isSignedNumberFormat, valuePolarity } from './value-format';
 
 export type ValueColor = 'red' | 'green' | undefined;
 
@@ -9,28 +9,30 @@ export function valueColorStyle(color: ValueColor): string | undefined {
     : color === 'green' ? 'var(--mc-color-positive, #52c41a)' : undefined;
 }
 
-export function valueColor(value: FieldValue | undefined, rule: ColorRule): ValueColor {
+export function valueColor(value: FieldValue | undefined, rule: ColorRule, format?: ValueFormatPreset): ValueColor {
   const numeric = finiteNumber(value);
   if (numeric === undefined) return undefined;
   if (rule.mode === 'fixed') return rule.color;
-  return numeric > 0 ? rule.positive : numeric < 0 ? rule.negative : undefined;
+  const polarity = valuePolarity(numeric, format);
+  return polarity === 'positive' ? rule.positive : polarity === 'negative' ? rule.negative : undefined;
 }
 
 /** Explicit rules win only on validated inputs; old pages keep their documented color behavior. */
-export function tableValueColor(value: FieldValue | undefined, column: TableColumn): ValueColor {
-  if (column.colorRule) return valueColor(value, column.colorRule);
-  return column.visual === 'signed' ? legacyColor(value) : undefined;
+export function tableValueColor(value: FieldValue | undefined, column: TableColumn, format?: ValueFormatPreset): ValueColor {
+  if (column.colorRule) return valueColor(value, column.colorRule, format);
+  return column.visual === 'signed' ? legacyColor(value, format) : undefined;
 }
 
-export function changeValueColor(value: FieldValue | undefined, change: MetricCardChange): ValueColor {
-  if (change.colorRule) return valueColor(value, change.colorRule);
+export function changeValueColor(value: FieldValue | undefined, change: MetricCardChange, format?: ValueFormatPreset): ValueColor {
+  if (change.colorRule) return valueColor(value, change.colorRule, format);
+  if (isSignedNumberFormat(format) && valuePolarity(value, format) === 'neutral') return undefined;
   if (change.tone === 'neutral') return undefined;
   if (change.tone === 'positive') return 'green';
   if (change.tone === 'danger') return 'red';
-  return legacyColor(value);
+  return legacyColor(value, format);
 }
 
-function legacyColor(value: FieldValue | undefined): ValueColor {
-  const polarity = valuePolarity(value);
+function legacyColor(value: FieldValue | undefined, format?: ValueFormatPreset): ValueColor {
+  const polarity = valuePolarity(value, format);
   return polarity === 'positive' ? 'green' : polarity === 'negative' ? 'red' : undefined;
 }

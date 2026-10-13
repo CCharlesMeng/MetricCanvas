@@ -1,4 +1,34 @@
-"""Schema 6.16 presentation invariants shared with the product validator."""
+"""Schema 6.16/6.17 presentation invariants shared with the product validator."""
+
+from .filter_text_values import references
+
+
+def signed_number_paths(page):
+    formats = {"number-signed", "number-1-signed"}
+    result = []
+
+    def visit(node, path, name):
+        if isinstance(node, list):
+            for index, child in enumerate(node):
+                visit(child, f"{path}/{index}", name)
+        elif isinstance(node, dict):
+            for key, child in node.items():
+                pointer = f"{path}/{key.replace('~', '~0').replace('/', '~1')}"
+                if key == name and isinstance(child, str) and child in formats:
+                    result.append(pointer)
+                else:
+                    visit(child, pointer, name)
+
+    for source_id, source in page.get("dataSources", {}).items():
+        pointer = source_id.replace("~", "~0").replace("/", "~1")
+        visit(source.get("fields", {}), f"/dataSources/{pointer}/fields", "defaultFormat")
+    for si, section in enumerate(page.get("sections", [])):
+        for ci, component in enumerate(section.get("components", [])):
+            visit(component.get("props", {}), f"/sections/{si}/components/{ci}/props", "format")
+    visit(page.get("detailViews", []), "/detailViews", "format")
+    for kind in ("param", "filter"):
+        result.extend(f"{path}/format" for path, ref in references(page, kind) if ref.get("format") in formats)
+    return list(dict.fromkeys(result))
 
 
 def capability_paths(page, minor=None):

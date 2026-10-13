@@ -7,6 +7,20 @@ import { cartesianFrame } from '../src/shared/chart-presentation';
 import { init } from 'echarts';
 
 describe('numeric color rules', () => {
+  it('uses resolved display precision at both consumers while preserving fixed and old rules', () => {
+    const colorRule = { mode: 'sign', positive: 'red', negative: 'green' } as const;
+    for (const value of [0, -0, 0.04, -0.04, '0.04', '-0.04', null, Infinity]) {
+      expect(tableValueColor(value, { field: 'delta', colorRule }, 'number-1-signed')).toBeUndefined();
+      expect(changeValueColor(value, { label: '变化', field: 'delta', colorRule }, 'number-1-signed')).toBeUndefined();
+    }
+    for (const [value, expected] of [[0.05, 'red'], [-0.05, 'green']] as const) {
+      expect(tableValueColor(value, { field: 'delta', colorRule }, 'number-1-signed')).toBe(expected);
+      expect(changeValueColor(value, { label: '变化', field: 'delta', colorRule }, 'number-1-signed')).toBe(expected);
+    }
+    expect(valueColor(0.04, colorRule, 'number-1')).toBe('red');
+    expect(valueColor(0.04, { mode: 'fixed', color: 'green' }, 'number-1-signed')).toBe('green');
+    expect(changeValueColor(0.04, { label: '变化', field: 'delta', tone: 'positive' }, 'number-1-signed')).toBeUndefined();
+  });
   it('maps raw sign independently from display format and keeps zero/missing ordinary', () => {
     const rule = { mode: 'sign', positive: 'red', negative: 'green' } as const;
     expect([2, -2, 0, 0.00001, null, undefined].map(value => valueColor(value, rule)))

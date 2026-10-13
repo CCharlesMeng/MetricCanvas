@@ -80,14 +80,30 @@ def validate_page_document(value: Any) -> list[PageContractIssue]:
     return [*row_issues, *_invariant_issues(value), *_navigation_issues(value), *[PageContractIssue(*issue) for issue in report_date_issues(value)], *[PageContractIssue(*issue) for issue in query_result_issues(value, _resolved_fields)]]
 
 
+def _signed_number_capability_issues(value: Mapping[str, Any], minor: int) -> list[PageContractIssue]:
+    if minor >= 17:
+        return []
+    from .presentation import signed_number_paths
+    return [PageContractIssue("SCHEMA_ERROR", path, "带符号普通数值格式由6.17引入")
+            for path in signed_number_paths(value)]
+
+
+def _presentation_capability_issues(value: Mapping[str, Any], minor: int) -> list[PageContractIssue]:
+    from .presentation import capability_paths
+    return [PageContractIssue("SCHEMA_ERROR", path, "explicit colors and chart labels require 6.16")
+            for path in capability_paths(value, minor)]
+
+
 def _parameter_capability_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
     if isinstance(value.get("params"), Mapping) and not value["params"]:
         return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs cannot be empty")]
     minor = int(value["schemaVersion"].split(".")[1])
-    from .presentation import capability_paths as presentation_paths
-    paths = presentation_paths(value, minor)
-    if paths:
-        return [PageContractIssue("SCHEMA_ERROR", path, "explicit colors and chart labels require 6.16") for path in paths]
+    signed_issues = _signed_number_capability_issues(value, minor)
+    if signed_issues:
+        return signed_issues
+    presentation_issues = _presentation_capability_issues(value, minor)
+    if presentation_issues:
+        return presentation_issues
     if minor < 15:
         paths = _filter_text_capability_paths(value)
         if paths:
@@ -303,6 +319,8 @@ NUMERIC_FORMATS = frozenset(
     {
         "number",
         "number-1",
+        "number-signed",
+        "number-1-signed",
         "number-2",
         "number-grouped",
         "compact-wan-0",

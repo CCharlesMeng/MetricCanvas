@@ -1,6 +1,18 @@
 {
   "invariants": [
     {
+      "id": "signed-number-format-capability",
+      "description": "带符号普通数值格式由6.17引入",
+      "valid": [
+        "signed-number-page"
+      ],
+      "invalid": [
+        "signed-number-binding-before-6.17",
+        "signed-number-default-before-6.17",
+        "signed-number-param-before-6.17"
+      ]
+    },
+    {
       "id": "explicit-color-local",
       "description": "显式颜色只绑定数字且不与旧染色声明冲突",
       "valid": [

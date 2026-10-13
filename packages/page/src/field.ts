@@ -28,6 +28,8 @@ export const valueFormatPresets = [
   'text',
   'number',
   'number-1',
+  'number-signed',
+  'number-1-signed',
   'number-2',
   'number-grouped',
   'compact-wan-0',

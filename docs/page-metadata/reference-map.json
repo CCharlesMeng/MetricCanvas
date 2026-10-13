@@ -290,7 +290,8 @@
         "million-formats-page",
         "compute-page",
         "reference-branches-page",
-        "explicit-presentation-page"
+        "explicit-presentation-page",
+        "signed-number-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -305,7 +306,8 @@
         "field-binding-match",
         "explicit-color-local",
         "chart-value-label-exclusive",
-        "presentation-capability"
+        "presentation-capability",
+        "signed-number-format-capability"
       ]
     },
     "actions-and-navigation.md": {
@@ -1285,7 +1287,10 @@
     "red": "统一主题的红色，业务含义由当前声明确定。",
     "green": "统一主题的绿色，业务含义由当前声明确定。",
     "all": "全部类别名称同时呈现，不自动隐藏或只展示前20个。",
-    "6.16": "新增显式数字颜色、全部类别标签及常驻数值标签。"
+    "6.16": "新增显式数字颜色、全部类别标签及常驻数值标签。",
+    "number-signed": "保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。",
+    "number-1-signed": "保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。",
+    "6.17": "新增带符号普通数值格式，按展示精度统一符号、正负颜色与变化箭头。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

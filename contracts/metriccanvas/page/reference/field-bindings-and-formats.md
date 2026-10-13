@@ -6,6 +6,16 @@ format优先于字段defaultFormat；未设置时走组件/类型的既有格式
 
 text不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。
 
+## 带符号普通数值（6.17）
+
+`number-signed` 保留 `number` 的原始数值精度，正数加 `+`、负数保留 `-`、零无符号；`number-1-signed` 保留一位小数后判断符号。`1.24` 显示 `+1.2`，`-1.24` 显示 `-1.2`，`0.04`、`-0.04` 与负零均显示 `0.0`。不乘100、不追加百分号，适用于天数或次数的绝对变化。单位仍由组件的单位声明提供。空值及非有限数值显示缺失文案。
+
+```json
+{ "data": "main", "field": "avg-decision-time-change", "format": "number-1-signed" }
+```
+
+表格数字列与指标卡变化项采用以上格式时，`colorRule.mode: "sign"` 的颜色及变化箭头与展示精度一致：舍入后零为普通文字且无箭头；显示非零才按正负映射颜色和方向。字段 `defaultFormat` 继承后遵循相同规则，显式绑定 `format` 仍优先。`fixed` 颜色继续按声明包含有效零。既有格式（包括 `percent-2-signed`）继续按原始值判断方向。仅影响展示，不修改查询、原始数据、计算或排序；6.16 可读但不能声明这些新格式。
+
 
 ## 按百万呈现
 
@@ -23,9 +33,9 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 
 ## 显式数字颜色与图表标签（6.16）
 
-表格数字列及指标卡变化项可就地声明 `colorRule`。`{"mode":"fixed","color":"green"}` 对全部有效数字（包括零）固定染色；`{"mode":"sign","positive":"red","negative":"green"}` 按原始正负值映射。颜色只接受 `red` / `green`；正负模式的零和所有模式的缺失值保持普通文字颜色。字段绑定必须为 `number` / `money`。同一字段在不同展示位置可使用不同规则，不从数据源或页面继承颜色。
+表格数字列及指标卡变化项可就地声明 `colorRule`。`{"mode":"fixed","color":"green"}` 对全部有效数字（包括零）固定染色；`{"mode":"sign","positive":"red","negative":"green"}` 按原始正负值映射；6.17新增的带符号普通数值格式按展示精度判断，见上节。颜色只接受 `red` / `green`；正负模式的零和所有模式的缺失值保持普通文字颜色。字段绑定必须为 `number` / `money`。同一字段在不同展示位置可使用不同规则，不从数据源或页面继承颜色。
 
-`colorRule` 与表格 `visual: "signed"`、`dangerValues` 或指标卡旧 `tone` 同时声明时校验失败。旧页未使用新规则时保留旧染色与箭头行为；使用新规则的指标卡箭头独立按原始正负值显示 ↑ / ↓，颜色不控制方向。
+`colorRule` 与表格 `visual: "signed"`、`dangerValues` 或指标卡旧 `tone` 同时声明时校验失败。旧页未使用新规则时保留旧染色与箭头行为；使用新规则的指标卡箭头独立按方向显示 ↑ / ↓；6.17新增的带符号普通数值格式按展示精度，其余按原始正负值，颜色不控制方向。
 
 柱状图、折线图和柱线混合图可声明 `categoryLabels: {"mode":"all","rotate":45}`，全部展示完整类别名称，不自动抽样隐藏或默认缩放到前20个类别。`mode: "auto"` 保留原有类别显示策略；`rotate` 范围为 -90—90。横向柱状图作用于类别Y轴。
 
@@ -44,7 +54,7 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 6.15 新增 `period`：用于时间输入的统一展示，单点原值显示，范围“开始 至 结束”，同端点折叠为单点。`{filter, format:"period"}` 读取已应用状态；`{param, format:"period"}` 读取打开时的参数值。没有 period-compact 或自定义连接词。
 
 
-页面协议 6.16。结构真源为本册[schema.json](schema.json)，SHA256 `dcadb25a05482ffc03090b4d88f20b510da884519112de4f65646ee8658e9875`。字段表自动生成；可选不等于有默认值。
+页面协议 6.17。结构真源为本册[schema.json](schema.json)，SHA256 `5428ea4686046582f8446c1de4237ca36ac3e2be251cec3390329801185058f6`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -156,13 +166,15 @@ Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 只控制当前组件中这一次字段绑定的展示格式 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 只控制当前组件中这一次字段绑定的展示格式 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "text" | 普通文本格式，不能执行HTML。 |
 | "number" | 数值标量或原数值格式，按所在字段解释。 |
 | "number-1" | 保留1位小数。 |
+| "number-signed" | 保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。 |
+| "number-1-signed" | 保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。 |
 | "number-2" | 保留2位小数。 |
 | "number-grouped" | 千分位数值展示。 |
 | "compact-wan-0" | 按万缩放，0位小数。 |
@@ -457,6 +469,7 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - `explicit-color-local`：显式颜色只绑定数字且不与旧染色声明冲突。反例：[color-rule-legacy-conflict](errors/color-rule-legacy-conflict.json)、[color-rule-nonnumeric](errors/color-rule-nonnumeric.json)、[color-rule-tone-conflict](errors/color-rule-tone-conflict.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `chart-value-label-exclusive`：常驻数值标签不与旧标签重复启用。反例：[value-label-bar-conflict](errors/value-label-bar-conflict.json)、[value-label-line-conflict](errors/value-label-line-conflict.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `presentation-capability`：颜色与图表标签声明由6.16引入。反例：[presentation-before-6.16](errors/presentation-before-6.16.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `signed-number-format-capability`：带符号普通数值格式由6.17引入。反例：[signed-number-binding-before-6.17](errors/signed-number-binding-before-6.17.json)、[signed-number-default-before-6.17](errors/signed-number-default-before-6.17.json)、[signed-number-param-before-6.17](errors/signed-number-param-before-6.17.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -464,6 +477,7 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - [compute-page](examples/compute-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 - [explicit-presentation-page](examples/explicit-presentation-page.json)：完整合法页面；查询仅为静态契约证据。
+- [signed-number-page](examples/signed-number-page.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/primitives.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.16",
+  "schemaVersion": "6.17",
   "id": "business-sdt-report",
   "meta": {
     "description": "商务SDT行权效率专项报告"
@@ -2313,7 +2313,7 @@
               "label": "数据统计时间截至",
               "value": "2026年9月"
             },
-            "subtitle": "1.整体概况：2026年9月商务SDT行权效率报告。代表处SDT平均决策时长为0.5天，较上月+0.0天；地区部SDT平均决策时长为0.5天，较上月+0.0天；华为云计算SDT平均决策时长为0.5天，较上月+0.1天；<br>2.代表处SDT决策效率：决策时长最长的3个代表处为德国代表处（时长4.8天，较上月+4.8天）、东亚代表处（时长3.4天，较上月+2.0天）、国际总部（时长3.1天，较上月+2.8天）；决策时长最短的3个代表处为内蒙古代表处（时长0.0天，较上月-0.4天）、甘肃代表处（时长0.1天，较上月-0.8天）、中国总部（时长0.1天，较上月+0.0天）；<br>3.地区部SDT决策效率：决策时长最长的3个地区部为国际总部（时长3.1天，较上月+2.8天）、欧洲地区部（时长1.8天，较上月-0.4天）、北部非洲地区部（时长1.7天，较上月+0.7天）；决策时长最短的3个地区部为中国地区部（时长0.6天，较上月+0.1天）、巴基斯坦代表处（时长0.5天，较上月+0.5天）、ELS代表处（时长0.3天，较上月-16.6天）。",
+            "subtitle": "1.整体概况：2026年9月商务SDT行权效率报告。代表处SDT平均决策时长为0.5天，较上月0.0天；地区部SDT平均决策时长为0.5天，较上月0.0天；华为云计算SDT平均决策时长为0.5天，较上月+0.1天；<br>2.代表处SDT决策效率：决策时长最长的3个代表处为德国代表处（时长4.8天，较上月+4.8天）、东亚代表处（时长3.4天，较上月+2.0天）、国际总部（时长3.1天，较上月+2.8天）；决策时长最短的3个代表处为内蒙古代表处（时长0.0天，较上月-0.4天）、甘肃代表处（时长0.1天，较上月-0.8天）、中国总部（时长0.1天，较上月0.0天）；<br>3.地区部SDT决策效率：决策时长最长的3个地区部为国际总部（时长3.1天，较上月+2.8天）、欧洲地区部（时长1.8天，较上月-0.4天）、北部非洲地区部（时长1.7天，较上月+0.7天）；决策时长最短的3个地区部为中国地区部（时长0.6天，较上月+0.1天）、巴基斯坦代表处（时长0.5天，较上月+0.5天）、ELS代表处（时长0.3天，较上月-16.6天）。",
             "subtitleFormat": "semanticHtml",
             "decoration": "shortBar"
           }
@@ -2352,7 +2352,8 @@
                     "label": "月变化",
                     "field": {
                       "data": "main",
-                      "field": "avg-decision-time-change"
+                      "field": "avg-decision-time-change",
+                      "format": "number-1-signed"
                     },
                     "unit": "天",
                     "colorRule": {
@@ -2375,7 +2376,8 @@
                     "label": "月变化",
                     "field": {
                       "data": "compare",
-                      "field": "decision-count-change"
+                      "field": "decision-count-change",
+                      "format": "number-signed"
                     },
                     "unit": "次",
                     "colorRule": {
@@ -2416,7 +2418,8 @@
                     "label": "月变化",
                     "field": {
                       "data": "main",
-                      "field": "avg-decision-time-change"
+                      "field": "avg-decision-time-change",
+                      "format": "number-1-signed"
                     },
                     "unit": "天",
                     "colorRule": {
@@ -2439,7 +2442,8 @@
                     "label": "月变化",
                     "field": {
                       "data": "compare",
-                      "field": "decision-count-change"
+                      "field": "decision-count-change",
+                      "format": "number-signed"
                     },
                     "unit": "次",
                     "colorRule": {
@@ -2480,7 +2484,8 @@
                     "label": "月变化",
                     "field": {
                       "data": "main",
-                      "field": "avg-decision-time-change"
+                      "field": "avg-decision-time-change",
+                      "format": "number-1-signed"
                     },
                     "unit": "天",
                     "colorRule": {
@@ -2503,7 +2508,8 @@
                     "label": "月变化",
                     "field": {
                       "data": "compare",
-                      "field": "decision-count-change"
+                      "field": "decision-count-change",
+                      "format": "number-signed"
                     },
                     "unit": "次",
                     "colorRule": {
@@ -2666,7 +2672,11 @@
                 }
               },
               {
-                "field": "avg-decision-time-change",
+                "field": {
+                  "data": "main",
+                  "field": "avg-decision-time-change",
+                  "format": "number-1-signed"
+                },
                 "title": "平均决策时长环比上月",
                 "align": "right",
                 "colorRule": {
@@ -2751,7 +2761,11 @@
                 "align": "right"
               },
               {
-                "field": "avg-decision-time-change",
+                "field": {
+                  "data": "main",
+                  "field": "avg-decision-time-change",
+                  "format": "number-1-signed"
+                },
                 "title": "平均决策时长环比上月",
                 "align": "right",
                 "colorRule": {

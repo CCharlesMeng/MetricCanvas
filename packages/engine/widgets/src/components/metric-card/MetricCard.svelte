@@ -2,7 +2,7 @@
   import type { FieldBinding, MetricCardProps, Row } from '@metriccanvas/page/internal';
   import type { MetricDataSlots } from '../../shared/component-data';
   import { fieldRow, fieldValue, resolveField } from '../../shared/component-data';
-  import { formatValue, valuePolarity } from '../../shared/value-format';
+  import { formatValue, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
   import { changeValueColor, valueColorStyle } from '../../shared/value-color';
   import ProgressRing from './ProgressRing.svelte';
 
@@ -28,7 +28,8 @@
   ): string {
     const raw = fieldValue(field, data);
     const text = fieldText(field);
-    return tone === 'positive' && typeof raw === 'number' && raw > 0 ? `+${text}` : text;
+    const format = resolveField(field, data).format;
+    return tone === 'positive' && typeof raw === 'number' && raw > 0 && !isSignedNumberFormat(format) ? `+${text}` : text;
   }
 
   const progressValue = $derived(
@@ -78,8 +79,9 @@
           <div class="changes">
             {#each row.changes as change, changeIndex (`${change.label}:${changeIndex}`)}
               {@const raw = fieldValue(change.field, data)}
-              {@const color = changeValueColor(raw, change)}
-              {@const direction = change.colorRule ? valuePolarity(raw) : color === 'green' ? 'positive' : color === 'red' ? 'negative' : 'neutral'}
+              {@const format = resolveField(change.field, data).format}
+              {@const color = changeValueColor(raw, change, format)}
+              {@const direction = change.colorRule || isSignedNumberFormat(format) ? valuePolarity(raw, format) : color === 'green' ? 'positive' : color === 'red' ? 'negative' : 'neutral'}
               <span class:positive={color === 'green'} class:negative={color === 'red'} class:explicit-color={change.colorRule !== undefined} style:color={change.colorRule ? valueColorStyle(color) : undefined} class="change">
                 <span class="change-label">{change.label}</span>
                 <span class="change-value">

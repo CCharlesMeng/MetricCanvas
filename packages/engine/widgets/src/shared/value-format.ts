@@ -30,6 +30,9 @@ export function formatValue(
       return String(numeric);
     case 'number-1':
       return formatNumber(numeric, 1);
+    case 'number-signed':
+    case 'number-1-signed':
+      return signedNumberPresentation(numeric, format).text;
     case 'number-2':
       return formatNumber(numeric, 2);
     case 'number-grouped':
@@ -59,13 +62,29 @@ export function formatValue(
   }
 }
 
-/** 按原始数值正负返回语义色状态;非数值与 0 均为 neutral。 */
+/** 新增 signed 数值格式按展示精度判断方向；其它格式仍按原始值。 */
 export function valuePolarity(
-  value: FieldValue | undefined
+  value: FieldValue | undefined,
+  format?: ValueFormatPreset
 ): ValuePolarity {
   const numeric = finiteNumber(value);
   if (numeric === undefined || numeric === 0) return 'neutral';
+  if (isSignedNumberFormat(format)) return signedNumberPresentation(numeric, format).polarity;
   return numeric > 0 ? 'positive' : 'negative';
+}
+
+export function isSignedNumberFormat(
+  format: ValueFormatPreset | undefined
+): format is 'number-signed' | 'number-1-signed' {
+  return format === 'number-signed' || format === 'number-1-signed';
+}
+
+/** 文本与方向共用同一次舍入，负零及舍入到零均无符号。 */
+function signedNumberPresentation(value: number, format: 'number-signed' | 'number-1-signed') {
+  const magnitude = format === 'number-1-signed'
+    ? formatNumber(Math.abs(value), 1) : String(Math.abs(value));
+  const polarity: ValuePolarity = Number(magnitude) === 0 ? 'neutral' : value > 0 ? 'positive' : 'negative';
+  return { text: `${polarity === 'positive' ? '+' : polarity === 'negative' ? '-' : ''}${magnitude}`, polarity };
 }
 
 /**

@@ -82,6 +82,27 @@ describe('formatValue', () => {
 });
 
 describe('valuePolarity', () => {
+  it.each([
+    [1.24, '+1.2', 'positive'], [-1.24, '-1.2', 'negative'],
+    [0.04, '0.0', 'neutral'], [-0.04, '0.0', 'neutral'],
+    [0.05, '+0.1', 'positive'], [-0.05, '-0.1', 'negative'],
+    [0, '0.0', 'neutral'], [-0, '0.0', 'neutral'],
+    ['0.04', '0.0', 'neutral'], ['-0.05', '-0.1', 'negative'],
+    [null, '—', 'neutral'], [Infinity, '—', 'neutral'], [NaN, '—', 'neutral']
+  ] as const)('signed decimal text and direction agree for %s', (value, text, polarity) => {
+    expect(formatValue(value, 'number-1-signed')).toBe(text);
+    expect(valuePolarity(value, 'number-1-signed')).toBe(polarity);
+  });
+  it('preserves unrounded number precision and keeps old formats unchanged', () => {
+    expect(formatValue(3, 'number-signed')).toBe('+3');
+    expect(formatValue('-3', 'number-signed')).toBe('-3');
+    expect(formatValue(-0, 'number-signed')).toBe('0');
+    expect(formatValue(0.04, 'number-signed')).toBe('+0.04');
+    expect(formatValue(-0.04, 'number-signed')).toBe('-0.04');
+    expect(formatValue(null, 'number-signed', '暂无')).toBe('暂无');
+    expect(valuePolarity(-0.04, 'number-1')).toBe('negative');
+    expect(formatValue(0.004, 'percent-2-signed')).toBe('+0.00%');
+  });
   it('按数值及数值字符串返回语义状态', () => {
     expect(valuePolarity(4.24)).toBe('positive');
     expect(valuePolarity('-2.52')).toBe('negative');

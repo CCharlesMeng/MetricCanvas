@@ -424,7 +424,7 @@
               {#if columnField(column) !== mergedColumnField || rowSpans[i] !== 0}
                 {@const resolved = resolveField(column.field, data)}
                 {@const rawValue = alignedFieldValue(column.field, data, row)}
-                {@const color = tableValueColor(rawValue, column)}
+                {@const color = tableValueColor(rawValue, column, resolved.format)}
                 {@const semanticPresentation = semanticHtmlFieldPresentation(
                   resolved,
                   rawValue,

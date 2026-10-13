@@ -1,0 +1,34 @@
+{
+  "case": "signed-number-binding-before-6.17",
+  "invariant": "signed-number-format-capability",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "带符号普通数值格式，按展示精度统一零值方向 由 6.17 引入，文档声明的是 6.16",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/valueField/format"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "rows": [
+                {
+                  "valueField": {
+                    "format": "number-1-signed"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/signed-number-binding-before-6.17.json"
+}
