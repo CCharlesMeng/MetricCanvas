@@ -37,7 +37,7 @@ try {
   await expect(page.getByText(/服务端已保存修订 R3/)).toBeVisible(); expect(commands).toHaveLength(2);
   oldDocument = structuredClone(commands[1].document); oldDocument.sections[0].components[0].props.title = '历史内容';
   // Read a stable paginated history then restore the exact selected revision.
-  await page.getByRole('button', { name: '页面历史', exact: true }).click();
+  await page.getByRole('button', { name: '页面设置', exact: true }).click(); await page.getByRole('button', { name: '页面历史', exact: true }).click();
   await page.getByRole('button', { name: '加载更多历史' }).click();
   await expect(page.getByRole('button', { name: '恢复 old-2', exact: true })).toBeVisible();
   await page.getByRole('button', { name: '恢复 old-1', exact: true }).click();
@@ -50,11 +50,11 @@ try {
   await page.getByRole('checkbox', { name: '启用历史替身' }).check(); await embedded.check(); await inspector.getByRole('button', { name: /历史内容/ }).click();
   await inspector.getByLabel('组件标题').fill('恢复后继续编辑'); await inspector.getByLabel('组件标题').press('Tab');
   await expect(page.getByText(/服务端已保存修订 R5/)).toBeVisible(); expect(commands[3].base.revisionId).toBe('r4');
-  await page.getByRole('button', { name: '页面历史', exact: true }).click();
+  await page.getByRole('button', { name: '页面设置', exact: true }).click(); await page.getByRole('button', { name: '页面历史', exact: true }).click();
   duplicate = true; await page.getByRole('button', { name: '加载更多历史' }).click();
   await expect(page.getByText(/历史分页出现重复修订/)).toBeVisible();
   // The real capability remains unavailable when the explicit fixture is not selected.
   await embedded.uncheck(); await page.getByRole('checkbox', { name: '启用历史替身' }).uncheck(); await embedded.check();
-  await page.getByRole('button', { name: '页面历史', exact: true }).click(); await expect(page.getByText(/尚未开放页面历史/)).toBeVisible();
+  await page.getByRole('button', { name: '页面设置', exact: true }).click(); await page.getByRole('button', { name: '页面历史', exact: true }).click(); await expect(page.getByText(/尚未开放页面历史/)).toBeVisible();
   console.log('T15 browser PASS: offline undo appends compensation, stable history pagination, exact old restore produces new revision, reopen then edit, unavailable lifecycle is explicit.');
 } finally { await browser.close(); }

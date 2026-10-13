@@ -41,6 +41,20 @@ it('publishes an extracted 6.5 template through the actual coordinator and singl
 });
 
 describe('Java YAML assets boundary',()=>{
+ it('projects YAML directory metadata without requesting definitions and tolerates missing or malformed field summaries',async()=>{
+  installRuntimeConfig(config);
+  const fetchImpl=vi.fn(async(_input:RequestInfo|URL)=>Response.json({retCode:'CBC.0000',total:3,page_metadata_list:[
+   {...receipt,created_at:'2026-10-01T00:00:00Z',supported_fields:JSON.stringify({metrics:['营业额','营业额',{label:'订单数'}],dimensions:[{name:'地区'}]})},
+   {...receipt,page_metadata_id:'no-summary'},
+   {...receipt,page_metadata_id:'bad-summary',supported_fields:'{broken'}
+  ]}));
+  const result=await createPageAssetsClient({fetchImpl}).list({page:1,pageSize:20});
+  expect(result.items[0]).toMatchObject({createdAt:'2026-10-01T00:00:00Z',supportedFields:{metrics:['营业额','订单数'],dimensions:['地区']}});
+  expect(result.items.slice(1).map(item=>item.supportedFields)).toEqual([null,null]);
+  expect(result.items).toHaveLength(3);
+  expect(String(fetchImpl.mock.calls[0][0])).toContain('needDefinition=false');
+ });
+
  it('lists distinct resources, encodes direct reads, and needs no DQE configuration',async()=>{
   installRuntimeConfig(config);const calls:string[]=[];
   const api=createPageAssetsClient({fetchImpl:async(input)=>{const url=String(input);calls.push(url);return Response.json(url.includes('?')?{retCode:'CBC.0000',total:2,page_metadata_list:[receipt,{...receipt,page_metadata_id:'resource/2'}]}:receipt);}});

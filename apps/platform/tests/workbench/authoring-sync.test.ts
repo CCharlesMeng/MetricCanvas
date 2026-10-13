@@ -11,7 +11,7 @@ const hash = (command: DurableSaveCommand) => createHash('sha256').update(JSON.s
 function saved(command: DurableSaveCommand, index: number): StrongSaved {
   return { status: 'saved', operationId: command.context.operationId, base: command.base, ref: { pageId: command.pageId, resourceId: 'resource', revisionId: `r${index}` }, contentHash: hash(command), canonicalization: 'fixture-json/1', revisionNumber: index };
 }
-function setup() {
+function setup(manualSave = false) {
   const writes: DurableAuthoringState[] = []; let failStorage = false; let identity = 'alice';
   const storage: AuthoringStorage<DurableAuthoringState> = {
     async read() { return null; }, async write(_scope, version, value) { if (failStorage) throw Error('quota'); writes.push(structuredClone(value)); return version + 1; }
@@ -22,7 +22,7 @@ function setup() {
     lookup: vi.fn<StableSavePort['lookup']>(async (context) => ({ status: 'unknown', operationId: context.operationId })),
     async verifySaved(command, receipt) { return receipt.contentHash === hash(command); }
   };
-  const sync = createAuthoringSync({ initial: { format: 1, scope: { actorId: 'alice', workspaceId: 'w', pageId: 'sync-page' }, base: { pageId: 'sync-page', revisionId: 'r1', resourceId: 'resource' }, draft: draft('initial'), queue: [] }, storage, port,
+  const sync = createAuthoringSync({ manualSave, initial: { format: 1, scope: { actorId: 'alice', workspaceId: 'w', pageId: 'sync-page' }, base: { pageId: 'sync-page', revisionId: 'r1', resourceId: 'resource' }, draft: draft('initial'), queue: [] }, storage, port,
     identity: () => ({ actorId: identity, workspaceId: 'w' }), operationId: () => `op-${++operation}` });
   return { sync, port, writes, failStorage: (value: boolean) => { failStorage = value; }, changeIdentity: () => { identity = 'bob'; } };
 }
@@ -109,4 +109,28 @@ it('never writes a new identity edit into the previous identity scope', async ()
   changeIdentity(); await sync.enqueue(draft('new-user'), 'new', true); await sync.retry();
   expect(writes).toEqual(before); expect(port.save).not.toHaveBeenCalled();
   expect(sync.snapshot().phase).toBe('identity-changed'); sync.dispose();
+});
+
+
+describe('explicit manual save', () => {
+ it('protects repeated edits and local undo without any network write, then saves one final snapshot', async () => {
+  const {sync,port,writes}=setup(true);sync.start();await settle();
+  await sync.enqueue(draft('one'),'first input',true);await sync.enqueue(draft('two'),'last input',true);
+  expect(port.save).not.toHaveBeenCalled();expect(sync.snapshot()).toMatchObject({dirty:true,pending:0,protection:'protected'});
+  expect(writes.at(-1)).toMatchObject({format:3,localDirty:true,queue:[]});
+  const previous=await sync.undo();expect(JSON.stringify(previous)).toContain('one');expect(port.save).not.toHaveBeenCalled();
+  await sync.enqueue(draft('final'),'last unblurred input',true);await sync.commit();
+  expect(port.save).toHaveBeenCalledTimes(1);expect(JSON.stringify(vi.mocked(port.save).mock.calls[0][0].document)).toContain('final');
+  expect(sync.snapshot()).toMatchObject({dirty:false,pending:0,protection:'protected'});await sync.commit();expect(port.save).toHaveBeenCalledTimes(1);sync.dispose();
+ });
+ it('storage failure cannot send an unprotected draft; retrying protection still requires explicit Save',async()=>{
+  const {sync,port,failStorage}=setup(true);failStorage(true);await sync.enqueue(draft('protected later'),'input',true);
+  expect(await sync.protect()).toBe(false);expect(port.save).not.toHaveBeenCalled();failStorage(false);expect(await sync.protect()).toBe(true);sync.setOnline(false);sync.setOnline(true);await settle();expect(port.save).not.toHaveBeenCalled();await sync.commit();expect(port.save).toHaveBeenCalledTimes(1);sync.dispose();
+ });
+ it('refresh restores local dirty content without sending and keeps a lost acknowledgement on its original operation',async()=>{
+  const {sync,port,writes}=setup(true);await sync.enqueue(draft('local'),'input',true);const local=structuredClone(writes.at(-1)!);sync.dispose();
+  const write=vi.fn(async(_scope,version:number,_value:DurableAuthoringState)=>version+1);
+  const restored=createAuthoringSync({manualSave:true,initial:local,restoredVersion:1,storage:{async read(){return null;},write},port,identity:()=>({actorId:'alice',workspaceId:'w'})});restored.start();await settle();expect(port.save).not.toHaveBeenCalled();expect(restored.snapshot().dirty).toBe(true);
+  port.save=vi.fn<StableSavePort['save']>(async command=>({status:'unknown',operationId:command.context.operationId}));await restored.commit();const calls=vi.mocked(port.save).mock.calls;expect(calls).toHaveLength(1);await restored.commit();expect(port.save).toHaveBeenCalledTimes(1);expect(restored.snapshot()).toMatchObject({phase:'unknown',pending:1});restored.dispose();
+ });
 });

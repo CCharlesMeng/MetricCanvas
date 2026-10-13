@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "contract_sha256": "9320aff178d2067324546dab8f3ef0218f6dcbb9f299162bcac66435de910452",
+  "page_available": true,
+  "observed": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "route": "/tests/browser/index.html"
+  },
+  "environment": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "dpr": 1,
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+    "scroll": {
+      "width": 1440,
+      "height": 919
+    }
+  },
+  "rules": {
+    "R3-1-button-style": {
+      "status": "ok",
+      "actual": [
+        {
+          "height": "32px",
+          "font-size": "14px",
+          "border-radius": "6px"
+        }
+      ],
+      "locator_used": {
+        "strategy": "css",
+        "selector": "[aria-label=\"表单\"] .mc-ui-button"
+      },
+      "matched": 1
+    },
+    "R3-2-input-style": {
+      "status": "ok",
+      "actual": [
+        {
+          "height": "32px",
+          "font-size": "14px",
+          "border-radius": "6px",
+          "padding-left": "12px",
+          "padding-right": "12px",
+          "border-top-color": "rgb(194, 194, 194)"
+        }
+      ],
+      "locator_used": {
+        "strategy": "css",
+        "selector": "input[aria-label=\"标题\"]"
+      },
+      "matched": 1
+    },
+    "R3-3-grid-header": {
+      "status": "ok",
+      "actual": [
+        {
+          "padding": "4px 16px",
+          "background-color": "rgb(245, 245, 245)"
+        }
+      ],
+      "locator_used": {
+        "strategy": "css",
+        "selector": "th:first-child"
+      },
+      "matched": 1
+    },
+    "R3-3-grid-title": {
+      "status": "ok",
+      "actual": [
+        {
+          "font-size": "14px",
+          "line-height": "21px",
+          "font-weight": "400",
+          "color": "rgb(89, 89, 89)"
+        }
+      ],
+      "locator_used": {
+        "strategy": "css",
+        "selector": "th:first-child .mc-ui-grid-cell"
+      },
+      "matched": 1
+    },
+    "R3-4-select-panel": {
+      "status": "ok",
+      "actual": [
+        {
+          "border-radius": "6px",
+          "padding": "8px 0px",
+          "box-shadow": "rgba(0, 0, 0, 0.08) 0px 4px 16px 0px"
+        }
+      ],
+      "locator_used": {
+        "strategy": "css",
+        "selector": "[role=\"listbox\"]"
+      },
+      "matched": 1
+    },
+    "R3-4-select-item": {
+      "status": "ok",
+      "actual": [
+        {
+          "height": "32px",
+          "padding": "0px 16px",
+          "line-height": "21px"
+        }
+      ],
+      "locator_used": {
+        "strategy": "css",
+        "selector": "[role=\"option\"]:first-child"
+      },
+      "matched": 1
+    },
+    "R6-1-no-overflow": {
+      "status": "ok",
+      "actual": 0,
+      "locator_used": {
+        "strategy": "css",
+        "selector": "main"
+      },
+      "matched": 1
+    }
+  }
+}

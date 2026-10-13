@@ -1,4 +1,4 @@
-export type LeaveGuard = () => boolean | Promise<boolean>;
+export type LeaveGuard = (destination?: URL) => boolean | Promise<boolean>;
 export function normalizeRouteBase(base: string): string {
   if (!base.startsWith('/') || /[?#\\]/.test(base) || base.includes('//') || /%|(?:^|\/)\.{1,2}(?:\/|$)/.test(base)) throw Error('routeBase 必须是绝对路径前缀。');
   return base.replace(/\/+$/, '');
@@ -18,11 +18,11 @@ export function createPlatformNavigation(container: HTMLElement, routeBase: stri
   const guards = new Map<LeaveGuard, () => boolean>(), listeners = new Set<(url: URL) => void>();
   const state = () => ({...history.state, [stateKey]:{instance,index}});
   history.replaceState(state(), '', url);
-  function canLeave(): boolean | Promise<boolean> {
+  function canLeave(destination?:URL): boolean | Promise<boolean> {
     const checks=[...guards.keys()];
     function check(index:number):boolean|Promise<boolean> {
       if(index===checks.length)return true;
-      const result=checks[index]();
+      const result=checks[index](destination);
       return typeof result==='boolean' ? result && check(index+1) : result.then(allowed=>allowed && check(index+1));
     }
     return check(0);
@@ -34,7 +34,7 @@ export function createPlatformNavigation(container: HTMLElement, routeBase: stri
     if (destroyed || pending || next.href === url.href) return false;
     pending=true;
     try {
-      if (!await canLeave() || destroyed) return false;
+      if (!await canLeave(next) || destroyed) return false;
       if (!options.replaceState) index++;
       history[options.replaceState ? 'replaceState' : 'pushState'](state(), '', next);
       publish(next);return true;
@@ -54,7 +54,7 @@ export function createPlatformNavigation(container: HTMLElement, routeBase: stri
     const next = new URL(location.href);
     if (!isPlatformPath(next.pathname,base)) return;
     const entry = history.state?.[stateKey];
-    const allowed = !pending && await canLeave();
+    const allowed = !pending && await canLeave(next);
     if (destroyed) return;
     if (allowed) {index=entry?.instance === instance ? entry.index : index;publish(next);}
     else if (entry?.instance === instance && entry.index !== index) {restoring=true;history.go(index-entry.index);}

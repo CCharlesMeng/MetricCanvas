@@ -1,5 +1,5 @@
 <script lang="ts">
-  import DatePicker from '../../src/filters/DatePicker.svelte';
+  import { DatePicker } from '@metriccanvas/ui';
   import FilterBar from '../../src/filters/FilterBar.svelte';
   import type { TimeRangeValue } from '@metriccanvas/page/internal';
   import type { FilterValue } from '../../../runtime/src';

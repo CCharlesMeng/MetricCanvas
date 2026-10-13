@@ -55,7 +55,7 @@ const measurements=[];
     await page.setViewportSize({width,height:1000});
     await page.goto(`${platformUrl}?page=${encodeURIComponent(pageId)}&resource=${encodeURIComponent(resourceId)}`);
     await expect(page.getByText(header.props.title,{exact:true}).first()).toBeVisible();
-    if (fixtureData.paginationExpectation) await page.getByRole('button', { name: '当前修订预览', exact: true }).click();
+    if (fixtureData.paginationExpectation) {await page.getByRole('button', { name: '预览当前页面', exact: true }).click();await page.getByRole('button', { name: '预览内容', exact: true }).click();await page.getByRole('option', { name: '已保存内容', exact: true }).click();}
     await expect(page.getByText(firstRegion,{exact:true}).first()).toBeVisible();
     if(pageId==='main-flow-complex-report'){
       await expect(page.getByText('通用',{exact:true}).first()).toBeVisible();

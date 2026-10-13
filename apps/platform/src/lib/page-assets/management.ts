@@ -9,20 +9,22 @@ export interface ActionRecord { status: 'sending' | 'confirmed' | 'rejected' | '
 export function createAssetManagement(assets: PageAssets,
   records: AuthoringStorage<ActionRecord> = createIndexedAuthoringStorage(),
   drafts: AuthoringStorage<DurableAuthoringState> = createIndexedAuthoringStorage(),
-  readConfig = readPageAssetsRuntimeConfig) {
+  readConfig = readPageAssetsRuntimeConfig,
+  checkWork?: (asset:AssetRef)=>boolean) {
   let busy = false;
   async function run<T>(asset: AssetRef, action: ActionRecord['action'], execute: () => Promise<MutationOutcome<T>>, version?: number): Promise<MutationOutcome<T>> {
     if (busy) return {status:'rejected',code:'BUSY',message:'当前操作尚未结束。'};
     const identity = readConfig();
     if (!identity) return {status:'rejected',code:'UNAUTHENTICATED',message:'身份配置不可用。'};
-    const scope = {actorId:identity.operatorId,workspaceId:identity.workspaceId,...asset};
+    const scope = {serviceTarget:JSON.stringify([identity.pageMetadataBaseUrl,identity.dqeEndpoint]),actorId:identity.operatorId,workspaceId:identity.workspaceId,...asset};
     const actionScope = {...scope, channel:'management' as const};
+    if(checkWork&&!checkWork(asset))return {status:'rejected',code:'UNSYNCHRONIZED',message:'此页面仍有未保存或未决工作，请先在工作台处理。'};
     busy = true;
     try {
       const legacy = await drafts.read({actorId:scope.actorId,workspaceId:scope.workspaceId,pageId:scope.pageId});
       if (legacy?.value.queue.length) return {status:'rejected',code:'UNSYNCHRONIZED',message:'存在旧版未决工作，请先人工核实。'};
       const draft = await drafts.read(scope);
-      if (draft?.value.queue.length) return {status:'rejected',code:'UNSYNCHRONIZED',message:'此页面仍有未同步工作，请先在工作台处理。'};
+      if (draft?.value.localDirty || draft?.value.queue.length) return {status:'rejected',code:'UNSYNCHRONIZED',message:'此页面仍有未同步工作，请先在工作台处理。'};
       const previous = await records.read(actionScope);
       if (previous && ['sending','unknown'].includes(previous.value.status)) return {status:'unknown',message:'上次管理操作结果未确认，已停止再次写入。'};
       const current = readConfig();
@@ -40,7 +42,7 @@ export function createAssetManagement(assets: PageAssets,
         const restored = createCanvasAuthoringDraft({...revision.document});
         if (!restored.ok) throw Error(restored.message);
         // Rollback may reset revision numbering; replace the old confirmed projection.
-        await drafts.write(scope,draft?.version ?? 0,{format:2,scope,
+        await drafts.write(scope,draft?.version ?? 0,{format:3,localDirty:false,scope,
           base:{...asset,revisionId:revision.revisionId},draft:restored.draft,queue:[],confirmed:revision});
       }
       await records.write(actionScope,next,{status:outcome.status,action,version});

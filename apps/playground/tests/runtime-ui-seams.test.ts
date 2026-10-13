@@ -18,11 +18,8 @@ describe('Runtime UI Module Seam', () => {
   it('统一运行时不得通过全局 class 选择器修改纯渲染组件内部 DOM', () => {
     const violations = sourceFiles(runtimeUiRoot).flatMap((file) => {
       const source = readFileSync(file, 'utf8');
-      // DatePicker owns its popover markup; its Tiny OS rules are confined to that namespace.
-      const ownsDatePicker = file === resolve(runtimeUiRoot, 'filters/DatePicker.svelte')
-        && /class=["']mc-date-picker["']/u.test(source);
+      // Neutral DatePicker styles now belong to @metriccanvas/ui, outside this module.
       return [...source.matchAll(/:global\(\.([^)]+)\)/gu)]
-        .filter(match => !(ownsDatePicker && match[1].startsWith('mc-date-picker ')))
         .map((match) => ({
         file,
         selector: match[0]

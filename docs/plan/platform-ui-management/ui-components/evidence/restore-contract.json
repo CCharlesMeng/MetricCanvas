@@ -1,0 +1,122 @@
+{
+  "baseline_sha256": "de024b621fc455a97ebd6db77d492e60c7f0b17640455e307fa12486c1a30a46",
+  "contract_sha256": "9320aff178d2067324546dab8f3ef0218f6dcbb9f299162bcac66435de910452",
+  "rules": [
+    {
+      "baseline_id": "R3-1",
+      "check_mode": "numeric",
+      "expected": [
+        {
+          "border-radius": "6px",
+          "font-size": "14px",
+          "height": "32px"
+        }
+      ],
+      "id": "R3-1-button-style",
+      "scenario": "1440x900 默认",
+      "subject": "Button 默认尺寸",
+      "tolerance": {
+        "css_px": 1.0
+      }
+    },
+    {
+      "baseline_id": "R3-2",
+      "check_mode": "numeric",
+      "expected": [
+        {
+          "border-radius": "6px",
+          "border-top-color": "#c2c2c2",
+          "font-size": "14px",
+          "height": "32px",
+          "padding-left": "12px",
+          "padding-right": "12px"
+        }
+      ],
+      "id": "R3-2-input-style",
+      "scenario": "1440x900 默认",
+      "subject": "Input 默认样式",
+      "tolerance": {
+        "css_px": 1.0
+      }
+    },
+    {
+      "baseline_id": "R3-3",
+      "check_mode": "numeric",
+      "expected": [
+        {
+          "background-color": "#f5f5f5",
+          "padding": "4px 16px"
+        }
+      ],
+      "id": "R3-3-grid-header",
+      "scenario": "1440x900 默认",
+      "subject": "Grid 表头间距背景",
+      "tolerance": {
+        "css_px": 1.0
+      }
+    },
+    {
+      "baseline_id": "R3-3",
+      "check_mode": "numeric",
+      "expected": [
+        {
+          "color": "#595959",
+          "font-size": "14px",
+          "font-weight": "400",
+          "line-height": "21px"
+        }
+      ],
+      "id": "R3-3-grid-title",
+      "scenario": "1440x900 默认",
+      "subject": "Grid 表头内层文字",
+      "tolerance": {
+        "css_px": 1.0
+      }
+    },
+    {
+      "baseline_id": "R3-4",
+      "check_mode": "numeric",
+      "expected": [
+        {
+          "border-radius": "6px",
+          "box-shadow": "rgba(0, 0, 0, 0.08) 0px 4px 16px 0px",
+          "padding": "8px 0px"
+        }
+      ],
+      "id": "R3-4-select-panel",
+      "scenario": "先打开 Select",
+      "subject": "Select 面板",
+      "tolerance": {
+        "css_px": 1.0
+      }
+    },
+    {
+      "baseline_id": "R3-4",
+      "check_mode": "numeric",
+      "expected": [
+        {
+          "height": "32px",
+          "line-height": "21px",
+          "padding": "0px 16px"
+        }
+      ],
+      "id": "R3-4-select-item",
+      "scenario": "先打开 Select",
+      "subject": "Select 选项",
+      "tolerance": {
+        "css_px": 1.0
+      }
+    },
+    {
+      "baseline_id": "R6-1",
+      "check_mode": "overflow",
+      "id": "R6-1-no-overflow",
+      "scenario": "390x700",
+      "subject": "390 文档无横向溢出",
+      "tolerance": {
+        "css_px": 1.0
+      }
+    }
+  ],
+  "schema_version": 3
+}

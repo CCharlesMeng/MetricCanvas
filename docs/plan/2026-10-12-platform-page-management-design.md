@@ -1,5 +1,10 @@
 # Platform 页面管理功能与交互设计
 
+> 2026-10-13 清理：目录状态筛选移入列头，新建与刷新并排放在表格顶部；按 Java YAML 列表投影补充修订号、指标与维度摘要、创建时间，资源 ID 与修订 ID 放入悬停提示。按用户修订保留目录行内“编辑”，品牌改为纯标识，旧 /ask 跳转创作；预览入口统一并区分工作副本／已保存内容，共用阅读工具栏。管理工具面沿用 OpenTiny OS Theme Grid、Select、Tag、Pagination，使用 14px 正文、20px 标题、24px 常规留白及窄屏 16px 留白。旧样式与静态原型移入 docs/archive/platform-prototypes-2026-10-13，仍使用的开发验收页面保留。本轮不使用 sdd-dev-frontend，回归结果直接报告。
+
+> 2026-10-12 后续用户修订：减少按钮及重复入口，编辑与详情合并。当前目录名称和“编辑”直接进入页面搭建工作台；“预览”为独立阅读模式。删除目录的“更多 → 页面详情”，原详情链接兼容进入工作台并展开“页面设置”。页面信息、草稿历史和删除当前记录统一收进工作台的折叠区。常用主动作使用统一 32px 主按钮，次要动作用统一 28px 文字／图标入口，组件形态选择改为下拉框。下文旧版“独立详情页／名称进入详情”的安排由这次明确要求覆盖；高级生命周期及提供方边界保持原决策。本轮按用户要求不使用 sdd-dev-frontend。
+
+
 页面管理面向个人存量页面，帮助用户找到页面、继续创作、确认发布和整理存量。采用平铺目录与独立详情页，常用入口直接可见，低频和危险动作按需展开。草稿与发布内容隔离，历史先预览再恢复，删除为永久删除。
 
 状态：2026-10-12 用户确认当前交互并要求落盘，包括预览中的进入编辑入口。交互作为后续实施基线；视觉另按 TinyVue OS Theme 演进，见[风格与组件复用方案](2026-10-12-platform-os-theme-component-architecture.md)。服务能力与正式实施仍需按配合清单核验。
@@ -51,7 +56,7 @@
 
 ## 现有能力与缺口
 
-当前 `/manage` 支持全部、草稿、已发布筛选，20 条分页、刷新与新建。详情支持当前内容预览、编辑、草稿历史摘要、按指定版本恢复和删除。名称展示不一致：列表突出页面 ID，详情把描述作为标题；页面文档实际已有 `meta.title`。[列表](../../apps/platform/src/lib/views/ManagementList.svelte)、[详情](../../apps/platform/src/lib/views/ManagementDetail.svelte)、[页面标题规则](../../packages/page/src/page-list-entry.ts)。
+当前 `/manage` 支持全部、草稿、已发布筛选，20 条分页、刷新与新建。详情支持当前内容预览、编辑、草稿历史摘要、按指定版本恢复和删除。名称展示不一致：列表突出页面 ID，详情把描述作为标题；页面文档实际已有 `meta.title`。[列表](../../apps/platform/src/lib/views/ManagementList.svelte)、[详情](../../apps/platform/src/lib/views/PageReading.svelte)、[页面标题规则](../../packages/page/src/page-list-entry.ts)。
 
 当前 Java 接入对同一资源进行草稿保存和发布状态更新，不保证独立发布副本；平台没有独立的发布内容读取链路。历史接口只返回摘要，恢复接口返回恢复后的完整页面，但没有恢复前历史正文读取、恢复追加修订或跨窗口基线检查保证。[现行生命周期结论](../adr/topics/page-lifecycle-and-publish-governance.md)、[ADR 0080](../adr/0080-java-assets-single-attempt-save-and-status-publication.md)、[Java 契约](../../service/platform-java.yaml)。
 

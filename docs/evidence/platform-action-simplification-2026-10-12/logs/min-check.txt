@@ -1,0 +1,5 @@
+$ svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json
+Loading svelte-check in workspace: /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-compatibility-3Nh1ab/5.29.0/source/apps/platform
+Getting Svelte diagnostics...
+
+svelte-check found 0 errors and 0 warnings

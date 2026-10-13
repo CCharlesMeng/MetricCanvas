@@ -26,7 +26,8 @@
   },
   "dependencies": {
     "@metriccanvas/page": "workspace:*",
-    "echarts": "^6.1.0"
+    "echarts": "^6.1.0",
+    "@metriccanvas/ui": "workspace:0.1.0"
   },
   "peerDependencies": {
     "svelte": ">=5.29.0 <6"

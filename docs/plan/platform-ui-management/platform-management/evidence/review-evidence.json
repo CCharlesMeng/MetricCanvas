@@ -1,0 +1,972 @@
+{
+  "code": {
+    "base_ref": "1e941d5f",
+    "code_fingerprint": "bc2f74cf944f7d5fd8678b5d790512258ff1421273d62b058859edf4b540a0ae",
+    "files": [
+      {
+        "path": ".github/workflows/ci.yml",
+        "sha256": "32f8e2311078178d9ebb82de32aa44e012f343d4cead39f7ad986b448d7dd539"
+      },
+      {
+        "path": "apps/platform/package.json",
+        "sha256": "201469b359fac8c78f8166fb73bac4893f3bc7d820e764c3257cca59c559c12e"
+      },
+      {
+        "path": "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+        "sha256": "1a2c767dee2b7fc1f5a4457bd926a9c68ef0fa00189393f62995f6a06c1e6aa5"
+      },
+      {
+        "path": "apps/platform/src/lib/PlatformFrame.svelte",
+        "sha256": "d08ca271561c4fa19a9ff58933649b37e30257741e16cc5c0db94a7b5c6a1eb0"
+      },
+      {
+        "path": "apps/platform/src/lib/PlatformRoot.svelte",
+        "sha256": "bf0db21e36e969bee0301458b25523dcfa33ccabaa343c91459cfc2efa85e6bd"
+      },
+      {
+        "path": "apps/platform/src/lib/integration/navigation.ts",
+        "sha256": "9273c4ee4fc8da2eb494e4c27108b6acba2231fd04e2d89ef85f8e5c98d38ea3"
+      },
+      {
+        "path": "apps/platform/src/lib/integration/services.ts",
+        "sha256": "1af7490ea4901a8f51e63e81311758f0ad1b30a65c05235afbd7334f0c185229"
+      },
+      {
+        "path": "apps/platform/src/lib/page-assets.ts",
+        "sha256": "09ffa1264ad1ca5d7d7977fbc5c876a7ba1c4f795b26c7b3fc35677cecb64e1b"
+      },
+      {
+        "path": "apps/platform/src/lib/page-assets/management.ts",
+        "sha256": "fcfb1c2adc6c80f7dc526f9730bd018c2437981a945d51ecbd326406b424a063"
+      },
+      {
+        "path": "apps/platform/src/lib/views/ManagementDetail.svelte",
+        "sha256": "ec81cf739464570cea643b5dd6282c494abd0f5fac2a23d1093f5a191e40c862"
+      },
+      {
+        "path": "apps/platform/src/lib/views/ManagementList.svelte",
+        "sha256": "53050743b086d2b7d3845561297757df9725897ca6dc955f21356f50f511cfcd"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/ComponentProperties.svelte",
+        "sha256": "b4d3fdea92fc9016b9b68ac79eda9c8c8458777e46dbeb027ccde628696260e5"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/Inspector.svelte",
+        "sha256": "e1db48f9abc215bae964ab030e2074fecf0f4a1fdde1db32f753ecfc9e3c97a0"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/MetadataJsonDrawer.svelte",
+        "sha256": "a08d2a8633e49fa7612363b49774912b8fa1e0290506fc1cbf2ac47092783f95"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+        "sha256": "9fd77a93910416843485f3bf2e36b4abb2aa85ac1d05006b75e876696aaddcb4"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/authoring-coordinator.ts",
+        "sha256": "3d07a5abd319e7974f0a8df216ef375d4e18bf52daf8032d664862fd4f1ab131"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/authoring-recovery.ts",
+        "sha256": "064fc644f497ed29a64b4ea8e8dad9972f2ec5c0487e403a65a33a312837b00c"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/authoring-storage.ts",
+        "sha256": "5827c4ab7d163ec32182119ebe11dd1c9c207520a33fbce4561114de5433ff42"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/authoring-sync.ts",
+        "sha256": "6b3cb2ecdb2b45687f743f1dd7dc392cd448cd8b4316b46d8597807a98a16a44"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/document-edit.ts",
+        "sha256": "e3314382581feb2c99752d5ada1bbaae9f1ed6f308204a7bfa5837473ee755d1"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/work-session.ts",
+        "sha256": "87c91effc994d900eb4ce3a46035c60de0dd92db9371bff49607614e32a42a1f"
+      },
+      {
+        "path": "apps/platform/tests/microfrontend/production-browser.mjs",
+        "sha256": "959fb816320634462cebcb452a390b682f65f3f4de85fbc66df798fd72f46453"
+      },
+      {
+        "path": "apps/platform/tests/workbench/authoring-language.test.ts",
+        "sha256": "19ef8450c657db183c756c7712cff71d6b5fa535c597c16d40a30a10e09a6026"
+      },
+      {
+        "path": "apps/platform/tests/workbench/authoring-sync.test.ts",
+        "sha256": "528d67ff3f1b6a9842735b69b75e4648ce6458de69097f41645b8d5895ef9007"
+      },
+      {
+        "path": "apps/platform/tests/workbench/document-edit.test.ts",
+        "sha256": "212989c3e2c77997bb3515e557cd506ea7e2245b65b005b60b1f2a593c548c73"
+      },
+      {
+        "path": "apps/platform/tests/workbench/platform-management-browser.mjs",
+        "sha256": "9daaa3ce08deea5bacf2c2f610070223300cc19da3662346d86181e81bd6560b"
+      },
+      {
+        "path": "apps/platform/tests/workbench/work-session.test.ts",
+        "sha256": "8391fb78a6480c61c9e4863b51c3fb3b82a4a99870b3beb9c59817ef77b1e48f"
+      },
+      {
+        "path": "apps/playground/tests/runtime-ui-seams.test.ts",
+        "sha256": "9b82e8c721ae11bbd2f19635b677d0f9b5432c5776c7897189ad55a8579b4aaf"
+      },
+      {
+        "path": "contracts/metriccanvas/manifest.json",
+        "sha256": "d352d12f01c9e82ebdb4ef3105264f5100dcbf1de0c87a426691a1bd06f68e3d"
+      },
+      {
+        "path": "contracts/metriccanvas/page/reference/index.json",
+        "sha256": "33ef336e2ced0320ffb541f1997ca1a32f9e688b9bc21f92b4040d28d098c4b0"
+      },
+      {
+        "path": "metriccanvas-authoring/bundle.lock.json",
+        "sha256": "baeb4014c302b01820750e1515e782ad8167815a9c5440af00693a5a399b11f3"
+      },
+      {
+        "path": "metriccanvas-authoring/contract-lock.json",
+        "sha256": "17e274b441a86f7100c866381f73ef40759aa6c5031f35938c951ff3c8ffe9df"
+      },
+      {
+        "path": "metriccanvas-authoring/contract-snapshot/manifest.json",
+        "sha256": "d352d12f01c9e82ebdb4ef3105264f5100dcbf1de0c87a426691a1bd06f68e3d"
+      },
+      {
+        "path": "metriccanvas-authoring/contract-snapshot/page/reference/index.json",
+        "sha256": "33ef336e2ced0320ffb541f1997ca1a32f9e688b9bc21f92b4040d28d098c4b0"
+      },
+      {
+        "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/index.json",
+        "sha256": "33ef336e2ced0320ffb541f1997ca1a32f9e688b9bc21f92b4040d28d098c4b0"
+      },
+      {
+        "path": "package.json",
+        "sha256": "5b0e38795649dbe65af25213c1f376cc8b93917165e197a1196f8c7c24ef5fee"
+      },
+      {
+        "path": "packages/embed/tests/browser/embed.spec.ts",
+        "sha256": "d6ed2e820a35b989270d53eb25ebe115f576f97a02a11ba6a20fd5ebba6556b9"
+      },
+      {
+        "path": "packages/embed/tests/browser/presentation.spec.ts",
+        "sha256": "a64312f4a80bcb0e18103ccd86bc10b8318568206feefdfcb9faf80230a3c62a"
+      },
+      {
+        "path": "packages/embed/tests/browser/section-navigation.spec.ts",
+        "sha256": "10a430d2a07a4ad1d5ac0c893a68c4d55604743d7c4fa429c82d37de4f4ef39b"
+      },
+      {
+        "path": "packages/engine/package.json",
+        "sha256": "bd7139ed9cdca39fbc1c0594321237d91dcd8e4d360d19ab283fedea89e18631"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/DatePicker.svelte",
+        "sha256": "deleted"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/DatePickerIcon.svelte",
+        "sha256": "deleted"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "sha256": "c21bcfabdf6dd1e24b57c9f33933918dcb1ea79051807427bf2156cce27c0cd1"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "sha256": "986e8fac31243b6e796a26def88beea74765f29f5e2f02e9d392a5bbb76e8856"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/date-picker.ts",
+        "sha256": "deleted"
+      },
+      {
+        "path": "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "sha256": "83b8194f1894d33dfacf04a3986bec195ed3999b443563f9f687a1a293e3d126"
+      },
+      {
+        "path": "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "sha256": "5b73a705510a8bae01aedf39e8e26a2d70343338267f34462235810403c24832"
+      },
+      {
+        "path": "packages/engine/widgets/src/shared/EChart.svelte",
+        "sha256": "88cfd06e42893d2567d0ae257de4fb173d0bb6d33634dd8b1b870eab55d0ae74"
+      },
+      {
+        "path": "packages/ui/LICENSE",
+        "sha256": "908f8fc657fff912e0910c4b279a88424713c26c96afa5e8de6de6414f6f0a11"
+      },
+      {
+        "path": "packages/ui/fixtures/calendar-conformance.ts",
+        "sha256": "5ce5ecdf54a638cc894c705139326ced675ba46f834749a061640eb3f11df2c9"
+      },
+      {
+        "path": "packages/ui/package.json",
+        "sha256": "d692c4c4b999a39566566c09992545d4d9ca3f15fdeff6901ceb1fd6feecb833"
+      },
+      {
+        "path": "packages/ui/playwright.config.ts",
+        "sha256": "4149727a390c307743d5b885fdcf59cc96b05d9a5057eca47d38c5afb6333971"
+      },
+      {
+        "path": "packages/ui/scripts/freeze-os-theme.mjs",
+        "sha256": "0f60336f36a089d24481403b9a16972e42d67ee562b99676afb908ba1a72fdc4"
+      },
+      {
+        "path": "packages/ui/src/components/button/Button.svelte",
+        "sha256": "8d3957d2a6a6539e7ad6558f8d01c01c272d050e87dd18e7ce0cd4abd208b175"
+      },
+      {
+        "path": "packages/ui/src/components/date-picker/DatePicker.svelte",
+        "sha256": "091e2aa7e9016ff0bb855d348b9120f41332fcc43061085335ac3d74e6f0e2e7"
+      },
+      {
+        "path": "packages/ui/src/components/date-picker/DatePickerIcon.svelte",
+        "sha256": "8966990b37c63de1a9ef42b669daf3c7b1f6f11cc74fa5c65f92597a081b855f"
+      },
+      {
+        "path": "packages/ui/src/components/date-picker/calendar.ts",
+        "sha256": "b5cc5e2854748e52e5215cffd0676a6bd90b6bf08114d5687a1c86d64016b9df"
+      },
+      {
+        "path": "packages/ui/src/components/dialog/Dialog.svelte",
+        "sha256": "3a86d7384bdc3ac42b259a1075f98e648c64d00bd0bb2301bd3a1bca98a54cc9"
+      },
+      {
+        "path": "packages/ui/src/components/dropdown/Dropdown.svelte",
+        "sha256": "8d2b3907dcc3a6701cb04c69902505489cb8c5903764b7d2c973f67d967f84f6"
+      },
+      {
+        "path": "packages/ui/src/components/empty/Empty.svelte",
+        "sha256": "beffd333b5f5f42b0d9d9564d93744d14a97e8e0c5b655caae8a709337b38da9"
+      },
+      {
+        "path": "packages/ui/src/components/grid/Grid.svelte",
+        "sha256": "fc0f586ec1076d4aad81dc1b70bd7869259f106100d4ae774765213798725553"
+      },
+      {
+        "path": "packages/ui/src/components/input/Input.svelte",
+        "sha256": "5449b0440fa56c701ad9afe288879289adea479f73142d4cc35fa5d14b1ea3cd"
+      },
+      {
+        "path": "packages/ui/src/components/pagination/Pagination.svelte",
+        "sha256": "96aa2b4d051b276591ac95dfaafd943298bcc96d438236cfc25348039dcc84a8"
+      },
+      {
+        "path": "packages/ui/src/components/select/Select.svelte",
+        "sha256": "d541e22b2b427d216f4cc957b3dd55ce1b36fdf640d7fb9b82d38f9927357bfd"
+      },
+      {
+        "path": "packages/ui/src/components/tabs/Tabs.svelte",
+        "sha256": "5d1ead90d027140df02638e92f45bac0b9034e87a8f07a56eb2b5007e0284015"
+      },
+      {
+        "path": "packages/ui/src/components/tag/Tag.svelte",
+        "sha256": "c94500b54022a82212e0c6bbbe4f8695b60c8f8106f1530202ec51d788a78526"
+      },
+      {
+        "path": "packages/ui/src/components/textarea/Textarea.svelte",
+        "sha256": "4f72dad63660236fd44f95413ca2d0842cac6388f979e62a798326b8b48dafa9"
+      },
+      {
+        "path": "packages/ui/src/index.ts",
+        "sha256": "2f4cd3a6a88496a18ebc3dac0b9ee2e99c686d2795466f8cea513778d870bde9"
+      },
+      {
+        "path": "packages/ui/src/shared/Theme.svelte",
+        "sha256": "c1cb0b27f1324b40ace31720f72ed01933707c671fdb8c8f7ad22e52fc77482d"
+      },
+      {
+        "path": "packages/ui/src/shared/popover.ts",
+        "sha256": "aa6ae97d146f38295525dac3402dfd3cfbc07b6476c9be2ce873de5c4964c40c"
+      },
+      {
+        "path": "packages/ui/src/types.ts",
+        "sha256": "1ed867a9909a00aff3aa8d1c9d143bd90279b0ff0c66c413e23efdb44592c7d6"
+      },
+      {
+        "path": "packages/ui/svelte.config.js",
+        "sha256": "f8d6d85f6117ea9a3f144faf9e98786b7494754e29b9106e6e0865d6e2c5b880"
+      },
+      {
+        "path": "packages/ui/tests/browser/UiHarness.svelte",
+        "sha256": "c7845fd57e561be114770f5688a4952d46b7e5ad16f67256e2829bc4fbe22938"
+      },
+      {
+        "path": "packages/ui/tests/browser/capture-boundaries.mjs",
+        "sha256": "cc9018a5644b117503d14c0b67ddbdc4232a05ead0aa1cfb13f55be63a5b678d"
+      },
+      {
+        "path": "packages/ui/tests/browser/components.spec.ts",
+        "sha256": "42c558219771cbc053e3abf6c36d90cf4cd41232813d82a6174a315edfaef574"
+      },
+      {
+        "path": "packages/ui/tests/browser/main.ts",
+        "sha256": "642fc8c706602b216b81f91372e3d69bc460257dff8e2676a3fb87aa70efb9d6"
+      },
+      {
+        "path": "packages/ui/tests/browser/restore.spec.ts",
+        "sha256": "0d67d83bf91fda1b70fd8e98cdae339a517f518f0a4499aa227822f01b5fc1cc"
+      },
+      {
+        "path": "packages/ui/tests/calendar.test.ts",
+        "sha256": "41bd7c0f3108d4ec92831c82766dd71f08a89e46270aa32fc4608dcdc5837b73"
+      },
+      {
+        "path": "packages/ui/tsconfig.build.json",
+        "sha256": "23877b5d7eaa9444c52fa1c538caa45eaa78590eba7845ecc13a52bee5695ad3"
+      },
+      {
+        "path": "packages/ui/tsconfig.json",
+        "sha256": "4ea1a5038785e00956495dd8c177e9b7c0f63ef68196626cb61aa8d7ce8f0bfa"
+      },
+      {
+        "path": "packages/ui/tsconfig.test.json",
+        "sha256": "a08bf1ced03fbced848d9bc9a675471574d07c80573677210f2f37ff62742c02"
+      },
+      {
+        "path": "packages/ui/vite.config.ts",
+        "sha256": "7fef8402c047a2c505afe64b6eacbfe85343716d6bf018c168e86f89a08edc04"
+      },
+      {
+        "path": "pnpm-lock.yaml",
+        "sha256": "e5bd2d8ed910b31429bd622f855d097d8fc6a80db22052142f893c1dc69fc809"
+      },
+      {
+        "path": "tests/public-api.test.ts",
+        "sha256": "daedb09cccea80230c7c5ddd0df757b24ba79c5156fad88c9a0d35273db9ce77"
+      },
+      {
+        "path": "tools/package-build/build.mjs",
+        "sha256": "6dab6d16c6b93e72b4be2720ed846b35e5ab0ef3ffff0dd36aae8ee6bedc44e7"
+      },
+      {
+        "path": "tools/package-build/check.ts",
+        "sha256": "8cf316938767203bbf3b0df89249d02ffd35e3580ce60a0abdeaadf34a6a4636"
+      },
+      {
+        "path": "tools/package-build/compatibility.mjs",
+        "sha256": "5ac10a2bf0d23f089efc3560e5ea42782b8e3860c20b122b0965a009868336b1"
+      },
+      {
+        "path": "tools/package-build/fixtures/ui-only/App.svelte",
+        "sha256": "f4f31552617376637211363896ffb0a117a5e6de1bf6866ef3ebfc0f57cd7239"
+      },
+      {
+        "path": "tools/package-build/fixtures/ui-only/main.ts",
+        "sha256": "766b16477aab9a443d98a29339cc0282abf8bbae589d92de622494452dd1727a"
+      },
+      {
+        "path": "tools/package-build/fixtures/ui-only/svelte.config.js",
+        "sha256": "450f0af4f4c1ecc4c7180f2e364c8a59bfed69dd350fb6b47bce8641c2a37786"
+      },
+      {
+        "path": "tools/package-build/fixtures/ui-only/tsconfig.json",
+        "sha256": "fec1d588467d60aaf45ccc4c856e49795579a2918a93a9156c9be372333c73b9"
+      },
+      {
+        "path": "tools/package-build/fixtures/ui-only/vite.config.js",
+        "sha256": "41c3933f17eadf09fcdd36a076ec634a47b37253f046227b2b4dfe1ef8e38c64"
+      },
+      {
+        "path": "tools/package-build/surface.ts",
+        "sha256": "c4efabb622778ab7b32227222025c212d3f85717b1713e6af78a49802d0d9e28"
+      }
+    ],
+    "head": "1e941d5f6b084b5d59cc9682e834798a824af70a"
+  },
+  "evidence_epoch": "review-final",
+  "quality_gate": {
+    "code_fingerprint": "bc2f74cf944f7d5fd8678b5d790512258ff1421273d62b058859edf4b540a0ae",
+    "commands": [
+      {
+        "command": "pnpm test (isolated source, current + minimum Svelte)",
+        "duration_ms": 53940,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/evidence/platform-ui-management-2026-10-12/compatibility/manifest.json",
+        "name": "full-unit",
+        "passed": 1772,
+        "scope": "1772 pass / 4 skipped per version at b6 tree; later platform UI and two added manualSave test cases verified separately. No full-unit rerun claimed for final tree.",
+        "skipped": 4,
+        "source_tree": "b6c855feb90adb47816c384817ea36faeebb91f9"
+      },
+      {
+        "command": "pnpm --filter platform check",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-platform-save-state-check.txt",
+        "name": "platform-check"
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/ui check",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-ui-final-check.txt",
+        "name": "ui-check"
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/ui test:browser --project=chrome",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-ui-final-controls.txt",
+        "name": "ui-browser-chrome"
+      },
+      {
+        "command": "node apps/platform/tests/workbench/platform-management-browser.mjs",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-platform-save-state-browser2.txt",
+        "name": "platform-browser-fixture"
+      },
+      {
+        "command": "node apps/platform/tests/microfrontend/production-browser.mjs",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-platform-save-state-micro.txt",
+        "name": "microfrontend-fixture"
+      },
+      {
+        "command": "pnpm exec vitest run apps/platform/tests/workbench/authoring-language.test.ts",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-manual-language-final.txt",
+        "name": "manual-language-current"
+      },
+      {
+        "command": "pnpm exec vitest run apps/platform/tests/workbench/authoring-language.test.ts (isolated minimum Svelte)",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-manual-language-min-final.txt",
+        "name": "manual-language-minimum"
+      },
+      {
+        "command": "pnpm --filter platform exec tsc --noEmit -p tsconfig.test.json",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-manual-language-types-final.txt",
+        "name": "manual-language-types-current"
+      },
+      {
+        "command": "pnpm --filter platform exec tsc --noEmit -p tsconfig.test.json (isolated minimum Svelte)",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-manual-language-types-min-final.txt",
+        "name": "manual-language-types-minimum"
+      }
+    ]
+  },
+  "runtime": {
+    "account": "test-user",
+    "api_mode": "HTTP fixtures only",
+    "browser": "Chrome 155.0.8059.39",
+    "dpr": 1,
+    "driver": "repository Playwright",
+    "font_fingerprint": "system Arial fallback; fixed OS Theme font stack",
+    "role": "fixture",
+    "tenant": "test-workspace",
+    "url": "loopback Vite fixture"
+  },
+  "scenarios": [
+    {
+      "artifacts": [
+        "docs/plan/platform-ui-management/platform-management/evidence/artifacts/management-1440.png",
+        "docs/plan/platform-ui-management/platform-management/evidence/artifacts/management-390.png",
+        "docs/plan/platform-ui-management/platform-management/evidence/artifacts/reading-1440.png",
+        "docs/plan/platform-ui-management/platform-management/evidence/artifacts/browser-result.json"
+      ],
+      "captured_at_code_fingerprint": "bc2f74cf944f7d5fd8678b5d790512258ff1421273d62b058859edf4b540a0ae",
+      "captured_dependency_hashes": {
+        "apps/platform/src/lib/PageAuthoringWorkbench.svelte": "1a2c767dee2b7fc1f5a4457bd926a9c68ef0fa00189393f62995f6a06c1e6aa5",
+        "apps/platform/src/lib/PlatformFrame.svelte": "d08ca271561c4fa19a9ff58933649b37e30257741e16cc5c0db94a7b5c6a1eb0",
+        "apps/platform/src/lib/PlatformRoot.svelte": "bf0db21e36e969bee0301458b25523dcfa33ccabaa343c91459cfc2efa85e6bd",
+        "apps/platform/src/lib/integration/navigation.ts": "9273c4ee4fc8da2eb494e4c27108b6acba2231fd04e2d89ef85f8e5c98d38ea3",
+        "apps/platform/src/lib/integration/services.ts": "1af7490ea4901a8f51e63e81311758f0ad1b30a65c05235afbd7334f0c185229",
+        "apps/platform/src/lib/page-assets.ts": "09ffa1264ad1ca5d7d7977fbc5c876a7ba1c4f795b26c7b3fc35677cecb64e1b",
+        "apps/platform/src/lib/page-assets/management.ts": "fcfb1c2adc6c80f7dc526f9730bd018c2437981a945d51ecbd326406b424a063",
+        "apps/platform/src/lib/views/ManagementDetail.svelte": "ec81cf739464570cea643b5dd6282c494abd0f5fac2a23d1093f5a191e40c862",
+        "apps/platform/src/lib/views/ManagementList.svelte": "53050743b086d2b7d3845561297757df9725897ca6dc955f21356f50f511cfcd",
+        "apps/platform/src/lib/workbench/ComponentProperties.svelte": "b4d3fdea92fc9016b9b68ac79eda9c8c8458777e46dbeb027ccde628696260e5",
+        "apps/platform/src/lib/workbench/Inspector.svelte": "e1db48f9abc215bae964ab030e2074fecf0f4a1fdde1db32f753ecfc9e3c97a0",
+        "apps/platform/src/lib/workbench/MetadataJsonDrawer.svelte": "a08d2a8633e49fa7612363b49774912b8fa1e0290506fc1cbf2ac47092783f95",
+        "apps/platform/src/lib/workbench/ReportDateProperties.svelte": "9fd77a93910416843485f3bf2e36b4abb2aa85ac1d05006b75e876696aaddcb4",
+        "apps/platform/src/lib/workbench/authoring-coordinator.ts": "3d07a5abd319e7974f0a8df216ef375d4e18bf52daf8032d664862fd4f1ab131",
+        "apps/platform/src/lib/workbench/authoring-recovery.ts": "064fc644f497ed29a64b4ea8e8dad9972f2ec5c0487e403a65a33a312837b00c",
+        "apps/platform/src/lib/workbench/authoring-storage.ts": "5827c4ab7d163ec32182119ebe11dd1c9c207520a33fbce4561114de5433ff42",
+        "apps/platform/src/lib/workbench/authoring-sync.ts": "6b3cb2ecdb2b45687f743f1dd7dc392cd448cd8b4316b46d8597807a98a16a44",
+        "apps/platform/src/lib/workbench/document-edit.ts": "e3314382581feb2c99752d5ada1bbaae9f1ed6f308204a7bfa5837473ee755d1",
+        "apps/platform/src/lib/workbench/work-session.ts": "87c91effc994d900eb4ce3a46035c60de0dd92db9371bff49607614e32a42a1f",
+        "docs/plan/2026-10-12-platform-page-management-design.md": "61fa757f6171d35df3424095843c3f46b5f0a775afd116bff6cc7e7f30be93a8",
+        "packages/ui/src/components/button/Button.svelte": "8d3957d2a6a6539e7ad6558f8d01c01c272d050e87dd18e7ce0cd4abd208b175",
+        "packages/ui/src/components/date-picker/DatePicker.svelte": "091e2aa7e9016ff0bb855d348b9120f41332fcc43061085335ac3d74e6f0e2e7",
+        "packages/ui/src/components/date-picker/DatePickerIcon.svelte": "8966990b37c63de1a9ef42b669daf3c7b1f6f11cc74fa5c65f92597a081b855f",
+        "packages/ui/src/components/date-picker/calendar.ts": "b5cc5e2854748e52e5215cffd0676a6bd90b6bf08114d5687a1c86d64016b9df",
+        "packages/ui/src/components/dialog/Dialog.svelte": "3a86d7384bdc3ac42b259a1075f98e648c64d00bd0bb2301bd3a1bca98a54cc9",
+        "packages/ui/src/components/dropdown/Dropdown.svelte": "8d2b3907dcc3a6701cb04c69902505489cb8c5903764b7d2c973f67d967f84f6",
+        "packages/ui/src/components/empty/Empty.svelte": "beffd333b5f5f42b0d9d9564d93744d14a97e8e0c5b655caae8a709337b38da9",
+        "packages/ui/src/components/grid/Grid.svelte": "fc0f586ec1076d4aad81dc1b70bd7869259f106100d4ae774765213798725553",
+        "packages/ui/src/components/input/Input.svelte": "5449b0440fa56c701ad9afe288879289adea479f73142d4cc35fa5d14b1ea3cd",
+        "packages/ui/src/components/pagination/Pagination.svelte": "96aa2b4d051b276591ac95dfaafd943298bcc96d438236cfc25348039dcc84a8",
+        "packages/ui/src/components/select/Select.svelte": "d541e22b2b427d216f4cc957b3dd55ce1b36fdf640d7fb9b82d38f9927357bfd",
+        "packages/ui/src/components/tabs/Tabs.svelte": "5d1ead90d027140df02638e92f45bac0b9034e87a8f07a56eb2b5007e0284015",
+        "packages/ui/src/components/tag/Tag.svelte": "c94500b54022a82212e0c6bbbe4f8695b60c8f8106f1530202ec51d788a78526",
+        "packages/ui/src/components/textarea/Textarea.svelte": "4f72dad63660236fd44f95413ca2d0842cac6388f979e62a798326b8b48dafa9",
+        "packages/ui/src/index.ts": "2f4cd3a6a88496a18ebc3dac0b9ee2e99c686d2795466f8cea513778d870bde9",
+        "packages/ui/src/shared/Theme.svelte": "c1cb0b27f1324b40ace31720f72ed01933707c671fdb8c8f7ad22e52fc77482d",
+        "packages/ui/src/shared/popover.ts": "aa6ae97d146f38295525dac3402dfd3cfbc07b6476c9be2ce873de5c4964c40c",
+        "packages/ui/src/types.ts": "1ed867a9909a00aff3aa8d1c9d143bd90279b0ff0c66c413e23efdb44592c7d6",
+        "service/platform-java.yaml": "104a63c5a52055da4d3791e6b0d7a4bd4bf19a194fbb55c3989556e68675f776"
+      },
+      "captured_runtime": {
+        "account": "test-user",
+        "api_mode": "HTTP fixtures only",
+        "browser": "Chrome 155.0.8059.39",
+        "dpr": 1,
+        "driver": "repository Playwright",
+        "font_fingerprint": "system Arial fallback; fixed OS Theme font stack",
+        "role": "fixture",
+        "tenant": "test-workspace",
+        "url": "loopback Vite fixture"
+      },
+      "depends_on": [
+        "apps/platform/src/lib/workbench/authoring-storage.ts",
+        "apps/platform/src/lib/workbench/ComponentProperties.svelte",
+        "apps/platform/src/lib/views/ManagementList.svelte",
+        "apps/platform/src/lib/workbench/MetadataJsonDrawer.svelte",
+        "apps/platform/src/lib/workbench/work-session.ts",
+        "apps/platform/src/lib/PlatformRoot.svelte",
+        "packages/ui/src/components/dropdown/Dropdown.svelte",
+        "packages/ui/src/components/tag/Tag.svelte",
+        "packages/ui/src/shared/popover.ts",
+        "packages/ui/src/components/date-picker/calendar.ts",
+        "packages/ui/src/shared/Theme.svelte",
+        "packages/ui/src/types.ts",
+        "apps/platform/src/lib/integration/navigation.ts",
+        "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+        "packages/ui/src/components/select/Select.svelte",
+        "packages/ui/src/components/dialog/Dialog.svelte",
+        "apps/platform/src/lib/workbench/document-edit.ts",
+        "packages/ui/src/components/textarea/Textarea.svelte",
+        "packages/ui/src/components/date-picker/DatePicker.svelte",
+        "apps/platform/src/lib/integration/services.ts",
+        "apps/platform/src/lib/workbench/Inspector.svelte",
+        "apps/platform/src/lib/workbench/authoring-recovery.ts",
+        "apps/platform/src/lib/views/ManagementDetail.svelte",
+        "apps/platform/src/lib/PlatformFrame.svelte",
+        "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+        "apps/platform/src/lib/page-assets/management.ts",
+        "apps/platform/src/lib/workbench/authoring-sync.ts",
+        "packages/ui/src/index.ts",
+        "packages/ui/src/components/empty/Empty.svelte",
+        "packages/ui/src/components/button/Button.svelte",
+        "apps/platform/src/lib/workbench/authoring-coordinator.ts",
+        "apps/platform/src/lib/page-assets.ts",
+        "packages/ui/src/components/input/Input.svelte",
+        "packages/ui/src/components/grid/Grid.svelte",
+        "packages/ui/src/components/date-picker/DatePickerIcon.svelte",
+        "packages/ui/src/components/pagination/Pagination.svelte",
+        "packages/ui/src/components/tabs/Tabs.svelte",
+        "service/platform-java.yaml",
+        "docs/plan/2026-10-12-platform-page-management-design.md"
+      ],
+      "fixture": {
+        "name": "platform-management",
+        "sha256": "9daaa3ce08deea5bacf2c2f610070223300cc19da3662346d86181e81bd6560b"
+      },
+      "id": "BE-1",
+      "network": [
+        {
+          "header_names": [
+            "x-auth-token"
+          ],
+          "method": "GET",
+          "path": "/fixture-assets/user-page-metadata",
+          "query": "?pageNo=1&pageSize=20&needDefinition=false&isDraft=true",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        },
+        {
+          "header_names": [
+            "x-auth-token"
+          ],
+          "method": "GET",
+          "path": "/fixture-assets/user-page-metadata",
+          "query": "?pageNo=1&pageSize=20&needDefinition=false&isDraft=true",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        },
+        {
+          "header_names": [
+            "x-auth-token"
+          ],
+          "method": "GET",
+          "path": "/fixture-assets/user-page-metadata/metadata-1",
+          "query": "",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        },
+        {
+          "header_names": [
+            "x-auth-token"
+          ],
+          "method": "GET",
+          "path": "/fixture-assets/user-page-metadata",
+          "query": "?pageNo=1&pageSize=20&needDefinition=false&isDraft=true",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        },
+        {
+          "header_names": [
+            "content-type",
+            "x-auth-token"
+          ],
+          "method": "PUT",
+          "observed": {
+            "base_revision_id": "r1",
+            "is_draft": true
+          },
+          "path": "/fixture-assets/user-page-metadata/metadata-1",
+          "query": "",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        },
+        {
+          "header_names": [
+            "x-auth-token"
+          ],
+          "method": "GET",
+          "path": "/fixture-assets/user-page-metadata",
+          "query": "?pageNo=1&pageSize=20&needDefinition=false&isDraft=true",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        },
+        {
+          "header_names": [
+            "x-auth-token"
+          ],
+          "method": "GET",
+          "path": "/fixture-assets/user-page-metadata/metadata-1",
+          "query": "",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        },
+        {
+          "header_names": [
+            "x-auth-token"
+          ],
+          "method": "GET",
+          "path": "/fixture-assets/user-page-metadata",
+          "query": "?pageNo=1&pageSize=20&needDefinition=false&isDraft=true",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        },
+        {
+          "header_names": [
+            "x-auth-token"
+          ],
+          "method": "GET",
+          "path": "/fixture-assets/user-page-metadata",
+          "query": "?pageNo=1&pageSize=20&needDefinition=false&isDraft=true",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        },
+        {
+          "header_names": [
+            "x-auth-token"
+          ],
+          "method": "GET",
+          "path": "/fixture-assets/user-page-metadata",
+          "query": "?pageNo=1&pageSize=20&needDefinition=false&isDraft=true",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        },
+        {
+          "header_names": [
+            "x-auth-token"
+          ],
+          "method": "GET",
+          "path": "/fixture-assets/user-page-metadata/metadata-19",
+          "query": "",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        },
+        {
+          "header_names": [
+            "x-auth-token"
+          ],
+          "method": "GET",
+          "path": "/fixture-assets/user-page-metadata",
+          "query": "?pageNo=1&pageSize=20&needDefinition=false&isDraft=true",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        },
+        {
+          "header_names": [
+            "content-type",
+            "x-auth-token"
+          ],
+          "method": "PUT",
+          "observed": {
+            "base_revision_id": "r2",
+            "is_draft": true
+          },
+          "path": "/fixture-assets/user-page-metadata/metadata-1",
+          "query": "",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        },
+        {
+          "header_names": [
+            "x-auth-token"
+          ],
+          "method": "GET",
+          "path": "/fixture-assets/user-page-metadata",
+          "query": "?pageNo=1&pageSize=20&needDefinition=false&isDraft=true",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        },
+        {
+          "header_names": [
+            "x-auth-token"
+          ],
+          "method": "GET",
+          "path": "/fixture-assets/user-page-metadata",
+          "query": "?pageNo=1&pageSize=20&needDefinition=false&isDraft=true",
+          "request_contract": "service/platform-java.yaml",
+          "status": 200
+        }
+      ],
+      "observations": [
+        "document widths at 1440 and 390 equal the respective viewport widths",
+        "Manual edit before blur returns to directory with zero PUTs; explicit Save freezes last input and produces one PUT; unchanged Save disabled",
+        "Second PUT applies but loses acknowledgement; status says 保存结果未确认, Save disabled, navigation and reload issue no further PUT (total writes=2)",
+        "Reload recovers the unsaved title; same task reading displays the local document",
+        "20-row async directory return restores focused asset-19 link and positive scrollTop",
+        "Narrow 更多 trigger opens its 页面详情 menu item",
+        "Bare creation route shows empty workbench; only explicit new action creates a task UUID; reload preserves that UUID"
+      ],
+      "page": "/manage → / → reading → refresh",
+      "profile": "contract",
+      "source": "phase-c",
+      "steps": [
+        "Open desktop fixture",
+        "Execute recorded keyboard and local-save paths",
+        "Capture 390px layout"
+      ],
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      }
+    }
+  ],
+  "schema_version": 1,
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-PLAT-1",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "live",
+        "status": "UNVERIFIED",
+        "task": "1",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-PLAT-2",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "live",
+        "status": "UNVERIFIED",
+        "task": "2",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-PLAT-3",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "live",
+        "status": "UNVERIFIED",
+        "task": "3",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-PLAT-4",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "live",
+        "status": "UNVERIFIED",
+        "task": "4",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      }
+    ],
+    "facts": {
+      "cross_page": true,
+      "frozen_r": true,
+      "frozen_r5": false,
+      "frozen_r6": true,
+      "has_f3": true,
+      "has_s3_claim": true,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "story",
+      "regression",
+      "restore-final",
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "render",
+        "story",
+        "regression",
+        "restore-final",
+        "review-layout",
+        "review-convention",
+        "review-quality",
+        "self-test"
+      ],
+      "phase": "final",
+      "required_profiles": {
+        "AT-PLAT-1": "live",
+        "AT-PLAT-2": "live",
+        "AT-PLAT-3": "live",
+        "AT-PLAT-4": "live"
+      },
+      "review_roles": [
+        "review-layout",
+        "review-convention",
+        "review-quality",
+        "self-test"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5"
+      ],
+      "review-layout": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5"
+      ],
+      "review-quality": [
+        "Q1",
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q6",
+        "Q7"
+      ],
+      "self-test": [
+        "F3-1",
+        "F3-2",
+        "F3-3",
+        "F3-4",
+        "F3-5",
+        "F3-6"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "risk_triggers": [
+      "async-state",
+      "build-config",
+      "interaction",
+      "new-pattern",
+      "shared-boundary",
+      "visual",
+      "write"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "new-pattern",
+        "shared-boundary",
+        "write"
+      ],
+      "changed_files": 274,
+      "max_changed_files": 5,
+      "restore_tasks": [
+        "3",
+        "4"
+      ],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "async-state": [
+        "agent",
+        "plan"
+      ],
+      "build-config": [
+        "diff"
+      ],
+      "interaction": [
+        "plan"
+      ],
+      "new-pattern": [
+        "plan"
+      ],
+      "shared-boundary": [
+        "diff",
+        "plan"
+      ],
+      "visual": [
+        "diff",
+        "plan"
+      ],
+      "write": [
+        "plan"
+      ]
+    }
+  }
+}

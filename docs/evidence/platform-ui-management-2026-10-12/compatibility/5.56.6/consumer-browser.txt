@@ -1,0 +1,114 @@
+[WebServer] (node:3079) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:3080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 96 tests using 1 worker
+
+(node:3090) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/96] [embed-chrome] › packages/embed/tests/browser/detail-views.spec.ts:12:1 › two columns use distinct row and page date bindings
+[2/96] [embed-chrome] › packages/embed/tests/browser/detail-views.spec.ts:31:1 › column-specific snapshot detail reuses existing rows and never queries
+[3/96] [embed-chrome] › packages/embed/tests/browser/detail-views.spec.ts:66:1 › query detail cancellation, late responses, local sorting and focus restoration
+[4/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:83:1 › 经典脚本在 Shadow DOM 中渲染 inline 页面并隔离宿主样式
+[5/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:97:1 › 独立 HTML 最终报告页加载真实页面并完成客户端渲染
+[6/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:117:1 › 挂载接口支持更新、重复挂载保护和幂等销毁
+[7/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:170:1 › 页面 id 不影响统一运行时的 DOM 与计算样式
+[8/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:187:1 › 四个 IOC 页面在 1980px 视口占满宿主且没有页面级横向溢出
+[9/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:232:1 › 机会点清单使用单一标准页头并把密集筛选收纳到更多筛选
+[10/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:317:1 › 1980px 下 IOC 组合卡保持页面列轨与卡内 span 声明
+[11/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:371:1 › Tab 活动面板提供直接组件布局盒且自身不保存页面派生宽度
+[12/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:443:1 › 项目详情组件只按内容单元响应，不受外部视口宽度影响
+[13/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:522:1 › 指标卡只从显式声明且非空的值发出导航
+[14/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:581:1 › analysisStack 页签每个选中面板顺序渲染三张表
+[15/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:654:1 › compact 工具栏显示七个只读筛选并不伪造返回
+[16/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:729:1 › metricGrid 横排双指标在窄视口保持等分且上下分隔线同轴
+[17/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:820:1 › connectPrevious 在任意页面生成白底虚线表格组
+[18/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:920:1 › 三档分区容器提供扁平外缘，组件自带表面
+[19/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:1014:1 › 活动指标卡在窄容器与手机视口不溢出
+[20/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:1108:1 › query 页面以内嵌初始行启动，翻页后通过数据网关查询
+[21/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:1133:1 › query 页面缺少接入依赖时给出配置错误而非页面错误
+[22/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:1166:1 › 查询失败按稳定分类呈现并上抛 data-error 嵌入事件,宿主不解析错误字符串
+[23/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:1243:1 › ESM 单文件产物可直接导入
+[24/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:1252:1 › AI 总结通过假 SSE 契约流式渲染且只发送声明字段
+[25/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:1279:1 › 报告 AI 总结与指标卡共用摘要正文的浅紫描边样式
+[26/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:1412:1 › 指标面板与风险提示随业务内容自然增高
+[27/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:1495:1 › reportCompact 内容层与表格等宽且无滚动层
+[28/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:1544:1 › 流水报告页头背景、表头、分析宽度与客户标签保持统一
+[29/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:1668:1 › 流水报告的长代表处名称仍由完整背景包裹
+[30/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:1744:1 › 流水分析报告在四档桌面宽度完整呈现并沿用统一状态
+[31/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:2309:1 › 详细排行卡可展开受控的嵌套明细字段
+[32/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:2396:1 › 详细排行卡把 DQE 语义 HTML 直接渲染为说明，并由前端映射正负颜色
+[33/96] [embed-chrome] › packages/embed/tests/browser/embed.spec.ts:2461:1 › 并排的详细排行卡按同一排名的较高内容同步行高
+[34/96] [embed-chrome] › packages/embed/tests/browser/execution.spec.ts:5:3 › classic IOC执行初始快照、实际取值、部分错误与最后筛选记录
+[35/96] [embed-chrome] › packages/embed/tests/browser/execution.spec.ts:5:3 › esm IOC执行初始快照、实际取值、部分错误与最后筛选记录
+[36/96] [embed-chrome] › packages/embed/tests/browser/inline-params.spec.ts:5:1 › Tokens grouped params: HTTP requests, URL overrides, missing inputs and empty periods
+[37/96] [embed-chrome] › packages/embed/tests/browser/layout-compatibility.spec.ts:5:5 › classic 新旧 report 文档渲染等价且非法文档失败关闭
+[38/96] [embed-chrome] › packages/embed/tests/browser/layout-compatibility.spec.ts:5:5 › classic 新旧 dashboard 文档渲染等价且非法文档失败关闭
+[39/96] [embed-chrome] › packages/embed/tests/browser/layout-compatibility.spec.ts:5:5 › esm 新旧 report 文档渲染等价且非法文档失败关闭
+[40/96] [embed-chrome] › packages/embed/tests/browser/layout-compatibility.spec.ts:5:5 › esm 新旧 dashboard 文档渲染等价且非法文档失败关闭
+[41/96] [embed-chrome] › packages/embed/tests/browser/navigation.spec.ts:5:1 › 无导航适配的 HTML 宿主完成 IOC 概览→清单→详情及浏览器返回
+[42/96] [embed-chrome] › packages/embed/tests/browser/navigation.spec.ts:28:1 › 层级区域筛选按当前层级选谓词字段，三层各自命中
+[43/96] [embed-chrome] › packages/embed/tests/browser/navigation.spec.ts:43:1 › 丢单表跳项目详情并传页面月份，保留行立项状态
+[44/96] [embed-chrome] › packages/embed/tests/browser/navigation.spec.ts:64:1 › 查询分页与服务端排序共存，排序作用于全表而不是当前页
+[45/96] [embed-chrome] › packages/embed/tests/browser/navigation.spec.ts:84:1 › 时间点、布尔与数值区间筛选各自下推到查询
+[46/96] [embed-chrome] › packages/embed/tests/browser/navigation.spec.ts:113:1 › 云行业选定后云子行业候选按上游收窄
+[47/96] [embed-chrome] › packages/embed/tests/browser/navigation.spec.ts:135:1 › 相对/绝对链接、三种绑定、复制地址、新标签和缺值都遵循原生 anchor
+[48/96] [embed-chrome] › packages/embed/tests/browser/navigation.spec.ts:170:1 › 图表直接点击执行默认导航，不依赖宿主回调
+[49/96] [embed-chrome] › packages/embed/tests/browser/navigation.spec.ts:184:1 › 宿主可选接管，同文档更换初始参数重新初始化，省略接管恢复默认链接
+[50/96] [embed-chrome] › packages/embed/tests/browser/navigation.spec.ts:211:1 › 指标值链接从实际点击的数据槽取行参数
+[51/96] [embed-chrome] › packages/embed/tests/browser/params-initialization.spec.ts:5:3 › classic 参数初始化、部分共享、后续筛选和URL独立
+[52/96] [embed-chrome] › packages/embed/tests/browser/params-initialization.spec.ts:5:3 › esm 参数初始化、部分共享、后续筛选和URL独立
+[53/96] [embed-chrome] › packages/embed/tests/browser/params-initialization.spec.ts:49:1 › 维度必需参数缺值阻止查数；默认、单值与可选缺值可呈现
+[54/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 1440 report default: all 53 declared component branches remain visible
+[55/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 1440 report plain: all 53 declared component branches remain visible
+[56/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 1440 report panel: all 53 declared component branches remain visible
+[57/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 1440 report card: all 53 declared component branches remain visible
+[58/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 1440 dashboard default: all 53 declared component branches remain visible
+[59/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 1440 dashboard plain: all 53 declared component branches remain visible
+[60/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 1440 dashboard panel: all 53 declared component branches remain visible
+[61/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 1440 dashboard card: all 53 declared component branches remain visible
+[62/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 390 report default: all 53 declared component branches remain visible
+[63/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 390 report plain: all 53 declared component branches remain visible
+[64/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 390 report panel: all 53 declared component branches remain visible
+[65/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 390 report card: all 53 declared component branches remain visible
+[66/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 390 dashboard default: all 53 declared component branches remain visible
+[67/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 390 dashboard plain: all 53 declared component branches remain visible
+[68/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 390 dashboard panel: all 53 declared component branches remain visible
+[69/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:15:5 › 390 dashboard card: all 53 declared component branches remain visible
+[70/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:54:1 › all header metadata, metric panels/progress and repeated configured items render
+[71/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:112:3 › 1440: long/multirow configured content remains reachable in compact containers
+[72/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:112:3 › 390: long/multirow configured content remains reachable in compact containers
+[73/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:140:1 › every table in a compact tab list remains reachable and duplicate links render
+[74/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:166:1 › configured gauge/ranking detail actions have a visible keyboard-accessible trigger
+[75/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:184:1 › forecast table without pagination keeps every configured row reachable
+[76/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:198:1 › linked, selected, rate-bar and plain columns all retain configured secondary and badge fields
+[77/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:215:1 › embedded and forecast cells wrap long configured values instead of clipping them
+[78/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:230:1 › snapshot detail charts reuse normal layout, drawing space and configured spans
+[79/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:252:53 › plain: loading/empty/error/ready keep configured components identifiable
+[80/96] [embed-chrome] › packages/embed/tests/browser/presentation.spec.ts:252:53 › card: loading/empty/error/ready keep configured components identifiable
+[81/96] [embed-chrome] › packages/embed/tests/browser/project-forecast.spec.ts:4:3 › 项目详情全年预测在1280px可横向访问12月
+[82/96] [embed-chrome] › packages/embed/tests/browser/project-forecast.spec.ts:4:3 › 项目详情全年预测在375px可横向访问12月
+[83/96] [embed-chrome] › packages/embed/tests/browser/section-navigation.spec.ts:4:1 › two query-backed instances keep selection isolated and reuse data across group changes
+[84/96] [embed-chrome] › packages/embed/tests/browser/section-navigation.spec.ts:53:1 › content groups retain table state; search resets hidden tables; anchors remain within the instance
+[85/96] [embed-chrome] › packages/embed/tests/browser/version-error.spec.ts:11:3 › classic 版本失败关闭、宿主事件分类与更新恢复
+[86/96] [embed-chrome] › packages/embed/tests/browser/version-error.spec.ts:11:3 › esm 版本失败关闭、宿主事件分类与更新恢复
+(node:3904) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[87/96] [canvas-chrome] › packages/metric-canvas/tests/browser/metric-canvas.spec.ts:16:1 › 选中和控件切换保留渲染实例与查询状态，正式渲染无创作装饰
+[88/96] [canvas-chrome] › packages/metric-canvas/tests/browser/metric-canvas.spec.ts:33:1 › 筛选与查询分页语义一致，编辑点击拦截且切换模式不清空状态
+[89/96] [canvas-chrome] › packages/metric-canvas/tests/browser/metric-canvas.spec.ts:57:1 › 标题和宽度编辑回传宿主，文档更新同时影响正式渲染
+[90/96] [canvas-chrome] › packages/metric-canvas/tests/browser/metric-canvas.spec.ts:70:1 › 跨分区拖拽回传意图，草稿空分区不进入正式文档
+[91/96] [canvas-chrome] › packages/metric-canvas/tests/browser/metric-canvas.spec.ts:88:1 › 无效草稿回退正式排布，卸载后单元格不再发送创作意图
+[92/96] [canvas-chrome] › packages/metric-canvas/tests/browser/metric-canvas.spec.ts:105:1 › 编辑态捕获原生链接，退出编辑后恢复浏览器跳转
+[93/96] [canvas-chrome] › packages/metric-canvas/tests/browser/metric-canvas.spec.ts:119:5 › 6.0 report 进入搭建画布与正式渲染后保持规范布局
+[94/96] [canvas-chrome] › packages/metric-canvas/tests/browser/metric-canvas.spec.ts:119:5 › 6.0 dashboard 进入搭建画布与正式渲染后保持规范布局
+[95/96] [canvas-chrome] › packages/metric-canvas/tests/browser/metric-canvas.spec.ts:119:5 › 6.1 report 进入搭建画布与正式渲染后保持规范布局
+[96/96] [canvas-chrome] › packages/metric-canvas/tests/browser/metric-canvas.spec.ts:119:5 › 6.1 dashboard 进入搭建画布与正式渲染后保持规范布局
+  96 passed (48.9s)

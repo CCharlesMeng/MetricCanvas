@@ -6,6 +6,7 @@ import {
   componentCandidatesFor,
   createCanvasAuthoringDraft,
   editComponent,
+  editPageTitle,
   locatorOfComponent,
   moveComponent,
   unitOfDataSource
@@ -306,3 +307,6 @@ describe('旧页面进入创作草稿的规范化', () => {
     ]) expect(createCanvasAuthoringDraft(input).ok).toBe(false);
   });
 });
+
+
+it('page title edits retain component titles, source bindings and unrelated metadata',()=>{const original=assembled();original.meta={title:'页面旧标题',description:'保留描述'};const draft=authoringDraftOf(original);const changed=editPageTitle(draft,'页面新标题');expect(changed.ok).toBe(true);if(!changed.ok)return;expect(changed.draft.pageDocument.meta).toMatchObject({title:'页面新标题',description:'保留描述'});expect(changed.draft.pageDocument.sections).toEqual(draft.pageDocument.sections);expect(changed.draft.pageDocument.dataSources).toEqual(draft.pageDocument.dataSources);expect(draft.pageDocument.meta).toMatchObject({title:'页面旧标题'});const cleared=editPageTitle(changed.draft,'');expect(cleared.ok).toBe(true);if(cleared.ok)expect(cleared.draft.pageDocument.meta).toEqual({description:'保留描述'});});

@@ -1,0 +1,10 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run
+
+ RUN  v4.1.11 /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-compatibility-3Nh1ab/5.29.0/source
+
+
+ Test Files  201 passed (201)
+      Tests  1772 passed | 4 skipped (1776)
+   Start at  20:20:59
+   Duration  54.79s (transform 5.73s, setup 0ms, import 60.81s, tests 73.50s, environment 9ms)
+

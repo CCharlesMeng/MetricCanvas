@@ -117,7 +117,7 @@ flowchart TD
 | `packages/engine/widgets/src/components/table/` | 保留领域转换；抽分页与已具备完整能力的 Grid 路径，报告呈现保持独立 |
 | `runtime-ui/src/filters/DimensionFilter.svelte`；`widgets/src/components/tab-container/` | 使用共享 Select/Tabs，保留领域状态与布局 |
 | `packages/engine/package.json`、`apps/platform/package.json`；`tools/package-build/build.mjs`、`surface.ts`、`compatibility.mjs`；公开面快照 | 注册独立 UI 包的构建/导出、向下依赖、最低 Svelte 版本与独立消费检查；开发期可导入不等于发包后可用 |
-| `apps/platform/src/lib/PlatformFrame.svelte`、`views/ManagementList.svelte`、`views/ManagementDetail.svelte` | 工具面视觉、目录状态和管理入口 |
+| `apps/platform/src/lib/PlatformFrame.svelte`、`views/ManagementList.svelte`、`views/PageReading.svelte` | 工具面视觉、目录状态和管理入口 |
 | `apps/platform/src/lib/PageAuthoringWorkbench.svelte`、`RevisionPreview.svelte` 与管理导航状态 | 与已确认的工作台/阅读模式接线；统一返回路径与修改保留 |
 | `docs/adr/` 对应主题页、前端 Story 规格与验收工件 | 固化裁决、视觉状态基线和逐项证据；当前提案不直接覆盖生效 ADR |
 

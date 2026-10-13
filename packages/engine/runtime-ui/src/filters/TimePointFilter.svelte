@@ -1,5 +1,6 @@
 <script lang="ts">
-  import DatePicker from './DatePicker.svelte';
+  import { DatePicker } from '@metriccanvas/ui';
+  import { validateTimePointValue } from '@metriccanvas/page/internal';
   interface Props {
     label?: string;
     required?: boolean;
@@ -11,4 +12,4 @@
   let { label, granularity, value, onchange, required = false, readOnly = false }: Props = $props();
 </script>
 <DatePicker {label} {required} precision={granularity} disabled={readOnly}
-  value={value ? { from: value, to: value } : null} onchange={next => onchange(next?.from ?? null)} />
+  value={value ? { from: value, to: value } : null} onchange={next => { if (!next || !validateTimePointValue(next.from, granularity)) onchange(next?.from ?? null); }} />

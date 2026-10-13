@@ -1,10 +1,17 @@
 <script lang="ts">
+  import PrimaryAction from './PrimaryAction.svelte';
 
+  import {Input,Select} from '@metriccanvas/ui';
+  import ReadingHeader from './ReadingHeader.svelte';
+  import ToolAction from './ToolAction.svelte';
+  import PageAssetInfo from './workbench/PageAssetInfo.svelte';
+  import {createAssetManagement} from './page-assets/management';
   import { createAuthoringLanguageRecovery, type TrustedLanguageRecoveryPort } from './workbench/authoring-language-recovery';
   import { createAuthoringLanguage, type LanguagePort } from './workbench/authoring-language';
   import PublicationReview from './workbench/PublicationReview.svelte';
   import InlineParameterReview from './workbench/InlineParameterReview.svelte';
   import {canonicalizeJson} from '@metriccanvas/page';
+  import {parsePage,pageListEntry} from '@metriccanvas/page/internal';
   import {createInlineParameterPublication,type ParameterSourcePort} from './workbench/inline-parameter-publication';
   import {previewParameterPage} from './workbench/preview-parameter-page';
   import { RuntimeView } from '@metriccanvas/engine/ui';
@@ -23,7 +30,7 @@
   import { workbenchPageViewModel } from './workbench/transient-page';
   import {
     changeComponentType, componentCandidatesFor,
-    editComponent, locatorOfComponent, moveComponent,
+    editComponent, editPageTitle, locatorOfComponent, moveComponent,
     type ComponentLocator, type DocumentEditResult
   } from './workbench/document-edit';
   import { editReportDate } from './workbench/report-date-edit';
@@ -37,7 +44,8 @@
   import { listenForApplyPage } from './workbench/apply-page';
   import { createIndexedAuthoringStorage } from './workbench/authoring-storage';
   import { unavailableStableSave, type StableSavePort, type DurableAuthoringState } from './workbench/authoring-sync';
-  let { parameterInstancePort, parameterContextRef, onParameterInstanceReady, parameterSourcePort, dialogueAdapter = services.dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = authoringPort === pageAuthoringPort ? pageSavePort : unavailableStableSave, languagePort = services.authoring?.language, onLanguageReady, languageRecoveryPort, onLanguageRecoveryReady, publicationPort = unavailablePublicationPort, humanConfirmation = unavailableHumanConfirmation }: {
+  let { taskUrl, active=true, showPageInfo=false, parameterInstancePort, parameterContextRef, onParameterInstanceReady, parameterSourcePort, dialogueAdapter = services.dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = authoringPort === pageAuthoringPort ? pageSavePort : unavailableStableSave, languagePort = services.authoring?.language, onLanguageReady, languageRecoveryPort, onLanguageRecoveryReady, publicationPort = unavailablePublicationPort, humanConfirmation = unavailableHumanConfirmation }: {
+    taskUrl?:URL;active?:boolean;showPageInfo?:boolean;
     parameterInstancePort?: ParameterInstancePort;
     parameterContextRef?: () => string;
     onParameterInstanceReady?: (api: ReturnType<typeof createParameterInstanceSession>) => void;
@@ -48,6 +56,9 @@
     dialogueAdapter?: DialogueAdapter; readSavedDraft?: ReadSavedDraft; authoringPort?: AuthoringPort; stableSavePort?: StableSavePort;
   } = $props();
   const coordinator = untrack(() => createAuthoringCoordinator({
+    manualSave:true,
+    localTaskId: taskUrl?.searchParams.get('task')??undefined,
+    storageTarget: () => { const config=readRuntimeConfig(); return JSON.stringify([config?.pageMetadataBaseUrl,config?.dqeEndpoint]); },
     port: {
       ...authoringPort,
       capabilities: { ...authoringPort.capabilities, exactDraftRead: !!readSavedDraft || authoringPort.capabilities.exactDraftRead },
@@ -58,6 +69,8 @@
       return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' };
     }
   }));
+  let activateTask=$state<(()=>void)|null>(null);
+  let activated=false;
   let publication = $state<ReturnType<typeof createAuthoringPublication> | null>(null);
   let publicationOpen = $state(false);
   let parameterReview = $state<ReturnType<typeof createInlineParameterPublication>|null>(null);
@@ -73,17 +86,33 @@
   const currentDraft = $derived(authoring.draft);
   const baseRevisionId = $derived(authoring.ref?.revisionId ?? null);
   const savePending = $derived(authoring.save?.status === 'pending' || authoring.languageLocked || publicationBusy);
-  const saveBlocked = $derived(savePending || authoring.save?.status === 'unknown' ||
+  const saveBlocked = $derived(authoring.sync?.phase==='unknown' || authoring.sync?.phase==='identity-changed' || savePending || authoring.save?.status === 'unknown' ||
     (authoring.save?.status === 'rejected' && authoring.save.code === 'REVISION_CONFLICT'));
   const loading = $derived(authoring.loading);
   const saveNotice = $derived(authoring.save?.status === 'saved' ? `已保存修订 R${authoring.save.revision.revisionNumber}` : '');
   let saveError = $state('');
   let editError = $state('');
   let retainDimensionValues = $state(true);
+  let replaceBoundTitle=$state(false);
+  const titleIsBound=$derived.by(()=>{const meta=authoring.draft?.pageDocument.meta;return !!meta&&typeof meta==='object'&&'title' in meta&&typeof meta.title==='object'&&meta.title!==null;});
   let metadataOpen = $state(false);
   let previewOpen = $state(false);
   let historyOpen = $state(false);
+  let settingsOpen=$state(untrack(()=>taskUrl?.searchParams.get('info')==='1'));
+  const settingsId='page-settings-'+crypto.randomUUID();
+  const recordManager=createAssetManagement(services.pageAssets,undefined,undefined,services.session.readConfig,services.workSession.canMutate);
   let previewRef = $state<DraftRef | null>(null);
+  let savedPreviewTitle=$state('');
+  let savedPreviewNumber=$state<number|undefined>();
+  let savedPreviewStatus=$state<'草稿'|'已发布'|'状态待核实'|undefined>();
+  $effect(()=>{void previewRef;savedPreviewTitle='';savedPreviewNumber=undefined;savedPreviewStatus=undefined;});
+  async function readSavedPreview(pageId:string,revisionId:string,signal?:AbortSignal){
+    const ref=previewRef;
+    if(!ref||ref.pageId!==pageId||ref.revisionId!==revisionId)throw Error('预览目标已变化。');
+    const revision=await coordinator.preview(ref,signal);
+    if(!signal?.aborted&&previewRef===ref){const parsed=parsePage(revision.document);savedPreviewTitle=parsed.ok?pageListEntry(parsed.page).title:pageId;savedPreviewNumber=revision.revisionNumber;savedPreviewStatus=revision.isDraft===false?'已发布':revision.isDraft===true?'草稿':'状态待核实';}
+    return revision;
+  }
   let metadataEntryEl: HTMLButtonElement | null = $state(null);
   let flushingInput = false;
   let workbenchElement: HTMLDivElement;
@@ -92,28 +121,38 @@
 
   // Coordinator owns the working copy; UI only projects snapshots and forwards intents.
   onMount(() => {
+    const stopWork=services.workSession.register(taskUrl?.href??crypto.randomUUID(),()=>{const value=coordinator.snapshot();return {pageId:value.ref?.pageId??(String(value.draft?.pageDocument.id??taskUrl?.searchParams.get('page')??'')||null),resourceId:value.ref?.resourceId??taskUrl?.searchParams.get('resource')??null,busy:value.loading||value.dirty||value.languageLocked||(value.sync?.pending??0)>0};});
     const stopInvalidation = services.session.onInvalidate(() => coordinator.dispose());
     const hasUnsavedWork = () => {
       const current = coordinator.snapshot();
       return current.dirty || (current.sync?.pending ?? 0) > 0 || current.save?.status === 'pending' || current.save?.status === 'unknown' || current.languageLocked;
     };
-    const stopGuard = services.navigation.registerGuard(() => !hasUnsavedWork() || window.confirm('当前工作尚未确认保存，仍要离开？原恢复记录将保留。'), hasUnsavedWork);
-    const pageId = services.navigation.current().searchParams.get('page');
+    const stopGuard = services.navigation.registerGuard(destination => {
+      if(!destination)return !hasUnsavedWork()||window.confirm('当前工作尚未确认保存，仍要离开？原恢复记录将保留。');
+      return (async()=>{
+        const input=document.activeElement;
+        if(input instanceof HTMLInputElement||input instanceof HTMLTextAreaElement){if(workbenchElement?.contains(input)){input.dispatchEvent(new Event('change',{bubbles:true}));input.blur();}}
+        const protectedWork=await coordinator.protect();
+        if(!protectedWork){editError='浏览器保护尚未成功，不能离开当前工作。';return false;}
+        return true;
+      })();
+    }, ()=>hasUnsavedWork()&&coordinator.snapshot().sync?.protection!=='protected');
+    const pageId = (taskUrl??services.navigation.current()).searchParams.get('page');
     let syncEnabled = false;
     const enableSync = () => {
       if (syncEnabled) return;
       syncEnabled = true;
       coordinator.enableAutoSync({ storage: createIndexedAuthoringStorage<DurableAuthoringState>(), port: stableSavePort });
     };
-    const resume = async (targetPageId: string | null) => { enableSync(); if (targetPageId) await coordinator.load(targetPageId, {resourceId:services.navigation.current().searchParams.get('resource') ?? undefined}); };
+    const resume = async (targetPageId: string | null) => { enableSync(); if (targetPageId) await coordinator.load(targetPageId, {resourceId:(taskUrl??services.navigation.current()).searchParams.get('resource') ?? undefined,localOnly:!active}); };
     if (languageRecoveryPort) {
       languageRecovery = createAuthoringLanguageRecovery({ coordinator, port: languageRecoveryPort,
         identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; },
-        currentPageId: () => services.navigation.current().searchParams.get('page'), resume, protectSaved: enableSync });
+        currentPageId: () => (taskUrl??services.navigation.current()).searchParams.get('page'), resume, protectSaved: enableSync });
       languageRecovery.subscribe(value => { recoveryState = value; });
       void languageRecovery.check(pageId);
       onLanguageRecoveryReady?.(languageRecovery);
-    } else void resume(pageId);
+    } else {const resumed=resume(pageId);activated=active;activateTask=()=>{if(activated)return;activated=true;void resumed.then(()=>{const snapshot=coordinator.snapshot();const currentPageId=snapshot.ref?.pageId??String(snapshot.draft?.pageDocument.id??taskUrl?.searchParams.get('page')??'');if(currentPageId&&!snapshot.dirty&&!snapshot.languageLocked&&!snapshot.sync?.pending)void coordinator.load(currentPageId,{refreshCurrent:!!snapshot.draft,resourceId:snapshot.ref?.resourceId??taskUrl?.searchParams.get('resource')??undefined});});};}
     coordinator.setOnline(navigator.onLine);
     if (parameterInstancePort && parameterContextRef) {
       parameterInstance = createParameterInstanceSession({port: parameterInstancePort, scope: () => {
@@ -137,7 +176,7 @@
     });
     publication?.subscribe(value => { publicationBusy = value.phase === 'busy' || value.phase === 'unknown'; });
     const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; publication?.invalidate(); parameterReview?.invalidate(); parameterInstance?.invalidate(); });
-    let disconnectAuthoring: void | (() => void);
+
     if (languagePort) {
       language = createAuthoringLanguage({ coordinator, port: languagePort, target: services.events,
         selection: () => currentDocument && selectedComponent ? { pageId: String(currentDocument.id), componentId: selectedComponent.componentId } : null,
@@ -150,7 +189,7 @@
         identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; } });
       language.subscribe((value) => { languageState = value; });
       onLanguageReady?.(language);
-      disconnectAuthoring = services.authoring?.connect?.(language);
+      // The active view connects below; background leases remain owned by this task.
     }
     const stop = languagePort ? () => {} : listenForSavedDrafts({
       target: services.events, read: coordinator.readSavedDraft,
@@ -173,6 +212,7 @@
         return JSON.stringify([config?.operatorId, config?.workspaceId]);
       },
       onpreview: (previewJson) => {
+        if(!active)return;
         if (languagePort || publicationBusy || languageRecoveryPort) {
           saveError = '当前受控操作尚未完成，暂不能应用页面通知。'; return;
         }
@@ -181,6 +221,7 @@
         }
       },
       onapply: async (pageId) => {
+        if(!active)return;
         if (languagePort || publicationBusy || languageRecoveryPort) {
           saveError = '当前受控操作尚未完成，暂不能应用页面通知。'; return;
         }
@@ -190,9 +231,14 @@
       },
       onerror: (message) => { saveError = message; }
     });
-    return () => { stopGuard(); stopInvalidation(); disconnectAuthoring?.(); window.removeEventListener('online', online); window.removeEventListener('offline', offline); stopApplyPage(); stop(); language?.dispose(); languageRecovery?.dispose(); publication?.dispose(); parameterReview?.dispose(); parameterInstance?.dispose(); unsubscribe(); coordinator.dispose(); };
+    return () => { stopWork();stopGuard(); stopInvalidation(); window.removeEventListener('online', online); window.removeEventListener('offline', offline); stopApplyPage(); stop(); language?.dispose(); languageRecovery?.dispose(); publication?.dispose(); parameterReview?.dispose(); parameterInstance?.dispose(); unsubscribe(); coordinator.dispose(); };
   });
 
+  $effect(()=>{if(!active)activated=false;else if(activateTask)activateTask();});
+  $effect(()=>{if(active&&showPageInfo)settingsOpen=true;});
+  $effect(()=>{if(active&&language)return services.authoring?.connect?.(language);});
+  const displayTitle=$derived.by(()=>{const meta=authoring.draft?.pageDocument.meta;return meta&&typeof meta==='object'&&'title' in meta&&typeof meta.title==='string'?meta.title:String(authoring.draft?.pageDocument.id??'新建页面');});
+  $effect(()=>{if(taskUrl&&authoring.draft)void services.workSession.bind(taskUrl,String(authoring.draft.pageDocument.id),authoring.ref?.resourceId).catch(error=>{editError=String(error);});});
   const currentDocument = $derived(currentDraft?.pageDocument ?? null);
   const canvasDocument = $derived(currentDraft?.canvasDocument ?? null);
   const pageModel = $derived(
@@ -258,7 +304,8 @@
   });
 
   async function saveRevision() {
-    if (!currentDocument || !pageModel || pageModel.transient || saveBlocked) return;
+    if (!currentDocument || !pageModel || saveBlocked) return;
+    const input=document.activeElement;if(input instanceof HTMLInputElement||input instanceof HTMLTextAreaElement){if(workbenchElement?.contains(input))input.dispatchEvent(new Event('change',{bubbles:true}));}
     saveError = '';
     await coordinator.save();
   }
@@ -310,6 +357,19 @@
     selectedComponent = locatorOfComponent(canvasDocument, componentId);
   }
 
+  async function managePageRecord(action:'remove'|'restore',version?:number){
+    const ref=coordinator.requireSynchronizedRef();
+    const result=action==='remove'?recordManager.remove(ref):recordManager.restore(ref,version!);
+    const preparation=coordinator.beginPreparation();
+    let outcome;
+    try{outcome=await result;}finally{preparation.release();}
+    if(outcome.status!=='confirmed')throw Error(outcome.message);
+    if(action==='remove'){
+      await services.workSession.forgetAsset(ref);
+      await services.navigation.navigate(services.workSession.snapshot().directory);
+    }else await coordinator.load(ref.pageId,{resourceId:ref.resourceId,refreshCurrent:true});
+  }
+
   function closeMetadataDrawer() {
     metadataOpen = false;
     void tick().then(() => metadataEntryEl?.focus());
@@ -319,11 +379,19 @@
   <title>MetricCanvas 页面搭建工作台</title>
 </svelte:head>
 
-<div bind:this={workbenchElement} class="workbench" data-testid="workbench">
+<div bind:this={workbenchElement} class="workbench" class:reading={previewOpen} data-testid="workbench">
+  {#if previewOpen}
+    <div class="reading-toolbar">
+      <ReadingHeader title={previewRef?(savedPreviewTitle||previewRef.pageId):displayTitle} revision={previewRef?savedPreviewNumber:undefined} status={previewRef?savedPreviewStatus:undefined} source={previewRef?'已保存内容':'工作副本'} backLabel="继续编辑" onback={()=>{previewOpen=false;previewRef=null;}}>
+        {#if authoring.ref}<Select label="预览内容" value={previewRef?'saved':'working'} options={[{value:'working',label:'工作副本'},{value:'saved',label:'已保存内容'}]} onchange={value=>{previewRef=value==='saved'&&authoring.ref?{...authoring.ref}:null;}}/>{/if}
+      </ReadingHeader>
+    </div>
+  {:else}
   <div class="docbar" data-testid="workbench-contextbar" data-contract-critical>
     <div class="l">
-      <strong class="canvas-title">页面画布</strong>
-      {#if pageModel}
+      <ToolAction icon="back" iconOnly ariaLabel="返回页面管理" onclick={()=>services.navigation.navigate(services.workSession.snapshot().directory)}/>
+      {#if currentDraft&&!previewOpen}<div class="page-title-editor"><Input label="页面标题" value={typeof currentDraft.pageDocument.meta==='object'&&currentDraft.pageDocument.meta&&'title' in currentDraft.pageDocument.meta&&typeof currentDraft.pageDocument.meta.title==='string'?currentDraft.pageDocument.meta.title:''} placeholder={displayTitle} disabled={savePending||loading||(titleIsBound&&!replaceBoundTitle)} oncommit={value=>{if(currentDraft)applyDocumentEdit(editPageTitle(currentDraft,value));}}/>{#if titleIsBound&&!replaceBoundTitle}<ToolAction onclick={()=>replaceBoundTitle=true}>改为固定标题</ToolAction>{/if}</div>{:else}<strong class="canvas-title">{displayTitle}</strong>{/if}
+      {#if pageModel&&!previewOpen}
         <span class="badge" class:transient={pageModel.transient}>
           {pageModel.transient ? '临时页面态' : authoring.dirty ? '未保存工作副本' : '已保存页面修订'}
         </span>
@@ -334,57 +402,49 @@
             临时指标 ×{pageModel.adHocFormulas.length}
           </span>
         {/if}
-        <code class="page-id">{pageModel.pageId}</code>
-        <span class="stat">组件 {pageModel.components.length}</span>
-        <span class="stat">页面数据源 {pageModel.dataSourceCount}</span>
-      {:else}
+      {:else if !pageModel}
         <span class="badge idle">尚无页面文档</span>
       {/if}
     </div>
     <div class="r" data-testid="document-actions">
-      {#if parameterReview}<button class="btn" disabled={saveBlocked||authoring.dirty} onclick={()=>parameterReviewOpen=!parameterReviewOpen}>参数模板评审</button>{/if}
-      {#if publicationPort.available}<button class="btn" disabled={!authoring.ref || authoring.languageLocked} onclick={() => publicationOpen = !publicationOpen}>发布评审</button>
-      {:else}<button class="btn" disabled={!authoring.ref || authoring.dirty || saveBlocked || authoring.sync?.phase === 'saving'} onclick={async () => { if (!window.confirm('发布当前页面？后续保存编辑会将当前记录改为草稿。')) return; try { await coordinator.publish(); } catch (error) { saveError = String(error); } }}>发布页面</button>{/if}
-      <button class="btn" disabled={!authoring.sync?.canUndo || loading || savePending} onclick={async () => { try { await coordinator.undo(); editError = ''; } catch (error) { editError = String(error); } }}>撤销上一步</button>
-      {#if authoringPort.assets && authoring.ref}<a class="btn" href={`${resolve('/manage/pages/[pageId]', {pageId:authoring.ref.pageId})}?resource=${encodeURIComponent(authoring.ref.resourceId)}`}>页面历史</a>{:else}<button class="btn" disabled={!authoring.ref} onclick={() => historyOpen = !historyOpen}>页面历史</button>{/if}
-      {#if baseRevisionId}
-        <button class="btn" onclick={() => { previewRef = authoring.ref ? { ...authoring.ref } : null; previewOpen = !previewOpen; }}>当前修订预览</button>
-      {/if}
-      <button
-        type="button"
-        class="btn"
-        bind:this={metadataEntryEl}
-        data-testid="metadata-json-entry"
-        disabled={!currentDocument}
-        title={currentDocument ? '查看元数据' : '页面文档生成后可查看'}
-        onclick={() => (metadataOpen = true)}
-      >
-        查看元数据
-      </button>
-      {#if pageModel && !pageModel.transient}
-        {#if authoring.sync}
-          {#if stableSavePort.delivery !== 'single'}<label class="stat"><input type="checkbox" bind:checked={retainDimensionValues} disabled={savePending} onchange={(event) => coordinator.setRetainDimensionValues(event.currentTarget.checked)} />保存时保留维度取值</label>{/if}
-          {#if authoring.sync.pending > 0 && stableSavePort.delivery !== 'single'}<button type="button" class="btn" disabled={authoring.sync.phase === 'saving'} onclick={() => coordinator.retrySync()}>核实并重试同步</button>{/if}
-        {:else}
-          <button type="button" class="btn" disabled={saveBlocked} onclick={saveRevision}>
-            {savePending ? '保存中…' : baseRevisionId ? '保存新修订' : '保存首个修订'}
-          </button>
-        {/if}
+      <ToolAction icon="eye" disabled={!currentDocument} ariaLabel={previewOpen?'继续编辑':'预览当前页面'} onclick={()=>{previewRef=null;previewOpen=!previewOpen;}}>{previewOpen?'继续编辑':'预览'}</ToolAction>
+      {#if !previewOpen}
+        <ToolAction icon="undo" iconOnly ariaLabel="撤销上一步" disabled={!authoring.sync?.canUndo||loading||savePending} onclick={async()=>{try{await coordinator.undo();editError='';}catch(error){editError=String(error);}}}/>
+        <ToolAction icon="code" iconOnly bind:element={metadataEntryEl} testId="metadata-json-entry" ariaLabel="查看元数据" disabled={!currentDocument} onclick={()=>metadataOpen=true}/>
+        <ToolAction icon="settings" expanded={settingsOpen} controls={settingsId} onclick={()=>settingsOpen=!settingsOpen}>页面设置</ToolAction>
+        {#if pageModel}<PrimaryAction disabled={saveBlocked||!authoring.dirty||authoring.sync?.phase==='saving'} onclick={saveRevision}>{(authoring.sync?authoring.sync.phase==='saving':savePending)?'保存中…':authoring.sync?'保存草稿':baseRevisionId?'保存新修订':'保存首个修订'}</PrimaryAction>{/if}
       {/if}
     </div>
   </div>
 
+  {/if}
+
   <aside class="chat" aria-label="分析会话" data-testid="workbench-track">
-    <PanguDialogue adapter={dialogueAdapter} />
+    {#if active}<PanguDialogue adapter={dialogueAdapter} />{/if}
 
   </aside>
 
   <main class="canvas" aria-label="页面画布" data-testid="workbench-track">
+    {#if settingsOpen&&!previewOpen}
+      <section class="settings-panel" id={settingsId} aria-label="页面设置">
+        <h2 class="settings-heading">创作与发布</h2>
+        <div class="settings-actions">
+          <ToolAction onclick={()=>services.navigation.navigate(`${resolve('/')}?new=1`)}>新建页面</ToolAction>
+          {#if parameterReview}<ToolAction disabled={saveBlocked||authoring.dirty} onclick={()=>parameterReviewOpen=!parameterReviewOpen}>参数模板评审</ToolAction>{/if}
+          {#if publicationPort.available}<ToolAction disabled={!authoring.ref||authoring.languageLocked} onclick={()=>publicationOpen=!publicationOpen}>发布评审</ToolAction>
+          {:else}<ToolAction disabled={!authoring.ref||authoring.dirty||saveBlocked||authoring.sync?.phase==='saving'} onclick={async()=>{if(!window.confirm('发布当前页面？后续保存编辑会将当前记录改为草稿。'))return;try{await coordinator.publish();}catch(error){saveError=String(error);}}}>发布当前记录</ToolAction>{/if}
+          {#if !authoringPort.assets}<ToolAction disabled={!authoring.ref} onclick={()=>historyOpen=!historyOpen}>页面历史</ToolAction>{/if}
+        </div>
+        {#if pageModel}<p class="document-summary">{pageModel.components.length} 个组件 · {pageModel.dataSourceCount} 个页面数据源</p>{/if}
+        {#if authoring.sync&&stableSavePort.delivery!=='single'}<label class="stat"><input type="checkbox" bind:checked={retainDimensionValues} disabled={savePending} onchange={event=>coordinator.setRetainDimensionValues(event.currentTarget.checked)}/>保存时保留维度取值</label>{#if authoring.sync.pending>0}<ToolAction disabled={authoring.sync.phase==='saving'} onclick={()=>coordinator.retrySync()}>核实并重试同步</ToolAction>{/if}{/if}
+        {#if authoringPort.assets&&authoring.ref}{#key authoring.ref.revisionId}<PageAssetInfo asset={authoring.ref} disabled={authoring.dirty||saveBlocked||loading} onaction={managePageRecord}/>{/key}{/if}
+      </section>
+    {/if}
     {#if historyOpen}{#key authoring.ref?.resourceId}<AuthoringHistory list={coordinator.listHistory} restore={coordinator.restoreRevision} />{/key}{/if}
     {#if recoveryState}
       <p class="notice" role="status" data-testid="language-recovery-status">{recoveryState.message || '正在检查未决操作…'}</p>
       {#if !recoveryState.summary}
-        <button class="btn" disabled={recoveryState.busy} onclick={() => languageRecovery?.check(services.navigation.current().searchParams.get('page'))}>再次检查恢复</button>
+        <button class="btn" disabled={recoveryState.busy} onclick={() => languageRecovery?.check((taskUrl??services.navigation.current()).searchParams.get('page'))}>再次检查恢复</button>
       {:else}
         <button class="btn" disabled={recoveryState.busy || recoveryState.phase === 'opened'} onclick={() => languageRecovery?.recover()}>查询原操作</button>
         <button class="btn" disabled={recoveryState.busy || recoveryState.summary.cancelRequested || !recoveryState.locked} onclick={() => languageRecovery?.cancel()}>取消未完成操作</button>
@@ -404,10 +464,13 @@
     {#if authoring.sync}
       {#if authoring.sync.protection === 'failed'}
         <p class="error" role="alert">浏览器保护失败，请勿关闭页面。{authoring.sync.message}</p>
+      {:else if authoring.sync.phase==='unknown'}
+        <p class="notice" role="status" data-testid="authoring-save-state">保存结果未确认，已停止重复发送。工作副本与原操作记录仍在此浏览器保护。</p>
       {:else if authoring.sync.pending > 0}
         <p class="notice" role="status">{authoring.sync.protection === 'protected' ? '已在浏览器保护' : '正在保护到浏览器'}，待同步 {authoring.sync.pending} 个操作。{authoring.sync.message}</p>
+      {:else if authoring.dirty}<p class="notice" role="status" data-testid="authoring-save-state">{authoring.sync.protection==='protected'?'已在此浏览器保护，尚未保存到服务端。':'正在保护当前修改…'}</p>
       {:else if authoring.sync.lastSaved}
-        <p class="notice" role="status">服务端已保存修订 R{authoring.sync.lastSaved.revisionNumber}</p>
+        <p class="notice" role="status" data-testid="authoring-save-state">草稿已保存。</p>
       {/if}
     {/if}
     {#if saveError || authoring.error}<p class="error" role="alert">{saveError || authoring.error}</p>{/if}
@@ -420,18 +483,18 @@
         <InlineParameterReview publication={parameterReview} {dataGateway}/>
       {:else if publicationOpen && publication}
         <PublicationReview {publication} />
-      {:else if previewOpen && previewRef}
-        <p class="notice">正在预览已保存修订；再次点击“当前内容预览”返回工作副本。</p>
+      {:else if previewOpen && !previewRef && currentDocument && active}<RuntimeView document={currentDocument} {dataGateway}/>
+      {:else if previewOpen && previewRef && active}
         <RevisionPreview pageId={previewRef.pageId} revisionId={previewRef.revisionId}
-          readRevision={(_pageId, _revisionId, signal) => coordinator.preview(previewRef!, signal)} />
-      {:else if instanceState.document || instanceState.loading || instanceState.error}
+          readRevision={readSavedPreview} />
+      {:else if active&&(instanceState.document || instanceState.loading || instanceState.error)}
         <div aria-label="参数化页面临时运行">
           <p>临时运行，不修改或保存当前页面。<button onclick={() => parameterInstance?.close()}>关闭运行预览</button></p>
           {#if instanceState.error}<p role="alert">{instanceState.error}</p>
           {:else if instanceState.loading}<p role="status">正在读取运行产物…</p>
           {:else if instanceState.document}<RuntimeView document={instanceState.document} {dataGateway} />{/if}
         </div>
-      {:else if currentDocument}
+      {:else if currentDocument&&active}
         <MetricCanvas
           document={currentDocument}
           {dataGateway}
@@ -495,13 +558,19 @@
   .workbench {
     display: grid;
     grid-template-columns: var(--analysis-rail-w) minmax(0, 1fr) var(--inspector-rail-w);
-    grid-template-rows: var(--contextbar-h) minmax(0, 1fr);
+    grid-template-rows:auto minmax(0, 1fr);
     height: 100%;
     min-height: 0;
     min-width: 0;
     background: var(--bg);
     overflow: hidden;
   }
+  .workbench.reading {grid-template-columns:minmax(0,1fr);}
+  .reading-toolbar{grid-column:1/-1;grid-row:1;min-width:0}
+  .workbench.reading .page-scroll{padding:24px}
+  .settings-heading{font-size:14px;font-weight:600;margin:0 0 12px;color:#191919}
+  .workbench.reading .chat,.workbench.reading .inspector-track{display:none}
+  .workbench.reading .canvas{grid-column:1}
   .chat {
     grid-column: 1;
     grid-row: 2;
@@ -542,9 +611,12 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    height: var(--contextbar-h);
+    min-height: var(--contextbar-h);
+    height:auto;
+    flex-wrap:wrap;
+    padding-block:8px;
     min-width: 0;
-    padding: 0 10px 0 13px;
+    padding: 10px 16px;
     background: var(--surface);
     border-bottom: 1px solid var(--line);
   }
@@ -556,21 +628,28 @@
     min-width: 0;
   }
   .docbar .r {
-    flex: none;
+    flex: 0 1 auto;
+    flex-wrap:wrap;
   }
+  .docbar .l{flex:1 1 260px;flex-wrap:wrap}
+  .docbar .r{margin-left:auto;gap:8px}
+  .page-title-editor{min-width:120px;max-width:320px;flex:1}
+  .settings-panel{flex:none;max-height:50%;overflow:auto;padding:24px;background:var(--surface);border-bottom:1px solid var(--line)}
+  .settings-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+  .document-summary{font-size:12px;color:#808080;margin:12px 0 0}
   .canvas-title {
     flex: none;
     color: var(--text);
-    font-size: 11.5px;
-    font-weight: 650;
+    font-size: 14px;
+    font-weight: 500;
   }
   .badge {
     padding: 2px 7px;
     color: #3730a3;
     background: #eef2ff;
     border-radius: 5px;
-    font-size: 9.5px;
-    font-weight: 650;
+    font-size: 12px;
+    font-weight: 500;
   }
   .badge.transient {
     color: #92400e;
@@ -585,17 +664,9 @@
     color: #71717a;
     background: #f4f4f5;
   }
-  .page-id {
-    max-width: 160px;
-    overflow: hidden;
-    color: #3f3f46;
-    font-size: 10.5px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
   .stat {
     color: #71717a;
-    font-size: 10.5px;
+    font-size: 12px;
   }
 
   @keyframes pulse {
@@ -610,45 +681,15 @@
     }
   }
 
-  .btn {
-    height: 28px;
-    padding: 0 9px;
-    color: var(--text);
-    background: var(--surface);
-    border: 1px solid #d4d4d8;
-    border-radius: 6px;
-    font-size: 10.5px;
-    font-weight: 550;
-    cursor: pointer;
-    transition:
-      background 0.15s ease,
-      border-color 0.15s ease,
-      box-shadow 0.15s ease,
-      transform 0.1s ease;
-  }
-  .btn:hover:not(:disabled) {
-    border-color: #a1a1aa;
-    box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
-  }
-  .btn:active:not(:disabled) {
-    transform: translateY(1px);
-  }
-  .btn:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-
-  .btn:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:28px;padding:3px 6px;border:0;border-radius:4px;background:transparent;color:#595959;font:inherit;font-size:14px;line-height:20px;cursor:pointer;text-decoration:none}
+  .btn:hover:not(:disabled){background:#f0f0f0;color:#191919}.btn:focus-visible{outline:2px solid #1476ff;outline-offset:2px}.btn:disabled{color:#c2c2c2;cursor:not-allowed}
   .notice {
     margin: 0;
     padding: 6px 12px;
     color: #166534;
     background: #f0fdf4;
     border-bottom: 1px solid #dcfce7;
-    font-size: 10.5px;
+    font-size: 12px;
   }
   .error {
     margin: 0;
@@ -656,7 +697,7 @@
     color: #b91c1c;
     background: #fef2f2;
     border-bottom: 1px solid #fecaca;
-    font-size: 10.5px;
+    font-size: 12px;
   }
   .page-scroll {
     flex: 1;
@@ -688,12 +729,6 @@
     font-size: 13px;
     line-height: 1.7;
   }
-  @container platform (max-width: 1100px) {
-    .docbar .stat,
-    .page-id {
-      display: none;
-    }
-  }
   @container platform (max-width: 760px) {
     .workbench {
       grid-template-columns: minmax(0, 1fr);
@@ -708,4 +743,5 @@
       display: none;
     }
   }
+  @media(max-width:700px){.workbench.reading .page-scroll,.settings-panel{padding:16px}}
 </style>

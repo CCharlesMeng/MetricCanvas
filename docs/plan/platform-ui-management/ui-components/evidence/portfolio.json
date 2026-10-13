@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "phase": "final",
+  "tier": {
+    "value": "standard",
+    "restore_tasks": [
+      "2",
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "blocking_triggers": [
+      "new-pattern",
+      "shared-boundary"
+    ],
+    "changed_files": 274,
+    "max_changed_files": 5
+  },
+  "risk_triggers": [
+    "build-config",
+    "interaction",
+    "new-pattern",
+    "shared-boundary",
+    "visual"
+  ],
+  "trigger_sources": {
+    "visual": [
+      "diff",
+      "plan"
+    ],
+    "new-pattern": [
+      "plan"
+    ],
+    "shared-boundary": [
+      "diff",
+      "plan"
+    ],
+    "interaction": [
+      "plan"
+    ],
+    "build-config": [
+      "diff"
+    ]
+  },
+  "portfolio_narrowed": [],
+  "facts": {
+    "cross_page": false,
+    "shared_style": false,
+    "overflow_state": true,
+    "frozen_r": true,
+    "frozen_r5": false,
+    "frozen_r6": true,
+    "has_f3": true,
+    "has_s3_claim": false
+  },
+  "modules": [
+    "causal",
+    "targeted-quality",
+    "render",
+    "regression",
+    "restore-final",
+    "review-layout",
+    "review-convention",
+    "review-quality"
+  ],
+  "review_roles": [
+    "review-layout",
+    "review-convention",
+    "review-quality"
+  ],
+  "review_dimensions": {
+    "review-layout": [
+      "L2",
+      "L3",
+      "L5"
+    ],
+    "review-convention": [
+      "C1",
+      "C2",
+      "C3",
+      "C4",
+      "C5"
+    ],
+    "review-quality": [
+      "Q2",
+      "Q4",
+      "Q5",
+      "Q6",
+      "Q7"
+    ]
+  },
+  "claims": [
+    {
+      "id": "AT-UI-1",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "test_case",
+      "task": "1",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-UI-2",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "restore_contract",
+      "task": "2",
+      "modules": [
+        "causal",
+        "render"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-UI-3",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "restore_contract",
+      "task": "3",
+      "modules": [
+        "causal",
+        "render"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-UI-4",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "restore_contract",
+      "task": "4",
+      "modules": [
+        "causal",
+        "render"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-UI-5",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "restore_contract",
+      "task": "5",
+      "modules": [
+        "causal",
+        "render"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-UI-6",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "restore_contract",
+      "task": "6",
+      "modules": [
+        "causal",
+        "render"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-UI-7",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "test_case",
+      "task": "7",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "previous": {
+    "phase": "final",
+    "tier": "standard",
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "restore-final",
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "required_profiles": {
+      "AT-UI-1": "mock",
+      "AT-UI-2": "mock",
+      "AT-UI-3": "mock",
+      "AT-UI-4": "mock",
+      "AT-UI-5": "mock",
+      "AT-UI-6": "mock",
+      "AT-UI-7": "mock"
+    }
+  }
+}

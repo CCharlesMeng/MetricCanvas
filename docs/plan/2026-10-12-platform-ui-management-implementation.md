@@ -4,6 +4,8 @@
 
 阅读顺序：[已确认交互](2026-10-12-platform-page-management-design.md) → [组件架构与视觉范围](2026-10-12-platform-os-theme-component-architecture.md) → 本文。仓库保存的[原型](../evidence/platform-page-management-interaction-2026-10-12/page-management-interaction-prototype.html)是交互来源；视觉真源是指定 TinyVue OS Theme 的对应组件。
 
+新会话接续时先读 [Handoff](2026-10-12-platform-ui-management-handoff.md)，其中记录当前起点、并行修改、阅读顺序和第一迭代推进步骤。
+
 ## 目标与已确定范围
 
 新增独立 Svelte 基础组件库 `@metriccanvas/ui`，供平台和引擎共同使用。管理、详情、阅读模式工具栏和工作台相关工具面按 OS Theme 演进；相同组件按冻结的官方状态做 1:1 还原。平台原有三个关键页面与明确的新建、继续创作、预览进入编辑、一步返回管理规则保持。
@@ -91,7 +93,24 @@ UI 采用现有标准 Svelte 打包方式，声明 peer `>=5.29.0 <6`。这项�
 
 ## 实施工作包与退出条件
 
-全部工作包当前为未开始。下列文件为拟实施落点；每包开始前核对当前工作区和具体文件，不覆盖现有计算、日期文本及创作输入任务的修改。生产代码实施由决策和视觉冻结解锁，不因为任务列出就视为已授权执行。
+本会话已按用户连续实施授权完成 W0–W6 的前端代码；下表区分实现与验收。W7 受提供方能力保证约束，未用模拟能力替代。前置任务的 43 个过程文件保存在带说明的完整 Git stash；交接副本位于 `/tmp/metriccanvas-platform-ui-handoff.jvtgGY/`，未恢复整份 stash。截至该实施记录时尚未提交、推送或部署。2026-10-13 用户已要求提交本批改动并合入 main；提交、远端同步和 CI 结果以本次交付回执为准。生产部署尚未执行。
+
+| 工作包 | 实施状态 | 验收范围及遗留 |
+| --- | --- | --- |
+| W0 | 已落 ADR-0102、两份 SDD Story、官方 3.32.0 资产指纹 | 完整状态像素比较仍未全部收口，不能宣称所有控件 1:1 已验收 |
+| W1 | 独立 UI 0.1.0、统一构建/公开面/五包 tarball 与 CI 矩阵 | 当前与最低 Svelte 源码及仓外 Chrome 消费；Edge 环境故障、CI 未运行另列 |
+| W2 | 中性 DatePicker 提取，引擎仍负责页面日期协议 | 四形态、历法共用向量、原根/ShadowRoot、现有 Table/渲染回归 |
+| W3 | 管理基础控件与局部官方主题实现 | 七条冻结数值/溢出规则；普通根/ShadowRoot、键盘、禁用、长文案、窄/短屏；全量状态像素证据未收口 |
+| W4 | 人工编辑只本地保护；明确保存单次发送；format 3 | 旧未决命令不重放，未知停发；AI 脏稿前置保护与既有单发送者保持 |
+| W5 | 实例任务指针、逐任务工作副本、导航与阅读恢复 | 明确新建才创建临时任务；目录条件、异步滚动/焦点恢复；同范围刷新恢复；清洁任务重入刷新基线 |
+| W6 | 平台工具面采用 UI；管理 Grid 与受限详情 | 390px 操作完整可点击、目录/详情/工作台链路及 UMD 门户夹具通过；真实 Java/Relay/身份/门户未运行 |
+| W7 | 提供方需求与禁用能力说明已交付 | 全局搜索/排序/标题摘要、独立发布读、历史正文/追加恢复、复制、整页删除等待真实保证，未实现猜测 DTO |
+
+详细证据与逐声明状态见 `platform-ui-management/ui-components/`、`platform-ui-management/platform-management/` 及 `docs/evidence/platform-ui-management-2026-10-12/`。
+
+最终本地证据：当前 Svelte 5.56.6 与最低 5.29.0 的隔离源码各为 201 个文件、1772 个测试通过、4 个跳过；每版仓外产品 Chrome 用例 96 个、UI-only 用例 20 个通过。真实五包 tarball 摘要和日志见 [兼容记录](../evidence/platform-ui-management-2026-10-12/compatibility/manifest.json)。包及构建输入与验收树 `b6c855feb90adb47816c384817ea36faeebb91f9` 一致。其后新增的工作台 unknown 状态文案/禁用保存由两版平台 check、当前 Chrome HTTP fixture 和生产微前端 fixture 单独验证；另补人工脏稿 AI 零发送与已保存回执无第二次前端保存两项测试，当前/最低 Svelte 的语言套件均 55/55、测试类型检查通过。这些增量没有被记成最终树全量单测重跑、远端 CI 或真实接缝通过。
+
+当前 Chrome 155 的工作台旅程已记录：无变化保存禁用；第二次保存已应用但丢失回执时，显示“保存结果未确认”、停止重复发送，导航和刷新后仍无额外 PUT。UI 7 项和平台 8 项冻结还原规则通过；它们是明确数值/状态声明，不能代替全状态 1:1 像素对照。完整视觉、Edge、CI 和 live 验收缺口保留在各 Story 的 alpha-tests.md 与 acceptance.md。
 
 ### W0：裁决与视觉来源冻结
 
@@ -185,7 +204,7 @@ UI 采用现有标准 Svelte 打包方式，声明 peer `>=5.29.0 <6`。这项�
 依赖：W3/W5；按已确认 Q19 A 增量交付 UI、视觉与真实支持的旅程，服务能力未到位的功能明确未开放。
 
 - `apps/platform/package.json` 直接依赖 UI；`views/ManagementList.svelte` 使用 Grid、现有服务分页/状态和明确操作入口；不以当前页本地过滤模拟全目录检索。
-- `views/ManagementDetail.svelte` 使用 UI、版本状态与当前读取内容预览；旧资产能力与目标双引用模型明确区分。未提供历史正文时不显示假的历史预览。
+- `views/PageReading.svelte` 使用 UI、版本状态与当前读取内容预览；旧资产能力与目标双引用模型明确区分。未提供历史正文时不显示假的历史预览。
 - `PageAuthoringWorkbench.svelte`、`PlatformFrame.svelte`、`RevisionPreview.svelte` 迁移关联工具面；不覆盖引擎内容 CSS，不重做创作编排或页面布局。
 - 新 `management/copy-page.ts`：从明确已读取并校验的文档创建独立 pageId，新建 draft 单次提交；不复制历史、发布引用、本地队列和操作ID。身份、pageId/resourceId、未知操作保护沿用已有层。
 - `page-assets/contract.ts`、`java-adapter.ts`、`management.ts` 与 `page-assets.ts`：仅扩充已获得提供方事实的消费面；新增 capability 描述记录是否确认及原因，不以示例成功推导真实支持，也不要求私有 Adapter 平白增加必填配置。
@@ -231,9 +250,39 @@ UI 采用现有标准 Svelte 打包方式，声明 peer `>=5.29.0 <6`。这项�
 
 组件纯逻辑使用现有 Vitest；控件交互/布局用真实浏览器；资产生命周期用契约夹具及真实服务。现有 `pnpm test`、`pnpm check`、`pnpm build`、`pnpm packages:check`继续执行；发布兼容使用修订后的 `pnpm compatibility:check`，最低版本与当前版本分别留痕。是否跑完整 Bundle 导出检查取决于产品包版本/契约的实际变更，generated lock 不手改。
 
-compatibility 默认检查 HEAD 的 Git 树。执行未提交实现的消费验证要明确 source-tree，不能跑 HEAD 后声称当前工作区通过；只对本批允许文件建立验收树，保留其他任务修改。Svelte最低工具链使用既有矩阵兼容组合，不用忽略 peer 声称成功。验证命令列为实施时的必需条件，本轮未运行。
+compatibility 默认检查 HEAD 的 Git 树。执行未提交实现的消费验证要明确 source-tree，不能跑 HEAD 后声称当前工作区通过；只对本批允许文件建立验收树，保留其他任务修改。Svelte最低工具链使用既有矩阵兼容组合，不用忽略 peer 声称成功。规划时验证尚未运行；本次实际执行范围与结果见上方实施状态及证据，未运行项保持单独登记。
 
 ## 批次、依赖与回退
+
+工程工作包归并为五个验收迭代，前四轮完成增量版本，第五轮在外部能力就绪后完成全部生命周期。以下为初步工程排期，按一名主要开发持续投入、包含针对性测试与集中浏览器验收估算；不是已测执行耗时，也不计 Java 提供方建设/等待、设计大幅变更或上线审批时间。
+
+| 迭代 | 对应工作包 | 可验收交付 | 估算工作日 |
+| --- | --- | --- | --- |
+| I1 工程与基线 | W0/W1 | 官方视觉状态基线、UI 包骨架、统一构建/CI与独立消费门禁 | 2–3 |
+| I2 公共 UI | W2/W3 | 日期无变化提取、管理所需真实组件与还原验证、基于真实组件的新视觉稿 | 4–6 |
+| I3 工作台与导航 | W4/W5 | 明确保存、本地恢复、多页工作副本、统一工作台和阅读模式/返回旅程 | 4–6 |
+| I4 管理增量版本 | W6 | 管理/详情/工作台工具面视觉与已支持资产旅程集成，兼容性集中回归 | 3–4 |
+| I5 完整生命周期 | W7 | 提供方能力接入、旧资产映射、真实发布/历史恢复/删除验证 | 2–4，在契约与服务均就绪后 |
+
+前四轮合计 13–19 个工作日，约三到四周；包括第五轮的 MC 侧工作合计 15–23 个工作日，约三到五周。完整功能的日历完成时间为“前四轮完成与提供方就绪两者中较晚的时点 + I5 的 2–4 个工作日”，不能只将 MC 工作量相加当作提供方交付承诺。
+
+Java 配合清单在 I1 就输出，提供方工作可与 I2–I4 并行，不到 I5 才启动协调。I3 最主要的不确定性是现有自动同步改为明确保存，以及旧恢复记录/未决操作兼容；I2 的不确定性是官方状态基线与控件交互细节。I1 验收后以实际工程/基线结果校准后续区间，不缩减已确认的 1:1 或写入保护要求来满足时间估算。
+
+### 各迭代代码包变更
+
+下表区分产品源码、新包建设、验证文件与同版发布联动。工程工具与根目录不是新增 npm 交付物。
+
+| 迭代 | 新增/修改的主要代码包 | 具体变更 | 验证及仓库级配套 |
+| --- | --- | --- | --- |
+| I1 工程与基线 | 新增 `packages/ui`（`@metriccanvas/ui`） | manifest、源码/发布入口、Svelte/TS配置、最小公开面、许可证与README；此时不算控件全部完成 | 修改 `tools/package-build`、根 package.json/锁文件、`tests/public-api`、CI；新增 UI 独立消费夹具；规格/视觉来源及 ADR 修订 |
+| I2 公共 UI | 修改 `packages/ui`、`packages/engine` | UI 实现管理所需基础组件并接收 DatePicker；engine 的 runtime-ui 日期筛选适配器改用 UI，中性日期类型与页面协议校验分开；engine manifest新增 UI 依赖 | UI/engine 日期与控件验收；修改 `apps/playground/tests/runtime-ui-seams.test.ts` 和日期 Harness；embed、搭建画布及最低 Svelte 仓外消费回归 |
+| I3 工作台与导航 | 修改 `apps/platform`（platform） | 工作会话、人工明确保存、本地存储/恢复版本、服务作用域、当前任务指针；路由、返回目录状态、阅读模式与预览编辑入口 | platform 保存/恢复/导航/微前端测试及新增工作会话浏览器夹具；不改 Python 创作算法或 Relay协议 |
+| I4 管理增量版本 | 修改 `apps/platform`；`packages/ui` 仅在集成发现必要适配时修正 | platform 直接声明 UI 依赖，管理/详情/工作台工具面使用 UI；新草稿复制与真实能力展示。UI适配修正不改变已冻结还原目标 | platform 页面/微前端/兼容验收；UI修正时重验依赖状态；引擎内容/日期/报告导出做对应回归 |
+| I5 完整生命周期 | 修改 `apps/platform`；外部 Java 页面资产服务由提供方修改 | platform 更新消费契约和 Java Adapter，接入检索、双内容引用、精确发布、历史读取/追加恢复、删除与核实；不把 Java 服务建进本仓 | 消费契约资料/夹具、生命周期 ADR；真实 Java、发布访问/执行、身份与门户分别验收 |
+
+`packages/page`、`packages/metric-canvas`、`packages/embed` 本轮没有计划中的业务源码重构。engine 改动正式发布时，按现有四包同版规则联动这三个包的 manifest 版本、产物和对应契约版本/摘要生成；这不等于修改页面 Schema 或新增 UI 领域依赖。embed 重建后仍自包含，并检验 UI 的组件样式进入 ShadowRoot。
+
+`packages/application-runtime` 与 `metriccanvas-authoring` 未列本轮业务改动：配置/身份通路和 AI工具单次保存继续沿用。产品组版本发生变化时，authoring 中的生成契约快照/锁可按既有导出链联动，不能误报为创作算法或输入协议变更。若实施证据显示必须改变现有公开 Interface、私有 Adapter 或这些包的业务代码，先登记扩散原因并做针对性架构审查，不默认扩大范围。
 
 ```mermaid
 flowchart LR

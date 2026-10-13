@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "gate": "sdd-dev",
+  "cell": "CODE-CONVENTION",
+  "role": "review-convention",
+  "checklist": "/Users/moon/Documents/Code/moon-skills/skills/sdd-review-frontend/frontend-code-checklists/convention.md",
+  "output_schema": "/Users/moon/Documents/Code/moon-skills/skills/sdd-review-frontend/references/role-result.md",
+  "assigned_dimensions": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C5"
+  ],
+  "evidence_epoch": "review-final",
+  "code_fingerprint": "bc2f74cf944f7d5fd8678b5d790512258ff1421273d62b058859edf4b540a0ae",
+  "review_object": "platform-management final working-tree diff",
+  "anchors": [
+    "/manage",
+    "/manage/pages/:pageId",
+    "/"
+  ],
+  "deliverables": {
+    "code_diff": "1e941d5f",
+    "qa_baseline": "/Users/moon/Documents/Code/公司项目/DataDashboard/docs/plan/platform-ui-management/platform-management/dev-baseline.md",
+    "browser_evidence": "/Users/moon/Documents/Code/公司项目/DataDashboard/docs/plan/platform-ui-management/platform-management/evidence/review-evidence.json"
+  },
+  "constraints": {
+    "frozen_claims": [
+      "R1-1",
+      "R2-1",
+      "R6-1",
+      "F3-1",
+      "F3-2",
+      "F3-3",
+      "F3-4",
+      "F3-5",
+      "F3-6"
+    ],
+    "exemptions": [],
+    "risk_closure": [
+      "apps/platform"
+    ],
+    "required_states": [
+      "disabled",
+      "selected",
+      "empty",
+      "overflow"
+    ],
+    "start_failures": "/Users/moon/Documents/Code/公司项目/DataDashboard/docs/plan/platform-ui-management/platform-management/dev-baseline.md / 执行起点",
+    "tolerance": {
+      "css_px": 1
+    }
+  }
+}

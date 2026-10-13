@@ -1,0 +1,21 @@
+{
+  "browser": "155.0.8059.39",
+  "pages": 5,
+  "errors": [],
+  "checks": [
+    "directory contains all five pages",
+    "Tokens inline report and chart preview visible"
+  ],
+  "scope": "local seeded HTTP service, not Java",
+  "api_checks": [
+    "five initial records",
+    "draft filter 3 / published filter 2",
+    "temporary new page create",
+    "saved revision increments and persists to disk",
+    "stale base revision rejected with 409",
+    "temporary verification record removed, five seeds retained"
+  ],
+  "typecheck": "pnpm exec tsc --noEmit -p apps/platform/scripts: exit 0",
+  "source_sha256": "ed5fe9765f1bd0b16f36875afedf92f302576d994db1f0a34ca1d735ef53741f",
+  "pages_originals_modified": false
+}

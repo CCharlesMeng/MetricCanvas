@@ -1,0 +1,87 @@
+{
+  "baseline_sha256": "110ea056826935c248874deec572d0f2f937bf0cd3ef1f3598f7054c80a88e13",
+  "contract_sha256": "0f54f1b367aeb5ab8721ffc47eb52c1d6a5ae6bd5f8eb593c9276d748ef8c32a",
+  "rules": [
+    {
+      "baseline_id": "R1-1",
+      "check_mode": "exact",
+      "expected": [
+        "页面管理"
+      ],
+      "id": "R1-1-directory",
+      "scenario": "management-1440",
+      "subject": "管理页面标题"
+    },
+    {
+      "baseline_id": "R1-1",
+      "check_mode": "exact",
+      "expected": [
+        "页面标题"
+      ],
+      "id": "R1-1-details-reading",
+      "scenario": "reading-1440",
+      "subject": "详情阅读页面标题"
+    },
+    {
+      "baseline_id": "R1-1",
+      "check_mode": "exact",
+      "expected": [
+        "继续编辑"
+      ],
+      "id": "R1-1-workbench-reading",
+      "scenario": "workbench-reading",
+      "subject": "同工作台阅读继续编辑入口"
+    },
+    {
+      "baseline_id": "R2-1",
+      "check_mode": "exact",
+      "expected": [
+        "已在此浏览器保护，尚未保存到服务端。"
+      ],
+      "id": "R2-1-protected",
+      "scenario": "locally-protected",
+      "subject": "保存状态文案"
+    },
+    {
+      "baseline_id": "R2-1",
+      "check_mode": "exact",
+      "expected": [
+        "草稿已保存。"
+      ],
+      "id": "R2-1-saved",
+      "scenario": "saved",
+      "subject": "保存状态文案"
+    },
+    {
+      "baseline_id": "R2-1",
+      "check_mode": "exact",
+      "expected": [
+        "保存结果未确认，已停止重复发送。工作副本与原操作记录仍在此浏览器保护。"
+      ],
+      "id": "R2-1-unknown",
+      "scenario": "unknown-save",
+      "subject": "保存状态文案"
+    },
+    {
+      "baseline_id": "R6-1",
+      "check_mode": "overflow",
+      "id": "R6-1-management-1440",
+      "scenario": "management-1440",
+      "subject": "管理目录无横向溢出",
+      "tolerance": {
+        "css_px": 1.0
+      }
+    },
+    {
+      "baseline_id": "R6-1",
+      "check_mode": "overflow",
+      "id": "R6-1-management-390",
+      "scenario": "management-390",
+      "subject": "管理目录无横向溢出",
+      "tolerance": {
+        "css_px": 1.0
+      }
+    }
+  ],
+  "schema_version": 3
+}

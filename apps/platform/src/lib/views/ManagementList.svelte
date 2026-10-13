@@ -1,230 +1,44 @@
 <script lang="ts">
-  import {usePlatformServices} from "../integration/services";
-  const services = usePlatformServices();
-  const {pageAssets} = services;
-  const {resolve, navigate:goto} = services.navigation;
-  import { onMount } from 'svelte';
-  import type { AssetSummary } from '$lib/page-assets/contract';
-  let pages = $state<AssetSummary[]>([]);
-  let loading = $state(true), error = $state(''), pageNo = $state(1), total = $state(0);
-  let statusFilter = $state<'' | 'draft' | 'published'>('');
-  let request = 0;
-  const controller = new AbortController();
-  onMount(() => { void loadPages(); return () => {request++;controller.abort();}; });
-  async function loadPages() {
-    const id = ++request; loading = true; error = '';
-    try {
-      const result = await pageAssets.list({page:pageNo,pageSize:20,...(statusFilter ? {state:statusFilter} : {})},controller.signal);
-      if (id === request) { pages = result.items; total = result.total; }
-    } catch (cause) { if(id === request) error = cause instanceof Error ? cause.message : '目录加载失败'; }
-    finally { if(id === request) loading = false; }
-  }
+  import PrimaryAction from '../PrimaryAction.svelte';
+ import {Tag,Grid,Pagination} from '@metriccanvas/ui';
+ import StatusColumnFilter from '../StatusColumnFilter.svelte';
+ import ToolAction from '../ToolAction.svelte';import {usePlatformServices} from '../integration/services';import {onMount,tick} from 'svelte';import type {AssetSummary} from '../page-assets/contract';
+ const services=usePlatformServices();const {pageAssets}=services;const {resolve,navigate}=services.navigation;const initial=services.navigation.current();
+ let pages=$state<AssetSummary[]>([]);let loading=$state(true),error=$state(''),total=$state(0);
+ let pageNo=$state(Math.max(1,Number(initial.searchParams.get('page'))||1));let status=$state(['draft','published'].includes(initial.searchParams.get('state')??'')?initial.searchParams.get('state')!:'');let list:HTMLElement;let request=0;const controller=new AbortController();
+ const preview=(page:AssetSummary)=>`${resolve('/manage/pages/[pageId]',{pageId:page.pageId})}?resource=${encodeURIComponent(page.resourceId)}&reading=1`;
+ const edit=(page:AssetSummary)=>`${resolve('/')}?page=${encodeURIComponent(page.pageId)}&resource=${encodeURIComponent(page.resourceId)}`;
+ function locationFor(page:number,state:string){const query=new URLSearchParams();query.set('page',String(page));if(state)query.set('state',state);return `${resolve('/manage')}?${query}`;}
+ async function change(page:number,state:string){await navigate(locationFor(page,state));}
+ onMount(()=>{const old=services.workSession.snapshot();void load().then(async()=>{await tick();if(controller.signal.aborted||error)return;const previous=new URL(old.directory,initial);const sameDirectory=previous.pathname===initial.pathname&&['page','state'].every(key=>(previous.searchParams.get(key)??'')===(initial.searchParams.get(key)??''));if(!sameDirectory)return;const target=[...list.querySelectorAll<HTMLElement>('[data-asset-focus]')].find(element=>element.dataset.assetFocus===old.focus);target?.focus({preventScroll:true});list.scrollTop=old.scroll;});const stop=services.navigation.registerGuard(async()=>{try{await services.workSession.rememberDirectory(services.navigation.current(),list.scrollTop,(document.activeElement as HTMLElement)?.dataset.assetFocus??null);return true;}catch(cause){error=String(cause);return false;}},()=>false);return()=>{request++;controller.abort();stop();};});
+ function displayDate(value:string){if(!value)return '—';const date=new Date(value);return Number.isNaN(date.valueOf())?value:new Intl.DateTimeFormat('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(date).replaceAll('/','-');}
+ async function load(){const id=++request;loading=true;error='';try{const result=await pageAssets.list({page:pageNo,pageSize:20,...(status==='draft'||status==='published'?{state:status}:{})},controller.signal);if(id===request){pages=result.items;total=result.total;}}catch(cause){if(id===request)error=String(cause);}finally{if(id===request)loading=false;}}
 </script>
-
-
-
-<section class="management">
-  <div class="heading">
-    <div>
-      <p class="eyebrow">管理</p>
-      <h1>页面</h1>
-      <p class="muted">查看已保存页面，继续创作或管理草稿。</p>
-    </div>
-    <div class="heading-actions">
-      <a href={`${resolve('/')}?new=1`}>创建新页面</a>
-      <select aria-label="页面状态" bind:value={statusFilter} onchange={() => {pageNo=1;void loadPages();}}><option value="">全部</option><option value="draft">草稿</option><option value="published">已发布</option></select>
-      <button onclick={loadPages} disabled={loading}>刷新目录</button>
-    </div>
+{#snippet statusHeader()}
+  <StatusColumnFilter value={status} onchange={value=>change(1,value)}/>
+{/snippet}
+<section bind:this={list} class="management">
+  <header><h1>页面管理</h1></header>
+  <div class="management-panel">
+    <div class="table-toolbar" aria-label="页面目录操作"><PrimaryAction onclick={()=>navigate(`${resolve('/')}?new=1`)}>新建页面</PrimaryAction><ToolAction icon="refresh" disabled={loading} onclick={load}>刷新</ToolAction></div>
+    <Grid responsive="stack" rows={pages} headers={{state:statusHeader}} columns={[{key:'name',label:'页面',width:'24%'},{key:'state',label:'状态',width:'14%'},{key:'revision',label:'修订',width:'8%'},{key:'fields',label:'指标与维度',width:'20%'},{key:'created',label:'创建时间',width:'12%'},{key:'updated',label:'最近修改',width:'12%'},{key:'actions',label:'操作',width:'10%'}]} rowKey={page=>page.resourceId} {loading} {error} emptyText="当前筛选下暂无页面，可新建页面。" label="页面目录">
+      {#snippet cell(page,column)}
+        {#if column.key==='name'}<a data-asset-focus={page.resourceId} href={edit(page)} title={`页面 ID：${page.pageId}\n资源 ID：${page.resourceId}`}>{page.pageId}</a><p class="description" title={page.description}>{page.description||'暂无描述'}</p>
+        {:else if column.key==='state'}<Tag type={page.state==='published'?'success':'info'}>{page.state==='published'?'已发布':page.state==='draft'?'草稿':'状态待核实'}</Tag>
+        {:else if column.key==='revision'}<span title={page.revisionId}>R{page.revisionNumber}</span>
+        {:else if column.key==='fields'}
+          {#if page.supportedFields}<div class="field-summary" title={`指标：${page.supportedFields.metrics.join('、')||'无'}\n维度：${page.supportedFields.dimensions.join('、')||'无'}`}><span>{page.supportedFields.metrics.length} 个指标 · {page.supportedFields.dimensions.length} 个维度</span><p class="description">{[...page.supportedFields.metrics,...page.supportedFields.dimensions].join('、')||'无指标与维度'}</p></div>{:else}<span class="unavailable">未提供</span>{/if}
+        {:else if column.key==='created'}<time datetime={page.createdAt}>{displayDate(page.createdAt??'')}</time>
+        {:else if column.key==='updated'}<time datetime={page.updatedAt}>{displayDate(page.updatedAt)}</time>
+        {:else}<div class="actions"><a class="row-action" href={preview(page)}>预览</a><a class="row-action" href={edit(page)}>编辑</a></div>{/if}
+      {/snippet}
+    </Grid>
+    {#if error}<ToolAction onclick={load}>重试</ToolAction>{/if}
+    <div class="pagination"><Pagination page={pageNo} {total} disabled={loading} onchange={page=>change(page,status)}/></div>
   </div>
-
-  {#if loading}
-    <div class="skeleton-list" aria-label="加载页面目录">
-      <i></i><i></i><i></i>
-    </div>
-  {:else if error}
-    <div class="error">
-      <p>{error}</p>
-      <button onclick={loadPages}>重试</button>
-    </div>
-  {:else if pages.length === 0}
-    <div class="empty">
-      <h2>暂无页面</h2>
-      <p>当前筛选下没有页面，可创建新页面。</p>
-      <a href={resolve('/')}>打开页面搭建工作台</a>
-    </div>
-  {:else}
-    <ul class="page-list">
-      {#each pages as page (page.resourceId)}
-        <li>
-          <a class="page-link" href={`${resolve('/manage/pages/[pageId]', { pageId: page.pageId })}?resource=${encodeURIComponent(page.resourceId)}`}>
-            <span class="page-id">{page.pageId}</span>
-            <span class="summary">
-              <span>
-                最新页面修订
-                <code>{page.revisionId}</code>
-              </span>
-              <span>
-                状态
-                <code>{page.state === 'published' ? '已发布' : page.state === 'draft' ? '草稿' : '状态未知'}</code>
-              </span>
-              <span>{page.description || page.pageId} · {page.updatedAt}</span>
-            </span>
-          </a>
-        </li>
-      {/each}
-    </ul>
-    <nav aria-label="目录分页"><button disabled={pageNo === 1 || loading} onclick={() => {pageNo--;void loadPages();}}>上一页</button><span>第 {pageNo} 页 · 共 {total} 条</span><button disabled={pageNo * 20 >= total || loading} onclick={() => {pageNo++;void loadPages();}}>下一页</button></nav>
-  {/if}
 </section>
-
 <style>
-  .management {
-    max-width: 1120px;
-    margin: 0 auto;
-    padding: 32px 24px 72px;
-  }
-  .heading {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    align-items: start;
-    margin-bottom: 24px;
-  }
-  .eyebrow {
-    margin: 0;
-    color: var(--accent);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  h1 {
-    margin: 5px 0;
-    font-size: 24px;
-    letter-spacing: -0.01em;
-  }
-  .muted {
-    color: var(--muted);
-    font-size: 13px;
-  }
-  button, .empty a {
-    padding: 7px 13px;
-    color: var(--text);
-    background: var(--surface);
-    border: 1px solid #d4d4d8;
-    border-radius: 9px;
-    font: inherit;
-    font-size: 12.5px;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease,
-      transform 0.1s ease;
-  }
-  button:hover:not(:disabled), .empty a:hover {
-    border-color: var(--faint);
-    box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
-  }
-  button:active:not(:disabled) {
-    transform: translateY(1px);
-  }
-  .heading-actions {
-    display: flex;
-    gap: 8px;
-  }
-  button:disabled {
-    cursor: wait;
-    opacity: 0.5;
-  }
-  .page-list {
-    display: grid;
-    gap: 10px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .page-link {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 16px 18px;
-    color: inherit;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    text-decoration: none;
-    transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease;
-  }
-  .page-link:hover {
-    border-color: rgb(79 70 229 / 45%);
-    box-shadow: 0 2px 10px rgb(24 24 27 / 6%);
-  }
-  .page-id {
-    font-weight: 700;
-    font-size: 13.5px;
-  }
-  .summary {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: end;
-    gap: 16px;
-    color: var(--muted);
-    font-size: 12px;
-  }
-  code {
-    margin-left: 4px;
-    padding: 1px 7px;
-    color: #3f3f46;
-    background: var(--line-soft);
-    border-radius: 5px;
-    font-size: 11.5px;
-  }
-  .skeleton-list {
-    display: grid;
-    gap: 10px;
-  }
-  .skeleton-list i {
-    height: 58px;
-    background: linear-gradient(100deg, #ececee 40%, #f6f6f7 50%, #ececee 60%);
-    background-size: 200% 100%;
-    border-radius: 12px;
-    animation: shimmer 1.6s ease-in-out infinite;
-  }
-  @keyframes shimmer {
-    to {
-      background-position: -200% 0;
-    }
-  }
-  .empty,
-  .error {
-    display: grid;
-    justify-items: start;
-    gap: 12px;
-    padding: 28px;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-  }
-  .empty h2 {
-    margin: 0;
-    font-size: 16px;
-  }
-  .empty p,
-  .error p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 13px;
-  }
-  @container platform (max-width: 720px) {
-    .page-link {
-      flex-direction: column;
-    }
-    .summary {
-      justify-content: start;
-    }
-  }
+.management{height:100%;overflow:auto;padding:24px;font-size:14px;line-height:1.5;color:#191919}header{margin-bottom:24px}h1{font-size:20px;line-height:28px;font-weight:600;margin:0}.management-panel{padding:24px;background:#fff;border-radius:8px;min-width:0}.table-toolbar{display:flex;align-items:center;gap:12px;margin-bottom:16px}.description{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:4px 0 0;color:#808080;font-size:12px;line-height:18px}.actions{display:flex;align-items:center;gap:16px}a{color:#191919;text-decoration:none;overflow-wrap:anywhere}a:hover{text-decoration:underline}.row-action{display:inline-flex;align-items:center;min-height:28px;color:#1476ff;font-size:14px;line-height:20px;white-space:nowrap}.row-action:hover{color:#0f5ed4}a:focus-visible{outline:2px solid #1476ff;outline-offset:2px;border-radius:2px}.pagination{display:flex;justify-content:flex-end;margin-top:24px}time{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.unavailable{color:#808080}.field-summary{min-width:0}
+@media(min-width:701px){.management :global(table){min-width:1080px}}
+@media(max-width:700px){.management{padding:16px}.management-panel{padding:16px}header{margin-bottom:16px}.pagination{margin-top:16px;justify-content:flex-start}.management :global(td[data-column="fields"]){grid-column:1/-1}.management :global(td[data-column="revision"]::before),.management :global(td[data-column="created"]::before),.management :global(td[data-column="updated"]::before){display:block;content:attr(data-label);font-size:12px;color:#808080;margin-bottom:4px}}
 </style>

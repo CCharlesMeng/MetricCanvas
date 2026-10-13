@@ -8,11 +8,11 @@ const base = { pageId: 'p', revisionId: 'opaque-old', resourceId: 'resource' };
 const flush = () => new Promise((resolve) => setTimeout(resolve, 10));
 const cleanups: (() => void)[] = [];
 afterEach(() => cleanups.splice(0).forEach((f) => f()));
-async function setup(empty = false) {
+async function setup(empty = false, manualSave = false) {
   let identity = { actorId: 'alice', workspaceId: 'work' }, serial = 0;
   const revision: PageRevision = { ...base, document, revisionNumber: 1, baseRevisionId: null, contentHash: '', createdAt: '', createdBy: '', dataContextVersion: null };
   const authoringPort: AuthoringPort = { capabilities: { ...confirmedPageAssetCapabilities, latestRead: true }, getLatest: async () => revision, getRevision: async () => revision, saveRevision: async (_pageId, command) => ({ ...revision, document: command.document as PageRevision['document'] }) };
-  const coordinator = createAuthoringCoordinator({ port: authoringPort, identity: () => identity });
+  const coordinator = createAuthoringCoordinator({ port: authoringPort, identity: () => identity, manualSave });
   if (!empty) await coordinator.load('p');
   const target = new EventTarget();
   const deliveries = new Map<string, { binding: LanguageContext; draft: SavedDraft }>();
@@ -29,14 +29,40 @@ async function setup(empty = false) {
   };
   const language = createAuthoringLanguage({ coordinator, port, target, identity: () => identity, id: () => `id-${++serial}` });
   cleanups.push(() => { language.dispose(); coordinator.dispose(); });
-  const deliver = (id = 'notification', binding = context) => {
+  const deliver = async (id = 'notification', suppliedBinding?: LanguageContext) => {
+    await vi.waitFor(()=>expect(suppliedBinding ?? context).toBeDefined());
+    const binding=suppliedBinding ?? context;
     const updated = structuredClone(document); updated.sections[0].components[0].props.title = 'Changed';
     deliveries.set(id, { binding: structuredClone(binding), draft: { draftId: id, ref: { ...base, revisionId: 'opaque-new' }, document: updated } });
     return { status: 'saved' as const, draftId: id, operations: [{ id: 'title', status: 'applied' }] };
   };
   return { coordinator, language, port, authoringPort, target, deliveries, context: () => context, deliver,
-    resolve: (value: LanguageResult) => resolve(value), identity: () => { identity = { actorId: 'bob', workspaceId: 'work' }; } };
+    resolve: async (value: LanguageResult) => {await vi.waitFor(()=>expect(resolve).toBeTypeOf('function'));resolve(value);}, identity: () => { identity = { actorId: 'bob', workspaceId: 'work' }; } };
 }
+it('manual-save mode rejects dirty AI preparation without saving or starting a provider turn', async () => {
+  const f = await setup(false, true);
+  const save = vi.spyOn(f.authoringPort, 'saveRevision');
+  const edited = structuredClone(f.coordinator.snapshot().draft!);
+  edited.pageDocument.meta = { title: 'Unsaved manual title' };
+  expect(f.coordinator.replaceDraft(edited)).toBe(true);
+  await f.language.start('change title');
+  expect(f.language.snapshot()).toMatchObject({ phase: 'failed', message: expect.stringContaining('人工修改尚未明确保存') });
+  expect(save).not.toHaveBeenCalled();
+  expect(f.port.prepare).not.toHaveBeenCalled();
+  expect(f.port.run).not.toHaveBeenCalled();
+  expect(f.coordinator.snapshot()).toMatchObject({ dirty: true, languageLocked: false, draft: edited });
+});
+it('manual-save mode accepts an AI saved receipt without a second frontend save', async () => {
+  const f = await setup(false, true);
+  const save = vi.spyOn(f.authoringPort, 'saveRevision');
+  const running = f.language.start('change title');
+  await vi.waitFor(() => expect(f.port.run).toHaveBeenCalledTimes(1));
+  await f.resolve(await f.deliver());
+  await running;
+  await vi.waitFor(() => expect(f.language.snapshot().phase).toBe('saved'));
+  expect(save).not.toHaveBeenCalled();
+  expect(f.coordinator.snapshot()).toMatchObject({ dirty: false, languageLocked: false, ref: { revisionId: 'opaque-new' } });
+});
 it('waits for synchronization, locks all manual writes, then accepts only exact saved content', async () => {
   const f = await setup(); const draft = f.coordinator.snapshot().draft!;
   const edit = structuredClone(draft); edit.pageDocument.meta = { description: 'edit' };
@@ -52,31 +78,32 @@ it('waits for synchronization, locks all manual writes, then accepts only exact 
   expect(f.coordinator.replaceDraft(draft)).toBe(false); expect(await f.coordinator.save()).toBeNull();
   await f.coordinator.load('different'); expect(f.coordinator.snapshot().ref).toEqual(base);
   expect(() => f.coordinator.requireSynchronizedRef()).toThrow();
-  f.resolve(f.deliver()); await running; await flush();
+  await f.resolve(await f.deliver()); await running; await flush();
   expect(f.language.snapshot().phase).toBe('saved'); expect(f.coordinator.snapshot().languageLocked).toBe(false);
   expect(f.coordinator.snapshot().draft!.pageDocument).toMatchObject({ sections: [{ components: [{ props: { title: 'Changed' } }] }] });
 });
 it('creates no asset or local page until a legal first saved reference is verified', async () => {
   const f = await setup(true); const run = f.language.start('create', { mode: 'new' }); await flush();
+  await vi.waitFor(()=>expect(f.context()).toBeDefined());
   expect(f.context().base).toBeNull(); expect(f.coordinator.snapshot().draft).toBeNull();
-  f.resolve(f.deliver()); await run; await flush(); expect(f.coordinator.snapshot().ref?.revisionId).toBe('opaque-new');
+  await f.resolve(await f.deliver()); await run; await flush(); expect(f.coordinator.snapshot().ref?.revisionId).toBe('opaque-new');
 });
 for (const status of ['text', 'waiting', 'failed'] as const) it(`${status} preserves the old page and releases editing`, async () => {
   const f = await setup(); const before = f.coordinator.snapshot().draft; const run = f.language.start(status); await flush();
-  f.resolve({ status, operations: [] }); await run;
+  await f.resolve({ status, operations: [] }); await run;
   expect(f.coordinator.snapshot().draft).toEqual(before); expect(f.coordinator.snapshot().languageLocked).toBe(false);
 });
 it('unknown queries the exact original operation without another run or manufactured success', async () => {
-  const f = await setup(); const run = f.language.start('lost ack'); await flush(); const original = structuredClone(f.context());
-  f.resolve({ status: 'unknown', operations: [] }); await run;
+  const f = await setup(); const run = f.language.start('lost ack'); await vi.waitFor(()=>expect(f.context()).toBeDefined()); const original = structuredClone(f.context());
+  await f.resolve({ status: 'unknown', operations: [] }); await run;
   expect(f.coordinator.snapshot().ref).toEqual(base); expect(f.coordinator.snapshot().languageLocked).toBe(true);
-  f.port.lookup = vi.fn(async () => f.deliver()); await f.language.lookup(); await flush();
+  f.port.lookup = vi.fn(async () => await f.deliver()); await f.language.lookup(); await flush();
   expect(f.port.lookup).toHaveBeenCalledWith(original, expect.any(AbortSignal)); expect(f.port.run).toHaveBeenCalledTimes(1);
   expect(f.language.snapshot().phase).toBe('saved');
 });
 it('cancelled saved operation is recovered for explicit viewing without replacing the old page', async () => {
   const f = await setup(); const run = f.language.start('slow'); await flush();
-  const saved = f.deliver(); f.language.cancel(); f.resolve(saved); await run; await flush();
+  const saved = await f.deliver(); f.language.cancel(); await f.resolve(saved); await run; await flush();
   expect(f.coordinator.snapshot().ref).toEqual(base);
   f.port.lookup = vi.fn(async () => saved); await f.language.lookup();
   expect(f.language.snapshot()).toMatchObject({ phase: 'recovered', recovery: { revisionId: 'opaque-new' } });
@@ -84,40 +111,40 @@ it('cancelled saved operation is recovered for explicit viewing without replacin
 });
 it('rejects old first notification after cancel → authoritative not-applied → new round, without parsing opaque IDs', async () => {
   const f = await setup(); const oldRun = f.language.start('old'); await flush();
-  const old = f.deliver('zzzz'); f.language.cancel(); f.resolve({ status: 'unknown', operations: [] }); await oldRun;
+  const old = await f.deliver('zzzz'); f.language.cancel(); await f.resolve({ status: 'unknown', operations: [] }); await oldRun;
   await f.language.lookup();
   const newRun = f.language.start('new'); await flush();
   f.target.dispatchEvent(new CustomEvent(DRAFT_SAVED_EVENT, { detail: { draftId: old.draftId } })); await flush();
   expect(f.coordinator.snapshot().ref).toEqual(base); expect(f.language.snapshot().message).toContain('RESPONSE_MISMATCH');
-  f.resolve(f.deliver('aaaa')); await newRun; await flush(); expect(f.language.snapshot().phase).toBe('saved');
+  await f.resolve(await f.deliver('aaaa')); await newRun; await flush(); expect(f.language.snapshot().phase).toBe('saved');
 });
 it('isolates changed identity before and after an in-flight exact read', async () => {
-  const f = await setup(); const run = f.language.start('edit'); await flush(); const saved = f.deliver();
+  const f = await setup(); const run = f.language.start('edit'); await flush(); const saved = await f.deliver();
   let complete!: () => void; const originalRead = f.port.read;
   f.port.read = vi.fn(async (id, signal) => { await new Promise<void>((resolve) => complete = resolve); return originalRead(id, signal); });
-  f.resolve(saved); await run; await flush(); f.identity(); complete(); await flush();
+  await f.resolve(saved); await run; await flush(); f.identity(); await vi.waitFor(()=>expect(complete).toBeTypeOf('function'));complete(); await flush();
   expect(f.coordinator.snapshot().ref).toEqual(base); expect(f.language.snapshot()).toMatchObject({ recovery: null, operations: [], phase: 'unknown' });
   await f.language.lookup(); expect(f.port.lookup).not.toHaveBeenCalled();
 });
 for (const mismatch of ['runId', 'operationId', 'actorId', 'workspaceId', 'base', 'invalid-page', 'resource'] as const) it(`rejects trusted-read ${mismatch} mismatch`, async () => {
-  const f = await setup(); const run = f.language.start('edit'); await flush(); const result = f.deliver();
+  const f = await setup(); const run = f.language.start('edit'); await flush(); const result = await f.deliver();
   const delivery = f.deliveries.get(result.draftId)!;
   if (mismatch === 'base') delivery.binding.base = null;
   else if (mismatch === 'invalid-page') delivery.draft.document.schemaVersion = '99.0';
   else if (mismatch === 'resource') delivery.draft.ref.resourceId = 'wrong';
   else delivery.binding[mismatch] = 'wrong';
-  f.resolve(result); await run; await flush(); expect(f.coordinator.snapshot().ref).toEqual(base);
+  await f.resolve(result); await run; await flush(); expect(f.coordinator.snapshot().ref).toEqual(base);
   expect(f.language.snapshot().phase).toBe('unknown');
 });
 it('read failure keeps a partial-success summary truthful and retries only the read through original lookup', async () => {
   const f = await setup(); const run = f.language.start('partial'); await flush();
-  f.resolve({ status: 'saved', draftId: 'later', operations: [{ id: 'a', status: 'applied' }, { id: 'b', status: 'failed' }] }); await run; await flush();
+  await f.resolve({ status: 'saved', draftId: 'later', operations: [{ id: 'a', status: 'applied' }, { id: 'b', status: 'failed' }] }); await run; await flush();
   expect(f.language.snapshot().operations.map(o => o.status)).toEqual(['applied', 'failed']); expect(f.coordinator.snapshot().ref).toEqual(base);
-  f.port.lookup = vi.fn(async () => f.deliver('later')); await f.language.lookup(); await flush(); expect(f.language.snapshot().phase).toBe('saved');
+  f.port.lookup = vi.fn(async () => await f.deliver('later')); await f.language.lookup(); await flush(); expect(f.language.snapshot().phase).toBe('saved');
 });
 it('pending/accepted duplicate notifications and disposed late reads never apply twice', async () => {
-  const f = await setup(); const run = f.language.start('edit'); await flush(); const saved = f.deliver();
-  f.resolve(saved); await run;
+  const f = await setup(); const run = f.language.start('edit'); await flush(); const saved = await f.deliver();
+  await f.resolve(saved); await run;
   f.target.dispatchEvent(new CustomEvent(DRAFT_SAVED_EVENT, { detail: { draftId: saved.draftId } }));
   await flush(); expect(f.port.read).toHaveBeenCalledTimes(1);
   f.target.dispatchEvent(new CustomEvent(DRAFT_SAVED_EVENT, { detail: { draftId: saved.draftId } })); await flush(); expect(f.port.read).toHaveBeenCalledTimes(1);
@@ -126,7 +153,8 @@ it('an accepted program notification wins over a later run failure and permits a
   const f = await setup(); let reject!: (error: Error) => void; let binding!: LanguageContext;
   f.port.run = vi.fn(async (context) => { binding = context; return new Promise<LanguageResult>((_resolve, fail) => reject = fail); });
   const run = f.language.start('async'); await flush();
-  const saved = f.deliver('early', binding);
+  await vi.waitFor(()=>expect(binding).toBeDefined());
+  const saved = await f.deliver('early', binding);
   f.target.dispatchEvent(new CustomEvent(DRAFT_SAVED_EVENT, { detail: { draftId: saved.draftId } })); await flush();
   expect(f.language.snapshot().phase).toBe('saved'); reject(Error('late transport failure')); await run;
   expect(f.language.snapshot().phase).toBe('saved');
@@ -134,10 +162,10 @@ it('an accepted program notification wins over a later run failure and permits a
   await f.language.start('next'); expect(f.port.run).toHaveBeenCalledTimes(1);
 });
 it('unmount aborts an unsettled exact read and keeps the old page', async () => {
-  const f = await setup(); const run = f.language.start('edit'); await flush(); const saved = f.deliver();
+  const f = await setup(); const run = f.language.start('edit'); await flush(); const saved = await f.deliver();
   let complete!: () => void; const read = f.port.read;
   f.port.read = async (id, signal) => { await new Promise<void>(resolve => complete = resolve); return read(id, signal); };
-  f.resolve(saved); await run; await flush(); f.language.dispose(); complete(); await flush();
+  await f.resolve(saved); await run; await flush(); f.language.dispose(); await vi.waitFor(()=>expect(complete).toBeTypeOf('function'));complete(); await flush();
   expect(f.coordinator.snapshot().ref).toEqual(base);
 });
 it('waits for durable browser protection before acquiring a language lease', async () => {
@@ -146,7 +174,7 @@ it('waits for durable browser protection before acquiring a language lease', asy
     port: { stableSave: false, save: async () => { throw Error('not used'); }, lookup: async () => { throw Error('not used'); }, verifySaved: async () => false } });
   await flush(); const run = f.language.start('edit'); await flush(); expect(f.port.run).not.toHaveBeenCalled();
   protect(); await flush(); expect(f.port.run).toHaveBeenCalledTimes(1);
-  f.resolve({ status: 'text', operations: [] }); await run;
+  await f.resolve({ status: 'text', operations: [] }); await run;
 });
 it('storage failure leaves language pending and cancellation never invokes Relay', async () => {
   const f = await setup(); f.coordinator.enableAutoSync({ storage: { read: async () => { throw Error('denied'); }, write: async () => 1 },
@@ -156,9 +184,9 @@ it('storage failure leaves language pending and cancellation never invokes Relay
 });
 for (const field of ['pageId', 'revisionId', 'resourceId'] as const) it(`cancelled first creation rejects a saved recovery missing ${field}`, async () => {
   const f = await setup(true); const run = f.language.start('create', { mode: 'new' }); await flush();
-  const saved = f.deliver(); const entry = f.deliveries.get(saved.draftId)!;
+  const saved = await f.deliver(); const entry = f.deliveries.get(saved.draftId)!;
   Reflect.deleteProperty(entry.draft.ref, field);
-  f.language.cancel(); f.resolve(saved); await run;
+  f.language.cancel(); await f.resolve(saved); await run;
   f.port.lookup = vi.fn(async () => saved); await f.language.lookup();
   expect(f.language.snapshot()).toMatchObject({ phase: 'unknown', recovery: null });
   expect(f.language.snapshot().message).toContain('RESPONSE_MISMATCH');
@@ -210,7 +238,7 @@ it('cancellation releases preparation lock and late prepare never runs content',
   f.port.prepare = async (...args) => { await new Promise<void>(resolve => complete = resolve); return prepare(...args); };
   const run = f.language.start('edit'); await flush();
   expect(f.coordinator.replaceDraft(f.coordinator.snapshot().draft!)).toBe(false);
-  f.language.cancel(); complete(); await run;
+  f.language.cancel(); await vi.waitFor(()=>expect(complete).toBeTypeOf('function'));complete(); await run;
   expect(f.port.run).not.toHaveBeenCalled(); expect(f.coordinator.snapshot().languageLocked).toBe(false);
 });
 it('flush admits preexisting input under the lock and synchronizes it before reading latest', async () => {
@@ -229,7 +257,7 @@ it('flush admits preexisting input under the lock and synchronizes it before rea
 });
 it('read-only saved response never announces or reads an unauthorized save', async () => {
   const f = await setup(); const run = f.language.start('explain configuration', { access: 'read' }); await flush();
-  f.resolve(f.deliver()); await run;
+  await f.resolve(await f.deliver()); await run;
   expect(f.language.snapshot()).toMatchObject({ phase: 'unknown', message: expect.not.stringContaining('已保存') });
   expect(f.port.read).not.toHaveBeenCalled(); expect(f.coordinator.snapshot().ref).toEqual(base);
 });
@@ -251,7 +279,7 @@ it('unknown synchronization preserves the draft and recovery lock without reques
 it('first creation rejects a returned page different from the allocated identity', async () => {
   const f = await setup(true); const prepare = f.port.prepare!;
   f.port.prepare = async (...args) => ({ ...await prepare(...args), pageId: 'allocated-other' });
-  const run = f.language.start('create', { mode: 'new' }); await flush(); f.resolve(f.deliver()); await run; await flush();
+  const run = f.language.start('create', { mode: 'new' }); await flush(); await f.resolve(await f.deliver()); await run; await flush();
   expect(f.coordinator.snapshot().draft).toBeNull(); expect(f.language.snapshot().phase).toBe('unknown');
 });
 it('a failed preparation-to-language transition can release its temporary lock', async () => {
@@ -278,7 +306,7 @@ for (const interruption of ['identity', 'cancel'] as const) it(`does not send a 
   try {
     const run = f.language.start('edit'); await flush();
     if (interruption === 'identity') f.identity(); else f.language.cancel();
-    complete(); await run;
+    await vi.waitFor(()=>expect(complete).toBeTypeOf('function'));complete(); await run;
     expect(f.port.prepare).not.toHaveBeenCalled(); expect(f.port.run).not.toHaveBeenCalled();
   } finally { spy.mockRestore(); }
 });
@@ -287,8 +315,8 @@ it('accepts a bound saved receipt directly without reading or saving the asset a
   const f = await setup();
   const save = vi.spyOn(f.authoringPort, 'saveRevision');
   const run = f.language.start('edit'); await flush();
-  const result = f.deliver();
-  f.resolve({...result, delivery: f.deliveries.get(result.draftId)!});
+  const result = await f.deliver();
+  await f.resolve({...result, delivery: f.deliveries.get(result.draftId)!});
   await run; await flush();
   expect(f.language.snapshot().phase).toBe('saved');
   expect(f.coordinator.snapshot().ref?.revisionId).toBe('opaque-new');
@@ -298,9 +326,9 @@ it('accepts a bound saved receipt directly without reading or saving the asset a
 
 it('rejects an inline saved receipt bound to another resource', async () => {
   const f = await setup();const run=f.language.start('edit');await flush();
-  const result=f.deliver();const delivery=f.deliveries.get(result.draftId)!;
+  const result=await f.deliver();const delivery=f.deliveries.get(result.draftId)!;
   delivery.draft.ref.resourceId='another-resource';
-  f.resolve({...result,delivery});await run;await flush();
+  await f.resolve({...result,delivery});await run;await flush();
   expect(f.language.snapshot().phase).toBe('unknown');
   expect(f.coordinator.snapshot().ref).toEqual(base);
   expect(f.port.read).not.toHaveBeenCalled();

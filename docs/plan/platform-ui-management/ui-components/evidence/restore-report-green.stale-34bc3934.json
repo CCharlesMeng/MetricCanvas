@@ -1,0 +1,106 @@
+{
+  "contract_sha256": "34bc393403b26ec6817e030aa023358c8594a4dc195aebe7a5fb97521b8e856e",
+  "entries": [
+    {
+      "actual": [
+        {
+          "border-radius": "6px",
+          "font-size": "14px",
+          "height": "32px"
+        }
+      ],
+      "rule_id": "R3-1-button-style",
+      "status": "green"
+    },
+    {
+      "actual": [
+        {
+          "border-radius": "6px",
+          "border-top-color": "rgb(194, 194, 194)",
+          "font-size": "14px",
+          "height": "32px",
+          "padding-left": "12px",
+          "padding-right": "12px"
+        }
+      ],
+      "rule_id": "R3-2-input-style",
+      "status": "green"
+    },
+    {
+      "actual": [
+        {
+          "background-color": "rgb(245, 245, 245)",
+          "padding": "4px 16px"
+        }
+      ],
+      "rule_id": "R3-3-grid-header",
+      "status": "green"
+    },
+    {
+      "actual": [
+        {
+          "color": "rgb(89, 89, 89)",
+          "font-size": "14px",
+          "font-weight": "400",
+          "line-height": "21px"
+        }
+      ],
+      "rule_id": "R3-3-grid-title",
+      "status": "green"
+    },
+    {
+      "actual": [
+        {
+          "border-radius": "6px",
+          "box-shadow": "rgba(0, 0, 0, 0.08) 0px 4px 16px 0px",
+          "padding": "8px 0px"
+        }
+      ],
+      "rule_id": "R3-4-select-panel",
+      "status": "green"
+    },
+    {
+      "actual": [
+        {
+          "height": "32px",
+          "line-height": "21px",
+          "padding": "0px 16px"
+        }
+      ],
+      "rule_id": "R3-4-select-item",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R6-1-no-overflow",
+      "status": "green"
+    }
+  ],
+  "observed": {
+    "captures": [
+      {
+        "route": "/tests/browser/index.html",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/tests/browser/index.html",
+        "viewport": {
+          "height": 700,
+          "width": 390
+        }
+      }
+    ]
+  },
+  "overall": "green",
+  "phase": "green",
+  "schema_version": 3,
+  "summary": {
+    "green": 7,
+    "red": 0,
+    "total": 7,
+    "yellow": 0
+  }
+}

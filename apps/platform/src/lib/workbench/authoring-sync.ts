@@ -35,13 +35,13 @@ interface QueuedOperation {
   command?: DurableSaveCommand; outcome?: StrongSaveOutcome;
 }
 export interface DurableAuthoringState {
-  format: 1 | 2; scope: StorageScope; base: DraftRef | null; draft: CanvasAuthoringDraft;
+  format: 1 | 2 | 3; localDirty?: boolean; scope: StorageScope; base: DraftRef | null; draft: CanvasAuthoringDraft;
   queue: QueuedOperation[];
   undoDraft?: CanvasAuthoringDraft;
   confirmed?: import('../page-assets/contract').PageRevision;
 }
 export interface SyncSnapshot {
-  canUndo?: boolean; pending: number; protection: 'pending' | 'protected' | 'failed';
+  canUndo?: boolean; dirty?: boolean; pending: number; protection: 'pending' | 'protected' | 'failed';
   phase: 'idle' | 'saving' | 'unavailable' | 'unknown' | 'rejected' | 'storage-failed' | 'identity-changed';
   message: string; base: DraftRef | null; lastSaved: StrongSaved | null;
 }
@@ -55,6 +55,7 @@ function messageOf(error: unknown) { return error instanceof Error ? error.messa
 
 export function createAuthoringSync(options: {
   initial: DurableAuthoringState;
+  manualSave?: boolean;
   storage: AuthoringStorage<DurableAuthoringState>;
   port: StableSavePort;
   identity(): Pick<StorageScope, 'actorId' | 'workspaceId'>;
@@ -64,8 +65,9 @@ export function createAuthoringSync(options: {
   retryDelays?: readonly number[];
 }) {
   let state = structuredClone(options.initial);
-  if (options.port.delivery === 'single' && state.format !== 2 && state.queue.length) throw Error('旧版未决工作已保留，不能自动重放，请先人工核实。');
-  if (options.port.delivery === 'single') state.format = 2;
+  if ((options.manualSave && state.format !== 3 && state.queue.length) || (options.port.delivery === 'single' && state.format === 1 && state.queue.length)) throw Error('旧版未决工作已保留，不能自动重放，请先人工核实。');
+  if (options.manualSave) { state.format = 3; state.localDirty ??= false; }
+  else if (options.port.delivery === 'single') state.format = 2;
   let storageVersion = options.restoredVersion ?? 0;
   let durable = options.restoredVersion !== undefined, disposed = false, running = false;
   // A durable command may have crossed the network even when no outcome was stored.
@@ -85,7 +87,7 @@ export function createAuthoringSync(options: {
     if (!identity.actorId || !identity.workspaceId || identity.actorId !== state.scope.actorId || identity.workspaceId !== state.scope.workspaceId) identityInvalidated = true;
     return !identityInvalidated;
   };
-  const snapshot = (): SyncSnapshot => structuredClone({ ...status, pending: state.queue.length, base: state.base, canUndo: !!state.undoDraft });
+  const snapshot = (): SyncSnapshot => structuredClone({ ...status, pending: state.queue.length, base: state.base, canUndo: !!state.undoDraft, dirty: !!state.localDirty || state.queue.length > 0 });
   const emit = () => { if (!disposed) for (const listener of listeners) listener(snapshot()); };
   function transaction(change: () => void): Promise<boolean> {
     const result = serial.then(async () => {
@@ -104,7 +106,7 @@ export function createAuthoringSync(options: {
     serial = result.catch(() => {}); return result;
   }
   function scheduleRetry() {
-    if (options.port.delivery === 'single') return;
+    if (options.manualSave || options.port.delivery === 'single') return;
     if (timer || disposed || running || !online || !durable || retryBlocked || !options.port.stableSave || !state.queue.length || state.queue[0].outcome?.status === 'rejected' || !identityMatches() || attempts >= delays.length) return;
     timer = setTimeout(() => { timer = undefined; attempts++; void api.retry(false); }, delays[attempts]);
   }
@@ -175,6 +177,7 @@ export function createAuthoringSync(options: {
     snapshot,
     start() {
       if (!durable) { void transaction(() => {}).then((protectedWork) => { if (protectedWork) void pump(); }); return; }
+      if (options.manualSave && options.restoredVersion && state.queue.length) { pause('unknown', '恢复的原保存需要核实，不会自动重发。'); return; }
       if (state.queue[0]?.outcome) void api.retry(false); else void pump();
     },
     setOnline(value: boolean) {
@@ -193,10 +196,27 @@ export function createAuthoringSync(options: {
         if (!forceOperation && same(state.draft.pageDocument, parsed.document)) { state.draft = structuredClone(draft); return; }
         state.undoDraft = structuredClone(state.draft);
         state.draft = structuredClone(draft);
-        state.queue.push({ operationId, document: parsed.document, description, retainDimensionValues, ...(intent ? {intent} : {}) });
+        if (options.manualSave && !intent) state.localDirty = true;
+        else state.queue.push({ operationId, document: parsed.document, description, retainDimensionValues, ...(intent ? {intent} : {}) });
       });
       if (persisted) void pump();
     },
+    /** Freeze exactly the protected manual draft only after an explicit Save. */
+    async commit(retainDimensionValues = true): Promise<void> {
+      await serial;
+      if (disposed || !identityMatches()) throw Error('工作范围已变化。');
+      if (!options.manualSave) { await api.retry(); return; }
+      if (state.queue.length) { await api.retry(); return; }
+      if (!state.localDirty) return;
+      const parsed = normalizePageDocument(state.draft.pageDocument);
+      if (!parsed.ok) throw Error('页面校验未通过，不能保存。');
+      const persisted = await transaction(() => {
+        state.queue.push({operationId:options.operationId?.() ?? crypto.randomUUID(),document:structuredClone(parsed.document),description:'人工明确保存',retainDimensionValues,intent:'saveDraft'});
+        state.localDirty = false;
+      });
+      if (persisted) await pump();
+    },
+    async protect(): Promise<boolean> { await serial; return durable || await transaction(() => {}); },
     async undo(retainDimensionValues = true): Promise<CanvasAuthoringDraft | null> {
       if (undoing) return null;
       undoing = true;
@@ -217,7 +237,8 @@ export function createAuthoringSync(options: {
       await transaction(() => {
         if (!same(state.draft, requested)) throw Error('撤销期间工作副本已变化。');
         state.draft = draft; delete state.undoDraft;
-        state.queue.push({ operationId: options.operationId?.() ?? crypto.randomUUID(), document: parsed.document, description: '撤销上一步完整操作', retainDimensionValues });
+        if (options.manualSave) state.localDirty = true;
+        else state.queue.push({ operationId: options.operationId?.() ?? crypto.randomUUID(), document: parsed.document, description: '撤销上一步完整操作', retainDimensionValues });
       });
       if (disposed || !identityMatches()) throw Error('工作范围已变化，原操作已保留。');
       void pump(); return structuredClone(state.draft);

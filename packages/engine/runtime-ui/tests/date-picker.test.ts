@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calendarDays, calendarDraft, calendarMonths, calendarValue, moveCalendarValue, shiftCalendar, validCalendarValue } from '../src/filters/date-picker';
+import { calendarDays, calendarDraft, calendarMonths, calendarValue, moveCalendarValue, shiftCalendar, validCalendarValue } from '../../../ui/src/components/date-picker/calendar';
 
 describe('日期选择器业务日期与提交边界', () => {
   it('闰年及月底严格校验，不把非法日期归一化', () => {
@@ -43,4 +43,13 @@ describe('日期选择器业务日期与提交边界', () => {
     expect(calendarMonths(2027).flat().map(cell => cell.value)).toEqual(Array.from({ length: 12 }, (_, i) => `2027-${String(i + 1).padStart(2, '0')}`));
     expect(calendarValue(new Date(2026, 0, 31, 23, 59), 'date')).toBe('2026-01-31');
   });
+});
+
+import { validateCalendarTimeRange } from '@metriccanvas/page/internal';
+import { calendarConformance } from '../../../ui/fixtures/calendar-conformance';
+it('UI 日历与页面协议按共用向量校验，不引入反向依赖', () => {
+  for (const [precision, value, valid] of calendarConformance) {
+    expect(validCalendarValue(value, precision)).toBe(valid);
+    expect(validateCalendarTimeRange({ from: value, to: value }, precision).length === 0).toBe(valid);
+  }
 });

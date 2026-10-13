@@ -1,0 +1,86 @@
+{
+  "source_tree": "b6c855feb90adb47816c384817ea36faeebb91f9",
+  "scope": "Package/build inputs match final working files; later platform save-state UI delta verified separately with both Svelte checks and HTTP/production fixtures. Chrome only; Edge and CI not passed.",
+  "versions": [
+    {
+      "svelte": "5.56.6",
+      "unit": {
+        "files": 201,
+        "passed": 1772,
+        "skipped": 4
+      },
+      "product_chrome_passed": 96,
+      "ui_chrome_passed": 20,
+      "archives": [
+        {
+          "package": "embed",
+          "sha256": "4b6f3809f607190f0ce50d74b330a1d167c8d5a9b36f16a039113aadaa62c3f4",
+          "bytes": 1462853
+        },
+        {
+          "package": "engine",
+          "sha256": "af1915e1c1a038b8467493a274354c2f5ba039c10606dba43322bc36a444b1a9",
+          "bytes": 310932
+        },
+        {
+          "package": "metric-canvas",
+          "sha256": "449b4e6b77b458b63a0fc9f9012de6f0aa10e5a76407027bfbf16d233d4f422d",
+          "bytes": 8078
+        },
+        {
+          "package": "page",
+          "sha256": "f53c2fb2762ac78f2e01339c7eaa660e74b09f815ec263715ace108237120d01",
+          "bytes": 198374
+        },
+        {
+          "package": "ui",
+          "sha256": "6df473df84bbff32e1a79b1d53f65833df03d6efa83457187fec8b76b0195088",
+          "bytes": 35570
+        }
+      ]
+    },
+    {
+      "svelte": "5.29.0",
+      "unit": {
+        "files": 201,
+        "passed": 1772,
+        "skipped": 4
+      },
+      "product_chrome_passed": 96,
+      "ui_chrome_passed": 20,
+      "archives": [
+        {
+          "package": "embed",
+          "sha256": "e8b8599b8c22dc5bedb0e0221e13a313cf90cf790e24a9c2d825ae8b24151ba1",
+          "bytes": 1532146
+        },
+        {
+          "package": "engine",
+          "sha256": "5f2a54261e6f63de3b955c8e88468113e585674c6143583682ee02070694fe53",
+          "bytes": 306710
+        },
+        {
+          "package": "metric-canvas",
+          "sha256": "40b866152c887e88ffaa53f273a5354a5bc8a5213c61f0cc7b6126b3ee154de8",
+          "bytes": 8053
+        },
+        {
+          "package": "page",
+          "sha256": "f53c2fb2762ac78f2e01339c7eaa660e74b09f815ec263715ace108237120d01",
+          "bytes": 198374
+        },
+        {
+          "package": "ui",
+          "sha256": "8e06927dda01a5cf74563a6a642f7435f09af9c3a2bf1dc0aa799d8e3c79adaa",
+          "bytes": 35524
+        }
+      ]
+    }
+  ],
+  "final_platform_delta": {
+    "ui": "unknown state message and save disable; current/minimum checks and browser HTTP/production fixtures passed",
+    "tests": "Two added manualSave cases; authoring-language suite 55/55 at current and minimum Svelte; scoped test type-checks passed",
+    "full_unit_final_tree": "not rerun; do not relabel 1772 + 4 result as 1774 final full-suite pass",
+    "unit_test_sha256": "19ef8450c657db183c756c7712cff71d6b5fa535c597c16d40a30a10e09a6026"
+  }
+}

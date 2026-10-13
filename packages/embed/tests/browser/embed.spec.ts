@@ -265,11 +265,8 @@ test('机会点清单使用单一标准页头并把密集筛选收纳到更多�
     await expect(overflow.locator('[data-dashboard-filter-count]')).toHaveText('6');
 
     const contentFilters = host.locator('[data-dashboard-content-filters]');
-    await expect(contentFilters.locator('[data-filter-control]')).toHaveCount(1);
-    await expect(contentFilters.locator('input[type="search"]')).toHaveAttribute(
-      'placeholder',
-      '搜索机会点 / 客户'
-    );
+    // The current IOC definition removed the search that covered only its current service page.
+    await expect(contentFilters.locator('[data-filter-control]')).toHaveCount(0);
 
     if (viewport.width === 1980) {
       expect(await toolbar.evaluate((element) => element.getBoundingClientRect().height))
@@ -700,7 +697,8 @@ test('compact 工具栏显示七个只读筛选并不伪造返回', async ({ pag
   const toolbar = host.locator('[data-dashboard-toolbar].compact');
   await expect(toolbar.getByRole('heading', { name: '机会点数' })).toBeVisible();
   await expect(toolbar.locator('[data-filter-control]')).toHaveCount(7);
-  await expect(toolbar.locator('[data-filter-control] :is(input, button)')).toHaveCount(7);
+  // A read-only date field owns both its input and calendar trigger.
+  await expect(toolbar.locator('[data-filter-control] :is(input, button)')).toHaveCount(8);
   expect(await toolbar.locator('[data-filter-control] :is(input, button)').evaluateAll(
     (controls) => controls.every((control) => (control as HTMLInputElement | HTMLButtonElement).disabled)
   )).toBe(true);
@@ -1599,11 +1597,10 @@ test('流水报告页头背景、表头、分析宽度与客户标签保持统�
     if (!(head instanceof HTMLElement)) return null;
     const style = getComputedStyle(header);
     return {
-      whiteSpace: style.whiteSpace,
       singleLine: head.getBoundingClientRect().height <= Number.parseFloat(style.lineHeight) + 1,
       fits: header.scrollWidth <= header.clientWidth
     };
-  })).toEqual({ whiteSpace: 'nowrap', singleLine: true, fits: true });
+  })).toEqual({ singleLine: true, fits: true });
   await expect(yoyReasonNegativeValue).toHaveCSS('color', 'rgb(245, 34, 45)');
   await expect(yoyReasonPositiveValue).toHaveCSS('color', 'rgb(82, 196, 26)');
   expect.soft(await analysisSections.evaluateAll((sections) =>

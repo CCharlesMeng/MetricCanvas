@@ -171,8 +171,11 @@ test('图表直接点击执行默认导航，不依赖宿主回调', async ({pag
   await page.goto('/pages/ioc-project-overview');
   await expect(page.locator('.runtime-view')).toBeVisible();
   await page.evaluate(() => window.runtime.update({document:{schemaVersion:'6.5',id:'chart-link',dataSources:{values:{fields:{category:{type:'string',role:'dimension'},amount:{type:'number',role:'measure'}},source:{type:'inline',rows:[{category:'A001',amount:10}]}}},sections:[{id:'main',components:[{id:'chart',type:'barChart',layout:{span:12},data:{main:'values'},props:{categoryField:'category',series:[{field:'amount',label:'金额'}],actions:[{on:'click',navigate:{href:'/pages/ioc-project-detail',query:{'opportunity-code':{source:'row',field:'category'}}}}]}}]}]}}));
-  const chart=page.locator('canvas').first();
+  const chart=page.locator('[data-component="main/chart"] canvas').first();
   await expect(chart).toBeVisible();
+  // The canvas exists before ECharts finishes drawing its initial animated bar.
+  // Wait for the colored data mark at the actual click point, not just the canvas box.
+  await expect.poll(()=>chart.evaluate(canvas=>{const el=canvas as HTMLCanvasElement;const pixel=el.getContext('2d')!.getImageData(Math.floor(el.width/2),Math.floor(el.height/2),1,1).data;return pixel[3]>0&&Math.max(pixel[0],pixel[1],pixel[2])-Math.min(pixel[0],pixel[1],pixel[2])>20;})).toBe(true);
   const box=await chart.boundingBox();
   await chart.click({position:{x:box!.width/2,y:box!.height/2}});
   await expect(page).toHaveURL(/opportunity-code=A001/);

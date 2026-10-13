@@ -1,0 +1,699 @@
+{
+  "claim_ledger": [
+    {
+      "actual_profile": "contract",
+      "claim_status": "DEFERRED",
+      "evidence": "browser-result.json；compatibility/manifest.json；authoring-sync/authoring-language 单测",
+      "external_dependency": "可用真实 Java、Relay 和测试身份",
+      "id": "AT-PLAT-1",
+      "note": "本地保护不写远端；明确保存最后输入仅 1 次；无变化禁用；第 2 次请求丢失回执后 unknown 禁用保存、导航和刷新不重发。真实 Java/Relay/身份路径未运行。",
+      "resume_condition": "提供已确认服务目标和可复验身份，记录本地保护、人工明确保存与 AI 单发送者的真实请求/回执",
+      "resume_entry": "tasks.md Task 1；dev-baseline.md F3；authoring-sync/authoring-language 测试"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "DEFERRED",
+      "evidence": "browser-result.json；logs/metriccanvas-platform-save-state-micro.txt",
+      "external_dependency": "实际 qiankun 门户与测试身份",
+      "id": "AT-PLAT-2",
+      "note": "同任务、阅读、刷新、20 行异步目录滚动/焦点恢复；生产微前端 fixture 的前缀、返回/前进、挂载/卸载通过。真实门户未运行。",
+      "resume_condition": "验证实际路由前缀、导航、刷新、租约与挂载生命周期",
+      "resume_entry": "tasks.md Task 2；apps/platform/tests/microfrontend/production-browser.mjs"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "DEFERRED",
+      "evidence": "browser-result.json；evidence/restore-report-green.json；../java-provider-requirements.md",
+      "external_dependency": "Java 生命周期能力与成功/冲突/失败语义",
+      "id": "AT-PLAT-3",
+      "note": "当前真实契约支持的列表、当前记录、历史摘要/rollback 与当前记录删除已接入。全量搜索排序、独立发布正文、历史正文/追加恢复、复制、整页永久删除需提供方保证，界面明确能力边界。",
+      "resume_condition": "按 java-provider-requirements.md 给出契约与行为保证，再接入并验证高级资产旅程",
+      "resume_entry": "../java-provider-requirements.md；实施计划 W7"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "DEFERRED",
+      "evidence": "document-edit 单测；browser-result.json；evidence/restore-report-green.json",
+      "external_dependency": "可用真实平台及完整视觉验收环境",
+      "id": "AT-PLAT-4",
+      "note": "页面标题保持查询绑定和其他组件；工具面接入 UI；阅读不触发保存；冻结的 8 个数值/状态规则通过。真实环境和完整视觉状态验收未完成。",
+      "resume_condition": "在真实工作台操作标题、日期配置、元数据，并复验内容区视觉和契约无漂移",
+      "resume_entry": "tasks.md Task 4；UI alpha-tests.md"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "browser-result.json",
+      "id": "F3-1",
+      "note": "未失焦输入返回管理，本地保护成功且零 PUT。"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "browser-result.json",
+      "id": "F3-2",
+      "note": "明确保存一次、无变化禁用、丢失回执后导航/刷新均不重发；仅 contract 范围。"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "UNVERIFIED",
+      "evidence": "logs/metriccanvas-manual-language-final.txt",
+      "id": "F3-3",
+      "note": "manualSave 专项测试证明脏稿 AI 前置拒绝/零发送及干净 AI 回执无第二次前端保存；完整 S3 与 live 链路尚缺。"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "UNVERIFIED",
+      "evidence": "browser-result.json",
+      "id": "F3-4",
+      "note": "同任务与 unknown 导航已证实；另一资源和语言租约同时存在的组合尚缺。"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "UNVERIFIED",
+      "evidence": "work-session 单测；生产微前端 fixture",
+      "id": "F3-5",
+      "note": "同范围恢复及身份失效已覆盖；完整 actor/workspace/service 切换 S3 组合尚缺。"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "UNVERIFIED",
+      "evidence": "authoring-sync 单测与 coordinator 停发分支",
+      "id": "F3-6",
+      "note": "预置 format 1/2 未决记录和未知服务来源的完整 S3 恢复尚缺。"
+    }
+  ],
+  "code_fingerprint": "bc2f74cf944f7d5fd8678b5d790512258ff1421273d62b058859edf4b540a0ae",
+  "counts": {
+    "blocker": 0,
+    "claims_deferred": 4,
+    "claims_unverified": 4,
+    "decided": 0,
+    "deferred": 0,
+    "handoff": 1,
+    "manual_acceptance": 0,
+    "manual_pending": 0,
+    "norm_candidate": 0,
+    "open_question": 0,
+    "skipped": 0,
+    "suggestion": 1,
+    "unplanned_carry": 0
+  },
+  "coverage": {
+    "review-convention": [
+      {
+        "dimension": "C1",
+        "evidence_ids": [
+          "PATTERN-STRUCT-1",
+          "PATTERN-COMP-1"
+        ],
+        "result": "unrun",
+        "scope": "新增文件与跨目录导入已触发 C1；采用的工程依据未定义文件命名、导出命名或导入别名规范，无法判定符合或违规。"
+      },
+      {
+        "dimension": "C2",
+        "evidence_ids": [
+          "PATTERN-STRUCT-1",
+          "PATTERN-DATA-1",
+          "REQ-DEC-4",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L51-L64",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L101-L108",
+          "apps/platform/src/lib/workbench/work-session.ts:L1-L10",
+          "apps/platform/src/lib/workbench/authoring-coordinator.ts:L77-L120",
+          "apps/platform/src/lib/workbench/authoring-sync.ts:L193-L219"
+        ],
+        "result": "clear",
+        "scope": "管理与工作台采用 Svelte 单文件；工作副本、保存队列和会话指针分别由 coordinator、sync、work-session 持有，组件转发意图并投影快照。未发现 UI 绕过已选领域所有者。"
+      },
+      {
+        "dimension": "C3",
+        "evidence_ids": [
+          "PATTERN-STYLE-1",
+          "REQ-DEC-3",
+          "apps/platform/src/lib/views/ManagementList.svelte:L1-L20",
+          "apps/platform/src/lib/views/ManagementDetail.svelte:L1-L22",
+          "apps/platform/src/lib/workbench/MetadataJsonDrawer.svelte:L1-L25",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L451-L472"
+        ],
+        "result": "clear",
+        "scope": "新增控件通过独立 UI 包持有固定官方样式；平台新增规则限定工具面与管理组件，未新增穿透 RuntimeView 的广域主题覆盖。PlatformFrame 原有全局 reset 未被本次新增或复制。"
+      },
+      {
+        "dimension": "C4",
+        "evidence_ids": [
+          "PATTERN-API-1",
+          "PATTERN-DATA-1",
+          "apps/platform/src/lib/integration/services.ts:L14-L19",
+          "apps/platform/src/lib/page-assets.ts:L10-L29",
+          "apps/platform/src/lib/views/ManagementList.svelte:L6-L12",
+          "apps/platform/src/lib/views/ManagementDetail.svelte:L3-L9",
+          "apps/platform/src/lib/page-assets/management.ts:L16-L59",
+          "apps/platform/src/lib/page-assets/java-adapter.ts:L50-L87",
+          "service/platform-java.yaml:L35-L46"
+        ],
+        "result": "clear",
+        "scope": "按新增采用的 PATTERN-API-1 重检：管理视图通过实例 pageAssets 和管理所有者调用既有 Java Adapter，未旁路 fetch；读取与历史查询传递 AbortSignal，异常映射到 error/historyError，写入未知结果由管理所有者持久化并停发。实例 services 把 session.readConfig/fetchImpl 注入资产客户端，既有 Adapter 的鉴权头、错误码与 Java YAML 契约保持一致。"
+      },
+      {
+        "dimension": "C5",
+        "evidence_ids": [
+          "PATTERN-COMP-1",
+          "REQ-DEC-2",
+          "apps/platform/src/lib/views/ManagementDetail.svelte:L2-L15",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L451-L472",
+          "apps/platform/src/lib/views/ManagementList.svelte:L1-L17",
+          "apps/platform/src/lib/workbench/MetadataJsonDrawer.svelte:L1-L22"
+        ],
+        "result": "clear",
+        "scope": "管理详情继续复用 RevisionPreview；工作台当前文档与已保存修订分别复用 RuntimeView/RevisionPreview，控件经 @metriccanvas/ui 入口消费，未复制另一套页面渲染。"
+      }
+    ],
+    "review-layout": [
+      {
+        "dimension": "L1",
+        "evidence_ids": [
+          "BE-1"
+        ],
+        "result": "clear",
+        "scope": "Chrome 155 fixture；1440×900目录、工作台阅读和详情阅读页的共享Button高度均32px，默认控件颜色rgb(25,25,25)、背景rgb(255,255,255)、边框1px solid rgb(89,89,89)一致。未将不同视口或不同语义元素的差异判为违规。"
+      },
+      {
+        "dimension": "L2",
+        "evidence_ids": [
+          "BE-1"
+        ],
+        "result": "clear",
+        "scope": "Chrome 155 fixture；390×700的20行目录。文档与管理容器scrollWidth=clientWidth；170px行高容纳72px操作单元格和64px动作内容；滚动后asset-19/20及操作进入视口，无列表数据撑破行或文档横向溢出。"
+      },
+      {
+        "dimension": "L3",
+        "evidence_ids": [
+          "BE-1"
+        ],
+        "result": "clear",
+        "scope": "Chrome 155 fixture；R6-1冻结1440/390目录，文档横向溢出为0。390目录Grid/scroll/table/tbody矩形均为(76,206,298,170)，更多按钮(84,331,96,28)完整位于裁切容器内；20行末行更多按钮底647px，位于末行底664px内。先前裁切疑点已由新鲜原始几何解除。"
+      },
+      {
+        "dimension": "L4",
+        "evidence_ids": [
+          "BE-1"
+        ],
+        "result": "clear",
+        "scope": "Chrome 155 fixture；1440目录四列宽度合计1232px且连续对齐；390目录按名称、状态/时间、操作三层排列，状态和时间各149px合计298px，操作单元格72px容纳64px动作内容，预览/编辑同排且更多在下一排。"
+      },
+      {
+        "dimension": "L5",
+        "evidence_ids": [
+          "BE-1"
+        ],
+        "result": "clear",
+        "scope": "Chrome 155 fixture；当前筛选以草稿触发器文案展示，排序控件disabled=true、文字rgb(194,194,194)、背景rgb(240,240,240)，与可用状态筛选控件区分。本地保护时保存disabled=false，confirmed及unknown后disabled=true；unknown保存样式为浅色文字与灰色背景。菜单更多按钮focused=true且已实际打开页面详情菜单。仅判断已采集的运行时状态，不扩展到未声明的R4数值或全量像素状态。"
+      }
+    ],
+    "review-quality": [
+      {
+        "dimension": "Q1",
+        "evidence_ids": [
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L52-L65",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L80-L86",
+          "apps/platform/src/lib/workbench/work-session.ts:L4-L31"
+        ],
+        "result": "clear",
+        "scope": "工作台达到状态编排、业务规则、呈现三类职责阈值，但仍内聚于创作任务；持久化、发送、恢复和管理分别由 coordinator、sync、work-session、management 承担。最终新建入口和 unknown 提示属于同一创作生命周期，未引入不相干职责。"
+      },
+      {
+        "dimension": "Q2",
+        "evidence_ids": [
+          "apps/platform/src/lib/views/ManagementList.svelte:L1-L19",
+          "apps/platform/src/lib/views/ManagementDetail.svelte:L1-L19",
+          "packages/ui/src/shared/popover.ts:L1-L24"
+        ],
+        "result": "clear",
+        "scope": "管理视图、输入提交路径及公共浮层构件；未发现具有可观察质量后果的新重复实现。"
+      },
+      {
+        "dimension": "Q3",
+        "evidence_ids": [
+          "apps/platform/src/lib/workbench/authoring-coordinator.ts:L257-L305"
+        ],
+        "result": "finding",
+        "scope": "coordinator.load 包含18个 if 分支，超过单函数分支数10的参考线；原复杂度占主体，本次新增 localOnly 分支继续扩展该函数。"
+      },
+      {
+        "dimension": "Q4",
+        "evidence_ids": [
+          "apps/platform/src/lib/workbench/authoring-sync.ts:L37-L49",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L80-L86",
+          "apps/platform/src/lib/workbench/work-session.ts:L2-L4"
+        ],
+        "result": "clear",
+        "scope": "工作会话指针、人工脏稿、未决命令和已确认修订独立；unknown 保存按钮禁用由已有 sync phase 派生，没有新增副作用同步的冗余状态。"
+      },
+      {
+        "dimension": "Q5",
+        "evidence_ids": [
+          "apps/platform/src/lib/views/ManagementList.svelte:L12-L13",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L135-L135",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L214-L218",
+          "apps/platform/src/lib/workbench/authoring-coordinator.ts:L257-L305",
+          "packages/ui/src/shared/popover.ts:L11-L16",
+          "packages/ui/src/components/date-picker/DatePicker.svelte:L59-L88",
+          "apps/platform/src/lib/PlatformRoot.svelte:L29-L41",
+          "apps/platform/src/lib/PlatformRoot.svelte:L69-L71",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L370-L373"
+        ],
+        "result": "clear",
+        "scope": "原请求、导航、订阅和观察器判断复用。最终空工作台只转发明确新建或管理导航；Workbench 新建按钮沿用 navigation guard，未增加独立副作用。"
+      },
+      {
+        "dimension": "Q6",
+        "evidence_ids": [
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L80-L86",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L394-L403",
+          "apps/platform/src/lib/workbench/authoring-sync.ts:L178-L181",
+          "BE-1"
+        ],
+        "result": "clear",
+        "scope": "冻结边界的静态保护路径未发现新增缺口；unknown 明确提示并禁用保存。新鲜 contract 场景观察第二次 PUT 应用后丢失回执，管理导航和刷新均不重发，总 writes=2。完整其他 F3 组合由 self-test 单独判断。"
+      },
+      {
+        "dimension": "Q7",
+        "evidence_ids": [
+          "apps/platform/src/lib/views/ManagementList.svelte:L13-L18",
+          "apps/platform/src/lib/views/ManagementDetail.svelte:L7-L9",
+          "apps/platform/src/lib/workbench/work-session.ts:L1-L32"
+        ],
+        "result": "clear",
+        "scope": "所检运行时代码和公共构件未发现新增调试输出、断点、TODO 空实现或写死样例替代真实取数。"
+      }
+    ],
+    "self-test": [
+      {
+        "dimension": "F3-1",
+        "evidence_ids": [
+          "BE-1",
+          "apps/platform/tests/workbench/platform-management-browser.mjs:L16-L17"
+        ],
+        "result": "clear",
+        "scope": "contract/Chrome/HTTP fixture：未失焦编辑标题后返回管理，PUT为0；返回原任务仍保留标题。本地保护与不远端保存期望成立。"
+      },
+      {
+        "dimension": "F3-2",
+        "evidence_ids": [
+          "BE-1",
+          "apps/platform/tests/workbench/platform-management-browser.mjs:L14-L22"
+        ],
+        "result": "clear",
+        "scope": "contract S3：最后一次未失焦输入经明确保存只发送1次 PUT，保存后无变化按钮禁用；第二次 PUT 已应用但回执丢失，显示保存结果未确认并禁用保存，管理导航、回到任务和刷新均无重发，总 writes=2。"
+      },
+      {
+        "dimension": "F3-3",
+        "evidence_ids": [
+          "apps/platform/tests/workbench/authoring-language.test.ts:L42-L65",
+          "apps/platform/tests/workbench/authoring-language.test.ts:L314-L325"
+        ],
+        "result": "unrun",
+        "scope": "新增 manualSave 专项单元测试在当前及最低 Svelte 均55/55：人工脏稿拒绝 AI 准备，saveRevision/prepare/run 均未调用且脏稿保留；干净稿接收 AI 已保存回执后无第二次前端保存。完整 S3 界面/网络组合和真实 Relay 链路仍未执行。"
+      },
+      {
+        "dimension": "F3-4",
+        "evidence_ids": [
+          "BE-1",
+          "apps/platform/tests/workbench/platform-management-browser.mjs:L16-L21",
+          "apps/platform/tests/workbench/work-session.test.ts:L6-L8"
+        ],
+        "result": "unrun",
+        "scope": "contract：管理/创作返回保留人工工作副本和目录条件，恢复焦点与滚动；新增已发未知命令在导航和刷新后保留 unknown 且不重发。另一资源与语言租约的完整组合尚未记录。"
+      },
+      {
+        "dimension": "F3-5",
+        "evidence_ids": [
+          "BE-1",
+          "apps/platform/tests/workbench/platform-management-browser.mjs:L15-L21",
+          "apps/platform/tests/workbench/work-session.test.ts:L8-L8",
+          "apps/platform/tests/workbench/authoring-sync.test.ts:L96-L111"
+        ],
+        "result": "unrun",
+        "scope": "contract：同范围刷新恢复未保存标题、任务 UUID 和 unknown 状态且不重发；身份/workspace/服务切换后不得读取或发送旧工作的 S3 场景尚缺。"
+      },
+      {
+        "dimension": "F3-6",
+        "evidence_ids": [
+          "apps/platform/src/lib/workbench/authoring-sync.ts:L65-L69"
+        ],
+        "result": "unrun",
+        "scope": "没有 format1/2 未决记录的本次 S3 恢复场景；静态停发分支不能证明完整旧格式与未知服务来源迁移边界。"
+      }
+    ]
+  },
+  "decisions": [],
+  "deferred_candidates": [],
+  "evidence_epoch": "review-final",
+  "findings": [
+    {
+      "artifacts": [],
+      "basis": "Q3 单函数分支数参考线为10；按 if 条件计数为18，未额外计入复合布尔或三元表达式。主体复杂度已存在，本次继续扩展读取模式；最终增量未修改该函数。",
+      "canonical_key": "file:apps/platform/src/lib/workbench/authoring-coordinator.ts|function:load|branch-count",
+      "dimension": "Q3",
+      "evidence_ids": [
+        "apps/platform/src/lib/workbench/authoring-coordinator.ts:L257-L305"
+      ],
+      "id": "Q3-1",
+      "impact": "本地恢复、远端读取、旧记录保护及刷新保护集中在同一函数；修改读取策略时需核对多个早退和失效条件。localOnly 已有两个判定位置，增加遗漏相邻路径的维护风险，未观察到因此产生的当前错误结果。",
+      "level": "suggestion",
+      "location": "apps/platform/src/lib/workbench/authoring-coordinator.ts:257-305",
+      "roles": [
+        "review-quality"
+      ],
+      "source_ids": [
+        "Q3-1"
+      ],
+      "suggested_action": "后续有读取策略修改需求时，提取存储范围及恢复记录读取函数，用具名策略决定恢复本地或读取远端；保留 load 对 scope、signal 和 finally 的统一失效处理。本建议不要求为本轮验收重写模块。",
+      "summary": "load 在既有复杂度基础上加入 localOnly 路径，当前共有18个 if 分支。"
+    }
+  ],
+  "handoff": [
+    {
+      "id": "Q3-1",
+      "kind": "suggestion",
+      "needs_decision": false,
+      "user_visible_text": "load 在既有复杂度基础上加入 localOnly 路径，当前共有18个 if 分支。（本地恢复、远端读取、旧记录保护及刷新保护集中在同一函数；修改读取策略时需核对多个早退和失效条件。localOnly 已有两个判定位置，增加遗漏相邻路径的维护风险，未观察到因此产生的当前错误结果。）"
+    }
+  ],
+  "judged_files": {
+    "review-convention": [
+      "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "apps/platform/src/lib/PlatformFrame.svelte",
+      "apps/platform/src/lib/PlatformRoot.svelte",
+      "apps/platform/src/lib/integration/services.ts",
+      "apps/platform/src/lib/page-assets/management.ts",
+      "apps/platform/src/lib/views/ManagementList.svelte",
+      "apps/platform/src/lib/views/ManagementDetail.svelte",
+      "apps/platform/src/lib/workbench/ComponentProperties.svelte",
+      "apps/platform/src/lib/workbench/Inspector.svelte",
+      "apps/platform/src/lib/workbench/MetadataJsonDrawer.svelte",
+      "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+      "apps/platform/src/lib/workbench/authoring-coordinator.ts",
+      "apps/platform/src/lib/workbench/authoring-sync.ts",
+      "apps/platform/src/lib/workbench/work-session.ts",
+      "apps/platform/src/lib/page-assets.ts"
+    ],
+    "review-layout": [
+      "apps/platform/src/lib/PlatformFrame.svelte",
+      "apps/platform/src/lib/PlatformRoot.svelte",
+      "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "apps/platform/src/lib/views/ManagementList.svelte",
+      "apps/platform/src/lib/views/ManagementDetail.svelte",
+      "packages/ui/src/shared/Theme.svelte",
+      "packages/ui/src/components/grid/Grid.svelte",
+      "packages/ui/src/components/button/Button.svelte",
+      "packages/ui/src/components/select/Select.svelte",
+      "packages/ui/src/components/dropdown/Dropdown.svelte",
+      "packages/ui/src/components/pagination/Pagination.svelte"
+    ],
+    "review-quality": [
+      "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "apps/platform/src/lib/PlatformRoot.svelte",
+      "apps/platform/src/lib/views/ManagementList.svelte",
+      "apps/platform/src/lib/views/ManagementDetail.svelte",
+      "apps/platform/src/lib/workbench/work-session.ts",
+      "apps/platform/src/lib/workbench/authoring-coordinator.ts",
+      "apps/platform/src/lib/workbench/authoring-sync.ts",
+      "apps/platform/src/lib/workbench/authoring-storage.ts",
+      "apps/platform/src/lib/workbench/authoring-recovery.ts",
+      "apps/platform/src/lib/workbench/document-edit.ts",
+      "apps/platform/src/lib/workbench/MetadataJsonDrawer.svelte",
+      "apps/platform/src/lib/workbench/Inspector.svelte",
+      "apps/platform/src/lib/page-assets/management.ts",
+      "apps/platform/src/lib/integration/navigation.ts",
+      "packages/engine/widgets/src/shared/EChart.svelte",
+      "packages/ui/src/types.ts",
+      "packages/ui/src/index.ts",
+      "packages/ui/src/shared/Theme.svelte",
+      "packages/ui/src/shared/popover.ts",
+      "packages/ui/src/components/button/Button.svelte",
+      "packages/ui/src/components/input/Input.svelte",
+      "packages/ui/src/components/textarea/Textarea.svelte",
+      "packages/ui/src/components/select/Select.svelte",
+      "packages/ui/src/components/dropdown/Dropdown.svelte",
+      "packages/ui/src/components/dialog/Dialog.svelte",
+      "packages/ui/src/components/tabs/Tabs.svelte",
+      "packages/ui/src/components/tag/Tag.svelte",
+      "packages/ui/src/components/empty/Empty.svelte",
+      "packages/ui/src/components/grid/Grid.svelte",
+      "packages/ui/src/components/pagination/Pagination.svelte",
+      "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "packages/ui/src/components/date-picker/calendar.ts"
+    ],
+    "self-test": [
+      "apps/platform/tests/workbench/platform-management-browser.mjs",
+      "apps/platform/tests/workbench/authoring-sync.test.ts",
+      "apps/platform/tests/workbench/authoring-language.test.ts",
+      "apps/platform/tests/workbench/work-session.test.ts",
+      "apps/platform/src/lib/PlatformRoot.svelte",
+      "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "apps/platform/src/lib/workbench/authoring-coordinator.ts",
+      "apps/platform/src/lib/workbench/authoring-sync.ts"
+    ]
+  },
+  "known_gaps": {
+    "review-convention": [
+      "C1：diff-facts 的新增文件事实否定跳过条件，但采用的 PATTERN 未提供命名或别名判据；如实未验证，不能虚构规范或判 clear。",
+      "本格仅检查采用的工程规范；静态结论不替代浏览器还原或真实 Java/Relay/身份/门户验收。"
+    ],
+    "review-layout": [],
+    "review-quality": [],
+    "self-test": [
+      "F3-3：manualSave 脏稿 AI 拒绝及干净稿回执无二次前端保存已有当前/最低 Svelte 专项单元证据；仍需 S3 界面和网络组合，当前 HTTP 浏览器 fixture 未执行 AI。真实提供方等待沿用 alpha-tests.md AT-PLAT-1 的既定 Deferred，不新增用户决策。",
+      "F3-4：需补另一资源与语言租约存在时的导航组合；人工工作副本、目录条件和已发未知命令的普通导航/刷新保持已由 contract 场景观测。",
+      "F3-5：需补身份、workspace、服务目标切换的 S3 读取与发送隔离场景；同范围刷新恢复已观测。",
+      "F3-6：需预置 format1/2 未决记录及未知服务来源记录，记录原样保留且无自动重放或迁移发送的 S3 事实。",
+      "实际 profile=contract，HTTP fixture 使用 provider mock。真实 Java、Relay、身份、门户无可用环境，未取得 live 验收。未分配 F4/REG，未生成其 coverage，未声称无回归。"
+    ]
+  },
+  "manual_acceptance": [],
+  "norm_candidates": [],
+  "open_questions": [],
+  "portfolio_narrowed": [],
+  "restore_contract": {
+    "contract_sha256": "0f54f1b367aeb5ab8721ffc47eb52c1d6a5ae6bd5f8eb593c9276d748ef8c32a",
+    "overall": "green",
+    "summary": {
+      "green": 8,
+      "red": 0,
+      "total": 8,
+      "yellow": 0
+    }
+  },
+  "roles": {
+    "review-convention": "executed",
+    "review-layout": "executed",
+    "review-quality": "executed",
+    "self-test": "executed"
+  },
+  "schema_version": 1,
+  "skipped": {
+    "review-convention": [],
+    "review-layout": [],
+    "review-quality": [],
+    "self-test": []
+  },
+  "unplanned_carry": [],
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-PLAT-1",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "live",
+        "status": "UNVERIFIED",
+        "task": "1",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-PLAT-2",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "live",
+        "status": "UNVERIFIED",
+        "task": "2",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-PLAT-3",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "live",
+        "status": "UNVERIFIED",
+        "task": "3",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-PLAT-4",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "live",
+        "status": "UNVERIFIED",
+        "task": "4",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      }
+    ],
+    "facts": {
+      "cross_page": true,
+      "frozen_r": true,
+      "frozen_r5": false,
+      "frozen_r6": true,
+      "has_f3": true,
+      "has_s3_claim": true,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "story",
+      "regression",
+      "restore-final",
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "render",
+        "story",
+        "regression",
+        "restore-final",
+        "review-layout",
+        "review-convention",
+        "review-quality",
+        "self-test"
+      ],
+      "phase": "final",
+      "required_profiles": {
+        "AT-PLAT-1": "live",
+        "AT-PLAT-2": "live",
+        "AT-PLAT-3": "live",
+        "AT-PLAT-4": "live"
+      },
+      "review_roles": [
+        "review-layout",
+        "review-convention",
+        "review-quality",
+        "self-test"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5"
+      ],
+      "review-layout": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5"
+      ],
+      "review-quality": [
+        "Q1",
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q6",
+        "Q7"
+      ],
+      "self-test": [
+        "F3-1",
+        "F3-2",
+        "F3-3",
+        "F3-4",
+        "F3-5",
+        "F3-6"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "risk_triggers": [
+      "async-state",
+      "build-config",
+      "interaction",
+      "new-pattern",
+      "shared-boundary",
+      "visual",
+      "write"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "new-pattern",
+        "shared-boundary",
+        "write"
+      ],
+      "changed_files": 274,
+      "max_changed_files": 5,
+      "restore_tasks": [
+        "3",
+        "4"
+      ],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "async-state": [
+        "agent",
+        "plan"
+      ],
+      "build-config": [
+        "diff"
+      ],
+      "interaction": [
+        "plan"
+      ],
+      "new-pattern": [
+        "plan"
+      ],
+      "shared-boundary": [
+        "diff",
+        "plan"
+      ],
+      "visual": [
+        "diff",
+        "plan"
+      ],
+      "write": [
+        "plan"
+      ]
+    }
+  }
+}

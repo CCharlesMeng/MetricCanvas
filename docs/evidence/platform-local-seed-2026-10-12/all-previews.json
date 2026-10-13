@@ -1,0 +1,42 @@
+{
+  "browser": "155.0.8059.39",
+  "errors": [],
+  "observations": [
+    {
+      "name": "demo",
+      "title": "演示看板(筛选联动)",
+      "alerts": [],
+      "canvas": 4,
+      "tableRows": 0
+    },
+    {
+      "name": "sales-detail",
+      "title": "销售明细(跨页下钻目标页)",
+      "alerts": [],
+      "canvas": 3,
+      "tableRows": 5
+    },
+    {
+      "name": "tokens-report",
+      "title": "Tokens运营分析简报",
+      "alerts": [],
+      "canvas": 2,
+      "tableRows": 30
+    },
+    {
+      "name": "flow-analysis-report",
+      "title": "2026年2月流水分析报告",
+      "alerts": [],
+      "canvas": 2,
+      "tableRows": 30
+    },
+    {
+      "name": "report-date-filter-example",
+      "title": "Tokens 月度用量报告",
+      "alerts": [],
+      "canvas": 0,
+      "tableRows": 6
+    }
+  ],
+  "scope": "Local assets + existing DQE Sim"
+}

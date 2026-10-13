@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "contract_sha256": "0f54f1b367aeb5ab8721ffc47eb52c1d6a5ae6bd5f8eb593c9276d748ef8c32a",
+  "page_available": true,
+  "observed": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "route": "/manage?state=draft&page=1"
+  },
+  "environment": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "dpr": 1,
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+    "scroll": {
+      "width": 1440,
+      "height": 900
+    }
+  },
+  "rules": {
+    "R1-1-directory": {
+      "status": "ok",
+      "actual": [
+        "页面管理"
+      ],
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".management h1"
+      },
+      "matched": 1
+    },
+    "R6-1-management-1440": {
+      "status": "ok",
+      "actual": 0,
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".platform-app"
+      },
+      "matched": 1
+    }
+  }
+}

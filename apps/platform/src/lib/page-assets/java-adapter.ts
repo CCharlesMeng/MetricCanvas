@@ -26,6 +26,28 @@ interface ProviderListResponse extends Record<string, unknown> {
   total?: unknown;
 }
 
+/** Optional directory projection: malformed summaries must not hide valid assets. */
+function supportedFieldsOf(value:unknown):{metrics:string[];dimensions:string[]}|null {
+  if(typeof value!=='string'||!value.trim())return null;
+  try{
+    const parsed:unknown=JSON.parse(value);
+    if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))return null;
+    const record=parsed as Record<string,unknown>;
+    const labels=(items:unknown):string[]|null=>{
+      if(!Array.isArray(items))return null;
+      const result:string[]=[];
+      for(const item of items){
+        const label=typeof item==='string'?item:item&&typeof item==='object'?(item.label??item.name??item.id):null;
+        if(typeof label!=='string'||!label.trim())return null;
+        result.push(label.trim());
+      }
+      return [...new Set(result)];
+    };
+    const metrics=labels(record.metrics),dimensions=labels(record.dimensions);
+    return metrics&&dimensions?{metrics,dimensions}:null;
+  }catch{return null;}
+}
+
 /**
  * 静态平台的页面资产客户端。每次请求现读集成门户注入的基址与用户态身份，
  * 直接消费 CDINL2DataBuilderService 已确认的 user-page-metadata 接口。
@@ -232,7 +254,8 @@ export function createPageAssetsClient({
         resourceId: requiredString(item.page_metadata_id,'page_metadata_id'), pageId:requiredString(item.page_id,'page_id'),
         revisionId:requiredString(item.revision_id,'revision_id'), revisionNumber:providerRevisionNumber(item),
         state: item.is_draft === true ? 'draft' as const : item.is_draft === false ? 'published' as const : 'unknown' as const,
-        description: typeof item.description === 'string' ? item.description : '', updatedAt: typeof item.updated_at === 'string' ? item.updated_at : ''
+        description: typeof item.description === 'string' ? item.description : '', updatedAt: typeof item.updated_at === 'string' ? item.updated_at : '',
+        createdAt:typeof item.created_at==='string'?item.created_at:'',supportedFields:supportedFieldsOf(item.supported_fields)
       })) };
     },
     async resolve(pageId, signal) {

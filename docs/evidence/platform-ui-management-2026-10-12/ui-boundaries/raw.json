@@ -1,0 +1,3657 @@
+{
+  "browser": "155.0.8059.39",
+  "kind": "current Chrome, UI fixture",
+  "errors": [],
+  "states": [
+    {
+      "id": "long-focused-false",
+      "facts": {
+        "viewport": {
+          "width": 390,
+          "height": 700,
+          "dpr": 1
+        },
+        "document": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "nodes": [
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-active",
+            "text": "选项一",
+            "rect": {
+              "x": 24,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "pointer",
+              "fontWeight": "600",
+              "outline": "rgb(25, 25, 25) solid 2px",
+              "boxShadow": "rgb(25, 25, 25) 0px -2px 0px 0px inset",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "true",
+            "focused": true,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0",
+            "text": "选项二",
+            "rect": {
+              "x": 78,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "default",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "false",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-disabled",
+            "text": "禁用选项",
+            "rect": {
+              "x": 132,
+              "y": 358.390625,
+              "width": 68,
+              "height": 48
+            },
+            "scrollWidth": 68,
+            "clientWidth": 68,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(194, 194, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "not-allowed",
+              "fontWeight": "400",
+              "outline": "rgb(194, 194, 194) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": true,
+            "selected": "false",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "empty svelte-yxvg8a",
+            "text": "暂无数据",
+            "rect": {
+              "x": 24,
+              "y": 476.390625,
+              "width": 342,
+              "height": 85
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 85,
+            "clientHeight": 85,
+            "style": {
+              "color": "rgb(128, 128, 128)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(128, 128, 128) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "名称",
+            "rect": {
+              "x": 40,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "操作",
+            "rect": {
+              "x": 211,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名",
+            "rect": {
+              "x": 40,
+              "y": 629.390625,
+              "width": 139,
+              "height": 756
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 756,
+            "clientHeight": 756,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 993.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "第二行",
+            "rect": {
+              "x": 40,
+              "y": 1413.890625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 1410.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "LI",
+            "class": "svelte-wt1yqc is-active",
+            "text": "1",
+            "rect": {
+              "x": 125.140625,
+              "y": 1459.390625,
+              "width": 32,
+              "height": 32
+            },
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 30,
+            "clientHeight": 30,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgb(245, 245, 245)",
+              "cursor": "pointer",
+              "fontWeight": "700",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          }
+        ]
+      },
+      "screenshot": "long-focused-false.png"
+    },
+    {
+      "id": "selected-false",
+      "facts": {
+        "viewport": {
+          "width": 390,
+          "height": 700,
+          "dpr": 1
+        },
+        "document": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "nodes": [
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0",
+            "text": "选项一",
+            "rect": {
+              "x": 24,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "default",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "false",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-active",
+            "text": "选项二",
+            "rect": {
+              "x": 78,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "pointer",
+              "fontWeight": "600",
+              "outline": "rgb(25, 25, 25) none 0px",
+              "boxShadow": "rgb(25, 25, 25) 0px -2px 0px 0px inset",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "true",
+            "focused": true,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-disabled",
+            "text": "禁用选项",
+            "rect": {
+              "x": 132,
+              "y": 358.390625,
+              "width": 68,
+              "height": 48
+            },
+            "scrollWidth": 68,
+            "clientWidth": 68,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(194, 194, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "not-allowed",
+              "fontWeight": "400",
+              "outline": "rgb(194, 194, 194) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": true,
+            "selected": "false",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "empty svelte-yxvg8a",
+            "text": "暂无数据",
+            "rect": {
+              "x": 24,
+              "y": 476.390625,
+              "width": 342,
+              "height": 85
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 85,
+            "clientHeight": 85,
+            "style": {
+              "color": "rgb(128, 128, 128)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(128, 128, 128) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "名称",
+            "rect": {
+              "x": 40,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "操作",
+            "rect": {
+              "x": 211,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名",
+            "rect": {
+              "x": 40,
+              "y": 629.390625,
+              "width": 139,
+              "height": 756
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 756,
+            "clientHeight": 756,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 993.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "第二行",
+            "rect": {
+              "x": 40,
+              "y": 1413.890625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 1410.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "LI",
+            "class": "svelte-wt1yqc is-active",
+            "text": "1",
+            "rect": {
+              "x": 125.140625,
+              "y": 1459.390625,
+              "width": 32,
+              "height": 32
+            },
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 30,
+            "clientHeight": 30,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgb(245, 245, 245)",
+              "cursor": "pointer",
+              "fontWeight": "700",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          }
+        ]
+      },
+      "screenshot": "selected-false.png"
+    },
+    {
+      "id": "select-open-false",
+      "facts": {
+        "viewport": {
+          "width": 390,
+          "height": 700,
+          "dpr": 1
+        },
+        "document": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "nodes": [
+          {
+            "tag": "DIV",
+            "class": "mc-ui-select-dropdown svelte-1m6ir0w",
+            "text": "选项一选项二禁用选项",
+            "rect": {
+              "x": 24,
+              "y": 350.390625,
+              "width": 342,
+              "height": 112
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 112,
+            "clientHeight": 112,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgb(255, 255, 255)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "rgba(0, 0, 0, 0.08) 0px 4px 16px 0px",
+              "overflow": "auto",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-option mc-ui-select-dropdown__item svelte-1m6ir0w selected",
+            "text": "选项一",
+            "rect": {
+              "x": 24,
+              "y": 358.390625,
+              "width": 342,
+              "height": 32
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 32,
+            "clientHeight": 32,
+            "style": {
+              "color": "rgb(20, 118, 255)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "pointer",
+              "fontWeight": "400",
+              "outline": "rgb(20, 118, 255) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "true",
+            "focused": true,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-option mc-ui-select-dropdown__item svelte-1m6ir0w",
+            "text": "选项二",
+            "rect": {
+              "x": 24,
+              "y": 390.390625,
+              "width": 342,
+              "height": 32
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 32,
+            "clientHeight": 32,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "pointer",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "false",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-option mc-ui-select-dropdown__item svelte-1m6ir0w is-disabled",
+            "text": "禁用选项",
+            "rect": {
+              "x": 24,
+              "y": 422.390625,
+              "width": 342,
+              "height": 32
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 32,
+            "clientHeight": 32,
+            "style": {
+              "color": "rgb(194, 194, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "not-allowed",
+              "fontWeight": "400",
+              "outline": "rgb(194, 194, 194) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": true,
+            "selected": "false",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0",
+            "text": "选项一",
+            "rect": {
+              "x": 24,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "default",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "false",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-active",
+            "text": "选项二",
+            "rect": {
+              "x": 78,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "pointer",
+              "fontWeight": "600",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "rgb(25, 25, 25) 0px -2px 0px 0px inset",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "true",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-disabled",
+            "text": "禁用选项",
+            "rect": {
+              "x": 132,
+              "y": 358.390625,
+              "width": 68,
+              "height": 48
+            },
+            "scrollWidth": 68,
+            "clientWidth": 68,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(194, 194, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "not-allowed",
+              "fontWeight": "400",
+              "outline": "rgb(194, 194, 194) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": true,
+            "selected": "false",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "empty svelte-yxvg8a",
+            "text": "暂无数据",
+            "rect": {
+              "x": 24,
+              "y": 476.390625,
+              "width": 342,
+              "height": 85
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 85,
+            "clientHeight": 85,
+            "style": {
+              "color": "rgb(128, 128, 128)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(128, 128, 128) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "名称",
+            "rect": {
+              "x": 40,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "操作",
+            "rect": {
+              "x": 211,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名",
+            "rect": {
+              "x": 40,
+              "y": 629.390625,
+              "width": 139,
+              "height": 756
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 756,
+            "clientHeight": 756,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 993.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "第二行",
+            "rect": {
+              "x": 40,
+              "y": 1413.890625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 1410.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "LI",
+            "class": "svelte-wt1yqc is-active",
+            "text": "1",
+            "rect": {
+              "x": 125.140625,
+              "y": 1459.390625,
+              "width": 32,
+              "height": 32
+            },
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 30,
+            "clientHeight": 30,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgb(245, 245, 245)",
+              "cursor": "pointer",
+              "fontWeight": "700",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          }
+        ]
+      },
+      "screenshot": "select-open-false.png"
+    },
+    {
+      "id": "dialog-open-false",
+      "facts": {
+        "viewport": {
+          "width": 390,
+          "height": 700,
+          "dpr": 1
+        },
+        "document": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "nodes": [
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0",
+            "text": "选项一",
+            "rect": {
+              "x": 24,
+              "y": -575.609375,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "default",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "false",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-active",
+            "text": "选项二",
+            "rect": {
+              "x": 78,
+              "y": -575.609375,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "pointer",
+              "fontWeight": "600",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "rgb(25, 25, 25) 0px -2px 0px 0px inset",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "true",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-disabled",
+            "text": "禁用选项",
+            "rect": {
+              "x": 132,
+              "y": -575.609375,
+              "width": 68,
+              "height": 48
+            },
+            "scrollWidth": 68,
+            "clientWidth": 68,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(194, 194, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "not-allowed",
+              "fontWeight": "400",
+              "outline": "rgb(194, 194, 194) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": true,
+            "selected": "false",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "empty svelte-yxvg8a",
+            "text": "暂无数据",
+            "rect": {
+              "x": 24,
+              "y": -457.609375,
+              "width": 342,
+              "height": 85
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 85,
+            "clientHeight": 85,
+            "style": {
+              "color": "rgb(128, 128, 128)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(128, 128, 128) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "名称",
+            "rect": {
+              "x": 40,
+              "y": -347.609375,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "操作",
+            "rect": {
+              "x": 211,
+              "y": -347.609375,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名",
+            "rect": {
+              "x": 40,
+              "y": -304.609375,
+              "width": 139,
+              "height": 756
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 756,
+            "clientHeight": 756,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 59.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "第二行",
+            "rect": {
+              "x": 40,
+              "y": 479.890625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 476.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "LI",
+            "class": "svelte-wt1yqc is-active",
+            "text": "1",
+            "rect": {
+              "x": 125.140625,
+              "y": 525.390625,
+              "width": 32,
+              "height": 32
+            },
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 30,
+            "clientHeight": 30,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgb(245, 245, 245)",
+              "cursor": "pointer",
+              "fontWeight": "700",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIALOG",
+            "class": "mc-ui-dialog-box ui-dialog svelte-1f95758",
+            "text": "确认操作确认",
+            "rect": {
+              "x": 19,
+              "y": 316.5,
+              "width": 320,
+              "height": 167
+            },
+            "scrollWidth": 320,
+            "clientWidth": 320,
+            "scrollHeight": 167,
+            "clientHeight": 167,
+            "style": {
+              "color": "rgb(0, 0, 0)",
+              "background": "rgb(255, 255, 255)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(0, 0, 0) none 3px",
+              "boxShadow": "rgba(0, 0, 0, 0.2) 0px 8px 32px 0px",
+              "overflow": "auto",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-button mc-ui-button--default",
+            "text": "确认",
+            "rect": {
+              "x": 241,
+              "y": 431.5,
+              "width": 74,
+              "height": 28
+            },
+            "scrollWidth": 72,
+            "clientWidth": 72,
+            "scrollHeight": 26,
+            "clientHeight": 26,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgb(255, 255, 255)",
+              "cursor": "pointer",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 0px",
+              "boxShadow": "none",
+              "overflow": "hidden",
+              "textOverflow": "ellipsis",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          }
+        ]
+      },
+      "screenshot": "dialog-open-false.png"
+    },
+    {
+      "id": "empty-false",
+      "facts": {
+        "viewport": {
+          "width": 390,
+          "height": 700,
+          "dpr": 1
+        },
+        "document": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "nodes": [
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-active",
+            "text": "选项一",
+            "rect": {
+              "x": 24,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "pointer",
+              "fontWeight": "600",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "rgb(25, 25, 25) 0px -2px 0px 0px inset",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "true",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0",
+            "text": "选项二",
+            "rect": {
+              "x": 78,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "default",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "false",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-disabled",
+            "text": "禁用选项",
+            "rect": {
+              "x": 132,
+              "y": 358.390625,
+              "width": 68,
+              "height": 48
+            },
+            "scrollWidth": 68,
+            "clientWidth": 68,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(194, 194, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "not-allowed",
+              "fontWeight": "400",
+              "outline": "rgb(194, 194, 194) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": true,
+            "selected": "false",
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "empty svelte-yxvg8a",
+            "text": "暂无数据",
+            "rect": {
+              "x": 24,
+              "y": 476.390625,
+              "width": 342,
+              "height": 85
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 85,
+            "clientHeight": 85,
+            "style": {
+              "color": "rgb(128, 128, 128)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(128, 128, 128) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "名称",
+            "rect": {
+              "x": 40,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "操作",
+            "rect": {
+              "x": 211,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "DIV",
+            "class": "empty svelte-yxvg8a",
+            "text": "暂无数据",
+            "rect": {
+              "x": 24,
+              "y": 617.390625,
+              "width": 342,
+              "height": 85
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 85,
+            "clientHeight": 85,
+            "style": {
+              "color": "rgb(128, 128, 128)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(128, 128, 128) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          },
+          {
+            "tag": "LI",
+            "class": "svelte-wt1yqc is-active",
+            "text": "1",
+            "rect": {
+              "x": 125.140625,
+              "y": 710.390625,
+              "width": 32,
+              "height": 32
+            },
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 30,
+            "clientHeight": 30,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgb(245, 245, 245)",
+              "cursor": "pointer",
+              "fontWeight": "700",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": false
+          }
+        ]
+      },
+      "screenshot": "empty-false.png"
+    },
+    {
+      "id": "long-focused-true",
+      "facts": {
+        "viewport": {
+          "width": 390,
+          "height": 700,
+          "dpr": 1
+        },
+        "document": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "nodes": [
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-active",
+            "text": "选项一",
+            "rect": {
+              "x": 24,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "pointer",
+              "fontWeight": "600",
+              "outline": "rgb(25, 25, 25) solid 2px",
+              "boxShadow": "rgb(25, 25, 25) 0px -2px 0px 0px inset",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "true",
+            "focused": true,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0",
+            "text": "选项二",
+            "rect": {
+              "x": 78,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "default",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "false",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-disabled",
+            "text": "禁用选项",
+            "rect": {
+              "x": 132,
+              "y": 358.390625,
+              "width": 68,
+              "height": 48
+            },
+            "scrollWidth": 68,
+            "clientWidth": 68,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(194, 194, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "not-allowed",
+              "fontWeight": "400",
+              "outline": "rgb(194, 194, 194) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": true,
+            "selected": "false",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "empty svelte-yxvg8a",
+            "text": "暂无数据",
+            "rect": {
+              "x": 24,
+              "y": 476.390625,
+              "width": 342,
+              "height": 85
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 85,
+            "clientHeight": 85,
+            "style": {
+              "color": "rgb(128, 128, 128)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(128, 128, 128) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "名称",
+            "rect": {
+              "x": 40,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "操作",
+            "rect": {
+              "x": 211,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名",
+            "rect": {
+              "x": 40,
+              "y": 629.390625,
+              "width": 139,
+              "height": 756
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 756,
+            "clientHeight": 756,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 993.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "第二行",
+            "rect": {
+              "x": 40,
+              "y": 1413.890625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 1410.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "LI",
+            "class": "svelte-wt1yqc is-active",
+            "text": "1",
+            "rect": {
+              "x": 125.140625,
+              "y": 1459.390625,
+              "width": 32,
+              "height": 32
+            },
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 30,
+            "clientHeight": 30,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgb(245, 245, 245)",
+              "cursor": "pointer",
+              "fontWeight": "700",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          }
+        ]
+      },
+      "screenshot": "long-focused-true.png"
+    },
+    {
+      "id": "selected-true",
+      "facts": {
+        "viewport": {
+          "width": 390,
+          "height": 700,
+          "dpr": 1
+        },
+        "document": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "nodes": [
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0",
+            "text": "选项一",
+            "rect": {
+              "x": 24,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "default",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "false",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-active",
+            "text": "选项二",
+            "rect": {
+              "x": 78,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "pointer",
+              "fontWeight": "600",
+              "outline": "rgb(25, 25, 25) none 0px",
+              "boxShadow": "rgb(25, 25, 25) 0px -2px 0px 0px inset",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "true",
+            "focused": true,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-disabled",
+            "text": "禁用选项",
+            "rect": {
+              "x": 132,
+              "y": 358.390625,
+              "width": 68,
+              "height": 48
+            },
+            "scrollWidth": 68,
+            "clientWidth": 68,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(194, 194, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "not-allowed",
+              "fontWeight": "400",
+              "outline": "rgb(194, 194, 194) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": true,
+            "selected": "false",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "empty svelte-yxvg8a",
+            "text": "暂无数据",
+            "rect": {
+              "x": 24,
+              "y": 476.390625,
+              "width": 342,
+              "height": 85
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 85,
+            "clientHeight": 85,
+            "style": {
+              "color": "rgb(128, 128, 128)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(128, 128, 128) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "名称",
+            "rect": {
+              "x": 40,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "操作",
+            "rect": {
+              "x": 211,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名",
+            "rect": {
+              "x": 40,
+              "y": 629.390625,
+              "width": 139,
+              "height": 756
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 756,
+            "clientHeight": 756,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 993.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "第二行",
+            "rect": {
+              "x": 40,
+              "y": 1413.890625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 1410.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "LI",
+            "class": "svelte-wt1yqc is-active",
+            "text": "1",
+            "rect": {
+              "x": 125.140625,
+              "y": 1459.390625,
+              "width": 32,
+              "height": 32
+            },
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 30,
+            "clientHeight": 30,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgb(245, 245, 245)",
+              "cursor": "pointer",
+              "fontWeight": "700",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          }
+        ]
+      },
+      "screenshot": "selected-true.png"
+    },
+    {
+      "id": "select-open-true",
+      "facts": {
+        "viewport": {
+          "width": 390,
+          "height": 700,
+          "dpr": 1
+        },
+        "document": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "nodes": [
+          {
+            "tag": "DIV",
+            "class": "mc-ui-select-dropdown svelte-1m6ir0w",
+            "text": "选项一选项二禁用选项",
+            "rect": {
+              "x": 24,
+              "y": 350.390625,
+              "width": 342,
+              "height": 112
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 112,
+            "clientHeight": 112,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgb(255, 255, 255)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "rgba(0, 0, 0, 0.08) 0px 4px 16px 0px",
+              "overflow": "auto",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-option mc-ui-select-dropdown__item svelte-1m6ir0w selected",
+            "text": "选项一",
+            "rect": {
+              "x": 24,
+              "y": 358.390625,
+              "width": 342,
+              "height": 32
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 32,
+            "clientHeight": 32,
+            "style": {
+              "color": "rgb(20, 118, 255)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "pointer",
+              "fontWeight": "400",
+              "outline": "rgb(20, 118, 255) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "true",
+            "focused": true,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-option mc-ui-select-dropdown__item svelte-1m6ir0w",
+            "text": "选项二",
+            "rect": {
+              "x": 24,
+              "y": 390.390625,
+              "width": 342,
+              "height": 32
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 32,
+            "clientHeight": 32,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "pointer",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "false",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-option mc-ui-select-dropdown__item svelte-1m6ir0w is-disabled",
+            "text": "禁用选项",
+            "rect": {
+              "x": 24,
+              "y": 422.390625,
+              "width": 342,
+              "height": 32
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 32,
+            "clientHeight": 32,
+            "style": {
+              "color": "rgb(194, 194, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "not-allowed",
+              "fontWeight": "400",
+              "outline": "rgb(194, 194, 194) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": true,
+            "selected": "false",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0",
+            "text": "选项一",
+            "rect": {
+              "x": 24,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "default",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "false",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-active",
+            "text": "选项二",
+            "rect": {
+              "x": 78,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "pointer",
+              "fontWeight": "600",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "rgb(25, 25, 25) 0px -2px 0px 0px inset",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "true",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-disabled",
+            "text": "禁用选项",
+            "rect": {
+              "x": 132,
+              "y": 358.390625,
+              "width": 68,
+              "height": 48
+            },
+            "scrollWidth": 68,
+            "clientWidth": 68,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(194, 194, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "not-allowed",
+              "fontWeight": "400",
+              "outline": "rgb(194, 194, 194) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": true,
+            "selected": "false",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "empty svelte-yxvg8a",
+            "text": "暂无数据",
+            "rect": {
+              "x": 24,
+              "y": 476.390625,
+              "width": 342,
+              "height": 85
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 85,
+            "clientHeight": 85,
+            "style": {
+              "color": "rgb(128, 128, 128)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(128, 128, 128) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "名称",
+            "rect": {
+              "x": 40,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "操作",
+            "rect": {
+              "x": 211,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名",
+            "rect": {
+              "x": 40,
+              "y": 629.390625,
+              "width": 139,
+              "height": 756
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 756,
+            "clientHeight": 756,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 993.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "第二行",
+            "rect": {
+              "x": 40,
+              "y": 1413.890625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 1410.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "LI",
+            "class": "svelte-wt1yqc is-active",
+            "text": "1",
+            "rect": {
+              "x": 125.140625,
+              "y": 1459.390625,
+              "width": 32,
+              "height": 32
+            },
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 30,
+            "clientHeight": 30,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgb(245, 245, 245)",
+              "cursor": "pointer",
+              "fontWeight": "700",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          }
+        ]
+      },
+      "screenshot": "select-open-true.png"
+    },
+    {
+      "id": "dialog-open-true",
+      "facts": {
+        "viewport": {
+          "width": 390,
+          "height": 700,
+          "dpr": 1
+        },
+        "document": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "nodes": [
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0",
+            "text": "选项一",
+            "rect": {
+              "x": 24,
+              "y": -575.609375,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "default",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "false",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-active",
+            "text": "选项二",
+            "rect": {
+              "x": 78,
+              "y": -575.609375,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "pointer",
+              "fontWeight": "600",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "rgb(25, 25, 25) 0px -2px 0px 0px inset",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "true",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-disabled",
+            "text": "禁用选项",
+            "rect": {
+              "x": 132,
+              "y": -575.609375,
+              "width": 68,
+              "height": 48
+            },
+            "scrollWidth": 68,
+            "clientWidth": 68,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(194, 194, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "not-allowed",
+              "fontWeight": "400",
+              "outline": "rgb(194, 194, 194) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": true,
+            "selected": "false",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "empty svelte-yxvg8a",
+            "text": "暂无数据",
+            "rect": {
+              "x": 24,
+              "y": -457.609375,
+              "width": 342,
+              "height": 85
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 85,
+            "clientHeight": 85,
+            "style": {
+              "color": "rgb(128, 128, 128)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(128, 128, 128) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "名称",
+            "rect": {
+              "x": 40,
+              "y": -347.609375,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "操作",
+            "rect": {
+              "x": 211,
+              "y": -347.609375,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名称与说明长页面名",
+            "rect": {
+              "x": 40,
+              "y": -304.609375,
+              "width": 139,
+              "height": 756
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 756,
+            "clientHeight": 756,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 59.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "第二行",
+            "rect": {
+              "x": 40,
+              "y": 479.890625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "打开",
+            "rect": {
+              "x": 211,
+              "y": 476.390625,
+              "width": 139,
+              "height": 28
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 28,
+            "clientHeight": 28,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "LI",
+            "class": "svelte-wt1yqc is-active",
+            "text": "1",
+            "rect": {
+              "x": 125.140625,
+              "y": 525.390625,
+              "width": 32,
+              "height": 32
+            },
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 30,
+            "clientHeight": 30,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgb(245, 245, 245)",
+              "cursor": "pointer",
+              "fontWeight": "700",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIALOG",
+            "class": "mc-ui-dialog-box ui-dialog svelte-1f95758",
+            "text": "确认操作确认",
+            "rect": {
+              "x": 19,
+              "y": 316.5,
+              "width": 320,
+              "height": 167
+            },
+            "scrollWidth": 320,
+            "clientWidth": 320,
+            "scrollHeight": 167,
+            "clientHeight": 167,
+            "style": {
+              "color": "rgb(0, 0, 0)",
+              "background": "rgb(255, 255, 255)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(0, 0, 0) none 3px",
+              "boxShadow": "rgba(0, 0, 0, 0.2) 0px 8px 32px 0px",
+              "overflow": "auto",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-button mc-ui-button--default",
+            "text": "确认",
+            "rect": {
+              "x": 241,
+              "y": 431.5,
+              "width": 74,
+              "height": 28
+            },
+            "scrollWidth": 72,
+            "clientWidth": 72,
+            "scrollHeight": 26,
+            "clientHeight": 26,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgb(255, 255, 255)",
+              "cursor": "pointer",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 0px",
+              "boxShadow": "none",
+              "overflow": "hidden",
+              "textOverflow": "ellipsis",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          }
+        ]
+      },
+      "screenshot": "dialog-open-true.png"
+    },
+    {
+      "id": "empty-true",
+      "facts": {
+        "viewport": {
+          "width": 390,
+          "height": 700,
+          "dpr": 1
+        },
+        "document": {
+          "scrollWidth": 390,
+          "clientWidth": 390
+        },
+        "nodes": [
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-active",
+            "text": "选项一",
+            "rect": {
+              "x": 24,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "pointer",
+              "fontWeight": "600",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "rgb(25, 25, 25) 0px -2px 0px 0px inset",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "true",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0",
+            "text": "选项二",
+            "rect": {
+              "x": 78,
+              "y": 358.390625,
+              "width": 54,
+              "height": 48
+            },
+            "scrollWidth": 54,
+            "clientWidth": 54,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "default",
+              "fontWeight": "400",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": false,
+            "selected": "false",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "BUTTON",
+            "class": "mc-ui-tabs__item is-top svelte-1vywrz0 is-disabled",
+            "text": "禁用选项",
+            "rect": {
+              "x": 132,
+              "y": 358.390625,
+              "width": 68,
+              "height": 48
+            },
+            "scrollWidth": 68,
+            "clientWidth": 68,
+            "scrollHeight": 48,
+            "clientHeight": 48,
+            "style": {
+              "color": "rgb(194, 194, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "not-allowed",
+              "fontWeight": "400",
+              "outline": "rgb(194, 194, 194) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "nowrap"
+            },
+            "disabled": true,
+            "selected": "false",
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "empty svelte-yxvg8a",
+            "text": "暂无数据",
+            "rect": {
+              "x": 24,
+              "y": 476.390625,
+              "width": 342,
+              "height": 85
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 85,
+            "clientHeight": 85,
+            "style": {
+              "color": "rgb(128, 128, 128)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(128, 128, 128) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "名称",
+            "rect": {
+              "x": 40,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "mc-ui-grid-cell svelte-1sier50",
+            "text": "操作",
+            "rect": {
+              "x": 211,
+              "y": 586.390625,
+              "width": 139,
+              "height": 21
+            },
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "scrollHeight": 21,
+            "clientHeight": 21,
+            "style": {
+              "color": "rgb(89, 89, 89)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(89, 89, 89) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "DIV",
+            "class": "empty svelte-yxvg8a",
+            "text": "暂无数据",
+            "rect": {
+              "x": 24,
+              "y": 617.390625,
+              "width": 342,
+              "height": 85
+            },
+            "scrollWidth": 342,
+            "clientWidth": 342,
+            "scrollHeight": 85,
+            "clientHeight": 85,
+            "style": {
+              "color": "rgb(128, 128, 128)",
+              "background": "rgba(0, 0, 0, 0)",
+              "cursor": "auto",
+              "fontWeight": "400",
+              "outline": "rgb(128, 128, 128) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          },
+          {
+            "tag": "LI",
+            "class": "svelte-wt1yqc is-active",
+            "text": "1",
+            "rect": {
+              "x": 125.140625,
+              "y": 710.390625,
+              "width": 32,
+              "height": 32
+            },
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 30,
+            "clientHeight": 30,
+            "style": {
+              "color": "rgb(25, 25, 25)",
+              "background": "rgb(245, 245, 245)",
+              "cursor": "pointer",
+              "fontWeight": "700",
+              "outline": "rgb(25, 25, 25) none 3px",
+              "boxShadow": "none",
+              "overflow": "visible",
+              "textOverflow": "clip",
+              "whiteSpace": "normal"
+            },
+            "disabled": false,
+            "selected": null,
+            "focused": false,
+            "shadow": true
+          }
+        ]
+      },
+      "screenshot": "empty-true.png"
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "contract_sha256": "0f54f1b367aeb5ab8721ffc47eb52c1d6a5ae6bd5f8eb593c9276d748ef8c32a",
+  "entries": [
+    {
+      "actual": [
+        "页面管理"
+      ],
+      "rule_id": "R1-1-directory",
+      "status": "green"
+    },
+    {
+      "actual": [
+        "页面标题"
+      ],
+      "rule_id": "R1-1-details-reading",
+      "status": "green"
+    },
+    {
+      "actual": [
+        "继续编辑"
+      ],
+      "rule_id": "R1-1-workbench-reading",
+      "status": "green"
+    },
+    {
+      "actual": [
+        "已在此浏览器保护，尚未保存到服务端。"
+      ],
+      "rule_id": "R2-1-protected",
+      "status": "green"
+    },
+    {
+      "actual": [
+        "草稿已保存。"
+      ],
+      "rule_id": "R2-1-saved",
+      "status": "green"
+    },
+    {
+      "actual": [
+        "保存结果未确认，已停止重复发送。工作副本与原操作记录仍在此浏览器保护。"
+      ],
+      "rule_id": "R2-1-unknown",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R6-1-management-1440",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R6-1-management-390",
+      "status": "green"
+    }
+  ],
+  "observed": {
+    "captures": [
+      {
+        "route": "/manage?state=draft&page=1",
+        "viewport": {
+          "height": 700,
+          "width": 390
+        }
+      },
+      {
+        "route": "/?page=asset-test&resource=metadata-1",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/manage?state=draft&page=1",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/manage?state=draft&page=1",
+        "viewport": {
+          "height": 700,
+          "width": 390
+        }
+      },
+      {
+        "route": "/manage?state=draft&page=1",
+        "viewport": {
+          "height": 700,
+          "width": 390
+        }
+      },
+      {
+        "route": "/manage/pages/asset-test?resource=metadata-1&reading=1",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/?page=asset-test&resource=metadata-1",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/?page=asset-test&resource=metadata-1",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/?page=asset-test&resource=metadata-1",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        }
+      }
+    ]
+  },
+  "overall": "green",
+  "phase": "green",
+  "schema_version": 3,
+  "summary": {
+    "green": 8,
+    "red": 0,
+    "total": 8,
+    "yellow": 0
+  }
+}

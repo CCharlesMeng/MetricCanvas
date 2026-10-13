@@ -51,6 +51,7 @@ export type AssetState = 'draft' | 'published' | 'unknown';
 export interface AssetSummary extends AssetRef {
   revisionId: string; revisionNumber: number; state: AssetState;
   description: string; updatedAt: string;
+  createdAt?: string; supportedFields?: {metrics:string[];dimensions:string[]}|null;
 }
 export interface DraftHistoryEntry {
   historyId: string; draftVersion: number; createdBy: string; createdAt: string; comment: string; description: string;

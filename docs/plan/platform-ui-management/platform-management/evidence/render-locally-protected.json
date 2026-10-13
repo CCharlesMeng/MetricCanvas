@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "contract_sha256": "0f54f1b367aeb5ab8721ffc47eb52c1d6a5ae6bd5f8eb593c9276d748ef8c32a",
+  "page_available": true,
+  "observed": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "route": "/?page=asset-test&resource=metadata-1"
+  },
+  "environment": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "dpr": 1,
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+    "scroll": {
+      "width": 1440,
+      "height": 900
+    }
+  },
+  "rules": {
+    "R2-1-protected": {
+      "status": "ok",
+      "actual": [
+        "已在此浏览器保护，尚未保存到服务端。"
+      ],
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".work-task:not([hidden]) [data-testid=authoring-save-state]"
+      },
+      "matched": 1
+    }
+  }
+}

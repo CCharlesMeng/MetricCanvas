@@ -89,6 +89,15 @@ try {
       const dependencies = { ...manifest.dependencies, ...manifest.peerDependencies };
       assert(!('echarts' in dependencies) && !('svelte' in dependencies));
     }
+    if (name === '@metriccanvas/ui') {
+      const dependencies = { ...manifest.dependencies, ...manifest.peerDependencies };
+      assert.deepEqual(Object.keys(dependencies), ['svelte'], 'UI may depend only on its Svelte peer');
+      for (const file of files) {
+        if (!/\.(?:js|ts|svelte)$/.test(file.name)) continue;
+        const code = readFileSync(join(file.parentPath, file.name), 'utf8');
+        assert(!/[@]metriccanvas\/(?:page|engine|embed|metric-canvas)|echarts|data-gateway|page-assets/.test(code), 'UI reaches a domain/product dependency');
+      }
+    }
     results.push({ name, version: manifest.version, entries: Object.keys(manifest.exports).length, files: files.length, components });
   }
   console.log(JSON.stringify({ packages: results }, null, 2));

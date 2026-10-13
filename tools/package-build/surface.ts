@@ -6,7 +6,13 @@ import ts from 'typescript';
 const root = fileURLToPath(new URL('../..', import.meta.url));
 
 /** 交付物的源码入口。`embed` 的 exports 指向构建产物，这里锁它的源码入口。 */
+export const productReleaseGroup = ['@metriccanvas/page', '@metriccanvas/engine', '@metriccanvas/metric-canvas', '@metriccanvas/embed'];
+
 export const artifacts: Record<string, { manifest: string; entries: Record<string, string> }> = {
+  '@metriccanvas/ui': {
+    manifest: 'packages/ui/package.json',
+    entries: { '.': 'packages/ui/src/index.ts' }
+  },
   '@metriccanvas/page': {
     manifest: 'packages/page/package.json',
     entries: {

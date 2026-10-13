@@ -57,6 +57,9 @@ export function createAuthoringCoordinator(options: {
   port: AuthoringPort;
   identity(): { actorId: string; workspaceId: string };
   operationId?: () => string;
+  manualSave?: boolean;
+  storageTarget?: () => string;
+  localTaskId?: string;
 }) {
   let state: AuthoringSnapshot = { draft: null, ref: null, loading: false, languageLocked: false, dirty: false, save: null, error: '', sync: null };
   let epoch = 0;
@@ -74,6 +77,9 @@ export function createAuthoringCoordinator(options: {
   const snapshot = () => structuredClone(state);
   const emit = () => { for (const listener of listeners) listener(snapshot()); };
   const identityKey = () => { const value = options.identity(); return JSON.stringify([value.actorId, value.workspaceId]); };
+  const targetScope = () => ({...(options.storageTarget ? {serviceTarget:options.storageTarget()} : {}),...(options.localTaskId ? {taskId:options.localTaskId} : {})});
+  const durableFormat = () => options.manualSave ? 3 as const : syncConfig?.port.delivery === 'single' ? 2 as const : 1 as const;
+  const localState = () => options.manualSave ? {localDirty:false} : {};
   const scope = () => `${epoch}:${identityKey()}`;
   const recoveryLocked = () => state.sync?.phase === 'rejected' || state.save?.status === 'unknown' || state.save?.status === 'pending' || state.sync?.phase === 'unknown';
   const unresolved = () => state.loading || state.sync?.protection === 'failed' || state.save?.status === 'pending' || state.save?.status === 'unknown' || (state.sync?.pending ?? 0) > 0;
@@ -86,7 +92,7 @@ export function createAuthoringCoordinator(options: {
     sync?.dispose(); sync = null;
     const identity = options.identity();
     const expected = scope();
-    const storageScope = { ...identity, pageId: String(state.draft.pageDocument.id), ...(options.port.assets && state.ref?.resourceId ? {resourceId:state.ref.resourceId} : {}) };
+    const storageScope = { ...identity, ...targetScope(), pageId: String(state.draft.pageDocument.id), ...(options.port.assets && !options.localTaskId && state.ref?.resourceId ? {resourceId:state.ref.resourceId} : {}) };
     state = { ...state, loading: true, sync: null }; emit();
     try {
       if (!identity.actorId || !identity.workspaceId) throw new Error('身份失效，原记录已保留，请重新登录后打开页面。');
@@ -94,15 +100,15 @@ export function createAuthoringCoordinator(options: {
       let stored = raw === null ? null : validateAuthoringRecord(raw, storageScope);
       if (disposed || scope() !== expected) return;
       if (incoming && stored && stored.value.queue.length === 0) {
-        const value: DurableAuthoringState = { format: syncConfig.port.delivery === 'single' ? 2 : 1, scope: storageScope, base: state.ref, draft: state.draft!, queue: [], ...(receipt ? {confirmed:receipt} : stored.value.confirmed?.revisionId === state.ref?.revisionId ? {confirmed: stored.value.confirmed} : {}) };
+        const value: DurableAuthoringState = { format: durableFormat(), ...localState(), scope: storageScope, base: state.ref, draft: state.draft!, queue: [], ...(receipt ? {confirmed:receipt} : stored.value.confirmed?.revisionId === state.ref?.revisionId ? {confirmed: stored.value.confirmed} : {}) };
         const version = await syncConfig.storage.write(storageScope, stored.version, structuredClone(value));
         if (disposed || scope() !== expected) return;
         stored = { version, value };
       }
-      if (stored) state = { ...state, draft: stored.value.draft, ref: stored.value.base, dirty: stored.value.queue.length > 0 };
+      if (stored) state = { ...state, draft: stored.value.draft, ref: stored.value.base, dirty: !!stored.value.localDirty || stored.value.queue.length > 0 };
       const active = createAuthoringSync({
-        initial: stored?.value ?? { format: syncConfig.port.delivery === 'single' ? 2 : 1, scope: storageScope, base: state.ref, draft: state.draft!, queue: [], ...(receipt ? {confirmed:receipt} : {}) },
-        ...syncConfig, identity: options.identity, restoredVersion: stored?.version, online
+        initial: stored?.value ?? { format: durableFormat(), ...localState(), scope: storageScope, base: state.ref, draft: state.draft!, queue: [], ...(receipt ? {confirmed:receipt} : {}) },
+        ...syncConfig, manualSave:options.manualSave, identity: options.identity, restoredVersion: stored?.version, online
       });
       sync = active;
       active.subscribe((value) => {
@@ -110,7 +116,7 @@ export function createAuthoringCoordinator(options: {
         if (owner !== identityKey()) {
           state = { ...state, error: '身份已变化，原队列已停写停发，请重新打开页面。' }; emit(); return;
         }
-        state = { ...state, sync: value, ref: value.base, dirty: value.pending > 0, languageLocked: !!preparation || !!languageLease || value.phase === 'unknown' }; emit();
+        state = { ...state, sync: value, ref: value.base, dirty: value.dirty ?? value.pending > 0, languageLocked: !!preparation || !!languageLease || value.phase === 'unknown' }; emit();
       });
       state = { ...state, loading: false }; emit();
       active.start();
@@ -173,6 +179,7 @@ export function createAuthoringCoordinator(options: {
         },
         async synchronize() {
           if (!current()) throw Error('工作范围已变化。');
+          if (options.manualSave && state.dirty) throw Error('人工修改尚未明确保存，请保存或取消本次 AI 修改。');
           if (sync) await sync.retry();
           else if (state.dirty) {
             // The private preparation token alone may drain the existing manual draft.
@@ -211,10 +218,11 @@ export function createAuthoringCoordinator(options: {
         }
       };
     },
+    async protect(): Promise<boolean> { return sync ? sync.protect() : !state.dirty; },
     capabilities: options.port.capabilities,
     subscribe(listener: (state: AuthoringSnapshot) => void) { listeners.add(listener); listener(snapshot()); return () => { listeners.delete(listener); }; },
     replaceDraft(draft: CanvasAuthoringDraft, description = '手工页面修改', forceOperation = false): boolean {
-      if ((preparation && !flushing) || languageLease || recoveryLocked() || disposed || (syncConfig && state.loading) || state.save?.status === 'pending') return false;
+      if ((preparation && !flushing) || languageLease || recoveryLocked() || disposed || (syncConfig && state.loading) || state.save?.status === 'pending' || (options.manualSave && (state.sync?.pending ?? 0) > 0)) return false;
       if (owner && owner !== identityKey()) { state = { ...state, error: '身份已变化，请重新打开页面后编辑。' }; emit(); return false; }
       if (state.ref && draft.pageDocument.id !== state.ref.pageId) {
         state = { ...state, error: 'RESPONSE_MISMATCH：编辑不能改变页面身份。' }; emit(); return false;
@@ -243,9 +251,10 @@ export function createAuthoringCoordinator(options: {
       change(parsed.draft);
       state = { ...state, ref: null, dirty: true, save: null, sync: null };
       emit();
+      if(syncConfig) void attachSync().then(async()=>{await sync?.enqueue(parsed.draft,'应用页面工作副本',retainDimensionValues,true);});
       return true;
     },
-    async load(pageId: string, optionsForLoad: { refreshCurrent?: boolean; resourceId?: string } = {}): Promise<void> {
+    async load(pageId: string, optionsForLoad: { refreshCurrent?: boolean; resourceId?: string; localOnly?:boolean } = {}): Promise<void> {
       const refreshCurrent = optionsForLoad.refreshCurrent === true;
       if (refreshCurrent && (preparation || languageLease || disposed || unresolved() || state.dirty ||
           (owner !== null && owner !== identityKey()) || (state.ref && state.ref.pageId !== pageId))) {
@@ -260,25 +269,26 @@ export function createAuthoringCoordinator(options: {
       state = { ...state, loading: true, error: '' }; emit();
       try {
         let stored: StoredRecord<DurableAuthoringState> | null = null;
-        const resourceId = optionsForLoad.resourceId ?? (options.port.assets ? (await options.port.assets.resolve(pageId, signal)).resourceId : undefined);
+        const resourceId = optionsForLoad.resourceId ?? (options.port.assets && !options.localTaskId ? (await options.port.assets.resolve(pageId, signal)).resourceId : undefined);
         if (disposed || signal.aborted || scope() !== expected) return;
         if (syncConfig) {
-          const storageScope = { ...options.identity(), pageId, ...(resourceId ? {resourceId} : {}) };
+          const storageScope = { ...options.identity(), ...targetScope(), pageId, ...(resourceId && !options.localTaskId ? {resourceId} : {}) };
           if (!storageScope.actorId || !storageScope.workspaceId) throw new Error('身份失效，请重新登录后打开页面。');
-          if (resourceId) {
+          if (resourceId && !options.storageTarget) {
             const legacy = await syncConfig.storage.read({...options.identity(),pageId});
             if (legacy?.value.queue.length) throw Error('旧版未决工作已保留，请先人工核实，不能在新入口重放。');
           }
           const raw = await syncConfig.storage.read(storageScope);
           if (disposed || signal.aborted || scope() !== expected) return;
           stored = raw === null ? null : validateAuthoringRecord(raw, storageScope);
-          if (refreshCurrent && stored && stored.value.queue.length > 0) throw new Error('本地仍有未同步修改，保留当前页面。');
-          if (stored && (!options.port.assets || stored.value.queue.length > 0) && !refreshCurrent) {
+          if (refreshCurrent && stored && (stored.value.queue.length > 0 || stored.value.localDirty)) throw new Error('本地仍有未同步修改，保留当前页面。');
+          if (stored && (!options.port.assets || optionsForLoad.localOnly || (stored.value.queue.length > 0 || stored.value.localDirty)) && !refreshCurrent) {
             owner = identityKey();
-            change(stored.value.draft); state = { ...state, ref: stored.value.base, dirty: stored.value.queue.length > 0, save: null };
+            change(stored.value.draft); state = { ...state, ref: stored.value.base, dirty: !!stored.value.localDirty || stored.value.queue.length > 0, save: null };
             await attachSync(stored); return;
           }
         }
+        if(optionsForLoad.localOnly)return;
         let revision = await options.port.getLatest(pageId, signal, resourceId);
         if (stored?.value.confirmed && stored.value.confirmed.resourceId === revision.resourceId && stored.value.confirmed.revisionNumber > revision.revisionNumber) revision = stored.value.confirmed;
         if (disposed || signal.aborted || scope() !== expected) return;
@@ -372,7 +382,7 @@ export function createAuthoringCoordinator(options: {
     },
     async save(preparationPermit?: symbol): Promise<SaveOutcome | null> {
       if ((preparation && preparation !== preparationPermit) || languageLease || disposed || !state.draft) return null;
-      if (sync) { await sync.retry(); return null; }
+      if (sync) { if (options.manualSave) await sync.commit(retainDimensionValues); else await sync.retry(); return null; }
       if (unresolved() || (state.save?.status === 'rejected' && state.save.code === 'REVISION_CONFLICT')) return state.save;
       const identity = options.identity();
       const context: OperationContext = { ...identity, origin: { kind: 'manual' }, operationId: options.operationId?.() ?? crypto.randomUUID() };

@@ -278,7 +278,7 @@ for (const container of ['plain', 'card'] as const) test(`${container}: loading/
       await expect(page.getByRole('alert').first()).toContainText('DQE_TRANSPORT_ERROR');
     } else {
       await expect(page.getByText('配置列头', { exact: true })).toBeVisible();
-      expect(await page.locator('.echart canvas').evaluateAll(canvases => canvases.length === 1 && canvases.every(canvas => canvas.getBoundingClientRect().height >= 30))).toBe(true);
+      await expect.poll(()=>page.locator('.echart canvas').evaluateAll(canvases => canvases.length === 1 && canvases.every(canvas => canvas.getBoundingClientRect().height >= 30))).toBe(true);
       if (mode === 'ready') await expect(page.locator('.ranking-card')).toContainText('配置取值');
     }
   }

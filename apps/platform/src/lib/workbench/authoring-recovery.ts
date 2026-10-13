@@ -20,7 +20,9 @@ export function validateAuthoringRecord(input: unknown, scope: StorageScope): St
   if (![scope.actorId, scope.workspaceId, scope.pageId].every(text)) return fail();
   if (!record(input) || !keys(input, ['version', 'value']) || !Number.isSafeInteger(input.version) || Number(input.version) < 1) return fail();
   const value = input.value;
-  if (!record(value) || !keys(value, ['format', 'scope', 'base', 'draft', 'queue', 'undoDraft', 'confirmed']) || ![1, 2].includes(Number(value.format)) || stable(value.scope) !== stable(scope) || !ref(value.base, scope.pageId) || !Array.isArray(value.queue)) return fail();
+  if (!record(value) || !keys(value, ['format', 'scope', 'base', 'draft', 'queue', 'undoDraft', 'confirmed', 'localDirty']) || ![1, 2, 3].includes(Number(value.format)) || stable(value.scope) !== stable(scope) || !ref(value.base, scope.pageId) || !Array.isArray(value.queue)) return fail();
+  if (value.format === 3 && typeof value.localDirty !== 'boolean') return fail();
+  if (value.format !== 3 && value.localDirty !== undefined) return fail();
   if (value.confirmed !== undefined && (!record(value.confirmed) || value.confirmed.pageId !== scope.pageId || !text(value.confirmed.resourceId) || (scope.resourceId !== undefined && value.confirmed.resourceId !== scope.resourceId) || !text(value.confirmed.revisionId) || !Number.isSafeInteger(value.confirmed.revisionNumber) || Number(value.confirmed.revisionNumber) < 1 || !record(value.confirmed.document) || value.confirmed.document.id !== scope.pageId || validate(value.confirmed.document).length)) return fail();
   if (!record(value.draft) || !keys(value.draft, ['canvasDocument', 'pageDocument', 'authoringSections'])) return fail();
   const draft = restoreCanvasAuthoringDraft(value.draft);
@@ -48,6 +50,6 @@ export function validateAuthoringRecord(input: unknown, scope: StorageScope): St
       } else if (!['pending', 'unknown'].includes(String(outcome.status)) || !keys(outcome, ['status', 'operationId', 'message']) || (outcome.message !== undefined && typeof outcome.message !== 'string')) return fail();
     }
   }
-  if (value.queue.length && stable(value.queue.at(-1).document) !== stable(draft.draft.pageDocument)) return fail();
+  if (value.queue.length && !value.localDirty && stable(value.queue.at(-1).document) !== stable(draft.draft.pageDocument)) return fail();
   return structuredClone(input) as unknown as StoredRecord<DurableAuthoringState>;
 }

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import ToolAction from '../ToolAction.svelte';
+  import {Select,Input} from '@metriccanvas/ui';
   import ReportDateProperties from './ReportDateProperties.svelte';
   import type { CanvasAuthoringDraft } from './document-edit';
   import type { ReportDateEdit } from './report-date-edit';
@@ -71,56 +73,22 @@
 
       <section>
         <h5>组件形态</h5>
-        <div class="types">
-          {#each candidates as candidate (candidate.type)}
-            <button
-              type="button"
-              class:on={candidate.type === selectedView.componentType}
-              class:rec={candidate.recommended &&
-                candidate.type !== selectedView.componentType}
-              disabled={busy || !candidate.ok}
-              title={candidate.ok
-                ? candidate.recommended
-                  ? '按当前数据形状推荐'
-                  : undefined
-                : candidate.reasons.join(';')}
-              onclick={() => onSelectType(candidate.type)}
-            >
-              {candidate.label}{#if candidate.recommended && candidate.ok}<span class="star">★</span>{/if}
-            </button>
-          {/each}
-        </div>
-        <p class="hint">置灰的形态不满足数据形状硬闸,悬停可见原因。</p>
+        <Select label="组件形态" value={selectedView.componentType} disabled={busy} options={candidates.map(candidate=>({value:candidate.type,label:candidate.label+(candidate.recommended&&candidate.ok?' · 推荐':candidate.ok?'':' · 不适用'),disabled:!candidate.ok}))} onchange={value=>{const candidate=candidates.find(item=>item.type===value);if(candidate?.ok)onSelectType(candidate.type);}}/>
+        <p class="hint">可用形态取决于当前组件的数据。</p>
       </section>
 
       <section>
         <h5>布局</h5>
         <label class="field">
           <span>组件标题</span>
-          <input
-            value={selectedView.title ?? ''}
-            placeholder="留空使用默认标题"
-            disabled={busy}
-            onchange={(event) =>
-              onEdit({ title: (event.currentTarget as HTMLInputElement).value })}
-          />
+          <Input label="组件标题" value={selectedView.title??''} placeholder="留空使用默认标题" disabled={busy} oncommit={value=>onEdit({title:value})}/>
         </label>
         {#if selectedSpan !== null}
           <div class="span-row">
             <span>宽度</span>
-            <button
-              type="button"
-              aria-label="缩小组件"
-              disabled={busy || selectedSpan <= 1}
-              onclick={() => onEdit({ span: selectedSpan! - 1 })}
-            >−</button>
+            <ToolAction icon="minus" iconOnly ariaLabel="缩小组件" disabled={busy||selectedSpan<=1} onclick={()=>onEdit({span:selectedSpan!-1})}/>
             <b>{selectedSpan}/{selectedColumnCount}</b>
-            <button
-              type="button"
-              aria-label="加宽组件"
-              disabled={busy || selectedSpan >= selectedColumnCount}
-              onclick={() => onEdit({ span: selectedSpan! + 1 })}
-            >＋</button>
+            <ToolAction icon="plus" iconOnly ariaLabel="加宽组件" disabled={busy||selectedSpan>=selectedColumnCount} onclick={()=>onEdit({span:selectedSpan!+1})}/>
           </div>
         {/if}
       </section>
@@ -162,7 +130,7 @@
         <ul class="mlist">
           {#each pageModel.components as component (component.componentId)}
             <li>
-              <button type="button" onclick={() => onSelectComponent(component.componentId)}>
+              <button type="button" class="component-entry" disabled={busy} onclick={() => onSelectComponent(component.componentId)}>
                 <b>{component.title ?? component.componentLabel}</b>
                 <small>
                   {component.componentLabel}{component.dataSourceId
@@ -188,23 +156,23 @@
     border-left: 1px solid var(--line);
   }
   .inspector > header {
-    padding: 14px 16px;
+    padding: 16px;
     border-bottom: 1px solid var(--line);
   }
   .inspector > header b {
-    font-size: 13px;
+    font-size: 14px;
   }
   .inspector > header p {
     margin: 3px 0 0;
     color: var(--faint);
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.5;
   }
   .panel {
     display: flex;
     flex: 1;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
     padding: 16px;
     overflow-y: auto;
   }
@@ -212,17 +180,17 @@
     display: grid;
     gap: 2px;
     padding: 9px 12px;
-    background: #fafaff;
+    background: #f5f5f5;
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 4px;
   }
   .selbar b {
-    font-size: 12.5px;
+    font-size: 14px;
   }
   .selbar small {
     overflow: hidden;
     color: var(--faint);
-    font-size: 10.5px;
+    font-size: 12px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -232,52 +200,10 @@
   }
   h5 {
     margin: 0;
-    color: #52525b;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-  }
-  .types {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .types button {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 6px 10px;
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    font: inherit;
-    font-size: 12px;
-    cursor: pointer;
-    transition:
-      border-color 0.15s ease,
-      background 0.15s ease,
-      color 0.15s ease;
-  }
-  .types button:hover:not(:disabled):not(.on) {
-    border-color: var(--faint);
-  }
-  .types button.on {
-    color: #fff;
-    background: var(--accent);
-    border-color: var(--accent);
-  }
-  .types button.rec:not(.on) {
-    color: #4338ca;
-    border-color: #a5b4fc;
-  }
-  .types button:disabled {
-    color: var(--faint);
-    background: #fafafa;
-    border-style: dashed;
-    cursor: not-allowed;
-  }
-  .types .star {
-    font-size: 9px;
+    color: #595959;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: normal;
   }
   .kv {
     display: grid;
@@ -291,7 +217,7 @@
   }
   .kv dt {
     color: var(--faint);
-    font-size: 11px;
+    font-size: 12px;
   }
   .kv dd {
     margin: 0;
@@ -302,7 +228,7 @@
     padding: 1px 6px;
     background: var(--line-soft);
     border-radius: 5px;
-    font-size: 11px;
+    font-size: 12px;
   }
   .contract {
     width: 100%;
@@ -312,7 +238,7 @@
   .contract td {
     padding: 5px 6px;
     border-bottom: 1px solid var(--line-soft);
-    font-size: 11px;
+    font-size: 12px;
     text-align: left;
   }
   .contract th {
@@ -329,36 +255,19 @@
     padding: 0;
     list-style: none;
   }
-  .mlist button {
-    display: grid;
-    width: 100%;
-    gap: 2px;
-    padding: 10px;
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-    transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease;
-  }
-  .mlist button:hover {
-    border-color: rgb(79 70 229 / 45%);
-    box-shadow: 0 2px 8px rgb(24 24 27 / 6%);
-  }
+  .component-entry{display:flex;flex-direction:column;gap:4px;width:100%;padding:10px 8px;text-align:left;border:0;border-bottom:1px solid #f0f0f0;background:transparent;border-radius:4px;color:#191919;font:inherit;cursor:pointer}
+  .component-entry:hover:not(:disabled){background:#f5f5f5}.component-entry:focus-visible{outline:2px solid #1476ff;outline-offset:2px}.component-entry:disabled{color:#c2c2c2;cursor:not-allowed}
   .mlist b {
-    font-size: 12.5px;
+    font-size: 14px;
   }
   .mlist small {
     color: var(--muted);
-    font-size: 11px;
+    font-size: 12px;
   }
   .hint {
     margin: 0;
     color: var(--faint);
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.6;
   }
   .field {
@@ -366,55 +275,19 @@
     gap: 5px;
   }
   .field > span {
-    color: #52525b;
-    font-size: 11.5px;
-  }
-  .field input {
-    width: 100%;
-    height: 30px;
-    padding: 0 9px;
-    background: #fff;
-    border: 1px solid #d4d4d8;
-    border-radius: 8px;
-    font: inherit;
-    font-size: 12.5px;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  }
-  .field input:focus-visible {
-    outline: none;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgb(99 102 241 / 12%);
+    color: #595959;
+    font-size: 14px;
   }
   .span-row {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #52525b;
-    font-size: 11.5px;
+    color: #595959;
+    font-size: 14px;
   }
   .span-row b {
     min-width: 38px;
     text-align: center;
     font-size: 12px;
-  }
-  .span-row button {
-    display: grid;
-    place-items: center;
-    width: 26px;
-    height: 26px;
-    padding: 0;
-    background: #fff;
-    border: 1px solid #d4d4d8;
-    border-radius: 7px;
-    font: inherit;
-    cursor: pointer;
-    transition: border-color 0.15s ease;
-  }
-  .span-row button:hover:not(:disabled) {
-    border-color: var(--faint);
-  }
-  .span-row button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
   }
 </style>

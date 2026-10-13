@@ -1,6 +1,6 @@
 <script lang="ts">
   import { untrack } from 'svelte';
-  import DatePicker from './DatePicker.svelte';
+  import { DatePicker } from '@metriccanvas/ui';
   import { validateCalendarTimeRange, type TimeRangePrecision, type TimeRangeValue } from '@metriccanvas/page/internal';
   interface Props {
     label?: string;
@@ -27,7 +27,7 @@
 </script>
 
 {#if precision !== 'datetime'}
-  <DatePicker {label} {required} {precision} range disabled={readOnly} {value} {onchange} />
+  <DatePicker {label} {required} {precision} range disabled={readOnly} {value} onchange={next => { if (!next || !validateCalendarTimeRange(next, precision).length) onchange(next); }} />
 {:else}
 <div class="filter">
   {#if label}<span class="label">{label}</span>{/if}

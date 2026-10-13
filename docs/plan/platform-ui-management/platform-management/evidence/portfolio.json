@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "phase": "final",
+  "tier": {
+    "value": "standard",
+    "restore_tasks": [
+      "3",
+      "4"
+    ],
+    "blocking_triggers": [
+      "new-pattern",
+      "shared-boundary",
+      "write"
+    ],
+    "changed_files": 274,
+    "max_changed_files": 5
+  },
+  "risk_triggers": [
+    "async-state",
+    "build-config",
+    "interaction",
+    "new-pattern",
+    "shared-boundary",
+    "visual",
+    "write"
+  ],
+  "trigger_sources": {
+    "visual": [
+      "diff",
+      "plan"
+    ],
+    "new-pattern": [
+      "plan"
+    ],
+    "shared-boundary": [
+      "diff",
+      "plan"
+    ],
+    "interaction": [
+      "plan"
+    ],
+    "async-state": [
+      "agent",
+      "plan"
+    ],
+    "write": [
+      "plan"
+    ],
+    "build-config": [
+      "diff"
+    ]
+  },
+  "portfolio_narrowed": [],
+  "facts": {
+    "cross_page": true,
+    "shared_style": false,
+    "overflow_state": true,
+    "frozen_r": true,
+    "frozen_r5": false,
+    "frozen_r6": true,
+    "has_f3": true,
+    "has_s3_claim": true
+  },
+  "modules": [
+    "causal",
+    "targeted-quality",
+    "render",
+    "story",
+    "regression",
+    "restore-final",
+    "review-layout",
+    "review-convention",
+    "review-quality",
+    "self-test"
+  ],
+  "review_roles": [
+    "review-layout",
+    "review-convention",
+    "review-quality",
+    "self-test"
+  ],
+  "review_dimensions": {
+    "review-layout": [
+      "L1",
+      "L2",
+      "L3",
+      "L4",
+      "L5"
+    ],
+    "review-convention": [
+      "C1",
+      "C2",
+      "C3",
+      "C4",
+      "C5"
+    ],
+    "review-quality": [
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5",
+      "Q6",
+      "Q7"
+    ],
+    "self-test": [
+      "F3-1",
+      "F3-2",
+      "F3-3",
+      "F3-4",
+      "F3-5",
+      "F3-6"
+    ]
+  },
+  "claims": [
+    {
+      "id": "AT-PLAT-1",
+      "verification_scope": "S3_STORY",
+      "verification_method": "test_case",
+      "task": "1",
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "story"
+      ],
+      "required_profile": "live",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-PLAT-2",
+      "verification_scope": "S3_STORY",
+      "verification_method": "test_case",
+      "task": "2",
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "story"
+      ],
+      "required_profile": "live",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-PLAT-3",
+      "verification_scope": "S3_STORY",
+      "verification_method": "test_case",
+      "task": "3",
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "story"
+      ],
+      "required_profile": "live",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-PLAT-4",
+      "verification_scope": "S3_STORY",
+      "verification_method": "test_case",
+      "task": "4",
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "story"
+      ],
+      "required_profile": "live",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "previous": {
+    "phase": "final",
+    "tier": "standard",
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "story",
+      "regression",
+      "restore-final",
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "required_profiles": {
+      "AT-PLAT-1": "live",
+      "AT-PLAT-2": "live",
+      "AT-PLAT-3": "live",
+      "AT-PLAT-4": "live"
+    }
+  }
+}

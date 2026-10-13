@@ -22,7 +22,7 @@ mkdirSync(requestedOutput, { recursive: true });
 const output = realpathSync(requestedOutput);
 assert(output !== root && !output.startsWith(root + '/'), 'Compatibility consumers must live outside the workspace');
 const summary = { source: root, sourceTree, versions: [] };
-const names = ['page', 'engine', 'metric-canvas', 'embed'];
+const names = ['page', 'ui', 'engine', 'metric-canvas', 'embed'];
 
 function run(command, args, cwd, log) {
   console.log(`${command} ${args.join(' ')}\n  cwd: ${cwd}\n  log: ${log}`);
@@ -88,7 +88,25 @@ for (const version of versions) {
   mkdirSync(pageOnly);
   writeJson(join(pageOnly, 'package.json'), { private: true, type: 'module', dependencies: { '@metriccanvas/page': archives['@metriccanvas/page'] } });
   run('npm', ['install', '--ignore-scripts', '--no-audit', '--no-fund'], pageOnly, join(logs, 'page-install.log'));
-  run('node', ['--input-type=module', '-e', `import assert from 'node:assert/strict'; import {createRequire} from 'node:module'; import {parsePage,supportedVersions} from '@metriccanvas/page'; const require=createRequire(import.meta.url); for(const name of ['svelte','echarts']) assert.throws(()=>require.resolve(name)); assert(parsePage({schemaVersion:supportedVersions().at(-1),id:'external',dataSources:{},sections:[{id:'main',components:[{id:'title',type:'reportHeader',layout:{span:12},props:{title:'External'}}]}]}).ok); console.log('page-only Node ESM passed');`], pageOnly, join(logs, 'page-runtime.log'));
+  run('node', ['--input-type=module', '-e', `import assert from 'node:assert/strict'; import {createRequire} from 'node:module'; import {parsePage,supportedVersions} from '@metriccanvas/page'; const require=createRequire(import.meta.url); for(const name of ['svelte','echarts','@metriccanvas/ui']) assert.throws(()=>require.resolve(name)); assert(parsePage({schemaVersion:supportedVersions().at(-1),id:'external',dataSources:{},sections:[{id:'main',components:[{id:'title',type:'reportHeader',layout:{span:12},props:{title:'External'}}]}]}).ok); console.log('page-only Node ESM passed');`], pageOnly, join(logs, 'page-runtime.log'));
+
+  // UI-only installation must not reach any product/domain package.
+  const uiOnly = join(directory, 'ui-only');
+  mkdirSync(uiOnly);
+  writeJson(join(uiOnly, 'package.json'), {
+    private: true, type: 'module',
+    dependencies: { '@metriccanvas/ui': archives['@metriccanvas/ui'], svelte: version },
+    devDependencies: { typescript: '5.9.3', 'svelte-check': '4.7.3',
+      '@sveltejs/vite-plugin-svelte': version === '5.29.0' ? '5.1.1' : '7.2.0',
+      vite: version === '5.29.0' ? '6.3.6' : '8.1.5' }
+  });
+  run('npm', ['install', '--ignore-scripts', '--no-audit', '--no-fund', '--strict-peer-deps'], uiOnly, join(logs, 'ui-install.log'));
+  const uiRequire = createRequire(join(uiOnly, 'package.json'));
+  for (const name of ['@metriccanvas/page', '@metriccanvas/engine', '@metriccanvas/metric-canvas', '@metriccanvas/embed', 'echarts']) assert.throws(() => uiRequire.resolve(name));
+  cpSync(join(source, 'tools/package-build/fixtures/ui-only'), uiOnly, { recursive: true });
+  for (const [command, args] of [['svelte-check', ['--tsconfig', './tsconfig.json']], ['vite', ['build']]]) {
+    run(join(uiOnly, 'node_modules/.bin', command), args, uiOnly, join(logs, `ui-${command}.log`));
+  }
 
   const consumer = join(directory, 'consumer');
   mkdirSync(consumer);
@@ -100,7 +118,7 @@ for (const version of versions) {
       vite: version === '5.29.0' ? '6.3.6' : '8.1.5',
       typescript: '5.9.3', 'svelte-check': '4.7.3', '@types/node': '26.1.1', '@playwright/test': '1.62.0'
     },
-    // 四个版本尚未发到 registry；只把彼此的依赖来源固定为这次真实 tarball。
+    // 产品和 UI 版本尚未发到 registry；只把彼此的依赖来源固定为这次真实 tarball。
     overrides: Object.fromEntries(Object.keys(archives).map((name) => [name, '$' + name]))
   });
   run('npm', ['install', '--ignore-scripts', '--no-audit', '--no-fund', '--strict-peer-deps'], consumer, join(logs, 'consumer-install.log'));
@@ -110,7 +128,7 @@ for (const version of versions) {
   assert.equal(json(engineRequire.resolve('svelte/package.json')).version, version);
   for (const name of names) assert(realpathSync(join(consumer, 'node_modules/@metriccanvas', name)).startsWith(consumer + '/'), 'Installed package points back into workspace');
 
-  for (const path of ['packages/metric-canvas/tests/browser', 'packages/embed/tests/browser', 'packages/embed/examples', 'packages/embed/tests/serve.mjs', 'packages/embed/tests/dqe-fixture-endpoint.mjs', 'tools/dqe-sim/fixtures/ioc-opportunity-list.json', 'tools/dqe-sim/fixtures/ioc-dimension-values.json', 'tools/dqe-sim/fixtures/ioc-page-datasets.json', 'packages/page/fixtures/contract-valid/url-navigation-page.json', 'packages/page/fixtures/contract-valid/dimension-params-page.json', 'packages/page/fixtures/parameter-extraction/tokens-parameter-source.json', 'pages']) {
+  for (const path of ['packages/metric-canvas/tests/browser', 'packages/embed/tests/browser', 'packages/embed/examples', 'packages/embed/tests/serve.mjs', 'packages/embed/tests/dqe-fixture-endpoint.mjs', 'tools/dqe-sim/fixtures/ioc-opportunity-list.json', 'tools/dqe-sim/fixtures/ioc-dimension-values.json', 'tools/dqe-sim/fixtures/ioc-page-datasets.json', 'packages/engine/widgets/tests/responsive-fixtures.ts', 'contracts/metriccanvas/page/reference/examples', 'packages/page/fixtures/contract-valid/detail-views.json', 'packages/page/fixtures/contract-valid/url-navigation-page.json', 'packages/page/fixtures/contract-valid/dimension-params-page.json', 'packages/page/fixtures/parameter-extraction/tokens-parameter-source.json', 'pages']) {
     cpSync(join(source, path), join(consumer, path), { recursive: true });
   }
   // 既有浏览器用例与断言不变；类型导入改为已安装包，不能读取本仓 src。
@@ -125,20 +143,27 @@ for (const version of versions) {
     compilerOptions: { target: 'ES2022', module: 'ESNext', moduleResolution: 'Bundler', strict: true, noEmit: true, allowJs: true, checkJs: true, skipLibCheck: false, verbatimModuleSyntax: true, esModuleInterop: true, types: ['node'] },
     include: ['packages/metric-canvas/tests/browser/harness/**/*', 'ports.ts']
   });
-  const imports = ['@metriccanvas/page', '@metriccanvas/engine', '@metriccanvas/engine/widgets', '@metriccanvas/engine/ui', '@metriccanvas/engine/ui/types', '@metriccanvas/engine/ui/composition', '@metriccanvas/engine/dqe', '@metriccanvas/metric-canvas', '@metriccanvas/metric-canvas/types', '@metriccanvas/embed'];
+  const imports = ['@metriccanvas/ui', '@metriccanvas/page', '@metriccanvas/engine', '@metriccanvas/engine/widgets', '@metriccanvas/engine/ui', '@metriccanvas/engine/ui/types', '@metriccanvas/engine/ui/composition', '@metriccanvas/engine/dqe', '@metriccanvas/metric-canvas', '@metriccanvas/metric-canvas/types', '@metriccanvas/embed'];
   writeFileSync(join(consumer, 'ports.ts'), imports.map((name, index) => `export * as Entry${index} from '${name}';`).join('\n'));
   const bin = (name) => join(consumer, 'node_modules/.bin', name);
   run(bin('svelte-check'), ['--tsconfig', './tsconfig.json'], consumer, join(logs, 'consumer-svelte-check.log'));
   run(bin('tsc'), ['--noEmit', '-p', 'tsconfig.json'], consumer, join(logs, 'consumer-types.log'));
   run(bin('vite'), ['build'], consumer, join(logs, 'consumer-build.log'));
+  cpSync(join(source,'packages/ui/tests/browser/components.spec.ts'),join(uiOnly,'components.spec.ts'));
+  writeFileSync(join(uiOnly,'playwright.config.mjs'),`import {defineConfig} from '${consumer.replaceAll('\\','/')}/node_modules/@playwright/test/index.mjs';export default defineConfig({testDir:'.',testMatch:'components.spec.ts',workers:1,use:{baseURL:'http://127.0.0.1:4183',channel:'chrome',headless:true,viewport:{width:1440,height:900}},webServer:{command:'node node_modules/vite/bin/vite.js preview --host 127.0.0.1 --port 4183 --strictPort',url:'http://127.0.0.1:4183',reuseExistingServer:false}});`);
+  // Browser runner is a test tool from the combined fixture, never a UI runtime dependency.
+  writeFileSync(join(uiOnly,'components.spec.ts'),readFileSync(join(uiOnly,'components.spec.ts'),'utf8').replace("from '@playwright/test'",`from '${consumer.replaceAll('\\','/')}/node_modules/@playwright/test/index.mjs'`).replace('/tests/browser/index.html','/'));
+  run(bin('playwright'),['test','--config=playwright.config.mjs'],uiOnly,join(logs,'ui-browser.log'));
   run(bin('playwright'), ['test'], consumer, join(logs, 'consumer-browser.log'));
   const browserResults = json(join(consumer, 'browser-results.json'));
   assert.equal(browserResults.stats.unexpected, 0);
   assert.equal(browserResults.stats.skipped, 0);
   assert(browserResults.stats.expected > 0, 'Browser suite did not run any tests');
   const browsers = json(join(consumer, 'browser-versions.json'));
-  assert.deepEqual(Object.keys(browsers).sort(), ['chrome', 'msedge'], 'Both real Chrome and Edge are required');
-  summary.versions.push({ svelte: version, isolatedSource: source !== root, consumer, browsers, tests: browserResults.stats });
+  const requestedBrowsers=(process.env.METRICCANVAS_TEST_BROWSERS??'chrome,msedge').split(',').sort();
+  assert.deepEqual(Object.keys(browsers).sort(),requestedBrowsers,'Requested real browsers must all run');
+  const completeBrowserMatrix=JSON.stringify(requestedBrowsers)===JSON.stringify(['chrome','msedge']);
+  summary.versions.push({ svelte: version, isolatedSource: source !== root, consumer, browsers, requiredBrowsers:['chrome','msedge'],completeBrowserMatrix, tests: browserResults.stats });
   writeJson(join(output, 'summary.json'), summary);
 }
 console.log(JSON.stringify(summary, null, 2));

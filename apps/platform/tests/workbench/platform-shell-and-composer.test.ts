@@ -34,8 +34,9 @@ describe('Platform 样式 token 边界', () => {
     expect(workbenchSource).not.toContain('<textarea');
   });
 
-  it('分析会话轨在所有工作台断点保持 480px 宽', () => {
-    expect(layoutSource).toMatch(/--analysis-rail-w:\s*480px;/);
+  it('工作台工具轨宽度由 Platform 壳层统一持有', () => {
+    expect(layoutSource).toMatch(/--analysis-rail-w:\s*320px;/);
+    expect(layoutSource).toMatch(/--inspector-rail-w:\s*280px;/);
     expect(workbenchSource).toContain('grid-template-columns: var(--analysis-rail-w)');
     expect(workbenchSource).not.toMatch(/--analysis-rail-w\s*:/);
   });

@@ -2,17 +2,18 @@
   import {usePlatformServices} from './integration/services';
   const services = usePlatformServices();
   const {resolve} = services.navigation;
-  import { onMount } from 'svelte';
+  import { onMount,untrack } from 'svelte';
 
 
   let { children, path }: { children: import('svelte').Snippet; path: string } = $props();
-  let operatorId = $state('');
+  let work=$state(untrack(()=>services.workSession.snapshot()));
   onMount(() => {
-    operatorId = services.session.readConfig()?.operatorId ?? '';
+    const stopWork=services.workSession.subscribe(value=>{work=value;});
+    return stopWork;
   });
 
   const NAV = [
-    { href: '/', label: '页面搭建工作台' },
+    { href: '/', label: '创作' },
     { href: '/manage', label: '页面管理' }
   ] as const;
 
@@ -27,18 +28,11 @@
 
 <div class="platform-app" data-testid="platform-app">
 <aside class="global-rail" data-testid="global-rail" aria-label="Platform 全局导航">
-  <a
-    class="brand"
-    href={resolve('/')}
-    aria-label="MetricCanvas"
-    title="MetricCanvas"
-    data-contract-shell-label
-    data-contract-critical
-  >M</a>
+  <div class="brand" aria-label="MetricCanvas" title="MetricCanvas" data-contract-shell-label data-contract-critical>M</div>
   <nav aria-label="主导航">
     {#each NAV as item (item.href)}
       <a
-        href={resolve(item.href)}
+        href={item.href==='/'?(work.tasks.find(task=>task.key===work.current)?.url??resolve('/')):work.directory}
         class="nav-link"
         class:active={isActive(item.href)}
         aria-current={isActive(item.href) ? 'page' : undefined}
@@ -63,12 +57,6 @@
       </a>
     {/each}
   </nav>
-  <div class="who" title={operatorId ? `当前用户：${operatorId}` : '未注入运行配置'} data-contract-critical>
-    <span class="avatar" aria-hidden="true">
-      {operatorId.slice(0, 1).toUpperCase() || '?'}
-    </span>
-    <span class="operator-id" data-testid="operator-id">{operatorId || '未注入'}</span>
-  </div>
 </aside>
 
 <main class="shell-main">{@render children()}</main>
@@ -83,23 +71,23 @@
   }
   /* Platform 壳层 token：只服务全局导航与工具面，不覆盖统一运行时 --mc-*。 */
   .platform-app {
-    --bg: #f3f4f6;
+    --bg: #f5f5f5;
     --surface: #ffffff;
     --surface-subtle: #f9fafb;
-    --line: #e5e7eb;
+    --line: #f0f0f0;
     --line-soft: #f1f3f5;
-    --text: #111827;
+    --text: #191919;
     --muted: #6b7280;
     --faint: #9ca3af;
-    --accent: #6366f1;
-    --accent-strong: #4f46e5;
-    --accent-soft: #eef2ff;
-    --rail: #111827;
-    --rail-hover: #182231;
-    --rail-active: #1f2937;
-    --rail-text: #d1d5db;
-    --rail-muted: #8b95a5;
-    --rail-line: rgb(255 255 255 / 8%);
+    --accent: #191919;
+    --accent-strong: #191919;
+    --accent-soft: #f5f5f5;
+    --rail: #ffffff;
+    --rail-hover: #f5f5f5;
+    --rail-active: #f0f0f0;
+    --rail-text: #595959;
+    --rail-muted: #808080;
+    --rail-line: #f0f0f0;
     --text-on-strong: #fff;
     --control-line: #d1d5db;
     --warn-bg: #fffbeb;
@@ -110,8 +98,8 @@
     --down-strong: #b91c1c;
     --shell-rail-w: 60px;
     --contextbar-h: 46px;
-    --analysis-rail-w: 480px;
-    --inspector-rail-w: 260px;
+    --analysis-rail-w: 320px;
+    --inspector-rail-w: 280px;
     /* 横向顶栏已收敛进竖向导航，工作台继续消费唯一满高 token。 */
     --topbar-h: 0px;
   }
@@ -129,8 +117,9 @@
     color: var(--text);
     background: var(--bg);
     font-family:
-      Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-      "PingFang SC", "Microsoft YaHei", sans-serif;
+      Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size:14px;
+    line-height:1.5;
     -webkit-font-smoothing: antialiased;
   }
   .platform-app :global(button),
@@ -154,7 +143,7 @@
     flex: none;
     place-items: center;
     height: var(--contextbar-h);
-    color: var(--text-on-strong);
+    color: var(--text);
     border-bottom: 1px solid var(--rail-line);
     font-size: 16px;
     font-weight: 750;
@@ -190,55 +179,16 @@
     stroke-linejoin: round;
   }
   .nav-link:hover {
-    color: var(--text-on-strong);
+    color: var(--text);
     background: var(--rail-hover);
   }
   .nav-link.active {
-    color: var(--text-on-strong);
+    color: var(--text);
     background: var(--rail-active);
   }
-  .brand:focus-visible,
   .nav-link:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: -2px;
-  }
-  .who {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 4px;
-    width: 44px;
-    min-height: 44px;
-    margin: auto 8px 10px;
-    border-radius: 9px;
-  }
-  .who:hover {
-    background: var(--rail-hover);
-  }
-  .who:focus-within {
-    outline: 2px solid var(--accent);
-    outline-offset: -2px;
-  }
-  .avatar {
-    display: grid;
-    place-items: center;
-    width: 25px;
-    height: 25px;
-    color: var(--text-on-strong);
-    background: var(--accent);
-    border: 1px solid rgb(255 255 255 / 22%);
-    border-radius: 7px;
-    font-size: 10px;
-    font-weight: 700;
-  }
-  .operator-id {
-    max-width: 100%;
-    overflow-wrap: anywhere;
-    text-align: center;
-    font-size: 9px;
-    line-height: 1.2;
   }
   .sr-only {
     position: absolute;

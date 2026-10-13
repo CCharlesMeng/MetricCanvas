@@ -3,6 +3,7 @@ import { writeFileSync } from 'node:fs';
 
 test('two query-backed instances keep selection isolated and reuse data across group changes', async ({ page }) => {
   await page.goto('/pages/ioc-content-navigation');
+  await expect.poll(()=>page.evaluate(()=>!!window.pageDocument&&!!window.runtime)).toBe(true);
   await page.evaluate(() => {
     const document = structuredClone(window.pageDocument);
     for (const field of Object.values(document.dataSources.rows.fields) as Array<Record<string, unknown>>) {

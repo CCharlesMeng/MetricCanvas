@@ -1,0 +1,48 @@
+{
+  "source": "/Users/moon/Documents/Code/公司项目/DataDashboard",
+  "sourceTree": "b6c855feb90adb47816c384817ea36faeebb91f9",
+  "versions": [
+    {
+      "svelte": "5.56.6",
+      "isolatedSource": true,
+      "consumer": "/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-compatibility-3Nh1ab/5.56.6/consumer",
+      "browsers": {
+        "chrome": "155.0.8059.39"
+      },
+      "requiredBrowsers": [
+        "chrome",
+        "msedge"
+      ],
+      "completeBrowserMatrix": false,
+      "tests": {
+        "startTime": "2026-10-12T12:20:05.456Z",
+        "duration": 48935.098999999995,
+        "expected": 96,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "svelte": "5.29.0",
+      "isolatedSource": true,
+      "consumer": "/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-compatibility-3Nh1ab/5.29.0/consumer",
+      "browsers": {
+        "chrome": "155.0.8059.39"
+      },
+      "requiredBrowsers": [
+        "chrome",
+        "msedge"
+      ],
+      "completeBrowserMatrix": false,
+      "tests": {
+        "startTime": "2026-10-12T12:23:05.643Z",
+        "duration": 56010.301,
+        "expected": 96,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    }
+  ]
+}

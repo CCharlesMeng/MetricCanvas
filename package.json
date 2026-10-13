@@ -7,6 +7,7 @@
     "dev:dqe": "tsx tools/dqe-sim/src/dev.ts",
     "dev:playground": "pnpm --filter playground dev",
     "dev:platform": "pnpm --filter platform dev",
+    "dev:assets": "tsx apps/platform/scripts/dev-page-assets.ts",
     "build": "pnpm build:packages && pnpm --filter @metriccanvas/embed build && pnpm --filter platform build",
     "test": "pnpm --filter playground exec svelte-kit sync && vitest run",
     "test:embed": "pnpm --filter @metriccanvas/embed test:browser",
@@ -22,9 +23,10 @@
     "sim:dqe": "tsx tools/dqe-sim/src/server.ts",
     "check": "tsc --noEmit -p tools/package-build && tsc --noEmit -p tests/tsconfig.json && pnpm -r check",
     "build:playground": "pnpm --filter playground build",
-    "build:packages": "pnpm --filter @metriccanvas/page --filter @metriccanvas/engine --filter @metriccanvas/metric-canvas -r build",
+    "build:packages": "pnpm --filter @metriccanvas/ui --filter @metriccanvas/page --filter @metriccanvas/engine --filter @metriccanvas/metric-canvas -r build",
     "packages:check": "tsx tools/package-build/check.ts",
-    "compatibility:check": "node tools/package-build/compatibility.mjs"
+    "compatibility:check": "node tools/package-build/compatibility.mjs",
+    "test:ui": "pnpm --filter @metriccanvas/ui test:browser"
   },
   "devDependencies": {
     "@sveltejs/package": "2.5.8",

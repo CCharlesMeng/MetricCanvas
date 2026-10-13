@@ -18,7 +18,7 @@ const pageAssets = {
       const config = readConfig();
       if (!config) return {status:'rejected',code:'UNAUTHENTICATED',message:'身份不可用。'};
       try {
-        const record = await actionRecords.read({actorId:config.operatorId,workspaceId:config.workspaceId,...command.target.asset,channel:'management'});
+        const record = await actionRecords.read({actorId:config.operatorId,workspaceId:config.workspaceId,...command.target.asset,channel:'management',serviceTarget:JSON.stringify([config.pageMetadataBaseUrl,config.dqeEndpoint])});
         const current = readConfig();
         if (current?.operatorId !== config.operatorId || current?.workspaceId !== config.workspaceId) return {status:'rejected',code:'IDENTITY_CHANGED',message:'身份已变化，未发送保存。'};
         if (record && ['sending','unknown'].includes(record.value.status)) return {status:'unknown',message:'此页面的管理操作结果未确认，保存已停止。'};

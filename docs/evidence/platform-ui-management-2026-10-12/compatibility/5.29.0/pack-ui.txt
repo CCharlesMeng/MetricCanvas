@@ -1,0 +1,47 @@
+$ pnpm build
+$ node ../../tools/package-build/build.mjs ui
+.svelte-kit/package-input -> dist
+package: @metriccanvas/ui@0.1.0
+Tarball Contents
+dist/components/button/Button.svelte
+dist/components/button/Button.svelte.d.ts
+dist/components/date-picker/calendar.d.ts
+dist/components/date-picker/calendar.js
+dist/components/date-picker/DatePicker.svelte
+dist/components/date-picker/DatePicker.svelte.d.ts
+dist/components/date-picker/DatePickerIcon.svelte
+dist/components/date-picker/DatePickerIcon.svelte.d.ts
+dist/components/date-picker/tiny-vue-LICENSE.txt
+dist/components/dialog/Dialog.svelte
+dist/components/dialog/Dialog.svelte.d.ts
+dist/components/dropdown/Dropdown.svelte
+dist/components/dropdown/Dropdown.svelte.d.ts
+dist/components/empty/Empty.svelte
+dist/components/empty/Empty.svelte.d.ts
+dist/components/grid/Grid.svelte
+dist/components/grid/Grid.svelte.d.ts
+dist/components/input/Input.svelte
+dist/components/input/Input.svelte.d.ts
+dist/components/pagination/Pagination.svelte
+dist/components/pagination/Pagination.svelte.d.ts
+dist/components/select/Select.svelte
+dist/components/select/Select.svelte.d.ts
+dist/components/tabs/Tabs.svelte
+dist/components/tabs/Tabs.svelte.d.ts
+dist/components/tag/Tag.svelte
+dist/components/tag/Tag.svelte.d.ts
+dist/components/textarea/Textarea.svelte
+dist/components/textarea/Textarea.svelte.d.ts
+dist/index.d.ts
+dist/index.js
+dist/shared/popover.d.ts
+dist/shared/popover.js
+dist/shared/Theme.svelte
+dist/shared/Theme.svelte.d.ts
+dist/types.d.ts
+dist/types.js
+LICENSE
+package.json
+README.md
+Tarball Details
+/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-compatibility-3Nh1ab/5.29.0/ui.tgz

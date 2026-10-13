@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import ToolAction from '../ToolAction.svelte';
   import type { DraftRef } from './authoring-coordinator';
   import type { RevisionHistoryPage, RevisionHistoryEntry } from './authoring-history';
   let { list, restore }: {
@@ -31,22 +32,22 @@
   onMount(() => { void load(); return () => controller.abort(); });
 </script>
 <section aria-label="页面修订历史" class="history">
-  <strong>页面修订历史</strong>
+  <strong>页面历史</strong>
   <p>恢复会创建新的修订，不改写历史或已发布版本。</p>
   {#if error}<p role="alert">{error}</p>{/if}
   {#if notice}<p role="status">{notice}</p>{/if}
   {#each entries as entry (entry.ref.revisionId)}
     <div class="entry">
       <span>{entry.revisionNumber ? `R${entry.revisionNumber}` : entry.ref.revisionId} · {entry.description ?? '说明未提供'} · {entry.origin ?? '来源未提供'} · {entry.createdAt ?? '时间未提供'}</span>
-      <button type="button" disabled={busy} onclick={() => choose(entry.ref)}>恢复 {entry.ref.revisionId}</button>
+      <ToolAction disabled={busy} onclick={() => choose(entry.ref)}>恢复 {entry.ref.revisionId}</ToolAction>
     </div>
   {/each}
   {#if busy}<p role="status">正在读取或核实…</p>{/if}
-  {#if next}<button type="button" disabled={busy || !!error} onclick={load}>加载更多历史</button>{/if}
+  {#if next}<ToolAction disabled={busy || !!error} onclick={load}>加载更多历史</ToolAction>{/if}
 </section>
 <style>
   .history { padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface, white); }
   p { margin: 6px 0; font-size: 12px; }
-  .entry { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 12px; }
+  .entry { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 14px; }
   [role='alert'] { color: var(--down-strong); }
 </style>

@@ -111,3 +111,31 @@ jobs:
 
   # ADR-0074：旧 Java 工程由完整历史 tag 保留，不再作为本仓 CI 交付物。
   # 新页面资产接口由外部提供，消费验收见 #105；不以旧 Java job 冒充接入。
+
+  compatibility:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        svelte: ['current', '5.29.0']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install supported browser channels
+        run: pnpm --filter @metriccanvas/embed exec playwright install --with-deps chrome msedge
+      - name: Verify isolated source and installed consumers
+        run: pnpm compatibility:check --svelte=${{ matrix.svelte }}
+        env:
+          METRICCANVAS_COMPATIBILITY_DIR: ${{ runner.temp }}/metriccanvas-compatibility
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compatibility-${{ matrix.svelte }}-${{ github.sha }}
+          path: ${{ runner.temp }}/metriccanvas-compatibility

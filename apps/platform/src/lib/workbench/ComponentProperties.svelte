@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {Input,Textarea,Select} from '@metriccanvas/ui';
   import type { PropertyControl, PropertyEdit } from './property-edit';
   let { controls, busy = false, onEdit }: { controls: PropertyControl[]; busy?: boolean; onEdit: (edit: PropertyEdit) => void } = $props();
   const valueText = (value: unknown) => typeof value === 'string' || typeof value === 'number' ? String(value) : '';
@@ -15,29 +16,23 @@
   <section aria-label="展示属性">
     <h5>展示属性</h5>
     {#each controls as control (control.id)}
-      <label>
+      <div class="property-field">
         <span>{control.label}</span>
         {#if control.kind === 'boolean' || control.kind === 'choice'}
-          <select aria-label={control.label} disabled={busy} value={control.value === undefined ? '' : String(control.value)} onchange={(event) => submit(control, event.currentTarget.value)}>
-            <option value="">默认</option>
-            {#if control.kind === 'boolean'}<option value="true">开启</option><option value="false">关闭</option>
-            {:else}{#each control.choices ?? [] as choice}<option value={choice}>{({ content: '按内容', container: '适配容器', left: '左侧', right: '右侧' } as Record<string, string>)[choice] ?? choice}</option>{/each}{/if}
-          </select>
+          <Select label={control.label} disabled={busy} value={control.value === undefined?'':String(control.value)} options={[{value:'',label:'默认'},...(control.kind==='boolean'?[{value:'true',label:'开启'},{value:'false',label:'关闭'}]:(control.choices??[]).map(choice=>({value:choice,label:({content:'按内容',container:'适配容器',left:'左侧',right:'右侧'} as Record<string,string>)[choice]??choice})))]} onchange={value=>submit(control,value)}/>
         {:else if control.kind === 'tags'}
-          <textarea aria-label={control.label} disabled={busy} value={Array.isArray(control.value) ? control.value.map(valueText).join('\n') : ''} onchange={(event) => submit(control, event.currentTarget.value)}></textarea>
+          <Textarea label={control.label} disabled={busy} value={Array.isArray(control.value)?control.value.map(valueText).join('\n'):''} oncommit={value=>submit(control,value)}/>
         {:else}
-          <input aria-label={control.label} type={control.kind === 'number' ? 'number' : 'text'} min={control.kind === 'number' ? 1 : undefined} step={control.kind === 'number' ? 1 : undefined} disabled={busy} value={valueText(control.value)} onchange={(event) => submit(control, event.currentTarget.value)} />
+          <Input label={control.label} type={control.kind==='number'?'number':'text'} disabled={busy} value={valueText(control.value)} oncommit={value=>submit(control,value)}/>
         {/if}
         {#if control.value && typeof control.value === 'object' && (!Array.isArray(control.value) || control.value.some((item) => item && typeof item === 'object'))}<small>此值含参数引用，编辑此项将替换为固定文字。</small>{/if}
-      </label>
+      </div>
     {/each}
   </section>
 {/if}
 <style>
-  section { display: grid; gap: 10px; }
-  h5 { margin: 0; color: #52525b; font-size: 11px; }
-  label { display: grid; gap: 5px; font-size: 11.5px; color: #52525b; }
-  input, select, textarea { width: 100%; min-height: 30px; padding: 5px 8px; border: 1px solid #d4d4d8; border-radius: 8px; font: inherit; background: white; }
-  textarea { min-height: 60px; resize: vertical; }
+  section { display: grid; gap: 16px; }
+  h5 { margin: 0; color: #595959; font-size: 14px; }
+  .property-field { display: grid; gap: 8px; font-size: 14px; color: #595959; }
   small { color: var(--muted); }
 </style>

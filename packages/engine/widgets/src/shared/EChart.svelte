@@ -46,35 +46,45 @@
      因此在**第一次** setOption 之前就已可读,图表不会先按内置色画一遍再重画。 */
   onMount(() => {
     const el = container!;
-    width = el.clientWidth;
-    const instance = echarts.init(el);
-    chart = instance;
-    if (onitemclick) {
-      instance.on('click', (params) =>
-        onitemclick(params.dataIndex, typeof params.name === 'string' ? params.name : undefined)
-      );
-    }
+    let instance: echarts.ECharts | undefined;
+    let stopped = false;
+    const measure = () => {
+      if (stopped || el.clientWidth <= 0 || el.clientHeight <= 0) return;
+      width = el.clientWidth;
+      if (!instance) {
+        instance = echarts.init(el);
+        chart = instance;
+        if (onitemclick) instance.on('click', (params) =>
+          onitemclick(params.dataIndex, typeof params.name === 'string' ? params.name : undefined)
+        );
+      } else if (!instance.isDisposed()) instance.resize();
+    };
+    // ResizeObserver also delivers the first laid-out size. Older Svelte consumers
+    // can mount before parent styles establish a height; zero-sized geo transforms
+    // are singular and cannot safely be passed to ECharts.
+    measure();
     let resizeFrame: number | undefined;
     const observer = new ResizeObserver(() => {
       if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame);
       resizeFrame = requestAnimationFrame(() => {
         resizeFrame = undefined;
-        width = el.clientWidth;
-        instance.resize();
+        measure();
       });
     });
     observer.observe(el);
     const freeze = () => {
+      stopped = true;
       observer.disconnect();
       if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame);
-      if (!instance.isDisposed()) instance.dispose();
+      if (instance && !instance.isDisposed()) instance.dispose();
     };
     if (staticExport) el.addEventListener('metriccanvas:freeze-export-chart', freeze, {once:true});
     return () => {
+      stopped = true;
       observer.disconnect();
       if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame);
       el.removeEventListener('metriccanvas:freeze-export-chart', freeze);
-      if (!instance.isDisposed()) instance.dispose();
+      if (instance && !instance.isDisposed()) instance.dispose();
     };
   });
 

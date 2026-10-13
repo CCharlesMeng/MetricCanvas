@@ -1,0 +1,118 @@
+{
+  "schema_version": 2,
+  "rules": {
+    "R1-1-directory": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".management h1"
+        }
+      ],
+      "collect": {
+        "kind": "text"
+      }
+    },
+    "R1-1-details-reading": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".management.reading h1"
+        }
+      ],
+      "collect": {
+        "kind": "text"
+      }
+    },
+    "R1-1-workbench-reading": {
+      "locators": [
+        {
+          "strategy": "role",
+          "role": "button",
+          "name": "继续编辑"
+        }
+      ],
+      "collect": {
+        "kind": "text"
+      }
+    },
+    "R2-1-protected": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".work-task:not([hidden]) [data-testid=authoring-save-state]"
+        }
+      ],
+      "collect": {
+        "kind": "text"
+      }
+    },
+    "R2-1-saved": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".work-task:not([hidden]) [data-testid=authoring-save-state]"
+        }
+      ],
+      "collect": {
+        "kind": "text"
+      }
+    },
+    "R2-1-unknown": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".work-task:not([hidden]) [data-testid=authoring-save-state]"
+        }
+      ],
+      "collect": {
+        "kind": "text"
+      }
+    },
+    "R6-1-management-1440": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".platform-app"
+        }
+      ],
+      "collect": {
+        "kind": "overflow"
+      }
+    },
+    "R6-1-management-390": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".platform-app"
+        }
+      ],
+      "collect": {
+        "kind": "overflow"
+      }
+    }
+  },
+  "scenarios": {
+    "management-1440": [
+      "R1-1-directory",
+      "R6-1-management-1440"
+    ],
+    "reading-1440": [
+      "R1-1-details-reading"
+    ],
+    "workbench-reading": [
+      "R1-1-workbench-reading"
+    ],
+    "locally-protected": [
+      "R2-1-protected"
+    ],
+    "saved": [
+      "R2-1-saved"
+    ],
+    "unknown-save": [
+      "R2-1-unknown"
+    ],
+    "management-390": [
+      "R6-1-management-390"
+    ]
+  }
+}

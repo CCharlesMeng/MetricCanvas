@@ -1,0 +1,544 @@
+{
+  "claim_ledger": [
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "packages/ui/tests/calendar.test.ts；packages/engine/runtime-ui/tests/date-picker.test.ts；compatibility/manifest.json",
+      "id": "AT-UI-1",
+      "note": "共享日期向量 15 项；引擎协议和中立 CalendarPrecision 的映射；Chrome 日期场景与两版 Svelte 仓外消费通过。此项只证明迁移逻辑。"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "UNVERIFIED",
+      "evidence": "evidence/restore-report-green.json；evidence/artifacts/boundaries-raw.json",
+      "id": "AT-UI-2",
+      "note": "Button/Input 默认数值还原通过，长文案及焦点已观测；完整逐状态视觉对照尚未收口。"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "UNVERIFIED",
+      "evidence": "evidence/artifacts/boundaries-raw.json；compatibility/manifest.json",
+      "id": "AT-UI-3",
+      "note": "下拉键盘/焦点/根内浮层及 selected/disabled 已验证；完整源站菜单外观对照尚缺。"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "UNVERIFIED",
+      "evidence": "evidence/restore-report-green.json；browser-result.json",
+      "id": "AT-UI-4",
+      "note": "Grid 默认数值、390 窄屏堆叠和按钮完整可见通过；Pagination 全状态像素对照尚缺。"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "UNVERIFIED",
+      "evidence": "evidence/artifacts/boundaries-raw.json；compatibility/manifest.json",
+      "id": "AT-UI-5",
+      "note": "Tabs 禁用/键盘焦点及 Tag 源站类、Empty 行为已覆盖；全状态源站视觉对照尚缺。"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "UNVERIFIED",
+      "evidence": "evidence/artifacts/boundaries-raw.json；compatibility/manifest.json",
+      "id": "AT-UI-6",
+      "note": "Dialog 原根挂载、短视口、关闭与焦点恢复通过；完整源站视觉对照尚缺。"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "UNVERIFIED",
+      "evidence": "compatibility/summary.json；compatibility/manifest.json",
+      "id": "AT-UI-7",
+      "note": "Chrome 155 的 UI 20 项在当前和最低 Svelte 分别通过；Edge 155 进程静态页面可启动，但动画帧/截图/点击稳定性挂起，完整双浏览器门禁未通过。"
+    }
+  ],
+  "code_fingerprint": "bc2f74cf944f7d5fd8678b5d790512258ff1421273d62b058859edf4b540a0ae",
+  "counts": {
+    "blocker": 0,
+    "claims_deferred": 0,
+    "claims_unverified": 6,
+    "decided": 0,
+    "deferred": 0,
+    "handoff": 0,
+    "manual_acceptance": 0,
+    "manual_pending": 0,
+    "norm_candidate": 0,
+    "open_question": 0,
+    "skipped": 0,
+    "suggestion": 0,
+    "unplanned_carry": 0
+  },
+  "coverage": {
+    "review-convention": [
+      {
+        "dimension": "C1",
+        "evidence_ids": [
+          "PATTERN-STRUCT-1",
+          "PATTERN-COMP-1"
+        ],
+        "result": "unrun",
+        "scope": "新增文件与跨目录导入已触发 C1；采用的工程依据未定义文件命名、导出命名或导入别名规范，无法判定符合或违规。"
+      },
+      {
+        "dimension": "C2",
+        "evidence_ids": [
+          "PATTERN-STRUCT-1",
+          "PATTERN-COMP-1",
+          "PATTERN-DATA-1",
+          "REQ-DEC-2",
+          "packages/ui/src/index.ts:L1-L15",
+          "packages/ui/src/types.ts:L1-L6",
+          "packages/ui/src/components/tabs/Tabs.svelte:L1-L6",
+          "packages/ui/src/components/select/Select.svelte:L1-L13",
+          "packages/ui/src/components/dropdown/Dropdown.svelte:L1-L12"
+        ],
+        "result": "clear",
+        "scope": "复用未失效的 Svelte 单文件、领域逻辑分离及中性值结论；新增 Option class、主题选择器转换与窄屏 Grid 高度仅调整控件呈现，未改变公共 API 或领域所有者。"
+      },
+      {
+        "dimension": "C3",
+        "evidence_ids": [
+          "PATTERN-STYLE-1",
+          "REQ-DEC-3",
+          "packages/ui/scripts/freeze-os-theme.mjs:L20-L44",
+          "packages/ui/src/components/button/Button.svelte:L3-L6",
+          "packages/ui/src/components/tag/Tag.svelte:L2-L5",
+          "packages/ui/src/components/select/Select.svelte:L13-L14",
+          "packages/ui/src/components/grid/Grid.svelte:L5-L7"
+        ],
+        "result": "clear",
+        "scope": "最终重检固定官方样式所有权：Button default、Tag light、Select Option 类连接既有官方状态规则；生成器验证每个来源文件摘要并统一限定 mc-ui-theme 与 mc-ui-* 前缀。Grid 窄屏高度仅作用于 stacked 控件，没有新增 RuntimeView 广域主题覆盖。"
+      },
+      {
+        "dimension": "C4",
+        "evidence_ids": [
+          "PATTERN-DATA-1",
+          "REQ-DEC-2"
+        ],
+        "result": "unrun",
+        "scope": "统一 diff-facts 的请求或取消事实触发 C4，但 UI Story 采用集合未规定接口出口、错误映射或请求取消规范，无法作接口规范验收。"
+      },
+      {
+        "dimension": "C5",
+        "evidence_ids": [
+          "PATTERN-COMP-1",
+          "REQ-DEC-2",
+          "packages/ui/src/index.ts:L1-L15",
+          "packages/ui/src/components/grid/Grid.svelte:L1-L5",
+          "packages/ui/src/components/dropdown/Dropdown.svelte:L1-L12",
+          "packages/ui/src/components/select/Select.svelte:L1-L13",
+          "apps/platform/src/lib/views/ManagementList.svelte:L1-L2",
+          "apps/platform/src/lib/views/ManagementDetail.svelte:L1-L2",
+          "apps/platform/src/lib/workbench/ReportDateProperties.svelte:L1-L4",
+          "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte:L1-L3",
+          "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte:L1-L4"
+        ],
+        "result": "clear",
+        "scope": "复用公开入口和控件复用结论；新增 Option class 与样式转换仍复用现有 Theme，Grid 继续复用 Empty，未新增与已选公共能力语义等价的另一套实现。"
+      }
+    ],
+    "review-layout": [
+      {
+        "dimension": "L2",
+        "evidence_ids": [
+          "BE-2"
+        ],
+        "result": "clear",
+        "scope": "Chrome 155、HTTP fixture；声明的长文案与空行 fixture；普通根和 ShadowRoot；390×700。长行单元格宽139px、scrollWidth=clientWidth=139、height=scrollHeight=756，同行操作位于独立列，未见横向遮挡。"
+      },
+      {
+        "dimension": "L3",
+        "evidence_ids": [
+          "BE-2"
+        ],
+        "result": "clear",
+        "scope": "Chrome 155、HTTP fixture；/tests/browser/index.html；冻结390×700视口；十个边界状态。document.scrollWidth=clientWidth=390；Select矩形(24,350.390625,342,112)、Dialog矩形(19,316.5,320,167)、确认按钮矩形(241,431.5,74,28)均位于目标视口内；普通根和ShadowRoot事实一致。"
+      },
+      {
+        "dimension": "L5",
+        "evidence_ids": [
+          "BE-2"
+        ],
+        "result": "clear",
+        "scope": "Chrome 155、HTTP fixture；Tabs和Select的disabled/selected及Tabs键盘焦点；普通根和ShadowRoot。禁用页签及Select禁用项颜色rgb(194,194,194)、cursor=not-allowed；选中页签weight=600并有底边标记，未选中weight=400；键盘焦点outline=solid 2px；Select选中项颜色rgb(20,118,255)，未选中项rgb(25,25,25)，禁用项可区分。"
+      }
+    ],
+    "review-quality": [
+      {
+        "dimension": "Q2",
+        "evidence_ids": [
+          "packages/ui/src/shared/popover.ts:L1-L24",
+          "packages/ui/src/components/select/Select.svelte:L2-L14",
+          "packages/ui/src/components/dropdown/Dropdown.svelte:L2-L13",
+          "packages/ui/src/components/tabs/Tabs.svelte:L1-L7",
+          "packages/ui/src/shared/Theme.svelte:L1-L5",
+          "packages/ui/src/components/select/Select.svelte:L13-L14",
+          "packages/ui/src/components/grid/Grid.svelte:L5-L7",
+          "packages/ui/src/components/button/Button.svelte:L4-L6",
+          "packages/ui/src/components/tag/Tag.svelte:L3-L5"
+        ],
+        "result": "clear",
+        "scope": "公共构件、浮层辅助函数和中性日期算法未发现有可观察质量后果的新重复；最终 Button default/Tag light class 及 Grid 窄屏样式修正没有新增逻辑实现。"
+      },
+      {
+        "dimension": "Q4",
+        "evidence_ids": [
+          "packages/ui/src/types.ts:L1-L7",
+          "packages/ui/src/components/date-picker/DatePicker.svelte:L16-L39",
+          "packages/ui/src/components/button/Button.svelte:L4-L6",
+          "packages/ui/src/components/tag/Tag.svelte:L3-L5",
+          "packages/ui/src/components/grid/Grid.svelte:L3-L7"
+        ],
+        "result": "clear",
+        "scope": "调用者控制输入、选项、排序、分页和日期值；组件只保存临时输入与浮层状态。最终 Button/Tag class 和 Grid 窄屏裁切修正未增加业务状态或派生值副作用同步。"
+      },
+      {
+        "dimension": "Q5",
+        "evidence_ids": [
+          "packages/ui/src/shared/popover.ts:L11-L16",
+          "packages/ui/src/components/select/Select.svelte:L10-L11",
+          "packages/ui/src/components/dropdown/Dropdown.svelte:L9-L10",
+          "packages/ui/src/components/date-picker/DatePicker.svelte:L59-L88",
+          "packages/ui/src/components/dialog/Dialog.svelte:L3-L6"
+        ],
+        "result": "clear",
+        "scope": "原浮层监听、ResizeObserver、DatePicker 和 Dialog 清理判断复用；最终样式修正未增加状态写入、监听、请求或计时器。"
+      },
+      {
+        "dimension": "Q6",
+        "evidence_ids": [
+          "packages/ui/src/components/input/Input.svelte:L3-L5",
+          "packages/ui/src/components/textarea/Textarea.svelte:L3-L5",
+          "packages/ui/src/components/select/Select.svelte:L7-L13",
+          "packages/ui/src/components/dropdown/Dropdown.svelte:L6-L12",
+          "packages/ui/src/components/tabs/Tabs.svelte:L4-L7",
+          "packages/ui/src/components/dialog/Dialog.svelte:L4-L6",
+          "packages/ui/src/components/date-picker/DatePicker.svelte:L96-L123",
+          "packages/ui/src/components/date-picker/calendar.ts:L49-L65",
+          "packages/ui/src/components/grid/Grid.svelte:L3-L5",
+          "packages/ui/src/components/pagination/Pagination.svelte:L3-L5",
+          "BE-2"
+        ],
+        "result": "clear",
+        "scope": "F3 输入提交、禁用项、浮层关闭、排序分页事件与合法日期提交均有明确路径。本轮 disabled class 保留原生 disabled；Tabs 焦点可见状态有新鲜原始观察。"
+      },
+      {
+        "dimension": "Q7",
+        "evidence_ids": [
+          "packages/ui/src/components/grid/Grid.svelte:L3-L5",
+          "packages/ui/src/components/select/Select.svelte:L4-L13",
+          "packages/ui/src/components/date-picker/calendar.ts:L7-L65",
+          "packages/ui/tests/browser/UiHarness.svelte:L2-L4"
+        ],
+        "result": "clear",
+        "scope": "新增构件和日期算法未发现调试输出、断点、TODO 空实现或固定样例替代生产数据；固定展示数据仅位于测试夹具。"
+      }
+    ]
+  },
+  "decisions": [],
+  "deferred_candidates": [],
+  "evidence_epoch": "review-final",
+  "findings": [],
+  "handoff": [],
+  "judged_files": {
+    "review-convention": [
+      "packages/ui/src/index.ts",
+      "packages/ui/src/types.ts",
+      "packages/ui/src/shared/Theme.svelte",
+      "packages/ui/src/shared/popover.ts",
+      "packages/ui/src/components/button/Button.svelte",
+      "packages/ui/src/components/input/Input.svelte",
+      "packages/ui/src/components/textarea/Textarea.svelte",
+      "packages/ui/src/components/tabs/Tabs.svelte",
+      "packages/ui/src/components/tag/Tag.svelte",
+      "packages/ui/src/components/empty/Empty.svelte",
+      "packages/ui/src/components/select/Select.svelte",
+      "packages/ui/src/components/dropdown/Dropdown.svelte",
+      "packages/ui/src/components/pagination/Pagination.svelte",
+      "packages/ui/src/components/grid/Grid.svelte",
+      "packages/ui/src/components/dialog/Dialog.svelte",
+      "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "packages/ui/src/components/date-picker/DatePickerIcon.svelte",
+      "packages/ui/src/components/date-picker/calendar.ts",
+      "packages/ui/vite.config.ts",
+      "apps/platform/src/lib/views/ManagementList.svelte",
+      "apps/platform/src/lib/views/ManagementDetail.svelte",
+      "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+      "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "packages/ui/scripts/freeze-os-theme.mjs"
+    ],
+    "review-layout": [
+      "packages/ui/tests/browser/UiHarness.svelte",
+      "packages/ui/src/shared/Theme.svelte",
+      "packages/ui/src/components/grid/Grid.svelte",
+      "packages/ui/src/components/tabs/Tabs.svelte",
+      "packages/ui/src/components/select/Select.svelte",
+      "packages/ui/src/components/dialog/Dialog.svelte",
+      "packages/ui/src/components/button/Button.svelte",
+      "packages/ui/src/components/empty/Empty.svelte",
+      "packages/ui/src/shared/popover.ts"
+    ],
+    "review-quality": [
+      "packages/ui/src/types.ts",
+      "packages/ui/src/index.ts",
+      "packages/ui/src/shared/Theme.svelte",
+      "packages/ui/src/shared/popover.ts",
+      "packages/ui/src/components/button/Button.svelte",
+      "packages/ui/src/components/input/Input.svelte",
+      "packages/ui/src/components/textarea/Textarea.svelte",
+      "packages/ui/src/components/select/Select.svelte",
+      "packages/ui/src/components/dropdown/Dropdown.svelte",
+      "packages/ui/src/components/dialog/Dialog.svelte",
+      "packages/ui/src/components/tabs/Tabs.svelte",
+      "packages/ui/src/components/tag/Tag.svelte",
+      "packages/ui/src/components/empty/Empty.svelte",
+      "packages/ui/src/components/grid/Grid.svelte",
+      "packages/ui/src/components/pagination/Pagination.svelte",
+      "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "packages/ui/src/components/date-picker/calendar.ts",
+      "packages/ui/tests/browser/components.spec.ts",
+      "packages/ui/tests/browser/UiHarness.svelte"
+    ]
+  },
+  "known_gaps": {
+    "review-convention": [
+      "C1：diff-facts 的新增文件事实否定跳过条件，但采用的 PATTERN 未提供命名或别名判据；如实未验证，不能虚构规范或判 clear。",
+      "本格仅检查采用的工程规范；静态结论不替代浏览器还原或真实 Java/Relay/身份/门户验收。",
+      "C4：UI 的中性值及依赖边界规范不是接口验收依据；没有采用的请求处理 PATTERN，因此未验证，不标 skipped 或 clear。"
+    ],
+    "review-layout": [],
+    "review-quality": []
+  },
+  "manual_acceptance": [],
+  "norm_candidates": [],
+  "open_questions": [],
+  "portfolio_narrowed": [],
+  "restore_contract": {
+    "contract_sha256": "9320aff178d2067324546dab8f3ef0218f6dcbb9f299162bcac66435de910452",
+    "overall": "green",
+    "summary": {
+      "green": 7,
+      "red": 0,
+      "total": 7,
+      "yellow": 0
+    }
+  },
+  "roles": {
+    "review-convention": "executed",
+    "review-layout": "executed",
+    "review-quality": "executed"
+  },
+  "schema_version": 1,
+  "skipped": {
+    "review-convention": [],
+    "review-layout": [],
+    "review-quality": []
+  },
+  "unplanned_carry": [],
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-UI-1",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-UI-2",
+        "modules": [
+          "causal",
+          "render"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "2",
+        "verification_method": "restore_contract",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-UI-3",
+        "modules": [
+          "causal",
+          "render"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "3",
+        "verification_method": "restore_contract",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-UI-4",
+        "modules": [
+          "causal",
+          "render"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "4",
+        "verification_method": "restore_contract",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-UI-5",
+        "modules": [
+          "causal",
+          "render"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "5",
+        "verification_method": "restore_contract",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-UI-6",
+        "modules": [
+          "causal",
+          "render"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "6",
+        "verification_method": "restore_contract",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-UI-7",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "7",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      }
+    ],
+    "facts": {
+      "cross_page": false,
+      "frozen_r": true,
+      "frozen_r5": false,
+      "frozen_r6": true,
+      "has_f3": true,
+      "has_s3_claim": false,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "restore-final",
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "render",
+        "regression",
+        "restore-final",
+        "review-layout",
+        "review-convention",
+        "review-quality"
+      ],
+      "phase": "final",
+      "required_profiles": {
+        "AT-UI-1": "mock",
+        "AT-UI-2": "mock",
+        "AT-UI-3": "mock",
+        "AT-UI-4": "mock",
+        "AT-UI-5": "mock",
+        "AT-UI-6": "mock",
+        "AT-UI-7": "mock"
+      },
+      "review_roles": [
+        "review-layout",
+        "review-convention",
+        "review-quality"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5"
+      ],
+      "review-layout": [
+        "L2",
+        "L3",
+        "L5"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q6",
+        "Q7"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "risk_triggers": [
+      "build-config",
+      "interaction",
+      "new-pattern",
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "new-pattern",
+        "shared-boundary"
+      ],
+      "changed_files": 274,
+      "max_changed_files": 5,
+      "restore_tasks": [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "build-config": [
+        "diff"
+      ],
+      "interaction": [
+        "plan"
+      ],
+      "new-pattern": [
+        "plan"
+      ],
+      "shared-boundary": [
+        "diff",
+        "plan"
+      ],
+      "visual": [
+        "diff",
+        "plan"
+      ]
+    }
+  }
+}

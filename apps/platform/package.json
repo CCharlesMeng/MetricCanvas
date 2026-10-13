@@ -16,7 +16,8 @@
     "@metriccanvas/application-runtime": "workspace:*",
     "@metriccanvas/engine": "workspace:*",
     "@metriccanvas/metric-canvas": "workspace:*",
-    "@metriccanvas/page": "workspace:*"
+    "@metriccanvas/page": "workspace:*",
+    "@metriccanvas/ui": "workspace:0.1.0"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.2.0",

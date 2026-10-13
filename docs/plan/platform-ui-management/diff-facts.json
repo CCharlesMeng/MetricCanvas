@@ -1,0 +1,1961 @@
+{
+  "base_ref": "1e941d5f",
+  "changed_files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/frontend-baselines/api.md",
+      "status": "A"
+    },
+    {
+      "path": "apps/platform/frontend-baselines/components.md",
+      "status": "A"
+    },
+    {
+      "path": "apps/platform/frontend-baselines/data.md",
+      "status": "A"
+    },
+    {
+      "path": "apps/platform/frontend-baselines/index.md",
+      "status": "A"
+    },
+    {
+      "path": "apps/platform/frontend-baselines/routes.md",
+      "status": "A"
+    },
+    {
+      "path": "apps/platform/frontend-baselines/runtime.md",
+      "status": "A"
+    },
+    {
+      "path": "apps/platform/frontend-baselines/structure.md",
+      "status": "A"
+    },
+    {
+      "path": "apps/platform/frontend-baselines/styles.md",
+      "status": "A"
+    },
+    {
+      "path": "apps/platform/frontend-baselines/tests.md",
+      "status": "A"
+    },
+    {
+      "path": "apps/platform/package.json",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/PlatformFrame.svelte",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/PlatformRoot.svelte",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/integration/navigation.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/integration/services.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/page-assets.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/page-assets/management.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/views/ManagementDetail.svelte",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/views/ManagementList.svelte",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/ComponentProperties.svelte",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/Inspector.svelte",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/MetadataJsonDrawer.svelte",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/authoring-coordinator.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/authoring-recovery.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/authoring-storage.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/authoring-sync.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/document-edit.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/work-session.ts",
+      "status": "A"
+    },
+    {
+      "path": "apps/platform/tests/microfrontend/production-browser.mjs",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/tests/workbench/authoring-language.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/tests/workbench/authoring-sync.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/tests/workbench/document-edit.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/tests/workbench/platform-management-browser.mjs",
+      "status": "A"
+    },
+    {
+      "path": "apps/platform/tests/workbench/work-session.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "apps/playground/tests/runtime-ui-seams.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/manifest.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/index.json",
+      "status": "M"
+    },
+    {
+      "path": "docs/adr/0102-independent-neutral-ui-with-unified-product-engineering.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/adr/README.md",
+      "status": "M"
+    },
+    {
+      "path": "docs/adr/topics/domain-modeling-and-package-boundaries.md",
+      "status": "M"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/README.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/browser-result.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/consumer-browser.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/consumer-build.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/consumer-svelte-check.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/consumer-types.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/pack-embed.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/pack-engine.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/pack-metric-canvas.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/pack-page.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/pack-ui.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/page-runtime.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/source-build.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/source-check.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/source-test.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/ui-browser.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/ui-svelte-check.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.29.0/ui-vite.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/consumer-browser.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/consumer-build.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/consumer-svelte-check.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/consumer-types.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/pack-embed.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/pack-engine.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/pack-metric-canvas.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/pack-page.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/pack-ui.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/page-runtime.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/source-build.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/source-check.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/source-test.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/ui-browser.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/ui-svelte-check.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/5.56.6/ui-vite.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/final-input-comparison.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/manifest.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/compatibility/summary.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-manual-language-final.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-manual-language-min-final.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-manual-language-types-final.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-manual-language-types-min-final.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-platform-min-final-check.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-platform-save-state-browser2.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-platform-save-state-build.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-platform-save-state-check.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-platform-save-state-micro.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-ui-final-check.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-ui-final-controls.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-ui-final-matrix.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/logs/metriccanvas-ui-release-contracts.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/management-1440.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/management-390.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/reading-1440.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/ui-boundaries/dialog-open-false.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/ui-boundaries/dialog-open-true.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/ui-boundaries/empty-false.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/ui-boundaries/empty-true.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/ui-boundaries/long-focused-false.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/ui-boundaries/long-focused-true.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/ui-boundaries/raw.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/ui-boundaries/select-open-false.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/ui-boundaries/select-open-true.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/ui-boundaries/selected-false.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-management-2026-10-12/ui-boundaries/selected-true.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/basic-usage-composition-api-8b0267c1.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/dynamic-disabled-composition-api-352ca3a1.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/ghost-composition-api-42b959f0.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-014741fd.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-099d797a.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-0a28d810.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-128469e9.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-371308ea.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-3b1f13af.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-3fd79811.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-5098694c.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-5c86830a.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-6b596188.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-7607951e.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-79910755.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-8a0de827.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-9354f852.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-953e3bf0.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-a6cd1bda.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-b8677c4f.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-c73f0ccb.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-c7e11a93.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-d2f1f210.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-e3b0c442.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-fa1574ca.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/responsive-index-21064541.css",
+      "status": "A"
+    },
+    {
+      "path": "docs/evidence/platform-ui-os-theme-2026-10-12/sources.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/2026-10-12-platform-ui-management-handoff.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/2026-10-12-platform-ui-management-implementation.md",
+      "status": "M"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/diff-facts.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/java-provider-requirements.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/acceptance.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/alpha-tests.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/dev-baseline.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/artifacts/browser-result.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/artifacts/management-1440.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/artifacts/management-390.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/artifacts/reading-1440.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/portfolio.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/render-directory-20-rows.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/render-locally-protected.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/render-management-1440.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/render-management-390-before-menu.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/render-management-390.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/render-reading-1440.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/render-saved.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/render-unknown-save.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/render-workbench-reading.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/request-review-convention.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/request-review-layout.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/request-review-quality.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/request-self-test.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/restore-adapter.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/restore-contract.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/restore-report-green.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/review-evidence.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/evidence/review-results.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/platform-management/tasks.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/requirement-frontend-design.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/acceptance.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/alpha-tests.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/dev-baseline.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/boundaries-dialog-open-false.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/boundaries-dialog-open-true.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/boundaries-empty-false.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/boundaries-empty-true.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/boundaries-long-focused-false.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/boundaries-long-focused-true.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/boundaries-raw.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/boundaries-select-open-false.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/boundaries-select-open-true.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/boundaries-selected-false.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/boundaries-selected-true.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/render-desktop.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/render-narrow.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/ui-desktop.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/artifacts/ui-narrow.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/portfolio-final.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/portfolio.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/render-desktop.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/render-narrow.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/request-review-convention.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/request-review-layout.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/request-review-quality.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/restore-adapter.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/restore-contract.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/restore-report-green.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/restore-report-green.stale-34bc3934.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/review-evidence.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/review-results.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/ui-desktop.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/evidence/ui-narrow.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/story-delta-frontend-design.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/plan/platform-ui-management/ui-components/tasks.md",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/bundle.lock.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-lock.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/manifest.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/index.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/index.json",
+      "status": "M"
+    },
+    {
+      "path": "package.json",
+      "status": "M"
+    },
+    {
+      "path": "packages/embed/tests/browser/embed.spec.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/embed/tests/browser/navigation.spec.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/embed/tests/browser/presentation.spec.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/embed/tests/browser/section-navigation.spec.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/package.json",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/tests/date-picker.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/widgets/src/shared/EChart.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/ui/LICENSE",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/README.md",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/fixtures/calendar-conformance.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/frontend-baselines/components.md",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/frontend-baselines/data.md",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/frontend-baselines/index.md",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/frontend-baselines/runtime.md",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/frontend-baselines/structure.md",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/frontend-baselines/styles.md",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/frontend-baselines/tests.md",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/package.json",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/playwright.config.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/scripts/freeze-os-theme.mjs",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/button/Button.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/date-picker/DatePickerIcon.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/date-picker/calendar.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/date-picker/tiny-vue-LICENSE.txt",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/dialog/Dialog.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/dropdown/Dropdown.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/empty/Empty.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/grid/Grid.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/input/Input.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/pagination/Pagination.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/select/Select.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/tabs/Tabs.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/tag/Tag.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/components/textarea/Textarea.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/index.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/shared/Theme.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/shared/popover.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/src/types.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/svelte.config.js",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/tests/browser/UiHarness.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/tests/browser/capture-boundaries.mjs",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/tests/browser/components.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/tests/browser/index.html",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/tests/browser/main.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/tests/browser/restore.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/tests/calendar.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/tsconfig.build.json",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/tsconfig.json",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/tsconfig.test.json",
+      "status": "A"
+    },
+    {
+      "path": "packages/ui/vite.config.ts",
+      "status": "A"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "status": "M"
+    },
+    {
+      "path": "tests/public-api.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "tests/public-api/ui.txt",
+      "status": "A"
+    },
+    {
+      "path": "tools/package-build/README.md",
+      "status": "M"
+    },
+    {
+      "path": "tools/package-build/build.mjs",
+      "status": "M"
+    },
+    {
+      "path": "tools/package-build/check.ts",
+      "status": "M"
+    },
+    {
+      "path": "tools/package-build/compatibility.mjs",
+      "status": "M"
+    },
+    {
+      "path": "tools/package-build/fixtures/ui-only/App.svelte",
+      "status": "A"
+    },
+    {
+      "path": "tools/package-build/fixtures/ui-only/index.html",
+      "status": "A"
+    },
+    {
+      "path": "tools/package-build/fixtures/ui-only/main.ts",
+      "status": "A"
+    },
+    {
+      "path": "tools/package-build/fixtures/ui-only/svelte.config.js",
+      "status": "A"
+    },
+    {
+      "path": "tools/package-build/fixtures/ui-only/tsconfig.json",
+      "status": "A"
+    },
+    {
+      "path": "tools/package-build/fixtures/ui-only/vite.config.js",
+      "status": "A"
+    },
+    {
+      "path": "tools/package-build/surface.ts",
+      "status": "M"
+    }
+  ],
+  "head": "1e941d5f6b084b5d59cc9682e834798a824af70a",
+  "risk_triggers": {
+    "build-config": [
+      {
+        "evidence": "apps/platform/package.json",
+        "rule": "build-config-file"
+      },
+      {
+        "evidence": "package.json",
+        "rule": "build-config-file"
+      },
+      {
+        "evidence": "packages/engine/package.json",
+        "rule": "build-config-file"
+      },
+      {
+        "evidence": "packages/ui/package.json",
+        "rule": "build-config-file"
+      },
+      {
+        "evidence": "packages/ui/playwright.config.ts",
+        "rule": "build-config-file"
+      },
+      {
+        "evidence": "packages/ui/tsconfig.build.json",
+        "rule": "build-config-file"
+      },
+      {
+        "evidence": "packages/ui/tsconfig.json",
+        "rule": "build-config-file"
+      },
+      {
+        "evidence": "packages/ui/tsconfig.test.json",
+        "rule": "build-config-file"
+      },
+      {
+        "evidence": "packages/ui/vite.config.ts",
+        "rule": "build-config-file"
+      },
+      {
+        "evidence": "pnpm-lock.yaml",
+        "rule": "build-config-file"
+      },
+      {
+        "evidence": "tools/package-build/fixtures/ui-only/tsconfig.json",
+        "rule": "build-config-file"
+      },
+      {
+        "evidence": "tools/package-build/fixtures/ui-only/vite.config.js",
+        "rule": "build-config-file"
+      }
+    ],
+    "shared-boundary": [
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/tests/date-picker.test.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/shared/EChart.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/fixtures/calendar-conformance.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/playwright.config.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/scripts/freeze-os-theme.mjs",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/components/button/Button.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/components/date-picker/DatePicker.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/components/date-picker/DatePickerIcon.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/components/date-picker/calendar.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/components/dialog/Dialog.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/components/dropdown/Dropdown.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/components/empty/Empty.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/components/grid/Grid.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/components/input/Input.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/components/pagination/Pagination.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/components/select/Select.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/components/tabs/Tabs.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/components/tag/Tag.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/components/textarea/Textarea.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/index.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/shared/Theme.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/shared/popover.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/src/types.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/svelte.config.js",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/UiHarness.svelte",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/capture-boundaries.mjs",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/components.spec.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/index.html",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/main.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/restore.spec.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/tests/calendar.test.ts",
+        "rule": "shared-path"
+      },
+      {
+        "evidence": "packages/ui/vite.config.ts",
+        "rule": "shared-path"
+      }
+    ],
+    "visual": [
+      {
+        "evidence": "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "apps/platform/src/lib/PlatformFrame.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "apps/platform/src/lib/PlatformRoot.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "apps/platform/src/lib/views/ManagementDetail.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "apps/platform/src/lib/views/ManagementList.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "apps/platform/src/lib/workbench/ComponentProperties.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "apps/platform/src/lib/workbench/Inspector.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "apps/platform/src/lib/workbench/MetadataJsonDrawer.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/basic-usage-composition-api-8b0267c1.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/dynamic-disabled-composition-api-352ca3a1.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/ghost-composition-api-42b959f0.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-014741fd.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-099d797a.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-0a28d810.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-128469e9.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-371308ea.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-3b1f13af.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-3fd79811.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-5098694c.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-5c86830a.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-6b596188.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-7607951e.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-79910755.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-8a0de827.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-9354f852.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-953e3bf0.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-a6cd1bda.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-b8677c4f.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-c73f0ccb.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-c7e11a93.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-d2f1f210.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-e3b0c442.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-fa1574ca.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/responsive-index-21064541.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/runtime-ui/tests/browser/DatePickerHarness.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/engine/widgets/src/shared/EChart.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/scripts/freeze-os-theme.mjs",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/button/Button.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/date-picker/DatePicker.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/date-picker/DatePickerIcon.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/dialog/Dialog.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/dropdown/Dropdown.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/empty/Empty.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/grid/Grid.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/input/Input.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/pagination/Pagination.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/select/Select.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/tabs/Tabs.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/tag/Tag.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/textarea/Textarea.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/src/shared/Theme.svelte",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "packages/ui/src/shared/Theme.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/UiHarness.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/index.html",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "tools/package-build/fixtures/ui-only/App.svelte",
+        "rule": "template-file"
+      },
+      {
+        "evidence": "tools/package-build/fixtures/ui-only/index.html",
+        "rule": "template-file"
+      }
+    ]
+  },
+  "schema_version": 1,
+  "shared_paths": [
+    "/packages/ui/**",
+    "/packages/engine/**"
+  ],
+  "skip_rebuttals": {
+    "C1": [
+      {
+        "evidence": "apps/platform/src/lib/workbench/work-session.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "apps/platform/tests/workbench/platform-management-browser.mjs (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "apps/platform/tests/workbench/work-session.test.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/basic-usage-composition-api-8b0267c1.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/dynamic-disabled-composition-api-352ca3a1.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/ghost-composition-api-42b959f0.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-014741fd.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-099d797a.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-0a28d810.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-128469e9.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-371308ea.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-3b1f13af.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-3fd79811.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-5098694c.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-5c86830a.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-6b596188.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-7607951e.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-79910755.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-8a0de827.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-9354f852.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-953e3bf0.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-a6cd1bda.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-b8677c4f.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-c73f0ccb.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-c7e11a93.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-d2f1f210.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-e3b0c442.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-fa1574ca.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/responsive-index-21064541.css (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/fixtures/calendar-conformance.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/playwright.config.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/scripts/freeze-os-theme.mjs (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/button/Button.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/date-picker/DatePicker.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/date-picker/DatePickerIcon.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/date-picker/calendar.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/dialog/Dialog.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/dropdown/Dropdown.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/empty/Empty.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/grid/Grid.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/input/Input.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/pagination/Pagination.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/select/Select.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/tabs/Tabs.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/tag/Tag.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/components/textarea/Textarea.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/index.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/shared/Theme.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/shared/popover.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/src/types.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/svelte.config.js (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/UiHarness.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/capture-boundaries.mjs (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/components.spec.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/index.html (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/main.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/restore.spec.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/tests/calendar.test.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "packages/ui/vite.config.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "tools/package-build/fixtures/ui-only/App.svelte (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "tools/package-build/fixtures/ui-only/index.html (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "tools/package-build/fixtures/ui-only/main.ts (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "tools/package-build/fixtures/ui-only/svelte.config.js (A)",
+        "rule": "added-or-renamed-file"
+      },
+      {
+        "evidence": "tools/package-build/fixtures/ui-only/vite.config.js (A)",
+        "rule": "added-or-renamed-file"
+      }
+    ],
+    "C3": [
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/basic-usage-composition-api-8b0267c1.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/dynamic-disabled-composition-api-352ca3a1.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/ghost-composition-api-42b959f0.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-014741fd.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-099d797a.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-0a28d810.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-128469e9.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-371308ea.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-3b1f13af.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-3fd79811.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-5098694c.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-5c86830a.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-6b596188.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-7607951e.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-79910755.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-8a0de827.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-9354f852.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-953e3bf0.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-a6cd1bda.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-b8677c4f.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-c73f0ccb.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-c7e11a93.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-d2f1f210.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-e3b0c442.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/index-fa1574ca.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "docs/evidence/platform-ui-os-theme-2026-10-12/assets/responsive-index-21064541.css",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "packages/ui/scripts/freeze-os-theme.mjs",
+        "rule": "style-or-token-file"
+      },
+      {
+        "evidence": "packages/ui/src/shared/Theme.svelte",
+        "rule": "style-or-token-file"
+      }
+    ],
+    "C4": [
+      {
+        "evidence": "apps/platform/src/lib/PageAuthoringWorkbench.svelte: $effect(()=>{if(taskUrl&&authoring.draft)void services.workSession.bind(taskUrl,String(authoring.draft.pageDocument.id),",
+        "rule": "request-or-cancellation"
+      },
+      {
+        "evidence": "apps/platform/src/lib/PlatformRoot.svelte: void services.workSession.restore().then(()=>{restored=true;}).catch(error=>{workError=String(error);});",
+        "rule": "request-or-cancellation"
+      },
+      {
+        "evidence": "apps/platform/src/lib/PlatformRoot.svelte: const next=new URL(url),controller=new AbortController();",
+        "rule": "request-or-cancellation"
+      },
+      {
+        "evidence": "apps/platform/src/lib/PlatformRoot.svelte: })().catch(error=>{if(!controller.signal.aborted)workError=String(error);}).finally(()=>{if(!controller.signal.aborted)o",
+        "rule": "request-or-cancellation"
+      },
+      {
+        "evidence": "apps/platform/src/lib/views/ManagementDetail.svelte: let {pageId,url}:{pageId:string;url:URL}=$props();let revision=$state<PageRevision|null>(null);let history=$state<DraftH",
+        "rule": "request-or-cancellation"
+      },
+      {
+        "evidence": "apps/platform/src/lib/views/ManagementList.svelte: let pageNo=$state(Math.max(1,Number(initial.searchParams.get('page'))||1));let status=$state(['draft','published'].inclu",
+        "rule": "request-or-cancellation"
+      },
+      {
+        "evidence": "apps/platform/src/lib/workbench/work-session.ts: function protect(change:()=>void){const result=serial.then(async()=>{if(disposed)throw Error('平台工作会话已失效。');const before=",
+        "rule": "request-or-cancellation"
+      }
+    ],
+    "Q7": [
+      {
+        "evidence": "tools/package-build/compatibility.mjs: run('node', ['--input-type=module', '-e', `import assert from 'node:assert/strict'; import {createRequire} from 'node:mo",
+        "rule": "debug-or-placeholder-residue"
+      },
+      {
+        "evidence": "apps/platform/tests/workbench/platform-management-browser.mjs: expect(errors).toEqual([]);await writeFile(resolve(out,'browser-result.json'),JSON.stringify({browser:browser.version(),",
+        "rule": "debug-or-placeholder-residue"
+      },
+      {
+        "evidence": "packages/ui/scripts/freeze-os-theme.mjs: console.log(`Frozen ${css.nodes.length} source rules; ${component.length} bytes. No document-global TinyVue stylesheet i",
+        "rule": "debug-or-placeholder-residue"
+      },
+      {
+        "evidence": "packages/ui/tests/browser/capture-boundaries.mjs: console.log(JSON.stringify({browser:browser.version(),out,states:states.length,errors}));",
+        "rule": "debug-or-placeholder-residue"
+      }
+    ]
+  }
+}

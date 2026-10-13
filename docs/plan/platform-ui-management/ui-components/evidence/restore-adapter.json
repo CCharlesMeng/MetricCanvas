@@ -1,0 +1,115 @@
+{
+  "schema_version": 2,
+  "rules": {
+    "R3-1-button-style": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[aria-label=\"表单\"] .mc-ui-button"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "height",
+          "font-size",
+          "border-radius"
+        ]
+      }
+    },
+    "R3-2-input-style": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "input[aria-label=\"标题\"]"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "height",
+          "font-size",
+          "border-radius",
+          "padding-left",
+          "padding-right",
+          "border-top-color"
+        ]
+      }
+    },
+    "R3-3-grid-header": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "th:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "padding",
+          "background-color"
+        ]
+      }
+    },
+    "R3-3-grid-title": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "th:first-child .mc-ui-grid-cell"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "font-size",
+          "line-height",
+          "font-weight",
+          "color"
+        ]
+      }
+    },
+    "R3-4-select-panel": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[role=\"listbox\"]"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "border-radius",
+          "padding",
+          "box-shadow"
+        ]
+      }
+    },
+    "R3-4-select-item": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[role=\"option\"]:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "height",
+          "padding",
+          "line-height"
+        ]
+      }
+    },
+    "R6-1-no-overflow": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "main"
+        }
+      ],
+      "collect": {
+        "kind": "overflow"
+      }
+    }
+  }
+}

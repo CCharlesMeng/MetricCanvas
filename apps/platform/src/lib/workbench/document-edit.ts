@@ -185,6 +185,13 @@ export function moveComponent(
 }
 
 /** 组件标题与宽度编辑；宽度按所属分区的实际列轨数夹取。 */
+/** Explicitly edit only the page-level title declaration, retaining all component titles and bindings. */
+export function editPageTitle(draft:CanvasAuthoringDraft,title:string):DocumentEditResult {
+  const document=jsonClone(draft.canvasDocument);const meta=recordOf(document.meta)??{};
+  if(title.trim()==='')delete meta.title;else meta.title=title;
+  document.meta=meta;return projectCanvasDraft(document);
+}
+
 export function editComponent(
   draft: CanvasAuthoringDraft,
   locator: ComponentLocator,
