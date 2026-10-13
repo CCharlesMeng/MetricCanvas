@@ -2,6 +2,7 @@ import type { FieldValue, ValueFormatPreset } from '@metriccanvas/page/internal'
 import { formatPeriod } from '@metriccanvas/page/internal';
 
 export type ValuePolarity = 'positive' | 'negative' | 'neutral';
+type SignedNumberFormat = Extract<ValueFormatPreset, `number${string}-signed`>;
 
 const DEFAULT_NULL_TEXT = '—';
 /**
@@ -32,6 +33,8 @@ export function formatValue(
       return formatNumber(numeric, 1);
     case 'number-signed':
     case 'number-1-signed':
+    case 'number-2-signed':
+    case 'number-grouped-signed':
       return signedNumberPresentation(numeric, format).text;
     case 'number-2':
       return formatNumber(numeric, 2);
@@ -75,15 +78,20 @@ export function valuePolarity(
 
 export function isSignedNumberFormat(
   format: ValueFormatPreset | undefined
-): format is 'number-signed' | 'number-1-signed' {
-  return format === 'number-signed' || format === 'number-1-signed';
+): format is SignedNumberFormat {
+  return format?.startsWith('number') === true && format.endsWith('-signed');
 }
 
 /** 文本与方向共用同一次舍入，负零及舍入到零均无符号。 */
-function signedNumberPresentation(value: number, format: 'number-signed' | 'number-1-signed') {
-  const magnitude = format === 'number-1-signed'
-    ? formatNumber(Math.abs(value), 1) : String(Math.abs(value));
-  const polarity: ValuePolarity = Number(magnitude) === 0 ? 'neutral' : value > 0 ? 'positive' : 'negative';
+function signedNumberPresentation(value: number, format: SignedNumberFormat) {
+  let magnitude: string;
+  switch (format) {
+    case 'number-signed': magnitude = String(Math.abs(value)); break;
+    case 'number-1-signed': magnitude = formatNumber(Math.abs(value), 1); break;
+    case 'number-2-signed': magnitude = formatNumber(Math.abs(value), 2); break;
+    case 'number-grouped-signed': magnitude = formatNumber(Math.abs(value), undefined, true); break;
+  }
+  const polarity: ValuePolarity = Number(magnitude.replaceAll(',', '')) === 0 ? 'neutral' : value > 0 ? 'positive' : 'negative';
   return { text: `${polarity === 'positive' ? '+' : polarity === 'negative' ? '-' : ''}${magnitude}`, polarity };
 }
 

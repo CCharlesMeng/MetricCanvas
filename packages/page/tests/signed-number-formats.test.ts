@@ -7,10 +7,13 @@ import report from '../../../pages/business-sdt-report.json';
 
 const document = () => JSON.parse(readFileSync('packages/page/fixtures/contract-valid/inline-report.json', 'utf8'));
 
-it.each(['number-signed', 'number-1-signed'] as const)('%s requires 6.17 at bindings, defaults and text references', format => {
+it.each([
+  ['number-signed', 17], ['number-1-signed', 17],
+  ['number-2-signed', 18], ['number-grouped-signed', 18]
+] as const)('%s requires 6.%s at bindings, defaults and text references', (format, minor) => {
   for (const location of ['binding', 'default', 'param', 'filter', 'detail']) {
     const raw = document();
-    raw.schemaVersion = '6.17';
+    raw.schemaVersion = `6.${minor}`;
     if (location === 'binding') raw.sections[0].components[1].props.rows[0].valueField.format = format;
     if (location === 'default') raw.dataSources.overview.fields.gmv.defaultFormat = format;
     if (location === 'param') {
@@ -28,9 +31,9 @@ it.each(['number-signed', 'number-1-signed'] as const)('%s requires 6.17 at bind
       }] }];
     }
     expect(validate(raw), location).toEqual([]);
-    expect(requiredMinorVersion(raw)).toBe(17);
-    raw.schemaVersion = '6.16';
-    expect(validate(raw), location).toContainEqual(expect.objectContaining({ message: expect.stringContaining('由 6.17 引入') }));
+    expect(requiredMinorVersion(raw)).toBe(minor);
+    raw.schemaVersion = `6.${minor - 1}`;
+    expect(validate(raw), location).toContainEqual(expect.objectContaining({ message: expect.stringContaining(`由 6.${minor} 引入`) }));
   }
   expect(formatSuitsParamType(format, 'number')).toBe(true);
   expect(formatSuitsParamType(format, 'string')).toBe(false);

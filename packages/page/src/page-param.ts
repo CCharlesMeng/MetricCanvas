@@ -109,6 +109,8 @@ const NUMERIC_FORMATS = new Set<ValueFormatPreset>([
   'number-1',
   'number-signed',
   'number-1-signed',
+  'number-2-signed',
+  'number-grouped-signed',
   'number-2',
   'number-grouped',
   'compact-wan-0',

@@ -7,6 +7,19 @@ import { cartesianFrame } from '../src/shared/chart-presentation';
 import { init } from 'echarts';
 
 describe('numeric color rules', () => {
+  it.each([
+    ['number-2-signed', 0.004, 0.005],
+    ['number-grouped-signed', 0.0004, 0.0005]
+  ] as const)('%s uses the same zero threshold for both color consumers', (format, roundedZero, nonzero) => {
+    const colorRule = { mode: 'sign', positive: 'red', negative: 'green' } as const;
+    for (const value of [roundedZero, -roundedZero]) {
+      expect(tableValueColor(value, { field: 'delta', colorRule }, format)).toBeUndefined();
+      expect(changeValueColor(value, { label: '变化', field: 'delta', colorRule }, format)).toBeUndefined();
+    }
+    expect(tableValueColor(nonzero, { field: 'delta', colorRule }, format)).toBe('red');
+    expect(changeValueColor(-nonzero, { label: '变化', field: 'delta', colorRule }, format)).toBe('green');
+    expect(tableValueColor(1234, { field: 'delta', colorRule }, format)).toBe('red');
+  });
   it('uses resolved display precision at both consumers while preserving fixed and old rules', () => {
     const colorRule = { mode: 'sign', positive: 'red', negative: 'green' } as const;
     for (const value of [0, -0, 0.04, -0.04, '0.04', '-0.04', null, Infinity]) {

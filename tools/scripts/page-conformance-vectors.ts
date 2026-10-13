@@ -55,6 +55,17 @@ function longString(length: number): string {
 
 export const invariants: InvariantDefinition[] = [
   {
+    id: 'signed-number-family-capability', description: '两位小数与千分位带符号数值格式由6.18引入',
+    valid: ['signed-number-family-page'], cases: [
+      { case: 'signed-number-two-decimal-before-6.18', base: 'inline-report', expect: /由 6.18 引入/,
+        mutate: d => { d.schemaVersion = '6.17'; firstComponent(d,0,1).props.rows[0].valueField.format = 'number-2-signed'; } },
+      { case: 'signed-number-grouped-before-6.18', base: 'inline-report', expect: /由 6.18 引入/,
+        mutate: d => { d.schemaVersion = '6.17'; d.dataSources.overview.fields.gmv.defaultFormat = 'number-grouped-signed'; } },
+      { case: 'signed-number-family-param-before-6.18', base: 'inline-report', expect: /由 6.18 引入/,
+        mutate: d => { d.schemaVersion = '6.17'; d.params = [{ id:'target',type:'number',required:true,default:3 }]; d.meta = {title:{param:'target',format:'number-2-signed'}}; } }
+    ]
+  },
+  {
     id: 'signed-number-format-capability', description: '带符号普通数值格式由6.17引入',
     valid: ['signed-number-page'], cases: [
       { case: 'signed-number-binding-before-6.17', base: 'inline-report', expect: /由 6.17 引入/,

@@ -15,7 +15,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 17;
+const CURRENT_MINOR = 18;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -37,6 +37,10 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'signed-number-format-family': {
+    minor: 18, description: '补齐两位小数及千分位的带符号普通数值格式',
+    usedAt: document => namedFormatPaths(document, /^number-(?:2|grouped)-signed$/)
+  },
   'signed-number-formats': {
     minor: 17, description: '带符号普通数值格式，按展示精度统一零值方向',
     usedAt: document => namedFormatPaths(document, /^number(?:-1)?-signed$/)
@@ -562,7 +566,11 @@ export const versionPolicy: VersionPolicy = {
  * 能力引入历史仍可查询，但不代表旧 6.x 文档可读。
  */
 export function supportedVersions(policy: VersionPolicy = versionPolicy): string[] {
-  const currentMajor = policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 ? [...new Set(['6.5', ...(policy.minor >= 12 ? ['6.11', ...(policy.minor >= 13 ? ['6.12', ...(policy.minor >= 14 ? ['6.13', ...(policy.minor >= 15 ? ['6.14', ...(policy.minor >= 16 ? ['6.15', ...(policy.minor >= 17 ? ['6.16'] : [])] : [])] : [])] : [])] : [])] : []), policy.current])] : [policy.current];
+  const readableMinors = [5];
+  for (let minor = 11; minor < policy.minor; minor++) readableMinors.push(minor);
+  const currentMajor = policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6
+    ? [...new Set([...readableMinors.map(minor => `${policy.major}.${minor}`), policy.current])]
+    : [policy.current];
   return policy.major === PAGE_SCHEMA_MAJOR
     ? [...LEGACY_READABLE_PAGE_SCHEMA_VERSIONS, ...currentMajor]
     : currentMajor;

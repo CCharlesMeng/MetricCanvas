@@ -83,6 +83,33 @@ describe('formatValue', () => {
 
 describe('valuePolarity', () => {
   it.each([
+    ['number-2-signed', 1234.5678, '+1234.57', 'positive'],
+    ['number-2-signed', -1234.5678, '-1234.57', 'negative'],
+    ['number-2-signed', 0.004, '0.00', 'neutral'],
+    ['number-2-signed', '-0.004', '0.00', 'neutral'],
+    ['number-2-signed', 0.005, '+0.01', 'positive'],
+    ['number-2-signed', -0.005, '-0.01', 'negative'],
+    ['number-grouped-signed', 1234.5678, '+1,234.568', 'positive'],
+    ['number-grouped-signed', '-1234.5678', '-1,234.568', 'negative'],
+    ['number-grouped-signed', 0.0004, '0', 'neutral'],
+    ['number-grouped-signed', -0.0004, '0', 'neutral'],
+    ['number-grouped-signed', 0.0005, '+0.001', 'positive'],
+    ['number-grouped-signed', -0.0005, '-0.001', 'negative'],
+    ['number-grouped-signed', 1000, '+1,000', 'positive'],
+    ['number-grouped-signed', -1000, '-1,000', 'negative']
+  ] as const)('%s renders %s with matching displayed polarity', (format, value, text, polarity) => {
+    expect(formatValue(value, format)).toBe(text);
+    expect(valuePolarity(value, format)).toBe(polarity);
+  });
+  it.each(['number-signed', 'number-1-signed', 'number-2-signed', 'number-grouped-signed'] as const)('%s handles missing and negative zero', format => {
+    for (const value of [null, undefined, NaN, Infinity]) {
+      expect(formatValue(value, format, '暂无')).toBe('暂无');
+      expect(valuePolarity(value, format)).toBe('neutral');
+    }
+    expect(formatValue(-0, format)).toBe(formatValue(0, format));
+    expect(formatValue(-0, format)).not.toMatch(/^[+-]/);
+  });
+  it.each([
     [1.24, '+1.2', 'positive'], [-1.24, '-1.2', 'negative'],
     [0.04, '0.0', 'neutral'], [-0.04, '0.0', 'neutral'],
     [0.05, '+0.1', 'positive'], [-0.05, '-0.1', 'negative'],

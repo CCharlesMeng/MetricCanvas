@@ -17,9 +17,10 @@
         "6.14",
         "6.15",
         "6.16",
-        "6.17"
+        "6.17",
+        "6.18"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18"
     },
     "id": {
       "type": "string",
@@ -314,6 +315,8 @@
             "number-1",
             "number-signed",
             "number-1-signed",
+            "number-2-signed",
+            "number-grouped-signed",
             "number-2",
             "number-grouped",
             "compact-wan-0",
@@ -354,6 +357,8 @@
             "number-1",
             "number-signed",
             "number-1-signed",
+            "number-2-signed",
+            "number-grouped-signed",
             "number-2",
             "number-grouped",
             "compact-wan-0",
@@ -870,6 +875,8 @@
                 "number-1",
                 "number-signed",
                 "number-1-signed",
+                "number-2-signed",
+                "number-grouped-signed",
                 "number-2",
                 "number-grouped",
                 "compact-wan-0",
@@ -932,6 +939,8 @@
                 "number-1",
                 "number-signed",
                 "number-1-signed",
+                "number-2-signed",
+                "number-grouped-signed",
                 "number-2",
                 "number-grouped",
                 "compact-wan-0",
@@ -1759,6 +1768,8 @@
                 "number-1",
                 "number-signed",
                 "number-1-signed",
+                "number-2-signed",
+                "number-grouped-signed",
                 "number-2",
                 "number-grouped",
                 "compact-wan-0",
@@ -1826,6 +1837,8 @@
                 "number-1",
                 "number-signed",
                 "number-1-signed",
+                "number-2-signed",
+                "number-grouped-signed",
                 "number-2",
                 "number-grouped",
                 "compact-wan-0",
@@ -2018,6 +2031,8 @@
               "number-1",
               "number-signed",
               "number-1-signed",
+              "number-2-signed",
+              "number-grouped-signed",
               "number-2",
               "number-grouped",
               "compact-wan-0",
@@ -2092,6 +2107,8 @@
                   "number-1",
                   "number-signed",
                   "number-1-signed",
+                  "number-2-signed",
+                  "number-grouped-signed",
                   "number-2",
                   "number-grouped",
                   "compact-wan-0",
@@ -2154,6 +2171,8 @@
                   "number-1",
                   "number-signed",
                   "number-1-signed",
+                  "number-2-signed",
+                  "number-grouped-signed",
                   "number-2",
                   "number-grouped",
                   "compact-wan-0",
@@ -3586,6 +3605,8 @@
                 "number-1",
                 "number-signed",
                 "number-1-signed",
+                "number-2-signed",
+                "number-grouped-signed",
                 "number-2",
                 "number-grouped",
                 "compact-wan-0",
@@ -5820,6 +5841,8 @@
                         "number-1",
                         "number-signed",
                         "number-1-signed",
+                        "number-2-signed",
+                        "number-grouped-signed",
                         "number-2",
                         "number-grouped",
                         "compact-wan-0",
@@ -6306,5 +6329,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.17"
+  "$id": "https://metriccanvas/page/v6.18"
 }

@@ -1,0 +1,9 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/signed-number-family/DataDashboard
+
+
+ Test Files  202 passed (202)
+      Tests  1818 passed | 4 skipped (1822)
+   Start at  19:36:42
+   Duration  64.99s (transform 9.66s, setup 0ms, import 91.73s, tests 84.01s, environment 9ms)

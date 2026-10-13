@@ -1,6 +1,18 @@
 {
   "invariants": [
     {
+      "id": "signed-number-family-capability",
+      "description": "两位小数与千分位带符号数值格式由6.18引入",
+      "valid": [
+        "signed-number-family-page"
+      ],
+      "invalid": [
+        "signed-number-two-decimal-before-6.18",
+        "signed-number-grouped-before-6.18",
+        "signed-number-family-param-before-6.18"
+      ]
+    },
+    {
       "id": "signed-number-format-capability",
       "description": "带符号普通数值格式由6.17引入",
       "valid": [

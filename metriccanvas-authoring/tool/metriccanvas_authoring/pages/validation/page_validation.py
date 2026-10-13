@@ -81,11 +81,12 @@ def validate_page_document(value: Any) -> list[PageContractIssue]:
 
 
 def _signed_number_capability_issues(value: Mapping[str, Any], minor: int) -> list[PageContractIssue]:
-    if minor >= 17:
-        return []
     from .presentation import signed_number_paths
-    return [PageContractIssue("SCHEMA_ERROR", path, "带符号普通数值格式由6.17引入")
-            for path in signed_number_paths(value)]
+    versions = [(17, {"number-signed", "number-1-signed"}),
+                (18, {"number-2-signed", "number-grouped-signed"})]
+    return [PageContractIssue("SCHEMA_ERROR", path, f"带符号普通数值格式由6.{floor}引入")
+            for floor, formats in versions if minor < floor
+            for path in signed_number_paths(value, formats)]
 
 
 def _presentation_capability_issues(value: Mapping[str, Any], minor: int) -> list[PageContractIssue]:
@@ -321,6 +322,8 @@ NUMERIC_FORMATS = frozenset(
         "number-1",
         "number-signed",
         "number-1-signed",
+        "number-2-signed",
+        "number-grouped-signed",
         "number-2",
         "number-grouped",
         "compact-wan-0",

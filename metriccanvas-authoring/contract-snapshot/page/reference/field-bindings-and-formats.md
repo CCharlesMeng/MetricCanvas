@@ -6,7 +6,18 @@ format优先于字段defaultFormat；未设置时走组件/类型的既有格式
 
 text不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。
 
-## 带符号普通数值（6.17）
+## 带符号普通数值（6.17起）
+
+全部 `number` 格式都有对应的带符号版本，保留原格式的精度与千分位规则：
+
+| 原格式 | 带符号格式 | 版本下限 | 正数示例 | 零值示例 |
+|---|---|---|---|---|
+| `number` | `number-signed` | 6.17 | `+1.234` | `0` |
+| `number-1` | `number-1-signed` | 6.17 | `+1.2` | `0.0` |
+| `number-2` | `number-2-signed` | 6.18 | `+1.23` | `0.00` |
+| `number-grouped` | `number-grouped-signed` | 6.18 | `+1,234.568` | `0` |
+
+`number-2-signed` 的 `±0.004` 均显示 `0.00`，`±0.005` 分别显示 `+0.01`、`-0.01`。`number-grouped-signed` 沿用当前千分位格式默认最多三位小数的舍入策略，`±0.0004` 均显示 `0`，`±0.0005` 分别显示 `+0.001`、`-0.001`。所有带符号普通数值格式共用零值的符号、正负颜色及变化箭头规则。
 
 `number-signed` 保留 `number` 的原始数值精度，正数加 `+`、负数保留 `-`、零无符号；`number-1-signed` 保留一位小数后判断符号。`1.24` 显示 `+1.2`，`-1.24` 显示 `-1.2`，`0.04`、`-0.04` 与负零均显示 `0.0`。不乘100、不追加百分号，适用于天数或次数的绝对变化。单位仍由组件的单位声明提供。空值及非有限数值显示缺失文案。
 
@@ -54,7 +65,7 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 6.15 新增 `period`：用于时间输入的统一展示，单点原值显示，范围“开始 至 结束”，同端点折叠为单点。`{filter, format:"period"}` 读取已应用状态；`{param, format:"period"}` 读取打开时的参数值。没有 period-compact 或自定义连接词。
 
 
-页面协议 6.17。结构真源为本册[schema.json](schema.json)，SHA256 `5428ea4686046582f8446c1de4237ca36ac3e2be251cec3390329801185058f6`。字段表自动生成；可选不等于有默认值。
+页面协议 6.18。结构真源为本册[schema.json](schema.json)，SHA256 `409931a46ec8ee0830617569960fcf5f7876ddd308294354a33c70aee966d75e`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -166,7 +177,7 @@ Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 只控制当前组件中这一次字段绑定的展示格式 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 只控制当前组件中这一次字段绑定的展示格式 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -175,6 +186,8 @@ Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/format`。
 | "number-1" | 保留1位小数。 |
 | "number-signed" | 保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。 |
 | "number-1-signed" | 保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。 |
+| "number-2-signed" | 保留两位小数，正数加正号，舍入后零无符号；方向与展示精度一致；6.18新增。 |
+| "number-grouped-signed" | 沿用number-grouped千分位与默认小数精度，正数加正号，舍入后零无符号；6.18新增。 |
 | "number-2" | 保留2位小数。 |
 | "number-grouped" | 千分位数值展示。 |
 | "compact-wan-0" | 按万缩放，0位小数。 |
@@ -470,6 +483,7 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - `chart-value-label-exclusive`：常驻数值标签不与旧标签重复启用。反例：[value-label-bar-conflict](errors/value-label-bar-conflict.json)、[value-label-line-conflict](errors/value-label-line-conflict.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `presentation-capability`：颜色与图表标签声明由6.16引入。反例：[presentation-before-6.16](errors/presentation-before-6.16.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `signed-number-format-capability`：带符号普通数值格式由6.17引入。反例：[signed-number-binding-before-6.17](errors/signed-number-binding-before-6.17.json)、[signed-number-default-before-6.17](errors/signed-number-default-before-6.17.json)、[signed-number-param-before-6.17](errors/signed-number-param-before-6.17.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `signed-number-family-capability`：两位小数与千分位带符号数值格式由6.18引入。反例：[signed-number-two-decimal-before-6.18](errors/signed-number-two-decimal-before-6.18.json)、[signed-number-grouped-before-6.18](errors/signed-number-grouped-before-6.18.json)、[signed-number-family-param-before-6.18](errors/signed-number-family-param-before-6.18.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -478,6 +492,7 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - [reference-branches-page](examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 - [explicit-presentation-page](examples/explicit-presentation-page.json)：完整合法页面；查询仅为静态契约证据。
 - [signed-number-page](examples/signed-number-page.json)：完整合法页面；查询仅为静态契约证据。
+- [signed-number-family-page](examples/signed-number-family-page.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/primitives.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。

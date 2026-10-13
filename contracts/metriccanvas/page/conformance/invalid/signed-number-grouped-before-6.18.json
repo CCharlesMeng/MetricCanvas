@@ -1,0 +1,84 @@
+{
+  "case": "signed-number-grouped-before-6.18",
+  "invariant": "signed-number-family-capability",
+  "input": {
+    "schemaVersion": "6.17",
+    "layout": "report",
+    "id": "inline-report",
+    "meta": {
+      "description": "内联报告契约样例"
+    },
+    "dataSources": {
+      "overview": {
+        "fields": {
+          "gmv": {
+            "type": "number",
+            "role": "measure",
+            "label": "成交总额",
+            "nullable": false,
+            "defaultFormat": "number-grouped-signed"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "gmv": 632300000000
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "overview",
+        "components": [
+          {
+            "id": "report-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "经营简报",
+              "asOf": {
+                "label": "数据截至",
+                "value": "2026-07-21"
+              }
+            }
+          },
+          {
+            "id": "gmv-card",
+            "type": "metricCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "overview"
+            },
+            "props": {
+              "title": "GMV",
+              "rows": [
+                {
+                  "label": "当日",
+                  "valueField": {
+                    "data": "main",
+                    "field": "gmv",
+                    "format": "compact-yi-1"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/fields/gmv/defaultFormat",
+      "message": "补齐两位小数及千分位的带符号普通数值格式 由 6.18 引入，文档声明的是 6.17"
+    }
+  ]
+}

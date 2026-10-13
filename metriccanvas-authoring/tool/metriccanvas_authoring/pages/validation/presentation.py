@@ -3,8 +3,9 @@
 from .filter_text_values import references
 
 
-def signed_number_paths(page):
-    formats = {"number-signed", "number-1-signed"}
+def signed_number_paths(page, formats=None):
+    if formats is None:
+        formats = {"number-signed", "number-1-signed", "number-2-signed", "number-grouped-signed"}
     result = []
 
     def visit(node, path, name):
