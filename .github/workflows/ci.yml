@@ -80,8 +80,14 @@ jobs:
       - name: 产品构建
         run: pnpm build
 
-      - name: 构建平台 HTML 微前端归档
-        run: pnpm --filter platform pack:microfrontend
+      - name: 构建平台生产与调试微前端归档
+        run: pnpm --filter platform pack:microfrontend:all
+
+      - name: 安装调试包验收浏览器
+        run: pnpm --filter @metriccanvas/embed exec playwright install --with-deps chromium
+
+      - name: 验证 qiankun 调试包源码映射
+        run: node apps/platform/tests/microfrontend/debug-browser.mjs
 
       - name: 检查打包入口、声明与组件
         run: pnpm packages:check

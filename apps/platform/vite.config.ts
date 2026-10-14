@@ -20,7 +20,8 @@ function htmlEntry(): Plugin {
 }
 
 export default defineConfig(({mode}) => {
-  const micro = mode === 'microfrontend';
+  const debug = mode === 'microfrontend-debug';
+  const micro = mode === 'microfrontend' || debug;
   return {
     // Library mode intentionally leaves NODE_ENV untouched unless explicitly defined.
     define: micro ? {'process.env.NODE_ENV': JSON.stringify('production')} : {},
@@ -32,8 +33,10 @@ export default defineConfig(({mode}) => {
     }},
     base: micro ? './' : process.env.METRICCANVAS_BASE_PATH || '/',
     build: micro ? {
-      outDir: 'dist/microfrontend',
+      outDir: debug ? 'dist/microfrontend-debug' : 'dist/microfrontend',
       target: 'es2022',
+      // Debug changes readability only; Vite/Svelte still compile production code.
+      ...(debug ? {minify: false, cssMinify: false, sourcemap: true} : {}),
       lib: {
         entry: 'src/microfrontend/entry.ts', name: 'MetricCanvasPlatform', formats: ['umd'],
         fileName: () => 'assets/platform.umd.js', cssFileName: 'assets/platform'

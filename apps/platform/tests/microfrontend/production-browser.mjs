@@ -7,7 +7,9 @@ import {resolve,extname} from 'node:path';
 import {chromium,expect} from '../../../../packages/embed/node_modules/@playwright/test/index.mjs';
 const qiankun=process.env.QIANKUN_DIST || createRequire(import.meta.url).resolve('qiankun/dist/index.umd.js');
 const adapterMode=process.env.DEPLOYMENT_ADAPTER_TEST === '1';
-let dist=resolve('apps/platform/dist/microfrontend');
+const profile=process.env.MICROFRONTEND_PROFILE || 'production';
+if(!['production','debug'].includes(profile))throw Error('Invalid MICROFRONTEND_PROFILE');
+let dist=resolve(`apps/platform/dist/microfrontend${profile==='debug'?'-debug':''}`);
 let deploymentDirectory;
 if(adapterMode){
  deploymentDirectory=mkdtempSync(resolve(tmpdir(),'platform-browser-deployment-'));
@@ -132,5 +134,5 @@ try {
  expect(failureCleanup).toEqual({failed:true,count:0,roots:0});
  if(adapterMode)expect(await page.evaluate(()=>adapterCounters.open === adapterCounters.closed && adapterCounters.open > 1)).toBe(true);
  expect(errors).toEqual([]);
- console.log(JSON.stringify({status:'PASS',deploymentAdapter:adapterMode,qiankun:'2.10.16',browser:browser.version(),writes,evidence:'production HTML + CSS/UMD, prefix, navigation/back/forward/refresh, manual edit/save/reopen, cancel click/back/cross-prefix back/portal leave, local modal, unknown write retained without replay, token refresh, identity invalidation, unmount/remount/rapid switching, failed mount cleanup; HTTP fixture only'}));
+ console.log(JSON.stringify({status:'PASS',profile,deploymentAdapter:adapterMode,qiankun:'2.10.16',browser:browser.version(),writes,evidence:'production HTML + CSS/UMD, prefix, navigation/back/forward/refresh, manual edit/save/reopen, cancel click/back/cross-prefix back/portal leave, local modal, unknown write retained without replay, token refresh, identity invalidation, unmount/remount/rapid switching, failed mount cleanup; HTTP fixture only'}));
 } catch(error){console.error(await page.locator('body').innerText());console.error(errors);throw error;}finally{await browser.close();await new Promise(r=>server.close(r));if(deploymentDirectory)rmSync(deploymentDirectory,{recursive:true,force:true});}

@@ -67,6 +67,8 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 
 `pnpm --filter platform pack:microfrontend` 输出 `apps/platform/dist/microfrontend/` 和同级版本归档、SHA-256；独立构建仍在 `apps/platform/build/`，互不覆盖。`release.json` 包含候选版本、Git 基线、工作区修改标志、源码树 SHA-256 及各资源摘要。工作区产物的基线 SHA 不应冒充全部修改已提交的源码 SHA。
 
+`pnpm --filter platform pack:microfrontend:debug` 输出独立的 `apps/platform/dist/microfrontend-debug/` 和 `metriccanvas-platform-<version>-debug.tar.gz`、SHA-256。调试包保持同一生产编译逻辑，JS/CSS 不压缩，附带含 TS/Svelte 源内容的 JS source map；生产目录不包含 map。`release.json.profile` 区分 `production` 与 `debug`。`pack:microfrontend:all` 连续生成两种归档，目录互不覆盖。两种包均可用归档自带的部署组合脚本接入仓外 Adapter，调试时将门户 entry 指向组合后的调试目录即可；具体操作见 [平台打包与调试](platform-build.md)。
+
 | props | 语义 |
 |---|---|
 | `routeBase` | 必填绝对路径前缀；门户按路径段激活 |

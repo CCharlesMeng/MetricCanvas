@@ -8,9 +8,13 @@
     "preview": "vite preview --port 4174",
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "build:microfrontend": "vite build --mode microfrontend",
+    "build:microfrontend:debug": "vite build --mode microfrontend-debug",
     "pack:microfrontend": "pnpm build:microfrontend && node scripts/pack-microfrontend.mjs",
+    "pack:microfrontend:debug": "pnpm build:microfrontend:debug && node scripts/pack-microfrontend.mjs --debug",
+    "pack:microfrontend:all": "pnpm pack:microfrontend && pnpm pack:microfrontend:debug",
     "pack:deployment": "node scripts/pack-deployment.mjs",
-    "test:microfrontend": "cd ../.. && node apps/platform/tests/microfrontend/production-browser.mjs"
+    "test:microfrontend": "cd ../.. && node apps/platform/tests/microfrontend/production-browser.mjs",
+    "test:microfrontend:debug": "cd ../.. && MICROFRONTEND_PROFILE=debug DEPLOYMENT_ADAPTER_TEST=1 node apps/platform/tests/microfrontend/production-browser.mjs && node apps/platform/tests/microfrontend/debug-browser.mjs"
   },
   "dependencies": {
     "@metriccanvas/application-runtime": "workspace:*",
