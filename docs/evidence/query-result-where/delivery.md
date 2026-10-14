@@ -19,3 +19,7 @@
 - git diff --check：通过。
 
 本地命令日志保存于/tmp/metriccanvas-query-cascade-delivery/。浏览器交互与截图见[paged-scenario.md](paged-scenario.md)；配置与影响见[architecture-impact.md](architecture-impact.md)。本批未验收真实DS模型、DQE/Relay/Java或生产部署；远端提交与CI结论在交付最终回执中另行报告。
+
+## 首轮CI与消费者夹具修复
+
+首轮提交a25f256b的CI运行38577509386中，types/build/authoring/tests通过；兼容性浏览器196个用例通过，新增行过滤用例在Chrome和Edge分别因query-result-where-page.json未复制到独立消费者而报ENOENT。修复在compatibility.mjs的显式夹具复制清单增加该文件，不修改业务行为；最终提交与重跑CI结论由交付回执报告。
