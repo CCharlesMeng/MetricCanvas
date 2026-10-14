@@ -25,6 +25,10 @@
 
 验证未提交改动时，先只暂存本次交付文件，用 `git write-tree` 取得树 ID，再传 `--source-tree=<树 ID>`。输出包含该树 ID；不会把其他任务尚未完成的工作区改动混入验收，也不会改写本仓锁文件。`METRICCANVAS_COMPATIBILITY_DIR` 可指定工作区之外的结果目录，已存在的版本子目录会拒绝覆盖；未指定时自动创建临时目录。日志、浏览器版本、测试结果与 `summary.json` 留存其中。
 
+CI 使用 `--source-checks=ci`：仅在 GitHub Actions 中，且 GITHUB_SHA、checkout 的 HEAD 和选定源码树一致时，源码副本省去重复 test/check，仍冻结安装、严格 peer 校验、build、实际打包及全部消费者验收。`tests` / `types` job 在同一 SHA 上执行完整源码检查，最终必需的 `ci` job 汇总五个并行任务；任何失败、取消或跳过均阻止通过。本地默认 `--source-checks=full` 保留完整检查，不能把 CI 模式的消费者结果单独报告为完整源码验证。
+
+CI 仅上传 `summary.json`、包归档、命令日志、消费者 manifest/lockfile、浏览器结果及存在的失败附件。临时源码和消费者安装目录不上传。summary 记录源码提交/树、验证模式、委托检查以及各命令耗时和结果；失败时已完成的诊断仍保留。流水线与交付操作见 [CI 与范围交付](../../docs/agents/ci-delivery.md)。
+
 源码副本保持冻结锁文件，消费者使用当前 Vite / vite-plugin-svelte 工具链，不再降级依赖或重写源码副本的 manifest。包内已有 Svelte peer 范围保留，但门禁只提供当前版本的兼容性证据。
 
 浏览器必须为真实 Chrome 和 Edge；先执行 `pnpm --filter @metriccanvas/embed exec playwright install --with-deps chrome msedge`，CI 自动执行此步。本机已有 Chrome 时，可用 `METRICCANVAS_EDGE_EXECUTABLE` 指定独立解包的官方 Edge 可执行文件。门禁记录实际启动版本，两种加载方式 ESM / script-IIFE 均由既有测试覆盖。该门禁不替代 #103 的外部真实集成应用验收。

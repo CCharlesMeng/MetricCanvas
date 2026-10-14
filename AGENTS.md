@@ -24,6 +24,10 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 
 改动只要需要对着**外部设计源**(设计稿、规格、旧系统截图)还原视觉或结构,就走 `sdd-dev-frontend`;纯逻辑改动、重构、修 bug、加测试不走。判据是改动对着什么,不是改动多大。理由是"像不像"没有客观标准,SDD 的机器判据正是为这类问题准备的;"对不对"这类问题 `pnpm test` 已经够了。
 
+### Git 交付
+
+提交、push 或跨分支交付使用 [scoped-main-delivery](.agents/skills/scoped-main-delivery/SKILL.md)，以本仓入口为准。
+
 ### Issue tracker
 
 本仓库的 issue 和 PRD 存放于 GitHub Issues(`CCharlesMeng/MetricCanvas`),使用 `gh` CLI 操作。详见 `docs/agents/issue-tracker.md`。

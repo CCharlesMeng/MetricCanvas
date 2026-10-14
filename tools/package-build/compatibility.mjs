@@ -5,6 +5,7 @@ import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { sourceCheckCommands } from './compatibility-profile.mjs';
 
 const root = realpathSync(fileURLToPath(new URL('../..', import.meta.url)));
 const require = createRequire(import.meta.url);
@@ -15,24 +16,44 @@ const selected = process.argv.find((arg) => arg.startsWith('--svelte='))?.slice(
 const requestedTree = process.argv.find((arg) => arg.startsWith('--source-tree='))?.slice('--source-tree='.length) ?? 'HEAD';
 assert(/^(?:HEAD|[a-f0-9]{40})$/.test(requestedTree), 'source-tree must be HEAD or an explicit Git object id');
 const sourceTree = execFileSync('git', ['rev-parse', `${requestedTree}^{tree}`], { cwd: root, encoding: 'utf8' }).trim();
+const checkMode = process.argv.find(arg => arg.startsWith('--source-checks='))?.slice('--source-checks='.length) ?? 'full';
+const headSha = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
+const headTree = execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { cwd: root, encoding: 'utf8' }).trim();
+const sourceCommands = sourceCheckCommands(checkMode, {
+  githubActions: process.env.GITHUB_ACTIONS, ci: process.env.CI,
+  githubSha: process.env.GITHUB_SHA, headSha, sourceTree, headTree
+});
 const versions = selected ? [selected === 'current' ? current : selected] : [current];
 for (const version of versions) assert(version === current, `Unsupported matrix version ${version}`);
 const requestedOutput = resolve(process.env.METRICCANVAS_COMPATIBILITY_DIR ?? mkdtempSync(join(tmpdir(), 'metriccanvas-compatibility-')));
 mkdirSync(requestedOutput, { recursive: true });
 const output = realpathSync(requestedOutput);
 assert(output !== root && !output.startsWith(root + '/'), 'Compatibility consumers must live outside the workspace');
-const summary = { source: root, sourceTree, versions: [] };
+const summary = {
+  source: root, sourceTree, sourceCommit: headSha,
+  sourceValidation: { mode: checkMode, commands: sourceCommands,
+    delegatedJobs: checkMode === 'ci' ? ['tests', 'types'] : [] },
+  steps: [], versions: []
+};
+writeJson(join(output, 'summary.json'), summary);
 const names = ['page', 'ui', 'engine', 'metric-canvas', 'embed'];
 
 function run(command, args, cwd, log) {
   console.log(`${command} ${args.join(' ')}\n  cwd: ${cwd}\n  log: ${log}`);
   const fd = openSync(log, 'w');
+  const started = Date.now();
+  let result = 'success';
   try {
     execFileSync(command, args, { cwd, stdio: ['ignore', fd, fd], env: { ...process.env, CI: '1' } });
   } catch (error) {
+    result = 'failure';
     console.error(readFileSync(log, 'utf8').slice(-12000));
     throw error;
-  } finally { closeSync(fd); }
+  } finally {
+    closeSync(fd);
+    summary.steps.push({ command, args, seconds: (Date.now() - started) / 1000, result, log });
+    writeJson(join(output, 'summary.json'), summary);
+  }
 }
 
 /** 按明确 Git 树建立隔离源码矩阵，原工作区及其锁文件完全不动。 */
@@ -43,7 +64,7 @@ function sourceWorkspace(directory, logs) {
   execFileSync('tar', ['-xf', archive, '-C', directory]);
   rmSync(archive);
   run('pnpm', ['install', '--frozen-lockfile', '--strict-peer-dependencies'], directory, join(logs, 'source-install.log'));
-  for (const command of ['test', 'check', 'build']) run('pnpm', [command], directory, join(logs, `source-${command}.log`));
+  for (const command of sourceCommands) run('pnpm', [command], directory, join(logs, `source-${command}.log`));
   return directory;
 }
 

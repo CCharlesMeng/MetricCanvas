@@ -26,6 +26,7 @@
     "build:packages": "pnpm --filter @metriccanvas/ui --filter @metriccanvas/page --filter @metriccanvas/engine --filter @metriccanvas/metric-canvas -r build",
     "packages:check": "tsx tools/package-build/check.ts",
     "compatibility:check": "node tools/package-build/compatibility.mjs",
+    "ci:wait": "node tools/scripts/wait-ci.mjs",
     "test:ui": "pnpm --filter @metriccanvas/ui test:browser"
   },
   "devDependencies": {
@@ -37,6 +38,7 @@
     "tsx": "^4.23.1",
     "typescript": "^5.9.3",
     "vite": "8.1.5",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "yaml": "2.9.0"
   }
 }

@@ -1,5 +1,4 @@
-# CI 流水线(切片9,docs/solution.md §5「页面即代码」):
-# PR 与 main push 触发,校验不过则 workflow 失败、阻止合并(分支保护规则由维护者在仓库设置里开启)。
+# All checks use the same GitHub SHA. Required status "ci" aggregates every job.
 name: CI
 
 on:
@@ -7,32 +6,20 @@ on:
   push:
     branches: [main]
 
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
 jobs:
-  ci:
+  authoring:
     runs-on: ubuntu-latest
-    env:
-      PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 11
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
-
+      - uses: ./.github/actions/setup-workspace
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           cache: pip
           cache-dependency-path: metriccanvas-authoring/tool/requirements.lock
-
-      # allowBuilds(esbuild)已在 pnpm-workspace.yaml 声明,frozen-lockfile 下自动生效
-      - name: 安装依赖
-        run: pnpm install --frozen-lockfile
 
       - name: 安装创作 Bundle 依赖
         run: python -m pip install --require-hashes -r metriccanvas-authoring/tool/requirements.lock
@@ -68,14 +55,32 @@ jobs:
       - name: 验证创作接入与单向同步契约
         run: python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_deployment*.py'
 
-      # 自动包含 apps/platform/tests/dialogue.test.ts；不依赖内网盘古 SDK。
-      - name: 单元测试（含对话接缝）
-        run: pnpm test
+      - name: 上传创作 Bundle
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: metriccanvas-authoring-${{ github.sha }}
+          path: metriccanvas-authoring
 
-      # platform check 覆盖 dialogue 的 port/runtime、Svelte 容器和测试类型。
-      - name: 类型检查（含对话模块）
-        run: pnpm check
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
+      - run: pnpm test
 
+  types:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
+      - run: pnpm check
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
       # 产品构建包含四个引擎交付物与纯前端静态平台。
       - name: 产品构建
         run: pnpm build
@@ -106,38 +111,43 @@ jobs:
           name: metriccanvas-platform-microfrontend-${{ github.sha }}
           path: apps/platform/dist
 
-      # 开发预览应用按需使用，不作为产品构建产物上传。
-      # 实际内网载体的 deploy job 仍待部署环境确定。
-      - name: 上传创作 Bundle
-        if: github.event_name == 'push'
-        uses: actions/upload-artifact@v4
-        with:
-          name: metriccanvas-authoring-${{ github.sha }}
-          path: metriccanvas-authoring
-
-  # ADR-0074：旧 Java 工程由完整历史 tag 保留，不再作为本仓 CI 交付物。
-  # 新页面资产接口由外部提供，消费验收见 #105；不以旧 Java job 冒充接入。
-
   compatibility:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 11
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-workspace
       - name: Install supported browser channels
         run: pnpm --filter @metriccanvas/embed exec playwright install --with-deps chrome msedge
       - name: Verify isolated source and installed consumers
-        run: pnpm compatibility:check --svelte=current
+        run: pnpm compatibility:check --svelte=current --source-checks=ci
         env:
           METRICCANVAS_COMPATIBILITY_DIR: ${{ runner.temp }}/metriccanvas-compatibility
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: compatibility-current-${{ github.sha }}
-          path: ${{ runner.temp }}/metriccanvas-compatibility
+          path: |
+            ${{ runner.temp }}/metriccanvas-compatibility/summary.json
+            ${{ runner.temp }}/metriccanvas-compatibility/*/*.tgz
+            ${{ runner.temp }}/metriccanvas-compatibility/*/logs/**
+            ${{ runner.temp }}/metriccanvas-compatibility/*/page-only/package*.json
+            ${{ runner.temp }}/metriccanvas-compatibility/*/ui-only/package*.json
+            ${{ runner.temp }}/metriccanvas-compatibility/*/consumer/package*.json
+            ${{ runner.temp }}/metriccanvas-compatibility/*/consumer/browser-*.json
+            ${{ runner.temp }}/metriccanvas-compatibility/*/ui-only/test-results/**
+            ${{ runner.temp }}/metriccanvas-compatibility/*/consumer/test-results/**
+            ${{ runner.temp }}/metriccanvas-compatibility/*/consumer/playwright-report/**
+
+  ci:
+    if: ${{ always() }}
+    needs: [authoring, tests, types, build, compatibility]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Require all checks to succeed
+        run: node tools/scripts/check-ci-results.mjs
+        env:
+          CI_JOB_RESULTS: ${{ toJSON(needs) }}
