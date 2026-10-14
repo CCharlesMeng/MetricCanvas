@@ -48,33 +48,37 @@ describe('独立本地创作 Skill', () => {
     expect(JSON.parse(version.stdout).schemaVersion).toBe(manifest.schemaVersion);
   });
 
-  it('无仓库和依赖的 CLI 接受合法页面，拒绝语义错误、文件名错误和 JSON 语法错误', async () => {
+  // Each scenario launches one bounded Node process. Combining eight CLI
+  // invocations made the shared 5s test deadline depend on CI runner load.
+  it.each([
+    ['valid', 0], ['file-name', 1], ['semantic', 1], ['syntax', 1],
+    ['missing', 2], ['empty-directory', 2], ['directory', 0]
+  ] as const)('无仓库和依赖的 CLI 场景：%s', async (scenario, status) => {
+    const caseFolder = await mkdtemp(path.join(isolated, 'cli-'));
     const page = JSON.parse(files.get('references/page-metadata/examples/inline-report.json')!);
-    const target = path.join(isolated, `${page.id}.json`);
-    await writeFile(target, JSON.stringify(page));
-    expect(run([target]).status).toBe(0);
-    const wrongName = path.join(isolated, 'wrong-name.json');
-    await writeFile(wrongName, JSON.stringify(page));
-    const mismatch = run([wrongName]);
-    expect(mismatch.status).toBe(1);
-    expect(JSON.parse(mismatch.stdout).errors).toEqual(fileNameErrors('wrong-name.json', page));
-    page.sections[0].components[0].id = page.sections[0].components[1].id;
-    const expected = parsePage(page);
-    expect(expected.ok).toBe(false);
-    await writeFile(target, JSON.stringify(page));
-    const failed = run([target]);
-    expect(failed.status).toBe(1);
-    expect(JSON.parse(failed.stdout).errors).toEqual(expected.errors);
-    await writeFile(target, '{broken');
-    expect(run([target]).status).toBe(1);
-    expect(run([path.join(isolated, 'missing')]).status).toBe(2);
-    const empty = path.join(isolated, 'empty');
-    await mkdir(empty);
-    expect(run([empty]).status).toBe(2);
-    await writeFile(path.join(empty, `${page.id}.json`), files.get('references/page-metadata/examples/inline-report.json')!);
-    const directory = run([empty]);
-    expect(directory.status, directory.stderr).toBe(0);
-    expect(JSON.parse(directory.stdout).ok).toBe(true);
+    let target = path.join(caseFolder, `${page.id}.json`);
+    let expectedErrors: unknown[] | undefined;
+    if (scenario === 'file-name') {
+      target = path.join(caseFolder, 'wrong-name.json');
+      expectedErrors = fileNameErrors('wrong-name.json', page);
+    } else if (scenario === 'semantic') {
+      page.sections[0].components[0].id = page.sections[0].components[1].id;
+      const parsed = parsePage(page);
+      expect(parsed.ok).toBe(false);
+      if (!parsed.ok) expectedErrors = parsed.errors;
+    }
+    if (scenario !== 'missing' && scenario !== 'empty-directory') {
+      await writeFile(target, scenario === 'syntax' ? '{broken' : JSON.stringify(page));
+    }
+    const result = run([scenario === 'directory' || scenario === 'empty-directory' ? caseFolder : target]);
+    expect(result.error, result.stderr).toBeUndefined();
+    expect(result.status, result.stderr).toBe(status);
+    if (status !== 2) {
+      const receipt = JSON.parse(result.stdout);
+      expect(receipt.ok).toBe(status === 0);
+      if (expectedErrors) expect(receipt.errors).toEqual(expectedErrors);
+      if (scenario === 'syntax') expect(receipt.errors[0].type).toBe('SCHEMA_ERROR');
+    }
   });
 
   it('概览完整样例与短片段均可通过产品校验，地名清单无仓外依赖', async () => {
