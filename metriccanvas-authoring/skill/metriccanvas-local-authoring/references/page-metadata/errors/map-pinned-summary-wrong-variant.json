@@ -1,0 +1,39 @@
+{
+  "case": "map-pinned-summary-wrong-variant",
+  "invariant": "map-pinned-summary",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "pinnedSummary 只能用于 variant: regionalOverview 的地图",
+      "paths": [
+        "/sections/0/components/0/props/pinnedSummary"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "pinnedSummary": {
+                "matchField": "code",
+                "matchValue": "310000",
+                "titleField": "name",
+                "fields": [
+                  {
+                    "…": "共2个键"
+                  },
+                  {
+                    "…": "共2个键"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

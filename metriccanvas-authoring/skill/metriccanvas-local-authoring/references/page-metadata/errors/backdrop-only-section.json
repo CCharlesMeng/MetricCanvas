@@ -1,0 +1,32 @@
+{
+  "case": "backdrop-only-section",
+  "invariant": "backdrop-needs-siblings",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "内容分区 overview 只有 backdrop 组件，没有可叠放其上的组件",
+      "paths": [
+        "/sections/0/components"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "backdrop",
+            "type": "text",
+            "layout": {
+              "…": "共2个键"
+            },
+            "props": {
+              "…": "共2个键"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

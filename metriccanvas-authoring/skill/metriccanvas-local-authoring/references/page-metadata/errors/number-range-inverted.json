@@ -1,0 +1,30 @@
+{
+  "case": "number-range-inverted",
+  "invariant": "number-range-default",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "数值区间 from 不得大于 to",
+      "paths": [
+        "/filters/6/default"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      "…",
+      "…",
+      "…",
+      "…",
+      "…",
+      {
+        "default": {
+          "from": 10,
+          "to": 5
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

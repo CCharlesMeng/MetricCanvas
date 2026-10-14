@@ -1,0 +1,46 @@
+{
+  "case": "data-slot-unknown-source",
+  "invariant": "data-slot-known-source",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "数据槽 main 引用了未知数据源:nope",
+      "paths": [
+        "/sections/0/components/1/data/main"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字段绑定的数据槽 main 指向未知数据源:nope",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/valueField"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "data": {
+              "main": "nope"
+            },
+            "props": {
+              "rows": [
+                {
+                  "valueField": {
+                    "data": "main",
+                    "field": "gmv",
+                    "format": "compact-yi-1"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

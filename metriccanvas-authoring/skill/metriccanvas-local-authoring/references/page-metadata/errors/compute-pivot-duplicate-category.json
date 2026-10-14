@@ -1,0 +1,34 @@
+{
+  "case": "compute-pivot-duplicate-category",
+  "invariant": "compute-pivot-categories-unique",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "类别取值已映射到其它目标列:线上",
+      "paths": [
+        "/dataSources/pivoted/compute/0/columns/1/categories/2"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "pivoted": {
+        "compute": [
+          {
+            "columns": [
+              "…",
+              {
+                "categories": [
+                  "…",
+                  "…",
+                  "线上"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

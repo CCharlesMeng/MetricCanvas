@@ -1,0 +1,26 @@
+{
+  "case": "time-range-from-after-to",
+  "invariant": "time-range-default-calendar",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间范围 from 不得晚于 to",
+      "paths": [
+        "/filters/2/default"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      "…",
+      {
+        "default": {
+          "from": "2026-07-31",
+          "to": "2026-07-01"
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

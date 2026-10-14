@@ -1,0 +1,42 @@
+{
+  "case": "query-field-without-mapping",
+  "invariant": "query-field-mapping",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "行缺少字段:extra",
+      "paths": [
+        "/dataSources/orders/source/initial/rows/0/extra",
+        "/dataSources/orders/source/initial/rows/1/extra"
+      ]
+    },
+    {
+      "type": "QUERY_MAPPING_ERROR",
+      "message": "页面字段 extra 既没有 queryField 映射，也不是计算阶段产出字段",
+      "paths": [
+        "/dataSources/orders/fields/extra"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "orders": {
+        "source": {
+          "initial": {
+            "rows": [
+              {},
+              {}
+            ]
+          }
+        },
+        "fields": {
+          "extra": {
+            "type": "number",
+            "role": "measure"
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

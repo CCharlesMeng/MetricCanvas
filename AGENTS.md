@@ -18,6 +18,8 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 
 `.agents/skills/repair-page-metadata/` 是本仓自有 skill,由本仓维护并随仓交付。
 
+`.agents/skills/metriccanvas-local-authoring` 指向本仓独立分发的 `metriccanvas-authoring/skill/metriccanvas-local-authoring/`。新增、更新或交付该 Skill 时读取 [`docs/agents/local-authoring-skill-maintenance.md`](docs/agents/local-authoring-skill-maintenance.md)，在产品真源生成知识与校验器；安装目录内的知识和运行依赖必须闭合。
+
 ### 何时走 SDD
 
 改动只要需要对着**外部设计源**(设计稿、规格、旧系统截图)还原视觉或结构,就走 `sdd-dev-frontend`;纯逻辑改动、重构、修 bug、加测试不走。判据是改动对着什么,不是改动多大。理由是"像不像"没有客观标准,SDD 的机器判据正是为这类问题准备的;"对不对"这类问题 `pnpm test` 已经够了。

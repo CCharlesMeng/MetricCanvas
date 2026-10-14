@@ -1,0 +1,33 @@
+{
+  "case": "record-list-in-table-column",
+  "invariant": "detail-field-consumption",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "此组件属性只支持 semanticHtml 类型的 detail 字段:events",
+      "paths": [
+        "/sections/0/components/1/props/columns/1/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "field": "events"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,27 @@
+{
+  "case": "inline-row-datetime-invalid",
+  "invariant": "inline-rows-contract",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字段 at 的值不符合类型 datetime",
+      "paths": [
+        "/dataSources/notes/source/rows/0/at"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "notes": {
+        "source": {
+          "rows": [
+            {
+              "at": "2026-06-15 10:00"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

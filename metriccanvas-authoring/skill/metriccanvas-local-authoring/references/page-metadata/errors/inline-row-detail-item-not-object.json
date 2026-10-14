@@ -1,0 +1,251 @@
+{
+  "case": "inline-row-detail-item-not-object",
+  "invariant": "detail-item-object",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be string",
+      "paths": [
+        "/dataSources/notes/source/rows/0/items"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be number",
+      "paths": [
+        "/dataSources/notes/source/rows/0/items"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be boolean",
+      "paths": [
+        "/dataSources/notes/source/rows/0/items"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be null",
+      "paths": [
+        "/dataSources/notes/source/rows/0/items"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match a schema in anyOf",
+      "paths": [
+        "/dataSources/notes/source/rows/0/items",
+        "/dataSources/notes/source/rows/0/items",
+        "/dataSources/notes/fields/body",
+        "/dataSources/notes/fields/items",
+        "/dataSources/notes/fields",
+        "/dataSources/notes/fields",
+        "/dataSources/notes"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be object",
+      "paths": [
+        "/dataSources/notes/source/rows/0/items/0"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 queryField",
+      "paths": [
+        "/dataSources/notes/fields/body/queryField",
+        "/dataSources/notes/fields/body/queryField",
+        "/dataSources/notes/fields/body/queryField",
+        "/dataSources/notes/fields/body/queryField",
+        "/dataSources/notes/fields/items/queryField",
+        "/dataSources/notes/fields/items/queryField",
+        "/dataSources/notes/fields/items/queryField",
+        "/dataSources/notes/fields/items/items/fields/name/queryField",
+        "/dataSources/notes/fields/items/items/fields/name/queryField",
+        "/dataSources/notes/fields/items/items/fields/value/queryField",
+        "/dataSources/notes/fields/items/items/fields/value/queryField",
+        "/dataSources/notes/fields/items/queryField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"string\",\"number\",\"boolean\",\"date\",\"datetime\"]",
+      "paths": [
+        "/dataSources/notes/fields/body/type",
+        "/dataSources/notes/fields/body/type",
+        "/dataSources/notes/fields/items/type",
+        "/dataSources/notes/fields/items/type"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"dimension\",\"measure\"]",
+      "paths": [
+        "/dataSources/notes/fields/body/role",
+        "/dataSources/notes/fields/body/role",
+        "/dataSources/notes/fields/items/role",
+        "/dataSources/notes/fields/items/role"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 currency",
+      "paths": [
+        "/dataSources/notes/fields/body/currency",
+        "/dataSources/notes/fields/body/currency",
+        "/dataSources/notes/fields/items/currency",
+        "/dataSources/notes/fields/items/items/fields/name/currency",
+        "/dataSources/notes/fields/items/items/fields/value/currency",
+        "/dataSources/notes/fields/items/currency"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be equal to constant",
+      "paths": [
+        "/dataSources/notes/fields/body/type",
+        "/dataSources/notes/fields/body/role",
+        "/dataSources/notes/fields/body/type",
+        "/dataSources/notes/fields/body/type",
+        "/dataSources/notes/fields/body/role",
+        "/dataSources/notes/fields/items/type",
+        "/dataSources/notes/fields/items/role",
+        "/dataSources/notes/fields/items/items/fields/name/type",
+        "/dataSources/notes/fields/items/items/fields/name/role",
+        "/dataSources/notes/fields/items/items/fields/value/type",
+        "/dataSources/notes/fields/items/type",
+        "/dataSources/notes/fields/items/type",
+        "/dataSources/notes/fields/items/role",
+        "/dataSources/notes/source/type"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match exactly one schema in oneOf",
+      "paths": [
+        "/dataSources/notes/fields/body",
+        "/dataSources/notes/fields/body",
+        "/dataSources/notes/fields/items",
+        "/dataSources/notes/fields/items/items/fields/name",
+        "/dataSources/notes/fields/items/items/fields/value",
+        "/dataSources/notes/fields/items"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 items",
+      "paths": [
+        "/dataSources/notes/fields/body/items"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 items(拼写错误?)",
+      "paths": [
+        "/dataSources/notes/fields/items/items",
+        "/dataSources/notes/fields/items/items",
+        "/dataSources/notes/fields/items/items",
+        "/dataSources/notes/fields/items/items",
+        "/dataSources/notes/fields/items/items",
+        "/dataSources/notes/fields/items"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 dimensions",
+      "paths": [
+        "/dataSources/notes/fields/dimensions"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 measures",
+      "paths": [
+        "/dataSources/notes/fields/measures"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 title(拼写错误?)",
+      "paths": [
+        "/dataSources/notes/fields/title"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 day(拼写错误?)",
+      "paths": [
+        "/dataSources/notes/fields/day"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 at(拼写错误?)",
+      "paths": [
+        "/dataSources/notes/fields/at"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 flag(拼写错误?)",
+      "paths": [
+        "/dataSources/notes/fields/flag"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 body(拼写错误?)",
+      "paths": [
+        "/dataSources/notes/fields/body"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 query",
+      "paths": [
+        "/dataSources/notes/source/query"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 rows(拼写错误?)",
+      "paths": [
+        "/dataSources/notes/source/rows"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "notes": {
+        "fields": {
+          "title": {
+            "…": "共2个键"
+          },
+          "day": {
+            "…": "共2个键"
+          },
+          "at": {
+            "…": "共3个键"
+          },
+          "flag": {
+            "…": "共2个键"
+          },
+          "body": {
+            "…": "共2个键"
+          },
+          "items": {
+            "…": "共3个键"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            "…（共1项）"
+          ]
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,27 @@
+{
+  "case": "number-range-empty",
+  "invariant": "number-range-default",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "数值区间至少要有一端",
+      "paths": [
+        "/filters/6/default"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      "…",
+      "…",
+      "…",
+      "…",
+      "…",
+      {
+        "default": {}
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,29 @@
+{
+  "case": "initial-row-semantic-html-too-large",
+  "invariant": "query-initial-rows-normalize",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "DQE 语义 HTML 字段 reason 最多允许 64000 字符，实际 64001 字符",
+      "paths": [
+        "/dataSources/customers/source/initial/rows/0/reason"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "customers": {
+        "source": {
+          "initial": {
+            "rows": [
+              {
+                "reason": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx…（共64001字符）"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,21 @@
+{
+  "case": "default-level-unknown",
+  "invariant": "default-level-declared",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "defaultLevel 引用了未知层级:country",
+      "paths": [
+        "/filters/0/defaultLevel"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "defaultLevel": "country"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

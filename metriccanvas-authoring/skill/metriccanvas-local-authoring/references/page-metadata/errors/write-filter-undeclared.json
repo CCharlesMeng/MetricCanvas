@@ -1,0 +1,31 @@
+{
+  "case": "write-filter-undeclared",
+  "invariant": "write-filter-target",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "回写了未声明的筛选器:nope",
+      "paths": [
+        "/sections/0/components/0/props/actions/0/writeFilter"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "actions": [
+                {
+                  "writeFilter": "nope"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

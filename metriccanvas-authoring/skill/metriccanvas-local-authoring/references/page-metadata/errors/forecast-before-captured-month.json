@@ -1,0 +1,30 @@
+{
+  "case": "forecast-before-captured-month",
+  "invariant": "bar-forecast-boundary",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "6月为统计月及之前不得提供预测系列 forecast",
+      "paths": [
+        "/dataSources/monthly/source/initial/rows/1/forecast"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "monthly": {
+        "source": {
+          "initial": {
+            "rows": [
+              "…",
+              {
+                "forecast": 13
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

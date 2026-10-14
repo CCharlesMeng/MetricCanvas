@@ -1,0 +1,31 @@
+{
+  "case": "query-detail-item-duplicate-mapping",
+  "invariant": "query-field-mapping",
+  "expected": [
+    {
+      "type": "QUERY_MAPPING_ERROR",
+      "message": "嵌套明细 queryField event_title 已映射到页面字段 title",
+      "paths": [
+        "/dataSources/customers/fields/events/items/fields/desc/queryField"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "customers": {
+        "fields": {
+          "events": {
+            "items": {
+              "fields": {
+                "desc": {
+                  "queryField": "event_title"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

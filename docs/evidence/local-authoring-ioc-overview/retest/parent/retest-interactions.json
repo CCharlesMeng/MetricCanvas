@@ -1,0 +1,291 @@
+{
+  "errors": [],
+  "filters": {
+    "checkboxChecked": true,
+    "tableUnchanged": true,
+    "queries": []
+  },
+  "asc": [
+    "4\n\t\n亚太\n\t\n新加坡\n\t\n900万\n\t\n0.0%\n\t\n0.0%\n\t\n0.0%\n\t\n0元",
+    "1\n\t\n欧洲\n\t\n德国\n\t\n7,500万\n\t\n1.3%\n\t\n0.7%\n\t\n0.8%\n\t\n1,200万",
+    "3\n\t\n中国\n\t\n上海\n\t\n9,500万\n\t\n0.5%\n\t\n0.6%\n\t\n0.6%\n\t\n900万",
+    "2\n\t\n中国\n\t\n北京\n\t\n1.80亿\n\t\n0.7%\n\t\n0.8%\n\t\n0.8%\n\t\n1,800万"
+  ],
+  "desc": [
+    "2\n\t\n中国\n\t\n北京\n\t\n1.80亿\n\t\n0.7%\n\t\n0.8%\n\t\n0.8%\n\t\n1,800万",
+    "3\n\t\n中国\n\t\n上海\n\t\n9,500万\n\t\n0.5%\n\t\n0.6%\n\t\n0.6%\n\t\n900万",
+    "1\n\t\n欧洲\n\t\n德国\n\t\n7,500万\n\t\n1.3%\n\t\n0.7%\n\t\n0.8%\n\t\n1,200万",
+    "4\n\t\n亚太\n\t\n新加坡\n\t\n900万\n\t\n0.0%\n\t\n0.0%\n\t\n0.0%\n\t\n0元"
+  ],
+  "projectLinks": [
+    {
+      "text": "云平台升级  ",
+      "href": "http://127.0.0.1:62727/pages/ioc-project-detail?project=DEMO-P01&month=2026-03"
+    },
+    {
+      "text": "行业云项目  ",
+      "href": "http://127.0.0.1:62727/pages/ioc-project-detail?project=DEMO-P02&month=2026-03"
+    },
+    {
+      "text": "进入机会点清单（静态入口） →",
+      "href": "http://127.0.0.1:62727/pages/ioc-opportunity-list?month=2026-03"
+    }
+  ],
+  "navigations": [
+    "http://127.0.0.1:62727/pages/ioc-project-detail?project=DEMO-P01&month=2026-03",
+    "http://127.0.0.1:62727/pages/ioc-project-detail?opportunity=DEMO-P03&month=2026-03"
+  ],
+  "targetValidation": "stub only",
+  "overflow": [
+    {
+      "tag": "SPAN",
+      "class": "row-label svelte-1vxoqkp",
+      "component": "summary-cards/level-card",
+      "left": 227.796875,
+      "right": 385.234375,
+      "client": 157,
+      "scroll": 157,
+      "overflow": "visible"
+    },
+    {
+      "tag": "BUTTON",
+      "class": "svelte-i9ai5d",
+      "component": "detail-and-map/details",
+      "left": 270.25,
+      "right": 382.25,
+      "client": 112,
+      "scroll": 112,
+      "overflow": "visible"
+    },
+    {
+      "tag": "TABLE",
+      "class": "svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 48,
+      "right": 464,
+      "client": 416,
+      "scroll": 416,
+      "overflow": "visible"
+    },
+    {
+      "tag": "COLGROUP",
+      "class": "",
+      "component": "detail-and-map/details",
+      "left": 48,
+      "right": 464,
+      "client": 416,
+      "scroll": 416,
+      "overflow": "visible"
+    },
+    {
+      "tag": "COL",
+      "class": "",
+      "component": "detail-and-map/details",
+      "left": 360,
+      "right": 412,
+      "client": 52,
+      "scroll": 52,
+      "overflow": "visible"
+    },
+    {
+      "tag": "COL",
+      "class": "",
+      "component": "detail-and-map/details",
+      "left": 412,
+      "right": 464,
+      "client": 52,
+      "scroll": 52,
+      "overflow": "visible"
+    },
+    {
+      "tag": "THEAD",
+      "class": "svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 48,
+      "right": 464,
+      "client": 416,
+      "scroll": 416,
+      "overflow": "visible"
+    },
+    {
+      "tag": "TR",
+      "class": "svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 48,
+      "right": 464,
+      "client": 416,
+      "scroll": 416,
+      "overflow": "visible"
+    },
+    {
+      "tag": "TH",
+      "class": "svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 360,
+      "right": 412,
+      "client": 51,
+      "scroll": 51,
+      "overflow": "visible"
+    },
+    {
+      "tag": "DIV",
+      "class": "head svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 366,
+      "right": 405,
+      "client": 39,
+      "scroll": 39,
+      "overflow": "visible"
+    },
+    {
+      "tag": "BUTTON",
+      "class": "sort-toggle svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 366,
+      "right": 405,
+      "client": 39,
+      "scroll": 39,
+      "overflow": "visible"
+    },
+    {
+      "tag": "SPAN",
+      "class": "svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 366,
+      "right": 388.59375,
+      "client": 23,
+      "scroll": 23,
+      "overflow": "visible"
+    },
+    {
+      "tag": "SPAN",
+      "class": "sort-hint svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 392.59375,
+      "right": 405,
+      "client": 12,
+      "scroll": 12,
+      "overflow": "visible"
+    },
+    {
+      "tag": "TH",
+      "class": "svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 412,
+      "right": 464,
+      "client": 51,
+      "scroll": 51,
+      "overflow": "visible"
+    },
+    {
+      "tag": "DIV",
+      "class": "head svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 418,
+      "right": 457,
+      "client": 39,
+      "scroll": 39,
+      "overflow": "visible"
+    },
+    {
+      "tag": "BUTTON",
+      "class": "sort-toggle svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 418,
+      "right": 457,
+      "client": 39,
+      "scroll": 39,
+      "overflow": "visible"
+    },
+    {
+      "tag": "SPAN",
+      "class": "svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 418,
+      "right": 440.59375,
+      "client": 23,
+      "scroll": 23,
+      "overflow": "visible"
+    },
+    {
+      "tag": "SPAN",
+      "class": "sort-hint svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 444.59375,
+      "right": 457,
+      "client": 12,
+      "scroll": 12,
+      "overflow": "visible"
+    },
+    {
+      "tag": "TBODY",
+      "class": "svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 48,
+      "right": 464,
+      "client": 416,
+      "scroll": 416,
+      "overflow": "visible"
+    },
+    {
+      "tag": "TR",
+      "class": "svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 48,
+      "right": 464,
+      "client": 416,
+      "scroll": 416,
+      "overflow": "visible"
+    },
+    {
+      "tag": "TD",
+      "class": "svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 360,
+      "right": 412,
+      "client": 51,
+      "scroll": 51,
+      "overflow": "visible"
+    },
+    {
+      "tag": "DIV",
+      "class": "cell-stack svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 370,
+      "right": 401,
+      "client": 31,
+      "scroll": 31,
+      "overflow": "visible"
+    },
+    {
+      "tag": "SPAN",
+      "class": "cell-primary-value svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 370,
+      "right": 401,
+      "client": 31,
+      "scroll": 31,
+      "overflow": "visible"
+    },
+    {
+      "tag": "TD",
+      "class": "svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 412,
+      "right": 464,
+      "client": 51,
+      "scroll": 51,
+      "overflow": "visible"
+    },
+    {
+      "tag": "DIV",
+      "class": "cell-stack svelte-wtvwcm",
+      "component": "detail-and-map/details",
+      "left": 422,
+      "right": 453,
+      "client": 31,
+      "scroll": 31,
+      "overflow": "visible"
+    }
+  ]
+}

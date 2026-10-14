@@ -1,0 +1,38 @@
+{
+  "case": "navigation-filter-undeclared",
+  "invariant": "navigation-filter-source",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "未声明的筛选器:nope",
+      "paths": [
+        "/sections/0/components/0/props/actions/1/navigate/query/nope/id"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "actions": [
+                "…",
+                {
+                  "navigate": {
+                    "query": {
+                      "nope": {
+                        "id": "nope"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

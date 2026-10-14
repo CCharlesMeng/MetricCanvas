@@ -1,0 +1,57 @@
+{
+  "case": "map-level-fields-without-hierarchy-filter",
+  "invariant": "map-hierarchy",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "levelField 只能与 hierarchyFilter 一起使用",
+      "paths": [
+        "/sections/0/components/0/props/levelField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "parentField 只能与 hierarchyFilter 一起使用",
+      "paths": [
+        "/sections/0/components/0/props/parentField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "levelMaps 只能与 hierarchyFilter 一起使用",
+      "paths": [
+        "/sections/0/components/0/props/levelMaps"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "隐藏层级切换器要求同页地图通过 hierarchyFilter 承担下钻:area",
+      "paths": [
+        "/filters/0/hierarchyPicker"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "levelField": "level",
+              "parentField": "parent",
+              "levelMaps": {
+                "province": "china"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "filters": [
+      {
+        "hierarchyPicker": "hidden"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

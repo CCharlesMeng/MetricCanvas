@@ -132,17 +132,30 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
     } finally { writeFileSync(file,original); }
   }, scenarioTimeout);
 
+  it.each(['references/page-metadata/schema.json', 'references/knowledge.json', 'scripts/validate-page.mjs'])('拒绝独立本地 Skill 生成内容漂移：%s', file => {
+    const relative = `metriccanvas-authoring/skill/metriccanvas-local-authoring/${file}`;
+    withChangedFile(relative, readFileSync(path.join(isolated,relative),'utf8') + '\nchanged generated content\n', () => {
+      const result = runExport();
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain(`skill/metriccanvas-local-authoring/${file}`);
+    });
+  }, scenarioTimeout);
+
   it('生成器保留作者参考且只清理生成子树', () => {
     const folder = mkdtempSync(path.join(tmpdir(), 'metriccanvas-ownership-'));
     try {
       cpSync(isolated, folder, {recursive:true, verbatimSymlinks:true});
       const authored = path.join(folder, 'metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/private.md');
       writeFileSync(authored, '# Authored extension\n');
+      const localAuthored = path.join(folder, 'metriccanvas-authoring/skill/metriccanvas-local-authoring/references/local-workflow.md');
+      const localOriginal = readFileSync(localAuthored, 'utf8');
+      writeFileSync(localAuthored, localOriginal + '\nLocal authored extension\n');
       const stale = path.join(folder, 'metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/stale.md');
       writeFileSync(stale, '# Stale projection\n');
       const result = runExport([], folder);
       expect(result.status, result.stderr).toBe(0);
       expect(readFileSync(authored, 'utf8')).toBe('# Authored extension\n');
+      expect(readFileSync(localAuthored, 'utf8')).toBe(localOriginal + '\nLocal authored extension\n');
       expect(existsSync(stale)).toBe(false);
       expect(runExport(['--check'], folder).status).toBe(0);
     } finally { rmSync(folder, {recursive:true, force:true}); }

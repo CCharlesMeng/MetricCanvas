@@ -1,0 +1,273 @@
+{
+  "case": "composite-card-with-data",
+  "invariant": "composite-card-pure-container",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "组合卡是纯容器，自己不承载数据，不得声明 data；数据由子组件各自声明",
+      "paths": [
+        "/sections/0/components/1/data"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be equal to constant",
+      "paths": [
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/props/variant",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/props/variant",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/props/variant",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/props/variant",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/props/variant",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/props/variant",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/props/variant",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/props/variant"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 titleIcon(拼写错误?)",
+      "paths": [
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/props/titleIcon",
+        "/sections/0/components/1/props/titleIcon"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 components(拼写错误?)",
+      "paths": [
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components",
+        "/sections/0/components/1/props/components"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 rows",
+      "paths": [
+        "/sections/0/components/1/props/rows"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"summary\",\"activityProgress\",\"compactSummary\",\"dualSummary\",\"compactStrip\",\"compactStack\"]",
+      "paths": [
+        "/sections/0/components/1/props/variant"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 categoryField",
+      "paths": [
+        "/sections/0/components/1/props/categoryField",
+        "/sections/0/components/1/props/categoryField",
+        "/sections/0/components/1/props/categoryField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 series",
+      "paths": [
+        "/sections/0/components/1/props/series",
+        "/sections/0/components/1/props/series"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 xField",
+      "paths": [
+        "/sections/0/components/1/props/xField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 variant(拼写错误?)",
+      "paths": [
+        "/sections/0/components/1/props/variant",
+        "/sections/0/components/1/props/variant"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 valueField",
+      "paths": [
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 columns",
+      "paths": [
+        "/sections/0/components/1/props/columns",
+        "/sections/0/components/1/props/columns"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"reportCompact\",\"embedded\",\"forecastMatrix\"]",
+      "paths": [
+        "/sections/0/components/1/props/variant"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 nameField",
+      "paths": [
+        "/sections/0/components/1/props/nameField",
+        "/sections/0/components/1/props/nameField",
+        "/sections/0/components/1/props/nameField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 map",
+      "paths": [
+        "/sections/0/components/1/props/map"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 tabs",
+      "paths": [
+        "/sections/0/components/1/props/tabs"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"compact\",\"analysisStack\"]",
+      "paths": [
+        "/sections/0/components/1/props/variant"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 items",
+      "paths": [
+        "/sections/0/components/1/props/items"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"counterStrip\",\"detailSummary\",\"detailNormMatrix\"]",
+      "paths": [
+        "/sections/0/components/1/props/variant"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 field",
+      "paths": [
+        "/sections/0/components/1/props/field"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"plain\",\"quote\",\"narrativeShort\",\"narrativeMeeting\",\"narrativeRisk\",\"narrativeProgress\"]",
+      "paths": [
+        "/sections/0/components/1/props/variant"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"plain\",\"heading\",\"insight\",\"reportInline\",\"riskNotice\"]",
+      "paths": [
+        "/sections/0/components/1/props/variant"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 promptTemplate",
+      "paths": [
+        "/sections/0/components/1/props/promptTemplate"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 relatedData",
+      "paths": [
+        "/sections/0/components/1/props/relatedData"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match exactly one schema in oneOf",
+      "paths": [
+        "/sections/0/components/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "id": "card",
+            "type": "compositeCard",
+            "layout": {
+              "span": 2
+            },
+            "props": {
+              "title": "渠道概览",
+              "titleIcon": "opportunity",
+              "variant": "metricGrid",
+              "components": [
+                "…（共5项）"
+              ]
+            },
+            "data": {
+              "main": "summary"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

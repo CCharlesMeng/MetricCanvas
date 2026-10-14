@@ -1,0 +1,24 @@
+{
+  "case": "missing-schema-version",
+  "invariant": "schema-structure",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 schemaVersion",
+      "paths": [
+        "/schemaVersion"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must NOT have fewer than 1 items",
+      "paths": [
+        "/sections"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": []
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

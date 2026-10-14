@@ -1,0 +1,31 @@
+{
+  "case": "text-value-format-mismatch",
+  "invariant": "text-value-format-compatible",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "格式 date 与页面参数 year 的类型 number 不相容",
+      "paths": [
+        "/sections/0/components/0/props/tags/0/format"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "tags": [
+                {
+                  "format": "date"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

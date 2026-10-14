@@ -1,0 +1,52 @@
+{
+  "case": "filter-text-before-6.15",
+  "invariant": "filter-text-capability",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "显式筛选文本引用及统一 period 日期格式 由 6.15 引入，文档声明的是 6.14",
+      "paths": [
+        "/sections/0/components/0/props/asOf/value",
+        "/sections/2/components/0/props/body",
+        "/sections/0/components/0/props/subtitle/format",
+        "/sections/0/components/0/props/asOf/value/format",
+        "/sections/2/components/0/props/body/format"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "asOf": {
+                "value": {
+                  "filter": "period-filter",
+                  "format": "period"
+                }
+              },
+              "subtitle": {
+                "format": "period"
+              }
+            }
+          }
+        ]
+      },
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "body": {
+                "filter": "period-filter",
+                "format": "period"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,169 @@
+{
+  "computedSummary": {
+    "opportunity_count": 270,
+    "previous_opportunity_count": 255,
+    "presign_amount": 359000000,
+    "previous_presign_amount": 337000000,
+    "annual_sales_forecast": 276000000,
+    "annual_target": 470000000,
+    "stock_forecast": 85000000,
+    "realized_revenue": 55000000,
+    "remaining_valid_amount": 241000000,
+    "established_count": 126,
+    "established_presign_amount": 208000000,
+    "operating_established_count": 126,
+    "should_establish_count": 180,
+    "held_meeting_count": 72,
+    "should_hold_meeting_count": 100,
+    "won_count": 46,
+    "closed_count": 85,
+    "should_review_count": 65,
+    "reviewed_count": 46,
+    "opportunity_delta": 15,
+    "presign_delta": 22000000,
+    "pipeline_denominator_step": 385000000,
+    "pipeline_denominator": 330000000,
+    "pipeline_support_rate": 0.7303030303030303,
+    "establishment_rate": 0.7,
+    "meeting_rate": 0.72,
+    "win_rate": 0.5411764705882353,
+    "review_rate": 0.7076923076923077
+  },
+  "headlineChecks": [
+    {
+      "field": "opportunity_count",
+      "expected": 270,
+      "actual": 270,
+      "passed": true
+    },
+    {
+      "field": "opportunity_delta",
+      "expected": 15,
+      "actual": 15,
+      "passed": true
+    },
+    {
+      "field": "presign_amount",
+      "expected": 359000000,
+      "actual": 359000000,
+      "passed": true
+    },
+    {
+      "field": "presign_delta",
+      "expected": 22000000,
+      "actual": 22000000,
+      "passed": true
+    },
+    {
+      "field": "pipeline_support_rate",
+      "expected": 73.03030303030303,
+      "actual": 0.7303030303030303,
+      "passed": false
+    },
+    {
+      "field": "establishment_rate",
+      "expected": 70,
+      "actual": 0.7,
+      "passed": false
+    },
+    {
+      "field": "meeting_rate",
+      "expected": 72,
+      "actual": 0.72,
+      "passed": false
+    },
+    {
+      "field": "win_rate",
+      "expected": 54.11764705882353,
+      "actual": 0.5411764705882353,
+      "passed": false
+    },
+    {
+      "field": "review_rate",
+      "expected": 70.76923076923077,
+      "actual": 0.7076923076923077,
+      "passed": false
+    }
+  ],
+  "regionalChecks": [
+    {
+      "region": "中国",
+      "expectedPercent": 57.692307692307686,
+      "actualPercent": 0.5789473684,
+      "arithmeticPercent": 57.89473684000001,
+      "arithmeticPassed": false
+    },
+    {
+      "region": "欧洲",
+      "expectedPercent": 128.57142857142858,
+      "actualPercent": 1.2857142857,
+      "arithmeticPercent": 128.57142857,
+      "arithmeticPassed": true
+    },
+    {
+      "region": "亚太",
+      "expectedPercent": 0,
+      "actualPercent": 0,
+      "arithmeticPercent": 0,
+      "arithmeticPassed": true
+    }
+  ],
+  "mapChecks": [
+    {
+      "region": "中国",
+      "geometry": "China",
+      "basemapMatch": true,
+      "value": 0.5789473684,
+      "projectionProvidedByInput": true
+    },
+    {
+      "region": "欧洲",
+      "geometry": "Germany",
+      "basemapMatch": true,
+      "value": 1.2857142857,
+      "projectionProvidedByInput": false
+    },
+    {
+      "region": "亚太",
+      "geometry": "Singapore",
+      "basemapMatch": false,
+      "value": 0,
+      "projectionProvidedByInput": false
+    },
+    {
+      "region": "中东中亚",
+      "geometry": "Kazakhstan",
+      "basemapMatch": true,
+      "value": null,
+      "projectionProvidedByInput": false
+    },
+    {
+      "region": "北部非洲",
+      "geometry": "Egypt",
+      "basemapMatch": true,
+      "value": null,
+      "projectionProvidedByInput": false
+    },
+    {
+      "region": "南部非洲",
+      "geometry": "South Africa",
+      "basemapMatch": true,
+      "value": null,
+      "projectionProvidedByInput": false
+    },
+    {
+      "region": "拉美",
+      "geometry": "Brazil",
+      "basemapMatch": true,
+      "value": null,
+      "projectionProvidedByInput": false
+    },
+    {
+      "region": "俄罗斯",
+      "geometry": "Russia",
+      "basemapMatch": true,
+      "value": null,
+      "projectionProvidedByInput": false
+    }
+  ]
+}

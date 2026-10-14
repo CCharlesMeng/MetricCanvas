@@ -1,0 +1,3 @@
+# Frozen evaluation inputs and model notes retain their original bytes.
+retest/input/data/*.csv -text whitespace=cr-at-eol
+retest/output/*.md -text whitespace=-blank-at-eof

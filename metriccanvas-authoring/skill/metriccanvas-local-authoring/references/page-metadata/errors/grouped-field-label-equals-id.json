@@ -1,0 +1,27 @@
+{
+  "case": "grouped-field-label-equals-id",
+  "invariant": "grouped-query-field-label-not-id",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "label 与字段 id 相同，应省略:customer",
+      "paths": [
+        "/dataSources/grouped/fields/dimensions/customer/label"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "grouped": {
+        "fields": {
+          "dimensions": {
+            "customer": {
+              "label": "customer"
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

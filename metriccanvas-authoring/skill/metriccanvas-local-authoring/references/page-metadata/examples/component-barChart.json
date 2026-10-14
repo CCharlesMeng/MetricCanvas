@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "6.18",
+  "id": "explicit-presentation-page",
+  "layout": "report",
+  "dataSources": {
+    "sample": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "delta": {
+          "type": "number",
+          "role": "measure",
+          "unit": "天",
+          "defaultFormat": "number-1",
+          "nullable": true
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "unit": "次",
+          "defaultFormat": "number",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "甲代表处",
+            "delta": 2.5,
+            "count": 10
+          },
+          {
+            "name": "乙代表处",
+            "delta": -2,
+            "count": 0
+          },
+          {
+            "name": "丙代表处",
+            "delta": 0,
+            "count": 8
+          },
+          {
+            "name": "丁代表处",
+            "delta": null,
+            "count": null
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "sample-bar",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "categoryField": "name",
+            "series": [
+              {
+                "field": "delta"
+              }
+            ],
+            "categoryLabels": {
+              "mode": "all",
+              "rotate": 45
+            },
+            "showValueLabels": true
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "case": "navigation-wrong-filter-part",
+  "invariant": "url-navigation-source-contract",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "筛选器 period 不支持分量 value",
+      "paths": [
+        "/sections/0/components/0/props/actions/0/navigate/query/from/part"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "actions": [
+                {
+                  "navigate": {
+                    "query": {
+                      "from": {}
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

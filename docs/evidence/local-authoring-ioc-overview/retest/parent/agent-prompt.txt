@@ -1,0 +1,22 @@
+使用 $metriccanvas-local-authoring 完成一次独立的本地页面创作测试，只生成 ioc-project-overview 项目概览。
+
+本次从零开始，没有已有页面可修改，也没有旧页面JSON可读。只允许从以下位置读取任务输入和知识：
+- /private/tmp/metriccanvas-local-authoring-gpt56-ioc-overview-retest-20261014-3c2604b1/skill/metriccanvas-local-authoring/（完整独立安装的Skill，入口SKILL.md）；
+- /private/tmp/metriccanvas-local-authoring-gpt56-ioc-overview-retest-20261014-3c2604b1/input/（requirements.md、原始设计截图、独立合成CSV数据）。
+只允许写入 /private/tmp/metriccanvas-local-authoring-gpt56-ioc-overview-retest-20261014-3c2604b1/output/。
+
+先读取指定的SKILL.md和input/requirements.md，按任务需要读取Skill目录内文档，查看input/screenshots/design-content.png。不要先搜索工作区。不要读取仓库的pages、源码、文档、Git历史、其他Skill、AGENTS或记忆，也不要读取parent目录、网页或网络来源。知识只来自本Skill目录，业务事实只来自input。本测试输入不含旧MetricCanvas页面结构、组件配置、字段绑定或旧查询定义。
+
+先总结业务内容、信息层级、展示关系和交互，保存到output/feature-summary.md，然后依据你自己的页面设计创建完整JSON。组件类型、字段id、数据源组织和布局由你按Skill决定，不推理或恢复旧实现。金额原值为元；CSV数据是本次新编写的匿名演示样例，不是真实服务结果。按requirements声明的口径形成派生指标并如实说明计算实现与不能表达的部分。汇总样例与代表性项目样例不能相加对账；原稿数字只示意，不是需要硬编码的答案。
+
+设计稿缺失地图背景和部分图片资源，空白/破损图标不等于功能需求。遵守requirements的来源差异和明确未裁决项；不要从旧页面补答案。无可信查询时使用明确标注的inline数据，不自造DQE查询、服务器或网关，也不声称完整筛选/地图下钻已经实现。能在现有Schema中表达就实现，受限制的项列出准确缺口，继续完成其他项。
+
+生成器只写output/working/ioc-project-overview.json。每次完整生成后、校验前使用Skill内scripts/snapshot-attempt.mjs保存到一个不存在的output/attempt-N目录，再校验该快照。不得覆盖或重建任何尝试；修复只改工作文件。最终检查所有快照哈希。运行Skill内的scripts/validate-page.mjs校验，按回执自主修复，保留每轮命令、退出码、原始回执和修复记录。最终写output/final/ioc-project-overview.json。不得修改Skill、校验器、输入或原仓库。可在output中写生成/检查辅助脚本。不得生成其他页面、提交、推送、发布或调用生产数据服务。你无需在仓库中预览，主agent会用统一运行时独立做浏览器验收。
+
+同时交付：
+- output/feature-summary.md：你从独立输入总结的特征；
+- output/coverage.md：逐项F01-F10的实现位置、完成状态、未验证项、缺口；U01-U04分别列出，不偷换为已完成；
+- output/validation/：每轮真实校验回执与修复记录；
+- output/skill-feedback.md：这份Skill的知识缺失、歧义、错误或可用性问题，给出具体影响；没有问题如实说明；
+- output/read-audit.md：列出实际读取的文件路径与用途，便于复核没有答案泄露。
+保留首次尝试和失败证据。不要把结构校验通过声称为视觉、交互、业务或真实查询全部通过。最终回复报告产物位置、实际校验结果、未完成项。

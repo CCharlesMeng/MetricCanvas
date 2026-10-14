@@ -1,0 +1,37 @@
+{
+  "case": "table-selection-writes-non-dimension",
+  "invariant": "table-selection-writes",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "单元格选择只能写入 dimension 筛选器:keyword",
+      "paths": [
+        "/sections/0/components/0/props/columns/0/selection/writes/keyword"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                {
+                  "selection": {
+                    "writes": {
+                      "keyword": {
+                        "value": "华"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

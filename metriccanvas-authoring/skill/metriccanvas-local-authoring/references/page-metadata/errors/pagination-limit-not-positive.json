@@ -1,0 +1,33 @@
+{
+  "case": "pagination-limit-not-positive",
+  "invariant": "pagination-query-order",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "查询分页要求 DQE order.limit 为正整数",
+      "paths": [
+        "/dataSources/sales/source/query/body/dsl_list/0/order/limit"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "sales": {
+        "source": {
+          "query": {
+            "body": {
+              "dsl_list": [
+                {
+                  "order": {
+                    "limit": 0
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

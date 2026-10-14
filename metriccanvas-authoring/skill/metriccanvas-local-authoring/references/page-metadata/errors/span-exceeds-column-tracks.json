@@ -1,0 +1,28 @@
+{
+  "case": "span-exceeds-column-tracks",
+  "invariant": "column-track-span",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "内容分区 overview 声明了 2 条列轨，组件 card 的 span 不能超过 2",
+      "paths": [
+        "/sections/0/components/1/layout/span"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "layout": {
+              "span": 3
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,17 @@
+{
+  "case": "version-major-unsupported",
+  "invariant": "schema-version-supported",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "不支持的文档格式版本 4.0:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移",
+      "paths": [
+        "/schemaVersion"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "schemaVersion": "4.0"
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

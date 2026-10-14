@@ -1,0 +1,27 @@
+{
+  "case": "table-merge-by-not-column",
+  "invariant": "table-merge-by-column",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "mergeBy 必须是表格已声明的列字段:row-kind",
+      "paths": [
+        "/sections/0/components/0/props/mergeBy"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "mergeBy": "row-kind"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,32 @@
+{
+  "case": "navigation-text-unsafe-url",
+  "invariant": "url-navigation-source-contract",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "导航只允许 HTTP(S) 或相对 URL",
+      "paths": [
+        "/sections/0/components/1/props/links/0/href"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "links": [
+                {
+                  "href": "data:text/html,hello"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -12,6 +12,8 @@ import {
   versionPolicy
 } from '../../packages/page/src/internal.ts';
 import { buildPageReference, validateReferenceLinks } from './page-reference.ts';
+import { localPageReference, localValidatorOutputs, localKnowledgeManifest } from './local-authoring-projection.ts';
+import { overviewMapLedExample } from './local-authoring-overview-example.ts';
 import { invariants, type InvariantDefinition } from './page-conformance-vectors.ts';
 import { queryResultCases } from './query-result-conformance-vectors.ts';
 import {extractPageParams,applyPageParamSelection,resolvePageParams} from '../../packages/page/src/index.ts';
@@ -506,7 +508,14 @@ async function writeOutputs(
     await writeFile(target, content, 'utf8');
   }
   await writeTree(snapshotRoot, productOutputs);
-  for (const skill of skills) await writeTree(path.join(bundleRoot, skill.directory, 'references/page-metadata'), skill.outputs);
+  for (const skill of skills) {
+    await writeTree(path.join(bundleRoot, skill.directory, 'references/page-metadata'), skill.outputs);
+    for (const [relative, content] of skill.generated ?? []) {
+      const target = path.join(bundleRoot, skill.directory, relative);
+      await mkdir(path.dirname(target), {recursive: true});
+      await writeFile(target, content, 'utf8');
+    }
+  }
   await rm(path.join(authoringContractRoot, 'exported'), { recursive: true, force: true });
   for (const [relativePath, content] of authoringOutputs) {
     const target = path.join(authoringContractRoot, relativePath);
@@ -541,7 +550,7 @@ function referenceProjection(outputs: OutputMap): OutputMap {
 }
 
 /** Registry is a distribution index, not a Relay router or tool allowlist. */
-async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{directory: string; outputs: OutputMap}>> {
+async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{directory: string; outputs: OutputMap; generated?: OutputMap}>> {
   const bundle = JSON.parse(await readFile(path.join(bundleRoot, 'bundle.json'), 'utf8'));
   const legacy = 'skill/metriccanvas-page-builder/SKILL.md';
   if (bundle.skill?.entrypoint !== legacy) throw new Error('Legacy Skill entrypoint changed');
@@ -549,7 +558,7 @@ async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{
   if (!Array.isArray(entries) || !entries.length) throw new Error('Invalid Skill registry');
   const actualBundleRoot = await realpath(bundleRoot);
   const seen = new Set<string>();
-  const projections: Array<{directory: string; outputs: OutputMap}> = [];
+  const projections: Array<{directory: string; outputs: OutputMap; generated?: OutputMap}> = [];
   for (const entry of entries) {
     if (!entry || typeof entry.id !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(entry.id) ||
         entry.entrypoint !== `skill/${entry.id}/SKILL.md` || seen.has(entry.id)) throw new Error('Invalid or duplicate Skill entry');
@@ -566,20 +575,42 @@ async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{
     // The registry declares the only generated subtree. Everything else belongs
     // to the Skill author and must survive regeneration, including references.
     const mode = entry.referenceProjection ?? (entry.id === 'metriccanvas-page-builder' ? 'page-metadata' : 'none');
-    if (!['none', 'page-metadata'].includes(mode)) throw new Error('Unknown Skill reference projection');
+    if (!['none', 'page-metadata', 'local-page-metadata'].includes(mode)) throw new Error('Unknown Skill reference projection');
+    if (mode === 'local-page-metadata' && entry.id !== 'metriccanvas-local-authoring') throw new Error('Local reference projection requires the local authoring entrypoint');
+    if (entry.id === 'metriccanvas-local-authoring' && (mode !== 'local-page-metadata' || entry.mcpServer)) throw new Error('Local authoring requires standalone knowledge and no MCP service');
     if (entry.id.startsWith('metriccanvas-platform-') && entry.id !== 'metriccanvas-platform-authoring') {
       throw new Error('Retired Platform Skill entry');
     }
     if (entry.id === 'metriccanvas-platform-authoring' && mode !== 'none') throw new Error('Platform Skill must use authored references');
     const documents: OutputMap = new Map();
     for (const file of await listFiles(path.join(bundleRoot, directory))) {
-      if (mode === 'page-metadata' && file.startsWith('references/page-metadata/')) continue;
+      if (mode !== 'none' && file.startsWith('references/page-metadata/')) continue;
+      if (mode === 'local-page-metadata' && ['scripts/validate-page.mjs', 'scripts/THIRD-PARTY-LICENSES.md', 'references/knowledge.json', 'references/map-regions.json', 'assets/layouts/overview-map-led.json'].includes(file)) continue;
       documents.set(file, await readFile(path.join(bundleRoot, directory, file), 'utf8'));
     }
-    const outputs = mode === 'page-metadata' ? referenceProjection(productOutputs) : new Map<string, string>();
-    for (const [file, content] of outputs) documents.set(`references/page-metadata/${file}`, content);
+    const outputs = mode === 'none' ? new Map<string, string>() : referenceProjection(productOutputs);
+    const projected = mode === 'local-page-metadata' ? localPageReference(outputs) : outputs;
+    const generated = mode === 'local-page-metadata' ? await localValidatorOutputs(repoRoot) : undefined;
+    if (generated) {
+      const mapContract = JSON.parse(productOutputs.get('page/map-regions.json')!);
+      generated.set('references/map-regions.json', json({contractVersion: mapContract.contractVersion,
+        maps: Object.fromEntries(Object.entries(mapContract.maps).map(([name, item]) => {
+          const map = item as {regions: string[]; source: {sha256: string}};
+          return [name, {regions: map.regions, sourceSha256: map.source.sha256}];
+        }))}));
+      const overview = overviewMapLedExample(versionPolicy.current);
+      const overviewErrors = validate(overview);
+      if (overviewErrors.length) throw new Error(`Overview layout example invalid: ${JSON.stringify(overviewErrors)}`);
+      generated.set('assets/layouts/overview-map-led.json', json(overview));
+      generated.set('references/knowledge.json', localKnowledgeManifest(new Map([
+        ...[...projected].map(([file, content]) => [`references/page-metadata/${file}`, content] as [string,string]),
+        ...generated
+      ]), versionPolicy.current, productContractVersion));
+      for (const [file, content] of generated) documents.set(file, content);
+    }
+    for (const [file, content] of projected) documents.set(`references/page-metadata/${file}`, content);
     validateReferenceLinks(documents);
-    if (mode === 'page-metadata') projections.push({directory, outputs});
+    if (mode !== 'none') projections.push({directory, outputs: projected, generated});
   }
   if (!seen.has('metriccanvas-page-builder')) throw new Error('Skill registry missing legacy entrypoint');
   return projections;
@@ -649,6 +680,9 @@ async function assertCurrent(
   await collectTreeDrift(snapshotRoot, productOutputs, 'contract-snapshot', drift);
   for (const skill of await buildSkillProjections(productOutputs)) {
     await collectTreeDrift(path.join(bundleRoot,skill.directory,'references/page-metadata'),skill.outputs,`${skill.directory}/references/page-metadata`,drift);
+    for (const [file, content] of skill.generated ?? []) {
+      await collectFileDrift(path.join(bundleRoot, skill.directory, file), content, `${skill.directory}/${file}`, drift);
+    }
   }
   const generatedAuthoringOutputs = new Map(
     [...authoringOutputs].filter(

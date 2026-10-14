@@ -1,0 +1,33 @@
+{
+  "case": "navigation-invalid-port",
+  "invariant": "url-navigation-source-contract",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "导航只允许 HTTP(S) 或相对 URL",
+      "paths": [
+        "/sections/0/components/0/props/actions/0/navigate/href"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "actions": [
+                {
+                  "navigate": {
+                    "href": "https://example.com:70000/path"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

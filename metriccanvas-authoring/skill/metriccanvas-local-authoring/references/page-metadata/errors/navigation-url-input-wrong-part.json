@@ -1,0 +1,24 @@
+{
+  "case": "navigation-url-input-wrong-part",
+  "invariant": "url-navigation-source-contract",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "该筛选器不支持此 URL 分量",
+      "paths": [
+        "/filters/1/urlParams/level"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "urlParams": {
+          "level": "level"
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

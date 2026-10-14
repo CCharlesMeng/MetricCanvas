@@ -1,0 +1,24 @@
+{
+  "case": "duplicate-page-param-id",
+  "invariant": "page-param-id-unique",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "页面参数 id 重复:customer",
+      "paths": [
+        "/params/3/id"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "params": [
+      "…",
+      "…",
+      "…",
+      {
+        "id": "customer"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

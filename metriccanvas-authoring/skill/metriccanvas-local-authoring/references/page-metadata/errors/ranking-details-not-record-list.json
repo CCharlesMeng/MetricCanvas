@@ -1,0 +1,31 @@
+{
+  "case": "ranking-details-not-record-list",
+  "invariant": "ranking-detail-records",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "结构化明细必须绑定 recordList 字段:reason",
+      "paths": [
+        "/sections/0/components/2/props/details/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          {
+            "props": {
+              "details": {
+                "field": "reason"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

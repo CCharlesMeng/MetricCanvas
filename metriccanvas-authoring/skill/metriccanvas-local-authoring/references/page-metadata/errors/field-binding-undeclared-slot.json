@@ -1,0 +1,35 @@
+{
+  "case": "field-binding-undeclared-slot",
+  "invariant": "field-binding-resolves",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字段绑定引用了组件未声明的数据槽:compare",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/valueField"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "rows": [
+                {
+                  "valueField": {
+                    "data": "compare",
+                    "field": "gmv"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

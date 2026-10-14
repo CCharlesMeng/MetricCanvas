@@ -1,0 +1,41 @@
+{
+  "model": "gpt-5.6-sol",
+  "forkTurns": "none",
+  "target": "ioc-project-overview",
+  "outcome": "partial; full acceptance failed",
+  "sameInputBytesAsFirst": true,
+  "inputAndSkillHashesUnchanged": true,
+  "attemptBytesPreserved": {
+    "attempt-1": true,
+    "attempt-2": true
+  },
+  "schemaErrors": [
+    4,
+    0
+  ],
+  "finalSchemaPassed": true,
+  "passed": [
+    "three cohesive business cards and charts; lower table/map side by side",
+    "runtime ready and no pageerror",
+    "three tabs and full table column sets",
+    "numeric sort ascending/descending",
+    "project/opportunity identifiers and month navigate to stub",
+    "checkbox enabled and state changes; no real requery claimed",
+    "all attempt snapshots unchanged"
+  ],
+  "failed": [
+    "percent scale: 73.0% intended becomes 0.7%; other rate fields and win probability also 100x wrong",
+    "China regional pipeline arithmetic: 57.8947% generated vs 57.6923% expected, separate from percent scale",
+    "unsupported macro-region to representative-country projection; Singapore not present in basemap",
+    "map legend overlaps neighboring card; management labels crowd",
+    "375px viewport document width385px; label and tab overflow"
+  ],
+  "notRun": [
+    "real DQE/filter data refresh",
+    "complete map hierarchy/drill",
+    "real target business pages",
+    "production save/publication",
+    "human visual acceptance"
+  ],
+  "postTestChanges": "explicit visible syntax, percent scale100 and input percent preservation, programmed numerator/denominator checks, no representative-country substitution, documented macro-region fallback; these additions have static preflight only, no additional model run"
+}

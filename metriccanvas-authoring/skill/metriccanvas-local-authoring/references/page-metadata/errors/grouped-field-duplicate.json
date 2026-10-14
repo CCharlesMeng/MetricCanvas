@@ -1,0 +1,28 @@
+{
+  "case": "grouped-field-duplicate",
+  "invariant": "grouped-query-fields-unique",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "页面字段重复声明:customer",
+      "paths": [
+        "/dataSources/grouped/fields/measures/customer"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "grouped": {
+        "fields": {
+          "measures": {
+            "customer": {
+              "queryField": "customer_dup",
+              "type": "number"
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

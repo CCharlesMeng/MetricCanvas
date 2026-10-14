@@ -1,0 +1,22 @@
+{
+  "case": "default-level-without-hierarchy",
+  "invariant": "default-level-declared",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "defaultLevel 只能用于声明了 hierarchy 的维度筛选器",
+      "paths": [
+        "/filters/1/defaultLevel"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "defaultLevel": "city-level"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,22 @@
+{
+  "case": "duplicate-section-id",
+  "invariant": "section-id-unique",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "section id 重复:overview",
+      "paths": [
+        "/sections/1/id"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "id": "overview"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

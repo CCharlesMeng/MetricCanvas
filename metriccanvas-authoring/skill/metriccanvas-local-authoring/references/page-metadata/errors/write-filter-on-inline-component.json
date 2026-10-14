@@ -1,0 +1,51 @@
+{
+  "case": "write-filter-on-inline-component",
+  "invariant": "actions-live-only",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "writeFilter 只允许绑定 query 数据源的组件；navigate 与 openDetail 可以挂在 inline 组件上",
+      "paths": [
+        "/sections/0/components/0/props/actions"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "当前行缺少可传参的标量字段:city",
+      "paths": [
+        "/sections/0/components/0/props/actions/1/navigate/query/city/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "actions": [
+                {
+                  "on": "click",
+                  "writeFilter": "region",
+                  "field": "region"
+                },
+                {
+                  "on": "click",
+                  "navigate": {
+                    "…": "共2个键",
+                    "query": {
+                      "city": {
+                        "field": "city"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

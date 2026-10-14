@@ -1,0 +1,27 @@
+{
+  "case": "table-multi-slot-without-row-key",
+  "invariant": "table-row-key",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "多数据槽表格必须声明 rowKey",
+      "paths": [
+        "/sections/0/components/2/props/rowKey"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          {
+            "props": {}
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

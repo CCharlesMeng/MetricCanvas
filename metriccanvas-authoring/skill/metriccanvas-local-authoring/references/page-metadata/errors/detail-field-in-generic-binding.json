@@ -1,0 +1,36 @@
+{
+  "case": "detail-field-in-generic-binding",
+  "invariant": "detail-field-consumption",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "嵌套明细字段 items 只能由显式支持 detail 的组件属性消费",
+      "paths": [
+        "/sections/0/components/5/props/items/0/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          "…",
+          "…",
+          "…",
+          {
+            "props": {
+              "items": [
+                {
+                  "field": "items"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

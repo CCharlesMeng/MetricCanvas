@@ -1,0 +1,45 @@
+{
+  "case": "filter-binding-time-target-not-time-range",
+  "invariant": "filter-binding",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "查询时间目标只能由一个筛选器控制",
+      "paths": [
+        "/dataSources/orders/source/query/filterBindings"
+      ]
+    },
+    {
+      "type": "FILTER_BINDING_ERROR",
+      "message": "time 目标必须绑定 timeRange 筛选器:city",
+      "paths": [
+        "/dataSources/orders/source/query/filterBindings/city"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "orders": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "…": "共2个键"
+                }
+              },
+              "period": {
+                "target": "time"
+              },
+              "city": {
+                "target": "time"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

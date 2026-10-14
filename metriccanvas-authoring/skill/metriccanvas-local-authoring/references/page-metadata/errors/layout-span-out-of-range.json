@@ -1,0 +1,218 @@
+{
+  "case": "layout-span-out-of-range",
+  "invariant": "schema-structure",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 data(拼写错误?)",
+      "paths": [
+        "/sections/0/components/1/data",
+        "/sections/0/components/1/data",
+        "/sections/0/components/1/data",
+        "/sections/0/components/1/data",
+        "/sections/0/components/1/data"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be equal to constant",
+      "paths": [
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/type"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be <= 12",
+      "paths": [
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span",
+        "/sections/0/components/1/layout/span"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 rows(拼写错误?)",
+      "paths": [
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows",
+        "/sections/0/components/1/props/rows"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 categoryField",
+      "paths": [
+        "/sections/0/components/1/props/categoryField",
+        "/sections/0/components/1/props/categoryField",
+        "/sections/0/components/1/props/categoryField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 series",
+      "paths": [
+        "/sections/0/components/1/props/series",
+        "/sections/0/components/1/props/series"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 xField",
+      "paths": [
+        "/sections/0/components/1/props/xField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 valueField",
+      "paths": [
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField",
+        "/sections/0/components/1/props/valueField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 columns",
+      "paths": [
+        "/sections/0/components/1/props/columns",
+        "/sections/0/components/1/props/columns"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 nameField",
+      "paths": [
+        "/sections/0/components/1/props/nameField",
+        "/sections/0/components/1/props/nameField",
+        "/sections/0/components/1/props/nameField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 map",
+      "paths": [
+        "/sections/0/components/1/props/map"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 tabs",
+      "paths": [
+        "/sections/0/components/1/props/tabs"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 components",
+      "paths": [
+        "/sections/0/components/1/props/components"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 items",
+      "paths": [
+        "/sections/0/components/1/props/items"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 field",
+      "paths": [
+        "/sections/0/components/1/props/field"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 promptTemplate",
+      "paths": [
+        "/sections/0/components/1/props/promptTemplate"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 relatedData",
+      "paths": [
+        "/sections/0/components/1/props/relatedData"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match exactly one schema in oneOf",
+      "paths": [
+        "/sections/0/components/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "id": "gmv-card",
+            "type": "metricCard",
+            "layout": {
+              "span": 13
+            },
+            "data": {
+              "main": "overview"
+            },
+            "props": {
+              "title": "GMV",
+              "rows": [
+                "…（共1项）"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

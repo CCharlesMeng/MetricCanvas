@@ -1,0 +1,57 @@
+{
+  "case": "detail-component-reject-mapchart",
+  "invariant": "detail-view-component-types",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "详情只允许说明、图表和表格，不允许递归动作或容器",
+      "paths": [
+        "/detailViews/0/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "detailViews": [
+      {
+        "components": [
+          {
+            "id": "detail-negative-china-map",
+            "type": "mapChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "regions"
+            },
+            "props": {
+              "variant": "regionalOverview",
+              "nameField": "name",
+              "valueField": "gmv",
+              "map": "china",
+              "hierarchyFilter": "area",
+              "levelField": "level",
+              "parentField": "parent",
+              "codeField": "code",
+              "levelMaps": {
+                "…": "共1个键"
+              },
+              "legend": {
+                "…": "共2个键"
+              },
+              "tooltipFields": [
+                "…（共1项）"
+              ],
+              "pinnedSummary": {
+                "…": "共4个键"
+              },
+              "actions": [
+                "…（共1项）"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

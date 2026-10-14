@@ -1,0 +1,25 @@
+{
+  "case": "query-dimension-role-mismatch",
+  "invariant": "query-field-mapping",
+  "expected": [
+    {
+      "type": "QUERY_MAPPING_ERROR",
+      "message": "DQE 维度 city 的 role 必须为 dimension",
+      "paths": [
+        "/dataSources/orders/fields/city/role"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "orders": {
+        "fields": {
+          "city": {
+            "role": "measure"
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

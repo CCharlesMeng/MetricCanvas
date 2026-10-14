@@ -1,0 +1,31 @@
+{
+  "case": "table-row-key-not-dimension",
+  "invariant": "table-row-key",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "rowKey 字段 gmv 的 role 必须为 dimension",
+      "paths": [
+        "/sections/0/components/2/data/main",
+        "/sections/0/components/2/data/compare"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          {
+            "data": {
+              "main": "current",
+              "compare": "previous"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

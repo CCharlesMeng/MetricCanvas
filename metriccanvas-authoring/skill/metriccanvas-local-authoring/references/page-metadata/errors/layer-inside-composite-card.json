@@ -1,0 +1,35 @@
+{
+  "case": "layer-inside-composite-card",
+  "invariant": "layer-top-level-only",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "layout.layer 只能声明在内容分区的顶层组件上",
+      "paths": [
+        "/sections/0/components/1/props/components/1/layout/layer"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "components": [
+                "…",
+                {
+                  "layout": {
+                    "layer": "backdrop"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

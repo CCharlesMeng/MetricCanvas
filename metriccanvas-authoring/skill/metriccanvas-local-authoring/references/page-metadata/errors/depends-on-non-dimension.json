@@ -1,0 +1,22 @@
+{
+  "case": "depends-on-non-dimension",
+  "invariant": "filter-depends-on",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "级联上游必须是 dimension 筛选器:period",
+      "paths": [
+        "/filters/1/dependsOn"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "dependsOn": "period"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

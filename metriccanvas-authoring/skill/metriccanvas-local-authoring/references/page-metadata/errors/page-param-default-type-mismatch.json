@@ -1,0 +1,22 @@
+{
+  "case": "page-param-default-type-mismatch",
+  "invariant": "page-param-default-type",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "默认值不符合参数类型 number",
+      "paths": [
+        "/params/1/default"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "params": [
+      "…",
+      {
+        "default": "2026"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

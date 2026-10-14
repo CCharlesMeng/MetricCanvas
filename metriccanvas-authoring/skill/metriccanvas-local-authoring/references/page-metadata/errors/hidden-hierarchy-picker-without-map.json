@@ -1,0 +1,21 @@
+{
+  "case": "hidden-hierarchy-picker-without-map",
+  "invariant": "hidden-hierarchy-picker-needs-map",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "隐藏层级切换器要求同页地图通过 hierarchyFilter 承担下钻:region",
+      "paths": [
+        "/filters/0/hierarchyPicker"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "hierarchyPicker": "hidden"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

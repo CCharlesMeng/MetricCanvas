@@ -1,0 +1,39 @@
+{
+  "case": "map-hierarchy-filter-undeclared",
+  "invariant": "map-hierarchy",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "地图下钻引用了未声明的筛选器:nope",
+      "paths": [
+        "/sections/0/components/0/props/hierarchyFilter"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "隐藏层级切换器要求同页地图通过 hierarchyFilter 承担下钻:area",
+      "paths": [
+        "/filters/0/hierarchyPicker"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "hierarchyFilter": "nope"
+            }
+          }
+        ]
+      }
+    ],
+    "filters": [
+      {
+        "hierarchyPicker": "hidden"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

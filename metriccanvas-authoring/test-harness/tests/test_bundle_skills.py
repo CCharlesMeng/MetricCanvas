@@ -17,7 +17,7 @@ class BundleSkillsTest(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.entries = []
-        for name in ("metriccanvas-page-builder", "metriccanvas-platform-authoring"):
+        for name in ("metriccanvas-page-builder", "metriccanvas-platform-authoring", "metriccanvas-local-authoring"):
             entry = f"skill/{name}/SKILL.md"
             self.entries.append({"id": name, "entrypoint": entry})
             folder = self.root / "skill" / name
@@ -30,6 +30,7 @@ class BundleSkillsTest(unittest.TestCase):
             (workflows / f"{name}.md").write_text("# Workflow\n")
         self.bundle = {"skill": {"entrypoint": self.entries[0]["entrypoint"]}, "skills": self.entries}
         self.entries[1]["mcpServer"] = "metriccanvas-platform-content"
+        self.entries[2]["referenceProjection"] = "local-page-metadata"
         self.bundle["toolServices"] = {"metriccanvas-platform-content": {"command": "metriccanvas-platform-content", "module": "metriccanvas_authoring.platform_server", "contextContract": "authoring-turn/1.0", "platformProtocolVersion": "2.0"}}
         (self.root / "tool").mkdir()
         (self.root / "tool/pyproject.toml").write_text('[project.scripts]\nmetriccanvas-platform-content = "metriccanvas_authoring.platform_server:main"\n')
@@ -98,6 +99,22 @@ class BundleSkillsTest(unittest.TestCase):
         value = copy.deepcopy(self.bundle)
         value["skills"][1]["referenceProjection"] = "all-contracts"
         self.assertTrue(any("projection" in error for error in self.check(value)))
+
+    def test_local_projection_cannot_be_assigned_to_online_skill(self) -> None:
+        value = copy.deepcopy(self.bundle)
+        value["skills"][0]["referenceProjection"] = "local-page-metadata"
+        self.assertTrue(any("local projection" in error for error in self.check(value)))
+
+    def test_local_skill_cannot_depend_on_another_skill(self) -> None:
+        entry = self.root / self.entries[2]["entrypoint"]
+        entry.write_text("[online](../metriccanvas-platform-authoring/SKILL.md)")
+        self.assertTrue(any("standalone link" in error for error in self.check()))
+
+    def test_local_skill_requires_its_knowledge_and_cannot_require_mcp(self) -> None:
+        for change in ({"referenceProjection": "none"}, {"mcpServer": "metriccanvas-platform-content"}):
+            value = copy.deepcopy(self.bundle)
+            value["skills"][2].update(change)
+            self.assertTrue(any("standalone knowledge" in error for error in self.check(value)))
 
     def test_unified_deployment_cannot_route_to_legacy_service(self) -> None:
         value = copy.deepcopy(self.bundle)

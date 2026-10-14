@@ -1,0 +1,101 @@
+{
+  "case": "field-id-pattern",
+  "invariant": "schema-structure",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match pattern \"^[A-Za-z_][A-Za-z0-9_-]*$\"",
+      "paths": [
+        "/dataSources/overview/fields",
+        "/dataSources/overview/fields"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "property name must be valid",
+      "paths": [
+        "/dataSources/overview/fields",
+        "/dataSources/overview/fields"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 dimensions",
+      "paths": [
+        "/dataSources/overview/fields/dimensions"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 measures",
+      "paths": [
+        "/dataSources/overview/fields/measures"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match a schema in anyOf",
+      "paths": [
+        "/dataSources/overview/fields",
+        "/dataSources/overview/fields",
+        "/dataSources/overview"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 gmv(拼写错误?)",
+      "paths": [
+        "/dataSources/overview/fields/gmv"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 1-bad(拼写错误?)",
+      "paths": [
+        "/dataSources/overview/fields/1-bad"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 query",
+      "paths": [
+        "/dataSources/overview/source/query"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 rows(拼写错误?)",
+      "paths": [
+        "/dataSources/overview/source/rows"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be equal to constant",
+      "paths": [
+        "/dataSources/overview/source/type"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "overview": {
+        "fields": {
+          "gmv": {
+            "…": "共4个键"
+          },
+          "1-bad": {
+            "…": "共2个键"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            "…（共1项）"
+          ]
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

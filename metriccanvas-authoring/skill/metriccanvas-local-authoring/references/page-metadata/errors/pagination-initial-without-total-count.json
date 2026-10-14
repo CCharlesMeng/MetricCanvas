@@ -1,0 +1,23 @@
+{
+  "case": "pagination-initial-without-total-count",
+  "invariant": "pagination-initial-rows",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "查询分页的内嵌初始行必须声明 totalCount",
+      "paths": [
+        "/dataSources/paged/source/initial/totalCount"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "paged": {
+        "source": {
+          "initial": {}
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

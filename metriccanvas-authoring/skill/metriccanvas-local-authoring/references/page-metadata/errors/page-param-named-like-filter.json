@@ -1,0 +1,21 @@
+{
+  "case": "page-param-named-like-filter",
+  "invariant": "page-param-not-filter-name",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "页面参数与筛选器同名:customer;同一语义只能取一种形态",
+      "paths": [
+        "/params/0/id"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "params": [
+      {
+        "id": "customer"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

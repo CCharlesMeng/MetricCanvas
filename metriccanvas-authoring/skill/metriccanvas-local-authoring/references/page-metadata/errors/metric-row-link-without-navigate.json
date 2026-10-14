@@ -1,0 +1,38 @@
+{
+  "case": "metric-row-link-without-navigate",
+  "invariant": "metric-row-link-needs-navigate",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "指标值链接必须至少声明一个 navigate 或 openDetail 动作",
+      "paths": [
+        "/sections/0/components/1/props/components/0/props/rows/0/link"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "components": [
+                {
+                  "props": {
+                    "rows": [
+                      {
+                        "link": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

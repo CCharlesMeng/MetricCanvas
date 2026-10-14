@@ -71,8 +71,12 @@ def validate_skills(root: Path, bundle: dict[str, Any], locked: set[str]) -> lis
             errors.append(f"skills: invalid or duplicate entry {name}")
             continue
         projection = entry.get("referenceProjection", "page-metadata" if name == "metriccanvas-page-builder" else "none")
-        if projection not in {"none", "page-metadata"}:
+        if projection not in {"none", "page-metadata", "local-page-metadata"}:
             errors.append(f"{name}: unknown reference projection")
+        if projection == "local-page-metadata" and name != "metriccanvas-local-authoring":
+            errors.append(f"{name}: local projection requires local authoring entrypoint")
+        if name == "metriccanvas-local-authoring" and (projection != "local-page-metadata" or entry.get("mcpServer")):
+            errors.append(f"{name}: requires standalone knowledge and no MCP service")
         if name == "metriccanvas-platform-authoring" and projection != "none":
             errors.append(f"{name}: expected authored references")
         ids.add(name)

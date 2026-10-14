@@ -1,0 +1,31 @@
+{
+  "case": "actual-after-captured-month",
+  "invariant": "bar-forecast-boundary",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "7月为统计月之后不得提供实际系列 actual",
+      "paths": [
+        "/dataSources/monthly/source/initial/rows/2/actual"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "monthly": {
+        "source": {
+          "initial": {
+            "rows": [
+              "…",
+              "…",
+              {
+                "actual": 14
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

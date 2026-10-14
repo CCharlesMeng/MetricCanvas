@@ -1,0 +1,36 @@
+{
+  "case": "table-duplicate-column-binding",
+  "invariant": "table-column-binding-unique",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表格列字段绑定重复:main:region",
+      "paths": [
+        "/sections/0/components/0/props/columns/2/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                "…",
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "region"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

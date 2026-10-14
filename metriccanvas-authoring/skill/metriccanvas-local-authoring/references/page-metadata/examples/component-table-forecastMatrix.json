@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "6.18",
+  "id": "reference-export-compute-branches",
+  "layout": "report",
+  "dataSources": {
+    "fill-1": {
+      "fields": {
+        "time": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "time": "2026-01",
+            "amount": 1
+          }
+        ]
+      },
+      "compute": [
+        {
+          "op": "timeFill",
+          "timeField": "time",
+          "granularity": "month",
+          "format": "iso",
+          "range": {
+            "currentYearOffset": 0
+          },
+          "measures": [
+            "amount"
+          ]
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "table-fill-1",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "fill-1"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "time"
+              },
+              {
+                "field": "amount"
+              }
+            ],
+            "variant": "forecastMatrix"
+          }
+        }
+      ]
+    }
+  ]
+}

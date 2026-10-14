@@ -1,0 +1,155 @@
+{
+  "schemaVersion": "6.18",
+  "id": "reference-export-detail-branches",
+  "layout": "report",
+  "dataSources": {
+    "sample": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure"
+        },
+        "other": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "样例",
+            "value": 10,
+            "other": 5
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "main-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成数据，只验证详情组件合法分支"
+          }
+        }
+      ]
+    }
+  ],
+  "detailViews": [
+    {
+      "id": "detail",
+      "mode": "snapshot",
+      "components": [
+        {
+          "id": "detail-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "详情说明"
+          }
+        },
+        {
+          "id": "detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "name"
+              },
+              {
+                "field": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "detail-bar",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "categoryField": "name",
+            "series": [
+              {
+                "field": "value",
+                "label": "值"
+              }
+            ]
+          }
+        },
+        {
+          "id": "detail-line",
+          "type": "lineChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "xField": "name",
+            "series": [
+              {
+                "field": "value",
+                "label": "值"
+              }
+            ]
+          }
+        },
+        {
+          "id": "detail-pie",
+          "type": "pieChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "categoryField": "name",
+            "valueField": "value"
+          }
+        },
+        {
+          "id": "detail-gauge",
+          "type": "gauge",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "valueField": "value",
+            "min": 0,
+            "max": 100
+          }
+        }
+      ]
+    }
+  ]
+}

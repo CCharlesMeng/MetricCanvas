@@ -1,0 +1,310 @@
+{
+  "errors": [],
+  "desktop": {
+    "width": 1679,
+    "scrollWidth": 1679,
+    "events": [
+      {
+        "type": "ready",
+        "pageId": "ioc-project-overview"
+      }
+    ],
+    "queries": [],
+    "controls": [
+      {
+        "tag": "INPUT",
+        "text": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "概览",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "TOP预签项目",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "丢单项目",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "排名 ⇅",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "预签金额 ⇅",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "管道支撑率 ⇅",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "项目分析会召开率 ⇅",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "立项率 ⇅",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "本月新签单金额 ⇅",
+        "disabled": false
+      }
+    ],
+    "components": [
+      {
+        "id": "scope-note/scope-text",
+        "rect": {
+          "x": 23,
+          "y": 96,
+          "width": 1632,
+          "height": 52
+        }
+      },
+      {
+        "id": "summary-cards/opportunity-card",
+        "rect": {
+          "x": 23,
+          "y": 164,
+          "width": 533.328125,
+          "height": 304
+        }
+      },
+      {
+        "id": "summary-cards/level-card",
+        "rect": {
+          "x": 572.328125,
+          "y": 164,
+          "width": 533.328125,
+          "height": 304
+        }
+      },
+      {
+        "id": "summary-cards/review-card",
+        "rect": {
+          "x": 1121.65625,
+          "y": 164,
+          "width": 533.34375,
+          "height": 304
+        }
+      },
+      {
+        "id": "detail-and-map/details",
+        "rect": {
+          "x": 23,
+          "y": 484,
+          "width": 670.65625,
+          "height": 425
+        }
+      },
+      {
+        "id": "detail-and-map/world-map",
+        "rect": {
+          "x": 709.65625,
+          "y": 484,
+          "width": 945.34375,
+          "height": 425
+        }
+      },
+      {
+        "id": "navigation-gap/opportunity-list-link",
+        "rect": {
+          "x": 23,
+          "y": 925,
+          "width": 1632,
+          "height": 101
+        }
+      }
+    ],
+    "text": "全球/区域作战地图\n仅看重点国代\n全球\n▾\n全部项目等级\n▾\n全部产业\n▾\n\n当前选择状态由顶部控件展示；页面使用 2026-03 inline 演示数据，控件变化不会触发真实筛选取数。分类行是演示分配，汇总与项目样例不可相加对账。\n\n机会点概况\n机会点数\n270\n个\n较上月\n15个\n总预签金额\n3.59亿\n较上月\n2,200万\n年度销售预测\n2.76亿\n年度管道支撑率\n0.7%\n机会点分类\t数量\t预签金额\n\n卓越\n\t90\t1.20亿\n\n战略\n\t100\t1.45亿\n\n核心\n\t80\t9,400万\n项目分层分级管理\n已立项数量\n126\n个\n已立项预签金额\n2.08亿\n立项率\n0.7%\n近60天项目分析会召开率\n0.7%\n赢单率\n0.5%\n项目层级\t数量\t预签金额\n\n公司特级\n\t30\t6,000万\n\n公司级\n\t60\t1.00亿\n\n地区部级\n\t36\t4,800万\n\n代表处级\n\t0\t0元\n复盘总结\n应复盘\n65\n个\n已复盘\n46\n个\n复盘率\n0.7%\n及时奖惩（固定类别色）\n奖惩类别\t数量\n\n金牌\n\t8\n\n银牌\n\t12\n\n红牌\n\t3\n\n黄牌\n\t5\n概览\nTOP预签项目\n丢单项目\n排名\n⇅\n\t\n区域\n\t\n代表处\n\t\n预签金额\n⇅\n\t\n管道支撑率\n⇅\n\t\n项目分析会召开率\n⇅\n\t\n立项率\n⇅\n\t\n本月新签单金额\n⇅\n\n\n1\n\t\n欧洲\n\t\n德国\n\t\n7,500万\n\t\n1.3%\n\t\n0.7%\n\t\n0.8%\n\t\n1,200万\n\n\n2\n\t\n中国\n\t\n北京\n\t\n1.80亿\n\t\n0.7%\n\t\n0.8%\n\t\n0.8%\n\t\n1,800万\n\n\n3\n\t\n中国\n\t\n上海\n\t\n9,500万\n\t\n0.5%\n\t\n0.6%\n\t\n0.6%\n\t\n900万\n\n\n4\n\t\n亚太\n\t\n新加坡\n\t\n900万\n\t\n0.0%\n\t\n0.0%\n\t\n0.0%\n\t\n0元\n总条数： 4\n世界地域管道支撑率（代表国家着色）\n管道支撑率\n80%以上\n51%~80%\n1%~50%\n0\n\n地域访问路径目标：全球 → 地区部 → 代表处 → 机会点清单。当前 inline 样例只完成全球层的地区展示；代表处全量层级与地图点击联动待真实层级数据和查询接入。\n\n进入机会点清单（静态入口） →"
+  },
+  "mobile": {
+    "width": 375,
+    "scrollWidth": 385,
+    "events": [
+      {
+        "type": "ready",
+        "pageId": "ioc-project-overview"
+      }
+    ],
+    "queries": [],
+    "controls": [
+      {
+        "tag": "INPUT",
+        "text": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "disabled": false
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "概览",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "TOP预签项目",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "丢单项目",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "排名 ⇅",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "预签金额 ⇅",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "管道支撑率 ⇅",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "项目分析会召开率 ⇅",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "立项率 ⇅",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "本月新签单金额 ⇅",
+        "disabled": false
+      }
+    ],
+    "components": [
+      {
+        "id": "scope-note/scope-text",
+        "rect": {
+          "x": 23,
+          "y": 318,
+          "width": 328,
+          "height": 72
+        }
+      },
+      {
+        "id": "summary-cards/opportunity-card",
+        "rect": {
+          "x": 23,
+          "y": 406,
+          "width": 328,
+          "height": 304
+        }
+      },
+      {
+        "id": "summary-cards/level-card",
+        "rect": {
+          "x": 23,
+          "y": 726,
+          "width": 328,
+          "height": 288
+        }
+      },
+      {
+        "id": "summary-cards/review-card",
+        "rect": {
+          "x": 23,
+          "y": 1030,
+          "width": 328,
+          "height": 288
+        }
+      },
+      {
+        "id": "detail-and-map/details",
+        "rect": {
+          "x": 23,
+          "y": 1334,
+          "width": 328,
+          "height": 551
+        }
+      },
+      {
+        "id": "detail-and-map/world-map",
+        "rect": {
+          "x": 23,
+          "y": 1901,
+          "width": 328,
+          "height": 320
+        }
+      },
+      {
+        "id": "navigation-gap/opportunity-list-link",
+        "rect": {
+          "x": 23,
+          "y": 2237,
+          "width": 328,
+          "height": 251
+        }
+      }
+    ],
+    "text": "全球/区域作战地图\n仅看重点国代\n全球\n▾\n全部项目等级\n▾\n全部产业\n▾\n\n当前选择状态由顶部控件展示；页面使用 2026-03 inline 演示数据，控件变化不会触发真实筛选取数。分类行是演示分配，汇总与项目样例不可相加对账。\n\n机会点概况\n机会点数\n270\n个\n较上月\n15个\n总预签金额\n3.59亿\n较上月\n2,200万\n年度销售预测\n2.76亿\n年度管道支撑率\n0.7%\n机会点分类\t数量\t预签金额\n\n卓越\n\t90\t1.20亿\n\n战略\n\t100\t1.45亿\n\n核心\n\t80\t9,400万\n项目分层分级管理\n已立项数量\n126\n个\n已立项预签金额\n2.08亿\n立项率\n0.7%\n近60天项目分析会召开率\n0.7%\n赢单率\n0.5%\n项目层级\t数量\t预签金额\n\n公司特级\n\t30\t6,000万\n\n公司级\n\t60\t1.00亿\n\n地区部级\n\t36\t4,800万\n\n代表处级\n\t0\t0元\n复盘总结\n应复盘\n65\n个\n已复盘\n46\n个\n复盘率\n0.7%\n及时奖惩（固定类别色）\n奖惩类别\t数量\n\n金牌\n\t8\n\n银牌\n\t12\n\n红牌\n\t3\n\n黄牌\n\t5\n概览\nTOP预签项目\n丢单项目\n排名\n⇅\n\t\n区域\n\t\n代表处\n\t\n预签金额\n⇅\n\t\n管道支撑率\n⇅\n\t\n项目分析会召开率\n⇅\n\t\n立项率\n⇅\n\t\n本月新签单金额\n⇅\n\n\n1\n\t\n欧洲\n\t\n德国\n\t\n7,500万\n\t\n1.3%\n\t\n0.7%\n\t\n0.8%\n\t\n1,200万\n\n\n2\n\t\n中国\n\t\n北京\n\t\n1.80亿\n\t\n0.7%\n\t\n0.8%\n\t\n0.8%\n\t\n1,800万\n\n\n3\n\t\n中国\n\t\n上海\n\t\n9,500万\n\t\n0.5%\n\t\n0.6%\n\t\n0.6%\n\t\n900万\n\n\n4\n\t\n亚太\n\t\n新加坡\n\t\n900万\n\t\n0.0%\n\t\n0.0%\n\t\n0.0%\n\t\n0元\n总条数： 4\n世界地域管道支撑率（代表国家着色）\n管道支撑率\n80%以上\n51%~80%\n1%~50%\n0\n\n地域访问路径目标：全球 → 地区部 → 代表处 → 机会点清单。当前 inline 样例只完成全球层的地区展示；代表处全量层级与地图点击联动待真实层级数据和查询接入。\n\n进入机会点清单（静态入口） →"
+  },
+  "tabs": [
+    {
+      "name": "TOP预签项目",
+      "text": [
+        "机会点分类\t数量\t预签金额\n\n卓越\n\t90\t1.20亿\n\n战略\n\t100\t1.45亿\n\n核心\n\t80\t9,400万",
+        "项目层级\t数量\t预签金额\n\n公司特级\n\t30\t6,000万\n\n公司级\n\t60\t1.00亿\n\n地区部级\n\t36\t4,800万\n\n代表处级\n\t0\t0元",
+        "奖惩类别\t数量\n\n金牌\n\t8\n\n银牌\n\t12\n\n红牌\n\t3\n\n黄牌\n\t5",
+        "项目名称\n\t\n预签金额\n⇅\n\t\n年度销售预测\n⇅\n\t\n赢率\n⇅\n\n\n云平台升级\n\t\n3,500万\n\t\n2,200万\n\t\n0.8%\n\n\n行业云项目\n\t\n2,800万\n\t\n1,800万\n\t\n0.6%"
+      ]
+    },
+    {
+      "name": "丢单项目",
+      "text": [
+        "机会点分类\t数量\t预签金额\n\n卓越\n\t90\t1.20亿\n\n战略\n\t100\t1.45亿\n\n核心\n\t80\t9,400万",
+        "项目层级\t数量\t预签金额\n\n公司特级\n\t30\t6,000万\n\n公司级\n\t60\t1.00亿\n\n地区部级\n\t36\t4,800万\n\n代表处级\n\t0\t0元",
+        "奖惩类别\t数量\n\n金牌\n\t8\n\n银牌\n\t12\n\n红牌\n\t3\n\n黄牌\n\t5",
+        "机会点名称\n\t\n预签金额\n⇅\n\t\n丢单原因\n\n\n数据平台机会点C\n\t\n1,500万\n\t\n预算取消\n\n\n容器平台机会点D\n\t\n800万\n\t\n竞争方案胜出"
+      ]
+    },
+    {
+      "name": "概览",
+      "text": [
+        "机会点分类\t数量\t预签金额\n\n卓越\n\t90\t1.20亿\n\n战略\n\t100\t1.45亿\n\n核心\n\t80\t9,400万",
+        "项目层级\t数量\t预签金额\n\n公司特级\n\t30\t6,000万\n\n公司级\n\t60\t1.00亿\n\n地区部级\n\t36\t4,800万\n\n代表处级\n\t0\t0元",
+        "奖惩类别\t数量\n\n金牌\n\t8\n\n银牌\n\t12\n\n红牌\n\t3\n\n黄牌\n\t5",
+        "排名\n⇅\n\t\n区域\n\t\n代表处\n\t\n预签金额\n⇅\n\t\n管道支撑率\n⇅\n\t\n项目分析会召开率\n⇅\n\t\n立项率\n⇅\n\t\n本月新签单金额\n⇅\n\n\n1\n\t\n欧洲\n\t\n德国\n\t\n7,500万\n\t\n1.3%\n\t\n0.7%\n\t\n0.8%\n\t\n1,200万\n\n\n2\n\t\n中国\n\t\n北京\n\t\n1.80亿\n\t\n0.7%\n\t\n0.8%\n\t\n0.8%\n\t\n1,800万\n\n\n3\n\t\n中国\n\t\n上海\n\t\n9,500万\n\t\n0.5%\n\t\n0.6%\n\t\n0.6%\n\t\n900万\n\n\n4\n\t\n亚太\n\t\n新加坡\n\t\n900万\n\t\n0.0%\n\t\n0.0%\n\t\n0.0%\n\t\n0元"
+      ]
+    }
+  ]
+}

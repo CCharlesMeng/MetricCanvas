@@ -1,0 +1,33 @@
+{
+  "case": "initial-row-detail-null-not-allowed",
+  "invariant": "query-initial-rows-normalize",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "DQE 嵌套明细字段 event_impact 为 null，页面字段 impact 声明 nullable=false",
+      "paths": [
+        "/dataSources/customers/source/initial/rows/0/events/0/event_impact"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "customers": {
+        "source": {
+          "initial": {
+            "rows": [
+              {
+                "events": [
+                  {
+                    "event_impact": null
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

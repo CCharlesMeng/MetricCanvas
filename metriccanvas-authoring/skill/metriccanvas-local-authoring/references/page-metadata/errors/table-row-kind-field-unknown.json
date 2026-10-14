@@ -1,0 +1,27 @@
+{
+  "case": "table-row-kind-field-unknown",
+  "invariant": "table-row-kind-field",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "行类别字段 kind 不在数据源 targets 中",
+      "paths": [
+        "/sections/0/components/0/props/rowKindField"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "rowKindField": "kind"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

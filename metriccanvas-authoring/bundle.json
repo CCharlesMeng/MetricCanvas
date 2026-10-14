@@ -27,6 +27,11 @@
       "referenceMode": "injected-or-file-read",
       "referenceProjection": "none",
       "mcpServer": "metriccanvas-platform-content"
+    },
+    {
+      "id": "metriccanvas-local-authoring",
+      "entrypoint": "skill/metriccanvas-local-authoring/SKILL.md",
+      "referenceProjection": "local-page-metadata"
     }
   ],
   "toolServices": {

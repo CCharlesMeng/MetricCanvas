@@ -1,0 +1,27 @@
+{
+  "case": "duplicate-component-id-in-container",
+  "invariant": "component-id-unique",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "component id 重复:single-panel",
+      "paths": [
+        "/sections/0/components/2/id"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          {
+            "id": "single-panel"
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -9,7 +9,7 @@ import { atPointer, buildPageReference, referenceNodes, validateReferenceLinks, 
 
 const root = process.cwd();
 const bundle = JSON.parse(await readFile('metriccanvas-authoring/bundle.json','utf8'));
-const skills: Array<{id:string;entrypoint:string}> = bundle.skills ?? [{id:'metriccanvas-page-builder',entrypoint:bundle.skill.entrypoint}];
+const skills: Array<{id:string;entrypoint:string;referenceProjection?:string}> = bundle.skills ?? [{id:'metriccanvas-page-builder',entrypoint:bundle.skill.entrypoint}];
 const authorMap = JSON.parse(await readFile('docs/page-metadata/reference-map.json', 'utf8')) as ReferenceMap;
 const inputs = new Map<string,string>();
 for (const file of await readdir('packages/page/fixtures/contract-valid')) if (file.endsWith('.json')) inputs.set(`page/conformance/valid/${file}`, await readFile(`packages/page/fixtures/contract-valid/${file}`, 'utf8'));
@@ -77,7 +77,7 @@ describe('页面参考手册生成与分发', () => {
     try {
       await cp('metriccanvas-authoring',path.join(temp,'bundle'),{recursive:true,filter:source=>!source.split(path.sep).some(part=>['__pycache__','.venv','node_modules'].includes(part))});
       expect(bundle.skill.entrypoint).toBe('skill/metriccanvas-page-builder/SKILL.md');
-      expect(skills.map(skill=>skill.id)).toEqual(['metriccanvas-page-builder','metriccanvas-platform-authoring']);
+      expect(skills.map(skill=>skill.id)).toEqual(['metriccanvas-page-builder','metriccanvas-platform-authoring','metriccanvas-local-authoring']);
       const prefixes = ['bundle/contract-snapshot/page/reference'];
       for (const skill of skills) {
         const directory = path.dirname(skill.entrypoint);
@@ -90,10 +90,13 @@ describe('页面参考手册生成与分发', () => {
         validateReferenceLinks(standalone);
         if (skill.id === 'metriccanvas-page-builder') {
           prefixes.push(`${skill.id}/references/page-metadata`);
-        } else {
+        } else if (skill.id === 'metriccanvas-platform-authoring') {
           expect(standalone.has('workflows/create.md')).toBe(true);
           expect(standalone.has('workflows/edit.md')).toBe(true);
           expect([...standalone.values()].reduce((total, content) => total + content.split('\n').length, 0)).toBeLessThanOrEqual(10000);
+        } else {
+          expect(standalone.has('references/knowledge.json')).toBe(true);
+          expect(standalone.has('scripts/validate-page.mjs')).toBe(true);
         }
       }
       for(const prefix of prefixes) {

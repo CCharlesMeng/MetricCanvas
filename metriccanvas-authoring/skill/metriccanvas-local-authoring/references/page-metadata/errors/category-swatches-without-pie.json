@@ -1,0 +1,37 @@
+{
+  "case": "category-swatches-without-pie",
+  "invariant": "category-swatches-need-pie",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "色点按类别取值取色，要求同页有饼图绑定同一个类别字段:summary.channel 没有配对的饼图；不需要与扇区同色时去掉 swatches",
+      "paths": [
+        "/sections/0/components/1/props/components/3/props/swatches"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "components": [
+                "…",
+                "…",
+                "…",
+                {
+                  "props": {
+                    "swatches": true
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

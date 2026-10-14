@@ -29,6 +29,7 @@
 ## 交付内容
 
 - `skill/metriccanvas-platform-authoring/`：平台创建、编辑等工作流，与 Python 只通过 MCP 协作。
+- `skill/metriccanvas-local-authoring/`：Coding Agent 直接创建和修改页面 JSON；整目录可独立安装，协议知识与产品校验器均在目录内，运行校验只需 Node.js 22+。知识维护见 [真源与派生链](SOURCES.md)。
 - `tool/`：Python ≥3.12 包。平台唯一注册命令为 `metriccanvas-platform-content`。
 - `contracts/`、`contract-snapshot/`：创作协议与运行所需产品契约；无需内部 Node 环境再生成。
 - `examples/adapter_template/`：公共维护的参考实现，测试使用它；不是生产回退。

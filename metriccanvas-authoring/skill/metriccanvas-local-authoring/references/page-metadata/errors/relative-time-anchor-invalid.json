@@ -1,0 +1,26 @@
+{
+  "case": "relative-time-anchor-invalid",
+  "invariant": "relative-time-anchor",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间点不是有效的公历日期",
+      "paths": [
+        "/filters/3/default/anchor"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      "…",
+      "…",
+      {
+        "default": {
+          "anchor": "2026-13-01"
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}
