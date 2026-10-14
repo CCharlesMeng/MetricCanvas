@@ -23,7 +23,7 @@
     "sim:dqe": "tsx tools/dqe-sim/src/server.ts",
     "check": "tsc --noEmit -p tools/package-build && tsc --noEmit -p tests/tsconfig.json && pnpm -r check",
     "build:playground": "pnpm --filter playground build",
-    "build:packages": "pnpm --filter @metriccanvas/ui --filter @metriccanvas/page --filter @metriccanvas/engine --filter @metriccanvas/metric-canvas -r build",
+    "build:packages": "pnpm --filter @metriccanvas/ui --filter @metriccanvas/data-execution --filter @metriccanvas/page --filter @metriccanvas/engine --filter @metriccanvas/metric-canvas -r build",
     "packages:check": "tsx tools/package-build/check.ts",
     "compatibility:check": "node tools/package-build/compatibility.mjs",
     "ci:wait": "node tools/scripts/wait-ci.mjs",

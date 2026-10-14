@@ -6,6 +6,9 @@ import type { PageDocument } from './page-document';
 import type { TypedError } from './errors';
 import { applyFilterTextValues, collectFilterTextValueReferences, initialFilterTextValues } from './filter-text-value';
 import { resolveFilterTextValue, resolveParamTextValues } from './text-value';
+import { canonicalizeJson } from './canonical-json';
+import { queryResultDependencies } from './query-dependencies';
+import { computeDependencies } from './compute';
 
 export interface ParamResolutionIssue { code: 'INVALID_PAGE'|'UNKNOWN_INPUT'|'MISSING_INPUT'|'INVALID_VALUE'|'INVALID_TIME_RULE'|'INVALID_MATERIALIZATION'; path: string; param?: string; message: string; }
 export type ResolvePageParamsResult =
@@ -42,6 +45,10 @@ export function resolvePageParams(page:unknown, suppliedValues:Readonly<Record<s
     }
   }
   if(issues.length)return {ok:false,issues};
+  for (const id of changedParamSourceIds(structural.page, values)) {
+    const source = document.dataSources[id]?.source;
+    if (source?.type === 'query') delete source.initial;
+  }
   const parsed=parsePage(document,{textValues:{values}});
   if(!parsed.ok)return {ok:false,issues:parsed.errors.map(e=>issue(e,'INVALID_MATERIALIZATION'))};
   let resolvedPage:Page;
@@ -60,9 +67,10 @@ export function materializePageParams(page:Page,values:ReadonlyMap<string,PagePa
     if(value===undefined?p.required!==false:!matchesParamDeclaration(value,p))throw Error(`参数取值缺失或类型错误:${p.id}`);
   }
   const resolved=structuredClone(page);
-  for(const source of Object.values(resolved.dataSources))if(source.source.type==='query') {
+  const changed = changedParamSourceIds(page, values);
+  for(const [id, source] of Object.entries(resolved.dataSources))if(source.source.type==='query') {
     source.source.query=initializeQueryParams(source.source.query,values);
-    if(page.params && (Array.isArray(page.params) ? page.params.length > 0 : Object.keys(page.params).length > 0)) delete source.source.initial;
+    if (changed.has(id)) delete source.source.initial;
   }
   for (const filter of resolved.filters ?? []) {
     if (filter.type !== 'timePoint' && filter.type !== 'timeRange') continue;
@@ -76,3 +84,31 @@ export function materializePageParams(page:Page,values:ReadonlyMap<string,PagePa
   return resolved;
 }
 function issue(e:TypedError,code:ParamResolutionIssue['code']='INVALID_PAGE'):ParamResolutionIssue{return {code,path:e.path,message:e.message};}
+
+/** Invalidate only queries whose parameter conditions changed, then their dependants. */
+function changedParamSourceIds(page: Page, values: ReadonlyMap<string, PageParamValue>): Set<string> {
+  const saved = new Map<string, PageParamValue>();
+  for (const param of page.params ?? []) {
+    const value = param.value ?? param.default;
+    if (value !== undefined) saved.set(param.id, value);
+  }
+  const changed = new Set<string>();
+  for (const [id, source] of Object.entries(page.dataSources)) {
+    if (source.source.type !== 'query') continue;
+    const query = source.source.query;
+    try {
+      if (canonicalizeJson(initializeQueryParams(query, saved)) !== canonicalizeJson(initializeQueryParams(query, values))) changed.add(id);
+    } catch { changed.add(id); }
+    for (const filterId of Object.keys(query.filterBindings ?? {})) {
+      const filter = page.filters?.find(filter => filter.id === filterId);
+      const paramId = filter && 'initialParam' in filter ? filter.initialParam : undefined;
+      if (paramId && canonicalizeJson(saved.get(paramId) ?? null) !== canonicalizeJson(values.get(paramId) ?? null)) changed.add(id);
+    }
+  }
+  for (const dependency of changed) {
+    for (const [id, source] of Object.entries(page.dataSources)) {
+      if ([...queryResultDependencies(source), ...computeDependencies(source.compute ?? [])].includes(dependency)) changed.add(id);
+    }
+  }
+  return changed;
+}

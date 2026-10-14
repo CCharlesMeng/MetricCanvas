@@ -1,0 +1,26 @@
+import {
+  hasQueryFieldMapping, normalizeQueryRows,
+  type QueryDataSourceFieldDefinition, type Row
+} from '@metriccanvas/page/internal';
+
+/** Reverse the explicit mapping for serialization; compute outputs stay out of initial. */
+export function queryRowsFromPageRows(
+  rows: readonly Row[], fields: Record<string, QueryDataSourceFieldDefinition>
+): Row[] {
+  const raw = rows.map(row => {
+    const output: Row = {};
+    for (const [id, field] of Object.entries(fields)) {
+      if (!hasQueryFieldMapping(field)) continue;
+      if (!Object.hasOwn(row, id)) throw new Error('查询结果缺少声明字段');
+      const value = row[id];
+      output[field.queryField] = field.type === 'recordList' && Array.isArray(value)
+        ? value.map(item => Object.fromEntries(Object.entries(field.items.fields).map(
+          ([itemId, itemField]) => [itemField.queryField, item[itemId]]
+        ))) : value;
+    }
+    return output;
+  });
+  const normalized = normalizeQueryRows(raw, fields);
+  if (!normalized.ok) throw new Error('查询结果不符合字段契约');
+  return raw;
+}

@@ -97,6 +97,9 @@ jobs:
       - name: 检查打包入口、声明与组件
         run: pnpm packages:check
 
+      - name: 验证取数包Node独立安装与CLI
+        run: node tools/package-build/data-execution-consumer.mjs
+
       - name: 上传静态平台
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v4

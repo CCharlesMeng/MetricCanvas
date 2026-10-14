@@ -1,16 +1,14 @@
+import { composeEffectiveQuery, executeQuery, rawSnapshot } from '@metriccanvas/data-execution/runtime';
+import type { QueryHeaderFilters } from '@metriccanvas/data-execution/runtime';
 import { resolveQueryResultInputs } from './query-result-inputs';
 import { executionSourceKey } from './execution';
 import type { Page } from '@metriccanvas/page';
 import {
-  bindingQueryField,
   queryResultDependencies,
   cascadeSourceIds,
   computeDependencies,
   declaredPaginationLimit,
   hasQueryFieldMapping,
-  timePointPredicateValue,
-  resolveTimeWindow,
-  type DataRow,
   type DataSnapshot,
   type DataSource,
   type EffectiveQuery,
@@ -37,12 +35,7 @@ export interface Subscribable<T> {
 }
 
 /** 表头筛选的当前值,按页面字段 id 归集;形状与表格视图状态同源。 */
-export type QueryHeaderFilters = Readonly<
-  Record<
-    string,
-    { mode: 'select'; values: readonly string[] } | { mode: 'dateRange'; from: string; to: string }
-  >
->;
+export type { QueryHeaderFilters } from '@metriccanvas/data-execution/runtime';
 
 export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
   captureQueries(): ReadonlyMap<string, EffectiveQuery>;
@@ -224,15 +217,14 @@ function hasReusableInitial(binding: DataSourceBinding): boolean {
 
 function initialSnapshots(
   bindings: DataSourceBinding[],
-  useEmbeddedInitialRows: boolean,
-  skipInitial: ReadonlySet<string> = new Set()
+  useEmbeddedInitialRows: boolean
 ): Map<string, DataSnapshot> {
   return new Map(
     bindings.map((binding) => [
       binding.sourceId,
       binding.dataSource.source.type === 'inline'
         ? rawSnapshot(binding.dataSource.source.rows)
-        : useEmbeddedInitialRows && !skipInitial.has(binding.sourceId) && hasReusableInitial(binding) && binding.dataSource.source.initial
+        : useEmbeddedInitialRows && hasReusableInitial(binding) && binding.dataSource.source.initial
           ? rawSnapshot(
               binding.dataSource.source.initial.rows,
               binding.dataSource.source.initial.totalCount
@@ -240,19 +232,6 @@ function initialSnapshots(
         : { status: 'loading' }
     ])
   );
-}
-
-function rawSnapshot(
-  rows: ReadonlyArray<Record<string, unknown>>,
-  totalCount?: number
-): DataSnapshot {
-  return rows.length === 0
-    ? { status: 'empty', ...(totalCount === undefined ? {} : { totalCount }) }
-    : {
-        status: 'ready',
-        rows: rows as Extract<DataSnapshot, { status: 'ready' }>['rows'],
-        ...(totalCount === undefined ? {} : { totalCount })
-      };
 }
 
 function notify(run: (value: PageDataSnapshots) => void, snapshots: PageDataSnapshots): void {
@@ -282,36 +261,15 @@ function startSession(
     }
   });
   const useEmbeddedInitialRows = !execution && sameFilterValues(values, defaults);
-  const joinedSources = new Set<string>();
-  const bindingMap = new Map(bindings.map(binding => [binding.sourceId, binding]));
-  function includeDependencies(id: string) {
-    if (joinedSources.has(id)) return;
-    joinedSources.add(id);
-    for (const dependency of computeDependencies(bindingMap.get(id)?.dataSource.compute ?? [])) includeDependencies(dependency);
-  }
-  for (const binding of bindings) if (computeDependencies(binding.dataSource.compute ?? []).length) includeDependencies(binding.sourceId);
-  const joinedQueries = queryBindings.filter(binding => joinedSources.has(binding.sourceId));
-  const captureTimes = new Set(joinedQueries.map(binding => binding.dataSource.source.initial?.capturedAt));
-  // 初始快照不能和本轮查询混合；无法证明同一采集批次时统一走当前查询。
-  const skipInitial = captureTimes.size > 1 || captureTimes.has(undefined)
-    ? new Set(joinedQueries.map(binding => binding.sourceId)) : new Set<string>();
-  const cascaded = cascadeSourceIds(Object.fromEntries(bindings.map(binding => [binding.sourceId, binding.dataSource])));
-  for (const id of cascaded) skipInitial.add(id);
-  let rawSnapshots = initialSnapshots(bindings, useEmbeddedInitialRows, skipInitial);
+  // Existing initial is consumed even when captures differ or a dependent source is missing.
+  let rawSnapshots = initialSnapshots(bindings, useEmbeddedInitialRows);
   const sources = new Map(bindings.map(binding => [binding.sourceId, binding.dataSource]));
   const executionMatches = new Set<string>();
   if (execution && sameFilterValues(values, execution.filters)) for (const binding of queryBindings) {
     const snapshot = execution.snapshots.get(binding.sourceId);
-    if (!cascaded.has(binding.sourceId) && snapshot && execution.sourceKeys.get(binding.sourceId) === executionSourceKey(binding.dataSource)) {
+    if (snapshot && execution.sourceKeys.get(binding.sourceId) === executionSourceKey(binding.dataSource)) {
       executionMatches.add(binding.sourceId);
       rawSnapshots.set(binding.sourceId, snapshot);
-    }
-  }
-  if (execution && joinedQueries.some(binding => !executionMatches.has(binding.sourceId))) {
-    for (const binding of joinedQueries) {
-      executionMatches.delete(binding.sourceId);
-      rawSnapshots.set(binding.sourceId, { status: 'loading' });
-      skipInitial.add(binding.sourceId);
     }
   }
   for (const binding of queryBindings) {
@@ -456,7 +414,7 @@ function startSession(
       const request: InFlightRequest = { members, controller: new AbortController() };
       inFlightRequests.add(request);
       withSlot(() => {
-        void execute(query, gateway, diagnosticContext, request.controller.signal).then(
+        void executeQuery(query, gateway, diagnosticContext, request.controller.signal).then(
           (snapshot) => {
             inFlightRequests.delete(request);
             release();
@@ -508,7 +466,7 @@ function startSession(
 
   refetch(
     queryBindings.filter(
-      (binding) => !(executionMatches.has(binding.sourceId)) && !(useEmbeddedInitialRows && !skipInitial.has(binding.sourceId) && hasReusableInitial(binding) && binding.dataSource.source.initial)
+      (binding) => !(executionMatches.has(binding.sourceId)) && !(useEmbeddedInitialRows && hasReusableInitial(binding) && binding.dataSource.source.initial)
     ),
     false
   );
@@ -574,131 +532,6 @@ function startSession(
       unsubscribeLiveFilters?.();
     }
   };
-}
-
-/** 页面字段 id 对应的上游查询字段;计算产出等本地字段没有映射。 */
-function mappedQueryField(
-  dataSource: QueryDataSource,
-  fieldId: string
-): string | undefined {
-  const field = dataSource.fields[fieldId];
-  return field && hasQueryFieldMapping(field) ? field.queryField : undefined;
-}
-
-function composeEffectiveQuery(
-  binding: QueryBinding,
-  values: FilterValues,
-  pageIndex: number,
-  sortRules: ReadonlyArray<{ field: string; direction: 'asc' | 'desc' }>,
-  headerFilters: QueryHeaderFilters
-): EffectiveQuery {
-  const dataSource = binding.dataSource;
-  const query = dataSource.source.query;
-  const filterValues: EffectiveQuery['filterValues'] = [];
-  for (const [filterId, binding] of Object.entries(query.filterBindings ?? {})) {
-    const value = values.get(filterId);
-    if (binding.target === 'dimension' && value?.type === 'dimension') {
-      // 层级维度取当前层级的谓词字段(ADR-0084);缺级时整条不下推,
-      // 不拿别的层级字段去接收本层取值。
-      const queryField = bindingQueryField(binding, value.level);
-      if (queryField !== undefined) {
-        filterValues.push({
-          target: 'dimension',
-          queryField,
-          values: value.values
-        });
-      }
-    } else if (binding.target === 'time' && value?.type === 'timeRange') {
-      filterValues.push({
-        target: 'time',
-        value: { from: value.from, to: value.to }
-      });
-    } else if (binding.target === 'time' && binding.window && value?.type === 'timePoint') {
-      const range = resolveTimeWindow(value.value, binding.window);
-      filterValues.push({ target: 'time', value: { from: range.start, to: range.end } });
-    } else if (binding.target === 'timePoint' && value?.type === 'timePoint') {
-      // 时间点是等值谓词,按绑定声明的格式落到维度字段上(ADR-0085)。
-      filterValues.push({
-        target: 'dimension',
-        queryField: binding.queryField,
-        values: [timePointPredicateValue(value.value, binding.valueFormat)]
-      });
-    } else if (binding.target === 'boolean' && value?.type === 'boolean') {
-      // 勾选与否不对称:不勾且未声明 whenFalse 即无条件,不由运行时取反。
-      const values = value.value ? binding.whenTrue : binding.whenFalse;
-      if (values !== undefined) {
-        filterValues.push({
-          target: 'dimension',
-          queryField: binding.queryField,
-          values: [...values]
-        });
-      }
-    } else if (binding.target === 'numberRange' && value?.type === 'numberRange') {
-      if (value.from !== undefined || value.to !== undefined) {
-        filterValues.push({
-          target: 'metricRange',
-          metric: binding.metric,
-          ...(value.from !== undefined ? { from: value.from } : {}),
-          ...(value.to !== undefined ? { to: value.to } : {})
-        });
-      }
-    }
-  }
-  // 表头筛选按列字段落到维度谓词上(ADR-0086)。字段没有 queryField 映射
-  // 说明它不是上游取来的列,整条跳过而不是拿字段 id 冒充查询字段。
-  for (const [fieldId, filter] of Object.entries(headerFilters)) {
-    const queryField = mappedQueryField(dataSource, fieldId);
-    if (queryField === undefined) continue;
-    if (filter.mode === 'select') {
-      if (filter.values.length > 0) {
-        filterValues.push({ target: 'dimension', queryField, values: [...filter.values] });
-      }
-    } else if (filter.from.length > 0 || filter.to.length > 0) {
-      filterValues.push({
-        target: 'dimensionRange',
-        queryField,
-        ...(filter.from.length > 0 ? { from: filter.from } : {}),
-        ...(filter.to.length > 0 ? { to: filter.to } : {})
-      });
-    }
-  }
-  const sort = sortRules.flatMap((rule) => {
-    const queryField = mappedQueryField(dataSource, rule.field);
-    return queryField === undefined ? [] : [{ queryField, direction: rule.direction }];
-  });
-  // language 与查询体按数据源的查询定义分支原样透传,编排层不合成协议细节。
-  return {
-    language: query.language,
-    body: query.body,
-    fieldMappings: dataSource.fields,
-    ...(sort.length > 0 ? { sort } : {}),
-    ...(binding.pagination
-      ? {
-          pagination: {
-            offset: pageIndex * binding.pagination.limit,
-            limit: binding.pagination.limit
-          }
-        }
-      : {}),
-    filterValues
-  };
-}
-
-async function execute(
-  query: EffectiveQuery,
-  gateway: DataGateway,
-  diagnosticContext: QueryDiagnosticContext,
-  signal: AbortSignal
-): Promise<DataSnapshot> {
-  try {
-    const result = await gateway.fetchData(query, diagnosticContext, signal);
-    if (query.pagination && result.totalCount === undefined) {
-      throw new Error('查询分页结果缺少 totalCount');
-    }
-    return rawSnapshot(result.rows, result.totalCount);
-  } catch (cause) {
-    return { status: 'error', error: preservedQueryError(cause) };
-  }
 }
 
 function correctedPageIndex(

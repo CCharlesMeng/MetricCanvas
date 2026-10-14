@@ -8,6 +8,7 @@ import ts from 'typescript';
 
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const sources = {
+  'data-execution': { src: '.' },
   page: { src: '.' },
   ui: { src: '.' },
   engine: Object.fromEntries(['runtime', 'widgets', 'runtime-ui', 'data-gateway'].map((part) => [`${part}/src`, `${part}/src`])),

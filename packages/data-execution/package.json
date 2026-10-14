@@ -1,0 +1,50 @@
+{
+  "name": "@metriccanvas/data-execution",
+  "version": "1.0.0-rc.4",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "metriccanvas-execute-page": "./dist/program.js"
+  },
+  "scripts": {
+    "check": "tsc --noEmit -p . && tsc --noEmit -p tsconfig.test.json",
+    "build": "node ../../tools/package-build/build.mjs data-execution",
+    "prepack": "pnpm build"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./runtime": "./src/runtime.ts",
+    "./dqe": "./src/dqe/index.ts",
+    "./node": "./src/node.ts"
+  },
+  "dependencies": {
+    "@metriccanvas/page": "workspace:*"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./runtime": {
+        "types": "./dist/runtime.d.ts",
+        "default": "./dist/runtime.js"
+      },
+      "./dqe": {
+        "types": "./dist/dqe/index.d.ts",
+        "default": "./dist/dqe/index.js"
+      },
+      "./node": {
+        "types": "./dist/node.d.ts",
+        "default": "./dist/node.js"
+      }
+    }
+  }
+}

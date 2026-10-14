@@ -129,6 +129,12 @@ importers:
         specifier: workspace:*
         version: link:../engine
 
+  packages/data-execution:
+    dependencies:
+      '@metriccanvas/page':
+        specifier: workspace:*
+        version: link:../page
+
   packages/embed:
     dependencies:
       '@metriccanvas/engine':
@@ -141,6 +147,9 @@ importers:
         specifier: ^5.56.6
         version: 5.56.6
     devDependencies:
+      '@metriccanvas/data-execution':
+        specifier: workspace:*
+        version: link:../data-execution
       '@playwright/test':
         specifier: ^1.62.0
         version: 1.62.0
@@ -159,6 +168,9 @@ importers:
 
   packages/engine:
     dependencies:
+      '@metriccanvas/data-execution':
+        specifier: workspace:*
+        version: link:../data-execution
       '@metriccanvas/page':
         specifier: workspace:*
         version: link:../page

@@ -1,0 +1,11 @@
+import { createDqeGateway, type DqeGatewayConfig } from './dqe';
+import { createPageDataExecutor } from './execute';
+import type { PageDocument } from '@metriccanvas/page';
+
+/** Trusted deployment supplies transport configuration; stdin/stdout carry only metadata. */
+export async function executePageDataProgram(
+  metadata: PageDocument, config: DqeGatewayConfig
+): Promise<PageDocument> {
+  if (!config.endpoint || !URL.canParse(config.endpoint)) throw new Error('Node取数需要绝对DQE地址');
+  return createPageDataExecutor({ gateway: createDqeGateway(config) }).execute(metadata);
+}

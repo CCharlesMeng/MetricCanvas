@@ -88,7 +88,7 @@ it('声明完整结果的辅助查询被截断时，目标进入错误态而不�
   stop();
 });
 
-it('不同采集时刻的初始行不组合，统一重新请求当前批次', async () => {
+it('不同采集时刻的初始行直接组合，不触发首屏重查', async () => {
   const page = fixture();
   for (const [id, source] of Object.entries(page.dataSources)) {
     const initialRows: Row[] = id === 'customers' ? [{ customerId: 'A' }] : [{ partyNumber: 'A', amount: 999 }];
@@ -106,9 +106,9 @@ it('不同采集时刻的初始行不组合，统一重新请求当前批次', a
     const id = context!.dataSourceIds![0]; ids.push(id);
     return { rows: id === 'customers' ? [{ customerId: 'A' }] : [{ partyNumber: 'A', amount: 20 }] };
   } }).subscribe(next => state = next);
-  expect(state.get('customers')?.status).toBe('loading');
+  expect(state.get('customers')?.status).toBe('ready');
   await flush();
-  expect(ids.sort()).toEqual(['customers', 'revenue']);
-  expect(state.get('customers')).toMatchObject({ status: 'ready', rows: [{ customerId: 'A', revenue: 20 }] });
+  expect(ids).toEqual([]);
+  expect(state.get('customers')).toMatchObject({ status: 'ready', rows: [{ customerId: 'A', revenue: 999 }] });
   stop();
 });

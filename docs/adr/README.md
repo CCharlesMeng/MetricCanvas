@@ -14,7 +14,7 @@
 
 <!-- adr-index:start 由 tools/scripts/adr-index.py 生成，不要手改 -->
 
-共 103 份 ADR（0001–0103）：现行 96、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
+共 104 份 ADR（0001–0105）：现行 97、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
 
 | 编号 | 标题 | 现状 |
 |---|---|---|
@@ -77,8 +77,8 @@
 | [0057](./0057-proportional-row-packing-and-page-header-in-assembly.md) | 装配期按比例装箱铺满行宽,并产出页面级页头 | 现行；装箱纯函数与页头均已实现；defaultSpan 重新表述为比例基线 |
 | [0058](./0058-latest-session-checkpoint-restores-transient-page-state.md) | 分析会话保存最新检查点以恢复临时页面态 | 现行；部分修订 0030 的会话内容边界；不产生页面修订 |
 | [0059](./0059-direct-component-box-responsive-ownership.md) | 响应式布局按统一运行时、直接组件布局盒与组件内部三层拥有 | 现行；不改页面协议；17 种组件与 53 个 variant 已纳入响应契约门禁 |
-| [0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md) | 静态 Svelte、Java 页面治理与 Relay/Python 创作期取代 Node 平台 | 现行；部分由 [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md) 修订；目标架构，尚未完成迁移；Python 直接保存修订已退出 |
-| [0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md) | 自包含创作 Bundle 与中立契约单向导出 | 现行；部分由 [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md) 修订；迁移实施基线；build_page 保存职责已退出 |
+| [0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md) | 静态 Svelte、Java 页面治理与 Relay/Python 创作期取代 Node 平台 | 现行；部分由 [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)、[0105](./0105-shared-page-data-execution-and-initial-consumption.md) 修订；目标架构，尚未完成迁移；Python 直接保存修订已退出 |
+| [0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md) | 自包含创作 Bundle 与中立契约单向导出 | 现行；部分由 [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)、[0105](./0105-shared-page-data-execution-and-initial-consumption.md) 修订；迁移实施基线；build_page 保存职责已退出 |
 | [0062](./0062-first-party-java-page-assets-module.md) | 第一方 Java 页面资产 Module 的工程、Interface 与持久化边界 | 现行；部分由 [0070](./0070-consume-host-java-page-assets-api.md) 修订；J1–J4 已完成：校验器、四个 Interface、内存与 MySQL 仓储、Python / platform Java Adapter 与一键纵切 pnpm slice:page-assets；CloudBuild Testcontainers 探针与并入宿主时机待用户；目标宿主 CDINL2DataBuilderService |
 | [0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md) | Relay 与 DQE 真实接口对创作期边界的修正 | 现行；部分由 [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md) 修订；身份、DQE 与打包事实继续生效；Python 保存幂等与取消后修订语义已退出 |
 | [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md) | Agent 返回页面构建产物，Relay 会话与 Java 页面资产分别持久化 | 现行；现行目标；Agent 不保存页面，Relay 需新增模型摘要/完整 artifact 双通道 |
@@ -88,7 +88,7 @@
 | [0068](./0068-plain-url-navigation-protocol.md) | URL 导航使用普通查询参数，页面协议切到 6.0 | 现行；#109 的后续裁决；实现与验收状态由 #109 记录 |
 | [0069](./0069-local-boundary-substitutes-and-host-owned-credentials.md) | 本地首版在存储与 HTTP 边界替代外部依赖，请求凭据归宿主 | 现行；#99 已裁决；#101/#102/#104/#105 分别落实接线、删除、验收与接口对账 |
 | [0070](./0070-consume-host-java-page-assets-api.md) | Java 页面资产由宿主提供，本仓负责接口消费 | 现行；用户修正 #105 范围；部分取代 0062 的第一方 Java 建设前提 |
-| [0071](./0071-four-release-artifacts-with-standalone-page-protocol.md) | 渲染引擎按四个交付物发布，页面协议独立成包 | 现行；#100 已裁决；发布门禁与目录重组待执行票 |
+| [0071](./0071-four-release-artifacts-with-standalone-page-protocol.md) | 渲染引擎按四个交付物发布，页面协议独立成包 | 现行；部分由 [0105](./0105-shared-page-data-execution-and-initial-consumption.md) 修订；#100 已裁决；发布门禁与目录重组待执行票 |
 | [0072](./0072-integrating-application-rename-and-authoring-render-time-split.md) | 「宿主」改称集成应用，创作期与渲染期确立为一对对立时段 | 现行；词汇表已补齐；ADR 正文与 docs/plan/ 保留「宿主」原措辞 |
 | [0073](./0073-static-platform-direct-access-with-injected-runtime-config.md) | 静态平台以自包含 SPA 直连外部服务，运行配置由集成应用注入 | 现行；#101 已裁决；接线与静态化归 #104，应用外壳归 #110 |
 | [0074](./0074-browser-component-building-and-isolated-legacy-baseline.md) | 人工组件切换在浏览器完成，旧服务链隔离为可复现历史基线 | 现行；#122–#125 已建立基线并完成主体解耦清理；新页面资产消费验证后退出旧适配器 |
@@ -116,11 +116,12 @@
 | [0096](./0096-ioc-view-state-and-post-query-presentation.md) | 内容切换与详情视图共享组件，分别持有状态 | 现行；IOC 已确认行为的 6.12 增量；创作契约待最后阶段同步 |
 | [0097](./0097-report-date-filter-and-instance-export-view.md) | 报告日期筛选复用实例状态，PDF 由集成应用消费静态导出视图 | 现行；部分由 [0100](./0100-explicit-filter-text-values-and-period-format.md) 修订；用户批准 C 工具带及实例 DOM 导出；6.13 增量，生产 PDF 与真实服务联通待验 |
 | [0098](./0098-profiled-page-composition-and-incremental-navigation.md) | 平台创作共用入口，报告与看板分别装配，导航按需增量建立 | 现行；用户完成 D1–D7 grill；统一入口、内部装配策略与受控结构树；实施尚未开始 |
-| [0099](./0099-raw-query-result-bindings-and-bounded-left-joins.md) | 查询以原始结果集合声明输入 计算继续在页面数据源内执行 | 现行；用户确认商务SDT两阶段请求和小增量复用方案，并授权实施验证；真实DQE验真单独记录 |
+| [0099](./0099-raw-query-result-bindings-and-bounded-left-joins.md) | 查询以原始结果集合声明输入 计算继续在页面数据源内执行 | 现行；部分由 [0105](./0105-shared-page-data-execution-and-initial-consumption.md) 修订；用户确认商务SDT两阶段请求和小增量复用方案，并授权实施验证；真实DQE验真单独记录 |
 | [0100](./0100-explicit-filter-text-values-and-period-format.md) | 文本显式读取参数或筛选状态，期间只使用统一 period 格式 | 现行；用户批准显式筛选文本引用，只保留 period 格式；6.15 增量 |
 | [0101](./0101-explicit-value-colors-and-chart-labels.md) | 数字颜色由展示位置声明，图表标签策略显式可控 | 现行；用户批准红绿规则就地声明、全部类别标签与常驻数值标签；6.16 增量 |
 | [0102](./0102-independent-neutral-ui-with-unified-product-engineering.md) | MetricCanvas UI 独立版本并共用产品工程 | 现行；用户确认 Q14–Q21；UI 独立版本，同仓工程；部分修订 ADR-0071 |
 | [0103](./0103-signed-numbers-use-displayed-polarity.md) | 带符号普通数值以展示精度统一方向 | 现行；用户确认全部8处变化量带正号，舍入后零无符号、无颜色、无箭头，并授权实施 |
+| [0105](./0105-shared-page-data-execution-and-initial-consumption.md) | Relay与浏览器共用页面查询执行，单次入口返回完整页面文档 | 现行；用户完成Q1–Q14裁决并授权实施；真实Relay/DQE接入单列验收 |
 
 <!-- adr-index:end -->
 
@@ -134,9 +135,9 @@
 |---|---|---|
 | [IOC 作战地图批次（0045–0053）](./topics/ioc-operation-map-batch.md) | 一个多页 GraphQL 数据应用触发的九份决策：哪些已生效、哪些仍是提议、以及驱动它们的三条业务裁决。 | 0045 0046 0047 0048 0049 0050 0051 0052 0053 0095 0096 |
 | [技术栈与建设策略](./topics/tech-stack-and-strategy.md) | 为什么自研封闭领域 DSL 与 Svelte 运行时，而不是 A2UI 或开源 BI；严格声明式的边界在哪。 | 0001 0002 0003 0005 0035 0046 |
-| [领域建模、包边界与部署形态](./topics/domain-modeling-and-package-boundaries.md) | 聚合根只有「页面」；包按 DDD 分层命名；从 Node 平台迁到静态 Svelte + Java 页面资产 + Relay/Python 的目标形态。 | 0004 0006 0007 0009 0023 0024 0025 0029 0060 0061 0062 0063 0064 0065 0066 0067 0069 0070 0071 0072 0073 0074 0075 0076 0077 0090 0093 0094 0102 |
+| [领域建模、包边界与部署形态](./topics/domain-modeling-and-package-boundaries.md) | 聚合根只有「页面」；包按 DDD 分层命名；从 Node 平台迁到静态 Svelte + Java 页面资产 + Relay/Python 的目标形态。 | 0004 0006 0007 0009 0023 0024 0025 0029 0060 0061 0062 0063 0064 0065 0066 0067 0069 0070 0071 0072 0073 0074 0075 0076 0077 0090 0093 0094 0102 0105 |
 | [页面文档结构与书写原则](./topics/page-document-structure.md) | 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。 | 0013 0017 0018 0021 0026 0028 0035 0036 0038 0042 0047 0048 0049 0050 0052 0053 0054 0057 0059 0086 0097 0099 0100 0101 0103 |
-| [数据获取与查询模型](./topics/data-fetching-and-query-model.md) | 演进链条最长、最容易读错现状的一组：从预定义指标到内嵌 DQE 查询定义，当前实际生效模型与版本策略。 | 0008 0010 0011 0012 0014 0015 0016 0017 0019 0020 0022 0026 0028 0030 0031 0032 0033 0034 0038 0044 0045 0046 0050 0051 0053 0054 0068 0081 0084 0085 0091 0092 0095 0099 |
+| [数据获取与查询模型](./topics/data-fetching-and-query-model.md) | 演进链条最长、最容易读错现状的一组：从预定义指标到内嵌 DQE 查询定义，当前实际生效模型与版本策略。 | 0008 0010 0011 0012 0014 0015 0016 0017 0019 0020 0022 0026 0028 0030 0031 0032 0033 0034 0038 0044 0045 0046 0050 0051 0053 0054 0068 0081 0084 0085 0091 0092 0095 0099 0105 |
 | [产品形态谱系与两速生命周期](./topics/product-forms-and-lifecycle.md) | 问数、探索、报告、Data App 共用一份页面文档；临时页面态与资产态的两速生命周期，以及分析会话的归属。 | 0009 0020 0021 0022 0030 0035 0036 0058 0060 0064 0079 0083 0090 |
 | [问数编排与口径治理](./topics/ask-orchestration-and-scope-governance.md) | 创作期编排的固定顺序、临时指标的非阻塞边界、口径组与业务章节如何决定分区、盘古接入的第一版边界。 | 0030 0031 0032 0035 0036 0037 0039 0040 0041 0043 0055 0057 0077 0082 0098 |
 | [页面生命周期与发布治理](./topics/page-lifecycle-and-publish-governance.md) | 资产态的保存与发布：当前 Java 接入按单次保存与回执确认，哪些治理能力明确不作为本期前置。 | 0008 0010 0078 0079 0080 |

@@ -5,7 +5,7 @@ import { artifacts, productReleaseGroup, renderSnapshot } from '../tools/package
 import { describe, expect, it } from 'vitest';
 
 /**
- * 五个交付物的公开面快照门禁(ADR-0071)。
+ * 六个交付物的公开面快照门禁(ADR-0071)。
  *
  * 交付物一旦发布，主入口与每个子路径导出的名字就是对外承诺。此前 `page` 主入口
  * 是 19 个 `export *`，公开面等于那 19 个模块的全部内容，新增符号会自动成为承诺
@@ -21,7 +21,7 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const snapshotDir = resolve(root, 'tests/public-api');
 const update = process.env.UPDATE_PUBLIC_API === '1';
 
-describe('五个交付物的公开面', () => {
+describe('六个交付物的公开面', () => {
   it('发布交付物解除 private 并与页面协议包锁步同版', () => {
     const page = JSON.parse(readFileSync(resolve(root, artifacts['@metriccanvas/page']!.manifest), 'utf8'));
     expect(page.version).toMatch(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/);

@@ -36,7 +36,7 @@ const summary = {
   steps: [], versions: []
 };
 writeJson(join(output, 'summary.json'), summary);
-const names = ['page', 'ui', 'engine', 'metric-canvas', 'embed'];
+const names = ['data-execution', 'page', 'ui', 'engine', 'metric-canvas', 'embed'];
 
 function run(command, args, cwd, log) {
   console.log(`${command} ${args.join(' ')}\n  cwd: ${cwd}\n  log: ${log}`);
@@ -141,7 +141,7 @@ for (const version of versions) {
     compilerOptions: { target: 'ES2022', module: 'ESNext', moduleResolution: 'Bundler', strict: true, noEmit: true, allowJs: true, checkJs: true, skipLibCheck: false, verbatimModuleSyntax: true, esModuleInterop: true, types: ['node'] },
     include: ['packages/metric-canvas/tests/browser/harness/**/*', 'ports.ts']
   });
-  const imports = ['@metriccanvas/ui', '@metriccanvas/page', '@metriccanvas/engine', '@metriccanvas/engine/widgets', '@metriccanvas/engine/ui', '@metriccanvas/engine/ui/types', '@metriccanvas/engine/ui/composition', '@metriccanvas/engine/dqe', '@metriccanvas/metric-canvas', '@metriccanvas/metric-canvas/types', '@metriccanvas/embed'];
+  const imports = ['@metriccanvas/data-execution', '@metriccanvas/data-execution/runtime', '@metriccanvas/data-execution/dqe', '@metriccanvas/data-execution/node', '@metriccanvas/ui', '@metriccanvas/page', '@metriccanvas/engine', '@metriccanvas/engine/widgets', '@metriccanvas/engine/ui', '@metriccanvas/engine/ui/types', '@metriccanvas/engine/ui/composition', '@metriccanvas/engine/dqe', '@metriccanvas/metric-canvas', '@metriccanvas/metric-canvas/types', '@metriccanvas/embed'];
   writeFileSync(join(consumer, 'ports.ts'), imports.map((name, index) => `export * as Entry${index} from '${name}';`).join('\n'));
   const bin = (name) => join(consumer, 'node_modules/.bin', name);
   run(bin('svelte-check'), ['--tsconfig', './tsconfig.json'], consumer, join(logs, 'consumer-svelte-check.log'));

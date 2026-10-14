@@ -6,9 +6,13 @@ import ts from 'typescript';
 const root = fileURLToPath(new URL('../..', import.meta.url));
 
 /** 交付物的源码入口。`embed` 的 exports 指向构建产物，这里锁它的源码入口。 */
-export const productReleaseGroup = ['@metriccanvas/page', '@metriccanvas/engine', '@metriccanvas/metric-canvas', '@metriccanvas/embed'];
+export const productReleaseGroup = ['@metriccanvas/data-execution', '@metriccanvas/page', '@metriccanvas/engine', '@metriccanvas/metric-canvas', '@metriccanvas/embed'];
 
 export const artifacts: Record<string, { manifest: string; entries: Record<string, string> }> = {
+  '@metriccanvas/data-execution': {
+    manifest: 'packages/data-execution/package.json',
+    entries: { '.': 'packages/data-execution/src/index.ts', './runtime': 'packages/data-execution/src/runtime.ts', './dqe': 'packages/data-execution/src/dqe/index.ts', './node': 'packages/data-execution/src/node.ts' }
+  },
   '@metriccanvas/ui': {
     manifest: 'packages/ui/package.json',
     entries: { '.': 'packages/ui/src/index.ts' }

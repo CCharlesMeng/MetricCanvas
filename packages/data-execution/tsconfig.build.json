@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declarationMap": false
+  },
+  "include": [
+    ".svelte-kit/package-input/**/*"
+  ],
+  "exclude": []
+}

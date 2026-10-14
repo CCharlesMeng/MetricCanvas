@@ -8,6 +8,8 @@
 
 **页面试验场的开发工具定位（[ADR-0075](../0075-page-playground-as-development-tool.md)，#102）：** 原 Canvas 应用更名为**页面试验场（Page Playground）**，目录 `apps/playground`、包名 `playground`。保留仓库页面浏览与 JSON 即时预览，移除旧平台 API 来源；按需启动和构建，不参加默认产品启动与交付，测试与类型检查继续覆盖。平台、搭建画布 `MetricCanvas` 与渲染引擎的职责不变。这补齐 ADR-0074 留给 #102 的去留单项，其余旧服务与静态化由 #125/#104 接续。**本节后文按原措辞提到的 `apps/canvas` 指的就是它**，历史 ADR 正文不改写。
 
+**共享页面取数（[ADR-0105](../0105-shared-page-data-execution-and-initial-consumption.md)）：** 新增纯TS/JS交付物`@metriccanvas/data-execution`，依赖page，供引擎与Relay单次Node执行进程共用。局部修订下文0060/0061的Python-only执行依赖与0071的取数实现归属；不新增常驻Node服务，不迁移Python创作取数。页面定义、initial快照消费与展示计算仍按原职责区分。
+
 **现行结论:** 领域层不建模传统业务实体,只有聚合根**页面**(0052 以前称"看板页面");包按 DDD 分层围绕这个聚合根命名(领域包 `page`、应用层 `runtime`、基础设施适配器 `data-gateway` 等),端口按意图命名、适配器按系统命名,依赖方向全部指向 `page`。词汇表历史上出现过的"页面规格"一等术语已降级为普通词"页面文档",序列化形态不占领域词汇位置。
 
 **创作流程与版本术语硬切换([ADR-0090](../0090-authoring-flow-hard-cutover-and-version-vocabulary.md)):** 生产只保留一套平台页面创作流程和一套现行页面结构计划。结构计划、页面 Schema、Bundle 与外部 API 是不同版本序列；文档出现 v1/v2/v3 时必须标注所属序列。内容工具可提交平台草稿，Java 页面资产服务负责持久化与发布状态，Relay 负责会话检查点和产物交付；普通问数仍不自动落库。旧创作入口与候选提交链只能作为归档或迁移证据，不得作为生产 fallback。

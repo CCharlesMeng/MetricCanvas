@@ -10,7 +10,7 @@ function parse(raw: unknown) {
   if (!result.ok) throw new Error(JSON.stringify(result.errors));
   return result.page;
 }
-it('区间原样用与基准点派生同页共存，窗口重合的查询去重，清除无执行凭据的旧行', async () => {
+it('区间原样用与基准点派生同页共存，窗口重合的查询去重，同值初始化保留初始行', async () => {
   const raw = document(), before = JSON.stringify(raw), page = parse(raw);
   const inputs = resolvePageParams('', page.params ?? []);
   expect(inputs.missing).toEqual([]);
@@ -18,7 +18,9 @@ it('区间原样用与基准点派生同页共存，窗口重合的查询去重�
   const source = page.dataSources.current.source;
   if (source.type === 'query') source.initial = {capturedAt:'2026-01-01T00:00:00Z',rows:[]};
   const loaded = initializePageParams(page, inputs.values);
-  expect(loaded.dataSources.current.source).not.toHaveProperty('initial');
+  expect(loaded.dataSources.current.source).toHaveProperty('initial');
+  // Query de-duplication below is exercised without a cached first screen.
+  if (loaded.dataSources.current.source.type === 'query') delete loaded.dataSources.current.source.initial;
   const requests: EffectiveQuery[] = [];
   const stop = orchestrate(loaded, {fetchData: async q => { requests.push(q); return {rows:[],totalCount:0}; }}, createFilterState()).subscribe(() => {});
   try {

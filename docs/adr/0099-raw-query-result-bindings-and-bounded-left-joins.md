@@ -1,5 +1,6 @@
 ---
 status: accepted
+revised-by: [0105]
 date: 2026-10-12
 note: 用户确认商务SDT两阶段请求和小增量复用方案，并授权实施验证；真实DQE验真单独记录
 ---

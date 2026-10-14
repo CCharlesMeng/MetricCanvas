@@ -1,5 +1,5 @@
-export { createDataGateway } from './dispatch';
-export type { DataGatewayAdapters } from './dispatch';
+export { createDataGateway } from '@metriccanvas/data-execution/dqe';
+export type { DataGatewayAdapters } from '@metriccanvas/data-execution/dqe';
 export {
   DEFAULT_DQE_ENDPOINT,
   DqeGatewayError,
@@ -8,13 +8,13 @@ export {
   dimensionValuesDqeItem,
   effectiveDqeItem,
   isAbortError
-} from './dqe';
+} from '@metriccanvas/data-execution/dqe';
 export type {
   DqeGatewayConfig,
   DqeDiagnostics,
   DqeDiagnosticRecord,
   DqeDiagnosticStatus,
   InMemoryDqeDiagnostics
-} from './dqe';
+} from '@metriccanvas/data-execution/dqe';
 /** 只出接口:开发期明细的实现在平台侧,不随引擎发布(ADR-0071)。 */
-export type { DqeDevDetail } from './dev-detail';
+export type { DqeDevDetail } from '@metriccanvas/data-execution/dqe';

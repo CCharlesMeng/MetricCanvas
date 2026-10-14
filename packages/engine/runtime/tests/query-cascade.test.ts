@@ -137,9 +137,9 @@ describe('query cascade execution', () => {
     const h=harness(p);h.calls[0].resolve({rows:projects(),totalCount:1});await flush();
     h.calls[1].resolve({rows:stages(),totalCount:3});await flush();expect(h.state().get(base)?.status).toBe('error');h.stop();
   });
-  it('ignores unproven initial rows even with identical timestamps',()=>{
+  it('uses supplied cascade initial without a proof envelope',()=>{
     const p=fixture();for(const id of [base,detail]){const source=p.dataSources[id].source;if(source.type==='query')source.initial={capturedAt:'2026-09-30T00:00:00Z',rows:[],totalCount:0};}
-    const h=harness(p);expect(h.calls.map(c=>c.id)).toEqual([base]);h.stop();
+    const h=harness(p);expect(h.calls).toHaveLength(0);expect(h.state().get(base)?.status).toBe('empty');h.stop();
   });
   it('export binds its own fresh main rows and retains Top5 despite a larger total',async()=>{
     const p=fixture(),h=harness(p);

@@ -1,0 +1,51 @@
+# @metriccanvas/data-execution
+
+## .
+DataGateway
+DataGatewayResult
+DimensionValueCandidate
+DimensionValuesGateway
+DimensionValuesRequest
+DimensionValuesResult
+PageDataExecutor
+QueryDiagnosticContext
+RuntimeDataGateway
+createPageDataExecutor
+
+## ./runtime
+BooleanFilterValue
+DimensionFilterValue
+FilterValue
+FilterValues
+NumberRangeFilterValue
+QueryHeaderFilters
+SearchFilterValue
+TimePointFilterValue
+TimeRangeFilterValue
+composeEffectiveQuery
+executeQuery
+initialFilterValues
+initializePageParams
+preservedQueryError
+rawSnapshot
+resolveQueryResultInputs
+
+## ./dqe
+DEFAULT_DQE_ENDPOINT
+DataGatewayAdapters
+DqeDevDetail
+DqeDiagnosticRecord
+DqeDiagnosticStatus
+DqeDiagnostics
+DqeGatewayConfig
+DqeGatewayError
+InMemoryDqeDiagnostics
+createDataGateway
+createDqeGateway
+createInMemoryDqeDiagnostics
+dimensionValuesDqeItem
+effectiveDqeItem
+isAbortError
+
+## ./node
+executePageDataProgram

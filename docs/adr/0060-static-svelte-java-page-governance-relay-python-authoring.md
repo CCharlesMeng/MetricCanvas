@@ -1,6 +1,6 @@
 ---
 status: accepted
-revised-by: [0064]
+revised-by: [0064, 0105]
 note: 目标架构，尚未完成迁移；Python 直接保存修订已退出
 ---
 

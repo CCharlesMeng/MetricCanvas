@@ -1,5 +1,6 @@
 ---
 status: accepted
+revised-by: [0105]
 date: 2026-09-07
 note: #100 已裁决；发布门禁与目录重组待执行票
 ---
