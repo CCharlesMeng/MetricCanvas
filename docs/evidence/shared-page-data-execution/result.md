@@ -70,3 +70,7 @@ Relay部署方安装本次page/data-execution版本及Node 22+，按每次调用
 - `pnpm adr:index:check`及作用域差异空白检查：通过。
 
 首次独立全仓测试与摘要锁生成重叠，隔离测试复制了更新前的Bundle锁，导致2项stale失败；其余1898项通过、5项跳过。锁生成及校验完成后执行`pnpm test tests/authoring-export-isolation.test.ts --maxWorkers=2`，该文件19项全部通过（95.02秒）。两次结果覆盖1900项通过、5项跳过；不称为单次全仓零失败报告。原始全仓机器报告`vitest.json`仍是首次混合工作区证据，不冒充本checkout结果。远端CI按最终提交SHA独立确认。
+
+首次main提交`25d2ce181de85ca833611da81e5f1551cb72b5f7`已推送并核对远端。CI `38563831529`中tests、types、build、authoring通过；compatibility的192项浏览器用例通过，新增的4项Chrome/Edge用例因仓外fixture缺失而失败。本次遗漏在`tools/package-build/compatibility.mjs`的复制清单补入`query-cascade-page.json`，保持既有消费者测试与断言。
+
+修复后按同一复制清单建立仓外消费者，安装实际page/data-execution tarball，并加载构建后的Embed；新增2项Chrome用例全部通过，验证目录`/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/execution-installed-browser-IXS59u`。`node --check tools/package-build/compatibility.mjs`通过。完整Chrome/Edge及最终远端CI仍按修复提交确认，不能用本地Chrome代替完整矩阵。
