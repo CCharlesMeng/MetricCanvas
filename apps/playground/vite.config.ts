@@ -1,6 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig, type Plugin } from 'vite';
 import { fileURLToPath } from 'node:url';
+import { createDqeDevProxy } from '../../tools/dev-server';
 import { reportPdfDemo } from './report-pdf-demo';
 
 const pagesDir = fileURLToPath(new URL('../../pages', import.meta.url));
@@ -35,8 +36,10 @@ export default defineConfig({
     }
   },
   server: {
+    host: '0.0.0.0',
     port: 5173,
     strictPort: true,
+    proxy: createDqeDevProxy(),
     // 页面文档与 workspace 包在仓库根,允许 dev server 越出应用目录读取
     fs: { allow: ['../..'] }
   }

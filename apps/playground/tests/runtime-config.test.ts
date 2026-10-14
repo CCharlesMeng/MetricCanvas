@@ -55,6 +55,23 @@ afterEach(() => {
 });
 
 describe('运行配置注入面', () => {
+  it('开发默认端点使用同源相对路径，IP 访问时不会请求浏览者的回环地址', async () => {
+    installLocalDevRuntimeConfig();
+    expect(readRuntimeConfig()).toMatchObject({
+      dqeEndpoint: '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute',
+      pageMetadataBaseUrl: '/rest/cdi/cdinl2databuilderservice/v1'
+    });
+    const requests: string[] = [];
+    const gateway = createInjectedDqeGateway((async (input) => {
+      requests.push(new URL(String(input), 'https://192.168.1.25:5174/pages/demo').href);
+      return successResponse();
+    }) as typeof fetch);
+    await gateway.fetchData(query);
+    expect(requests).toEqual([
+      'https://192.168.1.25:5174/rest/cdi/cdinl2databuilderservice/v1/dsl/execute'
+    ]);
+  });
+
   it('本地 mock 可覆盖端点与 cftk，但不覆盖已有门户配置', () => {
     installLocalDevRuntimeConfig({ pageMetadataBaseUrl: ' https://pages.example/v1 ', cftk: ' mock-cftk ' });
     expect(readPageMetadataBaseUrl()).toBe('https://pages.example/v1');

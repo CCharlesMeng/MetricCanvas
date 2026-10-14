@@ -3,6 +3,7 @@ import {fileURLToPath} from 'node:url';
 import {svelte} from '@sveltejs/vite-plugin-svelte';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import {defineConfig, type Plugin} from 'vite';
+import {createDqeDevProxy} from '../../tools/dev-server';
 
 const appRoot = dirname(fileURLToPath(import.meta.url));
 function htmlEntry(): Plugin {
@@ -38,6 +39,18 @@ export default defineConfig(({mode}) => {
         fileName: () => 'assets/platform.umd.js', cssFileName: 'assets/platform'
       }
     } : {outDir: 'build', target: 'es2022'},
-    server: {host: '127.0.0.1', port: 5174, strictPort: true}
+    server: {
+      host: '0.0.0.0', port: 5174, strictPort: true,
+      proxy: {
+        ...createDqeDevProxy(),
+        '/rest/cdi/cdinl2databuilderservice/v1/user-page-metadata': {
+          target: 'http://127.0.0.1:8080', changeOrigin: true,
+          configure(proxy) {
+            // 同源请求已到达 Vite；本地资产服务无需再检查浏览器的跨源 Origin。
+            proxy.on('proxyReq', (request) => request.removeHeader('origin'));
+          }
+        }
+      }
+    }
   };
 });

@@ -9,18 +9,20 @@ DQE Sim 是独立的本地 DQE 执行仿真，使用真实 HTTP 接口验证浏�
 pnpm dev:dqe
 ```
 
-命令先监听 `127.0.0.1:18228`，再启动页面试验场。页面试验场通过共享运行配置模块使用本地 DQE 默认端点：
+命令先监听 `0.0.0.0:18228`，再启动监听 `0.0.0.0:5173` 的页面试验场。
+其他人可通过 `http://<启动机器IP>:5173` 访问。页面试验场通过共享运行配置模块使用同源 DQE 端点：
 
 ```text
-http://127.0.0.1:18228/rest/cdi/cdinl2databuilderservice/v1/dsl/execute
+/rest/cdi/cdinl2databuilderservice/v1/dsl/execute
 ```
 
 同时把 `VITE_AI_SUMMARY_ENDPOINT` 注入为：
 
 ```text
-http://127.0.0.1:18228/api/ai/conversations/
+/api/ai/conversations/
 ```
 
+两个路径都由 Vite 开发服务器代理到启动机器的 DQE Sim；浏览器不直接请求 `127.0.0.1`。
 该开发端点按字符、按时间间隔返回 SSE，用于本地验收 AI Summary
 的请求组装、流式状态与页面渲染。
 
@@ -36,7 +38,10 @@ http://127.0.0.1:5173/pages/customer-activity-risk-briefing
 pnpm sim:dqe
 ```
 
-可通过 `DQE_SIM_PORT` 修改服务端口；使用非默认端口时，还需在页面试验场的运行配置中注入对应 `dqeEndpoint`。服务还提供 `GET /__health`。
+可通过 `DQE_SIM_PORT` 修改服务端口；`pnpm dev:dqe` 启动的页面试验场自动继承端口。
+单独启动 Platform 或页面试验场时，也设置同一个 `DQE_SIM_PORT`，浏览器中的相对路径保持不变。
+如需只允许本机访问 DQE Sim，可设置 `DQE_SIM_HOST=127.0.0.1`。
+服务还提供 `GET /__health`，可通过 `http://<启动机器IP>:18228/__health` 检查。
 
 直接调用：
 

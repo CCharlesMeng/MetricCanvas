@@ -72,8 +72,18 @@ pnpm dev:dqe
 | 服务 | 地址 |
 |---|---|
 | 页面试验场（按需） | `http://127.0.0.1:5173` |
-| Platform | `http://127.0.0.1:5174` |
+| Platform | `https://127.0.0.1:5174` |
 | DQE Sim | `http://127.0.0.1:18228/rest/cdi/cdinl2databuilderservice/v1/dsl/execute` |
+
+三个开发服务默认监听 `0.0.0.0`，同一网络的其他人可将上述地址中的
+`127.0.0.1` 替换为启动机器的 IP。Platform 使用开发自签名 HTTPS 证书，
+首次访问需要在浏览器中接受证书。
+
+同时启动三个服务：一个终端运行 `pnpm dev:dqe`，另一个运行 `pnpm dev:platform`。
+浏览器中的 DQE 请求使用 `/rest/cdi/cdinl2databuilderservice/v1/dsl/execute`，
+由各自的 Vite 开发服务器代理到启动机器的 DQE Sim，不会访问浏览者的回环地址。
+`DQE_SIM_PORT` 可修改仿真端口；两个前端启动时也需设置相同的值。
+Platform 的本地页面资产请求也走同源代理；需要页面目录和管理功能时，再运行 `pnpm dev:assets`。
 
 ## 常用命令
 

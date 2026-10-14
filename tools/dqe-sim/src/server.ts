@@ -5,6 +5,7 @@ export const DQE_EXECUTE_PATH =
   '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute';
 export const AI_SUMMARY_CONVERSATIONS_PATH = '/api/ai/conversations/';
 export const DEFAULT_DQE_SIM_PORT = 18228;
+export const DEFAULT_DQE_SIM_HOST = '0.0.0.0';
 
 const DEFAULT_AI_SUMMARY_TEXT = [
   '1. **整体NA客户未考察情况**：各代表处均存在无公司考察NA客户，需结合清单逐项关注。',
@@ -277,9 +278,10 @@ function isRecord(value: unknown): value is JsonRecord {
 
 if (process.argv[1]?.endsWith('server.ts')) {
   const port = Number(process.env.DQE_SIM_PORT ?? DEFAULT_DQE_SIM_PORT);
-  createDqeSimServer().listen(port, '127.0.0.1', () => {
+  const host = process.env.DQE_SIM_HOST ?? DEFAULT_DQE_SIM_HOST;
+  createDqeSimServer().listen(port, host, () => {
     console.log(
-      `DQE Sim 已启动:http://127.0.0.1:${port}${DQE_EXECUTE_PATH}(Ctrl+C 停止)`
+      `DQE Sim 已启动:http://${host}:${port}${DQE_EXECUTE_PATH}(Ctrl+C 停止)`
     );
   });
 }

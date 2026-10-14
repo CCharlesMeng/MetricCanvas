@@ -100,8 +100,8 @@ export function installRuntimeConfig(config: InjectedRuntimeConfig | null): void
 export function installLocalDevRuntimeConfig(overrides: Partial<InjectedRuntimeConfig> = {}): void {
   if (holder()[RUNTIME_CONFIG_SOURCE_KEY]) return;
   installRuntimeConfig({
-    dqeEndpoint: trimmedField(overrides, 'dqeEndpoint') ?? `http://127.0.0.1:18228${DEFAULT_DQE_ENDPOINT}`,
-    pageMetadataBaseUrl: trimmedField(overrides, 'pageMetadataBaseUrl') ?? 'http://127.0.0.1:8080/rest/cdi/cdinl2databuilderservice/v1',
+    dqeEndpoint: trimmedField(overrides, 'dqeEndpoint') ?? DEFAULT_DQE_ENDPOINT,
+    pageMetadataBaseUrl: trimmedField(overrides, 'pageMetadataBaseUrl') ?? '/rest/cdi/cdinl2databuilderservice/v1',
     authToken: trimmedField(overrides, 'authToken') ?? 'local-dev',
     operatorId: trimmedField(overrides, 'operatorId') ?? 'developer-1',
     workspaceId: trimmedField(overrides, 'workspaceId') ?? 'local',

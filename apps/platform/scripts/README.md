@@ -1,6 +1,6 @@
 # 本地预置页面
 
-仓库根执行 `pnpm dev:assets`，再打开本地平台的 `/manage`。它使用既有开发配置中的 `127.0.0.1:8080`，只接受 `local-dev` / `developer-1` 开发身份，不改真实门户配置。
+仓库根执行 `pnpm dev:assets`，再打开平台的 `/manage`。浏览器通过同源相对路径访问页面资产，Vite 开发服务器代理到启动机器的 `127.0.0.1:8080`，因此也支持通过 IP 访问平台。资产服务只接受 `local-dev` / `developer-1` 开发身份，不改真实门户配置。
 
 首次启动从 `pages/` 复制五个完整页面：`demo`、`sales-detail`、`tokens-report`、`flow-analysis-report`、`report-date-filter-example`。前三类包含看板、跨页明细和静态报告；后两类包含多章节查询报告及日期筛选。Tokens 和流水报告预置为发布态，其余为草稿态。查询页面使用原始快照与现有 DQE Sim；同时运行 `pnpm dev:dqe`。
 

@@ -2,14 +2,15 @@ import { spawn, type ChildProcess } from 'node:child_process';
 import {
   AI_SUMMARY_CONVERSATIONS_PATH,
   createDqeSimServer,
+  DEFAULT_DQE_SIM_HOST,
   DEFAULT_DQE_SIM_PORT,
   DQE_EXECUTE_PATH
 } from './server';
 
-const host = '127.0.0.1';
+const host = process.env.DQE_SIM_HOST ?? DEFAULT_DQE_SIM_HOST;
 const port = Number(process.env.DQE_SIM_PORT ?? DEFAULT_DQE_SIM_PORT);
 const endpoint = `http://${host}:${port}${DQE_EXECUTE_PATH}`;
-const aiSummaryEndpoint = `http://${host}:${port}${AI_SUMMARY_CONVERSATIONS_PATH}`;
+const aiSummaryEndpoint = AI_SUMMARY_CONVERSATIONS_PATH;
 const server = createDqeSimServer();
 let playground: ChildProcess | undefined;
 let stopping = false;
@@ -45,18 +46,18 @@ function playgroundInvocation(): { command: string; args: string[] } {
   if (pnpmEntry) {
     return {
       command: process.execPath,
-      args: [pnpmEntry, '--filter', 'playground', 'dev', '--host', host]
+      args: [pnpmEntry, '--filter', 'playground', 'dev']
     };
   }
   if (process.platform === 'win32') {
     return {
       command: process.env.ComSpec ?? 'cmd.exe',
-      args: ['/d', '/s', '/c', `pnpm --filter playground dev --host ${host}`]
+      args: ['/d', '/s', '/c', 'pnpm --filter playground dev']
     };
   }
   return {
     command: 'pnpm',
-    args: ['--filter', 'playground', 'dev', '--host', host]
+    args: ['--filter', 'playground', 'dev']
   };
 }
 

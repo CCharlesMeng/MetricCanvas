@@ -3,6 +3,8 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import playgroundViteConfig from '../apps/playground/vite.config';
 import platformViteConfig from '../apps/platform/vite.config';
+import { createDqeDevProxy } from '../tools/dev-server';
+import { DEFAULT_DQE_SIM_HOST } from '../tools/dqe-sim/src/server';
 
 const rootPackage = JSON.parse(
   readFileSync(resolve(import.meta.dirname, '../package.json'), 'utf8')
@@ -12,7 +14,7 @@ describe('本地开发服务端口契约', () => {
   afterEach(() => vi.unstubAllEnvs());
   it('页面试验场固定占用 5173，端口冲突时禁止静默漂移', () => {
     expect(playgroundViteConfig).toMatchObject({
-      server: { port: 5173, strictPort: true }
+      server: { host: '0.0.0.0', port: 5173, strictPort: true }
     });
   });
 
@@ -26,7 +28,18 @@ describe('本地开发服务端口契约', () => {
         })
       : platformViteConfig;
     expect(config).toMatchObject({
-      server: { port: 5174, strictPort: true }
+      server: { host: '0.0.0.0', port: 5174, strictPort: true }
+    });
+  });
+
+  it('DQE 默认监听所有 IPv4 网卡，自定义端口只改变代理目标', () => {
+    expect(DEFAULT_DQE_SIM_HOST).toBe('0.0.0.0');
+    vi.stubEnv('DQE_SIM_PORT', '19228');
+    expect(createDqeDevProxy()).toMatchObject({
+      '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute': {
+        target: 'http://127.0.0.1:19228'
+      },
+      '/api/ai/conversations/': { target: 'http://127.0.0.1:19228' }
     });
   });
 
