@@ -1,12 +1,14 @@
-# 报告完整导出与 PDF 下载接入
+# 报告完整导出与浏览器 PDF 接入
 
-本文是集成应用的报告导出与下载接入专题，维护下载操作、公共方法、编码接线和运行边界。页面协议概览见[PAGE-METADATA.md](../PAGE-METADATA.md)，参数与期间筛选配置见[PAGE-PARAMETERS.md](../PAGE-PARAMETERS.md#时间参数与顶部筛选)。
+本文是集成应用的报告导出与浏览器 PDF 接入专题，维护操作、公共方法、编码接线和运行边界。页面协议概览见[PAGE-METADATA.md](../PAGE-METADATA.md)，参数与期间筛选配置见[PAGE-PARAMETERS.md](../PAGE-PARAMETERS.md#时间参数与顶部筛选)。
 
-## 下载操作
+## 直接下载 PDF
 
-从仓库根目录运行 `pnpm dev:playground`，打开[PDF下载演示](http://localhost:5173/preview?prototype=report-date)。选择并提交期间后点击“导出 PDF”，浏览器下载 `经营分析报告.pdf`；页面显示实际PDF第一页，并提供“再次下载 PDF”和“打开 PDF”链接。点击“准备完整导出视图”可先检查静态DOM。
+从仓库根目录运行 `pnpm dev:playground`，打开[浏览器 PDF 演示](http://localhost:5173/preview?prototype=report-date)。选择并提交期间后点击“导出 PDF”，浏览器生成并下载 `经营分析报告.pdf`，无需打开打印预览。是否询问保存位置由浏览器下载设置决定。点击“准备完整导出视图”可先检查静态 DOM。
 
-演示使用本地合成数据和开发态编码服务。普通样例页面路由消费页面JSON，下载按钮由集成应用接入；页面JSON无需新增下载配置字段。编码所需Chromium与PDF预览所需Poppler的配置见下文。
+演示使用本地合成数据，PDF 编码与下载均在用户浏览器内完成。`html2canvas` 1.4.1 和 `jsPDF` 4.2.1 随页面试验场打包并在导出时按需加载，运行时不依赖 CDN、PDF 编码接口、服务端 Chromium 或 Poppler。普通样例页面路由消费页面 JSON，按钮由集成应用接入；页面 JSON 无需新增下载配置字段。内网 IP、域名和 HTTPS 访问无需额外 PDF 路由；完整数据仍通过集成应用已有数据网关取得。
+
+正文以图片写入 PDF，不能选中、复制或搜索。页面只报告已生成并发起下载，不能判断操作系统是否已把文件写入磁盘。
 
 ## 与时间筛选配合
 
@@ -19,7 +21,7 @@ HTML 集成应用的 `RuntimeHandle` 和 Svelte `RuntimeView` 实例均暴露同
 ```ts
 await handle.withExportView(async ({ target, paper, wideElements, signal }) => {
   // target 已连接到 DOM，图表已转为静态图片，字体和图片已准备好。
-  // 将你的 PDF 编码器接到这里，并等待编码及保存完成。
+  // 接入集成应用的 PDF 编码器，并等待编码和发起下载结束。
   await pdfEncoder.encodeAndSave(target, {
     paper,              // 固定 A4
     wideElements,       // 标记为横向的内容分区
@@ -46,14 +48,40 @@ await handle.withExportView(async ({ target, paper, wideElements, signal }) => {
 
 错误码：`EXPORT_NOT_READY`、`EXPORT_BUSY`、`EXPORT_CANCELLED`、`EXPORT_TIMEOUT`、`EXPORT_ROW_LIMIT`、`EXPORT_INCOMPLETE_DATA`、`EXPORT_RENDER_FAILED`。集成应用编码错误原样抛出；两类错误均清理临时 DOM。
 
-可运行的接入示例：[HTML 示例](../packages/embed/examples/report-export.html)。[本地报告示例](http://localhost:5173/preview?prototype=report-date)提供“准备完整导出视图”和“导出 PDF”两个入口。前者查看静态 DOM；后者通过本地集成应用编码、下载和预览真实 A4 多页 PDF。两者使用本地合成数据；验收不代表真实 Relay/Java/DQE 联通或生产 PDF 编码器验收。
+可运行的接入示例：[HTML 示例](../packages/embed/examples/report-export.html)验证静态视图和实例生命周期；[本地报告示例](http://localhost:5173/preview?prototype=report-date)提供“准备完整导出视图”和“导出 PDF”两个入口。前者查看静态 DOM，后者直接下载 A4 多页 PDF。两者使用本地合成数据；验收不代表真实 Relay/Java/DQE 联通。
 
-## 本地 PDF 端到端示例
+## 浏览器编码与下载示例
 
 从仓根运行 `pnpm dev:playground`，打开上述5173地址，点击“导出 PDF”。示例中的“主要明细”和“补充明细”是内容分区组导航，分别显示经营明细及趋势、区域及项目分析；导出包含两个分组和全部 Tabs。
 
-调用链：`RuntimeView.withExportView` → [示例编码客户端](../apps/playground/src/lib/report-pdf-client.ts) 将已准备 DOM 的外观和静态图表序列化 → [Vite 本地编码服务](../apps/playground/report-pdf-demo.ts) 用已安装 Chromium 编排 A4 多页 → Poppler 从实际 PDF 渲染第一页 → 浏览器下载完整文件并展示第一页预览。编码服务仅在页面试验场开发模式提供，限定本地同源请求、禁止文档脚本及远程资源，临时文件在结束时清理；不进入引擎或生产构建。
+调用链：`RuntimeView.withExportView` → [浏览器 PDF 客户端](../apps/playground/src/lib/report-pdf-client.ts) 复制静态 DOM 和计算后的样式 → 独立 iframe 准备字体与图片 → [分页规划](../apps/playground/src/lib/report-pdf-pagination.ts) → html2canvas 按页生成图片 → jsPDF 合成全部页面 → Blob 下载链接 → 清理编码视图和引擎临时视图。
 
-默认查找本机 Playwright 缓存中的 Chromium headless shell；也可用 `MC_PDF_CHROMIUM` 指定已安装的 Chromium 可执行文件。预览使用 PATH 中的 `pdftoppm`，也可用 `MC_PDF_RENDERER` 指定路径；缺失时明确报错。这个接入示例覆盖当前报告的竖向 A4 分页，宽分区明确拒绝；生产编码器对任意宽分区的横向编排仍需消费 `wideElements` 并独立验收。示例用文字色替代封面的渐变文字，并按纵向内容流分页，避免 PDF 合成器的渐变描边及 Grid 分页重叠。
+调用方示例（Svelte 通过 `bind:this` 取得 `runtime`，HTML 挂载 handle 使用相同调用）：
+
+```ts
+import { downloadReportPdf } from './report-pdf-client';
+
+await runtime.withExportView(async ({ target, signal, wideElements }) => {
+  if (wideElements.length) throw new Error('当前 PDF 示例仅支持竖向 A4');
+  const { pageCount } = await downloadReportPdf(target, signal, '经营分析报告.pdf');
+  // 到这里已生成 PDF 并发起浏览器下载，可以显示 pageCount。
+});
+```
+
+`downloadReportPdf` 是集成应用侧示例 helper，不是渲染引擎公共导出。它在所有页面编码成功后才发起下载，失败不下载部分结果。收到 `signal` 后停止下一页和下载；html2canvas 不支持中断正在进行的截图，因此当前页截图完成后再释放独立编码 iframe。字体、图片准备阶段支持及时取消。必须保留回调中的 `await`，确保引擎不会提前销毁正常消费中的导出视图。
+
+示例采用 A4 竖向、10 mm 边距、2 倍截图和页码。每次只分配当前页的 Canvas，不把整份长报告变成一个超大位图；表格行和图表不跨页裁切，表格续页重复表头，章节标题尽量与后续内容保持在一起。冻结图表保持静态图片占用的高度，防止绝对定位图片在截图中被裁掉。
+
+宽分区仍明确拒绝；单个不可拆分的表格行、图表或正文块超过 A4 页高时明确失败，不静默裁切。任意宽分区的横向编排需由集成应用消费 `wideElements` 并独立验收。截图和文字排版受浏览器、字体及 html2canvas CSS 支持范围影响，部署时应保证报告字体在客户端可用。无需配置 `MC_PDF_CHROMIUM` 或 `MC_PDF_RENDERER`。
+
+分页边界由[分页单元测试](../apps/playground/tests/report-pdf-pagination.test.ts)核验，实际下载、长表、图片失败及取消清理由[浏览器回归脚本](../apps/playground/tests/report-pdf-browser.mjs)核验。从仓根运行：
+
+```sh
+pnpm exec vitest run apps/playground/tests/report-pdf-pagination.test.ts
+# 先在另一个终端运行 pnpm dev:playground，再执行浏览器回归；默认访问 5173。
+node apps/playground/tests/report-pdf-browser.mjs
+```
+
+浏览器测试期间不要同时构建或运行 `svelte-kit sync`，避免开发服务重载打断测试；可用 `REPORT_PDF_BASE_URL` 指定另一服务地址。
 
 部署 Adapter 的日期身份证明提供方可以返回 `timeIdentities`（按数据源 ID）和 `timePointFields`（按数据源 ID/查询字段，含 granularity、valueFormat、identity），证明必须绑定精确页面摘要和 DQE 验证基线。未提供时算法保持独立日期身份；字符串月份分区不由模型猜测。真实部署接入由集成应用/Relay Adapter 配置，不改变 Java 页面资产接口。

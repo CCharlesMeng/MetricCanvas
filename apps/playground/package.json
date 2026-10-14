@@ -11,7 +11,9 @@
   "dependencies": {
     "@metriccanvas/application-runtime": "workspace:*",
     "@metriccanvas/engine": "workspace:*",
-    "@metriccanvas/page": "workspace:*"
+    "@metriccanvas/page": "workspace:*",
+    "html2canvas": "1.4.1",
+    "jspdf": "4.2.1"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.10",

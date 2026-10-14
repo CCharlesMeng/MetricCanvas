@@ -3,16 +3,12 @@
   import { applyPageParamSelection,extractPageParams,resolvePageParams, type PageDocument } from '@metriccanvas/page';
   import type { RuntimeDataGateway } from '@metriccanvas/engine';
   import fixture from '../../../../packages/page/fixtures/contract-valid/report-date-filters-page.json';
-  import { onDestroy } from 'svelte';
-  import { encodeReportPdf } from './report-pdf-client';
+  import { downloadReportPdf } from './report-pdf-client';
   let mode=$state('monthRange');
   let phase=$state<'draft'|'candidate'|'applied'>('applied');
   let runtime:RuntimeView;
   let exportHost:HTMLDivElement;
   let exportMessage=$state('');let exporting=$state(false);
-  let pdfUrl=$state('');
-  let pdfFirstPage=$state('');
-  onDestroy(()=>{if(pdfUrl)URL.revokeObjectURL(pdfUrl);});
   function sourceFor(mode:string) {
     const p=structuredClone(fixture) as any;
     delete p.params;delete p.filters;delete p.sections[0].components[0].props.filterIds;
@@ -49,7 +45,7 @@
     exporting=true;exportMessage='准备完整导出视图…';exportHost.replaceChildren();
     try {
       await runtime.withExportView(async ({target,wideElements})=>{
-        if(fail)throw Error('模拟集成应用编码失败');
+        if(fail)throw Error('模拟集成应用导出失败');
         const copy=target.cloneNode(true) as HTMLElement;
         const style=getComputedStyle(target);
         for(const name of Array.from(style))if(name.startsWith('--mc-')||name==='font-family')copy.style.setProperty(name,style.getPropertyValue(name));
@@ -59,18 +55,14 @@
     }catch(cause){exportMessage=cause instanceof Error?cause.message:'导出失败';}
     finally{exporting=false;}
   }
-  async function downloadPdf() {
-    exporting=true;exportMessage='准备完整报告并编码 PDF…';
+  async function exportPdf() {
+    exporting=true;exportMessage='准备完整报告并按 A4 分页生成 PDF…';
     try {
       await runtime.withExportView(async ({target,signal,wideElements})=>{
-        if(wideElements.length)throw Error('本地 PDF 示例仅演示竖向 A4；宽分区需要集成应用另行编排。');
+        if(wideElements.length)throw Error('当前 PDF 示例仅支持竖向 A4；请调整过宽的内容分区，或由集成应用接入横向 PDF。');
         const rowCount=target.querySelectorAll('tbody tr').length;
-        const encoded=await encodeReportPdf(target,signal);
-        if(pdfUrl)URL.revokeObjectURL(pdfUrl);
-        pdfUrl=URL.createObjectURL(encoded.pdf);pdfFirstPage=encoded.firstPage;
-        const link=target.ownerDocument.createElement('a');
-        link.href=pdfUrl;link.download='经营分析报告.pdf';link.click();
-        exportMessage=`PDF 已生成并下载：${rowCount} 行，包含全部分组、区域及项目内容；期间已保留，日期框已移除。`;
+        const {pageCount}=await downloadReportPdf(target,signal);
+        exportMessage=`PDF 已生成并发起下载：${pageCount} 页、${rowCount} 行，包含全部分组、区域及项目内容。`;
       });
     }catch(cause){exportMessage=cause instanceof Error?cause.message:'PDF 导出失败';}
     finally{exporting=false;}
@@ -85,14 +77,13 @@
     <button type="button" onclick={()=>{phase='candidate';exportMessage='';exportHost.replaceChildren();}}>提取日期</button>
     <button type="button" onclick={()=>{phase='applied';exportMessage='';exportHost.replaceChildren();}}>确认提取</button>
     <button type="button" disabled={exporting} onclick={()=>previewExport()}>准备完整导出视图</button>
-    <button type="button" disabled={exporting} onclick={downloadPdf}>导出 PDF</button>
-    <button type="button" disabled={exporting} onclick={()=>previewExport(true)}>模拟编码失败</button>
-    <span>本页使用本地合成数据和正式引擎。“主要明细”显示经营明细及趋势，“补充明细”显示区域、项目分析；导出 PDF 包含两组全部内容。</span>
+    <button type="button" disabled={exporting} onclick={exportPdf}>导出 PDF</button>
+    <button type="button" disabled={exporting} onclick={()=>previewExport(true)}>模拟导出失败</button>
+    <span>本页使用本地合成数据和正式引擎。“主要明细”显示经营明细及趋势，“补充明细”显示区域、项目分析；点击“导出 PDF”直接下载包含两组全部内容的 PDF。正文以图片保存。</span>
   </div>
   {#if phase==='candidate'&&extraction.ok}<p role="status">识别到 {extraction.candidates.length} 个日期候选；确认后增加参数和页头筛选器。</p>{/if}
   <RuntimeView bind:this={runtime} {document} dataGateway={gateway}/>
   {#if exportMessage}<p role="status">{exportMessage}</p>{/if}
-  {#if pdfUrl}<p><a href={pdfUrl} download="经营分析报告.pdf">再次下载 PDF</a> · <a href={pdfUrl} target="_blank" rel="noreferrer">打开 PDF</a></p><figure class="pdf-preview"><figcaption>实际 PDF 第一页预览 · 下载可查看全部页面</figcaption><img src={pdfFirstPage} alt="实际生成 PDF 的第一页"/></figure>{/if}
   <div class="export-preview" bind:this={exportHost}></div>
 </main>
 <style>
@@ -102,7 +93,4 @@
   button,select { padding:6px 10px;border:1px solid #d4d4d8;border-radius:6px;background:#fff;font:inherit;font-size:13px; }
   label { display:flex;align-items:center;gap:6px;font-size:13px; }
   .export-preview { max-width:100%;overflow:auto;border-top:1px solid #e4e4e7; }
-  .pdf-preview { margin:0;border:1px solid #e4e4e7;background:#f4f4f5;padding:16px; }
-  .pdf-preview figcaption { margin-bottom:12px;font-size:13px;color:#71717a; }
-  .pdf-preview img { display:block;width:100%;max-width:794px;height:auto;margin:auto; }
 </style>
