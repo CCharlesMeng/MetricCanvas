@@ -13,6 +13,16 @@ describe('report PDF pagination', () => {
     const pages = planPdfPages(180, 100, [{ top: 80, bottom: 130 }, { top: 100, bottom: 150 }], [], []);
     expect(pages.map(page => [page.top, page.bottom])).toEqual([[0, 80], [80, 180]]);
   });
+  it('reserves both side-by-side table headers on a continued page', () => {
+    const rows = [24, 64, 104, 144].map(top => ({ top, bottom: top + 40 }));
+    expect(planPdfPages(184, 104, rows, [
+      { top: 0, bottom: 184, headerEnd: 24, headerHeight: 20 },
+      { top: 0, bottom: 184, headerEnd: 24, headerHeight: 24 }
+    ], [])).toEqual([
+      { top: 0, bottom: 104, headerHeight: 0 },
+      { top: 104, bottom: 184, headerHeight: 24, headerIndex: 0, headerIndices: [0, 1] }
+    ]);
+  });
   it('starts a chart section on a new page without a blank first page', () => {
     const pages = planPdfPages(230, 100, [{ top: 90, bottom: 170 }], [], [0, 90]);
     expect(pages.map(page => [page.top, page.bottom])).toEqual([[0, 90], [90, 190], [190, 230]]);

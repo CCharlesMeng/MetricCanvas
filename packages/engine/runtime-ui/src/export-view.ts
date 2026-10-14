@@ -18,10 +18,19 @@ export async function withPreparedExportView<T>(input:{state:ExportRenderState;q
   holder.dataset.metriccanvasExportStage='';
   holder.setAttribute('aria-hidden','true');
   holder.inert=true;
-  holder.style.cssText='position:fixed;left:-100000px;top:0;width:794px;pointer-events:none;';
+  const content=sourceRoot.querySelector<HTMLElement>('.page-content')??sourceRoot;
+  const contentWidth=content.getBoundingClientRect().width;
+  const runtimeWidth=sourceRoot.getBoundingClientRect().width;
+  holder.style.cssText=`position:fixed;left:-100000px;top:0;width:${runtimeWidth}px;container:mc-runtime / inline-size;pointer-events:none;`;
   // Preserve the instance's inherited theme, font and shadow-root styling.
-  const style=getComputedStyle(sourceRoot);
+  const style=getComputedStyle(content);
   for(const name of Array.from(style)) if(name.startsWith('--mc-')||['font-family','font-size','line-height','color'].includes(name)) holder.style.setProperty(name,style.getPropertyValue(name));
+  holder.style.backgroundColor=style.backgroundColor;
+  holder.style.backgroundImage=style.backgroundImage;
+  const sections=sourceRoot.querySelector<HTMLElement>('.page-sections');
+  const sectionStyle=sections?getComputedStyle(sections):undefined;
+  const padding=['top','right','bottom','left'].map(side=>`${parseFloat(style.getPropertyValue(`padding-${side}`))+(sectionStyle?parseFloat(sectionStyle.getPropertyValue(`padding-${side}`)):0)}px`).join(' ');
+  const gap=sectionStyle?.gap??'16px';
   const root=sourceRoot.getRootNode();
   const parent=root instanceof ShadowRoot?root:sourceRoot.ownerDocument.body;
   let instance:ReturnType<typeof mount>|undefined;
@@ -29,7 +38,8 @@ export async function withPreparedExportView<T>(input:{state:ExportRenderState;q
     state.snapshots=await abortable(prepareExportSnapshots(state.page,input.gateway,input.queries,state.filters,signal,undefined,state.currentYear),signal);
     signal.throwIfAborted();
     parent.appendChild(holder);
-    instance=mount(ExportView,{target:holder,props:{state}});
+    // Establish the visible box before charts mount; post-mount resizing can look like overflow.
+    instance=mount(ExportView,{target:holder,props:{state,width:contentWidth,padding,gap}});
     await tick();
     const target=holder.querySelector<HTMLElement>('[data-export-view]');
     if(!target) throw new ExportViewError('EXPORT_RENDER_FAILED','导出视图未挂载');
@@ -60,13 +70,17 @@ async function frame(signal:AbortSignal) {
 async function prepareDom(target:HTMLElement,signal:AbortSignal) {
   await target.ownerDocument.fonts.ready;
   await frame(signal); await frame(signal);
+  const style=getComputedStyle(target);
+  const padding=parseFloat(style.paddingLeft)+parseFloat(style.paddingRight);
   for(const section of target.querySelectorAll<HTMLElement>('[data-section-id]')) {
-    if(section.scrollWidth>section.clientWidth+1) {
+    // A page header can intentionally bleed into the canvas padding; that is not a wide table.
+    const bleed=section.querySelector('[data-component-type="reportHeader"]')?(parseFloat(style.getPropertyValue('--mc-page-content-padding-inline'))||0):0;
+    if(section.scrollWidth>section.clientWidth+bleed+1) {
       section.dataset.exportOrientation='landscape';
       const width=Math.max(1047,section.scrollWidth);
       section.style.width=`${width}px`;
       section.dataset.exportNaturalWidth=String(width);
-      target.style.width=`${Math.max(target.offsetWidth,width+76)}px`;
+      target.style.width=`${Math.max(target.offsetWidth,width+padding)}px`;
     } else {section.style.width=`${section.clientWidth}px`;
     }
   }

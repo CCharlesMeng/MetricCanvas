@@ -2,7 +2,7 @@
   import { getContext, onMount } from 'svelte';
   import { STATIC_EXPORT_CONTEXT } from './export-context';
   import * as echarts from 'echarts';
-  import type { EChartsOption } from 'echarts';
+  import type { EChartsOption, XAXisComponentOption } from 'echarts';
   import { cartesianFrame } from './chart-presentation';
 
   /**
@@ -93,7 +93,12 @@
     if (staticExport) {
       container!.dataset.exportChartReady = 'false';
       const series = frame.option.series === undefined ? undefined : (Array.isArray(frame.option.series) ? frame.option.series : [frame.option.series]).map(series => ({...series,animation:false}));
-      chart.setOption({...frame.option,animation:false,...(series?{series}:{})},{notMerge:true});
+      const fitCategoryEnds = (axis: XAXisComponentOption): XAXisComponentOption => axis.type === 'category'
+        ? {...axis,axisLabel:{...axis.axisLabel,hideOverlap:axis.axisLabel?.hideOverlap??true,showMinLabel:true,showMaxLabel:true,alignMinLabel:'left',alignMaxLabel:'right'}} : axis;
+      const xAxis = frame.option.xAxis === undefined ? undefined : Array.isArray(frame.option.xAxis)
+        ? frame.option.xAxis.map(fitCategoryEnds) : fitCategoryEnds(frame.option.xAxis);
+      // A frozen chart has no zoom controls; include the whole result range.
+      chart.setOption({...frame.option,dataZoom:[],animation:false,...(xAxis?{xAxis}:{}),...(series?{series}:{})},{notMerge:true});
       container!.dataset.exportChartReady = 'true';
     } else chart.setOption(frame.option, { notMerge: updateMode === 'replace' });
   });

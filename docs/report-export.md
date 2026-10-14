@@ -34,6 +34,8 @@ await handle.withExportView(async ({ target, paper, wideElements, signal }) => {
 
 模块关系：页面实例先捕获已应用筛选、查询排序、表头筛选和局部表格状态；数据准备器通过同一数据网关重新取得完整结果；导出渲染器复用正式组件并展开全部正文；资源准备器固定图表、等待字体图片；最后交给集成应用回调。全部状态属于当前实例，正常浏览继续独立运行。
 
+静态视图沿用当前页面内容宽度、容器查询上下文、主题、内边距和分区间距，在图表挂载前确定几何。`paper: 'A4'` 表示输出纸张，不要求 DOM 固定为 A4 像素宽度；集成应用按目标纸张等比例缩放与分页。页面在窄容器中采用单列时，导出保留该排布；在宽容器中并排的组件也保持并排。
+
 `target` 在回调成功、失败或取消前有效。集成应用必须 await 全部消费工作；收到 signal 后停止读取。方法结束后引擎卸载临时视图。页面更新和销毁也会取消；即使网关不响应 AbortSignal，准备阶段仍按时拒绝并清理。一个实例同时只允许一个导出；不同实例分别拥有生命周期。
 
 ## 导出范围与完整性
@@ -72,6 +74,8 @@ await runtime.withExportView(async ({ target, signal, wideElements }) => {
 
 示例采用 A4 竖向、10 mm 边距、2 倍截图和页码。每次只分配当前页的 Canvas，不把整份长报告变成一个超大位图；表格行和图表不跨页裁切，表格续页重复表头，章节标题尽量与后续内容保持在一起。冻结图表保持静态图片占用的高度，防止绝对定位图片在截图中被裁掉。
 
+编码文档复制完整的计算样式及伪元素，保留多列、固定高度、同行对齐、封面铺满效果和原有间距，不再把分区强制改成纵向列表。渐变文字由浏览器先绘制为局部透明图片，保留原有字形和渐变，避免截图器把渐变铺成矩形或替换为单色。能容纳一页的短卡片整体分页；并排表格跨页时分别重复各自表头，按较高表头预留位置。完整图表使用全部结果范围，移除交互缩放窗口。
+
 宽分区仍明确拒绝；单个不可拆分的表格行、图表或正文块超过 A4 页高时明确失败，不静默裁切。任意宽分区的横向编排需由集成应用消费 `wideElements` 并独立验收。截图和文字排版受浏览器、字体及 html2canvas CSS 支持范围影响，部署时应保证报告字体在客户端可用。无需配置 `MC_PDF_CHROMIUM` 或 `MC_PDF_RENDERER`。
 
 分页边界由[分页单元测试](../apps/playground/tests/report-pdf-pagination.test.ts)核验，实际下载、长表、图片失败及取消清理由[浏览器回归脚本](../apps/playground/tests/report-pdf-browser.mjs)核验。从仓根运行：
@@ -80,6 +84,9 @@ await runtime.withExportView(async ({ target, signal, wideElements }) => {
 pnpm exec vitest run apps/playground/tests/report-pdf-pagination.test.ts
 # 先在另一个终端运行 pnpm dev:playground，再执行浏览器回归；默认访问 5173。
 node apps/playground/tests/report-pdf-browser.mjs
+node apps/playground/tests/report-pdf-appearance-browser.mjs
+node apps/playground/tests/report-pdf-fidelity-browser.mjs
+node apps/playground/tests/report-pdf-runtime-fidelity-browser.mjs
 ```
 
 浏览器测试期间不要同时构建或运行 `svelte-kit sync`，避免开发服务重载打断测试；可用 `REPORT_PDF_BASE_URL` 指定另一服务地址。

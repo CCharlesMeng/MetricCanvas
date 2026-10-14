@@ -24,7 +24,9 @@ await page.addInitScript(() => {
   const original = HTMLCanvasElement.prototype.toDataURL;
   HTMLCanvasElement.prototype.toDataURL = function (...args) {
     if (document.querySelector('[data-report-pdf-frame]')) {
-      window.pdfCanvases.push({ width: this.width, height: this.height });
+      const view = document.querySelector('[data-report-pdf-frame]').contentDocument.querySelector('[data-export-view]');
+      const width = view.getBoundingClientRect().width;
+      window.pdfCanvases.push({ width: this.width, height: this.height, limitWidth: Math.ceil(width * 2), limitHeight: Math.ceil(width * 277 / 190) * 2 });
       if (window.pdfMode === 'fail') throw new Error('模拟 PDF 图片编码失败');
       if (window.pdfMode === 'update') {
         window.pdfMode = 'normal';
@@ -173,6 +175,7 @@ try {
     source.dataset.exportView = '';
     source.innerHTML = '<table style="width:700px;border-collapse:collapse;font-size:14px;line-height:18px"><thead><tr><th style="padding:9px">Row</th><th>Value</th></tr></thead><tbody>' +
       Array.from({ length: 500 }, (_, index) => `<tr><td style="padding:9px;border:1px solid #bbb">Row ${index + 1}</td><td>${index + 1}</td></tr>`).join('') + '</tbody></table>';
+    source.style.width = '718px';
     document.body.append(source);
     try { return await downloadReportPdf(source, new AbortController().signal, 'long-report.pdf'); }
     finally { source.remove(); }
@@ -186,7 +189,7 @@ try {
 
   const canvases = await page.evaluate(() => window.pdfCanvases);
   expect(canvases.length).toBeGreaterThan(20);
-  expect(canvases.every(canvas => canvas.width <= 1436 && canvas.height <= 2092)).toBe(true);
+  expect(canvases.every(canvas => canvas.width <= canvas.limitWidth && canvas.height <= canvas.limitHeight)).toBe(true);
   expect(await page.evaluate(() => window.printCalls)).toBe(0);
   expect(errors).toEqual([]);
   expect(encoderRequests).toEqual([]);

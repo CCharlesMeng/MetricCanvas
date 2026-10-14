@@ -7,14 +7,14 @@
   import ComponentRenderer from './ComponentRenderer.svelte';
   import RuntimeSection from './RuntimeSection.svelte';
   import type { NestedComponentRender,TableRenderBinding } from './component-render';
-  let {state}: {state:ExportRenderState}=$props();
+  let {state,width,padding,gap}: {state:ExportRenderState;width:number;padding:string;gap:string}=$props();
   setContext(STATIC_EXPORT_CONTEXT,true);
   function table(component:Component):TableRenderBinding|undefined {
     return component.type==='table'?{view:state.tables[component.id]??{pageIndex:0,sort:[],headerFilters:{}},filterOptions:{},paginationConfig:{mode:'none'},onpage:()=>{},onpagesize:()=>{},onsort:()=>{},onheaderfilter:()=>{},oncellselect:()=>{}}:undefined;
   }
   const nested:NestedComponentRender={map:c=>exportComponentMap(state,c),data:c=>exportComponentData(state,c),snapshot:c=>exportComponentSnapshot(state,c),table,onchartclick:()=>undefined,onmetriclink:()=>undefined,metricHref:()=>()=>undefined};
 </script>
-<div class="export-view" data-export-view data-export-paper="A4">
+<div class="export-view" data-export-view data-export-paper="A4" style:width={`${width}px`} style:padding={padding} style:gap={gap}>
   {#snippet componentContent(component:Component)}
     <div data-export-component={component.id}>
     <ComponentRenderer {component} data={exportComponentData(state,component)} snapshot={exportComponentSnapshot(state,component)}
@@ -28,7 +28,7 @@
   {/each}
 </div>
 <style>
-  .export-view { box-sizing:border-box; width:794px; padding:38px; color:var(--mc-color-text,#191919); background:white; }
+  .export-view { display:flex; flex-direction:column; box-sizing:border-box; color:var(--mc-color-text,#191919); background:inherit; }
   [data-export-component] { display:contents; }
-  .export-view :global(*) { animation:none!important; transition:none!important; }
+  .export-view :global(*) { box-sizing:border-box; animation:none!important; transition:none!important; }
 </style>

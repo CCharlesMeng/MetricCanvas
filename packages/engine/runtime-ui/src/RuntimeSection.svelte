@@ -529,6 +529,6 @@
       inset: auto;
     }
   }
-  .page-section.static-export { margin-bottom:24px; break-inside:auto; }
+  .page-section.static-export { break-inside:auto; }
   .static-export .section-grid, .static-export .cell { height:auto!important; max-height:none!important; overflow:visible!important; }
 </style>
