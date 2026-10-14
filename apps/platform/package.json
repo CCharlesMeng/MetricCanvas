@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev --port 5174",
+    "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview --port 4174",
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json",

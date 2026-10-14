@@ -6,6 +6,7 @@ import {defineConfig, type Plugin} from 'vite';
 import {createDqeDevProxy} from '../../tools/dev-server';
 
 const appRoot = dirname(fileURLToPath(import.meta.url));
+const iocDomain = 'ioc.cloudbu.huawei.com';
 function htmlEntry(): Plugin {
   return {
     name: 'platform-html-entry',
@@ -22,10 +23,11 @@ function htmlEntry(): Plugin {
 export default defineConfig(({mode}) => {
   const debug = mode === 'microfrontend-debug';
   const micro = mode === 'microfrontend' || debug;
+  const windows = process.platform === 'win32';
   return {
     // Library mode intentionally leaves NODE_ENV untouched unless explicitly defined.
     define: micro ? {'process.env.NODE_ENV': JSON.stringify('production')} : {},
-    plugins: [svelte(), ...(micro ? [htmlEntry()] : [basicSsl()])],
+    plugins: [svelte(), ...(micro ? [htmlEntry()] : [basicSsl(windows ? {domains: [iocDomain]} : undefined)])],
     resolve: {alias: {
       $lib: resolve(appRoot, 'src/lib'),
       $pages: resolve(appRoot, '../../pages'),
@@ -43,7 +45,7 @@ export default defineConfig(({mode}) => {
       }
     } : {outDir: 'build', target: 'es2022'},
     server: {
-      host: '0.0.0.0', port: 5174, strictPort: true,
+      host: windows ? iocDomain : '127.0.0.1', port: windows ? 443 : 5174, strictPort: true,
       proxy: {
         ...createDqeDevProxy(),
         '/rest/cdi/cdinl2databuilderservice/v1/user-page-metadata': {

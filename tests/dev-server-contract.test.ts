@@ -9,16 +9,21 @@ import { DEFAULT_DQE_SIM_HOST } from '../tools/dqe-sim/src/server';
 const rootPackage = JSON.parse(
   readFileSync(resolve(import.meta.dirname, '../package.json'), 'utf8')
 ) as { scripts: Record<string, string> };
+const platformDescriptor = Object.getOwnPropertyDescriptor(process, 'platform')!;
 
 describe('本地开发服务端口契约', () => {
-  afterEach(() => vi.unstubAllEnvs());
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    Object.defineProperty(process, 'platform', platformDescriptor);
+  });
   it('页面试验场固定占用 5173，端口冲突时禁止静默漂移', () => {
     expect(playgroundViteConfig).toMatchObject({
       server: { host: '0.0.0.0', port: 5173, strictPort: true }
     });
   });
 
-  it('Platform 固定占用 5174，端口冲突时禁止静默漂移', () => {
+  it('Mac 使用本地地址和 5174，端口冲突时禁止静默漂移', () => {
+    Object.defineProperty(process, 'platform', {value: 'darwin'});
     const config = typeof platformViteConfig === 'function'
       ? platformViteConfig({
           command: 'serve',
@@ -28,7 +33,7 @@ describe('本地开发服务端口契约', () => {
         })
       : platformViteConfig;
     expect(config).toMatchObject({
-      server: { host: '0.0.0.0', port: 5174, strictPort: true }
+      server: { host: '127.0.0.1', port: 5174, strictPort: true }
     });
   });
 
@@ -41,6 +46,19 @@ describe('本地开发服务端口契约', () => {
       },
       '/api/ai/conversations/': { target: 'http://127.0.0.1:19228' }
     });
+  });
+
+  it('Windows 使用 IOC 域名和 443，启动命令不覆盖配置端口', () => {
+    Object.defineProperty(process, 'platform', {value: 'win32'});
+    const config = typeof platformViteConfig === 'function'
+      ? platformViteConfig({command: 'serve', mode: 'development'}) : platformViteConfig;
+    expect(config).toMatchObject({server: {
+      host: 'ioc.cloudbu.huawei.com', port: 443, strictPort: true,
+      proxy: {'/rest/cdi/cdinl2databuilderservice/v1/dsl/execute': {target: 'http://127.0.0.1:18228'}}
+    }});
+    expect(rootPackage.scripts['dev:platform']).toBe('pnpm --filter platform dev');
+    const platformPackage = JSON.parse(readFileSync(resolve(import.meta.dirname, '../apps/platform/package.json'), 'utf8'));
+    expect(platformPackage.scripts.dev).toBe('vite dev');
   });
 
   it('默认开发命令直接启动 Platform 与 DQE Sim', () => {

@@ -72,12 +72,13 @@ pnpm dev:dqe
 | 服务 | 地址 |
 |---|---|
 | 页面试验场（按需） | `http://127.0.0.1:5173` |
-| Platform | `https://127.0.0.1:5174` |
+| Platform（Mac / Linux） | `https://127.0.0.1:5174`（也可用 `https://localhost:5174`） |
+| Platform（Windows） | `https://ioc.cloudbu.huawei.com`（443） |
 | DQE Sim | `http://127.0.0.1:18228/rest/cdi/cdinl2databuilderservice/v1/dsl/execute` |
 
-三个开发服务默认监听 `0.0.0.0`，同一网络的其他人可将上述地址中的
-`127.0.0.1` 替换为启动机器的 IP。Platform 使用开发自签名 HTTPS 证书，
-首次访问需要在浏览器中接受证书。
+Platform 根据操作系统自动选择上述域名与端口，统一使用 `pnpm dev:platform` 启动。
+Windows 的域名解析与证书信任由开发者自行配置；Platform 使用开发自签名 HTTPS 证书。
+页面试验场与 DQE Sim 默认监听 `0.0.0.0`，可使用启动机器的 IP 访问。
 
 同时启动三个服务：一个终端运行 `pnpm dev:dqe`，另一个运行 `pnpm dev:platform`。
 浏览器中的 DQE 请求使用 `/rest/cdi/cdinl2databuilderservice/v1/dsl/execute`，
