@@ -6,7 +6,7 @@ import {defineConfig, type Plugin} from 'vite';
 import {createDqeDevProxy} from '../../tools/dev-server';
 
 const appRoot = dirname(fileURLToPath(import.meta.url));
-const iocDomain = 'ioc.cloudbu.huawei.com';
+const localDomain = 'local.cloudbu.huawei.com';
 function htmlEntry(): Plugin {
   return {
     name: 'platform-html-entry',
@@ -24,10 +24,15 @@ export default defineConfig(({mode}) => {
   const debug = mode === 'microfrontend-debug';
   const micro = mode === 'microfrontend' || debug;
   const windows = process.platform === 'win32';
+  const proxy = createDqeDevProxy();
+  delete proxy['/rest/cdi/cdinl2databuilderservice/v1/dsl/execute'];
+  proxy['/rest/cdi/cdinl2databuilderservice/'] = {
+    target: 'https://ioc.cloudbu.huawei.com', changeOrigin: true
+  };
   return {
     // Library mode intentionally leaves NODE_ENV untouched unless explicitly defined.
     define: micro ? {'process.env.NODE_ENV': JSON.stringify('production')} : {},
-    plugins: [svelte(), ...(micro ? [htmlEntry()] : [basicSsl(windows ? {domains: [iocDomain]} : undefined)])],
+    plugins: [svelte(), ...(micro ? [htmlEntry()] : [basicSsl(windows ? {domains: [localDomain]} : undefined)])],
     resolve: {alias: {
       $lib: resolve(appRoot, 'src/lib'),
       $pages: resolve(appRoot, '../../pages'),
@@ -45,17 +50,8 @@ export default defineConfig(({mode}) => {
       }
     } : {outDir: 'build', target: 'es2022'},
     server: {
-      host: windows ? iocDomain : '127.0.0.1', port: windows ? 443 : 5174, strictPort: true,
-      proxy: {
-        ...createDqeDevProxy(),
-        '/rest/cdi/cdinl2databuilderservice/v1/user-page-metadata': {
-          target: 'http://127.0.0.1:8080', changeOrigin: true,
-          configure(proxy) {
-            // 同源请求已到达 Vite；本地资产服务无需再检查浏览器的跨源 Origin。
-            proxy.on('proxyReq', (request) => request.removeHeader('origin'));
-          }
-        }
-      }
+      host: windows ? localDomain : '127.0.0.1', port: windows ? 443 : 5174, strictPort: true,
+      proxy
     }
   };
 });

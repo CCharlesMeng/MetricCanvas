@@ -48,14 +48,16 @@ describe('本地开发服务端口契约', () => {
     });
   });
 
-  it('Windows 使用 IOC 域名和 443，启动命令不覆盖配置端口', () => {
+  it('Windows 使用本地域名和 443，服务前缀统一代理到 IOC', () => {
     Object.defineProperty(process, 'platform', {value: 'win32'});
     const config = typeof platformViteConfig === 'function'
       ? platformViteConfig({command: 'serve', mode: 'development'}) : platformViteConfig;
     expect(config).toMatchObject({server: {
-      host: 'ioc.cloudbu.huawei.com', port: 443, strictPort: true,
-      proxy: {'/rest/cdi/cdinl2databuilderservice/v1/dsl/execute': {target: 'http://127.0.0.1:18228'}}
+      host: 'local.cloudbu.huawei.com', port: 443, strictPort: true,
+      proxy: {'/rest/cdi/cdinl2databuilderservice/': {target: 'https://ioc.cloudbu.huawei.com', changeOrigin: true}}
     }});
+    expect(config).not.toHaveProperty('server.proxy./rest/cdi/cdinl2databuilderservice/v1/dsl/execute');
+    expect(config).not.toHaveProperty('server.proxy./rest/cdi/cdinl2databuilderservice/v1/user-page-metadata');
     expect(rootPackage.scripts['dev:platform']).toBe('pnpm --filter platform dev');
     const platformPackage = JSON.parse(readFileSync(resolve(import.meta.dirname, '../apps/platform/package.json'), 'utf8'));
     expect(platformPackage.scripts.dev).toBe('vite dev');

@@ -73,7 +73,7 @@ pnpm dev:dqe
 |---|---|
 | 页面试验场（按需） | `http://127.0.0.1:5173` |
 | Platform（Mac / Linux） | `https://127.0.0.1:5174`（也可用 `https://localhost:5174`） |
-| Platform（Windows） | `https://ioc.cloudbu.huawei.com`（443） |
+| Platform（Windows） | `https://local.cloudbu.huawei.com`（443） |
 | DQE Sim | `http://127.0.0.1:18228/rest/cdi/cdinl2databuilderservice/v1/dsl/execute` |
 
 Platform 根据操作系统自动选择上述域名与端口，统一使用 `pnpm dev:platform` 启动。
@@ -81,10 +81,10 @@ Windows 的域名解析与证书信任由开发者自行配置；Platform 使用
 页面试验场与 DQE Sim 默认监听 `0.0.0.0`，可使用启动机器的 IP 访问。
 
 同时启动三个服务：一个终端运行 `pnpm dev:dqe`，另一个运行 `pnpm dev:platform`。
-浏览器中的 DQE 请求使用 `/rest/cdi/cdinl2databuilderservice/v1/dsl/execute`，
-由各自的 Vite 开发服务器代理到启动机器的 DQE Sim，不会访问浏览者的回环地址。
-`DQE_SIM_PORT` 可修改仿真端口；两个前端启动时也需设置相同的值。
-Platform 的本地页面资产请求也走同源代理；需要页面目录和管理功能时，再运行 `pnpm dev:assets`。
+Platform 本地调试时，将 `/rest/cdi/cdinl2databuilderservice/` 前缀下的所有请求
+代理到 `https://ioc.cloudbu.huawei.com`，保留原始路径与查询参数，并将请求 Host 改为目标域名。
+页面试验场的 DQE 请求仍代理到本机 DQE Sim；`DQE_SIM_PORT` 可修改仿真端口，
+页面试验场启动时也需设置相同的值。Platform 的 `/api/ai/conversations/` 请求仍使用本机 DQE Sim。
 
 ## 常用命令
 

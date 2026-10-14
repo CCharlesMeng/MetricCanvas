@@ -14,7 +14,7 @@ afterEach(async () => {
   vi.unstubAllEnvs();
 });
 
-it('两个前端通过同源路径代理真实 DQE 和 SSE，自定义仿真端口无需改变浏览器地址', async () => {
+it('两个前端通过同源路径代理 DQE 和 SSE，平台远端目标使用本地服务替身', async () => {
   const upstream = createDqeSimServer({
     logger: false, aiSummaryText: '完成', aiSummaryCharacterIntervalMs: 0
   });
@@ -30,9 +30,15 @@ it('两个前端通过同源路径代理真实 DQE 和 SSE，自定义仿真端�
   const platformConfig = typeof platform === 'function'
     ? await platform({ command: 'serve', mode: 'development' }) : await platform;
   for (const config of [playground, platformConfig]) {
+    const proxy = {...config.server?.proxy};
+    const prefix = '/rest/cdi/cdinl2databuilderservice/';
+    const remoteProxy = proxy[prefix];
+    if (remoteProxy && typeof remoteProxy !== 'string') {
+      proxy[prefix] = {...remoteProxy, target: `http://127.0.0.1:${process.env.DQE_SIM_PORT}`};
+    }
     const frontend = await createServer({
       configFile: false,
-      server: { ...config.server, host: '127.0.0.1', port: 0, strictPort: false },
+      server: { ...config.server, proxy, host: '127.0.0.1', port: 0, strictPort: false },
       logLevel: 'silent'
     });
     cleanup.push(() => frontend.close());
