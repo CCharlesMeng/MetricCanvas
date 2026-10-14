@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-const ExcelJS = createRequire(new URL('../../../engine/package.json', import.meta.url))('exceljs');
+const require = createRequire(import.meta.url);
+const ExcelJS = createRequire(require.resolve('@metriccanvas/engine/ui'))('exceljs');
 const fixture = () => JSON.parse(readFileSync(new URL('../../../page/fixtures/contract-valid/table-toolbar-page.json', import.meta.url), 'utf8'));
 
 test('table-local search finds a later row and downloads all matches while another table remains independent', async ({ page }, testInfo) => {
