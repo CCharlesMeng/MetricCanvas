@@ -135,7 +135,7 @@ try {
   const generatedFrame = stack.match(/platform\.umd\.js:(\d+):(\d+)/);
   expect(generatedFrame).not.toBeNull();
   const stackSource = consumer.originalPositionFor({line:Number(generatedFrame[1]),column:Number(generatedFrame[2])-1});
-  expect(stackSource.source).toMatch(/\/integration\/navigation\.ts$/);
+  expect(stackSource.source).toMatch(/\/integration\/routes\.ts$/);
   expect(stackSource.line).toBeGreaterThan(0);
   expect(errors).toEqual([]);
   for(const prefix of prefixes) expect(requests).toContain(`${prefix}assets/platform.css`);
