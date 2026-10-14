@@ -42,6 +42,16 @@ def title(id="title", component="header", value="Changed", **extra):
 
 
 class PageEditingTest(unittest.TestCase):
+    def test_table_toolbar_is_a_controlled_property_and_invalid_fields_roll_back(self):
+        toolbar = {'search': {'fields': ['region']}, 'export': {'format': 'xlsx', 'filename': '区域明细'}}
+        operation = {'id': 'toolbar', 'type': 'set_properties', 'componentId': 'table', 'properties': {'toolbar': toolbar}}
+        result = edit(page(), operation)
+        self.assertEqual(result['status'], 'changed')
+        self.assertEqual(result['document']['sections'][0]['components'][2]['props']['toolbar'], toolbar)
+        operation['properties']['toolbar']['search']['fields'] = ['amount']
+        rejected = edit(page(), operation)
+        self.assertNotEqual(rejected['status'], 'changed')
+
     def test_valid_fixture_and_request_schema(self):
         self.assertEqual(validate_page_document(page()), [])
         Draft202012Validator.check_schema(EDIT_SCHEMA)

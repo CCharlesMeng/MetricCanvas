@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.20",
-  "schemaSha256": "b09fb609c6763ab2e2020b0a7c354b89ba9ff2a4d4093b9be07a1d347fd5ad62",
+  "schemaVersion": "6.21",
+  "schemaSha256": "b1463f60554cf354fdbf4789e020e48526496d89b8feee4181f652e50d12e715",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -509,7 +509,8 @@
       "examples": [
         "query-dashboard",
         "reference-branches-page",
-        "reference-export-column-actions"
+        "reference-export-column-actions",
+        "table-toolbar-page"
       ],
       "rules": [
         "table-row-key",
@@ -522,7 +523,8 @@
         "pagination-query-source",
         "pagination-query-order",
         "pagination-initial-rows",
-        "pagination-exclusive-source"
+        "pagination-exclusive-source",
+        "table-toolbar-search"
       ]
     },
     "components/mapChart.md": {
@@ -839,7 +841,8 @@
         "6.17",
         "6.18",
         "6.19",
-        "6.20"
+        "6.20",
+        "6.21"
       ]
     },
     {
@@ -6718,6 +6721,69 @@
       "ref": "#/definitions/textValue"
     },
     {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar",
+      "path": "@tableComponent.props.toolbar",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search",
+      "path": "@tableComponent.props.toolbar.search",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/fields",
+      "path": "@tableComponent.props.toolbar.search.fields",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/fields/items",
+      "path": "@tableComponent.props.toolbar.search.fields[]",
+      "required": "每个数组项",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/placeholder",
+      "path": "@tableComponent.props.toolbar.search.placeholder",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/placeholder/allOf/0",
+      "path": "@tableComponent.props.toolbar.search.placeholder · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export",
+      "path": "@tableComponent.props.toolbar.export",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/format",
+      "path": "@tableComponent.props.toolbar.export.format",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "xlsx"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/filename",
+      "path": "@tableComponent.props.toolbar.export.filename",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/filename/allOf/0",
+      "path": "@tableComponent.props.toolbar.export.filename · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
       "pointer": "#/definitions/tableComponent/properties/props/properties/variant",
       "path": "@tableComponent.props.variant",
       "required": "本分支可选",
@@ -10995,5 +11061,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "0763e0a6ceb8cc4875aa998aaffff76573de854b36881dbeccf1a9bf1cf5f78a"
+  "semanticSourceDigest": "18f3a966cd10353161218cfedff79a85cd927b4d0c70c6a9255f42eeca835dea"
 }

@@ -13,6 +13,13 @@ import type {
  * 抽成显式契约,使 `ComponentRenderer` 不需要认识运行时的表格状态实现。
  */
 export interface TableRenderBinding {
+  searchDraft?: string;
+  exporting?: boolean;
+  exportError?: string;
+  onsearchdraft?: (query: string) => void;
+  onsearch?: (query: string) => void;
+  onexport?: () => void;
+  oncancelexport?: () => void;
   view: TableViewState;
   selectedCell?: TableSelectedCell;
   filterOptions: Record<string, string[]>;

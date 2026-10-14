@@ -40,7 +40,7 @@ describe('report date contracts and atomic extraction',()=>{
       const candidate=extraction.candidates.find(c=>c.declaration.type==='timeRange')!;
       expect(candidate.dateForm).toBe(`${granularity}${single?'':'Range'}`);
       const applied=applyPageParamSelection(extraction,[candidate.id]);if(!applied.ok)throw Error(JSON.stringify(applied.issues));
-      expect(applied.document.schemaVersion).toBe('6.20');
+      expect(applied.document.schemaVersion).toBe('6.21');
       expect(applied.document.filters?.[0].type).toBe(single?'timePoint':'timeRange');
       expect(applied.document.sections[0].components[0].type).toBe('reportHeader');
       expect(applied.document.filters?.[0].default).toBeUndefined();

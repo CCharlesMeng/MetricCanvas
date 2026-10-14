@@ -87,6 +87,8 @@ export function createInMemoryDqeDiagnostics(limit = 100): InMemoryDqeDiagnostic
 }
 
 export interface DqeGatewayConfig {
+  /** Encode a verified upstream search predicate; absent capability fails explicitly. */
+  encodeSearch?: (item: JsonObject, search: NonNullable<EffectiveQuery['search']>) => JsonObject;
   endpoint?: string;
   headers?: Record<string, string>;
   fetchImpl?: typeof fetch;
@@ -436,7 +438,7 @@ export function createDqeGateway(
       }
       let item: JsonObject;
       try {
-        item = effectiveDqeItem(query);
+        item = encodedDqeItem(query, config.encodeSearch);
       } catch (cause) {
         return failEarly(cause);
       }
@@ -591,7 +593,9 @@ function classifiedFetchError(
 }
 
 /** 在不改变页面查询定义的前提下，克隆并覆盖当前生效筛选。 */
-export function effectiveDqeItem(query: EffectiveQuery): JsonObject {
+export function effectiveDqeItem(query: EffectiveQuery): JsonObject { return encodedDqeItem(query); }
+
+function encodedDqeItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfig['encodeSearch']): JsonObject {
   assertNoQueryParamReferences(query.body);
   const item = cloneJson(query.body.dsl_list[0]);
   for (const filter of query.filterValues) {
@@ -621,6 +625,10 @@ export function effectiveDqeItem(query: EffectiveQuery): JsonObject {
       }));
     }
     item.order = order;
+  }
+  if (query.search) {
+    if (!encodeSearch) throw new DqeGatewayError('DQE_CONFIG_ERROR', '数据网关未配置全表文本搜索能力');
+    return encodeSearch(item, structuredClone(query.search));
   }
   return item;
 }

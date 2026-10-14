@@ -1,0 +1,247 @@
+{
+  "schemaVersion": "6.21",
+  "id": "table-toolbar-demo",
+  "layout": "report",
+  "dataSources": {
+    "records": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "unit": "元"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "客户1",
+            "value": 1
+          },
+          {
+            "name": "客户2",
+            "value": 2
+          },
+          {
+            "name": "客户3",
+            "value": 3
+          },
+          {
+            "name": "客户4",
+            "value": 4
+          },
+          {
+            "name": "客户5",
+            "value": 5
+          },
+          {
+            "name": "客户6",
+            "value": 6
+          },
+          {
+            "name": "客户7",
+            "value": 7
+          },
+          {
+            "name": "客户8",
+            "value": 8
+          },
+          {
+            "name": "客户9",
+            "value": 9
+          },
+          {
+            "name": "客户10",
+            "value": 10
+          },
+          {
+            "name": "客户11",
+            "value": 11
+          },
+          {
+            "name": "客户12",
+            "value": 12
+          },
+          {
+            "name": "客户13",
+            "value": 13
+          },
+          {
+            "name": "客户14",
+            "value": 14
+          },
+          {
+            "name": "客户15",
+            "value": 15
+          },
+          {
+            "name": "客户16",
+            "value": 16
+          },
+          {
+            "name": "客户17",
+            "value": 17
+          },
+          {
+            "name": "客户18",
+            "value": 18
+          },
+          {
+            "name": "客户19",
+            "value": 19
+          },
+          {
+            "name": "客户20",
+            "value": 20
+          },
+          {
+            "name": "客户21",
+            "value": 21
+          },
+          {
+            "name": "客户22",
+            "value": 22
+          },
+          {
+            "name": "客户23",
+            "value": 23
+          },
+          {
+            "name": "客户24",
+            "value": 24
+          },
+          {
+            "name": "客户25",
+            "value": 25
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "表格搜索与导出示例",
+            "subtitle": "25条演示记录。试着搜索“客户25”，或搜索“客户2”后导出 Excel；两张表的搜索互不影响。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "records-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "客户明细",
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "name"
+                ],
+                "placeholder": "搜索客户"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "客户明细"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10,
+              "numbered": true
+            },
+            "columns": [
+              {
+                "field": "name",
+                "sortable": true
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "value",
+                  "format": "number-2"
+                },
+                "title": "金额（元）",
+                "sortable": true
+              }
+            ],
+            "fit": "container"
+          }
+        },
+        {
+          "id": "independent-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "另一张独立表格",
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "name"
+                ],
+                "placeholder": "搜索客户"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "另一张独立表格"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10,
+              "numbered": true
+            },
+            "columns": [
+              {
+                "field": "name",
+                "sortable": true
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "value",
+                  "format": "number-2"
+                },
+                "title": "金额（元）",
+                "sortable": true
+              }
+            ],
+            "fit": "container"
+          }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "title": "表格搜索与导出示例",
+    "description": "25条匿名演示记录，展示每张表独立搜索和完整匹配结果Excel导出。"
+  }
+}

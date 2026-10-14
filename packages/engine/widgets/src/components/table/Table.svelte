@@ -12,6 +12,8 @@
 
 <script lang="ts">
   import { getContext } from 'svelte';
+  import TableToolbar from './TableToolbar.svelte';
+  import TableControlIcon from './TableControlIcon.svelte';
   import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
   const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
   import type {
@@ -56,6 +58,13 @@
     /** select 模式表头筛选候选项(壳经数据网关 fetchDimensionValues 供给),key = 列 field */
     filterOptions?: Record<string, string[]>;
     pagination?: TablePaginationState;
+    searchDraft?: string;
+    exporting?: boolean;
+    exportError?: string;
+    onsearchdraft?: (query: string) => void;
+    onsearch?: (query: string) => void;
+    onexport?: () => void;
+    oncancelexport?: () => void;
     selectedCell?: TableSelectedCell;
     onpage?: (pageIndex: number) => void;
     onpagesize?: (pageSize: number) => void;
@@ -73,6 +82,7 @@
     view,
     filterOptions = {},
     pagination,
+    searchDraft, exporting, exportError, onsearchdraft, onsearch, onexport, oncancelexport,
     selectedCell,
     onpage,
     onpagesize,
@@ -250,6 +260,16 @@
         )
       : 0
   );
+  function jumpToPage(input: HTMLInputElement) {
+    const requested = Number(input.value.trim());
+    if (!input.value.trim() || !Number.isSafeInteger(requested)) {
+      input.value = String(view.pageIndex + 1);
+      return;
+    }
+    const pageIndex = Math.max(1, Math.min(totalPages, requested)) - 1;
+    input.value = String(pageIndex + 1);
+    if (pageIndex !== view.pageIndex) onpage?.(pageIndex);
+  }
   const numberedPages = $derived(
     totalPages > 0 ? pageWindow(view.pageIndex + 1, totalPages) : []
   );
@@ -299,11 +319,15 @@
   style:--table-content-min-width={`${columnWidthTotal}px`}
   style:--table-fit-min-width={`${fitMinWidth}px`}
 >
-  {#if props.title || props.subtitle}
+  {#if props.title || props.subtitle || (interactive && !staticExport && props.toolbar)}
     <div class="table-heading">
       {#if props.title}<h3>{props.title}</h3>{/if}
       {#if props.subtitle}
         <div class="subtitle"><span aria-hidden="true">*</span>{props.subtitle}</div>
+      {/if}
+      {#if interactive && !staticExport && props.toolbar}
+        <TableToolbar toolbar={props.toolbar} draft={searchDraft} busy={exporting} error={exportError}
+          ondraft={onsearchdraft} {onsearch} {onexport} oncancel={oncancelexport} />
       {/if}
     </div>
   {/if}
@@ -557,7 +581,7 @@
           <details class="page-size-select">
             <summary aria-label={`每页 ${pagination.pageSize} 条`}>
               <span>{pagination.pageSize}</span>
-              <span aria-hidden="true" class="page-size-arrow"></span>
+              <span aria-hidden="true" class="page-size-arrow"><TableControlIcon name="down" /></span>
             </summary>
             <div aria-label="每页显示数量" class="page-size-menu" role="listbox">
               {#each pageSizeOptions as pageSize}
@@ -578,9 +602,7 @@
             disabled={view.pageIndex === 0}
             onclick={() => onpage?.(view.pageIndex - 1)}
           >
-            <svg aria-hidden="true" viewBox="0 0 16 16">
-              <path d="M10.4 3.4 5.8 8l4.6 4.6" />
-            </svg>
+            <TableControlIcon name="left" />
           </button>
           {#if (props.pagination.mode === 'query' || props.pagination.numbered) && numberedPages.length > 0}
             {#each numberedPages as item, itemIndex (`${item}:${itemIndex}`)}
@@ -590,6 +612,7 @@
                 <button
                   type="button"
                   class="page-button"
+                  class:last-page={itemIndex === numberedPages.length - 1}
                   class:current={item === view.pageIndex + 1}
                   aria-current={item === view.pageIndex + 1 ? 'page' : undefined}
                   onclick={() => onpage?.(item - 1)}
@@ -606,10 +629,15 @@
             disabled={view.pageIndex + 1 >= totalPages}
             onclick={() => onpage?.(view.pageIndex + 1)}
           >
-            <svg aria-hidden="true" viewBox="0 0 16 16">
-              <path d="m5.6 3.4 4.6 4.6-4.6 4.6" />
-            </svg>
+            <TableControlIcon name="right" />
           </button>
+          <label class="page-jump">
+            <span class="jump-label">跳至</span>
+            <input aria-label="跳转页码" inputmode="numeric" value={view.pageIndex + 1}
+              onkeydown={event => { if (event.key === 'Enter') { event.preventDefault(); jumpToPage(event.currentTarget); } }}
+              onchange={event => jumpToPage(event.currentTarget)} />
+            <span class="jump-suffix">页</span>
+          </label>
         </div>
       {/if}
     </div>
@@ -656,6 +684,7 @@
   }
   .table-heading {
     display: flex;
+    flex-wrap: wrap;
     min-height: 30px;
     align-items: center;
     justify-content: space-between;
@@ -1051,10 +1080,12 @@
     flex-wrap: wrap;
     gap: 8px;
     min-height: 32px;
-    margin-top: 8px;
+    margin-top: 0;
+    padding: 24px 0 8px;
     color: #191919;
     font-size: 14px;
     line-height: 1;
+    font-family: Helvetica, Arial, PingFangSC-Regular, 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, 'Microsoft JhengHei';
   }
   .pager-actions {
     display: flex;
@@ -1070,12 +1101,10 @@
   .page-size-select {
     position: relative;
     flex: none;
-    margin-right: 16px;
   }
   .page-size-select summary {
     box-sizing: border-box;
     display: flex;
-    min-width: 70px;
     height: 32px;
     align-items: center;
     justify-content: space-between;
@@ -1089,14 +1118,17 @@
     outline: 0;
     user-select: none;
   }
+  .page-size-select summary > span:first-child {
+    margin-right: 4px;
+  }
   .page-size-select summary::-webkit-details-marker {
     display: none;
   }
   .page-size-select summary:hover {
-    border-color: #999;
+    border-color: #191919;
   }
   .page-size-select summary:active {
-    border-color: #1476ff;
+    border-color: #191919;
   }
   .page-size-select summary:focus-visible {
     outline: 2px solid rgb(20 118 255 / 0.28);
@@ -1104,24 +1136,19 @@
   }
   .page-size-arrow {
     position: relative;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 32px;
-    height: 30px;
+    height: 32px;
+    top: -1px;
+    color: #808080;
+    transition: transform .3s;
   }
-  .page-size-arrow::after {
-    position: absolute;
-    top: 11px;
-    left: 11px;
-    width: 6px;
-    height: 6px;
-    border-right: 1.5px solid currentColor;
-    border-bottom: 1.5px solid currentColor;
-    content: '';
-    transform: rotate(45deg);
-    transform-origin: 65% 65%;
-    transition: transform 120ms ease;
-  }
-  .page-size-select[open] .page-size-arrow::after {
-    transform: rotate(225deg);
+  .page-size-select summary:hover .page-size-arrow { color: #191919; }
+  .page-size-select[open] .page-size-arrow {
+    transform: rotate(180deg);
   }
   .page-size-menu {
     position: absolute;
@@ -1219,15 +1246,17 @@
     border-radius: 999px;
     line-height: 30px;
     text-align: center;
+    transition: all .5s ease;
+  }
+  .page-button.last-page {
+    margin-right: 0;
   }
   .page-button:hover,
   .page-button:active {
     background: #f5f5f5;
-    color: #191919;
+    color: #808080;
   }
-  .page-button:active {
-    background: #e6e6e6;
-  }
+  .page-button:hover:not(.current) { font-weight: 600; }
   .page-button:focus-visible,
   .pager-nav:focus-visible,
   .page-size-menu button:focus-visible {
@@ -1243,27 +1272,19 @@
     padding: 0;
     color: #191919;
   }
-  .pager-nav svg {
-    width: 16px;
-    height: 16px;
-    fill: none;
-    stroke: currentColor;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-width: 1.2;
-  }
   .pager-prev {
+    margin-left: 16px;
     margin-right: 8px;
   }
   .pager-next {
-    margin-left: 4px;
+    margin-left: 8px;
   }
   .pager-nav:hover:not(:disabled),
   .pager-nav:active:not(:disabled) {
-    color: #1476ff;
+    color: #191919;
   }
   .pager-nav:disabled {
-    color: rgb(16 16 16 / 0.3);
+    color: #c2c2c2;
     cursor: not-allowed;
   }
   .page-button.current {
@@ -1283,6 +1304,31 @@
   .page-no {
     color: #71717a;
   }
+  .page-jump {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    white-space: nowrap;
+  }
+  .jump-label { padding-left: 16px; margin-right: 8px; }
+  .page-jump input {
+    box-sizing: border-box;
+    width: 48px;
+    height: 32px;
+    margin-right: 4px;
+    padding: 1px 2px;
+    border: 1px solid #c2c2c2;
+    border-radius: 6px;
+    background: #fff;
+    color: #191919;
+    font: inherit;
+    text-align: center;
+    outline: none;
+    line-height: 32px;
+    transition: border .3s;
+  }
+  .page-jump input:hover, .page-jump input:focus { border-color: #191919; }
+  .jump-suffix { padding-left: 4px; margin-right: 8px; }
   .fit-container .scroll {
     overflow-x: auto;
   }

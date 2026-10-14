@@ -1,7 +1,9 @@
 import type { Page, Component, DataSnapshot, Row } from '@metriccanvas/page/internal';
 import { resolveDataSourceFields } from '@metriccanvas/page/internal';
 import type { PageDataSnapshots, FilterValues } from '../../runtime/src';
-import type { NamedDataSlots, TableViewState, TableHeaderFilterValue } from '../../widgets/src';
+import type { NamedDataSlots } from '../../widgets/src/shared/component-data';
+import type { TableViewState, TableHeaderFilterValue } from '../../widgets/src/components/table/view-state';
+import { applyTableSearch } from './table-search';
 import { applySearchFilters } from './filters/inline-search';
 import { filterMapRows, isHierarchyDeclaration, resolveMapBasemap } from './map-hierarchy';
 import { sortTableRows, filterTableRowsByHeaders } from './table-state';
@@ -34,6 +36,9 @@ export function exportComponentData(state:ExportRenderState,component:Component)
     const fields=resolveDataSourceFields(source);
     const ready=renderableDataSnapshot(snapshot); if(!ready)continue;
     let rows:Row[]=ready.rows;
+    if(component.type==='table'&&slot==='main') {
+      rows=applyTableSearch(rows,component,state.tables[component.id]?.searchQuery);
+    }
     if(component.type==='table'&&slot==='main'&&component.props.pagination?.mode!=='query') {
       rows=filterTableRowsByHeaders(applySearchFilters(rows,state.filters,fields),state.headerFilters[component.id]??{});
       rows=sortTableRows(rows,state.tables[component.id]?.sort??[]);

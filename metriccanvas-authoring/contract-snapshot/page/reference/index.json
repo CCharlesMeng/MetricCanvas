@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.20",
-  "schemaSha256": "b09fb609c6763ab2e2020b0a7c354b89ba9ff2a4d4093b9be07a1d347fd5ad62",
+  "schemaVersion": "6.21",
+  "schemaSha256": "b1463f60554cf354fdbf4789e020e48526496d89b8feee4181f652e50d12e715",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -36,7 +36,7 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "e4e7c5c6b6f17c094f2382c6c5c8ac5707cb17a5d975907072f826df93f2ae92"
+      "sha256": "620fff7893bbe8b9ef3fe35e2ad47a2b75288773ecfc0741099828907bd66bf4"
     },
     {
       "file": "packages/page/src/schema/actions.ts",
@@ -96,7 +96,7 @@
     },
     {
       "file": "packages/page/src/schema/components/table.ts",
-      "sha256": "f1c4cfbef9b44a1ff93308bcdeab3e6ccd3cd9056710663702e9642e5d197124"
+      "sha256": "e4990f47d6248f3fb1bf34dcc4ceb9613273254176a8bf04f780960e5ec1572e"
     },
     {
       "file": "packages/page/src/schema/components/text.ts",
@@ -140,11 +140,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "b99b211f991f03615c89446055e5e8e7f7c60d1a228d04fcf4cbe2e78bfdce2a"
+      "sha256": "08045920285bb81dfa47431205e55711e9a82dffdd5e5d18fd67edc13184a5df"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "b2639e5e3f5798ebf7b9dd2b5c6234799cfc8923f320a26a2ac273f5c0597da2"
+      "sha256": "0957dda44999eb779bdb1e09db3755b7e26ab0a64a57e480a43bfe76e7688f2e"
     }
   ],
   "modules": {
@@ -743,7 +743,8 @@
       "examples": [
         "query-dashboard",
         "reference-branches-page",
-        "reference-export-column-actions"
+        "reference-export-column-actions",
+        "table-toolbar-page"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -760,7 +761,8 @@
         "pagination-query-source",
         "pagination-query-order",
         "pagination-initial-rows",
-        "pagination-exclusive-source"
+        "pagination-exclusive-source",
+        "table-toolbar-search"
       ]
     },
     "components/mapChart.md": {
@@ -1123,7 +1125,8 @@
         "6.17",
         "6.18",
         "6.19",
-        "6.20"
+        "6.20",
+        "6.21"
       ]
     },
     {
@@ -6997,6 +7000,69 @@
     {
       "pointer": "#/definitions/tableComponent/properties/props/properties/subtitle/allOf/0",
       "path": "@tableComponent.props.subtitle · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar",
+      "path": "@tableComponent.props.toolbar",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search",
+      "path": "@tableComponent.props.toolbar.search",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/fields",
+      "path": "@tableComponent.props.toolbar.search.fields",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/fields/items",
+      "path": "@tableComponent.props.toolbar.search.fields[]",
+      "required": "每个数组项",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/placeholder",
+      "path": "@tableComponent.props.toolbar.search.placeholder",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/placeholder/allOf/0",
+      "path": "@tableComponent.props.toolbar.search.placeholder · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export",
+      "path": "@tableComponent.props.toolbar.export",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/format",
+      "path": "@tableComponent.props.toolbar.export.format",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "xlsx"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/filename",
+      "path": "@tableComponent.props.toolbar.export.filename",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/filename/allOf/0",
+      "path": "@tableComponent.props.toolbar.export.filename · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/table.md",
       "ref": "#/definitions/textValue"

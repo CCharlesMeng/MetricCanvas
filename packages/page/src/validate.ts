@@ -1458,6 +1458,17 @@ function componentErrors(
         });
         visit(component.props.columns, `${componentPath}/props/columns`);
       }
+      const search = component.props.toolbar?.search;
+      if (search) {
+        const source = page.dataSources[component.data.main];
+        const fields = source ? resolveDataSourceFields(source) : {};
+        if (new Set(search.fields).size !== search.fields.length) errors.push(schemaError(`${componentPath}/props/toolbar/search/fields`, '搜索字段不得重复'));
+        search.fields.forEach((id, index) => {
+          const field = fields[id];
+          if (!field || field.type !== 'string') errors.push(schemaError(`${componentPath}/props/toolbar/search/fields/${index}`, '搜索必须引用 main 数据槽中的文本标量字段'));
+          if (source?.source.type === 'query' && source.source.resultScope !== 'complete' && (!source.fields[id] || !hasQueryFieldMapping(source.fields[id]))) errors.push(schemaError(`${componentPath}/props/toolbar/search/fields/${index}`, '查询搜索字段必须具有 queryField 映射'));
+        });
+      }
       errors.push(...tableDataErrors(page, component, componentPath));
       errors.push(...tablePresentationErrors(page, component, componentPath));
       errors.push(
@@ -1755,6 +1766,7 @@ function queryPaginationErrors(page: Page): TypedError[] {
   const queryTables: Array<{
     sourceId: string;
     componentPath: string;
+    reason?: string;
   }> = [];
 
   const addReference = (sourceId: string, path: string) => {
@@ -1790,6 +1802,7 @@ function queryPaginationErrors(page: Page): TypedError[] {
           )
         );
       }
+      if (component.props.toolbar?.search && source?.source.type === 'query' && source.source.resultScope !== 'complete' && pagination?.mode !== 'query') queryTables.push({ sourceId, componentPath, reason: '查询搜索' });
       if (pagination?.mode !== 'query') return;
       if (source?.source.type !== 'query') {
         errors.push(
@@ -1843,13 +1856,13 @@ function queryPaginationErrors(page: Page): TypedError[] {
       }
   });
 
-  for (const { sourceId, componentPath } of queryTables) {
+  for (const { sourceId, componentPath, reason } of queryTables) {
     const usages = references.get(sourceId) ?? [];
     if (usages.length !== 1) {
       errors.push(
         schemaError(
           `${componentPath}/data/main`,
-          `查询分页表格必须独占页面数据源 ${sourceId}，当前引用 ${usages.length} 次`
+          `${reason ?? '查询分页'}表格必须独占页面数据源 ${sourceId}，当前引用 ${usages.length} 次`
         )
       );
     }

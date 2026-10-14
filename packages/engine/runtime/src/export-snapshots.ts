@@ -12,7 +12,7 @@ export class ExportViewError extends Error {
   }
 }
 /** No initial snapshots or overlays. Fetch the captured query scope through the same gateway. */
-export async function prepareExportSnapshots(page: Page, gateway: DataGateway, queries: ReadonlyMap<string, EffectiveQuery>, filters: FilterValues, signal: AbortSignal, diagnosticBase?: QueryDiagnosticContext,currentYear=new Date().getFullYear()): Promise<Map<string, DataSnapshot>> {
+export async function prepareExportSnapshots(page: Page, gateway: DataGateway, queries: ReadonlyMap<string, EffectiveQuery>, filters: FilterValues, signal: AbortSignal, diagnosticBase?: QueryDiagnosticContext,currentYear=new Date().getFullYear(), completeSources: readonly string[] = []): Promise<Map<string, DataSnapshot>> {
   const ids = new Set<string>();
   for (const component of flattenPageComponents({ sections: page.sections })) {
     for (const id of Object.values(component.data ?? {})) ids.add(id);
@@ -47,7 +47,7 @@ export async function prepareExportSnapshots(page: Page, gateway: DataGateway, q
     frozen.filterValues = frozen.filterValues.filter(value => value.target !== 'dimension' || !targets.has(value.queryField));
     frozen.filterValues.push(...resolved.values);
     const diagnostics = {...diagnosticBase, pageId:page.id, dataSourceIds:[id]};
-    if (cascaded.has(id)) {
+    if (cascaded.has(id) && (!completeSources.includes(id) || isBoundedResultSource(page.dataSources, id))) {
       const result = await gateway.fetchData(frozen, diagnostics, signal);
       signal.throwIfAborted();
       const limit = frozen.pagination?.limit ?? declaredPaginationLimit(source.source.query);

@@ -36,6 +36,11 @@ def apply_presentation(block, source, component):
     elif p['kind']=='record-list':
         if p.get('density')=='compact': props['variant']='reportCompact'
         if 'subtitle' in p: props['subtitle']=p['subtitle']
+        if 'toolbar' in p:
+            toolbar=deepcopy(p['toolbar'])
+            if 'search' in toolbar:
+                toolbar['search']['fields']=[field_id(source['fields'], field) for field in toolbar['search']['fields']]
+            props['toolbar']=toolbar
         overrides={}
         displayed={c['field'] for c in props['columns']}
         for column in p.get('columns',[]):

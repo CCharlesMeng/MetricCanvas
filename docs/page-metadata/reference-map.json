@@ -595,7 +595,8 @@
       "examples": [
         "query-dashboard",
         "reference-branches-page",
-        "reference-export-column-actions"
+        "reference-export-column-actions",
+        "table-toolbar-page"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -612,7 +613,8 @@
         "pagination-query-source",
         "pagination-query-order",
         "pagination-initial-rows",
-        "pagination-exclusive-source"
+        "pagination-exclusive-source",
+        "table-toolbar-search"
       ]
     },
     "components/mapChart.md": {
@@ -1141,7 +1143,14 @@
     "where": "下游独立筛选上游原始行；缺省读取全部行，不修改上游快照。",
     "all": "非空条件集合，所有条件满足；最多4层组合、64个叶子。",
     "any": "非空条件集合，任意条件满足；最多4层组合、64个叶子。",
-    "#/definitions/queryResultWhere/anyOf/3/properties/values": "非空同类型字面量集合，最多1000项；不强制类型转换。"
+    "#/definitions/queryResultWhere/anyOf/3/properties/values": "非空同类型字面量集合，最多1000项；不强制类型转换。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar": "每张表独立配置右上角工具区；省略时不显示搜索和导出。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search": "显式文本搜索声明；提交的关键词属于表格实例，省略时关闭入口。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/fields": "main数据槽中的1至64个文本标量字段；不得重复，查询搜索要求有效queryField映射。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/placeholder": "搜索输入提示；省略时显示搜索表格，支持文本取值引用。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export": "完整匹配结果的Excel导出声明；省略时关闭入口。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/format": "首版固定xlsx，导出工作簿而非当前分页截图。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/filename": "文件名基础文本；省略采用已解析表格标题或表格数据，自动附加.xlsx并清理非法文件名字符。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1320,7 +1329,8 @@
     "lte": "原始number/money值小于等于阈值，按原始单位。",
     "isNull": "只匹配合法null值；缺字段仍是契约错误。",
     "isNotNull": "只匹配合法非null值；缺字段仍是契约错误。",
-    "6.20": "查询分页窗口可作为结果绑定输入；任意可排序列驱动依赖更新，排序回到第一页，下游仍只接收字段集合。"
+    "6.20": "查询分页窗口可作为结果绑定输入；任意可排序列驱动依赖更新，排序回到第一页，下游仍只接收字段集合。",
+    "6.21": "表格独立搜索与完整Excel导出工具区；查询搜索字段必须映射，搜索编码由数据网关提供。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

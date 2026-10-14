@@ -111,10 +111,25 @@ def _query_capability_issues(value: Mapping[str, Any], minor: int) -> list[PageC
     return []
 
 
+def _table_toolbar_capability_issues(value: Mapping[str, Any], minor: int) -> list[PageContractIssue]:
+    if minor >= 21:
+        return []
+    paths = []
+    for key in ('sections', 'detailViews'):
+        for index, container in enumerate(value.get(key, [])):
+            for component, path in _walk_components(container.get('components', []), f'/{key}/{index}/components'):
+                if component.get('type') == 'table' and 'toolbar' in component.get('props', {}):
+                    paths.append(path)
+    return [PageContractIssue('SCHEMA_ERROR', path, '表格工具区由6.21引入') for path in paths]
+
+
 def _parameter_capability_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
     if isinstance(value.get("params"), Mapping) and not value["params"]:
         return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs cannot be empty")]
     minor = int(value["schemaVersion"].split(".")[1])
+    toolbar_issues = _table_toolbar_capability_issues(value, minor)
+    if toolbar_issues:
+        return toolbar_issues
     signed_issues = _signed_number_capability_issues(value, minor)
     if signed_issues:
         return signed_issues
@@ -1436,6 +1451,17 @@ def _table_component_issues(
     props = component.get("props", {})
     if not isinstance(props, Mapping):
         return issues
+    search=props.get('toolbar', {}).get('search')
+    if search:
+        source=data_sources.get(slots.get('main'), {})
+        fields, _, _=_resolved_fields(source.get('fields', {}), '')
+        raw=source.get('source', {})
+        for index, field_id in enumerate(search['fields']):
+            field=fields.get(field_id, {})
+            at=f'{path}/props/toolbar/search/fields/{index}'
+            if field.get('type') != 'string': issues.append(PageContractIssue('SCHEMA_ERROR', at, '搜索必须引用main文本标量字段'))
+            if raw.get('type') == 'query' and raw.get('resultScope') != 'complete' and not field.get('queryField'):
+                issues.append(PageContractIssue('SCHEMA_ERROR', at, '查询搜索字段必须具有queryField映射'))
     def check_row_key():
         row_key = props.get("rowKey")
         if len(slots) > 1:
@@ -2064,6 +2090,14 @@ def _compute_issues(
     return issues
 
 
+def _is_complete_unbounded_query(raw_source: Any) -> bool:
+    if not isinstance(raw_source, Mapping) or raw_source.get('type') != 'query' or raw_source.get('resultScope') != 'complete':
+        return False
+    items = raw_source.get('query', {}).get('body', {}).get('dsl_list', [])
+    order = items[0].get('order', {}) if items else {}
+    return not (isinstance(order, Mapping) and ('limit' in order or 'offset' in order))
+
+
 def _query_pagination_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
     data_sources = page.get("dataSources", {})
     if not isinstance(data_sources, Mapping):
@@ -2109,17 +2143,18 @@ def _query_pagination_issues(page: Mapping[str, Any]) -> list[PageContractIssue]
                 return
             pagination = props.get("pagination")
             if not isinstance(pagination, Mapping):
-                return
+                pagination = {}
             source_id = slots.get("main") if isinstance(slots, Mapping) else None
             source = data_sources.get(source_id)
             raw_source = source.get("source") if isinstance(source, Mapping) else None
             source_type = raw_source.get("type") if isinstance(raw_source, Mapping) else None
             mode = pagination.get("mode")
-            if mode == "local" and source_type != "inline":
+            if mode == "local" and source_type != "inline" and not _is_complete_unbounded_query(raw_source):
                 issues.append(
                     PageContractIssue("SCHEMA_ERROR", f"{path}/props/pagination/mode", "local pagination requires inline data")
                 )
             if mode != "query":
+                if props.get('toolbar', {}).get('search') and source_type == 'query' and raw_source.get('resultScope') != 'complete': query_tables.append((source_id, path))
                 return
             if source_type != "query":
                 issues.append(

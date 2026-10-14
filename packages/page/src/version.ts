@@ -15,7 +15,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 20;
+const CURRENT_MINOR = 21;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -37,6 +37,10 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'table-toolbar': {
+    minor: 21, description: '表格独立搜索与完整 Excel 导出工具区',
+    usedAt: document => componentPaths(document, component => component.type === 'table' && has(props(component), 'toolbar'))
+  },
   'query-result-page-window': {
     minor: 20, description: '查询分页窗口作为结果绑定输入，支持任意列查询排序驱动依赖更新',
     usedAt: document => {

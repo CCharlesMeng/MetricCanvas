@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { applyTableSearch, remoteTableSearch } from './table-search';
+  import { prepareTableExport } from './table-export';
+  import { downloadTableWorkbook } from './table-workbook';
   import { tablePagination } from './table-pagination';
   import { tick, untrack, setContext, onDestroy } from 'svelte';
   import { initialSectionGroup, selectedSectionGroup, sectionGroupFor, visibleSections } from './section-navigation';
@@ -135,7 +138,11 @@
 
   const summaryCapture:SummaryCapture=new Map();
   setContext(SUMMARY_EXPORT_CAPTURE,summaryCapture);
+  const tableExportControllers = new Map<string, AbortController>();
+  let tableExportStates = $state<Record<string, { busy: boolean; error?: string }>>({});
+  let tableSearchDrafts = $state<Record<string, string>>({});
   let exporting:AbortController|undefined;
+  onDestroy(() => { for (const controller of tableExportControllers.values()) controller.abort(new ExportViewError('EXPORT_CANCELLED', '页面实例已销毁')); });
   onDestroy(()=>exporting?.abort(new ExportViewError('EXPORT_CANCELLED','页面实例已销毁')));
   export async function withExportView<T>(consume:ExportViewConsumer<T>,options?:ExportViewOptions):Promise<T> {
     if(pageState.phase!=='ready'||!stream||!surfaceRoot)throw new ExportViewError('EXPORT_NOT_READY','页面实例尚未就绪');
@@ -210,6 +217,8 @@
     bootstrap: import('../../runtime/src').ExecutionBootstrap | undefined
   ) {
     exporting?.abort(new ExportViewError('EXPORT_CANCELLED','页面实例已更新'));
+    for (const controller of tableExportControllers.values()) controller.abort(new ExportViewError('EXPORT_CANCELLED', '页面实例已更新'));
+    tableExportControllers.clear(); tableExportStates = {}; tableSearchDrafts = {};
     const mySession = ++session;
     pageState = { phase: 'loading' };
     snapshots = new Map();
@@ -441,6 +450,35 @@
 
   function tableViewOf(component: TableComponent): TableViewState {
     return tableViews[component.id] ?? { pageIndex: 0, sort: [], headerFilters: {} };
+  }
+
+  function handleTableSearch(component: TableComponent, query: string) {
+    const search = component.props.toolbar?.search;
+    if (!search || pageState.phase !== 'ready') return;
+    const next = query.trim();
+    tableSearchDrafts = { ...tableSearchDrafts, [component.id]: query };
+    pushTableView(component, { ...tableViewOf(component), searchQuery: next, pageIndex: 0 });
+    if (remoteTableSearch(pageState.page.dataSources[component.data.main])) stream?.setQuerySearch(component.data.main, { fields: search.fields, query: next });
+  }
+
+  async function exportTable(component: TableComponent) {
+    if (pageState.phase !== 'ready' || !stream || !component.props.toolbar?.export || tableExportControllers.has(component.id)) return;
+    const controller = new AbortController();
+    const currentSession = session;
+    tableExportControllers.set(component.id, controller);
+    tableExportStates = { ...tableExportStates, [component.id]: { busy: true } };
+    // All scope values are frozen by prepareTableExport synchronously before its first await.
+    try {
+      const frozen = JSON.parse(JSON.stringify(component)) as TableComponent;
+      const data = await prepareTableExport({ page: pageState.page, component: frozen,
+        queries: stream.captureQueries(), gateway: activeGateway, controller,
+        state: { currentYear: stream.captureComputeYear(), filters: filterValues, tables: tableViews, headerFilters: appliedTableHeaderFilters } });
+      controller.signal.throwIfAborted();
+      await downloadTableWorkbook(frozen, data, controller.signal);
+      if (session === currentSession) tableExportStates = { ...tableExportStates, [component.id]: { busy: false } };
+    } catch (error) {
+      if (session === currentSession) tableExportStates = { ...tableExportStates, [component.id]: { busy: false, error: controller.signal.aborted ? (controller.signal.reason instanceof Error ? controller.signal.reason.message : '导出已取消') : error instanceof Error ? error.message : '导出失败' } };
+    } finally { if (tableExportControllers.get(component.id) === controller) tableExportControllers.delete(component.id); }
   }
 
   function handleTablePage(component: TableComponent, pageIndex: number) {
@@ -927,7 +965,7 @@
     const applied = appliedHeaderFiltersOf(component);
     const source = pageState.phase === 'ready' ? pageState.page.dataSources[component.data.main] : undefined;
     const searched = applySearchFilters(
-      snapshot.rows,
+      applyTableSearch(snapshot.rows, component, view.searchQuery),
       filterValues,
       source ? resolveDataSourceFields(source) : {}
     );
@@ -1017,6 +1055,13 @@
     if (component.type !== 'table') return undefined;
     return {
       view: tableViewOf(component),
+      searchDraft: tableSearchDrafts[component.id] ?? tableViewOf(component).searchQuery ?? '',
+      onsearchdraft: query => { tableSearchDrafts = { ...tableSearchDrafts, [component.id]: query }; },
+      onsearch: query => handleTableSearch(component, query),
+      onexport: () => { void exportTable(component); },
+      oncancelexport: () => tableExportControllers.get(component.id)?.abort(new ExportViewError('EXPORT_CANCELLED', '导出已取消')),
+      exporting: tableExportStates[component.id]?.busy,
+      exportError: tableExportStates[component.id]?.error,
       selectedCell: tableSelectedCell(component),
       filterOptions: tableFilterOptions(component),
       pagination: tablePaginationState(loaded, component, slots),

@@ -135,6 +135,16 @@ export const tableComponentZ = z
       .object({
         title: textValueZ.optional(),
         subtitle: textValueZ.optional(),
+        toolbar: z.object({
+          search: z.object({
+            fields: z.array(fieldNameZ).min(1).max(64).meta({ uniqueItems: true }),
+            placeholder: textValueZ.optional()
+          }).strict().optional(),
+          export: z.object({
+            format: z.literal('xlsx'),
+            filename: textValueZ.optional()
+          }).strict().optional()
+        }).strict().optional(),
         variant: z.enum(['reportCompact', 'embedded', 'forecastMatrix']).optional(),
         /** 容器底部的渐隐提示；只表示有更多纵向内容，不改变数据。 */
         bottomFade: z.boolean().optional(),

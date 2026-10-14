@@ -1,0 +1,102 @@
+import type { FieldBinding, TableComponent, TableColumnNode, ValueFormatPreset } from '@metriccanvas/page/internal';
+import type { NamedDataSlots } from '../../widgets/src/shared/component-data';
+import { resolveField } from '../../widgets/src/shared/component-data';
+import { alignTableRows, alignedFieldValue } from '../../widgets/src/components/table/rows';
+import { buildTableColumnLayout } from '../../widgets/src/components/table/columns';
+import { formatValue } from '../../widgets/src/shared/value-format';
+
+export function tableExportFilename(component: TableComponent): string {
+  const name = component.props.toolbar?.export?.filename || component.props.title || '表格数据';
+  return `${name.replace(/[<>:"/\\|?*\u0000-\u001f]/g, '_').replace(/\.xlsx$/i, '').slice(0, 120) || '表格数据'}.xlsx`;
+}
+
+/** Numbers retain raw values; scale formats display the frozen presentation without changing them. */
+function numberFormat(value: number, format?: ValueFormatPreset): string {
+  if (!format || format === 'number') return 'General';
+  if (format === 'number-grouped') return '#,##0.###############';
+  if (format === 'number-1') return '0.0';
+  if (format === 'number-2') return '0.00';
+  if (format.startsWith('percent-') && !format.endsWith('signed')) {
+    const precision = Number(format.slice(-1));
+    return `0${precision ? `.${'0'.repeat(precision)}` : ''}"%"`;
+  }
+  return `"${formatValue(value, format).replaceAll('"', '""')}"`;
+}
+
+function plainText(html: string): string {
+  // Parsed in an inert document; no HTML or formula is written to the workbook.
+  if (typeof DOMParser !== 'undefined') return new DOMParser().parseFromString(html.replace(/<br\s*\/?\s*>/gi, '\n'), 'text/html').body.textContent ?? '';
+  return html.replace(/<br\s*\/?\s*>/gi, '\n').replace(/<[^>]*>/g, '').replaceAll('&amp;', '&').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&quot;', '"').replaceAll('&#39;', "'");
+}
+
+/** One column tree controls multi-level headers, aligned slot values and compound fields. */
+export async function encodeTableWorkbook(component: TableComponent, data: NamedDataSlots, signal: AbortSignal): Promise<Uint8Array<ArrayBuffer>> {
+  signal.throwIfAborted();
+  const ExcelJS = (await import('exceljs')).default;
+  signal.throwIfAborted();
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet('表格数据');
+  let groupIndex = 0;
+  const title = (binding: FieldBinding, given?: string) => {
+    const definition = resolveField(binding, data).definition;
+    const text = given ?? definition?.label ?? resolveField(binding, data).field;
+    return definition && 'unit' in definition && definition.unit && !text.includes(definition.unit) ? `${text}（${definition.unit}）` : text;
+  };
+  const project = (nodes: TableColumnNode[]): TableColumnNode[] => nodes.map(node => {
+    if (node.kind === 'group') return { ...node, children: project(node.children) };
+    const label = title(node.field, node.title);
+    const extras = [node.secondaryField, node.badgeField].filter((field): field is FieldBinding => field !== undefined);
+    if (!extras.length) return { ...node, title: label };
+    return { kind: 'group', id: `export-${groupIndex++}`, title: label,
+      children: [{ ...node, title: title(node.field) }, ...extras.map(field => ({ field, title: title(field) }))] };
+  });
+  const layout = buildTableColumnLayout(project(component.props.columns));
+  layout.headerRows.forEach((cells, rowIndex) => {
+    let columnIndex = 1;
+    for (const cell of cells) {
+      while (sheet.getCell(rowIndex + 1, columnIndex).isMerged) columnIndex++;
+      const target = sheet.getCell(rowIndex + 1, columnIndex);
+      target.value = cell.title;
+      target.font = { bold: true };
+      target.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+      if (cell.rowspan > 1 || cell.colspan > 1) sheet.mergeCells(rowIndex + 1, columnIndex, rowIndex + cell.rowspan, columnIndex + cell.colspan - 1);
+      columnIndex += cell.colspan;
+    }
+  });
+  const headerCount = layout.headerRows.length;
+  const rows = alignTableRows(data, component.props.rowKey);
+  rows.forEach((row, index) => {
+    signal.throwIfAborted();
+    layout.leaves.forEach((column, columnIndex) => {
+      const resolved = resolveField(column.field, data);
+      const value = alignedFieldValue(column.field, data, row);
+      const cell = sheet.getCell(headerCount + index + 1, columnIndex + 1);
+      if (value == null) { cell.value = resolved.missingText ?? null; return; }
+      if (typeof value === 'number') {
+        cell.value = value; cell.numFmt = numberFormat(value, resolved.format);
+      } else if (typeof value === 'boolean') cell.value = value;
+      else if (resolved.definition?.type === 'semanticHtml') cell.value = plainText(String(value));
+      else if (resolved.definition?.type === 'date' || resolved.definition?.type === 'datetime') {
+        const date = new Date(String(value));
+        if (Number.isFinite(date.getTime())) { cell.value = date; cell.numFmt = resolved.definition.type === 'date' ? 'yyyy-mm-dd' : 'yyyy-mm-dd hh:mm:ss'; }
+        else cell.value = String(value);
+      } else cell.value = typeof value === 'string' ? value : JSON.stringify(value);
+    });
+  });
+  sheet.columns.forEach((column, index) => { column.width = Math.min(60, Math.max(14, (layout.leaves[index]?.width ?? 150) / 7)); });
+  sheet.views = [{ state: 'frozen', ySplit: headerCount }];
+  const buffer = await workbook.xlsx.writeBuffer();
+  signal.throwIfAborted();
+  return new Uint8Array(buffer);
+}
+
+export async function downloadTableWorkbook(component: TableComponent, data: NamedDataSlots, signal: AbortSignal): Promise<void> {
+  const bytes = await encodeTableWorkbook(component, data, signal);
+  signal.throwIfAborted();
+  const url = URL.createObjectURL(new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+  const link = document.createElement('a');
+  link.href = url; link.download = tableExportFilename(component); link.hidden = true;
+  document.body.appendChild(link);
+  try { signal.throwIfAborted(); link.click(); }
+  finally { link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
+}

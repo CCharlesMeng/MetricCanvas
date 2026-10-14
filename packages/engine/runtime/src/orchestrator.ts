@@ -49,6 +49,7 @@ export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
     sort: ReadonlyArray<{ field: string; direction: 'asc' | 'desc' }>
   ): void;
   setQueryHeaderFilters(dataSourceId: string, filters: QueryHeaderFilters): void;
+  setQuerySearch(dataSourceId: string, search: { fields: readonly string[]; query: string }): void;
 }
 
 interface DataSourceBinding {
@@ -118,7 +119,8 @@ export function orchestrate(
     },
     setQueryHeaderFilters(dataSourceId, filters) {
       session?.setQueryHeaderFilters(dataSourceId, filters);
-    }
+    },
+    setQuerySearch(dataSourceId, search) { session?.setQuerySearch(dataSourceId, search); }
   };
 }
 
@@ -134,6 +136,7 @@ interface Session {
     sort: ReadonlyArray<{ field: string; direction: 'asc' | 'desc' }>
   ): void;
   setQueryHeaderFilters(dataSourceId: string, filters: QueryHeaderFilters): void;
+  setQuerySearch(dataSourceId: string, search: { fields: readonly string[]; query: string }): void;
   dispose(): void;
 }
 
@@ -295,6 +298,7 @@ function startSession(
   // 不是页面的声明。
   const sortRules = new Map<string, Array<{ field: string; direction: 'asc' | 'desc' }>>();
   const headerFilters = new Map<string, QueryHeaderFilters>();
+  const searches = new Map<string, { fields: readonly string[]; query: string }>();
   let disposed = false;
   let inFlight = 0;
   const waiters: Array<() => void> = [];
@@ -389,7 +393,8 @@ function startSession(
         values,
         pageIndexes.get(binding.sourceId) ?? 0,
         sortRules.get(binding.sourceId) ?? [],
-        headerFilters.get(binding.sourceId) ?? {}
+        headerFilters.get(binding.sourceId) ?? {},
+        searches.get(binding.sourceId)
       );
       query.filterValues.push(...input.values);
       const key = JSON.stringify(query);
@@ -482,7 +487,7 @@ function startSession(
     getQueryPageSize: id => queryBindings.find(binding => binding.sourceId === id)?.pagination?.limit,
     captureQueries() {
       return new Map(queryBindings.map(binding => {
-        const query = composeEffectiveQuery(binding, values, cascaded.has(binding.sourceId) ? pageIndexes.get(binding.sourceId) ?? 0 : 0, sortRules.get(binding.sourceId) ?? [], headerFilters.get(binding.sourceId) ?? {});
+        const query = composeEffectiveQuery(binding, values, cascaded.has(binding.sourceId) ? pageIndexes.get(binding.sourceId) ?? 0 : 0, sortRules.get(binding.sourceId) ?? [], headerFilters.get(binding.sourceId) ?? {}, searches.get(binding.sourceId));
         const input = resolveQueryResultInputs(binding.dataSource, rawSnapshots, sources, windowLimits());
         if (input.status === 'ready') query.filterValues.push(...input.values);
         return [binding.sourceId, structuredClone(query)];
@@ -523,6 +528,15 @@ function startSession(
       if (!binding || (!binding.pagination && queryBindings.some(candidate => queryResultDependencies(candidate.dataSource).includes(dataSourceId)))) return;
       if (JSON.stringify(headerFilters.get(dataSourceId) ?? {}) === JSON.stringify(filters)) return;
       headerFilters.set(dataSourceId, filters);
+      pageIndexes.set(dataSourceId, 0);
+      refetch([binding], true);
+    },
+    setQuerySearch(dataSourceId, search) {
+      const binding = queryBindings.find(candidate => candidate.sourceId === dataSourceId);
+      if (!binding) return;
+      const next = { fields: [...search.fields], query: search.query.trim() };
+      if (JSON.stringify(searches.get(dataSourceId)) === JSON.stringify(next)) return;
+      searches.set(dataSourceId, next);
       pageIndexes.set(dataSourceId, 0);
       refetch([binding], true);
     },

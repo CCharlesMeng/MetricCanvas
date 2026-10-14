@@ -26,7 +26,8 @@ export function composeEffectiveQuery(
   values: FilterValues,
   pageIndex: number,
   sortRules: ReadonlyArray<{ field: string; direction: 'asc' | 'desc' }>,
-  headerFilters: QueryHeaderFilters
+  headerFilters: QueryHeaderFilters,
+  search?: { fields: readonly string[]; query: string }
 ): EffectiveQuery {
   const dataSource = binding.dataSource;
   const query = dataSource.source.query;
@@ -102,11 +103,17 @@ export function composeEffectiveQuery(
     const queryField = mappedQueryField(dataSource, rule.field);
     return queryField === undefined ? [] : [{ queryField, direction: rule.direction }];
   });
+  const term = search?.query.trim();
+  const queryFields = search?.fields.map(field => mappedQueryField(dataSource, field));
+  if (term && (!queryFields?.length || queryFields.some(field => field === undefined))) {
+    throw new Error('表格搜索字段缺少查询字段映射');
+  }
   // language 与查询体按数据源的查询定义分支原样透传,编排层不合成协议细节。
   return {
     language: query.language,
     body: query.body,
     fieldMappings: dataSource.fields,
+    ...(term && queryFields ? { search: { queryFields: queryFields as string[], query: term } } : {}),
     ...(sort.length > 0 ? { sort } : {}),
     ...(binding.pagination
       ? {

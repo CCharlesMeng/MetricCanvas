@@ -1,6 +1,18 @@
 {
   "invariants": [
     {
+      "id": "table-toolbar-search",
+      "description": "表格工具区由6.21引入，搜索显式引用文本标量字段",
+      "valid": [
+        "table-toolbar-page"
+      ],
+      "invalid": [
+        "table-toolbar-before-6.21",
+        "table-search-nontext-field",
+        "table-search-duplicate-field"
+      ]
+    },
+    {
       "id": "signed-number-family-capability",
       "description": "两位小数与千分位带符号数值格式由6.18引入",
       "valid": [

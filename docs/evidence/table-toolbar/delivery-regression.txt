@@ -1,0 +1,10 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/page/tests packages/engine/runtime/tests/table-search.test.ts packages/engine/runtime-ui/tests/table-export.test.ts packages/engine/runtime-ui/tests/report-export.test.ts packages/data-execution/tests tests/page-reference.test.ts tests/public-api.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/table-toolbar-delivery/DataDashboard
+
+
+ Test Files  59 passed (59)
+      Tests  533 passed (533)
+   Start at  22:48:36
+   Duration  7.01s (transform 4.82s, setup 0ms, import 38.14s, tests 11.22s, environment 6ms)
+

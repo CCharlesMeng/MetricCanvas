@@ -40,6 +40,7 @@
   import type { AiSummaryConfig } from './ai-summary/pangu-sse';
   import { fieldRow } from '../../widgets/src/shared/component-data';
   import WidgetHost from './WidgetHost.svelte';
+  import TableToolbar from '../../widgets/src/components/table/TableToolbar.svelte';
   import { partialDataNotices } from './widget-host-state';
   import {
     rendersWithoutWidgetHost,
@@ -181,6 +182,11 @@
     </CompositeCard>
   {/if}
 {:else}
+  {#if component.type === 'table' && table && component.props.toolbar && !exportMode && (snapshot.status === 'loading' || snapshot.status === 'error')}
+    <TableToolbar toolbar={component.props.toolbar} draft={table.searchDraft} busy={table.exporting}
+      error={table.exportError} canExport={false} ondraft={table.onsearchdraft} onsearch={table.onsearch}
+      onexport={table.onexport} oncancel={table.oncancelexport} />
+  {/if}
   <WidgetHost {snapshot} title={component.props.title} notices={partialDataNotices(component, pageSnapshots, table?.paginationConfig?.mode === 'query')}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
@@ -228,6 +234,8 @@
           selectedCell={table.selectedCell}
           filterOptions={table.filterOptions}
           pagination={table.pagination}
+          searchDraft={table.searchDraft} exporting={table.exporting} exportError={table.exportError}
+          onsearchdraft={table.onsearchdraft} onsearch={table.onsearch} onexport={table.onexport} oncancelexport={table.oncancelexport}
           onpage={table.onpage}
           onpagesize={table.onpagesize}
           onsort={table.onsort}

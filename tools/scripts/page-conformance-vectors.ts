@@ -55,6 +55,17 @@ function longString(length: number): string {
 
 export const invariants: InvariantDefinition[] = [
   {
+    id: 'table-toolbar-search', description: '表格工具区由6.21引入，搜索显式引用文本标量字段',
+    valid: ['table-toolbar-page'], cases: [
+      { case: 'table-toolbar-before-6.21', base: 'table-toolbar-page', expect: /由 6.21 引入/,
+        mutate: d => { d.schemaVersion = '6.20'; } },
+      { case: 'table-search-nontext-field', base: 'table-toolbar-page', expect: /文本标量字段/,
+        mutate: d => { firstComponent(d).props.toolbar.search.fields = ['value']; } },
+      { case: 'table-search-duplicate-field', base: 'table-toolbar-page', expect: /不得重复|duplicate/,
+        mutate: d => { firstComponent(d).props.toolbar.search.fields = ['name', 'name']; } }
+    ]
+  },
+  {
     id: 'signed-number-family-capability', description: '两位小数与千分位带符号数值格式由6.18引入',
     valid: ['signed-number-family-page'], cases: [
       { case: 'signed-number-two-decimal-before-6.18', base: 'inline-report', expect: /由 6.18 引入/,
