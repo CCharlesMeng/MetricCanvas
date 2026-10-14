@@ -14,7 +14,7 @@
 
 <!-- adr-index:start 由 tools/scripts/adr-index.py 生成，不要手改 -->
 
-共 104 份 ADR（0001–0105）：现行 97、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
+共 106 份 ADR（0001–0107）：现行 99、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
 
 | 编号 | 标题 | 现状 |
 |---|---|---|
@@ -116,12 +116,14 @@
 | [0096](./0096-ioc-view-state-and-post-query-presentation.md) | 内容切换与详情视图共享组件，分别持有状态 | 现行；IOC 已确认行为的 6.12 增量；创作契约待最后阶段同步 |
 | [0097](./0097-report-date-filter-and-instance-export-view.md) | 报告日期筛选复用实例状态，PDF 由集成应用消费静态导出视图 | 现行；部分由 [0100](./0100-explicit-filter-text-values-and-period-format.md) 修订；用户批准 C 工具带及实例 DOM 导出；6.13 增量，生产 PDF 与真实服务联通待验 |
 | [0098](./0098-profiled-page-composition-and-incremental-navigation.md) | 平台创作共用入口，报告与看板分别装配，导航按需增量建立 | 现行；用户完成 D1–D7 grill；统一入口、内部装配策略与受控结构树；实施尚未开始 |
-| [0099](./0099-raw-query-result-bindings-and-bounded-left-joins.md) | 查询以原始结果集合声明输入 计算继续在页面数据源内执行 | 现行；部分由 [0105](./0105-shared-page-data-execution-and-initial-consumption.md) 修订；用户确认商务SDT两阶段请求和小增量复用方案，并授权实施验证；真实DQE验真单独记录 |
+| [0099](./0099-raw-query-result-bindings-and-bounded-left-joins.md) | 查询以原始结果集合声明输入 计算继续在页面数据源内执行 | 现行；部分由 [0105](./0105-shared-page-data-execution-and-initial-consumption.md)、[0107](./0107-query-page-windows-drive-result-dependencies.md) 修订；用户确认商务SDT两阶段请求和小增量复用方案，并授权实施验证；真实DQE验真单独记录 |
 | [0100](./0100-explicit-filter-text-values-and-period-format.md) | 文本显式读取参数或筛选状态，期间只使用统一 period 格式 | 现行；用户批准显式筛选文本引用，只保留 period 格式；6.15 增量 |
 | [0101](./0101-explicit-value-colors-and-chart-labels.md) | 数字颜色由展示位置声明，图表标签策略显式可控 | 现行；用户批准红绿规则就地声明、全部类别标签与常驻数值标签；6.16 增量 |
 | [0102](./0102-independent-neutral-ui-with-unified-product-engineering.md) | MetricCanvas UI 独立版本并共用产品工程 | 现行；用户确认 Q14–Q21；UI 独立版本，同仓工程；部分修订 ADR-0071 |
 | [0103](./0103-signed-numbers-use-displayed-polarity.md) | 带符号普通数值以展示精度统一方向 | 现行；用户确认全部8处变化量带正号，舍入后零无符号、无颜色、无箭头，并授权实施 |
 | [0105](./0105-shared-page-data-execution-and-initial-consumption.md) | Relay与浏览器共用页面查询执行，单次入口返回完整页面文档 | 现行；用户完成Q1–Q14裁决并授权实施；真实Relay/DQE接入单列验收 |
+| [0106](./0106-filter-query-result-input-rows-per-binding.md) | 下游查询结果绑定独立筛选上游原始行 | 现行；用户认可现有查询结果绑定上的行过滤方案，并授权落盘和实施 |
+| [0107](./0107-query-page-windows-drive-result-dependencies.md) | 查询分页窗口通过现有结果绑定驱动依赖更新 | 现行；用户确认任意列排序可驱动其他查询，排序回到第一页，并授权实施 |
 
 <!-- adr-index:end -->
 
@@ -137,7 +139,7 @@
 | [技术栈与建设策略](./topics/tech-stack-and-strategy.md) | 为什么自研封闭领域 DSL 与 Svelte 运行时，而不是 A2UI 或开源 BI；严格声明式的边界在哪。 | 0001 0002 0003 0005 0035 0046 |
 | [领域建模、包边界与部署形态](./topics/domain-modeling-and-package-boundaries.md) | 聚合根只有「页面」；包按 DDD 分层命名；从 Node 平台迁到静态 Svelte + Java 页面资产 + Relay/Python 的目标形态。 | 0004 0006 0007 0009 0023 0024 0025 0029 0060 0061 0062 0063 0064 0065 0066 0067 0069 0070 0071 0072 0073 0074 0075 0076 0077 0090 0093 0094 0102 0105 |
 | [页面文档结构与书写原则](./topics/page-document-structure.md) | 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。 | 0013 0017 0018 0021 0026 0028 0035 0036 0038 0042 0047 0048 0049 0050 0052 0053 0054 0057 0059 0086 0097 0099 0100 0101 0103 |
-| [数据获取与查询模型](./topics/data-fetching-and-query-model.md) | 演进链条最长、最容易读错现状的一组：从预定义指标到内嵌 DQE 查询定义，当前实际生效模型与版本策略。 | 0008 0010 0011 0012 0014 0015 0016 0017 0019 0020 0022 0026 0028 0030 0031 0032 0033 0034 0038 0044 0045 0046 0050 0051 0053 0054 0068 0081 0084 0085 0091 0092 0095 0099 0105 |
+| [数据获取与查询模型](./topics/data-fetching-and-query-model.md) | 演进链条最长、最容易读错现状的一组：从预定义指标到内嵌 DQE 查询定义，当前实际生效模型与版本策略。 | 0008 0010 0011 0012 0014 0015 0016 0017 0019 0020 0022 0026 0028 0030 0031 0032 0033 0034 0038 0044 0045 0046 0050 0051 0053 0054 0068 0081 0084 0085 0091 0092 0095 0099 0105 0106 0107 |
 | [产品形态谱系与两速生命周期](./topics/product-forms-and-lifecycle.md) | 问数、探索、报告、Data App 共用一份页面文档；临时页面态与资产态的两速生命周期，以及分析会话的归属。 | 0009 0020 0021 0022 0030 0035 0036 0058 0060 0064 0079 0083 0090 |
 | [问数编排与口径治理](./topics/ask-orchestration-and-scope-governance.md) | 创作期编排的固定顺序、临时指标的非阻塞边界、口径组与业务章节如何决定分区、盘古接入的第一版边界。 | 0030 0031 0032 0035 0036 0037 0039 0040 0041 0043 0055 0057 0077 0082 0098 |
 | [页面生命周期与发布治理](./topics/page-lifecycle-and-publish-governance.md) | 资产态的保存与发布：当前 Java 接入按单次保存与回执确认，哪些治理能力明确不作为本期前置。 | 0008 0010 0078 0079 0080 |

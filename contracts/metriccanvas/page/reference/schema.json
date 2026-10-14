@@ -18,9 +18,11 @@
         "6.15",
         "6.16",
         "6.17",
-        "6.18"
+        "6.18",
+        "6.19",
+        "6.20"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20"
     },
     "id": {
       "type": "string",
@@ -2302,6 +2304,13 @@
                 "type": "integer",
                 "minimum": 1,
                 "maximum": 1000
+              },
+              "where": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/queryResultWhere"
+                  }
+                ]
               }
             },
             "required": [
@@ -2540,6 +2549,167 @@
         "body"
       ],
       "additionalProperties": false
+    },
+    "queryResultWhere": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "all": {
+              "minItems": 1,
+              "maxItems": 64,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/queryResultWhere"
+              }
+            }
+          },
+          "required": [
+            "all"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "any": {
+              "minItems": 1,
+              "maxItems": 64,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/queryResultWhere"
+              }
+            }
+          },
+          "required": [
+            "any"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "eq",
+                "ne"
+              ]
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "in",
+                "notIn"
+              ]
+            },
+            "values": {
+              "minItems": 1,
+              "maxItems": 1000,
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "values"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "gt",
+                "gte",
+                "lt",
+                "lte"
+              ]
+            },
+            "value": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "isNull",
+                "isNotNull"
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "op"
+          ],
+          "additionalProperties": false
+        }
+      ]
     },
     "timeWindow": {
       "oneOf": [
@@ -6329,5 +6499,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.18"
+  "$id": "https://metriccanvas/page/v6.20"
 }

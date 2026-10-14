@@ -95,6 +95,22 @@ def _presentation_capability_issues(value: Mapping[str, Any], minor: int) -> lis
             for path in capability_paths(value, minor)]
 
 
+def _query_capability_issues(value: Mapping[str, Any], minor: int) -> list[PageContractIssue]:
+    from .query_results import capability_paths, where_capability_paths, window_capability_paths
+    capabilities = (
+        (15, _filter_text_capability_paths, "filter text and period format require 6.15"),
+        (20, window_capability_paths, "查询分页窗口结果绑定由6.20引入"),
+        (19, where_capability_paths, "查询输入行过滤由6.19引入"),
+        (14, capability_paths, "级联查询或多度量透视由6.14引入"),
+    )
+    for introduced, detect, message in capabilities:
+        if minor < introduced:
+            paths = detect(value)
+            if paths:
+                return [PageContractIssue("SCHEMA_ERROR", path, message) for path in paths]
+    return []
+
+
 def _parameter_capability_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
     if isinstance(value.get("params"), Mapping) and not value["params"]:
         return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs cannot be empty")]
@@ -105,15 +121,9 @@ def _parameter_capability_issues(value: Mapping[str, Any]) -> list[PageContractI
     presentation_issues = _presentation_capability_issues(value, minor)
     if presentation_issues:
         return presentation_issues
-    if minor < 15:
-        paths = _filter_text_capability_paths(value)
-        if paths:
-            return [PageContractIssue("SCHEMA_ERROR", path, "filter text and period format require 6.15") for path in paths]
-    from .query_results import capability_paths
-    if minor < 14:
-        paths = capability_paths(value)
-        if paths:
-            return [PageContractIssue("SCHEMA_ERROR", path, "级联查询或多度量透视由6.14引入") for path in paths]
+    query_issues = _query_capability_issues(value, minor)
+    if query_issues:
+        return query_issues
     if isinstance(value.get("params"), Mapping) and minor < 6:
         return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs require 6.6")]
     from .report_date_filters import date_capability_paths

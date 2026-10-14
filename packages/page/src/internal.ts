@@ -46,3 +46,5 @@ export { hasQueryParamReferences } from './query-param-references';
 export * from './time-param';
 
 export * from './query-dependencies';
+
+export * from './query-result-where';

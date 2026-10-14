@@ -15,7 +15,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 18;
+const CURRENT_MINOR = 20;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -37,6 +37,29 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'query-result-page-window': {
+    minor: 20, description: '查询分页窗口作为结果绑定输入，支持任意列查询排序驱动依赖更新',
+    usedAt: document => {
+      const paged = new Set<string>();
+      walkDocumentComponents(document, component => {
+        if (component.type === 'table' && record(props(component)?.pagination)?.mode === 'query') {
+          const id = record(component.data)?.main;
+          if (typeof id === 'string') paged.add(id);
+        }
+      });
+      return dataSourcePaths(document, source => {
+        const bindings = record(record(source.source)?.query)?.resultBindings;
+        return Array.isArray(bindings) && bindings.some(binding => paged.has(String(record(binding)?.source)));
+      });
+    }
+  },
+  'query-result-row-filter': {
+    minor: 19, description: '下游查询结果绑定按原始字段条件筛选输入行',
+    usedAt: document => dataSourcePaths(document, source => {
+      const bindings = record(record(source.source)?.query)?.resultBindings;
+      return Array.isArray(bindings) && bindings.some(binding => has(record(binding), 'where'));
+    })
+  },
   'signed-number-format-family': {
     minor: 18, description: '补齐两位小数及千分位的带符号普通数值格式',
     usedAt: document => namedFormatPaths(document, /^number-(?:2|grouped)-signed$/)

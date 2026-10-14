@@ -27,10 +27,52 @@ def capability_paths(page):
             if "resultBindings" in query(source) or any(multi_pivot(op) for op in source.get("compute", []))]
 
 
+def window_capability_paths(page):
+    paged = {component.get("data", {}).get("main")
+             for section in [*page.get("sections", []), *page.get("detailViews", [])]
+             for component in components(section.get("components", []))
+             if component.get("type") == "table" and component.get("props", {}).get("pagination", {}).get("mode") == "query"}
+    return [f"/dataSources/{name}" for name, source in page.get("dataSources", {}).items()
+            if any(binding.get("source") in paged for binding in query(source).get("resultBindings", []))]
+
+
+def where_capability_paths(page):
+    return [f"/dataSources/{name}/source/query/resultBindings/{index}/where"
+            for name, source in page.get("dataSources", {}).items()
+            for index, binding in enumerate(query(source).get("resultBindings", [])) if "where" in binding]
+
+
+def check_where(context, source, node, path, depth=0, leaves=None):
+    from .page_validation import _scalar_violation
+    if leaves is None:
+        leaves = [0]
+    if "all" in node or "any" in node:
+        key = "all" if "all" in node else "any"
+        if depth >= 4:
+            context.fail(path, "查询输入过滤组合超过4层")
+            return
+        for index, child in enumerate(node[key]):
+            check_where(context, source, child, f"{path}/{key}/{index}", depth + 1, leaves)
+    else:
+        leaves[0] += 1
+        incoming = context.fields.get(source, {}).get(node["field"], {})
+        if "queryField" not in incoming or incoming.get("type") in {"recordList", "semanticHtml"}:
+            context.fail(path + "/field", "查询输入过滤必须引用同一上游查询的原始标量字段")
+        elif node["op"] in {"gt", "gte", "lt", "lte"} and incoming.get("type") not in {"number", "money"}:
+            context.fail(path + "/op", "查询输入有序比较只支持number或money字段")
+        else:
+            values = node.get("values", [node["value"]] if "value" in node else [])
+            for index, value in enumerate(values):
+                if _scalar_violation(value, incoming) is not None:
+                    suffix = f"/values/{index}" if "values" in node else "/value"
+                    context.fail(path + suffix, "查询输入过滤字面量与字段类型不符")
+    if depth == 0 and leaves[0] > 64:
+        context.fail(path, "查询输入过滤超过64个叶子条件")
+
+
 def components(items):
-    for component in items:
-        yield component
-        yield from components(component.get("components", []))
+    from metriccanvas_authoring.pages.components.component_editing import walk_components
+    yield from walk_components({"sections": [{"components": items}]})
 
 
 def bounded(sources, name):
@@ -73,10 +115,13 @@ def check_upstream(context, binding, path):
         return
     order = record(item(upstream).get("order"))
     limited = bounded(context.sources, binding["source"])
-    if (binding["source"] in context.paged or "offset" in order
-            or (not limited and upstream["source"].get("resultScope") != "complete")):
-        context.fail(path, "结果输入要求完整查询或显式有限选择，不能引用查询分页窗口")
-    if limited and any(op["op"] in {"grandTotal", "groupSubtotal", "timeFill"} for op in upstream.get("compute", [])):
+    window = binding["source"] in context.paged
+    window_limit = order.get("limit")
+    valid_window = type(window_limit) is int and 0 < window_limit <= 9007199254740991 and order.get("offset") == 0
+    if ((not window and "offset" in order) or (window and (not valid_window or upstream["source"].get("resultScope") == "complete"))
+            or (not window and not limited and upstream["source"].get("resultScope") != "complete")):
+        context.fail(path, "结果输入要求完整查询、显式有限选择或声明正整数limit的查询分页窗口；分页窗口不能声明complete")
+    if (window or limited) and any(op["op"] in {"grandTotal", "groupSubtotal", "timeFill"} for op in upstream.get("compute", [])):
         context.fail(path, "有限选择源不能作为全量统计输入")
 
 
@@ -88,6 +133,8 @@ def check_bindings(context, name, source):
     for index, binding in enumerate(q["resultBindings"]):
         path = f"/dataSources/{name}/source/query/resultBindings/{index}"
         check_upstream(context, binding, path)
+        if "where" in binding:
+            check_where(context, binding["source"], binding["where"], path + "/where")
         if binding["queryField"] in targets:
             context.fail(path + "/queryField", "结果输入与已有维度条件重复")
         targets.add(binding["queryField"])
@@ -161,7 +208,7 @@ def query_result_issues(page, resolve_fields):
     sources = page.get("dataSources", {})
     fields = {name: resolve_fields(source["fields"], f"/dataSources/{name}/fields")[0]
               for name, source in sources.items()}
-    paged = {component.get("data", {}).get("main") for section in page.get("sections", [])
+    paged = {component.get("data", {}).get("main") for section in [*page.get("sections", []), *page.get("detailViews", [])]
              for component in components(section["components"])
              if component.get("props", {}).get("pagination", {}).get("mode") == "query"}
     context = Context(sources, fields, paged)

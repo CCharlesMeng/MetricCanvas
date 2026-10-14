@@ -336,6 +336,9 @@ function startSession(
     }
   }
 
+  const windowLimits = () => new Map(queryBindings.flatMap(binding => binding.pagination ? [[binding.sourceId, binding.pagination.limit] as const] : []));
+  const cascaded = cascadeSourceIds(Object.fromEntries(sources));
+
   function publish(updates: ReadonlyArray<[QueryBinding, DataSnapshot]>): void {
     if (updates.length === 0) return;
     const next = new Map(rawSnapshots);
@@ -348,7 +351,7 @@ function startSession(
     push(snapshots);
     if (updates.some(([, snapshot]) => snapshot.status !== 'loading')) {
       const ready = queryBindings.filter(binding => waitingQueries.has(binding.sourceId) &&
-        resolveQueryResultInputs(binding.dataSource, rawSnapshots, sources).status !== 'waiting');
+        resolveQueryResultInputs(binding.dataSource, rawSnapshots, sources, windowLimits()).status !== 'waiting');
       if (ready.length) refetch(ready, false);
     }
   }
@@ -356,12 +359,14 @@ function startSession(
   function refetch(targets: QueryBinding[], publishLoading: boolean): void {
     if (targets.length === 0 || disposed) return;
     if (publishLoading) {
-      const ids = new Set(targets.map(binding => binding.sourceId));
+      const roots = new Set(targets.map(binding => binding.sourceId));
+      const ids = new Set(roots);
       let size = -1;
       while (size !== ids.size) {
         size = ids.size;
         for (const binding of queryBindings) if (queryResultDependencies(binding.dataSource).some(id => ids.has(id))) ids.add(binding.sourceId);
       }
+      for (const id of ids) if (!roots.has(id)) pageIndexes.set(id, 0);
       targets = queryBindings.filter(binding => ids.has(binding.sourceId));
     }
     for (const binding of targets) {
@@ -376,7 +381,7 @@ function startSession(
       { query: EffectiveQuery; members: Array<[QueryBinding, number]> }
     >();
     for (const binding of targets) {
-      const input = resolveQueryResultInputs(binding.dataSource, rawSnapshots, sources);
+      const input = resolveQueryResultInputs(binding.dataSource, rawSnapshots, sources, windowLimits());
       if (input.status === 'waiting') { waitingQueries.add(binding.sourceId); continue; }
       if (input.status === 'terminal') { publish([[binding, input.snapshot]]); continue; }
       const query = composeEffectiveQuery(
@@ -477,8 +482,8 @@ function startSession(
     getQueryPageSize: id => queryBindings.find(binding => binding.sourceId === id)?.pagination?.limit,
     captureQueries() {
       return new Map(queryBindings.map(binding => {
-        const query = composeEffectiveQuery(binding, values, 0, sortRules.get(binding.sourceId) ?? [], headerFilters.get(binding.sourceId) ?? {});
-        const input = resolveQueryResultInputs(binding.dataSource, rawSnapshots, sources);
+        const query = composeEffectiveQuery(binding, values, cascaded.has(binding.sourceId) ? pageIndexes.get(binding.sourceId) ?? 0 : 0, sortRules.get(binding.sourceId) ?? [], headerFilters.get(binding.sourceId) ?? {});
+        const input = resolveQueryResultInputs(binding.dataSource, rawSnapshots, sources, windowLimits());
         if (input.status === 'ready') query.filterValues.push(...input.values);
         return [binding.sourceId, structuredClone(query)];
       }));
@@ -506,7 +511,7 @@ function startSession(
     // 看新排序的第 5 页是没有意义的。
     setQuerySort(dataSourceId, sort) {
       const binding = queryBindings.find((candidate) => candidate.sourceId === dataSourceId);
-      if (!binding || queryBindings.some(candidate => queryResultDependencies(candidate.dataSource).includes(dataSourceId))) return;
+      if (!binding || (!binding.pagination && queryBindings.some(candidate => queryResultDependencies(candidate.dataSource).includes(dataSourceId)))) return;
       const next = sort.map((rule) => ({ ...rule }));
       if (JSON.stringify(sortRules.get(dataSourceId) ?? []) === JSON.stringify(next)) return;
       sortRules.set(dataSourceId, next);
@@ -515,7 +520,7 @@ function startSession(
     },
     setQueryHeaderFilters(dataSourceId, filters) {
       const binding = queryBindings.find((candidate) => candidate.sourceId === dataSourceId);
-      if (!binding || queryBindings.some(candidate => queryResultDependencies(candidate.dataSource).includes(dataSourceId))) return;
+      if (!binding || (!binding.pagination && queryBindings.some(candidate => queryResultDependencies(candidate.dataSource).includes(dataSourceId)))) return;
       if (JSON.stringify(headerFilters.get(dataSourceId) ?? {}) === JSON.stringify(filters)) return;
       headerFilters.set(dataSourceId, filters);
       pageIndexes.set(dataSourceId, 0);

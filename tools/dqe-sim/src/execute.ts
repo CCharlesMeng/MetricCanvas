@@ -1,3 +1,4 @@
+import { executeQueryResultWhere } from './query-result-where';
 import { executeBusinessSdt } from './business-sdt';
 import customerActivityRiskFixtureJson from '../fixtures/customer-activity-risk.json';
 import customerActivityRiskTop100FixtureJson from '../fixtures/customer-activity-risk-top100.json';
@@ -143,6 +144,8 @@ const customerActivityDetailDimensions = [
 ];
 
 export function executeDqeItem(item: unknown): DqeSimItemResult {
+  const filteredInputDemo = executeQueryResultWhere(item);
+  if (filteredInputDemo) return filteredInputDemo;
   const sdt = executeBusinessSdt(item, process.env.DQE_SDT_SCENARIO);
   if (sdt) return sdt;
   const exactResult = executeExactScenarios(item);

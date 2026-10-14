@@ -1,3 +1,4 @@
+import { queryResultWhereErrors } from './query-result-where';
 import type { Page } from './page';
 import type { TypedError } from './errors';
 import { hasQueryFieldMapping } from './field';
@@ -31,13 +32,17 @@ export function queryResultBindingErrors(page: Page): TypedError[] {
         fail(path, '结果输入必须引用查询源的原始string或number维度字段');
       } else {
         const order = upstream.source.query.body.dsl_list[0].order;
-        if (paged.has(binding.source) || (order && typeof order === 'object' && 'offset' in order) ||
-          (!isBoundedResultSource(page.dataSources, binding.source) && upstream.source.resultScope !== 'complete')) {
-          fail(path, '结果输入要求完整查询或显式有限选择，不能引用查询分页窗口');
+        const window = paged.has(binding.source);
+        const limit = order && typeof order === 'object' && !Array.isArray(order) ? order.limit : undefined;
+        if ((order && typeof order === 'object' && !Array.isArray(order) && (window ? order.offset !== 0 : 'offset' in order)) ||
+          (window ? upstream.source.resultScope === 'complete' || !Number.isSafeInteger(limit) || Number(limit) <= 0
+            : !isBoundedResultSource(page.dataSources, binding.source) && upstream.source.resultScope !== 'complete')) {
+          fail(path, '结果输入要求完整查询、显式有限选择或声明正整数limit的查询分页窗口；分页窗口不能声明complete');
         }
-        if (isBoundedResultSource(page.dataSources, binding.source) && (upstream.compute ?? []).some(op =>
+        if ((window || isBoundedResultSource(page.dataSources, binding.source)) && (upstream.compute ?? []).some(op =>
           ['grandTotal', 'groupSubtotal', 'timeFill'].includes(op.op))) fail(path, '有限选择源不能作为全量统计输入');
       }
+      if (binding.where) errors.push(...queryResultWhereErrors(binding.where, upstream?.fields ?? {}, `${path}/where`));
       if (targets.has(binding.queryField)) fail(`${path}/queryField`, '结果输入与已有维度条件重复');
       targets.add(binding.queryField);
     }

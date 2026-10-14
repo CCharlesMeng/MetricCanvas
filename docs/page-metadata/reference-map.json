@@ -149,22 +149,31 @@
       "title": "查询定义与显式绑定",
       "definitions": [
         "pageQuery",
-        "dqeQuery"
+        "dqeQuery",
+        "queryResultWhere"
       ],
       "keywords": [
         "queries-and-bindings",
-        "查询定义与显式绑定"
+        "查询定义与显式绑定",
+        "分页级联",
+        "任意列排序",
+        "配置解读"
       ],
       "examples": [
         "dimension-params-page",
         "hierarchy-binding-page",
         "non-dimension-bindings-page",
-        "query-cascade-page"
+        "query-cascade-page",
+        "query-result-where-page",
+        "query-result-where-branches",
+        "query-result-page-window-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/query.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/page/src/query-result-where.ts",
+        "packages/page/src/validate-query-results.ts"
       ],
       "rules": [
         "query-field-mapping",
@@ -1128,7 +1137,11 @@
     "negative": "原始数值小于零时使用的颜色。",
     "categoryLabels": "类别轴名称展示策略；all保留完整类别，不抽样或默认窗口。",
     "rotate": "类别标签旋转角度，范围-90到90。",
-    "showValueLabels": "为每个有效柱值或折线节点常驻显示格式化数字；与旧标签开关互斥。"
+    "showValueLabels": "为每个有效柱值或折线节点常驻显示格式化数字；与旧标签开关互斥。",
+    "where": "下游独立筛选上游原始行；缺省读取全部行，不修改上游快照。",
+    "all": "非空条件集合，所有条件满足；最多4层组合、64个叶子。",
+    "any": "非空条件集合，任意条件满足；最多4层组合、64个叶子。",
+    "#/definitions/queryResultWhere/anyOf/3/properties/values": "非空同类型字面量集合，最多1000项；不强制类型转换。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1295,7 +1308,19 @@
     "6.17": "新增带符号普通数值格式，按展示精度统一符号、正负颜色与变化箭头。",
     "number-2-signed": "保留两位小数，正数加正号，舍入后零无符号；方向与展示精度一致；6.18新增。",
     "number-grouped-signed": "沿用number-grouped千分位与默认小数精度，正数加正号，舍入后零无符号；6.18新增。",
-    "6.18": "补齐普通数值格式族的两位小数及千分位带符号版本；保留6.17读取。"
+    "6.18": "补齐普通数值格式族的两位小数及千分位带符号版本；保留6.17读取。",
+    "6.19": "新增查询结果绑定where：下游按原始字段独立筛行后提取维度集合，上游完整结果保持不变。",
+    "eq": "原始标量严格等值；null不匹配。",
+    "ne": "原始标量严格不等值；null不匹配。",
+    "in": "原始值严格属于字面量集合；null不匹配。",
+    "notIn": "原始值严格不属于字面量集合；null不匹配。",
+    "gt": "原始number/money值大于阈值，按原始单位。",
+    "gte": "原始number/money值大于等于阈值，按原始单位。",
+    "lt": "原始number/money值小于阈值，按原始单位。",
+    "lte": "原始number/money值小于等于阈值，按原始单位。",
+    "isNull": "只匹配合法null值；缺字段仍是契约错误。",
+    "isNotNull": "只匹配合法非null值；缺字段仍是契约错误。",
+    "6.20": "查询分页窗口可作为结果绑定输入；任意可排序列驱动依赖更新，排序回到第一页，下游仍只接收字段集合。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

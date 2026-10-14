@@ -1,4 +1,4 @@
-import { MAX_QUERY_RESULT_VALUES, declaredPaginationLimit, type DataSource, type DataSnapshot, type EffectiveQuery } from '@metriccanvas/page/internal';
+import { filterQueryResultRows, MAX_QUERY_RESULT_VALUES, declaredPaginationLimit, type DataSource, type DataSnapshot, type EffectiveQuery } from '@metriccanvas/page/internal';
 
 type Resolution =
   | { status: 'ready'; values: EffectiveQuery['filterValues'] }
@@ -6,7 +6,7 @@ type Resolution =
   | { status: 'terminal'; snapshot: DataSnapshot };
 
 /** One-shot execution, rendering and export resolve predicates from raw normalized snapshots. */
-export function resolveQueryResultInputs(source: DataSource, raw: ReadonlyMap<string, DataSnapshot>, sources: ReadonlyMap<string, DataSource>): Resolution {
+export function resolveQueryResultInputs(source: DataSource, raw: ReadonlyMap<string, DataSnapshot>, sources: ReadonlyMap<string, DataSource>, windowLimits: ReadonlyMap<string, number> = new Map()): Resolution {
   if (source.source.type !== 'query') return { status: 'ready', values: [] };
   const values: EffectiveQuery['filterValues'] = [];
   let waiting = false;
@@ -20,15 +20,21 @@ export function resolveQueryResultInputs(source: DataSource, raw: ReadonlyMap<st
     const rows = snapshot.status === 'ready' ? snapshot.rows : [];
     const upstream = sources.get(binding.source);
     const query = upstream?.source.type === 'query' ? upstream.source : undefined;
-    const limit = query ? declaredPaginationLimit(query.query) : undefined;
-    if ((query?.resultScope === 'complete' && snapshot.totalCount !== undefined && snapshot.totalCount !== rows.length) ||
+    const limit = windowLimits.get(binding.source) ?? (query ? declaredPaginationLimit(query.query) : undefined);
+    if ((snapshot.totalCount !== undefined && (!Number.isSafeInteger(snapshot.totalCount) || snapshot.totalCount < rows.length)) ||
+        (query?.resultScope === 'complete' && snapshot.totalCount !== undefined && snapshot.totalCount !== rows.length) ||
         (typeof limit === 'number' && rows.length > limit)) {
       error = fail('查询输入结果不符合声明范围'); continue;
     }
-    if (!rows.length) { empty = true; continue; }
+    let selected = rows;
+    if (binding.where) {
+      try { selected = filterQueryResultRows(rows, binding.where, upstream?.fields ?? {}); }
+      catch (cause) { error = fail(cause instanceof Error ? cause.message : '查询输入过滤失败'); continue; }
+    }
+    if (!selected.length) { empty = true; continue; }
     const unique = new Map<string, string | number>();
     const fieldType = upstream?.fields[binding.field]?.type;
-    for (const row of rows) {
+    for (const row of selected) {
       const value = row[binding.field];
       if ((typeof value !== 'string' && typeof value !== 'number') ||
           (fieldType !== undefined && typeof value !== fieldType) ||

@@ -1,5 +1,7 @@
 import { MAX_QUERY_RESULT_VALUES } from '../query-result-limits';
 import { z } from 'zod';
+import type { QueryResultWhere } from '../query';
+import { MAX_QUERY_RESULT_WHERE_LEAVES, MAX_QUERY_RESULT_WHERE_VALUES } from '../query-result-where';
 import { computeZ } from './compute';
 import {
   fieldNameZ,
@@ -40,12 +42,22 @@ export const timeWindowZ = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('toDate'), unit: z.enum(['month', 'year']) }).strict()
 ]).meta({ id: 'timeWindow' });
 
+const resultLiteralZ = z.union([z.string(), z.number(), z.boolean()]);
+export const queryResultWhereZ: z.ZodType<QueryResultWhere> = z.lazy(() => z.union([
+  z.object({ all: z.array(queryResultWhereZ).min(1).max(MAX_QUERY_RESULT_WHERE_LEAVES) }).strict(),
+  z.object({ any: z.array(queryResultWhereZ).min(1).max(MAX_QUERY_RESULT_WHERE_LEAVES) }).strict(),
+  z.object({ field: fieldNameZ, op: z.enum(['eq', 'ne']), value: resultLiteralZ }).strict(),
+  z.object({ field: fieldNameZ, op: z.enum(['in', 'notIn']), values: z.array(resultLiteralZ).min(1).max(MAX_QUERY_RESULT_WHERE_VALUES) }).strict(),
+  z.object({ field: fieldNameZ, op: z.enum(['gt', 'gte', 'lt', 'lte']), value: z.number() }).strict(),
+  z.object({ field: fieldNameZ, op: z.enum(['isNull', 'isNotNull']) }).strict()
+])).meta({ id: 'queryResultWhere' });
+
 export const dqeQueryZ = z
   .object({
     language: z.literal('dqe'),
     resultBindings: z.array(z.object({
       source: idZ, field: fieldNameZ, target: z.literal('dimension'),
-      queryField: z.string().min(1), maxValues: z.int().min(1).max(MAX_QUERY_RESULT_VALUES)
+      queryField: z.string().min(1), maxValues: z.int().min(1).max(MAX_QUERY_RESULT_VALUES), where: queryResultWhereZ.optional()
     }).strict()).min(1).optional(),
     body: z
       .object({

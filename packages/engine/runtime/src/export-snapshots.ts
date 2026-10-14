@@ -27,6 +27,7 @@ export async function prepareExportSnapshots(page: Page, gateway: DataGateway, q
     sources.set(id, source);
   }
   const cascaded = cascadeSourceIds(page.dataSources);
+  const windowLimits = new Map([...queries].flatMap(([id, query]) => query.pagination ? [[id, query.pagination.limit] as const] : []));
   const pending = new Set(ids);
   async function fetchSource(id: string): Promise<void> {
     signal.throwIfAborted();
@@ -38,7 +39,7 @@ export async function prepareExportSnapshots(page: Page, gateway: DataGateway, q
     }
     const query = queries.get(id);
     if (!query) throw new ExportViewError('EXPORT_NOT_READY', '缺少导出查询状态');
-    const resolved = resolveQueryResultInputs(source, raw, sources);
+    const resolved = resolveQueryResultInputs(source, raw, sources, windowLimits);
     if (resolved.status === 'waiting') throw new ExportViewError('EXPORT_NOT_READY', '导出查询输入未就绪');
     if (resolved.status === 'terminal') { raw.set(id, resolved.snapshot); return; }
     const frozen = structuredClone(query);
@@ -49,9 +50,9 @@ export async function prepareExportSnapshots(page: Page, gateway: DataGateway, q
     if (cascaded.has(id)) {
       const result = await gateway.fetchData(frozen, diagnostics, signal);
       signal.throwIfAborted();
-      const limit = declaredPaginationLimit(source.source.query);
+      const limit = frozen.pagination?.limit ?? declaredPaginationLimit(source.source.query);
       if (result.rows.length > EXPORT_MAX_ROWS ||
-          (isBoundedResultSource(page.dataSources, id) && limit !== undefined && result.rows.length > limit) ||
+          ((frozen.pagination || isBoundedResultSource(page.dataSources, id)) && limit !== undefined && result.rows.length > limit) ||
           (result.totalCount !== undefined && (!Number.isSafeInteger(result.totalCount) || result.totalCount < result.rows.length))) {
         throw new ExportViewError('EXPORT_INCOMPLETE_DATA', '导出结果不符合声明范围');
       }

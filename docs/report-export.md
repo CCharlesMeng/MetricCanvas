@@ -92,3 +92,7 @@ node apps/playground/tests/report-pdf-runtime-fidelity-browser.mjs
 浏览器测试期间不要同时构建或运行 `svelte-kit sync`，避免开发服务重载打断测试；可用 `REPORT_PDF_BASE_URL` 指定另一服务地址。
 
 部署 Adapter 的日期身份证明提供方可以返回 `timeIdentities`（按数据源 ID）和 `timePointFields`（按数据源 ID/查询字段，含 granularity、valueFormat、identity），证明必须绑定精确页面摘要和 DQE 验证基线。未提供时算法保持独立日期身份；字符串月份分区不由模型猜测。真实部署接入由集成应用/Relay Adapter 配置，不改变 Java 页面资产接口。
+
+## 查询结果绑定使用分页窗口时的导出范围
+
+6.20允许查询分页窗口作为结果绑定输入。对此类级联链，导出捕获当前页码、每页条数和排序，重新请求该窗口，再从新窗口解析下游字段集合；不把当前页扩大为业务全量。窗口totalCount可大于行数。固定TopN仍保留其声明的选择范围；未参与级联的普通分页表继续按完整结果导出规则处理。

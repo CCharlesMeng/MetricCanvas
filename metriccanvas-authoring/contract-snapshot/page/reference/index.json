@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.18",
-  "schemaSha256": "409931a46ec8ee0830617569960fcf5f7876ddd308294354a33c70aee966d75e",
+  "schemaVersion": "6.20",
+  "schemaSha256": "b09fb609c6763ab2e2020b0a7c354b89ba9ff2a4d4093b9be07a1d347fd5ad62",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -31,8 +31,12 @@
       "sha256": "a9581315bbe0246aa9f08c8dc036cc944b03140c82c5c1a929f163eca6db91b8"
     },
     {
+      "file": "packages/page/src/query-result-where.ts",
+      "sha256": "b4d28971568ffefa3eb675fae637298ab8db238e8dc102acca41c7262b5a1ebb"
+    },
+    {
       "file": "packages/page/src/query.ts",
-      "sha256": "68ea1e239ae9db8ae48d1898251e3f0706b0e1edb1f85c30a360895c4677222c"
+      "sha256": "e4e7c5c6b6f17c094f2382c6c5c8ac5707cb17a5d975907072f826df93f2ae92"
     },
     {
       "file": "packages/page/src/schema/actions.ts",
@@ -104,7 +108,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "1bc26fac843ca65026d1956704794cf6d2a9e9851862ba0da441112027f4c4c6"
+      "sha256": "0e24f3a3abc86ab349ce8926c9e4c5c6b5bfa1d34b1f6e353fe104bda6f47f1a"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -129,6 +133,10 @@
     {
       "file": "packages/page/src/time-param.ts",
       "sha256": "d567d0457111b52d8f854c26e7ba7434470ef9111436082ad85e1816b77dfacb"
+    },
+    {
+      "file": "packages/page/src/validate-query-results.ts",
+      "sha256": "d1a8fb16a47926cc2db92f857cbd27f18462a399dfd937f69f45b9d10c347daa"
     },
     {
       "file": "packages/page/src/validate.ts",
@@ -289,22 +297,31 @@
       "title": "查询定义与显式绑定",
       "definitions": [
         "pageQuery",
-        "dqeQuery"
+        "dqeQuery",
+        "queryResultWhere"
       ],
       "keywords": [
         "queries-and-bindings",
-        "查询定义与显式绑定"
+        "查询定义与显式绑定",
+        "分页级联",
+        "任意列排序",
+        "配置解读"
       ],
       "examples": [
         "dimension-params-page",
         "hierarchy-binding-page",
         "non-dimension-bindings-page",
-        "query-cascade-page"
+        "query-cascade-page",
+        "query-result-where-page",
+        "query-result-where-branches",
+        "query-result-page-window-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/query.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/page/src/query-result-where.ts",
+        "packages/page/src/validate-query-results.ts"
       ],
       "rules": [
         "query-field-mapping",
@@ -1104,7 +1121,9 @@
         "6.15",
         "6.16",
         "6.17",
-        "6.18"
+        "6.18",
+        "6.19",
+        "6.20"
       ]
     },
     {
@@ -3818,6 +3837,213 @@
       "path": "@dqeQuery.resultBindings[].maxValues",
       "required": "本分支必填",
       "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/resultBindings/items/properties/where",
+      "path": "@dqeQuery.resultBindings[].where",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/resultBindings/items/properties/where/allOf/0",
+      "path": "@dqeQuery.resultBindings[].where · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md",
+      "ref": "#/definitions/queryResultWhere"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere",
+      "path": "@queryResultWhere",
+      "required": "类型/分支",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/0",
+      "path": "@queryResultWhere · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/0/properties/all",
+      "path": "@queryResultWhere · anyOf[0].all",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/0/properties/all/items",
+      "path": "@queryResultWhere · anyOf[0].all[]",
+      "required": "每个数组项",
+      "module": "queries-and-bindings.md",
+      "ref": "#/definitions/queryResultWhere"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/1",
+      "path": "@queryResultWhere · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/1/properties/any",
+      "path": "@queryResultWhere · anyOf[1].any",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/1/properties/any/items",
+      "path": "@queryResultWhere · anyOf[1].any[]",
+      "required": "每个数组项",
+      "module": "queries-and-bindings.md",
+      "ref": "#/definitions/queryResultWhere"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/2",
+      "path": "@queryResultWhere · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/2/properties/field",
+      "path": "@queryResultWhere · anyOf[2].field",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/2/properties/op",
+      "path": "@queryResultWhere · anyOf[2].op",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "eq",
+        "ne"
+      ]
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/2/properties/value",
+      "path": "@queryResultWhere · anyOf[2].value",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/2/properties/value/anyOf/0",
+      "path": "@queryResultWhere · anyOf[2].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/2/properties/value/anyOf/1",
+      "path": "@queryResultWhere · anyOf[2].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/2/properties/value/anyOf/2",
+      "path": "@queryResultWhere · anyOf[2].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/3",
+      "path": "@queryResultWhere · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/3/properties/field",
+      "path": "@queryResultWhere · anyOf[3].field",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/3/properties/op",
+      "path": "@queryResultWhere · anyOf[3].op",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "in",
+        "notIn"
+      ]
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/3/properties/values",
+      "path": "@queryResultWhere · anyOf[3].values",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/3/properties/values/items",
+      "path": "@queryResultWhere · anyOf[3].values[]",
+      "required": "每个数组项",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/3/properties/values/items/anyOf/0",
+      "path": "@queryResultWhere · anyOf[3].values[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/3/properties/values/items/anyOf/1",
+      "path": "@queryResultWhere · anyOf[3].values[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/3/properties/values/items/anyOf/2",
+      "path": "@queryResultWhere · anyOf[3].values[] · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/4",
+      "path": "@queryResultWhere · anyOf[4]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/4/properties/field",
+      "path": "@queryResultWhere · anyOf[4].field",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/4/properties/op",
+      "path": "@queryResultWhere · anyOf[4].op",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "gt",
+        "gte",
+        "lt",
+        "lte"
+      ]
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/4/properties/value",
+      "path": "@queryResultWhere · anyOf[4].value",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/5",
+      "path": "@queryResultWhere · anyOf[5]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/5/properties/field",
+      "path": "@queryResultWhere · anyOf[5].field",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/queryResultWhere/anyOf/5/properties/op",
+      "path": "@queryResultWhere · anyOf[5].op",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "isNull",
+        "isNotNull"
+      ]
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/body",
@@ -10256,8 +10482,8 @@
     {
       "schemaPointer": "#/definitions/queryScalarField/oneOf/1",
       "module": "fields.md",
-      "file": "examples/filters-page.json",
-      "pointer": "#/dataSources/orders/fields/amount"
+      "file": "examples/query-result-where-page.json",
+      "pointer": "#/dataSources/projects/fields/amount"
     },
     {
       "schemaPointer": "#/definitions/queryField/anyOf/1",
@@ -10312,6 +10538,78 @@
       "module": "queries-and-bindings.md",
       "file": "examples/component-lineChart.json",
       "pointer": "#/dataSources/live-sales/source/query"
+    },
+    {
+      "schemaPointer": "#/definitions/queryResultWhere/anyOf/0",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-result-where-page.json",
+      "pointer": "#/dataSources/details-high/source/query/resultBindings/0/where"
+    },
+    {
+      "schemaPointer": "#/definitions/queryResultWhere/anyOf/1",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-result-where-branches.json",
+      "pointer": "#/dataSources/details-high/source/query/resultBindings/0/where/all/8"
+    },
+    {
+      "schemaPointer": "#/definitions/queryResultWhere/anyOf/2",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-result-where-page.json",
+      "pointer": "#/dataSources/details-high/source/query/resultBindings/0/where/all/0"
+    },
+    {
+      "schemaPointer": "#/definitions/queryResultWhere/anyOf/2/properties/value/anyOf/0",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-result-where-page.json",
+      "pointer": "#/dataSources/details-high/source/query/resultBindings/0/where/all/0/value"
+    },
+    {
+      "schemaPointer": "#/definitions/queryResultWhere/anyOf/2/properties/value/anyOf/1",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-result-where-branches.json",
+      "pointer": "#/dataSources/details-high/source/query/resultBindings/0/where/all/1/value"
+    },
+    {
+      "schemaPointer": "#/definitions/queryResultWhere/anyOf/2/properties/value/anyOf/2",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-result-where-branches.json",
+      "pointer": "#/dataSources/details-high/source/query/resultBindings/0/where/all/2/value"
+    },
+    {
+      "schemaPointer": "#/definitions/queryResultWhere/anyOf/3",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-result-where-branches.json",
+      "pointer": "#/dataSources/details-high/source/query/resultBindings/0/where/all/3"
+    },
+    {
+      "schemaPointer": "#/definitions/queryResultWhere/anyOf/3/properties/values/items/anyOf/0",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-result-where-branches.json",
+      "pointer": "#/dataSources/details-high/source/query/resultBindings/0/where/all/3/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/queryResultWhere/anyOf/3/properties/values/items/anyOf/1",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-result-where-branches.json",
+      "pointer": "#/dataSources/details-high/source/query/resultBindings/0/where/all/4/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/queryResultWhere/anyOf/3/properties/values/items/anyOf/2",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-result-where-branches.json",
+      "pointer": "#/dataSources/details-high/source/query/resultBindings/0/where/all/5/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/queryResultWhere/anyOf/4",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-result-where-page.json",
+      "pointer": "#/dataSources/details-high/source/query/resultBindings/0/where/all/1"
+    },
+    {
+      "schemaPointer": "#/definitions/queryResultWhere/anyOf/5",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-result-where-branches.json",
+      "pointer": "#/dataSources/details-high/source/query/resultBindings/0/where/all/8/any/0"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/0",

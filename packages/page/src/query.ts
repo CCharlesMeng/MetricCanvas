@@ -129,7 +129,17 @@ export interface QueryResultBinding {
   target: 'dimension';
   queryField: string;
   maxValues: number;
+  /** Select rows from this binding's raw upstream result without changing that result. */
+  where?: QueryResultWhere;
 }
+
+export type QueryResultWhere =
+  | { all: QueryResultWhere[] }
+  | { any: QueryResultWhere[] }
+  | { field: string; op: 'eq' | 'ne'; value: string | number | boolean }
+  | { field: string; op: 'in' | 'notIn'; values: Array<string | number | boolean> }
+  | { field: string; op: 'gt' | 'gte' | 'lt' | 'lte'; value: number }
+  | { field: string; op: 'isNull' | 'isNotNull' };
 
 export interface DqeQueryDefinition {
   resultBindings?: QueryResultBinding[];

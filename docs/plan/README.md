@@ -6,6 +6,7 @@
 
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
+| 查询结果过滤与分页级联 | 本仓实现与本地验收完成，真实接入待验 | [实施计划](2026-10-14-query-result-page-input.md)：6.19 where、6.20查询窗口输入与任意列排序、共享执行/导出、配置说明及独立Skill；真实DS/DQE/Relay接入单独验收 |
 | 平台打包与源码调试 | 第一期独立调试包本地完成，第二期真正分块未实施 | [两期计划](2026-10-14-platform-microfrontend-build.md)、[打包与调试](../platform-build.md)、[本地验收](../evidence/platform-debug-build.md)：后续测量分块收益，再冻结工具链并实施 |
 | 共享页面取数 | 本仓实现完成，真实Relay/DQE接入待验收 | [实施主计划](2026-10-14-shared-page-data-execution.md)、[验收记录](../evidence/shared-page-data-execution/result.md)；取数包、引擎和Node程序共用查询核心 |
 | **本次Report与Dashboard生成** | **方案已认可，生产实现未开始** | **[统一主计划](2026-10-12-report-dashboard-authoring-plan.md)**：六份分稿合并，集中目标、文本流程、computed、架构、C00–C11、协议、R/J/D依赖和验收；接口/部署选型仍待冻结 |

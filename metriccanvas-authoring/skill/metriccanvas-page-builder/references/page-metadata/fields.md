@@ -11,7 +11,7 @@ recordList使用显式items.fields约束每条嵌套记录，限制在已支持�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.18。结构真源为本册[schema.json](schema.json)，SHA256 `409931a46ec8ee0830617569960fcf5f7876ddd308294354a33c70aee966d75e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.20。结构真源为本册[schema.json](schema.json)，SHA256 `b09fb609c6763ab2e2020b0a7c354b89ba9ff2a4d4093b9be07a1d347fd5ad62`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1540,7 +1540,7 @@ Schema位置：`#/definitions/groupedQueryFields/anyOf/1`。
 - `#/definitions/fieldValue/anyOf/1`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/source/initial/rows/0/events`。
 - `#/definitions/queryField/anyOf/0`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/dataSources/live-sales/fields/stat-date`。
 - `#/definitions/queryScalarField/oneOf/0`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/dataSources/live-sales/fields/stat-date`。
-- `#/definitions/queryScalarField/oneOf/1`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/dataSources/orders/fields/amount`。
+- `#/definitions/queryScalarField/oneOf/1`：[合法完整页面](examples/query-result-where-page.json)，JSON Pointer `#/dataSources/projects/fields/amount`。
 - `#/definitions/queryField/anyOf/1`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/events`。
 - `#/definitions/queryField/anyOf/2`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/reason`。
 - `#/definitions/queryField/anyOf/3`：[合法完整页面](examples/query-cascade-page.json)，JSON Pointer `#/dataSources/project-efficiency-bottom5/fields/rep-office-time`。

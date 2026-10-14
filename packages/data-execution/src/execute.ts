@@ -40,10 +40,16 @@ export function createPageDataExecutor(config: { gateway: DataGateway }): PageDa
       }).flatMap(component => component.type === 'table' && component.props.pagination?.mode === 'query'
         ? [component.data.main] : []));
 
+      const windowLimits = new Map([...paged].flatMap(id => {
+        const source = sources.get(id);
+        const limit = source?.source.type === 'query' ? declaredPaginationLimit(source.source.query) : undefined;
+        return limit === undefined ? [] : [[id, limit] as const];
+      }));
+
       async function fetchSource(id: string): Promise<void> {
         const source = sources.get(id)!;
         if (!isQuerySource(source)) return;
-        const input = resolveQueryResultInputs(source, raw, sources);
+        const input = resolveQueryResultInputs(source, raw, sources, windowLimits);
         if (input.status === 'waiting') throw new Error('页面查询依赖未就绪');
         let snapshot: DataSnapshot;
         if (input.status === 'terminal') snapshot = input.snapshot;

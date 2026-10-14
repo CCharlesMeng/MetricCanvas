@@ -58,7 +58,9 @@
 
 ## 级联查询
 
-查询结果绑定自6.14起由下游 `source.query.resultBindings` 声明，读取上游原始维度集合形成查询输入；与用户筛选状态分别管理。完整声明、执行顺序、边界及与 `pivot`/`joinAggregate` 的协作见[级联查询专题](docs/cascading-queries.md)，字段表见[查询定义与显式绑定](contracts/metriccanvas/page/reference/queries-and-bindings.md)。
+查询结果绑定自6.14起由下游 `source.query.resultBindings` 声明，读取上游原始维度集合形成查询输入；6.19起可用where独立筛选输入行而保留上游结果；6.20起允许查询分页窗口输入及任意列查询排序驱动依赖更新；与用户筛选状态分别管理。完整声明、执行顺序、边界及与 `pivot`/`joinAggregate` 的协作见[级联查询专题](docs/cascading-queries.md)，字段表见[查询定义与显式绑定](contracts/metriccanvas/page/reference/queries-and-bindings.md)。
+
+逐字段配置讲解见[首轮查询、任意列排序与分页级联](docs/page-metadata/queries-and-bindings.md#配置解读首轮查询任意列排序与分页级联)：连起来配置字段映射、初始order、表格query分页与下游resultBindings。查询分页窗口提供本轮输入，totalCount表示业务总行数；sections顺序不决定查询执行顺序。
 
 ## 报告下载与完整导出
 
