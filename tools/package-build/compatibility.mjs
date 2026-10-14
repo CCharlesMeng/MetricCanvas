@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { closeSync, cpSync, existsSync, mkdirSync, mkdtempSync, openSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { closeSync, cpSync, existsSync, mkdirSync, mkdtempSync, openSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -15,8 +15,8 @@ const selected = process.argv.find((arg) => arg.startsWith('--svelte='))?.slice(
 const requestedTree = process.argv.find((arg) => arg.startsWith('--source-tree='))?.slice('--source-tree='.length) ?? 'HEAD';
 assert(/^(?:HEAD|[a-f0-9]{40})$/.test(requestedTree), 'source-tree must be HEAD or an explicit Git object id');
 const sourceTree = execFileSync('git', ['rev-parse', `${requestedTree}^{tree}`], { cwd: root, encoding: 'utf8' }).trim();
-const versions = selected ? [selected === 'current' ? current : selected] : [current, '5.29.0'];
-for (const version of versions) assert([current, '5.29.0'].includes(version), `Unsupported matrix version ${version}`);
+const versions = selected ? [selected === 'current' ? current : selected] : [current];
+for (const version of versions) assert(version === current, `Unsupported matrix version ${version}`);
 const requestedOutput = resolve(process.env.METRICCANVAS_COMPATIBILITY_DIR ?? mkdtempSync(join(tmpdir(), 'metriccanvas-compatibility-')));
 mkdirSync(requestedOutput, { recursive: true });
 const output = realpathSync(requestedOutput);
@@ -36,36 +36,13 @@ function run(command, args, cwd, log) {
 }
 
 /** 按明确 Git 树建立隔离源码矩阵，原工作区及其锁文件完全不动。 */
-function sourceWorkspace(directory, logs, version) {
+function sourceWorkspace(directory, logs) {
   mkdirSync(directory, { recursive: true });
   const archive = directory + '.tar';
   execFileSync('git', ['archive', '--format=tar', '--output', archive, sourceTree], { cwd: root });
   execFileSync('tar', ['-xf', archive, '-C', directory]);
   rmSync(archive);
-  if (version === '5.29.0') {
-    const pins = { svelte: '5.29.0', vite: '6.3.6', '@sveltejs/vite-plugin-svelte': '5.1.1' };
-    const manifests = [join(directory, 'package.json')];
-    for (const base of ['packages', 'apps', 'tools']) {
-      for (const entry of readdirSync(join(directory, base), { withFileTypes: true })) {
-        const path = join(directory, base, entry.name, 'package.json');
-        if (entry.isDirectory() && existsSync(path)) manifests.push(path);
-      }
-    }
-    for (const file of manifests) {
-      const manifest = json(file);
-      for (const field of ['dependencies', 'devDependencies']) {
-        for (const [name, version] of Object.entries(pins)) if (manifest[field]?.[name]) manifest[field][name] = version;
-      }
-      writeJson(file, manifest);
-    }
-    const workspace = join(directory, 'pnpm-workspace.yaml');
-    const yaml = readFileSync(workspace, 'utf8');
-    const frameworkOverrides = Object.entries(pins).map(([name, version]) => `  ${JSON.stringify(name)}: ${JSON.stringify(version)}\n`).join('');
-    writeFileSync(workspace, /^overrides:/m.test(yaml)
-      ? yaml.replace(/^overrides:\s*$/m, `overrides:\n${frameworkOverrides.trimEnd()}`)
-      : yaml + '\noverrides:\n' + frameworkOverrides);
-  }
-  run('pnpm', ['install', version === '5.29.0' ? '--no-frozen-lockfile' : '--frozen-lockfile', '--strict-peer-dependencies'], directory, join(logs, 'source-install.log'));
+  run('pnpm', ['install', '--frozen-lockfile', '--strict-peer-dependencies'], directory, join(logs, 'source-install.log'));
   for (const command of ['test', 'check', 'build']) run('pnpm', [command], directory, join(logs, `source-${command}.log`));
   return directory;
 }
@@ -75,7 +52,7 @@ for (const version of versions) {
   assert(!existsSync(directory), `Use an empty result directory: ${directory}`);
   const logs = join(directory, 'logs');
   mkdirSync(logs, { recursive: true });
-  const source = sourceWorkspace(join(directory, 'source'), logs, version);
+  const source = sourceWorkspace(join(directory, 'source'), logs);
   const archives = {};
   for (const name of names) {
     const archive = join(directory, `${name}.tgz`);
@@ -97,8 +74,8 @@ for (const version of versions) {
     private: true, type: 'module',
     dependencies: { '@metriccanvas/ui': archives['@metriccanvas/ui'], svelte: version },
     devDependencies: { typescript: '5.9.3', 'svelte-check': '4.7.3',
-      '@sveltejs/vite-plugin-svelte': version === '5.29.0' ? '5.1.1' : '7.2.0',
-      vite: version === '5.29.0' ? '6.3.6' : '8.1.5' }
+      '@sveltejs/vite-plugin-svelte': '7.2.0',
+      vite: '8.1.5' }
   });
   run('npm', ['install', '--ignore-scripts', '--no-audit', '--no-fund', '--strict-peer-deps'], uiOnly, join(logs, 'ui-install.log'));
   const uiRequire = createRequire(join(uiOnly, 'package.json'));
@@ -114,8 +91,8 @@ for (const version of versions) {
     name: 'metriccanvas-external-consumer', private: true, type: 'module',
     dependencies: { ...archives, svelte: version },
     devDependencies: {
-      '@sveltejs/vite-plugin-svelte': version === '5.29.0' ? '5.1.1' : '7.2.0',
-      vite: version === '5.29.0' ? '6.3.6' : '8.1.5',
+      '@sveltejs/vite-plugin-svelte': '7.2.0',
+      vite: '8.1.5',
       typescript: '5.9.3', 'svelte-check': '4.7.3', '@types/node': '26.1.1', '@playwright/test': '1.62.0'
     },
     // 产品和 UI 版本尚未发到 registry；只把彼此的依赖来源固定为这次真实 tarball。

@@ -114,10 +114,6 @@ jobs:
 
   compatibility:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        svelte: ['current', '5.29.0']
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -131,11 +127,11 @@ jobs:
       - name: Install supported browser channels
         run: pnpm --filter @metriccanvas/embed exec playwright install --with-deps chrome msedge
       - name: Verify isolated source and installed consumers
-        run: pnpm compatibility:check --svelte=${{ matrix.svelte }}
+        run: pnpm compatibility:check --svelte=current
         env:
           METRICCANVAS_COMPATIBILITY_DIR: ${{ runner.temp }}/metriccanvas-compatibility
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: compatibility-${{ matrix.svelte }}-${{ github.sha }}
+          name: compatibility-current-${{ github.sha }}
           path: ${{ runner.temp }}/metriccanvas-compatibility

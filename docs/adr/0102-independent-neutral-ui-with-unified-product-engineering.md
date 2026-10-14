@@ -12,6 +12,8 @@ note: 用户确认 Q14–Q21；UI 独立版本，同仓工程；部分修订 ADR
 
 部分修订 [ADR-0071](0071-four-release-artifacts-with-standalone-page-protocol.md)：公开面门禁覆盖五包，page/engine/metric-canvas/embed 四包继续锁步；UI 独立 SemVer。工程共用同仓 workspace、锁文件、Svelte 打包、质量命令和 CI。产品组合使用已验收 UI 的精确版本；UI 版本不进入页面 Schema 或 Bundle 的产品契约版本。UI-only 与 page-only 仓外消费分别证明无反向依赖，最低与当前 Svelte 分别验证，不以工作区源码导入代替 tarball 消费。
 
+**2026-10-14 验证策略修订（用户确认）：** 移除 Svelte 5.29.0 兼容性验证及其降级工具链；以下历史最低版本门禁要求由当前版本验证取代。manifest 的 peer 范围保留，CI 与本地门禁仅为锁文件安装的当前 Svelte 提供证据，继续验证仓外 tarball 消费、类型、构建与 Chrome/Edge。执行入口见 [兼容性门禁](../../tools/package-build/README.md)。
+
 UI 固定视觉资源随控件发布，平台不提供任意 theme 入口、不广域覆盖 RuntimeView；样式和浮层保持原挂载根。管理与 UI 分开 SDD Story，官方版本、状态、图标与资产摘要可追溯。独立包建设不改变 [ADR-0066](0066-self-contained-rendering-engine-host-boundary.md) 对引擎内容视觉的所有权。
 
 人工修改持续在本地保护，明确保存才提交远端；AI 沿用工具单次提交。工作会话由平台实例拥有，内部切换不销毁工作，恢复作用域绑定身份、workspace 和服务目标。未决操作保持原身份并停发；新格式不自动重放旧未知记录。
