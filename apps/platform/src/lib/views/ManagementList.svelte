@@ -2,14 +2,15 @@
   import PrimaryAction from '../PrimaryAction.svelte';
  import {Tag,Grid,Pagination} from '@metriccanvas/ui';
  import StatusColumnFilter from '../StatusColumnFilter.svelte';
+ import {createHref,managementHref,readingHref,resolvePlatformRoute} from '../integration/routes';
  import ToolAction from '../ToolAction.svelte';import {usePlatformServices} from '../integration/services';import {onMount,tick} from 'svelte';import type {AssetSummary} from '../page-assets/contract';
- const services=usePlatformServices();const {pageAssets}=services;const {resolve,navigate}=services.navigation;const initial=services.navigation.current();
+ const services=usePlatformServices();const {pageAssets}=services;const {navigate}=services.navigation;const initial=services.navigation.current();
  let pages=$state<AssetSummary[]>([]);let loading=$state(true),error=$state(''),total=$state(0);
- let pageNo=$state(Math.max(1,Number(initial.searchParams.get('page'))||1));let status=$state(['draft','published'].includes(initial.searchParams.get('state')??'')?initial.searchParams.get('state')!:'');let list:HTMLElement;let request=0;const controller=new AbortController();
- const preview=(page:AssetSummary)=>`${resolve('/manage/pages/[pageId]',{pageId:page.pageId})}?resource=${encodeURIComponent(page.resourceId)}&reading=1`;
- const edit=(page:AssetSummary)=>`${resolve('/')}?page=${encodeURIComponent(page.pageId)}&resource=${encodeURIComponent(page.resourceId)}`;
- function locationFor(page:number,state:string){const query=new URLSearchParams();query.set('page',String(page));if(state)query.set('state',state);return `${resolve('/manage')}?${query}`;}
- async function change(page:number,state:string){await navigate(locationFor(page,state));}
+ const initialRoute=resolvePlatformRoute(initial,services.navigation.base).route;
+ let pageNo=$state(initialRoute.kind==='management'?initialRoute.page:1);let status=$state(initialRoute.kind==='management'?initialRoute.state:'');let list:HTMLElement;let request=0;const controller=new AbortController();
+ const preview=(page:AssetSummary)=>readingHref(services.navigation.base,page.pageId,page.resourceId);
+ const edit=(page:AssetSummary)=>createHref(services.navigation.base,{pageId:page.pageId,resourceId:page.resourceId});
+ async function change(page:number,state:string){await navigate(managementHref(services.navigation.base,page,state));}
  onMount(()=>{const old=services.workSession.snapshot();void load().then(async()=>{await tick();if(controller.signal.aborted||error)return;const previous=new URL(old.directory,initial);const sameDirectory=previous.pathname===initial.pathname&&['page','state'].every(key=>(previous.searchParams.get(key)??'')===(initial.searchParams.get(key)??''));if(!sameDirectory)return;const target=[...list.querySelectorAll<HTMLElement>('[data-asset-focus]')].find(element=>element.dataset.assetFocus===old.focus);target?.focus({preventScroll:true});list.scrollTop=old.scroll;});const stop=services.navigation.registerGuard(async()=>{try{await services.workSession.rememberDirectory(services.navigation.current(),list.scrollTop,(document.activeElement as HTMLElement)?.dataset.assetFocus??null);return true;}catch(cause){error=String(cause);return false;}},()=>false);return()=>{request++;controller.abort();stop();};});
  function displayDate(value:string){if(!value)return '—';const date=new Date(value);return Number.isNaN(date.valueOf())?value:new Intl.DateTimeFormat('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(date).replaceAll('/','-');}
  async function load(){const id=++request;loading=true;error='';try{const result=await pageAssets.list({page:pageNo,pageSize:20,...(status==='draft'||status==='published'?{state:status}:{})},controller.signal);if(id===request){pages=result.items;total=result.total;}}catch(cause){if(id===request)error=String(cause);}finally{if(id===request)loading=false;}}
@@ -20,7 +21,7 @@
 <section bind:this={list} class="management">
   <header><h1>页面管理</h1></header>
   <div class="management-panel">
-    <div class="table-toolbar" aria-label="页面目录操作"><PrimaryAction onclick={()=>navigate(`${resolve('/')}?new=1`)}>新建页面</PrimaryAction><ToolAction icon="refresh" disabled={loading} onclick={load}>刷新</ToolAction></div>
+    <div class="table-toolbar" aria-label="页面目录操作"><PrimaryAction onclick={()=>navigate(createHref(services.navigation.base,{newTask:true}))}>新建页面</PrimaryAction><ToolAction icon="refresh" disabled={loading} onclick={load}>刷新</ToolAction></div>
     <Grid responsive="stack" rows={pages} headers={{state:statusHeader}} columns={[{key:'name',label:'页面',width:'24%'},{key:'state',label:'状态',width:'14%'},{key:'revision',label:'修订',width:'8%'},{key:'fields',label:'指标与维度',width:'20%'},{key:'created',label:'创建时间',width:'12%'},{key:'updated',label:'最近修改',width:'12%'},{key:'actions',label:'操作',width:'10%'}]} rowKey={page=>page.resourceId} {loading} {error} emptyText="当前筛选下暂无页面，可新建页面。" label="页面目录">
       {#snippet cell(page,column)}
         {#if column.key==='name'}<a data-asset-focus={page.resourceId} href={edit(page)} title={`页面 ID：${page.pageId}\n资源 ID：${page.resourceId}`}>{page.pageId}</a><p class="description" title={page.description}>{page.description||'暂无描述'}</p>

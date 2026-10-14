@@ -59,7 +59,13 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 
 ### 平台应用路由前缀
 
-平台以 `routeBase` 拥有路径段及其后代，例如 `/metrics` 匹配 `/metrics/manage`，不匹配 `/metrics-other`。内部导航不重挂，详情保留 `/manage/pages/:pageId?resource=...`；`/manage/pages/:pageId/edit` 转到 `/?page=...&resource=...`。取消内部点击或后退会恢复原 URL 与视图。普通跨页下钻 URL 仅在明确属于平台前缀时接管。
+平台以 `routeBase` 拥有路径段及其后代，例如 `/metrics` 匹配 `/metrics/create`、`/metrics/manage`，不匹配 `/metrics-other`。内部导航不重挂；正式创作入口为 `/create`，页面目录为 `/manage`，已保存内容阅读为 `/manage/pages/:pageId?resource=...`，阅读由路径决定，不要求 `reading=1`。指定页面创作使用 `/create?page=...&resource=...`，临时任务使用 `/create?task=...`；`new=1` 仅是明确新建意图，在地址提交前生成任务身份并移除。
+
+旧 `/`、`/ask` 和 `/manage/pages/:pageId/edit` 入口统一转到 `/create` 并保留有效查询参数；尾斜杠和查询参数顺序统一规范化。路由解析与生成由平台路由模块拥有，根组件不再按旧入口或 `reading` 参数反复重定向。普通跨页下钻 URL 仅在明确属于平台前缀时接管。
+
+点击、参数补齐和浏览器后退共享导航事务；guard 串行执行，后续意图使过期请求失效。异步补齐提交前核对原地址与导航版本，取消后退恢复原 URL 与视图；本实例拥有索引的历史条目同时恢复历史位置，其他实例或门户的历史条目不伪造本实例索引。内部切换隐藏工作台并停用其对话/创作入口，同时保留任务实例和工作副本。
+
+恢复旧工作会话时仅规范化任务 URL 和目录 URL，保留任务 key、当前指针、目录滚动及焦点，不删除或重放工作副本和未决保存记录。任务 key 必须与 URL 中的任务或页面/资源身份一致；不一致记录停止恢复并保留原记录，不自动修补身份或循环跳转。迁移后的 `/create` 地址不能保证被旧平台版本读取，回退时须保留记录并使用兼容版本。
 
 嵌入产物支持运行时前缀，资源相对 HTML entry 解析，不按业务 URL 拼接；不设置全局 `<base>`，标题由门户拥有。独立构建通过 `METRICCANVAS_BASE_PATH=/metriccanvas/ pnpm --filter platform build` 绑定静态资源和路由前缀。
 

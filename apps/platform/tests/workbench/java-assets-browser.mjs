@@ -40,7 +40,7 @@ try {
  await page.getByRole('button',{name:'删除页面'}).click();
  await expect(page).toHaveURL(`${root}/manage`);
  await page.getByRole('link',{name:'创建新页面'}).click();
- await expect(page).toHaveURL(`${root}/?new=1`);
+ await expect(page).toHaveURL(/\/create\?task=/);
  expect(writes).toBe(2);expect(errors).toEqual([]);
  console.log('PASS: directory → resource edit → single save → publish → reload → history/restore/delete → empty new-page entry. HTTP fixtures only.');
 } catch(error) { console.error(await page.locator('body').innerText());console.error(errors);throw error; } finally {await browser.close();}

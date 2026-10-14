@@ -64,7 +64,7 @@ try {
  await page.getByRole('link',{name:/asset-test/}).click();
  await expect(page.getByTestId('workbench')).toBeVisible();
  await page.goBack();await expect(page).toHaveURL(/\/metrics\/manage$/);
- await page.goForward();await expect(page).toHaveURL(/\/metrics\/\?page=asset-test&resource=metadata-1$/);
+ await page.goForward();await expect(page).toHaveURL(/\/metrics\/create\?page=asset-test&resource=metadata-1$/);
  await page.reload();await expect(page.getByTestId('workbench')).toBeVisible();
  const inspector=page.getByRole('complementary',{name:'检查器'});
  await expect(page.getByTestId('chat-unavailable')).toBeVisible();

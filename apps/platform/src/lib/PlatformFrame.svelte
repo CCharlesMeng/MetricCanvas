@@ -13,13 +13,13 @@
   });
 
   const NAV = [
-    { href: '/', label: '创作' },
+    { href: '/create', label: '创作' },
     { href: '/manage', label: '页面管理' }
   ] as const;
 
   function isActive(href: string): boolean {
     const route = path;
-    return route === href || (href !== '/' && route.startsWith(`${href}/`));
+    return route === href || (href !== '/create' && route.startsWith(`${href}/`));
   }
 
 </script>
@@ -32,7 +32,7 @@
   <nav aria-label="主导航">
     {#each NAV as item (item.href)}
       <a
-        href={item.href==='/'?(work.tasks.find(task=>task.key===work.current)?.url??resolve('/')):work.directory}
+        href={item.href==='/create'?(work.tasks.find(task=>task.key===work.current)?.url??resolve('/create')):work.directory}
         class="nav-link"
         class:active={isActive(item.href)}
         aria-current={isActive(item.href) ? 'page' : undefined}
@@ -41,7 +41,7 @@
         data-contract-shell-label
         data-contract-critical
       >
-        {#if item.href === '/'}
+        {#if item.href === '/create'}
           <svg viewBox="0 0 20 20" aria-hidden="true">
             <path d="M4 4.75h12v8.5H9l-3.5 2.5v-2.5H4z" />
           </svg>

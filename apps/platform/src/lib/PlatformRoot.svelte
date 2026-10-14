@@ -1,6 +1,7 @@
 <script lang="ts">
   import {onMount,setContext,untrack} from 'svelte';
   import PrimaryAction from './PrimaryAction.svelte';
+  import {createHref,resolvePlatformRoute} from './integration/routes';
   import ToolAction from './ToolAction.svelte';
   import {PLATFORM_CONTEXT,type PlatformServices} from './integration/services';
   import PlatformFrame from './PlatformFrame.svelte';
@@ -14,9 +15,9 @@
   let work=$state(untrack(()=>services.workSession.snapshot()));
   let restored=$state(false);let opening=$state(false);let workError=$state('');
   let DevView = $state<import('svelte').Component | null>(null);
-  const path = $derived(url.pathname.slice(services.navigation.base.length) || '/');
-  const detail = $derived(/^\/manage\/pages\/([^/]+)(\/edit)?\/?$/.exec(path));
-  const pageId = $derived.by(() => {try {return detail ? decodeURIComponent(detail[1]) : '';} catch {return '';}});
+  const route = $derived(resolvePlatformRoute(url,services.navigation.base).route);
+  const path = $derived(route.path);
+  const creating = $derived(route.kind==='create');
   const key = $derived(url.pathname + url.search);
   onMount(() => {
     const stopWork=services.workSession.subscribe(value=>{work=value;});
@@ -26,27 +27,23 @@
     return ()=>{stopRoute();stopSession();stopWork();};
   });
   $effect(()=>{
-    if(!restored||path!=='/'||DevView)return;
+    if(!active||!restored||route.kind!=='create'||DevView)return;
     workError='';opening=true;
-    const next=new URL(url),controller=new AbortController();
+    const next=new URL(url),from=services.navigation.checkpoint(),controller=new AbortController();
+    const currentRoute=route;
     void (async()=>{
-      if(next.searchParams.has('page')&&!next.searchParams.has('resource')&&!next.searchParams.has('task')){
-        const asset=await services.pageAssets.resolve(next.searchParams.get('page')!,controller.signal);
-        if(controller.signal.aborted)return;next.searchParams.set('resource',asset.resourceId);
+      if(currentRoute.pageId&&!currentRoute.resourceId&&!currentRoute.taskId){
+        const asset=await services.pageAssets.resolve(currentRoute.pageId,controller.signal);
+        controller.signal.throwIfAborted();next.searchParams.set('resource',asset.resourceId);
       }
-      const target=await services.workSession.open(next);
-      if(!controller.signal.aborted&&target!==url.pathname+url.search&&path==='/')await services.navigation.navigate(target,{replaceState:true});
+      const target=await services.workSession.open(next,controller.signal);
+      const destination=new URL(target,next);destination.hash=next.hash;
+      if(!controller.signal.aborted&&destination.href!==from.href)await services.navigation.navigate(destination,{replaceState:true,signal:controller.signal,from});
     })().catch(error=>{if(!controller.signal.aborted)workError=String(error);}).finally(()=>{if(!controller.signal.aborted)opening=false;});
-    return()=>controller.abort();
+    return()=>{controller.abort();opening=false;};
   });
   $effect(() => {
     if (!services.embedded) document.title = path.startsWith('/manage') ? '页面管理 | MetricCanvas' : 'MetricCanvas 指标画布';
-    if(path==='/ask')void services.navigation.navigate(services.navigation.resolve('/'),{replaceState:true});
-    if (detail && (detail[2] || url.searchParams.get('reading')!=='1')) {
-      const query = new URLSearchParams(url.search);query.set('page',pageId);
-      query.delete('reading');if(!detail[2])query.set('info','1');
-      void services.navigation.navigate(`${services.navigation.resolve('/')}?${query}`,{replaceState:true});
-    }
   });
   $effect(() => {
     DevView=null;
@@ -67,19 +64,20 @@
   {:else}
     {#if workError}<p role="alert">{workError} 原恢复记录已保留。</p>{/if}
     {#if restored}
-      {#each work.tasks as task(task.key)}<div class="work-task" hidden={path!=='/'||work.current!==task.key||!!DevView||opening||!!workError}><PageAuthoringWorkbench taskUrl={new URL(task.url,url.origin)} showPageInfo={url.searchParams.get('info')==='1'&&work.current===task.key} active={path==='/'&&work.current===task.key&&!DevView&&!opening&&!workError}/></div>{/each}
-      {#if path==='/'&&!work.current&&!DevView&&!url.searchParams.has('page')&&!url.searchParams.has('task')&&!url.searchParams.has('new')}<section class="empty-workbench" aria-label="页面搭建工作台"><h1>页面搭建工作台</h1><p>尚无当前页面。点击新建页面开始创作，或从页面管理选择已有页面。</p><PrimaryAction onclick={()=>services.navigation.navigate(`${services.navigation.resolve('/')}?new=1`)}>新建页面</PrimaryAction><ToolAction onclick={()=>services.navigation.navigate(work.directory)}>页面管理</ToolAction></section>{/if}
+      <div class="work-stack" class:work-stack-hidden={!creating||!work.current||!!DevView||opening||!!workError}>
+        {#each work.tasks as task(task.key)}<div class="work-task" hidden={work.current!==task.key||!!DevView||opening||!!workError}><PageAuthoringWorkbench taskUrl={new URL(task.url,url.origin)} showPageInfo={route.kind==='create'&&route.showPageInfo&&work.current===task.key} active={creating&&work.current===task.key&&!DevView&&!opening&&!workError}/></div>{/each}
+      </div>
+      {#if creating&&!work.current&&!DevView&&!opening&&!workError}<section class="empty-workbench" aria-label="页面搭建工作台"><h1>页面搭建工作台</h1><p>尚无当前页面。点击新建页面开始创作，或从页面管理选择已有页面。</p><PrimaryAction onclick={()=>services.navigation.navigate(createHref(services.navigation.base,{newTask:true}))}>新建页面</PrimaryAction><ToolAction onclick={()=>services.navigation.navigate(work.directory)}>页面管理</ToolAction></section>{/if}
     {/if}
     {#key key}
       {#if DevView}<DevView/>
-      {:else if path === '/'}{#if !restored}<p role="status">正在恢复工作会话…</p>{/if}
-      {:else if path === '/manage' || path === '/manage/'}<ManagementList/>
-      {:else if detail && !detail[2] && pageId}<PageReading {pageId} {url}/>
-      {:else if detail?.[2]}<p>正在打开页面搭建工作台…</p>
-      {:else if path === '/ask'}<p role="status">正在打开创作入口…</p>
+      {:else if creating}{#if !restored}<p role="status">正在恢复工作会话…</p>{/if}
+      {:else if route.kind === 'management'}<ManagementList/>
+      {:else if route.kind === 'reading'}<PageReading pageId={route.pageId} resourceId={route.resourceId}/>
+      {:else if route.kind === 'invalid'}<p role="alert">{route.message}</p>
       {:else}<p role="alert">页面不存在。</p>{/if}
     {/key}
   {/if}
 </PlatformFrame>
 
-<style>.empty-workbench{padding:24px;max-width:900px;margin:auto;font-size:14px}.empty-workbench h1{font-size:20px;line-height:28px;font-weight:600}.empty-workbench p{color:#595959;line-height:1.6}.work-task{height:100%;min-height:0}.work-task[hidden]{display:none}</style>
+<style>.empty-workbench{padding:24px;max-width:900px;margin:auto;font-size:14px}.empty-workbench h1{font-size:20px;line-height:28px;font-weight:600}.empty-workbench p{color:#595959;line-height:1.6}.work-stack{height:100%;min-height:0}.work-stack.work-stack-hidden{display:none}.work-task{height:100%;min-height:0}.work-task[hidden]{display:none}</style>

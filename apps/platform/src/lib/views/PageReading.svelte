@@ -1,14 +1,15 @@
 <script lang="ts">
+ import {createHref} from '../integration/routes';
  import ReadingHeader from '../ReadingHeader.svelte';import ToolAction from '../ToolAction.svelte';import {parsePage,pageListEntry} from '@metriccanvas/page/internal';import {onMount} from 'svelte';import {usePlatformServices} from '../integration/services';import type {PageRevision} from '../page-assets/contract';import RevisionPreview from '../RevisionPreview.svelte';
- const services=usePlatformServices();const {pageAssets}=services;const {resolve,navigate}=services.navigation;
- let {pageId,url}:{pageId:string;url:URL}=$props();let revision=$state<PageRevision|null>(null);let loading=$state(true),error=$state('');const controller=new AbortController();
+ const services=usePlatformServices();const {pageAssets}=services;const {navigate}=services.navigation;
+ let {pageId,resourceId}:{pageId:string;resourceId:string|null}=$props();let revision=$state<PageRevision|null>(null);let loading=$state(true),error=$state('');const controller=new AbortController();
  const title=$derived.by(()=>{if(!revision)return pageId;const parsed=parsePage(revision.document);return parsed.ok?pageListEntry(parsed.page).title:pageId;});
  onMount(()=>{void load();return()=>controller.abort();});
- async function load(){loading=true;error='';try{const resourceId=url.searchParams.get('resource');const value=await pageAssets.read(resourceId?{pageId,resourceId}:await pageAssets.resolve(pageId,controller.signal),controller.signal);if(!controller.signal.aborted)revision=value;}catch(cause){if(!controller.signal.aborted)error=String(cause);}finally{if(!controller.signal.aborted)loading=false;}}
+ async function load(){loading=true;error='';try{const value=await pageAssets.read(resourceId?{pageId,resourceId}:await pageAssets.resolve(pageId,controller.signal),controller.signal);if(!controller.signal.aborted)revision=value;}catch(cause){if(!controller.signal.aborted)error=String(cause);}finally{if(!controller.signal.aborted)loading=false;}}
 </script>
 <section class="reading">
 <ReadingHeader {title} source="已保存内容" revision={revision?.revisionNumber} status={revision?(revision.isDraft===false?'已发布':revision.isDraft===true?'草稿':'状态待核实'):undefined} backLabel="返回页面管理" onback={()=>navigate(services.workSession.snapshot().directory)}>
-  {#if revision}<a class="edit-link" aria-label="进入编辑" href={`${resolve('/')}?page=${encodeURIComponent(pageId)}&resource=${encodeURIComponent(revision.resourceId!)}`}>编辑</a>{/if}
+  {#if revision}<a class="edit-link" aria-label="进入编辑" href={createHref(services.navigation.base,{pageId,resourceId:revision.resourceId!})}>编辑</a>{/if}
 </ReadingHeader>
 <div class="reading-content">
 {#if error}<p role="alert">{error}</p>{/if}

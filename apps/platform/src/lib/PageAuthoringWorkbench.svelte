@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {createHref} from './integration/routes';
   import PrimaryAction from './PrimaryAction.svelte';
 
   import {Input,Select} from '@metriccanvas/ui';
@@ -429,7 +430,7 @@
       <section class="settings-panel" id={settingsId} aria-label="页面设置">
         <h2 class="settings-heading">创作与发布</h2>
         <div class="settings-actions">
-          <ToolAction onclick={()=>services.navigation.navigate(`${resolve('/')}?new=1`)}>新建页面</ToolAction>
+          <ToolAction onclick={()=>services.navigation.navigate(createHref(services.navigation.base,{newTask:true}))}>新建页面</ToolAction>
           {#if parameterReview}<ToolAction disabled={saveBlocked||authoring.dirty} onclick={()=>parameterReviewOpen=!parameterReviewOpen}>参数模板评审</ToolAction>{/if}
           {#if publicationPort.available}<ToolAction disabled={!authoring.ref||authoring.languageLocked} onclick={()=>publicationOpen=!publicationOpen}>发布评审</ToolAction>
           {:else}<ToolAction disabled={!authoring.ref||authoring.dirty||saveBlocked||authoring.sync?.phase==='saving'} onclick={async()=>{if(!window.confirm('发布当前页面？后续保存编辑会将当前记录改为草稿。'))return;try{await coordinator.publish();}catch(error){saveError=String(error);}}}>发布当前记录</ToolAction>{/if}
