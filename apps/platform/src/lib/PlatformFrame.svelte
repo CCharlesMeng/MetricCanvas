@@ -98,7 +98,7 @@
     --down-strong: #b91c1c;
     --shell-rail-w: 60px;
     --contextbar-h: 46px;
-    --analysis-rail-w: 320px;
+    --analysis-rail-w: 400px;
     --inspector-rail-w: 280px;
     /* 横向顶栏已收敛进竖向导航，工作台继续消费唯一满高 token。 */
     --topbar-h: 0px;
