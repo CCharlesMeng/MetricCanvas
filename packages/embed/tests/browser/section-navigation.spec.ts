@@ -42,6 +42,7 @@ test('two query-backed instances keep selection isolated and reuse data across g
   await expect(second.locator('[data-section-id="a"]')).toBeHidden();
   await expect(second.locator('[data-section-id="b"]')).toBeVisible();
   await first.locator('[data-section-group="a"]').click();
+  await a.locator('summary[title="表头筛选"]').click();
   await expect(a.getByRole('checkbox', { name: '客户21', exact: true })).toBeChecked();
   await expect(a.locator('tbody tr')).toHaveCount(1);
   await first.locator('[data-section-anchor="b"]').click();

@@ -109,7 +109,11 @@ docs/evidence/multi-query-table/delivery-bundle.txt
 docs/evidence/multi-query-table/delivery-complexity.txt
 docs/evidence/multi-query-table/delivery-contract-check.txt
 docs/evidence/multi-query-table/delivery-pages.txt
+docs/evidence/multi-query-table/delivery-paths.txt
 docs/evidence/multi-query-table/delivery-python-final.txt
+docs/evidence/multi-query-table/delivery-reactive-browser.txt
+docs/evidence/multi-query-table/delivery-reactive-runtime.txt
+docs/evidence/multi-query-table/delivery-reactive-types.txt
 docs/evidence/multi-query-table/delivery-tests.txt
 docs/evidence/multi-query-table/delivery-types.txt
 docs/evidence/multi-query-table/delivery.md
@@ -576,6 +580,7 @@ packages/data-execution/src/compute/snapshots.ts
 packages/data-execution/src/compute/time-fill.ts
 packages/data-execution/src/effective-query.ts
 packages/data-execution/src/execute.ts
+packages/data-execution/src/filter-values.ts
 packages/data-execution/src/paged-join/execute.ts
 packages/data-execution/src/paged-join/export.ts
 packages/data-execution/src/paged-join/member-query.ts
@@ -595,6 +600,7 @@ packages/data-execution/tests/fixtures/offices.json
 packages/data-execution/tests/paged-join.test.ts
 packages/data-execution/tests/query-runner.test.ts
 packages/embed/tests/browser/paged-join.spec.ts
+packages/embed/tests/browser/section-navigation.spec.ts
 packages/engine/runtime-ui/src/ComponentRenderer.svelte
 packages/engine/runtime-ui/src/DetailContent.svelte
 packages/engine/runtime-ui/src/RuntimeSurface.svelte
@@ -616,6 +622,7 @@ packages/engine/runtime/src/table-pagination.ts
 packages/engine/runtime/src/table-session.ts
 packages/engine/runtime/tests/dqe-orchestration.test.ts
 packages/engine/runtime/tests/paged-join-session.test.ts
+packages/engine/runtime/tests/param-initialization.test.ts
 packages/engine/runtime/tests/report-export.test.ts
 packages/engine/runtime/tests/table-session.test.ts
 packages/engine/widgets/src/components/table/Table.svelte
@@ -656,6 +663,7 @@ tools/dqe-sim/fixtures/multi-query-table.json
 tools/dqe-sim/src/execute.ts
 tools/dqe-sim/src/multi-query-table.ts
 tools/dqe-sim/tests/multi-query-table.test.ts
+tools/package-build/compatibility.mjs
 tools/scripts/export-authoring-contracts.ts
 tools/scripts/local-authoring-projection.ts
 tools/scripts/page-conformance-vectors.ts

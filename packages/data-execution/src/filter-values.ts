@@ -77,7 +77,7 @@ function initialValue(decl: FilterDeclaration, now: Date): FilterValue | undefin
     return {
       type: 'dimension',
       dimension: dimensionOfLevel(decl, level?.id),
-      values: decl.default,
+      values: [...decl.default],
       ...(level ? { level: level.id } : {})
     };
   }
