@@ -65,6 +65,8 @@
 - 边界：字段缺失、维度类型、行/明细结构仍拒绝；number 与 money 的查询度量缺失即使 nullable=false 也继续显示。inline 仍严格。
 - 协议：[结果字段契约](../docs/page-metadata/fields.md#查询数值度量的容错)。静态/行为和本地浏览器证据不代表真实 DQE、Relay、DS 模型或部署验收。
 
+此页面同时用于查询错误与结果总数回归：`packages/embed/tests/browser/result-diagnostics.spec.ts` 直接读取页面，在 DQE HTTP 边界注入异常。字段缺失或维度类型错误时，表格、指标卡和折线图呈现空数据，错误只打印到控制台；总数小于或大于实际八行时，八行继续显示并打印 `TOTAL_COUNT_MISMATCH`，不修改上游总数。协议见[查询异常与结果总数](../docs/page-metadata/data-sources.md#查询异常与结果总数)。
+
 ## 商务SDT级联查询保留场景
 
 [business-sdt-cascade-example.json](business-sdt-cascade-example.json)，试验场「验收样例」。它保存原有Top5项目→阶段明细的完整配置，替代人工业务报告作为自动级联与展示格式的回归输入。运行本地DQE Sim后，9/10月HTTP验收检查两条独立链使用各自商务编号，并验证导出与屏幕结果一致；不证明真实业务数据。

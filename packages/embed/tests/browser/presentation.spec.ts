@@ -274,8 +274,9 @@ for (const container of ['plain', 'card'] as const) test(`${container}: loading/
     if (mode === 'loading') {
       expect(await page.locator('.skeleton').evaluateAll(items => items.length === 3 && items.every(item => item.getBoundingClientRect().height >= 72))).toBe(true);
     } else if (mode === 'error') {
-      await expect(page.getByRole('alert')).toHaveCount(3);
-      await expect(page.getByRole('alert').first()).toContainText('DQE_TRANSPORT_ERROR');
+      await expect(page.getByRole('alert')).toHaveCount(0);
+      await expect(page.getByRole('cell', { name: '暂无数据' })).toBeVisible();
+      await expect(page.getByText('DQE_TRANSPORT_ERROR')).toHaveCount(0);
     } else {
       await expect(page.getByText('配置列头', { exact: true })).toBeVisible();
       await expect.poll(()=>page.locator('.echart canvas').evaluateAll(canvases => canvases.length === 1 && canvases.every(canvas => canvas.getBoundingClientRect().height >= 30))).toBe(true);

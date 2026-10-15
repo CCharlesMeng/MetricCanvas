@@ -235,6 +235,11 @@ export function createDqeGateway(
     requestId?: string
   ): void {
     if (!settle(call)) return;
+    if (cause instanceof DqeGatewayError && cause.detail !== undefined) {
+      console.error(`[MetricCanvas][${cause.code}] ${cause.message}`, {
+        ...call.context, executionId: call.executionId, batchId, requestId, detail: cause.detail
+      });
+    }
     recordDiagnostic(call, {
       status: 'error',
       ...(batchId !== undefined ? { batchId } : {}),

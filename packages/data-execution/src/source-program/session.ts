@@ -54,7 +54,7 @@ export function createSourceProgram(page: Page, config: { gateway: DataGateway; 
         const source=compiled.sources.get(id);if(!source)continue;
         const view=request.views?.get(id)??defaultSourceView(page,id,compiled.limits.get(id));
         const initial=defaultConditions(id,request.conditions)?reusableInitialSnapshot(source,view,compiled.limits.has(id)):source.source.type==='inline'?rawSnapshot(source.source.rows):undefined;
-        snapshots.set(id,initial??{status:'loading'});
+        snapshots.set(id,initial ? checkOrdinaryRange(source, initial, undefined, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] }) : {status:'loading'});
       }return snapshots;
     },
     captureQueries(conditions: FilterValues, views: ReadonlyMap<string, TableQueryView>, raw: ReadonlyMap<string, DataSnapshot>): ReadonlyMap<string, EffectiveQuery> {
@@ -83,6 +83,16 @@ export function createSourceProgram(page: Page, config: { gateway: DataGateway; 
       const queries = new Map<string, EffectiveQuery>();
       const initials = new Map<string, SourceUpdate['initial']>();
       const corrections = new Map<string, TableQueryView>();
+      const reportedErrors = new Map<string, string>();
+      function reportError(id: string, snapshot: DataSnapshot): void {
+        if (snapshot.status !== 'error') return;
+        const fingerprint = `${snapshot.error.code}\n${snapshot.error.message}`;
+        if (reportedErrors.get(id) === fingerprint) return;
+        reportedErrors.set(id, fingerprint);
+        console.error(`[MetricCanvas][${snapshot.error.code}] ${snapshot.error.message}`, {
+          ...config.diagnostics, pageId: page.id, ...describeExportSource(page, id), ...snapshot.error
+        });
+      }
       const limits = new Map(compiled.limits);
       for(const [id,query] of request.queries??[])if(query.pagination)limits.set(id,query.pagination.limit);
       for (const [id, view] of views) if (compiled.limits.has(id)) limits.set(id, view.pageSize);
@@ -97,7 +107,7 @@ export function createSourceProgram(page: Page, config: { gateway: DataGateway; 
         if (raw.has(id)) return;
         const view = views.get(id) ?? defaultSourceView(page, id, limits.get(id));
         const initial = request.useInitial && defaultConditions(id,request.conditions) ? reusableInitialSnapshot(source,view,limits.has(id)) : undefined;
-        if (initial) { raw.set(id, initial); return; }
+        if (initial) { raw.set(id, checkOrdinaryRange(source, initial, undefined, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] })); return; }
         if (source.source.type === 'inline') { raw.set(id, rawSnapshot(source.source.rows)); return; }
         const dependencies = queryResultDependencies(source);
         const missing = dependencies.filter(id => !raw.has(id));
@@ -145,11 +155,13 @@ export function createSourceProgram(page: Page, config: { gateway: DataGateway; 
           }
         }
         request.signal?.throwIfAborted();
-        snapshot = checkOrdinaryRange(source, snapshot, resultLimit);
+        snapshot = checkOrdinaryRange(source, snapshot, resultLimit, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id], pagination: queries.get(id)?.pagination });
         if (snapshot.status === 'ready' || snapshot.status === 'empty') {
           try { const rows=queryRowsFromPageRows(snapshot.status === 'ready' ? snapshot.rows : [],source.fields);
-            if(defaultConditions(id,request.conditions) && view.pageIndex===0 && !view.sort.length && !view.predicates.length && !view.search?.query.trim() && (!compiled.limits.has(id)||view.pageSize===compiled.limits.get(id))) initials.set(id,{capturedAt:new Date().toISOString(),rows,...(snapshot.totalCount===undefined?{}:{totalCount:snapshot.totalCount})}); }
-          catch { snapshot = { status: 'error', error: { code: 'DQE_ROW_CONTRACT_ERROR', message: '查询结果不符合字段契约' } }; }
+            // Keep inconsistent live rows visible without persisting an invalid first-page initial.
+            const validInitialWindow = !compiled.limits.has(id) || (snapshot.totalCount !== undefined && rows.length === Math.min(view.pageSize, snapshot.totalCount));
+            if(validInitialWindow && defaultConditions(id,request.conditions) && view.pageIndex===0 && !view.sort.length && !view.predicates.length && !view.search?.query.trim() && (!compiled.limits.has(id)||view.pageSize===compiled.limits.get(id))) initials.set(id,{capturedAt:new Date().toISOString(),rows,...(snapshot.totalCount===undefined?{}:{totalCount:snapshot.totalCount})}); }
+          catch (cause) { snapshot = { status: 'error', error: preservedQueryError(cause) }; }
         }
         raw.set(id, snapshot);
         const autoSize = compiled.automatic.has(id) && !compiled.limits.has(id) ? automaticQueryPageSize(source as QueryDataSource, snapshot) : undefined;
@@ -170,11 +182,16 @@ export function createSourceProgram(page: Page, config: { gateway: DataGateway; 
         // Sources outside this read cannot create spurious missing-compute errors.
         for (const key of all.keys()) if (!ids.has(key) && !raw.has(key)) all.delete(key);
         const snapshots = computedSnapshots(all, raw, context);
+        reportError(id, raw.get(id)!);
+        if ([...executionSourceIds(page, [id])].every(dependency => raw.has(dependency))) reportError(id, snapshots.get(id) ?? raw.get(id)!);
         yield { sourceId: id, snapshot: [...executionSourceIds(page,[id])].every(dependency=>raw.has(dependency)) ? snapshots.get(id) ?? raw.get(id)! : {status:'loading'}, raw: raw.get(id)!, initial: initials.get(id), viewCorrection: corrections.get(id), query: queries.get(id) };
       }
       // Raw success can precede compute dependencies. Publish final projections after all settle.
       const final = computedSnapshots(new Map([...compiled.sources].filter(([id]) => ids.has(id) || raw.has(id))), raw, context);
-      for (const id of ids) if (compiled.sources.get(id)?.compute?.length) yield { sourceId: id, snapshot: final.get(id)!, raw: raw.get(id)! };
+      for (const id of ids) if (compiled.sources.get(id)?.compute?.length) {
+        reportError(id, final.get(id)!);
+        yield { sourceId: id, snapshot: final.get(id)!, raw: raw.get(id)! };
+      }
       } finally { controller.abort(); if(request.freshness==='refresh')runner.forgetScope(scope); }
     },
     dispose() { runner.dispose(); }

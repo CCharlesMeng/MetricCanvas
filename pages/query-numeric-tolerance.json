@@ -70,6 +70,7 @@
       },
       "source": {
         "type": "query",
+        "resultScope": "complete",
         "query": {
           "language": "dqe",
           "body": {

@@ -52,4 +52,10 @@ describe('AI 总结请求组装', () => {
       assembleAiSummaryRequest(props, new Map([['inspection-progress', { status: 'empty' }]]))
     ).toEqual({ status: 'empty' });
   });
+
+  it('关联查询失败时显示空数据，不向总结组件传递查询报错', () => {
+    expect(assembleAiSummaryRequest(props, new Map([['inspection-progress', {
+      status: 'error', error: { code: 'DQE_FIELD_MAPPING_ERROR', message: '响应缺少映射字段' }
+    }]]))).toEqual({ status: 'empty' });
+  });
 });

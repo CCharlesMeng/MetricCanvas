@@ -19,12 +19,23 @@ export function reusableInitialSnapshot(source: DataSource, view?: TableQueryVie
   if ((windowed||source.source.type==='pagedJoin') && view && initial.totalCount !== undefined && initial.rows.length !== Math.min(view.pageSize, initial.totalCount)) return undefined;
   return rawSnapshot(initial.rows, initial.totalCount);
 }
-export function checkOrdinaryRange(source: DataSource, snapshot: DataSnapshot, limit?: number): DataSnapshot {
+export function checkOrdinaryRange(source: DataSource, snapshot: DataSnapshot, limit?: number, diagnostics?: QueryDiagnosticContext & { pagination?: EffectiveQuery['pagination'] }): DataSnapshot {
   if (snapshot.status === 'error' || snapshot.status === 'loading' || source.source.type !== 'query') return snapshot;
   const count = snapshot.status === 'ready' ? snapshot.rows.length : 0;
-  if ((snapshot.totalCount !== undefined && (!Number.isSafeInteger(snapshot.totalCount) || snapshot.totalCount < count)) ||
-    (source.source.resultScope === 'complete' && snapshot.totalCount !== undefined && snapshot.totalCount !== count) ||
-    (limit !== undefined && count > limit)) return { status: 'error', error: { code: 'DQE_ROW_CONTRACT_ERROR', message: '查询结果不符合字段或范围契约' } };
+  if (snapshot.totalCount !== undefined && (!Number.isSafeInteger(snapshot.totalCount) || snapshot.totalCount < 0)) {
+    return { status: 'error', error: { code: 'DQE_ROW_CONTRACT_ERROR', message: '查询结果 totalCount 必须是非负安全整数' } };
+  }
+  if (limit !== undefined && count > limit) {
+    return { status: 'error', error: { code: 'DQE_ROW_CONTRACT_ERROR', message: `查询返回 ${count} 行，超过请求上限 ${limit} 行` } };
+  }
+  if (diagnostics && snapshot.totalCount !== undefined &&
+    ((count > 0 && snapshot.totalCount < (diagnostics.pagination?.offset ?? 0) + count) ||
+      (source.source.resultScope === 'complete' && snapshot.totalCount !== count))) {
+    console.warn('[MetricCanvas][TOTAL_COUNT_MISMATCH] 查询结果总数与返回行数不一致；继续使用已返回数据', {
+      code: 'TOTAL_COUNT_MISMATCH', ...diagnostics, rowCount: count,
+      totalCount: snapshot.totalCount, resultScope: source.source.resultScope
+    });
+  }
   return snapshot;
 }
 /** A static limit without offset is a business selection unless a table owns its window. */
@@ -35,6 +46,8 @@ export function isBusinessSelection(source:DataSource,mutableWindow:boolean):boo
 }
 export function correctedPageIndex(query: EffectiveQuery, snapshot: DataSnapshot): number | undefined {
   if (!query.pagination || snapshot.status === 'error' || snapshot.status === 'loading') return undefined;
+  // A stale total must never replace a non-empty returned window with another page.
+  if (snapshot.status === 'ready' && snapshot.rows.length > 0) return undefined;
   const total = snapshot.totalCount;
   if (total === undefined || (total > 0 && query.pagination.offset < total) || (total === 0 && query.pagination.offset === 0)) return undefined;
   return Math.max(0, Math.ceil(total / query.pagination.limit) - 1);

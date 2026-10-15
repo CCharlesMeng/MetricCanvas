@@ -94,14 +94,19 @@
     nested
   }: Props = $props();
 
-  const mainData = $derived({ main: data.main! } as MainDataSlots);
+  // One failed slot makes the whole component empty, including healthy comparison slots.
+  const visibleData = $derived(snapshot.status === 'error'
+    ? Object.fromEntries(Object.keys(component.data ?? {}).map(slot => [slot, {
+      fields: data[slot]?.fields ?? {}, snapshot: { status: 'ready' as const, rows: [] }
+    }])) : data);
+  const mainData = $derived({ main: visibleData.main! } as MainDataSlots);
   const metricData = $derived({
-    main: data.main!,
-    ...(data.compare ? { compare: data.compare } : {}),
-    ...(data.target ? { target: data.target } : {})
+    main: visibleData.main!,
+    ...(visibleData.compare ? { compare: visibleData.compare } : {}),
+    ...(visibleData.target ? { target: visibleData.target } : {})
   } as MetricDataSlots);
   const tableData = $derived(
-    data as NamedDataSlots & { main: NonNullable<NamedDataSlots['main']> }
+    visibleData as NamedDataSlots & { main: NonNullable<NamedDataSlots['main']> }
   );
 </script>
 
@@ -182,7 +187,7 @@
     </CompositeCard>
   {/if}
 {:else}
-  {#if component.type === 'table' && table && component.props.toolbar && !exportMode && (snapshot.status === 'loading' || snapshot.status === 'error')}
+  {#if component.type === 'table' && table && component.props.toolbar && !exportMode && snapshot.status === 'loading'}
     <TableToolbar toolbar={component.props.toolbar} draft={table.searchDraft} busy={table.exporting}
       error={table.exportError} canExport={false} ondraft={table.onsearchdraft} onsearch={table.onsearch}
       onexport={table.onexport} oncancel={table.oncancelexport} />

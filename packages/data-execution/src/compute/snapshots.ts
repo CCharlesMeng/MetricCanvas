@@ -36,8 +36,9 @@ export function computedSnapshots(
       else if (snapshot.status === 'loading' || dependencyState?.status === 'loading') computed = { status: 'loading' };
       else if (snapshot.status === 'ready' || snapshot.status === 'empty') {
         const rows = snapshot.status === 'ready' ? snapshot.rows : [];
-        if (checkOrdinaryRange(source,snapshot).status==='error') {
-          computed = fail('声明完整的查询结果与返回总数不一致');
+        const checked = checkOrdinaryRange(source,snapshot);
+        if (checked.status==='error') {
+          computed = checked;
         } else try {
           const output = applyComputation(source.compute ?? [], rows, dependencies, context);
           const changesCount = (source.compute ?? []).some(op => op.op === 'timeFill');

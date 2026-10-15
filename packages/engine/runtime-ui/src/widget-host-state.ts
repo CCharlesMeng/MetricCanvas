@@ -30,12 +30,13 @@ export function rendersWithoutWidgetHost(component: Component): boolean {
 
 /**
  * 把数据快照投影为纯渲染组件可消费的就绪快照。
- * 空态投影为空行；加载态和错误态由 WidgetHost 统一呈现。
+ * 空态与错误态投影为空行；错误分类保留在内部快照和嵌入事件中。
  */
 export function renderableDataSnapshot(
   snapshot: DataSnapshot
 ): ReadyDataSnapshot | undefined {
-  if (snapshot.status === 'loading' || snapshot.status === 'error') return undefined;
+  if (snapshot.status === 'loading') return undefined;
+  if (snapshot.status === 'error') return { status: 'ready', rows: [] };
   if (snapshot.status === 'ready') return snapshot;
   return {
     status: 'ready',

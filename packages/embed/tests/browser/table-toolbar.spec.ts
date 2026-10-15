@@ -73,7 +73,8 @@ test('unsupported query search remains clearable after failure', async ({ page }
   }, document);
   await expect(page.getByRole('cell', { name: '正常记录' })).toBeVisible();
   await page.getByRole('searchbox').fill('客户'); await page.getByRole('searchbox').press('Enter');
-  await expect(page.getByRole('alert')).toContainText('搜索能力未配置');
+  await expect(page.getByRole('cell', { name: '暂无数据' })).toBeVisible();
+  await expect(page.getByText('搜索能力未配置')).toHaveCount(0);
   await page.getByRole('button', { name: '清空表格搜索' }).click();
   await expect(page.getByRole('cell', { name: '正常记录' })).toBeVisible();
 });

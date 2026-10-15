@@ -8,13 +8,13 @@ import {
 } from '../src/widget-host-state';
 
 describe('renderableDataSnapshot', () => {
-  it('不把查询错误投影为就绪快照', () => {
+  it('查询错误只在呈现边界投影为空数据', () => {
     expect(
       renderableDataSnapshot({
         status: 'error',
         error: { code: 'DQE_TRANSPORT_ERROR', message: 'DQE HTTP 请求失败:404' }
       })
-    ).toBeUndefined();
+    ).toEqual({ status: 'ready', rows: [] });
   });
 
   it('把空快照投影为空行就绪快照并保留总数', () => {

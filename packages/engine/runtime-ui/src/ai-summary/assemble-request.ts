@@ -33,7 +33,7 @@ export function assembleAiSummaryRequest(
   const failed = relatedSnapshots.find(
     (snapshot) => snapshot?.status === 'error'
   );
-  if (failed?.status === 'error') return { status: 'error', error: failed.error };
+  if (failed?.status === 'error') return { status: 'empty' };
   if (relatedSnapshots.some((snapshot) => !snapshot || snapshot.status === 'loading')) {
     return { status: 'loading' };
   }

@@ -1163,7 +1163,7 @@ test('query 页面缺少接入依赖时给出配置错误而非页面错误', as
     .toBe(true);
 });
 
-test('查询失败按稳定分类呈现并上抛 data-error 嵌入事件,宿主不解析错误字符串', async ({
+test('查询失败显示空表并打印诊断，仍上抛 data-error 嵌入事件', async ({
   page
 }) => {
   await page.goto('/examples/query.html');
@@ -1193,6 +1193,8 @@ test('查询失败按稳定分类呈现并上抛 data-error 嵌入事件,宿主�
   await page.evaluate(() => {
     window.queryRuntime.destroy();
   });
+  const errors: string[] = [];
+  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
   for (const testCase of cases) {
     await page.evaluate(
       ({ code, message }) => {
@@ -1217,9 +1219,12 @@ test('查询失败按稳定分类呈现并上抛 data-error 嵌入事件,宿主�
     );
 
     const host = page.locator('[data-metriccanvas-runtime]');
-    await expect(host.getByText(testCase.headline)).toBeVisible();
-    await expect(host.getByText(testCase.message)).toBeVisible();
-    await expect(host.getByText(testCase.code)).toBeVisible();
+    await expect(host.getByRole('table')).toBeVisible();
+    await expect(host.getByText(testCase.headline)).toHaveCount(0);
+    await expect(host.getByText(testCase.message)).toHaveCount(0);
+    await expect(host.getByText(testCase.code)).toHaveCount(0);
+    await expect(host.getByRole('table').locator('tbody').getByText('华东')).toHaveCount(0);
+    await expect.poll(() => errors.some(message => message.includes(testCase.code) && message.includes(testCase.message))).toBe(true);
     await expect
       .poll(() =>
         page.evaluate(() =>
@@ -2299,10 +2304,9 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
       }
     });
   }, flowReportDocument);
-  // 错误块按分类呈现:标题(处理语义)+ 脱值消息 + 分类标识(issue #51);
-  // 普通 Error 未携带查询错误分类,兜底为 UNKNOWN。
-  await expect(yoyDropTable.getByRole('alert')).toContainText('流水数据网关测试错误');
-  await expect(yoyDropTable.getByRole('alert')).toContainText('UNKNOWN');
+  await expect(yoyDropTable.getByText('暂无数据', { exact: true })).toBeVisible();
+  await expect(yoyDropTable.getByRole('alert')).toHaveCount(0);
+  await expect(yoyDropTable.getByText('流水数据网关测试错误')).toHaveCount(0);
   await expect(host.getByRole('heading', { name: '2026年2月流水分析报告' })).toBeVisible();
 });
 

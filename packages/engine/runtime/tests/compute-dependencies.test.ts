@@ -75,7 +75,7 @@ describe('IOC F2 跨源计算与批次', () => {
   });
 });
 
-it('声明完整结果的辅助查询被截断时，目标进入错误态而不是计算部分合计', async () => {
+it('声明完整结果的辅助查询总数不一致时，继续使用返回行计算', async () => {
   const page = fixture();
   page.dataSources.revenue = {
     fields: { partyNumber: { type: 'string', role: 'dimension', queryField: 'partyNumber' }, amount: { type: 'number', role: 'measure', unit: '元', collapsible: true, queryField: 'amount' } },
@@ -84,7 +84,7 @@ it('声明完整结果的辅助查询被截断时，目标进入错误态而不�
   let state: PageDataSnapshots = new Map();
   const stop = orchestrate(page, { async fetchData() { return { rows: [{ partyNumber: 'A', amount: 100 }], totalCount: 2 }; } }).subscribe(next => state = next);
   await flush();
-  expect(state.get('customers')?.status).toBe('error');
+  expect(state.get('customers')).toMatchObject({ status: 'ready', rows: [{ customerId: 'A', revenue: 100 }, { customerId: 'B', revenue: null }] });
   stop();
 });
 

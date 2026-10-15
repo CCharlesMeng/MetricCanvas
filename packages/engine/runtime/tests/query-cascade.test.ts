@@ -132,10 +132,10 @@ describe('query cascade execution', () => {
     expect(h.calls).toHaveLength(4);expect(h.calls[3].query).not.toEqual(h.calls[1].query);
     expect(h.calls[3].query.filterValues).toContainEqual({target:'dimension',queryField:'商务编号',values:['A']});h.stop();
   });
-  it('rejects duplicate stage rows and incomplete detail results',async()=>{
+  it('rejects duplicate stage rows but retains detail rows when only totalCount disagrees',async()=>{
     const p=fixture();expect(()=>applyComputation(p.dataSources[detail].compute??[],[...stages(),...stages()])).toThrow('重复');
     const h=harness(p);h.calls[0].resolve({rows:projects(),totalCount:1});await flush();
-    h.calls[1].resolve({rows:stages(),totalCount:3});await flush();expect(h.state().get(base)?.status).toBe('error');h.stop();
+    h.calls[1].resolve({rows:stages(),totalCount:3});await flush();expect(h.state().get(base)?.status).toBe('ready');h.stop();
   });
   it('uses supplied cascade initial without a proof envelope',()=>{
     const p=fixture();for(const id of [base,detail]){const source=p.dataSources[id].source;if(source.type==='query')source.initial={capturedAt:'2026-09-30T00:00:00Z',rows:[],totalCount:0};}

@@ -148,13 +148,15 @@ describe('complete metadata execution', () => {
     stop();
   });
 
-  it('does not replace old initial when the gateway violates the row contract or complete scope', async () => {
+  it('replaces old initial when only the declared complete total disagrees', async () => {
     const page = fixture();
     initial(page, detail, [{ '商务编号': 'A', '阶段名称': '代表处SDT', 'SDT成员决策时长': 8, 'SDT成员决策次数': 1 }]);
     const result = await createPageDataExecutor({ gateway: { async fetchData(_q, context) {
       return context!.dataSourceIds![0] === main ? { rows: projects(), totalCount: 1 } : { rows: stages(), totalCount: 2 };
     } } }).execute(page);
-    expect(result.dataSources[detail]).toEqual(page.dataSources[detail]);
+    expect(result.dataSources[detail].source).toMatchObject({ initial: {
+      totalCount: 2, rows: [{ '商务编号': 'A', '阶段名称': '代表处SDT', 'SDT成员决策时长': 0, 'SDT成员决策次数': 3 }]
+    } });
   });
 
   it('clears affected initial before a condition change and preserves data for a display-only change', async () => {

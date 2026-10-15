@@ -55,10 +55,10 @@ describe('filtered query inputs across consumers and export',()=>{
     h.calls[0].resolve({rows:input,totalCount:3});await flush();
     expect(h.calls.map(c=>c.id)).toEqual(['projects','details-low']);expect(h.snapshots().get('details-high')?.status).toBe('error');expect(h.snapshots().get('projects')).toMatchObject({status:'ready',rows:input});h.stop();
   });
-  it('only extracts selected keys but does not hide invalid predicate fields or truncated A',()=>{
+  it('only extracts selected keys, keeps invalid fields rejected and tolerates a mismatched total',()=>{
     const p=fixture();expect(resolve(p,[{...project('X',0),'project-id':null},project('HIGH',2e6)])).toMatchObject({status:'ready',values:[{values:['HIGH']}]});
     expect(resolve(p,[{...project('X',2e6),'project-id':null}])).toMatchObject({status:'terminal',snapshot:{status:'error'}});
-    expect(resolve(p,[project('LOW',0)],2)).toMatchObject({status:'terminal',snapshot:{status:'error'}});
+    expect(resolve(p,[project('LOW',0)],2)).toMatchObject({status:'terminal',snapshot:{status:'empty'}});
     expect(resolve(p,[{...project('CLOSED',0,'结束'),amount:'SECRET'}])).toMatchObject({status:'terminal',snapshot:{status:'error',error:{message:'查询输入过滤字段缺失或类型不合法'}}});
   });
   it('invalidates consumers on A refresh and ignores old downstream success',async()=>{
