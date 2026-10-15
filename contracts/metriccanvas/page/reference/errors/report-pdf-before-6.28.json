@@ -1,0 +1,64 @@
+{
+  "case": "report-pdf-before-6.28",
+  "invariant": "report-header-pdf-export",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "Report 页头内置 PDF 下载及可配置按钮文字和文件名 由 6.28 引入，文档声明的是 6.27",
+      "paths": [
+        "/sections/0/components/0",
+        "/sections/2/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "report-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": {
+                "…": "共1个键"
+              },
+              "subtitle": "本地合成数据。更改月份后，报告标题、期间和 PDF 文件名一起变化；导出包含所有正文。",
+              "filterIds": [
+                "…（共1项）"
+              ],
+              "asOf": {
+                "…": "共2个键"
+              },
+              "pdfExport": {
+                "…": "共2个键"
+              }
+            }
+          }
+        ]
+      },
+      "…",
+      {
+        "components": [
+          {
+            "id": "default-download-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "无日期工具带的默认下载按钮",
+              "subtitle": "pdfExport={}，默认显示“下载 PDF”，文件名取本页头标题；仍下载整份报告。",
+              "pdfExport": {
+                "…": "共0个键"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/report-pdf-before-6.28.json"
+}

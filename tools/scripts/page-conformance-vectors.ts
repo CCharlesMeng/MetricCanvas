@@ -55,6 +55,16 @@ function longString(length: number): string {
 
 export const invariants: InvariantDefinition[] = [
   {
+    id: 'report-header-pdf-export', description: 'Report PDF下载由6.28引入，仅允许Report顶层页头，按钮文字和文件名为非空文本取值',
+    valid: ['report-pdf-export'], cases: [
+      {case:'report-pdf-before-6.28',base:'report-pdf-export',expect:/由 6.28 引入/,mutate:d=>{d.schemaVersion='6.27';}},
+      {case:'report-pdf-on-dashboard',base:'report-pdf-export',expect:/PDF 下载工具带只允许/,mutate:d=>{d.layout='dashboard';delete d.sections[0].components[0].props.filterIds;}},
+      {case:'report-pdf-empty-label',base:'report-pdf-export',expect:/./,mutate:d=>{d.sections[0].components[0].props.pdfExport.label='';}},
+      {case:'report-pdf-empty-filename',base:'report-pdf-export',expect:/./,mutate:d=>{d.sections[0].components[0].props.pdfExport.filename='';}},
+      {case:'report-pdf-unknown-option',base:'report-pdf-export',expect:/./,mutate:d=>{d.sections[0].components[0].props.pdfExport.encoder='external';}}
+    ]
+  },
+  {
     id: 'time-point-disable-future', description: '6.25 时间点禁止未来月份与日期',
     valid: ['time-point-no-future'], cases: [
       { case: 'time-point-disable-future-before-6.25', base: 'time-point-no-future', expect: /由 6.25 引入/, mutate: d => { d.schemaVersion = '6.24'; } },

@@ -37,7 +37,7 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
-  'report-pdf-export': {
+  'report-header-pdf-export': {
     minor: 28, description: 'Report 页头内置 PDF 下载及可配置按钮文字和文件名',
     usedAt: document => componentPaths(document, component => component.type === 'reportHeader' && has(props(component), 'pdfExport'))
   },

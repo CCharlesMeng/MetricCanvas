@@ -12,6 +12,8 @@ test('页面配置驱动ShadowRoot里的PDF按钮和实际下载，无新窗口'
   await expect(buttons.nth(1)).toHaveText('下载 PDF');
   expect(await buttons.first().evaluate(element => getComputedStyle(element).backgroundColor)).toBe('rgb(255, 255, 255)');
   await expect(page.locator('[data-report-date-toolbar]').first().locator('input').first()).toBeVisible();
+  // Browser profiles may already own an extra startup tab; only export-created tabs are a regression.
+  const existingPages = context.pages();
   const downloaded = page.waitForEvent('download');
   await buttons.first().click();
   const download = await downloaded;
@@ -26,7 +28,7 @@ test('页面配置驱动ShadowRoot里的PDF按钮和实际下载，无新窗口'
   await expect(page.locator('[data-report-pdf-frame]')).toHaveCount(0);
   await expect(page.locator('[data-metriccanvas-export-stage]')).toHaveCount(0);
   expect(popupCount).toBe(0);
-  expect(context.pages()).toHaveLength(1);
+  expect(context.pages()).toEqual(existingPages);
 });
 
 test('编码失败显示错误，恢复按钮并清理临时视图', async ({ page }) => {

@@ -25,9 +25,12 @@
         "6.22",
         "6.23",
         "6.24",
-        "6.25"
+        "6.25",
+        "6.26",
+        "6.27",
+        "6.28"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28"
     },
     "id": {
       "type": "string",
@@ -3776,6 +3779,26 @@
                 "pattern": "^[a-z0-9][a-z0-9-]*$"
               }
             },
+            "pdfExport": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/nonEmptyTextValue"
+                    }
+                  ]
+                },
+                "filename": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/nonEmptyTextValue"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
             "subtitle": {
               "allOf": [
                 {
@@ -6985,5 +7008,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.25"
+  "$id": "https://metriccanvas/page/v6.28"
 }

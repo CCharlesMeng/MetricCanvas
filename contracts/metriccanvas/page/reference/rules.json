@@ -1,6 +1,20 @@
 {
   "invariants": [
     {
+      "id": "report-header-pdf-export",
+      "description": "Report PDF下载由6.28引入，仅允许Report顶层页头，按钮文字和文件名为非空文本取值",
+      "valid": [
+        "report-pdf-export"
+      ],
+      "invalid": [
+        "report-pdf-before-6.28",
+        "report-pdf-on-dashboard",
+        "report-pdf-empty-label",
+        "report-pdf-empty-filename",
+        "report-pdf-unknown-option"
+      ]
+    },
+    {
       "id": "time-point-disable-future",
       "description": "6.25 时间点禁止未来月份与日期",
       "valid": [

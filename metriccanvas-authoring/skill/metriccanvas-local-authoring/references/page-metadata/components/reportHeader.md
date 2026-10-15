@@ -8,12 +8,20 @@ dashboard 的筛选器由统一工具栏呈现，reportHeader 禁止配置 filte
 
 filterIds（6.13）按序引用页面 timePoint/timeRange 筛选器，采用封面上方独立工具带；宽容器右对齐，窄容器换行。控件使用运行时筛选状态，不拥有查询。6.15 起 filterIds 仅决定控件位置，不自动创建或覆盖 asOf。期间文字使用 asOf.value: {filter: 筛选器id, format: "period"} 显式引用当前已应用值；字面量保持静态，param 引用保持打开时的参数值。6.13/6.14 继续按旧的期间派生规则读取。导出保留捕获时已经解析的静态文字。
 
+## 内置 PDF 下载（6.28）
+
+`pdfExport: {label?, filename?}` 对象存在即显示下载按钮；省略时不显示。label默认“下载 PDF”，filename默认触发页头标题。两项都是非空文本取值，支持参数、已应用筛选引用和显式parts；点击时捕获，后续筛选变化不改变本次文件名。文件名自动清理不合法字符并补`.pdf`，不执行模板表达式。
+
+只允许Report顶层页头。下载按钮与filterIds共用封面上方工具带，无日期控件也可单独显示；下载范围是整份报告。按钮为白底描边；准备和生成状态在按钮文字中切换，生成中禁用重复点击并显示取消。成功或取消后恢复配置名称，不保留成功提示；失败显示“下载失败，重试”，悬停提示具体原因。导出不包含工具带。内置编码由引擎负责，集成应用不需安装PDF库；原withExportView自定义入口保留。
+
+A4默认竖向，存在引擎标记的宽内容时整份横向；采用零外边距，保持页面自身样式和间距，按原有排布连续切片；不按章节强制换页，不重复插入表头或添加页码。图片正文以有界批次截图并快速无损编码，全部成功才发起文件下载。整页沿用部分取数失败时保留可用内容、每结果10000行和准备60秒的现行策略；取消、页面文档更新或实例销毁时中止并清理。超页高的图表、卡片或正文块跨纸张连续承接，不移动内容或丢弃中间像素。完整作者页面见`report-pdf-export`示例（本地合成数据）；静态校验不证明查询完整性、浏览器下载效果或真实部署联通。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.25。结构真源为本册[schema.json](../schema.json)，SHA256 `e36f38eb39917a773c9f9259e4d24a1856794f7ebe6ec187880e1591ddbe5733`。字段表自动生成；可选不等于有默认值。
+页面协议 6.28。结构真源为本册[schema.json](../schema.json)，SHA256 `0ea82bb19fbb77187a11882c2048abc126c3ce7f5c33a91d8d7c694c4f5acc91`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -100,6 +108,56 @@ Schema位置：`#/definitions/reportHeaderComponent/properties/props/properties/
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7265706f7274486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7064664578706f7274"></a>
+
+### `@reportHeaderComponent.props.pdfExport`
+
+Schema位置：`#/definitions/reportHeaderComponent/properties/props/properties/pdfExport`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 6.28：对象存在即启用引擎内置PDF下载；仅用于Report顶层页头，与日期控件共用工具带。 |
+
+<a id="schema-232f646566696e6974696f6e732f7265706f7274486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7064664578706f72742f70726f706572746965732f6c6162656c"></a>
+
+### `@reportHeaderComponent.props.pdfExport.label`
+
+Schema位置：`#/definitions/reportHeaderComponent/properties/props/properties/pdfExport/properties/label`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 下载按钮名称；默认“下载 PDF”，支持参数、已应用筛选引用与文本片段组合。 |
+
+<a id="schema-232f646566696e6974696f6e732f7265706f7274486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7064664578706f72742f70726f706572746965732f6c6162656c2f616c6c4f662f30"></a>
+
+### `@reportHeaderComponent.props.pdfExport.label · allOf[0]`
+
+Schema位置：`#/definitions/reportHeaderComponent/properties/props/properties/pdfExport/properties/label/allOf/0`。目标：[#/definitions/nonEmptyTextValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/nonEmptyTextValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7265706f7274486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7064664578706f72742f70726f706572746965732f66696c656e616d65"></a>
+
+### `@reportHeaderComponent.props.pdfExport.filename`
+
+Schema位置：`#/definitions/reportHeaderComponent/properties/props/properties/pdfExport/properties/filename`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 下载文件名；默认触发页头标题，自动清理文件名并补.pdf；点击时捕获文本值。 |
+
+<a id="schema-232f646566696e6974696f6e732f7265706f7274486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7064664578706f72742f70726f706572746965732f66696c656e616d652f616c6c4f662f30"></a>
+
+### `@reportHeaderComponent.props.pdfExport.filename · allOf[0]`
+
+Schema位置：`#/definitions/reportHeaderComponent/properties/props/properties/pdfExport/properties/filename/allOf/0`。目标：[#/definitions/nonEmptyTextValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/nonEmptyTextValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7265706f7274486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7375627469746c65"></a>
 
@@ -260,6 +318,7 @@ Schema位置：`#/definitions/reportHeaderComponent/properties/props/properties/
 - `field-binding-resolves`：字段绑定引用组件已声明的数据槽与数据源中存在的字段。反例：[field-binding-undeclared-slot](../errors/field-binding-undeclared-slot.json)、[unknown-component-field](../errors/unknown-component-field.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `field-binding-role`：字段绑定的角色符合组件属性要求。反例：[field-binding-role-mismatch](../errors/field-binding-role-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `field-binding-match`：行匹配字段必须是 dimension，匹配值符合其类型。反例：[match-field-unknown](../errors/match-field-unknown.json)、[match-field-not-dimension](../errors/match-field-not-dimension.json)、[match-value-type-mismatch](../errors/match-value-type-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `report-header-pdf-export`：Report PDF下载由6.28引入，仅允许Report顶层页头，按钮文字和文件名为非空文本取值。反例：[report-pdf-before-6.28](../errors/report-pdf-before-6.28.json)、[report-pdf-on-dashboard](../errors/report-pdf-on-dashboard.json)、[report-pdf-empty-label](../errors/report-pdf-empty-label.json)、[report-pdf-empty-filename](../errors/report-pdf-empty-filename.json)、[report-pdf-unknown-option](../errors/report-pdf-unknown-option.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -267,6 +326,7 @@ Schema位置：`#/definitions/reportHeaderComponent/properties/props/properties/
 - [projectDetail](../examples/component-reportHeader-projectDetail.json)：独立完整页面，保留必要语义依赖。
 - [inline-report](../examples/inline-report.json)：完整合法页面；查询仅为静态契约证据。
 - [text-composition-page](../examples/text-composition-page.json)：完整合法页面；查询仅为静态契约证据。
+- [report-pdf-export](../examples/report-pdf-export.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-reportHeader.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

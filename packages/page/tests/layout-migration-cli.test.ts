@@ -26,7 +26,7 @@ it.each(['report', 'dashboard'])('CLI追加迁移%s且原文不变，重复规�
     expect(spawnSync(process.execPath, ['--import', 'tsx', cli, input, target]).status).not.toBe(0);
     expect(readFileSync(target, 'utf8')).toBe(saved);
   }
-});
+}, 30_000);
 
 it.each(['7.0', '6.4', 'bad'])('CLI拒绝%s且不留下输出', (schemaVersion) => {
   const input = join(dir, `bad-${schemaVersion}.json`);

@@ -487,7 +487,8 @@
       ],
       "examples": [
         "inline-report",
-        "text-composition-page"
+        "text-composition-page",
+        "report-pdf-export"
       ],
       "sources": [
         "packages/page/src/schema/components/report-header.ts",
@@ -498,7 +499,8 @@
         "data-slot-known-source",
         "field-binding-resolves",
         "field-binding-role",
-        "field-binding-match"
+        "field-binding-match",
+        "report-header-pdf-export"
       ]
     },
     "components/metricCard.md": {
@@ -1190,7 +1192,10 @@
     "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates": "最终字段上的 AND 条件；会话条件不写回定义；默认 initial 必须为空。",
     "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values": "显式选择集合，保留字符串或数值类型。",
     "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/search": "已提交文本搜索；首版组合搜索使用有界完整关联，草稿不进入。",
-    "#/definitions/timePointFilter/properties/disableFuture": "为true时，按本地当前月份／日期限制选择、输入及初始化；当前期间包含在内。"
+    "#/definitions/timePointFilter/properties/disableFuture": "为true时，按本地当前月份／日期限制选择、输入及初始化；当前期间包含在内。",
+    "#/definitions/reportHeaderComponent/properties/props/properties/pdfExport": "6.28：对象存在即启用引擎内置PDF下载；仅用于Report顶层页头，与日期控件共用工具带。",
+    "#/definitions/reportHeaderComponent/properties/props/properties/pdfExport/properties/label": "下载按钮名称；默认“下载 PDF”，支持参数、已应用筛选引用与文本片段组合。",
+    "#/definitions/reportHeaderComponent/properties/props/properties/pdfExport/properties/filename": "下载文件名；默认触发页头标题，自动清理文件名并补.pdf；点击时捕获文本值。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1377,7 +1382,10 @@
     "numberRange": "数值度量的包含端点范围；按原始单位比较，一端可缺省。",
     "6.23": "显式文本片段组合的兼容读取版本。",
     "6.24": "时间点包含式下限的兼容读取版本。",
-    "6.25": "时间点禁止未来月份／日期的当前写出版本。"
+    "6.25": "时间点禁止未来月份／日期引入版本。",
+    "6.26": "兼容读取版本；本次分发未引入该版本专属能力，具体能力以能力表为准。",
+    "6.27": "兼容读取版本；本次分发未引入该版本专属能力，具体能力以能力表为准。",
+    "6.28": "当前写出版本；引入Report页头内置PDF下载及可配置按钮文字、文件名。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

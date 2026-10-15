@@ -71,7 +71,7 @@ filter 读取当前已应用筛选状态，初次从 default/initialParam/URL �
 验收页面 `report-title-filter-example` 无业务数据与外部查询，覆盖月份主标题、独立范围、同起止、清空、多筛选组合和参数文字；日期型、非法输入、可选参数、版本和导出捕获另由行为测试覆盖。`report-date-filter-example` 同时演示主标题与 DQE Sim 查询联动，仿真不代表真实 DQE 集成。
 
 
-页面协议 6.25。结构真源为本册[schema.json](schema.json)，SHA256 `e36f38eb39917a773c9f9259e4d24a1856794f7ebe6ec187880e1591ddbe5733`。字段表自动生成；可选不等于有默认值。
+页面协议 6.28。结构真源为本册[schema.json](schema.json)，SHA256 `0ea82bb19fbb77187a11882c2048abc126c3ce7f5c33a91d8d7c694c4f5acc91`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

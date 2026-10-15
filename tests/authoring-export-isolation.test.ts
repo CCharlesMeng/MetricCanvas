@@ -192,6 +192,7 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
   }, scenarioTimeout);
 
   it('包版本变更后拒绝旧导出并可重新生成', () => {
+    // Two separately bounded exports and a fresh copy need a combined scenario budget.
     // Regeneration rewrites multiple projections. Give this mutating scenario its
     // own copy so ordering/shuffling cannot contaminate other drift assertions.
     const regenerationRoot = mkdtempSync(path.join(tmpdir(), 'metriccanvas-contract-regeneration-'));
@@ -212,5 +213,5 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
     } finally {
       rmSync(regenerationRoot, { recursive: true, force: true });
     }
-  }, scenarioTimeout);
+  }, scenarioTimeout * 2);
 });

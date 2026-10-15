@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.25",
-  "schemaSha256": "e36f38eb39917a773c9f9259e4d24a1856794f7ebe6ec187880e1591ddbe5733",
+  "schemaVersion": "6.28",
+  "schemaSha256": "0ea82bb19fbb77187a11882c2048abc126c3ce7f5c33a91d8d7c694c4f5acc91",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -421,14 +421,16 @@
       ],
       "examples": [
         "inline-report",
-        "text-composition-page"
+        "text-composition-page",
+        "report-pdf-export"
       ],
       "rules": [
         "schema-structure",
         "data-slot-known-source",
         "field-binding-resolves",
         "field-binding-role",
-        "field-binding-match"
+        "field-binding-match",
+        "report-header-pdf-export"
       ]
     },
     "components/metricCard.md": {
@@ -864,7 +866,10 @@
         "6.22",
         "6.23",
         "6.24",
-        "6.25"
+        "6.25",
+        "6.26",
+        "6.27",
+        "6.28"
       ]
     },
     {
@@ -5557,6 +5562,38 @@
       "path": "@reportHeaderComponent.props.filterIds[]",
       "required": "每个数组项",
       "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pdfExport",
+      "path": "@reportHeaderComponent.props.pdfExport",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pdfExport/properties/label",
+      "path": "@reportHeaderComponent.props.pdfExport.label",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pdfExport/properties/label/allOf/0",
+      "path": "@reportHeaderComponent.props.pdfExport.label · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pdfExport/properties/filename",
+      "path": "@reportHeaderComponent.props.pdfExport.filename",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pdfExport/properties/filename/allOf/0",
+      "path": "@reportHeaderComponent.props.pdfExport.filename · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
     },
     {
       "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/subtitle",
@@ -11675,5 +11712,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "81f8af50d5aa1d57fcc6bbf87fc00e72a6aff2b76efc477813c64e9cf095a429"
+  "semanticSourceDigest": "243d2ce4052dcc726c897f2911702649d2a89b1073628c772e308bc74d401219"
 }
