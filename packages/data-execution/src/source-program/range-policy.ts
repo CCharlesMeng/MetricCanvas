@@ -2,6 +2,7 @@ import { canonicalizeJson, declaredPaginationLimit, type DataSnapshot, type Data
 import type { QueryRunner } from '../query-runner';
 import type { QueryDiagnosticContext } from '../ports';
 import { rawSnapshot } from '../snapshots';
+import type { ExportSourceDetails } from './export-diagnostics';
 
 export const EXPORT_MAX_ROWS = 10_000;
 export const EXPORT_PREPARATION_TIMEOUT_MS = 60_000;
@@ -38,7 +39,7 @@ export function correctedPageIndex(query: EffectiveQuery, snapshot: DataSnapshot
   if (total === undefined || (total > 0 && query.pagination.offset < total) || (total === 0 && query.pagination.offset === 0)) return undefined;
   return Math.max(0, Math.ceil(total / query.pagination.limit) - 1);
 }
-export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, scope: string, signal: AbortSignal | undefined, diagnostics: QueryDiagnosticContext, trustedComplete = false): Promise<DataSnapshot> {
+export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, scope: string, signal: AbortSignal | undefined, diagnostics: QueryDiagnosticContext, trustedComplete = false, describeSource?: () => ExportSourceDetails): Promise<DataSnapshot> {
   const frozen = structuredClone(query);
   const declared = frozen.pagination?.limit ?? declaredPaginationLimit({ language: frozen.language, body: frozen.body });
   const limit = Math.min(declared ?? 500, 500);
@@ -59,7 +60,25 @@ export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, 
     if (paged && chunk.length > limit) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '导出分页返回行数超出请求范围');
     rows.push(...chunk);
     if (rows.length > EXPORT_MAX_ROWS) throw new SourceRangeError('EXPORT_ROW_LIMIT', '导出单表超过 10000 行');
-    if (expected !== undefined && rows.length > expected) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '导出行数超出结果总数');
+    if (expected !== undefined && rows.length > expected) {
+      const sourceDetails = describeSource?.();
+      const location = sourceDetails ? ` [数据源 ${sourceDetails.dataSourceId}；组件 ${sourceDetails.components.map(component => `${component.componentTitle ?? component.componentType} (${component.componentId})`).join('、') || '无组件引用'}]` : '';
+      console.warn(`[MetricCanvas][EXPORT_TOTAL_COUNT_MISMATCH]${location} 导出行数超出结果总数；继续导出已取得的数据，完整性未确认`, {
+        code: 'EXPORT_TOTAL_COUNT_MISMATCH',
+        pageId: diagnostics.pageId,
+        pageRevisionId: diagnostics.pageRevisionId,
+        dataSourceIds: diagnostics.dataSourceIds,
+        ...sourceDetails,
+        expectedTotalCount: expected,
+        accumulatedRowCount: rows.length,
+        pageRowCount: chunk.length,
+        pagination: paged ? { offset, limit } : undefined,
+        completeness: 'unverified'
+      });
+      // The reported total cannot guide further reads. Retain received rows without
+      // truncating or guessing row identity, and stop before repeating more pages.
+      return rawSnapshot(rows, rows.length);
+    }
     if (!paged && expected === undefined && !trustedComplete) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '完整导出需要 totalCount 或显式完整结果契约');
     if (!paged || rows.length === expected) return rawSnapshot(rows, rows.length);
     if (!chunk.length) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '导出分页提前结束');

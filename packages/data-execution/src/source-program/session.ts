@@ -15,6 +15,7 @@ import { computedSnapshots } from '../compute/snapshots';
 import { compileSources, executionSourceIds } from './compiler';
 import { reusableInitialSnapshot, checkOrdinaryRange, isBusinessSelection, correctedPageIndex, fetchComplete } from './range-policy';
 import { automaticQueryPageSize } from './table-pagination';
+import { describeExportSource } from './export-diagnostics';
 
 export interface SourceRead {
   roots: readonly string[]; conditions: FilterValues;
@@ -130,7 +131,7 @@ export function createSourceProgram(page: Page, config: { gateway: DataGateway; 
           queries.set(id, query);
           const diagnostics = { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] };
           const preserveWindow = isBusinessSelection(source,compiled.limits.has(id)||compiled.automatic.has(id)) || (cascaded.has(id) && (!request.completeSources?.includes(id) || isBoundedResultSource(page.dataSources, id)));
-          if (request.purpose === 'complete' && !preserveWindow) { resultLimit=undefined; snapshot = await fetchComplete(query, runner, scope, request.signal, diagnostics, source.source.resultScope === 'complete'); }
+          if (request.purpose === 'complete' && !preserveWindow) { resultLimit=undefined; snapshot = await fetchComplete(query, runner, scope, request.signal, diagnostics, source.source.resultScope === 'complete', () => describeExportSource(page, id)); }
           else {
             snapshot = await runner.run(query, diagnostics, scope, request.signal);
             const corrected = correctedPageIndex(query, snapshot);

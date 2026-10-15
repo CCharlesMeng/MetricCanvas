@@ -45,6 +45,8 @@ await handle.withExportView(async ({ target, paper, wideElements, signal }) => {
 - 日期输入、分页、选择、链接和详情浮层不进入导出；期间文字保留捕获值。详情专用查询不执行。
 - 使用同一已认证数据网关；不复用初始快照或当前分页。排序与表头筛选也保留。
 - 每个导出结果上限 10,000 行，整次准备上限 60 秒；PDF 编码和保存时间不计入。超限、提前结束、分页总数缺失或变化明确失败；无分页查询需 totalCount 或显式 resultScope: complete 完整结果契约，无截断或当前页降级。
+- 普通查询完整取数时，若累计行数超过接口声明的总数，控制台打印 `EXPORT_TOTAL_COUNT_MISMATCH` 警告并继续导出已收到的全部行；停止后续分页，不按错误总数截断，也不自动去重。此时数据完整性未确认，PDF 中保留收到的数据，警告仅输出到控制台。警告包含页面与修订 ID、数据源 ID、请求 offset/limit、本次与累计行数、接口总数及 `completeness: 'unverified'`，不输出查询体、筛选值或业务数据。其他完整性错误仍明确失败，组合查询源仍按其完整性规则校验。
+- 该警告正文直接显示异常数据源 ID 和关联组件的标题、ID；详情中的 `dataSourcePath` 指向数据源声明，`components` 列出组件类型、标题、所属内容分区、组件路径 `componentPath` 和数据绑定路径 `bindingPath`。共享数据源列出全部引用（包含 Tab 和组合卡内的组件）；`boundSourceId` 是组件直接绑定的源，`relation: 'dependency'` 表示异常源是它的上游依赖，`direct` 表示直接绑定。标题来自已解析的页面声明，不输出结果行或查询条件。
 - A4 多页由集成应用编码器完成；`wideElements` 对应 `data-export-orientation="landscape"` 和自然宽度提示，由编码器决定横向分页或缩放。引擎没有全局打印样式。
 - 冻结的是查询作用域；重新取数不会承诺数据库快照隔离。AI 总结使用捕获的已完成静态结论，尚未完成则拒绝导出。
 

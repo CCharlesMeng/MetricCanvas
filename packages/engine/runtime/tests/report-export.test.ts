@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import fixture from '../../../page/fixtures/contract-valid/report-date-filters-page.json';
 import { parsePage } from '@metriccanvas/page';
 import { prepareExportSnapshots, ExportViewError } from '../src/export-snapshots';
@@ -45,6 +45,68 @@ it('fails over the row limit, on incomplete pagination and when total changes',a
     await expect(prepareExportSnapshots(page,gateway,stream.captureQueries(),initialFilterValues(page.filters??[]),new AbortController().signal)).rejects.toMatchObject({code:expected});
     unsubscribe();
   }
+});
+it.each([
+  { paged: true, totalCount: 53, pageRows: 10, exportedRows: 60, offsets: [0,10,20,30,40,50] },
+  { paged: true, totalCount: 0, pageRows: 1, exportedRows: 1, offsets: [0] },
+  { paged: false, totalCount: 0, pageRows: 1, exportedRows: 1, offsets: [undefined] }
+])('warns and exports received rows when the total is understated: %j',async scenario=>{
+  const page=loaded();
+  if(!scenario.paged) {
+    const source=page.dataSources.sales.source;if(source.type!=='query')throw Error('fixture');
+    delete source.query.body.dsl_list[0].order;
+    const table=page.sections[1].components[0];if(table.type==='table')table.props.pagination={mode:'none'};
+  }
+  const requests:EffectiveQuery[]=[];
+  const gateway:DataGateway={async fetchData(query){requests.push(query);return {
+    rows:Array.from({length:scenario.pageRows},(_,i)=>({entry:`private-entry-${i}`,amount:i})),totalCount:scenario.totalCount
+  };}};
+  const warning=vi.spyOn(console,'warn').mockImplementation(()=>{});
+  try {
+    const result=await prepareExportSnapshots(page,gateway,new Map(),initialFilterValues(page.filters??[]),new AbortController().signal,{pageRevisionId:'revision-for-export'});
+    const snapshot=result.get('sales');
+    expect(snapshot?.status).toBe('ready');
+    if(snapshot?.status!=='ready')throw Error('export did not retain received rows');
+    expect(snapshot.rows).toHaveLength(scenario.exportedRows);
+    expect(snapshot.rows.at(-1)).toEqual({entry:`private-entry-${scenario.pageRows-1}`,amount:scenario.pageRows-1});
+    expect(snapshot.totalCount).toBe(scenario.exportedRows);
+    expect(requests.map(query=>query.pagination?.offset)).toEqual(scenario.offsets);
+    expect(warning).toHaveBeenCalledExactlyOnceWith(expect.stringContaining('EXPORT_TOTAL_COUNT_MISMATCH'),{
+      code:'EXPORT_TOTAL_COUNT_MISMATCH',pageId:page.id,pageRevisionId:'revision-for-export',dataSourceIds:['sales'],
+      dataSourceId:'sales',dataSourcePath:'/dataSources/sales',
+      components:[{componentId:'sales-table',componentType:'table',componentTitle:'经营明细',
+        componentPath:'/sections/1/components/0',sectionId:'detail',sectionTitle:'经营明细',
+        bindingPath:'/sections/1/components/0/data/main',boundSourceId:'sales',relation:'direct'}],
+      expectedTotalCount:scenario.totalCount,accumulatedRowCount:scenario.exportedRows,pageRowCount:scenario.pageRows,
+      pagination:scenario.paged?{offset:scenario.offsets.at(-1),limit:10}:undefined,
+      completeness:'unverified'
+    });
+    expect(JSON.stringify(warning.mock.calls)).not.toContain('private-entry');
+    expect(JSON.stringify(warning.mock.calls)).not.toContain('filterValues');
+  } finally {warning.mockRestore();}
+});
+it('identifies every shared-source consumer including nested Tab tables in the warning',async()=>{
+  const page=loaded(),table=page.sections[1].components[0];
+  if(table.type!=='table')throw Error('fixture');
+  page.sections[1].components.push({id:'sales-tabs',type:'tabContainer',layout:{span:12},props:{tabs:[{
+    id:'additional',label:'补充明细',component:{...structuredClone(table),id:'nested-sales',props:{...table.props,title:'补充明细'}}
+  }]}});
+  const warning=vi.spyOn(console,'warn').mockImplementation(()=>{});
+  try {
+    const gateway:DataGateway={async fetchData(){return {rows:[{entry:'private-entry',amount:1}],totalCount:0};}};
+    const result=await prepareExportSnapshots(page,gateway,new Map(),initialFilterValues(page.filters??[]),new AbortController().signal);
+    expect(result.get('sales')?.status).toBe('ready');
+    expect(warning).toHaveBeenCalledTimes(1);
+    expect(warning.mock.calls[0][0]).toContain('数据源 sales');
+    expect(warning.mock.calls[0][0]).toContain('经营明细 (sales-table)');
+    expect(warning.mock.calls[0][0]).toContain('补充明细 (nested-sales)');
+    expect(warning.mock.calls[0][1].components).toEqual([
+      expect.objectContaining({componentId:'sales-table',boundSourceId:'sales',relation:'direct'}),
+      expect.objectContaining({componentId:'nested-sales',componentTitle:'补充明细',componentType:'table',
+        componentPath:'/sections/1/components/1/props/tabs/0/component',
+        bindingPath:'/sections/1/components/1/props/tabs/0/component/data/main',boundSourceId:'sales',relation:'direct'})
+    ]);
+  } finally {warning.mockRestore();}
 });
 it('ignores embedded first-screen rows and fetches partial unpaged results to completion',async()=>{
   const page=loaded();const source=page.dataSources.sales.source;if(source.type!=='query')throw Error('fixture');
