@@ -7,6 +7,7 @@
   import sectionTitleLeftUrl from '../../assets/section-title-left.svg?inline';
   import sectionTitleRightUrl from '../../assets/section-title-right.svg?inline';
   import headerFlowBackgroundUrl from '../../assets/header-flow-background.svg?inline';
+  import reportAssistantIconUrl from '../../assets/report-assistant-icon.svg?inline';
 
   /** 可见页头组合组件：只展示 props，不读取页面 meta、数据或全局状态。 */
   interface Props {
@@ -67,7 +68,18 @@
           aria-hidden="true"
           data-decorative-image="header-flow-background"
         />
-        {#if props.generatedBy}<p class="generated-by">{props.generatedBy}</p>{/if}
+        {#if props.generatedBy}
+          <p class="generated-by">
+            <img
+              class="report-assistant-icon"
+              src={reportAssistantIconUrl}
+              alt=""
+              aria-hidden="true"
+              data-decorative-icon="report-assistant"
+            />
+            {props.generatedBy}
+          </p>
+        {/if}
         {#if props.badge}
           <div class="lead-row">
             <span class="badge lead-badge">
@@ -344,12 +356,10 @@
     flex-direction: column;
     gap: 0;
   }
-  .short-bar .generated-by::before {
+  .report-assistant-icon {
     width: 28px;
     height: 28px;
     flex: 0 0 28px;
-    background: url('../../assets/report-assistant-icon.svg') center / 100% 100% no-repeat;
-    content: '';
   }
   .short-bar .title-line {
     margin-left: 34px;

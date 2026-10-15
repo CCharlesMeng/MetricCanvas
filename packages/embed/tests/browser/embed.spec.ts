@@ -2011,6 +2011,7 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   const reportCover = reportHeader.locator('.report-cover');
   const reportTitle = reportCover.locator('h1');
   const reportGeneratedBy = reportCover.locator('.generated-by');
+  const reportAssistantIcon = reportGeneratedBy.locator('[data-decorative-icon="report-assistant"]');
   const reportSummary = reportHeader.locator('.report-summary');
   const reportSummaryTitle = reportSummary.locator('.report-summary-title span');
   const reportSummaryFrame = reportSummary.locator('.report-summary-frame');
@@ -2027,6 +2028,12 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   );
   const headerBackground = host.locator('[data-decorative-image="header-flow-background"]');
   await expect(reportCover).toHaveCount(1);
+  await expect(reportAssistantIcon).toHaveAttribute('src', /^data:image\/svg\+xml/);
+  await expect(reportAssistantIcon).toHaveCSS('width', '28px');
+  await expect(reportAssistantIcon).toHaveCSS('height', '28px');
+  await expect.poll(async () => reportAssistantIcon.evaluate((image) =>
+    image instanceof HTMLImageElement && image.complete && image.naturalWidth === 28
+  )).toBe(true);
   await expect.poll(async () => reportTitle.evaluate((title) => {
     const titleStyle = getComputedStyle(title);
     const decorationStyle = getComputedStyle(title, '::after');
@@ -2157,7 +2164,7 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(host.locator('[data-decorative-icon="risk-warning"]')).toHaveCount(1);
   await expect(host.locator('[data-decorative-icon="ranking-growth"]')).toHaveCount(1);
   await expect(host.locator('[data-decorative-icon="ranking-decline"]')).toHaveCount(0);
-  await expect(decorativeIcons).toHaveCount(10);
+  await expect(decorativeIcons).toHaveCount(11);
   await expect(decorativeIcons.first()).toHaveAttribute('src', /^data:image\/svg\+xml/);
   const riskNotices = host.locator('.text-block.risk-notice');
   await expect(riskNotices).toHaveCount(1);
