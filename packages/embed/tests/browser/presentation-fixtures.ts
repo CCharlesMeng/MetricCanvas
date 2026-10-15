@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { normalizePageDocument, versionPolicy } from '@metriccanvas/page';
-import type { Component } from '@metriccanvas/page/internal';
+import { chartFilterOptions, isChartComponent, walkPageComponents, type Component } from '@metriccanvas/page/internal';
 import type { PageDocument } from '@metriccanvas/page';
 import { responsiveFixtures } from '../../../engine/widgets/tests/responsive-fixtures';
 
@@ -11,6 +11,20 @@ export function presentationFixtures(): Array<{ name: string; document: PageDocu
   return Object.entries(responsiveFixtures).flatMap(([type, { variants }]) => variants.map(variant => {
     const name = `${type}${variant === 'default' ? '' : `-${variant}`}`;
     const document = JSON.parse(readFileSync(new URL(`component-${name}.json`, examples), 'utf8'));
+    // This matrix exercises chart presentation in both layouts. Dashboard-only controls
+    // keep their own full-page acceptance tests instead of entering the Report projection.
+    const chartFilters = chartFilterOptions(document);
+    walkPageComponents<Component>(document, component => {
+      if (isChartComponent(component)) delete component.props.filter;
+    });
+    if (chartFilters.size) {
+      document.filters = document.filters?.filter((filter: {id: string}) => !chartFilters.has(filter.id));
+      if (!document.filters?.length) delete document.filters;
+      for (const source of Object.values(document.dataSources) as Array<any>) {
+        if (source.source.type !== 'query') continue;
+        for (const id of chartFilters.keys()) delete source.source.query.filterBindings?.[id];
+      }
+    }
     for (const source of Object.values(document.dataSources) as Array<any>) {
       if (source.source.type !== 'query') continue;
       if (!source.source.initial) source.source.initial = {
