@@ -30,3 +30,7 @@
 上游 `cbf9c35b` 的 CI [38743812426](https://github.com/CCharlesMeng/MetricCanvas/actions/runs/38743812426) 已失败。其测试包含 `page-id-neutrality` 对 `report-pdf-export` 的名称冲突，以及 PDF 字段参考注释缺失导致的生成隔离检查失败。这两类问题已由新 main 的 b57fff40 修复，本次同步后重跑检查，不通过放宽中立性规则掩盖。
 
 原混合工作区的 SDT、旧类型和临时 PDF 样例失败仅是历史实施记录，不当作这个新基线的当前失败。真实 DQE／Relay／Java、真实 DS 模型和部署未验证；Edge 本机未安装，浏览器本地结果限 Chrome。此前安装包验证属于旧源码树，未冒充本次基线的安装包完整矩阵。
+
+## CI 后续修复
+
+功能提交 `d38959c9` 已 push 并核对远端 main。首轮 CI 的 authoring 作业发现 `_uses_product_bridge` 圈复杂度为 19，超过仓库上限 15。期间形态判断已提取为 `_is_period_filter`，保留所有原判断与递归行为。固定 `radon==6.0.1` 复测：15 个公共模块 362 个函数，最大复杂度 15、超限 0；契约检查及 2589 digest checks 通过。只更新 Python 校验文件及相应 Bundle 哈希，不调整复杂度门禁。

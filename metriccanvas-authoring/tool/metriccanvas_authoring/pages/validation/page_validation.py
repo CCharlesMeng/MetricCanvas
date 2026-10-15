@@ -34,10 +34,19 @@ class PageContractIssue:
         return asdict(self)
 
 
+def _is_period_filter(node):
+    if node.get('type') != 'timeRange':
+        return False
+    if 'display' in node or 'initialMode' in node:
+        return True
+    default = node.get('default')
+    return isinstance(default, dict) and 'mode' in default
+
+
 def _uses_product_bridge(node):
     if isinstance(node, list): return any(_uses_product_bridge(v) for v in node)
     if isinstance(node, dict) and node.get('type') == 'reportHeader' and isinstance(node.get('props'), dict) and 'pdfExport' in node['props']: return True
-    if isinstance(node, dict): return node.get('type') == 'pagedJoin' or (node.get('type') == 'timeRange' and ('display' in node or 'initialMode' in node or isinstance(node.get('default'),dict) and 'mode' in node['default'])) or (node.get('type') == 'timePoint' and ('min' in node or 'disableFuture' in node)) or node.get('mode') == 'numberRange' or any(_uses_product_bridge(v) for v in node.values())
+    if isinstance(node, dict): return node.get('type') == 'pagedJoin' or _is_period_filter(node) or (node.get('type') == 'timePoint' and ('min' in node or 'disableFuture' in node)) or node.get('mode') == 'numberRange' or any(_uses_product_bridge(v) for v in node.values())
     return False
 
 
