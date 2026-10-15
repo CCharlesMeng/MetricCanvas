@@ -179,7 +179,7 @@
     const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; publication?.invalidate(); parameterReview?.invalidate(); parameterInstance?.invalidate(); });
 
     if (languagePort) {
-      language = createAuthoringLanguage({ coordinator, port: languagePort, target: services.events,
+      language = createAuthoringLanguage({ coordinator, port: languagePort, target: window,
         selection: () => currentDocument && selectedComponent ? { pageId: String(currentDocument.id), componentId: selectedComponent.componentId } : null,
         flushPendingInput: () => {
           const input = document.activeElement;
@@ -193,7 +193,7 @@
       // The active view connects below; background leases remain owned by this task.
     }
     const stop = languagePort ? () => {} : listenForSavedDrafts({
-      target: services.events, read: coordinator.readSavedDraft,
+      target: window, read: coordinator.readSavedDraft,
       captureIdentity: () => {
         const identity = readRuntimeConfig();
         return JSON.stringify([identity?.operatorId, identity?.workspaceId]);
@@ -207,7 +207,7 @@
       onerror: (message) => { saveError = message; }
     });
     const stopApplyPage = listenForApplyPage({
-      target: services.events,
+      target: window,
       captureIdentity: () => {
         const config = readRuntimeConfig();
         return JSON.stringify([config?.operatorId, config?.workspaceId]);

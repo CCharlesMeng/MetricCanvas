@@ -68,6 +68,11 @@ try {
  await page.reload();await expect(page.getByTestId('workbench')).toBeVisible();
  const inspector=page.getByRole('complementary',{name:'检查器'});
  await expect(page.getByTestId('chat-unavailable')).toBeVisible();
+ // Portal props deliberately contain no event bus; the SDK can notify window directly.
+ doc.sections[0].components[0].props.body='窗口事件已刷新页面';revision++;
+ await page.evaluate(()=>window.dispatchEvent(new CustomEvent('metriccanvas:apply-page',{detail:{pageId:'asset-test'}})));
+ await expect(page.getByRole('main',{name:'页面画布',exact:true}).getByText('窗口事件已刷新页面',{exact:true})).toBeVisible();
+ expect(writes).toBe(0);
  const portalOverflow=await page.locator('body').evaluate(el=>el.style.overflow);
  await page.getByRole('button',{name:'查看元数据',exact:true}).click();
  await expect(page.getByRole('dialog')).toBeVisible();
@@ -133,6 +138,21 @@ try {
  });
  expect(failureCleanup).toEqual({failed:true,count:0,roots:0});
  if(adapterMode)expect(await page.evaluate(()=>adapterCounters.open === adapterCounters.closed && adapterCounters.open > 1)).toBe(true);
+ const previewPage=await browser.newPage();previewPage.on('pageerror',e=>errors.push(e.message));
+ let previewRequests=0;
+ await previewPage.route('**/fixture-assets/**',route=>{previewRequests++;return route.abort();});
+ try {
+  await previewPage.goto('http://127.0.0.1:5198/metrics/create?new=1');
+  await expect(previewPage.getByText('尚无页面文档')).toBeVisible();
+  const previewDocument={...doc,id:'window-preview'};
+  await previewPage.evaluate(previewJson=>window.dispatchEvent(new CustomEvent('metriccanvas:apply-page',{detail:{previewJson}})),previewDocument);
+  const previewCanvas=previewPage.getByRole('main',{name:'页面画布',exact:true});
+  await expect(previewCanvas.getByText('窗口事件已刷新页面',{exact:true})).toBeVisible();
+  await previewPage.evaluate(()=>window.dispatchEvent(new CustomEvent('metriccanvas:apply-page',{detail:{pageId:''}})));
+  await expect(previewPage.getByText('应用通知无效：需要 previewJson 或非空的 pageId。',{exact:true})).toBeVisible();
+  await expect(previewCanvas.getByText('窗口事件已刷新页面',{exact:true})).toBeVisible();
+  expect(previewRequests).toBe(0);
+ } finally {await previewPage.close();}
  expect(errors).toEqual([]);
- console.log(JSON.stringify({status:'PASS',profile,deploymentAdapter:adapterMode,qiankun:'2.10.16',browser:browser.version(),writes,evidence:'production HTML + CSS/UMD, prefix, navigation/back/forward/refresh, manual edit/save/reopen, cancel click/back/cross-prefix back/portal leave, local modal, unknown write retained without replay, token refresh, identity invalidation, unmount/remount/rapid switching, failed mount cleanup; HTTP fixture only'}));
+ console.log(JSON.stringify({status:'PASS',profile,deploymentAdapter:adapterMode,qiankun:'2.10.16',browser:browser.version(),writes,evidence:'production HTML + CSS/UMD, window apply-page without injected events (pageId refresh, previewJson, invalid event preservation), prefix, navigation/back/forward/refresh, manual edit/save/reopen, cancel click/back/cross-prefix back/portal leave, local modal, unknown write retained without replay, token refresh, identity invalidation, unmount/remount/rapid switching, failed mount cleanup; HTTP fixture only'}));
 } catch(error){console.error(await page.locator('body').innerText());console.error(errors);throw error;}finally{await browser.close();await new Promise(r=>server.close(r));if(deploymentDirectory)rmSync(deploymentDirectory,{recursive:true,force:true});}

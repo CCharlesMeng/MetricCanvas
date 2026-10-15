@@ -9,7 +9,7 @@ import type { DialogueAdapter } from '../dialogue/port';
 import type { AuthoringIntegration } from '../dialogue/authoring-integration';
 export const PLATFORM_CONTEXT = Symbol('platform-services');
 export function createPlatformServices(session: ReturnType<typeof createPlatformSession>, navigation: PlatformNavigation, options: {
-  embedded: boolean; dialogueAdapter?: DialogueAdapter; authoring?: AuthoringIntegration; events?: EventTarget;
+  embedded: boolean; dialogueAdapter?: DialogueAdapter; authoring?: AuthoringIntegration;
 }) {
   const config=session.readConfig();
   const workSession=createWorkSession({scope:{actorId:config?.operatorId??'',workspaceId:config?.workspaceId??'',pageId:'__platform-work-session__',serviceTarget:JSON.stringify([config?.pageMetadataBaseUrl,config?.dqeEndpoint])},base:navigation.base,origin:location.origin});
@@ -17,7 +17,7 @@ export function createPlatformServices(session: ReturnType<typeof createPlatform
   return {workSession,...createPageAssetServices({readConfig:session.readConfig,fetchImpl:session.fetchImpl}),session,navigation,
     workbenchGateway:createWorkbenchDqeGateway(session.fetchImpl,session.readConfig),
     dataGateway:createInjectedDqeGateway(session.fetchImpl,undefined,session.readConfig),
-    events:options.events ?? new EventTarget(), embedded:options.embedded,
+    embedded:options.embedded,
     dialogueAdapter:options.dialogueAdapter ?? {async mount(){throw Error('对话服务尚未接通。');}}, authoring:options.authoring};
 }
 export type PlatformServices = ReturnType<typeof createPlatformServices>;

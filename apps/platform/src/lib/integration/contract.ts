@@ -23,7 +23,6 @@ export interface PlatformPortalProps<TrustedAuthoring = never> {
   dialogueAdapter?: { mount(element: HTMLElement): Promise<() => void> };
   /** Optional trusted program adapter; use the repository's AuthoringIntegration type. */
   authoring?: TrustedAuthoring;
-  events?: EventTarget;
 }
 
 /** Versioned deployment seam. Implementations live outside the platform repository. */

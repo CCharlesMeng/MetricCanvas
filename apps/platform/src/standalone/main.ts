@@ -8,6 +8,6 @@ if(import.meta.env.DEV){
 const instance=await mountPlatform(document.getElementById('app')!,{
   routeBase:import.meta.env.BASE_URL.replace(/\/$/,'')||'/',readConfig:()=>readPageAssetsRuntimeConfig(),
   subscribeConfig(changed){window.addEventListener('metriccanvas:config-changed',changed);return()=>window.removeEventListener('metriccanvas:config-changed',changed);},
-  dialogueAdapter:panguDialogueAdapter,authoring:readAuthoringIntegration(),events:window
+  dialogueAdapter:panguDialogueAdapter,authoring:readAuthoringIntegration()
 },false);
 if(import.meta.hot)import.meta.hot.dispose(()=>{void instance.destroy();});
