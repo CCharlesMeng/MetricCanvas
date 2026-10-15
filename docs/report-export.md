@@ -2,13 +2,28 @@
 
 本文是集成应用的报告导出与浏览器 PDF 接入专题，维护操作、公共方法、编码接线和运行边界。页面协议概览见[PAGE-METADATA.md](../PAGE-METADATA.md)，参数与期间筛选配置见[PAGE-PARAMETERS.md](../PAGE-PARAMETERS.md#时间参数与顶部筛选)。
 
-## 直接下载 PDF
+## 配置内置 PDF 下载（6.28）
 
-从仓库根目录运行 `pnpm dev:playground`，打开[浏览器 PDF 演示](http://localhost:5173/preview?prototype=report-date)。选择并提交期间后点击“导出 PDF”，浏览器生成并下载 `经营分析报告.pdf`，无需打开打印预览。是否询问保存位置由浏览器下载设置决定。点击“准备完整导出视图”可先检查静态 DOM。
+Report顶层reportHeader在props中声明以下对象：
 
-演示使用本地合成数据，PDF 编码与下载均在用户浏览器内完成。`html2canvas` 1.4.1 和 `jsPDF` 4.2.1 随页面试验场打包并在导出时按需加载，运行时不依赖 CDN、PDF 编码接口、服务端 Chromium 或 Poppler。普通样例页面路由消费页面 JSON，按钮由集成应用接入；页面 JSON 无需新增下载配置字段。内网 IP、域名和 HTTPS 访问无需额外 PDF 路由；完整数据仍通过集成应用已有数据网关取得。
+```json
+{
+  "pdfExport": {
+    "label": "下载经营报告",
+    "filename": "经营分析报告.pdf"
+  }
+}
+```
 
-正文以图片写入 PDF，不能选中、复制或搜索。页面只报告已生成并发起下载，不能判断操作系统是否已把文件写入磁盘。
+对象存在即启用；`pdfExport: {}`使用默认按钮“下载 PDF”，文件名取触发页头标题。省略则不显示。两项均遵循既有文本取值协议，可引用页面参数、已应用筛选或显式parts，点击时冻结。工具带与filterIds共用，无日期控件也可独立显示。按钮下载整页，生成期间禁用重复点击并提供取消；错误在工具带显示。日期和下载控件不进入PDF，期间正文保留。
+
+从仓库根目录运行`pnpm dev:playground`，打开[内置PDF页面](http://localhost:5173/pages/report-pdf-export)。页面使用45行inline合成数据，无外部查询；包括自定义按钮及动态文件名、无日期的默认按钮和未启用对照。HTML集成应用示例见[内置下载](../packages/embed/examples/report-pdf-download.html)。本批次按用户要求未执行验证，示例存在不代表验收通过。
+
+PDF编码与下载均在浏览器内完成。html2canvas 1.4.1和jsPDF 4.2.1由引擎拥有依赖，集成应用无需另行安装或提供编码器。npm运行时在需要时加载编码依赖；HTML单文件产物捆绑全部依赖，不需要CDN、编码接口、服务端Chromium或Poppler。集成应用需要采用包含6.28能力的新引擎产物。
+
+标准编码使用A4，普通内容竖向，存在引擎标记的宽内容时整份横向。正文以图片写入，不能选中或搜索文字。所有页编码完成后通过Blob下载链接发起下载，无新窗口和打印预览；保存位置由浏览器下载设置决定。运行时只能报告已生成并发起下载，不能判断文件是否已写入磁盘。
+
+原[报告日期演示](http://localhost:5173/preview?prototype=report-date)仍保留静态视图预览及高级调用示例，共用同一引擎内部编码实现。
 
 ## 与时间筛选配合
 
@@ -30,7 +45,7 @@ await handle.withExportView(async ({ target, paper, wideElements, signal }) => {
 }, { signal: controller.signal });
 ```
 
-`pdfEncoder` 是集成应用自有实现，上例展示接线方式。引擎不编码、下载或保存 PDF。Svelte 使用 `bind:this` 取得实例；HTML 使用 `MetricCanvas.mount(...)` 返回的 handle。返回值透传回调结果。
+`pdfEncoder` 是集成应用自有实现，上例展示接线方式。标准下载由引擎内置实现；只有选择本节自定义消费回调时，编码与下载由回调负责。Svelte 使用 `bind:this` 取得实例；HTML 使用 `MetricCanvas.mount(...)` 返回的 handle。返回值透传回调结果。
 
 模块关系：页面实例先捕获已应用筛选、查询排序、表头筛选和局部表格状态；数据准备器通过同一数据网关重新取得完整结果；导出渲染器复用正式组件并展开全部正文；资源准备器固定图表、等待字体图片；最后交给集成应用回调。全部状态属于当前实例，正常浏览继续独立运行。
 
@@ -44,12 +59,12 @@ await handle.withExportView(async ({ target, paper, wideElements, signal }) => {
 - 声明为Top5等有限选择的主查询保留其集合范围；级联明细完整性按[查询结果绑定规则](cascading-queries.md#4-主集合与完整明细的边界)核验。
 - 日期输入、分页、选择、链接和详情浮层不进入导出；期间文字保留捕获值。详情专用查询不执行。
 - 使用同一已认证数据网关，正常重新取得全部匹配行而非直接下载初始快照或当前分页；重新取数失败时按下述可用内容规则保留页面数据。排序与表头筛选也保留。
-- 整页下载按可用内容继续：单个数据源取数或计算失败不阻断其余内容；后续分页取数失败时保留此前成功取得的行，普通查询与组合查询源均适用。重新取数完全失败但点击下载时已有就绪数据时，保留捕获的页面数据；没有可用数据的组件按空数据呈现。全部动态查询失败时，静态标题和正文仍可下载。不自动补零，不把查询失败当成真实零值。
+- 整页下载按可用内容继续：单个数据源取数或计算失败不阻断其余内容；后续分页取数失败时保留此前成功取得的行，普通查询与组合查询源均适用。重新取数完全失败但点击下载时已有就绪数据时，保留捕获的页面数据；没有可用数据的组件按空数据呈现，自定义组件保留标题与无数据提示。全部动态查询失败时，静态标题和正文仍可下载。不自动补零，不把查询失败当成真实零值。
 - 不完整数据的诊断保留在控制台；保留部分分页或页面数据时打印 `EXPORT_PARTIAL_DATA`，标记 `completeness: 'unverified'`，不输出查询体、筛选值或业务行。捕获数据保留原总数，普通组件可沿用部分数据提示；下载成功不代表数据完整。
 - 每个导出结果上限 10,000 行，整次准备上限 60 秒；PDF 编码和保存时间不计入。超限、提前结束、分页总数缺失或变化明确失败；无分页查询需 totalCount 或显式 resultScope: complete 完整结果契约，无截断或当前页降级。
 - 普通查询完整取数时，若累计行数超过接口声明的总数，控制台打印 `EXPORT_TOTAL_COUNT_MISMATCH` 警告并继续导出已收到的全部行；停止后续分页，不按错误总数截断，也不自动去重。此时数据完整性未确认，PDF 中保留收到的数据，警告仅输出到控制台。警告包含页面与修订 ID、数据源 ID、请求 offset/limit、本次与累计行数、接口总数及 `completeness: 'unverified'`，不输出查询体、筛选值或业务数据。其他完整性错误仍明确失败，组合查询源仍按其完整性规则校验。
 - 该警告正文直接显示异常数据源 ID 和关联组件的标题、ID；详情中的 `dataSourcePath` 指向数据源声明，`components` 列出组件类型、标题、所属内容分区、组件路径 `componentPath` 和数据绑定路径 `bindingPath`。共享数据源列出全部引用（包含 Tab 和组合卡内的组件）；`boundSourceId` 是组件直接绑定的源，`relation: 'dependency'` 表示异常源是它的上游依赖，`direct` 表示直接绑定。标题来自已解析的页面声明，不输出结果行或查询条件。
-- A4 多页由集成应用编码器完成；`wideElements` 对应 `data-export-orientation="landscape"` 和自然宽度提示，由编码器决定横向分页或缩放。引擎没有全局打印样式。
+- 标准下载由引擎编码器完成A4多页；自定义回调取得的`wideElements`对应 `data-export-orientation="landscape"` 和自然宽度提示，内置编码器对宽内容使用整份横向A4，自定义编码器可自行决定横向分页或缩放。引擎不注入全局打印样式。
 - 冻结的是查询作用域；重新取数不会承诺数据库快照隔离。AI 总结使用点击下载时已有的文字（含已流出的部分文字）；尚无文字或生成失败时呈现空态，不阻断其他内容。
 
 错误码：`EXPORT_NOT_READY`、`EXPORT_BUSY`、`EXPORT_CANCELLED`、`EXPORT_TIMEOUT`、`EXPORT_ROW_LIMIT`、`EXPORT_INCOMPLETE_DATA`、`EXPORT_RENDER_FAILED`。集成应用编码错误原样抛出；两类错误均清理临时 DOM。
@@ -60,29 +75,19 @@ await handle.withExportView(async ({ target, paper, wideElements, signal }) => {
 
 从仓根运行 `pnpm dev:playground`，打开上述5173地址，点击“导出 PDF”。示例中的“主要明细”和“补充明细”是内容分区组导航，分别显示经营明细及趋势、区域及项目分析；导出包含两个分组和全部 Tabs。
 
-调用链：`RuntimeView.withExportView` → [浏览器 PDF 客户端](../apps/playground/src/lib/report-pdf-client.ts) 复制静态 DOM 和计算后的样式 → 独立 iframe 准备字体与图片 → [分页规划](../apps/playground/src/lib/report-pdf-pagination.ts) → html2canvas 按页生成图片 → jsPDF 合成全部页面 → Blob 下载链接 → 清理编码视图和引擎临时视图。
+调用链：`RuntimeView.withExportView` → [浏览器 PDF 客户端](../packages/engine/runtime-ui/src/report-pdf-client.ts) 复制静态 DOM 和计算后的样式 → 独立 iframe 准备字体与图片 → [分页规划](../packages/engine/runtime-ui/src/report-pdf-pagination.ts) → html2canvas 按页生成图片 → jsPDF 合成全部页面 → Blob 下载链接 → 清理编码视图和引擎临时视图。
 
-调用方示例（Svelte 通过 `bind:this` 取得 `runtime`，HTML 挂载 handle 使用相同调用）：
+标准接入只需配置pdfExport，HTML挂载和Svelte RuntimeView消费相同页面，不需要新增挂载参数。`downloadReportPdf`是引擎内部实现，不是新增公共导出。现有页面试验场通过兼容转发模块继续使用它，自定义集成应用可继续用withExportView消费静态DOM。
 
-```ts
-import { downloadReportPdf } from './report-pdf-client';
+编码器在所有页面成功后才发起下载，失败不下载部分文件。收到signal后停止下一页和下载；html2canvas不支持中断当前截图，当前截图完成后释放独立编码iframe。字体、图片准备阶段支持取消。日期筛选变化不改变本轮捕获状态，页面文档更新或实例销毁会取消导出。
 
-await runtime.withExportView(async ({ target, signal, wideElements }) => {
-  if (wideElements.length) throw new Error('当前 PDF 示例仅支持竖向 A4');
-  const { pageCount } = await downloadReportPdf(target, signal, '经营分析报告.pdf');
-  // 到这里已生成 PDF 并发起浏览器下载，可以显示 pageCount。
-});
-```
-
-`downloadReportPdf` 是集成应用侧示例 helper，不是渲染引擎公共导出。它在所有页面编码成功后才发起下载，失败不下载部分结果。收到 `signal` 后停止下一页和下载；html2canvas 不支持中断正在进行的截图，因此当前页截图完成后再释放独立编码 iframe。字体、图片准备阶段支持及时取消。必须保留回调中的 `await`，确保引擎不会提前销毁正常消费中的导出视图。
-
-示例采用 A4 竖向、10 mm 边距、2 倍截图和页码。每次只分配当前页的 Canvas，不把整份长报告变成一个超大位图；表格行和图表不跨页裁切，表格续页重复表头，章节标题尽量与后续内容保持在一起。冻结图表保持静态图片占用的高度，防止绝对定位图片在截图中被裁掉。
+A4采用10mm边距、2倍截图和页码。每次只分配当前页的Canvas，表格行和图表不跨页裁切，续页重复表头，标题尽量与后续内容保持在一起。冻结图表保留测量高度。
 
 编码文档复制完整的计算样式及伪元素，保留多列、固定高度、同行对齐、封面铺满效果和原有间距，不再把分区强制改成纵向列表。渐变文字由浏览器先绘制为局部透明图片，保留原有字形和渐变，避免截图器把渐变铺成矩形或替换为单色。能容纳一页的短卡片整体分页；并排表格跨页时分别重复各自表头，按较高表头预留位置。完整图表使用全部结果范围，移除交互缩放窗口。
 
-宽分区仍明确拒绝；单个不可拆分的表格行、图表或正文块超过 A4 页高时明确失败，不静默裁切。任意宽分区的横向编排需由集成应用消费 `wideElements` 并独立验收。截图和文字排版受浏览器、字体及 html2canvas CSS 支持范围影响，部署时应保证报告字体在客户端可用。无需配置 `MC_PDF_CHROMIUM` 或 `MC_PDF_RENDERER`。
+宽内容触发整份横向A4；单个不可拆分的表格行、图表或正文块超过对应页高时明确失败，不静默裁切。截图和文字排版受浏览器、字体及 html2canvas CSS 支持范围影响，部署时应保证报告字体在客户端可用。无需配置 `MC_PDF_CHROMIUM` 或 `MC_PDF_RENDERER`。
 
-分页边界由[分页单元测试](../apps/playground/tests/report-pdf-pagination.test.ts)核验，实际下载、长表、图片失败及取消清理由[浏览器回归脚本](../apps/playground/tests/report-pdf-browser.mjs)核验。从仓根运行：
+已有分页回归入口为[分页单元测试](../apps/playground/tests/report-pdf-pagination.test.ts)，实际下载、长表、图片失败及取消清理回归入口为[浏览器回归脚本](../apps/playground/tests/report-pdf-browser.mjs)；本批次未执行。从仓根可运行：
 
 ```sh
 pnpm exec vitest run apps/playground/tests/report-pdf-pagination.test.ts
@@ -94,7 +99,7 @@ node apps/playground/tests/report-pdf-runtime-fidelity-browser.mjs
 node apps/playground/tests/report-pdf-partial-browser.mjs
 ```
 
-部分取数失败回归覆盖单源失败、后续分页失败、重新取数失败后保留已显示数据、全部动态源失败及依赖失败数据的 AI 总结，并实际生成 PDF、发起浏览器下载和检查临时视图清理。它使用合成数据网关，不代表真实 DQE/Relay 联通。
+部分取数失败回归覆盖单源失败、后续分页失败、重新取数失败后保留已显示数据、全部动态源失败及失败数据驱动的自定义组件，并实际生成 PDF、发起浏览器下载和检查临时视图清理。它使用合成数据网关，不代表真实 DQE/Relay 联通。
 
 浏览器测试期间不要同时构建或运行 `svelte-kit sync`，避免开发服务重载打断测试；可用 `REPORT_PDF_BASE_URL` 指定另一服务地址。
 

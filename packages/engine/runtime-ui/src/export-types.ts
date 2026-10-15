@@ -4,7 +4,7 @@ export interface PreparedExportView {
   target: HTMLElement;
   pageId: string;
   paper: 'A4';
-  /** Sections marked for a landscape page; host encoder controls PDF pagination. */
+  /** Sections marked as wide; built-in PDF uses landscape, custom consumers choose their pagination. */
   wideElements: readonly HTMLElement[];
   signal: AbortSignal;
 }

@@ -114,7 +114,7 @@
 | [0094](./0094-independent-platform-deployment-adapters.md) | 平台与门户部署 Adapter 分别维护和发布 | 现行；门户专属接线由独立部署项目维护，平台仅发布版本化契约与静态产物 |
 | [0095](./0095-cross-source-computation-and-ioc-schema-compatibility.md) | 跨源计算仍属于页面数据源，6.12 保留 6.11 读取 | 现行；6.12 增量；用户确认保留 6.11 读取；创作契约按实施顺序最后同步 |
 | [0096](./0096-ioc-view-state-and-post-query-presentation.md) | 内容切换与详情视图共享组件，分别持有状态 | 现行；IOC 已确认行为的 6.12 增量；创作契约待最后阶段同步 |
-| [0097](./0097-report-date-filter-and-instance-export-view.md) | 报告日期筛选复用实例状态，PDF 由集成应用消费静态导出视图 | 现行；部分由 [0100](./0100-explicit-filter-text-values-and-period-format.md) 修订；用户批准 C 工具带及实例 DOM 导出；6.13 增量，生产 PDF 与真实服务联通待验 |
+| [0097](./0097-report-date-filter-and-instance-export-view.md) | 报告日期筛选、实例静态导出视图与内置 PDF 下载 | 现行；部分由 [0100](./0100-explicit-filter-text-values-and-period-format.md) 修订；6.28按用户批准增加引擎内置PDF下载；保留实例DOM自定义导出；本批次未验收 |
 | [0098](./0098-profiled-page-composition-and-incremental-navigation.md) | 平台创作共用入口，报告与看板分别装配，导航按需增量建立 | 现行；用户完成 D1–D7 grill；统一入口、内部装配策略与受控结构树；实施尚未开始 |
 | [0099](./0099-raw-query-result-bindings-and-bounded-left-joins.md) | 查询以原始结果集合声明输入 计算继续在页面数据源内执行 | 现行；部分由 [0105](./0105-shared-page-data-execution-and-initial-consumption.md)、[0107](./0107-query-page-windows-drive-result-dependencies.md) 修订；用户确认商务SDT两阶段请求和小增量复用方案，并授权实施验证；真实DQE验真单独记录 |
 | [0100](./0100-explicit-filter-text-values-and-period-format.md) | 文本显式读取参数或筛选状态，期间只使用统一 period 格式 | 现行；部分由 [0109](./0109-explicit-text-value-composition.md) 修订；用户批准显式筛选文本引用，只保留 period 格式；6.15 增量 |

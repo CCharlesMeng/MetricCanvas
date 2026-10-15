@@ -58,8 +58,7 @@
   async function exportPdf() {
     exporting=true;exportMessage='准备完整报告并按 A4 分页生成 PDF…';
     try {
-      await runtime.withExportView(async ({target,signal,wideElements})=>{
-        if(wideElements.length)throw Error('当前 PDF 示例仅支持竖向 A4；请调整过宽的内容分区，或由集成应用接入横向 PDF。');
+      await runtime.withExportView(async ({target,signal})=>{
         const rowCount=target.querySelectorAll('tbody tr').length;
         const {pageCount}=await downloadReportPdf(target,signal);
         exportMessage=`PDF 已生成并发起下载：${pageCount} 页、${rowCount} 行，包含全部分组、区域及项目内容。`;

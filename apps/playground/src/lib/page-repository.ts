@@ -7,7 +7,7 @@ import { catalogPageEntry, type PlaygroundPageEntry } from './page-catalog-entry
  * 开发工具只消费仓库页面。pages/ 在 Vite root 之外，dev 下的监听由
  * vite.config.ts 的 watch-page-assets 插件补齐，修改页面即热刷新。
  */
-const modules = import.meta.glob<{ default: unknown }>('$pages/*.json');
+const modules = import.meta.glob<{ default: unknown }>('$pages/**/*.json');
 
 interface StaticPageRepository extends PageRepository {
   list(): Promise<PlaygroundPageEntry[]>;

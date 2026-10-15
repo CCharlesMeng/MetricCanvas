@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MetricCanvas · 引擎内置 PDF 下载</title>
+  <style>body{margin:0;background:#f4f6fa;font-family:system-ui,sans-serif}main{max-width:1200px;margin:auto}#status{padding:12px 20px}</style>
+</head>
+<body>
+  <main><p id="status" role="status">本地合成数据，正在加载…</p><div id="report"></div></main>
+  <script src="../dist/metriccanvas-runtime.global.js"></script>
+  <script>
+    (async () => {
+      try {
+        const response = await fetch('/pages/report-pdf-export.json');
+        if (!response.ok) throw new Error('页面加载失败');
+        const documentPage = await response.json();
+        window.runtime = MetricCanvas.mount('#report', { document: documentPage });
+        document.getElementById('status').textContent = '本地合成数据；直接点击报告工具带的下载按钮。';
+      } catch (error) {
+        document.getElementById('status').textContent = error.message;
+      }
+    })();
+  </script>
+</body>
+</html>

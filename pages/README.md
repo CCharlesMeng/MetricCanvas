@@ -78,3 +78,11 @@
 - 手工输入未来月份后回车，应显示“日期不得晚于…”且已应用标题保持不变；URL指定未来月份时不能恢复未来值。进入下一月后重新打开，新月份可选。
 - 商务SDT终极版：[commercial-sdt-efficiency-ultimate-monthly.json](sdt/commercial-sdt-efficiency-ultimate-monthly.json)，默认2026-10并声明同样限制，标题和所有15个查询继续跟随月份。该业务页需要真实DQE；本地选择器验收不证明业务取数成功。
 - 协议、边界和月份推进由 time-point-no-future 测试覆盖；浏览器直接消费上述页面及终极版文件，不在测试里临时拼出交互配置。
+
+## Report PDF 下载与 SDT 月报预览
+
+[report-pdf-export.json](report-pdf-export.json)使用45行inline合成数据，覆盖配置文字/动态文件名、默认按钮及未启用对照。入口为`/pages/report-pdf-export`。
+
+[SDT月报](sdt/commercial-sdt-efficiency-ultimate-monthly.json)可在`http://localhost:5173/pages/commercial-sdt-efficiency-ultimate-monthly`预览，目录中的经营分析分组提供入口；下载文件名包含已应用月份，业务数据仍依赖DQE。页面仓库现在递归读取pages子目录。
+
+按钮使用白底描边，准备/生成状态在按钮内显示，成功或取消后恢复配置名称；失败可重试，悬停可看原因。本批次按用户要求未运行测试或构建。

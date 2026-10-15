@@ -17,6 +17,10 @@ export const reportHeaderComponentZ = z
       .object({
         title: nonEmptyTextValueZ,
         filterIds: z.array(idZ).min(1).optional(),
+        pdfExport: z.object({
+          label: nonEmptyTextValueZ.optional(),
+          filename: nonEmptyTextValueZ.optional()
+        }).strict().optional(),
         subtitle: textValueZ.optional(),
         subtitleFormat: z.literal('semanticHtml').optional(),
         generatedBy: textValueZ.optional(),

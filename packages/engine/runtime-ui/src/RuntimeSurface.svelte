@@ -68,6 +68,8 @@
     type TableViewState
   } from '../../widgets/src';
   import { withPreparedExportView } from './export-view';
+  import { downloadReportPdf } from './report-pdf-client';
+  import { REPORT_PDF_CONTEXT, reportPdfFilename, type ReportPdfContext } from './report-pdf-context';
   import type { ExportViewConsumer, ExportViewOptions } from './export-types';
   import { SUMMARY_EXPORT_CAPTURE, type SummaryCapture } from './export-render-state';
   import { ExportViewError } from '../../runtime/src/export-snapshots';
@@ -143,9 +145,42 @@
   setContext(SUMMARY_EXPORT_CAPTURE,summaryCapture);
   let tableExportStates = $state<Record<string, { busy: boolean; error?: string }>>({});
   const exportController = createExportController(next => tableExportStates = next);
+  // ':' cannot occur in a component id; page tasks cannot collide with table exports.
+  const pageExportTask = 'page:export';
+  let reportPdfMessage = $state('');
+  let reportPdfError = $state<string | undefined>();
+  let reportPdfGeneration = 0;
+  const reportPdf: ReportPdfContext = {
+    get busy() { return tableExportStates[pageExportTask]?.busy ?? false; },
+    get error() { return reportPdfError; },
+    get message() { return reportPdfMessage; },
+    async download(props) {
+      if (reportPdf.busy) return;
+      const generation = ++reportPdfGeneration;
+      const filename = reportPdfFilename(props);
+      reportPdfError = undefined;
+      reportPdfMessage = '正在准备报告…';
+      try {
+        await withExportView(async ({target, signal}) => {
+          if (generation === reportPdfGeneration) reportPdfMessage = '正在生成 PDF…';
+          await downloadReportPdf(target, signal, filename);
+        });
+      } catch (cause) {
+        if (generation !== reportPdfGeneration) return;
+        if (!(cause instanceof ExportViewError && cause.code === 'EXPORT_CANCELLED')) {
+          reportPdfError = cause instanceof Error ? cause.message : '导出失败';
+          console.error('[MetricCanvas][REPORT_PDF_FAILED] PDF 下载失败', cause);
+        }
+      } finally {
+        if (generation === reportPdfGeneration) reportPdfMessage = '';
+      }
+    },
+    cancel() { exportController.cancel(pageExportTask); }
+  };
+  setContext(REPORT_PDF_CONTEXT, reportPdf);
   let tableController: ReturnType<typeof createTableController> | undefined;
   let tableRevision = $state(0);
-  onDestroy(() => { exportController.reset(); tableController?.dispose(); });
+  onDestroy(() => { reportPdfGeneration++; exportController.reset(); tableController?.dispose(); });
   export async function withExportView<T>(consume:ExportViewConsumer<T>,options?:ExportViewOptions):Promise<T> {
     if(pageState.phase!=='ready'||!stream||!surfaceRoot)throw new ExportViewError('EXPORT_NOT_READY','页面实例尚未就绪');
     // Capture every runtime value before the first await; later interactions stay independent.
@@ -157,7 +192,7 @@
     const state={page,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
     const queries=stream.captureQueries();
     const program=stream.getSourceProgram();
-    return exportController.run('page', controller => withPreparedExportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program},consume,options));
+    return exportController.run(pageExportTask, controller => withPreparedExportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program},consume,options));
   }
   let pageState = $state<PageState>({ phase: 'loading' });
   let snapshots = $state<PageDataSnapshots>(new Map());
@@ -202,6 +237,10 @@
 
   function dispose() {
     untrack(() => closeDetail(false));
+    reportPdfGeneration++;
+    reportPdfMessage = '';
+    reportPdfError = undefined;
+    exportController.reset();
     session += 1;
     for (const fn of disposers) fn();
     disposers = [];
@@ -1043,7 +1082,7 @@
     {@const contentFilters = contentFilterDeclarations(readyPage, declarations)}
     {@const layoutForm = readyPage.layout ?? 'report'}
     {@const firstComponent = readyPage.sections[0]?.components[0]}
-    {@const leadingDateToolbar = layoutForm === 'report' && !readyPage.sections[0]?.title && firstComponent?.type === 'reportHeader' && firstComponent.layout.span === 12 && !!firstComponent.props.filterIds?.length}
+    {@const leadingDateToolbar = layoutForm === 'report' && !readyPage.sections[0]?.title && firstComponent?.type === 'reportHeader' && firstComponent.layout.span === 12 && (!!firstComponent.props.filterIds?.length || !!firstComponent.props.pdfExport)}
     {@const dashboardToolbar = readyPage.dashboardToolbar ?? 'visible'}
     {@const dashboardToolbarConfig =
       typeof dashboardToolbar === 'object' ? dashboardToolbar : undefined}

@@ -34,3 +34,7 @@ pnpm build:playground # 独立静态构建，输出 apps/playground/build
 下载范围、编码服务的Chromium/Poppler依赖及接入方法统一见[报告完整导出与PDF下载接入](../../docs/report-export.md)。此编码服务仅在开发态提供；集成应用提供生产下载入口与编码器。
 
 旧应用名为 Canvas；目录和包名现为 `apps/playground` / `playground`。搭建画布组件 `MetricCanvas` 与渲染引擎的名字保持原义。边界裁决见 [ADR-0075](../../docs/adr/0075-page-playground-as-development-tool.md)。
+
+### 引擎内置 PDF 下载
+
+打开`http://localhost:5173/pages/report-pdf-export`，或者经营分析分组中的商务SDT月报。Report页头使用`pdfExport: {label?, filename?}`配置按钮和文件名；与日期筛选共用工具带，白底描边，状态在按钮内切换，成功后恢复原名称。编码依赖由引擎提供；Playground高级示例转发到同一实现。页面仓库递归读取pages子目录。本批次未运行测试或构建。

@@ -29,7 +29,9 @@
     "echarts": "^6.1.0",
     "@metriccanvas/ui": "workspace:0.1.0",
     "@metriccanvas/data-execution": "workspace:*",
-    "exceljs": "4.4.0"
+    "exceljs": "4.4.0",
+    "html2canvas": "1.4.1",
+    "jspdf": "4.2.1"
   },
   "peerDependencies": {
     "svelte": ">=5.29.0 <6"

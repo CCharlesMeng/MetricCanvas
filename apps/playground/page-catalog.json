@@ -241,6 +241,26 @@
         "月份选择",
         "未来时间限制"
       ]
+    },
+    {
+      "id": "commercial-sdt-efficiency-ultimate-monthly",
+      "group": "reports",
+      "summary": "商务SDT行权效率专项月报，支持月份筛选和 PDF 下载，业务数据需要 DQE。",
+      "tags": [
+        "商务SDT",
+        "月份筛选",
+        "PDF下载"
+      ]
+    },
+    {
+      "id": "report-pdf-export",
+      "group": "features",
+      "summary": "Report 工具带内置 PDF 下载，可配置按钮文字和动态文件名，包含默认与关闭对照。",
+      "tags": [
+        "PDF下载",
+        "报告工具带",
+        "本地合成数据"
+      ]
     }
   ]
 }

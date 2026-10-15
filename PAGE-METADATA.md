@@ -33,6 +33,7 @@
 | 顶部切换月份或日期并联动查询与文字 | [时间参数与顶部筛选](PAGE-PARAMETERS.md#时间参数与顶部筛选) | [报告页头时间筛选页面](pages/report-date-filter-example.json) |
 | 先查对象集合，再查明细并关联展示 | [级联查询](docs/cascading-queries.md) | [商务SDT报告](pages/business-sdt-cascade-example.json) |
 | 配置每张表的独立搜索与完整Excel导出 | [表格工具区](docs/table-export.md) | [表格工具区示例](packages/page/fixtures/contract-valid/table-toolbar-page.json) |
+| 配置 Report 工具带内置 PDF 下载与按钮文字（6.28） | [报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628) | [内置PDF下载页面](pages/report-pdf-export.json) |
 | 下载当前筛选范围内的完整报告PDF | [导出与PDF下载接入](docs/report-export.md) | [HTML接入示例](packages/embed/examples/report-export.html) |
 
 1. 按场景进入专题；按JSON路径查[模块参考](contracts/metriccanvas/page/reference/README.md)。

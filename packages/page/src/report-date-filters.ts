@@ -10,7 +10,11 @@ export function reportDateFilterErrors(page: Page): TypedError[] {
   const filters = new Map((page.filters ?? []).map(f => [f.id, f]));
   const placed = new Set<string>();
   walkPageComponents(page, (component, path) => {
-    if (component.type !== 'reportHeader' || !component.props.filterIds) return;
+    if (component.type !== 'reportHeader') return;
+    if (component.props.pdfExport && (page.layout === 'dashboard' || !/^\/sections\/\d+\/components\/\d+$/.test(path))) {
+      error(`${path}/props/pdfExport`, 'PDF 下载工具带只允许放在报表的顶层页头');
+    }
+    if (!component.props.filterIds) return;
     if (page.layout === 'dashboard' || !/^\/sections\/\d+\/components\/\d+$/.test(path)) {
       error(`${path}/props/filterIds`, '日期工具带只允许放在报表的顶层页头');
     }

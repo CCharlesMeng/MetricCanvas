@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.25",
+  "schemaVersion": "6.28",
   "id": "commercial-sdt-efficiency-ultimate-monthly",
   "meta": {
     "title": "商务SDT行权效率专项报告",
@@ -1312,7 +1312,19 @@
             "decoration": "shortBar",
             "filterIds": [
               "report-period-filter"
-            ]
+            ],
+            "pdfExport": {
+              "label": "下载 PDF",
+              "filename": {
+                "parts": [
+                  "商务SDT行权效率专项报告-",
+                  {
+                    "filter": "report-period-filter",
+                    "format": "period"
+                  }
+                ]
+              }
+            }
           }
         }
       ]

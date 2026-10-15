@@ -469,3 +469,7 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 6.6 分组 times 已支持区间；历史讨论另见[时间区间参数提案](docs/archive/page-time-range-proposal/time-range-parameters.md)，不属于本文现行协议。
 
 6.25可另声明 `disableFuture: true`，单点参数的实际值必须不晚于本地当前月份／日期；未来参数在初始化时拒绝，不钳制为当前期间。可与 min 共同使用，默认值及所有用户输入遵循同一规则，详见[禁止未来时间](docs/page-metadata/filters.md#禁止未来时间625)。
+
+### Report 日期工具带与 PDF 下载
+
+6.28起，`reportHeader.props.pdfExport`与`filterIds`共用工具带。按钮文字`label`和文件名`filename`均遵循文本取值协议，可用`{parts:["经营报告-",{filter:"report-month",format:"period"}]}`引用当前已应用期间。导出点击时捕获期间、数据作用域与文件名，未提交草稿不参与；PDF不包含日期及下载控件。声明和默认行为见[报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628)，完整示例见[内置PDF下载页面](pages/report-pdf-export.json)。
