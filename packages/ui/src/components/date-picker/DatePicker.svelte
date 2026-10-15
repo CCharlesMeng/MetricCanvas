@@ -10,11 +10,12 @@
     range?: boolean;
     required?: boolean;
     min?: string;
+    disableFuture?: boolean;
     disabled?: boolean;
     value: DateRangeValue | null;
     onchange: (value: DateRangeValue | null) => void;
   }
-  let { label, precision, min, range = false, required = false, disabled = false, value, onchange }: Props = $props();
+  let { label, precision, min, disableFuture = false, range = false, required = false, disabled = false, value, onchange }: Props = $props();
   const id = $props.id();
   let anchor: HTMLDivElement;
   let panel = $state<HTMLDivElement>();
@@ -30,13 +31,15 @@
   let active = $state('');
   let left = $state(0);
   let top = $state(0);
-  const today = $derived(calendarValue(new Date(), precision));
+  let clock = $state(new Date());
+  const today = $derived(calendarValue(clock, precision));
+  const max = $derived(disableFuture ? today : undefined);
   const boards = $derived(range ? [view, precision === 'month' ? { year: view.year + 1, month: 1 } : shiftCalendar(view, 1)] : [view]);
   const selectedFrom = $derived(start ? (hover && hover < start ? hover : start) : value?.from ?? '');
   const selectedTo = $derived(start ? (hover && hover > start ? hover : start) : value?.to ?? '');
 
   function resetDraft() { from = value?.from ?? ''; to = value?.to ?? ''; start = ''; hover = ''; error = ''; }
-  $effect(() => { value; precision; range; min; untrack(() => { resetDraft(); open = false; }); });
+  $effect(() => { value; precision; range; min; disableFuture; untrack(() => { resetDraft(); open = false; }); });
   $effect(() => { if (disabled) open = false; });
 
   function position() {
@@ -90,15 +93,18 @@
 
   function show() {
     if (disabled || open) return;
+    clock = new Date();
     resetDraft(); level = precision;
     const initial = value?.from ?? today;
     active = min && initial < min ? min : initial;
+    if (max && active > max) active = max;
     view = calendarView(active); open = true;
   }
   function close(focus = false) { open = false; start = ''; hover = ''; if (focus) firstInput?.focus(); }
   function submit(event?: Event) {
     if (disabled) return;
-    const result = calendarDraft(from.trim(), to.trim(), precision, range, required, min);
+    clock = new Date();
+    const result = calendarDraft(from.trim(), to.trim(), precision, range, required, min, max);
     error = result.ok ? '' : result.error;
     if (result.ok) {
       // Enter commits without blurring. A later native change event for the
@@ -111,6 +117,11 @@
   function canNavigate(months: number) {
     const next = shiftCalendar(view, months);
     if (next.year < 1 || next.year > 9998) return false;
+    if (max) {
+      if (level === 'year' && Math.floor(next.year / 10) * 10 > Number(max.slice(0, 4))) return false;
+      if (level === 'month' && next.year > Number(max.slice(0, 4))) return false;
+      if (level === 'date' && `${String(next.year).padStart(4, '0')}-${String(next.month).padStart(2, '0')}` > max.slice(0, 7)) return false;
+    }
     if (!min) return true;
     if (level === 'year') return Math.floor(next.year / 10) * 10 + 9 >= Number(min.slice(0, 4));
     if (level === 'month') return next.year + (range ? 1 : 0) >= Number(min.slice(0, 4));
@@ -119,6 +130,7 @@
   }
   function navigate(months: number) { if (canNavigate(months)) view = shiftCalendar(view, months); }
   function cellDisabled(cell: CalendarCell) {
+    if (max && (level === 'year' ? cell.label > Number(max.slice(0, 4)) : cell.value > max.slice(0, level === 'month' ? 7 : 10))) return true;
     if (!min) return false;
     if (level === 'year') return cell.label < Number(min.slice(0, 4));
     return cell.value < min.slice(0, level === 'month' ? 7 : 10);
@@ -167,10 +179,11 @@
     const amount = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -columns, ArrowDown: columns }[event.key];
     if (amount !== undefined) {
       event.preventDefault();
-      if (level === 'year') { const year = cell.label + amount; if (year < 1 || year > 9998 || (min && year < Number(min.slice(0, 4)))) return; active = String(year); view = { ...view, year }; }
+      if (level === 'year') { const year = cell.label + amount; if (year < 1 || year > 9998 || (min && year < Number(min.slice(0, 4))) || (max && year > Number(max.slice(0, 4)))) return; active = String(year); view = { ...view, year }; }
       else {
         const next = moveCalendarValue(cell.value, level, amount);
         if (min && next < min.slice(0, level === 'month' ? 7 : 10)) return;
+        if (max && next > max.slice(0, level === 'month' ? 7 : 10)) return;
         active = next; view = calendarView(active);
       }
       if (start) hover = active;
@@ -180,6 +193,7 @@
       navigate((event.key === 'PageUp' ? -1 : 1) * (level === 'year' ? 120 : level === 'month' || event.shiftKey ? 12 : 1));
       active = level === 'year' ? String(view.year) : `${String(view.year).padStart(4, '0')}-${String(view.month).padStart(2, '0')}${level === 'date' ? '-01' : ''}`;
       if (min && level !== 'year' && active < min.slice(0, level === 'month' ? 7 : 10)) active = min.slice(0, level === 'month' ? 7 : 10);
+      if (max && level !== 'year' && active > max.slice(0, level === 'month' ? 7 : 10)) active = max.slice(0, level === 'month' ? 7 : 10);
       await focusCell(active);
     } else if (event.key === 'Home' || event.key === 'End') {
       event.preventDefault();

@@ -1,0 +1,1952 @@
+{
+  "schemaVersion": "6.25",
+  "id": "commercial-sdt-efficiency-ultimate-monthly",
+  "meta": {
+    "title": "商务SDT行权效率专项报告",
+    "description": "辉哥版页面结构与展示规则，标准版指标及阶段查询；月份选择驱动报告查询，不含页头摘要。"
+  },
+  "filters": [
+    {
+      "id": "report-period-filter",
+      "type": "timePoint",
+      "granularity": "month",
+      "label": "报告期间",
+      "required": true,
+      "initialParam": "report-period",
+      "disableFuture": true
+    }
+  ],
+  "dataSources": {
+    "rep-office-sdt-avg-time": {
+      "fields": {
+        "avg-decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审SDT平均决策时长",
+          "defaultFormat": "number-2",
+          "queryField": "商审SDT平均决策时长"
+        },
+        "avg-decision-time-change": {
+          "type": "number",
+          "role": "measure",
+          "label": "平均决策时长月变化",
+          "defaultFormat": "number-1-signed",
+          "nullable": true,
+          "queryField": "商审SDT平均决策时长月变化"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "商审SDT平均决策时长",
+                  "商审SDT平均决策时长月变化"
+                ],
+                "output_dims": [],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "阶段名称",
+                      "dim_value_list": [
+                        "代表处SDT"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
+            }
+          }
+        }
+      }
+    },
+    "rep-office-sdt-count": {
+      "fields": {
+        "decision-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审审批人决策次数",
+          "defaultFormat": "number",
+          "queryField": "商审审批人决策次数"
+        },
+        "decision-count-change": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策次数月变化",
+          "defaultFormat": "number-signed",
+          "nullable": true,
+          "queryField": "商审审批人决策次数月变化"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "商审审批人决策次数",
+                  "商审审批人决策次数月变化"
+                ],
+                "output_dims": [],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "阶段名称",
+                      "dim_value_list": [
+                        "代表处SDT"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
+            }
+          }
+        }
+      }
+    },
+    "rep-office-sdt-trend": {
+      "fields": {
+        "time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "时间",
+          "queryField": "账期(month)"
+        },
+        "avg-decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审SDT平均决策时长",
+          "defaultFormat": "number-2",
+          "nullable": true,
+          "queryField": "商审SDT平均决策时长"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "商审SDT平均决策时长"
+                ],
+                "output_dims": [
+                  "账期(month)"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "阶段名称",
+                      "dim_value_list": [
+                        "代表处SDT"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {
+                  "order_by_field": "账期(month)",
+                  "type": "asc"
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "lastN",
+                "unit": "month",
+                "n": 6
+              }
+            }
+          }
+        }
+      }
+    },
+    "region-sdt-avg-time": {
+      "fields": {
+        "avg-decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审SDT平均决策时长",
+          "defaultFormat": "number-2",
+          "queryField": "商审SDT平均决策时长"
+        },
+        "avg-decision-time-change": {
+          "type": "number",
+          "role": "measure",
+          "label": "平均决策时长月变化",
+          "defaultFormat": "number-1-signed",
+          "nullable": true,
+          "queryField": "商审SDT平均决策时长月变化"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "商审SDT平均决策时长",
+                  "商审SDT平均决策时长月变化"
+                ],
+                "output_dims": [],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "阶段名称",
+                      "dim_value_list": [
+                        "地区部SDT"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
+            }
+          }
+        }
+      }
+    },
+    "region-sdt-count": {
+      "fields": {
+        "decision-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审审批人决策次数",
+          "defaultFormat": "number",
+          "queryField": "商审审批人决策次数"
+        },
+        "decision-count-change": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策次数月变化",
+          "defaultFormat": "number-signed",
+          "nullable": true,
+          "queryField": "商审审批人决策次数月变化"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "商审审批人决策次数",
+                  "商审审批人决策次数月变化"
+                ],
+                "output_dims": [],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "阶段名称",
+                      "dim_value_list": [
+                        "地区部SDT"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
+            }
+          }
+        }
+      }
+    },
+    "cloud-sdt-avg-time": {
+      "fields": {
+        "avg-decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审SDT平均决策时长",
+          "defaultFormat": "number-2",
+          "queryField": "商审SDT平均决策时长"
+        },
+        "avg-decision-time-change": {
+          "type": "number",
+          "role": "measure",
+          "label": "平均决策时长月变化",
+          "defaultFormat": "number-1-signed",
+          "nullable": true,
+          "queryField": "商审SDT平均决策时长月变化"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "商审SDT平均决策时长",
+                  "商审SDT平均决策时长月变化"
+                ],
+                "output_dims": [],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "阶段名称",
+                      "dim_value_list": [
+                        "华为云计算SDT"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
+            }
+          }
+        }
+      }
+    },
+    "cloud-sdt-count": {
+      "fields": {
+        "decision-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审审批人决策次数",
+          "defaultFormat": "number",
+          "queryField": "商审审批人决策次数"
+        },
+        "decision-count-change": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策次数月变化",
+          "defaultFormat": "number-signed",
+          "nullable": true,
+          "queryField": "商审审批人决策次数月变化"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "商审审批人决策次数",
+                  "商审审批人决策次数月变化"
+                ],
+                "output_dims": [],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "阶段名称",
+                      "dim_value_list": [
+                        "华为云计算SDT"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
+            }
+          }
+        }
+      }
+    },
+    "region-sdt-trend": {
+      "fields": {
+        "time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "时间",
+          "queryField": "账期(month)"
+        },
+        "avg-decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审SDT平均决策时长",
+          "defaultFormat": "number-2",
+          "nullable": true,
+          "queryField": "商审SDT平均决策时长"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "商审SDT平均决策时长"
+                ],
+                "output_dims": [
+                  "账期(month)"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "阶段名称",
+                      "dim_value_list": [
+                        "地区部SDT"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {
+                  "order_by_field": "账期(month)",
+                  "type": "asc"
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "lastN",
+                "unit": "month",
+                "n": 6
+              }
+            }
+          }
+        }
+      }
+    },
+    "cloud-sdt-trend": {
+      "fields": {
+        "time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "时间",
+          "queryField": "账期(month)"
+        },
+        "avg-decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审SDT平均决策时长",
+          "defaultFormat": "number-2",
+          "nullable": true,
+          "queryField": "商审SDT平均决策时长"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "商审SDT平均决策时长"
+                ],
+                "output_dims": [
+                  "账期(month)"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "阶段名称",
+                      "dim_value_list": [
+                        "华为云计算SDT"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {
+                  "order_by_field": "账期(month)",
+                  "type": "asc"
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "lastN",
+                "unit": "month",
+                "n": 6
+              }
+            }
+          }
+        }
+      }
+    },
+    "rep-office-domestic": {
+      "fields": {
+        "rep-office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处"
+        },
+        "avg-decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审SDT平均决策时长",
+          "defaultFormat": "number-2",
+          "unit": "天",
+          "queryField": "商审SDT平均决策时长"
+        },
+        "avg-decision-time-change": {
+          "type": "number",
+          "role": "measure",
+          "label": "平均决策时长月变化",
+          "defaultFormat": "number-1-signed",
+          "unit": "天",
+          "nullable": true,
+          "queryField": "商审SDT平均决策时长月变化"
+        },
+        "decision-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审审批人决策次数",
+          "defaultFormat": "number",
+          "unit": "次",
+          "queryField": "商审审批人决策次数"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "商审SDT平均决策时长",
+                  "商审SDT平均决策时长月变化",
+                  "商审审批人决策次数"
+                ],
+                "output_dims": [
+                  "代表处"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "阶段名称",
+                      "dim_value_list": [
+                        "代表处SDT"
+                      ]
+                    },
+                    {
+                      "dim_name": "国内或海外",
+                      "dim_value_list": [
+                        "国内"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {
+                  "order_by_field": "商审SDT平均决策时长",
+                  "type": "DESC"
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
+            }
+          }
+        }
+      }
+    },
+    "rep-office-overseas": {
+      "fields": {
+        "rep-office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处"
+        },
+        "avg-decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审SDT平均决策时长",
+          "defaultFormat": "number-2",
+          "unit": "天",
+          "queryField": "商审SDT平均决策时长"
+        },
+        "avg-decision-time-change": {
+          "type": "number",
+          "role": "measure",
+          "label": "平均决策时长月变化",
+          "defaultFormat": "number-1-signed",
+          "unit": "天",
+          "nullable": true,
+          "queryField": "商审SDT平均决策时长月变化"
+        },
+        "decision-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审审批人决策次数",
+          "defaultFormat": "number",
+          "unit": "次",
+          "queryField": "商审审批人决策次数"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "商审SDT平均决策时长",
+                  "商审SDT平均决策时长月变化",
+                  "商审审批人决策次数"
+                ],
+                "output_dims": [
+                  "代表处"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "阶段名称",
+                      "dim_value_list": [
+                        "代表处SDT"
+                      ]
+                    },
+                    {
+                      "dim_name": "国内或海外",
+                      "dim_value_list": [
+                        "海外"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {
+                  "order_by_field": "商审SDT平均决策时长",
+                  "type": "DESC"
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
+            }
+          }
+        }
+      }
+    },
+    "region-efficiency": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部"
+        },
+        "avg-decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审SDT平均决策时长",
+          "defaultFormat": "number-2",
+          "unit": "天",
+          "queryField": "商审SDT平均决策时长"
+        },
+        "avg-decision-time-change": {
+          "type": "number",
+          "role": "measure",
+          "label": "平均决策时长月变化",
+          "defaultFormat": "number-1-signed",
+          "unit": "天",
+          "nullable": true,
+          "queryField": "商审SDT平均决策时长月变化"
+        },
+        "decision-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审审批人决策次数",
+          "defaultFormat": "number",
+          "unit": "次",
+          "queryField": "商审审批人决策次数"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "商审SDT平均决策时长",
+                  "商审SDT平均决策时长月变化",
+                  "商审审批人决策次数"
+                ],
+                "output_dims": [
+                  "地区部"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "阶段名称",
+                      "dim_value_list": [
+                        "地区部SDT"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {
+                  "order_by_field": "商审SDT平均决策时长",
+                  "type": "DESC"
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
+            }
+          }
+        }
+      }
+    },
+    "decision-maker-top10": {
+      "fields": {
+        "decision-maker": {
+          "type": "string",
+          "role": "dimension",
+          "label": "决策人",
+          "queryField": "审批人名称"
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处"
+        },
+        "region-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部"
+        },
+        "decision-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策次数",
+          "defaultFormat": "number",
+          "queryField": "SDT成员决策次数"
+        },
+        "avg-decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "平均决策时长",
+          "defaultFormat": "number-2",
+          "queryField": "商审SDT成员平均决策时长"
+        },
+        "total-decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-2",
+          "nullable": true,
+          "queryField": "SDT成员决策时长"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "SDT成员决策时长",
+                  "SDT成员决策次数",
+                  "商审SDT成员平均决策时长"
+                ],
+                "output_dims": [
+                  "审批人名称",
+                  "代表处",
+                  "地区部"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "order_by_field": "商审SDT成员平均决策时长",
+                  "type": "desc",
+                  "limit": 10
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
+            }
+          }
+        }
+      }
+    },
+    "project-efficiency-top10": {
+      "fields": {
+        "customer-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "nullable": true,
+          "queryField": "客户名称"
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "nullable": true,
+          "queryField": "项目名称"
+        },
+        "commerce-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号",
+          "nullable": false,
+          "queryField": "商务编号"
+        },
+        "decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-2",
+          "unit": "天",
+          "nullable": true,
+          "queryField": "SDT成员决策时长"
+        },
+        "rep-office-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-2",
+          "unit": "天",
+          "nullable": true
+        },
+        "rep-office-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批人次",
+          "defaultFormat": "number",
+          "unit": "次",
+          "nullable": true
+        },
+        "region-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-2",
+          "unit": "天",
+          "nullable": true
+        },
+        "region-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批人次",
+          "defaultFormat": "number",
+          "unit": "次",
+          "nullable": true
+        },
+        "cloud-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-2",
+          "unit": "天",
+          "nullable": true
+        },
+        "cloud-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批人次",
+          "defaultFormat": "number",
+          "unit": "次",
+          "nullable": true
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处"
+        },
+        "region-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "SDT成员决策时长"
+                ],
+                "output_dims": [
+                  "客户名称",
+                  "项目名称",
+                  "商务编号",
+                  "代表处",
+                  "地区部"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "order_by_field": "SDT成员决策时长",
+                  "type": "desc",
+                  "limit": 10
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
+            }
+          }
+        }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "project-efficiency-top10-stages",
+          "keys": [
+            {
+              "local": "commerce-id",
+              "foreign": "commerce-id"
+            }
+          ],
+          "values": [
+            {
+              "field": "rep-office-time",
+              "output": "rep-office-time",
+              "aggregate": "unique"
+            },
+            {
+              "field": "rep-office-count",
+              "output": "rep-office-count",
+              "aggregate": "unique"
+            },
+            {
+              "field": "region-time",
+              "output": "region-time",
+              "aggregate": "unique"
+            },
+            {
+              "field": "region-count",
+              "output": "region-count",
+              "aggregate": "unique"
+            },
+            {
+              "field": "cloud-time",
+              "output": "cloud-time",
+              "aggregate": "unique"
+            },
+            {
+              "field": "cloud-count",
+              "output": "cloud-count",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        }
+      ]
+    },
+    "project-efficiency-top10-stages": {
+      "fields": {
+        "commerce-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号",
+          "nullable": false,
+          "queryField": "商务编号"
+        },
+        "stage-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "阶段名称",
+          "nullable": false,
+          "queryField": "阶段名称"
+        },
+        "decision-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-2",
+          "unit": "天",
+          "nullable": true,
+          "queryField": "SDT成员决策时长"
+        },
+        "decision-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策次数",
+          "defaultFormat": "number",
+          "unit": "次",
+          "nullable": true,
+          "queryField": "SDT成员决策次数"
+        },
+        "rep-office-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-2",
+          "unit": "天",
+          "nullable": true
+        },
+        "rep-office-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批人次",
+          "defaultFormat": "number",
+          "unit": "次",
+          "nullable": true
+        },
+        "region-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-2",
+          "unit": "天",
+          "nullable": true
+        },
+        "region-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批人次",
+          "defaultFormat": "number",
+          "unit": "次",
+          "nullable": true
+        },
+        "cloud-time": {
+          "type": "number",
+          "role": "measure",
+          "label": "决策时长",
+          "defaultFormat": "number-2",
+          "unit": "天",
+          "nullable": true
+        },
+        "cloud-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "审批人次",
+          "defaultFormat": "number",
+          "unit": "次",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "SDT成员决策时长",
+                  "SDT成员决策次数"
+                ],
+                "output_dims": [
+                  "商务编号",
+                  "阶段名称"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "resultBindings": [
+            {
+              "source": "project-efficiency-top10",
+              "field": "commerce-id",
+              "target": "dimension",
+              "queryField": "商务编号",
+              "maxValues": 10
+            }
+          ],
+          "filterBindings": {
+            "report-period-filter": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
+            }
+          }
+        }
+      },
+      "compute": [
+        {
+          "op": "pivot",
+          "categoryField": "stage-name",
+          "valueField": "decision-time",
+          "keyFields": [
+            "commerce-id"
+          ],
+          "columns": [
+            {
+              "output": "rep-office-time",
+              "categories": [
+                "代表处SDT"
+              ]
+            },
+            {
+              "output": "rep-office-count",
+              "categories": [
+                "代表处SDT"
+              ],
+              "valueField": "decision-count"
+            },
+            {
+              "output": "region-time",
+              "categories": [
+                "地区部SDT"
+              ]
+            },
+            {
+              "output": "region-count",
+              "categories": [
+                "地区部SDT"
+              ],
+              "valueField": "decision-count"
+            },
+            {
+              "output": "cloud-time",
+              "categories": [
+                "华为云计算SDT"
+              ]
+            },
+            {
+              "output": "cloud-count",
+              "categories": [
+                "华为云计算SDT"
+              ],
+              "valueField": "decision-count"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "id": "report-header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "report-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": {
+              "parts": [
+                {
+                  "filter": "report-period-filter",
+                  "format": "period"
+                },
+                " 商务SDT行权效率专项报告"
+              ]
+            },
+            "generatedBy": "报告由CloudIOC&云战地助手生成",
+            "badge": "商务SDT月报",
+            "asOf": {
+              "label": "报告期间",
+              "value": {
+                "filter": "report-period-filter",
+                "format": "period"
+              }
+            },
+            "decoration": "shortBar",
+            "filterIds": [
+              "report-period-filter"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rep-office-sdt-overview",
+      "title": "商务SDT效率总览",
+      "container": "panel",
+      "components": [
+        {
+          "id": "rep-office-sdt-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "rep-office-sdt-avg-time",
+            "compare": "rep-office-sdt-count"
+          },
+          "props": {
+            "title": "代表处SDT效率",
+            "variant": "compactSummary",
+            "showTrendArrows": true,
+            "rows": [
+              {
+                "label": "平均决策时长",
+                "valueField": {
+                  "data": "main",
+                  "field": "avg-decision-time"
+                },
+                "unit": "天",
+                "changes": [
+                  {
+                    "label": "月变化",
+                    "field": {
+                      "data": "main",
+                      "field": "avg-decision-time-change",
+                      "format": "number-1-signed"
+                    },
+                    "unit": "天",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "决策次数",
+                "valueField": {
+                  "data": "compare",
+                  "field": "decision-count"
+                },
+                "unit": "次",
+                "changes": [
+                  {
+                    "label": "月变化",
+                    "field": {
+                      "data": "compare",
+                      "field": "decision-count-change",
+                      "format": "number-signed"
+                    },
+                    "unit": "次",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "region-sdt-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "region-sdt-avg-time",
+            "compare": "region-sdt-count"
+          },
+          "props": {
+            "title": "地区部SDT效率",
+            "variant": "compactSummary",
+            "showTrendArrows": true,
+            "rows": [
+              {
+                "label": "平均决策时长",
+                "valueField": {
+                  "data": "main",
+                  "field": "avg-decision-time"
+                },
+                "unit": "天",
+                "changes": [
+                  {
+                    "label": "月变化",
+                    "field": {
+                      "data": "main",
+                      "field": "avg-decision-time-change",
+                      "format": "number-1-signed"
+                    },
+                    "unit": "天",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "决策次数",
+                "valueField": {
+                  "data": "compare",
+                  "field": "decision-count"
+                },
+                "unit": "次",
+                "changes": [
+                  {
+                    "label": "月变化",
+                    "field": {
+                      "data": "compare",
+                      "field": "decision-count-change",
+                      "format": "number-signed"
+                    },
+                    "unit": "次",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "cloud-sdt-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "cloud-sdt-avg-time",
+            "compare": "cloud-sdt-count"
+          },
+          "props": {
+            "title": "华为云计算SDT效率",
+            "variant": "compactSummary",
+            "showTrendArrows": true,
+            "rows": [
+              {
+                "label": "平均决策时长",
+                "valueField": {
+                  "data": "main",
+                  "field": "avg-decision-time"
+                },
+                "unit": "天",
+                "changes": [
+                  {
+                    "label": "月变化",
+                    "field": {
+                      "data": "main",
+                      "field": "avg-decision-time-change",
+                      "format": "number-1-signed"
+                    },
+                    "unit": "天",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "决策次数",
+                "valueField": {
+                  "data": "compare",
+                  "field": "decision-count"
+                },
+                "unit": "次",
+                "changes": [
+                  {
+                    "label": "月变化",
+                    "field": {
+                      "data": "compare",
+                      "field": "decision-count-change",
+                      "format": "number-signed"
+                    },
+                    "unit": "次",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "rep-office-trend-chart",
+          "type": "lineChart",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "rep-office-sdt-trend"
+          },
+          "props": {
+            "title": "近6月代表处SDT平均决策时长变化(天)",
+            "xField": "time",
+            "smooth": true,
+            "series": [
+              {
+                "field": "avg-decision-time",
+                "label": "平均决策时长"
+              }
+            ],
+            "showPointLabels": true,
+            "categoryLabels": {
+              "mode": "all",
+              "rotate": -30
+            }
+          }
+        },
+        {
+          "id": "region-trend-chart",
+          "type": "lineChart",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "region-sdt-trend"
+          },
+          "props": {
+            "title": "近6月地区部SDT平均决策时长变化(天)",
+            "xField": "time",
+            "smooth": true,
+            "series": [
+              {
+                "field": "avg-decision-time",
+                "label": "平均决策时长"
+              }
+            ],
+            "showPointLabels": true,
+            "categoryLabels": {
+              "mode": "all",
+              "rotate": -30
+            }
+          }
+        },
+        {
+          "id": "cloud-trend-chart",
+          "type": "lineChart",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "cloud-sdt-trend"
+          },
+          "props": {
+            "title": "近6月华为云计算SDT平均决策时长变化(天)",
+            "xField": "time",
+            "smooth": true,
+            "series": [
+              {
+                "field": "avg-decision-time",
+                "label": "平均决策时长"
+              }
+            ],
+            "showPointLabels": true,
+            "categoryLabels": {
+              "mode": "all",
+              "rotate": -30
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "rep-office-efficiency-section",
+      "title": "代表处SDT决策效率",
+      "container": "panel",
+      "components": [
+        {
+          "id": "rep-office-domestic-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "rep-office-domestic"
+          },
+          "props": {
+            "title": "国内代表处SDT决策效率",
+            "fit": "container",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "rep-office",
+                "title": "代表处",
+                "width": 100
+              },
+              {
+                "field": "avg-decision-time",
+                "title": "平均决策时长(天)",
+                "align": "right",
+                "width": 80
+              },
+              {
+                "field": "avg-decision-time-change",
+                "title": "环比上月(天)",
+                "align": "right",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "red",
+                  "negative": "green"
+                },
+                "width": 120
+              },
+              {
+                "field": "decision-count",
+                "title": "决策次数(次)",
+                "align": "right",
+                "width": 80
+              }
+            ]
+          }
+        },
+        {
+          "id": "rep-office-overseas-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "rep-office-overseas"
+          },
+          "props": {
+            "title": "海外代表处SDT决策效率",
+            "fit": "container",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "rep-office",
+                "title": "代表处",
+                "width": 100
+              },
+              {
+                "field": "avg-decision-time",
+                "title": "平均决策时长(天)",
+                "align": "right",
+                "width": 80
+              },
+              {
+                "field": "avg-decision-time-change",
+                "title": "环比上月(天)",
+                "align": "right",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "red",
+                  "negative": "green"
+                },
+                "width": 120
+              },
+              {
+                "field": "decision-count",
+                "title": "决策次数(次)",
+                "align": "right",
+                "width": 80
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "region-efficiency-section",
+      "title": "地区部SDT决策效率",
+      "container": "panel",
+      "components": [
+        {
+          "id": "region-efficiency-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "region-efficiency"
+          },
+          "props": {
+            "title": "地区部SDT决策效率",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "region",
+                "title": "地区部"
+              },
+              {
+                "field": "avg-decision-time",
+                "title": "平均决策时长(天)",
+                "align": "right"
+              },
+              {
+                "field": "avg-decision-time-change",
+                "title": "环比上月(天)",
+                "align": "right",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "red",
+                  "negative": "green"
+                }
+              },
+              {
+                "field": "decision-count",
+                "title": "决策次数(次)",
+                "align": "right"
+              }
+            ],
+            "fit": "container"
+          }
+        }
+      ]
+    },
+    {
+      "id": "project-efficiency-section",
+      "title": "项目决策效率",
+      "container": "panel",
+      "components": [
+        {
+          "id": "project-top10-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "project-efficiency-top10"
+          },
+          "props": {
+            "title": "项目决策时长最慢Top10",
+            "fit": "container",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "customer-name",
+                "title": "客户名称",
+                "width": 120
+              },
+              {
+                "field": "project-name",
+                "title": "项目名称",
+                "width": 120
+              },
+              {
+                "field": "commerce-id",
+                "title": "商务编号",
+                "width": 80
+              },
+              {
+                "field": "rep-office-name",
+                "title": "代表处",
+                "width": 80
+              },
+              {
+                "field": "region-name",
+                "title": "地区部",
+                "width": 80
+              },
+              {
+                "field": "decision-time",
+                "title": "商务决策时长(天)",
+                "align": "right",
+                "width": 60,
+                "colorRule": {
+                  "mode": "fixed",
+                  "color": "red"
+                }
+              },
+              {
+                "kind": "group",
+                "id": "rep-office-sdt",
+                "title": "代表处SDT决策效率",
+                "children": [
+                  {
+                    "field": "rep-office-count",
+                    "title": "审批人次(次)",
+                    "align": "right",
+                    "width": 95
+                  },
+                  {
+                    "field": "rep-office-time",
+                    "title": "决策时长(天)",
+                    "align": "right",
+                    "width": 95,
+                    "colorRule": {
+                      "mode": "fixed",
+                      "color": "red"
+                    }
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "region-sdt",
+                "title": "地区部SDT决策效率",
+                "children": [
+                  {
+                    "field": "region-count",
+                    "title": "审批人次(次)",
+                    "align": "right",
+                    "width": 95
+                  },
+                  {
+                    "field": "region-time",
+                    "title": "决策时长(天)",
+                    "align": "right",
+                    "width": 95,
+                    "colorRule": {
+                      "mode": "fixed",
+                      "color": "red"
+                    }
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "cloud-sdt",
+                "title": "华为云计算SDT决策效率",
+                "children": [
+                  {
+                    "field": "cloud-count",
+                    "title": "审批人次(次)",
+                    "align": "right",
+                    "width": 95
+                  },
+                  {
+                    "field": "cloud-time",
+                    "title": "决策时长(天)",
+                    "align": "right",
+                    "width": 95,
+                    "colorRule": {
+                      "mode": "fixed",
+                      "color": "red"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "decision-maker-efficiency-section",
+      "title": "决策人决策效率",
+      "container": "panel",
+      "components": [
+        {
+          "id": "decision-maker-top10-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "decision-maker-top10"
+          },
+          "props": {
+            "title": "平均决策时长最慢Top10",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "decision-maker",
+                "title": "决策人"
+              },
+              {
+                "field": "rep-office-name",
+                "title": "代表处",
+                "width": 80
+              },
+              {
+                "field": "region-name",
+                "title": "地区部",
+                "width": 80
+              },
+              {
+                "field": "decision-count",
+                "title": "决策次数(次)",
+                "align": "right"
+              },
+              {
+                "field": "avg-decision-time",
+                "title": "平均决策时长(天)",
+                "align": "right",
+                "colorRule": {
+                  "mode": "fixed",
+                  "color": "red"
+                }
+              }
+            ],
+            "fit": "container"
+          }
+        }
+      ]
+    }
+  ],
+  "layout": "report",
+  "params": {
+    "query": {
+      "times": [
+        {
+          "id": "report-period",
+          "granularity": "month",
+          "start": "2026-10",
+          "end": "2026-10"
+        }
+      ]
+    }
+  }
+}

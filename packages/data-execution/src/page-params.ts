@@ -28,7 +28,7 @@ export function seedPageParamFilters(page: import('@metriccanvas/page').Page, va
       // 单点 times 输入的两端相同，取哪一端都一样；缺值时不写初值＝不筛。
       const point = value as { start?: string } | undefined;
       if (typeof point?.start === 'string') {
-        const issue = validateTimePointValue(point.start, declaration.granularity, declaration.min);
+        const issue = validateTimePointValue(point.start, declaration.granularity, declaration.min, declaration.disableFuture);
         if (issue) throw new Error(`筛选器 ${declaration.id}: ${issue}`);
         declaration.default = point.start;
       }

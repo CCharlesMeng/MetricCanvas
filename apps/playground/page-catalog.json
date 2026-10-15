@@ -232,6 +232,15 @@
         "Top5",
         "仿真"
       ]
+    },
+    {
+      "id": "time-point-no-future",
+      "group": "verification",
+      "summary": "月份与日期禁止选择未来时间，覆盖键盘、手工输入与URL恢复。",
+      "tags": [
+        "月份选择",
+        "未来时间限制"
+      ]
     }
   ]
 }

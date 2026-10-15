@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "6.24",
-  "schemaSha256": "1b4431158377bb109d4802945a5307f4439dfd3a862b89b9adb188939ec1280a",
+  "schemaVersion": "6.25",
+  "schemaSha256": "e36f38eb39917a773c9f9259e4d24a1856794f7ebe6ec187880e1591ddbe5733",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
-      "sha256": "7669c2765c1666d7d97d7c51910b6df4a4293915a98c6ba7fa48e6ccb59f0659"
+      "sha256": "07f01423d8a9bede12d2d9d070ba694fc9fa9a82430f5c174a895ca02b069119"
     },
     {
       "file": "packages/engine/widgets/src/components/gauge/Gauge.svelte",
@@ -112,7 +112,7 @@
     },
     {
       "file": "packages/page/src/schema/filter.ts",
-      "sha256": "1ccd84624ef44eea610b0abc69483a07af8a40ed382522bae88b60db58891ef0"
+      "sha256": "4bf15b68e9baed0812c934fa9cf984946c102c716b88feddeaee230808c1cded"
     },
     {
       "file": "packages/page/src/schema/page.ts",
@@ -144,11 +144,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "f1e9f262433365924fecc488165160c21c251fcba9c619c618f2c2e72d436448"
+      "sha256": "fb25ab527d2ae913373e59dbd47449bea7d0f91cc2d5dbc4a9281c8bc5606c65"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "7fa4677d0af3bb46a2fe13dfcaf41b96ca2e1b1573128963b3905452a4f26578"
+      "sha256": "300e5b37199fc574c77bfe16c4b409f7e6f543527cc5a2864406b2c0211461fd"
     }
   ],
   "modules": {
@@ -390,7 +390,8 @@
       "examples": [
         "filters-page",
         "reference-branches-page",
-        "time-point-min-page"
+        "time-point-min-page",
+        "time-point-no-future"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -408,7 +409,8 @@
         "hierarchy-picker-requires-hierarchy",
         "filter-depends-on",
         "hidden-hierarchy-picker-needs-map",
-        "time-point-min"
+        "time-point-min",
+        "time-point-disable-future"
       ]
     },
     "sections-and-layout.md": {
@@ -1149,7 +1151,8 @@
         "6.21",
         "6.22",
         "6.23",
-        "6.24"
+        "6.24",
+        "6.25"
       ]
     },
     {
@@ -5425,6 +5428,12 @@
     {
       "pointer": "#/definitions/timePointFilter/properties/min",
       "path": "@timePointFilter.min",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/disableFuture",
+      "path": "@timePointFilter.disableFuture",
       "required": "本分支可选",
       "module": "filters.md"
     },

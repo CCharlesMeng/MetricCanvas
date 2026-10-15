@@ -55,6 +55,14 @@ function longString(length: number): string {
 
 export const invariants: InvariantDefinition[] = [
   {
+    id: 'time-point-disable-future', description: '6.25 时间点禁止未来月份与日期',
+    valid: ['time-point-no-future'], cases: [
+      { case: 'time-point-disable-future-before-6.25', base: 'time-point-no-future', expect: /由 6.25 引入/, mutate: d => { d.schemaVersion = '6.24'; } },
+      { case: 'time-point-disable-future-default-month', base: 'time-point-no-future', expect: /不得晚于/, mutate: d => { d.filters[0].default = '9999-12'; } },
+      { case: 'time-point-disable-future-default-date', base: 'time-point-no-future', expect: /不得晚于/, mutate: d => { d.filters[1].default = '9999-12-31'; } }
+    ]
+  },
+  {
     id: 'time-point-min', description: '6.24 时间点下限与默认值日历语义',
     valid: ['time-point-min-page'], cases: [
       { case: 'time-point-min-before-6.24', base: 'time-point-min-page', expect: /由 6.24 引入/, mutate: d => { d.schemaVersion = '6.23'; } },

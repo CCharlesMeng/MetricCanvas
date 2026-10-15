@@ -2,7 +2,7 @@
 
 <a id="页面参数维度与时间的现行方案"></a>
 
-本文是页面参数的使用专题，承接[页面元数据总规范](PAGE-METADATA.md)。当前作者协议为 **6.24**；版本与可读范围以总规范及生成契约为准。本文先说明当前分层参数、打开与保存、顶部时间筛选和共享窗口规则，再说明程序化提取，最后集中保留旧数组参数的兼容用法。字段表由Schema生成，见[参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
+本文是页面参数的使用专题，承接[页面元数据总规范](PAGE-METADATA.md)。当前作者协议为 **6.25**；版本与可读范围以总规范及生成契约为准。本文先说明当前分层参数、打开与保存、顶部时间筛选和共享窗口规则，再说明程序化提取，最后集中保留旧数组参数的兼容用法。字段表由Schema生成，见[参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
 
 ## 阅读入口
 
@@ -467,3 +467,5 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 版本边界：维度参数与初始化绑定由6.2引入；确定性时间参数与窗口绑定由6.3引入。6.4引入`yearToDate`与`monthToDate`，6.3的`toDate + unit`保留兼容。当前可读版本与能力下限见[页面元数据规范](PAGE-METADATA.md#版本初始化与持久化)；5.x只走读取规范化，新文档写当前作者版本。
 
 6.6 分组 times 已支持区间；历史讨论另见[时间区间参数提案](docs/archive/page-time-range-proposal/time-range-parameters.md)，不属于本文现行协议。
+
+6.25可另声明 `disableFuture: true`，单点参数的实际值必须不晚于本地当前月份／日期；未来参数在初始化时拒绝，不钳制为当前期间。可与 min 共同使用，默认值及所有用户输入遵循同一规则，详见[禁止未来时间](docs/page-metadata/filters.md#禁止未来时间625)。

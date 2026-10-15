@@ -1,0 +1,22 @@
+{
+  "case": "time-point-disable-future-default-date",
+  "invariant": "time-point-disable-future",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间点不得晚于 2026-10-15",
+      "paths": [
+        "/filters/1/default"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "default": "9999-12-31"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

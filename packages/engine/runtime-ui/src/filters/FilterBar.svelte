@@ -158,6 +158,7 @@
         required={declaration.required}
         granularity={declaration.granularity}
         min={declaration.min}
+        disableFuture={declaration.disableFuture}
         value={timePointValue(declaration.id)}
         onchange={(value) => ontimepoint(declaration.id, declaration.granularity, value)}
       />

@@ -1,6 +1,18 @@
 {
   "invariants": [
     {
+      "id": "time-point-disable-future",
+      "description": "6.25 时间点禁止未来月份与日期",
+      "valid": [
+        "time-point-no-future"
+      ],
+      "invalid": [
+        "time-point-disable-future-before-6.25",
+        "time-point-disable-future-default-month",
+        "time-point-disable-future-default-date"
+      ]
+    },
+    {
       "id": "time-point-min",
       "description": "6.24 时间点下限与默认值日历语义",
       "valid": [

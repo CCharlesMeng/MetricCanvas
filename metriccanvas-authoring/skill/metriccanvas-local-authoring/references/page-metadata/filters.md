@@ -10,18 +10,28 @@ urlParams仅映射该类允许的value/from/to/level键，不能与本页其它�
 
 ## 时间点下限（6.24）
 
-`timePoint.min` 是可选的包含式下限，month 使用真实公历 `YYYY-MM`，date 使用 `YYYY-MM-DD`；未声明则保留原有无业务下限行为。本次不增加上限或 timeRange 边界。`min` 与筛选粒度不匹配、日历无效或 default 早于 min 时拒绝页面；initialParam 实际值越界时拒绝初始化，不截断或伪造实际输入。
+`timePoint.min` 是可选的包含式下限，month 使用真实公历 `YYYY-MM`，date 使用 `YYYY-MM-DD`；未声明则保留原有无业务下限行为。timeRange 边界保持原有规则。`min` 与筛选粒度不匹配、日历无效或 default 早于 min 时拒绝页面；initialParam 实际值越界时拒绝初始化，不截断或伪造实际输入。
 
 共享日期选择器禁用更早的年/月/日期，手工提交越界草稿显示错误并保留已应用值。筛选状态绑定页面声明后，write/writeMany 同样拒绝越界、粒度不符及必选筛选的清空。URL 初始化忽略非法/越界值，使用页面合法默认值；必选有下限筛选在 fromURL 恢复时保留当前合法值或默认值。执行回执中的越界筛选拒绝接收。下限约束筛选值，不裁剪由该值派生的查询窗口。
 
 完整协议示例 `time-point-min-page` 同时覆盖月份和日期下限；业务页面 `business-sdt-report-monthly` 使用 `min: "2020-06"`，全部呈现查询与报告主标题、统计月份联动，3个趋势窗口含所选月共6个月。原页摘要是明确标记的2026年10月固定摘要，不作为切月后的分析结论。业务查询接入与真实数据另行验收。
+
+<a id="禁止未来时间625"></a>
+
+## 禁止未来时间（6.25）
+
+`timePoint.disableFuture: true` 禁止晚于执行环境本地当前月份／日期的时间点，当前期间本身可选；省略或 false 不限制未来。month 以当前 `YYYY-MM` 为上限，date 以当前 `YYYY-MM-DD` 为上限。上限在打开选择器及提交时重新求值，不保存为固定日期，跨月后新月份自动可用。
+
+月份／日期／年份面板禁用越界单元格、向未来翻页和键盘移动；手工输入越界显示错误并保留已应用值。URL恢复、筛选状态写入、执行回执和参数初始化同样检查，不能通过跳过控件写入未来值；非法初始参数拒绝初始化，不截断为当前期间。可与 `min` 同时声明；该限制只约束选中的时间点，不裁剪近N期查询窗口，也不更改未声明限制的页面。
+
+完整场景 `time-point-no-future` 无业务查询；商务SDT终极版 `pages/sdt/commercial-sdt-efficiency-ultimate-monthly.json` 默认2026-10，月份选择不能进入未来。真实DQE接入与业务数据另行验收。
 
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.24。结构真源为本册[schema.json](schema.json)，SHA256 `1b4431158377bb109d4802945a5307f4439dfd3a862b89b9adb188939ec1280a`。字段表自动生成；可选不等于有默认值。
+页面协议 6.25。结构真源为本册[schema.json](schema.json)，SHA256 `e36f38eb39917a773c9f9259e4d24a1856794f7ebe6ec187880e1591ddbe5733`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -757,6 +767,16 @@ Schema位置：`#/definitions/timePointFilter/properties/min`。
 |---|---|---|---|---|
 | "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 量表下界。 |
 
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f64697361626c65467574757265"></a>
+
+### `@timePointFilter.disableFuture`
+
+Schema位置：`#/definitions/timePointFilter/properties/disableFuture`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 为true时，按本地当前月份／日期限制选择、输入及初始化；当前期间包含在内。 |
+
 <a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f7265717569726564"></a>
 
 ### `@timePointFilter.required`
@@ -1162,12 +1182,14 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - `filter-depends-on`：级联只能依赖另一个已声明的 dimension 筛选器且不成环。反例：[depends-on-self](errors/depends-on-self.json)、[depends-on-undeclared](errors/depends-on-undeclared.json)、[depends-on-non-dimension](errors/depends-on-non-dimension.json)、[depends-on-cycle](errors/depends-on-cycle.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `hidden-hierarchy-picker-needs-map`：隐藏层级切换器时必须有地图通过 hierarchyFilter 承担下钻。反例：[hidden-hierarchy-picker-without-map](errors/hidden-hierarchy-picker-without-map.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `time-point-min`：6.24 时间点下限与默认值日历语义。反例：[time-point-min-before-6.24](errors/time-point-min-before-6.24.json)、[time-point-min-invalid-month](errors/time-point-min-invalid-month.json)、[time-point-min-wrong-precision](errors/time-point-min-wrong-precision.json)、[time-point-min-default-before](errors/time-point-min-default-before.json)、[time-point-min-invalid-date](errors/time-point-min-invalid-date.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `time-point-disable-future`：6.25 时间点禁止未来月份与日期。反例：[time-point-disable-future-before-6.25](errors/time-point-disable-future-before-6.25.json)、[time-point-disable-future-default-month](errors/time-point-disable-future-default-month.json)、[time-point-disable-future-default-date](errors/time-point-disable-future-default-date.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
 - [filters-page](examples/filters-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 - [time-point-min-page](examples/time-point-min-page.json)：完整合法页面；查询仅为静态契约证据。
+- [time-point-no-future](examples/time-point-no-future.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

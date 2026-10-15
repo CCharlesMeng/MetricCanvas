@@ -238,7 +238,8 @@
       "examples": [
         "filters-page",
         "reference-branches-page",
-        "time-point-min-page"
+        "time-point-min-page",
+        "time-point-no-future"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -256,7 +257,8 @@
         "hierarchy-picker-requires-hierarchy",
         "filter-depends-on",
         "hidden-hierarchy-picker-needs-map",
-        "time-point-min"
+        "time-point-min",
+        "time-point-disable-future"
       ]
     },
     "sections-and-layout.md": {
@@ -1187,7 +1189,8 @@
     "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/sort/items/properties/direction": "按原始值升序或降序，缺值始终排尾。",
     "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates": "最终字段上的 AND 条件；会话条件不写回定义；默认 initial 必须为空。",
     "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values": "显式选择集合，保留字符串或数值类型。",
-    "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/search": "已提交文本搜索；首版组合搜索使用有界完整关联，草稿不进入。"
+    "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/search": "已提交文本搜索；首版组合搜索使用有界完整关联，草稿不进入。",
+    "#/definitions/timePointFilter/properties/disableFuture": "为true时，按本地当前月份／日期限制选择、输入及初始化；当前期间包含在内。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1373,7 +1376,8 @@
     "desc": "按原始可比较值降序，缺值仍排尾。",
     "numberRange": "数值度量的包含端点范围；按原始单位比较，一端可缺省。",
     "6.23": "显式文本片段组合的兼容读取版本。",
-    "6.24": "时间点包含式下限的当前写出版本。"
+    "6.24": "时间点包含式下限的兼容读取版本。",
+    "6.25": "时间点禁止未来月份／日期的当前写出版本。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

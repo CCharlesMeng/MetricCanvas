@@ -46,13 +46,14 @@ export function moveCalendarValue(value: string, precision: CalendarPrecision, a
   const view = calendarView(value);
   return calendarValue(localDate(view.year, view.month + (precision === 'month' ? amount : 0), precision === 'date' ? Number(value.slice(8)) + amount : 1), precision);
 }
-export function calendarDraft(from: string, to: string, precision: CalendarPrecision, range: boolean, required: boolean, min?: string):
+export function calendarDraft(from: string, to: string, precision: CalendarPrecision, range: boolean, required: boolean, min?: string, max?: string):
   { ok: true; value: { from: string; to: string } | null } | { ok: false; error: string } {
   if (!from && (!range || !to)) return required ? { ok: false, error: '请选择日期' } : { ok: true, value: null };
   if (range && (!from || !to)) return { ok: false, error: '请填写完整的起止期间' };
   const value = { from, to: range ? to : from };
   const error = calendarValueError(from, precision, 'from') ?? calendarValueError(value.to, precision, 'to') ?? (from > value.to ? '时间范围 from 不得晚于 to' : undefined)
-    ?? (min !== undefined && from < min ? `日期不得早于 ${min}` : undefined);
+    ?? (min !== undefined && from < min ? `日期不得早于 ${min}` : undefined)
+    ?? (max !== undefined && value.to > max ? `日期不得晚于 ${max}` : undefined);
   return error ? { ok: false, error } : { ok: true, value };
 }
 

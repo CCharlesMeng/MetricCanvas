@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.24**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23和6.24；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.25**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24和6.25；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
 
 ## 从需求到页面
 
@@ -373,3 +373,5 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 - 字段绑定 `missingText`：消费者缺失文案，数值类型与刻度不变。
 
 具体约束见 [ADR-0096](docs/adr/0096-ioc-view-state-and-post-query-presentation.md)。6.11继续可读，但使用上述能力的文档必须写6.12。
+
+`timePoint.disableFuture: true` 从6.25起禁止未来月份／日期，当前期间可选；上限随本地当前日期推进，控件、手工输入、URL与参数初始化共同约束。见[禁止未来时间](docs/page-metadata/filters.md#禁止未来时间625)及[交互验收页](pages/time-point-no-future.json)。

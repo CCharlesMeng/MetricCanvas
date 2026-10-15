@@ -96,7 +96,7 @@ function initialValue(decl: FilterDeclaration, now: Date): FilterValue | undefin
   }
   if (decl.type === 'timePoint') {
     if (!decl.default) return undefined;
-    const issue = validateTimePointValue(decl.default, decl.granularity, decl.min);
+    const issue = validateTimePointValue(decl.default, decl.granularity, decl.min, decl.disableFuture, now);
     if (issue) throw new Error(`筛选器 ${decl.id}: ${issue}`);
     return { type: 'timePoint', granularity: decl.granularity, value: decl.default };
   }

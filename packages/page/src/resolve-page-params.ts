@@ -81,7 +81,7 @@ export function materializePageParams(page:Page,values:ReadonlyMap<string,PagePa
     const value = values.get(filter.initialParam);
     if (value && typeof value === 'object' && !Array.isArray(value)) {
       if (filter.type === 'timePoint') {
-        const error = validateTimePointValue(value.start, filter.granularity, filter.min);
+        const error = validateTimePointValue(value.start, filter.granularity, filter.min, filter.disableFuture);
         if (error) throw new Error(`筛选器 ${filter.id}: ${error}`);
         filter.default = value.start;
       }

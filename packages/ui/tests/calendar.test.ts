@@ -54,3 +54,10 @@ it('包含式下限阻止手工越界，月份与日期格式保持独立', () =
   expect(calendarDraft('2020-06-14', '', 'date', false, true, '2020-06-15').ok).toBe(false);
   expect(calendarDraft('2020-06-15', '', 'date', false, true, '2020-06-15').ok).toBe(true);
 });
+
+it('包含式上限阻止未来月份及日期，当前期间和范围终点均校验', () => {
+  expect(calendarDraft('2026-10', '', 'month', false, true, undefined, '2026-10').ok).toBe(true);
+  expect(calendarDraft('2026-11', '', 'month', false, true, undefined, '2026-10')).toEqual({ ok: false, error: '日期不得晚于 2026-10' });
+  expect(calendarDraft('2026-10-16', '', 'date', false, true, undefined, '2026-10-15').ok).toBe(false);
+  expect(calendarDraft('2026-09', '2026-11', 'month', true, true, undefined, '2026-10').ok).toBe(false);
+});

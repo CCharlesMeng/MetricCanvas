@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.24",
-  "schemaSha256": "1b4431158377bb109d4802945a5307f4439dfd3a862b89b9adb188939ec1280a",
+  "schemaVersion": "6.25",
+  "schemaSha256": "e36f38eb39917a773c9f9259e4d24a1856794f7ebe6ec187880e1591ddbe5733",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -204,7 +204,8 @@
       "examples": [
         "filters-page",
         "reference-branches-page",
-        "time-point-min-page"
+        "time-point-min-page",
+        "time-point-no-future"
       ],
       "rules": [
         "filter-id-unique",
@@ -217,7 +218,8 @@
         "hierarchy-picker-requires-hierarchy",
         "filter-depends-on",
         "hidden-hierarchy-picker-needs-map",
-        "time-point-min"
+        "time-point-min",
+        "time-point-disable-future"
       ]
     },
     "sections-and-layout.md": {
@@ -861,7 +863,8 @@
         "6.21",
         "6.22",
         "6.23",
-        "6.24"
+        "6.24",
+        "6.25"
       ]
     },
     {
@@ -5137,6 +5140,12 @@
     {
       "pointer": "#/definitions/timePointFilter/properties/min",
       "path": "@timePointFilter.min",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/disableFuture",
+      "path": "@timePointFilter.disableFuture",
       "required": "本分支可选",
       "module": "filters.md"
     },
@@ -11666,5 +11675,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "6ffa859e1f716d979126450f3952c17d5a4adf19bc90e5bbe5979e5f2c7b94ed"
+  "semanticSourceDigest": "81f8af50d5aa1d57fcc6bbf87fc00e72a6aff2b76efc477813c64e9cf095a429"
 }

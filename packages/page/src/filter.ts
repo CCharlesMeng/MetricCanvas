@@ -127,6 +127,8 @@ export interface TimePointFilterDeclaration {
   granularity: 'month' | 'date';
   /** 可选的包含式下限，格式与 granularity 一致（6.24）。 */
   min?: string;
+  /** 禁止选择晚于本地当前月份／日期的时间点（6.25）；未声明时不限制。 */
+  disableFuture?: boolean;
   required?: boolean;
   /** month 为 YYYY-MM,date 为 YYYY-MM-DD */
   default?: string;
@@ -434,16 +436,24 @@ export function daysInGregorianMonth(year: number, month: number): number {
 export function validateTimePointValue(
   value: string,
   granularity: 'month' | 'date',
-  min?: string
+  min?: string,
+  disableFuture = false,
+  now: Date = new Date()
 ): string | undefined {
   if (granularity === 'month') {
     const match = /^(\d{4})-(\d{2})$/.exec(value);
     if (!match) return '时间点须为 YYYY-MM 格式';
     const month = Number(match[2]);
     if (Number(match[1]) < 1 || month < 1 || month > 12) return '时间点不是有效月份';
-    return min !== undefined && value < min ? `时间点不得早于 ${min}` : undefined;
+  } else {
+    const parsed = parseCalendarValue(value, 'date');
+    if (!parsed.valid) return parsed.reason === 'calendar' ? '时间点不是有效的公历日期' : '时间点须为 YYYY-MM-DD 格式';
   }
-  const parsed = parseCalendarValue(value, 'date');
-  if (parsed.valid) return min !== undefined && value < min ? `时间点不得早于 ${min}` : undefined;
-  return parsed.reason === 'calendar' ? '时间点不是有效的公历日期' : '时间点须为 YYYY-MM-DD 格式';
+  if (min !== undefined && value < min) return `时间点不得早于 ${min}`;
+  if (disableFuture) {
+    const month = `${String(now.getFullYear()).padStart(4, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const maximum = granularity === 'month' ? month : `${month}-${String(now.getDate()).padStart(2, '0')}`;
+    if (value > maximum) return `时间点不得晚于 ${maximum}`;
+  }
+  return undefined;
 }

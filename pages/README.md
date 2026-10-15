@@ -70,3 +70,11 @@
 ## 商务SDT级联查询保留场景
 
 [business-sdt-cascade-example.json](business-sdt-cascade-example.json)，试验场「验收样例」。它保存原有Top5项目→阶段明细的完整配置，替代人工业务报告作为自动级联与展示格式的回归输入。运行本地DQE Sim后，9/10月HTTP验收检查两条独立链使用各自商务编号，并验证导出与屏幕结果一致；不证明真实业务数据。
+
+## 月份及日期禁止未来时间
+
+- 页面：[time-point-no-future.json](time-point-no-future.json)，试验场「验收样例」，入口 `/pages/time-point-no-future`；无外部数据或查询。运行 `pnpm dev:playground` 后可直接操作。
+- 默认报告月份2026-10；月份只能选择设备本地当前月及之前，日期只能选择今天及之前。打开面板检查未来月份／日期和年份不可选，键盘右移及向未来翻页不能越界。
+- 手工输入未来月份后回车，应显示“日期不得晚于…”且已应用标题保持不变；URL指定未来月份时不能恢复未来值。进入下一月后重新打开，新月份可选。
+- 商务SDT终极版：[commercial-sdt-efficiency-ultimate-monthly.json](sdt/commercial-sdt-efficiency-ultimate-monthly.json)，默认2026-10并声明同样限制，标题和所有15个查询继续跟随月份。该业务页需要真实DQE；本地选择器验收不证明业务取数成功。
+- 协议、边界和月份推进由 time-point-no-future 测试覆盖；浏览器直接消费上述页面及终极版文件，不在测试里临时拼出交互配置。

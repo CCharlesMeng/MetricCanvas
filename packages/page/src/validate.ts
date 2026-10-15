@@ -515,7 +515,7 @@ function filterDeclarationErrors(
       if (issue) errors.push(schemaError(`${path}/min`, issue));
     }
     if (filter.default !== undefined) {
-      const issue = validateTimePointValue(filter.default, filter.granularity, filter.min);
+      const issue = validateTimePointValue(filter.default, filter.granularity, filter.min, filter.disableFuture);
       if (issue) errors.push(schemaError(`${path}/default`, issue));
     }
   } else if (filter.type === 'numberRange' && filter.default) {

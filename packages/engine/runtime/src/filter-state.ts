@@ -32,8 +32,8 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   let current: Map<string, FilterValue> = new Map();
   for (const [id, value] of initial ?? []) {
     const declaration = byId.get(id);
-    const valid = declaration?.type === 'timePoint' && declaration.min !== undefined ? normalize(value, declaration) : value;
-    if (declaration?.type === 'timePoint' && declaration.min !== undefined && valid === undefined) throw new Error(`筛选器 ${id} 初值不符合时间点下限`);
+    const valid = declaration?.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture === true) ? normalize(value, declaration) : value;
+    if (declaration?.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture === true) && valid === undefined) throw new Error(`筛选器 ${id} 初值不符合时间点边界`);
     if (valid) current.set(id, valid);
   }
   const subscribers = new Set<(values: FilterValues) => void>();
@@ -84,7 +84,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
       for (const declaration of declarations) byId.set(declaration.id, declaration);
       const next = new Map(parseFilterSearch(search, declarations));
       for (const declaration of declarations) {
-        if (declaration.type !== 'timePoint' || !declaration.min || !declaration.required || next.has(declaration.id)) continue;
+        if (declaration.type !== 'timePoint' || (declaration.min === undefined && !declaration.disableFuture) || !declaration.required || next.has(declaration.id)) continue;
         const fallback = current.get(declaration.id) ?? initialFilterValues([declaration]).get(declaration.id);
         if (fallback) next.set(declaration.id, fallback);
       }
@@ -105,10 +105,10 @@ function notify(run: (values: FilterValues) => void, values: FilterValues): void
 
 /** 空值集合等同不筛选,归一为清除,保持 URL 与状态干净 */
 function normalize(value: FilterValue | null, declaration?: FilterDeclaration): FilterValue | null | undefined {
-  if (declaration?.type === 'timePoint' && declaration.min !== undefined) {
+  if (declaration?.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture === true)) {
     if (!value) return declaration.required ? undefined : null;
     if (value.type !== 'timePoint' || value.granularity !== declaration.granularity) return undefined;
-    if (validateTimePointValue(value.value, declaration.granularity, declaration.min)) return undefined;
+    if (validateTimePointValue(value.value, declaration.granularity, declaration.min, declaration.disableFuture)) return undefined;
   }
   if (value && value.type === 'dimension' && value.values.length === 0) return null;
   if (value?.type === 'timeRange' && validateCalendarTimeRange(value).length > 0) {
@@ -185,7 +185,7 @@ export function parseFilterSearch(search: string, declarations: readonly FilterD
       value = {type:'numberRange', ...(fromText?.trim() ? {from:Number(fromText)} : {}), ...(toText?.trim() ? {to:Number(toText)} : {})};
     } else if (declaration.type === 'timePoint') {
       const raw = read('value');
-      if (!raw || validateTimePointValue(raw, declaration.granularity, declaration.min)) continue;
+      if (!raw || validateTimePointValue(raw, declaration.granularity, declaration.min, declaration.disableFuture)) continue;
       value = {type:'timePoint', granularity:declaration.granularity, value:raw};
     } else if (declaration.type === 'boolean') {
       const raw = read('value');
