@@ -1,0 +1,38 @@
+{
+  "case": "paged-join-invalid-initial",
+  "invariant": "paged-join",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "组合初始行必须匹配默认视图",
+      "paths": [
+        "/dataSources/office-overview/source/initial/view"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "组合初始行必须符合最终字段契约及完整第一页",
+      "paths": [
+        "/dataSources/office-overview/source/initial/rows"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "office-overview": {
+        "source": {
+          "initial": {
+            "view": {
+              "pageIndex": 1,
+              "pageSize": 3,
+              "sort": [],
+              "predicates": []
+            },
+            "rows": []
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/paged-join-invalid-initial.json"
+}

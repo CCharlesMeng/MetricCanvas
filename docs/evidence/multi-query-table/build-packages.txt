@@ -1,0 +1,64 @@
+$ pnpm --filter @metriccanvas/ui --filter @metriccanvas/data-execution --filter @metriccanvas/page --filter @metriccanvas/engine --filter @metriccanvas/metric-canvas -r build
+Scope: 5 of 12 workspace projects
+packages/page build$ node ../../tools/package-build/build.mjs page
+packages/ui build$ node ../../tools/package-build/build.mjs ui
+packages/ui build: .svelte-kit/package-input -> dist
+packages/ui build: Done
+packages/page build: .svelte-kit/package-input -> dist
+packages/page build: Done
+packages/data-execution build$ node ../../tools/package-build/build.mjs data-execution
+packages/data-execution build: .svelte-kit/package-input -> dist
+packages/data-execution build: Done
+packages/engine build$ node ../../tools/package-build/build.mjs engine
+packages/engine build: .svelte-kit/package-input -> dist
+packages/engine build: Done
+packages/metric-canvas build$ node ../../tools/package-build/build.mjs metric-canvas
+packages/metric-canvas build: .svelte-kit/package-input -> dist
+packages/metric-canvas build: Done
+$ tsx tools/package-build/check.ts
+{
+  "packages": [
+    {
+      "name": "@metriccanvas/data-execution",
+      "version": "1.0.0-rc.4",
+      "entries": 4,
+      "files": 68,
+      "components": 0
+    },
+    {
+      "name": "@metriccanvas/ui",
+      "version": "0.1.0",
+      "entries": 1,
+      "files": 40,
+      "components": 14
+    },
+    {
+      "name": "@metriccanvas/page",
+      "version": "1.0.0-rc.4",
+      "entries": 2,
+      "files": 153,
+      "components": 0
+    },
+    {
+      "name": "@metriccanvas/engine",
+      "version": "1.0.0-rc.4",
+      "entries": 6,
+      "files": 322,
+      "components": 42
+    },
+    {
+      "name": "@metriccanvas/metric-canvas",
+      "version": "1.0.0-rc.4",
+      "entries": 2,
+      "files": 12,
+      "components": 2
+    },
+    {
+      "name": "@metriccanvas/embed",
+      "version": "1.0.0-rc.4",
+      "entries": 1,
+      "files": 6,
+      "components": 0
+    }
+  ]
+}

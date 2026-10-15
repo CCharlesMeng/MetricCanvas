@@ -1,19 +1,13 @@
 <script lang="ts" module>
-  export type { TableHeaderFilterValue, TableViewState } from './view-state';
-  export interface TablePaginationState {
-    pageSize: number;
-    totalCount: number;
-  }
-  export interface TableSelectedCell {
-    rowIndex: number;
-    columnField: string;
-  }
+  export type {TableHeaderFilterValue,TableViewState,TablePaginationState,TableSelectedCell} from './view-state';
 </script>
 
 <script lang="ts">
+  import type {TablePaginationState,TableSelectedCell} from './view-state';
   import { getContext } from 'svelte';
   import TableToolbar from './TableToolbar.svelte';
   import TableControlIcon from './TableControlIcon.svelte';
+  import { tableFilterPopover } from './filter-popover';
   import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
   const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
   import type {
@@ -57,6 +51,7 @@
     view: TableViewState;
     /** select 模式表头筛选候选项(壳经数据网关 fetchDimensionValues 供给),key = 列 field */
     filterOptions?: Record<string, string[]>;
+    filterOptionsStatus?:Record<string,'idle'|'loading'|'ready'|'empty'|'unavailable'|'error'>;
     pagination?: TablePaginationState;
     searchDraft?: string;
     exporting?: boolean;
@@ -69,6 +64,7 @@
     onpage?: (pageIndex: number) => void;
     onpagesize?: (pageSize: number) => void;
     onsort?: (sort: TableSortRule[]) => void;
+    sortReset?:readonly TableSortRule[];
     onheaderfilter?: (field: string, value: TableHeaderFilterValue | null) => void;
     oncellselect?: (context: { rowIndex: number; column: TableColumn }) => void;
     linkHref?: (row: Row, column?: TableColumn) => string | undefined;
@@ -80,13 +76,13 @@
     props,
     interactive = true,
     view,
-    filterOptions = {},
+    filterOptions = {}, filterOptionsStatus = {},
     pagination,
     searchDraft, exporting, exportError, onsearchdraft, onsearch, onexport, oncancelexport,
     selectedCell,
     onpage,
     onpagesize,
-    onsort,
+    onsort, sortReset,
     onheaderfilter,
     oncellselect,
     onlink,
@@ -183,7 +179,7 @@
         ? { field, direction: 'asc' }
         : current.direction === 'asc'
           ? { field, direction: 'desc' }
-          : null;
+          : sortReset&&!event.shiftKey?{field,direction:'asc'}:null;
     if (event.shiftKey) {
       const kept = view.sort.filter((rule) => rule.field !== field);
       onsort?.(next ? [...kept, next] : kept);
@@ -215,6 +211,9 @@
     onheaderfilter?.(field, from || to ? { mode: 'dateRange', from, to } : null);
   }
 
+  function rangeUnit(column:TableColumn):string {const definition=resolveField(column.field,data).definition;return definition?.type==='money'?'元':definition?.role==='detail'?'数值':definition?.unit??'数值';}
+  function numberRangeOf(field: string): {from:string;to:string} { const value=view.headerFilters[field]; return value?.mode==='numberRange'?value:{from:'',to:''}; }
+  function emitNumberRange(field:string,from:string,to:string) { onheaderfilter?.(field,from||to?{mode:'numberRange',from,to}:null); }
   function hasActiveFilter(field: string): boolean {
     return view.headerFilters[field] !== undefined;
   }
@@ -387,9 +386,9 @@
                     {/if}
 
                     {#if interactive && column.filterable}
-                      <details class="filter">
+                      <details class="filter" use:tableFilterPopover>
                         <summary class:active={hasActiveFilter(columnField(column))} title="表头筛选">▼</summary>
-                        <div class="menu">
+                        <div class="menu" popover="auto">
                           {#if column.filterable.mode === 'select'}
                             {#each filterOptions[columnField(column)] ?? [] as option (option)}
                               <label class="option">
@@ -401,9 +400,9 @@
                                 <span>{option}</span>
                               </label>
                             {:else}
-                              <span class="hint">候选项加载中…</span>
+                              <span class="hint">{filterOptionsStatus[columnField(column)]==='unavailable'?'候选值能力不可用':filterOptionsStatus[columnField(column)]==='error'?'候选项加载失败':['ready','empty'].includes(filterOptionsStatus[columnField(column)])?'没有候选项':'候选项加载中…'}</span>
                             {/each}
-                          {:else}
+                          {:else if column.filterable.mode === 'dateRange'}
                             {@const range = dateRangeOf(columnField(column))}
                             <div class="range">
                               <input
@@ -420,6 +419,14 @@
                                   emitDateRange(columnField(column), range.from, e.currentTarget.value)}
                               />
                             </div>
+                          {:else if column.filterable.mode === 'numberRange'}
+                            {@const range=numberRangeOf(columnField(column))}
+                            <div class="range">
+                              <input type="text" inputmode="decimal" aria-label="数值下限" placeholder="下限" value={range.from} onchange={e=>emitNumberRange(columnField(column),e.currentTarget.value,range.to)} />
+                              <span class="sep">至</span>
+                              <input type="text" inputmode="decimal" aria-label="数值上限" placeholder="上限" value={range.to} onchange={e=>emitNumberRange(columnField(column),range.from,e.currentTarget.value)} />
+                            </div>
+                            <span class="hint">原始单位：{rangeUnit(column)}</span>
                           {/if}
                           {#if hasActiveFilter(columnField(column))}
                             <button
@@ -1015,11 +1022,12 @@
     background: #f4f4f5;
   }
   .menu {
-    position: absolute;
+    position: fixed;
     z-index: 10;
-    top: calc(100% + 4px);
-    left: 0;
+    inset: auto;
+    margin: 0;
     min-width: 160px;
+    max-width: calc(100vw - 16px);
     max-height: 240px;
     overflow: auto;
     background: #fff;
@@ -1030,6 +1038,9 @@
     display: flex;
     flex-direction: column;
     font-weight: 400;
+  }
+  .menu[popover]:not(:popover-open) {
+    display: none;
   }
   .option {
     display: flex;

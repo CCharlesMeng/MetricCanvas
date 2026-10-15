@@ -1,0 +1,17 @@
+flowchart TD
+  Start["当前页面筛选 + 本表排序 / 表头条件 / 页码"] --> Compile["编译本轮执行计划<br/>选择排序字段归属与条件范围"]
+  Compile --> Direct{"全部排序与表头条件<br/>能由同一完整覆盖域的查询执行？"}
+  Direct -->|是| Select["选页角色<br/>全范围过滤排序 + 编码作为同值排序<br/>返回本页编码、顺序、totalCount"]
+  Select --> Empty{"当前业务集合为空？"}
+  Empty -->|是| EmptyResult["发布空集合，跳过补列"]
+  Empty -->|否| Fill["补列角色<br/>其他成员按本页编码并行查询完整匹配行<br/>复用选页已返回字段"]
+  Fill --> PageRows["按编码关联投影<br/>保留选页顺序与totalCount"]
+  Direct -->|否| Domain["完整业务行全集<br/>校验唯一编码与最多1000行"]
+  Domain --> Full["其他成员按全集编码完整取数<br/>校验完整性，按编码关联投影"]
+  Full --> View["完整行上过滤 → 稳定排序 → 分页<br/>totalCount = 全部匹配行数"]
+  PageRows --> Check["检查字段、范围与当前代次<br/>写当前排序下的行序号"]
+  View --> Check
+  Check --> Publish["原子发布 office-overview 当前页<br/>独立图表的 office-meeting 快照保持独立"]
+  Fill -. 查询失败 / 重复键 / 截断 .-> Fail["本轮错误<br/>不发布部分结果"]
+  Full -. 超限 / 查询失败 / 截断 .-> Fail
+

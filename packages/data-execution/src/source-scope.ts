@@ -1,5 +1,5 @@
 import type { Page } from '@metriccanvas/page';
-import { computeDependencies, flattenPageComponents, queryResultDependencies } from '@metriccanvas/page/internal';
+import { computeDependencies, definitionSourceIds, flattenPageComponents, queryResultDependencies } from '@metriccanvas/page/internal';
 
 function referencedSources(page: Pick<Page, 'sections' | 'detailViews'>): Set<string> {
   const ids = new Set<string>();
@@ -31,6 +31,7 @@ export function initialQuerySourceIds(page: Page): string[] {
   const delayed = dependencies(page, referencedSources({
     sections: [], detailViews: page.detailViews?.filter(view => view.mode === 'query')
   }));
+  const members = new Set(Object.values(page.dataSources).flatMap(definitionSourceIds));
   return Object.entries(page.dataSources).flatMap(([id, source]) =>
-    source.source.type === 'query' && (!delayed.has(id) || live.has(id)) ? [id] : []);
+    source.source.type !== 'inline' && (!delayed.has(id) || live.has(id)) && (!members.has(id) || live.has(id)) ? [id] : []);
 }

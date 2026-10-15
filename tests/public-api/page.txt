@@ -150,6 +150,9 @@ PageParseOptions
 PageParseResult
 PageQuery
 PageSection
+PagedJoinDataSource
+PagedJoinMember
+PagedJoinSource
 ParamResolutionIssue
 ParameterProgramRequest
 PieChartComponent
@@ -216,8 +219,12 @@ TableColumnGroup
 TableColumnNode
 TableComponent
 TableDataBinding
+TableHeaderFilters
+TablePredicate
 TableProps
+TableQueryView
 TableSelectionWrite
+TableSortRule
 TextComponent
 TextLink
 TextProps
@@ -240,6 +247,7 @@ ValueFormatPreset
 VersionPolicy
 WriteFilterAction
 ZeroDenominatorSemantics
+affectedSourceIds
 applyFilterTextValues
 assertNoQueryParamReferences
 barForecastBoundaryIssues
@@ -255,9 +263,11 @@ componentCatalogEntry
 compositeCardChildTypes
 computeDependencies
 computeOutputFields
+conditionSourceIds
 dataSourceMode
 daysInGregorianMonth
 declaredPaginationLimit
+definitionSourceIds
 deriveComponentCapabilities
 derivePageCapabilities
 dimensionOfLevel
@@ -287,6 +297,7 @@ isFoldingOperator
 isInlineDataSource
 isLevelDimensionBinding
 isNavigationHref
+isPagedJoinDataSource
 isQueryDataSource
 isQueryErrorCode
 isQueryInputDeclaration
@@ -320,10 +331,16 @@ resolveParamTextValues
 resolveRelativeTime
 resolveTextValues
 resolveTimeWindow
+resultSourceIds
 rowKinds
 runPageParameterProgram
 sectionBackdrop
 supportedVersions
+tableHeaders
+tablePredicateZ
+tablePredicates
+tableQueryViewZ
+tableSortZ
 textValueScope
 timePointPredicateValue
 timeWindowCompatible

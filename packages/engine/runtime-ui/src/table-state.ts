@@ -1,5 +1,5 @@
 import type { Page } from '@metriccanvas/page';
-import { flattenPageComponents, computeDependencies, type Row } from '@metriccanvas/page/internal';
+import { flattenPageComponents, conditionSourceIds, type Row } from '@metriccanvas/page/internal';
 import type { FilterValues } from '../../runtime/src';
 import type { TableHeaderFilterValue, TableViewState } from '../../widgets/src/components/table/view-state';
 
@@ -23,10 +23,7 @@ export function resetFilteredTablePages(
     if (component.type !== 'table') continue;
     const view = views[component.id];
     if (!view || view.pageIndex === 0) continue;
-    const sources = new Set([component.data.main]);
-    for (const id of sources) {
-      for (const dependency of computeDependencies(page.dataSources[id]?.compute ?? [])) sources.add(dependency);
-    }
+    const sources = conditionSourceIds(page, component.data.main);
     const queryAffected = [...sources].some(id => {
       const source = page.dataSources[id];
       return (source?.source.type === 'query' &&
@@ -41,28 +38,14 @@ export function resetFilteredTablePages(
   return result;
 }
 
-/** 按原始值排序，缺失和非有限数在升降序下都排尾；相同值保持输入顺序。 */
-export function sortTableRows(rows: readonly Row[], rules: TableViewState['sort']): Row[] {
-  const missing = (value: unknown) => value == null || (typeof value === 'number' && !Number.isFinite(value));
-  return [...rows].sort((left, right) => {
-    for (const rule of rules) {
-      const a = left[rule.field];
-      const b = right[rule.field];
-      if (missing(a) || missing(b)) {
-        if (missing(a) !== missing(b)) return missing(a) ? 1 : -1;
-        continue;
-      }
-      const comparison = a! < b! ? -1 : a! > b! ? 1 : 0;
-      if (comparison !== 0) return rule.direction === 'desc' ? -comparison : comparison;
-    }
-    return 0;
-  });
-}
-
-/** Shared live/export predicate; callers retain ownership of sorting and paging. */
-export function filterTableRowsByHeaders(rows:readonly Row[],filters:Readonly<Record<string,TableHeaderFilterValue>>):Row[] {
-  return rows.filter(row=>Object.entries(filters).every(([field,filter])=>{
-    const comparable=String(row[field]??'');
-    return filter.mode==='select'?filter.values.includes(comparable):(!filter.from||comparable>=filter.from)&&(!filter.to||comparable<=filter.to);
+export { sortTableRows } from '@metriccanvas/data-execution/runtime';
+import { filterTableRowsByHeaders as evaluate } from '@metriccanvas/data-execution/runtime';
+import { normalizeHeaderDraft } from './table-controller';
+export function filterTableRowsByHeaders(rows: readonly Row[], filters: import('@metriccanvas/page/internal').TableHeaderFilters | Readonly<Record<string, TableHeaderFilterValue>>): Row[] {
+  const normalized = Object.fromEntries(Object.entries(filters).flatMap(([field, value]) => {
+    if (value.mode !== 'numberRange' || typeof value.from === 'number' || typeof value.to === 'number' || (value.from === undefined && value.to === undefined)) return [[field, value]];
+    const applied = normalizeHeaderDraft(value as TableHeaderFilterValue);
+    return applied ? [[field, applied]] : [];
   }));
+  return evaluate(rows, normalized as import('@metriccanvas/page/internal').TableHeaderFilters);
 }

@@ -1,0 +1,22 @@
+$ tsx packages/page/src/validate-cli.ts
+✓ business-sdt-report.json
+✓ customer-activity-risk-briefing.json
+✓ demo.json
+✓ empty-state-showcase.json
+✓ flow-analysis-report-params.json
+✓ flow-analysis-report.json
+✓ ioc-content-navigation.json
+✓ ioc-opportunity-analysis.json
+✓ ioc-opportunity-list.json
+✓ ioc-project-detail.json
+✓ ioc-project-overview.json
+✓ multi-query-table.json
+✓ query-result-where-page.json
+✓ region-map.json
+✓ report-date-filter-example.json
+✓ sales-detail.json
+✓ table-toolbar-demo.json
+✓ tokens-monthly-trend.json
+✓ tokens-report.json
+
+共 19 个页面文档,19 通过,0 失败

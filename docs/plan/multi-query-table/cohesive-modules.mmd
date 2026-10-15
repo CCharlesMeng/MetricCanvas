@@ -1,0 +1,34 @@
+flowchart TD
+  subgraph Protocol[page 协议与规则真源]
+    Schema["Zod + 产品语义校验<br/>字段、版本、静态引用"]
+    References["源引用图<br/>definition / rawResult / computeResult"]
+    QueryView["TableQueryView<br/>规范化已提交视图类型"]
+  end
+  Schema --> Bridge["生成 Node 校验 Bridge"]
+  Bridge --> Python["Python 校验薄适配<br/>不复制新语义规则"]
+  QueryView --> TableSession["runtime TableSession<br/>已提交排序、页码和条件唯一所有者"]
+  UI["runtime-ui table-controller<br/>字符串草稿与呈现状态"] -->|提交命令| TableSession
+  TableSession -->|只读状态| UI
+  TableSession -->|roots + conditions + views| Program
+  References --> Program
+  subgraph Execution[共享 data-execution]
+    Program["SourceProgram.read<br/>唯一执行 Interface"]
+    Recipes["包内源配方与 raw / compute 阶段图<br/>ordinary / inline / pagedJoin"]
+    Policy["范围和 initial 政策<br/>完整 / TopN / 窗口 / 编码集合"]
+    Pure["纯 TableView + 具名算子<br/>过滤、排序、分页、计算"]
+    Pool["QueryRunner<br/>仅管理请求、并发、缓存与取消"]
+    Program --> Recipes
+    Recipes --> Policy
+    Recipes --> Pure
+    Recipes --> Pool
+  end
+  Pool --> Gateway["既有 DataGateway / DQE Adapter"]
+  Gateway --> DQE["DQE"]
+  Program --> Updates["SourceUpdate<br/>最终快照 + 合法 initial 更新"]
+  Updates --> Publish["runtime 页面会话<br/>sourceId 到公开快照"]
+  Publish --> Render["纯渲染组件"]
+  Node["单次 execute 薄适配"] --> Program
+  Updates --> Document["单次页面文档写回"]
+  Export["export-controller<br/>捕获、取消与导出任务"] -->|完整读取| Program
+  Updates --> ExportAdapter["既有导出 Adapter<br/>DOM / 图片 / XLSX / 下载"]
+

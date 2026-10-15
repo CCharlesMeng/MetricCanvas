@@ -15,7 +15,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 21;
+const CURRENT_MINOR = 22;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -37,6 +37,9 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'paged-join': { minor: 22, description: '多查询组合表格与数值表头范围',
+    usedAt: document => [...dataSourcePaths(document, source => record(source.source)?.type === 'pagedJoin'), ...numberRangeTablePaths(document)]
+  },
   'table-toolbar': {
     minor: 21, description: '表格独立搜索与完整 Excel 导出工具区',
     usedAt: document => componentPaths(document, component => component.type === 'table' && has(props(component), 'toolbar'))
@@ -963,4 +966,13 @@ function namedFormatPaths(document: unknown, pattern: RegExp): string[] {
     if (reference.format && pattern.test(reference.format)) paths.push(`${path}/format`);
   }
   return [...new Set(paths)];
+}
+
+function numberRangeTablePaths(document:unknown):string[]{
+  const paths:string[]=[];
+  walkDocumentComponents(document,(component,path)=>{
+    if(component.type!=='table')return;
+    function visit(columns:unknown,base:string){if(!Array.isArray(columns))return;columns.forEach((value,index)=>{const column=record(value);if(!column)return;const location=`${base}/${index}`;if(record(column.filterable)?.mode==='numberRange')paths.push(`${location}/filterable/mode`);visit(column.children,`${location}/children`);});}
+    visit(props(component)?.columns,`${path}/props/columns`);
+  });return paths;
 }

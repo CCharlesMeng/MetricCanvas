@@ -57,3 +57,5 @@ Relay 当前会把 MCP 完整返回值送回模型,所以目标接线必须在 M
 **[ADR-0073](../0073-static-platform-direct-access-with-injected-runtime-config.md) 保留的数据与身份通路：** 平台仍为静态浏览器应用，直连 Java 与 DQE，凭据由集成门户拥有，每请求现读，不自建登录或刷新重试。DQE 使用用户态 header token，服务端验证身份；Java 页面资产不要求 DQE 端点完整。application-runtime 与页面试验场保留全局包装。0073 的“不实现微前端协议”、只接受全局对象及不提供生命周期限制已被 0093 替换。
 
 **独立部署接线（[ADR-0094](../0094-independent-platform-deployment-adapters.md)）：** 平台 GitHub 只维护通用微前端、实例服务与版本化契约；门户变量、鉴权映射、私有 SDK/补丁及部署配置归仓外独立项目。部署 Adapter 以经典脚本和固定平台静态产物组合，记录双方摘要，不深导入平台源码；配置订阅与显式整页重载模式各自有明确保证，不能凭部署 Adapter 存在推断真实服务已接通。
+
+[ADR-0108](../0108-paged-join-and-unified-source-program.md) 将纯 compute/TableView、执行范围和 SourceProgram 收敛到 data-execution；引擎保留生命周期与公开快照发布，TableSession 持有提交状态，UI controller 持草稿和导出任务。共享包不得依赖 UI、widgets、Svelte、DOM 或文件编码；组合内部角色不新增稳定公开承诺。

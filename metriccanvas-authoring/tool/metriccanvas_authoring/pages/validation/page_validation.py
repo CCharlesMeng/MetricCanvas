@@ -34,8 +34,21 @@ class PageContractIssue:
         return asdict(self)
 
 
+def _uses_product_bridge(node):
+    if isinstance(node, list): return any(_uses_product_bridge(v) for v in node)
+    if isinstance(node, dict): return node.get('type') == 'pagedJoin' or node.get('mode') == 'numberRange' or any(_uses_product_bridge(v) for v in node.values())
+    return False
+
+
 def validate_page_document(value: Any) -> list[PageContractIssue]:
     """Validate structure plus query-result semantics used by Page parsing."""
+    if _uses_product_bridge(value):
+        from .node_validator import validate_with_node
+        return validate_with_node(value)
+    return _validate_python_document(value)
+
+
+def _validate_python_document(value: Any) -> list[PageContractIssue]:
     schema = json.loads(
         (PRODUCT_CONTRACT_ROOT / "page" / "schema.json").read_text(encoding="utf-8")
     )

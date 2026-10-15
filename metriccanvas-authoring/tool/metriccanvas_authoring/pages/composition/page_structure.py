@@ -99,6 +99,11 @@ def block_component(block, sources, pattern='custom', *, relations=(), evidence=
         rows = evidence['rows']
         count = evidence['totalCount']
     component_type = block['component']
+    if source['source']['type']=='pagedJoin':
+        if component_type!='table':raise StructureError('STRUCTURE_COMPONENT_INVALID')
+        props={'rowKey':source['source']['rowKey'],'pagination':{'mode':'query'},'columns':[{'field':field,'sortable':field in source['source']['ordering']['sortableFields']} for field in keys]}
+        if 'title' in block:props['title']=block['title']
+        return {'id':block['id'],'type':'table','data':{'main':block['source']},'layout':{'span':12},'props':props}
     match = block.get('match')
     if match:
         if component_type != 'metricCard':

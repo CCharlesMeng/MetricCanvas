@@ -1,0 +1,39 @@
+sequenceDiagram
+  autonumber
+  participant User as 用户
+  participant UI as 表格视图状态
+  participant Core as 组合执行核心
+  participant Pool as 共享请求池
+  participant DQE as DQE
+  participant Chart as 独立召开率图
+  participant Table as 概览表
+  Chart->>Pool: office-meeting 完整普通生效查询
+  Pool->>DQE: 无表格分页与表头条件的完整查询
+  User->>UI: 默认预签金额降序，第一页
+  UI->>Core: office-overview，generation 1
+  Core->>Pool: office-bidding 选页，offset 0 / limit 3
+  Pool->>DQE: 金额降序 + 编码升序 + 分页
+  DQE-->>Pool: 上海 / 北京 / 广州，总数8
+  Pool-->>Core: selection 结果，仅属于组合上下文
+  Core->>Pool: 其他成员按三个编码补列
+  Pool->>DQE: 并行普通DQE请求，编码集合条件，无分页窗口
+  DQE-->>Pool: 完整匹配字段行
+  Pool-->>Core: 本轮fill结果
+  Core-->>Table: 原子发布上海 / 北京 / 广州
+  DQE-->>Pool: 独立图表的完整召开率结果
+  Pool-->>Chart: office-meeting 普通快照，8行
+  User->>UI: 点击召开率降序
+  UI->>Core: 页码归零，generation 2
+  Core->>Pool: 取消仅由旧代次使用的请求
+  Note over Pool,Chart: 图表仍需要的共享请求保持运行
+  Core->>Pool: office-meeting 选页，offset 0 / limit 3
+  Pool->>DQE: 召开率降序 + 编码升序 + 分页
+  DQE-->>Pool: 上海 / 深圳 / 北京，总数8
+  Pool-->>Core: 新selection结果
+  Core->>Pool: 其他成员按新三个编码补列
+  Pool->>DQE: 编码集合条件下完整取数
+  DQE-->>Pool: 新补列结果
+  Pool-->>Core: 新fill结果
+  Core-->>Table: 原子发布上海 / 深圳 / 北京
+  Note over Chart,Table: 复用同一份查询定义，结果按使用条件和归属隔离
+

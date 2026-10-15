@@ -1,0 +1,117 @@
+{
+  "case": "paged-join-before-6.22",
+  "invariant": "paged-join",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "多查询组合表格与数值表头范围 由 6.22 引入，文档声明的是 6.21",
+      "paths": [
+        "/dataSources/office-overview",
+        "/sections/0/components/1/props/columns/3/filterable/mode",
+        "/sections/0/components/1/props/columns/4/filterable/mode",
+        "/sections/0/components/1/props/columns/5/filterable/mode",
+        "/sections/0/components/1/props/columns/6/filterable/mode",
+        "/sections/0/components/1/props/columns/7/filterable/mode"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "office-overview": {
+        "fields": {
+          "rank": {
+            "…": "共5个键"
+          },
+          "rep-office-code": {
+            "…": "共4个键"
+          },
+          "rep-office-name": {
+            "…": "共4个键"
+          },
+          "region-dept-name": {
+            "…": "共4个键"
+          },
+          "bidding-amount": {
+            "…": "共7个键"
+          },
+          "support-rate": {
+            "…": "共6个键"
+          },
+          "analysis-meeting-rate": {
+            "…": "共6个键"
+          },
+          "current-month-new-signed-amount": {
+            "…": "共7个键"
+          },
+          "project-initiation-rate": {
+            "…": "共6个键"
+          }
+        },
+        "source": {
+          "type": "pagedJoin",
+          "rowKey": "rep-office-code",
+          "domainMember": "directory",
+          "members": {
+            "…": "共6个键"
+          },
+          "projection": {
+            "…": "共8个键"
+          },
+          "ordering": {
+            "…": "共3个键"
+          },
+          "pagination": {
+            "…": "共1个键"
+          },
+          "fallback": {
+            "…": "共1个键"
+          },
+          "onMissing": "null",
+          "ordinalField": "rank"
+        }
+      }
+    },
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "columns": [
+                "…",
+                "…",
+                "…",
+                {
+                  "filterable": {
+                    "mode": "numberRange"
+                  }
+                },
+                {
+                  "filterable": {
+                    "mode": "numberRange"
+                  }
+                },
+                {
+                  "filterable": {
+                    "mode": "numberRange"
+                  }
+                },
+                {
+                  "filterable": {
+                    "mode": "numberRange"
+                  }
+                },
+                {
+                  "filterable": {
+                    "mode": "numberRange"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/paged-join-before-6.22.json"
+}

@@ -24,6 +24,7 @@
     { "id": "custom-component-dashboard", "group": "features", "summary": "区域经营看板中的页面自定义组件。", "tags": ["自定义组件"] },
     { "id": "region-map", "group": "features", "summary": "地图着色与散点、带参链接及层级维度筛选器。", "tags": ["地图", "层级筛选"] },
     { "id": "ioc-content-navigation", "group": "verification", "summary": "用匿名合成数据检查内容导航的运行时行为。", "tags": ["内容导航"] },
+    {"id": "multi-query-table", "group": "verification", "summary": "两张独立组合表对照当前序号与固定预签金额排名，支持全局排序、跨源范围和导出；使用本地 DQE 仿真。", "tags": ["多查询表格", "全局排序", "跨源筛选"]},
     { "id": "empty-state-showcase", "group": "verification", "summary": "检查空数据与请求失败时的组件呈现。", "tags": ["空态", "错误状态"] }
   ]
 }

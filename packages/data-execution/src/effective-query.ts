@@ -4,12 +4,7 @@ import type { DataGateway, QueryDiagnosticContext } from './ports';
 import { preservedQueryError } from './query-error';
 import { rawSnapshot } from './snapshots';
 
-export type QueryHeaderFilters = Readonly<
-  Record<
-    string,
-    { mode: 'select'; values: readonly string[] } | { mode: 'dateRange'; from: string; to: string }
-  >
->;
+export type QueryHeaderFilters = import('@metriccanvas/page/internal').TableHeaderFilters;
 
 export interface QueryBinding { dataSource: QueryDataSource; pagination?: { limit: number }; }
 
@@ -90,6 +85,8 @@ export function composeEffectiveQuery(
       if (filter.values.length > 0) {
         filterValues.push({ target: 'dimension', queryField, values: [...filter.values] });
       }
+    } else if (filter.mode === 'numberRange') {
+      if (filter.from !== undefined || filter.to !== undefined) filterValues.push({ target: 'metricRange', metric: queryField, ...(filter.from === undefined ? {} : { from: filter.from }), ...(filter.to === undefined ? {} : { to: filter.to }) });
     } else if (filter.from.length > 0 || filter.to.length > 0) {
       filterValues.push({
         target: 'dimensionRange',
@@ -136,7 +133,7 @@ export async function executeQuery(
   try {
     const result = await gateway.fetchData(query, diagnosticContext, signal);
     if (query.pagination && result.totalCount === undefined) {
-      throw new Error('查询分页结果缺少 totalCount');
+      throw Object.assign(new Error('查询分页结果缺少 totalCount'), { code:'DQE_ROW_CONTRACT_ERROR' });
     }
     return rawSnapshot(result.rows, result.totalCount);
   } catch (cause) {

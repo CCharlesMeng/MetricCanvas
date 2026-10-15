@@ -9,7 +9,12 @@
     "python": ">=3.12",
     "transport": "stdio",
     "entrypoint": "tool/server.py",
-    "requirements": "tool/requirements.lock"
+    "requirements": "tool/requirements.lock",
+    "pageValidation": {
+      "node": ">=22",
+      "entrypoint": "scripts/page-validation-bridge.mjs",
+      "timeoutSeconds": 20
+    }
   },
   "contracts": {
     "authoring": "contracts/manifest.json",

@@ -7,6 +7,7 @@
       "message": "must match pattern \"^[A-Za-z_][A-Za-z0-9_-]*$\"",
       "paths": [
         "/dataSources/overview/fields",
+        "/dataSources/overview/fields",
         "/dataSources/overview/fields"
       ]
     },
@@ -14,6 +15,7 @@
       "type": "SCHEMA_ERROR",
       "message": "property name must be valid",
       "paths": [
+        "/dataSources/overview/fields",
         "/dataSources/overview/fields",
         "/dataSources/overview/fields"
       ]
@@ -66,6 +68,7 @@
       "type": "SCHEMA_ERROR",
       "message": "存在未定义字段 rows(拼写错误?)",
       "paths": [
+        "/dataSources/overview/source/rows",
         "/dataSources/overview/source/rows"
       ]
     },
@@ -73,7 +76,64 @@
       "type": "SCHEMA_ERROR",
       "message": "must be equal to constant",
       "paths": [
+        "/dataSources/overview/source/type",
         "/dataSources/overview/source/type"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 rowKey",
+      "paths": [
+        "/dataSources/overview/source/rowKey"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 domainMember",
+      "paths": [
+        "/dataSources/overview/source/domainMember"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 members",
+      "paths": [
+        "/dataSources/overview/source/members"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 projection",
+      "paths": [
+        "/dataSources/overview/source/projection"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 ordering",
+      "paths": [
+        "/dataSources/overview/source/ordering"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 pagination",
+      "paths": [
+        "/dataSources/overview/source/pagination"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 fallback",
+      "paths": [
+        "/dataSources/overview/source/fallback"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 onMissing",
+      "paths": [
+        "/dataSources/overview/source/onMissing"
       ]
     }
   ],

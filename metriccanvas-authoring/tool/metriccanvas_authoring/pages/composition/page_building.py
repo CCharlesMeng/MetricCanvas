@@ -27,6 +27,7 @@ def assemble_page_document(
     schema_version: str,
     units: Sequence[ExecutableUnit],
     executions: Sequence[DqeExecutionResult],
+    paged_joins: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Assemble executed units into a current-version Page Metadata document."""
     data_sources: dict[str, Any] = {}
@@ -44,14 +45,18 @@ def assemble_page_document(
     if issues:
         raise PageBuildingIssues(tuple(issues))
 
-    return add_query_table_pagination({
+    document = {
         "schemaVersion": schema_version,
         "layout": "report",
         "id": page_id,
         **({} if description is None else {"meta": {"description": description}}),
         "dataSources": data_sources,
         "sections": _sections_of(units, components),
-    })
+    }
+    if paged_joins:
+        from .paged_join import attach_paged_join_tables
+        attach_paged_join_tables(document,paged_joins)
+    return add_query_table_pagination(document)
 
 
 def build_data_component(

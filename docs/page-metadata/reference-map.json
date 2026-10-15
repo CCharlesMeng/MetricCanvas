@@ -82,14 +82,18 @@
         "queryDataSource",
         "inlineSource",
         "querySource",
-        "embeddedInitialRows"
+        "embeddedInitialRows",
+        "pagedJoinSource",
+        "pagedJoinDataSource"
       ],
       "keywords": [
         "data-sources",
         "页面数据源与初始行"
       ],
       "examples": [
-        "query-dashboard"
+        "query-dashboard",
+        "paged-join-page",
+        "paged-join-fixed-rank-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -100,7 +104,8 @@
         "query-initial-rows-normalize",
         "inline-rows-contract",
         "captured-at-valid",
-        "pagination-initial-rows"
+        "pagination-initial-rows",
+        "paged-join"
       ]
     },
     "fields.md": {
@@ -596,7 +601,9 @@
         "query-dashboard",
         "reference-branches-page",
         "reference-export-column-actions",
-        "table-toolbar-page"
+        "table-toolbar-page",
+        "table-number-range-page",
+        "paged-join-fixed-rank-page"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -614,7 +621,8 @@
         "pagination-query-order",
         "pagination-initial-rows",
         "pagination-exclusive-source",
-        "table-toolbar-search"
+        "table-toolbar-search",
+        "paged-join"
       ]
     },
     "components/mapChart.md": {
@@ -1150,7 +1158,28 @@
     "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/placeholder": "搜索输入提示；省略时显示搜索表格，支持文本取值引用。",
     "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export": "完整匹配结果的Excel导出声明；省略时关闭入口。",
     "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/format": "首版固定xlsx，导出工作簿而非当前分页截图。",
-    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/filename": "文件名基础文本；省略采用已解析表格标题或表格数据，自动附加.xlsx并清理非法文件名字符。"
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/filename": "文件名基础文本；省略采用已解析表格标题或表格数据，自动附加.xlsx并清理非法文件名字符。",
+    "#/definitions/pagedJoinSource/properties/domainMember": "完整结果定义业务行域的成员 ID。",
+    "#/definitions/pagedJoinSource/properties/members": "复用页内普通查询定义的成员映射；定义引用不构成固定级联。",
+    "#/definitions/pagedJoinSource/properties/members/additionalProperties/properties/key": "成员结果业务键和显式编码输入目标。",
+    "#/definitions/pagedJoinSource/properties/members/additionalProperties/properties/canSelectPage": "经数据侧验真：覆盖相同行域、一键一行，且支持排序、总数和稳定键排序；不能从样本推断。",
+    "#/definitions/pagedJoinSource/properties/projection": "最终字段到成员原始字段的显式一对一投影；序号除外。",
+    "#/definitions/pagedJoinSource/properties/projection/additionalProperties/properties/member": "投影所属成员 ID。",
+    "#/definitions/pagedJoinSource/properties/ordering": "全局排序声明与交互可排序字段集合。",
+    "#/definitions/pagedJoinSource/properties/ordering/properties/default/items/properties/direction": "按原始值升序或降序，缺值始终排尾。",
+    "#/definitions/pagedJoinSource/properties/ordering/properties/sortableFields": "允许交互全局排序的最终投影字段。",
+    "#/definitions/pagedJoinSource/properties/ordering/properties/nulls": "缺值升降序均排尾；未验证 DQE 缺值排序时完整关联。",
+    "#/definitions/pagedJoinSource/properties/fallback": "有界完整关联策略的限制。",
+    "#/definitions/pagedJoinSource/properties/fallback/properties/maxRows": "完整行域和每个补列成员均不得超出，最大 1000 行。",
+    "#/definitions/pagedJoinSource/properties/onMissing": "成功无匹配行输出 null；失败不能冒充缺行。",
+    "#/definitions/pagedJoinSource/properties/ordinalField": "当前排序筛选下生成的数值行序号，不充当关联键。",
+    "#/definitions/pagedJoinSource/properties/initial/properties/view": "采集时的规范化已提交视图；组合 initial 必须匹配默认第一页。",
+    "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/pageIndex": "从零开始的页码。",
+    "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/sort": "优先级顺序排列的全局排序数组；空数组恢复组合默认排序。",
+    "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/sort/items/properties/direction": "按原始值升序或降序，缺值始终排尾。",
+    "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates": "最终字段上的 AND 条件；会话条件不写回定义；默认 initial 必须为空。",
+    "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values": "显式选择集合，保留字符串或数值类型。",
+    "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/search": "已提交文本搜索；首版组合搜索使用有界完整关联，草稿不进入。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1330,7 +1359,11 @@
     "isNull": "只匹配合法null值；缺字段仍是契约错误。",
     "isNotNull": "只匹配合法非null值；缺字段仍是契约错误。",
     "6.20": "查询分页窗口可作为结果绑定输入；任意可排序列驱动依赖更新，排序回到第一页，下游仍只接收字段集合。",
-    "6.21": "表格独立搜索与完整Excel导出工具区；查询搜索字段必须映射，搜索编码由数据网关提供。"
+    "6.21": "表格独立搜索与完整Excel导出工具区；查询搜索字段必须映射，搜索编码由数据网关提供。",
+    "6.22": "组合查询源和数值表头范围的当前写出版本。",
+    "asc": "按原始可比较值升序，缺值仍排尾。",
+    "desc": "按原始可比较值降序，缺值仍排尾。",
+    "numberRange": "数值度量的包含端点范围；按原始单位比较，一端可缺省。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -1404,6 +1437,36 @@
       "rule": "detail-view-component-types",
       "reason": "详情的展示闭集拒绝 aiSummary；共享组件 Schema 分支只存在语义反例。",
       "source": "packages/page/src/validate.ts"
+    },
+    "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/0": {
+      "case": "paged-join-initial-predicate-in",
+      "rule": "paged-join",
+      "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+      "source": "packages/page/src/validate-paged-join.ts"
+    },
+    "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values/items/anyOf/0": {
+      "case": "paged-join-initial-predicate-in",
+      "rule": "paged-join",
+      "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+      "source": "packages/page/src/validate-paged-join.ts"
+    },
+    "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values/items/anyOf/1": {
+      "case": "paged-join-initial-predicate-in",
+      "rule": "paged-join",
+      "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+      "source": "packages/page/src/validate-paged-join.ts"
+    },
+    "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/1": {
+      "case": "paged-join-initial-predicate-numeric",
+      "rule": "paged-join",
+      "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+      "source": "packages/page/src/validate-paged-join.ts"
+    },
+    "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/2": {
+      "case": "paged-join-initial-predicate-date",
+      "rule": "paged-join",
+      "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
+      "source": "packages/page/src/validate-paged-join.ts"
     }
   }
 }

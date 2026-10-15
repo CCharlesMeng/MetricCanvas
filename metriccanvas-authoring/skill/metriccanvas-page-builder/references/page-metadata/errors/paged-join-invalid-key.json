@@ -1,0 +1,29 @@
+{
+  "case": "paged-join-invalid-key",
+  "invariant": "paged-join",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "成员键必须与业务行键类型一致且非空",
+      "paths": [
+        "/dataSources/office-overview/source/members/meeting/key/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "office-overview": {
+        "source": {
+          "members": {
+            "meeting": {
+              "key": {
+                "field": "analysis-meeting-rate"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/paged-join-invalid-key.json"
+}

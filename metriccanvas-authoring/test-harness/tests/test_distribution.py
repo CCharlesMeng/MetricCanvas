@@ -47,11 +47,14 @@ class DistributionContractTest(unittest.TestCase):
     def test_sdist_embeds_all_runtime_contracts_for_wheel_build(self) -> None:
         project = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
         expected = {
+            "metriccanvas_authoring/_bundle/scripts/page-validation-bridge.mjs",
+            "metriccanvas_authoring/_bundle/scripts/PAGE-VALIDATOR-LICENSES.md",
             "metriccanvas_authoring/_bundle/contracts",
             "metriccanvas_authoring/_bundle/contract-snapshot",
             "metriccanvas_authoring/_bundle/contracts/authored/source-description.schema.json",
             "metriccanvas_authoring/_bundle/contracts/authored/authoring-turn.schema.json",
             "metriccanvas_authoring/_bundle/bundle.json",
+            "metriccanvas_authoring/_bundle/bundle.lock.json",
             "metriccanvas_authoring/_bundle/contract-lock.json",
             "metriccanvas_authoring/_bundle/contracts/authored/page-build-spec.schema.json",
             "metriccanvas_authoring/_bundle/contracts/authored/page-edit-request.schema.json",

@@ -33,22 +33,7 @@ PAGE_BUILD_SPEC_SCHEMA = json.loads(
 )
 
 
-def _inline_local_refs(value: Any, root: dict[str, Any]) -> Any:
-    if isinstance(value, list):
-        return [_inline_local_refs(entry, root) for entry in value]
-    if not isinstance(value, dict):
-        return value
-    reference = value.get("$ref")
-    if isinstance(reference, str) and reference.startswith("#/$defs/"):
-        name = reference.removeprefix("#/$defs/")
-        target = root["$defs"][name]
-        siblings = {key: entry for key, entry in value.items() if key != "$ref"}
-        return _inline_local_refs({**target, **siblings}, root)
-    return {
-        key: _inline_local_refs(entry, root)
-        for key, entry in value.items()
-        if key not in {"$defs", "$schema"}
-    }
+from metriccanvas_authoring.schema_projection import inline_local_refs as _inline_local_refs
 
 
 RUNTIME_PAGE_BUILD_SPEC_SCHEMA = _inline_local_refs(

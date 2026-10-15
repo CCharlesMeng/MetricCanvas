@@ -1,0 +1,186 @@
+{
+  "office-overview": {
+    "fields": {
+      "rank": {
+        "type": "number",
+        "role": "measure",
+        "nullable": false,
+        "label": "排名",
+        "defaultFormat": "number"
+      },
+      "rep-office-code": {
+        "type": "string",
+        "role": "dimension",
+        "nullable": false,
+        "label": "代表处编码"
+      },
+      "rep-office-name": {
+        "type": "string",
+        "role": "dimension",
+        "nullable": false,
+        "label": "代表处"
+      },
+      "region-dept-name": {
+        "type": "string",
+        "role": "dimension",
+        "nullable": false,
+        "label": "区域"
+      },
+      "bidding-amount": {
+        "type": "money",
+        "role": "measure",
+        "nullable": true,
+        "label": "预签金额",
+        "unit": "元",
+        "currency": "CNY",
+        "defaultFormat": "cny-adaptive"
+      },
+      "support-rate": {
+        "type": "number",
+        "role": "measure",
+        "nullable": true,
+        "label": "管道支撑率",
+        "unit": "%",
+        "defaultFormat": "percent-1"
+      },
+      "analysis-meeting-rate": {
+        "type": "number",
+        "role": "measure",
+        "nullable": true,
+        "label": "项目分析会召开率",
+        "unit": "%",
+        "defaultFormat": "percent-1"
+      },
+      "current-month-new-signed-amount": {
+        "type": "money",
+        "role": "measure",
+        "nullable": true,
+        "label": "本月新签单",
+        "unit": "元",
+        "currency": "CNY",
+        "defaultFormat": "cny-adaptive"
+      },
+      "project-initiation-rate": {
+        "type": "number",
+        "role": "measure",
+        "nullable": true,
+        "label": "立项率",
+        "unit": "%",
+        "defaultFormat": "percent-1"
+      }
+    },
+    "source": {
+      "type": "pagedJoin",
+      "rowKey": "rep-office-code",
+      "domainMember": "directory",
+      "members": {
+        "directory": {
+          "source": "office-directory",
+          "key": {
+            "field": "rep-office-code",
+            "queryField": "rep_office_code"
+          },
+          "canSelectPage": false
+        },
+        "bidding": {
+          "source": "office-bidding",
+          "key": {
+            "field": "rep-office-code",
+            "queryField": "rep_office_code"
+          },
+          "canSelectPage": true
+        },
+        "support": {
+          "source": "office-support",
+          "key": {
+            "field": "rep-office-code",
+            "queryField": "rep_office_code"
+          },
+          "canSelectPage": true
+        },
+        "meeting": {
+          "source": "office-meeting",
+          "key": {
+            "field": "rep-office-code",
+            "queryField": "rep_office_code"
+          },
+          "canSelectPage": true
+        },
+        "signed": {
+          "source": "office-signed",
+          "key": {
+            "field": "rep-office-code",
+            "queryField": "rep_office_code"
+          },
+          "canSelectPage": true
+        },
+        "initiation": {
+          "source": "office-initiation",
+          "key": {
+            "field": "rep-office-code",
+            "queryField": "rep_office_code"
+          },
+          "canSelectPage": true
+        }
+      },
+      "projection": {
+        "rep-office-code": {
+          "member": "directory",
+          "field": "rep-office-code"
+        },
+        "rep-office-name": {
+          "member": "directory",
+          "field": "rep-office-name"
+        },
+        "region-dept-name": {
+          "member": "directory",
+          "field": "region-dept-name"
+        },
+        "bidding-amount": {
+          "member": "bidding",
+          "field": "bidding-amount"
+        },
+        "support-rate": {
+          "member": "support",
+          "field": "support-rate"
+        },
+        "analysis-meeting-rate": {
+          "member": "meeting",
+          "field": "analysis-meeting-rate"
+        },
+        "current-month-new-signed-amount": {
+          "member": "signed",
+          "field": "current-month-new-signed-amount"
+        },
+        "project-initiation-rate": {
+          "member": "initiation",
+          "field": "project-initiation-rate"
+        }
+      },
+      "ordering": {
+        "default": [
+          {
+            "field": "bidding-amount",
+            "direction": "desc"
+          }
+        ],
+        "sortableFields": [
+          "bidding-amount",
+          "support-rate",
+          "analysis-meeting-rate",
+          "current-month-new-signed-amount",
+          "project-initiation-rate"
+        ],
+        "nulls": "last"
+      },
+      "pagination": {
+        "pageSize": 3
+      },
+      "fallback": {
+        "maxRows": 1000
+      },
+      "onMissing": "null",
+      "ordinalField": "rank"
+    }
+  }
+}

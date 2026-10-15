@@ -133,7 +133,7 @@ data.main选择数据源，sortable开放列头交互，pagination.mode=query使
 共享单次执行消费第一页；导出捕获当前页、页大小和排序，重新取得该窗口后计算下游输入。该级联链导出保留窗口范围，普通无级联的分页表仍按完整导出规则取数。固定TopN和完整结果源继续保留既有选择范围及排序覆盖保护。
 
 
-页面协议 6.21。结构真源为本册[schema.json](schema.json)，SHA256 `b1463f60554cf354fdbf4789e020e48526496d89b8feee4181f652e50d12e715`。字段表自动生成；可选不等于有默认值。
+页面协议 6.22。结构真源为本册[schema.json](schema.json)，SHA256 `48844824923af573b27be8c9c53d7be88910b12628c548cefdcb9362b7612fc5`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1032,7 +1032,7 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "numberRange" | 用于选择@dqeQuery.filterBindings{key} · anyOf[5].target分支；同分支其它约束同时成立。 |
+| "numberRange" | 数值度量的包含端点范围；按原始单位比较，一端可缺省。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f352f70726f706572746965732f6d6574726963"></a>
 

@@ -11,5 +11,5 @@ class CustomBuildHook(BuildHookInterface):
         if not (bundle / 'bundle.json').is_file():
             # sdist already contains the complete _bundle inside the package.
             return
-        for name in ('bundle.json', 'contract-lock.json', 'contracts', 'contract-snapshot'):
+        for name in ('bundle.json', 'bundle.lock.json', 'contract-lock.json', 'contracts', 'contract-snapshot', 'scripts/page-validation-bridge.mjs', 'scripts/PAGE-VALIDATOR-LICENSES.md'):
             build_data['force_include'][str(bundle / name)] = 'metriccanvas_authoring/_bundle/' + name

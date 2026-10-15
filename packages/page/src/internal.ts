@@ -48,3 +48,7 @@ export * from './time-param';
 export * from './query-dependencies';
 
 export * from './query-result-where';
+
+export * from './paged-join';
+export * from './table-query-view';
+export * from './data-source-references';

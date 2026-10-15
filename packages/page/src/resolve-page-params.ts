@@ -1,3 +1,4 @@
+import { affectedSourceIds } from './data-source-references';
 import { matchesParamDeclaration, pageParamDeclarations, type PageParamValue } from './page-param';
 import { initializeQueryParams } from './query';
 import { parsePage } from './validate';
@@ -47,7 +48,7 @@ export function resolvePageParams(page:unknown, suppliedValues:Readonly<Record<s
   if(issues.length)return {ok:false,issues};
   for (const id of changedParamSourceIds(structural.page, values)) {
     const source = document.dataSources[id]?.source;
-    if (source?.type === 'query') delete source.initial;
+    if (source && source.type !== 'inline') delete source.initial;
   }
   const parsed=parsePage(document,{textValues:{values}});
   if(!parsed.ok)return {ok:false,issues:parsed.errors.map(e=>issue(e,'INVALID_MATERIALIZATION'))};
@@ -72,6 +73,7 @@ export function materializePageParams(page:Page,values:ReadonlyMap<string,PagePa
     source.source.query=initializeQueryParams(source.source.query,values);
     if (changed.has(id)) delete source.source.initial;
   }
+  for (const id of changed) { const source = resolved.dataSources[id]?.source; if (source && source.type !== 'inline') delete source.initial; }
   for (const filter of resolved.filters ?? []) {
     if (filter.type !== 'timePoint' && filter.type !== 'timeRange') continue;
     if (!filter.initialParam) continue;
@@ -105,10 +107,5 @@ function changedParamSourceIds(page: Page, values: ReadonlyMap<string, PageParam
       if (paramId && canonicalizeJson(saved.get(paramId) ?? null) !== canonicalizeJson(values.get(paramId) ?? null)) changed.add(id);
     }
   }
-  for (const dependency of changed) {
-    for (const [id, source] of Object.entries(page.dataSources)) {
-      if ([...queryResultDependencies(source), ...computeDependencies(source.compute ?? [])].includes(dependency)) changed.add(id);
-    }
-  }
-  return changed;
+  return affectedSourceIds(page.dataSources, changed);
 }

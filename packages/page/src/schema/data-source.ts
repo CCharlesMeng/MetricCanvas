@@ -1,3 +1,4 @@
+import { pagedJoinDataSourceZ } from './paged-join';
 import { MAX_QUERY_RESULT_VALUES } from '../query-result-limits';
 import { z } from 'zod';
 import type { QueryResultWhere } from '../query';
@@ -198,5 +199,5 @@ export const queryDataSourceDocumentZ = z
   .meta({ id: 'queryDataSource' });
 
 export const dataSourceDocumentZ = z
-  .union([inlineDataSourceZ, queryDataSourceDocumentZ])
+  .union([inlineDataSourceZ, queryDataSourceDocumentZ, pagedJoinDataSourceZ])
   .meta({ id: 'dataSource' });

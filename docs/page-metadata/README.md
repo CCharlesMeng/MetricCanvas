@@ -10,6 +10,8 @@
 |---|---|---|
 | 顶部切换时间并同步期间文字 | [报告页头](components/reportHeader.md)的 `filterIds` → [时间筛选](filters.md) → [查询绑定](queries-and-bindings.md)；[文本取值](params-and-text-values.md)显式引用已应用筛选 | [报告日期筛选](../../contracts/metriccanvas/page/reference/examples/report-date-filters-page.json)、[显式期间文字](../../contracts/metriccanvas/page/reference/examples/report-filter-text-page.json) |
 | 上游查询结果驱动下游明细 | [查询结果绑定](queries-and-bindings.md)的 `resultBindings` → [具名算子](compute.md) → 组件数据槽 | [级联查询](../../contracts/metriccanvas/page/reference/examples/query-cascade-page.json) |
+| 多个普通查询组成可全局排序、过滤、分页的表格 | [组合查询源](data-sources.md)的 `pagedJoin` → [表格](components/table.md)的查询分页、数值范围与工具区 | [多查询组合表](../../contracts/metriccanvas/page/reference/examples/paged-join-page.json) |
+| 固定指标排名跟随业务行，切换表格排序后保留名次 | [数据源](data-sources.md)的普通查询排名字段 → `projection`；当前序号另用 `ordinalField` | [固定业务排名](../../contracts/metriccanvas/page/reference/examples/paged-join-fixed-rank-page.json) |
 
 ## 按模块查阅
 

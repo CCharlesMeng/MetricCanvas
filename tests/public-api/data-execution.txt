@@ -14,21 +14,46 @@ createPageDataExecutor
 
 ## ./runtime
 BooleanFilterValue
+ComputationContext
+ComputationError
 DimensionFilterValue
+EXPORT_MAX_ROWS
+EXPORT_PREPARATION_TIMEOUT_MS
 FilterValue
 FilterValues
 NumberRangeFilterValue
 QueryHeaderFilters
 SearchFilterValue
+SourceProgram
+SourceRangeError
+SourceRead
+SourceUpdate
 TimePointFilterValue
 TimeRangeFilterValue
+applyComputation
+automaticQueryPageSize
+automaticQueryTableSources
+compileSources
 composeEffectiveQuery
+computedSnapshots
+createSourceProgram
+defaultSourceView
+evaluateTableView
 executeQuery
+executionSourceIds
+filterTableRows
+filterTableRowsByHeaders
 initialFilterValues
 initializePageParams
+joinAggregate
 preservedQueryError
 rawSnapshot
 resolveQueryResultInputs
+reusableInitialSnapshot
+searchTableRows
+sortTableRows
+timeFill
+visibleSourceIds
 
 ## ./dqe
 DEFAULT_DQE_ENDPOINT

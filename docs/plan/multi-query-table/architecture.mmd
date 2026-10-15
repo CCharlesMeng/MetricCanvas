@@ -1,0 +1,21 @@
+flowchart TD
+  subgraph Metadata["页面文档"]
+    Queries["独立 query 数据源<br/>office-meeting / office-bidding / ..."]
+    Plan["pagedJoin 数据源 office-overview<br/>成员只保存查询数据源 ID 与组合规则"]
+    Plan -. 定义引用 .-> Queries
+  end
+  Queries --> Ordinary["普通执行上下文<br/>office-meeting：独立图表完整取数"]
+  Plan --> TableContext["表格执行上下文<br/>筛选 / 排序 / 页码 / 代次"]
+  TableContext --> Compiler["共享执行核心<br/>计划编译 + 选页 / 补列 / 完整关联"]
+  Ordinary --> Pool["共享请求池<br/>相同生效查询去重 / 缓存 / 全局并发"]
+  Compiler --> Pool
+  Pool <--> Gateway["既有 DataGateway 与 DQE Adapter"]
+  Gateway <--> DQE["DQE：仍接收普通查询请求"]
+  Pool --> OrdinaryResult["普通执行的原始结果"]
+  OrdinaryResult --> ChartSnapshot["公开快照 office-meeting"]
+  ChartSnapshot --> Chart["独立召开率图"]
+  Pool --> RoleResults["表格内部各角色原始结果"]
+  RoleResults --> Assemble["按编码投影并组装当前页"]
+  Assemble --> TableSnapshot["公开快照 office-overview"]
+  TableSnapshot --> Table["概览表"]
+

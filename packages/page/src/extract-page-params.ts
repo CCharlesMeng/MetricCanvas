@@ -229,7 +229,7 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
   }
   textWalk(document.sections,'/sections');textWalk(document.meta,'/meta');
   if(pending.length)return fail(`以下文本仍含原值，须显式替换或改为参数引用：${pending.join('、')}`,pending[0]);
-  if(selected.length)for(const ds of Object.values(document.dataSources))if(ds.source.type==='query')delete ds.source.initial;
+  if(selected.length)for(const ds of Object.values(document.dataSources))if(ds.source.type!=='inline')delete ds.source.initial;
   const resolved=resolvePageParams(document,originalValues);
   if(!resolved.ok)return resolved;
   for(const id of new Set(selected.flatMap(c=>c.coveredQueries))) {

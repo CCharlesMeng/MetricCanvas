@@ -81,3 +81,12 @@ it('requires completeness evidence for an unpaged query',async()=>{
   expect((await prepareExportSnapshots(page,gateway,stream.captureQueries(),initialFilterValues(page.filters??[]),new AbortController().signal)).get('sales')).toMatchObject({status:'ready'});
   off();
 });
+
+it('keeps a static business TopN on a graph without treating it as an export page window',async()=>{
+ const page=loaded(),source=page.dataSources.sales.source;if(source.type!=='query')throw Error('query');source.query.body.dsl_list[0].order={limit:5};
+ const table=page.sections[1].components[0];if(table.type==='table')table.props.pagination={mode:'none'};
+ const calls:EffectiveQuery[]=[];const gateway:DataGateway={async fetchData(query){calls.push(query);return {rows:Array.from({length:5},(_,i)=>({entry:String(i),amount:i})),totalCount:100};}};
+ const stream=orchestrate(page,gateway),off=stream.subscribe(()=>{});
+ const result=await prepareExportSnapshots(page,gateway,stream.captureQueries(),initialFilterValues(page.filters??[]),new AbortController().signal);
+ expect(result.get('sales')).toMatchObject({status:'ready',rows:expect.any(Array)});const snapshot=result.get('sales');expect(snapshot?.status==='ready'&&snapshot.rows.length).toBe(5);expect(calls.every(query=>query.pagination===undefined)).toBe(true);off();
+});

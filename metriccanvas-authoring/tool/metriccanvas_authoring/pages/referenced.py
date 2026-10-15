@@ -1,3 +1,8 @@
+from __future__ import annotations
+from metriccanvas_authoring.schema_projection import inline_local_refs
+from metriccanvas_authoring.pages.composition.paged_join import build_paged_join, referenced_definitions
+from metriccanvas_authoring.runtime_assets import bundle_root
+import json
 """Page expression from verified results; this module never executes DQE."""
 from copy import deepcopy
 from metriccanvas_authoring.pages.scope_annotations import refresh, source_contract, data_locations
@@ -25,6 +30,8 @@ COMPOSE_SCHEMA = obj({'title': TEXT, 'layout': {'enum': ['report', 'dashboard']}
 RESULT_OPERATION = obj({'id': ID, 'type': {'const': 'add_result_component'}, 'sectionId': ID,
     'resultRef': NAME, 'block': DATA_BLOCK,
     'dependsOn': {'type': 'array', 'items': ID}}, ['id', 'type', 'sectionId', 'resultRef', 'block'])
+_page_schema = json.loads((bundle_root()/'contract-snapshot/page/schema.json').read_text())
+COMPOSE_SCHEMA['properties']['pagedJoins']={'type':'object','propertyNames':ID,'additionalProperties':inline_local_refs(_page_schema['definitions']['pagedJoinSource'],_page_schema)}
 EDIT_RESULT_SCHEMA = deepcopy(EDIT_SCHEMA)
 EDIT_RESULT_SCHEMA['properties']['operations']['items']['oneOf'].extend([*SECTION_OPERATIONS, RESULT_OPERATION])
 
@@ -63,6 +70,11 @@ def compose(prepared, request, records):
     if len(ids) != len(set(ids)) or len(section_ids) != len(set(section_ids)) or 'header' in section_ids or set(ids) & generated or len(ids) > 50:
         return {'status': 'failed', 'document': None, 'operations': [], 'issues': [{'code': 'STRUCTURE_ID_CONFLICT', 'path': ''}]}
     sources = {key: deepcopy(value['source']) for key, value in records.items() if value is not None}
+    combinations=request.get('pagedJoins',{})
+    try:
+        for key,spec in combinations.items():sources[key]=build_paged_join(sources,spec)
+    except (KeyError,TypeError):
+        return {'status':'failed','document':None,'operations':[],'issues':[{'code':'COMPOSE_REQUEST_INVALID','path':'/pagedJoins'}]}
     document = {'id': prepared.binding['pageId'], 'schemaVersion': load_bundle_info()['pageSchemaVersion'],
         'layout': request.get('layout', 'report'), 'dataSources': {}, 'sections': [
             {'id': 'header', 'container': 'plain', 'components': [{'id': 'page-header', 'type': 'reportHeader', 'layout': {'span': 12}, 'props': {'title': request['title']}}]}]}
@@ -80,7 +92,10 @@ def compose(prepared, request, records):
                 component = block_component(block, sources, section['pattern'],
                     relations=record.get('relations', ()) if record else (), evidence=record)
                 trial = deepcopy(document)
-                trial['dataSources'].update(sources)
+                trial['dataSources'].update({key:value for key,value in sources.items() if key not in combinations})
+                for existing in [*target['components'],component]:
+                    root=existing.get('data',{}).get('main')
+                    if root in combinations:trial['dataSources'].update(referenced_definitions(sources,root))
                 trial['sections'].append({**target, 'components': target['components'] + [component]})
                 if validate_page_document(trial): raise StructureError('STRUCTURE_COMPONENT_INVALID')
                 target['components'].append(component)
@@ -94,7 +109,7 @@ def compose(prepared, request, records):
                 outcomes.append({'id': block['id'], 'status': 'failed', 'issues': [error.issue()], 'adjustments': []})
                 target['components'].append({'id': 'structure-missing-' + block['id'], 'type': 'text', 'layout': {'span': 12}, 'props': {'body': f"未生成「{block.get('title', block['id'])}」：{error.code}。"}})
         if used:
-            document['dataSources'].update({k: sources[k] for k in used})
+            for key in used:document['dataSources'].update(referenced_definitions(sources,key))
         pack_default_widths(target['components'], section['blocks'])
         document['sections'].append(target)
     for op in request.get('dateFilters', []):

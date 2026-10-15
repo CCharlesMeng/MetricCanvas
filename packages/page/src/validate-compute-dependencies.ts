@@ -15,6 +15,7 @@ export function crossSourceComputeErrors(page: Page): TypedError[] {
     component.type === 'table' && component.props.pagination?.mode === 'query' ? [component.data.main] : []));
   const full = (id: string, source: DataSource, path: string) => {
     if (source.source.type === 'inline') return;
+    if (source.source.type === 'pagedJoin') { error(path, '组合源是窗口结果，不能用于完整跨源计算'); return; }
     const query = source.source.query.body.dsl_list[0];
     const order = query?.order;
     if (source.source.resultScope !== 'complete' || paged.has(id) ||

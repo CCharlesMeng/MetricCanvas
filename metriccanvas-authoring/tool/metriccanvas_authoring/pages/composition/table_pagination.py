@@ -43,6 +43,10 @@ def add_query_table_pagination(page, component_ids=None):
         source_id = component['data']['main']
         data_source = page['dataSources'][source_id]
         source = data_source['source']
+        if source['type']=='pagedJoin':
+            component['props']['pagination']={'mode':'query'}
+            component['props']['rowKey']=source['rowKey']
+            continue
         if references[source_id] != 1 or source['type'] != 'query' or data_source.get('compute') or source.get('resultScope') == 'complete':
             continue
         initial = source.get('initial', {})

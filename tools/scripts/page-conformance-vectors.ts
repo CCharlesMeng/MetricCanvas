@@ -54,6 +54,20 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  { id:'paged-join',description:'6.22 组合表全局视图与普通查询定义引用', valid:['paged-join-page','table-number-range-page'],cases:[
+    {case:'table-number-range-before-6.22',base:'table-number-range-page',expect:/由 6.22 引入/,mutate:d=>{d.schemaVersion='6.21';}},
+    {case:'paged-join-initial-predicate-in',base:'paged-join-page',expect:/默认视图/,mutate:d=>{d.dataSources['office-overview'].source.initial={capturedAt:'2026-10-14T00:00:00Z',rows:[],totalCount:0,view:{pageIndex:0,pageSize:3,sort:[{field:'bidding-amount',direction:'desc'}],predicates:[{field:'rep-office-name',op:'in',values:['上海',1]}]}};}},
+    {case:'paged-join-initial-predicate-numeric',base:'paged-join-page',expect:/默认视图/,mutate:d=>{d.dataSources['office-overview'].source.initial={capturedAt:'2026-10-14T00:00:00Z',rows:[],totalCount:0,view:{pageIndex:0,pageSize:3,sort:[{field:'bidding-amount',direction:'desc'}],predicates:[{field:'bidding-amount',op:'gte',value:1},{field:'bidding-amount',op:'lte',value:2}]}};}},
+    {case:'paged-join-initial-predicate-date',base:'paged-join-page',expect:/默认视图/,mutate:d=>{d.dataSources['office-overview'].source.initial={capturedAt:'2026-10-14T00:00:00Z',rows:[],totalCount:0,view:{pageIndex:0,pageSize:3,sort:[{field:'bidding-amount',direction:'desc'}],predicates:[{field:'rep-office-name',op:'dateRange',from:'2026-01-01',to:'2026-02-01'}]}};}},
+    {case:'paged-join-before-6.22',base:'paged-join-page',expect:/由 6.22 引入/,mutate:d=>{d.schemaVersion='6.21';}},
+    {case:'paged-join-unknown-member',base:'paged-join-page',expect:/普通查询源/,mutate:d=>{d.dataSources['office-overview'].source.members.meeting.source='missing';}},
+    {case:'paged-join-invalid-key',base:'paged-join-page',expect:/成员键/,mutate:d=>{d.dataSources['office-overview'].source.members.meeting.key.field='analysis-meeting-rate';}},
+    {case:'paged-join-invalid-projection',base:'paged-join-page',expect:/原始字段/,mutate:d=>{d.dataSources['office-overview'].source.projection['bidding-amount'].field='missing';}},
+    {case:'paged-join-member-topn',base:'paged-join-page',expect:/无业务窗口/,mutate:d=>{d.dataSources['office-meeting'].source.query.body.dsl_list[0].order.limit=3;}},
+    {case:'paged-join-shared-root',base:'paged-join-page',expect:/独占/,mutate:d=>{const c=structuredClone(d.sections[0].components[1]);c.id='second-table';d.sections[0].components.push(c);}},
+    {case:'paged-join-invalid-initial',base:'paged-join-page',expect:/默认视图|完整第一页/,mutate:d=>{d.dataSources['office-overview'].source.initial={capturedAt:'2026-10-14T00:00:00Z',rows:[],totalCount:8,view:{pageIndex:1,pageSize:3,sort:[],predicates:[]}};}},
+    {case:'table-number-range-non-numeric',base:'paged-join-page',expect:/数值范围|度量/,mutate:d=>{d.sections[0].components[1].props.columns[1].filterable={mode:'numberRange'};}}
+  ] },
   {
     id: 'table-toolbar-search', description: '表格工具区由6.21引入，搜索显式引用文本标量字段',
     valid: ['table-toolbar-page'], cases: [

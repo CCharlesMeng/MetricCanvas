@@ -1,3 +1,4 @@
+import { checkOrdinaryRange } from './source-program/range-policy';
 import { filterQueryResultRows, MAX_QUERY_RESULT_VALUES, declaredPaginationLimit, type DataSource, type DataSnapshot, type EffectiveQuery } from '@metriccanvas/page/internal';
 
 type Resolution =
@@ -21,11 +22,7 @@ export function resolveQueryResultInputs(source: DataSource, raw: ReadonlyMap<st
     const upstream = sources.get(binding.source);
     const query = upstream?.source.type === 'query' ? upstream.source : undefined;
     const limit = windowLimits.get(binding.source) ?? (query ? declaredPaginationLimit(query.query) : undefined);
-    if ((snapshot.totalCount !== undefined && (!Number.isSafeInteger(snapshot.totalCount) || snapshot.totalCount < rows.length)) ||
-        (query?.resultScope === 'complete' && snapshot.totalCount !== undefined && snapshot.totalCount !== rows.length) ||
-        (typeof limit === 'number' && rows.length > limit)) {
-      error = fail('查询输入结果不符合声明范围'); continue;
-    }
+    if (upstream && checkOrdinaryRange(upstream,snapshot,limit).status==='error') { error=fail('查询输入结果不符合声明范围');continue; }
     let selected = rows;
     if (binding.where) {
       try { selected = filterQueryResultRows(rows, binding.where, upstream?.fields ?? {}); }

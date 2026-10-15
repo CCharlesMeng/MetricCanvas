@@ -51,7 +51,7 @@ export function localPageReference(reference: Map<string, string>): Map<string, 
 }
 
 /** One self-contained ESM executable, built from the same validator as the product. */
-export async function localValidatorOutputs(root: string): Promise<Map<string, string>> {
+export async function localValidatorOutputs(root: string, entryPoint = 'tools/scripts/local-authoring-validator.ts', outfile = 'scripts/validate-page.mjs'): Promise<Map<string, string>> {
   const buildRoot = await realpath(root);
   const sourceFiles = new Map<string,string>();
   // Stable virtual module ids remove checkout locations from both generated
@@ -82,8 +82,8 @@ export async function localValidatorOutputs(root: string): Promise<Map<string, s
     }
   };
   const result = await build({
-    absWorkingDir: buildRoot, entryPoints: ['tools/scripts/local-authoring-validator.ts'],
-    outfile: 'scripts/validate-page.mjs', bundle: true, platform: 'node', format: 'esm',
+    absWorkingDir: buildRoot, entryPoints: [entryPoint],
+    outfile, bundle: true, platform: 'node', format: 'esm',
     write: false, target: 'node22', minify: true, metafile: true, legalComments: 'none',
     banner: {js: 'import {createRequire} from "node:module"; const require = createRequire(import.meta.url);'},
     plugins: [stableModules]
@@ -121,7 +121,7 @@ export async function localValidatorOutputs(root: string): Promise<Map<string, s
   }
   outputs.set('scripts/THIRD-PARTY-LICENSES.md', '# Bundled dependency licenses\n\n' +
     [...licenses].sort(([a],[b]) => a.localeCompare(b)).map(([name,text]) => `## ${name}\n\n${text.trim()}\n`).join('\n'));
-  if (!outputs.has('scripts/validate-page.mjs')) throw new Error('Missing standalone validator');
+  if (!outputs.has(outfile)) throw new Error('Missing standalone validator');
   return outputs;
 }
 

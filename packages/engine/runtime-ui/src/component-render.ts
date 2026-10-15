@@ -1,12 +1,6 @@
 import type { Component, DataSnapshot, Row, TableColumn, TableComponent } from '@metriccanvas/page/internal';
-import type {
-  NamedDataSlots,
-  TableHeaderFilterValue,
-  TablePaginationState,
-  TableSelectedCell,
-  TableSortRule,
-  TableViewState
-} from '../../widgets/src';
+import type {NamedDataSlots} from '../../widgets/src/shared/component-data';
+import type {TableHeaderFilterValue,TablePaginationState,TableSelectedCell,TableSortRule,TableViewState} from '../../widgets/src/components/table/view-state';
 
 /**
  * 表格交互契约:视图状态与回调由统一运行时持有,组件分发只做转发。
@@ -21,8 +15,10 @@ export interface TableRenderBinding {
   onexport?: () => void;
   oncancelexport?: () => void;
   view: TableViewState;
+  sortReset?:readonly TableSortRule[];
   selectedCell?: TableSelectedCell;
   filterOptions: Record<string, string[]>;
+  filterOptionsStatus?:Record<string,import('../../runtime/src/dimension-values').DimensionValuesSnapshot['status']>;
   pagination?: TablePaginationState;
   paginationConfig?: TableComponent['props']['pagination'];
   onpage: (pageIndex: number) => void;

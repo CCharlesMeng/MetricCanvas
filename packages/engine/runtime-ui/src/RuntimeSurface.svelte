@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { createTableController } from './table-controller';
+  import { createExportController } from './export-controller';
+  import { type TableHeaderFilters, type TableQueryView, hasQueryFieldMapping } from '@metriccanvas/page/internal';
   import { applyTableSearch, remoteTableSearch } from './table-search';
   import { prepareTableExport } from './table-export';
   import { downloadTableWorkbook } from './table-workbook';
@@ -138,24 +141,21 @@
 
   const summaryCapture:SummaryCapture=new Map();
   setContext(SUMMARY_EXPORT_CAPTURE,summaryCapture);
-  const tableExportControllers = new Map<string, AbortController>();
   let tableExportStates = $state<Record<string, { busy: boolean; error?: string }>>({});
-  let tableSearchDrafts = $state<Record<string, string>>({});
-  let exporting:AbortController|undefined;
-  onDestroy(() => { for (const controller of tableExportControllers.values()) controller.abort(new ExportViewError('EXPORT_CANCELLED', '页面实例已销毁')); });
-  onDestroy(()=>exporting?.abort(new ExportViewError('EXPORT_CANCELLED','页面实例已销毁')));
+  const exportController = createExportController(next => tableExportStates = next);
+  let tableController: ReturnType<typeof createTableController> | undefined;
+  let tableRevision = $state(0);
+  onDestroy(() => { exportController.reset(); tableController?.dispose(); });
   export async function withExportView<T>(consume:ExportViewConsumer<T>,options?:ExportViewOptions):Promise<T> {
     if(pageState.phase!=='ready'||!stream||!surfaceRoot)throw new ExportViewError('EXPORT_NOT_READY','页面实例尚未就绪');
-    if(exporting)throw new ExportViewError('EXPORT_BUSY','该页面已有导出任务');
     // Capture every runtime value before the first await; later interactions stay independent.
     const page=JSON.parse(JSON.stringify(pageState.page)) as Page;
     const summaries=Object.fromEntries([...summaryCapture].map(([id,get])=>[id,JSON.parse(JSON.stringify(get()))]));
     for(const component of flattenPageComponents({sections:page.sections})) if(component.type==='aiSummary' && !['ready','empty'].includes(summaries[component.id]?.status))throw new ExportViewError('EXPORT_NOT_READY','AI 总结尚未完成，不能导出不完整页面');
-    const controller=new AbortController();exporting=controller;
-    const state={page,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:new Map(),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries};
+    const state={page,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:new Map(),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
     const queries=stream.captureQueries();
-    try {return await withPreparedExportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller},consume,options);}
-    finally {if(exporting===controller)exporting=undefined;}
+    const program=stream.getSourceProgram();
+    return exportController.run('page', controller => withPreparedExportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program},consume,options));
   }
   let pageState = $state<PageState>({ phase: 'loading' });
   let snapshots = $state<PageDataSnapshots>(new Map());
@@ -182,7 +182,7 @@
   }
   let tablePageSizes = $state<Record<string, number>>({});
   let appliedTableHeaderFilters = $state<
-    Record<string, Record<string, TableHeaderFilterValue>>
+    Record<string, TableHeaderFilters>
   >({});
   let activeGateway: RuntimeDataGateway = inlineGateway;
 
@@ -216,9 +216,7 @@
     revisionId: string | undefined,
     bootstrap: import('../../runtime/src').ExecutionBootstrap | undefined
   ) {
-    exporting?.abort(new ExportViewError('EXPORT_CANCELLED','页面实例已更新'));
-    for (const controller of tableExportControllers.values()) controller.abort(new ExportViewError('EXPORT_CANCELLED', '页面实例已更新'));
-    tableExportControllers.clear(); tableExportStates = {}; tableSearchDrafts = {};
+    exportController.reset(); tableController?.dispose(); tableController=undefined;
     const mySession = ++session;
     pageState = { phase: 'loading' };
     snapshots = new Map();
@@ -321,23 +319,14 @@
           emit?.({ type: 'filter-change', search: nextSearch });
           try { bootstrap?.recordFilters?.(values); } catch { /* 记录失败不能回滚当前筛选或中止查询 */ }
           if (changedFilters(previous, values).size > 0) closeDetail(false);
-          tableViews = resetFilteredTablePages(loaded, tableViews, previous, values);
+          for (const component of flattenPageComponents({sections:loaded.sections})) if(component.type==='table') tableController?.reset(component,previous,values);
         }
         primed = true;
       })
     );
 
-    const initialViews: Record<string, TableViewState> = {};
-    for (const component of pageComponents(loaded)) {
-      if (component.type !== 'table') continue;
-      const source = loaded.dataSources[component.data.main];
-      initialViews[component.id] = {
-        pageIndex: 0,
-        sort: initialTableSort(undefined),
-        headerFilters: {}
-      };
-    }
-    tableViews = initialViews;
+    tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded));
+    syncTableState(loaded);
     pageState = { phase: 'ready', page: filterTextPage(loaded, textBindings, filterValues), capabilities };
 
     const pageStream = orchestrate(
@@ -352,7 +341,7 @@
     disposers.push(
       pageStream.subscribe((next) => {
         snapshots = next;
-        syncQueryTablePages(loaded, next);
+        syncTableState(loaded);
         // 结构化查询错误上抛为嵌入事件,宿主按分类决定重试或重登(issue #51)。
         for (const event of collectDataErrors(emittedDataErrors, next)) {
           emit?.(event);
@@ -361,7 +350,7 @@
     );
     emit?.({ type: 'ready', pageId: loaded.id });
 
-    if (!capabilities.filters) return;
+    if (!capabilities.filters && !pageComponents(loaded).some(component=>component.type==='table'&&buildTableColumnLayout(component.props.columns).leaves.some(column=>column.filterable?.mode==='select'))) return;
 
     // 筛选候选值:显式状态经加载器发布,dispose 时取消在途请求,
     // 过期结果不会覆盖新会话的筛选状态(issue #54)。
@@ -388,7 +377,7 @@
       if (component.type !== 'table' || !capabilities.components[component.id]?.live) {
         continue;
       }
-      if (resolvedTablePagination(component)?.mode === 'query') continue;
+      if (resolvedTablePagination(component)?.mode === 'query') { Object.values(tableCandidateDimensions(component)).forEach(field=>filterableFields.add(field)); continue; }
       const source = loaded.dataSources[component.data.main];
       for (const column of buildTableColumnLayout(
         component.props.columns,
@@ -434,102 +423,24 @@
       : undefined;
   }
 
-  function setTableView(component: TableComponent, next: TableViewState) {
-    tableViews = { ...tableViews, [component.id]: next };
+  function syncTableState(loaded: Page) {
+    if (!tableController) return;
+    const tables=flattenPageComponents({sections:loaded.sections}).filter((c): c is TableComponent => c.type==='table');
+    tableViews=Object.fromEntries(tables.map(c=>[c.id,tableController!.render(c)]));
+    appliedTableHeaderFilters=Object.fromEntries(tables.map(c=>[c.id,tableController!.headers(c)]));
+    tablePageSizes=Object.fromEntries(tables.map(c=>[c.id,tableController!.view(c).pageSize]));
+    tableRevision+=1;
   }
-
-  function appliedHeaderFiltersOf(
-    component: TableComponent
-  ): Record<string, TableHeaderFilterValue> {
-    return appliedTableHeaderFilters[component.id] ?? {};
-  }
-
-  function pushTableView(component: TableComponent, next: TableViewState) {
-    setTableView(component, next);
-  }
-
-  function tableViewOf(component: TableComponent): TableViewState {
-    return tableViews[component.id] ?? { pageIndex: 0, sort: [], headerFilters: {} };
-  }
-
-  function handleTableSearch(component: TableComponent, query: string) {
-    const search = component.props.toolbar?.search;
-    if (!search || pageState.phase !== 'ready') return;
-    const next = query.trim();
-    tableSearchDrafts = { ...tableSearchDrafts, [component.id]: query };
-    pushTableView(component, { ...tableViewOf(component), searchQuery: next, pageIndex: 0 });
-    if (remoteTableSearch(pageState.page.dataSources[component.data.main])) stream?.setQuerySearch(component.data.main, { fields: search.fields, query: next });
-  }
-
   async function exportTable(component: TableComponent) {
-    if (pageState.phase !== 'ready' || !stream || !component.props.toolbar?.export || tableExportControllers.has(component.id)) return;
-    const controller = new AbortController();
-    const currentSession = session;
-    tableExportControllers.set(component.id, controller);
-    tableExportStates = { ...tableExportStates, [component.id]: { busy: true } };
-    // All scope values are frozen by prepareTableExport synchronously before its first await.
-    try {
-      const frozen = JSON.parse(JSON.stringify(component)) as TableComponent;
-      const data = await prepareTableExport({ page: pageState.page, component: frozen,
-        queries: stream.captureQueries(), gateway: activeGateway, controller,
-        state: { currentYear: stream.captureComputeYear(), filters: filterValues, tables: tableViews, headerFilters: appliedTableHeaderFilters } });
-      controller.signal.throwIfAborted();
-      await downloadTableWorkbook(frozen, data, controller.signal);
-      if (session === currentSession) tableExportStates = { ...tableExportStates, [component.id]: { busy: false } };
-    } catch (error) {
-      if (session === currentSession) tableExportStates = { ...tableExportStates, [component.id]: { busy: false, error: controller.signal.aborted ? (controller.signal.reason instanceof Error ? controller.signal.reason.message : '导出已取消') : error instanceof Error ? error.message : '导出失败' } };
-    } finally { if (tableExportControllers.get(component.id) === controller) tableExportControllers.delete(component.id); }
-  }
-
-  function handleTablePage(component: TableComponent, pageIndex: number) {
-    pushTableView(component, { ...tableViewOf(component), pageIndex });
-    if (resolvedTablePagination(component)?.mode === 'query') {
-      stream?.setQueryPage(component.data.main, pageIndex);
-    }
-  }
-
-  function handleTablePageSize(component: TableComponent, pageSize: number) {
-    if (!Number.isInteger(pageSize) || pageSize <= 0) return;
-    tablePageSizes = { ...tablePageSizes, [component.id]: pageSize };
-    pushTableView(component, { ...tableViewOf(component), pageIndex: 0 });
-    if (resolvedTablePagination(component)?.mode === 'query') {
-      stream?.setQueryPageSize(component.data.main, pageSize);
-    }
-  }
-
-  function handleTableSort(component: TableComponent, sort: TableViewState['sort']) {
-    pushTableView(component, { ...tableViewOf(component), sort, pageIndex: 0 });
-    // 查询分页下本地排序只能排到当前页，必须由上游执行（ADR-0086）。
-    if (resolvedTablePagination(component)?.mode === 'query') {
-      stream?.setQuerySort(component.data.main, sort);
-    }
-  }
-
-  function handleTableHeaderFilter(
-    component: TableComponent,
-    field: string,
-    value: TableHeaderFilterValue | null
-  ) {
-    const current = tableViewOf(component);
-    const headerFilters = { ...current.headerFilters };
-    if (value === null) delete headerFilters[field];
-    else headerFilters[field] = value;
-    const draft = { ...current, headerFilters };
-    setTableView(component, draft);
-
-    if (!shouldApplyTableHeaderFilter(value)) return;
-    const applied = { ...appliedHeaderFiltersOf(component) };
-    if (value === null) delete applied[field];
-    else applied[field] = value;
-    appliedTableHeaderFilters = {
-      ...appliedTableHeaderFilters,
-      [component.id]: applied
-    };
-    const next = { ...draft, pageIndex: 0 };
-    setTableView(component, next);
-    if (resolvedTablePagination(component)?.mode === 'query') {
-      stream?.setQueryHeaderFilters(component.data.main, applied);
-    }
+    if(pageState.phase!=='ready'||!stream||!component.props.toolbar?.export)return;
+    const frozen=JSON.parse(JSON.stringify(component)) as TableComponent;
+    const input={page:pageState.page,component:frozen,queries:stream.captureQueries(),gateway:activeGateway,
+      program:stream.getSourceProgram(),views:stream.captureViews(),
+      state:{currentYear:stream.captureComputeYear(),filters:filterValues,tables:tableViews,headerFilters:appliedTableHeaderFilters}};
+    try { await exportController.run(component.id,async controller=>{
+      const data=await prepareTableExport({...input,controller}); controller.signal.throwIfAborted();
+      await downloadTableWorkbook(frozen,data,controller.signal);
+    }); } catch { /* Task feedback is projected by exportController. */ }
   }
 
   function tableSelectedCell(component: TableComponent): TableSelectedCell | undefined {
@@ -582,29 +493,6 @@
       ]);
     }
     filterState?.writeMany(updates);
-  }
-
-  function syncQueryTablePages(loaded: Page, next: PageDataSnapshots) {
-    for (const component of pageComponents(loaded)) {
-      if (component.type !== 'table' || resolvedTablePagination(component)?.mode !== 'query') {
-        continue;
-      }
-      const snapshot = next.get(component.data.main);
-      if (
-        !snapshot ||
-        (snapshot.status !== 'ready' && snapshot.status !== 'empty') ||
-        snapshot.totalCount === undefined
-      ) {
-        continue;
-      }
-      const pageSize = effectiveTablePageSize(loaded, component);
-      if (pageSize === undefined) continue;
-      const lastPageIndex = Math.max(0, Math.ceil(snapshot.totalCount / pageSize) - 1);
-      const view = tableViewOf(component);
-      if (view.pageIndex > lastPageIndex) {
-        pushTableView(component, { ...view, pageIndex: lastPageIndex });
-      }
-    }
   }
 
   function parseFilterURL(search: string, declared: FilterDeclaration[]): FilterValues {
@@ -950,30 +838,18 @@
     component: TableComponent,
     snapshot: Extract<DataSnapshot, { status: 'ready' }>
   ): Extract<DataSnapshot, { status: 'ready' }> {
+    void tableRevision;
     if (resolvedTablePagination(component)?.mode === 'query') return snapshot;
-    const view = tableViewOf(component);
-    const rows = filteredTableRows(component, snapshot);
-    const pagination = resolvedTablePagination(component, snapshot);
-    if (pagination?.mode !== 'local') return { status: 'ready', rows };
-    const pageSize = tablePageSizes[component.id] ?? pagination.pageSize;
-    const offset = view.pageIndex * pageSize;
-    return { status: 'ready', rows: rows.slice(offset, offset + pageSize) };
+    const pagination = resolvedTablePagination(component,snapshot);
+    const source=pageState.phase==='ready'?pageState.page.dataSources[component.data.main]:undefined;
+    const rows=applySearchFilters(snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
+    return {status:'ready',rows:tableController?.present(component,rows,pagination?.mode!=='local').rows??rows};
   }
-
-  function filteredTableRows(component: TableComponent, snapshot: Extract<DataSnapshot, { status: 'ready' }>): Row[] {
-    const view = tableViewOf(component);
-    const applied = appliedHeaderFiltersOf(component);
-    const source = pageState.phase === 'ready' ? pageState.page.dataSources[component.data.main] : undefined;
-    const searched = applySearchFilters(
-      applyTableSearch(snapshot.rows, component, view.searchQuery),
-      filterValues,
-      source ? resolveDataSourceFields(source) : {}
-    );
-    let rows = filterTableRowsByHeaders(searched,applied);
-    if (view.sort.length > 0) {
-      rows = sortTableRows(rows, view.sort);
-    }
-    return rows;
+  function filteredTableRows(component: TableComponent,snapshot: Extract<DataSnapshot,{status:'ready'}>):Row[] {
+    void tableRevision;
+    const source=pageState.phase==='ready'?pageState.page.dataSources[component.data.main]:undefined;
+    const rows=applySearchFilters(snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
+    return tableController?.present(component,rows,true).rows??rows;
   }
 
   /** 表头筛选候选项:只投影 ready 快照的真实候选值;其余状态不给表头假候选。 */
@@ -987,8 +863,11 @@
     return options;
   }
 
+  function tableCandidateDimensions(component: TableComponent): Record<string,string> {return tableController?.candidateDimensions(component)??{};}
   function tableFilterOptions(component: TableComponent): Record<string, string[]> {
-    if (resolvedTablePagination(component)?.mode === 'query') return {};
+    if (resolvedTablePagination(component)?.mode === 'query') {
+      return Object.fromEntries(Object.entries(tableCandidateDimensions(component)).flatMap(([field,dimension])=>{const snapshot=dimensionCandidates.get(dimension);return snapshot?.status==='ready'?[[field,snapshot.candidates.map(c=>c.value)]]:[];}));
+    }
     const snapshot = componentSnapshots(component).get('main');
     if (snapshot?.status !== 'ready') return remoteHeaderOptions();
     const fields = buildTableColumnLayout(component.props.columns).leaves
@@ -1032,6 +911,7 @@
 
   function queryPageSize(loaded: Page, component: TableComponent): number | undefined {
     const source = loaded.dataSources[component.data.main];
+    if (source?.source.type === 'pagedJoin') return source.source.pagination.pageSize;
     if (source?.source.type !== 'query') return undefined;
     const order = source.source.query.body.dsl_list[0].order;
     if (typeof order !== 'object' || order === null || Array.isArray(order)) return undefined;
@@ -1053,29 +933,23 @@
     slots: ComponentSnapshots
   ): TableRenderBinding | undefined {
     if (component.type !== 'table') return undefined;
-    return {
-      view: tableViewOf(component),
-      searchDraft: tableSearchDrafts[component.id] ?? tableViewOf(component).searchQuery ?? '',
-      onsearchdraft: query => { tableSearchDrafts = { ...tableSearchDrafts, [component.id]: query }; },
-      onsearch: query => handleTableSearch(component, query),
+    void tableRevision;
+    return tableController?.binding(component,{
       onexport: () => { void exportTable(component); },
-      oncancelexport: () => tableExportControllers.get(component.id)?.abort(new ExportViewError('EXPORT_CANCELLED', '导出已取消')),
+      oncancelexport: () => exportController.cancel(component.id),
       exporting: tableExportStates[component.id]?.busy,
       exportError: tableExportStates[component.id]?.error,
       selectedCell: tableSelectedCell(component),
       filterOptions: tableFilterOptions(component),
+      filterOptionsStatus: tableController?.candidateStates(component,dimensionCandidates),
       pagination: tablePaginationState(loaded, component, slots),
       paginationConfig: resolvedTablePagination(component, slots.get('main')),
-      onpage: (pageIndex) => handleTablePage(component, pageIndex),
-      onpagesize: (pageSize) => handleTablePageSize(component, pageSize),
-      onsort: (sort) => handleTableSort(component, sort),
-      onheaderfilter: (field, value) => handleTableHeaderFilter(component, field, value),
       oncellselect: ({ rowIndex, column }) =>
         handleTableCellSelect(component, rowIndex, column),
       linkHref: (row, column) => column?.navigate ? navigationHref(column.navigate, filterValues, pageParams, row)
         : column?.openDetail ? undefined : componentHref(component, row),
       onlink: ({ row, column }, event) => handleTableLink(component, row, event, column)
-    };
+    });
   }
 
   function chartClickHandler(component: Component): ((row: Row) => void) | undefined {

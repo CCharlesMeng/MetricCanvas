@@ -1,0 +1,42 @@
+{
+  "case": "table-number-range-non-numeric",
+  "invariant": "paged-join",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "数值范围只允许 number/money 度量",
+      "paths": [
+        "/sections/0/components/1/props/columns/1/filterable"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字段 rep-office-name 的 role 为 dimension，此处要求 measure",
+      "paths": [
+        "/sections/0/components/1/props/columns/1/filterable"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "mode": "numberRange"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-number-range-non-numeric.json"
+}

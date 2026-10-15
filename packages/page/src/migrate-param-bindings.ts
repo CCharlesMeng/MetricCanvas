@@ -37,6 +37,7 @@ export function migrateParamBindings(input:unknown):{ok:true;document:PageDocume
   }
   document.params=grouped;
   for(const ds of Object.values(document.dataSources)) {
+    if(ds.source.type==='pagedJoin'){delete ds.source.initial;continue;}
     if(ds.source.type!=='query')continue;
     const q=ds.source.query, item=q.body.dsl_list[0];
     if(!Object.keys(q.paramBindings??{}).length)continue;

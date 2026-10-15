@@ -116,8 +116,7 @@ describe('统一运行时编排 raw DQE 页面数据源', () => {
       snapshots.push(value)
     );
 
-    await Promise.resolve();
-    await Promise.resolve();
+    await new Promise(resolve=>setTimeout(resolve,0));
     unsubscribe();
 
     expect(received).toHaveLength(1);

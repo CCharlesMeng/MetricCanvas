@@ -1,0 +1,28 @@
+{
+  "case": "paged-join-invalid-projection",
+  "invariant": "paged-join",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "投影必须引用成员的原始字段",
+      "paths": [
+        "/dataSources/office-overview/source/projection/bidding-amount"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "office-overview": {
+        "source": {
+          "projection": {
+            "bidding-amount": {
+              "member": "bidding",
+              "field": "missing"
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/paged-join-invalid-projection.json"
+}

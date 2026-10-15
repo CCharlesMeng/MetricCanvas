@@ -1,3 +1,4 @@
+import { pagedJoinErrors } from './validate-paged-join';
 import { queryResultBindingErrors } from './validate-query-results';
 import { reportDateFilterErrors } from './report-date-filters';
 import { crossSourceComputeErrors } from './validate-compute-dependencies';
@@ -272,6 +273,7 @@ function invariantErrors(page: Page): TypedError[] {
   errors.push(...reportDateFilterErrors(page));
   errors.push(...crossSourceComputeErrors(page));
   errors.push(...queryResultBindingErrors(page));
+  errors.push(...pagedJoinErrors(page));
 
   for (const [sourceId, dataSource] of Object.entries(page.dataSources)) {
     const path = `/dataSources/${escapePointer(sourceId)}`;
@@ -346,6 +348,7 @@ function invariantErrors(page: Page): TypedError[] {
       }
       if (props.pagination?.mode === 'query') errors.push(schemaError(componentPath, '详情表格当前只支持完整结果的本地分页'));
       if (component.type === 'text' && component.props.links?.length) errors.push(schemaError(componentPath, '详情说明不允许跨页链接'));
+      if (Object.values(component.data ?? {}).some(id => page.dataSources[id]?.source.type === 'pagedJoin')) errors.push(schemaError(componentPath, '详情不支持组合窗口结果'));
       if (component.type === 'table') {
         const unsupported = (columns: TableColumnNode[]): boolean => columns.some(column => column.kind === 'group'
           ? unsupported(column.children) : !!(column.filterable || column.selection || column.link || column.openDetail || column.navigate));
@@ -1448,6 +1451,7 @@ function componentErrors(
         const visit = (columns: TableColumnNode[], path: string) => columns.forEach((column, index) => {
           if (column.kind === 'group') visit(column.children, `${path}/${index}/children`);
           else {
+            if (column.filterable?.mode==='numberRange') { const resolved=resolveBinding(page,component,column.field); if (!('error' in resolved) && (resolved.field.role!=='measure' || !['number','money'].includes(resolved.field.type))) errors.push(schemaError(`${path}/${index}/filterable`, '数值范围只允许 number/money 度量')); }
             if (column.colorRule) checkColor(column.field, `${path}/${index}`,
               column.visual === 'signed' || column.dangerValues !== undefined);
             if ((column.openDetail || column.navigate) && (!column.link || column.selection || (column.openDetail && column.navigate))) errors.push(schemaError(`${path}/${index}`, '列动作要求 link，且 navigate/openDetail/selection 不得冲突'));
@@ -1804,6 +1808,7 @@ function queryPaginationErrors(page: Page): TypedError[] {
       }
       if (component.props.toolbar?.search && source?.source.type === 'query' && source.source.resultScope !== 'complete' && pagination?.mode !== 'query') queryTables.push({ sourceId, componentPath, reason: '查询搜索' });
       if (pagination?.mode !== 'query') return;
+      if (source?.source.type === 'pagedJoin') { queryTables.push({ sourceId, componentPath }); return; }
       if (source?.source.type !== 'query') {
         errors.push(
           schemaError(
@@ -1922,7 +1927,7 @@ function tableErrors(
       errors.push(schemaError(`${path}/field`, `表格列字段绑定重复:${key}`));
     }
     seen.add(key);
-    if (column.filterable) check(column.field, `${path}/filterable`, 'dimension');
+    if (column.filterable) check(column.field, `${path}/filterable`, column.filterable.mode === 'numberRange' ? 'measure' : 'dimension');
   };
   columns.forEach((column, index) =>
     visit(column, `${componentPath}/props/columns/${index}`)

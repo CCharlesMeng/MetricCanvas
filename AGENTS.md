@@ -28,6 +28,10 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 
 提交、push 或跨分支交付使用 [scoped-main-delivery](.agents/skills/scoped-main-delivery/SKILL.md)，以本仓入口为准。
 
+### 新功能验收（必选）
+
+所有新功能均须按 [新功能验收要求](docs/agents/feature-acceptance.md) 完成 `pages/` 场景、页面元数据文档及 `metriccanvas-local-authoring` 同步，作为实施完成条件；验收直接消费对应页面。
+
 ### Issue tracker
 
 本仓库的 issue 和 PRD 存放于 GitHub Issues(`CCharlesMeng/MetricCanvas`),使用 `gh` CLI 操作。详见 `docs/agents/issue-tracker.md`。

@@ -1,0 +1,27 @@
+{
+  "case": "paged-join-member-topn",
+  "invariant": "paged-join",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "成员必须无计算、无结果绑定、无业务窗口且声明完整",
+      "paths": [
+        "/dataSources/office-overview/source/members/meeting/source"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "office-overview": {
+        "source": {
+          "members": {
+            "meeting": {
+              "source": "office-meeting"
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

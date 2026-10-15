@@ -36,6 +36,7 @@ include = [
 "../contract-snapshot" = "metriccanvas_authoring/_bundle/contract-snapshot"
 "../contract-snapshot/page/map-regions.json" = "metriccanvas_authoring/_bundle/contract-snapshot/page/map-regions.json"
 "../bundle.json" = "metriccanvas_authoring/_bundle/bundle.json"
+"../bundle.lock.json" = "metriccanvas_authoring/_bundle/bundle.lock.json"
 "../contract-lock.json" = "metriccanvas_authoring/_bundle/contract-lock.json"
 "../contracts/authored/page-build-spec.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/page-build-spec.schema.json"
 "../contracts/authored/page-edit-request.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/page-edit-request.schema.json"
@@ -49,6 +50,9 @@ include = [
 
 "../contracts/authored/authoring-turn.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/authoring-turn.schema.json"
 "../contracts/authored/source-description.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/source-description.schema.json"
+
+"../scripts/page-validation-bridge.mjs" = "metriccanvas_authoring/_bundle/scripts/page-validation-bridge.mjs"
+"../scripts/PAGE-VALIDATOR-LICENSES.md" = "metriccanvas_authoring/_bundle/scripts/PAGE-VALIDATOR-LICENSES.md"
 
 [tool.hatch.build.hooks.custom]
 path = "hatch_build.py"

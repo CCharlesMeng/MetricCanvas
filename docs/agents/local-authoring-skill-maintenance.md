@@ -2,6 +2,8 @@
 
 维护 `metriccanvas-local-authoring` 时读取本页。分发实体是 `metriccanvas-authoring/skill/metriccanvas-local-authoring/`；仓内发现入口 `.agents/skills/metriccanvas-local-authoring` 指向该实体目录。安装复制完整实体，内部知识路径必须闭合。
 
+所有新功能的场景、页面元数据文档和本 Skill 同步均按[新功能验收要求](feature-acceptance.md)执行，为同批必选完成项。
+
 安装副本附有[维护说明](../../metriccanvas-authoring/skill/metriccanvas-local-authoring/references/maintenance.md)，只使用自身目录。下面的仓库路径与命令属于维护流程，不是 Skill 使用者的运行依赖。
 
 ## 修改入口

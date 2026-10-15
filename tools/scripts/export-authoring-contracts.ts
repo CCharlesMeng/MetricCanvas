@@ -528,6 +528,10 @@ async function writeOutputs(
     buildContractLock(productOutputs, authoringOutputs),
     'utf8'
   );
+  for (const [relative, content] of await localValidatorOutputs(repoRoot, 'tools/scripts/page-validation-bridge.ts', 'scripts/page-validation-bridge.mjs')) {
+    const target=path.join(bundleRoot, relative==='scripts/THIRD-PARTY-LICENSES.md'?'scripts/PAGE-VALIDATOR-LICENSES.md':relative);
+    await mkdir(path.dirname(target),{recursive:true});await writeFile(target,content,'utf8');
+  }
   await writeFile(path.join(bundleRoot, 'bundle.lock.json'), await buildBundleLock(), 'utf8');
 }
 
@@ -717,6 +721,10 @@ async function assertCurrent(
     drift
   );
 
+  for (const [relative, content] of await localValidatorOutputs(repoRoot, 'tools/scripts/page-validation-bridge.ts', 'scripts/page-validation-bridge.mjs')) {
+    const file=relative==='scripts/THIRD-PARTY-LICENSES.md'?'scripts/PAGE-VALIDATOR-LICENSES.md':relative;
+    await collectFileDrift(path.join(bundleRoot,file),content,`metriccanvas-authoring/${file}`,drift);
+  }
   const expectedBundleLock = await buildBundleLock();
   await collectFileDrift(
     path.join(bundleRoot, 'bundle.lock.json'),

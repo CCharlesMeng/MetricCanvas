@@ -1,12 +1,11 @@
-export interface TableSortRule {
-  field: string;
-  direction: 'asc' | 'desc';
-}
+export type { TableSortRule } from '@metriccanvas/page/internal';
+import type { TableSortRule } from '@metriccanvas/page/internal';
 
 /** 表头筛选当前值:日期范围允许单端草稿,由壳决定何时写入查询通道。 */
 export type TableHeaderFilterValue =
   | { mode: 'select'; values: string[] }
-  | { mode: 'dateRange'; from: string; to: string };
+  | { mode: 'dateRange'; from: string; to: string }
+  | { mode: 'numberRange'; from: string; to: string };
 
 /** 表格视图状态:由运行时/壳持有,组件只显示当前值并上抛变更。 */
 export interface TableViewState {
@@ -31,6 +30,10 @@ export function initialTableSort(
 export function shouldApplyTableHeaderFilter(
   value: TableHeaderFilterValue | null
 ): boolean {
+  if (value?.mode === 'numberRange') {
+    const from = value.from.trim() ? Number(value.from) : undefined, to = value.to.trim() ? Number(value.to) : undefined;
+    return (from === undefined || Number.isFinite(from)) && (to === undefined || Number.isFinite(to)) && (from === undefined || to === undefined || from <= to);
+  }
   return (
     value === null ||
     value.mode === 'select' ||
@@ -45,3 +48,6 @@ export function shouldShowTablePaginationControls(
 ): boolean {
   return totalCount > pageSize;
 }
+
+export interface TablePaginationState { pageSize:number; totalCount:number; }
+export interface TableSelectedCell { rowIndex:number; columnField:string; }

@@ -323,7 +323,7 @@ export function derivePageCapabilities(page: Page): PageCapabilities {
   // 未绑定的数据源仍决定页面数据形态，避免隐藏的 query source 被误判为静态。
   for (const dataSource of Object.values(page.dataSources)) {
     hasInline ||= dataSource.source.type === 'inline';
-    hasQuery ||= dataSource.source.type === 'query';
+    hasQuery ||= dataSource.source.type !== 'inline';
   }
 
   const dataMode: DataSourceMode = hasInline && hasQuery ? 'mixed' : hasQuery ? 'query' : 'inline';
@@ -353,7 +353,7 @@ export function deriveComponentCapabilities(
     })
   );
   const hasInline = sourceTypes.has('inline');
-  const hasQuery = sourceTypes.has('query');
+  const hasQuery = sourceTypes.has('query') || sourceTypes.has('pagedJoin');
   const dataMode: ComponentDataMode =
     sourceTypes.size === 0 ? 'none' : hasInline && hasQuery ? 'mixed' : hasQuery ? 'query' : 'inline';
   const props = component.props as { actions?: ComponentAction[]; pagination?: { mode: string } };

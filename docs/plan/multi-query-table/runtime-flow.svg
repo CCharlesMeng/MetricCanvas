@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1500" viewBox="0 0 1400 1500">
+<defs>
+<marker id="arrow-blue" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#2563eb"/></marker>
+<marker id="arrow-amber" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#b45309"/></marker>
+<marker id="arrow-green" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#047857"/></marker>
+<marker id="arrow-gray" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#58677d"/></marker>
+</defs>
+<rect width="1400" height="1500" fill="#f8fafc"/>
+<text x="46" y="52" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="29" font-weight="650" fill="#172033" text-anchor="start">多查询表格运行流程</text>
+<text x="46" y="86" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="400" fill="#58677d" text-anchor="start">设计稿 · 先确定策略；两条路径都在正确的范围内处理过滤、排序和分页</text>
+<rect x="395" y="128" width="610" height="111" rx="15" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="417" y="162" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="650" fill="#2563eb" text-anchor="start">输入本表当前视图</text>
+<text x="417" y="196" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">页面筛选 + 排序字段 + 已提交表头条件 + 页码</text>
+<path d="M700 239 L700 288" fill="none" stroke="#2563eb" stroke-width="2.3" marker-end="url(#arrow-blue)"/>
+<rect x="395" y="288" width="610" height="115" rx="15" fill="#ffffff" stroke="#58677d" stroke-width="1.5"/>
+<text x="417" y="322" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="650" fill="#58677d" text-anchor="start">编译执行计划</text>
+<text x="417" y="356" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">查字段归属、选页能力、过滤范围和数据完整性</text>
+<path d="M700 403 L700 438" fill="none" stroke="#58677d" stroke-width="2.3" marker-end="url(#arrow-gray)"/>
+<polygon points="700,438 1010,528 700,618 390,528" fill="#ffffff" stroke="#58677d" stroke-width="1.8"/>
+<text x="700" y="512" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="21" font-weight="600" fill="#172033" text-anchor="middle">全部排序和表头条件能否由</text>
+<text x="700" y="543" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="21" font-weight="600" fill="#172033" text-anchor="middle">同一完整覆盖域的查询执行？</text>
+<path d="M390 528 L290 528 L290 674" fill="none" stroke="#2563eb" stroke-width="2.3" marker-end="url(#arrow-blue)"/>
+<text x="245" y="588" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="500" fill="#2563eb" text-anchor="middle">是：选页后补列</text>
+<path d="M1010 528 L1110 528 L1110 674" fill="none" stroke="#b45309" stroke-width="2.3" marker-end="url(#arrow-amber)"/>
+<text x="1110" y="588" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="17" font-weight="500" fill="#b45309" text-anchor="middle">否：完整关联后分页</text>
+<rect x="55" y="674" width="565" height="150" rx="15" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="77" y="708" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="650" fill="#2563eb" text-anchor="start">第一阶段：排序列对应的查询</text>
+<text x="77" y="742" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">按全部业务条件排序，追加编码升序</text>
+<text x="77" y="771" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">取 offset / limit 对应的当前页</text>
+<text x="77" y="800" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">得到当前页编码、顺序及总条数</text>
+<rect x="780" y="674" width="565" height="150" rx="15" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+<text x="802" y="708" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="650" fill="#b45309" text-anchor="start">第一阶段：取得完整业务行全集</text>
+<text x="802" y="742" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">domainMember 定义全部代表处</text>
+<text x="802" y="771" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">检查唯一编码、完整性和 1000 行上限</text>
+<text x="802" y="800" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">超限明确失败，不降级为当前页处理</text>
+<path d="M338 824 L338 879" fill="none" stroke="#2563eb" stroke-width="2.3" marker-end="url(#arrow-blue)"/>
+<path d="M1062 824 L1062 879" fill="none" stroke="#b45309" stroke-width="2.3" marker-end="url(#arrow-amber)"/>
+<rect x="55" y="879" width="565" height="149" rx="15" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="77" y="913" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="650" fill="#2563eb" text-anchor="start">第二阶段：补齐当前页其他列</text>
+<text x="77" y="947" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">其他成员按当前页编码并行完整取数</text>
+<text x="77" y="976" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">复用第一阶段已返回的字段</text>
+<text x="77" y="1005" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">空业务集合跳过补列，直接返回空结果</text>
+<rect x="780" y="879" width="565" height="149" rx="15" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+<text x="802" y="913" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="650" fill="#b45309" text-anchor="start">第二阶段：补齐全集其他列</text>
+<text x="802" y="947" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">其他成员按全集编码完整取数</text>
+<text x="802" y="976" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">按编码关联并投影为完整业务行</text>
+<text x="802" y="1005" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">缺匹配取 null，失败与截断不能当作缺值</text>
+<path d="M338 1028 L338 1082" fill="none" stroke="#2563eb" stroke-width="2.3" marker-end="url(#arrow-blue)"/>
+<path d="M1062 1028 L1062 1082" fill="none" stroke="#b45309" stroke-width="2.3" marker-end="url(#arrow-amber)"/>
+<rect x="55" y="1082" width="565" height="126" rx="15" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="77" y="1116" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="650" fill="#2563eb" text-anchor="start">组装当前页</text>
+<text x="77" y="1150" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">保留第一阶段顺序与总条数</text>
+<text x="77" y="1179" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">不再对当前页做本地排序或过滤</text>
+<rect x="780" y="1082" width="565" height="126" rx="15" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+<text x="802" y="1116" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="650" fill="#b45309" text-anchor="start">完整集合上重建视图</text>
+<text x="802" y="1150" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">过滤 → 稳定排序 → 分页</text>
+<text x="802" y="1179" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">总条数取过滤后的全部匹配行数</text>
+<path d="M338 1208 L338 1250 L590 1250 L590 1303" fill="none" stroke="#2563eb" stroke-width="2.3" marker-end="url(#arrow-blue)"/>
+<path d="M1062 1208 L1062 1250 L810 1250 L810 1303" fill="none" stroke="#b45309" stroke-width="2.3" marker-end="url(#arrow-amber)"/>
+<rect x="395" y="1303" width="610" height="117" rx="15" fill="#ecfdf5" stroke="#047857" stroke-width="1.5"/>
+<text x="417" y="1337" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="650" fill="#047857" text-anchor="start">检查当前代次，原子发布最终快照</text>
+<text x="417" y="1371" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="400" fill="#172033" text-anchor="start">生成当前排序的行序号；独立图表快照不变</text>
+<text x="700" y="1466" font-family="PingFang SC,Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="400" fill="#58677d" text-anchor="middle">每一步都校验字段与范围；查询失败、重复键、截断或超限时不发布部分结果。</text>
+</svg>

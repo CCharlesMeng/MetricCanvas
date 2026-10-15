@@ -39,7 +39,7 @@ export interface TableColumn {
   width?: number;
   fixed?: 'left' | 'right';
   sortable?: boolean;
-  filterable?: { mode: 'select' | 'dateRange' };
+  filterable?: { mode: 'select' | 'dateRange' | 'numberRange' };
   /**
    * 该列是行点击导航入口(ADR-0049)。只有声明了的列才响应 navigate;
    * 与 `selection` 同时存在时以 `selection` 为准。
@@ -85,7 +85,7 @@ const tableColumnZ: z.ZodType<TableColumn> = z
     width: z.int().min(1).optional(),
     fixed: z.enum(['left', 'right']).optional(),
     sortable: z.boolean().optional(),
-    filterable: z.object({ mode: z.enum(['select', 'dateRange']) }).strict().optional(),
+    filterable: z.object({ mode: z.enum(['select', 'dateRange', 'numberRange']) }).strict().optional(),
     link: z.boolean().optional(),
     openDetail: openDetailActionZ.shape.openDetail.optional(),
     navigate: navigationTargetZ.optional(),

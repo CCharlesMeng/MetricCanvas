@@ -232,7 +232,9 @@
           interactive={!exportMode}
           view={table.view}
           selectedCell={table.selectedCell}
+          sortReset={table.sortReset}
           filterOptions={table.filterOptions}
+          filterOptionsStatus={table.filterOptionsStatus}
           pagination={table.pagination}
           searchDraft={table.searchDraft} exporting={table.exporting} exportError={table.exportError}
           onsearchdraft={table.onsearchdraft} onsearch={table.onsearch} onexport={table.onexport} oncancelexport={table.oncancelexport}

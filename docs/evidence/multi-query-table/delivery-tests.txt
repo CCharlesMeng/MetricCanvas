@@ -1,0 +1,10 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/multi-query-table-delivery/DataDashboard
+
+
+ Test Files  226 passed (226)
+      Tests  2016 passed | 4 skipped (2020)
+   Start at  11:21:08
+   Duration  159.33s (transform 23.20s, setup 0ms, import 137.35s, tests 192.33s, environment 11ms)
+

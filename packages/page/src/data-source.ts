@@ -1,3 +1,4 @@
+import type { PagedJoinDataSource } from './paged-join';
 import type { ComputeOperator } from './compute';
 import {
   hasQueryFieldMapping,
@@ -42,13 +43,13 @@ export interface QueryDataSource {
   source: QuerySource;
 }
 
-export type DataSource = InlineDataSource | QueryDataSource;
+export type DataSource = InlineDataSource | QueryDataSource | PagedJoinDataSource;
 export type DataSources = Record<string, DataSource>;
 export type DataSourceMode = 'inline' | 'query' | 'mixed';
 
 export function dataSourceMode(dataSources: DataSources): DataSourceMode {
   const kinds = new Set(
-    Object.values(dataSources).map((dataSource) => dataSource.source.type)
+    Object.values(dataSources).map((dataSource) => dataSource.source.type === 'inline' ? 'inline' : 'query')
   );
   if (kinds.size > 1) return 'mixed';
   return kinds.has('query') ? 'query' : 'inline';
@@ -103,3 +104,5 @@ export function resolveDataSourceFields(
     })
   );
 }
+
+export function isPagedJoinDataSource(source: DataSource): source is PagedJoinDataSource { return source.source.type === 'pagedJoin'; }

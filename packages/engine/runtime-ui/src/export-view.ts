@@ -7,7 +7,7 @@ import type { ExportRenderState } from './export-render-state';
 
 import type { ExportViewConsumer, ExportViewOptions } from './export-types';
 
-export async function withPreparedExportView<T>(input:{state:ExportRenderState;queries:ReadonlyMap<string,EffectiveQuery>;gateway:RuntimeDataGateway;sourceRoot:HTMLElement;controller:AbortController}, consume:ExportViewConsumer<T>,options:ExportViewOptions={}):Promise<T> {
+export async function withPreparedExportView<T>(input:{state:ExportRenderState;queries:ReadonlyMap<string,EffectiveQuery>;gateway:RuntimeDataGateway;sourceRoot:HTMLElement;controller:AbortController;program?:import('@metriccanvas/data-execution/runtime').SourceProgram}, consume:ExportViewConsumer<T>,options:ExportViewOptions={}):Promise<T> {
   const {state,controller,sourceRoot}=input;
   const signal=controller.signal;
   const abort=()=>controller.abort(new ExportViewError('EXPORT_CANCELLED','导出已取消'));
@@ -35,7 +35,7 @@ export async function withPreparedExportView<T>(input:{state:ExportRenderState;q
   const parent=root instanceof ShadowRoot?root:sourceRoot.ownerDocument.body;
   let instance:ReturnType<typeof mount>|undefined;
   try {
-    state.snapshots=await abortable(prepareExportSnapshots(state.page,input.gateway,input.queries,state.filters,signal,undefined,state.currentYear),signal);
+    state.snapshots=await abortable(prepareExportSnapshots(state.page,input.gateway,input.queries,state.filters,signal,undefined,state.currentYear,[],state.sourceViews,input.program),signal);
     signal.throwIfAborted();
     parent.appendChild(holder);
     // Establish the visible box before charts mount; post-mount resizing can look like overflow.

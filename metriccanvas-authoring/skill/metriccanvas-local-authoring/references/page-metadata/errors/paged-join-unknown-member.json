@@ -1,0 +1,40 @@
+{
+  "case": "paged-join-unknown-member",
+  "invariant": "paged-join",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "成员必须引用普通查询源",
+      "paths": [
+        "/dataSources/office-overview/source/members/meeting/source"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "投影必须引用成员的原始字段",
+      "paths": [
+        "/dataSources/office-overview/source/projection/analysis-meeting-rate"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "office-overview": {
+        "source": {
+          "members": {
+            "meeting": {
+              "source": "missing"
+            }
+          },
+          "projection": {
+            "analysis-meeting-rate": {
+              "member": "meeting",
+              "field": "analysis-meeting-rate"
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

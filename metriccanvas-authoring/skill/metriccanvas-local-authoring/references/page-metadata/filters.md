@@ -13,7 +13,7 @@ urlParams仅映射该类允许的value/from/to/level键，不能与本页其它�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.21。结构真源为本册[schema.json](schema.json)，SHA256 `b1463f60554cf354fdbf4789e020e48526496d89b8feee4181f652e50d12e715`。字段表自动生成；可选不等于有默认值。
+页面协议 6.22。结构真源为本册[schema.json](schema.json)，SHA256 `48844824923af573b27be8c9c53d7be88910b12628c548cefdcb9362b7612fc5`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -965,7 +965,7 @@ Schema位置：`#/definitions/numberRangeFilter/properties/type`。
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "numberRange" | 用于选择@numberRangeFilter.type分支；同分支其它约束同时成立。 |
+| "numberRange" | 数值度量的包含端点范围；按原始单位比较，一端可缺省。 |
 
 <a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f6c6162656c"></a>
 
@@ -1152,7 +1152,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 ## 联合分支见证（生成）
 
 - `#/definitions/timeRangeFilter/properties/default/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/1/default`。
-- `#/definitions/timeRangeFilter/properties/default/anyOf/1`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/filters/1/default`。
+- `#/definitions/timeRangeFilter/properties/default/anyOf/1`：[合法完整页面](examples/paged-join-page.json)，JSON Pointer `#/filters/0/default`。
 - `#/definitions/timeRangeFilter/properties/default/anyOf/2`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/2/default`。
 - `#/definitions/relativeTimeExpression/properties/range/oneOf/0`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/filters/3/default/range`。
 - `#/definitions/relativeTimeExpression/properties/range/oneOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/2/default/range`。

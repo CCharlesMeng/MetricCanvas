@@ -18,7 +18,8 @@ export interface ExportRenderState {
   filters: FilterValues;
   snapshots: PageDataSnapshots;
   tables: Record<string, TableViewState>;
-  headerFilters: Record<string, Record<string, TableHeaderFilterValue>>;
+  headerFilters: Record<string, import('@metriccanvas/page/internal').TableHeaderFilters>;
+  sourceViews?: ReadonlyMap<string, import('@metriccanvas/page/internal').TableQueryView>;
   summaries: Record<string, AiSummarySnapshot>;
 }
 export function exportComponentSlots(state: ExportRenderState, component: Component): Map<string, DataSnapshot> {
@@ -36,7 +37,7 @@ export function exportComponentData(state:ExportRenderState,component:Component)
     const fields=resolveDataSourceFields(source);
     const ready=renderableDataSnapshot(snapshot); if(!ready)continue;
     let rows:Row[]=ready.rows;
-    if(component.type==='table'&&slot==='main') {
+    if(component.type==='table'&&slot==='main'&&source.source.type!=='pagedJoin') {
       rows=applyTableSearch(rows,component,state.tables[component.id]?.searchQuery);
     }
     if(component.type==='table'&&slot==='main'&&component.props.pagination?.mode!=='query') {

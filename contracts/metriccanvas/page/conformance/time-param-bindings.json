@@ -1710,7 +1710,7 @@
           {
             "type": "SCHEMA_ERROR",
             "path": "/schemaVersion",
-            "message": "不支持的文档格式版本 6.3:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
+            "message": "不支持的文档格式版本 6.3:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
           }
         ]
       }
@@ -3642,6 +3642,191 @@
           },
           {
             "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/region/queryField",
+            "message": "存在未定义字段 queryField(拼写错误?)"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/region/currency",
+            "message": "缺少必填字段 currency"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/region/queryField",
+            "message": "存在未定义字段 queryField(拼写错误?)"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/region/type",
+            "message": "must be equal to constant"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/region/role",
+            "message": "must be equal to constant"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/region",
+            "message": "must match exactly one schema in oneOf"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/region/items",
+            "message": "缺少必填字段 items"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/region/queryField",
+            "message": "存在未定义字段 queryField(拼写错误?)"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/region/type",
+            "message": "must be equal to constant"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/region/role",
+            "message": "must be equal to constant"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/region/queryField",
+            "message": "存在未定义字段 queryField(拼写错误?)"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/region/type",
+            "message": "must be equal to constant"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/region/role",
+            "message": "must be equal to constant"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/region",
+            "message": "must match a schema in anyOf"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/gmv/queryField",
+            "message": "存在未定义字段 queryField(拼写错误?)"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/gmv/currency",
+            "message": "缺少必填字段 currency"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/gmv/queryField",
+            "message": "存在未定义字段 queryField(拼写错误?)"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/gmv/type",
+            "message": "must be equal to constant"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/gmv",
+            "message": "must match exactly one schema in oneOf"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/gmv/items",
+            "message": "缺少必填字段 items"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/gmv/queryField",
+            "message": "存在未定义字段 queryField(拼写错误?)"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/gmv/type",
+            "message": "must be equal to constant"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/gmv/role",
+            "message": "must be equal to constant"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/gmv/queryField",
+            "message": "存在未定义字段 queryField(拼写错误?)"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/gmv/type",
+            "message": "must be equal to constant"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/gmv/role",
+            "message": "must be equal to constant"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/fields/gmv",
+            "message": "must match a schema in anyOf"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/source/rowKey",
+            "message": "缺少必填字段 rowKey"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/source/domainMember",
+            "message": "缺少必填字段 domainMember"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/source/members",
+            "message": "缺少必填字段 members"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/source/projection",
+            "message": "缺少必填字段 projection"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/source/ordering",
+            "message": "缺少必填字段 ordering"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/source/pagination",
+            "message": "缺少必填字段 pagination"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/source/fallback",
+            "message": "缺少必填字段 fallback"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/source/onMissing",
+            "message": "缺少必填字段 onMissing"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/source/query",
+            "message": "存在未定义字段 query(拼写错误?)"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/current/source/type",
+            "message": "must be equal to constant"
+          },
+          {
+            "type": "SCHEMA_ERROR",
             "path": "/dataSources/current",
             "message": "must match a schema in anyOf"
           }
@@ -4223,7 +4408,7 @@
           {
             "type": "SCHEMA_ERROR",
             "path": "/schemaVersion",
-            "message": "不支持的文档格式版本 6.3:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
+            "message": "不支持的文档格式版本 6.3:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
           }
         ]
       }
@@ -7073,7 +7258,7 @@
           {
             "type": "SCHEMA_ERROR",
             "path": "/schemaVersion",
-            "message": "不支持的文档格式版本 6.2:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
+            "message": "不支持的文档格式版本 6.2:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
           }
         ]
       }

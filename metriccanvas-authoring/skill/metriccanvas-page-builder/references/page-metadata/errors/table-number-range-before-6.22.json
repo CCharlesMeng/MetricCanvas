@@ -1,0 +1,34 @@
+{
+  "case": "table-number-range-before-6.22",
+  "invariant": "paged-join",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "多查询组合表格与数值表头范围 由 6.22 引入，文档声明的是 6.21",
+      "paths": [
+        "/sections/0/components/0/props/columns/1/filterable/mode"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "filterable": {
+                    "mode": "numberRange"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-number-range-before-6.22.json"
+}

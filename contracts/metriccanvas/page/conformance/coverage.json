@@ -1,6 +1,28 @@
 {
   "invariants": [
     {
+      "id": "paged-join",
+      "description": "6.22 组合表全局视图与普通查询定义引用",
+      "valid": [
+        "paged-join-page",
+        "table-number-range-page"
+      ],
+      "invalid": [
+        "table-number-range-before-6.22",
+        "paged-join-initial-predicate-in",
+        "paged-join-initial-predicate-numeric",
+        "paged-join-initial-predicate-date",
+        "paged-join-before-6.22",
+        "paged-join-unknown-member",
+        "paged-join-invalid-key",
+        "paged-join-invalid-projection",
+        "paged-join-member-topn",
+        "paged-join-shared-root",
+        "paged-join-invalid-initial",
+        "table-number-range-non-numeric"
+      ]
+    },
+    {
       "id": "table-toolbar-search",
       "description": "表格工具区由6.21引入，搜索显式引用文本标量字段",
       "valid": [

@@ -1,0 +1,38 @@
+{
+  "case": "paged-join-initial-predicate-in",
+  "invariant": "paged-join",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "组合初始行必须匹配默认视图",
+      "paths": [
+        "/dataSources/office-overview/source/initial/view"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "office-overview": {
+        "source": {
+          "initial": {
+            "view": {
+              "pageIndex": 0,
+              "pageSize": 3,
+              "sort": [
+                {
+                  "…": "共2个键"
+                }
+              ],
+              "predicates": [
+                {
+                  "…": "共3个键"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/paged-join-initial-predicate-in.json"
+}

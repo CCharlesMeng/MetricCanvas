@@ -1,3 +1,4 @@
+import { executeMultiQueryTable } from './multi-query-table';
 import { executeQueryResultWhere } from './query-result-where';
 import { executeBusinessSdt } from './business-sdt';
 import customerActivityRiskFixtureJson from '../fixtures/customer-activity-risk.json';
@@ -144,6 +145,7 @@ const customerActivityDetailDimensions = [
 ];
 
 export function executeDqeItem(item: unknown): DqeSimItemResult {
+  const multiQueryTable=executeMultiQueryTable(item);if(multiQueryTable)return multiQueryTable;
   const filteredInputDemo = executeQueryResultWhere(item);
   if (filteredInputDemo) return filteredInputDemo;
   const sdt = executeBusinessSdt(item, process.env.DQE_SDT_SCENARIO);
