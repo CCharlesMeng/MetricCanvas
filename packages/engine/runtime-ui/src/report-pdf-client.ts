@@ -63,7 +63,7 @@ const pdfStyles = `
 `;
 
 /** html2canvas cannot clip a gradient to glyphs. Freeze those small elements with native SVG/HTML paint. */
-async function freezeGradientText(view: HTMLElement, signal: AbortSignal, pageWidth: number, pageHeight: number): Promise<void> {
+async function freezeGradientText(view: HTMLElement, signal: AbortSignal): Promise<void> {
   const document = view.ownerDocument;
   const pseudoStyles = Array.from(view.querySelectorAll('style')).map(style => style.textContent).join('\n');
   const gradients = [view, ...view.querySelectorAll<HTMLElement>('*')].filter(element => {
@@ -75,7 +75,6 @@ async function freezeGradientText(view: HTMLElement, signal: AbortSignal, pageWi
     signal.throwIfAborted();
     const rect = element.getBoundingClientRect();
     if (!rect.width || !rect.height) continue;
-    if (rect.width > pageWidth + 0.5 || rect.height > pageHeight) throw new Error('渐变文字块超过 A4 页面尺寸，请调整后导出');
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('width', String(rect.width * 2));
     svg.setAttribute('height', String(rect.height * 2));
@@ -137,9 +136,7 @@ export async function downloadReportPdf(target: HTMLElement, signal: AbortSignal
   const landscape = !!target.querySelector('[data-export-orientation="landscape"]');
   const paperWidth = landscape ? 297 : 210;
   const paperHeight = landscape ? 210 : 297;
-  const contentWidth = paperWidth - 20;
-  const contentHeight = paperHeight - 20;
-  const pageHeight = Math.floor(pageWidth * contentHeight / contentWidth);
+  const pageHeight = Math.floor(pageWidth * paperHeight / paperWidth);
   if (!Number.isFinite(pageWidth) || pageWidth <= 0) throw new Error('报告尺寸无效，无法生成 PDF');
   const [{ default: html2canvas }, { jsPDF }] = await Promise.all([import('html2canvas'), import('jspdf')]);
   signal.throwIfAborted();
@@ -173,54 +170,44 @@ export async function downloadReportPdf(target: HTMLElement, signal: AbortSignal
     if (!view) throw new Error('无法创建报告 PDF 编码视图');
     await abortable(view.ownerDocument.fonts.ready, signal);
     await abortable(Promise.all(Array.from(view.querySelectorAll('img')).map(image => image.decode())), signal);
-    await freezeGradientText(view, signal, pageWidth, pageHeight);
+    await freezeGradientText(view, signal);
     signal.throwIfAborted();
     const origin = view.getBoundingClientRect();
     const height = Math.ceil(origin.height);
-    const cards = '.metric-card,.composite-card,.key-value-panel,.ranking-card';
-    const blocks = Array.from(view.querySelectorAll<HTMLElement>(`tr,p,li,h1,h2,h3,.report-cover,[data-export-chart],${cards}`)).flatMap(element => {
-      const rect = element.getBoundingClientRect();
-      // Short cards stay intact. Long cards may paginate between their existing rows/paragraphs.
-      if (element.matches(cards) && rect.height > pageHeight) return [];
-      return [{ top: rect.top - origin.top, bottom: Math.min(height, rect.bottom - origin.top + (element.matches('h1,h2,h3') ? 48 : 0)) }];
-    }).filter(block => block.bottom > block.top);
-    const headers = Array.from(view.querySelectorAll<HTMLTableSectionElement>('thead'));
-    const tables = headers.map(header => {
-      const rect = header.getBoundingClientRect();
-      const table = header.closest('table')!.getBoundingClientRect();
-      return { top: table.top - origin.top, bottom: table.bottom - origin.top, headerEnd: rect.bottom - origin.top, headerHeight: rect.height };
-    });
-    const breaks = Array.from(view.querySelectorAll<HTMLElement>('.page-section')).filter(section => section.querySelector('[data-export-chart]'))
-      .map(section => section.getBoundingClientRect().top - origin.top);
-    const pages = planPdfPages(height, pageHeight, blocks, tables, breaks);
+    // Preserve the prepared layout exactly. Paper boundaries never move DOM blocks or add rows.
+    const pages = planPdfPages(height, pageHeight);
     const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: landscape ? 'landscape' : 'portrait', compress: true });
-    const headerImages = new Map<number, string>();
-    const options = { scale: 2, backgroundColor: '#ffffff', logging: false, scrollX: 0, scrollY: 0, windowWidth: pageWidth, windowHeight: pageHeight };
-    for (const [index, page] of pages.entries()) {
+    const capturePageHeight = Math.min(height, pageHeight);
+    const scale = Math.min(2, 8192 / pageWidth, 8192 / capturePageHeight, Math.sqrt(16_777_216 / (Math.ceil(pageWidth) * capturePageHeight)));
+    // Render several pages together when safe: html2canvas reparses the entire DOM per call.
+    // Bound both dimensions and area so long reports never allocate a report-sized canvas.
+    const maxCaptureHeight = Math.floor(Math.min(8192 / scale, 16_777_216 / (Math.ceil(pageWidth * scale) * scale)));
+    const options = { scale, backgroundColor: '#ffffff', logging: false, scrollX: 0, scrollY: 0, windowWidth: pageWidth, windowHeight: pageHeight };
+    for (let first = 0; first < pages.length;) {
       signal.throwIfAborted();
-      if (index) pdf.addPage();
-      for (const headerIndex of page.headerIndices ?? (page.headerIndex === undefined ? [] : [page.headerIndex])) {
-        const header = headers[headerIndex];
-        let image = headerImages.get(headerIndex);
-        if (!image) {
-          const canvas = await html2canvas(header, options);
-          try { signal.throwIfAborted(); image = canvas.toDataURL('image/png'); }
-          finally { canvas.width = 0; canvas.height = 0; }
-          headerImages.set(headerIndex, image);
-        }
-        const rect = header.getBoundingClientRect();
-        pdf.addImage(image, 'PNG', 10 + (rect.left - origin.left) * contentWidth / pageWidth, 10, rect.width * contentWidth / pageWidth, rect.height * contentWidth / pageWidth);
-      }
-      // html2canvas has no AbortSignal API: let the current render finish before removing its DOM.
-      // Only the current A4 slice gets a canvas; the full report never becomes a giant bitmap.
-      const canvas = await html2canvas(view, { ...options, y: page.top, width: pageWidth, height: page.bottom - page.top });
+      let last = first;
+      while (last + 1 < pages.length && pages[last + 1].bottom - pages[first].top <= maxCaptureHeight) last++;
+      // html2canvas cannot abort an active render. Keep its document alive until it finishes.
+      const canvas = await html2canvas(view, { ...options, y: pages[first].top, width: pageWidth, height: pages[last].bottom - pages[first].top });
+      const slice = owner.createElement('canvas');
       try {
         signal.throwIfAborted();
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10 + page.headerHeight * contentWidth / pageWidth, contentWidth, (page.bottom - page.top) * contentWidth / pageWidth);
-      } finally { canvas.width = 0; canvas.height = 0; }
-      pdf.setFontSize(9);
-      pdf.setTextColor(100);
-      pdf.text(`${index + 1} / ${pages.length}`, paperWidth / 2, paperHeight - 5, { align: 'center' });
+        for (let index = first; index <= last; index++) {
+          const page = pages[index];
+          if (index) pdf.addPage();
+          slice.width = canvas.width;
+          const sourceTop = Math.floor((page.top - pages[first].top) * scale);
+          const sourceBottom = Math.floor((page.bottom - pages[first].top) * scale);
+          slice.height = Math.max(1, sourceBottom - sourceTop);
+          const context = slice.getContext('2d');
+          if (!context) throw new Error('无法绘制报告 PDF');
+          context.drawImage(canvas, 0, sourceTop, canvas.width, slice.height, 0, 0, canvas.width, slice.height);
+          // FAST avoids jsPDF's default slow PNG recompression while retaining lossless text.
+          pdf.addImage(slice.toDataURL('image/png'), 'PNG', 0, 0, paperWidth, index < pages.length - 1 ? paperHeight : (page.bottom - page.top) * paperWidth / pageWidth, undefined, 'FAST');
+          signal.throwIfAborted();
+        }
+      } finally { canvas.width = 0; canvas.height = 0; slice.width = 0; slice.height = 0; }
+      first = last + 1;
       await new Promise(resolve => setTimeout(resolve, 0));
     }
     signal.throwIfAborted();

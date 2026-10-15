@@ -75,23 +75,26 @@ await handle.withExportView(async ({ target, paper, wideElements, signal }) => {
 
 从仓根运行 `pnpm dev:playground`，打开上述5173地址，点击“导出 PDF”。示例中的“主要明细”和“补充明细”是内容分区组导航，分别显示经营明细及趋势、区域及项目分析；导出包含两个分组和全部 Tabs。
 
-调用链：`RuntimeView.withExportView` → [浏览器 PDF 客户端](../packages/engine/runtime-ui/src/report-pdf-client.ts) 复制静态 DOM 和计算后的样式 → 独立 iframe 准备字体与图片 → [分页规划](../packages/engine/runtime-ui/src/report-pdf-pagination.ts) → html2canvas 按页生成图片 → jsPDF 合成全部页面 → Blob 下载链接 → 清理编码视图和引擎临时视图。
+调用链：`RuntimeView.withExportView` → [浏览器 PDF 客户端](../packages/engine/runtime-ui/src/report-pdf-client.ts) 复制静态 DOM 和计算后的样式 → 独立 iframe 准备字体与图片 → [分页规划](../packages/engine/runtime-ui/src/report-pdf-pagination.ts) → html2canvas 按有界批次生成图片后连续切片 → jsPDF 合成全部页面 → Blob 下载链接 → 清理编码视图和引擎临时视图。
 
 标准接入只需配置pdfExport，HTML挂载和Svelte RuntimeView消费相同页面，不需要新增挂载参数。`downloadReportPdf`是引擎内部实现，不是新增公共导出。现有页面试验场通过兼容转发模块继续使用它，自定义集成应用可继续用withExportView消费静态DOM。
 
-编码器在所有页面成功后才发起下载，失败不下载部分文件。收到signal后停止下一页和下载；html2canvas不支持中断当前截图，当前截图完成后释放独立编码iframe。字体、图片准备阶段支持取消。日期筛选变化不改变本轮捕获状态，页面文档更新或实例销毁会取消导出。
+编码器在所有页面成功后才发起下载，失败不下载部分文件。收到signal后停止后续编码和下载；html2canvas不支持中断当前截图，当前截图完成后释放独立编码iframe。字体、图片准备阶段支持取消。日期筛选变化不改变本轮捕获状态，页面文档更新或实例销毁会取消导出。
 
-A4采用10mm边距、2倍截图和页码。每次只分配当前页的Canvas，表格行和图表不跨页裁切，续页重复表头，标题尽量与后续内容保持在一起。冻结图表保留测量高度。
+A4采用零外边距，内容从纸张左上角铺满宽度，按静态视图原有排布连续切片；页面自身的内边距与样式保留。内容分区、标题、卡片、图表和表格都不人为另起一页，不重复插入表头或添加页码；跨纸张的内容连续承接，不丢弃中间像素。冻结图表保留测量高度。正常尺寸使用2倍截图，超宽内容适当降低倍率以控制画布尺寸。
 
-编码文档复制完整的计算样式及伪元素，保留多列、固定高度、同行对齐、封面铺满效果和原有间距，不再把分区强制改成纵向列表。渐变文字由浏览器先绘制为局部透明图片，保留原有字形和渐变，避免截图器把渐变铺成矩形或替换为单色。能容纳一页的短卡片整体分页；并排表格跨页时分别重复各自表头，按较高表头预留位置。完整图表使用全部结果范围，移除交互缩放窗口。
+编码文档复制完整的计算样式及伪元素，保留多列、固定高度、同行对齐、封面铺满效果和原有间距，不再把分区强制改成纵向列表。渐变文字由浏览器先绘制为局部透明图片，保留原有字形和渐变，避免截图器把渐变铺成矩形或替换为单色。并排内容保持原有几何，纸张边界不改变块的位置或插入额外空间。完整图表使用全部结果范围，移除交互缩放窗口。
 
-宽内容触发整份横向A4；单个不可拆分的表格行、图表或正文块超过对应页高时明确失败，不静默裁切。截图和文字排版受浏览器、字体及 html2canvas CSS 支持范围影响，部署时应保证报告字体在客户端可用。无需配置 `MC_PDF_CHROMIUM` 或 `MC_PDF_RENDERER`。
+宽内容触发整份横向A4；高于纸张的内容按原样连续切片，不因块高超过页高而拒绝整份导出。截图和文字排版受浏览器、字体及 html2canvas CSS 支持范围影响，部署时应保证报告字体在客户端可用。无需配置 `MC_PDF_CHROMIUM` 或 `MC_PDF_RENDERER`。
+
+截图按最长边8192像素、总面积约1600万像素限制合并批次，减少重复解析整份DOM；长报告分批处理。PNG使用快速无损压缩。
 
 已有分页回归入口为[分页单元测试](../apps/playground/tests/report-pdf-pagination.test.ts)，实际下载、长表、图片失败及取消清理回归入口为[浏览器回归脚本](../apps/playground/tests/report-pdf-browser.mjs)；本批次未执行。从仓根可运行：
 
 ```sh
 pnpm exec vitest run apps/playground/tests/report-pdf-pagination.test.ts
 # 先在另一个终端运行 pnpm dev:playground，再执行浏览器回归；默认访问 5173。
+node apps/playground/tests/report-pdf-continuous-browser.mjs
 node apps/playground/tests/report-pdf-browser.mjs
 node apps/playground/tests/report-pdf-appearance-browser.mjs
 node apps/playground/tests/report-pdf-fidelity-browser.mjs

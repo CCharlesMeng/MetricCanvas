@@ -26,7 +26,7 @@ await page.addInitScript(() => {
     if (document.querySelector('[data-report-pdf-frame]')) {
       const view = document.querySelector('[data-report-pdf-frame]').contentDocument.querySelector('[data-export-view]');
       const width = view.getBoundingClientRect().width;
-      window.pdfCanvases.push({ width: this.width, height: this.height, limitWidth: Math.ceil(width * 2), limitHeight: Math.ceil(width * 277 / 190) * 2 });
+      window.pdfCanvases.push({ width: this.width, height: this.height, limitWidth: Math.ceil(width * 2), limitHeight: Math.ceil(width * 297 / 210) * 2 });
       if (window.pdfMode === 'fail') throw new Error('模拟 PDF 图片编码失败');
       if (window.pdfMode === 'update') {
         window.pdfMode = 'normal';
@@ -152,20 +152,21 @@ try {
   expect(downloads.length).toBe(count);
   cases.push('cancellation during encoding waits for active canvas then prevents download and cleans iframe');
 
+  const tallDownload = page.waitForEvent('download');
   const tooTall = await page.evaluate(async () => {
     const { downloadReportPdf } = await import('/src/lib/report-pdf-client.ts');
     const source = document.createElement('div');
     source.dataset.exportView = '';
     source.innerHTML = '<p style="padding:1200px 0">过高的不可拆分正文</p>';
     document.body.append(source);
-    try { await downloadReportPdf(source, new AbortController().signal); }
-    catch (error) { return error.message; }
+    try { return await downloadReportPdf(source, new AbortController().signal); }
     finally { source.remove(); }
   });
-  expect(tooTall).toContain('超过 A4 页高');
+  await (await tallDownload).saveAs(path.join(output, 'tall-block.pdf'));
+  expect(tooTall.pageCount).toBeGreaterThan(1);
   await cleaned();
-  expect(downloads.length).toBe(count);
-  cases.push('oversized indivisible content explicitly fails instead of cropping');
+  expect(downloads.length).toBe(count + 1);
+  cases.push('oversized content continues across paper boundaries without rejection');
 
   // A whole-report scale=2 canvas here would be more than 32,000 pixels high.
   const longDownload = page.waitForEvent('download');
@@ -185,7 +186,7 @@ try {
   expect(long.pageCount).toBeGreaterThan(15);
   expect(await page.evaluate(() => window.pdfViews.at(-1).height)).toBeGreaterThan(16_000);
   await cleaned();
-  cases.push('500-row long report downloads using only bounded A4 canvases');
+  cases.push('500-row long report downloads using bounded captures and contiguous A4 slices');
 
   const canvases = await page.evaluate(() => window.pdfCanvases);
   expect(canvases.length).toBeGreaterThan(20);

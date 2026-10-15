@@ -96,6 +96,6 @@ try {
   });
   await (await parallelDownload).saveAs(path.join(output, 'parallel-tables.pdf'));
   expect(parallel.pageCount).toBeGreaterThan(1);
-  expect(await page.evaluate(() => window.tableHeaderColors)).toEqual([[219, 234, 254, 255], [220, 252, 231, 255]]);
+  expect(await page.evaluate(() => window.tableHeaderColors)).toEqual([]); // No additional header images or inserted rows.
   console.log(JSON.stringify({ parallelTables: 'pass', pages: parallel.pageCount }));
 } finally { await browser.close(); }
