@@ -1,4 +1,4 @@
-import { validateTimePointValue, dimensionOfLevel, hierarchyLevelOf, isRelativeTimeExpression, resolveRelativeTime, type FilterDeclaration, type NumberRangeValue } from '@metriccanvas/page/internal';
+import { isPeriodSelection, resolvePeriodSelection, type AppliedPeriodSelection, validateTimePointValue, dimensionOfLevel, hierarchyLevelOf, isRelativeTimeExpression, resolveRelativeTime, type FilterDeclaration, type NumberRangeValue } from '@metriccanvas/page/internal';
 
 /**
  * 筛选状态 (Filter State) 中单个筛选器的当前值。
@@ -26,6 +26,7 @@ export interface DimensionFilterValue {
 
 export interface TimeRangeFilterValue {
   type: 'timeRange';
+  selection?: AppliedPeriodSelection;
   from: string;
   to: string;
 }
@@ -83,6 +84,7 @@ function initialValue(decl: FilterDeclaration, now: Date): FilterValue | undefin
   }
   if (decl.type === 'timeRange') {
     if (!decl.default) return undefined;
+    if (isPeriodSelection(decl.default)) return {type:'timeRange',...resolvePeriodSelection(decl.default,now,decl.precision === 'month' ? 'month' : 'date')};
     const precision = decl.precision ?? 'date';
     if (typeof decl.default === 'string') {
       const range = resolvePreset(decl.default, now, precision === "month" ? "date" : precision);

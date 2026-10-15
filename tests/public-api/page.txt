@@ -26,6 +26,7 @@ AiSummaryComponent
 AiSummaryProps
 AiSummaryRelatedDataDefinition
 AiSummaryRelatedField
+AppliedPeriodSelection
 BarChartComponent
 BarChartProps
 BarChartSeries
@@ -155,6 +156,9 @@ PagedJoinMember
 PagedJoinSource
 ParamResolutionIssue
 ParameterProgramRequest
+PeriodMode
+PeriodRange
+PeriodSelection
 PieChartComponent
 PieChartProps
 PivotColumn
@@ -301,6 +305,7 @@ isInlineDataSource
 isLevelDimensionBinding
 isNavigationHref
 isPagedJoinDataSource
+isPeriodSelection
 isQueryDataSource
 isQueryErrorCode
 isQueryInputDeclaration
@@ -323,6 +328,8 @@ pageParamDeclarations
 pageParamErrors
 pageSchema
 parsePage
+periodRangeLabel
+periodSelectionFromRange
 queryErrorDisposition
 queryResultDependencies
 queryResultFieldContract
@@ -333,6 +340,7 @@ resolveFilterTextValue
 resolveInlineQueryParams
 resolvePageParams
 resolveParamTextValues
+resolvePeriodSelection
 resolveRelativeTime
 resolveTextValues
 resolveTimeWindow

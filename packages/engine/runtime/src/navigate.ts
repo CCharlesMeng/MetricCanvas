@@ -35,6 +35,7 @@ function filterPart(value: FilterValue | undefined, part: string): unknown {
   if (part === 'from' || part === 'to') return value.type === 'timeRange' || value.type === 'numberRange' ? value[part] : undefined;
   if (part === 'level') return value.type === 'dimension' ? value.level : undefined;
   if (value.type === 'dimension') return value.values;
+  if (value.type === 'timeRange' && value.selection) return value.selection.mode === 'last12Months' ? 'last12Months' : `${value.selection.mode}:${value.selection.value}`;
   if (value.type === 'search') return value.query;
   if (value.type === 'timePoint' || value.type === 'boolean') return value.value;
   return undefined;

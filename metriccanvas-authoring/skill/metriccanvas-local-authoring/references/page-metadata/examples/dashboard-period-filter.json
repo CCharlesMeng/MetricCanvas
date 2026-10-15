@@ -1,0 +1,180 @@
+{
+  "schemaVersion": "6.28",
+  "id": "dashboard-period-filter",
+  "layout": "dashboard",
+  "filters": [
+    {
+      "id": "period-filter",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "date",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "month"
+      }
+    }
+  ],
+  "dataSources": {
+    "sales": {
+      "fields": {
+        "entry": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "entry"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "entry"
+                ],
+                "output_metrics": [
+                  "amount"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {
+                  "limit": 10,
+                  "offset": 0
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "period-filter": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "fixed": {
+      "fields": {
+        "entry": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "entry"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "unbound_amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "entry"
+                ],
+                "output_metrics": [
+                  "unbound_amount"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false,
+                    "start": "2026-01-01",
+                    "end": "2026-01-31"
+                  }
+                },
+                "order": {
+                  "limit": 10,
+                  "offset": 0
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "detail",
+      "container": "plain",
+      "title": "经营明细",
+      "components": [
+        {
+          "id": "sales-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "title": "经营明细",
+            "columns": [
+              {
+                "field": "entry",
+                "title": "生效查询范围",
+                "sortable": true
+              },
+              {
+                "field": "amount",
+                "title": "金额",
+                "sortable": true
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            }
+          }
+        },
+        {
+          "id": "fixed-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "fixed"
+          },
+          "props": {
+            "title": "未绑定查询",
+            "columns": [
+              {
+                "field": "entry",
+                "title": "生效查询范围",
+                "sortable": true
+              },
+              {
+                "field": "amount",
+                "title": "金额",
+                "sortable": true
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "title": "期间筛选验收",
+    "description": "合成验收数据；通过网关请求中的实际时间范围验证联动。"
+  }
+}

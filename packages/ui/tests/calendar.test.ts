@@ -61,3 +61,12 @@ it('包含式上限阻止未来月份及日期，当前期间和范围终点均�
   expect(calendarDraft('2026-10-16', '', 'date', false, true, undefined, '2026-10-15').ok).toBe(false);
   expect(calendarDraft('2026-09', '2026-11', 'month', true, true, undefined, '2026-10').ok).toBe(false);
 });
+
+it('年季值与键盘移动严格使用期间编码',()=>{
+  expect(calendarValue(new Date(2026,9,15),'quarter')).toBe('2026-Q4');
+  expect(calendarValue(new Date(2026,9,15),'year')).toBe('2026');
+  expect(moveCalendarValue('2026-Q4','quarter',1)).toBe('2027-Q1');
+  expect(moveCalendarValue('2026','year',-1)).toBe('2025');
+  expect(calendarDraft('2026-Q4','','quarter',false,true)).toMatchObject({ok:true,value:{from:'2026-Q4',to:'2026-Q4'}});
+  expect(validCalendarValue('2026-Q5','quarter')).toBe(false);
+});

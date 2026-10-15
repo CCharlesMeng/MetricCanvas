@@ -53,11 +53,15 @@ const relativeTimeExpressionZ = z
   .strict()
   .meta({ id: 'relativeTimeExpression' });
 
+const periodSelectionZ = z.union([z.object({mode:z.enum(['year','quarter','month']),value:z.string().optional()}).strict(),z.object({mode:z.literal('last12Months')}).strict()]).meta({id:'periodSelection'});
+
 const timeRangeFilterZ = z
   .object({
     id: idZ,
     urlParams: z.object({ value: z.string().min(1).optional(), from: z.string().min(1).optional(), to: z.string().min(1).optional(), level: z.string().min(1).optional() }).strict().optional(),
     type: z.literal('timeRange'),
+    display: z.literal('period').optional(),
+    initialMode: z.enum(['year','quarter','month']).optional(),
     label: z.string().optional(),
     precision: z.enum(['month', 'date', 'datetime']).optional(),
     initialParam: idZ.optional(),
@@ -67,7 +71,8 @@ const timeRangeFilterZ = z
       .union([
         z.enum(['today', 'last7d', 'last30d', 'last90d']),
         timeRangeValueZ,
-        relativeTimeExpressionZ
+        relativeTimeExpressionZ,
+        periodSelectionZ
       ])
       .optional()
   })

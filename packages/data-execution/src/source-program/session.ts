@@ -46,7 +46,7 @@ export function createSourceProgram(page: Page, config: { gateway: DataGateway; 
   const defaults=initialFilterValues(page.filters??[]);
   function defaultConditions(id:string,values:FilterValues):boolean {
     const filters=new Set([...conditionSourceIds(page,id)].flatMap(key=>{const source=page.dataSources[key];return source?.source.type==='query'?Object.keys(source.source.query.filterBindings??{}):[];}));
-    return [...filters].every(id=>canonicalizeJson(values.get(id)??null)===canonicalizeJson(defaults.get(id)??null));
+    return [...filters].every(id=>{ const filter=page.filters?.find(f=>f.id===id); if(filter?.type==='timeRange' && filter.display==='period' && filter.default && typeof filter.default==='object' && 'mode' in filter.default && (filter.default.mode==='last12Months' || !filter.default.value))return false; return canonicalizeJson(values.get(id)??null)===canonicalizeJson(defaults.get(id)??null); });
   }
   let batch = 0;
   return {

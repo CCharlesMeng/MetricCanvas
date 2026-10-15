@@ -86,3 +86,19 @@
 [SDT月报](sdt/commercial-sdt-efficiency-ultimate-monthly.json)可在`http://localhost:5173/pages/commercial-sdt-efficiency-ultimate-monthly`预览，目录中的经营分析分组提供入口；下载文件名包含已应用月份，业务数据仍依赖DQE。页面仓库现在递归读取pages子目录。
 
 按钮使用白底描边，准备/生成状态在按钮内显示，成功或取消后恢复配置名称；失败可重试，悬停可看原因。本批次按用户要求未运行测试或构建。
+
+## Dashboard 期间筛选
+
+- `dashboard-period-filter`：日期精度；`dashboard-period-filter-month`：月份精度，均已注册 Playground 验收目录。页面声明两个查询表格，其中 sales 绑定顶部期间，fixed 不绑定。
+- `dashboard-period-filter-more`：组合筛选进入“更多筛选”；`dashboard-period-filter-readonly`：compact 只读范围。四个场景均在 Playground 验收目录。
+- 人工配置入口：运行 `pnpm --filter platform exec vite --config tests/browser/report-date.vite.config.ts` 后，打开 `http://127.0.0.1:5187/tests/browser/report-date-editor.html?dashboard`；复用正式属性面板，使用本地合成数据。
+- 数据环境：浏览器自动验收通过合成网关响应回显实际请求起止范围；人工使用时需要 DQE 网关提供匹配字段，页面本身不包含已验证真实业务数据。
+- 操作：切年／季／月并选期间；季度使用 Q1—Q4；先选历史月份再选近一年；改变 URL value 编码；跨月重新选择近一年；缩窄容器。
+- 预期：一次选择更新一个筛选状态，sales 范围改变而 fixed 不重新请求；近一年无输入框，按当前月之前 12 个完整月份显示范围。切回月保留历史月份。协议／日历／状态与请求断言见对应 period-filter 测试。
+- 证据边界：浏览器测试为合成数据，真实 DQE／Relay／Java 及部署未由此证明。
+
+## Report 内置 PDF 下载
+
+[report-pdf-export.json](report-pdf-export.json)（页面 id：`report-pdf-export`，页面试验场 `/pages/report-pdf-export`）使用纯 inline 合成数据，无外部网关。顶部更改月份后点击“下载经营报告”，预期下载包含全部45行的多页PDF，文件名和正文期间使用点击时已应用的月份；日期与下载工具带不进入PDF。第二个页头不配置日期，`pdfExport: {}` 显示默认“下载 PDF”；最后一个页头未配置导出，不显示按钮。点击任意按钮均下载整页，文件名取触发按钮所在页头的配置或标题。
+
+取消、生成失败、实例更新/销毁、并发和宽内容由对应行为回归覆盖；单个不可拆分块高于一页时显示明确错误，不下载部分文件。本次按用户要求未执行验收，不代表真实DQE、内网浏览器或部署已验证。

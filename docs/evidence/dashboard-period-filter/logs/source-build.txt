@@ -1,0 +1,53 @@
+$ pnpm build:packages && pnpm --filter @metriccanvas/embed build && pnpm --filter platform build
+$ pnpm --filter @metriccanvas/ui --filter @metriccanvas/data-execution --filter @metriccanvas/page --filter @metriccanvas/engine --filter @metriccanvas/metric-canvas -r build
+Scope: 5 of 12 workspace projects
+packages/ui build$ node ../../tools/package-build/build.mjs ui
+packages/page build$ node ../../tools/package-build/build.mjs page
+packages/ui build: .svelte-kit/package-input -> dist
+packages/ui build: Done
+packages/page build: .svelte-kit/package-input -> dist
+packages/page build: Done
+packages/data-execution build$ node ../../tools/package-build/build.mjs data-execution
+packages/data-execution build: .svelte-kit/package-input -> dist
+packages/data-execution build: Done
+packages/engine build$ node ../../tools/package-build/build.mjs engine
+packages/engine build: .svelte-kit/package-input -> dist
+packages/engine build: Done
+packages/metric-canvas build$ node ../../tools/package-build/build.mjs metric-canvas
+packages/metric-canvas build: .svelte-kit/package-input -> dist
+packages/metric-canvas build: Done
+$ vite build && tsc -p tsconfig.build.json
+vite v8.1.5 building client environment for production...
+[2K
+transforming...✓ 1121 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/metriccanvas-runtime.es.js  4,467.85 kB │ gzip: 1,116.75 kB
+
+[2K
+transforming...✓ 1121 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/metriccanvas-runtime.global.js  3,358.91 kB │ gzip: 998.84 kB
+
+✓ built in 1.18s
+$ vite build
+vite v8.1.5 building client environment for production...
+[2K
+transforming...✓ 1252 modules transformed.
+rendering chunks...
+computing gzip size...
+build/index.html                               0.48 kB │ gzip:   0.30 kB
+build/assets/index-DQ1PisIS.css              282.20 kB │ gzip:  42.10 kB
+build/assets/rolldown-runtime-DAXXjFlN.js      1.26 kB │ gzip:   0.70 kB
+build/assets/china-DwbDKGiY.js               117.73 kB │ gzip:  34.16 kB
+build/assets/world-AHhAxG5S.js               171.08 kB │ gzip:  54.92 kB
+build/assets/exceljs.min-BSnPgFSx.js         929.90 kB │ gzip: 256.47 kB
+build/assets/index-CkW8HESM.js             2,079.46 kB │ gzip: 671.21 kB
+
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.21s

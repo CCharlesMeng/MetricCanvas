@@ -65,7 +65,7 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 6.15 新增 `period`：用于时间输入的统一展示，单点原值显示，范围“开始 至 结束”，同端点折叠为单点。`{filter, format:"period"}` 读取已应用状态；`{param, format:"period"}` 读取打开时的参数值。没有 period-compact 或自定义连接词。
 
 
-页面协议 6.28。结构真源为本册[schema.json](schema.json)，SHA256 `0ea82bb19fbb77187a11882c2048abc126c3ce7f5c33a91d8d7c694c4f5acc91`。字段表自动生成；可选不等于有默认值。
+页面协议 6.28。结构真源为本册[schema.json](schema.json)，SHA256 `e4ef9aa696ed7bd39653228254b69104052b30215c458fffd42d6b987af71fc0`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

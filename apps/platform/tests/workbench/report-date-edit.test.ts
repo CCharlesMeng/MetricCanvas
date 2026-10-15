@@ -1,5 +1,7 @@
+import { parsePage } from '@metriccanvas/page';
 import { expect, it } from 'vitest';
 import fixture from '../../../../packages/page/fixtures/contract-valid/report-date-filters-page.json';
+import dashboardFixture from '../../../../pages/dashboard-period-filter.json';
 import { createCanvasAuthoringDraft } from '../../src/lib/workbench/document-edit';
 import { editReportDate } from '../../src/lib/workbench/report-date-edit';
 function draft() { const result=createCanvasAuthoringDraft(fixture);if(!result.ok)throw Error(result.message);return result.draft; }
@@ -17,4 +19,15 @@ it('invalid range configuration preserves the entire canvas draft',()=>{
   const before=draft();const original=structuredClone(before);
   const result=editReportDate(before,locator,{filterId:'period-filter',declaration:{id:'period-filter',type:'timeRange',precision:'month',required:true,default:{from:'2026-09',to:'2026-04'}},bindings:[{dataSourceId:'sales',binding:{target:'time'}}]});
   expect(result.ok).toBe(false);expect(before).toEqual(original);
+});
+it('Dashboard page-level period editing does not need a report header and preserves query aggregation',()=>{
+  const result=createCanvasAuthoringDraft(dashboardFixture);if(!result.ok)throw Error(result.message);
+  const edit=editReportDate(result.draft,null,{filterId:'period-filter',declaration:{id:'period-filter',type:'timeRange',display:'period',precision:'date',required:true,default:{mode:'quarter',value:'2026-Q4'}},bindings:[{dataSourceId:'sales',binding:{target:'time'}}]});
+  expect(edit.ok).toBe(true);if(!edit.ok)throw Error(edit.message);
+  const parsed=parsePage(edit.draft.pageDocument);if(!parsed.ok)throw Error('invalid');const page=parsed.page;
+  expect(page.filters?.[0]).toMatchObject({display:'period',default:{mode:'quarter',value:'2026-Q4'}});
+  const sales=page.dataSources.sales.source;if(sales.type!=='query')throw Error('query');
+  expect(sales.query.body.dsl_list[0].filter).toMatchObject({time:{period:'day',is_aggregate:false}});
+  expect(page.sections.some(s=>s.components.some(c=>c.type==='reportHeader'))).toBe(false);
+  const removed=editReportDate(edit.draft,null,{filterId:'period-filter',remove:true});expect(removed.ok).toBe(true);
 });

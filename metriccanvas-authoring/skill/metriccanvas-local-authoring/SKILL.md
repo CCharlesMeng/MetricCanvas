@@ -24,6 +24,7 @@ description: 在本地 Coding Agent 中，根据自然语言、设计稿或旧�
 - 多查询表格：连读[数据源](references/page-metadata/data-sources.md)的 `pagedJoin` 与[表格](references/page-metadata/components/table.md)的数值范围、查询分页、搜索及完整导出；使用册内完整示例核对成员引用与投影，按模块中的验收预期检查结果隔离。
   固定指标排名使用普通查询返回的独立字段并投影；`ordinalField` 仅为当前结果序号。先明确排名行域、并列规则和筛选后是否保留名次，缺少上游能力依据时只交付明确标识的仿真场景。
 - 用户要求Report下载PDF、修改下载按钮名称或文件名时，读取[报告页头](references/page-metadata/components/reportHeader.md)的pdfExport声明和完整示例；在页面JSON中配置label和filename，不向集成应用生成截图或编码代码。
+- Dashboard 需要年／季／月／近一年切换时，读取[筛选](references/page-metadata/filters.md)的期间选择与完整示例；声明一个 timeRange 及其查询绑定，先确定查询使用月份还是日期范围。
 - 参数、日期和筛选：[参数与文字](references/page-metadata/params-and-text-values.md)、[筛选](references/page-metadata/filters.md)、[查询绑定](references/page-metadata/queries-and-bindings.md)。
 - 计算、导航或自定义组件：从协议索引进入对应模块。
 

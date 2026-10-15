@@ -1,3 +1,6 @@
+<script module lang="ts">
+  import type { PeriodRange } from '@metriccanvas/page/internal';
+</script>
 <script lang="ts">
   /**
    * 筛选栏:页面筛选器声明 → 对应控件的唯一分发点。
@@ -18,6 +21,7 @@
   } from '../../../runtime/src';
   import DimensionFilter from './DimensionFilter.svelte';
   import HierarchyFilter from './HierarchyFilter.svelte';
+  import PeriodFilter from './PeriodFilter.svelte';
   import TimeRangeFilter from './TimeRangeFilter.svelte';
   import TimePointFilter from './TimePointFilter.svelte';
   import BooleanFilter from './BooleanFilter.svelte';
@@ -61,7 +65,7 @@
 
   function timeRangeValue(filterId: string): TimeRangeValue | null {
     const value = values.get(filterId);
-    return value?.type === 'timeRange' ? { from: value.from, to: value.to } : null;
+    return value?.type === 'timeRange' ? value : null;
   }
 
   function timePointValue(filterId: string): string | null {
@@ -102,7 +106,9 @@
 <div class:read-only={readOnly} class="filter-bar">
   {#each visible as declaration (declaration.id)}
     <div data-filter-control data-filter-id={declaration.id} class="filter-control">
-    {#if readOnly && declaration.type === 'boolean'}
+    {#if declaration.type === 'timeRange' && declaration.display === 'period'}
+      <PeriodFilter label={declaration.label} precision={declaration.precision === 'month' ? 'month' : 'date'} value={timeRangeValue(declaration.id) as PeriodRange | null} {readOnly} onchange={next=>ontimerange(declaration.id,next)}/>
+    {:else if readOnly && declaration.type === 'boolean'}
       <label class="readonly-boolean">
         <input type="checkbox" checked={booleanValue(declaration.id)} disabled />
         <span data-filter-display>{declaration.label ?? '布尔筛选'}</span>

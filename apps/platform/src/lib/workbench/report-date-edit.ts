@@ -21,11 +21,12 @@ export function dateBindingChoices(draft:CanvasAuthoringDraft,granularity:'month
   });
 }
 /** Atomic manual configuration; the same Page contract rejects mismatched precision/ownership. */
-export function editReportDate(draft:CanvasAuthoringDraft,locator:ComponentLocator,edit:ReportDateEdit):DocumentEditResult {
+export function editReportDate(draft:CanvasAuthoringDraft,locator:ComponentLocator|null,edit:ReportDateEdit):DocumentEditResult {
   const document=JSON.parse(JSON.stringify(draft.canvasDocument));
   const parsed=parsePage(document);if(!parsed.ok)return {ok:false,message:'页面基线无效'};
-  const header=document.sections.find((s:{id:string})=>s.id===locator.sectionId)?.components.find((c:{id:string})=>c.id===locator.componentId);
-  if(header?.type!=='reportHeader')return {ok:false,message:'请选择报告页头'};
+  const header=locator ? document.sections.find((s:{id:string})=>s.id===locator.sectionId)?.components.find((c:{id:string})=>c.id===locator.componentId) : undefined;
+  if(!locator && parsed.page.layout!=='dashboard')return {ok:false,message:'页面级日期配置仅支持 Dashboard'};
+  if(locator && header?.type!=='reportHeader')return {ok:false,message:'请选择报告页头'};
   const existing=(document.filters??[]).find((f:FilterDeclaration)=>f.id===edit.filterId);
   if(existing&&!['timePoint','timeRange'].includes(existing.type))return {ok:false,message:'筛选器 ID 已被其他类型占用'};
   document.schemaVersion=versionPolicy.current;
@@ -42,7 +43,7 @@ export function editReportDate(draft:CanvasAuthoringDraft,locator:ComponentLocat
     const declaration={...edit.declaration,id:edit.filterId};
     document.filters=[...(document.filters??[]).filter((f:FilterDeclaration)=>f.id!==edit.filterId),declaration];
     for(const section of document.sections)for(const other of section.components)if(other.type==='reportHeader'&&other!==header){const ids=(other.props.filterIds??[]).filter((id:string)=>id!==edit.filterId);if(ids.length)other.props.filterIds=ids;else delete other.props.filterIds;}
-    header.props.filterIds=[...new Set([...(header.props.filterIds??[]),edit.filterId])];
+    if(header)header.props.filterIds=[...new Set([...(header.props.filterIds??[]),edit.filterId])];
   }
   for(const [id,source] of Object.entries(document.dataSources) as [string,any][]) {
     if(source.source.type!=='query')continue;

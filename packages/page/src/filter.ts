@@ -1,3 +1,4 @@
+import type { PeriodSelection } from './period-filter';
 /**
  * 筛选器声明:页面级筛选状态 (Filter State) 的 DSL 形态。
  * 页面声明若干筛选器构成共享筛选状态;query 页面数据源通过 query.filters.subscribe 订阅,
@@ -67,6 +68,10 @@ export interface TimeRangeFilterDeclaration {
   /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
   urlParams?: { value?: string; from?: string; to?: string; level?: string };
   type: 'timeRange';
+  /** Period picker; omitted preserves the ordinary range editor. */
+  display?: 'period';
+  /** Explicit mode when a page parameter seeds a complete natural period. */
+  initialMode?: 'year' | 'quarter' | 'month';
   /** 筛选器标签,显示于筛选器区 */
   label?: string;
   /** 时间精度:date=日期(默认)| datetime=日期时间 */
@@ -77,7 +82,7 @@ export interface TimeRangeFilterDeclaration {
   /** false 时仅作为组件联动使用，不在页面筛选器区呈现控件。 */
   visible?: boolean;
   /** 初始范围:相对预设、结构化相对时间或绝对范围;缺省为不筛选 */
-  default?: TimeRangePreset | TimeRangeValue | RelativeTimeExpression;
+  default?: TimeRangePreset | TimeRangeValue | RelativeTimeExpression | PeriodSelection;
 }
 
 export type TimeRangePrecision = 'month' | 'date' | 'datetime';

@@ -529,7 +529,7 @@
       {selectedSpan}
       {selectedColumnCount}
       dateDraft={currentDraft}
-      onDateEdit={(edit)=>{if(currentDraft&&selectedComponent&&!previewOpen&&!loading)applyDocumentEdit(editReportDate(currentDraft,selectedComponent,edit));}}
+      onDateEdit={(edit)=>{if(currentDraft&&!previewOpen&&!loading&&(currentDraft.pageDocument.layout==='dashboard'||selectedComponent))applyDocumentEdit(editReportDate(currentDraft,currentDraft.pageDocument.layout==='dashboard'?null:selectedComponent,edit));}}
       properties={propertyControls(currentDraft, selectedComponent)}
       onPropertyEdit={(edit) => { if (currentDraft && selectedComponent && !previewOpen && !loading) applyDocumentEdit(editProperty(currentDraft, selectedComponent, edit)); }}
       candidates={typeCandidates}

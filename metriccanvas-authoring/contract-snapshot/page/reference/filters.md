@@ -2,6 +2,18 @@
 
 六类筛选为dimension、timeRange、timePoint、boolean、numberRange、search。声明描述输入能力，当前值由页内FilterState保存。URL只在初始化时读；重复维度键表示多值，不拆逗号。boolean的false是显式值，不能被默认true覆盖。
 
+## Dashboard 期间选择（6.27）
+
+`timeRange` 可声明 `display: "period"`，在 Dashboard 通用顶部 FilterBar 中作为一个筛选器显示「年／季／月／近一年」。省略 display 仍为原有范围编辑器。`precision` 只允许 month/date，分别决定实际范围编码，不改变查询的 period/is_aggregate。季度输入显示「2026 年 Q4」，四个面板选项为 Q1—Q4。
+
+默认选择使用 `default: {mode:"month"}`（当前月），也可写 `{mode:"year",value:"2026"}`、`{mode:"quarter",value:"2026-Q4"}`、`{mode:"month",value:"2026-10"}` 或 `{mode:"last12Months"}`。年季月省略 value 时按本次初始化的当前日期选择完整自然期间。近一年固定取当前月之前十二个完整月份；2026-10 显示 `25年10月~26年9月`，date 查询为 2025-10-01 至 2026-09-30，month 查询为 2025-10 至 2026-09；右侧只有只读文本，不提供截止月份输入。
+
+初始化、显式重新选择近一年共用期间解析；长驻页面不定时刷新，导出使用已应用快照。切回年季月保留会话内历史锚点。URL 的 value 分量编码 `month:2026-10`、`quarter:2026-Q4`、`year:2026` 或 `last12Months`，使用显式 `urlParams.value` 或筛选器 ID；恢复近一年时重新物化范围，非法选择不覆盖已有合法状态。导航可显式传筛选 value 分量保留模式，也可用 from/to 将实际范围传给普通日期输入。
+
+参数初始化改用互斥的 `initialParam` 与 `initialMode:"year"|"quarter"|"month"`，实际参数区间必须完整覆盖声明的自然期间；选择变化不反写页面参数。相对选择不提取成固定参数。新形态仅用于 Dashboard 顶部筛选，不用于报告页头、datetime 或图表独立筛选。查询使用现有 `{target:"time"}` 绑定，不能同时保存固定 start/end/param。
+
+完整验收页面为 `dashboard-period-filter`（日期精度）与 `dashboard-period-filter-month`（月份精度），见下方生成的完整示例入口。它们声明合成验收查询；实际 DQE 数据和部署验收另行报告。
+
 维度display选择select、tabs或tree；层级维度显式声明层级和初始层；6.11起层级维度与timePoint筛选器也可用initialParam取页面参数作初值。时间范围支持绝对from/to和受控相对时间；timePoint限定month/date粒度。numberRange允许单边界，两边空视为无条件；search为普通文本。
 
 urlParams仅映射该类允许的value/from/to/level键，不能与本页其它参数或筛选输入冲突。候选值来自受控数据能力，业务维度值不是协议枚举。
@@ -31,7 +43,7 @@ urlParams仅映射该类允许的value/from/to/level键，不能与本页其它�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.28。结构真源为本册[schema.json](schema.json)，SHA256 `0ea82bb19fbb77187a11882c2048abc126c3ce7f5c33a91d8d7c694c4f5acc91`。字段表自动生成；可选不等于有默认值。
+页面协议 6.28。结构真源为本册[schema.json](schema.json)，SHA256 `e4ef9aa696ed7bd39653228254b69104052b30215c458fffd42d6b987af71fc0`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -375,6 +387,36 @@ Schema位置：`#/definitions/timeRangeFilter/properties/type`。
 |---|---|
 | "timeRange" | 用于选择@timeRangeFilter.type分支；同分支其它约束同时成立。 |
 
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f646973706c6179"></a>
+
+### `@timeRangeFilter.display`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/display`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | const="period" | Schema未设默认；装配/运行时默认见语义说明 | 当前筛选器的受控输入显示方式。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "period" | 时间窗口：基准所在完整周期；offset按指定unit移动周期。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f696e697469616c4d6f6465"></a>
+
+### `@timeRangeFilter.initialMode`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/initialMode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["year","quarter","month"] | Schema未设默认；装配/运行时默认见语义说明 | 参数初始化期间筛选时显式选择自然年、自然季度或自然月；参数区间必须恰好覆盖该完整期间。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "year" | 年粒度。 |
+| "quarter" | 季度粒度。 |
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+
 <a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f6c6162656c"></a>
 
 ### `@timeRangeFilter.label`
@@ -637,6 +679,86 @@ Schema位置：`#/definitions/relativeTimeExpression/properties/anchor`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 相对时间计算所用的日历锚点。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f64656661756c742f616e794f662f33"></a>
+
+### `@timeRangeFilter.default · anyOf[3]`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/default/anyOf/3`。目标：[#/definitions/periodSelection](filters.md#schema-232f646566696e6974696f6e732f706572696f6453656c656374696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/periodSelection | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f6453656c656374696f6e"></a>
+
+### `@periodSelection`
+
+Schema位置：`#/definitions/periodSelection`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 类型/分支 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f6453656c656374696f6e2f616e794f662f30"></a>
+
+### `@periodSelection · anyOf[0]`
+
+Schema位置：`#/definitions/periodSelection/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["mode"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f6453656c656374696f6e2f616e794f662f302f70726f706572746965732f6d6f6465"></a>
+
+### `@periodSelection · anyOf[0].mode`
+
+Schema位置：`#/definitions/periodSelection/anyOf/0/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["year","quarter","month"] | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "year" | 年粒度。 |
+| "quarter" | 季度粒度。 |
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f6453656c656374696f6e2f616e794f662f302f70726f706572746965732f76616c7565"></a>
+
+### `@periodSelection · anyOf[0].value`
+
+Schema位置：`#/definitions/periodSelection/anyOf/0/properties/value`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f6453656c656374696f6e2f616e794f662f31"></a>
+
+### `@periodSelection · anyOf[1]`
+
+Schema位置：`#/definitions/periodSelection/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["mode"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f6453656c656374696f6e2f616e794f662f312f70726f706572746965732f6d6f6465"></a>
+
+### `@periodSelection · anyOf[1].mode`
+
+Schema位置：`#/definitions/periodSelection/anyOf/1/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="last12Months" | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "last12Months" | 用于选择@periodSelection · anyOf[1].mode分支；同分支其它约束同时成立。 |
 
 <a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c746572"></a>
 
@@ -1183,6 +1305,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - `hidden-hierarchy-picker-needs-map`：隐藏层级切换器时必须有地图通过 hierarchyFilter 承担下钻。反例：[hidden-hierarchy-picker-without-map](errors/hidden-hierarchy-picker-without-map.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `time-point-min`：6.24 时间点下限与默认值日历语义。反例：[time-point-min-before-6.24](errors/time-point-min-before-6.24.json)、[time-point-min-invalid-month](errors/time-point-min-invalid-month.json)、[time-point-min-wrong-precision](errors/time-point-min-wrong-precision.json)、[time-point-min-default-before](errors/time-point-min-default-before.json)、[time-point-min-invalid-date](errors/time-point-min-invalid-date.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `time-point-disable-future`：6.25 时间点禁止未来月份与日期。反例：[time-point-disable-future-before-6.25](errors/time-point-disable-future-before-6.25.json)、[time-point-disable-future-default-month](errors/time-point-disable-future-default-month.json)、[time-point-disable-future-default-date](errors/time-point-disable-future-default-date.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `period-filter`：6.27 Dashboard 年季月与近一年期间筛选。反例：[period-filter-before-6.27](errors/period-filter-before-6.27.json)、[period-filter-quarter-invalid](errors/period-filter-quarter-invalid.json)、[period-filter-report](errors/period-filter-report.json)、[period-filter-datetime](errors/period-filter-datetime.json)、[period-filter-no-default](errors/period-filter-no-default.json)、[period-filter-static-time](errors/period-filter-static-time.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -1190,9 +1313,19 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - [reference-branches-page](examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 - [time-point-min-page](examples/time-point-min-page.json)：完整合法页面；查询仅为静态契约证据。
 - [time-point-no-future](examples/time-point-no-future.json)：完整合法页面；查询仅为静态契约证据。
+- [dashboard-period-filter](examples/dashboard-period-filter.json)：完整合法页面；查询仅为静态契约证据。
+- [dashboard-period-filter-month](examples/dashboard-period-filter-month.json)：完整合法页面；查询仅为静态契约证据。
+- [period-filter-year-page](examples/period-filter-year-page.json)：完整合法页面；查询仅为静态契约证据。
+- [period-filter-quarter-page](examples/period-filter-quarter-page.json)：完整合法页面；查询仅为静态契约证据。
+- [period-filter-last12-months-page](examples/period-filter-last12-months-page.json)：完整合法页面；查询仅为静态契约证据。
+- [period-filter-parameter-page](examples/period-filter-parameter-page.json)：完整合法页面；查询仅为静态契约证据。
+- [dashboard-period-filter-more](examples/dashboard-period-filter-more.json)：完整合法页面；查询仅为静态契约证据。
+- [dashboard-period-filter-readonly](examples/dashboard-period-filter-readonly.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/filter.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/period-filter.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/report-date-filters.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 
@@ -1202,3 +1335,6 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - `#/definitions/relativeTimeExpression/properties/range/oneOf/0`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/filters/3/default/range`。
 - `#/definitions/relativeTimeExpression/properties/range/oneOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/2/default/range`。
 - `#/definitions/relativeTimeExpression/properties/range/oneOf/2`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/3/default/range`。
+- `#/definitions/timeRangeFilter/properties/default/anyOf/3`：[合法完整页面](examples/dashboard-period-filter.json)，JSON Pointer `#/filters/0/default`。
+- `#/definitions/periodSelection/anyOf/0`：[合法完整页面](examples/dashboard-period-filter.json)，JSON Pointer `#/filters/0/default`。
+- `#/definitions/periodSelection/anyOf/1`：[合法完整页面](examples/period-filter-last12-months-page.json)，JSON Pointer `#/filters/0/default`。

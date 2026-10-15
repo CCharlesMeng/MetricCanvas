@@ -1,19 +1,22 @@
 
-export type CalendarPrecision = 'month' | 'date';
+export type CalendarPrecision = 'month' | 'date' | 'year' | 'quarter';
 export interface CalendarView { year: number; month: number }
 export interface CalendarCell { value: string; label: number; adjacent: 'pre-month' | 'next-month' | null }
 const pad = (value: number) => String(value).padStart(2, '0');
 
 /** Calendar values are business dates, never UTC instants. */
 export function calendarValue(date: Date, precision: CalendarPrecision): string {
-  const month = `${String(date.getFullYear()).padStart(4, '0')}-${pad(date.getMonth() + 1)}`;
+  const year = String(date.getFullYear()).padStart(4,'0');
+  if (precision === 'year') return year;
+  if (precision === 'quarter') return `${year}-Q${Math.floor(date.getMonth()/3)+1}`;
+  const month = `${year}-${pad(date.getMonth() + 1)}`;
   return precision === 'month' ? month : `${month}-${pad(date.getDate())}`;
 }
 export function validCalendarValue(value: string, precision: CalendarPrecision): boolean {
   return calendarValueError(value, precision, 'from') === undefined;
 }
 export function calendarView(value: string, today = new Date()): CalendarView {
-  return { year: Number(value.slice(0, 4)) || today.getFullYear(), month: Number(value.slice(5, 7)) || today.getMonth() + 1 };
+  return { year: Number(value.slice(0, 4)) || today.getFullYear(), month: (value.includes('-Q') ? (Number(value.slice(6))-1)*3+1 : Number(value.slice(5, 7))) || today.getMonth() + 1 };
 }
 export function shiftCalendar(view: CalendarView, months: number): CalendarView {
   const index = view.year * 12 + view.month - 1 + months;
@@ -42,9 +45,18 @@ export function calendarMonths(year: number): CalendarCell[][] {
     return { value: `${String(year).padStart(4, '0')}-${pad(month)}`, label: month, adjacent: null };
   }));
 }
+export function calendarQuarters(year: number): CalendarCell[][] {
+  return [[1,2],[3,4]].map(row => row.map(q => ({value:`${String(year).padStart(4,'0')}-Q${q}`,label:q,adjacent:null})));
+}
+export function calendarDisplayValue(value: string, precision: CalendarPrecision): string {
+  return !value ? '' : precision === 'year' ? `${value} 年` : precision === 'quarter' ? value.replace('-Q',' 年 Q') : value;
+}
+export function calendarInputValue(value: string, precision: CalendarPrecision): string {
+  return precision === 'year' ? value.replace(/\s*年\s*$/, '').trim() : precision === 'quarter' ? value.replace(/\s*年\s*Q/, '-Q').trim() : value;
+}
 export function moveCalendarValue(value: string, precision: CalendarPrecision, amount: number): string {
   const view = calendarView(value);
-  return calendarValue(localDate(view.year, view.month + (precision === 'month' ? amount : 0), precision === 'date' ? Number(value.slice(8)) + amount : 1), precision);
+  return calendarValue(localDate(view.year + (precision === 'year' ? amount : 0), view.month + (precision === 'quarter' ? amount*3 : precision === 'month' ? amount : 0), precision === 'date' ? Number(value.slice(8)) + amount : 1), precision);
 }
 export function calendarDraft(from: string, to: string, precision: CalendarPrecision, range: boolean, required: boolean, min?: string, max?: string):
   { ok: true; value: { from: string; to: string } | null } | { ok: false; error: string } {
@@ -59,6 +71,10 @@ export function calendarDraft(from: string, to: string, precision: CalendarPreci
 
 /** Strict neutral Gregorian date validation, independent of Page Metadata. */
 function calendarValueError(value: string, precision: CalendarPrecision, field: 'from' | 'to'): string | undefined {
+  if (precision === 'year' || precision === 'quarter') {
+    const match = (precision === 'year' ? /^(\d{4})$/ : /^(\d{4})-Q([1-4])$/).exec(value);
+    return match && Number(match[1]) >= 1 && Number(match[1]) <= 9999 ? undefined : `时间范围 ${field} 须为 ${precision === 'year' ? 'YYYY' : 'YYYY-Q1…Q4'} 格式`;
+  }
   const match = (precision === 'month' ? /^(\d{4})-(\d{2})$/ : /^(\d{4})-(\d{2})-(\d{2})$/).exec(value);
   if (!match) return `时间范围 ${field} 须为 ${precision === 'month' ? 'YYYY-MM' : 'YYYY-MM-DD'} 格式`;
   const year = Number(match[1]), month = Number(match[2]), day = precision === 'month' ? 1 : Number(match[3]);

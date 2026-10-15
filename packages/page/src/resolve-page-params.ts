@@ -1,3 +1,4 @@
+import { periodSelectionFromRange } from './period-filter';
 import { validateTimePointValue } from './filter';
 import { affectedSourceIds } from './data-source-references';
 import { matchesParamDeclaration, pageParamDeclarations, type PageParamValue } from './page-param';
@@ -85,7 +86,14 @@ export function materializePageParams(page:Page,values:ReadonlyMap<string,PagePa
         if (error) throw new Error(`筛选器 ${filter.id}: ${error}`);
         filter.default = value.start;
       }
-      else filter.default = { from: value.start, to: value.end };
+      else {
+        const range = {from:value.start,to:value.end};
+        if (filter.display === 'period') {
+          const selection = periodSelectionFromRange(range,filter.initialMode ?? 'month',filter.precision === 'month' ? 'month' : 'date');
+          if (!selection) throw new Error(`筛选器 ${filter.id}: 参数不是完整自然期间`);
+          filter.default = selection;
+        } else filter.default = range;
+      }
     }
   }
   return resolved;

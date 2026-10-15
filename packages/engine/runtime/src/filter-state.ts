@@ -1,3 +1,4 @@
+import { resolvePeriodSelection, isPeriodSelection } from '@metriccanvas/page/internal';
 import { filterURLKeys } from '@metriccanvas/page/internal';
 import {
   dimensionOfLevel,
@@ -32,8 +33,9 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   let current: Map<string, FilterValue> = new Map();
   for (const [id, value] of initial ?? []) {
     const declaration = byId.get(id);
-    const valid = declaration?.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture === true) ? normalize(value, declaration) : value;
+    const valid = declaration?.type === 'timeRange' && declaration.display === 'period' ? normalize(value, declaration) : declaration?.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture === true) ? normalize(value, declaration) : value;
     if (declaration?.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture === true) && valid === undefined) throw new Error(`筛选器 ${id} 初值不符合时间点边界`);
+    if (declaration?.type === 'timeRange' && declaration.display === 'period' && !valid) throw new Error(`筛选器 ${id} 期间初值非法`);
     if (valid) current.set(id, valid);
   }
   const subscribers = new Set<(values: FilterValues) => void>();
@@ -84,7 +86,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
       for (const declaration of declarations) byId.set(declaration.id, declaration);
       const next = new Map(parseFilterSearch(search, declarations));
       for (const declaration of declarations) {
-        if (declaration.type !== 'timePoint' || (declaration.min === undefined && !declaration.disableFuture) || !declaration.required || next.has(declaration.id)) continue;
+        if (next.has(declaration.id) || !(declaration.type === 'timeRange' && declaration.display === 'period') && !(declaration.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture) && declaration.required)) continue;
         const fallback = current.get(declaration.id) ?? initialFilterValues([declaration]).get(declaration.id);
         if (fallback) next.set(declaration.id, fallback);
       }
@@ -105,6 +107,14 @@ function notify(run: (values: FilterValues) => void, values: FilterValues): void
 
 /** 空值集合等同不筛选,归一为清除,保持 URL 与状态干净 */
 function normalize(value: FilterValue | null, declaration?: FilterDeclaration): FilterValue | null | undefined {
+  if (declaration?.type === 'timeRange' && declaration.display === 'period') {
+    if (value?.type !== 'timeRange' || !isPeriodSelection(value.selection)) return undefined;
+    try {
+      const resolved = resolvePeriodSelection(value.selection,new Date(),declaration.precision === 'month' ? 'month' : 'date');
+      if (value.selection.mode !== 'last12Months' && (resolved.from !== value.from || resolved.to !== value.to)) return undefined;
+      return {type:'timeRange',...resolved};
+    } catch { return undefined; }
+  }
   if (declaration?.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture === true)) {
     if (!value) return declaration.required ? undefined : null;
     if (value.type !== 'timePoint' || value.granularity !== declaration.granularity) return undefined;
@@ -145,7 +155,7 @@ function sameValue(a: FilterValue | undefined, b: FilterValue | null): boolean {
     );
   }
   if (a.type === 'timeRange' && b.type === 'timeRange') {
-    return a.from === b.from && a.to === b.to;
+    return a.from === b.from && a.to === b.to && JSON.stringify(a.selection) === JSON.stringify(b.selection);
   }
   if (a.type === 'timePoint' && b.type === 'timePoint') {
     return a.granularity === b.granularity && a.value === b.value;
@@ -177,6 +187,15 @@ export function parseFilterSearch(search: string, declarations: readonly FilterD
       if (level && declaration.hierarchy && !declaration.hierarchy.some(l => l.id === level)) continue;
       value = { type: 'dimension', values, dimension: dimensionOfLevel(declaration, level), ...(level ? { level } : {}) };
     } else if (declaration.type === 'timeRange') {
+      if (declaration.display === 'period') {
+        const raw = read('value'); if (!raw) continue;
+        const split = raw.indexOf(':');
+        const selection = split < 0 ? {mode:raw} : {mode:raw.slice(0,split),value:raw.slice(split+1)};
+        if (!isPeriodSelection(selection)) continue;
+        if (selection.mode !== 'last12Months' && selection.value === undefined) continue;
+        try { result.set(declaration.id,{type:'timeRange',...resolvePeriodSelection(selection,new Date(),declaration.precision === 'month' ? 'month' : 'date')}); } catch {}
+        continue;
+      }
       const from = read('from'), to = read('to');
       if (!from || !to || validateCalendarTimeRange({from,to}, declaration.precision).length) continue;
       value = {type:'timeRange', from, to};
@@ -216,6 +235,8 @@ export function filterSearch(values: FilterValues, declarations: readonly Filter
     if (value.type === 'dimension') {
       value.values.forEach(item => put('value',item));
       put('level',value.level);
+    } else if (value.type === 'timeRange' && value.selection && declaration?.type === 'timeRange' && declaration.display === 'period') {
+      put('value',value.selection.mode === 'last12Months' ? 'last12Months' : `${value.selection.mode}:${value.selection.value}`);
     } else if (value.type === 'timeRange' || value.type === 'numberRange') {
       put('from',value.from); put('to',value.to);
     } else if (value.type === 'search') put('value',value.query);

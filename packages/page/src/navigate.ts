@@ -46,7 +46,7 @@ export function navigationErrors(page: Page): TypedError[] {
           if (!filter) { fail(`${p}/id`, `未声明的筛选器:${binding.id}`); continue; }
           const part = binding.part ?? 'value';
           const range = filter.type === 'timeRange' || filter.type === 'numberRange';
-          if (range ? !['from','to'].includes(part) : part !== 'value' && !(part === 'level' && filter.type === 'dimension' && filter.hierarchy)) {
+          if (range ? !['from','to',...(filter.type==='timeRange'&&filter.display==='period'?['value']:[])].includes(part) : part !== 'value' && !(part === 'level' && filter.type === 'dimension' && filter.hierarchy)) {
             fail(`${p}/part`, `筛选器 ${binding.id} 不支持分量 ${part}`);
           }
         } else {
@@ -74,6 +74,7 @@ export function navigationErrors(page: Page): TypedError[] {
 /** 同页 URL 名称不能指向两个不同输入。 */
 export function filterURLKeys(filter: NonNullable<Page['filters']>[number]): Record<string, string> {
   const names = filter.urlParams ?? {};
+  if (filter.type === 'timeRange' && filter.display === 'period') return {value:names.value ?? filter.id,from:names.from ?? `${filter.id}.from`,to:names.to ?? `${filter.id}.to`};
   if (filter.type === 'timeRange' || filter.type === 'numberRange') return { from: names.from ?? `${filter.id}.from`, to: names.to ?? `${filter.id}.to` };
   return { value: names.value ?? filter.id, ...(filter.type === 'dimension' && filter.hierarchy ? { level: names.level ?? `${filter.id}.level` } : {}) };
 }

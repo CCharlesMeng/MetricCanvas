@@ -7,3 +7,5 @@ UI 仅接收中性值、行列与事件，不依赖页面协议、渲染引擎�
 第三方资源归属见 LICENSE；工程入口见 [构建与仓外消费](../../tools/package-build/README.md)。
 
 Grid 的可选 `headers` 接收按列 key 对应的 Svelte snippet，用于列头筛选等展示。筛选条件和请求由调用者持有；窄屏堆叠时保留自定义列头，确保操作仍可访问。
+
+DatePicker 单点精度新增 year（YYYY）与 quarter（YYYY-Qn），输入分别显示 YYYY 年与 YYYY 年 Qn；年季范围编辑不在该入口支持范围内。原有 month/date 单点与范围模式保持原样。Dashboard 的组合筛选与相对月份计算由运行时适配器及页面协议负责。

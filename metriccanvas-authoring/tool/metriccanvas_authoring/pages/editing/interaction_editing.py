@@ -1,5 +1,6 @@
 """Atomic dimension-filter bindings and table-link navigation over trusted pages."""
 from copy import deepcopy
+from metriccanvas_authoring.bundle_info import load_bundle_info
 from metriccanvas_authoring.pages.components.component_editing import EditFailure, component_by_id
 from metriccanvas_authoring.pages.validation.page_validation import _resolved_fields
 
@@ -129,7 +130,7 @@ def set_report_header_filters(page, op):
             else: other['props'].pop('filterIds', None)
     if ids: header['props']['filterIds'] = list(ids)
     else: header['props'].pop('filterIds', None)
-    page['schemaVersion'] = '6.13'
+    page['schemaVersion'] = load_bundle_info()['pageSchemaVersion']
     return []
 
 
@@ -176,7 +177,7 @@ def add_date_filter(page, op):
     declaration = {'id': op['filterId'], **deepcopy(op['declaration'])}
     _date_bindings(page, op['filterId'], declaration, op['bindings'])
     page.setdefault('filters', []).append(declaration)
-    page['schemaVersion'] = '6.13'
+    page['schemaVersion'] = load_bundle_info()['pageSchemaVersion']
     if op.get('headerId'):
         header = component_by_id(page, op['headerId'])
         ids = header['props'].get('filterIds', [])
@@ -191,7 +192,7 @@ def update_date_filter(page, op):
     existing.clear(); existing.update({'id': op['filterId'], **deepcopy(op['declaration'])})
     _date_bindings(page, op['filterId'], existing, op['bindings'])
     _prune_date_param(page, old_param)
-    page['schemaVersion'] = '6.13'
+    page['schemaVersion'] = load_bundle_info()['pageSchemaVersion']
     if op.get('headerId'):
         header = component_by_id(page, op['headerId'])
         set_report_header_filters(page, {'headerId': op['headerId'], 'filterIds': list(dict.fromkeys([*header['props'].get('filterIds', []), op['filterId']]))})

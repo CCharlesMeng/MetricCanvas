@@ -1,0 +1,33 @@
+{
+  "case": "period-filter-no-default",
+  "invariant": "period-filter",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "期间筛选需要期间默认选择或参数初值",
+      "paths": [
+        "/filters/0/default"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "必需日期筛选器需要 default 或 initialParam 初值",
+      "paths": [
+        "/filters/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "period-filter",
+        "type": "timeRange",
+        "display": "period",
+        "precision": "date",
+        "label": "统计期间",
+        "required": true
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

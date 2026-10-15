@@ -99,7 +99,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     let primed = false;
     const unsubscribe = filters?.subscribe(next => {
       if (!primed) { primed = true; return; }
-      const changed = new Set([...new Set([...values.keys(), ...next.keys()])].filter(id => JSON.stringify(values.get(id)) !== JSON.stringify(next.get(id))));
+      const changed = new Set([...new Set([...values.keys(), ...next.keys()])].filter(id => queryCondition(values.get(id)) !== queryCondition(next.get(id))));
       values = next;
       const targets = new Set([...ids].filter(id => [...conditionSourceIds(page, id)].some(key => {
         const source = page.dataSources[key];
@@ -130,3 +130,5 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
   };
 }
 function same(left: FilterValues, right: FilterValues) { return [...new Set([...left.keys(), ...right.keys()])].every(id => JSON.stringify(left.get(id)) === JSON.stringify(right.get(id))); }
+
+function queryCondition(value: import('./filter-state').FilterValue | undefined): string | undefined { return JSON.stringify(value?.type === 'timeRange' ? {type:value.type,from:value.from,to:value.to} : value); }

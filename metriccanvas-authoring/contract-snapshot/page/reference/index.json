@@ -1,6 +1,6 @@
 {
   "schemaVersion": "6.28",
-  "schemaSha256": "0ea82bb19fbb77187a11882c2048abc126c3ce7f5c33a91d8d7c694c4f5acc91",
+  "schemaSha256": "e4ef9aa696ed7bd39653228254b69104052b30215c458fffd42d6b987af71fc0",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -24,11 +24,15 @@
     },
     {
       "file": "packages/page/src/navigate.ts",
-      "sha256": "de83005891638d68483a4b075496f02df2533bd866ab5d53a7c563e09e098f5e"
+      "sha256": "c6ea4da8b499954f8132d6d14e31c3208e3bd298edfb091f0f0942174d01cb36"
     },
     {
       "file": "packages/page/src/param-bindings.ts",
       "sha256": "a9581315bbe0246aa9f08c8dc036cc944b03140c82c5c1a929f163eca6db91b8"
+    },
+    {
+      "file": "packages/page/src/period-filter.ts",
+      "sha256": "a15566b374aae4e536a3a2d9504195b098e0beb2f9e70ddde9663b388465de42"
     },
     {
       "file": "packages/page/src/query-result-where.ts",
@@ -37,6 +41,10 @@
     {
       "file": "packages/page/src/query.ts",
       "sha256": "620fff7893bbe8b9ef3fe35e2ad47a2b75288773ecfc0741099828907bd66bf4"
+    },
+    {
+      "file": "packages/page/src/report-date-filters.ts",
+      "sha256": "8a0ab6d3a24b9b4d0bdb62abc5f35f4e07ff78745d5f8bca7ad8678548891ca5"
     },
     {
       "file": "packages/page/src/schema/actions.ts",
@@ -112,7 +120,7 @@
     },
     {
       "file": "packages/page/src/schema/filter.ts",
-      "sha256": "4bf15b68e9baed0812c934fa9cf984946c102c716b88feddeaee230808c1cded"
+      "sha256": "041070273e2367517ebe0dbbc9fae5b5a31ad7a8f11154ed3498a54c1ea86f2e"
     },
     {
       "file": "packages/page/src/schema/page.ts",
@@ -148,7 +156,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "9f7f8a0be94643be6b3812042211edf8975a7799815b7df7ad3c7edf37dea548"
+      "sha256": "9af6c580f55e7a207dfd0a6652e40945538e0dc6339c088ea26de825303c51c2"
     }
   ],
   "modules": {
@@ -381,7 +389,8 @@
         "timePointFilter",
         "booleanFilter",
         "numberRangeFilter",
-        "searchFilter"
+        "searchFilter",
+        "periodSelection"
       ],
       "keywords": [
         "filters",
@@ -391,12 +400,22 @@
         "filters-page",
         "reference-branches-page",
         "time-point-min-page",
-        "time-point-no-future"
+        "time-point-no-future",
+        "dashboard-period-filter",
+        "dashboard-period-filter-month",
+        "period-filter-year-page",
+        "period-filter-quarter-page",
+        "period-filter-last12-months-page",
+        "period-filter-parameter-page",
+        "dashboard-period-filter-more",
+        "dashboard-period-filter-readonly"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/filter.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/page/src/period-filter.ts",
+        "packages/page/src/report-date-filters.ts"
       ],
       "rules": [
         "filter-id-unique",
@@ -410,7 +429,8 @@
         "filter-depends-on",
         "hidden-hierarchy-picker-needs-map",
         "time-point-min",
-        "time-point-disable-future"
+        "time-point-disable-future",
+        "period-filter"
       ]
     },
     "sections-and-layout.md": {
@@ -5193,6 +5213,24 @@
       "const": "timeRange"
     },
     {
+      "pointer": "#/definitions/timeRangeFilter/properties/display",
+      "path": "@timeRangeFilter.display",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "const": "period"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/initialMode",
+      "path": "@timeRangeFilter.initialMode",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "enum": [
+        "year",
+        "quarter",
+        "month"
+      ]
+    },
+    {
       "pointer": "#/definitions/timeRangeFilter/properties/label",
       "path": "@timeRangeFilter.label",
       "required": "本分支可选",
@@ -5351,6 +5389,55 @@
       "path": "@relativeTimeExpression.anchor",
       "required": "本分支可选",
       "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/3",
+      "path": "@timeRangeFilter.default · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/periodSelection"
+    },
+    {
+      "pointer": "#/definitions/periodSelection",
+      "path": "@periodSelection",
+      "required": "类型/分支",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/periodSelection/anyOf/0",
+      "path": "@periodSelection · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/periodSelection/anyOf/0/properties/mode",
+      "path": "@periodSelection · anyOf[0].mode",
+      "required": "本分支必填",
+      "module": "filters.md",
+      "enum": [
+        "year",
+        "quarter",
+        "month"
+      ]
+    },
+    {
+      "pointer": "#/definitions/periodSelection/anyOf/0/properties/value",
+      "path": "@periodSelection · anyOf[0].value",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/periodSelection/anyOf/1",
+      "path": "@periodSelection · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/periodSelection/anyOf/1/properties/mode",
+      "path": "@periodSelection · anyOf[1].mode",
+      "required": "本分支必填",
+      "module": "filters.md",
+      "const": "last12Months"
     },
     {
       "pointer": "#/properties/filters/items/oneOf/2",
@@ -11456,6 +11543,24 @@
       "module": "filters.md",
       "file": "examples/reference-branches-page.json",
       "pointer": "#/filters/3/default/range"
+    },
+    {
+      "schemaPointer": "#/definitions/timeRangeFilter/properties/default/anyOf/3",
+      "module": "filters.md",
+      "file": "examples/dashboard-period-filter.json",
+      "pointer": "#/filters/0/default"
+    },
+    {
+      "schemaPointer": "#/definitions/periodSelection/anyOf/0",
+      "module": "filters.md",
+      "file": "examples/dashboard-period-filter.json",
+      "pointer": "#/filters/0/default"
+    },
+    {
+      "schemaPointer": "#/definitions/periodSelection/anyOf/1",
+      "module": "filters.md",
+      "file": "examples/period-filter-last12-months-page.json",
+      "pointer": "#/filters/0/default"
     },
     {
       "schemaPointer": "#/properties/filters/items/oneOf/2",

@@ -1674,19 +1674,58 @@
                         "type": "string"
                       },
                       "default": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                          "from": {
-                            "type": "string"
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "from": {
+                                "type": "string"
+                              },
+                              "to": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "from",
+                              "to"
+                            ]
                           },
-                          "to": {
-                            "type": "string"
+                          {
+                            "oneOf": [
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "mode": {
+                                    "enum": [
+                                      "year",
+                                      "quarter",
+                                      "month"
+                                    ]
+                                  },
+                                  "value": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "mode"
+                                ]
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "mode": {
+                                    "const": "last12Months"
+                                  }
+                                },
+                                "required": [
+                                  "mode"
+                                ]
+                              }
+                            ]
                           }
-                        },
-                        "required": [
-                          "from",
-                          "to"
                         ]
                       },
                       "initialParam": {
@@ -1696,6 +1735,16 @@
                       },
                       "required": {
                         "type": "boolean"
+                      },
+                      "display": {
+                        "const": "period"
+                      },
+                      "initialMode": {
+                        "enum": [
+                          "year",
+                          "quarter",
+                          "month"
+                        ]
                       }
                     },
                     "required": [
@@ -1899,19 +1948,58 @@
                         "type": "string"
                       },
                       "default": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                          "from": {
-                            "type": "string"
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "from": {
+                                "type": "string"
+                              },
+                              "to": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "from",
+                              "to"
+                            ]
                           },
-                          "to": {
-                            "type": "string"
+                          {
+                            "oneOf": [
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "mode": {
+                                    "enum": [
+                                      "year",
+                                      "quarter",
+                                      "month"
+                                    ]
+                                  },
+                                  "value": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "mode"
+                                ]
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "mode": {
+                                    "const": "last12Months"
+                                  }
+                                },
+                                "required": [
+                                  "mode"
+                                ]
+                              }
+                            ]
                           }
-                        },
-                        "required": [
-                          "from",
-                          "to"
                         ]
                       },
                       "initialParam": {
@@ -1921,6 +2009,16 @@
                       },
                       "required": {
                         "type": "boolean"
+                      },
+                      "display": {
+                        "const": "period"
+                      },
+                      "initialMode": {
+                        "enum": [
+                          "year",
+                          "quarter",
+                          "month"
+                        ]
                       }
                     },
                     "required": [

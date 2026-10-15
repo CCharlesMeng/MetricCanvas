@@ -4181,6 +4181,18 @@
               "type": "string",
               "const": "timeRange"
             },
+            "display": {
+              "type": "string",
+              "const": "period"
+            },
+            "initialMode": {
+              "type": "string",
+              "enum": [
+                "year",
+                "quarter",
+                "month"
+              ]
+            },
             "label": {
               "type": "string"
             },
@@ -4231,6 +4243,9 @@
                 },
                 {
                   "$ref": "#/$defs/Page/definitions/relativeTimeExpression"
+                },
+                {
+                  "$ref": "#/$defs/Page/definitions/periodSelection"
                 }
               ]
             }
@@ -4316,6 +4331,43 @@
             "includeCurrent"
           ],
           "additionalProperties": false
+        },
+        "periodSelection": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "year",
+                    "quarter",
+                    "month"
+                  ]
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "mode"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "last12Months"
+                }
+              },
+              "required": [
+                "mode"
+              ],
+              "additionalProperties": false
+            }
+          ]
         },
         "timePointFilter": {
           "type": "object",

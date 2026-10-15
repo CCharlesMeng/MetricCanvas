@@ -1,3 +1,4 @@
+import { isPeriodSelection, resolvePeriodSelection } from './period-filter';
 import { flattenPageComponents } from './component-walk';
 import { versionPolicy } from './version';
 import type { TimeWindow } from './time-param';
@@ -81,7 +82,8 @@ export function extractPageParams(input:unknown, context:ExtractionContext):Page
     const granularity = filter.type === 'timePoint' ? filter.granularity : filter.precision ?? 'date';
     if (granularity === 'datetime') continue;
     const existing = filter.initialParam ? pageParamDeclarations(source.params).find(p=>p.id===filter.initialParam) : undefined;
-    const initial = existing?.type === 'timeRange' && typeof existing.value==='object' && !Array.isArray(existing.value) ? existing.value : filter.type === 'timePoint' ? {start:filter.default,end:filter.default} :
+    const period = filter.type === 'timeRange' && filter.display === 'period' && isPeriodSelection(filter.default) && filter.default.mode !== 'last12Months' && filter.default.value ? resolvePeriodSelection(filter.default,new Date(2026,0,1),granularity) : undefined;
+    const initial = period ? {start:period.from,end:period.to} : existing?.type === 'timeRange' && typeof existing.value==='object' && !Array.isArray(existing.value) ? existing.value : filter.type === 'timePoint' ? {start:filter.default,end:filter.default} :
       filter.default && typeof filter.default === 'object' && 'from' in filter.default ? {start:filter.default.from,end:filter.default.to} : undefined;
     if (!initial || !matchesParamDeclaration(initial,{id:'',type:'timeRange',required:true,granularity})) { skipped.push({path:`/filters/${filter.id}/default`,reason:'相对时间须先在可信基线中明确为绝对日期'}); continue; }
     const declaration:PageParamDeclaration = {id:'',type:'timeRange',required:true,label:filter.label??'报告期间',granularity};
@@ -161,6 +163,7 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
       } else {
         const filter=document.filters!.find(f=>f.id===dateFilterId)!;
         if(filter.type !== 'timeRange' && filter.type !== 'timePoint') return fail('日期筛选类型不匹配');
+        if(filter.type==='timeRange' && filter.display==='period' && isPeriodSelection(filter.default) && filter.default.mode!=='last12Months')filter.initialMode=filter.default.mode;
         delete filter.default;filter.initialParam=c.id;filter.required=true;
       }
       if (document.layout !== 'dashboard') {

@@ -1,0 +1,24 @@
+{
+  "case": "period-filter-quarter-invalid",
+  "invariant": "period-filter",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "期间默认选择不合法",
+      "paths": [
+        "/filters/0/default"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "default": {
+          "mode": "quarter",
+          "value": "2026-Q5"
+        }
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/period-filter-quarter-invalid.json"
+}

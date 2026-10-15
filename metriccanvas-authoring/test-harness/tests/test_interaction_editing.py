@@ -183,6 +183,24 @@ class ReportDateEditingTest(unittest.TestCase):
         self.assertEqual(result['status'],'failed',result)
         self.assertEqual(p,original)
 
+    def test_dashboard_period_add_update_preserves_query_aggregation(self):
+        p=json.loads((Path(__file__).resolve().parents[3]/'pages/dashboard-period-filter.json').read_text())
+        p.pop('filters');p['dataSources']['sales']['source']['query'].pop('filterBindings')
+        before=deepcopy(p)
+        added=run(p,{'id':'add','type':'add_date_filter','filterId':'test-period',
+            'declaration':{'type':'timeRange','display':'period','precision':'date','default':{'mode':'quarter','value':'2026-Q4'}},
+            'bindings':[{'dataSourceId':'sales','target':'time'}]})
+        self.assertEqual(added['status'],'changed',added)
+        self.assertEqual(validate_page_document(added['document']),[])
+        self.assertEqual(p,before)
+        self.assertEqual(added['document']['dataSources']['fixed'],before['dataSources']['fixed'])
+        updated=run(added['document'],{'id':'update','type':'update_date_filter','filterId':'test-period',
+            'declaration':{'type':'timeRange','display':'period','precision':'date','default':{'mode':'last12Months'}},
+            'bindings':[{'dataSourceId':'sales','target':'time'}]})
+        self.assertEqual(updated['status'],'changed',updated)
+        self.assertEqual(updated['document']['filters'][0]['default'],{'mode':'last12Months'})
+        self.assertEqual(updated['document']['dataSources']['sales']['source']['query']['body'],before['dataSources']['sales']['source']['query']['body'])
+
     def test_placement_moves_existing_control_without_duplicate_reference(self):
         p=self.page();p['sections'].append({'id':'other-header','components':[{'id':'other-title','type':'reportHeader','layout':{'span':12},'props':{'title':'另一个页头'}}]})
         moved=run(p,{'id':'move','type':'set_report_header_filters','headerId':'other-title','filterIds':['period-filter']})

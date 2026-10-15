@@ -1,0 +1,354 @@
+{
+  "claim_ledger": [
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "BE-1；UI Chrome 22 tests；calendar.test.ts",
+      "id": "AT-UI-1",
+      "note": "年季月、键盘与 ShadowRoot；不声明业务数据真实性"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "BE-2、BE-3；period-filter.spec.ts",
+      "id": "AT-UI-2",
+      "note": "无输入、上月截止、历史日期无关、跨月和返回历史月"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "BE-3；period-filter.spec.ts",
+      "id": "AT-UI-3",
+      "note": "正常、更多、compact 只读和 390px 无横向溢出"
+    }
+  ],
+  "code_fingerprint": "dae79eb1c0a56a080fd0d6d4bd78b4cb35b636763a401195c4d6061fa515bdbe",
+  "counts": {
+    "blocker": 0,
+    "claims_deferred": 0,
+    "claims_unverified": 0,
+    "decided": 0,
+    "deferred": 0,
+    "handoff": 0,
+    "manual_acceptance": 0,
+    "manual_pending": 0,
+    "norm_candidate": 0,
+    "open_question": 0,
+    "skipped": 0,
+    "suggestion": 0,
+    "unplanned_carry": 0
+  },
+  "coverage": {
+    "review-convention": [
+      {
+        "dimension": "C1",
+        "evidence_ids": [
+          "PATTERN-STRUCT-1",
+          "PATTERN-COMP-1",
+          "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte:L1-L5",
+          "packages/page/src/period-filter.ts:L1-L8"
+        ],
+        "result": "unrun",
+        "scope": "两个新增文件 PeriodFilter.svelte、period-filter.ts 及本批次跨目录导入。存在新增文件，不能使用 C1 的无新增文件 skip_when。所选 baseline 的 PATTERN-STRUCT-1 仅约束 Svelte 单文件及领域逻辑分离，PATTERN-COMP-1 仅约束公开入口复用，均无目录命名、文件大小写或导入别名明文不变量，缺少可作 C1 判定的工程依据。"
+      },
+      {
+        "dimension": "C2",
+        "evidence_ids": [
+          "PATTERN-STRUCT-1",
+          "PATTERN-COMP-1",
+          "packages/ui/src/components/date-picker/DatePicker.svelte:L1-L18",
+          "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte:L1-L18",
+          "packages/engine/runtime-ui/src/filters/FilterBar.svelte:L1-L24",
+          "packages/engine/runtime-ui/src/ExportView.svelte:L1-L20",
+          "apps/platform/src/lib/workbench/ReportDateProperties.svelte:L1-L15",
+          "apps/platform/src/lib/workbench/ReportDateProperties.svelte:L51-L59",
+          "apps/platform/src/lib/workbench/Inspector.svelte:L1-L20",
+          "packages/page/src/report-date-filters.ts:L11-L20"
+        ],
+        "result": "clear",
+        "scope": "逐文件原始副本与最终 14 文件增量。6 个 Svelte 组件保持现有声明与 typed $props；DatePicker 的日期计算与输入转换仍由 calendar 模块承载。PeriodFilter 组合公开 DatePicker，期间范围计算委托领域模块。最终 ReportDateProperties 的默认 ID、动态 aria-label 和形态切换清空初值均未改变组件范式。所选规范未约束 Props 接口必须导出、禁止内联 props 类型或禁止 module script，不将这些差异判为违规。 period-review-3 接缝复核：report-date-filters.ts 新增的 PDF 下载工具带位置检查只调用既有 walkPageComponents 和 error 入口，未改变组件声明或复用路径，不构成 C2/C5 新发现。其余 13 文件哈希与上一纪元一致，当前 14 文件均与本纪元证据包一致。"
+      },
+      {
+        "dimension": "C5",
+        "evidence_ids": [
+          "PATTERN-COMP-1",
+          "PATTERN-STRUCT-1",
+          "packages/ui/src/index.ts:L1-L3",
+          "packages/ui/src/components/date-picker/DatePicker.svelte:L1-L5",
+          "packages/ui/src/components/date-picker/calendar.ts:L45-L59",
+          "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte:L3-L4",
+          "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte:L31-L36",
+          "apps/platform/src/lib/workbench/ReportDateProperties.svelte:L55-L59",
+          "packages/page/src/period-filter.ts:L18-L24",
+          "packages/data-execution/src/filter-values.ts:L84-L87",
+          "packages/engine/runtime/src/filter-state.ts:L118-L128",
+          "packages/page/src/report-date-filters.ts:L11-L20"
+        ],
+        "result": "clear",
+        "scope": "按 PATTERN-COMP-1 检查本次共享 UI 能力复用。PeriodFilter 与人工配置入口均从 @metriccanvas/ui 消费 DatePicker；年月季扩展落在同一 DatePicker/calendar 实现，未复制另一套日期面板。近一年计算调用既有 resolveRelativeTime，初始化、恢复和交互共同消费 resolvePeriodSelection。对没有所选 PATTERN 覆盖的局部实现差异不扩张为公共复用违规。 period-review-3 接缝复核：report-date-filters.ts 新增的 PDF 下载工具带位置检查只调用既有 walkPageComponents 和 error 入口，未改变组件声明或复用路径，不构成 C2/C5 新发现。其余 13 文件哈希与上一纪元一致，当前 14 文件均与本纪元证据包一致。"
+      }
+    ],
+    "review-layout": [
+      {
+        "dimension": "L2",
+        "evidence_ids": [
+          "BE-2",
+          "BE-3",
+          "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte:L45-L52"
+        ],
+        "result": "clear",
+        "scope": "已声明 date/month fixture、普通/更多筛选及 compact readonly；390px 页面横向溢出与短期间文本。BE-3 的运行时 scrollWidth 事实与图片结合，未发现内容遮挡或撑破。"
+      },
+      {
+        "dimension": "L5",
+        "evidence_ids": [
+          "BE-1",
+          "BE-2",
+          "BE-3",
+          "BE-4",
+          "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte:L49"
+        ],
+        "result": "clear",
+        "scope": "BE-1/2 中季、近一年与 Q4 选中态可区分；BE-3 readonly 无编辑控件；BE-4 中月分段 focus-visible=true，实测蓝色 2px solid outline、2px offset，与近一年选中态分离。期间组件无 disabled 参数，不要求新增禁用能力。"
+      }
+    ],
+    "review-quality": [
+      {
+        "dimension": "Q2",
+        "evidence_ids": [
+          "packages/page/src/period-filter.ts:L18-L35",
+          "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte:L16-L36",
+          "packages/data-execution/src/filter-values.ts:L85-L87",
+          "packages/engine/runtime/src/filter-state.ts:L120-L127",
+          "packages/engine/runtime/src/filter-state.ts:L201-L208",
+          "apps/platform/src/lib/workbench/Inspector.svelte:L64-L64",
+          "packages/page/src/report-date-filters.ts:L13-L20"
+        ],
+        "result": "clear",
+        "scope": "逐文件原始副本与14个受审文件的差异；期间范围物化集中于period-filter.ts:18-35，PeriodFilter:18/36、共享初始化filter-values.ts:87以及状态规范化/URL恢复filter-state.ts:124/207均调用该入口，未新增第二份完整期间范围计算。calendar.ts新增的是中性选择值格式与面板导航，未复制查询范围物化；Inspector复用已有日期配置编辑入口。未发现本次新增且造成独立维护分叉的可抽取重复。 period-review-3补核仅限report-date-filters.ts:14-18新增PDF放置检查接缝；新增的是同一组件遍历内的属性位置判定，没有第二份期间范围或日期配置实现。未扩大检视到并行PDF批次。"
+      },
+      {
+        "dimension": "Q5",
+        "evidence_ids": [
+          "packages/ui/src/components/date-picker/DatePicker.svelte:L42-L43",
+          "packages/ui/src/components/date-picker/DatePicker.svelte:L63-L91",
+          "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte:L15-L18",
+          "packages/engine/runtime/src/filter-state.ts:L48-L84",
+          "packages/engine/runtime/src/orchestrator.ts:L69-L95",
+          "packages/engine/runtime/src/orchestrator.ts:L99-L121",
+          "apps/platform/src/lib/workbench/ReportDateProperties.svelte:L13-L15",
+          "apps/platform/src/lib/workbench/ReportDateProperties.svelte:L51-L59",
+          "engine-check",
+          "BE-3",
+          "packages/page/src/report-date-filters.ts:L8-L20"
+        ],
+        "result": "clear",
+        "scope": "Svelte 5副作用、筛选订阅、请求取消与迟到响应隔离。DatePicker的监听与ResizeObserver在关闭或销毁时对称清理；PeriodFilter的草稿effect通过untrack避免自依赖；状态写入先替换再同步通知；orchestrator保留AbortController、token与disposed隔离和销毁清理。本轮ReportDateProperties的ID、aria-label及形态切换初值修复未新增异步或订阅。受审文件当前SHA256均与最终证据包相符。 period-review-3新增PDF检查只向函数局部errors数组追加错误，不新增请求、监听、计时器或共享状态写入；其后保留独立filterIds检查，期间筛选校验路径不变。"
+      }
+    ]
+  },
+  "decisions": [],
+  "deferred_candidates": [],
+  "evidence_epoch": "period-review-4",
+  "findings": [],
+  "handoff": [],
+  "judged_files": {
+    "review-convention": [
+      "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "packages/ui/src/components/date-picker/calendar.ts",
+      "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "packages/engine/runtime-ui/src/ExportView.svelte",
+      "packages/page/src/period-filter.ts",
+      "packages/page/src/filter.ts",
+      "packages/page/src/report-date-filters.ts",
+      "packages/data-execution/src/filter-values.ts",
+      "packages/engine/runtime/src/filter-state.ts",
+      "packages/engine/runtime/src/orchestrator.ts",
+      "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+      "apps/platform/src/lib/workbench/report-date-edit.ts",
+      "apps/platform/src/lib/workbench/Inspector.svelte"
+    ],
+    "review-layout": [
+      "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "packages/ui/src/components/date-picker/calendar.ts",
+      "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/FilterBar.svelte"
+    ],
+    "review-quality": [
+      "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "packages/ui/src/components/date-picker/calendar.ts",
+      "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "packages/engine/runtime-ui/src/ExportView.svelte",
+      "packages/page/src/period-filter.ts",
+      "packages/page/src/filter.ts",
+      "packages/page/src/report-date-filters.ts",
+      "packages/data-execution/src/filter-values.ts",
+      "packages/engine/runtime/src/filter-state.ts",
+      "packages/engine/runtime/src/orchestrator.ts",
+      "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+      "apps/platform/src/lib/workbench/report-date-edit.ts",
+      "apps/platform/src/lib/workbench/Inspector.svelte"
+    ]
+  },
+  "known_gaps": {
+    "review-convention": [
+      "C1 局部未验证：本次存在两个新增文件及跨目录导入，但已选真实 baseline 未定义命名或导入别名不变量；不能据此伪造 clear，亦不能改真实 diff 触发 skip_when。需要补充既有明文规范的来源或通过基线维护流程确立规则后，才能完成 C1 判断。"
+    ],
+    "review-layout": [],
+    "review-quality": [
+      "BE-3覆盖正式页面切换、跨月及未绑定源请求次数，未记录慢旧请求晚于新请求完成的浏览器竞态序列；Q5对此依据保留的取消、token和disposed代码保护，未执行额外质量命令或浏览器操作。"
+    ]
+  },
+  "manual_acceptance": [],
+  "norm_candidates": [],
+  "open_questions": [],
+  "portfolio_narrowed": [],
+  "restore_contract": null,
+  "roles": {
+    "review-convention": "executed",
+    "review-layout": "executed",
+    "review-quality": "executed"
+  },
+  "schema_version": 1,
+  "skipped": {
+    "review-convention": [],
+    "review-layout": [],
+    "review-quality": []
+  },
+  "unplanned_carry": [],
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-UI-1",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-UI-2",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "2",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-UI-3",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "2",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      }
+    ],
+    "facts": {
+      "cross_page": false,
+      "frozen_r": false,
+      "frozen_r5": false,
+      "frozen_r6": false,
+      "has_f3": false,
+      "has_s3_claim": false,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "review-convention",
+        "review-quality"
+      ],
+      "phase": "initial",
+      "required_profiles": {
+        "AT-UI-1": "mock",
+        "AT-UI-2": "mock",
+        "AT-UI-3": "mock"
+      },
+      "review_roles": [
+        "review-convention",
+        "review-quality"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C2",
+        "C5"
+      ],
+      "review-layout": [
+        "L2",
+        "L5"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q5"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "risk_triggers": [
+      "async-state",
+      "new-pattern",
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "new-pattern",
+        "shared-boundary"
+      ],
+      "changed_files": 14,
+      "max_changed_files": 5,
+      "restore_tasks": [],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "async-state": [
+        "agent",
+        "plan"
+      ],
+      "new-pattern": [
+        "agent",
+        "plan"
+      ],
+      "shared-boundary": [
+        "diff"
+      ],
+      "visual": [
+        "diff"
+      ]
+    }
+  }
+}

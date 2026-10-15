@@ -1,0 +1,204 @@
+{
+  "config": {
+    "argv": [
+      "/usr/local/bin/node",
+      "/private/tmp/metriccanvas-period-installed-consumers/5.56.6/consumer/node_modules/@playwright/test/cli.js",
+      "test",
+      "packages/embed/tests/browser/period-filter.spec.ts"
+    ],
+    "configFile": "/private/tmp/metriccanvas-period-installed-consumers/5.56.6/consumer/playwright.config.ts",
+    "rootDir": "/private/tmp/metriccanvas-period-installed-consumers/5.56.6/consumer",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "/private/tmp/metriccanvas-period-installed-consumers/5.56.6/consumer/browser-versions.mjs",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/private/tmp/metriccanvas-period-installed-consumers/5.56.6/consumer/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "embed-chrome",
+        "name": "embed-chrome",
+        "testDir": "/private/tmp/metriccanvas-period-installed-consumers/5.56.6/consumer/packages/embed/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/private/tmp/metriccanvas-period-installed-consumers/5.56.6/consumer/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "canvas-chrome",
+        "name": "canvas-chrome",
+        "testDir": "/private/tmp/metriccanvas-period-installed-consumers/5.56.6/consumer/packages/metric-canvas/tests/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "line",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "browser-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "packages/embed/tests/browser/period-filter.spec.ts",
+      "file": "packages/embed/tests/browser/period-filter.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "period selection queries, restoration and readonly rolling range (date)",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "embed-chrome",
+              "projectName": "embed-chrome",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 931,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T12:43:13.721Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "bd064b3a17f3025ce842-600e959830eab31751f3",
+          "file": "packages/embed/tests/browser/period-filter.spec.ts",
+          "line": 4,
+          "column": 41
+        },
+        {
+          "title": "period selection queries, restoration and readonly rolling range (month)",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "embed-chrome",
+              "projectName": "embed-chrome",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 759,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T12:43:14.807Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "bd064b3a17f3025ce842-08737b6f78a8ffd5b2c5",
+          "file": "packages/embed/tests/browser/period-filter.spec.ts",
+          "line": 4,
+          "column": 41
+        },
+        {
+          "title": "overflow panel and compact readonly consume the same period declaration",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "embed-chrome",
+              "projectName": "embed-chrome",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 608,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T12:43:15.574Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "bd064b3a17f3025ce842-e2bd70ec554887aba8d9",
+          "file": "packages/embed/tests/browser/period-filter.spec.ts",
+          "line": 39,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-15T12:43:12.591Z",
+    "duration": 3660.583,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

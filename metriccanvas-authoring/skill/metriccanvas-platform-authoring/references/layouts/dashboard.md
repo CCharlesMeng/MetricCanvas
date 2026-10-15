@@ -13,3 +13,7 @@
 显式 set_page_layout 只切根形态并说明可用宽度、工具栏及响应式影响。保留已有 section.title、props.title、容器与组件布局，不能用新建默认替换旧页。dashboard + panel 是合法组合；多组件共卡保留原card和分区标题。铺底与窄屏回流不另造实现。
 
 默认不是 dashboard=plain 的限制。出现真实非法候选时整项回滚，先说明错误路径及需要决定的调整；用户未要求的标题/绑定/查询/手工设置保持原文。
+
+## 年季月与近一年
+
+需要组合期间筛选时，复用 dateFilters／add_date_filter 的 timeRange 声明，增加 display=period。默认使用 {mode:"month"}，季度值使用 YYYY-Qn，近一年使用 {mode:"last12Months"}，不提供截止月份。使用显式时间查询绑定并保留查询聚合口径；精确字段与限制读取随包筛选参考中的 6.27 期间选择。

@@ -1,0 +1,490 @@
+{
+  "code": {
+    "base_ref": "/tmp/metriccanvas-period-baseline-20261015",
+    "code_fingerprint": "dae79eb1c0a56a080fd0d6d4bd78b4cb35b636763a401195c4d6061fa515bdbe",
+    "files": [
+      {
+        "path": "packages/ui/src/components/date-picker/DatePicker.svelte",
+        "sha256": "0f3e9406a2a6611713317ee2994e573c364d2c0cda5c2851885d686ba2e1eb81"
+      },
+      {
+        "path": "packages/ui/src/components/date-picker/calendar.ts",
+        "sha256": "6a52032789ab8381af5c71407133701b89fc32b5e2e86b1f502bf0ae836d1fee"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte",
+        "sha256": "f141065b7701e6bd99efe94d4e5a9b3face940cc16c4b73c1c6f155b1cb7bd95"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+        "sha256": "f660e6ce191f038e28d6b4030b7055e03c49fd9cc498c25c5a85a507adc571d6"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/ExportView.svelte",
+        "sha256": "e2efb73d6b3d750eaddc80b0109d83acf0f60c032e3c21da001ff699a98be7a6"
+      },
+      {
+        "path": "packages/page/src/period-filter.ts",
+        "sha256": "a15566b374aae4e536a3a2d9504195b098e0beb2f9e70ddde9663b388465de42"
+      },
+      {
+        "path": "packages/page/src/filter.ts",
+        "sha256": "17c65cb492fed4194c71ac4525457348e584e3eec08cc81ccc59475f9d713d70"
+      },
+      {
+        "path": "packages/page/src/report-date-filters.ts",
+        "sha256": "8a0ab6d3a24b9b4d0bdb62abc5f35f4e07ff78745d5f8bca7ad8678548891ca5"
+      },
+      {
+        "path": "packages/data-execution/src/filter-values.ts",
+        "sha256": "ecfbc3a12feb6d209e546822b8b03ab34a8e6b4dbb46190094c9b6cdbea7bfff"
+      },
+      {
+        "path": "packages/engine/runtime/src/filter-state.ts",
+        "sha256": "9b49f47b6372d8d1f2b5c6c228396562c46e9ab1848d4a38db861b08c74073de"
+      },
+      {
+        "path": "packages/engine/runtime/src/orchestrator.ts",
+        "sha256": "bb5abb5dbb5217e65b456755455db9e0854ca13214da6cdb5224f319eef76998"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+        "sha256": "38ebb0d3eabc6a3dcb724bd2f81a4bdff8605534e285c800c598a5f8a38b9b59"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/report-date-edit.ts",
+        "sha256": "3ef444a43058f68955820689de026de2b085ebbb3015250ab8143abe8a5e71e4"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/Inspector.svelte",
+        "sha256": "26ac33f0320f287fa27ddb26c95a38a321964c1b71d529e752bb9e5e25b7810b"
+      }
+    ],
+    "final_whitespace_cleanup": {
+      "changes": "remove one trailing space and final blank line only",
+      "files": [
+        "apps/platform/src/lib/workbench/ReportDateProperties.svelte",
+        "packages/page/src/filter.ts"
+      ],
+      "from": "89e6335550c687787d39555282b4b2510bdc55b4ff70e240a61974c8769ce7ce"
+    },
+    "head": "ea6e453efa6bab0d580d31bd80baa2fcf979f01f"
+  },
+  "evidence_epoch": "period-review-4",
+  "quality_gate": {
+    "code_fingerprint": "dae79eb1c0a56a080fd0d6d4bd78b4cb35b636763a401195c4d6061fa515bdbe",
+    "commands": [
+      {
+        "command": "pnpm --filter @metriccanvas/engine check",
+        "exit_code": 0,
+        "failures": [],
+        "name": "engine-check"
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/embed exec playwright test tests/browser/period-filter.spec.ts",
+        "exit_code": 0,
+        "failures": [],
+        "name": "period-browser"
+      },
+      {
+        "command": "pnpm exec vitest run apps/playground/tests/page-id-neutrality.test.ts apps/platform/tests/workbench/report-date-edit.test.ts",
+        "exit_code": 0,
+        "failures": [],
+        "name": "page-neutrality"
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/ui exec playwright test --project=chrome",
+        "exit_code": 0,
+        "failures": [],
+        "name": "ui-browser-chrome"
+      }
+    ]
+  },
+  "runtime": {
+    "browsers": [
+      "Chrome (Playwright)",
+      "Codex IAB (CUA)"
+    ],
+    "environments": [
+      {
+        "api_mode": "synthetic DQE responses",
+        "driver": "repository Playwright",
+        "url": "http://127.0.0.1:4175/pages/dashboard-period-filter"
+      },
+      {
+        "api_mode": "local synthetic gateway",
+        "driver": "CUA",
+        "url": "http://127.0.0.1:5187/tests/browser/report-date-editor.html?dashboard"
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "artifacts": [
+        "docs/plan/dashboard-period-filter/ui/evidence/artifacts/formal-quarter.png"
+      ],
+      "capture_tool": "CUA",
+      "captured_dependency_hashes": {
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "f660e6ce191f038e28d6b4030b7055e03c49fd9cc498c25c5a85a507adc571d6",
+        "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte": "f141065b7701e6bd99efe94d4e5a9b3face940cc16c4b73c1c6f155b1cb7bd95",
+        "packages/ui/src/components/date-picker/DatePicker.svelte": "0f3e9406a2a6611713317ee2994e573c364d2c0cda5c2851885d686ba2e1eb81",
+        "packages/ui/src/components/date-picker/calendar.ts": "6a52032789ab8381af5c71407133701b89fc32b5e2e86b1f502bf0ae836d1fee"
+      },
+      "captured_runtime": {
+        "browsers": [
+          "Chrome (Playwright)",
+          "Codex IAB (CUA)"
+        ],
+        "environments": [
+          {
+            "api_mode": "synthetic DQE responses",
+            "driver": "repository Playwright",
+            "url": "http://127.0.0.1:4175/pages/dashboard-period-filter"
+          },
+          {
+            "api_mode": "local synthetic gateway",
+            "driver": "CUA",
+            "url": "http://127.0.0.1:5187/tests/browser/report-date-editor.html?dashboard"
+          }
+        ]
+      },
+      "depends_on": [
+        "packages/ui/src/components/date-picker/DatePicker.svelte",
+        "packages/ui/src/components/date-picker/calendar.ts",
+        "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte"
+      ],
+      "fixture": {
+        "mode": "quarter",
+        "source": "pages/dashboard-period-filter.json"
+      },
+      "id": "BE-1",
+      "observations": [
+        "运行时输入为 2026 年 Q4",
+        "浮层有 Q1、Q2、Q3、Q4；Q4 高亮"
+      ],
+      "page": "http://127.0.0.1:5187/tests/browser/report-date-editor.html?dashboard",
+      "recorded_at_code_fingerprint": "89e6335550c687787d39555282b4b2510bdc55b4ff70e240a61974c8769ce7ce",
+      "scenario_key": "3314f75cbfc4640c549a2703d889f8a1ee7b3399a514439a333ee4bd1c989d04",
+      "source": "period-final",
+      "steps": [
+        "Dashboard 属性面板加载 period-filter",
+        "初始模式选季、应用",
+        "打开运行时季度框"
+      ],
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/dashboard-period-filter/ui/evidence/artifacts/formal-last12.png"
+      ],
+      "capture_tool": "CUA",
+      "captured_dependency_hashes": {
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "f660e6ce191f038e28d6b4030b7055e03c49fd9cc498c25c5a85a507adc571d6",
+        "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte": "f141065b7701e6bd99efe94d4e5a9b3face940cc16c4b73c1c6f155b1cb7bd95",
+        "packages/ui/src/components/date-picker/DatePicker.svelte": "0f3e9406a2a6611713317ee2994e573c364d2c0cda5c2851885d686ba2e1eb81",
+        "packages/ui/src/components/date-picker/calendar.ts": "6a52032789ab8381af5c71407133701b89fc32b5e2e86b1f502bf0ae836d1fee"
+      },
+      "captured_runtime": {
+        "browsers": [
+          "Chrome (Playwright)",
+          "Codex IAB (CUA)"
+        ],
+        "environments": [
+          {
+            "api_mode": "synthetic DQE responses",
+            "driver": "repository Playwright",
+            "url": "http://127.0.0.1:4175/pages/dashboard-period-filter"
+          },
+          {
+            "api_mode": "local synthetic gateway",
+            "driver": "CUA",
+            "url": "http://127.0.0.1:5187/tests/browser/report-date-editor.html?dashboard"
+          }
+        ]
+      },
+      "depends_on": [
+        "packages/ui/src/components/date-picker/DatePicker.svelte",
+        "packages/ui/src/components/date-picker/calendar.ts",
+        "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte"
+      ],
+      "fixture": {
+        "mode": "last12",
+        "source": "pages/dashboard-period-filter.json"
+      },
+      "id": "BE-2",
+      "observations": [
+        "运行时范围为 25年10月~26年9月",
+        "原运行时 combo box、日历按钮移除"
+      ],
+      "page": "http://127.0.0.1:5187/tests/browser/report-date-editor.html?dashboard",
+      "recorded_at_code_fingerprint": "89e6335550c687787d39555282b4b2510bdc55b4ff70e240a61974c8769ce7ce",
+      "scenario_key": "19697394cf61fb29c0976403982b10c2db38cba63b3ed18ee68526c1ed1af530",
+      "source": "period-final",
+      "steps": [
+        "切换运行时近一年"
+      ],
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/dashboard-period-filter/ui/evidence/artifacts/period-filter-period-selec-09949-adonly-rolling-range-month--period-filter-rolling.png",
+        "docs/plan/dashboard-period-filter/ui/evidence/artifacts/period-filter-period-selec-e0b3f-eadonly-rolling-range-date--period-filter-rolling.png",
+        "docs/plan/dashboard-period-filter/ui/evidence/artifacts/period-filter-overflow-pan-37d6e-the-same-period-declaration-period-readonly-compact.png"
+      ],
+      "capture_tool": "repository Playwright",
+      "captured_dependency_hashes": {
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte": "f660e6ce191f038e28d6b4030b7055e03c49fd9cc498c25c5a85a507adc571d6",
+        "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte": "f141065b7701e6bd99efe94d4e5a9b3face940cc16c4b73c1c6f155b1cb7bd95",
+        "packages/ui/src/components/date-picker/DatePicker.svelte": "0f3e9406a2a6611713317ee2994e573c364d2c0cda5c2851885d686ba2e1eb81",
+        "packages/ui/src/components/date-picker/calendar.ts": "6a52032789ab8381af5c71407133701b89fc32b5e2e86b1f502bf0ae836d1fee"
+      },
+      "captured_runtime": {
+        "browsers": [
+          "Chrome (Playwright)",
+          "Codex IAB (CUA)"
+        ],
+        "environments": [
+          {
+            "api_mode": "synthetic DQE responses",
+            "driver": "repository Playwright",
+            "url": "http://127.0.0.1:4175/pages/dashboard-period-filter"
+          },
+          {
+            "api_mode": "local synthetic gateway",
+            "driver": "CUA",
+            "url": "http://127.0.0.1:5187/tests/browser/report-date-editor.html?dashboard"
+          }
+        ]
+      },
+      "depends_on": [
+        "packages/ui/src/components/date-picker/DatePicker.svelte",
+        "packages/ui/src/components/date-picker/calendar.ts",
+        "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte"
+      ],
+      "fixture": {
+        "mode": "browser-boundaries",
+        "source": "pages/dashboard-period-filter.json"
+      },
+      "id": "BE-3",
+      "observations": [
+        "3 tests passed",
+        "历史月返回为 2024-02",
+        "近一年截止为上月",
+        "未绑定查询请求仍为 1 次",
+        "document.scrollWidth <= innerWidth"
+      ],
+      "page": "/pages/dashboard-period-filter",
+      "recorded_at_code_fingerprint": "89e6335550c687787d39555282b4b2510bdc55b4ff70e240a61974c8769ce7ce",
+      "scenario_key": "c664b071db0b480f98e4314984054b8c77747b80ce777ad0ac140559cbe9a98b",
+      "source": "period-final",
+      "steps": [
+        "运行 period-filter.spec.ts 读取正式 pages 场景",
+        "date / month、URL quarter、跨月、更多、compact readonly、390px"
+      ],
+      "viewport": {
+        "height": 700,
+        "width": 390
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/dashboard-period-filter/ui/evidence/artifacts/formal-focus.png"
+      ],
+      "capture_tool": "CUA",
+      "captured_dependency_hashes": {
+        "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte": "f141065b7701e6bd99efe94d4e5a9b3face940cc16c4b73c1c6f155b1cb7bd95"
+      },
+      "captured_runtime": {
+        "browsers": [
+          "Chrome (Playwright)",
+          "Codex IAB (CUA)"
+        ],
+        "environments": [
+          {
+            "api_mode": "synthetic DQE responses",
+            "driver": "repository Playwright",
+            "url": "http://127.0.0.1:4175/pages/dashboard-period-filter"
+          },
+          {
+            "api_mode": "local synthetic gateway",
+            "driver": "CUA",
+            "url": "http://127.0.0.1:5187/tests/browser/report-date-editor.html?dashboard"
+          }
+        ]
+      },
+      "depends_on": [
+        "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte"
+      ],
+      "fixture": {
+        "file": "pages/dashboard-period-filter.json",
+        "gateway": "local synthetic rows"
+      },
+      "id": "BE-4",
+      "observations": [
+        {
+          "background": "rgb(255, 255, 255)",
+          "focusVisible": true,
+          "outline": "rgb(20, 118, 255) solid 2px",
+          "outlineOffset": "2px",
+          "text": "月"
+        }
+      ],
+      "page": "http://127.0.0.1:5187/tests/browser/report-date-editor.html?dashboard",
+      "recorded_at_code_fingerprint": "89e6335550c687787d39555282b4b2510bdc55b4ff70e240a61974c8769ce7ce",
+      "scenario_key": "6d4b9bc3a08368154282b861879ff07860ce6f7daad55c33bd916fbbe337cf04",
+      "source": "period-final",
+      "steps": [
+        "选择近一年",
+        "Shift+Tab 到月按钮",
+        "读取焦点元素计算样式"
+      ],
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    }
+  ],
+  "schema_version": 1,
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-UI-1",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-UI-2",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "2",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-UI-3",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "2",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      }
+    ],
+    "facts": {
+      "cross_page": false,
+      "frozen_r": false,
+      "frozen_r5": false,
+      "frozen_r6": false,
+      "has_f3": false,
+      "has_s3_claim": false,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "review-convention",
+        "review-quality"
+      ],
+      "phase": "initial",
+      "required_profiles": {
+        "AT-UI-1": "mock",
+        "AT-UI-2": "mock",
+        "AT-UI-3": "mock"
+      },
+      "review_roles": [
+        "review-convention",
+        "review-quality"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C2",
+        "C5"
+      ],
+      "review-layout": [
+        "L2",
+        "L5"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q5"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "risk_triggers": [
+      "async-state",
+      "new-pattern",
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "new-pattern",
+        "shared-boundary"
+      ],
+      "changed_files": 14,
+      "max_changed_files": 5,
+      "restore_tasks": [],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "async-state": [
+        "agent",
+        "plan"
+      ],
+      "new-pattern": [
+        "agent",
+        "plan"
+      ],
+      "shared-boundary": [
+        "diff"
+      ],
+      "visual": [
+        "diff"
+      ]
+    }
+  }
+}

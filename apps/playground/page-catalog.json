@@ -261,6 +261,42 @@
         "报告工具带",
         "本地合成数据"
       ]
+    },
+    {
+      "id": "dashboard-period-filter",
+      "group": "verification",
+      "summary": "年季月／近一年期间筛选、时间绑定与未绑定查询隔离（合成数据）。",
+      "tags": [
+        "期间筛选",
+        "Dashboard"
+      ]
+    },
+    {
+      "id": "dashboard-period-filter-month",
+      "group": "verification",
+      "summary": "年季月／近一年期间筛选、时间绑定与未绑定查询隔离（合成数据）。",
+      "tags": [
+        "期间筛选",
+        "Dashboard"
+      ]
+    },
+    {
+      "id": "dashboard-period-filter-more",
+      "group": "verification",
+      "summary": "期间筛选的更多筛选／紧凑只读场景（合成验收数据）。",
+      "tags": [
+        "期间筛选",
+        "Dashboard"
+      ]
+    },
+    {
+      "id": "dashboard-period-filter-readonly",
+      "group": "verification",
+      "summary": "期间筛选的更多筛选／紧凑只读场景（合成验收数据）。",
+      "tags": [
+        "期间筛选",
+        "Dashboard"
+      ]
     }
   ]
 }

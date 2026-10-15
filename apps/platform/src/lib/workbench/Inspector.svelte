@@ -60,6 +60,8 @@
     </p>
   </header>
 
+  {#if dateDraft?.pageDocument.layout==='dashboard' && onDateEdit}<div class="panel"><ReportDateProperties draft={dateDraft} locator={null} {busy} onEdit={onDateEdit}/></div>{/if}
+
   {#if !pageModel}
     <div class="panel">
       <p class="hint">页面文档就绪后,这里可以配置每个组件。</p>

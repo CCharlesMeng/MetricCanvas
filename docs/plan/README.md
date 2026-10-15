@@ -6,6 +6,7 @@
 
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
+| Dashboard 年季月与近一年筛选 | 本地实现及定向验收完成；真实接入未验证 | [验收记录](../evidence/dashboard-period-filter/result.md)；[实施规划](2026-10-15-dashboard-period-filter.md)：Schema 6.27、顶部 filter、模式恢复、创作和独立安装包；保留原查询聚合 |
 | 多查询表格分页和共享查询 | P0–P5 已实施，P6 缺真实 DQE/Relay 上下文 | [实施方案与状态](2026-10-14-multi-query-table.md)、[验收证据](../evidence/multi-query-table/result.md)；6.22 组合查询源、共享执行、视图所有权与校验分发闭合 |
 | 查询结果过滤与分页级联 | 本仓实现与本地验收完成，真实接入待验 | [实施计划](2026-10-14-query-result-page-input.md)：6.19 where、6.20查询窗口输入与任意列排序、共享执行/导出、配置说明及独立Skill；真实DS/DQE/Relay接入单独验收 |
 | 平台打包与源码调试 | 第一期独立调试包本地完成，第二期真正分块未实施 | [两期计划](2026-10-14-platform-microfrontend-build.md)、[打包与调试](../platform-build.md)、[本地验收](../evidence/platform-debug-build.md)：后续测量分块收益，再冻结工具链并实施 |

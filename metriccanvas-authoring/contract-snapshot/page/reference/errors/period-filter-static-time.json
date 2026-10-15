@@ -1,0 +1,29 @@
+{
+  "case": "period-filter-static-time",
+  "invariant": "period-filter",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "期间筛选不能另有固定时间来源",
+      "paths": [
+        "/dataSources/sales/source/query/filterBindings/period-filter"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "sales": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "period-filter": {
+                "target": "time"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/period-filter-static-time.json"
+}

@@ -1,3 +1,4 @@
+import { periodSelectionFromRange } from '@metriccanvas/page/internal';
 import { validateTimePointValue, matchesParamDeclaration, materializePageParams } from '@metriccanvas/page/internal';
 import type { PageParamValue } from '@metriccanvas/page/internal';
 type PageParamValues = ReadonlyMap<string, PageParamValue>;
@@ -23,7 +24,14 @@ export function seedPageParamFilters(page: import('@metriccanvas/page').Page, va
     if (declaration.type === 'dimension') {
       declaration.default = value === undefined ? [] : Array.isArray(value) ? [...value] : [String(value)];
     } else if (declaration.type === 'timeRange') {
-      if (value && typeof value === 'object' && !Array.isArray(value)) declaration.default = { from: value.start, to: value.end };
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        const range = {from:value.start,to:value.end};
+        if (declaration.display === 'period') {
+          const selection = periodSelectionFromRange(range,declaration.initialMode ?? 'month',declaration.precision === 'month' ? 'month' : 'date');
+          if (!selection) throw new Error(`筛选器 ${declaration.id}: 参数不是完整自然期间`);
+          declaration.default = selection;
+        } else declaration.default = range;
+      }
     } else if (declaration.type === 'timePoint') {
       // 单点 times 输入的两端相同，取哪一端都一样；缺值时不写初值＝不筛。
       const point = value as { start?: string } | undefined;

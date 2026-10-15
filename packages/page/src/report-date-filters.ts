@@ -1,3 +1,4 @@
+import { isPeriodSelection, resolvePeriodSelection } from './period-filter';
 import type { Page } from './page';
 import type { TypedError } from './errors';
 import { walkPageComponents } from './component-walk';
@@ -29,8 +30,19 @@ export function reportDateFilterErrors(page: Page): TypedError[] {
   });
   for (const [index, filter] of (page.filters ?? []).entries()) {
     if (filter.type !== 'timePoint' && filter.type !== 'timeRange') continue;
+    if (filter.type === 'timeRange') {
+      const path = `/filters/${index}`;
+      if (filter.display === 'period') {
+        if (page.layout !== 'dashboard') error(path, '期间筛选仅支持 Dashboard 顶部筛选');
+        if (filter.precision === 'datetime') error(path, '期间筛选不支持 datetime');
+        if (!filter.initialParam && !isPeriodSelection(filter.default)) error(`${path}/default`, '期间筛选需要期间默认选择或参数初值');
+        if (filter.initialParam && !filter.initialMode) error(`${path}/initialMode`, '参数初始化期间筛选必须显式声明模式');
+        if (filter.initialMode && !filter.initialParam) error(`${path}/initialMode`, 'initialMode 只用于参数初始化');
+        if (isPeriodSelection(filter.default)) { try { resolvePeriodSelection(filter.default,new Date(2026,0,1),filter.precision === 'month' ? 'month' : 'date'); } catch { error(`${path}/default`,'期间默认选择不合法'); } }
+      } else if (isPeriodSelection(filter.default) || filter.initialMode) error(path,'期间选择只能用于 display=period');
+    }
     if (filter.required && filter.default === undefined && !filter.initialParam) error(`/filters/${index}`, '必需日期筛选器需要 default 或 initialParam 初值');
-    if (filter.type === 'timeRange' && filter.precision === 'month' && filter.default !== undefined &&
+    if (filter.type === 'timeRange' && filter.display !== 'period' && filter.precision === 'month' && filter.default !== undefined &&
       (typeof filter.default === 'string' || !('from' in filter.default))) error(`/filters/${index}/default`, '月份范围使用显式 YYYY-MM 起止值');
   }
   for (const [id, source] of Object.entries(page.dataSources)) {
@@ -45,6 +57,10 @@ export function reportDateFilterErrors(page: Page): TypedError[] {
       const value = time && typeof time === 'object' && !Array.isArray(time) ? time.time : undefined;
       const config = value && typeof value === 'object' && !Array.isArray(value) ? value : undefined;
       const path = `/dataSources/${id}/source/query/filterBindings/${filterId}`;
+      if (declaration?.type === 'timeRange' && declaration.display === 'period') {
+        if (!config || config.period !== (declaration.precision === 'month' ? 'month' : 'day')) error(path,'期间筛选需要精度匹配的查询时间配置');
+        if (config && ('start' in config || 'end' in config || 'param' in config)) error(path,'期间筛选不能另有固定时间来源');
+      }
       if (binding.window && declaration?.type === 'timePoint') {
         if (!timeWindowCompatible(declaration.granularity, binding.window)) error(path, '时间窗口单位与筛选器精度不相容');
         if (!config || config.period !== (declaration.granularity === 'month' ? 'month' : 'day')) error(path, '时间窗口需要精度匹配的显式 filter.time.period');

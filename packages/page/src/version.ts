@@ -37,6 +37,7 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'period-filter': {minor:27,description:'Dashboard 年季月与近一年期间筛选',usedAt:document => filterPaths(document, filter => filter.type === 'timeRange' && (has(filter,'display') || has(filter,'initialMode') || !!(record(filter.default) && has(record(filter.default),'mode'))))},
   'report-header-pdf-export': {
     minor: 28, description: 'Report 页头内置 PDF 下载及可配置按钮文字和文件名',
     usedAt: document => componentPaths(document, component => component.type === 'reportHeader' && has(props(component), 'pdfExport'))

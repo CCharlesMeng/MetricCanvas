@@ -2,7 +2,7 @@
 
 <a id="页面参数维度与时间的现行方案"></a>
 
-本文是页面参数的使用专题，承接[页面元数据总规范](PAGE-METADATA.md)。当前作者协议为 **6.25**；版本与可读范围以总规范及生成契约为准。本文先说明当前分层参数、打开与保存、顶部时间筛选和共享窗口规则，再说明程序化提取，最后集中保留旧数组参数的兼容用法。字段表由Schema生成，见[参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
+本文是页面参数的使用专题，承接[页面元数据总规范](PAGE-METADATA.md)。当前作者协议为 **6.28**；版本与可读范围以总规范及生成契约为准。本文先说明当前分层参数、打开与保存、顶部时间筛选和共享窗口规则，再说明程序化提取，最后集中保留旧数组参数的兼容用法。字段表由Schema生成，见[参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
 
 ## 阅读入口
 
@@ -473,3 +473,7 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 ### Report 日期工具带与 PDF 下载
 
 6.28起，`reportHeader.props.pdfExport`与`filterIds`共用工具带。按钮文字`label`和文件名`filename`均遵循文本取值协议，可用`{parts:["经营报告-",{filter:"report-month",format:"period"}]}`引用当前已应用期间。导出点击时捕获期间、数据作用域与文件名，未提交草稿不参与；PDF不包含日期及下载控件。声明和默认行为见[报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628)，完整示例见[内置PDF下载页面](pages/report-pdf-export.json)。
+
+## Dashboard 期间筛选初始化
+
+6.27 的 `timeRange.display="period"` 可用 `initialParam` 读取时间参数，同时显式声明 `initialMode` 为 year、quarter 或 month；参数必须正好覆盖一个对应自然期间。它与期间 default 互斥，运行中选择只写筛选状态。近一年独立按当前月之前十二个完整月份计算，不由绝对参数初始化，也不自动提取成固定参数。完整声明与示例见[筛选模块](docs/page-metadata/filters.md#dashboard-期间选择627)。

@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "phase": "final",
+  "tier": {
+    "value": "standard",
+    "restore_tasks": [],
+    "blocking_triggers": [
+      "new-pattern",
+      "shared-boundary"
+    ],
+    "changed_files": 14,
+    "max_changed_files": 5
+  },
+  "risk_triggers": [
+    "async-state",
+    "new-pattern",
+    "shared-boundary",
+    "visual"
+  ],
+  "trigger_sources": {
+    "async-state": [
+      "agent",
+      "plan"
+    ],
+    "new-pattern": [
+      "agent",
+      "plan"
+    ],
+    "shared-boundary": [
+      "diff"
+    ],
+    "visual": [
+      "diff"
+    ]
+  },
+  "portfolio_narrowed": [],
+  "facts": {
+    "cross_page": false,
+    "shared_style": false,
+    "overflow_state": true,
+    "frozen_r": false,
+    "frozen_r5": false,
+    "frozen_r6": false,
+    "has_f3": false,
+    "has_s3_claim": false
+  },
+  "modules": [
+    "causal",
+    "targeted-quality",
+    "render",
+    "regression",
+    "review-layout",
+    "review-convention",
+    "review-quality"
+  ],
+  "review_roles": [
+    "review-layout",
+    "review-convention",
+    "review-quality"
+  ],
+  "review_dimensions": {
+    "review-layout": [
+      "L2",
+      "L5"
+    ],
+    "review-convention": [
+      "C1",
+      "C2",
+      "C5"
+    ],
+    "review-quality": [
+      "Q2",
+      "Q5"
+    ]
+  },
+  "claims": [
+    {
+      "id": "AT-UI-1",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "test_case",
+      "task": "1",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-UI-2",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "test_case",
+      "task": "2",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-UI-3",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "test_case",
+      "task": "2",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "previous": {
+    "phase": "initial",
+    "tier": "standard",
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "review-convention",
+      "review-quality"
+    ],
+    "review_roles": [
+      "review-convention",
+      "review-quality"
+    ],
+    "required_profiles": {
+      "AT-UI-1": "mock",
+      "AT-UI-2": "mock",
+      "AT-UI-3": "mock"
+    }
+  }
+}

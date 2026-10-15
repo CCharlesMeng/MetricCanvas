@@ -15,6 +15,7 @@
   const nested:NestedComponentRender={map:c=>exportComponentMap(state,c),data:c=>exportComponentData(state,c),snapshot:c=>exportComponentSnapshot(state,c),table,onchartclick:()=>undefined,onmetriclink:()=>undefined,metricHref:()=>()=>undefined};
 </script>
 <div class="export-view" data-export-view data-export-paper="A4" style:width={`${width}px`} style:padding={padding} style:gap={gap}>
+  {#each state.page.filters??[] as filter}{#if filter.type==='timeRange' && filter.display==='period'}{@const applied=state.filters.get(filter.id)}{#if applied?.type==='timeRange'}<p data-export-period>{filter.label??'统计期间'}：{applied.from} 至 {applied.to}</p>{/if}{/if}{/each}
   {#snippet componentContent(component:Component)}
     <div data-export-component={component.id}>
     <ComponentRenderer {component} data={exportComponentData(state,component)} snapshot={exportComponentSnapshot(state,component)}

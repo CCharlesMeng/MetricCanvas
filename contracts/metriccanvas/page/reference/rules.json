@@ -1,6 +1,28 @@
 {
   "invariants": [
     {
+      "id": "period-filter",
+      "description": "6.27 Dashboard 年季月与近一年期间筛选",
+      "valid": [
+        "dashboard-period-filter",
+        "dashboard-period-filter-month",
+        "dashboard-period-filter-more",
+        "dashboard-period-filter-readonly",
+        "period-filter-year-page",
+        "period-filter-quarter-page",
+        "period-filter-last12-months-page",
+        "period-filter-parameter-page"
+      ],
+      "invalid": [
+        "period-filter-before-6.27",
+        "period-filter-quarter-invalid",
+        "period-filter-report",
+        "period-filter-datetime",
+        "period-filter-no-default",
+        "period-filter-static-time"
+      ]
+    },
+    {
       "id": "report-header-pdf-export",
       "description": "Report PDF下载由6.28引入，仅允许Report顶层页头，按钮文字和文件名为非空文本取值",
       "valid": [

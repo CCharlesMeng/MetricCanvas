@@ -54,6 +54,14 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'period-filter',description:'6.27 Dashboard 年季月与近一年期间筛选',valid:['dashboard-period-filter','dashboard-period-filter-month','dashboard-period-filter-more','dashboard-period-filter-readonly','period-filter-year-page','period-filter-quarter-page','period-filter-last12-months-page','period-filter-parameter-page'],cases:[
+    {case:'period-filter-before-6.27',base:'dashboard-period-filter',expect:/由 6.27 引入/,mutate:d=>{d.schemaVersion='6.26';}},
+    {case:'period-filter-quarter-invalid',base:'dashboard-period-filter',expect:/期间默认选择不合法/,mutate:d=>{d.filters[0].default={mode:'quarter',value:'2026-Q5'};}},
+    {case:'period-filter-report',base:'dashboard-period-filter',expect:/Dashboard/,mutate:d=>{d.layout='report';}},
+    {case:'period-filter-datetime',base:'dashboard-period-filter',expect:/datetime/,mutate:d=>{d.filters[0].precision='datetime';}},
+    {case:'period-filter-no-default',base:'dashboard-period-filter',expect:/期间默认选择/,mutate:d=>{delete d.filters[0].default;}},
+    {case:'period-filter-static-time',base:'dashboard-period-filter',expect:/固定时间来源/,mutate:d=>{d.dataSources.sales.source.query.body.dsl_list[0].filter.time.start='2026-01-01';}}
+  ]},
   {
     id: 'report-header-pdf-export', description: 'Report PDF下载由6.28引入，仅允许Report顶层页头，按钮文字和文件名为非空文本取值',
     valid: ['report-pdf-export'], cases: [
