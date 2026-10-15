@@ -1,0 +1,174 @@
+[
+  {
+    "output_dims": [
+      "chart_demo_category"
+    ],
+    "output_metrics": [
+      "chart_demo_orders"
+    ],
+    "filterableDims": [
+      "chart_demo_region"
+    ],
+    "rows": [
+      {
+        "chart_demo_region": "CN",
+        "chart_demo_category": "国内一组",
+        "chart_demo_orders": 10
+      },
+      {
+        "chart_demo_region": "CN",
+        "chart_demo_category": "国内二组",
+        "chart_demo_orders": 20
+      },
+      {
+        "chart_demo_region": "OVERSEAS",
+        "chart_demo_category": "海外一组",
+        "chart_demo_orders": 20
+      },
+      {
+        "chart_demo_region": "OVERSEAS",
+        "chart_demo_category": "海外二组",
+        "chart_demo_orders": 40
+      },
+      {
+        "chart_demo_region": "APAC",
+        "chart_demo_category": "亚太一组",
+        "chart_demo_orders": 30
+      },
+      {
+        "chart_demo_region": "APAC",
+        "chart_demo_category": "亚太二组",
+        "chart_demo_orders": 60
+      }
+    ]
+  },
+  {
+    "output_dims": [
+      "chart_demo_category"
+    ],
+    "output_metrics": [
+      "chart_demo_revenue"
+    ],
+    "filterableDims": [
+      "chart_demo_region"
+    ],
+    "rows": [
+      {
+        "chart_demo_region": "CN",
+        "chart_demo_category": "国内一组",
+        "chart_demo_revenue": 10
+      },
+      {
+        "chart_demo_region": "CN",
+        "chart_demo_category": "国内二组",
+        "chart_demo_revenue": 20
+      },
+      {
+        "chart_demo_region": "OVERSEAS",
+        "chart_demo_category": "海外一组",
+        "chart_demo_revenue": 20
+      },
+      {
+        "chart_demo_region": "OVERSEAS",
+        "chart_demo_category": "海外二组",
+        "chart_demo_revenue": 40
+      },
+      {
+        "chart_demo_region": "APAC",
+        "chart_demo_category": "亚太一组",
+        "chart_demo_revenue": 30
+      },
+      {
+        "chart_demo_region": "APAC",
+        "chart_demo_category": "亚太二组",
+        "chart_demo_revenue": 60
+      }
+    ]
+  },
+  {
+    "output_dims": [
+      "chart_demo_category"
+    ],
+    "output_metrics": [
+      "chart_demo_share"
+    ],
+    "filterableDims": [
+      "chart_demo_region"
+    ],
+    "rows": [
+      {
+        "chart_demo_region": "CN",
+        "chart_demo_category": "国内一组",
+        "chart_demo_share": 10
+      },
+      {
+        "chart_demo_region": "CN",
+        "chart_demo_category": "国内二组",
+        "chart_demo_share": 20
+      },
+      {
+        "chart_demo_region": "OVERSEAS",
+        "chart_demo_category": "海外一组",
+        "chart_demo_share": 20
+      },
+      {
+        "chart_demo_region": "OVERSEAS",
+        "chart_demo_category": "海外二组",
+        "chart_demo_share": 40
+      },
+      {
+        "chart_demo_region": "APAC",
+        "chart_demo_category": "亚太一组",
+        "chart_demo_share": 30
+      },
+      {
+        "chart_demo_region": "APAC",
+        "chart_demo_category": "亚太二组",
+        "chart_demo_share": 60
+      }
+    ]
+  },
+  {
+    "output_dims": [
+      "chart_demo_country"
+    ],
+    "output_metrics": [
+      "chart_demo_map"
+    ],
+    "filterableDims": [
+      "chart_demo_region"
+    ],
+    "rows": [
+      {
+        "chart_demo_region": "CN",
+        "chart_demo_country": "中国",
+        "chart_demo_map": 10
+      },
+      {
+        "chart_demo_region": "CN",
+        "chart_demo_country": "日本",
+        "chart_demo_map": 20
+      },
+      {
+        "chart_demo_region": "OVERSEAS",
+        "chart_demo_country": "美国",
+        "chart_demo_map": 20
+      },
+      {
+        "chart_demo_region": "OVERSEAS",
+        "chart_demo_country": "德国",
+        "chart_demo_map": 40
+      },
+      {
+        "chart_demo_region": "APAC",
+        "chart_demo_country": "日本",
+        "chart_demo_map": 30
+      },
+      {
+        "chart_demo_region": "APAC",
+        "chart_demo_country": "澳大利亚",
+        "chart_demo_map": 60
+      }
+    ]
+  }
+]

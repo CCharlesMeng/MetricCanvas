@@ -1,3 +1,4 @@
+import { executeChartLocalFilter } from './chart-local-filter';
 import { executeMultiQueryTable } from './multi-query-table';
 import { executeNumericTolerance } from './numeric-tolerance';
 import { executeQueryResultWhere } from './query-result-where';
@@ -146,6 +147,7 @@ const customerActivityDetailDimensions = [
 ];
 
 export function executeDqeItem(item: unknown): DqeSimItemResult {
+  const chartFilter = executeChartLocalFilter(item); if (chartFilter) return chartFilter;
   const numericTolerance = executeNumericTolerance(item); if (numericTolerance) return numericTolerance;
   const multiQueryTable=executeMultiQueryTable(item);if(multiQueryTable)return multiQueryTable;
   const filteredInputDemo = executeQueryResultWhere(item);

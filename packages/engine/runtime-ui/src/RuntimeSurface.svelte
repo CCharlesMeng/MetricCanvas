@@ -15,6 +15,7 @@
     type TypedError
   } from '@metriccanvas/page';
   import {
+    chartFilterOptions,
     dataSourceMode,
     derivePageCapabilities,
     fieldName,
@@ -338,12 +339,23 @@
     const textBindings = collectFilterTextValueReferences(resolveParamTextValues(raw, { values: params.values }));
     declarations = loaded.filters ?? [];
 
-    const fromDeclarations = initialFilterValues(declarations);
+    const fromDeclarations = initialFilterValues(loaded.filters ?? []);
     // 旧数组参数的显式 value 固定本次输入；分组参数仍允许 URL 参数与独立筛选初始化。
-    const fromURL: FilterValues = capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined)
+    const fromURL = new Map(capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined)
       ? parseFilterURL(search, declarations)
-      : new Map();
-    const state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations);
+      : new Map());
+    const localOptions = chartFilterOptions(loaded);
+    for (const [id, options] of localOptions) {
+      const value = fromURL.get(id);
+      if (value && (value.type !== 'dimension' || value.values.length !== 1 || !options.includes(value.values[0]!))) fromURL.delete(id);
+      const supplied = bootstrap?.filters.get(id);
+      if (bootstrap && (!supplied || supplied.type !== 'dimension' || supplied.values.length !== 1 || !options.includes(supplied.values[0]!))) {
+        pageState = { phase: 'invalid', errors: [{type:'SCHEMA_ERROR',path:'/filters',message:'执行快照中的图表筛选值不在候选项中'}] };
+        emit?.({type:'invalid',errors:pageState.errors});
+        return;
+      }
+    }
+    const state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions);
     filterState = state;
 
     let primed = false;
@@ -409,7 +421,7 @@
     );
 
     for (const declaration of declarations) {
-      if (declaration.type !== 'dimension') continue;
+      if (declaration.type !== 'dimension' || localOptions.has(declaration.id)) continue;
       loadDimensionCandidates(loader, declaration, filterValues);
     }
 
@@ -1087,7 +1099,7 @@
     {@const dashboardToolbarConfig =
       typeof dashboardToolbar === 'object' ? dashboardToolbar : undefined}
     {@const groupedDashboardFilters = dashboardFilterGroups(
-      declarations,
+      contentFilters,
       dashboardToolbarConfig?.variant
     )}
     <div
@@ -1105,7 +1117,7 @@
     {#if layoutForm === 'dashboard' && dashboardToolbar !== 'hidden'}
       <DashboardToolbar
         title={pageListEntry(readyPage).title}
-        {declarations}
+        declarations={contentFilters}
         values={filterValues}
         candidates={dimensionCandidates}
         ondimension={writeDimension}
@@ -1175,6 +1187,16 @@
         <ComponentRenderer
           {component}
           {headerControls}
+          chartFilterValue={component => {
+            if (!isChartComponent(component) || !component.props.filter) return undefined;
+            const value = filterValues.get(component.props.filter.filterId);
+            return value?.type === 'dimension' ? value.values[0] : undefined;
+          }}
+          onchartfilter={(component, value) => {
+            if (!isChartComponent(component) || !component.props.filter) return;
+            const declaration = declarations.find(item => item.id === component.props.filter!.filterId);
+            if (declaration?.type === 'dimension') writeDimension(declaration, [value]);
+          }}
           headerPeriod={(header)=>headerPeriod(header.props,declarations,filterValues,readyPage.schemaVersion)}
           data={componentData(readyPage, component, slots)}
           snapshot={hostRenderSnapshot(component, slots)}

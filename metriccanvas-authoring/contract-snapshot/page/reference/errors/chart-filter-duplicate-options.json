@@ -1,0 +1,38 @@
+{
+  "case": "chart-filter-duplicate-options",
+  "invariant": "chart-local-filter",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "图表筛选选项的 value 不得重复",
+      "paths": [
+        "/sections/0/components/0/props/filter/options"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "filter": {
+                "options": [
+                  {
+                    "label": "中国区",
+                    "value": "CN"
+                  },
+                  {
+                    "label": "海外",
+                    "value": "CN"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/chart-filter-duplicate-options.json"
+}

@@ -15,7 +15,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 28;
+const CURRENT_MINOR = 29;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -38,6 +38,10 @@ export interface PageCapabilityDefinition {
 
 export const pageCapabilities = {
   'period-filter': {minor:27,description:'Dashboard 年季月与近一年期间筛选',usedAt:document => filterPaths(document, filter => filter.type === 'timeRange' && (has(filter,'display') || has(filter,'initialMode') || !!(record(filter.default) && has(record(filter.default),'mode'))))},
+  'chart-local-filter': {
+    minor: 29, description: 'Dashboard 图表左上角独立筛选与自定义选项',
+    usedAt: document => componentPaths(document, component => ['barChart', 'lineChart', 'pieChart', 'mapChart'].includes(String(component.type)) && has(props(component), 'filter'))
+  },
   'report-header-pdf-export': {
     minor: 28, description: 'Report 页头内置 PDF 下载及可配置按钮文字和文件名',
     usedAt: document => componentPaths(document, component => component.type === 'reportHeader' && has(props(component), 'pdfExport'))

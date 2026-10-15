@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "phase": "final",
+  "tier": {
+    "value": "standard",
+    "restore_tasks": [
+      "T1"
+    ],
+    "blocking_triggers": [],
+    "changed_files": 2,
+    "max_changed_files": 5
+  },
+  "risk_triggers": [
+    "interaction",
+    "visual"
+  ],
+  "trigger_sources": {
+    "visual": [
+      "diff",
+      "plan"
+    ],
+    "interaction": [
+      "plan"
+    ]
+  },
+  "portfolio_narrowed": [],
+  "facts": {
+    "cross_page": false,
+    "shared_style": false,
+    "overflow_state": true,
+    "frozen_r": true,
+    "frozen_r5": false,
+    "frozen_r6": true,
+    "has_f3": false,
+    "has_s3_claim": false
+  },
+  "modules": [
+    "causal",
+    "targeted-quality",
+    "render",
+    "restore-final",
+    "review-layout"
+  ],
+  "review_roles": [
+    "review-layout"
+  ],
+  "review_dimensions": {
+    "review-layout": [
+      "L2",
+      "L3",
+      "L5"
+    ]
+  },
+  "claims": [
+    {
+      "id": "AT-BG-1",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "restore_contract",
+      "task": "T1",
+      "modules": [
+        "causal",
+        "render"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-BG-2",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "test_case",
+      "task": "T2",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-BG-3",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "test_case",
+      "task": "T2",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "previous": {
+    "phase": "initial",
+    "tier": "standard",
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "review-layout"
+    ],
+    "review_roles": [
+      "review-layout"
+    ],
+    "required_profiles": {
+      "AT-BG-1": "mock",
+      "AT-BG-2": "mock",
+      "AT-BG-3": "mock"
+    }
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "groups": [
+    {
+      "id": "orders-region",
+      "inside": true,
+      "buttons": [
+        {
+          "label": "中国区",
+          "pressed": "true",
+          "x": 51,
+          "y": 120,
+          "width": 92,
+          "height": 28,
+          "fontSize": "14px",
+          "paddingLeft": "24px",
+          "paddingRight": "24px",
+          "radius": "6px",
+          "background": "rgb(25, 25, 25)",
+          "color": "rgb(255, 255, 255)",
+          "overflow": false
+        },
+        {
+          "label": "海外",
+          "pressed": "false",
+          "x": 147,
+          "y": 120,
+          "width": 78,
+          "height": 28,
+          "fontSize": "14px",
+          "paddingLeft": "24px",
+          "paddingRight": "24px",
+          "radius": "6px",
+          "background": "rgb(245, 245, 245)",
+          "color": "rgb(89, 89, 89)",
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "id": "revenue-region",
+      "inside": true,
+      "buttons": [
+        {
+          "label": "中国区",
+          "pressed": "false",
+          "x": 747.5,
+          "y": 120,
+          "width": 92,
+          "height": 28,
+          "fontSize": "14px",
+          "paddingLeft": "24px",
+          "paddingRight": "24px",
+          "radius": "6px",
+          "background": "rgb(245, 245, 245)",
+          "color": "rgb(89, 89, 89)",
+          "overflow": false
+        },
+        {
+          "label": "海外",
+          "pressed": "true",
+          "x": 843.5,
+          "y": 120,
+          "width": 78,
+          "height": 28,
+          "fontSize": "14px",
+          "paddingLeft": "24px",
+          "paddingRight": "24px",
+          "radius": "6px",
+          "background": "rgb(25, 25, 25)",
+          "color": "rgb(255, 255, 255)",
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "id": "share-region",
+      "inside": true,
+      "buttons": [
+        {
+          "label": "国内",
+          "pressed": "false",
+          "x": 51,
+          "y": 456,
+          "width": 78,
+          "height": 28,
+          "fontSize": "14px",
+          "paddingLeft": "24px",
+          "paddingRight": "24px",
+          "radius": "6px",
+          "background": "rgb(245, 245, 245)",
+          "color": "rgb(89, 89, 89)",
+          "overflow": false
+        },
+        {
+          "label": "亚太",
+          "pressed": "true",
+          "x": 133,
+          "y": 456,
+          "width": 78,
+          "height": 28,
+          "fontSize": "14px",
+          "paddingLeft": "24px",
+          "paddingRight": "24px",
+          "radius": "6px",
+          "background": "rgb(25, 25, 25)",
+          "color": "rgb(255, 255, 255)",
+          "overflow": false
+        },
+        {
+          "label": "欧洲（空结果）",
+          "pressed": "false",
+          "x": 215,
+          "y": 456,
+          "width": 148,
+          "height": 28,
+          "fontSize": "14px",
+          "paddingLeft": "24px",
+          "paddingRight": "24px",
+          "radius": "6px",
+          "background": "rgb(245, 245, 245)",
+          "color": "rgb(89, 89, 89)",
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "id": "map-region",
+      "inside": true,
+      "buttons": [
+        {
+          "label": "中国区",
+          "pressed": "true",
+          "x": 747.5,
+          "y": 456,
+          "width": 92,
+          "height": 28,
+          "fontSize": "14px",
+          "paddingLeft": "24px",
+          "paddingRight": "24px",
+          "radius": "6px",
+          "background": "rgb(25, 25, 25)",
+          "color": "rgb(255, 255, 255)",
+          "overflow": false
+        },
+        {
+          "label": "海外",
+          "pressed": "false",
+          "x": 843.5,
+          "y": 456,
+          "width": 78,
+          "height": 28,
+          "fontSize": "14px",
+          "paddingLeft": "24px",
+          "paddingRight": "24px",
+          "radius": "6px",
+          "background": "rgb(245, 245, 245)",
+          "color": "rgb(89, 89, 89)",
+          "overflow": false
+        }
+      ]
+    }
+  ]
+}

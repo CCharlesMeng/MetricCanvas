@@ -17,7 +17,7 @@
 `t11-evidence.md`记录两形态真实Chrome→createDqeGateway→本地HTTP，选择/清空raw_region、未绑定表格保留，以及真实anchor跳转携row/param/filter/fixed/hash。实际外部DQE、权限及目标业务页仍待独立联调。源码定位：`metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/interaction_editing.py`、`page_editing.py`，公开回归`test_content_interactions.py`。
 
 
-页面协议 6.28。结构真源为本册[schema.json](schema.json)，SHA256 `e4ef9aa696ed7bd39653228254b69104052b30215c458fffd42d6b987af71fc0`。字段表自动生成；可选不等于有默认值。
+页面协议 6.29。结构真源为本册[schema.json](schema.json)，SHA256 `41d3a5e3f31d39f0eef81f4555d3a04c1fbd485bf8dd1bb9c745eb39e9c772d1`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -630,10 +630,10 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 ## 联合分支见证（生成）
 
 - `#/definitions/componentAction/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/1/props/actions/0`。
-- `#/definitions/componentAction/anyOf/1`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/0/props/actions/0`。
+- `#/definitions/componentAction/anyOf/1`：[合法完整页面](examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/0/props/actions/0`。
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/0`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/1/navigate/query/city`。
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/1`：[合法完整页面](examples/url-navigation-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/0/navigate/query/project`。
-- `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/0/props/actions/0/navigate/query/area`。
+- `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/1/navigate/query/region`。
 - `#/definitions/componentAction/anyOf/2`：[合法完整页面](examples/detail-views.json)，JSON Pointer `#/sections/1/components/0/props/actions/0`。
 - `#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0`：[合法完整页面](examples/url-navigation-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/1/openDetail`。
 - `#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1`：[合法完整页面](examples/detail-views.json)，JSON Pointer `#/sections/1/components/0/props/actions/0/openDetail`。

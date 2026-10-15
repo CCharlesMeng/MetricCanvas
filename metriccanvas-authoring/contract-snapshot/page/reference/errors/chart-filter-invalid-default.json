@@ -1,0 +1,29 @@
+{
+  "case": "chart-filter-invalid-default",
+  "invariant": "chart-local-filter",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "图表筛选 default 必须是候选项中的一个值",
+      "paths": [
+        "/sections/0/components/0/props/filter/filterId"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "filter": {
+                "filterId": "orders-region"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/chart-filter-invalid-default.json"
+}

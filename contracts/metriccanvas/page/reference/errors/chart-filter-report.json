@@ -1,0 +1,85 @@
+{
+  "case": "chart-filter-report",
+  "invariant": "chart-local-filter",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "图表筛选只用于 Dashboard 正文图表",
+      "paths": [
+        "/sections/0/components/0/props/filter",
+        "/sections/0/components/1/props/filter",
+        "/sections/0/components/2/props/filter",
+        "/sections/0/components/3/props/filter"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "filter": {
+                "filterId": "orders-region",
+                "options": [
+                  {
+                    "…": "共2个键"
+                  },
+                  {
+                    "…": "共2个键"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "props": {
+              "filter": {
+                "filterId": "revenue-region",
+                "options": [
+                  {
+                    "…": "共2个键"
+                  },
+                  {
+                    "…": "共2个键"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "props": {
+              "filter": {
+                "filterId": "share-region",
+                "options": [
+                  {
+                    "…": "共2个键"
+                  },
+                  {
+                    "…": "共2个键"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "props": {
+              "filter": {
+                "filterId": "map-region",
+                "options": [
+                  {
+                    "…": "共2个键"
+                  },
+                  {
+                    "…": "共2个键"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/chart-filter-report.json"
+}

@@ -1,0 +1,37 @@
+{
+  "case": "chart-filter-no-binding",
+  "invariant": "chart-local-filter",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "图表筛选需要绑定本图普通查询数据源的 filterBindings",
+      "paths": [
+        "/sections/0/components/0/props/filter"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "filter": {
+                "filterId": "orders-region",
+                "options": [
+                  {
+                    "…": "共2个键"
+                  },
+                  {
+                    "…": "共2个键"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,3 +1,4 @@
+import { chartFilterErrors } from './chart-filter';
 import { pagedJoinErrors } from './validate-paged-join';
 import { queryResultBindingErrors } from './validate-query-results';
 import { reportDateFilterErrors } from './report-date-filters';
@@ -132,7 +133,7 @@ export function parsePage(
 
   const page = canonicalLayoutDocument(materialized.document as Page);
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
-  const errors = [...invariantErrors(page), ...navigationErrors(page), ...urlInputErrors(page)];
+  const errors = [...invariantErrors(page), ...chartFilterErrors(page, compatibleDocument), ...navigationErrors(page), ...urlInputErrors(page)];
   return errors.length === 0
     ? { ok: true, page, errors: [] }
     : { ok: false, errors };

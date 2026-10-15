@@ -1,6 +1,6 @@
 <script lang="ts">
   import { setContext } from 'svelte';
-  import type { Component } from '@metriccanvas/page/internal';
+  import { isChartComponent, type Component } from '@metriccanvas/page/internal';
   import { STATIC_EXPORT_CONTEXT } from '../../widgets/src/shared/export-context';
   import { headerPeriod } from './report-date-header';
   import { exportComponentData,exportComponentSnapshot,exportComponentMap,type ExportRenderState } from './export-render-state';
@@ -19,6 +19,11 @@
   {#snippet componentContent(component:Component)}
     <div data-export-component={component.id}>
     <ComponentRenderer {component} data={exportComponentData(state,component)} snapshot={exportComponentSnapshot(state,component)}
+      chartFilterValue={component => {
+        if (!isChartComponent(component) || !component.props.filter) return undefined;
+        const value = state.filters.get(component.props.filter.filterId);
+        return value?.type === 'dimension' ? value.values[0] : undefined;
+      }}
       pageSnapshots={state.snapshots} map={exportComponentMap(state,component)} exportMode={true} {nested} table={table(component)}
       summarySnapshot={component.type==='aiSummary'?state.summaries[component.id]:undefined}
       headerPeriod={header=>headerPeriod(header.props,state.page.filters??[],state.filters,state.page.schemaVersion)}/>

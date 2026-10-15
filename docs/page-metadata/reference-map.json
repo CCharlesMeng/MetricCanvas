@@ -230,7 +230,8 @@
         "booleanFilter",
         "numberRangeFilter",
         "searchFilter",
-        "periodSelection"
+        "periodSelection",
+        "chartFilter"
       ],
       "keywords": [
         "filters",
@@ -248,14 +249,17 @@
         "period-filter-last12-months-page",
         "period-filter-parameter-page",
         "dashboard-period-filter-more",
-        "dashboard-period-filter-readonly"
+        "dashboard-period-filter-readonly",
+        "chart-local-filter-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/filter.ts",
         "tools/scripts/page-conformance-vectors.ts",
         "packages/page/src/period-filter.ts",
-        "packages/page/src/report-date-filters.ts"
+        "packages/page/src/report-date-filters.ts",
+        "packages/page/src/chart-filter.ts",
+        "packages/page/src/schema/chart-filter.ts"
       ],
       "rules": [
         "filter-id-unique",
@@ -270,7 +274,8 @@
         "hidden-hierarchy-picker-needs-map",
         "time-point-min",
         "time-point-disable-future",
-        "period-filter"
+        "period-filter",
+        "chart-local-filter"
       ]
     },
     "sections-and-layout.md": {
@@ -1208,7 +1213,13 @@
     "#/definitions/reportHeaderComponent/properties/props/properties/pdfExport": "6.28：对象存在即启用引擎内置PDF下载；仅用于Report顶层页头，与日期控件共用工具带。",
     "#/definitions/reportHeaderComponent/properties/props/properties/pdfExport/properties/label": "下载按钮名称；默认“下载 PDF”，支持参数、已应用筛选引用与文本片段组合。",
     "#/definitions/reportHeaderComponent/properties/props/properties/pdfExport/properties/filename": "下载文件名；默认触发页头标题，自动清理文件名并补.pdf；点击时捕获文本值。",
-    "initialMode": "参数初始化期间筛选时显式选择自然年、自然季度或自然月；参数区间必须恰好覆盖该完整期间。"
+    "initialMode": "参数初始化期间筛选时显式选择自然年、自然季度或自然月；参数区间必须恰好覆盖该完整期间。",
+    "#/definitions/barChartComponent/properties/props/properties/filter": "图表左上角的独立筛选配置，显式引用页面维度筛选器及固定选项。",
+    "#/definitions/lineChartComponent/properties/props/properties/filter": "图表左上角的独立筛选配置，显式引用页面维度筛选器及固定选项。",
+    "#/definitions/pieChartComponent/properties/props/properties/filter": "图表左上角的独立筛选配置，显式引用页面维度筛选器及固定选项。",
+    "#/definitions/mapChartComponent/properties/props/properties/filter": "图表左上角的独立筛选配置，显式引用页面维度筛选器及固定选项。",
+    "#/definitions/chartFilter/properties/filterId": "引用本页独立的维度筛选器id，由该筛选器声明初值和查询绑定。",
+    "#/definitions/chartFilter/properties/options": "选择器固定候选项；每项显式声明展示标签和实际维度值。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1398,7 +1409,8 @@
     "6.25": "时间点禁止未来月份／日期引入版本。",
     "6.26": "兼容读取版本；本次分发未引入该版本专属能力，具体能力以能力表为准。",
     "6.27": "Dashboard 年季月与近一年期间筛选引入版本。",
-    "6.28": "当前写出版本；引入Report页头内置PDF下载及可配置按钮文字、文件名。"
+    "6.28": "Report页头内置PDF下载及可配置按钮文字、文件名的兼容读取版本。",
+    "6.29": "Dashboard图表独立筛选：黑色圆角单选按钮组及自定义候选项。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

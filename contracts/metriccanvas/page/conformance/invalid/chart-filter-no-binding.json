@@ -1,0 +1,423 @@
+{
+  "case": "chart-filter-no-binding",
+  "invariant": "chart-local-filter",
+  "input": {
+    "schemaVersion": "6.29",
+    "id": "chart-local-filter-page",
+    "meta": {
+      "title": "图表独立筛选（合成演示）"
+    },
+    "layout": "dashboard",
+    "filters": [
+      {
+        "id": "orders-region",
+        "type": "dimension",
+        "dimension": "chart_demo_region",
+        "label": "订单对比区域",
+        "default": [
+          "CN"
+        ]
+      },
+      {
+        "id": "revenue-region",
+        "type": "dimension",
+        "dimension": "chart_demo_region",
+        "label": "收入趋势区域",
+        "default": [
+          "OVERSEAS"
+        ]
+      },
+      {
+        "id": "share-region",
+        "type": "dimension",
+        "dimension": "chart_demo_region",
+        "label": "渠道占比区域",
+        "default": [
+          "APAC"
+        ]
+      },
+      {
+        "id": "map-region",
+        "type": "dimension",
+        "dimension": "chart_demo_region",
+        "label": "区域分布区域",
+        "default": [
+          "CN"
+        ]
+      }
+    ],
+    "dataSources": {
+      "orders-data": {
+        "fields": {
+          "category": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "chart_demo_category"
+          },
+          "value": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "chart_demo_orders"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "chart_demo_category"
+                  ],
+                  "output_metrics": [
+                    "chart_demo_orders"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "revenue-data": {
+        "fields": {
+          "category": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "chart_demo_category"
+          },
+          "value": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "chart_demo_revenue"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "filterBindings": {
+              "revenue-region": {
+                "target": "dimension",
+                "queryField": "chart_demo_region"
+              }
+            },
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "chart_demo_category"
+                  ],
+                  "output_metrics": [
+                    "chart_demo_revenue"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "share-data": {
+        "fields": {
+          "category": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "chart_demo_category"
+          },
+          "value": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "chart_demo_share"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "filterBindings": {
+              "share-region": {
+                "target": "dimension",
+                "queryField": "chart_demo_region"
+              }
+            },
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "chart_demo_category"
+                  ],
+                  "output_metrics": [
+                    "chart_demo_share"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "map-data": {
+        "fields": {
+          "category": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "chart_demo_country"
+          },
+          "value": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "chart_demo_map"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "filterBindings": {
+              "map-region": {
+                "target": "dimension",
+                "queryField": "chart_demo_region"
+              }
+            },
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "chart_demo_country"
+                  ],
+                  "output_metrics": [
+                    "chart_demo_map"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "control-data": {
+        "fields": {
+          "category": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "chart_demo_category"
+          },
+          "value": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "chart_demo_orders"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "chart_demo_category"
+                  ],
+                  "output_metrics": [
+                    "chart_demo_orders"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "charts",
+        "components": [
+          {
+            "id": "orders",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "orders-data"
+            },
+            "props": {
+              "title": "订单对比",
+              "filter": {
+                "filterId": "orders-region",
+                "options": [
+                  {
+                    "label": "中国区",
+                    "value": "CN"
+                  },
+                  {
+                    "label": "海外",
+                    "value": "OVERSEAS"
+                  }
+                ]
+              },
+              "categoryField": "category",
+              "series": [
+                {
+                  "field": "value",
+                  "label": "订单对比"
+                }
+              ]
+            }
+          },
+          {
+            "id": "revenue",
+            "type": "lineChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "revenue-data"
+            },
+            "props": {
+              "title": "收入趋势",
+              "filter": {
+                "filterId": "revenue-region",
+                "options": [
+                  {
+                    "label": "中国区",
+                    "value": "CN"
+                  },
+                  {
+                    "label": "海外",
+                    "value": "OVERSEAS"
+                  }
+                ]
+              },
+              "xField": "category",
+              "series": [
+                {
+                  "field": "value",
+                  "label": "收入趋势"
+                }
+              ]
+            }
+          },
+          {
+            "id": "share",
+            "type": "pieChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "share-data"
+            },
+            "props": {
+              "title": "渠道占比",
+              "filter": {
+                "filterId": "share-region",
+                "options": [
+                  {
+                    "label": "国内",
+                    "value": "CN"
+                  },
+                  {
+                    "label": "亚太",
+                    "value": "APAC"
+                  },
+                  {
+                    "label": "欧洲（空结果）",
+                    "value": "EU"
+                  }
+                ]
+              },
+              "categoryField": "category",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "map",
+            "type": "mapChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "map-data"
+            },
+            "props": {
+              "title": "区域分布",
+              "filter": {
+                "filterId": "map-region",
+                "options": [
+                  {
+                    "label": "中国区",
+                    "value": "CN"
+                  },
+                  {
+                    "label": "海外",
+                    "value": "OVERSEAS"
+                  }
+                ]
+              },
+              "nameField": "category",
+              "valueField": "value",
+              "map": "world",
+              "nameMap": {
+                "中国": "China",
+                "日本": "Japan",
+                "美国": "United States of America",
+                "德国": "Germany",
+                "澳大利亚": "Australia"
+              }
+            }
+          },
+          {
+            "id": "control",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "control-data"
+            },
+            "props": {
+              "title": "全区域对照（保持不变）",
+              "categoryField": "category",
+              "series": [
+                {
+                  "field": "value",
+                  "label": "订单对比"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filter",
+      "message": "图表筛选需要绑定本图普通查询数据源的 filterBindings"
+    }
+  ]
+}

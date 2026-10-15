@@ -63,6 +63,16 @@ export const invariants: InvariantDefinition[] = [
     {case:'period-filter-static-time',base:'dashboard-period-filter',expect:/固定时间来源/,mutate:d=>{d.dataSources.sales.source.query.body.dsl_list[0].filter.time.start='2026-01-01';}}
   ]},
   {
+    id: 'chart-local-filter', description: '6.29 Dashboard 图表独立筛选及查询消费范围', valid: ['chart-local-filter-page'], cases: [
+      {case:'chart-filter-before-6.29',base:'chart-local-filter-page',expect:/由 6.29 引入/,mutate:d=>{d.schemaVersion='6.28';}},
+      {case:'chart-filter-report',base:'chart-local-filter-page',expect:/Dashboard/,mutate:d=>{d.layout='report';}},
+      {case:'chart-filter-invalid-default',base:'chart-local-filter-page',expect:/default/,mutate:d=>{d.filters[0].default=['unknown'];}},
+      {case:'chart-filter-duplicate-options',base:'chart-local-filter-page',expect:/不得重复/,mutate:d=>{firstComponent(d).props.filter.options[1].value='CN';}},
+      {case:'chart-filter-shared-source',base:'chart-local-filter-page',expect:/影响其他组件/,mutate:d=>{d.sections[0].components[4].data.main='orders-data';}},
+      {case:'chart-filter-no-binding',base:'chart-local-filter-page',expect:/filterBindings/,mutate:d=>{delete d.dataSources['orders-data'].source.query.filterBindings;}}
+    ]
+  },
+  {
     id: 'report-header-pdf-export', description: 'Report PDF下载由6.28引入，仅允许Report顶层页头，按钮文字和文件名为非空文本取值',
     valid: ['report-pdf-export'], cases: [
       {case:'report-pdf-before-6.28',base:'report-pdf-export',expect:/由 6.28 引入/,mutate:d=>{d.schemaVersion='6.27';}},

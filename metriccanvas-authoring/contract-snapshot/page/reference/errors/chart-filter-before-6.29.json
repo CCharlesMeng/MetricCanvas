@@ -1,0 +1,105 @@
+{
+  "case": "chart-filter-before-6.29",
+  "invariant": "chart-local-filter",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "Dashboard 图表左上角独立筛选与自定义选项 由 6.29 引入，文档声明的是 6.28",
+      "paths": [
+        "/sections/0/components/0",
+        "/sections/0/components/1",
+        "/sections/0/components/2",
+        "/sections/0/components/3"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "orders",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "orders-data"
+            },
+            "props": {
+              "title": "订单对比",
+              "filter": {
+                "…": "共2个键"
+              },
+              "categoryField": "category",
+              "series": [
+                "…（共1项）"
+              ]
+            }
+          },
+          {
+            "id": "revenue",
+            "type": "lineChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "revenue-data"
+            },
+            "props": {
+              "title": "收入趋势",
+              "filter": {
+                "…": "共2个键"
+              },
+              "xField": "category",
+              "series": [
+                "…（共1项）"
+              ]
+            }
+          },
+          {
+            "id": "share",
+            "type": "pieChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "share-data"
+            },
+            "props": {
+              "title": "渠道占比",
+              "filter": {
+                "…": "共2个键"
+              },
+              "categoryField": "category",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "map",
+            "type": "mapChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "map-data"
+            },
+            "props": {
+              "title": "区域分布",
+              "filter": {
+                "…": "共2个键"
+              },
+              "nameField": "category",
+              "valueField": "value",
+              "map": "world",
+              "nameMap": {
+                "…": "共5个键"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/chart-filter-before-6.29.json"
+}

@@ -43,10 +43,21 @@ def _is_period_filter(node):
     return isinstance(default, dict) and 'mode' in default
 
 
+def _is_chart_filter(node):
+    if node.get('type') not in {'barChart', 'lineChart', 'pieChart', 'mapChart'}:
+        return False
+    props = node.get('props')
+    return isinstance(props, dict) and 'filter' in props
+
+
+def _is_bounded_time_point(node):
+    return node.get('type') == 'timePoint' and ('min' in node or 'disableFuture' in node)
+
+
 def _uses_product_bridge(node):
     if isinstance(node, list): return any(_uses_product_bridge(v) for v in node)
     if isinstance(node, dict) and node.get('type') == 'reportHeader' and isinstance(node.get('props'), dict) and 'pdfExport' in node['props']: return True
-    if isinstance(node, dict): return node.get('type') == 'pagedJoin' or _is_period_filter(node) or (node.get('type') == 'timePoint' and ('min' in node or 'disableFuture' in node)) or node.get('mode') == 'numberRange' or any(_uses_product_bridge(v) for v in node.values())
+    if isinstance(node, dict): return node.get('type') == 'pagedJoin' or _is_chart_filter(node) or _is_period_filter(node) or _is_bounded_time_point(node) or node.get('mode') == 'numberRange' or any(_uses_product_bridge(v) for v in node.values())
     return False
 
 

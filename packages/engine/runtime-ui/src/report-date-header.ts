@@ -1,6 +1,6 @@
 import type { FilterDeclaration, ReportHeaderProps } from '@metriccanvas/page/internal';
 import type { FilterValues } from '../../runtime/src';
-import { formatPeriod } from '@metriccanvas/page/internal';
+import { chartFilterOptions, formatPeriod } from '@metriccanvas/page/internal';
 
 export function headerDateDeclarations(props: ReportHeaderProps, declarations: readonly FilterDeclaration[]): FilterDeclaration[] {
   return (props.filterIds ?? []).flatMap(id => declarations.find(f => f.id === id) ?? []);
@@ -19,5 +19,6 @@ export function headerPeriod(props: ReportHeaderProps, declarations: readonly Fi
 }
 export function contentFilterDeclarations(page: { sections: Array<{components: import('@metriccanvas/page/internal').Component[]}> }, declarations: FilterDeclaration[]): FilterDeclaration[] {
   const headerIds = new Set(page.sections.flatMap(s => s.components.flatMap(c => c.type === 'reportHeader' ? c.props.filterIds ?? [] : [])));
-  return declarations.filter(f => !headerIds.has(f.id));
+  const chartIds = chartFilterOptions(page);
+  return declarations.filter(f => !headerIds.has(f.id) && !chartIds.has(f.id));
 }

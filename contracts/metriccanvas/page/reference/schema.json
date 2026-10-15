@@ -28,9 +28,10 @@
         "6.25",
         "6.26",
         "6.27",
-        "6.28"
+        "6.28",
+        "6.29"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29"
     },
     "id": {
       "type": "string",
@@ -4734,6 +4735,13 @@
                 }
               ]
             },
+            "filter": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/chartFilter"
+                }
+              ]
+            },
             "variant": {
               "type": "string",
               "const": "reportForecast"
@@ -4810,6 +4818,43 @@
       },
       "required": [
         "main"
+      ],
+      "additionalProperties": false
+    },
+    "chartFilter": {
+      "type": "object",
+      "properties": {
+        "filterId": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "options": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "label",
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "filterId",
+        "options"
       ],
       "additionalProperties": false
     },
@@ -4902,6 +4947,13 @@
               "allOf": [
                 {
                   "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "filter": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/chartFilter"
                 }
               ]
             },
@@ -5009,6 +5061,13 @@
               "allOf": [
                 {
                   "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "filter": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/chartFilter"
                 }
               ]
             },
@@ -5724,6 +5783,13 @@
               "allOf": [
                 {
                   "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "filter": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/chartFilter"
                 }
               ]
             },
@@ -7060,5 +7126,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.28"
+  "$id": "https://metriccanvas/page/v6.29"
 }

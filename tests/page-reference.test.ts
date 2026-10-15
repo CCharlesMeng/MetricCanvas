@@ -110,7 +110,7 @@ describe('页面参考手册生成与分发', () => {
         for(const [file,content] of copied) if(file.startsWith('examples/')&&file.endsWith('.json')) expect(validate(JSON.parse(content)),file).toEqual([]);
       }
     } finally { await rm(temp,{recursive:true,force:true}); }
-  });
+  }, 30000);
   it('产品与Bundle参考逐字一致，Skill示例只发布当前作者版本', async () => {
     for (const [file, content] of reference) {
       for (const prefix of ['contracts/metriccanvas/page/reference','metriccanvas-authoring/contract-snapshot/page/reference']) {

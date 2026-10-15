@@ -23,6 +23,21 @@
       ]
     },
     {
+      "id": "chart-local-filter",
+      "description": "6.29 Dashboard 图表独立筛选及查询消费范围",
+      "valid": [
+        "chart-local-filter-page"
+      ],
+      "invalid": [
+        "chart-filter-before-6.29",
+        "chart-filter-report",
+        "chart-filter-invalid-default",
+        "chart-filter-duplicate-options",
+        "chart-filter-shared-source",
+        "chart-filter-no-binding"
+      ]
+    },
+    {
       "id": "report-header-pdf-export",
       "description": "Report PDF下载由6.28引入，仅允许Report顶层页头，按钮文字和文件名为非空文本取值",
       "valid": [

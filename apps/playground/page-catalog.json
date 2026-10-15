@@ -297,6 +297,15 @@
         "期间筛选",
         "Dashboard"
       ]
+    },
+    {
+      "id": "chart-local-filter-page",
+      "group": "verification",
+      "summary": "每张图左上角独立筛选；自定义选项、默认值、URL 和静态导出。合成数据。",
+      "tags": [
+        "图表筛选",
+        "Dashboard"
+      ]
     }
   ]
 }

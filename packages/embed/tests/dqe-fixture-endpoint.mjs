@@ -22,6 +22,7 @@ export const DQE_EXECUTE_PATH =
 
 const simFixtures = resolve(import.meta.dirname, '../../../tools/dqe-sim/fixtures');
 const datasets = [
+  ...readJson('chart-local-filter.json'),
   readJson('ioc-opportunity-list.json'),
   ...Object.values(readJson('ioc-page-datasets.json').datasets)
 ];

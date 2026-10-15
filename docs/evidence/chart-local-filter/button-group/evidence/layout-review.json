@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "role": "review-layout",
+  "evidence_epoch": "button-group-final",
+  "code_fingerprint": "3025ec311c1e77e171ab5a56fadeca64087a98f996e4ae6486e90eb22437255c",
+  "judged_files": [
+    "packages/engine/runtime-ui/src/dashboard/ChartFilter.svelte",
+    "packages/embed/tests/browser/chart-local-filter.spec.ts"
+  ],
+  "status": "executed",
+  "coverage": [
+    {
+      "dimension": "L2",
+      "scope": "1440/390 viewport and configured long option",
+      "evidence_ids": [
+        "BG-1440",
+        "BG-390"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "L3",
+      "scope": "1440/390 viewport: all four groups inside cards, no overlapping buttons, long option wraps with 4px gap",
+      "evidence_ids": [
+        "BG-1440",
+        "BG-390",
+        "browser acceptance"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "L5",
+      "scope": "Selected, hover and focus-visible button states",
+      "evidence_ids": [
+        "BG-1440",
+        "BG-390",
+        "browser acceptance"
+      ],
+      "result": "clear"
+    }
+  ],
+  "findings": [],
+  "skipped": [],
+  "open_questions": [],
+  "deferred_candidates": [],
+  "evidence_reused": [
+    "BG-1440",
+    "BG-390",
+    "browser acceptance"
+  ],
+  "evidence_added": [],
+  "known_gaps": []
+}

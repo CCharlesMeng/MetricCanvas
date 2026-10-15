@@ -1,0 +1,62 @@
+{
+  "contract_sha256": "7b05f42fbbcb0d4b25841810ea9dd4d0a4790fbacd7d272b76d1a727f6e1320f",
+  "entries": [
+    {
+      "actual": [],
+      "comparison": {
+        "actual": [],
+        "expected": [
+          2,
+          2,
+          3,
+          2
+        ]
+      },
+      "expected": [
+        2,
+        2,
+        3,
+        2
+      ],
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R1-1-counts",
+      "status": "red"
+    },
+    {
+      "actual": null,
+      "reasons": [
+        "页面可用但结构化采集缺本规则结果"
+      ],
+      "rule_id": "R3-1-size",
+      "status": "red"
+    },
+    {
+      "actual": null,
+      "reasons": [
+        "页面可用但结构化采集缺本规则结果"
+      ],
+      "rule_id": "R4-1-colors",
+      "status": "red"
+    },
+    {
+      "actual": null,
+      "reasons": [
+        "页面可用但结构化采集缺本规则结果"
+      ],
+      "rule_id": "R6-1-contained",
+      "status": "red"
+    }
+  ],
+  "observed": {},
+  "overall": "red",
+  "phase": "red",
+  "schema_version": 3,
+  "summary": {
+    "green": 0,
+    "red": 4,
+    "total": 4,
+    "yellow": 0
+  }
+}

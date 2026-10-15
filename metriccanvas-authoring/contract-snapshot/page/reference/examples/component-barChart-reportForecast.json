@@ -1,53 +1,43 @@
 {
-  "schemaVersion": "6.16",
-  "id": "explicit-presentation-page",
-  "layout": "report",
+  "schemaVersion": "6.29",
+  "id": "chart-local-filter-page",
+  "layout": "dashboard",
   "dataSources": {
-    "sample": {
+    "control-data": {
       "fields": {
-        "name": {
+        "category": {
           "type": "string",
-          "role": "dimension"
+          "role": "dimension",
+          "queryField": "chart_demo_category"
         },
-        "delta": {
+        "value": {
           "type": "number",
           "role": "measure",
-          "unit": "天",
-          "defaultFormat": "number-1",
-          "nullable": true
-        },
-        "count": {
-          "type": "number",
-          "role": "measure",
-          "unit": "次",
-          "defaultFormat": "number",
-          "nullable": true
+          "queryField": "chart_demo_orders"
         }
       },
       "source": {
-        "type": "inline",
-        "rows": [
-          {
-            "name": "甲代表处",
-            "delta": 2.5,
-            "count": 10
-          },
-          {
-            "name": "乙代表处",
-            "delta": -2,
-            "count": 0
-          },
-          {
-            "name": "丙代表处",
-            "delta": 0,
-            "count": 8
-          },
-          {
-            "name": "丁代表处",
-            "delta": null,
-            "count": null
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "chart_demo_category"
+                ],
+                "output_metrics": [
+                  "chart_demo_orders"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
           }
-        ]
+        }
       }
     }
   },
@@ -56,26 +46,23 @@
       "id": "main",
       "components": [
         {
-          "id": "sample-bar",
+          "id": "control",
           "type": "barChart",
           "layout": {
-            "span": 12
+            "span": 6
           },
           "data": {
-            "main": "sample"
+            "main": "control-data"
           },
           "props": {
-            "categoryField": "name",
+            "title": "全区域对照（保持不变）",
+            "categoryField": "category",
             "series": [
               {
-                "field": "delta"
+                "field": "value",
+                "label": "订单对比"
               }
             ],
-            "categoryLabels": {
-              "mode": "all",
-              "rotate": 45
-            },
-            "showValueLabels": true,
             "variant": "reportForecast"
           }
         }

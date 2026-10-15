@@ -12,8 +12,10 @@ nameMap 的方向是数据地名 → 底图区域名，例如 {"中国":"China"}
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
+Dashboard 正文可通过 `props.filter` 在左上角配置独立单选筛选。选项名称和值分离，default 与查询绑定显式声明；见[图表独立筛选](../filters.md#chart-local-filter)和 `chart-local-filter-page` 完整页面。
 
-页面协议 6.28。结构真源为本册[schema.json](../schema.json)，SHA256 `e4ef9aa696ed7bd39653228254b69104052b30215c458fffd42d6b987af71fc0`。字段表自动生成；可选不等于有默认值。
+
+页面协议 6.29。结构真源为本册[schema.json](../schema.json)，SHA256 `41d3a5e3f31d39f0eef81f4555d3a04c1fbd485bf8dd1bb9c745eb39e9c772d1`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -100,6 +102,26 @@ Schema位置：`#/definitions/mapChartComponent/properties/props/properties/titl
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f66696c746572"></a>
+
+### `@mapChartComponent.props.filter`
+
+Schema位置：`#/definitions/mapChartComponent/properties/props/properties/filter`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 图表左上角的独立筛选配置，显式引用页面维度筛选器及固定选项。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f66696c7465722f616c6c4f662f30"></a>
+
+### `@mapChartComponent.props.filter · allOf[0]`
+
+Schema位置：`#/definitions/mapChartComponent/properties/props/properties/filter/allOf/0`。目标：[#/definitions/chartFilter](../filters.md#schema-232f646566696e6974696f6e732f636861727446696c746572)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/chartFilter | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f76617269616e74"></a>
 
@@ -587,83 +609,39 @@ Schema位置：`#/definitions/mapChartComponent/properties/props/properties/acti
 
 ```json
 {
-  "id": "china-map",
+  "id": "map",
   "type": "mapChart",
   "layout": {
-    "span": 12
+    "span": 6
   },
   "data": {
-    "main": "regions"
+    "main": "map-data"
   },
   "props": {
-    "variant": "regionalOverview",
-    "nameField": "name",
-    "valueField": "gmv",
-    "map": "china",
-    "hierarchyFilter": "area",
-    "levelField": "level",
-    "parentField": "parent",
-    "codeField": "code",
-    "levelMaps": {
-      "province": "china"
-    },
-    "legend": {
-      "title": "GMV",
-      "bands": [
+    "title": "区域分布",
+    "filter": {
+      "filterId": "map-region",
+      "options": [
         {
-          "label": "低",
-          "from": 0
+          "label": "中国区",
+          "value": "CN"
         },
         {
-          "label": "高",
-          "from": 100
+          "label": "海外",
+          "value": "OVERSEAS"
         }
       ]
     },
-    "tooltipFields": [
-      {
-        "label": "增长",
-        "field": {
-          "data": "main",
-          "field": "growth",
-          "format": "percent-1"
-        }
-      }
-    ],
-    "pinnedSummary": {
-      "matchField": "code",
-      "matchValue": "310000",
-      "titleField": "name",
-      "fields": [
-        {
-          "label": "GMV",
-          "field": "gmv"
-        },
-        {
-          "label": "增长",
-          "field": "growth"
-        }
-      ]
-    },
-    "actions": [
-      {
-        "on": "click",
-        "navigate": {
-          "href": "/pages/map-page",
-          "query": {
-            "area": {
-              "source": "filter",
-              "id": "area"
-            },
-            "area.level": {
-              "source": "filter",
-              "id": "area",
-              "part": "level"
-            }
-          }
-        }
-      }
-    ]
+    "nameField": "category",
+    "valueField": "value",
+    "map": "world",
+    "nameMap": {
+      "中国": "China",
+      "日本": "Japan",
+      "美国": "United States of America",
+      "德国": "Germany",
+      "澳大利亚": "Australia"
+    }
   }
 }
 ```
@@ -671,5 +649,5 @@ Schema位置：`#/definitions/mapChartComponent/properties/props/properties/acti
 
 ## 联合分支见证（生成）
 
-- `#/definitions/mapPinnedSummary/properties/matchValue/anyOf/0`：[合法完整页面](../examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/0/props/pinnedSummary/matchValue`。
+- `#/definitions/mapPinnedSummary/properties/matchValue/anyOf/0`：[合法完整页面](../examples/map-page.json)，JSON Pointer `#/sections/0/components/0/props/pinnedSummary/matchValue`。
 - `#/definitions/mapPinnedSummary/properties/matchValue/anyOf/1`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/12/props/pinnedSummary/matchValue`。

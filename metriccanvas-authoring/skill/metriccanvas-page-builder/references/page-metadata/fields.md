@@ -23,7 +23,7 @@ recordList使用显式items.fields约束每条嵌套记录，限制在已支持�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.28。结构真源为本册[schema.json](schema.json)，SHA256 `e4ef9aa696ed7bd39653228254b69104052b30215c458fffd42d6b987af71fc0`。字段表自动生成；可选不等于有默认值。
+页面协议 6.29。结构真源为本册[schema.json](schema.json)，SHA256 `41d3a5e3f31d39f0eef81f4555d3a04c1fbd485bf8dd1bb9c745eb39e9c772d1`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1546,13 +1546,13 @@ Schema位置：`#/definitions/groupedQueryFields/anyOf/1`。
 - `#/definitions/field/anyOf/1`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/fields/items`。
 - `#/definitions/field/anyOf/2`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/fields/body`。
 - `#/definitions/fieldValue/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/dataSources/fixed-target/source/rows/0/target`。
-- `#/definitions/scalar/anyOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/sample/source/rows/0/name`。
+- `#/definitions/scalar/anyOf/0`：[合法完整页面](examples/component-pieChart.json)，JSON Pointer `#/dataSources/summary/source/rows/0/channel`。
 - `#/definitions/scalar/anyOf/1`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/dataSources/fixed-target/source/rows/0/target`。
 - `#/definitions/scalar/anyOf/2`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/source/rows/0/flag`。
-- `#/definitions/scalar/anyOf/3`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/sample/source/rows/3/delta`。
+- `#/definitions/scalar/anyOf/3`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/source/rows/0/at`。
 - `#/definitions/fieldValue/anyOf/1`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/source/rows/0/items`。
-- `#/definitions/queryField/anyOf/0`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/dataSources/live-sales/fields/stat-date`。
-- `#/definitions/queryScalarField/oneOf/0`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/dataSources/live-sales/fields/stat-date`。
+- `#/definitions/queryField/anyOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/control-data/fields/category`。
+- `#/definitions/queryScalarField/oneOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/control-data/fields/category`。
 - `#/definitions/queryScalarField/oneOf/1`：[合法完整页面](examples/paged-join-page.json)，JSON Pointer `#/dataSources/office-bidding/fields/bidding-amount`。
 - `#/definitions/queryField/anyOf/1`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/events`。
 - `#/definitions/queryField/anyOf/2`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/reason`。

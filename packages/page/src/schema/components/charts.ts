@@ -1,3 +1,4 @@
+import { chartFilterZ } from '../chart-filter';
 import { z } from 'zod';
 import {
   componentIdZ,
@@ -41,6 +42,7 @@ export const barChartComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
+        filter: chartFilterZ.optional(),
         variant: z.literal('reportForecast').optional(),
         categoryField: fieldBindingZ,
         series: z.array(barChartSeriesZ).min(1),
@@ -83,6 +85,7 @@ export const lineChartComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
+        filter: chartFilterZ.optional(),
         xField: fieldBindingZ,
         series: z.array(chartSeriesZ).min(1),
         smooth: z.boolean().optional(),
@@ -124,6 +127,7 @@ export const pieChartComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
+        filter: chartFilterZ.optional(),
         variant: z.literal('compactRing').optional(),
         categoryField: fieldBindingZ,
         valueField: fieldBindingZ,

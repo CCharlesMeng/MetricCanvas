@@ -12,7 +12,7 @@
    */
   import type { Snippet } from 'svelte';
   import ReportHeaderView from './ReportHeaderView.svelte';
-  import type { Component, DataSnapshot, Row } from '@metriccanvas/page/internal';
+  import { isChartComponent, type Component, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
   import type { PageDataSnapshots } from '../../runtime/src';
   import {
     BarChart,
@@ -40,6 +40,7 @@
   import type { AiSummaryConfig } from './ai-summary/pangu-sse';
   import { fieldRow } from '../../widgets/src/shared/component-data';
   import WidgetHost from './WidgetHost.svelte';
+  import ChartFilter from './dashboard/ChartFilter.svelte';
   import TableToolbar from '../../widgets/src/components/table/TableToolbar.svelte';
   import { partialDataNotices } from './widget-host-state';
   import {
@@ -53,6 +54,8 @@
     component: Component;
     summarySnapshot?: import('./ai-summary/session').AiSummarySnapshot;
     exportMode?: boolean;
+    chartFilterValue?: (component: Component) => string | undefined;
+    onchartfilter?: (component: Component, value: string) => void;
     headerControls?: Snippet<[string[]]>;
     headerPeriod?: (component: Extract<Component,{type:"reportHeader"}>) => string | undefined;
     /** 已投影的数据槽:表格的 main 槽已按当前视图状态裁剪。 */
@@ -79,7 +82,7 @@
 
   let {
     component,
-    exportMode = false, headerControls, headerPeriod, summarySnapshot,
+    exportMode = false, chartFilterValue, onchartfilter, headerControls, headerPeriod, summarySnapshot,
     data,
     snapshot,
     pageSnapshots,
@@ -115,7 +118,7 @@
   {#if nested}
     <Self
       component={nestedComponent}
-      {exportMode} {headerControls} {headerPeriod}
+      {exportMode} {chartFilterValue} {onchartfilter} {headerControls} {headerPeriod}
       data={nested.data(nestedComponent)}
       snapshot={nested.snapshot(nestedComponent)}
       {pageSnapshots}
@@ -191,6 +194,11 @@
     <TableToolbar toolbar={component.props.toolbar} draft={table.searchDraft} busy={table.exporting}
       error={table.exportError} canExport={false} ondraft={table.onsearchdraft} onsearch={table.onsearch}
       onexport={table.onexport} oncancel={table.oncancelexport} />
+  {/if}
+  {#if isChartComponent(component) && component.props.filter}
+    <ChartFilter control={component.props.filter} value={chartFilterValue?.(component)}
+      label={`${component.props.title ?? '图表'}筛选`} {exportMode}
+      onchange={value => onchartfilter?.(component, value)} />
   {/if}
   <WidgetHost {snapshot} title={component.props.title} notices={partialDataNotices(component, pageSnapshots, table?.paginationConfig?.mode === 'query')}>
     {#snippet ready(_readySnapshot)}

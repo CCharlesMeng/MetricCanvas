@@ -38,6 +38,32 @@ urlParams仅映射该类允许的value/from/to/level键，不能与本页其它�
 
 完整场景 `time-point-no-future` 无业务查询；商务SDT终极版 `pages/sdt/commercial-sdt-efficiency-ultimate-monthly.json` 默认2026-10，月份选择不能进入未来。真实DQE接入与业务数据另行验收。
 
+<a id="图表独立筛选629"></a>
+
+<a id="chart-local-filter"></a>
+
+## 图表独立筛选（6.29）
+
+Dashboard 正文的 `barChart`、`lineChart`、`pieChart`、`mapChart` 可在 `props.filter` 声明一个左上角紧凑圆角单选按钮组。`filterId` 引用页面的普通维度筛选器；`options` 是创作时配置的非空 `{label,value}` 数组。label 是显示名称，value 是实际查询值，各 value 唯一。该筛选器的 `default` 必须包含候选项中的恰好一个值，不使用 initialParam、层级、级联或隐藏声明。每张图分别声明 filterId，即使筛选同一业务维度也彼此独立。未配置的图表保留原有呈现。
+
+```json
+{
+  "filterId": "orders-region",
+  "options": [
+    {"label": "中国区", "value": "CN"},
+    {"label": "海外", "value": "OVERSEAS"}
+  ]
+}
+```
+
+例子中的页面筛选声明为 `{"id":"orders-region","type":"dimension","dimension":"region","default":["CN"]}`，本图普通查询以 `filterBindings.orders-region={"target":"dimension","queryField":"region"}` 绑定。所有候选项直接显示为圆角按钮，选中项黑底白字，其他项浅灰底深字，窄容器自然换行。控件只负责位置与选项，查询条件仍由筛选绑定管理；不在页面工具栏重复呈现，也不请求维度候选值。
+
+校验检查整个查询依赖图：绑定只能位于本图的查询依赖中，筛选影响的结果不能被另一组件（包括 AI 总结）消费，也不能驱动其他筛选器级联。需要独立图表时，分别声明查询数据源；共享完整结果、组合查询源、inline 图表、报表及详情视图不在本能力范围。切换只更新本图依赖的查询，页面公共筛选仍可与其共同作用。
+
+当前值进入同一筛选状态和 URL。非法或多值 URL 输入忽略，使用声明的默认项；运行中的清空、多选或域外写入被拒绝，保留已应用选择。执行快照含非法图表筛选值时拒绝打开。加载、空结果及查询失败保留筛选控件，允许继续切换。静态导出捕获当前选择和对应查询，并以所选 label 替代交互控件。
+
+验收页面 `chart-local-filter-page` 与同名协议夹具覆盖四种图表、独立默认项、自定义名称/值、空结果和未筛选对照图；浏览器验收直接消费此页面。数据是本地 Sim 的合成数据，不能证明真实 DQE、Relay 或线上部署结果。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。

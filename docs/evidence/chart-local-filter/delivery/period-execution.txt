@@ -1,0 +1,9 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/engine/runtime/tests/period-execution.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/chart-filter-delivery/DataDashboard
+
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  22:26:48
+   Duration  734ms (transform 365ms, setup 0ms, import 621ms, tests 27ms, environment 0ms)

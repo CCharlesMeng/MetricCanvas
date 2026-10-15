@@ -28,7 +28,11 @@ export interface FilterState {
   fromURL(search: string, declarations: readonly FilterDeclaration[]): void;
 }
 
-export function createFilterState(initial?: FilterValues, declarations: readonly FilterDeclaration[] = []): FilterState {
+export function createFilterState(initial?: FilterValues, declarations: readonly FilterDeclaration[] = [], dimensionOptions: ReadonlyMap<string, readonly string[]> = new Map()): FilterState {
+  function accepted(id: string, value: FilterValue | null | undefined): boolean {
+    const options = dimensionOptions.get(id);
+    return !options || !!value && value.type === 'dimension' && value.values.length === 1 && options.includes(value.values[0]!);
+  }
   const byId = new Map(declarations.map(declaration => [declaration.id, declaration]));
   let current: Map<string, FilterValue> = new Map();
   for (const [id, value] of initial ?? []) {
@@ -36,6 +40,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     const valid = declaration?.type === 'timeRange' && declaration.display === 'period' ? normalize(value, declaration) : declaration?.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture === true) ? normalize(value, declaration) : value;
     if (declaration?.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture === true) && valid === undefined) throw new Error(`筛选器 ${id} 初值不符合时间点边界`);
     if (declaration?.type === 'timeRange' && declaration.display === 'period' && !valid) throw new Error(`筛选器 ${id} 期间初值非法`);
+    if (!accepted(id, valid)) throw new Error(`图表筛选器 ${id} 初值不在候选项中`);
     if (valid) current.set(id, valid);
   }
   const subscribers = new Set<(values: FilterValues) => void>();
@@ -58,7 +63,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     write(filterId, value) {
       const next = normalize(value, byId.get(filterId));
       // 非法时间范围是无效写入,既不落状态也不清除已有合法值。
-      if (next === undefined) return;
+      if (next === undefined || !accepted(filterId, next)) return;
       if (sameValue(current.get(filterId), next)) return;
       const map = new Map(current);
       if (next === null) map.delete(filterId);
@@ -71,7 +76,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
       let changed = false;
       for (const [filterId, value] of updates) {
         const next = normalize(value, byId.get(filterId));
-        if (next === undefined || sameValue(map.get(filterId), next)) continue;
+        if (next === undefined || !accepted(filterId, next) || sameValue(map.get(filterId), next)) continue;
         if (next === null) map.delete(filterId);
         else map.set(filterId, next);
         changed = true;
@@ -89,6 +94,12 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
         if (next.has(declaration.id) || !(declaration.type === 'timeRange' && declaration.display === 'period') && !(declaration.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture) && declaration.required)) continue;
         const fallback = current.get(declaration.id) ?? initialFilterValues([declaration]).get(declaration.id);
         if (fallback) next.set(declaration.id, fallback);
+      }
+      for (const id of dimensionOptions.keys()) {
+        if (accepted(id, next.get(id))) continue;
+        const declaration = byId.get(id);
+        const fallback = current.get(id) ?? (declaration ? initialFilterValues([declaration]).get(id) : undefined);
+        if (fallback) next.set(id, fallback);
       }
       replace(next);
     }

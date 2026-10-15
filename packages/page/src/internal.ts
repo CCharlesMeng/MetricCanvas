@@ -53,3 +53,4 @@ export * from './paged-join';
 export * from './table-query-view';
 export * from './data-source-references';
 export * from './period-filter';
+export { chartFilterOptions } from './chart-filter';

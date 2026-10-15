@@ -71,7 +71,7 @@ filter 读取当前已应用筛选状态，初次从 default/initialParam/URL �
 验收页面 `report-title-filter-example` 无业务数据与外部查询，覆盖月份主标题、独立范围、同起止、清空、多筛选组合和参数文字；日期型、非法输入、可选参数、版本和导出捕获另由行为测试覆盖。`report-date-filter-example` 同时演示主标题与 DQE Sim 查询联动，仿真不代表真实 DQE 集成。
 
 
-页面协议 6.28。结构真源为本册[schema.json](schema.json)，SHA256 `e4ef9aa696ed7bd39653228254b69104052b30215c458fffd42d6b987af71fc0`。字段表自动生成；可选不等于有默认值。
+页面协议 6.29。结构真源为本册[schema.json](schema.json)，SHA256 `41d3a5e3f31d39f0eef81f4555d3a04c1fbd485bf8dd1bb9c745eb39e9c772d1`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1382,7 +1382,7 @@ Schema位置：`#/definitions/textValue/anyOf/3`。目标：[#/definitions/textV
 - `#/definitions/timeWindow/oneOf/2`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/to-date/source/query/paramBindings/report-month/window`。
 - `#/definitions/timeWindow/oneOf/3`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/month-to-date/source/query/paramBindings/report-month/window`。
 - `#/definitions/timeWindow/oneOf/4`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/legacy-to-date/source/query/paramBindings/report-month/window`。
-- `#/definitions/textValue/anyOf/0`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/0/props/legend/title`。
+- `#/definitions/textValue/anyOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/sections/0/components/0/props/title`。
 - `#/definitions/textValue/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/4/props/title`。
 - `#/definitions/textValue/anyOf/2`：[合法完整页面](examples/report-filter-text-page.json)，JSON Pointer `#/sections/2/components/0/props/body`。
 - `#/definitions/textValue/anyOf/3`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/sections/0/components/0/props/subtitle`。

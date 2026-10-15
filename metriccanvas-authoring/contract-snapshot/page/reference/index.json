@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.28",
-  "schemaSha256": "e4ef9aa696ed7bd39653228254b69104052b30215c458fffd42d6b987af71fc0",
+  "schemaVersion": "6.29",
+  "schemaSha256": "41d3a5e3f31d39f0eef81f4555d3a04c1fbd485bf8dd1bb9c745eb39e9c772d1",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -17,6 +17,10 @@
     {
       "file": "packages/engine/widgets/src/shared/semantic-html.ts",
       "sha256": "094d79a9d3fa928f49994caf5c97b50713e152920bb676ab50343f8d21f01ee7"
+    },
+    {
+      "file": "packages/page/src/chart-filter.ts",
+      "sha256": "311220824428d98a6bbbac47b3fadecda0903943e2c02e3c5d67fb16dc2f0f2a"
     },
     {
       "file": "packages/page/src/filter-text-value.ts",
@@ -51,6 +55,10 @@
       "sha256": "dc86230fc5004f684f9170f600b7f35c8ed5c17fd969f65cffab4cab0585de76"
     },
     {
+      "file": "packages/page/src/schema/chart-filter.ts",
+      "sha256": "720a73baaffbf908777b6ba143f3c4656bf9720630bb9c3ab2c1944d00ef80f0"
+    },
+    {
       "file": "packages/page/src/schema/components/ai-summary.ts",
       "sha256": "1e1485101551049a8ff478f9731dabfc18607b4d55b5d5ec4f267e78de0dc946"
     },
@@ -60,7 +68,7 @@
     },
     {
       "file": "packages/page/src/schema/components/charts.ts",
-      "sha256": "33a60e87da0adade09a40d2fc7e205099a522f149d2f88f080bf0ab6ce7fa1c8"
+      "sha256": "a4ed5c25cd9e795591d710263ea856cb4604fcbbb4e4d7a697372794aad456d8"
     },
     {
       "file": "packages/page/src/schema/components/composite-card.ts",
@@ -80,7 +88,7 @@
     },
     {
       "file": "packages/page/src/schema/components/map-chart.ts",
-      "sha256": "a0f55f7915bd6c7acdf9f9e6086f2d409a6d94c6706093343c740c4a44ec456f"
+      "sha256": "07ff082737d4fdc24d8e7288bcd21760da55c80b948e1c47468ca6e5e6bd213e"
     },
     {
       "file": "packages/page/src/schema/components/metric-card.ts",
@@ -152,11 +160,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "fb25ab527d2ae913373e59dbd47449bea7d0f91cc2d5dbc4a9281c8bc5606c65"
+      "sha256": "9189939b699dc70740cae331665261a220fb65acef28008db0bce671d8959c2e"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "9af6c580f55e7a207dfd0a6652e40945538e0dc6339c088ea26de825303c51c2"
+      "sha256": "69c4d79ffad09db2d3498eba5caf86465b4f145c93e73b90ba6146a05e72c94b"
     }
   ],
   "modules": {
@@ -390,7 +398,8 @@
         "booleanFilter",
         "numberRangeFilter",
         "searchFilter",
-        "periodSelection"
+        "periodSelection",
+        "chartFilter"
       ],
       "keywords": [
         "filters",
@@ -408,14 +417,17 @@
         "period-filter-last12-months-page",
         "period-filter-parameter-page",
         "dashboard-period-filter-more",
-        "dashboard-period-filter-readonly"
+        "dashboard-period-filter-readonly",
+        "chart-local-filter-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/filter.ts",
         "tools/scripts/page-conformance-vectors.ts",
         "packages/page/src/period-filter.ts",
-        "packages/page/src/report-date-filters.ts"
+        "packages/page/src/report-date-filters.ts",
+        "packages/page/src/chart-filter.ts",
+        "packages/page/src/schema/chart-filter.ts"
       ],
       "rules": [
         "filter-id-unique",
@@ -430,7 +442,8 @@
         "hidden-hierarchy-picker-needs-map",
         "time-point-min",
         "time-point-disable-future",
-        "period-filter"
+        "period-filter",
+        "chart-local-filter"
       ]
     },
     "sections-and-layout.md": {
@@ -1177,7 +1190,8 @@
         "6.25",
         "6.26",
         "6.27",
-        "6.28"
+        "6.28",
+        "6.29"
       ]
     },
     {
@@ -7115,6 +7129,55 @@
       "ref": "#/definitions/textValue"
     },
     {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/filter",
+      "path": "@barChartComponent.props.filter",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/filter/allOf/0",
+      "path": "@barChartComponent.props.filter · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md",
+      "ref": "#/definitions/chartFilter"
+    },
+    {
+      "pointer": "#/definitions/chartFilter",
+      "path": "@chartFilter",
+      "required": "类型/分支",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/chartFilter/properties/filterId",
+      "path": "@chartFilter.filterId",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/chartFilter/properties/options",
+      "path": "@chartFilter.options",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/chartFilter/properties/options/items",
+      "path": "@chartFilter.options[]",
+      "required": "每个数组项",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/chartFilter/properties/options/items/properties/label",
+      "path": "@chartFilter.options[].label",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/chartFilter/properties/options/items/properties/value",
+      "path": "@chartFilter.options[].value",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
       "pointer": "#/definitions/barChartComponent/properties/props/properties/variant",
       "path": "@barChartComponent.props.variant",
       "required": "本分支可选",
@@ -7354,6 +7417,19 @@
       "ref": "#/definitions/textValue"
     },
     {
+      "pointer": "#/definitions/lineChartComponent/properties/props/properties/filter",
+      "path": "@lineChartComponent.props.filter",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/lineChartComponent/properties/props/properties/filter/allOf/0",
+      "path": "@lineChartComponent.props.filter · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md",
+      "ref": "#/definitions/chartFilter"
+    },
+    {
       "pointer": "#/definitions/lineChartComponent/properties/props/properties/xField",
       "path": "@lineChartComponent.props.xField",
       "required": "本分支必填",
@@ -7526,6 +7602,19 @@
       "required": "独立分支（不合并required）",
       "module": "components/pieChart.md",
       "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/properties/filter",
+      "path": "@pieChartComponent.props.filter",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/properties/filter/allOf/0",
+      "path": "@pieChartComponent.props.filter · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/chartFilter"
     },
     {
       "pointer": "#/definitions/pieChartComponent/properties/props/properties/variant",
@@ -8473,6 +8562,19 @@
       "required": "独立分支（不合并required）",
       "module": "components/mapChart.md",
       "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/properties/filter",
+      "path": "@mapChartComponent.props.filter",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/properties/filter/allOf/0",
+      "path": "@mapChartComponent.props.filter · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/chartFilter"
     },
     {
       "pointer": "#/definitions/mapChartComponent/properties/props/properties/variant",
@@ -10597,14 +10699,14 @@
       "type": "barChart",
       "file": "examples/component-barChart.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/explicit-presentation-page.json"
+      "source": "page/conformance/valid/chart-local-filter-page.json"
     },
     {
       "type": "barChart",
       "variant": "reportForecast",
       "file": "examples/component-barChart-reportForecast.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/explicit-presentation-page.json"
+      "source": "page/conformance/valid/chart-local-filter-page.json"
     },
     {
       "type": "lineChart",
@@ -10656,14 +10758,14 @@
       "type": "mapChart",
       "file": "examples/component-mapChart.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/map-page.json"
+      "source": "page/conformance/valid/chart-local-filter-page.json"
     },
     {
       "type": "mapChart",
       "variant": "regionalOverview",
       "file": "examples/component-mapChart-regionalOverview.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/map-page.json"
+      "source": "page/conformance/valid/chart-local-filter-page.json"
     },
     {
       "type": "gauge",
@@ -11179,8 +11281,8 @@
     {
       "schemaPointer": "#/definitions/scalar/anyOf/0",
       "module": "fields.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/sample/source/rows/0/name"
+      "file": "examples/component-pieChart.json",
+      "pointer": "#/dataSources/summary/source/rows/0/channel"
     },
     {
       "schemaPointer": "#/definitions/scalar/anyOf/1",
@@ -11197,8 +11299,8 @@
     {
       "schemaPointer": "#/definitions/scalar/anyOf/3",
       "module": "fields.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/dataSources/sample/source/rows/3/delta"
+      "file": "examples/component-fieldText.json",
+      "pointer": "#/dataSources/notes/source/rows/0/at"
     },
     {
       "schemaPointer": "#/definitions/fieldValue/anyOf/1",
@@ -11209,26 +11311,26 @@
     {
       "schemaPointer": "#/definitions/dataSource/anyOf/1",
       "module": "data-sources.md",
-      "file": "examples/component-lineChart.json",
-      "pointer": "#/dataSources/live-sales"
+      "file": "examples/component-barChart.json",
+      "pointer": "#/dataSources/control-data"
     },
     {
       "schemaPointer": "#/definitions/queryDataSource/properties/fields/anyOf/0",
       "module": "data-sources.md",
-      "file": "examples/component-lineChart.json",
-      "pointer": "#/dataSources/live-sales/fields"
+      "file": "examples/component-barChart.json",
+      "pointer": "#/dataSources/control-data/fields"
     },
     {
       "schemaPointer": "#/definitions/queryField/anyOf/0",
       "module": "fields.md",
-      "file": "examples/component-lineChart.json",
-      "pointer": "#/dataSources/live-sales/fields/stat-date"
+      "file": "examples/component-barChart.json",
+      "pointer": "#/dataSources/control-data/fields/category"
     },
     {
       "schemaPointer": "#/definitions/queryScalarField/oneOf/0",
       "module": "fields.md",
-      "file": "examples/component-lineChart.json",
-      "pointer": "#/dataSources/live-sales/fields/stat-date"
+      "file": "examples/component-barChart.json",
+      "pointer": "#/dataSources/control-data/fields/category"
     },
     {
       "schemaPointer": "#/definitions/queryScalarField/oneOf/1",
@@ -11287,8 +11389,8 @@
     {
       "schemaPointer": "#/definitions/pageQuery/oneOf/0",
       "module": "queries-and-bindings.md",
-      "file": "examples/component-lineChart.json",
-      "pointer": "#/dataSources/live-sales/source/query"
+      "file": "examples/component-barChart.json",
+      "pointer": "#/dataSources/control-data/source/query"
     },
     {
       "schemaPointer": "#/definitions/queryResultWhere/anyOf/0",
@@ -11407,14 +11509,14 @@
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0",
       "module": "queries-and-bindings.md",
-      "file": "examples/reference-branches-page.json",
-      "pointer": "#/dataSources/sales/source/query/filterBindings/region-filter"
+      "file": "examples/component-mapChart.json",
+      "pointer": "#/dataSources/map-data/source/query/filterBindings/map-region"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1",
       "module": "queries-and-bindings.md",
-      "file": "examples/component-mapChart.json",
-      "pointer": "#/dataSources/regions/source/query/filterBindings/area"
+      "file": "examples/hierarchy-binding-page.json",
+      "pointer": "#/dataSources/sales/source/query/filterBindings/area"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2",
@@ -11599,8 +11701,8 @@
     {
       "schemaPointer": "#/definitions/textValue/anyOf/0",
       "module": "params-and-text-values.md",
-      "file": "examples/component-mapChart.json",
-      "pointer": "#/sections/0/components/0/props/legend/title"
+      "file": "examples/component-barChart.json",
+      "pointer": "#/sections/0/components/0/props/title"
     },
     {
       "schemaPointer": "#/definitions/textValue/anyOf/1",
@@ -11675,8 +11777,8 @@
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/1",
       "module": "actions-and-navigation.md",
-      "file": "examples/component-mapChart.json",
-      "pointer": "#/sections/0/components/0/props/actions/0"
+      "file": "examples/component-compositeCard.json",
+      "pointer": "#/sections/0/components/0/props/components/0/props/actions/0"
     },
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/0",
@@ -11693,8 +11795,8 @@
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/2",
       "module": "actions-and-navigation.md",
-      "file": "examples/component-mapChart.json",
-      "pointer": "#/sections/0/components/0/props/actions/0/navigate/query/area"
+      "file": "examples/filters-page.json",
+      "pointer": "#/sections/0/components/0/props/actions/1/navigate/query/region"
     },
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/2",
@@ -11859,7 +11961,7 @@
     {
       "schemaPointer": "#/definitions/mapPinnedSummary/properties/matchValue/anyOf/0",
       "module": "components/mapChart.md",
-      "file": "examples/component-mapChart.json",
+      "file": "examples/map-page.json",
       "pointer": "#/sections/0/components/0/props/pinnedSummary/matchValue"
     },
     {
