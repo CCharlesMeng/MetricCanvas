@@ -35,7 +35,18 @@ export async function withPreparedExportView<T>(input:{state:ExportRenderState;q
   const parent=root instanceof ShadowRoot?root:sourceRoot.ownerDocument.body;
   let instance:ReturnType<typeof mount>|undefined;
   try {
-    state.snapshots=await abortable(prepareExportSnapshots(state.page,input.gateway,input.queries,state.filters,signal,undefined,state.currentYear,[],state.sourceViews,input.program),signal);
+    const prepared=await abortable(prepareExportSnapshots(state.page,input.gateway,input.queries,state.filters,signal,undefined,state.currentYear,[],state.sourceViews,input.program,{allowPartial:true}),signal);
+    for(const [id,snapshot] of prepared) {
+      const captured=state.snapshots.get(id);
+      if(snapshot.status==='error' && (captured?.status==='ready'||captured?.status==='empty')) {
+        prepared.set(id,captured);
+        console.warn('[MetricCanvas][EXPORT_PARTIAL_DATA] 导出重新取数失败；保留点击下载时已取得的数据，完整性未确认', {
+          code:'EXPORT_PARTIAL_DATA',pageId:state.page.id,dataSourceId:id,
+          accumulatedRowCount:captured.status==='ready'?captured.rows.length:0,completeness:'unverified'
+        });
+      }
+    }
+    state.snapshots=prepared;
     signal.throwIfAborted();
     parent.appendChild(holder);
     // Establish the visible box before charts mount; post-mount resizing can look like overflow.

@@ -26,7 +26,11 @@ export function exportComponentSlots(state: ExportRenderState, component: Compon
   return new Map(Object.entries(component.data ?? {}).map(([slot,id])=>[slot,state.snapshots.get(id)??{status:'loading'}]));
 }
 export function exportComponentSnapshot(state: ExportRenderState, component: Component): DataSnapshot {
-  return hostRenderSnapshot(component,exportComponentSlots(state,component));
+  const slots=exportComponentSlots(state,component);
+  // A failed comparison slot must not erase the successfully downloaded main data.
+  const available=new Map([...slots].map(([slot,snapshot])=>[slot,snapshot.status==='error'?{status:'empty' as const}:snapshot]));
+  if([...slots.values()].some(snapshot=>snapshot.status==='ready'||snapshot.status==='empty'))return hostRenderSnapshot(component,available);
+  return hostRenderSnapshot(component,slots);
 }
 export function exportComponentData(state:ExportRenderState,component:Component): NamedDataSlots {
   const data:NamedDataSlots={};

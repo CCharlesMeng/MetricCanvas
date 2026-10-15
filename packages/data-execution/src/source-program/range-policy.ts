@@ -52,7 +52,7 @@ export function correctedPageIndex(query: EffectiveQuery, snapshot: DataSnapshot
   if (total === undefined || (total > 0 && query.pagination.offset < total) || (total === 0 && query.pagination.offset === 0)) return undefined;
   return Math.max(0, Math.ceil(total / query.pagination.limit) - 1);
 }
-export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, scope: string, signal: AbortSignal | undefined, diagnostics: QueryDiagnosticContext, trustedComplete = false, describeSource?: () => ExportSourceDetails): Promise<DataSnapshot> {
+export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, scope: string, signal: AbortSignal | undefined, diagnostics: QueryDiagnosticContext, trustedComplete = false, describeSource?: () => ExportSourceDetails, allowPartial = false): Promise<DataSnapshot> {
   const frozen = structuredClone(query);
   const declared = frozen.pagination?.limit ?? declaredPaginationLimit({ language: frozen.language, body: frozen.body });
   const limit = Math.min(declared ?? 500, 500);
@@ -62,7 +62,15 @@ export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, 
     signal?.throwIfAborted();
     const result = await runner.run({ ...frozen, ...(paged ? { pagination: { offset, limit } } : {}) }, diagnostics, scope, signal);
     signal?.throwIfAborted();
-    if (result.status === 'error' || result.status === 'loading') return result;
+    if (result.status === 'error' || result.status === 'loading') {
+      if (!allowPartial || !rows.length) return result;
+      console.warn('[MetricCanvas][EXPORT_PARTIAL_DATA] 后续分页取数失败；导出已取得的数据，完整性未确认', {
+        code: 'EXPORT_PARTIAL_DATA', ...diagnostics, ...describeSource?.(),
+        accumulatedRowCount: rows.length, expectedTotalCount: expected,
+        pagination: { offset, limit }, completeness: 'unverified'
+      });
+      return rawSnapshot(rows, rows.length);
+    }
     const chunk = result.status === 'ready' ? result.rows : [];
     if (result.totalCount !== undefined && (!Number.isSafeInteger(result.totalCount) || result.totalCount < 0)) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '导出结果总数不合法');
     if (result.totalCount !== undefined && result.totalCount > EXPORT_MAX_ROWS) throw new SourceRangeError('EXPORT_ROW_LIMIT', '导出单表超过 10000 行');

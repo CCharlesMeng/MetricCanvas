@@ -4,16 +4,34 @@ import type { QueryRunner } from '../query-runner';
 import { executePagedJoin } from './execute';
 import { rawSnapshot } from '../snapshots';
 import { EXPORT_MAX_ROWS, SourceRangeError } from '../source-program/range-policy';
+import { describeExportSource } from '../source-program/export-diagnostics';
 
-export async function exportPagedJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal) {
+export async function exportPagedJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, allowPartial = false): Promise<Awaited<ReturnType<typeof executePagedJoin>>> {
   if (!plan.selection) return executePagedJoin(plan, runner, scope, signal, true);
   const rows: Row[] = [], keys = new Set<unknown>();
   let expected: number | undefined;
+  function partial() {
+    console.warn('[MetricCanvas][EXPORT_PARTIAL_DATA] 后续组合分页取数失败；导出已取得的数据，完整性未确认', {
+      code: 'EXPORT_PARTIAL_DATA', pageId: plan.page.id, ...describeExportSource(plan.page, plan.sourceId),
+      accumulatedRowCount: rows.length, expectedTotalCount: expected, completeness: 'unverified'
+    });
+    return { snapshot: rawSnapshot(rows, rows.length) };
+  }
   for (let pageIndex = 0; ; pageIndex++) {
     signal?.throwIfAborted();
-    const result = await executePagedJoin({ ...plan, view: { ...plan.view, pageIndex } }, runner, scope, signal);
+    let result: Awaited<ReturnType<typeof executePagedJoin>>;
+    try { result = await executePagedJoin({ ...plan, view: { ...plan.view, pageIndex } }, runner, scope, signal); }
+    catch (cause) {
+      signal?.throwIfAborted();
+      if (allowPartial && rows.length) return partial();
+      throw cause;
+    }
     const snapshot = result.snapshot;
-    if (snapshot.status !== 'ready' && snapshot.status !== 'empty') throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '组合导出执行失败');
+    signal?.throwIfAborted();
+    if (snapshot.status !== 'ready' && snapshot.status !== 'empty') {
+      if (allowPartial && rows.length) return partial();
+      throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '组合导出执行失败');
+    }
     const total = snapshot.totalCount;
     if (total === undefined || (expected !== undefined && expected !== total) || result.viewCorrection) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '组合导出总数或窗口发生变化');
     if (total > EXPORT_MAX_ROWS) throw new SourceRangeError('EXPORT_ROW_LIMIT', '导出单表超过 10000 行');

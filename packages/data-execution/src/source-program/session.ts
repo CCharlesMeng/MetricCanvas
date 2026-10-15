@@ -13,7 +13,7 @@ import { rawSnapshot } from '../snapshots';
 import { queryRowsFromPageRows } from '../query-rows';
 import { computedSnapshots } from '../compute/snapshots';
 import { compileSources, executionSourceIds } from './compiler';
-import { reusableInitialSnapshot, checkOrdinaryRange, isBusinessSelection, correctedPageIndex, fetchComplete } from './range-policy';
+import { reusableInitialSnapshot, checkOrdinaryRange, isBusinessSelection, correctedPageIndex, fetchComplete, SourceRangeError } from './range-policy';
 import { automaticQueryPageSize } from './table-pagination';
 import { describeExportSource } from './export-diagnostics';
 
@@ -24,6 +24,8 @@ export interface SourceRead {
   /** Adapters may seed existing ordinary raw receipts; they never seed member roles. */
   seeds?: ReadonlyMap<string, DataSnapshot>; useInitial?: boolean;
   queries?: ReadonlyMap<string, EffectiveQuery>; completeSources?: readonly string[]; currentYear?: number;
+  /** Complete report reads retain successful sources/pages when a query fails. */
+  allowPartial?: boolean;
 }
 export interface SourceUpdate {
   sourceId: string; snapshot: DataSnapshot; raw: DataSnapshot;
@@ -115,14 +117,14 @@ export function createSourceProgram(page: Page, config: { gateway: DataGateway; 
         if (source.source.type === 'pagedJoin') {
           try {
             const plan = compilePagedJoin(page, id, request.conditions, view);
-            const result = request.purpose === 'complete' ? await exportPagedJoin(plan, runner, scope, request.signal) : await executePagedJoin(plan, runner, scope, request.signal);
+            const result = request.purpose === 'complete' ? await exportPagedJoin(plan, runner, scope, request.signal, request.allowPartial) : await executePagedJoin(plan, runner, scope, request.signal);
             request.signal?.throwIfAborted();
             raw.set(id, result.snapshot);
             const applied=result.viewCorrection??plan.view;
             if (canonicalizeJson(applied)!==canonicalizeJson(view)) corrections.set(id,applied);
             if (request.purpose !== 'complete' && defaultConditions(id,request.conditions) && applied.pageIndex===0 && applied.pageSize===source.source.pagination.pageSize && !applied.predicates.length && !applied.search?.query.trim() && canonicalizeJson(applied.sort)===canonicalizeJson(source.source.ordering.default) && (result.snapshot.status === 'ready' || result.snapshot.status === 'empty')) initials.set(id, { capturedAt: new Date().toISOString(), rows: result.snapshot.status === 'ready' ? result.snapshot.rows : [], totalCount: result.snapshot.totalCount!, view: result.viewCorrection ?? { ...view, sort: plan.view.sort } });
           } catch (cause) {
-            if (request.signal?.aborted || request.purpose === 'complete') throw cause;
+            if (request.signal?.aborted || (request.purpose === 'complete' && (!request.allowPartial || cause instanceof SourceRangeError))) throw cause;
             raw.set(id, { status: 'error', error: preservedQueryError(cause) });
           }
           return;
@@ -141,7 +143,7 @@ export function createSourceProgram(page: Page, config: { gateway: DataGateway; 
           queries.set(id, query);
           const diagnostics = { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] };
           const preserveWindow = isBusinessSelection(source,compiled.limits.has(id)||compiled.automatic.has(id)) || (cascaded.has(id) && (!request.completeSources?.includes(id) || isBoundedResultSource(page.dataSources, id)));
-          if (request.purpose === 'complete' && !preserveWindow) { resultLimit=undefined; snapshot = await fetchComplete(query, runner, scope, request.signal, diagnostics, source.source.resultScope === 'complete', () => describeExportSource(page, id)); }
+          if (request.purpose === 'complete' && !preserveWindow) { resultLimit=undefined; snapshot = await fetchComplete(query, runner, scope, request.signal, diagnostics, source.source.resultScope === 'complete', () => describeExportSource(page, id), request.allowPartial); }
           else {
             snapshot = await runner.run(query, diagnostics, scope, request.signal);
             const corrected = correctedPageIndex(query, snapshot);

@@ -30,6 +30,13 @@ function harness(page = fixture()) {
 }
 
 describe('query cascade execution', () => {
+  it('exports available content after an upstream failure without running its dependent query', async () => {
+    const p=fixture(),calls:string[]=[];
+    const result=await prepareExportSnapshots(p,{async fetchData(_query,context){calls.push(context!.dataSourceIds![0]);throw Object.assign(new Error('unavailable'),{code:'DQE_FORBIDDEN'});}},new Map(),new Map(),new AbortController().signal,undefined,2026,[],undefined,undefined,{allowPartial:true});
+    expect(calls).toEqual([base]);
+    expect(result.get(base)?.status).toBe('error');
+    expect(result.get(detail)?.status).toBe('error');
+  });
   it('waits for raw rows, sends a set once, pivots two measures and preserves the main order', async () => {
     const h=harness(); expect(h.calls.map(c=>c.id)).toEqual([base]);
     h.calls[0].resolve({rows:[...projects('B'),...projects('A')],totalCount:99}); await flush();

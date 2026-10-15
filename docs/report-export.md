@@ -43,12 +43,14 @@ await handle.withExportView(async ({ target, paper, wideElements, signal }) => {
 - 全部内容分区、内容分区组和 Tabs 均展开，表格包含当前已应用筛选范围内的全部匹配行。
 - 声明为Top5等有限选择的主查询保留其集合范围；级联明细完整性按[查询结果绑定规则](cascading-queries.md#4-主集合与完整明细的边界)核验。
 - 日期输入、分页、选择、链接和详情浮层不进入导出；期间文字保留捕获值。详情专用查询不执行。
-- 使用同一已认证数据网关；不复用初始快照或当前分页。排序与表头筛选也保留。
+- 使用同一已认证数据网关，正常重新取得全部匹配行而非直接下载初始快照或当前分页；重新取数失败时按下述可用内容规则保留页面数据。排序与表头筛选也保留。
+- 整页下载按可用内容继续：单个数据源取数或计算失败不阻断其余内容；后续分页取数失败时保留此前成功取得的行，普通查询与组合查询源均适用。重新取数完全失败但点击下载时已有就绪数据时，保留捕获的页面数据；没有可用数据的组件按空数据呈现。全部动态查询失败时，静态标题和正文仍可下载。不自动补零，不把查询失败当成真实零值。
+- 不完整数据的诊断保留在控制台；保留部分分页或页面数据时打印 `EXPORT_PARTIAL_DATA`，标记 `completeness: 'unverified'`，不输出查询体、筛选值或业务行。捕获数据保留原总数，普通组件可沿用部分数据提示；下载成功不代表数据完整。
 - 每个导出结果上限 10,000 行，整次准备上限 60 秒；PDF 编码和保存时间不计入。超限、提前结束、分页总数缺失或变化明确失败；无分页查询需 totalCount 或显式 resultScope: complete 完整结果契约，无截断或当前页降级。
 - 普通查询完整取数时，若累计行数超过接口声明的总数，控制台打印 `EXPORT_TOTAL_COUNT_MISMATCH` 警告并继续导出已收到的全部行；停止后续分页，不按错误总数截断，也不自动去重。此时数据完整性未确认，PDF 中保留收到的数据，警告仅输出到控制台。警告包含页面与修订 ID、数据源 ID、请求 offset/limit、本次与累计行数、接口总数及 `completeness: 'unverified'`，不输出查询体、筛选值或业务数据。其他完整性错误仍明确失败，组合查询源仍按其完整性规则校验。
 - 该警告正文直接显示异常数据源 ID 和关联组件的标题、ID；详情中的 `dataSourcePath` 指向数据源声明，`components` 列出组件类型、标题、所属内容分区、组件路径 `componentPath` 和数据绑定路径 `bindingPath`。共享数据源列出全部引用（包含 Tab 和组合卡内的组件）；`boundSourceId` 是组件直接绑定的源，`relation: 'dependency'` 表示异常源是它的上游依赖，`direct` 表示直接绑定。标题来自已解析的页面声明，不输出结果行或查询条件。
 - A4 多页由集成应用编码器完成；`wideElements` 对应 `data-export-orientation="landscape"` 和自然宽度提示，由编码器决定横向分页或缩放。引擎没有全局打印样式。
-- 冻结的是查询作用域；重新取数不会承诺数据库快照隔离。AI 总结使用捕获的已完成静态结论，尚未完成则拒绝导出。
+- 冻结的是查询作用域；重新取数不会承诺数据库快照隔离。AI 总结使用点击下载时已有的文字（含已流出的部分文字）；尚无文字或生成失败时呈现空态，不阻断其他内容。
 
 错误码：`EXPORT_NOT_READY`、`EXPORT_BUSY`、`EXPORT_CANCELLED`、`EXPORT_TIMEOUT`、`EXPORT_ROW_LIMIT`、`EXPORT_INCOMPLETE_DATA`、`EXPORT_RENDER_FAILED`。集成应用编码错误原样抛出；两类错误均清理临时 DOM。
 
@@ -89,7 +91,10 @@ node apps/playground/tests/report-pdf-browser.mjs
 node apps/playground/tests/report-pdf-appearance-browser.mjs
 node apps/playground/tests/report-pdf-fidelity-browser.mjs
 node apps/playground/tests/report-pdf-runtime-fidelity-browser.mjs
+node apps/playground/tests/report-pdf-partial-browser.mjs
 ```
+
+部分取数失败回归覆盖单源失败、后续分页失败、重新取数失败后保留已显示数据、全部动态源失败及依赖失败数据的 AI 总结，并实际生成 PDF、发起浏览器下载和检查临时视图清理。它使用合成数据网关，不代表真实 DQE/Relay 联通。
 
 浏览器测试期间不要同时构建或运行 `svelte-kit sync`，避免开发服务重载打断测试；可用 `REPORT_PDF_BASE_URL` 指定另一服务地址。
 

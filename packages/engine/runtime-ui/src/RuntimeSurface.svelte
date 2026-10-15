@@ -150,9 +150,11 @@
     if(pageState.phase!=='ready'||!stream||!surfaceRoot)throw new ExportViewError('EXPORT_NOT_READY','页面实例尚未就绪');
     // Capture every runtime value before the first await; later interactions stay independent.
     const page=JSON.parse(JSON.stringify(pageState.page)) as Page;
-    const summaries=Object.fromEntries([...summaryCapture].map(([id,get])=>[id,JSON.parse(JSON.stringify(get()))]));
-    for(const component of flattenPageComponents({sections:page.sections})) if(component.type==='aiSummary' && !['ready','empty'].includes(summaries[component.id]?.status))throw new ExportViewError('EXPORT_NOT_READY','AI 总结尚未完成，不能导出不完整页面');
-    const state={page,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:new Map(),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
+    const summaries=Object.fromEntries([...summaryCapture].map(([id,get])=>{
+      const value=get();
+      return [id,value.status==='ready'||value.status==='streaming'?{status:'ready' as const,text:value.text}:{status:'empty' as const}];
+    }));
+    const state={page,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
     const queries=stream.captureQueries();
     const program=stream.getSourceProgram();
     return exportController.run('page', controller => withPreparedExportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program},consume,options));

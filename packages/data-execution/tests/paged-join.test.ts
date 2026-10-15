@@ -16,6 +16,19 @@ async function read(view?:Partial<TableQueryView>,purpose:'screen'|'complete'='s
 }
 function rows(outputs:Map<string,DataSnapshot>){const s=outputs.get(root);if(s?.status!=='ready')throw Error(JSON.stringify(s));return s.rows;}
 describe('SourceProgram pagedJoin behavior',()=>{
+ it('retains earlier joined pages after a later query failure in a partial report read',async()=>{
+  const page=parsed(),gateway=officeGateway();
+  const program=createSourceProgram(page,{gateway:{async fetchData(query){
+   if((query.pagination?.offset??0)>0)throw Object.assign(new Error('unavailable'),{code:'DQE_UPSTREAM_ERROR'});
+   return gateway.fetchData(query);
+  }}});
+  const outputs=new Map<string,DataSnapshot>();
+  try {
+   for await(const update of program.read({roots:[root],conditions:initialFilterValues(page.filters??[]),views:new Map([[root,{...defaultSourceView(page,root),sort:[{field:'analysis-meeting-rate',direction:'desc'}]}]]),purpose:'complete',allowPartial:true}))outputs.set(update.sourceId,update.snapshot);
+   expect(rows(outputs)).toHaveLength(3);
+   expect(outputs.get(root)).toMatchObject({status:'ready',totalCount:3});
+  } finally {program.dispose();}
+ });
  it('globally switches the first page and preserves independent ordinary result',async()=>{
   expect(rows(await read()).map(r=>r['rep-office-code'])).toEqual(['SH-01','BJ-01','GD-01']);
   const result=await read({sort:[{field:'analysis-meeting-rate',direction:'desc'}]});

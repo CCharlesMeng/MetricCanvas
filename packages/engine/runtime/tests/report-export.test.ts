@@ -152,3 +152,32 @@ it('keeps a static business TopN on a graph without treating it as an export pag
  const result=await prepareExportSnapshots(page,gateway,stream.captureQueries(),initialFilterValues(page.filters??[]),new AbortController().signal);
  expect(result.get('sales')).toMatchObject({status:'ready',rows:expect.any(Array)});const snapshot=result.get('sales');expect(snapshot?.status==='ready'&&snapshot.rows.length).toBe(5);expect(calls.every(query=>query.pagination===undefined)).toBe(true);off();
 });
+
+function availableExport(page: ReturnType<typeof loaded>, gateway: DataGateway) {
+  return prepareExportSnapshots(page,gateway,new Map(),initialFilterValues(page.filters??[]),new AbortController().signal,undefined,2026,[],undefined,undefined,{allowPartial:true});
+}
+it('downloads healthy sources even when another source fails',async()=>{
+  const page=loaded();
+  page.dataSources.failed=structuredClone(page.dataSources.sales);
+  const failed=page.dataSources.failed.source;if(failed.type!=='query')throw Error('fixture');
+  failed.query.body.dsl_list[0].filter={time:{period:'month',is_aggregate:true}};
+  const table=structuredClone(page.sections[1].components[0]);
+  table.id='failed-table';table.data={main:'failed'};
+  page.sections[1].components.push(table);
+  const result=await availableExport(page,{async fetchData(_query,context){
+    if(context?.dataSourceIds?.includes('failed'))throw new Error('unavailable');
+    return {rows:[{entry:'available',amount:7}],totalCount:1};
+  }});
+  expect(result.get('sales')).toMatchObject({status:'ready',rows:[{entry:'available',amount:7}]});
+  expect(result.get('failed')).toMatchObject({status:'error'});
+});
+it('keeps downloaded pages when a later page fails and leaves strict exports strict',async()=>{
+  const page=loaded();
+  const gateway:DataGateway={async fetchData(query){
+    if(query.pagination?.offset)throw new Error('later page failed');
+    return {rows:Array.from({length:10},(_,i)=>({entry:String(i),amount:i})),totalCount:23};
+  }};
+  const result=await availableExport(page,gateway);
+  expect(result.get('sales')).toMatchObject({status:'ready',rows:Array.from({length:10},(_,i)=>({entry:String(i),amount:i})),totalCount:10});
+  await expect(prepareExportSnapshots(page,gateway,new Map(),initialFilterValues(page.filters??[]),new AbortController().signal)).rejects.toMatchObject({code:'EXPORT_INCOMPLETE_DATA'});
+});

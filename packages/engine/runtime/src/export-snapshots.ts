@@ -7,12 +7,12 @@ export class ExportViewError extends Error {
   constructor(public readonly code: 'EXPORT_NOT_READY' | 'EXPORT_BUSY' | 'EXPORT_ROW_LIMIT' | 'EXPORT_TIMEOUT' | 'EXPORT_INCOMPLETE_DATA' | 'EXPORT_RENDER_FAILED' | 'EXPORT_CANCELLED', message: string) { super(message); this.name = 'ExportViewError'; }
 }
 /** A thin complete-read adapter. Existing callers may supply captured ordinary queries. */
-export async function prepareExportSnapshots(page: Page, gateway: DataGateway, queries: ReadonlyMap<string, EffectiveQuery>, filters: FilterValues, signal: AbortSignal, diagnosticBase?: QueryDiagnosticContext, currentYear = new Date().getFullYear(), completeSources: readonly string[] = [], views?: ReadonlyMap<string, TableQueryView>, sharedProgram?: SourceProgram): Promise<Map<string, DataSnapshot>> {
+export async function prepareExportSnapshots(page: Page, gateway: DataGateway, queries: ReadonlyMap<string, EffectiveQuery>, filters: FilterValues, signal: AbortSignal, diagnosticBase?: QueryDiagnosticContext, currentYear = new Date().getFullYear(), completeSources: readonly string[] = [], views?: ReadonlyMap<string, TableQueryView>, sharedProgram?: SourceProgram, options: { allowPartial?: boolean } = {}): Promise<Map<string, DataSnapshot>> {
   const program = sharedProgram ?? createSourceProgram(page, { gateway, diagnostics: diagnosticBase });
   const result = new Map<string, DataSnapshot>();
   try {
-    for await (const update of program.read({ roots: [...visibleSourceIds(page)], conditions: filters, queries, views, purpose: 'complete', freshness: 'refresh', signal, currentYear, completeSources })) result.set(update.sourceId, update.snapshot);
-    for (const value of result.values()) if (value.status === 'error' || value.status === 'loading') throw new ExportViewError('EXPORT_INCOMPLETE_DATA', '导出查询或数据计算未完成');
+    for await (const update of program.read({ roots: [...visibleSourceIds(page)], conditions: filters, queries, views, purpose: 'complete', freshness: 'refresh', signal, currentYear, completeSources, allowPartial: options.allowPartial })) result.set(update.sourceId, update.snapshot);
+    if (!options.allowPartial) for (const value of result.values()) if (value.status === 'error' || value.status === 'loading') throw new ExportViewError('EXPORT_INCOMPLETE_DATA', '导出查询或数据计算未完成');
     return result;
   } catch (cause) {
     if (cause instanceof SourceRangeError) throw new ExportViewError(cause.code, cause.message);
