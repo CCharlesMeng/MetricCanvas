@@ -32,3 +32,10 @@ it('非法默认值和旧版本声明拒绝；页面参数不能绕过上限', (
   expect(resolvePageParams(paramPage).ok).toBe(true);
   expect(resolvePageParams(paramPage, { 'report-period': { start: '2026-11', end: '2026-11' } }).ok).toBe(false);
 });
+
+it('跨月不改变契约中的未来值校验回执', () => {
+  const invalid = load(); invalid.filters[0].default = '9999-12';
+  const october = validate(invalid);
+  vi.setSystemTime(new Date(2026, 10, 1));
+  expect(validate(invalid)).toEqual(october);
+});

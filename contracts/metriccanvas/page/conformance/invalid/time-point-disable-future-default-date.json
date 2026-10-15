@@ -72,7 +72,7 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/filters/1/default",
-      "message": "时间点不得晚于 2026-10-15"
+      "message": "时间点不得晚于当前日期"
     }
   ]
 }

@@ -453,7 +453,7 @@ export function validateTimePointValue(
   if (disableFuture) {
     const month = `${String(now.getFullYear()).padStart(4, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     const maximum = granularity === 'month' ? month : `${month}-${String(now.getDate()).padStart(2, '0')}`;
-    if (value > maximum) return `时间点不得晚于 ${maximum}`;
+    if (value > maximum) return granularity === 'month' ? '时间点不得晚于当前月份' : '时间点不得晚于当前日期';
   }
   return undefined;
 }

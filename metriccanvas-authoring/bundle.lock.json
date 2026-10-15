@@ -24,7 +24,7 @@
     },
     {
       "file": "contract-lock.json",
-      "sha256": "c2df7142430db52344fddaf69bce74792061dc69e2f29a0c4ea96d8e4125e1cf"
+      "sha256": "be6dd0f1ac09b3435716a4f95765033e0a99aad0741bbafba263ffe5103bdf68"
     },
     {
       "file": "contract-snapshot/authoring/publication-conformance.json",
@@ -44,7 +44,7 @@
     },
     {
       "file": "contract-snapshot/manifest.json",
-      "sha256": "f32c31f4a987b8fed7d60c3141c9d5e819dadd4843284196c8f843b882802d88"
+      "sha256": "6bd10266c142d797383093339b175b02cc803851c512e78bb8d05133e6463e0a"
     },
     {
       "file": "contract-snapshot/page/component-catalog.json",
@@ -888,11 +888,11 @@
     },
     {
       "file": "contract-snapshot/page/conformance/invalid/time-point-disable-future-default-date.json",
-      "sha256": "2e48566c7624cc3b2e1f7e0e039e309c06dc150d76c55dd385bfa5811051abe9"
+      "sha256": "e3ab5f0dd3f1242068e453c29062c52a533fbe2c16296c3d351c720f880f2f58"
     },
     {
       "file": "contract-snapshot/page/conformance/invalid/time-point-disable-future-default-month.json",
-      "sha256": "cd7cc6911357ecdd59337a8f63d07466a047f6163d5c1ab3eea2eafd72748131"
+      "sha256": "e7a0e1783ec50bfbf3100546aae1b6670803dcae9e05ecfbb9724d7c348f654e"
     },
     {
       "file": "contract-snapshot/page/conformance/invalid/time-point-initial-param-and-default.json",
@@ -2144,11 +2144,11 @@
     },
     {
       "file": "contract-snapshot/page/reference/errors/time-point-disable-future-default-date.json",
-      "sha256": "a7bcbd26e5f944e428d0ae9f2748fdafc2c1ee76e45dc5f73333c5f9e626e124"
+      "sha256": "2640c7a1c2f68387a15cd535c75443518a01b53ae984c583d86ba05719df66dc"
     },
     {
       "file": "contract-snapshot/page/reference/errors/time-point-disable-future-default-month.json",
-      "sha256": "0cb69c480bbf13b47d3bbcf8e0e5c27f481cce429fbf101b39bef72172db925f"
+      "sha256": "9249d61534ca20dec76e01460aaef0e69948c25a8a83bff1503d932541e0a58f"
     },
     {
       "file": "contract-snapshot/page/reference/errors/time-point-initial-param-and-default.json",
@@ -3020,7 +3020,7 @@
     },
     {
       "file": "scripts/page-validation-bridge.mjs",
-      "sha256": "8bc104f7b3e74b769536419ae8ce852b647217e1d6db540b047c7f6812f8f579"
+      "sha256": "3a82fd5933463232b52a59a3f22c8d4bbab2873763ccd71b6f1d88fd3d7d335a"
     },
     {
       "file": "scripts/PAGE-VALIDATOR-LICENSES.md",
@@ -3044,7 +3044,7 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/knowledge.json",
-      "sha256": "ef32689878c6d3be74e27a6ea6c34a9fe665776bc34dc3464c25d94561ae7123"
+      "sha256": "6231c3c9731714b8a95e02fde71250523d43aad15ab50cf07bd5d0f75b6c4254"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/local-workflow.md",
@@ -3976,11 +3976,11 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/errors/time-point-disable-future-default-date.json",
-      "sha256": "5f97067aca0eaf1744407214efdf5754667f76b76c398950a72961f33e323ed3"
+      "sha256": "1c264a5ce1a7a57428074214b175eb9fd5bec6ced4ba1d18e5b8d2a78ced7a20"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/errors/time-point-disable-future-default-month.json",
-      "sha256": "12d3c863f8bab5eb8c4e9d519ffd0b1aeaeee2e475ac58502fc45b488b2c813c"
+      "sha256": "bc20e930e32e7c0a74c048e359c8a9773076f474c1ddcf34a37e2f64c2fa161b"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/errors/time-point-initial-param-and-default.json",
@@ -4544,7 +4544,7 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/scripts/validate-page.mjs",
-      "sha256": "b8cd37d61743e7c3bc983f603bd5849b08172bf0fe4370859ce74b82a1164994"
+      "sha256": "41d75c99bd96607f03e562fe3b6f6614371326a4416ffcb4258c8448bb8ada73"
     },
     {
       "file": "skill/metriccanvas-local-authoring/SKILL.md",
@@ -5460,11 +5460,11 @@
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/errors/time-point-disable-future-default-date.json",
-      "sha256": "a7bcbd26e5f944e428d0ae9f2748fdafc2c1ee76e45dc5f73333c5f9e626e124"
+      "sha256": "2640c7a1c2f68387a15cd535c75443518a01b53ae984c583d86ba05719df66dc"
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/errors/time-point-disable-future-default-month.json",
-      "sha256": "0cb69c480bbf13b47d3bbcf8e0e5c27f481cce429fbf101b39bef72172db925f"
+      "sha256": "9249d61534ca20dec76e01460aaef0e69948c25a8a83bff1503d932541e0a58f"
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/errors/time-point-initial-param-and-default.json",
