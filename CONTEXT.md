@@ -124,6 +124,7 @@ _Avoid_: 返回值样例、组件字段配置
 
 **货币金额字段 (Money Field)**:
 结果字段契约中承载货币金额语义的标量字段。第一版使用 `type: money`、`role: measure`、`currency: CNY`，原始单位为元且只接受有限数字；展示策略仍由组件字段绑定决定。
+查询结果中的数值度量（`number` / `money`）先归一化为有限数字或缺失值 `null`，异常单元格不阻断其他数据。`nullable: false` 在查询数值度量上表示数据预期，实际缺失仅告警；维度、映射、结构及 inline 数据仍严格校验。
 _Avoid_: 普通数值金额、金额数据源、把 `cny-adaptive` 当作字段类型
 
 **嵌套明细字段 (Nested Detail Field)**:

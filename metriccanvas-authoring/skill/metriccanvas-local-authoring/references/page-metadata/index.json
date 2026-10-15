@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.22",
-  "schemaSha256": "48844824923af573b27be8c9c53d7be88910b12628c548cefdcb9362b7612fc5",
+  "schemaVersion": "6.24",
+  "schemaSha256": "1b4431158377bb109d4802945a5307f4439dfd3a862b89b9adb188939ec1280a",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -35,7 +35,8 @@
         "pageParam",
         "groupedPageParams",
         "timeWindow",
-        "filterTextValueReference"
+        "filterTextValueReference",
+        "textValueComposition"
       ],
       "keywords": [
         "params-and-text-values",
@@ -47,7 +48,8 @@
         "time-params-page",
         "grouped-params-page",
         "grouped-scalar-params-page",
-        "report-filter-text-page"
+        "report-filter-text-page",
+        "text-composition-page"
       ],
       "rules": [
         "page-param-id-unique",
@@ -59,7 +61,8 @@
         "optional-param-not-in-required-text",
         "filter-text-declared",
         "filter-text-format-compatible",
-        "filter-text-capability"
+        "filter-text-capability",
+        "text-value-composition"
       ]
     },
     "data-sources.md": {
@@ -81,7 +84,8 @@
       "examples": [
         "query-dashboard",
         "paged-join-page",
-        "paged-join-fixed-rank-page"
+        "paged-join-fixed-rank-page",
+        "query-numeric-tolerance"
       ],
       "rules": [
         "query-initial-rows-normalize",
@@ -116,7 +120,8 @@
       ],
       "examples": [
         "grouped-fields-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "query-numeric-tolerance"
       ],
       "rules": [
         "grouped-query-fields-unique",
@@ -198,7 +203,8 @@
       ],
       "examples": [
         "filters-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "time-point-min-page"
       ],
       "rules": [
         "filter-id-unique",
@@ -210,7 +216,8 @@
         "default-level-declared",
         "hierarchy-picker-requires-hierarchy",
         "filter-depends-on",
-        "hidden-hierarchy-picker-needs-map"
+        "hidden-hierarchy-picker-needs-map",
+        "time-point-min"
       ]
     },
     "sections-and-layout.md": {
@@ -411,7 +418,8 @@
         "报告页头 reportHeader"
       ],
       "examples": [
-        "inline-report"
+        "inline-report",
+        "text-composition-page"
       ],
       "rules": [
         "schema-structure",
@@ -851,7 +859,9 @@
         "6.19",
         "6.20",
         "6.21",
-        "6.22"
+        "6.22",
+        "6.23",
+        "6.24"
       ]
     },
     {
@@ -990,6 +1000,51 @@
         "date-month-day",
         "period"
       ]
+    },
+    {
+      "pointer": "#/definitions/nonEmptyTextValue/anyOf/3",
+      "path": "@nonEmptyTextValue · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "ref": "#/definitions/textValueComposition"
+    },
+    {
+      "pointer": "#/definitions/textValueComposition",
+      "path": "@textValueComposition",
+      "required": "类型/分支",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/textValueComposition/properties/parts",
+      "path": "@textValueComposition.parts",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/textValueComposition/properties/parts/items",
+      "path": "@textValueComposition.parts[]",
+      "required": "每个数组项",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/textValueComposition/properties/parts/items/anyOf/0",
+      "path": "@textValueComposition.parts[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/textValueComposition/properties/parts/items/anyOf/1",
+      "path": "@textValueComposition.parts[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "ref": "#/definitions/textValueReference"
+    },
+    {
+      "pointer": "#/definitions/textValueComposition/properties/parts/items/anyOf/2",
+      "path": "@textValueComposition.parts[] · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "ref": "#/definitions/filterTextValueReference"
     },
     {
       "pointer": "#/properties/meta/properties/description",
@@ -3475,8 +3530,7 @@
       "pointer": "#/definitions/embeddedInitialRows/properties/rows/items/additionalProperties",
       "path": "@embeddedInitialRows.rows[]{key}",
       "required": "动态键的值",
-      "module": "data-sources.md",
-      "ref": "#/definitions/fieldValue"
+      "module": "data-sources.md"
     },
     {
       "pointer": "#/definitions/embeddedInitialRows/properties/rows/items/propertyNames",
@@ -5081,6 +5135,12 @@
       ]
     },
     {
+      "pointer": "#/definitions/timePointFilter/properties/min",
+      "path": "@timePointFilter.min",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
       "pointer": "#/definitions/timePointFilter/properties/required",
       "path": "@timePointFilter.required",
       "required": "本分支可选",
@@ -5527,6 +5587,13 @@
       "required": "独立分支（不合并required）",
       "module": "params-and-text-values.md",
       "ref": "#/definitions/filterTextValueReference"
+    },
+    {
+      "pointer": "#/definitions/textValue/anyOf/3",
+      "path": "@textValue · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "ref": "#/definitions/textValueComposition"
     },
     {
       "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/subtitleFormat",
@@ -10366,6 +10433,30 @@
       "pointer": "#/sections/0/components/0/props/asOf/value"
     },
     {
+      "schemaPointer": "#/definitions/nonEmptyTextValue/anyOf/3",
+      "module": "params-and-text-values.md",
+      "file": "examples/text-composition-page.json",
+      "pointer": "#/sections/0/components/0/props/title"
+    },
+    {
+      "schemaPointer": "#/definitions/textValueComposition/properties/parts/items/anyOf/0",
+      "module": "params-and-text-values.md",
+      "file": "examples/text-composition-page.json",
+      "pointer": "#/sections/0/components/0/props/title/parts/1"
+    },
+    {
+      "schemaPointer": "#/definitions/textValueComposition/properties/parts/items/anyOf/1",
+      "module": "params-and-text-values.md",
+      "file": "examples/text-composition-page.json",
+      "pointer": "#/sections/0/components/0/props/title/parts/2"
+    },
+    {
+      "schemaPointer": "#/definitions/textValueComposition/properties/parts/items/anyOf/2",
+      "module": "params-and-text-values.md",
+      "file": "examples/text-composition-page.json",
+      "pointer": "#/sections/0/components/0/props/title/parts/0"
+    },
+    {
       "schemaPointer": "#/definitions/dashboardToolbar/anyOf/0",
       "module": "page.md",
       "file": "examples/reference-branches-page.json",
@@ -10578,8 +10669,8 @@
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/5",
       "module": "compute.md",
-      "file": "examples/compute-page.json",
-      "pointer": "#/dataSources/targets/compute/0"
+      "file": "examples/query-numeric-tolerance.json",
+      "pointer": "#/dataSources/samples/compute/0"
     },
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/6",
@@ -10638,8 +10729,8 @@
     {
       "schemaPointer": "#/definitions/fieldValue/anyOf/1",
       "module": "fields.md",
-      "file": "examples/component-rankingDetailCard.json",
-      "pointer": "#/dataSources/customers/source/initial/rows/0/events"
+      "file": "examples/component-fieldText.json",
+      "pointer": "#/dataSources/notes/source/rows/0/items"
     },
     {
       "schemaPointer": "#/definitions/dataSource/anyOf/1",
@@ -10686,8 +10777,8 @@
     {
       "schemaPointer": "#/definitions/queryField/anyOf/3",
       "module": "fields.md",
-      "file": "examples/query-cascade-page.json",
-      "pointer": "#/dataSources/project-efficiency-bottom5/fields/rep-office-time"
+      "file": "examples/query-numeric-tolerance.json",
+      "pointer": "#/dataSources/samples/fields/rate"
     },
     {
       "schemaPointer": "#/definitions/queryDataSource/properties/fields/anyOf/1",
@@ -10947,8 +11038,8 @@
     {
       "schemaPointer": "#/definitions/timeRangeFilter/properties/default/anyOf/1",
       "module": "filters.md",
-      "file": "examples/paged-join-page.json",
-      "pointer": "#/filters/0/default"
+      "file": "examples/text-composition-page.json",
+      "pointer": "#/filters/1/default"
     },
     {
       "schemaPointer": "#/definitions/timeRangeFilter/properties/default/anyOf/2",
@@ -10977,7 +11068,7 @@
     {
       "schemaPointer": "#/properties/filters/items/oneOf/2",
       "module": "page.md",
-      "file": "examples/non-dimension-bindings-page.json",
+      "file": "examples/text-composition-page.json",
       "pointer": "#/filters/0"
     },
     {
@@ -11024,6 +11115,12 @@
       "module": "params-and-text-values.md",
       "file": "examples/report-filter-text-page.json",
       "pointer": "#/sections/2/components/0/props/body"
+    },
+    {
+      "schemaPointer": "#/definitions/textValue/anyOf/3",
+      "module": "params-and-text-values.md",
+      "file": "examples/text-composition-page.json",
+      "pointer": "#/sections/0/components/0/props/subtitle"
     },
     {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/1",
@@ -11569,5 +11666,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "4f1479afcffdc6175250869d08aa614f9f5973cd2ca138b0249d1ef2b681e189"
+  "semanticSourceDigest": "76b464ebf74124c5242d515584c092e335a345443905a5ef93aaee0d8d791af6"
 }

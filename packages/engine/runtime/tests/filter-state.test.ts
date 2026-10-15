@@ -220,3 +220,45 @@ describe('筛选状态 store:订阅方异常隔离(write 永不 throw)', () => {
     expect(pushes[pushes.length - 1].get('f-region')).toEqual(region);
   });
 });
+
+describe('绑定声明的时间点下限', () => {
+  const declarations = [{ id: 'month', type: 'timePoint', granularity: 'month', required: true, default: '2026-10', min: '2020-06' }] as const;
+  const point = (value: string): FilterValue => ({ type: 'timePoint', granularity: 'month', value });
+  it('直接、批量、键盘等回写共用下限，越界或清空不推送状态', () => {
+    const state = createFilterState(new Map([['month', point('2026-10')]]), declarations);
+    const { pushes } = collect(state);
+    state.write('month', point('2020-05')); state.write('month', null);
+    state.writeMany([['month', point('2019-12')]]);
+    expect(pushes).toHaveLength(1);
+    state.write('month', point('2020-06'));
+    expect(pushes).toHaveLength(2);
+    expect(pushes.at(-1)?.get('month')).toEqual(point('2020-06'));
+  });
+  it('URL忽略越界值，fromURL保留必选已应用值或默认值', () => {
+    const state = createFilterState(undefined, declarations);
+    state.fromURL('?month=2020-05', declarations);
+    const { pushes } = collect(state);
+    expect(pushes.at(-1)?.get('month')).toEqual(point('2026-10'));
+    state.fromURL('?month=2020-06', declarations);
+    state.fromURL('?month=2019-12', declarations);
+    expect(pushes.at(-1)?.get('month')).toEqual(point('2020-06'));
+  });
+  it('日期精度也按包含式下限判断', () => {
+    const dates = [{ id: 'day', type: 'timePoint', granularity: 'date', min: '2020-06-15' }] as const;
+    const state = createFilterState(undefined, dates); const { pushes } = collect(state);
+    state.write('day', { type: 'timePoint', granularity: 'date', value: '2020-06-14' });
+    state.write('day', point('2020-07'));
+    expect(pushes).toHaveLength(1);
+    state.write('day', { type: 'timePoint', granularity: 'date', value: '2020-06-15' });
+    expect(pushes).toHaveLength(2);
+    state.write('day', null); expect(pushes.at(-1)?.has('day')).toBe(false);
+  });
+});
+
+
+it('时间点下限拒绝越界初始状态，序列化沿用已绑定的URL键', () => {
+  const declarations = [{ id: 'month', type: 'timePoint', granularity: 'month', min: '2020-06', urlParams: { value: 'period' } }] as const;
+  expect(() => createFilterState(new Map([['month', { type: 'timePoint', granularity: 'month', value: '2020-05' }]]), declarations)).toThrow('初值');
+  const state = createFilterState(new Map([['month', { type: 'timePoint', granularity: 'month', value: '2020-06' }]]), declarations);
+  expect(state.toURL()).toBe('period=2020-06');
+});

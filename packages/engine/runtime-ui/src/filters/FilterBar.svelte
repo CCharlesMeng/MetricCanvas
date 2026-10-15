@@ -108,7 +108,7 @@
         <span data-filter-display>{declaration.label ?? '布尔筛选'}</span>
       </label>
     {:else if readOnly && declaration.type === 'timePoint'}
-      <TimePointFilter label={declaration.label} required={declaration.required} granularity={declaration.granularity}
+      <TimePointFilter label={declaration.label} required={declaration.required} min={declaration.min} granularity={declaration.granularity}
         value={timePointValue(declaration.id)} readOnly onchange={() => {}} />
     {:else if readOnly && declaration.type === 'timeRange'}
       <TimeRangeFilter label={declaration.label} required={declaration.required} precision={declaration.precision ?? 'date'}
@@ -157,6 +157,7 @@
         label={declaration.label}
         required={declaration.required}
         granularity={declaration.granularity}
+        min={declaration.min}
         value={timePointValue(declaration.id)}
         onchange={(value) => ontimepoint(declaration.id, declaration.granularity, value)}
       />

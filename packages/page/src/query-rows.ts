@@ -7,6 +7,7 @@ import {
 } from './field';
 import {
   fieldContractViolations,
+  queryResultFieldContract,
   type FieldContractIssue
 } from './result-field-contract';
 import type { Row } from './snapshot';
@@ -38,15 +39,25 @@ export type QueryRowNormalizationIssue =
     }
   | (FieldContractIssue & { queryField: string; itemQueryField?: string });
 
+/** 按字段和原因计数，不保留原始值、数据行或每行告警。 */
+export interface QueryRowNormalizationWarning {
+  code: 'INVALID_NUMERIC_VALUE' | 'NUMERIC_NULL_NOT_ALLOWED';
+  fieldId: string;
+  queryField: string;
+  itemFieldId?: string;
+  itemQueryField?: string;
+  count: number;
+}
+
 export type QueryRowsNormalizationResult =
-  | { ok: true; rows: Row[]; issues: [] }
+  | { ok: true; rows: Row[]; issues: []; warnings?: QueryRowNormalizationWarning[] }
   | { ok: false; issues: QueryRowNormalizationIssue[] };
 
 /**
  * 使用查询字段映射把 DQE 原始结果归一化为稳定页面字段。
  * PageDocument 的内嵌初始行与数据网关的动态响应共用此纯计算接缝;
- * 本模块只负责查询字段映射,字段类型、nullable 与日期时间规则
- * 全部委托结果字段契约校验 Module,不自持判断。
+ * 数值度量先转为有限数字或 null，再按查询结果契约校验。
+ * 维度、字段集合、明细结构与日期时间规则仍委托结果字段契约校验 Module。
  */
 export function normalizeQueryRows(
   value: unknown,
@@ -58,6 +69,26 @@ export function normalizeQueryRows(
 
   const issues: QueryRowNormalizationIssue[] = [];
   const rows: Row[] = [];
+  const contracts = Object.fromEntries(Object.entries(fieldMappings).map(([id, field]) => [id, queryResultFieldContract(field)]));
+  const warnings = new Map<string, QueryRowNormalizationWarning>();
+  const numericValue = (value: unknown, field: QueryFieldDefinition,
+    context: Omit<QueryRowNormalizationWarning, 'code' | 'count'>): unknown => {
+    if (field.role !== 'measure' || (field.type !== 'number' && field.type !== 'money')) return value;
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    // 不接受 Number('')、布尔、十六进制、千分位与百分号的隐式转换。
+    if (typeof value === 'string' && /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(value.trim())) {
+      const parsed = Number(value);
+      if (Number.isFinite(parsed)) return parsed;
+    }
+    if (value !== null || field.nullable === false) {
+      const code = value === null ? 'NUMERIC_NULL_NOT_ALLOWED' : 'INVALID_NUMERIC_VALUE';
+      const key = JSON.stringify([context.fieldId, context.itemFieldId, code]);
+      const warning = warnings.get(key);
+      if (warning) warning.count++;
+      else warnings.set(key, { ...context, code, count: 1 });
+    }
+    return null;
+  };
   value.forEach((rawRow, rowIndex) => {
     if (!isRecord(rawRow)) {
       issues.push({ code: 'ROW_NOT_OBJECT', rowIndex });
@@ -81,11 +112,11 @@ export function normalizeQueryRows(
 
       const mapped =
         mapping.type === 'recordList'
-          ? mapDetailItems(rawRow[mapping.queryField], mapping, rowIndex, fieldId)
-          : { value: rawRow[mapping.queryField], issues: [], misses: NO_MISSES };
+          ? mapDetailItems(rawRow[mapping.queryField], mapping, rowIndex, fieldId, numericValue)
+          : { value: numericValue(rawRow[mapping.queryField], mapping, { fieldId, queryField: mapping.queryField }), issues: [], misses: NO_MISSES };
       issues.push(...mapped.issues);
 
-      const violations = fieldContractViolations(mapped.value, mapping).filter(
+      const violations = fieldContractViolations(mapped.value, contracts[fieldId]).filter(
         (violation) =>
           violation.code !== 'DETAIL_MISSING_FIELD' ||
           !mapped.misses.has(`${violation.itemIndex}:${violation.itemFieldId}`)
@@ -103,7 +134,7 @@ export function normalizeQueryRows(
   });
 
   return issues.length === 0
-    ? { ok: true, rows, issues: [] }
+    ? { ok: true, rows, issues: [], ...(warnings.size ? { warnings: [...warnings.values()] } : {}) }
     : { ok: false, issues };
 }
 
@@ -124,7 +155,9 @@ function mapDetailItems(
   value: unknown,
   mapping: QueryRecordListFieldDefinition,
   rowIndex: number,
-  fieldId: string
+  fieldId: string,
+  numericValue: (value: unknown, field: QueryFieldDefinition,
+    context: Omit<QueryRowNormalizationWarning, 'code' | 'count'>) => unknown
 ): MappedDetailValue {
   if (!Array.isArray(value)) return { value, issues: [], misses: NO_MISSES };
   const issues: QueryRowNormalizationIssue[] = [];
@@ -147,7 +180,8 @@ function mapDetailItems(
         });
         continue;
       }
-      record[itemFieldId] = rawItem[itemMapping.queryField];
+      record[itemFieldId] = numericValue(rawItem[itemMapping.queryField], itemMapping,
+        { fieldId, queryField: mapping.queryField, itemFieldId, itemQueryField: itemMapping.queryField });
     }
     return record;
   });

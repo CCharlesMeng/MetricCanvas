@@ -1,0 +1,368 @@
+{
+  "schemaVersion": "6.24",
+  "id": "query-numeric-tolerance",
+  "layout": "report",
+  "meta": {
+    "description": "查询数值度量容错验收，全部为合成数据；首屏初始行和本地 DQE Sim 使用同一组样例。"
+  },
+  "dataSources": {
+    "samples": {
+      "fields": {
+        "sample": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "容错样例",
+          "label": "样例",
+          "nullable": false
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "容错数值",
+          "label": "数值",
+          "nullable": false,
+          "defaultFormat": "number-1",
+          "collapsible": true
+        },
+        "amount": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "queryField": "容错金额",
+          "label": "金额",
+          "nullable": false,
+          "defaultFormat": "number-2"
+        },
+        "target": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "目标值",
+          "label": "目标",
+          "nullable": false
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "完成率",
+          "defaultFormat": "percent-1"
+        },
+        "details": {
+          "type": "recordList",
+          "role": "detail",
+          "queryField": "容错明细",
+          "items": {
+            "fields": {
+              "label": {
+                "type": "string",
+                "role": "dimension",
+                "queryField": "条目",
+                "nullable": false
+              },
+              "value": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "明细数值",
+                "nullable": false
+              }
+            }
+          }
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "容错样例",
+                  "容错明细"
+                ],
+                "output_metrics": [
+                  "容错数值",
+                  "容错金额",
+                  "目标值"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "start": "2026-10",
+                    "end": "2026-10"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-10-15T00:00:00Z",
+          "rows": [
+            {
+              "容错样例": "正常",
+              "容错数值": 10,
+              "容错金额": 100,
+              "目标值": 100,
+              "容错明细": [
+                {
+                  "条目": "示例",
+                  "明细数值": 2
+                }
+              ]
+            },
+            {
+              "容错样例": "占位符",
+              "容错数值": "--",
+              "容错金额": "--",
+              "目标值": 100,
+              "容错明细": [
+                {
+                  "条目": "示例",
+                  "明细数值": "--"
+                }
+              ]
+            },
+            {
+              "容错样例": "空值",
+              "容错数值": null,
+              "容错金额": null,
+              "目标值": 100,
+              "容错明细": [
+                {
+                  "条目": "示例",
+                  "明细数值": null
+                }
+              ]
+            },
+            {
+              "容错样例": "数字字符串",
+              "容错数值": "12.5",
+              "容错金额": "1250.5",
+              "目标值": 100,
+              "容错明细": [
+                {
+                  "条目": "示例",
+                  "明细数值": "3.5"
+                }
+              ]
+            },
+            {
+              "容错样例": "真实零",
+              "容错数值": 0,
+              "容错金额": 0,
+              "目标值": 100,
+              "容错明细": [
+                {
+                  "条目": "示例",
+                  "明细数值": 0
+                }
+              ]
+            },
+            {
+              "容错样例": "负数",
+              "容错数值": -4,
+              "容错金额": -40,
+              "目标值": 100,
+              "容错明细": [
+                {
+                  "条目": "示例",
+                  "明细数值": -2
+                }
+              ]
+            },
+            {
+              "容错样例": "布尔",
+              "容错数值": true,
+              "容错金额": false,
+              "目标值": 100,
+              "容错明细": [
+                {
+                  "条目": "示例",
+                  "明细数值": true
+                }
+              ]
+            },
+            {
+              "容错样例": "空串",
+              "容错数值": "",
+              "容错金额": "",
+              "目标值": 100,
+              "容错明细": [
+                {
+                  "条目": "示例",
+                  "明细数值": ""
+                }
+              ]
+            }
+          ],
+          "totalCount": 8
+        }
+      },
+      "compute": [
+        {
+          "op": "ratio",
+          "numerator": "value",
+          "denominator": "target",
+          "output": "rate",
+          "onZeroDenominator": "null",
+          "scale": 100
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "id": "samples",
+      "components": [
+        {
+          "id": "header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "查询数值容错 · 合成数据验收"
+          }
+        },
+        {
+          "id": "samples-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "samples"
+          },
+          "props": {
+            "title": "八种返回值，保留全部数据行",
+            "subtitle": "占位符、空值、布尔和空串显示缺失；数字字符串转换，真实零和负数保留。",
+            "columns": [
+              {
+                "field": "sample",
+                "title": "DQE 返回值样例",
+                "sortable": true
+              },
+              {
+                "field": "value",
+                "title": "数值",
+                "sortable": true
+              },
+              {
+                "field": "amount",
+                "title": "金额（元）",
+                "sortable": true
+              },
+              {
+                "field": "rate",
+                "title": "完成率",
+                "sortable": true
+              }
+            ],
+            "rowKey": "sample"
+          }
+        },
+        {
+          "id": "zero-progress",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "samples"
+          },
+          "props": {
+            "title": "真实零进度",
+            "rows": [
+              {
+                "label": "真实零",
+                "valueField": {
+                  "field": "rate",
+                  "match": {
+                    "field": "sample",
+                    "equals": "真实零"
+                  },
+                  "data": "main"
+                }
+              }
+            ],
+            "progress": {
+              "valueField": {
+                "field": "rate",
+                "match": {
+                  "field": "sample",
+                  "equals": "真实零"
+                },
+                "data": "main"
+              },
+              "label": "真实零进度"
+            }
+          }
+        },
+        {
+          "id": "missing-progress",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "samples"
+          },
+          "props": {
+            "title": "缺失值进度",
+            "rows": [
+              {
+                "label": "占位符",
+                "valueField": {
+                  "field": "rate",
+                  "match": {
+                    "field": "sample",
+                    "equals": "占位符"
+                  },
+                  "data": "main"
+                }
+              }
+            ],
+            "progress": {
+              "valueField": {
+                "field": "rate",
+                "match": {
+                  "field": "sample",
+                  "equals": "占位符"
+                },
+                "data": "main"
+              },
+              "label": "缺失值进度"
+            }
+          }
+        },
+        {
+          "id": "samples-line",
+          "type": "lineChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "samples"
+          },
+          "props": {
+            "title": "有效点保留，缺失点留缺口",
+            "xField": "sample",
+            "series": [
+              {
+                "field": "value"
+              }
+            ],
+            "showValueLabels": true,
+            "categoryLabels": {
+              "mode": "all"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

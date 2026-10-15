@@ -4,9 +4,9 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "DQE 嵌套明细字段 event_impact 为 null，页面字段 impact 声明 nullable=false",
+      "message": "DQE 嵌套明细字段 event_title 为 null，页面字段 title 声明 nullable=false",
       "paths": [
-        "/dataSources/customers/source/initial/rows/0/events/0/event_impact"
+        "/dataSources/customers/source/initial/rows/0/events/0/event_title"
       ]
     }
   ],
@@ -19,7 +19,7 @@
               {
                 "events": [
                   {
-                    "event_impact": null
+                    "event_title": null
                   }
                 ]
               }

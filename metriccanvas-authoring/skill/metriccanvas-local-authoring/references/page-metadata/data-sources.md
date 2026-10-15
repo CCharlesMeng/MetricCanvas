@@ -6,6 +6,8 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 
 可选compute作用于已归一化行集。inline行使用页面字段id；query结果经queryField映射。静态JSON通过校验不证明真实DQE成功。
 
+查询数值度量在进入快照和 compute 前归一化为有限数字或 `null`，单个异常值不再拒绝整份查询；首屏 initial、动态响应和一层嵌套明细使用同一规则，详见[结果字段契约](fields.md#查询数值度量的容错)。`nullable: false` 的数值度量缺失只告警，查询字段缺失、维度错误与结构错误仍会失败。`query-numeric-tolerance` 是对应完整合成验收示例。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
@@ -31,7 +33,7 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 `paged-join-fixed-rank-page` 完整示例使用这一配置。运行场景的两张表独占不同组合源，共用普通查询定义：召开率降序第一页相同，但当前序号为 1、2、3，预签金额排名为 1、4、2。Sim 在完整月份行域按金额降序、编码升序生成名次，表格筛选与搜索保留它；这只是示范查询契约，不证明真实 DQE 已支持排名算子。
 
 
-页面协议 6.22。结构真源为本册[schema.json](schema.json)，SHA256 `48844824923af573b27be8c9c53d7be88910b12628c548cefdcb9362b7612fc5`。字段表自动生成；可选不等于有默认值。
+页面协议 6.24。结构真源为本册[schema.json](schema.json)，SHA256 `1b4431158377bb109d4802945a5307f4439dfd3a862b89b9adb188939ec1280a`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -351,11 +353,11 @@ Schema位置：`#/definitions/embeddedInitialRows/properties/rows/items`。
 
 ### `@embeddedInitialRows.rows[]{key}`
 
-Schema位置：`#/definitions/embeddedInitialRows/properties/rows/items/additionalProperties`。目标：[#/definitions/fieldValue](fields.md#schema-232f646566696e6974696f6e732f6669656c6456616c7565)。
+Schema位置：`#/definitions/embeddedInitialRows/properties/rows/items/additionalProperties`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| 引用 #/definitions/fieldValue | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| 开放JSON | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f656d626564646564496e697469616c526f77732f70726f706572746965732f726f77732f6974656d732f70726f70657274794e616d6573"></a>
 
@@ -1134,7 +1136,7 @@ Schema位置：`#/definitions/pagedJoinSource/properties/initial/properties/view
 
 ## 语义规则与反例（生成）
 
-- `query-initial-rows-normalize`：DQE 内嵌初始行按 queryField 归一化并满足结果字段契约。反例：[initial-row-missing-query-field](errors/initial-row-missing-query-field.json)、[initial-row-null-not-allowed](errors/initial-row-null-not-allowed.json)、[initial-row-type-mismatch](errors/initial-row-type-mismatch.json)、[initial-row-date-invalid](errors/initial-row-date-invalid.json)、[initial-row-semantic-html-too-large](errors/initial-row-semantic-html-too-large.json)、[initial-row-detail-missing-query-field](errors/initial-row-detail-missing-query-field.json)、[initial-row-detail-null-not-allowed](errors/initial-row-detail-null-not-allowed.json)、[initial-row-detail-type-mismatch](errors/initial-row-detail-type-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `query-initial-rows-normalize`：DQE 内嵌初始行按 queryField 归一化，数值度量容错，维度和结构严格校验。反例：[initial-row-missing-query-field](errors/initial-row-missing-query-field.json)、[initial-row-null-not-allowed](errors/initial-row-null-not-allowed.json)、[initial-row-type-mismatch](errors/initial-row-type-mismatch.json)、[initial-row-date-invalid](errors/initial-row-date-invalid.json)、[initial-row-semantic-html-too-large](errors/initial-row-semantic-html-too-large.json)、[initial-row-detail-missing-query-field](errors/initial-row-detail-missing-query-field.json)、[initial-row-detail-null-not-allowed](errors/initial-row-detail-null-not-allowed.json)、[initial-row-detail-type-mismatch](errors/initial-row-detail-type-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `inline-rows-contract`：inline 数据行满足结果字段契约（字段集合、类型、nullable、明细约束）。反例：[inline-row-undeclared-field](errors/inline-row-undeclared-field.json)、[inline-row-missing-field](errors/inline-row-missing-field.json)、[inline-row-null-not-allowed](errors/inline-row-null-not-allowed.json)、[inline-row-type-mismatch](errors/inline-row-type-mismatch.json)、[inline-row-date-invalid](errors/inline-row-date-invalid.json)、[inline-row-datetime-invalid](errors/inline-row-datetime-invalid.json)、[inline-row-semantic-html-type](errors/inline-row-semantic-html-type.json)、[inline-row-detail-undeclared-field](errors/inline-row-detail-undeclared-field.json)、[inline-row-detail-missing-field](errors/inline-row-detail-missing-field.json)、[inline-row-detail-null-not-allowed](errors/inline-row-detail-null-not-allowed.json)、[inline-row-detail-type-mismatch](errors/inline-row-detail-type-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `captured-at-valid`：内嵌初始行的 capturedAt 须为有效的 RFC 3339 日期时间。反例：[captured-at-invalid-month](errors/captured-at-invalid-month.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `pagination-initial-rows`：查询分页的内嵌初始行必须声明 totalCount 且是完整第一页。反例：[pagination-initial-without-total-count](errors/pagination-initial-without-total-count.json)、[pagination-initial-not-full-page](errors/pagination-initial-not-full-page.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -1145,6 +1147,7 @@ Schema位置：`#/definitions/pagedJoinSource/properties/initial/properties/view
 - [query-dashboard](examples/query-dashboard.json)：完整合法页面；查询仅为静态契约证据。
 - [paged-join-page](examples/paged-join-page.json)：完整合法页面；查询仅为静态契约证据。
 - [paged-join-fixed-rank-page](examples/paged-join-fixed-rank-page.json)：完整合法页面；查询仅为静态契约证据。
+- [query-numeric-tolerance](examples/query-numeric-tolerance.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

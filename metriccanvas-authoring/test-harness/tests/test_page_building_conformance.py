@@ -120,10 +120,13 @@ class PageBuildingConformanceTest(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(dqe.calls, [])
                 self.assertIsNone(result.artifact)
 
-    async def test_matches_typescript_page_validation_error_vectors(self) -> None:
+    async def test_matches_typescript_page_validation_result_vectors(self) -> None:
         vector = exported_contract("build-page-conformance.json")
         vector_input = vector["input"]
-        for case in vector["pageValidationErrorCases"]:
+        successes = vector["pageValidationSuccessCases"]
+        self.assertEqual({case["case"] for case in successes}, {"result-row-null-not-allowed", "result-row-type-mismatch"})
+        cases = [(case, False) for case in vector["pageValidationErrorCases"]] + [(case, True) for case in successes]
+        for case, should_succeed in cases:
             with self.subTest(case=case["case"]):
                 execution = case["execution"]
                 dqe = FakeDqeExecutionPort(
@@ -147,7 +150,13 @@ class PageBuildingConformanceTest(unittest.IsolatedAsyncioTestCase):
                     )
                 )
 
-                self.assertFalse(result.ok)
+                self.assertEqual(result.ok, should_succeed, result.issues)
+                self.assertEqual(len(dqe.calls), 1)
+                if should_succeed:
+                    self.assertIsNotNone(result.artifact)
+                    self.assertEqual(validate_page_document(result.artifact.document), [])
+                    self.assertEqual(result.artifact.document["dataSources"]["result"]["source"]["initial"]["rows"], execution["rows"])
+                    continue
                 self.assertEqual(
                     [(issue.code, issue.path, issue.stage) for issue in result.issues],
                     [

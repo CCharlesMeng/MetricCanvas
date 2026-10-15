@@ -191,7 +191,7 @@
       }
     ],
     "document": {
-      "schemaVersion": "6.22",
+      "schemaVersion": "6.24",
       "id": "tokens-by-region",
       "meta": {
         "description": "区域 Tokens 请求量对比"
@@ -1011,7 +1011,9 @@
           "message": "DQE 内嵌初始行缺少映射字段:Tokens请求量"
         }
       ]
-    },
+    }
+  ],
+  "pageValidationSuccessCases": [
     {
       "case": "result-row-null-not-allowed",
       "execution": {
@@ -1027,14 +1029,7 @@
         ],
         "totalCount": 2,
         "capturedAt": "2026-09-02T00:00:01.000Z"
-      },
-      "expectedIssues": [
-        {
-          "type": "SCHEMA_ERROR",
-          "path": "/dataSources/result/source/initial/rows/0/Tokens请求量",
-          "message": "DQE 字段 Tokens请求量 为 null，页面字段 field-2 声明 nullable=false"
-        }
-      ]
+      }
     },
     {
       "case": "result-row-type-mismatch",
@@ -1051,14 +1046,7 @@
         ],
         "totalCount": 2,
         "capturedAt": "2026-09-02T00:00:01.000Z"
-      },
-      "expectedIssues": [
-        {
-          "type": "SCHEMA_ERROR",
-          "path": "/dataSources/result/source/initial/rows/0/Tokens请求量",
-          "message": "DQE 字段 Tokens请求量 不符合页面字段 field-2 的类型 number"
-        }
-      ]
+      }
     }
   ]
 }

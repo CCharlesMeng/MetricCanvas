@@ -9,7 +9,7 @@ metricGrid、compactSummary、analysisStack等变体决定卡内结构；子组�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.22。结构真源为本册[schema.json](../schema.json)，SHA256 `48844824923af573b27be8c9c53d7be88910b12628c548cefdcb9362b7612fc5`。字段表自动生成；可选不等于有默认值。
+页面协议 6.24。结构真源为本册[schema.json](../schema.json)，SHA256 `1b4431158377bb109d4802945a5307f4439dfd3a862b89b9adb188939ec1280a`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

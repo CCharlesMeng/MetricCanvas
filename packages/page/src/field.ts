@@ -62,6 +62,7 @@ export function isValueFormatPreset(value: unknown): value is ValueFormatPreset 
 interface FieldMetadata {
   label?: string;
   unit?: string;
+  /** 查询数值度量的非空声明是数据预期，实际缺失仅告警；其他场景仍严格验证。 */
   nullable?: boolean;
   /**
    * 该度量字段是否允许被折叠算子求和（ADR-0046）。缺席即不允许：

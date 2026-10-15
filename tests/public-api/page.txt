@@ -174,6 +174,7 @@ QueryRecordListFieldDefinition
 QueryResultBinding
 QueryResultWhere
 QueryRowNormalizationIssue
+QueryRowNormalizationWarning
 QueryRowsNormalizationResult
 QueryScalarFieldDefinition
 QuerySemanticHtmlFieldDefinition
@@ -229,6 +230,7 @@ TextComponent
 TextLink
 TextProps
 TextValue
+TextValueComposition
 TextValueFormatter
 TextValueReference
 TextValueReferenceUsage
@@ -257,6 +259,7 @@ canonicalizeJson
 capabilityFloorErrors
 cascadeSourceIds
 collectFilterTextValueReferences
+collectTextValueCompositions
 collectTextValueReferences
 componentCatalog
 componentCatalogEntry
@@ -303,6 +306,7 @@ isQueryErrorCode
 isQueryInputDeclaration
 isQueryLanguage
 isRelativeTimeExpression
+isTextValueComposition
 isTextValueReference
 isTimeRangeValue
 isValueFormatPreset
@@ -321,6 +325,7 @@ pageSchema
 parsePage
 queryErrorDisposition
 queryResultDependencies
+queryResultFieldContract
 queryResultWhereErrors
 requiredMinorVersion
 resolveDataSourceFields

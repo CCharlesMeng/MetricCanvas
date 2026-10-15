@@ -4,9 +4,9 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "DQE 字段 amount 不符合页面字段 amount 的类型 money",
+      "message": "DQE 字段 region 不符合页面字段 region 的类型 string",
       "paths": [
-        "/dataSources/orders/source/initial/rows/0/amount"
+        "/dataSources/orders/source/initial/rows/0/region"
       ]
     }
   ],
@@ -17,7 +17,7 @@
           "initial": {
             "rows": [
               {
-                "amount": "120"
+                "region": 120
               }
             ]
           }

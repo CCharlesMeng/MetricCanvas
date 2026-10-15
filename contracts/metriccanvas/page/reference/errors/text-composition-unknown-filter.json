@@ -1,0 +1,33 @@
+{
+  "case": "text-composition-unknown-filter",
+  "invariant": "text-value-composition",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "文本取值引用了未声明的筛选器:missing",
+      "paths": [
+        "/sections/0/components/0/props/title/parts/0/filter"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "title": {
+                "parts": [
+                  {
+                    "filter": "missing"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/text-composition-unknown-filter.json"
+}

@@ -1,0 +1,147 @@
+{
+  "case": "text-composition-incompatible-format",
+  "invariant": "text-value-composition",
+  "input": {
+    "schemaVersion": "6.23",
+    "id": "text-composition-page",
+    "layout": "report",
+    "meta": {
+      "title": "报告主标题随时间筛选变化",
+      "description": "纯文本交互验收；无业务数据、无外部查询。"
+    },
+    "params": {
+      "display": [
+        {
+          "id": "report-name",
+          "type": "string",
+          "value": "经营分析报告"
+        }
+      ]
+    },
+    "filters": [
+      {
+        "id": "report-month",
+        "type": "timePoint",
+        "granularity": "month",
+        "label": "报告月份",
+        "default": "2026-09"
+      },
+      {
+        "id": "report-range",
+        "type": "timeRange",
+        "precision": "month",
+        "label": "对照期间",
+        "default": {
+          "from": "2026-01",
+          "to": "2026-06"
+        }
+      }
+    ],
+    "dataSources": {},
+    "sections": [
+      {
+        "id": "header",
+        "container": "plain",
+        "components": [
+          {
+            "id": "report-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": {
+                "parts": [
+                  {
+                    "filter": "report-month",
+                    "format": "number-2"
+                  },
+                  " ",
+                  {
+                    "param": "report-name"
+                  }
+                ]
+              },
+              "subtitle": {
+                "parts": [
+                  "打开时名称：",
+                  {
+                    "param": "report-name"
+                  },
+                  "；已应用月份：",
+                  {
+                    "filter": "report-month",
+                    "format": "period"
+                  }
+                ]
+              },
+              "filterIds": [
+                "report-month",
+                "report-range"
+              ],
+              "decoration": "shortBar",
+              "asOf": {
+                "label": "对照期间",
+                "value": {
+                  "parts": [
+                    {
+                      "filter": "report-range",
+                      "format": "period"
+                    },
+                    " 对照分析"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "instructions",
+        "container": "plain",
+        "components": [
+          {
+            "id": "instructions-text",
+            "type": "text",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "body": "切换报告月份，主标题中的时间随已应用筛选变化；清空显示“全部期间 经营分析报告”。对照期间可独立改为范围或同月。无业务数据与查询，本页只验收文本联动及导出捕获。"
+            }
+          },
+          {
+            "id": "two-filters",
+            "type": "text",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "body": {
+                "parts": [
+                  "当前：",
+                  {
+                    "filter": "report-month",
+                    "format": "period"
+                  },
+                  "；对照：",
+                  {
+                    "filter": "report-range",
+                    "format": "period"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/title/parts/0/format",
+      "message": "格式 number-2 与筛选器 report-month 的类型 timePoint 不相容"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "case": "time-point-min-wrong-precision",
+  "invariant": "time-point-min",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间点须为 YYYY-MM 格式",
+      "paths": [
+        "/filters/0/min"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "min": "2020-06-01"
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/time-point-min-wrong-precision.json"
+}

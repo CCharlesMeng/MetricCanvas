@@ -227,7 +227,7 @@ describe('raw DQE 页面查询', () => {
     }]);
   });
 
-  it('把嵌套明细类型错误定位到明细项与原始字段', () => {
+  it('把嵌套明细维度类型错误定位到明细项与原始字段', () => {
     const page = rawPage();
     page.dataSources.overview.fields.attributions = {
       queryField: '归因明细',
@@ -238,7 +238,7 @@ describe('raw DQE 页面查询', () => {
           delta: {
             queryField: '波动金额',
             type: 'number',
-            role: 'measure'
+            role: 'dimension'
           }
         }
       }

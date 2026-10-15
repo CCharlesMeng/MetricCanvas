@@ -1,6 +1,9 @@
-import { validateContractRows, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
+import { queryResultFieldContract, validateContractRows, type FieldDefinition, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
 import type { PagedJoinPlan } from './plan';
 export const rowFailure = (message: string) => Object.assign(new Error(message), { code: 'DQE_ROW_CONTRACT_ERROR' });
+const queryResultFields = (fields: Record<string, FieldDefinition>) => Object.fromEntries(
+  Object.entries(fields).map(([id, field]) => [id, queryResultFieldContract(field)])
+);
 export function memberRows(plan: PagedJoinPlan, id: string, result: DataSnapshot, keys?: readonly (string | number)[], window?: { offset: number; limit: number }): Map<string | number, Row> {
   if (result.status === 'error') throw Object.assign(new Error(result.error.message), { code: result.error.code });
   if (result.status === 'loading') throw rowFailure('成员结果尚未完成');
@@ -10,7 +13,7 @@ export function memberRows(plan: PagedJoinPlan, id: string, result: DataSnapshot
   if (window) {
     if (total === undefined || rows.length !== Math.min(window.limit, Math.max(0, total - window.offset))) throw rowFailure('选页结果缺少完整窗口或总数');
   } else if (total !== undefined && total !== rows.length) throw rowFailure('完整补列结果被截断');
-  if (!validateContractRows(rows, plan.members.get(id)!.fields).ok) throw rowFailure('成员结果违反原始字段契约');
+  if (!validateContractRows(rows, queryResultFields(plan.members.get(id)!.fields)).ok) throw rowFailure('成员结果违反原始字段契约');
   const member = plan.source.source.members[id], type = plan.members.get(id)!.fields[member.key.field].type;
   const resultRows = new Map<string | number, Row>();
   for (const row of rows) {
@@ -30,7 +33,7 @@ export function projectRows(plan: PagedJoinPlan, keys: readonly (string | number
     if (plan.source.source.ordinalField) row[plan.source.source.ordinalField] = 0;
     return row;
   });
-  if (!validateContractRows(rows, plan.source.fields).ok) throw rowFailure('最终投影违反字段契约');
+  if (!validateContractRows(rows, queryResultFields(plan.source.fields)).ok) throw rowFailure('最终投影违反字段契约');
   return rows;
 }
 export function ordinalRows(plan: PagedJoinPlan, rows: Row[], offset: number): Row[] {

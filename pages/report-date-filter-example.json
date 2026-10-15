@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.15",
+  "schemaVersion": "6.23",
   "id": "report-date-filter-example",
   "layout": "report",
   "meta": {
@@ -90,7 +90,15 @@
             "span": 12
           },
           "props": {
-            "title": "Tokens 月度用量报告",
+            "title": {
+              "parts": [
+                {
+                  "filter": "report-period-filter",
+                  "format": "period"
+                },
+                " Tokens 消耗分析报告"
+              ]
+            },
             "subtitle": "选择右上角的月份范围，当前期间与下方月度数据同步更新。",
             "decoration": "shortBar",
             "asOf": {

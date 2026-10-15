@@ -1,4 +1,4 @@
-import { matchesParamDeclaration, materializePageParams } from '@metriccanvas/page/internal';
+import { validateTimePointValue, matchesParamDeclaration, materializePageParams } from '@metriccanvas/page/internal';
 import type { PageParamValue } from '@metriccanvas/page/internal';
 type PageParamValues = ReadonlyMap<string, PageParamValue>;
 
@@ -27,7 +27,11 @@ export function seedPageParamFilters(page: import('@metriccanvas/page').Page, va
     } else if (declaration.type === 'timePoint') {
       // 单点 times 输入的两端相同，取哪一端都一样；缺值时不写初值＝不筛。
       const point = value as { start?: string } | undefined;
-      if (typeof point?.start === 'string') declaration.default = point.start;
+      if (typeof point?.start === 'string') {
+        const issue = validateTimePointValue(point.start, declaration.granularity, declaration.min);
+        if (issue) throw new Error(`筛选器 ${declaration.id}: ${issue}`);
+        declaration.default = point.start;
+      }
       else delete declaration.default;
     }
   }

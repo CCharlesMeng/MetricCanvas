@@ -2,7 +2,7 @@ import type { Page } from './page';
 import type { TypedError } from './errors';
 import { walkPageComponents } from './component-walk';
 import { hasQueryFieldMapping } from './field';
-import { validateContractRows } from './result-field-contract';
+import { queryResultFieldContract, validateContractRows } from './result-field-contract';
 
 export function pagedJoinErrors(page: Page): TypedError[] {
   const errors: TypedError[] = [];
@@ -80,7 +80,8 @@ export function pagedJoinErrors(page: Page): TypedError[] {
     const initial = source.initial;
     if (initial) {
       if (initial.view.pageIndex !== 0 || initial.view.pageSize !== source.pagination.pageSize || JSON.stringify(initial.view.sort) !== JSON.stringify(source.ordering.default) || initial.view.predicates.length || initial.view.search?.query.trim()) error(`${path}/source/initial/view`, '组合初始行必须匹配默认视图');
-      if (initial.rows.length !== Math.min(initial.totalCount, source.pagination.pageSize) || !validateContractRows(initial.rows, data.fields).ok) error(`${path}/source/initial/rows`, '组合初始行必须符合最终字段契约及完整第一页');
+      const fields = Object.fromEntries(Object.entries(data.fields).map(([id, field]) => [id, queryResultFieldContract(field)]));
+      if (initial.rows.length !== Math.min(initial.totalCount, source.pagination.pageSize) || !validateContractRows(initial.rows, fields).ok) error(`${path}/source/initial/rows`, '组合初始行必须符合最终字段契约及完整第一页');
       const keys = initial.rows.map(row => row[source.rowKey]);
       if (keys.some(v => v == null || (typeof v === 'string' && !v.trim())) || new Set(keys).size !== keys.length) error(`${path}/source/initial/rows`, '组合初始行键必须唯一非空');
     }

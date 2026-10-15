@@ -2,7 +2,7 @@
   import type { FieldBinding, MetricCardProps, Row } from '@metriccanvas/page/internal';
   import type { MetricDataSlots } from '../../shared/component-data';
   import { fieldRow, fieldValue, resolveField } from '../../shared/component-data';
-  import { formatValue, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
+  import { finiteNumber, formatValue, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
   import { changeValueColor, valueColorStyle } from '../../shared/value-color';
   import ProgressRing from './ProgressRing.svelte';
 
@@ -33,8 +33,9 @@
   }
 
   const progressValue = $derived(
-    props.progress ? Number(fieldValue(props.progress.valueField, data) ?? 0) : 0
+    props.progress ? finiteNumber(fieldValue(props.progress.valueField, data)) : undefined
   );
+  const progressMissingText = $derived(props.progress ? resolveField(props.progress.valueField, data).missingText : undefined);
 
   function activateLink(field: FieldBinding, event: MouseEvent) {
     const row = fieldRow(field, data);
@@ -141,7 +142,7 @@
     {/if}
     {#if props.progress}
       <div class="progress-slot">
-        <ProgressRing value={progressValue} ringPercent={props.progress.ringPercent} label={props.progress.label ?? '完成率'} />
+        <ProgressRing value={progressValue} missingText={progressMissingText} ringPercent={props.progress.ringPercent} label={props.progress.label ?? '完成率'} />
       </div>
     {/if}
   {:else}
@@ -152,6 +153,7 @@
         <div class="progress-slot">
           <ProgressRing
             value={progressValue}
+            missingText={progressMissingText}
             ringPercent={props.progress.ringPercent}
             label={props.progress.label ?? '完成率'}
           />

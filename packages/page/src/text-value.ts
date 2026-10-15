@@ -2,6 +2,7 @@ import type { ValueFormatPreset } from './field';
 import { isFilterTextValueReference } from './filter-text-value';
 import {
   isTextValueReference,
+  isTextValueComposition,
   textValueScope,
   type PageParamDeclaration,
   type PageParamValue,
@@ -71,6 +72,13 @@ function resolveTexts(document: unknown, resolution: TextValueResolution, preser
     }
     if (isFilterTextValueReference(value)) {
       return preserveFilters ? value : resolveFilterTextValue(value, resolution);
+    }
+    if (isTextValueComposition(value)) {
+      const parts = value.parts.map(visit);
+      // 缺失参数使整个文本属性缺席，避免留下误导性的半句标题。
+      if (parts.includes(ABSENT)) return ABSENT;
+      if (preserveFilters && parts.some(isFilterTextValueReference)) return { parts };
+      return parts.join('');
     }
     const next: Record<string, unknown> = {};
     for (const [key, child] of Object.entries(value)) {

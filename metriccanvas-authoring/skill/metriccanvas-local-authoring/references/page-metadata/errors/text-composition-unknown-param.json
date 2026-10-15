@@ -1,0 +1,35 @@
+{
+  "case": "text-composition-unknown-param",
+  "invariant": "text-value-composition",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "文本取值引用了未声明的页面参数:missing",
+      "paths": [
+        "/sections/0/components/0/props/title/parts/2/param"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "title": {
+                "parts": [
+                  "…",
+                  "…",
+                  {
+                    "param": "missing"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -2,7 +2,7 @@
 
 <a id="页面参数维度与时间的现行方案"></a>
 
-本文是页面参数的使用专题，承接[页面元数据总规范](PAGE-METADATA.md)。当前作者协议为 **6.16**；版本与可读范围以总规范及生成契约为准。本文先说明当前分层参数、打开与保存、顶部时间筛选和共享窗口规则，再说明程序化提取，最后集中保留旧数组参数的兼容用法。字段表由Schema生成，见[参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
+本文是页面参数的使用专题，承接[页面元数据总规范](PAGE-METADATA.md)。当前作者协议为 **6.24**；版本与可读范围以总规范及生成契约为准。本文先说明当前分层参数、打开与保存、顶部时间筛选和共享窗口规则，再说明程序化提取，最后集中保留旧数组参数的兼容用法。字段表由Schema生成，见[参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
 
 ## 阅读入口
 
@@ -67,9 +67,13 @@
 
 分层参数的显式非法输入不回退保存值，缺必需输入时不能执行。执行回执已核验的实际输入与筛选值为初始化权威，不再次用URL或模板值覆盖。
 
+6.23 起，主标题可使用 `{"parts":[{"filter":"report-period-filter","format":"period"}," 经营分析报告"]}`，将已应用时间与固定名称组合。参数片段仍在打开时固定，筛选片段随已应用状态更新；任一可选参数片段缺失则整个文本属性移除。完整场景见 [report-title-filter-example](pages/report-title-filter-example.json)。
+
 参数文字用 `{param:"report-period",format:"period"}` 显示固定期间。需要文字随读者筛选变化时，用 `{filter:"report-period-filter",format:"period"}`；两者分别引用参数ID和筛选器ID。精确格式与缺值规则见[文本取值参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
 
 ## 时间参数与顶部筛选
+
+时间点可在6.24起使用 `min` 指定包含式下限，格式须与 granularity 一致。例：`{"id":"report-month","type":"timePoint","granularity":"month","required":true,"default":"2026-10","min":"2020-06"}`。越界输入不能更新已应用月份；参数初值越界则拒绝初始化。该限制不裁剪近N期窗口；详细行为见[筛选声明](docs/page-metadata/filters.md#时间点下限624)，完整场景见[商务SDT单月报告](pages/business-sdt-report-monthly.json)。
 
 页面参数确定打开时的输入；时间筛选器保存页内可变状态。需要读者切换期间时，应同时声明筛选器、查询绑定、控件位置和期间文字。以下用法对应报告页头 `reportHeader`；dashboard 的顶部工具栏消费页面筛选声明，布局形态本身不能代替查询绑定。
 
@@ -440,7 +444,7 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 }
 ```
 
-该片段用于报告页头属性，显示实际参数值。引用是整个属性取值，不支持模板字符串拼接。时间参数可显示规范字符串，也可在支持的版本显式使用 `format:"period"`；可选参数缺值时，引用所在文本属性按既有规则移除。
+该片段用于报告页头属性，显示实际参数值。单个引用是整个属性取值；6.23 可用显式 `parts` 组合字符串与引用，仍不支持模板表达式。时间参数可显示规范字符串，也可在支持的版本显式使用 `format:"period"`；可选参数缺值时，引用所在文本属性按既有规则移除。
 
 <a id="8-实际页面与查阅入口"></a>
 

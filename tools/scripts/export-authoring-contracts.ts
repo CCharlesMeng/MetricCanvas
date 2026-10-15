@@ -387,7 +387,7 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
   const authoredStepEventSchema = await readFile(authoredAgentStepEvent, 'utf8');
   const authoredConformanceSchema = await readFile(authoredAgentConformance, 'utf8');
   const analysisIntents = await readFile(path.join(authoringContractRoot, 'authored/analysis-intents.json'), 'utf8');
-  // 历史预期仍冻结并核验摘要；当前契约只派生版本/布局升级，
+  // 历史预期仍冻结并核验摘要；当前契约显式投影已批准的版本/展示与数值容错差异，
   // 不从 Python 或浏览器构造器的输出反向更新业务预期。
   const buildPageVector = JSON.parse(await legacyContract('build-page-conformance.json'));
   const normalizedBuildPage = normalizePageDocument({ ...buildPageVector.expected.document, schemaVersion: versionPolicy.current });
@@ -400,6 +400,13 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
       if (field.role === 'measure' && field.type === 'number' && !field.defaultFormat) field.defaultFormat = 'number';
     }
   }
+  // 旧版把非空数值度量的 null 和数字字符串当成整页失败；当前两例必须成功。
+  const tolerantCases = new Set(['result-row-null-not-allowed', 'result-row-type-mismatch']);
+  buildPageVector.pageValidationSuccessCases = buildPageVector.pageValidationErrorCases
+    .filter((item: { case: string }) => tolerantCases.has(item.case))
+    .map(({ expectedIssues: _historicalErrors, ...item }: { expectedIssues: unknown; case: string }) => item);
+  buildPageVector.pageValidationErrorCases = buildPageVector.pageValidationErrorCases
+    .filter((item: { case: string }) => !tolerantCases.has(item.case));
   const buildPageConformance = json(buildPageVector);
   const agentConformance = await legacyContract('agent-conformance.json');
   outputs.set('exported/analysis-intents.json', analysisIntents);

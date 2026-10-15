@@ -126,7 +126,9 @@ export const embeddedInitialRowsZ = z
     capturedAt: z
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/),
-    rows: z.array(dataRowZ),
+    // 原始查询单元格先由 queryField 归一化；数值异常对象也须能到达容错接缝。
+    // 明细结构、维度类型和映射字段仍由 normalizeQueryRows 严格验证。
+    rows: z.array(z.record(z.string(), z.unknown())),
     totalCount: z.int().min(0).optional()
   })
   .meta({ id: 'embeddedInitialRows' });

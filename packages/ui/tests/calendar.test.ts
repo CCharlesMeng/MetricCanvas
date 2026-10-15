@@ -47,3 +47,10 @@ describe('日期选择器业务日期与提交边界', () => {
 
 import { calendarConformance } from '../fixtures/calendar-conformance';
 it('中性日历的边界向量', () => { for (const [precision, value, valid] of calendarConformance) expect(validCalendarValue(value, precision)).toBe(valid); });
+
+it('包含式下限阻止手工越界，月份与日期格式保持独立', () => {
+  expect(calendarDraft('2020-05', '', 'month', false, true, '2020-06')).toEqual({ ok: false, error: '日期不得早于 2020-06' });
+  expect(calendarDraft('2020-06', '', 'month', false, true, '2020-06').ok).toBe(true);
+  expect(calendarDraft('2020-06-14', '', 'date', false, true, '2020-06-15').ok).toBe(false);
+  expect(calendarDraft('2020-06-15', '', 'date', false, true, '2020-06-15').ok).toBe(true);
+});

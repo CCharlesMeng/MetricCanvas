@@ -3,22 +3,23 @@
   import { normalizeProgressValue, progressRingOption } from './ring-options';
 
   interface Props {
-    value: number;
+    value: number | undefined;
+    missingText?: string;
     ringPercent?: number;
     label?: string;
   }
 
-  let { value, ringPercent, label = '完成率' }: Props = $props();
-  const normalized = $derived(normalizeProgressValue(value));
+  let { value, ringPercent, label = '完成率', missingText = '—' }: Props = $props();
+  const normalized = $derived(value === undefined || !Number.isFinite(value) ? undefined : normalizeProgressValue(value));
   const visibleTrackPercent = $derived(normalizeProgressValue(ringPercent ?? 100));
-  const option = $derived(progressRingOption(normalized, visibleTrackPercent));
+  const option = $derived(progressRingOption(normalized ?? 0, visibleTrackPercent));
 </script>
 
-<div class="progress-ring" aria-label={`${label} ${normalized}%`}>
+<div class="progress-ring" aria-label={`${label} ${normalized === undefined ? missingText : `${normalized}%`}`}>
   <div class="chart" aria-hidden="true">
     <EChart {option} updateMode="merge" />
   </div>
-  <div class="number"><span class="value">{normalized}</span><span class="percent">%</span></div>
+  <div class="number"><span class="value">{normalized ?? missingText}</span>{#if normalized !== undefined}<span class="percent">%</span>{/if}</div>
   <span class="label">{label}</span>
 </div>
 

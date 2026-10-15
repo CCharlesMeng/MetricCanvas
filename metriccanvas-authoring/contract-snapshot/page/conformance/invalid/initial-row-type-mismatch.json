@@ -47,10 +47,10 @@
             "capturedAt": "2026-08-01T00:00:00Z",
             "rows": [
               {
-                "region": "华东",
+                "region": 120,
                 "city": "上海",
                 "stat_date": "2026-07-31",
-                "amount": "120",
+                "amount": 120.5,
                 "order_cnt": 3
               },
               {
@@ -366,8 +366,8 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/dataSources/orders/source/initial/rows/0/amount",
-      "message": "DQE 字段 amount 不符合页面字段 amount 的类型 money"
+      "path": "/dataSources/orders/source/initial/rows/0/region",
+      "message": "DQE 字段 region 不符合页面字段 region 的类型 string"
     }
   ]
 }

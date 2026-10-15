@@ -1,0 +1,21 @@
+{
+  "case": "time-point-min-invalid-month",
+  "invariant": "time-point-min",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间点不是有效月份",
+      "paths": [
+        "/filters/0/min"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "min": "2020-13"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

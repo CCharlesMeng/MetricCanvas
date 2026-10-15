@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-15",
+  "baseline": "e7769bb27e8cebf044477e2a42e3bffb35fc5fbd",
+  "scope": [
+    "Schema 6.23 explicit text composition and applied-filter titles",
+    "DQE number/money measure tolerance and missing-value presentation",
+    "Schema 6.24 inclusive timePoint.min and SDT monthly page"
+  ],
+  "pages": {
+    "monthly": "pages/business-sdt-report-monthly.json",
+    "manualReport": "pages/business-sdt-report.json",
+    "retainedCascade": "pages/business-sdt-cascade-example.json",
+    "title": "pages/report-title-filter-example.json",
+    "numericTolerance": "pages/query-numeric-tolerance.json"
+  },
+  "manualReportNormalization": "Asset id aligned with filename and explicit layout:report added; all manually authored queries, components and content retained.",
+  "retainedMainBehavior": [
+    "Complete signed number format family",
+    "Detached dimension defaults before request freezing",
+    "Non-blocking total-count mismatch export diagnostics",
+    "Shared execution, multi-query tables, table toolbar and browser PDF"
+  ],
+  "excluded": [
+    "Earlier customBlock prototype and its documentation",
+    "Unfinished SDT simulator expansion",
+    "Unrelated process files, evidence deletions and output folders"
+  ],
+  "localChecks": {
+    "pages": "23/23 passed",
+    "types": "pnpm check passed",
+    "build": "pnpm build passed",
+    "browser": "5 passed (Chrome; synthetic gateway replay for SDT queries)",
+    "python": "537 tests, OK, 1 skipped; final text-validator recheck 14 passed",
+    "complexity": "maximum 15, no violations",
+    "standaloneNode": "external types and installed CLI passed",
+    "contracts": "663 product, 4 authoring, 1 interface current",
+    "bundle": "2445 digest checks passed",
+    "unit": "233 files, 2063 passed, 4 skipped",
+    "whitespace": "git diff --check passed"
+  },
+  "evidenceBoundaries": [
+    "Static, deterministic, browser and local Sim checks do not prove real DQE, Relay, Java, DS models or deployment.",
+    "Existing original workspace remains unchanged; delivery assembled on current origin/main."
+  ],
+  "sourceHashes": {
+    "pages/business-sdt-report.json": "33172d7e9d46683ac2398d0c5df6d4b441c8fb5e3a487de89cb1fb300f2ddc40",
+    "pages/business-sdt-report-monthly.json": "9cd5e4b55408f6a452dcd436f3d964aa5f9ea6e37ce9e9a19a9f13bfc5ebcc0e",
+    "packages/page/src/version.ts": "0f83761faffb88e8d025782296199cae997ef93ef8a2e7f76a3a71ff0bab38ff",
+    "packages/page/src/query-rows.ts": "e19423853c44150b694b400216c9c883708978b550ffae0f37da35b0d00f35d5",
+    "metriccanvas-authoring/bundle.lock.json": "28a9a78953e594144139a8085c460149d9039068f6c713462b5e15fdb5872ac3"
+  }
+}

@@ -13,7 +13,7 @@ from jsonschema.exceptions import ValidationError
 
 from metriccanvas_authoring.runtime_assets import bundle_root
 from .grouped_params import declarations as _param_declarations, query_reference_issues
-from .filter_text_values import capability_paths as _filter_text_capability_paths, reference_issues as _filter_text_reference_issues
+from .filter_text_values import capability_paths as _filter_text_capability_paths, reference_issues as _filter_text_reference_issues, composition_paths as _text_composition_paths
 
 
 BUNDLE_ROOT = bundle_root()
@@ -36,7 +36,7 @@ class PageContractIssue:
 
 def _uses_product_bridge(node):
     if isinstance(node, list): return any(_uses_product_bridge(v) for v in node)
-    if isinstance(node, dict): return node.get('type') == 'pagedJoin' or node.get('mode') == 'numberRange' or any(_uses_product_bridge(v) for v in node.values())
+    if isinstance(node, dict): return node.get('type') == 'pagedJoin' or (node.get('type') == 'timePoint' and 'min' in node) or node.get('mode') == 'numberRange' or any(_uses_product_bridge(v) for v in node.values())
     return False
 
 
@@ -79,18 +79,18 @@ def _validate_python_document(value: Any) -> list[PageContractIssue]:
     optional_materialized = _materialize_validation_text_values(value)
     optional_issues = _schema_issues(validator, optional_materialized)
     if optional_issues:
-        optional_issues.append(
-            PageContractIssue(
-                "SCHEMA_ERROR",
-                "/params",
-                "optional page parameters cannot be used by required text properties",
-            )
-        )
+        optional_issues.extend(_optional_text_issue_hint(value))
         return optional_issues
     row_issues = [*_query_initial_row_issues(value), *_inline_row_issues(value)]
     from .report_date_filters import report_date_issues
     from .query_results import query_result_issues
     return [*row_issues, *_invariant_issues(value), *_navigation_issues(value), *[PageContractIssue(*issue) for issue in report_date_issues(value)], *[PageContractIssue(*issue) for issue in query_result_issues(value, _resolved_fields)]]
+
+
+def _optional_text_issue_hint(value: Any) -> list[PageContractIssue]:
+    if any(declaration.get("required") is False for declaration in _param_declarations(value)):
+        return [PageContractIssue("SCHEMA_ERROR", "/params", "optional page parameters cannot be used by required text properties")]
+    return []
 
 
 def _signed_number_capability_issues(value: Mapping[str, Any], minor: int) -> list[PageContractIssue]:
@@ -140,6 +140,10 @@ def _parameter_capability_issues(value: Mapping[str, Any]) -> list[PageContractI
     if isinstance(value.get("params"), Mapping) and not value["params"]:
         return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs cannot be empty")]
     minor = int(value["schemaVersion"].split(".")[1])
+    if minor < 23:
+        paths = _text_composition_paths(value)
+        if paths:
+            return [PageContractIssue("SCHEMA_ERROR", path, "文本片段组合由6.23引入") for path in paths]
     toolbar_issues = _table_toolbar_capability_issues(value, minor)
     if toolbar_issues:
         return toolbar_issues
@@ -254,6 +258,17 @@ def _composite_structure_issues(value: Any) -> list[PageContractIssue]:
 _MISSING_TEXT_VALUE = object()
 
 
+def _is_validation_text_composition(value: Mapping[str, Any]) -> bool:
+    return set(value) == {"parts"} and isinstance(value["parts"], list)
+
+
+def _materialize_text_parts(parts: list[Any], visit: Callable[[Any], Any]) -> Any:
+    resolved = [visit(part) for part in parts]
+    if any(part is _MISSING_TEXT_VALUE for part in resolved):
+        return _MISSING_TEXT_VALUE
+    return "".join(resolved)
+
+
 def _materialize_validation_text_values(value: Any) -> Any:
     if not isinstance(value, Mapping):
         return value
@@ -278,6 +293,8 @@ def _materialize_validation_text_values(value: Any) -> Any:
             return "validation-value" if required[param_id] else _MISSING_TEXT_VALUE
         if isinstance(child.get("filter"), str) and set(child).issubset({"filter", "format"}):
             return "validation-value"
+        if _is_validation_text_composition(child):
+            return _materialize_text_parts(child["parts"], visit)
         return {
             key: resolved
             for key, item in child.items()
@@ -2397,6 +2414,9 @@ def _field_value_issues(
     *,
     query_mapping: bool = False,
 ) -> list[PageContractIssue]:
+    # 查询数值度量由共享执行归一化为有限数字或 null，不阻断页面。
+    if query_mapping and field.get("role") == "measure" and field.get("type") in {"number", "money"}:
+        return []
     violation = _scalar_violation(value, field)
     if violation == "null":
         return [PageContractIssue("SCHEMA_ERROR", path, "field does not allow null")]
@@ -2450,15 +2470,7 @@ def _field_value_issues(
                     )
                 )
                 continue
-            child_violation = _scalar_violation(item[source_name], raw_item_field)
-            if child_violation is not None:
-                issues.append(
-                    PageContractIssue(
-                        "SCHEMA_ERROR",
-                        child_path,
-                        "detail item field violates its scalar contract",
-                    )
-                )
+            issues.extend(_field_value_issues(item[source_name], raw_item_field, child_path, query_mapping=query_mapping))
 
     for item_index, item in enumerate(value):
         check_record_item(item_index, item)

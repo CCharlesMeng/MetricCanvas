@@ -198,10 +198,10 @@ describe('v4 data source 与 binding 校验', () => {
     expect(validate(valid)).toEqual([]);
 
     const invalidRow: any = structuredClone(valid);
-    invalidRow.dataSources.sales.source.initial.rows = [{ region: '华东', gmv: '错误' }];
+    invalidRow.dataSources.sales.source.initial.rows = [{ region: 42, gmv: 10 }];
     expect(validate(invalidRow)).toContainEqual(
       expect.objectContaining({
-        path: '/dataSources/sales/source/initial/rows/0/gmv'
+        path: '/dataSources/sales/source/initial/rows/0/region'
       })
     );
 

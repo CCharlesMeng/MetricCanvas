@@ -9,11 +9,12 @@
     precision: CalendarPrecision;
     range?: boolean;
     required?: boolean;
+    min?: string;
     disabled?: boolean;
     value: DateRangeValue | null;
     onchange: (value: DateRangeValue | null) => void;
   }
-  let { label, precision, range = false, required = false, disabled = false, value, onchange }: Props = $props();
+  let { label, precision, min, range = false, required = false, disabled = false, value, onchange }: Props = $props();
   const id = $props.id();
   let anchor: HTMLDivElement;
   let panel = $state<HTMLDivElement>();
@@ -35,7 +36,7 @@
   const selectedTo = $derived(start ? (hover && hover > start ? hover : start) : value?.to ?? '');
 
   function resetDraft() { from = value?.from ?? ''; to = value?.to ?? ''; start = ''; hover = ''; error = ''; }
-  $effect(() => { value; precision; range; untrack(() => { resetDraft(); open = false; }); });
+  $effect(() => { value; precision; range; min; untrack(() => { resetDraft(); open = false; }); });
   $effect(() => { if (disabled) open = false; });
 
   function position() {
@@ -89,20 +90,38 @@
 
   function show() {
     if (disabled || open) return;
-    resetDraft(); view = calendarView(value?.from ?? ''); level = precision;
-    active = value?.from ?? today; open = true;
+    resetDraft(); level = precision;
+    const initial = value?.from ?? today;
+    active = min && initial < min ? min : initial;
+    view = calendarView(active); open = true;
   }
   function close(focus = false) { open = false; start = ''; hover = ''; if (focus) firstInput?.focus(); }
-  function submit() {
+  function submit(event?: Event) {
     if (disabled) return;
-    const result = calendarDraft(from.trim(), to.trim(), precision, range, required);
+    const result = calendarDraft(from.trim(), to.trim(), precision, range, required, min);
     error = result.ok ? '' : result.error;
-    if (result.ok) { onchange(result.value); close(); }
+    if (result.ok) {
+      // Enter commits without blurring. A later native change event for the
+      // same applied value must not close a newly opened calendar.
+      if (event?.type === 'change' && result.value?.from === value?.from && result.value?.to === value?.to) return;
+      onchange(result.value); close();
+    }
   }
   function clear() { if (required || disabled) return; onchange(null); resetDraft(); close(true); }
-  function navigate(months: number) {
+  function canNavigate(months: number) {
     const next = shiftCalendar(view, months);
-    if (next.year >= 1 && next.year <= 9998) view = next;
+    if (next.year < 1 || next.year > 9998) return false;
+    if (!min) return true;
+    if (level === 'year') return Math.floor(next.year / 10) * 10 + 9 >= Number(min.slice(0, 4));
+    if (level === 'month') return next.year + (range ? 1 : 0) >= Number(min.slice(0, 4));
+    const last = range ? shiftCalendar(next, 1) : next;
+    return `${String(last.year).padStart(4, '0')}-${String(last.month).padStart(2, '0')}` >= min.slice(0, 7);
+  }
+  function navigate(months: number) { if (canNavigate(months)) view = shiftCalendar(view, months); }
+  function cellDisabled(cell: CalendarCell) {
+    if (!min) return false;
+    if (level === 'year') return cell.label < Number(min.slice(0, 4));
+    return cell.value < min.slice(0, level === 'month' ? 7 : 10);
   }
   function years() {
     const first = Math.floor(view.year / 10) * 10;
@@ -112,7 +131,7 @@
     })).map((row, i) => i === 2 ? row.slice(0, 2) : row);
   }
   function choose(cell: CalendarCell) {
-    if (disabled) return;
+    if (disabled || cellDisabled(cell)) return;
     if (level === 'year') { view = { ...view, year: cell.label }; level = 'month'; return; }
     if (level === 'month' && precision === 'date') { view = calendarView(cell.value); level = 'date'; return; }
     active = cell.value;
@@ -134,7 +153,7 @@
   async function focusCell(value: string) {
     await tick();
     if (!panel) return;
-    const button = [...panel.querySelectorAll<HTMLButtonElement>('[data-calendar-value]')].find(b => b.dataset.calendarValue === value);
+    const button = [...panel.querySelectorAll<HTMLButtonElement>('[data-calendar-value]')].find(b => b.dataset.calendarValue === value && !b.disabled);
     button?.focus();
     button?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }
@@ -148,19 +167,24 @@
     const amount = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -columns, ArrowDown: columns }[event.key];
     if (amount !== undefined) {
       event.preventDefault();
-      if (level === 'year') { const year = cell.label + amount; if (year < 1 || year > 9998) return; active = String(year); view = { ...view, year }; }
-      else { active = moveCalendarValue(cell.value, level, amount); view = calendarView(active); }
+      if (level === 'year') { const year = cell.label + amount; if (year < 1 || year > 9998 || (min && year < Number(min.slice(0, 4)))) return; active = String(year); view = { ...view, year }; }
+      else {
+        const next = moveCalendarValue(cell.value, level, amount);
+        if (min && next < min.slice(0, level === 'month' ? 7 : 10)) return;
+        active = next; view = calendarView(active);
+      }
       if (start) hover = active;
       await focusCell(active);
     } else if (event.key === 'PageUp' || event.key === 'PageDown') {
       event.preventDefault();
       navigate((event.key === 'PageUp' ? -1 : 1) * (level === 'year' ? 120 : level === 'month' || event.shiftKey ? 12 : 1));
       active = level === 'year' ? String(view.year) : `${String(view.year).padStart(4, '0')}-${String(view.month).padStart(2, '0')}${level === 'date' ? '-01' : ''}`;
+      if (min && level !== 'year' && active < min.slice(0, level === 'month' ? 7 : 10)) active = min.slice(0, level === 'month' ? 7 : 10);
       await focusCell(active);
     } else if (event.key === 'Home' || event.key === 'End') {
       event.preventDefault();
       const table = event.currentTarget instanceof HTMLElement ? event.currentTarget.closest('tr') : null;
-      const cells = table?.querySelectorAll<HTMLButtonElement>('[data-calendar-value]');
+      const cells = table?.querySelectorAll<HTMLButtonElement>('[data-calendar-value]:not(:disabled)');
       (event.key === 'Home' ? cells?.[0] : cells?.[cells.length - 1])?.focus();
     }
   }
@@ -196,12 +220,12 @@
         <div class="tiny-picker-panel__body-wrapper"><div class="tiny-picker-panel__body">
           {#if !range}
             <div class="tiny-date-picker__header">
-              <button type="button" class="tiny-picker-panel__icon-btn tiny-date-picker__prev-btn" aria-label="前一年" onclick={() => navigate(level === 'year' ? -120 : -12)}><DatePickerIcon name="double-left" /></button>
-              {#if level === 'date'}<button type="button" class="tiny-picker-panel__icon-btn tiny-date-picker__prev-btn" aria-label="上个月" onclick={() => navigate(-1)}><DatePickerIcon name="left" /></button>{/if}
+              <button type="button" class="tiny-picker-panel__icon-btn tiny-date-picker__prev-btn" aria-label="前一年" disabled={!canNavigate(level === 'year' ? -120 : -12)} onclick={() => navigate(level === 'year' ? -120 : -12)}><DatePickerIcon name="double-left" /></button>
+              {#if level === 'date'}<button type="button" class="tiny-picker-panel__icon-btn tiny-date-picker__prev-btn" aria-label="上个月" disabled={!canNavigate(-1)} onclick={() => navigate(-1)}><DatePickerIcon name="left" /></button>{/if}
               <button type="button" class="tiny-date-picker__header-label" onclick={() => level = 'year'}>{level === 'year' ? `${Math.floor(view.year / 10) * 10} 年 - ${Math.floor(view.year / 10) * 10 + 9} 年` : `${view.year} 年`}</button>
               {#if level !== 'year'}<button type="button" class="tiny-date-picker__header-label" onclick={() => level = 'month'}>{view.month} 月</button>{/if}
-              <button type="button" class="tiny-picker-panel__icon-btn tiny-date-picker__next-btn" aria-label="后一年" onclick={() => navigate(level === 'year' ? 120 : 12)}><DatePickerIcon name="double-right" /></button>
-              {#if level === 'date'}<button type="button" class="tiny-picker-panel__icon-btn tiny-date-picker__next-btn" aria-label="下个月" onclick={() => navigate(1)}><DatePickerIcon name="right" /></button>{/if}
+              <button type="button" class="tiny-picker-panel__icon-btn tiny-date-picker__next-btn" aria-label="后一年" disabled={!canNavigate(level === 'year' ? 120 : 12)} onclick={() => navigate(level === 'year' ? 120 : 12)}><DatePickerIcon name="double-right" /></button>
+              {#if level === 'date'}<button type="button" class="tiny-picker-panel__icon-btn tiny-date-picker__next-btn" aria-label="下个月" disabled={!canNavigate(1)} onclick={() => navigate(1)}><DatePickerIcon name="right" /></button>{/if}
             </div>
           {/if}
           {#each boards as board, side}
@@ -209,11 +233,11 @@
               {#if range}
                 <div class="tiny-date-range-picker__header">
                   {#if side === 0}
-                    <button type="button" class="tiny-picker-panel__icon-btn tiny-icon-d-arrow-left" aria-label="前一年" onclick={() => navigate(-12)}><DatePickerIcon name="double-left" /></button>
-                    {#if precision === 'date'}<button type="button" class="tiny-picker-panel__icon-btn tiny-icon-arrow-left" aria-label="上个月" onclick={() => navigate(-1)}><DatePickerIcon name="left" /></button>{/if}
+                    <button type="button" class="tiny-picker-panel__icon-btn tiny-icon-d-arrow-left" aria-label="前一年" disabled={!canNavigate(-12)} onclick={() => navigate(-12)}><DatePickerIcon name="double-left" /></button>
+                    {#if precision === 'date'}<button type="button" class="tiny-picker-panel__icon-btn tiny-icon-arrow-left" aria-label="上个月" disabled={!canNavigate(-1)} onclick={() => navigate(-1)}><DatePickerIcon name="left" /></button>{/if}
                   {:else}
-                    <button type="button" class="tiny-picker-panel__icon-btn tiny-icon-d-arrow-right" aria-label="后一年" onclick={() => navigate(12)}><DatePickerIcon name="double-right" /></button>
-                    {#if precision === 'date'}<button type="button" class="tiny-picker-panel__icon-btn tiny-icon-arrow-right" aria-label="下个月" onclick={() => navigate(1)}><DatePickerIcon name="right" /></button>{/if}
+                    <button type="button" class="tiny-picker-panel__icon-btn tiny-icon-d-arrow-right" aria-label="后一年" disabled={!canNavigate(12)} onclick={() => navigate(12)}><DatePickerIcon name="double-right" /></button>
+                    {#if precision === 'date'}<button type="button" class="tiny-picker-panel__icon-btn tiny-icon-arrow-right" aria-label="下个月" disabled={!canNavigate(1)} onclick={() => navigate(1)}><DatePickerIcon name="right" /></button>{/if}
                   {/if}
                   <div>{board.year} 年{precision === 'date' ? ` ${board.month} 月` : ''}</div>
                 </div>
@@ -228,10 +252,10 @@
                           <td class={cellClass(cell)}>
                             <div>
                               {#if level === 'date'}
-                                <span><button type="button" class="mc-day" data-calendar-value={cell.value} aria-label={cell.value} aria-pressed={cell.value === selectedFrom || cell.value === selectedTo}
+                                <span><button type="button" class="mc-day" data-calendar-value={cell.value} aria-label={cell.value} disabled={cellDisabled(cell)} aria-pressed={cell.value === selectedFrom || cell.value === selectedTo}
                                   onfocus={() => active = cell.value} onpointerenter={() => { if (start) hover = cell.value; }} onkeydown={e => cellKey(e, cell)} onclick={() => choose(cell)}>{cell.label}</button></span>
                               {:else}
-                                <button type="button" class="cell" data-calendar-value={cell.value} aria-label={cell.value} aria-pressed={cell.value === selectedFrom || cell.value === selectedTo}
+                                <button type="button" class="cell" data-calendar-value={cell.value} aria-label={cell.value} disabled={cellDisabled(cell)} aria-pressed={cell.value === selectedFrom || cell.value === selectedTo}
                                   onfocus={() => active = cell.value} onpointerenter={() => { if (start) hover = cell.value; }} onkeydown={e => cellKey(e, cell)} onclick={() => choose(cell)}>{cell.label}{level === 'month' ? ' 月' : ''}</button>
                               {/if}
                             </div>
@@ -269,6 +293,7 @@
   .is-disabled input { color:#c2c2c2; cursor:not-allowed; }
   .mc-picker-icon { position:absolute; right:12px; top:0; display:flex; align-items:center; justify-content:center; height:32px; width:16px; padding:0; border:0; background:transparent; color:#808080; cursor:pointer; }
   .mc-picker-icon:hover { color:#191919; }
+  .mc-date-popover button:disabled { color:#c2c2c2; cursor:not-allowed; }
   .mc-picker-icon:disabled { color:#c2c2c2; cursor:not-allowed; }
   .mc-clear-icon { visibility:hidden; }
   .tiny-date-editor:hover .mc-clear-icon,.tiny-date-editor:focus-within .mc-clear-icon,.tiny-date-editor.is-active .mc-clear-icon { visibility:visible; }
@@ -359,5 +384,8 @@
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td:not(.in-range) .cell) { width:100%; }
   :global(.mc-date-picker .tiny-date-table td.current span) { color:#fff; background:#1476ff; border-radius:999px; box-shadow:none; }
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.current .cell) { color:#fff; background:#1476ff; box-shadow:none; }
+  :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table, .tiny-date-table) td button:disabled),
+  :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table, .tiny-date-table) td button:disabled:hover) { color:#c2c2c2; background:transparent; cursor:not-allowed; }
+  :global(.mc-date-picker .tiny-picker-panel__icon-btn:disabled .tiny-svg) { fill:#c2c2c2; }
   @media print { .mc-date-picker { display:none; } }
 </style>

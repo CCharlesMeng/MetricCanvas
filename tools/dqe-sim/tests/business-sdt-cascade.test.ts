@@ -11,7 +11,7 @@ import fixture from '../fixtures/business-sdt-cascade.json';
 import october from '../fixtures/business-sdt-cascade-october.json';
 
 it.each([fixture,october])('real local HTTP: $month uses its own identifiers in both Top5 tables and export', async dataset => {
-  const document=JSON.parse(readFileSync(new URL('../../../pages/business-sdt-report.json',import.meta.url),'utf8'));
+  const document=JSON.parse(readFileSync(new URL('../../../pages/business-sdt-cascade-example.json',import.meta.url),'utf8'));
   for (const rank of ['bottom5','top5']) for (const suffix of ['','-stages']) {
     const time=document.dataSources[`project-efficiency-${rank}${suffix}`].source.query.body.dsl_list[0].filter.time;
     time.start=dataset.month;time.end=dataset.month;

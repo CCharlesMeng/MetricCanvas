@@ -81,6 +81,7 @@ const timePointFilterZ = z
     label: z.string().optional(),
     visible: z.boolean().optional(),
     granularity: z.enum(['month', 'date']),
+    min: z.string().optional(),
     required: z.boolean().optional(),
     default: z.string().optional(),
     initialParam: idZ.optional()

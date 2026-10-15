@@ -4,9 +4,9 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "DQE 嵌套明细字段 event_impact 不符合页面字段 impact 的类型 number",
+      "message": "DQE 嵌套明细字段 event_title 不符合页面字段 title 的类型 string",
       "paths": [
-        "/dataSources/customers/source/initial/rows/0/events/0/event_impact"
+        "/dataSources/customers/source/initial/rows/0/events/0/event_title"
       ]
     }
   ],
@@ -19,7 +19,7 @@
               {
                 "events": [
                   {
-                    "event_impact": "3"
+                    "event_title": 3
                   }
                 ]
               }

@@ -2,7 +2,7 @@
 
 表达页面标题、说明、时间点与标签；副标题可显式使用受控语义 HTML。适用于任何完整页面的开头。数据形状：不绑定页面数据源。
 
-页面内容页头；title为必需文本取值，可引用必需页面参数。页面meta.title是另一个页面级声明，不替代该组件必填title。
+页面内容页头；title为必需文本取值，可引用必需页面参数或当前已应用筛选；6.23 起可用 `{parts:[{filter:"report-month",format:"period"}," 经营分析报告"]}` 组合动态期间与固定名称，规则见[文本片段组合](../params-and-text-values.md#文本片段组合623)。页面meta.title是另一个页面级声明，不替代该组件必填title。
 
 dashboard 的筛选器由统一工具栏呈现，reportHeader 禁止配置 filterIds；下述日期工具带只用于 report。
 
@@ -13,7 +13,7 @@ filterIds（6.13）按序引用页面 timePoint/timeRange 筛选器，采用封�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.22。结构真源为本册[schema.json](../schema.json)，SHA256 `48844824923af573b27be8c9c53d7be88910b12628c548cefdcb9362b7612fc5`。字段表自动生成；可选不等于有默认值。
+页面协议 6.24。结构真源为本册[schema.json](../schema.json)，SHA256 `1b4431158377bb109d4802945a5307f4439dfd3a862b89b9adb188939ec1280a`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -266,22 +266,19 @@ Schema位置：`#/definitions/reportHeaderComponent/properties/props/properties/
 - [最小组件](../examples/component-reportHeader.json)：独立完整页面，保留必要语义依赖。
 - [projectDetail](../examples/component-reportHeader-projectDetail.json)：独立完整页面，保留必要语义依赖。
 - [inline-report](../examples/inline-report.json)：完整合法页面；查询仅为静态契约证据。
+- [text-composition-page](../examples/text-composition-page.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-reportHeader.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 
 ```json
 {
-  "id": "report-header",
+  "id": "header",
   "type": "reportHeader",
   "layout": {
     "span": 12
   },
   "props": {
-    "title": "经营简报",
-    "asOf": {
-      "label": "数据截至",
-      "value": "2026-07-21"
-    }
+    "title": "查询数值容错 · 合成数据验收"
   }
 }
 ```

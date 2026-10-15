@@ -1,4 +1,5 @@
 import { executeMultiQueryTable } from './multi-query-table';
+import { executeNumericTolerance } from './numeric-tolerance';
 import { executeQueryResultWhere } from './query-result-where';
 import { executeBusinessSdt } from './business-sdt';
 import customerActivityRiskFixtureJson from '../fixtures/customer-activity-risk.json';
@@ -145,6 +146,7 @@ const customerActivityDetailDimensions = [
 ];
 
 export function executeDqeItem(item: unknown): DqeSimItemResult {
+  const numericTolerance = executeNumericTolerance(item); if (numericTolerance) return numericTolerance;
   const multiQueryTable=executeMultiQueryTable(item);if(multiQueryTable)return multiQueryTable;
   const filteredInputDemo = executeQueryResultWhere(item);
   if (filteredInputDemo) return filteredInputDemo;

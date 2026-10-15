@@ -54,6 +54,29 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {
+    id: 'time-point-min', description: '6.24 时间点下限与默认值日历语义',
+    valid: ['time-point-min-page'], cases: [
+      { case: 'time-point-min-before-6.24', base: 'time-point-min-page', expect: /由 6.24 引入/, mutate: d => { d.schemaVersion = '6.23'; } },
+      { case: 'time-point-min-invalid-month', base: 'time-point-min-page', expect: /有效月份/, mutate: d => { d.filters[0].min = '2020-13'; } },
+      { case: 'time-point-min-wrong-precision', base: 'time-point-min-page', expect: /YYYY-MM 格式/, mutate: d => { d.filters[0].min = '2020-06-01'; } },
+      { case: 'time-point-min-default-before', base: 'time-point-min-page', expect: /不得早于/, mutate: d => { d.filters[0].default = '2020-05'; } },
+      { case: 'time-point-min-invalid-date', base: 'time-point-min-page', expect: /公历日期/, mutate: d => { d.filters[1].min = '2020-02-30'; } }
+    ]
+  },
+  {
+    id: 'text-value-composition', description: '6.23 文本片段组合；引用先校验，物化后只传递字符串',
+    valid: ['text-composition-page'], cases: [
+      { case: 'text-composition-before-6.23', base: 'text-composition-page', expect: /由 6.23 引入/, mutate: d => { d.schemaVersion = '6.22'; } },
+      { case: 'text-composition-unknown-filter', base: 'text-composition-page', expect: /未声明的筛选器/, mutate: d => { firstComponent(d).props.title.parts[0].filter = 'missing'; } },
+      { case: 'text-composition-unknown-param', base: 'text-composition-page', expect: /未声明的页面参数/, mutate: d => { firstComponent(d).props.title.parts[2].param = 'missing'; } },
+      { case: 'text-composition-incompatible-format', base: 'text-composition-page', expect: /不相容/, mutate: d => { firstComponent(d).props.title.parts[0].format = 'number-2'; } },
+      { case: 'text-composition-empty-result', base: 'text-composition-page', expect: /must NOT have fewer than 1 characters/, mutate: d => { firstComponent(d).props.title = { parts: [''] }; } },
+      { case: 'text-composition-optional-required-title', base: 'text-composition-page', expect: /必填|required/, mutate: d => { d.params.display[0].required = false; } },
+      { case: 'text-composition-empty', base: 'text-composition-page', expect: /minItems|至少|fewer|items|match|type/, mutate: d => { firstComponent(d).props.title = { parts: [] }; } },
+      { case: 'text-composition-nested', base: 'text-composition-page', expect: /type|match|additional|must/, mutate: d => { firstComponent(d).props.title = { parts: [{ parts: ['nested'] }] }; } }
+    ]
+  },
   { id:'paged-join',description:'6.22 组合表全局视图与普通查询定义引用', valid:['paged-join-page','table-number-range-page'],cases:[
     {case:'table-number-range-before-6.22',base:'table-number-range-page',expect:/由 6.22 引入/,mutate:d=>{d.schemaVersion='6.21';}},
     {case:'paged-join-initial-predicate-in',base:'paged-join-page',expect:/默认视图/,mutate:d=>{d.dataSources['office-overview'].source.initial={capturedAt:'2026-10-14T00:00:00Z',rows:[],totalCount:0,view:{pageIndex:0,pageSize:3,sort:[{field:'bidding-amount',direction:'desc'}],predicates:[{field:'rep-office-name',op:'in',values:['上海',1]}]}};}},
@@ -448,8 +471,8 @@ export const invariants: InvariantDefinition[] = [
   },
   {
     id: 'query-initial-rows-normalize',
-    description: 'DQE 内嵌初始行按 queryField 归一化并满足结果字段契约',
-    valid: ['filters-page', 'compute-page', 'grouped-fields-page', 'map-page', 'forecast-page'],
+    description: 'DQE 内嵌初始行按 queryField 归一化，数值度量容错，维度和结构严格校验',
+    valid: ['filters-page', 'compute-page', 'grouped-fields-page', 'map-page', 'forecast-page', 'query-numeric-tolerance'],
     cases: [
       {
         case: 'initial-row-missing-query-field',
@@ -470,9 +493,9 @@ export const invariants: InvariantDefinition[] = [
       {
         case: 'initial-row-type-mismatch',
         base: 'filters-page',
-        expect: /DQE 字段 amount 不符合页面字段 amount 的类型 money/,
+        expect: /DQE 字段 region 不符合页面字段 region 的类型 string/,
         mutate: (document) => {
-          document.dataSources.orders.source.initial.rows[0].amount = '120';
+          document.dataSources.orders.source.initial.rows[0].region = 120;
         }
       },
       {
@@ -502,17 +525,18 @@ export const invariants: InvariantDefinition[] = [
       {
         case: 'initial-row-detail-null-not-allowed',
         base: 'compute-page',
-        expect: /DQE 嵌套明细字段 event_impact 为 null，页面字段 impact 声明 nullable=false/,
+        expect: /DQE 嵌套明细字段 event_title 为 null，页面字段 title 声明 nullable=false/,
         mutate: (document) => {
-          document.dataSources.customers.source.initial.rows[0].events[0].event_impact = null;
+          document.dataSources.customers.fields.events.items.fields.title.nullable = false;
+          document.dataSources.customers.source.initial.rows[0].events[0].event_title = null;
         }
       },
       {
         case: 'initial-row-detail-type-mismatch',
         base: 'compute-page',
-        expect: /DQE 嵌套明细字段 event_impact 不符合页面字段 impact 的类型 number/,
+        expect: /DQE 嵌套明细字段 event_title 不符合页面字段 title 的类型 string/,
         mutate: (document) => {
-          document.dataSources.customers.source.initial.rows[0].events[0].event_impact = '3';
+          document.dataSources.customers.source.initial.rows[0].events[0].event_title = 3;
         }
       }
     ]
@@ -990,13 +1014,13 @@ export const invariants: InvariantDefinition[] = [
   },
   {
     id: 'detail-item-object',
-    description: '嵌套明细的每一项必须是对象；由 Page Schema 在结构层拒绝，语义层的同名判定因此不可达',
+    description: '嵌套明细的每一项必须是对象；inline 在结构层拒绝，查询原始初始行在归一化层拒绝',
     valid: ['compute-page', 'forecast-page'],
     cases: [
       {
         case: 'initial-row-detail-item-not-object',
         base: 'compute-page',
-        expect: /must be object/,
+        expect: /必须是对象/,
         mutate: (document) => {
           document.dataSources.customers.source.initial.rows[0].events = ['续约'];
         }
@@ -1004,7 +1028,7 @@ export const invariants: InvariantDefinition[] = [
       {
         case: 'inline-row-detail-item-not-object',
         base: 'forecast-page',
-        expect: /must be object/,
+        expect: /must be object|必须是对象/,
         mutate: (document) => {
           document.dataSources.notes.source.rows[0].items = ['续约'];
         }
@@ -1013,13 +1037,13 @@ export const invariants: InvariantDefinition[] = [
   },
   {
     id: 'detail-list-max-items',
-    description: '嵌套明细最多 100 项；由 Page Schema 的 maxItems 在结构层拒绝，语义层的同名判定因此不可达',
+    description: '嵌套明细最多 100 项；inline 在结构层拒绝，查询原始初始行在归一化层拒绝',
     valid: ['compute-page', 'forecast-page'],
     cases: [
       {
         case: 'initial-row-detail-list-too-large',
         base: 'compute-page',
-        expect: /must NOT have more than 100 items/,
+        expect: /最多允许 100 项/,
         mutate: (document) => {
           const row = document.dataSources.customers.source.initial.rows[0];
           row.events = Array.from({ length: 101 }, (_unused, index) => ({
@@ -1032,7 +1056,7 @@ export const invariants: InvariantDefinition[] = [
       {
         case: 'inline-row-detail-list-too-large',
         base: 'forecast-page',
-        expect: /must NOT have more than 100 items/,
+        expect: /must NOT have more than 100 items|最多允许 100 项/,
         mutate: (document) => {
           document.dataSources.notes.source.rows[0].items = Array.from(
             { length: 101 },

@@ -428,7 +428,7 @@ describe('DQE 数据网关', () => {
     });
 
     const outcome = await gateway
-      .fetchData(dqeQuery(fullDslItem))
+      .fetchData(dqeQuery(fullDslItem, { 'na-customer-count': { queryField: 'NA客户数', type: 'number', role: 'dimension' } }))
       .then(() => {
         throw new Error('行契约违规必须拒绝');
       })
@@ -446,7 +446,7 @@ describe('DQE 数据网关', () => {
     ).not.toContain(sentinel);
   });
 
-  it('nullable=false 的字段在数据网关拒绝 null', async () => {
+  it('nullable=false 的数值维度在数据网关拒绝 null', async () => {
     const gateway = createDqeGateway({
       fetchImpl: (async () =>
         new Response(
@@ -474,7 +474,7 @@ describe('DQE 数据网关', () => {
           'na-customer-count': {
             queryField: 'NA客户数',
             type: 'number',
-            role: 'measure',
+            role: 'dimension',
             nullable: false
           }
         })

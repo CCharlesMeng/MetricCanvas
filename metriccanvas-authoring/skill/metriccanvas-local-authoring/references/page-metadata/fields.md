@@ -2,6 +2,18 @@
 
 页面字段id是dataSources.<id>.fields的键；queryField指向DQE输出，两者不可隐式当成同一个名字。dimension用于分类，measure用于数值计算，detail承载受控明细；字段类型、角色和nullable必须与真实结果匹配。
 
+<a id="查询数值度量的容错"></a>
+
+## 查询数值度量的容错
+
+查询结果中 `role: measure` 且 `type: number` 或 `money` 的单元格统一归一化为有限数字或 `null`。有限数字（包括真实零和负数）原样保留；非空十进制及科学计数法字符串转换成有限数字；`"--"`、空串、非数字字符串、布尔、对象、数组及非有限数字转为 `null`。不解析千分位、百分号或十六进制，不把缺失值转为零。无效单元格保留所在行，其他字段和行继续渲染。
+
+该规则同样作用于查询内嵌初始行与嵌套明细中的数值度量，动态返回和首屏一致。数值度量即使声明 `nullable: false`，实际缺失也只记录非阻断告警；此声明在查询结果上表示数据预期，不再保证运行时一定非空。已有可空字段的正常 `null` 不告警。数据网关返回可选的 `warnings`，并在查询诊断中按字段及原因汇总数量；不记录原始值或数据行。
+
+数值维度（例如关联键）、其他类型、缺少映射字段、非对象行及明细结构/数量上限保持严格校验；`inline` 数据和文档字面量仍按原结果字段契约严格验证。组合表格成员和投影复验允许查询数值度量的 `null`，行键继续严格校验。
+
+表格和指标卡沿用字段绑定的 `missingText`（通常为 `—`），折线和柱图保留缺口，饼图略过缺失值，指标卡进度环显示缺失占位符且不附百分号。计算沿用各算子已声明的缺失值规则，不额外补零；允许忽略缺失的合计可能只覆盖有效值，不能视为完整数据。验收完整示例 `query-numeric-tolerance` 包含八种合成输入及派生完成率，不代表真实 DQE 或业务口径验真。
+
 query支持平铺和按角色分组的文档字段写法，normalize保持原始文档，运行时解析才展平。一个DQE输出应唯一映射到页面字段；派生字段不带queryField，必须由compute产出。
 
 recordList使用显式items.fields约束每条嵌套记录，限制在已支持的明细呈现。collapsible:true是小计/合计的显式授权，不能从measure角色推断可加总。格式只影响显示，不修改原数值。
@@ -11,7 +23,7 @@ recordList使用显式items.fields约束每条嵌套记录，限制在已支持�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.22。结构真源为本册[schema.json](schema.json)，SHA256 `48844824923af573b27be8c9c53d7be88910b12628c548cefdcb9362b7612fc5`。字段表自动生成；可选不等于有默认值。
+页面协议 6.24。结构真源为本册[schema.json](schema.json)，SHA256 `1b4431158377bb109d4802945a5307f4439dfd3a862b89b9adb188939ec1280a`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1512,8 +1524,8 @@ Schema位置：`#/definitions/groupedQueryFields/anyOf/1`。
 - `grouped-query-fields-unique`：按角色分组的查询字段在维度组与度量组之间不得重名。反例：[grouped-field-duplicate](errors/grouped-field-duplicate.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `grouped-query-field-label-not-id`：分组查询字段的 label 与字段 id 相同时应省略。反例：[grouped-field-label-equals-id](errors/grouped-field-label-equals-id.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `inline-rows-contract`：inline 数据行满足结果字段契约（字段集合、类型、nullable、明细约束）。反例：[inline-row-undeclared-field](errors/inline-row-undeclared-field.json)、[inline-row-missing-field](errors/inline-row-missing-field.json)、[inline-row-null-not-allowed](errors/inline-row-null-not-allowed.json)、[inline-row-type-mismatch](errors/inline-row-type-mismatch.json)、[inline-row-date-invalid](errors/inline-row-date-invalid.json)、[inline-row-datetime-invalid](errors/inline-row-datetime-invalid.json)、[inline-row-semantic-html-type](errors/inline-row-semantic-html-type.json)、[inline-row-detail-undeclared-field](errors/inline-row-detail-undeclared-field.json)、[inline-row-detail-missing-field](errors/inline-row-detail-missing-field.json)、[inline-row-detail-null-not-allowed](errors/inline-row-detail-null-not-allowed.json)、[inline-row-detail-type-mismatch](errors/inline-row-detail-type-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `detail-item-object`：嵌套明细的每一项必须是对象；由 Page Schema 在结构层拒绝，语义层的同名判定因此不可达。反例：[initial-row-detail-item-not-object](errors/initial-row-detail-item-not-object.json)、[inline-row-detail-item-not-object](errors/inline-row-detail-item-not-object.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `detail-list-max-items`：嵌套明细最多 100 项；由 Page Schema 的 maxItems 在结构层拒绝，语义层的同名判定因此不可达。反例：[initial-row-detail-list-too-large](errors/initial-row-detail-list-too-large.json)、[inline-row-detail-list-too-large](errors/inline-row-detail-list-too-large.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `detail-item-object`：嵌套明细的每一项必须是对象；inline 在结构层拒绝，查询原始初始行在归一化层拒绝。反例：[initial-row-detail-item-not-object](errors/initial-row-detail-item-not-object.json)、[inline-row-detail-item-not-object](errors/inline-row-detail-item-not-object.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `detail-list-max-items`：嵌套明细最多 100 项；inline 在结构层拒绝，查询原始初始行在归一化层拒绝。反例：[initial-row-detail-list-too-large](errors/initial-row-detail-list-too-large.json)、[inline-row-detail-list-too-large](errors/inline-row-detail-list-too-large.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `query-field-mapping`：query 数据源字段与 DQE 输出字段之间的显式、唯一、角色相容映射。反例：[query-field-without-mapping](errors/query-field-without-mapping.json)、[query-field-duplicate-mapping](errors/query-field-duplicate-mapping.json)、[query-field-not-output](errors/query-field-not-output.json)、[query-detail-item-duplicate-mapping](errors/query-detail-item-duplicate-mapping.json)、[query-dimension-role-mismatch](errors/query-dimension-role-mismatch.json)、[query-role-mismatch](errors/query-role-mismatch.json)、[query-output-unmapped](errors/query-output-unmapped.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `detail-field-consumption`：嵌套明细字段只能由显式支持 detail 的组件属性消费。反例：[detail-field-in-generic-binding](errors/detail-field-in-generic-binding.json)、[record-list-in-table-column](errors/record-list-in-table-column.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
@@ -1521,6 +1533,7 @@ Schema位置：`#/definitions/groupedQueryFields/anyOf/1`。
 
 - [grouped-fields-page](examples/grouped-fields-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
+- [query-numeric-tolerance](examples/query-numeric-tolerance.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 
@@ -1534,13 +1547,13 @@ Schema位置：`#/definitions/groupedQueryFields/anyOf/1`。
 - `#/definitions/scalar/anyOf/1`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/dataSources/fixed-target/source/rows/0/target`。
 - `#/definitions/scalar/anyOf/2`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/source/rows/0/flag`。
 - `#/definitions/scalar/anyOf/3`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/sample/source/rows/3/delta`。
-- `#/definitions/fieldValue/anyOf/1`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/source/initial/rows/0/events`。
+- `#/definitions/fieldValue/anyOf/1`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/source/rows/0/items`。
 - `#/definitions/queryField/anyOf/0`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/dataSources/live-sales/fields/stat-date`。
 - `#/definitions/queryScalarField/oneOf/0`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/dataSources/live-sales/fields/stat-date`。
 - `#/definitions/queryScalarField/oneOf/1`：[合法完整页面](examples/paged-join-page.json)，JSON Pointer `#/dataSources/office-bidding/fields/bidding-amount`。
 - `#/definitions/queryField/anyOf/1`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/events`。
 - `#/definitions/queryField/anyOf/2`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/reason`。
-- `#/definitions/queryField/anyOf/3`：[合法完整页面](examples/query-cascade-page.json)，JSON Pointer `#/dataSources/project-efficiency-bottom5/fields/rep-office-time`。
+- `#/definitions/queryField/anyOf/3`：[合法完整页面](examples/query-numeric-tolerance.json)，JSON Pointer `#/dataSources/samples/fields/rate`。
 - `#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/0`：[合法完整页面](examples/grouped-fields-page.json)，JSON Pointer `#/dataSources/grouped/fields/measures/growth`。
 - `#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/1`：[合法完整页面](examples/grouped-fields-page.json)，JSON Pointer `#/dataSources/grouped/fields/measures/revenue`。
 - `#/definitions/groupedQueryFields/anyOf/0`：[合法完整页面](examples/grouped-fields-page.json)，JSON Pointer `#/dataSources/grouped/fields`。

@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-10-12
 note: 用户批准显式筛选文本引用，只保留 period 格式；6.15 增量
+revised-by: [0109]
 ---
 
 # 文本显式读取参数或筛选状态，期间只使用统一 period 格式

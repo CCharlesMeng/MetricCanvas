@@ -1,0 +1,72 @@
+{
+  "case": "text-composition-before-6.23",
+  "invariant": "text-value-composition",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字面量、参数与已应用筛选值的显式文本片段组合 由 6.23 引入，文档声明的是 6.22",
+      "paths": [
+        "/sections/0/components/0/props/title",
+        "/sections/0/components/0/props/subtitle",
+        "/sections/0/components/0/props/asOf/value",
+        "/sections/1/components/1/props/body"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "title": {
+                "parts": [
+                  {
+                    "…": "共2个键"
+                  },
+                  " "
+                ]
+              },
+              "subtitle": {
+                "parts": [
+                  "打开时名称：",
+                  {
+                    "…": "共1个键"
+                  }
+                ]
+              },
+              "asOf": {
+                "value": {
+                  "parts": [
+                    {
+                      "…": "共2个键"
+                    },
+                    " 对照分析"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "body": {
+                "parts": [
+                  "当前：",
+                  {
+                    "…": "共2个键"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

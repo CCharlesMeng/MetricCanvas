@@ -38,7 +38,8 @@
         "pageParam",
         "groupedPageParams",
         "timeWindow",
-        "filterTextValueReference"
+        "filterTextValueReference",
+        "textValueComposition"
       ],
       "keywords": [
         "params-and-text-values",
@@ -50,7 +51,8 @@
         "time-params-page",
         "grouped-params-page",
         "grouped-scalar-params-page",
-        "report-filter-text-page"
+        "report-filter-text-page",
+        "text-composition-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -71,7 +73,8 @@
         "optional-param-not-in-required-text",
         "filter-text-declared",
         "filter-text-format-compatible",
-        "filter-text-capability"
+        "filter-text-capability",
+        "text-value-composition"
       ]
     },
     "data-sources.md": {
@@ -93,7 +96,8 @@
       "examples": [
         "query-dashboard",
         "paged-join-page",
-        "paged-join-fixed-rank-page"
+        "paged-join-fixed-rank-page",
+        "query-numeric-tolerance"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -133,7 +137,8 @@
       ],
       "examples": [
         "grouped-fields-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "query-numeric-tolerance"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -232,7 +237,8 @@
       ],
       "examples": [
         "filters-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "time-point-min-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -249,7 +255,8 @@
         "default-level-declared",
         "hierarchy-picker-requires-hierarchy",
         "filter-depends-on",
-        "hidden-hierarchy-picker-needs-map"
+        "hidden-hierarchy-picker-needs-map",
+        "time-point-min"
       ]
     },
     "sections-and-layout.md": {
@@ -477,7 +484,8 @@
         "报告页头 reportHeader"
       ],
       "examples": [
-        "inline-report"
+        "inline-report",
+        "text-composition-page"
       ],
       "sources": [
         "packages/page/src/schema/components/report-header.ts",
@@ -1360,10 +1368,12 @@
     "isNotNull": "只匹配合法非null值；缺字段仍是契约错误。",
     "6.20": "查询分页窗口可作为结果绑定输入；任意可排序列驱动依赖更新，排序回到第一页，下游仍只接收字段集合。",
     "6.21": "表格独立搜索与完整Excel导出工具区；查询搜索字段必须映射，搜索编码由数据网关提供。",
-    "6.22": "组合查询源和数值表头范围的当前写出版本。",
+    "6.22": "组合查询源和数值表头范围；保留读取。",
     "asc": "按原始可比较值升序，缺值仍排尾。",
     "desc": "按原始可比较值降序，缺值仍排尾。",
-    "numberRange": "数值度量的包含端点范围；按原始单位比较，一端可缺省。"
+    "numberRange": "数值度量的包含端点范围；按原始单位比较，一端可缺省。",
+    "6.23": "显式文本片段组合的兼容读取版本。",
+    "6.24": "时间点包含式下限的当前写出版本。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

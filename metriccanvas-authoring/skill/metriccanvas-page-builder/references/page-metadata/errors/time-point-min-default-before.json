@@ -1,0 +1,21 @@
+{
+  "case": "time-point-min-default-before",
+  "invariant": "time-point-min",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间点不得早于 2020-06",
+      "paths": [
+        "/filters/0/default"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "default": "2020-05"
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/time-point-min-default-before.json"
+}

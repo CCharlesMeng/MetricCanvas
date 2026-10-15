@@ -4,12 +4,13 @@
   interface Props {
     label?: string;
     required?: boolean;
+    min?: string;
     readOnly?: boolean;
     granularity: 'month' | 'date';
     value: string | null;
     onchange: (value: string | null) => void;
   }
-  let { label, granularity, value, onchange, required = false, readOnly = false }: Props = $props();
+  let { label, min, granularity, value, onchange, required = false, readOnly = false }: Props = $props();
 </script>
-<DatePicker {label} {required} precision={granularity} disabled={readOnly}
-  value={value ? { from: value, to: value } : null} onchange={next => { if (!next || !validateTimePointValue(next.from, granularity)) onchange(next?.from ?? null); }} />
+<DatePicker {label} {required} {min} precision={granularity} disabled={readOnly}
+  value={value ? { from: value, to: value } : null} onchange={next => { if (!next || !validateTimePointValue(next.from, granularity, min)) onchange(next?.from ?? null); }} />

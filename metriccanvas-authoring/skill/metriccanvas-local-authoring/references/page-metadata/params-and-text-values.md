@@ -39,7 +39,7 @@ params 增加对象分支，按消费位置分两层：params.query.{dimensions,
 
 ## 筛选文本取值（6.15）
 
-文本取值增加 `{filter: "筛选器id", format?: "格式预设"}` 分支，与 `{param: "参数id", format?: ...}` 互斥。两者均为整值替换，不支持拼接、模板表达式或自定义分隔符。筛选引用允许在所有既有文本取值位置声明，包括页头、副标题、内容分区标题、普通文本与嵌套组件；dataSources 内的请求体和业务数据不参与文本解析。
+文本取值增加 `{filter: "筛选器id", format?: "格式预设"}` 分支，与 `{param: "参数id", format?: ...}` 互斥。这两个分支均为整值替换；6.23 可用下述 parts 分支显式组合片段，不接受模板表达式。筛选引用允许在所有既有文本取值位置声明，包括页头、副标题、内容分区标题、普通文本与嵌套组件；dataSources 内的请求体和业务数据不参与文本解析。
 
 filter 读取当前已应用筛选状态，初次从 default/initialParam/URL 或执行回执初始化，随后随筛选变化更新；param 在打开时确定，页内筛选不能修改它。静态字面量不被筛选覆盖；控件位置和文本引用分别声明。未应用的输入草稿不改变期间。
 
@@ -54,8 +54,24 @@ filter 读取当前已应用筛选状态，初次从 default/initialParam/URL �
 
 参数提取确认后，原子增加筛选器、查询绑定、页头位置以及显式期间引用；保留已有静态文字或已声明引用，只有对应日期字面量可以改为期间引用。导出捕获当前已解析的文字和筛选状态，在等待完整数据期间不会跟随后续筛选变化。
 
+<a id="文本片段组合623"></a>
 
-页面协议 6.22。结构真源为本册[schema.json](schema.json)，SHA256 `48844824923af573b27be8c9c53d7be88910b12628c548cefdcb9362b7612fc5`。字段表自动生成；可选不等于有默认值。
+## 文本片段组合（6.23）
+
+所有既有文本取值位置增加 `{parts: [...]}`，包括报告主标题、说明、期间、内容分区标题、普通文本与嵌套组件。parts 是 1—64 个片段的有序数组，每项仅允许字符串、`{param, format?}` 或 `{filter, format?}`；不允许嵌套组合、脚本、模板表达式或额外字段。各片段按原顺序连接，空格和标点由作者在字符串片段中明确写出；不增加隐式分隔符或时间格式。必需文本的最终字符串仍须非空。
+
+```json
+{"title":{"parts":[{"filter":"report-month","format":"period"}," 经营分析报告"]}}
+```
+
+参数片段只读取打开时实际值；筛选片段读取当前已应用状态，输入草稿不参与投影。日期继续使用 period：单点显示规范月份/日期，区间显示“开始 至 结束”，同起止折叠为单点，清空为“全部期间”。任一可选参数片段缺值时整个文本属性（或该数组项）移除，不能留下半句；因此必需标题不能依赖可选参数片段。引用存在性与格式相容性在连接前逐项校验，dataSources 内的请求体与业务数据不参与文本解析。
+
+物化后组件只接收字符串；渲染期按整个文本位置重新投影组合，不重新初始化参数或查询。导出捕获已解析文字，准备期间的后续筛选不会改变本次导出标题。保存与规范化保留 parts 声明。存量字符串与整值引用继续按原语义读取，parts 能力下限为6.23。
+
+验收页面 `report-title-filter-example` 无业务数据与外部查询，覆盖月份主标题、独立范围、同起止、清空、多筛选组合和参数文字；日期型、非法输入、可选参数、版本和导出捕获另由行为测试覆盖。`report-date-filter-example` 同时演示主标题与 DQE Sim 查询联动，仿真不代表真实 DQE 集成。
+
+
+页面协议 6.24。结构真源为本册[schema.json](schema.json)，SHA256 `1b4431158377bb109d4802945a5307f4439dfd3a862b89b9adb188939ec1280a`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -210,6 +226,76 @@ Schema位置：`#/definitions/filterTextValueReference/properties/format`。
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
 | "period" | 日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c75652f616e794f662f33"></a>
+
+### `@nonEmptyTextValue · anyOf[3]`
+
+Schema位置：`#/definitions/nonEmptyTextValue/anyOf/3`。目标：[#/definitions/textValueComposition](params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565436f6d706f736974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValueComposition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7465787456616c7565436f6d706f736974696f6e"></a>
+
+### `@textValueComposition`
+
+Schema位置：`#/definitions/textValueComposition`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | required=["parts"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 显式文本片段组合；物化后组件只接收字符串 |
+
+<a id="schema-232f646566696e6974696f6e732f7465787456616c7565436f6d706f736974696f6e2f70726f706572746965732f7061727473"></a>
+
+### `@textValueComposition.parts`
+
+Schema位置：`#/definitions/textValueComposition/properties/parts`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1; maxItems=64 | Schema未设默认；装配/运行时默认见语义说明 | 按顺序连接的1—64个字面量、参数或筛选引用；不嵌套，不自动添加分隔符 |
+
+<a id="schema-232f646566696e6974696f6e732f7465787456616c7565436f6d706f736974696f6e2f70726f706572746965732f70617274732f6974656d73"></a>
+
+### `@textValueComposition.parts[]`
+
+Schema位置：`#/definitions/textValueComposition/properties/parts/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 每个数组项 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7465787456616c7565436f6d706f736974696f6e2f70726f706572746965732f70617274732f6974656d732f616e794f662f30"></a>
+
+### `@textValueComposition.parts[] · anyOf[0]`
+
+Schema位置：`#/definitions/textValueComposition/properties/parts/items/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7465787456616c7565436f6d706f736974696f6e2f70726f706572746965732f70617274732f6974656d732f616e794f662f31"></a>
+
+### `@textValueComposition.parts[] · anyOf[1]`
+
+Schema位置：`#/definitions/textValueComposition/properties/parts/items/anyOf/1`。目标：[#/definitions/textValueReference](params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c75655265666572656e6365)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValueReference | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7465787456616c7565436f6d706f736974696f6e2f70726f706572746965732f70617274732f6974656d732f616e794f662f32"></a>
+
+### `@textValueComposition.parts[] · anyOf[2]`
+
+Schema位置：`#/definitions/textValueComposition/properties/parts/items/anyOf/2`。目标：[#/definitions/filterTextValueReference](params-and-text-values.md#schema-232f646566696e6974696f6e732f66696c7465725465787456616c75655265666572656e6365)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/filterTextValueReference | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765506172616d"></a>
 
@@ -1231,6 +1317,16 @@ Schema位置：`#/definitions/textValue/anyOf/2`。目标：[#/definitions/filte
 |---|---|---|---|---|
 | 引用 #/definitions/filterTextValueReference | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f7465787456616c75652f616e794f662f33"></a>
+
+### `@textValue · anyOf[3]`
+
+Schema位置：`#/definitions/textValue/anyOf/3`。目标：[#/definitions/textValueComposition](params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565436f6d706f736974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValueComposition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 ## 语义规则与反例（生成）
 
 - `page-param-id-unique`：页面参数 id 唯一。反例：[duplicate-page-param-id](errors/duplicate-page-param-id.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -1243,6 +1339,7 @@ Schema位置：`#/definitions/textValue/anyOf/2`。目标：[#/definitions/filte
 - `filter-text-declared`：筛选文本必须引用已声明筛选器。反例：[filter-text-unknown](errors/filter-text-unknown.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `filter-text-format-compatible`：period 只接受时间输入，禁止数值日期格式混用。反例：[filter-text-format-mismatch](errors/filter-text-format-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `filter-text-capability`：筛选文本引用与 period 格式需要 6.15。反例：[filter-text-before-6.15](errors/filter-text-before-6.15.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `text-value-composition`：6.23 文本片段组合；引用先校验，物化后只传递字符串。反例：[text-composition-before-6.23](errors/text-composition-before-6.23.json)、[text-composition-unknown-filter](errors/text-composition-unknown-filter.json)、[text-composition-unknown-param](errors/text-composition-unknown-param.json)、[text-composition-incompatible-format](errors/text-composition-incompatible-format.json)、[text-composition-empty-result](errors/text-composition-empty-result.json)、[text-composition-optional-required-title](errors/text-composition-optional-required-title.json)、[text-composition-empty](errors/text-composition-empty.json)、[text-composition-nested](errors/text-composition-nested.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -1252,12 +1349,17 @@ Schema位置：`#/definitions/textValue/anyOf/2`。目标：[#/definitions/filte
 - [grouped-params-page](examples/grouped-params-page.json)：完整合法页面；查询仅为静态契约证据。
 - [grouped-scalar-params-page](examples/grouped-scalar-params-page.json)：完整合法页面；查询仅为静态契约证据。
 - [report-filter-text-page](examples/report-filter-text-page.json)：完整合法页面；查询仅为静态契约证据。
+- [text-composition-page](examples/text-composition-page.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 
 - `#/definitions/nonEmptyTextValue/anyOf/0`：[合法完整页面](examples/component-reportHeader.json)，JSON Pointer `#/sections/0/components/0/props/title`。
 - `#/definitions/nonEmptyTextValue/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/0/props/title`。
 - `#/definitions/nonEmptyTextValue/anyOf/2`：[合法完整页面](examples/report-filter-text-page.json)，JSON Pointer `#/sections/0/components/0/props/asOf/value`。
+- `#/definitions/nonEmptyTextValue/anyOf/3`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/sections/0/components/0/props/title`。
+- `#/definitions/textValueComposition/properties/parts/items/anyOf/0`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/sections/0/components/0/props/title/parts/1`。
+- `#/definitions/textValueComposition/properties/parts/items/anyOf/1`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/sections/0/components/0/props/title/parts/2`。
+- `#/definitions/textValueComposition/properties/parts/items/anyOf/2`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/sections/0/components/0/props/title/parts/0`。
 - `#/definitions/pageParam/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/2`。
 - `#/definitions/pageParam/anyOf/0/properties/default/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/2/default`。
 - `#/definitions/pageParam/anyOf/0/properties/default/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/3/default`。
@@ -1283,3 +1385,4 @@ Schema位置：`#/definitions/textValue/anyOf/2`。目标：[#/definitions/filte
 - `#/definitions/textValue/anyOf/0`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/0/props/legend/title`。
 - `#/definitions/textValue/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/4/props/title`。
 - `#/definitions/textValue/anyOf/2`：[合法完整页面](examples/report-filter-text-page.json)，JSON Pointer `#/sections/2/components/0/props/body`。
+- `#/definitions/textValue/anyOf/3`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/sections/0/components/0/props/subtitle`。

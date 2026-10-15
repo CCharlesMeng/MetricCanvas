@@ -813,9 +813,11 @@
             "6.19",
             "6.20",
             "6.21",
-            "6.22"
+            "6.22",
+            "6.23",
+            "6.24"
           ],
-          "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22"
+          "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24"
         },
         "id": {
           "type": "string",
@@ -1091,6 +1093,9 @@
             },
             {
               "$ref": "#/$defs/Page/definitions/filterTextValueReference"
+            },
+            {
+              "$ref": "#/$defs/Page/definitions/textValueComposition"
             }
           ]
         },
@@ -1178,6 +1183,35 @@
           ],
           "additionalProperties": false,
           "description": "对当前已应用筛选值的整值引用；不是参数初值或模板插值"
+        },
+        "textValueComposition": {
+          "type": "object",
+          "properties": {
+            "parts": {
+              "minItems": 1,
+              "maxItems": 64,
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/Page/definitions/textValueReference"
+                  },
+                  {
+                    "$ref": "#/$defs/Page/definitions/filterTextValueReference"
+                  }
+                ]
+              },
+              "description": "按顺序连接的1—64个字面量、参数或筛选引用；不嵌套，不自动添加分隔符"
+            }
+          },
+          "required": [
+            "parts"
+          ],
+          "additionalProperties": false,
+          "description": "显式文本片段组合；物化后组件只接收字符串"
         },
         "pageLayoutForm": {
           "type": "string",
@@ -3043,9 +3077,7 @@
                 "propertyNames": {
                   "type": "string"
                 },
-                "additionalProperties": {
-                  "$ref": "#/$defs/Page/definitions/fieldValue"
-                }
+                "additionalProperties": {}
               }
             },
             "totalCount": {
@@ -4327,6 +4359,9 @@
                 "date"
               ]
             },
+            "min": {
+              "type": "string"
+            },
             "required": {
               "type": "boolean"
             },
@@ -4643,6 +4678,9 @@
             },
             {
               "$ref": "#/$defs/Page/definitions/filterTextValueReference"
+            },
+            {
+              "$ref": "#/$defs/Page/definitions/textValueComposition"
             }
           ]
         },

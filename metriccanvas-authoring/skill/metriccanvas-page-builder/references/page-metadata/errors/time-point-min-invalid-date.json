@@ -1,0 +1,22 @@
+{
+  "case": "time-point-min-invalid-date",
+  "invariant": "time-point-min",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间点不是有效的公历日期",
+      "paths": [
+        "/filters/1/min"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "min": "2020-02-30"
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/time-point-min-invalid-date.json"
+}

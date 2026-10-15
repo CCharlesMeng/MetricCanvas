@@ -2,6 +2,24 @@
 from typing import Any, Mapping
 
 
+def composition_paths(page):
+    found = []
+
+    def visit(node, path):
+        if isinstance(node, list):
+            for index, child in enumerate(node):
+                visit(child, f"{path}/{index}")
+        elif isinstance(node, Mapping):
+            if set(node) == {"parts"} and isinstance(node["parts"], list):
+                found.append(path)
+            else:
+                for key, child in node.items():
+                    visit(child, f"{path}/{key.replace('~', '~0').replace('/', '~1')}")
+
+    visit({key: value for key, value in page.items() if key != "dataSources"}, "")
+    return found
+
+
 def references(page: Mapping[str, Any], source: str = "filter"):
     found = []
 

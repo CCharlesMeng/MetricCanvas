@@ -1,4 +1,4 @@
-import { dimensionOfLevel, hierarchyLevelOf, isRelativeTimeExpression, resolveRelativeTime, type FilterDeclaration, type NumberRangeValue } from '@metriccanvas/page/internal';
+import { validateTimePointValue, dimensionOfLevel, hierarchyLevelOf, isRelativeTimeExpression, resolveRelativeTime, type FilterDeclaration, type NumberRangeValue } from '@metriccanvas/page/internal';
 
 /**
  * 筛选状态 (Filter State) 中单个筛选器的当前值。
@@ -96,6 +96,8 @@ function initialValue(decl: FilterDeclaration, now: Date): FilterValue | undefin
   }
   if (decl.type === 'timePoint') {
     if (!decl.default) return undefined;
+    const issue = validateTimePointValue(decl.default, decl.granularity, decl.min);
+    if (issue) throw new Error(`筛选器 ${decl.id}: ${issue}`);
     return { type: 'timePoint', granularity: decl.granularity, value: decl.default };
   }
   if (decl.type === 'boolean') {

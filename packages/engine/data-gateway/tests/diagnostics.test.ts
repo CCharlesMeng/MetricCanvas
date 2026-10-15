@@ -214,7 +214,7 @@ describe('查询诊断默认不保留业务数据行(issue #47)', () => {
             results: [
               {
                 code: 'SUCCESS',
-                data: [{ 客户名称: SENTINEL, NA客户数: SENTINEL }],
+                data: [{ 客户名称: { invalid: SENTINEL }, NA客户数: 1 }],
                 total_count: 1
               }
             ]

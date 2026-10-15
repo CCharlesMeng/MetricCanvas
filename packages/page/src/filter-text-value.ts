@@ -2,13 +2,15 @@ import type { TypedError } from './errors';
 import type { FilterDeclaration } from './filter';
 import { isValueFormatPreset } from './field';
 import {
-  formatSuitsParamType, textValueScope,
-  type FilterTextValueReference, type PageParamType, type PageParamValue
+  formatSuitsParamType, textValueScope, isTextValueComposition,
+  type TextValueComposition, type FilterTextValueReference, type PageParamType, type PageParamValue
 } from './page-param';
 
 export interface FilterTextValueUsage {
   path: string;
   reference: FilterTextValueReference;
+  /** 组合按整个属性重新投影，不能写入已经物化成字符串的 parts 子路径。 */
+  composition?: { path: string; value: TextValueComposition };
 }
 
 /** 无时钟求值的已初始化默认值；相对时间由执行/运行时的实际筛选状态提供。 */
@@ -53,9 +55,11 @@ export function collectFilterTextValueReferences(document: unknown): FilterTextV
   const usages: FilterTextValueUsage[] = [];
   visit(textValueScope(document), '');
   return usages;
-  function visit(value: unknown, path: string): void {
+  function visit(value: unknown, path: string, composition?: FilterTextValueUsage['composition']): void {
     if (isFilterTextValueReference(value)) {
-      usages.push({ path, reference: value });
+      usages.push({ path, reference: value, ...(composition ? { composition } : {}) });
+    } else if (isTextValueComposition(value)) {
+      value.parts.forEach((part, index) => visit(part, `${path}/parts/${index}`, { path, value }));
     } else if (Array.isArray(value)) {
       value.forEach((child, index) => visit(child, `${path}/${index}`));
     } else if (value && typeof value === 'object') {
@@ -89,9 +93,20 @@ export function applyFilterTextValues<T>(
   page: T, usages: readonly FilterTextValueUsage[], resolve: (reference: FilterTextValueReference) => string
 ): T {
   let projected: unknown = page;
-  for (const { path, reference } of usages) {
-    const keys = path.slice(1).split('/').map(key => key.replaceAll('~1', '/').replaceAll('~0', '~'));
-    projected = replace(projected, keys, resolve(reference));
+  const composed = new Set<string>();
+  for (const { path, reference, composition } of usages) {
+    if (composition && composed.has(composition.path)) continue;
+    let text: string;
+    if (composition) {
+      composed.add(composition.path);
+      text = composition.value.parts.map(part => {
+        if (typeof part === 'string') return part;
+        if (isFilterTextValueReference(part)) return resolve(part);
+        throw new Error('文本组合须先解析参数再编译筛选引用');
+      }).join('');
+    } else text = resolve(reference);
+    const keys = (composition?.path ?? path).slice(1).split('/').map(key => key.replaceAll('~1', '/').replaceAll('~0', '~'));
+    projected = replace(projected, keys, text);
   }
   return projected as T;
   function replace(node: unknown, keys: string[], value: string): unknown {

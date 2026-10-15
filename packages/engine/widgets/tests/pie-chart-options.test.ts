@@ -38,6 +38,13 @@ function series(option: unknown): PieSeries {
 }
 
 describe('pieOption · compactRing', () => {
+  it('略过缺失数值而不伪造零扇区，真实零保留，全缺失时没有扇区', () => {
+    const withRows = (rows: MainDataSlots['main']['snapshot']['rows']): MainDataSlots => ({ main: { ...data.main, snapshot: { status: 'ready', rows } } });
+    const rows = [{ region: '缺失', amount: null }, { region: '真实零', amount: 0 }, { region: '有效', amount: 12 }];
+    expect(slices(pieOption(withRows(rows), props))).toEqual([{ name: '真实零', value: 0 }, { name: '有效', value: 12 }]);
+    expect(slices(pieOption(withRows([{ region: '缺失', amount: null }]), props))).toEqual([]);
+  });
+
   it('紧凑环图扩大外环并关闭外置标签，缺省饼图语义保持', () => {
     expect(series(pieOption(data, { ...props, variant: 'compactRing' }))).toMatchObject({
       radius: ['58%', '82%'],

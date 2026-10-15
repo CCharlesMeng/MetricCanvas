@@ -1,8 +1,9 @@
-import type { EffectiveQuery, Row } from '@metriccanvas/page/internal';
+import type { EffectiveQuery, Row, QueryRowNormalizationWarning } from '@metriccanvas/page/internal';
 
 export interface DataGatewayResult {
   rows: Row[];
   totalCount?: number;
+  warnings?: QueryRowNormalizationWarning[];
 }
 
 /**

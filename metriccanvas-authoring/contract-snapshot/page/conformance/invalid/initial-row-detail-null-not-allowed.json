@@ -227,7 +227,8 @@
                 "title": {
                   "queryField": "event_title",
                   "type": "string",
-                  "role": "dimension"
+                  "role": "dimension",
+                  "nullable": false
                 },
                 "impact": {
                   "queryField": "event_impact",
@@ -259,8 +260,8 @@
                 "reason": "<p class=\"positive\">增长</p>",
                 "events": [
                   {
-                    "event_title": "续约",
-                    "event_impact": null,
+                    "event_title": null,
+                    "event_impact": 3,
                     "event_desc": null,
                     "extra": "dropped"
                   }
@@ -406,8 +407,8 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/dataSources/customers/source/initial/rows/0/events/0/event_impact",
-      "message": "DQE 嵌套明细字段 event_impact 为 null，页面字段 impact 声明 nullable=false"
+      "path": "/dataSources/customers/source/initial/rows/0/events/0/event_title",
+      "message": "DQE 嵌套明细字段 event_title 为 null，页面字段 title 声明 nullable=false"
     }
   ]
 }

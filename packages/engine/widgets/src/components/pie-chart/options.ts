@@ -50,14 +50,16 @@ export function pieOption(
         ...(compactRing ? { center: ['50%', '50%'] as [string, string] } : {}),
         label: { show: compactRing ? false : showLabelLine, formatter: '{b}: {d}%' },
         labelLine: { show: compactRing ? false : showLabelLine },
-        data: rows.map((row, index) => {
+        data: rows.flatMap((row, index) => {
+          const numeric = finiteNumber(row[value.field]);
+          if (numeric === undefined) return [];
           const name = names[index] ?? '';
           const color = categoricalColor(palette, name, domain);
-          return {
+          return [{
             name,
-            value: finiteNumber(row[value.field]) ?? 0,
+            value: numeric,
             ...(color ? { itemStyle: { color } } : {})
-          };
+          }];
         })
       }
     ]

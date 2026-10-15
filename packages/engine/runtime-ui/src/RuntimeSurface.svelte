@@ -302,7 +302,7 @@
     const fromURL: FilterValues = capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined)
       ? parseFilterURL(search, declarations)
       : new Map();
-    const state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]));
+    const state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations);
     filterState = state;
 
     let primed = false;
@@ -705,7 +705,7 @@
         openDetail = { ...openDetail, view, page: input.page };
         if (view?.mode === 'query') {
           const generation = detailGeneration;
-          detailDispose = orchestrate(input.page, activeGateway, createFilterState(input.filters)).subscribe(value => {
+          detailDispose = orchestrate(input.page, activeGateway, createFilterState(input.filters, input.page.filters ?? [])).subscribe(value => {
             if (generation === detailGeneration && openDetail) detailSnapshots = value;
           });
         } else detailSnapshots = snapshots;

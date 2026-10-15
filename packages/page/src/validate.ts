@@ -58,6 +58,7 @@ import { filterTextValueErrors } from './filter-text-value';
 import {
   matchesFieldValue,
   validateContractRows,
+  queryResultFieldContract,
   type RowContractIssue
 } from './result-field-contract';
 import { barForecastBoundaryIssues } from './bar-forecast-boundary';
@@ -508,9 +509,15 @@ function filterDeclarationErrors(
         if (issue) errors.push(schemaError(`${path}/default/anchor`, issue));
       }
     }
-  } else if (filter.type === 'timePoint' && filter.default !== undefined) {
-    const issue = validateTimePointValue(filter.default, filter.granularity);
-    if (issue) errors.push(schemaError(`${path}/default`, issue));
+  } else if (filter.type === 'timePoint') {
+    if (filter.min !== undefined) {
+      const issue = validateTimePointValue(filter.min, filter.granularity);
+      if (issue) errors.push(schemaError(`${path}/min`, issue));
+    }
+    if (filter.default !== undefined) {
+      const issue = validateTimePointValue(filter.default, filter.granularity, filter.min);
+      if (issue) errors.push(schemaError(`${path}/default`, issue));
+    }
   } else if (filter.type === 'numberRange' && filter.default) {
     const { from, to } = filter.default;
     if (from === undefined && to === undefined) {
@@ -723,7 +730,7 @@ function queryContractErrors(
     errors.push(
       ...rowContractErrors(
         dataSource.source.initial.rows,
-        inputFields(dataSource),
+        Object.fromEntries(Object.entries(inputFields(dataSource)).map(([id, field]) => [id, queryResultFieldContract(field)])),
         `${sourcePath}/source/initial/rows`
       )
     );

@@ -83,8 +83,31 @@ export interface FilterTextValueReference {
   format?: ValueFormatPreset;
 }
 
-/** 文本取值:字面量,或对页面参数的整值引用。 */
-export type TextValue = string | TextValueReference | FilterTextValueReference;
+/** 有序的一层文本片段；不接受表达式、嵌套组合或隐式分隔符。 */
+export interface TextValueComposition {
+  parts: Array<string | TextValueReference | FilterTextValueReference>;
+}
+
+export function isTextValueComposition(value: unknown): value is TextValueComposition {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const node = value as Record<string, unknown>;
+  return Object.keys(node).length === 1 && Array.isArray(node.parts);
+}
+
+/** 文本取值在物化后统一成为字符串。 */
+export type TextValue = string | TextValueReference | FilterTextValueReference | TextValueComposition;
+
+export function collectTextValueCompositions(document: unknown): Array<{ path: string; value: TextValueComposition }> {
+  const usages: Array<{ path: string; value: TextValueComposition }> = [];
+  visit(textValueScope(document), '');
+  return usages;
+  function visit(value: unknown, path: string): void {
+    if (!value || typeof value !== 'object') return;
+    if (Array.isArray(value)) { value.forEach((child, index) => visit(child, `${path}/${index}`)); return; }
+    if (isTextValueComposition(value)) { usages.push({ path, value }); return; }
+    for (const [key, child] of Object.entries(value)) visit(child, `${path}/${escapePointer(key)}`);
+  }
+}
 
 /**
  * 文本取值引用按形状识别。页面协议里没有第二个使用 `param` 键的对象,

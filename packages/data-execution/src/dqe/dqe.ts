@@ -3,6 +3,7 @@ import {
   normalizeQueryRows,
   type QueryErrorCode,
   type QueryRowNormalizationIssue,
+  type QueryRowNormalizationWarning,
   type EffectiveQuery,
   type JsonObject,
   type JsonValue,
@@ -27,8 +28,8 @@ export type DqeDiagnosticStatus = 'success' | 'error';
  * 查询诊断记录:生产态查询诊断的唯一形状(issue #47)。
  *
  * 只保留定位标识(页面、页面修订、页面数据源、执行与上游请求)、
- * 开始时间、耗时、结果行数、状态与结构化错误分类。形状封闭且字段全部为
- * 标量或标识列表——原始响应、数据行、字段值、筛选值与上游错误正文
+ * 开始时间、耗时、结果行数、状态、结构化错误分类及脱值告警计数。形状封闭，
+ * 告警仅含字段标识、原因和数量——原始响应、数据行、字段值、筛选值与上游错误正文
  * 没有任何字段可以进入。开发期明细走独立的 DqeDevDetail 通道。
  */
 export interface DqeDiagnosticRecord {
@@ -48,6 +49,8 @@ export interface DqeDiagnosticRecord {
   rowCount?: number;
   totalCount?: number;
   errorCode?: DqeGatewayError['code'] | 'UNKNOWN';
+  /** 非阻断的数值缺失计数，仅含字段标识、原因和数量。 */
+  warnings?: QueryRowNormalizationWarning[];
 }
 
 export interface DqeDiagnostics {
@@ -173,6 +176,7 @@ export function createDqeGateway(
     rowCount?: number;
     totalCount?: number;
     errorCode?: DqeDiagnosticRecord['errorCode'];
+    warnings?: QueryRowNormalizationWarning[];
   }
 
   function recordDiagnostic(
@@ -193,7 +197,8 @@ export function createDqeGateway(
       status: outcome.status,
       ...(outcome.rowCount !== undefined ? { rowCount: outcome.rowCount } : {}),
       ...(outcome.totalCount !== undefined ? { totalCount: outcome.totalCount } : {}),
-      ...(outcome.errorCode !== undefined ? { errorCode: outcome.errorCode } : {})
+      ...(outcome.errorCode !== undefined ? { errorCode: outcome.errorCode } : {}),
+      ...(outcome.warnings !== undefined ? { warnings: outcome.warnings } : {})
     });
   }
 
@@ -217,7 +222,8 @@ export function createDqeGateway(
       batchId,
       ...(requestId !== undefined ? { requestId } : {}),
       rowCount: result.rows.length,
-      ...(result.totalCount !== undefined ? { totalCount: result.totalCount } : {})
+      ...(result.totalCount !== undefined ? { totalCount: result.totalCount } : {}),
+      ...(result.warnings !== undefined ? { warnings: result.warnings } : {})
     });
     call.resolve(result);
   }
@@ -308,7 +314,7 @@ export function createDqeGateway(
               { resultCode: String(rawResult.code) }
             );
           }
-          const rows = normalizeRows(rawResult.data, call.query);
+          const normalized = normalizeRows(rawResult.data, call.query);
           if (
             typeof rawResult.total_count !== 'number' ||
             !Number.isInteger(rawResult.total_count) ||
@@ -320,7 +326,7 @@ export function createDqeGateway(
               { totalCountType: describeType(rawResult.total_count) }
             );
           }
-          settleSuccess(call, { rows, totalCount: rawResult.total_count }, batchId, requestId);
+          settleSuccess(call, { ...normalized, totalCount: rawResult.total_count }, batchId, requestId);
         } catch (cause) {
           settleFailure(call, cause, batchId, requestId);
         }
@@ -729,9 +735,9 @@ function ensureRecord(parent: JsonObject, key: string): JsonObject {
   return copy;
 }
 
-function normalizeRows(value: unknown, query: EffectiveQuery): Row[] {
+function normalizeRows(value: unknown, query: EffectiveQuery): DataGatewayResult {
   const normalized = normalizeQueryRows(value, query.fieldMappings);
-  if (normalized.ok) return normalized.rows;
+  if (normalized.ok) return { rows: normalized.rows, ...(normalized.warnings ? { warnings: normalized.warnings } : {}) };
   throw gatewayNormalizationError(normalized.issues[0]!);
 }
 

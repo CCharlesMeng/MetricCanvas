@@ -25,6 +25,26 @@ afterAll(() => rm(isolated, {recursive: true, force: true}));
 const run = (args: string[]) => spawnSync(process.execPath, [script, ...args], {cwd: isolated, encoding: 'utf8', timeout: 10_000, env: {PATH: process.env.PATH}});
 
 describe('独立本地创作 Skill', () => {
+  it('查询数值容错示例可在仓外独立校验，维度和缺字段仍被拒绝', async () => {
+    const sourcePage = files.get('references/page-metadata/examples/query-numeric-tolerance.json');
+    expect(sourcePage).toBeDefined();
+    const page = JSON.parse(sourcePage!);
+    const target = path.join(isolated, `${page.id}.json`);
+    await writeFile(target, JSON.stringify(page));
+    expect(run([target]).status).toBe(0);
+    page.dataSources.samples.source.initial.rows[0]['容错数值'] = { invalid: true };
+    page.dataSources.samples.source.initial.rows[0]['容错明细'][0]['明细数值'] = [1, 2];
+    await writeFile(target, JSON.stringify(page));
+    expect(run([target]).status).toBe(0);
+    page.dataSources.samples.source.initial.rows[0]['容错样例'] = null;
+    await writeFile(target, JSON.stringify(page));
+    expect(run([target]).status).toBe(1);
+    page.dataSources.samples.source.initial.rows[0]['容错样例'] = '正常';
+    delete page.dataSources.samples.source.initial.rows[0]['容错数值'];
+    await writeFile(target, JSON.stringify(page));
+    expect(run([target]).status).toBe(1);
+  });
+
   it('整目录复制后知识链接与机器索引闭合，所有生成内容有一致的版本和哈希', () => {
     validateReferenceLinks(files);
     const manifest = JSON.parse(files.get('references/knowledge.json')!);

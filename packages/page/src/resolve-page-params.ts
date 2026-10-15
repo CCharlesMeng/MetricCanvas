@@ -1,3 +1,4 @@
+import { validateTimePointValue } from './filter';
 import { affectedSourceIds } from './data-source-references';
 import { matchesParamDeclaration, pageParamDeclarations, type PageParamValue } from './page-param';
 import { initializeQueryParams } from './query';
@@ -79,7 +80,11 @@ export function materializePageParams(page:Page,values:ReadonlyMap<string,PagePa
     if (!filter.initialParam) continue;
     const value = values.get(filter.initialParam);
     if (value && typeof value === 'object' && !Array.isArray(value)) {
-      if (filter.type === 'timePoint') filter.default = value.start;
+      if (filter.type === 'timePoint') {
+        const error = validateTimePointValue(value.start, filter.granularity, filter.min);
+        if (error) throw new Error(`筛选器 ${filter.id}: ${error}`);
+        filter.default = value.start;
+      }
       else filter.default = { from: value.start, to: value.end };
     }
   }

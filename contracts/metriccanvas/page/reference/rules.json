@@ -1,6 +1,37 @@
 {
   "invariants": [
     {
+      "id": "time-point-min",
+      "description": "6.24 时间点下限与默认值日历语义",
+      "valid": [
+        "time-point-min-page"
+      ],
+      "invalid": [
+        "time-point-min-before-6.24",
+        "time-point-min-invalid-month",
+        "time-point-min-wrong-precision",
+        "time-point-min-default-before",
+        "time-point-min-invalid-date"
+      ]
+    },
+    {
+      "id": "text-value-composition",
+      "description": "6.23 文本片段组合；引用先校验，物化后只传递字符串",
+      "valid": [
+        "text-composition-page"
+      ],
+      "invalid": [
+        "text-composition-before-6.23",
+        "text-composition-unknown-filter",
+        "text-composition-unknown-param",
+        "text-composition-incompatible-format",
+        "text-composition-empty-result",
+        "text-composition-optional-required-title",
+        "text-composition-empty",
+        "text-composition-nested"
+      ]
+    },
+    {
       "id": "paged-join",
       "description": "6.22 组合表全局视图与普通查询定义引用",
       "valid": [
@@ -311,13 +342,14 @@
     },
     {
       "id": "query-initial-rows-normalize",
-      "description": "DQE 内嵌初始行按 queryField 归一化并满足结果字段契约",
+      "description": "DQE 内嵌初始行按 queryField 归一化，数值度量容错，维度和结构严格校验",
       "valid": [
         "filters-page",
         "compute-page",
         "grouped-fields-page",
         "map-page",
-        "forecast-page"
+        "forecast-page",
+        "query-numeric-tolerance"
       ],
       "invalid": [
         "initial-row-missing-query-field",
@@ -553,7 +585,7 @@
     },
     {
       "id": "detail-item-object",
-      "description": "嵌套明细的每一项必须是对象；由 Page Schema 在结构层拒绝，语义层的同名判定因此不可达",
+      "description": "嵌套明细的每一项必须是对象；inline 在结构层拒绝，查询原始初始行在归一化层拒绝",
       "valid": [
         "compute-page",
         "forecast-page"
@@ -565,7 +597,7 @@
     },
     {
       "id": "detail-list-max-items",
-      "description": "嵌套明细最多 100 项；由 Page Schema 的 maxItems 在结构层拒绝，语义层的同名判定因此不可达",
+      "description": "嵌套明细最多 100 项；inline 在结构层拒绝，查询原始初始行在归一化层拒绝",
       "valid": [
         "compute-page",
         "forecast-page"

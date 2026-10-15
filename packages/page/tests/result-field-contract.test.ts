@@ -12,8 +12,8 @@ import {
 
 /**
  * 结果字段契约共享校验(issue #50):inline 数据校验与查询结果归一化
- * 必须调用同一实现。这里把两条路径放进同一组表驱动用例,任何一条
- * 规则漂移都会让两路结论不一致而失败。
+ * 必须调用同一实现。查询数值度量先容错归一化，维度、结构等其余规则
+ * 仍与 inline 相同；表驱动用例同时验证一致部分与这项显式差异。
  */
 
 interface Verdict {
@@ -143,7 +143,7 @@ describe('结果字段契约:货币金额字段', () => {
     nullable: false
   };
 
-  it('inline 与查询结果路径只接受有限数字', () => {
+  it('inline 严格，查询金额转为有限数字或缺失', () => {
     for (const value of [0, -0, 12.5, -13_123_173.26]) {
       for (const verdict of bothVerdicts(field, value)) {
         expect(verdict).toEqual({ ok: true, codes: [] });
@@ -151,16 +151,14 @@ describe('结果字段契约:货币金额字段', () => {
     }
 
     for (const value of ['12.5', Number.NaN, Number.POSITIVE_INFINITY]) {
-      for (const verdict of bothVerdicts(field, value)) {
-        expect(verdict).toEqual({ ok: false, codes: ['TYPE_MISMATCH'] });
-      }
+      expect(inlineVerdict(field, value)).toEqual({ ok: false, codes: ['TYPE_MISMATCH'] });
+      expect(queryVerdict(field, value)).toEqual({ ok: true, codes: [] });
     }
   });
 
-  it('沿用结果字段契约的 nullable 语义', () => {
-    for (const verdict of bothVerdicts(field, null)) {
-      expect(verdict).toEqual({ ok: false, codes: ['NULL_NOT_ALLOWED'] });
-    }
+  it('查询金额的 nullable=false 仅为数据预期，inline 仍拒绝 null', () => {
+    expect(inlineVerdict(field, null)).toEqual({ ok: false, codes: ['NULL_NOT_ALLOWED'] });
+    expect(queryVerdict(field, null)).toEqual({ ok: true, codes: [] });
     for (const verdict of bothVerdicts({ ...field, nullable: true }, null)) {
       expect(verdict).toEqual({ ok: true, codes: [] });
     }
@@ -216,7 +214,7 @@ describe('结果字段契约:明细字段规则(两条路径同一实现)', () =
     ]);
     expect(
       queryVerdict(recordListField, badType.map(rawDetailItem)).codes
-    ).toEqual(['DETAIL_TYPE_MISMATCH']);
+    ).toEqual([]);
     expect(
       queryVerdict(recordListField, badNull.map(rawDetailItem)).codes
     ).toEqual(['DETAIL_NULL_NOT_ALLOWED']);
@@ -288,7 +286,7 @@ describe('结果字段契约:错误只报告行号、字段名与错误分类', 
       amount: {
         queryField: '金额',
         type: 'number',
-        role: 'measure',
+        role: 'dimension',
         nullable: false
       }
     });
@@ -312,7 +310,7 @@ describe('结果字段契约:错误只报告行号、字段名与错误分类', 
       type: 'recordList',
       role: 'detail',
       items: {
-        fields: { reason: { type: 'number', role: 'measure' } }
+        fields: { reason: { type: 'number', role: 'dimension' } }
       }
     };
     const inline = validateContractRows([{ f: [{ reason: sentinel }] }], {

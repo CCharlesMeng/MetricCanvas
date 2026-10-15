@@ -34,6 +34,38 @@ class PageContractConformanceTest(unittest.TestCase):
     pending 注册表现在为空；新向量必须直接命中，不得通过扩大清单静默豁免。
     """
 
+    def test_query_numeric_tolerance_preserves_structural_guards(self) -> None:
+        page = json.loads((CONTRACT_ROOT / "page/conformance/valid/query-numeric-tolerance.json").read_text())
+        self.assertFalse(validate_page_document(page))
+        for value in ("--", None, "12.5", True, {"invalid": True}, [1, 2]):
+            candidate = deepcopy(page)
+            row = candidate["dataSources"]["samples"]["source"]["initial"]["rows"][0]
+            row["容错数值"] = value
+            row["容错明细"][0]["明细数值"] = value
+            self.assertFalse(validate_page_document(candidate))
+        row = page["dataSources"]["samples"]["source"]["initial"]["rows"][0]
+        row["容错样例"] = None
+        self.assertTrue(validate_page_document(page))
+        row["容错样例"] = "正常"
+        del row["容错数值"]
+        self.assertTrue(validate_page_document(page))
+
+    def test_text_composition_required_text_and_optional_parts(self) -> None:
+        page = json.loads((CONTRACT_ROOT / 'page/conformance/valid/text-composition-page.json').read_text())
+        original = deepcopy(page)
+        self.assertEqual(validate_page_document(page), [])
+        normalized = normalize_page_document(page)
+        self.assertTrue(normalized['ok'])
+        self.assertEqual(normalized['document']['sections'], original['sections'])
+        props = page['sections'][0]['components'][0]['props']
+        props['title'] = {'parts': ['']}
+        self.assertIn(('SCHEMA_ERROR', '/sections/0/components/0/props/title'), _issue_keys(validate_page_document(page)))
+        props['title'] = original['sections'][0]['components'][0]['props']['title']
+        page['params']['display'][0]['required'] = False
+        self.assertIn(('SCHEMA_ERROR', '/sections/0/components/0/props/title'), _issue_keys(validate_page_document(page)))
+        props['title'] = '固定主标题'
+        self.assertEqual(validate_page_document(page), [])
+
     def test_query_result_shared_vectors(self) -> None:
         matrix = json.loads((CONTRACT_ROOT / 'page/conformance/query-result-bindings.json').read_text())
         for case in matrix['cases']:

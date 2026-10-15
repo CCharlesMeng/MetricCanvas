@@ -1,30 +1,237 @@
 {
   "groups": [
-    { "id": "reports", "category": "business", "title": "经营分析", "description": "完整业务报告、运营月报与参数化分析。" },
-    { "id": "ioc", "category": "business", "title": "IOC 作战地图", "description": "从区域概览到机会点分析、清单与项目详情。使用合成演示数据。" },
-    { "id": "features", "category": "features", "title": "功能演示", "description": "按能力查找筛选、下钻、查询、组件与导出示例。" },
-    { "id": "verification", "category": "verification", "title": "验收样例", "description": "专门检查运行时交互与异常状态的演示页面。" }
+    {
+      "id": "reports",
+      "category": "business",
+      "title": "经营分析",
+      "description": "完整业务报告、运营月报与参数化分析。"
+    },
+    {
+      "id": "ioc",
+      "category": "business",
+      "title": "IOC 作战地图",
+      "description": "从区域概览到机会点分析、清单与项目详情。使用合成演示数据。"
+    },
+    {
+      "id": "features",
+      "category": "features",
+      "title": "功能演示",
+      "description": "按能力查找筛选、下钻、查询、组件与导出示例。"
+    },
+    {
+      "id": "verification",
+      "category": "verification",
+      "title": "验收样例",
+      "description": "专门检查运行时交互与异常状态的演示页面。"
+    }
   ],
   "pages": [
-    { "id": "business-sdt-report", "group": "reports", "summary": "行权效率专项分析，Top5 主查询联动阶段明细。", "tags": ["级联查询"] },
-    { "id": "flow-analysis-report", "group": "reports", "summary": "代表处流水分析，展示概况、趋势与结构。", "tags": ["流水分析"] },
-    { "id": "flow-analysis-report-params", "group": "reports", "summary": "流水分析的参数版，显式指定代表处与报告月份。", "tags": ["页面参数"] },
-    { "id": "tokens-report", "group": "reports", "summary": "固定采集时点的 Tokens 运营分析简报。", "tags": ["Tokens 运营"] },
-    { "id": "tokens-monthly-trend", "group": "reports", "summary": "上半年 Tokens 运营月报与月度趋势。", "tags": ["Tokens 运营"] },
-    { "id": "customer-activity-risk-briefing", "group": "reports", "summary": "客户活动风险分析与简报呈现。", "tags": ["客户风险"] },
-    { "id": "ioc-project-overview", "group": "ioc", "summary": "全球与区域项目概览、指标和区域分布。", "tags": ["概览"] },
-    { "id": "ioc-opportunity-analysis", "group": "ioc", "summary": "机会点数量与结构分析；首版筛选未接入查询。", "tags": ["分析"] },
-    { "id": "ioc-opportunity-list", "group": "ioc", "summary": "机会点明细、条件筛选与项目详情导航。", "tags": ["清单"] },
-    { "id": "ioc-project-detail", "group": "ioc", "summary": "项目基本信息、规范性、销售预测与项目叙事。", "tags": ["详情", "页面参数"] },
-    { "id": "demo", "group": "features", "summary": "筛选联动、页内下钻与跳转销售明细的完整链路。", "tags": ["筛选", "跨页下钻"] },
-    { "id": "sales-detail", "group": "features", "summary": "演示看板的下钻目标，从 URL 恢复区域与渠道筛选。", "tags": ["跨页下钻"] },
-    { "id": "report-date-filter-example", "group": "features", "summary": "月份范围输入联动期间文字与月度查询，使用本地 DQE 仿真。", "tags": ["日期筛选"] },
-    { "id": "query-result-where-page", "group": "features", "summary": "本地 DQE 仿真的排序分页，下游查询独立过滤当前窗口。", "tags": ["查询分页", "结果绑定"] },
-    { "id": "table-toolbar-demo", "group": "features", "summary": "每张表独立搜索，导出完整匹配结果到 Excel。", "tags": ["表格搜索", "Excel 导出"] },
-    { "id": "custom-component-dashboard", "group": "features", "summary": "区域经营看板中的页面自定义组件。", "tags": ["自定义组件"] },
-    { "id": "region-map", "group": "features", "summary": "地图着色与散点、带参链接及层级维度筛选器。", "tags": ["地图", "层级筛选"] },
-    { "id": "ioc-content-navigation", "group": "verification", "summary": "用匿名合成数据检查内容导航的运行时行为。", "tags": ["内容导航"] },
-    {"id": "multi-query-table", "group": "verification", "summary": "两张独立组合表对照当前序号与固定预签金额排名，支持全局排序、跨源范围和导出；使用本地 DQE 仿真。", "tags": ["多查询表格", "全局排序", "跨源筛选"]},
-    { "id": "empty-state-showcase", "group": "verification", "summary": "检查空数据与请求失败时的组件呈现。", "tags": ["空态", "错误状态"] }
+    {
+      "id": "business-sdt-report",
+      "group": "reports",
+      "summary": "固定2026年10月商务SDT报告，保留人工维护内容。",
+      "tags": [
+        "商务SDT",
+        "固定月份"
+      ]
+    },
+    {
+      "id": "report-title-filter-example",
+      "group": "features",
+      "summary": "主标题组合时间与固定文字，覆盖单点、范围、清空和导出捕获；无业务数据与查询。",
+      "tags": [
+        "动态标题",
+        "日期筛选"
+      ]
+    },
+    {
+      "id": "query-numeric-tolerance",
+      "group": "verification",
+      "summary": "八种查询数值样例验证初始行和动态响应的单元格容错；使用合成数据及本地 DQE 仿真。",
+      "tags": [
+        "数值容错",
+        "缺失值"
+      ]
+    },
+    {
+      "id": "business-sdt-report-monthly",
+      "group": "reports",
+      "summary": "单月筛选联动所有图表、报告主标题与统计月份，最早2020-06。",
+      "tags": [
+        "单月筛选",
+        "月份下限",
+        "近6月趋势"
+      ]
+    },
+    {
+      "id": "flow-analysis-report",
+      "group": "reports",
+      "summary": "代表处流水分析，展示概况、趋势与结构。",
+      "tags": [
+        "流水分析"
+      ]
+    },
+    {
+      "id": "flow-analysis-report-params",
+      "group": "reports",
+      "summary": "流水分析的参数版，显式指定代表处与报告月份。",
+      "tags": [
+        "页面参数"
+      ]
+    },
+    {
+      "id": "tokens-report",
+      "group": "reports",
+      "summary": "固定采集时点的 Tokens 运营分析简报。",
+      "tags": [
+        "Tokens 运营"
+      ]
+    },
+    {
+      "id": "tokens-monthly-trend",
+      "group": "reports",
+      "summary": "上半年 Tokens 运营月报与月度趋势。",
+      "tags": [
+        "Tokens 运营"
+      ]
+    },
+    {
+      "id": "customer-activity-risk-briefing",
+      "group": "reports",
+      "summary": "客户活动风险分析与简报呈现。",
+      "tags": [
+        "客户风险"
+      ]
+    },
+    {
+      "id": "ioc-project-overview",
+      "group": "ioc",
+      "summary": "全球与区域项目概览、指标和区域分布。",
+      "tags": [
+        "概览"
+      ]
+    },
+    {
+      "id": "ioc-opportunity-analysis",
+      "group": "ioc",
+      "summary": "机会点数量与结构分析；首版筛选未接入查询。",
+      "tags": [
+        "分析"
+      ]
+    },
+    {
+      "id": "ioc-opportunity-list",
+      "group": "ioc",
+      "summary": "机会点明细、条件筛选与项目详情导航。",
+      "tags": [
+        "清单"
+      ]
+    },
+    {
+      "id": "ioc-project-detail",
+      "group": "ioc",
+      "summary": "项目基本信息、规范性、销售预测与项目叙事。",
+      "tags": [
+        "详情",
+        "页面参数"
+      ]
+    },
+    {
+      "id": "demo",
+      "group": "features",
+      "summary": "筛选联动、页内下钻与跳转销售明细的完整链路。",
+      "tags": [
+        "筛选",
+        "跨页下钻"
+      ]
+    },
+    {
+      "id": "sales-detail",
+      "group": "features",
+      "summary": "演示看板的下钻目标，从 URL 恢复区域与渠道筛选。",
+      "tags": [
+        "跨页下钻"
+      ]
+    },
+    {
+      "id": "report-date-filter-example",
+      "group": "features",
+      "summary": "月份范围输入联动期间文字与月度查询，使用本地 DQE 仿真。",
+      "tags": [
+        "日期筛选"
+      ]
+    },
+    {
+      "id": "query-result-where-page",
+      "group": "features",
+      "summary": "本地 DQE 仿真的排序分页，下游查询独立过滤当前窗口。",
+      "tags": [
+        "查询分页",
+        "结果绑定"
+      ]
+    },
+    {
+      "id": "table-toolbar-demo",
+      "group": "features",
+      "summary": "每张表独立搜索，导出完整匹配结果到 Excel。",
+      "tags": [
+        "表格搜索",
+        "Excel 导出"
+      ]
+    },
+    {
+      "id": "custom-component-dashboard",
+      "group": "features",
+      "summary": "区域经营看板中的页面自定义组件。",
+      "tags": [
+        "自定义组件"
+      ]
+    },
+    {
+      "id": "region-map",
+      "group": "features",
+      "summary": "地图着色与散点、带参链接及层级维度筛选器。",
+      "tags": [
+        "地图",
+        "层级筛选"
+      ]
+    },
+    {
+      "id": "ioc-content-navigation",
+      "group": "verification",
+      "summary": "用匿名合成数据检查内容导航的运行时行为。",
+      "tags": [
+        "内容导航"
+      ]
+    },
+    {
+      "id": "multi-query-table",
+      "group": "verification",
+      "summary": "两张独立组合表对照当前序号与固定预签金额排名，支持全局排序、跨源范围和导出；使用本地 DQE 仿真。",
+      "tags": [
+        "多查询表格",
+        "全局排序",
+        "跨源筛选"
+      ]
+    },
+    {
+      "id": "empty-state-showcase",
+      "group": "verification",
+      "summary": "检查空数据与请求失败时的组件呈现。",
+      "tags": [
+        "空态",
+        "错误状态"
+      ]
+    },
+    {
+      "id": "business-sdt-cascade-example",
+      "group": "verification",
+      "summary": "保留Top5项目到阶段明细的两条独立级联链，使用本地DQE仿真验收。",
+      "tags": [
+        "级联查询",
+        "Top5",
+        "仿真"
+      ]
+    }
   ]
 }

@@ -3,7 +3,7 @@ import { expect, it } from 'vitest';
 import { validate } from '../src';
 import { formatSuitsParamType } from '../src/page-param';
 import { requiredMinorVersion } from '../src/version';
-import report from '../../../pages/business-sdt-report.json';
+import report from '../../../pages/business-sdt-cascade-example.json';
 
 const document = () => JSON.parse(readFileSync('packages/page/fixtures/contract-valid/inline-report.json', 'utf8'));
 

@@ -27,8 +27,15 @@ export interface FilterState {
   fromURL(search: string, declarations: readonly FilterDeclaration[]): void;
 }
 
-export function createFilterState(initial?: FilterValues): FilterState {
-  let current: Map<string, FilterValue> = new Map(initial ?? []);
+export function createFilterState(initial?: FilterValues, declarations: readonly FilterDeclaration[] = []): FilterState {
+  const byId = new Map(declarations.map(declaration => [declaration.id, declaration]));
+  let current: Map<string, FilterValue> = new Map();
+  for (const [id, value] of initial ?? []) {
+    const declaration = byId.get(id);
+    const valid = declaration?.type === 'timePoint' && declaration.min !== undefined ? normalize(value, declaration) : value;
+    if (declaration?.type === 'timePoint' && declaration.min !== undefined && valid === undefined) throw new Error(`筛选器 ${id} 初值不符合时间点下限`);
+    if (valid) current.set(id, valid);
+  }
   const subscribers = new Set<(values: FilterValues) => void>();
 
   function replace(next: Map<string, FilterValue>) {
@@ -47,7 +54,7 @@ export function createFilterState(initial?: FilterValues): FilterState {
     },
 
     write(filterId, value) {
-      const next = normalize(value);
+      const next = normalize(value, byId.get(filterId));
       // 非法时间范围是无效写入,既不落状态也不清除已有合法值。
       if (next === undefined) return;
       if (sameValue(current.get(filterId), next)) return;
@@ -61,7 +68,7 @@ export function createFilterState(initial?: FilterValues): FilterState {
       const map = new Map(current);
       let changed = false;
       for (const [filterId, value] of updates) {
-        const next = normalize(value);
+        const next = normalize(value, byId.get(filterId));
         if (next === undefined || sameValue(map.get(filterId), next)) continue;
         if (next === null) map.delete(filterId);
         else map.set(filterId, next);
@@ -70,11 +77,18 @@ export function createFilterState(initial?: FilterValues): FilterState {
       if (changed) replace(map);
     },
 
-    toURL(declarations = []) {
-      return filterSearch(current, declarations);
+    toURL(explicitDeclarations = declarations) {
+      return filterSearch(current, explicitDeclarations);
     },
     fromURL(search, declarations) {
-      replace(new Map(parseFilterSearch(search, declarations)));
+      for (const declaration of declarations) byId.set(declaration.id, declaration);
+      const next = new Map(parseFilterSearch(search, declarations));
+      for (const declaration of declarations) {
+        if (declaration.type !== 'timePoint' || !declaration.min || !declaration.required || next.has(declaration.id)) continue;
+        const fallback = current.get(declaration.id) ?? initialFilterValues([declaration]).get(declaration.id);
+        if (fallback) next.set(declaration.id, fallback);
+      }
+      replace(next);
     }
 
   };
@@ -90,7 +104,12 @@ function notify(run: (values: FilterValues) => void, values: FilterValues): void
 }
 
 /** 空值集合等同不筛选,归一为清除,保持 URL 与状态干净 */
-function normalize(value: FilterValue | null): FilterValue | null | undefined {
+function normalize(value: FilterValue | null, declaration?: FilterDeclaration): FilterValue | null | undefined {
+  if (declaration?.type === 'timePoint' && declaration.min !== undefined) {
+    if (!value) return declaration.required ? undefined : null;
+    if (value.type !== 'timePoint' || value.granularity !== declaration.granularity) return undefined;
+    if (validateTimePointValue(value.value, declaration.granularity, declaration.min)) return undefined;
+  }
   if (value && value.type === 'dimension' && value.values.length === 0) return null;
   if (value?.type === 'timeRange' && validateCalendarTimeRange(value).length > 0) {
     return undefined;
@@ -166,7 +185,7 @@ export function parseFilterSearch(search: string, declarations: readonly FilterD
       value = {type:'numberRange', ...(fromText?.trim() ? {from:Number(fromText)} : {}), ...(toText?.trim() ? {to:Number(toText)} : {})};
     } else if (declaration.type === 'timePoint') {
       const raw = read('value');
-      if (!raw || validateTimePointValue(raw, declaration.granularity)) continue;
+      if (!raw || validateTimePointValue(raw, declaration.granularity, declaration.min)) continue;
       value = {type:'timePoint', granularity:declaration.granularity, value:raw};
     } else if (declaration.type === 'boolean') {
       const raw = read('value');

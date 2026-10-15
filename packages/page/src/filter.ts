@@ -125,6 +125,8 @@ export interface TimePointFilterDeclaration {
   visible?: boolean;
   /** 单个时间点的粒度。谓词是等值,不是区间。 */
   granularity: 'month' | 'date';
+  /** 可选的包含式下限，格式与 granularity 一致（6.24）。 */
+  min?: string;
   required?: boolean;
   /** month 为 YYYY-MM,date 为 YYYY-MM-DD */
   default?: string;
@@ -431,16 +433,17 @@ export function daysInGregorianMonth(year: number, month: number): number {
 
 export function validateTimePointValue(
   value: string,
-  granularity: 'month' | 'date'
+  granularity: 'month' | 'date',
+  min?: string
 ): string | undefined {
   if (granularity === 'month') {
     const match = /^(\d{4})-(\d{2})$/.exec(value);
     if (!match) return '时间点须为 YYYY-MM 格式';
     const month = Number(match[2]);
     if (Number(match[1]) < 1 || month < 1 || month > 12) return '时间点不是有效月份';
-    return undefined;
+    return min !== undefined && value < min ? `时间点不得早于 ${min}` : undefined;
   }
   const parsed = parseCalendarValue(value, 'date');
-  if (parsed.valid) return undefined;
+  if (parsed.valid) return min !== undefined && value < min ? `时间点不得早于 ${min}` : undefined;
   return parsed.reason === 'calendar' ? '时间点不是有效的公历日期' : '时间点须为 YYYY-MM-DD 格式';
 }

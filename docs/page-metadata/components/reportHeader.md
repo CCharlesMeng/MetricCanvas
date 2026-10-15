@@ -2,7 +2,7 @@
 
 表达页面标题、说明、时间点与标签；副标题可显式使用受控语义 HTML。适用于任何完整页面的开头。数据形状：不绑定页面数据源。
 
-页面内容页头；title为必需文本取值，可引用必需页面参数。页面meta.title是另一个页面级声明，不替代该组件必填title。
+页面内容页头；title为必需文本取值，可引用必需页面参数或当前已应用筛选；6.23 起可用 `{parts:[{filter:"report-month",format:"period"}," 经营分析报告"]}` 组合动态期间与固定名称，规则见[文本片段组合](../params-and-text-values.md#文本片段组合623)。页面meta.title是另一个页面级声明，不替代该组件必填title。
 
 dashboard 的筛选器由统一工具栏呈现，reportHeader 禁止配置 filterIds；下述日期工具带只用于 report。
 

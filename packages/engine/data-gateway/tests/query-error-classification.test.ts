@@ -149,7 +149,7 @@ const cases: ClassificationCase[] = [
       envelope([
         {
           code: 'SUCCESS',
-          data: [{ 客户级别: '卓越NA', NA客户数: ROW_SENTINEL }],
+          data: [{ 客户级别: { invalid: ROW_SENTINEL }, NA客户数: 1 }],
           total_count: 1
         }
       ])) as typeof fetch
