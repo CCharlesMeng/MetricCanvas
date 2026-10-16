@@ -311,8 +311,9 @@ export function createDqeGateway(
               { resultType: describeType(rawResult) }
             );
           }
-          if (rawResult.code !== 'SUCCESS') {
-            // 上游对本查询项的明确拒答;retDesc 属上游错误正文,不进入错误对象。
+          if (!canConsumeResult(rawResult)) {
+            // 非成功码仍可能附带可消费的数据；没有数据行才按拒答处理。
+            // retDesc 属上游错误正文,不进入错误对象。
             throw new DqeGatewayError(
               'DQE_QUERY_REJECTED',
               `DQE 拒绝执行查询项:${String(rawResult.code)}`,
@@ -392,9 +393,9 @@ export function createDqeGateway(
           { resultType: describeType(result) }
         );
       }
-      // 上游对候选值查询的明确拒答 = 该维度的候选值能力不可用,
-      // 不伪装成空结果;retDesc 属上游错误正文,不进入任何对象。
-      if (result.code !== 'SUCCESS') return { kind: 'unavailable' };
+      // 非成功码附带数据时仍消费候选值；无数据的拒答才表示能力不可用。
+      // retDesc 属上游错误正文,不进入任何对象。
+      if (!canConsumeResult(result)) return { kind: 'unavailable' };
       return {
         kind: 'values',
         candidates: dedupedDimensionValues(result.data, dimension)
@@ -554,6 +555,11 @@ function dedupedDimensionValues(
     }
   });
   return [...values.values()];
+}
+
+/** 只判定是否继续消费；数据形状与字段契约由后续归一化校验。 */
+function canConsumeResult(result: JsonObject): boolean {
+  return result.code === 'SUCCESS' || (Array.isArray(result.data) && result.data.length > 0);
 }
 
 /** 校验 DQE 响应信封并返回结果项数组;信封失败按 DQE_ENVELOPE_ERROR 分类。 */

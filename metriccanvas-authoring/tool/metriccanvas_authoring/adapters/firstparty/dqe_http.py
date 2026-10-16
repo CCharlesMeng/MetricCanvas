@@ -240,7 +240,9 @@ def _successful_item(
         )
     item = results[0]
     code = item.get("code")
-    if code == "SUCCESS":
+    # Non-success codes can accompany usable rows; normal row validation still applies.
+    data = item.get("data")
+    if code == "SUCCESS" or (isinstance(data, list) and len(data) > 0):
         return item
     mappings = {
         "NO_PERMISSION": "DQE_FORBIDDEN",

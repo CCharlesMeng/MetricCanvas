@@ -53,7 +53,7 @@ Adapter；生产上线前必须替换为按用户身份，首选路径是 Relay 
 
 **DQE 只经 `CDINL2DataBuilderService` 的 `POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute`。**
 其 `dsl_list` 形状与本仓查询定义一致；行级权限由该服务注入过滤条件后再调 Lab，因此
-永不直连 Lab。错误映射：`NO_PERMISSION` → 无权限、HTTP 401 → 需要登录、`NO_MATCH` /
+永不直连 Lab。查询项 `code` 非 `SUCCESS` 但 `data` 为非空数组时，继续执行既有行与字段校验并消费数据（见[接入契约](../host-contract.md#dqe-查询项返回兼容)）；无数据行时的错误映射：`NO_PERMISSION` → 无权限、HTTP 401 → 需要登录、`NO_MATCH` /
 `FILTER_NO_MATCH` → 查询被拒绝、`ERROR` 与超时 → 上游失败。`total_count` 仅在
 `limit > 0` 时可得；`formula` 语法无文档，按 ADR-0032 留痕处理。
 

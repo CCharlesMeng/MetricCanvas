@@ -146,6 +146,10 @@ registerMicroApps([{
 
 候选验证：qiankun 2.10.16、Chromium 151；需要浏览器支持 AbortSignal.any、ResizeObserver 与现有渲染引擎能力。其他浏览器、目标门户与真实服务均不得从本地通过推断，详见 [实施验收](evidence/qiankun-platform/implementation.md)。
 
+## DQE 查询项返回兼容
+
+HTTP 与响应信封成功后，`results` 中 `code: "SUCCESS"` 的查询项按原规则消费；其他返回码（包括 `NO_PERMISSION`）只要 `data` 是非空数组，也继续归一化并交给统一运行时渲染。没有数据行的非成功查询项仍按原错误规则处理，维度候选值查询返回能力不可用。数据行、查询字段映射和总条数仍须通过各执行适配器的既有校验，HTTP 401/403 与失败信封仍失败。
+
 ## 筛选与 URL 的可选同步
 
 运行时通过 `filter-change` 事件输出编码后的 `search`，集成应用自行选择是否同步 URL。参考方式替换当前 URL，避免每次筛选新增一条浏览历史；**不要把这次 URL 写入立即原样回灌 `update`**。实际切页或浏览器前进/后退恢复时，再传完整输入与初始查询串。查询串未编码的分页、排序与滚动位置不在恢复承诺内。

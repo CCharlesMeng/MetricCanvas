@@ -129,7 +129,7 @@ describe('查询诊断默认不保留业务数据行(issue #47)', () => {
     });
   });
 
-  it('查询项失败:上游错误正文与失败数据行不进入诊断记录和错误对象', async () => {
+  it('非成功码带数据但字段缺失:上游错误正文与数据行不进入诊断记录和错误对象', async () => {
     const spies = consoleSpies();
     const diagnostics = createInMemoryDqeDiagnostics();
     const gateway = createDqeGateway({
@@ -157,12 +157,12 @@ describe('查询诊断默认不保留业务数据行(issue #47)', () => {
         (cause: unknown) => cause as { code: string; message: string; detail?: unknown }
       );
 
-    expect(caught).toMatchObject({ code: 'DQE_QUERY_REJECTED' });
+    expect(caught).toMatchObject({ code: 'DQE_FIELD_MAPPING_ERROR' });
     expect(diagnostics.records()).toHaveLength(1);
     expect(diagnostics.records()[0]).toMatchObject({
       pageId: 'na-customers',
       status: 'error',
-      errorCode: 'DQE_QUERY_REJECTED'
+      errorCode: 'DQE_FIELD_MAPPING_ERROR'
     });
     expect(JSON.stringify(diagnostics.records())).not.toContain(SENTINEL);
     expect(

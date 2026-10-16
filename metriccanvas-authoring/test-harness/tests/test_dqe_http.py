@@ -187,7 +187,7 @@ class DqeHttpExecutionPortTest(unittest.IsolatedAsyncioTestCase):
         }
         for item_code, expected in mappings.items():
             with self.subTest(item_code=item_code):
-                port = self.port(RecordingTransport(200, envelope(code=item_code)))
+                port = self.port(RecordingTransport(200, envelope(code=item_code, data=[])))
                 with self.assertRaises(DqeExecutionError) as raised:
                     await port.execute(EFFECTIVE_QUERY)
                 self.assertEqual(raised.exception.code, expected)
@@ -205,13 +205,30 @@ class DqeHttpExecutionPortTest(unittest.IsolatedAsyncioTestCase):
             "http://dqe.local/v1",
             "workspace-1",
             StaticIdentity("operator-1", "token-1"),
-            transport=RecordingTransport(200, envelope(code="NO_PERMISSION")),
+            transport=RecordingTransport(200, envelope(code="NO_PERMISSION", data=[])),
             forbidden_hint="在 DataHub 申请该指标权限",
         )
         with self.assertRaises(DqeExecutionError) as raised:
             await port.execute(EFFECTIVE_QUERY)
         self.assertEqual(raised.exception.code, "DQE_FORBIDDEN")
         self.assertIn("在 DataHub 申请该指标权限", str(raised.exception))
+
+    async def test_non_success_codes_with_rows_are_accepted(self) -> None:
+        for code in ("success", "NO_PERMISSION", "NO_MATCH", "ERROR", "UNKNOWN_CODE"):
+            with self.subTest(code=code):
+                result = await self.port(
+                    RecordingTransport(200, envelope(code=code, total_count=3))
+                ).execute(EFFECTIVE_QUERY)
+                self.assertEqual(result.rows, ({"区域": "华东", "Tokens请求量": 18},))
+                self.assertEqual(result.total_count, 3)
+
+    async def test_non_success_rows_still_obey_field_contracts(self) -> None:
+        port = self.port(RecordingTransport(
+            200, envelope(code="NO_PERMISSION", data=[{"区域": "华东"}])
+        ))
+        with self.assertRaises(DqeExecutionError) as raised:
+            await port.execute(EFFECTIVE_QUERY)
+        self.assertEqual(raised.exception.code, "DQE_ROW_CONTRACT_ERROR")
 
     async def test_malformed_envelope_is_not_reported_as_empty_data(self) -> None:
         for body in (b"not-json", {"retCode": "CBC.0000", "results": []}):
