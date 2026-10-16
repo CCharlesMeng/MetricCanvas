@@ -10,6 +10,33 @@ import { executeBusinessSdt } from '../src/business-sdt';
 import fixture from '../fixtures/business-sdt-cascade.json';
 import october from '../fixtures/business-sdt-cascade-october.json';
 
+it.each([fixture, october])('HTTP accepts ISO and compact $month identically for Top5 and stages', async dataset => {
+  const document=JSON.parse(readFileSync(new URL('../../../pages/business-sdt-cascade-example.json',import.meta.url),'utf8'));
+  const server=createDqeSimServer({logger:()=>{}});
+  await new Promise<void>(resolve=>server.listen(0,'127.0.0.1',resolve));
+  const endpoint=`http://127.0.0.1:${(server.address() as AddressInfo).port}${DQE_EXECUTE_PATH}`;
+  try {
+    for(const suffix of ['', '-stages']) {
+      const item=structuredClone(document.dataSources[`project-efficiency-bottom5${suffix}`].source.query.body.dsl_list[0]);
+      if(suffix)item.filter.dims=[{dim_name:'商务编号',dim_value_list:dataset.projects.slice(0,5).map(row=>row['商务编号'])}];
+      const results=[];
+      for(const month of [dataset.month,`${dataset.month.slice(0,4)}-${dataset.month.slice(4)}`]) {
+        item.filter.time={period:'month',start:month,end:month};
+        const response=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({dsl_list:[item]})});
+        const result=(await response.json()).results[0];
+        expect(result.code).toBe('SUCCESS');expect(result.data.length).toBeGreaterThan(0);results.push(result);
+      }
+      expect(results[0]).toEqual(results[1]);
+      for(const month of ['2026--09','2026-9','2026-13','0000-09',202609,null]) {
+        item.filter.time={period:'month',start:month,end:month};
+        expect(executeBusinessSdt(item)?.code).toBe('DQE_SIM_UNSUPPORTED_QUERY');
+      }
+    }
+  } finally {
+    server.closeAllConnections();await new Promise<void>((resolve,reject)=>server.close(error=>error?reject(error):resolve()));
+  }
+});
+
 it.each([fixture,october])('real local HTTP: $month uses its own identifiers in both Top5 tables and export', async dataset => {
   const document=JSON.parse(readFileSync(new URL('../../../pages/business-sdt-cascade-example.json',import.meta.url),'utf8'));
   for (const rank of ['bottom5','top5']) for (const suffix of ['','-stages']) {

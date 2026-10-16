@@ -4,6 +4,10 @@ import type { DqeSimItemResult } from './execute';
 
 type RecordValue = Record<string, unknown>;
 const record = (value: unknown): value is RecordValue => typeof value === 'object' && value !== null && !Array.isArray(value);
+const normalizeMonth = (value: unknown): string | undefined => {
+  if (typeof value !== 'string' || !/^(?!0000)\d{4}-?(0[1-9]|1[0-2])$/.test(value)) return undefined;
+  return value.replace('-', '');
+};
 const same = (actual: unknown, expected: string[]) => Array.isArray(actual) && actual.length === expected.length && expected.every(value => actual.includes(value));
 
 /** Normal DQE requests only; the simulator never executes cascade or compute. */
@@ -11,11 +15,11 @@ export function executeBusinessSdt(value: unknown, scenario = 'normal'): DqeSimI
   if (!record(value) || !Array.isArray(value.output_metrics) || !value.output_metrics.includes('SDT成员决策时长')) return undefined;
   const reject = (): DqeSimItemResult => ({code:'DQE_SIM_UNSUPPORTED_QUERY',data:[],total_count:0,retDesc:'商务SDT仿真不支持该查询条件',dqe:{columns:[],orders:[],limit:-1,offset:-1,sql:null}});
   if (!record(value.filter) || !record(value.filter.time)) return reject();
-  const month = value.filter.time.start;
+  const month = normalizeMonth(value.filter.time.start);
   const fixture = [september, october].find(candidate => candidate.month === month);
   if (!fixture) return reject();
   if ('cascade' in value || 'pivot' in value || !record(value.filter) || !record(value.filter.time) ||
-      value.filter.time.period !== 'month' || value.filter.time.start !== fixture.month || value.filter.time.end !== fixture.month ||
+      value.filter.time.period !== 'month' || month !== fixture.month || normalizeMonth(value.filter.time.end) !== fixture.month ||
       !Array.isArray(value.filter.dims) || !Array.isArray(value.filter.metrics) || value.filter.metrics.length || !record(value.order)) return reject();
   let rows: RecordValue[];
   if (same(value.output_dims,['客户名称','项目名称','商务编号']) && same(value.output_metrics,['SDT成员决策时长'])) {
