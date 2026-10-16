@@ -1,9 +1,13 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig, type Plugin } from 'vite';
+import basicSsl from '@vitejs/plugin-basic-ssl';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
 import { fileURLToPath } from 'node:url';
 import { createDqeDevProxy } from '../../tools/dev-server';
 
 const pagesDir = fileURLToPath(new URL('../../pages', import.meta.url));
+const appRoot = fileURLToPath(new URL('.', import.meta.url));
+const cloudIocDomain = 'local.cloudioc.huawei.com';
+const dqePath = '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute';
 
 /**
  * 页面资产目录在 Vite root 之外，watcher 默认只盯已加载过的 JSON。
@@ -26,20 +30,39 @@ function watchPageAssets(directory: string): Plugin {
   };
 }
 
-export default defineConfig({
-  plugins: [sveltekit(), watchPageAssets(pagesDir)],
-  resolve: {
-    alias: {
-      // 页面资产目录固定别名,避免源码内的多级相对路径
-      $pages: pagesDir
+export default defineConfig(({ command, mode, isPreview }) => {
+  // 凭据仅由 Windows 开发代理读取，不注入浏览器或静态构建。
+  const env = command === 'serve' && !isPreview && process.platform === 'win32'
+    ? loadEnv(mode, appRoot, 'PLAYGROUND_')
+    : {};
+  const cloudIoc = env.PLAYGROUND_CLOUDIOC === 'true';
+  const proxy = createDqeDevProxy();
+  if (cloudIoc) {
+    const cftk = env.PLAYGROUND_CLOUDIOC_CFTK?.trim();
+    if (!cftk || /[\r\n]/.test(cftk)) {
+      throw new Error('请在 apps/playground/.env.local 中填写有效的 PLAYGROUND_CLOUDIOC_CFTK，再启动页面试验场');
     }
-  },
-  server: {
-    host: '0.0.0.0',
-    port: 5173,
-    strictPort: true,
-    proxy: createDqeDevProxy(),
-    // 页面文档与 workspace 包在仓库根,允许 dev server 越出应用目录读取
-    fs: { allow: ['../..'] }
+    proxy[dqePath] = {
+      target: 'https://gray.cloudioc.huawei.com',
+      changeOrigin: true,
+      headers: { cftk }
+    };
   }
+  return {
+    plugins: [sveltekit(), watchPageAssets(pagesDir), ...(cloudIoc ? [basicSsl({ domains: [cloudIocDomain] })] : [])],
+    resolve: {
+      alias: {
+        // 页面资产目录固定别名,避免源码内的多级相对路径
+        $pages: pagesDir
+      }
+    },
+    server: {
+      host: cloudIoc ? cloudIocDomain : '0.0.0.0',
+      port: cloudIoc ? 443 : 5173,
+      strictPort: true,
+      proxy,
+      // 页面文档与 workspace 包在仓库根,允许 dev server 越出应用目录读取
+      fs: { allow: ['../..'] }
+    }
+  };
 });

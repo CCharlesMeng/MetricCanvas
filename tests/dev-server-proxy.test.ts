@@ -24,12 +24,15 @@ it('两个前端通过同源路径代理 DQE 和 SSE，平台远端目标使用�
     upstream.close((error) => error ? reject(error) : resolve());
   }));
   vi.stubEnv('DQE_SIM_PORT', String((upstream.address() as AddressInfo).port));
+  vi.stubEnv('PLAYGROUND_CLOUDIOC', 'false');
 
   const playground = (await import('../apps/playground/vite.config')).default;
   const platform = (await import('../apps/platform/vite.config')).default;
+  const playgroundConfig = typeof playground === 'function'
+    ? await playground({ command: 'serve', mode: 'development' }) : await playground;
   const platformConfig = typeof platform === 'function'
     ? await platform({ command: 'serve', mode: 'development' }) : await platform;
-  for (const config of [playground, platformConfig]) {
+  for (const config of [playgroundConfig, platformConfig]) {
     const proxy = {...config.server?.proxy};
     const prefix = '/rest/cdi/cdinl2databuilderservice/';
     const remoteProxy = proxy[prefix];

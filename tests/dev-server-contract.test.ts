@@ -17,9 +17,63 @@ describe('本地开发服务端口契约', () => {
     Object.defineProperty(process, 'platform', platformDescriptor);
   });
   it('页面试验场固定占用 5173，端口冲突时禁止静默漂移', () => {
-    expect(playgroundViteConfig).toMatchObject({
+    Object.defineProperty(process, 'platform', {value: 'darwin'});
+    const config = typeof playgroundViteConfig === 'function'
+      ? playgroundViteConfig({command: 'serve', mode: 'development'}) : playgroundViteConfig;
+    expect(config).toMatchObject({
       server: { host: '0.0.0.0', port: 5173, strictPort: true }
     });
+  });
+
+  it('Windows 开启配置后使用 HTTPS 插件和 443，仅 DQE 代理携带 cftk 到 gray', () => {
+    Object.defineProperty(process, 'platform', {value: 'win32'});
+    vi.stubEnv('PLAYGROUND_CLOUDIOC', 'true');
+    vi.stubEnv('PLAYGROUND_CLOUDIOC_CFTK', ' copied-cftk ');
+    const config = typeof playgroundViteConfig === 'function'
+      ? playgroundViteConfig({command: 'serve', mode: 'development'}) : playgroundViteConfig;
+    expect(config).toMatchObject({server: {
+      host: 'local.cloudioc.huawei.com', port: 443, strictPort: true,
+      proxy: {
+        '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute': {
+          target: 'https://gray.cloudioc.huawei.com', changeOrigin: true, headers: {cftk: 'copied-cftk'}
+        },
+        '/api/ai/conversations/': {target: expect.stringContaining('http://127.0.0.1:')}
+      }
+    }});
+    expect(config.plugins).toEqual(expect.arrayContaining([expect.objectContaining({name: 'vite:basic-ssl'})]));
+    expect(config).not.toHaveProperty('define');
+    expect(config.server?.proxy?.['/api/ai/conversations/']).not.toHaveProperty('headers');
+  });
+
+  it.each(['', ' \n ' , 'invalid\r\nheader'])('Windows 启用但 cftk 无效时拒绝启动，错误不泄露凭据', (cftk) => {
+    Object.defineProperty(process, 'platform', {value: 'win32'});
+    vi.stubEnv('PLAYGROUND_CLOUDIOC', 'true');
+    vi.stubEnv('PLAYGROUND_CLOUDIOC_CFTK', cftk);
+    expect(() => typeof playgroundViteConfig === 'function'
+      ? playgroundViteConfig({command: 'serve', mode: 'development'}) : playgroundViteConfig
+    ).toThrow('请在 apps/playground/.env.local 中填写有效的 PLAYGROUND_CLOUDIOC_CFTK');
+  });
+
+  it.each([
+    {platform: 'darwin', command: 'serve' as const, enabled: 'true', isPreview: false},
+    {platform: 'linux', command: 'serve' as const, enabled: 'true', isPreview: false},
+    {platform: 'win32', command: 'serve' as const, enabled: 'false', isPreview: false},
+    {platform: 'win32', command: 'build' as const, enabled: 'true', isPreview: false},
+    {platform: 'win32', command: 'serve' as const, enabled: 'true', isPreview: true}
+  ])('页面试验场隔离环境配置：$platform / $command / enabled=$enabled / preview=$isPreview', ({platform, command, enabled, isPreview}) => {
+    Object.defineProperty(process, 'platform', {value: platform});
+    vi.stubEnv('PLAYGROUND_CLOUDIOC', enabled);
+    vi.stubEnv('PLAYGROUND_CLOUDIOC_CFTK', '');
+    const config = typeof playgroundViteConfig === 'function'
+      ? playgroundViteConfig({command, mode: 'development', isPreview}) : playgroundViteConfig;
+    expect(config).toMatchObject({server: {
+      host: '0.0.0.0', port: 5173,
+      proxy: {'/rest/cdi/cdinl2databuilderservice/v1/dsl/execute': {
+        target: expect.stringContaining('http://127.0.0.1:')
+      }}
+    }});
+    expect(config.server?.proxy?.['/rest/cdi/cdinl2databuilderservice/v1/dsl/execute']).not.toHaveProperty('headers');
+    expect(config.plugins).not.toEqual(expect.arrayContaining([expect.objectContaining({name: 'vite:basic-ssl'})]));
   });
 
   it('Mac 使用本地地址和 5174，端口冲突时禁止静默漂移', () => {

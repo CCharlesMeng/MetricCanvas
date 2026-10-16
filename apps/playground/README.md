@@ -12,6 +12,31 @@ pnpm build:playground # 独立静态构建，输出 apps/playground/build
 
 默认 `pnpm dev` 和 `pnpm build` 不包含页面试验场，CI 不上传其静态产物；全仓测试和类型检查仍覆盖它。动态查询经共享运行配置模块注入端点与身份，内联页面不需要 DQE。页面文档的编辑只影响当前预览，持久化操作由平台承担。
 
+## Windows 本地连接 gray CloudIOC
+
+在 `apps/playground/.env.local` 中配置（文件已被 Git 忽略；可从 `.env.example` 复制，已有文件则追加）：
+
+```dotenv
+PLAYGROUND_CLOUDIOC=true
+PLAYGROUND_CLOUDIOC_CFTK="粘贴 gray 站点 localStorage 中 cftk 的原始值"
+```
+
+先在同一浏览器中登录 `https://gray.cloudioc.huawei.com`，从开发者工具的 Application → Local Storage 中复制 `cftk` 的值，替换上面的占位内容。配置值不包含示例占位文字；不要提交真实凭据。更新或重新登录后，重新复制并重启页面试验场。缺少 cftk 时开启此模式会明确拒绝启动。
+
+Windows 首次使用还需：
+
+1. 在 `C:\Windows\System32\drivers\etc\hosts` 添加 `127.0.0.1 local.cloudioc.huawei.com`。
+2. 确保 443 端口可用，并允许 Node 访问 gray 所需的公司网络；系统策略要求时使用相应权限运行。
+3. 运行 `pnpm dev:playground`，访问 `https://local.cloudioc.huawei.com:443`。开发服务器使用包含该域名的自签名证书，首次访问需处理浏览器的证书提示。此模式不需要启动 DQE Sim。
+
+浏览器仍请求本地 `/rest/cdi/cdinl2databuilderservice/v1/dsl/execute`，开发代理将请求转发到 `https://gray.cloudioc.huawei.com` 的相同路径，并在上游请求头加入 `cftk`。因此浏览器 Network 中的请求域名仍是 local，手工配置的 cftk 只在服务器转发时加入，不注入前端脚本或静态构建。AI 总结仍沿用现有仿真代理。
+
+此开关只在 **Windows 的开发服务器** 生效。关闭开关恢复原有 5173 / DQE Sim；macOS、Linux、静态构建与 `vite preview` 忽略该配置。Platform 不受影响。443 端口已占用时直接失败，不自动换端口。
+
+这仅配置开发传输，不建立登录或换取身份的流程；现有运行配置中的 `X-Auth-Token`、`X-Operator-Id`、`X-Workspace-Id` 保持原接线，不能把默认仿真身份视为 gray 的有效用户身份。gray 若需要其他有效凭据，仍须由集成应用提供；新增 cftk 本身不证明真实鉴权成功。上游 TLS 证书继续校验，公司 CA 需由 Node 信任。
+
+页面场景与证据边界见 [Windows gray 开发环境](../../pages/README.md#windows-gray-开发环境)。该配置不进入页面文档，不改变页面协议或本地创作 Skill 的声明规则。
+
 ## 时间筛选与级联查询示例
 
 首页先提供 Dashboard（看板）与 Report（报表）布局形态筛选，再按业务示例（经营分析、IOC 作战地图）、功能演示和验收样例组织页面，支持按名称、页面 ID、说明与功能标签搜索。卡片显示布局形态，直接从页面文档读取，并与预览外框使用同一读取规则；未声明时按协议默认归为 Report。预览页顶部提供返回页面目录的入口。
