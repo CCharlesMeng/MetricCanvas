@@ -83,10 +83,12 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 | `configChanges` | 默认订阅模式；部署保证身份/目标变化整页重载时可显式设为 `reload` 并省略订阅 |
 | `onEvent` | 可选，接收 `{code,message}`；code 为 `ready`、`login-required`、`session-invalidated`，消息不含凭据 |
 | `registerLeaveGuard` | 可选 `(guard) => unregister`；guard 返回 boolean 或 Promise<boolean>；门户在区域外导航及浏览器后退提交前调用，取消时恢复 URL |
-| `dialogueAdapter` | 可选，沿用 DialogueAdapter：mount(element) 返回实例清理函数；不能清理门户共享 SDK |
+| `dialogueAdapter` | 可选，沿用 DialogueAdapter：mount(element) 返回实例清理函数；显式注入优先，缺席时使用平台自带的盘古适配器；不能清理门户共享 SDK |
 | `authoring` | 可选，沿用可信创作 AuthoringIntegration；缺席时受控创作不可用，人工页面搭建不受阻 |
 
 平台内部通知统一使用平台所在的 `window`，不通过门户 props 注入事件总线。发送方用 `window.dispatchEvent(new CustomEvent('metriccanvas:apply-page', { detail }))`：`detail: { previewJson }` 直接应用完整页面文档（对象或 JSON 字符串），`detail: { pageId }` 重新读取当前页面；两者同时提供时优先使用 `previewJson`。工作台仅在活动时处理应用通知，保留身份、受控操作及未保存工作检查，并在卸载时移除监听。`metriccanvas:draft-saved` 同样使用 `window`，仍须经过精确草稿读取与校验。
+
+平台自带的盘古适配器要求 `window.__METRICCANVAS_PANGU__ = {resourceUrl, version}`，使用 `pangu.instance(id).renderChat(...)` / `destroy()`；资源配置缺失时保留明确的不可用反馈。此默认策略不增加对 `setChatConfig` 单例 SDK 的支持。使用单例 SDK 的部署须注入兼容的 `dialogueAdapter`，由部署侧闭包提供身份现读与登录恢复；`currentUser`、`onLoginRequired` 不属于本版平台 props。迁移方法见[内网对话兼容同步方案](plan/2026-10-16-intranet-dialogue-sync.md)。
 
 **默认交付：内部组合后的完整子应用包。** 原始平台归档是内部流水线的输入；若宿主只提供 `appList/roleList`，直接注册原始包会因为缺少 `readConfig` 而失败。独立部署项目通过 `MetricCanvasDeploymentAdapter` 契约 v1 转换主应用已有 props/全局能力，提供上表中的标准配置。接线实现、私有 SDK 和环境配置由内部项目维护，平台只消费标准输入。
 

@@ -3,14 +3,14 @@
 两侧以 `port.ts` 和 `runtime.ts` 的公开接口为契约：
 
 - `DialogueAdapter.mount(element: HTMLElement): Promise<() => void>` 挂载并返回销毁函数。
-- `PanguDialogue.svelte` 接收实例必填的 `adapter`；独立入口可注入 `panguDialogueAdapter`，微前端由门户可选注入，缺席时显示未接通；容器负责卸载、adapter 替换及异步挂载失败。
+- `PanguDialogue.svelte` 接收实例必填的 `adapter`；平台服务优先使用门户显式注入的 adapter，缺席时回退 `panguDialogueAdapter`，独立入口与微前端使用同一默认策略；容器负责卸载、adapter 替换及异步挂载失败。默认 adapter 缺少资源配置时明确显示不可用，不伪造对话能力。
 - 在 `window` 上分发 `CustomEvent('metriccanvas:draft-saved', { detail: { draftId } })`。`draftId` 是只读不可变修订的精确草稿引用，载荷只允许这一项；`draftIdOf` 和 `readDraftSavedDetail` 共用非空、无首尾空白、无控制字符、最多 512 字符的校验。
 - `listenForSavedDrafts` 通过 `ReadSavedDraft` 读取精确草稿并隔离迟到结果、身份与作用域变化。`onpage` 返回 `false` 时允许重试同一通知；默认读取端口 `unavailableDraftReader` 明确报告尚未接通。
 - 资源配置为 `window.__METRICCANVAS_PANGU__ = { resourceUrl, version }`。`runtime.ts` 保留 main 既有的资源版本固定及 `instance(id).renderChat(selector, options)` / `destroy()` 适配；真实 SDK 的更多接口事实仍由接入侧验证。
 
 `stub-adapter.ts` 提供只挂载提示并销毁自身节点的 `stubDialogueAdapter`，可通过 `adapter` prop 显式注入，不加载资源、不伪造保存成功事件。`fixture-adapter.ts` 保留现有交互式事件替身。工作台通过实例服务取得 adapter，不直接读取门户全局 SDK 配置。
 
-双方各自维护工作台中的对话引用，不相互复制覆盖；接口新增或变更需同步接口清单，未列出的本地实现细节不视为冻结契约。`lifecycle.ts` 是容器内部实现，不要求本地侧复制。
+内网单例 SDK、身份读取和登录恢复由仓外部署 Adapter 包装为公开的 `mount(element)` 接口，再通过 `props.dialogueAdapter` 注入；不再修改平台服务或工作台来装配私有实现。`currentUser`、`onLoginRequired` 和本地 `DialogueMountContext` 可以保留为部署内部接口，不是新增的平台 props；内部页面通知仍使用平台所在的 `window`。迁移及同步验收见[内网对话兼容同步方案](../../../../../docs/plan/2026-10-16-intranet-dialogue-sync.md)。接口新增或变更需同步接口清单，未列出的本地实现细节不视为冻结契约。`lifecycle.ts` 是容器内部实现，不要求本地侧复制。
 
 CI 的 `pnpm test` 自动发现 `apps/platform/tests/dialogue.test.ts` 和 `apps/platform/tests/workbench/dialogue-boundary.test.ts`，覆盖 stub 生命周期、草稿事件及既有 SDK 资源加载边界。`pnpm check` 包含平台模块、Svelte 容器及测试类型检查。测试不需要真实盘古 SDK、内网或凭据；通过检查不代表真实接入已验收。
 

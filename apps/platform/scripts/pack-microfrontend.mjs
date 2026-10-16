@@ -47,7 +47,9 @@ if (debug) {
 // Readable Rolldown output annotates module regions; these are not runtime imports.
 const script = artifacts.filter(path => path.endsWith('.js')).map(path => readFileSync(path, 'utf8'))
   .join('\n').replace(/^\s*\/\/#(?:end)?region[^\n]*$/gm, '');
-for (const forbidden of ['local-dev', 'developer-1', '__fixtures/', '__METRICCANVAS_PANGU__', 'currentLoginUser', 'node_modules/', 'process.env.NODE_ENV', root]) {
+// __METRICCANVAS_PANGU__ is the public URL/version seam used by the default
+// dialogue adapter. Portal-specific user sources and development wiring stay forbidden.
+for (const forbidden of ['local-dev', 'developer-1', '__fixtures/', 'currentLoginUser', 'node_modules/', 'process.env.NODE_ENV', root]) {
   if (script.includes(forbidden)) throw Error(`产物包含禁止内容: ${forbidden}`);
 }
 
