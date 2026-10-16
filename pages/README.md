@@ -76,7 +76,7 @@
 - 页面：[time-point-no-future.json](time-point-no-future.json)，试验场「验收样例」，入口 `/pages/time-point-no-future`；无外部数据或查询。运行 `pnpm dev:playground` 后可直接操作。
 - 默认报告月份2026-10；月份只能选择设备本地当前月及之前，日期只能选择今天及之前。打开面板检查未来月份／日期和年份不可选，键盘右移及向未来翻页不能越界。
 - 手工输入未来月份后回车，应显示“日期不得晚于…”且已应用标题保持不变；URL指定未来月份时不能恢复未来值。进入下一月后重新打开，新月份可选。
-- 商务SDT终极版：[commercial-sdt-efficiency-ultimate-monthly.json](sdt/commercial-sdt-efficiency-ultimate-monthly.json)，默认2026-10并声明同样限制，标题和所有15个查询继续跟随月份。该业务页需要真实DQE；本地选择器验收不证明业务取数成功。
+- 商务SDT终极版：[commercial-sdt-efficiency-ultimate-monthly.json](sdt/commercial-sdt-efficiency-ultimate-monthly.json)，默认2026-10并声明同样限制，报告期间和所有15个查询继续跟随月份，主标题保持“商务SDT行权效率专项报告”。该业务页需要真实DQE；本地选择器验收不证明业务取数成功。
 - 协议、边界和月份推进由 time-point-no-future 测试覆盖；浏览器直接消费上述页面及终极版文件，不在测试里临时拼出交互配置。
 
 ## Report PDF 下载与 SDT 月报预览

@@ -1291,15 +1291,7 @@
             "span": 12
           },
           "props": {
-            "title": {
-              "parts": [
-                {
-                  "filter": "report-period-filter",
-                  "format": "period"
-                },
-                " 商务SDT行权效率专项报告"
-              ]
-            },
+            "title": "商务SDT行权效率专项报告",
             "generatedBy": "报告由CloudIOC&云战地助手生成",
             "badge": "商务SDT月报",
             "asOf": {

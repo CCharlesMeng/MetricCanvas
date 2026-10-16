@@ -58,14 +58,14 @@ test('the exact ultimate SDT file defaults to October and future input cannot tr
   await page.goto('/pages/commercial-sdt-efficiency-ultimate-monthly');
   const input = page.getByRole('combobox', { name: '报告期间', exact: true });
   await expect(input).toHaveValue('2026-10');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('2026-10 商务SDT行权效率专项报告');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('商务SDT行权效率专项报告');
   await expect.poll(() => requests.length).toBe(14);
   expect(requests.every(q => q.filter.time.end.replaceAll('-', '') === '202610')).toBe(true);
   await input.fill('2026-11'); await input.press('Enter');
   await expect(page.getByRole('status')).toHaveText('日期不得晚于 2026-10');
   expect(requests).toHaveLength(14);
   await input.fill('2026-09'); await input.press('Enter');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('2026-09 商务SDT行权效率专项报告');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('商务SDT行权效率专项报告');
   await expect.poll(() => requests.length).toBe(28);
   expect(requests.slice(14).filter(q => q.filter.time.start.replaceAll('-', '') === '202604')).toHaveLength(3);
 });
