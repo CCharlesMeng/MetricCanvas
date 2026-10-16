@@ -1,4 +1,5 @@
 import { once } from 'node:events';
+import { createServer as createHttpServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { afterEach, expect, it, vi } from 'vitest';
 import { createServer } from 'vite';
@@ -9,9 +10,46 @@ import {
 } from '../tools/dqe-sim/src/server';
 
 const cleanup: Array<() => Promise<void>> = [];
+const platformDescriptor = Object.getOwnPropertyDescriptor(process, 'platform')!;
 afterEach(async () => {
   for (const close of cleanup.splice(0).reverse()) await close();
   vi.unstubAllEnvs();
+  Object.defineProperty(process, 'platform', platformDescriptor);
+});
+
+it('Windows gray 代理的真实上游请求收到配置的 cftk', async () => {
+  const received: Array<string | string[] | undefined> = [];
+  const upstream = createHttpServer((request, response) => {
+    received.push(request.headers.cftk);
+    response.end('{}');
+  });
+  upstream.listen(0, '127.0.0.1');
+  await once(upstream, 'listening');
+  cleanup.push(() => new Promise<void>((resolve, reject) => {
+    upstream.close((error) => error ? reject(error) : resolve());
+  }));
+  Object.defineProperty(process, 'platform', {value: 'win32'});
+  vi.stubEnv('PLAYGROUND_CLOUDIOC', 'true');
+  vi.stubEnv('PLAYGROUND_CLOUDIOC_CFTK', 'test-config-cftk');
+  const playground = (await import('../apps/playground/vite.config')).default;
+  const config = typeof playground === 'function'
+    ? await playground({command: 'serve', mode: 'development'}) : await playground;
+  Object.defineProperty(process, 'platform', platformDescriptor);
+  const dqeProxy = config.server?.proxy?.[DQE_EXECUTE_PATH];
+  if (!dqeProxy || typeof dqeProxy === 'string') throw new Error('Missing DQE proxy');
+  const frontend = await createServer({
+    configFile: false,
+    server: {host: '127.0.0.1', port: 0, strictPort: false, proxy: {
+      [DQE_EXECUTE_PATH]: {...dqeProxy, target: `http://127.0.0.1:${(upstream.address() as AddressInfo).port}`}
+    }},
+    logLevel: 'silent'
+  });
+  cleanup.push(() => frontend.close());
+  await frontend.listen();
+  const origin = `http://127.0.0.1:${(frontend.httpServer!.address() as AddressInfo).port}`;
+  const response = await fetch(origin + DQE_EXECUTE_PATH, {method: 'POST', body: '{}'});
+  expect(response.status).toBe(200);
+  expect(received).toEqual(['test-config-cftk']);
 });
 
 it('两个前端通过同源路径代理 DQE 和 SSE，平台远端目标使用本地服务替身', async () => {

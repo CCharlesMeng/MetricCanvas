@@ -25,7 +25,7 @@ describe('本地开发服务端口契约', () => {
     });
   });
 
-  it('Windows 开启配置后使用 HTTPS 插件和 443，仅 DQE 代理携带 cftk 到 gray', () => {
+  it('Windows 开启配置后使用 HTTPS 插件和 443，浏览器及 DQE 代理携带 cftk 到 gray', () => {
     Object.defineProperty(process, 'platform', {value: 'win32'});
     vi.stubEnv('PLAYGROUND_CLOUDIOC', 'true');
     vi.stubEnv('PLAYGROUND_CLOUDIOC_CFTK', ' copied-cftk ');
@@ -35,13 +35,13 @@ describe('本地开发服务端口契约', () => {
       host: 'local.cloudioc.huawei.com', port: 443, strictPort: true,
       proxy: {
         '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute': {
-          target: 'https://gray.cloudioc.huawei.com', changeOrigin: true, headers: {cftk: 'copied-cftk'}
+          target: 'https://gray.cloudioc.huawei.com', changeOrigin: true, secure: false, headers: {cftk: 'copied-cftk'}
         },
         '/api/ai/conversations/': {target: expect.stringContaining('http://127.0.0.1:')}
       }
     }});
     expect(config.plugins).toEqual(expect.arrayContaining([expect.objectContaining({name: 'vite:basic-ssl'})]));
-    expect(config).not.toHaveProperty('define');
+    expect(config.define).toEqual({'import.meta.env.PLAYGROUND_CLOUDIOC_CFTK': JSON.stringify('copied-cftk')});
     expect(config.server?.proxy?.['/api/ai/conversations/']).not.toHaveProperty('headers');
   });
 
@@ -73,6 +73,7 @@ describe('本地开发服务端口契约', () => {
       }}
     }});
     expect(config.server?.proxy?.['/rest/cdi/cdinl2databuilderservice/v1/dsl/execute']).not.toHaveProperty('headers');
+    expect(config).not.toHaveProperty('define');
     expect(config.plugins).not.toEqual(expect.arrayContaining([expect.objectContaining({name: 'vite:basic-ssl'})]));
   });
 

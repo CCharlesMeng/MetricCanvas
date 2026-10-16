@@ -7,7 +7,7 @@
 这是页面试验场的开发服务器配置，不新增页面能力或协议字段，页面文档与本地创作 Skill 沿用当前版本。配置与 hosts/HTTPS 步骤见[试验场说明](../apps/playground/README.md#windows-本地连接-gray-cloudioc)。
 
 - 复用已在目录注册的完整业务页面 [business-sdt-report-monthly.json](business-sdt-report-monthly.json)，入口 `https://local.cloudioc.huawei.com/pages/business-sdt-report-monthly`；它包含业务查询，不承诺 gray 环境具备对应数据集和权限。
-- Windows 填入有效 cftk 并打开开关后，运行 `pnpm dev:playground`，加载页面并提交报告月份。动态查询经本地 DQE 路径代理到 gray 的同路径，上游请求带配置中的 cftk；请求体及页面绑定沿用原规则。cftk 不出现在浏览器请求头或前端产物中。
+- Windows 填入有效 cftk 并打开开关后，运行 `pnpm dev:playground`，加载页面并提交报告月份。动态查询经本地 DQE 路径代理到 gray 的同路径；浏览器和上游请求均带配置中的 cftk，可在 Network 的 Request Headers 查看。请求体及页面绑定沿用原规则；静态构建不注入 cftk。仅该开发代理设置 `secure: false`。
 - Windows 启用但 cftk 为空或包含无效换行时启动失败；关闭开关恢复原有仿真代理。macOS/Linux 即使打开开关也保持 HTTP 5173 和仿真代理。灰度服务的查询拒绝或鉴权失败沿现有错误处理呈现，不回退到仿真数据。
 - 配置边界由 `tests/dev-server-contract.test.ts` 覆盖；本批次按用户要求不启动服务器、不做浏览器或真实 Windows/gray 联调，不能据此声称业务取数成功。
 

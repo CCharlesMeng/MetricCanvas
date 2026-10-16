@@ -29,11 +29,11 @@ Windows 首次使用还需：
 2. 确保 443 端口可用，并允许 Node 访问 gray 所需的公司网络；系统策略要求时使用相应权限运行。
 3. 运行 `pnpm dev:playground`，访问 `https://local.cloudioc.huawei.com:443`。开发服务器使用包含该域名的自签名证书，首次访问需处理浏览器的证书提示。此模式不需要启动 DQE Sim。
 
-浏览器仍请求本地 `/rest/cdi/cdinl2databuilderservice/v1/dsl/execute`，开发代理将请求转发到 `https://gray.cloudioc.huawei.com` 的相同路径，并在上游请求头加入 `cftk`。因此浏览器 Network 中的请求域名仍是 local，手工配置的 cftk 只在服务器转发时加入，不注入前端脚本或静态构建。AI 总结仍沿用现有仿真代理。
+浏览器仍请求本地 `/rest/cdi/cdinl2databuilderservice/v1/dsl/execute`，开发代理将请求转发到 `https://gray.cloudioc.huawei.com` 的相同路径。Windows 开发模式将配置的 cftk 注入页面试验场的请求实现，浏览器 Network 的 Request Headers 可以看到 `cftk`；代理同时设置该请求头，以上游收到的配置值为准。该值在本地开发前端可见，静态构建不注入。浏览器请求域名仍是 local；AI 总结仍沿用现有仿真代理。
 
 此开关只在 **Windows 的开发服务器** 生效。关闭开关恢复原有 5173 / DQE Sim；macOS、Linux、静态构建与 `vite preview` 忽略该配置。Platform 不受影响。443 端口已占用时直接失败，不自动换端口。
 
-这仅配置开发传输，不建立登录或换取身份的流程；现有运行配置中的 `X-Auth-Token`、`X-Operator-Id`、`X-Workspace-Id` 保持原接线，不能把默认仿真身份视为 gray 的有效用户身份。gray 若需要其他有效凭据，仍须由集成应用提供；新增 cftk 本身不证明真实鉴权成功。上游 TLS 证书继续校验，公司 CA 需由 Node 信任。
+这仅配置开发传输，不建立登录或换取身份的流程；现有运行配置中的 `X-Auth-Token`、`X-Operator-Id`、`X-Workspace-Id` 保持原接线，不能把默认仿真身份视为 gray 的有效用户身份。gray 若需要其他有效凭据，仍须由集成应用提供；新增 cftk 本身不证明真实鉴权成功。仅 Windows gray 开发代理设置 `secure: false`，以连接使用公司内部证书的服务；其他代理保持原配置。
 
 页面场景与证据边界见 [Windows gray 开发环境](../../pages/README.md#windows-gray-开发环境)。该配置不进入页面文档，不改变页面协议或本地创作 Skill 的声明规则。
 

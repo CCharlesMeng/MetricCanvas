@@ -1,9 +1,10 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EffectiveQuery, JsonObject } from '@metriccanvas/page/internal';
 import { DqeGatewayError } from '@metriccanvas/engine/dqe';
 import {
   MISSING_RUNTIME_CONFIG_MESSAGE,
   createInjectedDqeGateway,
+  createPlaygroundDqeGateway,
   installLocalDevRuntimeConfig,
   installRuntimeConfig,
   readPageMetadataBaseUrl,
@@ -52,9 +53,37 @@ function successResponse(): Response {
 
 afterEach(() => {
   installRuntimeConfig(null);
+  vi.unstubAllEnvs();
 });
 
 describe('运行配置注入面', () => {
+  it('Windows 开发配置的 cftk 加入浏览器发出的 DQE 请求头', async () => {
+    vi.stubEnv('PLAYGROUND_CLOUDIOC_CFTK', 'configured-browser-cftk');
+    installLocalDevRuntimeConfig();
+    const headers: Headers[] = [];
+    const gateway = createPlaygroundDqeGateway((async (_input, init) => {
+      headers.push(new Headers(init?.headers));
+      return successResponse();
+    }) as typeof fetch);
+    await gateway.fetchData(query);
+    expect(headers[0].get('cftk')).toBe('configured-browser-cftk');
+    expect(headers[0].get('X-Auth-Token')).toBe('local-dev');
+  });
+
+  it('未启用配置和生产构建不向浏览器请求添加 cftk', async () => {
+    installLocalDevRuntimeConfig();
+    const headers: Headers[] = [];
+    const gateway = createPlaygroundDqeGateway((async (_input, init) => {
+      headers.push(new Headers(init?.headers));
+      return successResponse();
+    }) as typeof fetch);
+    vi.stubEnv('PLAYGROUND_CLOUDIOC_CFTK', '');
+    await gateway.fetchData(query);
+    vi.stubEnv('PLAYGROUND_CLOUDIOC_CFTK', 'must-not-send');
+    vi.stubEnv('DEV', false);
+    await gateway.fetchData(query);
+    expect(headers.map((header) => header.get('cftk'))).toEqual([null, null]);
+  });
   it('开发默认端点使用同源相对路径，IP 访问时不会请求浏览者的回环地址', async () => {
     installLocalDevRuntimeConfig();
     expect(readRuntimeConfig()).toMatchObject({

@@ -31,24 +31,26 @@ function watchPageAssets(directory: string): Plugin {
 }
 
 export default defineConfig(({ command, mode, isPreview }) => {
-  // 凭据仅由 Windows 开发代理读取，不注入浏览器或静态构建。
+  // 仅 Windows 开发模式读取凭据；构建不注入此值。
   const env = command === 'serve' && !isPreview && process.platform === 'win32'
     ? loadEnv(mode, appRoot, 'PLAYGROUND_')
     : {};
   const cloudIoc = env.PLAYGROUND_CLOUDIOC === 'true';
+  const cftk = env.PLAYGROUND_CLOUDIOC_CFTK?.trim();
   const proxy = createDqeDevProxy();
   if (cloudIoc) {
-    const cftk = env.PLAYGROUND_CLOUDIOC_CFTK?.trim();
     if (!cftk || /[\r\n]/.test(cftk)) {
       throw new Error('请在 apps/playground/.env.local 中填写有效的 PLAYGROUND_CLOUDIOC_CFTK，再启动页面试验场');
     }
     proxy[dqePath] = {
       target: 'https://gray.cloudioc.huawei.com',
       changeOrigin: true,
+      secure: false,
       headers: { cftk }
     };
   }
   return {
+    ...(cloudIoc ? {define: {'import.meta.env.PLAYGROUND_CLOUDIOC_CFTK': JSON.stringify(cftk)}} : {}),
     plugins: [sveltekit(), watchPageAssets(pagesDir), ...(cloudIoc ? [basicSsl({ domains: [cloudIocDomain] })] : [])],
     resolve: {
       alias: {
