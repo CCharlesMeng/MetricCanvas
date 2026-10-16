@@ -56,14 +56,24 @@
 
 协议见[数据源](../docs/page-metadata/data-sources.md#多查询组合源-pagedjoin622)、[表格](../docs/page-metadata/components/table.md#数值范围和组合表622)。自动证据为 `packages/embed/tests/browser/paged-join.spec.ts` 与 `tools/dqe-sim/tests/multi-query-table.test.ts`，直接读取本页面；其他错误、取消与范围边界由共享执行测试覆盖。既有实施证据见[验收报告](../docs/evidence/multi-query-table/result.md)，真实接入仍按报告单独验收。
 
-### 报告主标题时间联动
+### 时间选择统一入口
 
-[report-title-filter-example.json](report-title-filter-example.json)，页面试验场入口 `/pages/report-title-filter-example`，内嵌示例服务入口 `/pages/report-title-filter-example`。纯文本交互页面，无业务数据、无外部查询。
+时间选择控件统一默认禁止未来时间；表头日期范围在 [IOC 机会点清单](ioc-opportunity-list.json) 的“机会点创建时间／进展更新时间”列验证。
 
-- 初始主标题为“2026-09 经营分析报告”；切换报告月份为2026-10后主标题和说明同步变化，参数提供的名称保持不变。
-- 清除时间点后显示“全部期间 经营分析报告”；无效输入/未提交草稿不改变已应用标题。
-- 独立修改对照期间检查范围、同月折叠和两个筛选引用同时出现在正文；导出保留捕获时标题，准备期间后续修改不改变本次导出。
-- [report-date-filter-example.json](report-date-filter-example.json) 使用同样的 parts 主标题并保留既有月度查询绑定；需本地 DQE Sim，标题变化本身不证明真实数据变化。协议异常由 text-composition 单元测试与契约反例覆盖。
+时间选择集中在两个页面，均位于页面试验场「功能演示」，可按“时间选择”搜索；不再为测试变体新增独立演示卡片。
+
+| 页面 | 入口 | 覆盖能力 |
+|---|---|---|
+| [Report 时间选择与联动](report-date-filter-example.json) | `/pages/report-date-filter-example` | 单月、月份范围、标题及正文联动、清空、参数初值、禁止未来月份及日期 |
+| [Dashboard 期间选择与查询](dashboard-period-filter.json) | `/pages/dashboard-period-filter` | 顶部统一筛选中的年／季／月／近一年，以及查询范围与未绑定查询对照 |
+
+Report 页面按三节组织，控件相互独立：
+
+1. “单月与范围文字联动”：报告月份初始为2026-09，改为2026-10后标题和正文同步变化；未提交草稿与无效输入不改变已应用标题。清除后显示“全部期间 经营分析报告”。对照期间支持范围及同月折叠，本节不改变明细查询。
+2. “范围筛选与查询联动”：报告期间由页面参数初始化为2026-01至2026-06，修改后当前期间与月度明细同步变化。这一节使用本地 DQE 仿真；运行 `pnpm dev:dqe` 和 `pnpm dev:playground` 后操作，不代表真实业务数据。
+3. “月份与日期禁止未来时间”：所有控件默认限制未来时间，不需逐个启用。受限月份／日期另展示2020-06下限；日期范围不能结束于明天，精确时间范围不能超过当前分钟。面板、输入、URL 和外部状态写入均受限，非法值保留已应用状态，不触发查询；跨月后新月份可选。
+
+原 `report-title-filter-example`、`time-point-no-future` 的演示能力已并入 Report 页面；旧独立页面入口撤下。浏览器回归直接消费聚合页，协议专用夹具仍保留。
 
 ## 查询数值容错
 
@@ -80,13 +90,9 @@
 
 [business-sdt-cascade-example.json](business-sdt-cascade-example.json)，试验场「验收样例」。它保存原有Top5项目→阶段明细的完整配置，替代人工业务报告作为自动级联与展示格式的回归输入。运行本地DQE Sim后，9/10月HTTP验收检查两条独立链使用各自商务编号，并验证导出与屏幕结果一致；不证明真实业务数据。
 
-## 月份及日期禁止未来时间
+## 业务月份限制
 
-- 页面：[time-point-no-future.json](time-point-no-future.json)，试验场「验收样例」，入口 `/pages/time-point-no-future`；无外部数据或查询。运行 `pnpm dev:playground` 后可直接操作。
-- 默认报告月份2026-10；月份只能选择设备本地当前月及之前，日期只能选择今天及之前。打开面板检查未来月份／日期和年份不可选，键盘右移及向未来翻页不能越界。
-- 手工输入未来月份后回车，应显示“日期不得晚于…”且已应用标题保持不变；URL指定未来月份时不能恢复未来值。进入下一月后重新打开，新月份可选。
-- 商务SDT终极版：[commercial-sdt-efficiency-ultimate-monthly.json](sdt/commercial-sdt-efficiency-ultimate-monthly.json)，默认2026-10并声明同样限制，报告期间和所有15个查询继续跟随月份，主标题保持“商务SDT行权效率专项报告”。该业务页需要真实DQE；本地选择器验收不证明业务取数成功。
-- 协议、边界和月份推进由 time-point-no-future 测试覆盖；浏览器直接消费上述页面及终极版文件，不在测试里临时拼出交互配置。
+[商务SDT终极版](sdt/commercial-sdt-efficiency-ultimate-monthly.json)保留为独立业务报告，默认2026-10并禁止未来月份，报告期间和全部查询继续跟随月份；主标题保持“商务SDT行权效率专项报告”。业务页需要真实 DQE，本地选择器验收不证明业务取数成功。通用月份／日期限制请使用上方 Report 时间选择入口。
 
 ## Report PDF 下载与 SDT 月报预览
 
@@ -98,11 +104,11 @@
 
 ## Dashboard 期间筛选
 
-- `dashboard-period-filter`：日期精度；`dashboard-period-filter-month`：月份精度，均已注册 Playground 验收目录。页面声明两个查询表格，其中 sales 绑定顶部期间，fixed 不绑定。
-- `dashboard-period-filter-more`：组合筛选进入“更多筛选”；`dashboard-period-filter-readonly`：compact 只读范围。四个场景均在 Playground 验收目录。
+- 统一入口 `dashboard-period-filter` 使用日期精度，声明两个查询表格：sales 绑定顶部期间，fixed 不绑定。
+- 月份精度、进入“更多筛选”、compact 只读三种变体仅保留于 `packages/page/fixtures/contract-valid/dashboard-period-filter-{month,more,readonly}.json`，不在演示目录重复展示。浏览器直接加载完整夹具，不临时拼装配置；安装包兼容性验收同步携带这些夹具。
 - 人工配置入口：运行 `pnpm --filter platform exec vite --config tests/browser/report-date.vite.config.ts` 后，打开 `http://127.0.0.1:5187/tests/browser/report-date-editor.html?dashboard`；复用正式属性面板，使用本地合成数据。
 - 数据环境：浏览器自动验收通过合成网关响应回显实际请求起止范围；人工使用时需要 DQE 网关提供匹配字段，页面本身不包含已验证真实业务数据。
-- 操作：切年／季／月并选期间；季度使用 Q1—Q4；先选历史月份再选近一年；改变 URL value 编码；跨月重新选择近一年；缩窄容器。
+- 操作：切年／季／月并选期间；季度使用 Q1—Q4；检查未来年／季／月不可选，当前自然期间仍使用完整查询范围；先选历史月份再选近一年；改变 URL value 编码；跨月重新选择近一年；缩窄容器。
 - 预期：一次选择更新一个筛选状态，sales 范围改变而 fixed 不重新请求；近一年无输入框，按当前月之前 12 个完整月份显示范围。切回月保留历史月份。协议／日历／状态与请求断言见对应 period-filter 测试。
 - 证据边界：浏览器测试为合成数据，真实 DQE／Relay／Java 及部署未由此证明。
 

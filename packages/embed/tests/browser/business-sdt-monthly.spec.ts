@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+test.beforeEach(async ({page}) => { await page.clock.install({time:new Date('2026-10-15T12:00:00+08:00')}); });
 
 // Synthetic transport data proves binding and rendering only, never real SDT facts.
 async function syntheticDqe(page: Page) {
@@ -8,7 +9,7 @@ async function syntheticDqe(page: Page) {
     requests.push(...items);
     const results = items.map((item: any) => {
       const month = Number(item.filter.time.end.replace(/-/g, '').slice(-2));
-      const data = item.filter.time.end.replace(/-/g, '') === '202611' ? [] : [Object.fromEntries([
+      const data = item.filter.time.end.replace(/-/g, '') === '202608' ? [] : [Object.fromEntries([
         ...item.output_dims.map((field: string) => [field, field === '账期(month)' ? item.filter.time.end : `合成验收-${field}`]),
         ...item.output_metrics.map((field: string) => [field, month])
       ])];
@@ -69,8 +70,11 @@ test('new SDT page binds all visible queries, main title and statistical month',
   await month.fill('2020-05'); await month.press('Enter');
   await expect(page.getByRole('status')).toHaveText('日期不得早于 2020-06');
   await month.fill('2026-11'); await month.press('Enter');
+  await expect(page.getByRole('status')).toHaveText('日期不得晚于 2026-10');
+  expect(requests).toHaveLength(42);
+  await month.fill('2026-08'); await month.press('Enter');
   await expect.poll(() => requests.length).toBe(56);
-  await expect(heading(page)).toHaveText('2026-11 商务SDT行权效率专项报告');
+  await expect(heading(page)).toHaveText('2026-08 商务SDT行权效率专项报告');
   await expect(page.getByRole('alert')).toHaveCount(0);
   expect(errors).toEqual([]);
 });

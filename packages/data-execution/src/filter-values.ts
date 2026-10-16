@@ -1,4 +1,4 @@
-import { isPeriodSelection, resolvePeriodSelection, type AppliedPeriodSelection, validateTimePointValue, dimensionOfLevel, hierarchyLevelOf, isRelativeTimeExpression, resolveRelativeTime, type FilterDeclaration, type NumberRangeValue } from '@metriccanvas/page/internal';
+import { timeFilterBoundaryError, isPeriodSelection, resolvePeriodSelection, type AppliedPeriodSelection, validateTimePointValue, dimensionOfLevel, hierarchyLevelOf, isRelativeTimeExpression, resolveRelativeTime, type FilterDeclaration, type NumberRangeValue } from '@metriccanvas/page/internal';
 
 /**
  * 筛选状态 (Filter State) 中单个筛选器的当前值。
@@ -66,6 +66,10 @@ export function initialFilterValues(
   const values = new Map<string, FilterValue>();
   for (const decl of declarations) {
     const value = initialValue(decl, now);
+    if (value && (value.type === 'timePoint' || value.type === 'timeRange')) {
+      const issue = timeFilterBoundaryError(decl, value, now);
+      if (issue) throw new Error(`筛选器 ${decl.id}: ${issue}`);
+    }
     if (value) values.set(decl.id, value);
   }
   return values;
@@ -88,7 +92,7 @@ function initialValue(decl: FilterDeclaration, now: Date): FilterValue | undefin
     const precision = decl.precision ?? 'date';
     if (typeof decl.default === 'string') {
       const range = resolvePreset(decl.default, now, precision === "month" ? "date" : precision);
-      return { type: 'timeRange', from: range.from, to: range.to };
+      return { type: 'timeRange', from: precision === 'month' ? range.from.slice(0,7) : range.from, to: precision === 'month' ? range.to.slice(0,7) : range.to };
     }
     if (isRelativeTimeExpression(decl.default)) {
       const range = resolveRelativeTime(decl.default, now, precision);
@@ -98,7 +102,7 @@ function initialValue(decl: FilterDeclaration, now: Date): FilterValue | undefin
   }
   if (decl.type === 'timePoint') {
     if (!decl.default) return undefined;
-    const issue = validateTimePointValue(decl.default, decl.granularity, decl.min, decl.disableFuture, now);
+    const issue = validateTimePointValue(decl.default, decl.granularity, decl.min, decl.disableFuture !== false, now);
     if (issue) throw new Error(`筛选器 ${decl.id}: ${issue}`);
     return { type: 'timePoint', granularity: decl.granularity, value: decl.default };
   }

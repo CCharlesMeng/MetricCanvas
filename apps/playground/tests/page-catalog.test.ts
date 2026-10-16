@@ -15,6 +15,19 @@ describe('页面试验场目录', () => {
     expect(groups.flatMap((group) => group.pages).map((page) => page.id).sort()).toEqual(ids);
   });
 
+  it('时间选择只有 Report 和 Dashboard 两个通用演示入口', () => {
+    const entries = catalog.pages.filter(page => page.tags.includes('时间选择'));
+    expect(entries.map(page => page.id).sort()).toEqual(['dashboard-period-filter', 'report-date-filter-example']);
+    expect(entries.every(page => page.group === 'features')).toBe(true);
+    const retired = ['report-title-filter-example', 'time-point-no-future',
+      'dashboard-period-filter-month', 'dashboard-period-filter-more', 'dashboard-period-filter-readonly'];
+    const files = readdirSync(fileURLToPath(new URL('../../../pages', import.meta.url)));
+    for (const id of retired) {
+      expect(catalog.pages.some(page => page.id === id)).toBe(false);
+      expect(files).not.toContain(`${id}.json`);
+    }
+  });
+
   it('新页面自动进入待归类，配置中已删除的页面不出现', () => {
     const groups = organizePageCatalog([{ id: 'new-example', title: '新样例', layoutForm: 'dashboard' }]);
     expect(groups).toHaveLength(1);

@@ -259,7 +259,8 @@
         "packages/page/src/period-filter.ts",
         "packages/page/src/report-date-filters.ts",
         "packages/page/src/chart-filter.ts",
-        "packages/page/src/schema/chart-filter.ts"
+        "packages/page/src/schema/chart-filter.ts",
+        "packages/page/src/time-filter-boundary.ts"
       ],
       "rules": [
         "filter-id-unique",

@@ -97,6 +97,7 @@ test('导出无取消入口，重复点击不创建并行任务，实例销毁�
 });
 
 test('点击后月份交互继续响应，PDF标题和文件名保留点击时的月份', async ({page}) => {
+  await page.clock.install({time:new Date('2026-11-15T12:00:00+08:00')});
   await page.addInitScript(() => {
     document.addEventListener('load',event=>{
       const frame=event.target;

@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { resolvePageParams, validate, validateTimePointValue } from '../src/internal';
 
-const load = () => JSON.parse(readFileSync(new URL('../../../pages/time-point-no-future.json', import.meta.url), 'utf8'));
+const load = () => JSON.parse(readFileSync(new URL('../fixtures/contract-valid/time-point-no-future.json', import.meta.url), 'utf8'));
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date(2026, 9, 15, 12)); });
 afterEach(() => vi.useRealTimers());
 

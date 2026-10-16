@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 test.use({timezoneId:'Asia/Shanghai'});
 test.beforeEach(async({page})=>{await page.clock.install({time:new Date('2026-10-15T12:00:00+08:00')});});
@@ -8,6 +9,10 @@ for(const precision of ['date','month'])test(`period selection queries, restorat
     await route.fulfill({json:{retCode:'CBC.0000',results:items.map((q:any)=>({code:'SUCCESS',data:[{entry:`${q.filter.time.start}~${q.filter.time.end}`,[q.output_metrics[0]]:42}],total_count:1}))}});
   });
   const path='/pages/dashboard-period-filter'+(precision==='month'?'-month':'');
+  if (precision === 'month') {
+    const fixture = readFileSync(new URL('../../../page/fixtures/contract-valid/dashboard-period-filter-month.json', import.meta.url), 'utf8');
+    await page.route('**/pages/dashboard-period-filter-month.json', route => route.fulfill({ contentType: 'application/json', body: fixture }));
+  }
   await page.goto(path);
   const period=page.locator('[data-period-filter]');
   await expect(period.getByRole('combobox')).toHaveValue('2026-10');
@@ -41,6 +46,10 @@ test('overflow panel and compact readonly consume the same period declaration',a
     const items=route.request().postDataJSON().dsl_list;
     await route.fulfill({json:{retCode:'CBC.0000',results:items.map(()=>({code:'SUCCESS',data:[],total_count:0}))}});
   });
+  for (const variant of ['more', 'readonly']) {
+    const fixture = readFileSync(new URL(`../../../page/fixtures/contract-valid/dashboard-period-filter-${variant}.json`, import.meta.url), 'utf8');
+    await page.route(`**/pages/dashboard-period-filter-${variant}.json`, route => route.fulfill({ contentType: 'application/json', body: fixture }));
+  }
   await page.goto('/pages/dashboard-period-filter-more');
   await page.getByText('更多筛选',{exact:true}).click();
   const period=page.locator('[data-period-filter]');await expect(period).toBeVisible();
@@ -53,4 +62,25 @@ test('overflow panel and compact readonly consume the same period declaration',a
   await expect(period.locator('button,input')).toHaveCount(0);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth)).toBe(false);
   await page.screenshot({path:info.outputPath('period-readonly-compact.png'),fullPage:true});
+});
+
+test('default Dashboard period picker disables future years, quarters and months',async({page})=>{
+  await page.clock.setSystemTime(new Date('2026-05-15T12:00:00+08:00'));
+  await page.route('**/rest/cdi/cdinl2databuilderservice/v1/dsl/execute',async route=>{
+    const items=route.request().postDataJSON().dsl_list;
+    await route.fulfill({json:{retCode:'CBC.0000',results:items.map(()=>({code:'SUCCESS',data:[],total_count:0}))}});
+  });
+  await page.goto('/pages/dashboard-period-filter?period-filter=quarter%3A2026-Q3');
+  const period=page.locator('[data-period-filter]');await expect(period.getByRole('combobox')).toHaveValue('2026-05');
+  await period.getByRole('button',{name:'季',exact:true}).click();await period.getByRole('combobox').click();
+  await expect(page.getByRole('button',{name:'2026-Q2',exact:true})).toBeEnabled();
+  await expect(page.getByRole('button',{name:'2026-Q3',exact:true})).toBeDisabled();
+  await period.getByRole('combobox').press('Escape');
+  await period.getByRole('button',{name:'年',exact:true}).click();await period.getByRole('combobox').click();
+  await expect(page.getByRole('button',{name:'2026',exact:true})).toBeEnabled();
+  await expect(page.getByRole('button',{name:'2027',exact:true})).toBeDisabled();
+  await period.getByRole('combobox').press('Escape');
+  await period.getByRole('button',{name:'月',exact:true}).click();await period.getByRole('combobox').click();
+  await expect(page.getByRole('button',{name:'2026-05',exact:true})).toBeEnabled();
+  await expect(page.getByRole('button',{name:'2026-06',exact:true})).toBeDisabled();
 });

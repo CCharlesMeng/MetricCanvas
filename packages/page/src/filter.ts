@@ -132,7 +132,7 @@ export interface TimePointFilterDeclaration {
   granularity: 'month' | 'date';
   /** 可选的包含式下限，格式与 granularity 一致（6.24）。 */
   min?: string;
-  /** 禁止选择晚于本地当前月份／日期的时间点（6.25）；未声明时不限制。 */
+  /** 禁止选择晚于本地当前月份／日期的时间点（6.25）；未声明默认禁止，false 显式放开。 */
   disableFuture?: boolean;
   required?: boolean;
   /** month 为 YYYY-MM,date 为 YYYY-MM-DD */

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import fixture from '../../../pages/report-title-filter-example.json';
+import fixture from '../../../pages/report-date-filter-example.json';
 import { parsePage, resolvePageParams, normalizePageDocument } from '../src';
 import { collectFilterTextValueReferences } from '../src/filter-text-value';
 import { resolveParamTextValues, resolveTextValues } from '../src/text-value';

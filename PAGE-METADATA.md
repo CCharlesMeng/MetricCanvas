@@ -70,7 +70,7 @@
 
 ## 动态标题与文本组合（6.23）
 
-所有文本取值位置可使用 `{"parts":[{"filter":"report-month","format":"period"}," 经营分析报告"]}`，主标题随已应用的时间筛选更新。片段也可引用打开时固定的参数，声明和缺值语义见[文本组合](docs/page-metadata/params-and-text-values.md#文本片段组合623)。完整验收入口为 [report-title-filter-example](pages/report-title-filter-example.json)；原[日期筛选示例](pages/report-date-filter-example.json)同时展示动态标题与月度查询。
+所有文本取值位置可使用 `{"parts":[{"filter":"report-month","format":"period"}," 经营分析报告"]}`，主标题随已应用的时间筛选更新。片段也可引用打开时固定的参数，声明和缺值语义见[文本组合](docs/page-metadata/params-and-text-values.md#文本片段组合623)。完整验收统一在 [Report 时间选择与联动](pages/report-date-filter-example.json)，按文字联动、范围查询和未来时间限制分节展示。
 
 ## 多查询表格（6.22）
 
@@ -375,7 +375,9 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 具体约束见 [ADR-0096](docs/adr/0096-ioc-view-state-and-post-query-presentation.md)。6.11继续可读，但使用上述能力的文档必须写6.12。
 
-`timePoint.disableFuture: true` 从6.25起禁止未来月份／日期，当前期间可选；上限随本地当前日期推进，控件、手工输入、URL与参数初始化共同约束。见[禁止未来时间](docs/page-metadata/filters.md#禁止未来时间625)及[交互验收页](pages/time-point-no-future.json)。
+所有时间选择器默认禁止未来时间，覆盖点、范围、Dashboard 年／季／月及精确时间输入；URL 和手工输入同样受限。当前自然期间保持完整查询范围，详见[时间选择的默认上限](docs/page-metadata/filters.md#时间选择的默认上限)。
+
+`timePoint.disableFuture: true` 从6.25起禁止未来月份／日期，当前期间可选；上限随本地当前日期推进，控件、手工输入、URL与参数初始化共同约束。见[禁止未来时间](docs/page-metadata/filters.md#禁止未来时间625)及[交互验收页](pages/report-date-filter-example.json)。
 
 6.27 增量：Dashboard 顶部 timeRange 的年／季／月／近一年选择形态，声明、状态及查询规则见[期间筛选](docs/page-metadata/filters.md#dashboard-期间选择627)。
 6.29 增加 Dashboard 正文图表左上角独立筛选 `props.filter`，支持自定义显示名称、查询值和单选默认项；查询依赖校验保证只影响所属图表。完整声明、限制与验收页面见[图表独立筛选](docs/page-metadata/filters.md#图表独立筛选629)。

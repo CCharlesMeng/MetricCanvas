@@ -67,7 +67,7 @@
 
 分层参数的显式非法输入不回退保存值，缺必需输入时不能执行。执行回执已核验的实际输入与筛选值为初始化权威，不再次用URL或模板值覆盖。
 
-6.23 起，主标题可使用 `{"parts":[{"filter":"report-period-filter","format":"period"}," 经营分析报告"]}`，将已应用时间与固定名称组合。参数片段仍在打开时固定，筛选片段随已应用状态更新；任一可选参数片段缺失则整个文本属性移除。完整场景见 [report-title-filter-example](pages/report-title-filter-example.json)。
+6.23 起，主标题可使用 `{"parts":[{"filter":"report-period-filter","format":"period"}," 经营分析报告"]}`，将已应用时间与固定名称组合。参数片段仍在打开时固定，筛选片段随已应用状态更新；任一可选参数片段缺失则整个文本属性移除。完整场景见 [Report 时间选择与联动](pages/report-date-filter-example.json)。
 
 参数文字用 `{param:"report-period",format:"period"}` 显示固定期间。需要文字随读者筛选变化时，用 `{filter:"report-period-filter",format:"period"}`；两者分别引用参数ID和筛选器ID。精确格式与缺值规则见[文本取值参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
 
@@ -477,3 +477,5 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 ## Dashboard 期间筛选初始化
 
 6.27 的 `timeRange.display="period"` 可用 `initialParam` 读取时间参数，同时显式声明 `initialMode` 为 year、quarter 或 month；参数必须正好覆盖一个对应自然期间。它与期间 default 互斥，运行中选择只写筛选状态。近一年独立按当前月之前十二个完整月份计算，不由绝对参数初始化，也不自动提取成固定参数。完整声明与示例见[筛选模块](docs/page-metadata/filters.md#dashboard-期间选择627)。
+
+时间选择器默认禁止未来时间；日期参数作为筛选初值时同样遵守运行时上限，非法初值拒绝初始化，不静默截断。查询窗口保持显式声明，当前年／季／月仍为完整自然期间。见[默认时间上限](docs/page-metadata/filters.md#时间选择的默认上限)。

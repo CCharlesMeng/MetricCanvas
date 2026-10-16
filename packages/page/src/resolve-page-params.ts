@@ -1,3 +1,4 @@
+import { timeFilterBoundaryError } from './time-filter-boundary';
 import { periodSelectionFromRange } from './period-filter';
 import { validateTimePointValue } from './filter';
 import { affectedSourceIds } from './data-source-references';
@@ -82,7 +83,7 @@ export function materializePageParams(page:Page,values:ReadonlyMap<string,PagePa
     const value = values.get(filter.initialParam);
     if (value && typeof value === 'object' && !Array.isArray(value)) {
       if (filter.type === 'timePoint') {
-        const error = validateTimePointValue(value.start, filter.granularity, filter.min, filter.disableFuture);
+        const error = validateTimePointValue(value.start, filter.granularity, filter.min, filter.disableFuture !== false);
         if (error) throw new Error(`筛选器 ${filter.id}: ${error}`);
         filter.default = value.start;
       }
@@ -91,8 +92,14 @@ export function materializePageParams(page:Page,values:ReadonlyMap<string,PagePa
         if (filter.display === 'period') {
           const selection = periodSelectionFromRange(range,filter.initialMode ?? 'month',filter.precision === 'month' ? 'month' : 'date');
           if (!selection) throw new Error(`筛选器 ${filter.id}: 参数不是完整自然期间`);
+          const error = timeFilterBoundaryError(filter, {type:'timeRange',...range,selection});
+          if (error) throw new Error(`筛选器 ${filter.id}: ${error}`);
           filter.default = selection;
-        } else filter.default = range;
+        } else {
+          const error = timeFilterBoundaryError(filter, {type:'timeRange', ...range});
+          if (error) throw new Error(`筛选器 ${filter.id}: ${error}`);
+          filter.default = range;
+        }
       }
     }
   }

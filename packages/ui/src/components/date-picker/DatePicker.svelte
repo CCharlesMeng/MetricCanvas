@@ -15,7 +15,7 @@
     value: DateRangeValue | null;
     onchange: (value: DateRangeValue | null) => void;
   }
-  let { label, precision, min, disableFuture = false, range = false, required = false, disabled = false, value, onchange }: Props = $props();
+  let { label, precision, min, disableFuture = true, range = false, required = false, disabled = false, value, onchange }: Props = $props();
   const id = $props.id();
   let anchor: HTMLDivElement;
   let panel = $state<HTMLDivElement>();

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { DatePicker } from '@metriccanvas/ui';
-  import { validateCalendarTimeRange, type TimeRangePrecision, type TimeRangeValue } from '@metriccanvas/page/internal';
+  import { currentTimeValue, timeFilterBoundaryError, validateCalendarTimeRange, type TimeRangePrecision, type TimeRangeValue } from '@metriccanvas/page/internal';
   interface Props {
     label?: string;
     precision?: TimeRangePrecision;
@@ -14,13 +14,16 @@
   let from = $state(untrack(() => value?.from ?? ''));
   let to = $state(untrack(() => value?.to ?? ''));
   let error = $state('');
+  let clock = $state(new Date());
+  const maximum = $derived(currentTimeValue('datetime', clock));
   const inputType = $derived(precision === 'datetime' ? 'datetime-local' : precision);
   $effect(() => { from = value?.from ?? ''; to = value?.to ?? ''; error = ''; });
   function emit() {
     if (!from && !to && !required) { error = ''; onchange(null); return; }
     if (!from || !to) { error = '请填写完整的起止期间'; return; }
+    clock = new Date();
     const issues = validateCalendarTimeRange({ from, to }, precision);
-    error = issues[0]?.message ?? '';
+    error = issues[0]?.message ?? timeFilterBoundaryError({id:'range',type:'timeRange',precision}, {type:'timeRange',from,to}, clock) ?? '';
     if (!error) onchange({ from, to });
   }
   function clear() { from = ''; to = ''; error = ''; onchange(null); }
@@ -34,6 +37,8 @@
   <input
     type={inputType}
     disabled={readOnly}
+    max={maximum}
+    onfocus={() => { clock = new Date(); }}
     aria-label={`${label ?? "期间"}开始`}
     aria-invalid={!!error}
     value={from}
@@ -43,6 +48,8 @@
   <input
     type={inputType}
     disabled={readOnly}
+    max={maximum}
+    onfocus={() => { clock = new Date(); }}
     aria-label={`${label ?? "期间"}结束`}
     aria-invalid={!!error}
     value={to}

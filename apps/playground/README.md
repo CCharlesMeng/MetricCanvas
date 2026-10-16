@@ -47,7 +47,8 @@ Windows 首次使用还需：
 
 | 场景 | 预览入口 | 完整页面JSON |
 |---|---|---|
-| 报告顶部月份范围与查询、期间文字联动 | [报告页头时间筛选示例](http://localhost:5173/pages/report-date-filter-example) | [report-date-filter-example.json](../../pages/report-date-filter-example.json) |
+| 单月、范围、文字联动与禁止未来时间 | [Report 时间选择与联动](http://localhost:5173/pages/report-date-filter-example) | [report-date-filter-example.json](../../pages/report-date-filter-example.json) |
+| 年／季／月／近一年与查询范围联动 | [Dashboard 期间选择与查询](http://localhost:5173/pages/dashboard-period-filter) | [dashboard-period-filter.json](../../pages/dashboard-period-filter.json) |
 | Top5主查询驱动阶段明细查询并关联展示 | [商务SDT报告](http://localhost:5173/pages/business-sdt-report) | [business-sdt-report.json](../../pages/business-sdt-report.json) |
 
 [JSON即时预览](http://localhost:5173/preview)允许粘贴上述完整页面文档。开发态另有[日期筛选验收演示](http://localhost:5173/preview?prototype=report-date)，支持四种月/日单点与范围形态、日期参数提取和PDF导出；该演示使用本地合成数据，完整样例查询使用本地DQE仿真。

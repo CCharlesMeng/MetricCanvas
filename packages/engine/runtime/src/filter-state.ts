@@ -1,6 +1,7 @@
 import { resolvePeriodSelection, isPeriodSelection } from '@metriccanvas/page/internal';
 import { filterURLKeys } from '@metriccanvas/page/internal';
 import {
+  timeFilterBoundaryError,
   dimensionOfLevel,
   validateCalendarTimeRange,
   validateTimePointValue,
@@ -37,9 +38,9 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   let current: Map<string, FilterValue> = new Map();
   for (const [id, value] of initial ?? []) {
     const declaration = byId.get(id);
-    const valid = declaration?.type === 'timeRange' && declaration.display === 'period' ? normalize(value, declaration) : declaration?.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture === true) ? normalize(value, declaration) : value;
-    if (declaration?.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture === true) && valid === undefined) throw new Error(`筛选器 ${id} 初值不符合时间点边界`);
-    if (declaration?.type === 'timeRange' && declaration.display === 'period' && !valid) throw new Error(`筛选器 ${id} 期间初值非法`);
+    const timed = declaration?.type === 'timeRange' || declaration?.type === 'timePoint';
+    const valid = timed ? normalize(value, declaration) : value;
+    if (timed && !valid) throw new Error(`筛选器 ${id} 初值不符合时间边界`);
     if (!accepted(id, valid)) throw new Error(`图表筛选器 ${id} 初值不在候选项中`);
     if (valid) current.set(id, valid);
   }
@@ -91,7 +92,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
       for (const declaration of declarations) byId.set(declaration.id, declaration);
       const next = new Map(parseFilterSearch(search, declarations));
       for (const declaration of declarations) {
-        if (next.has(declaration.id) || !(declaration.type === 'timeRange' && declaration.display === 'period') && !(declaration.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture) && declaration.required)) continue;
+        if (next.has(declaration.id) || !(declaration.type === 'timeRange' && (declaration.display === 'period' || declaration.required)) && !(declaration.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture !== false) && declaration.required)) continue;
         const fallback = current.get(declaration.id) ?? initialFilterValues([declaration]).get(declaration.id);
         if (fallback) next.set(declaration.id, fallback);
       }
@@ -120,16 +121,21 @@ function notify(run: (values: FilterValues) => void, values: FilterValues): void
 function normalize(value: FilterValue | null, declaration?: FilterDeclaration): FilterValue | null | undefined {
   if (declaration?.type === 'timeRange' && declaration.display === 'period') {
     if (value?.type !== 'timeRange' || !isPeriodSelection(value.selection)) return undefined;
+    if (timeFilterBoundaryError(declaration, value)) return undefined;
     try {
       const resolved = resolvePeriodSelection(value.selection,new Date(),declaration.precision === 'month' ? 'month' : 'date');
       if (value.selection.mode !== 'last12Months' && (resolved.from !== value.from || resolved.to !== value.to)) return undefined;
       return {type:'timeRange',...resolved};
     } catch { return undefined; }
   }
-  if (declaration?.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture === true)) {
+  if (declaration?.type === 'timePoint' && (declaration.min !== undefined || declaration.disableFuture !== false)) {
     if (!value) return declaration.required ? undefined : null;
     if (value.type !== 'timePoint' || value.granularity !== declaration.granularity) return undefined;
-    if (validateTimePointValue(value.value, declaration.granularity, declaration.min, declaration.disableFuture)) return undefined;
+    if (validateTimePointValue(value.value, declaration.granularity, declaration.min, declaration.disableFuture !== false)) return undefined;
+  }
+  if (declaration?.type === 'timeRange') {
+    if (!value) return declaration.required ? undefined : null;
+    if (value.type !== 'timeRange' || validateCalendarTimeRange(value, declaration.precision).length || timeFilterBoundaryError(declaration, value)) return undefined;
   }
   if (value && value.type === 'dimension' && value.values.length === 0) return null;
   if (value?.type === 'timeRange' && validateCalendarTimeRange(value).length > 0) {
@@ -204,7 +210,10 @@ export function parseFilterSearch(search: string, declarations: readonly FilterD
         const selection = split < 0 ? {mode:raw} : {mode:raw.slice(0,split),value:raw.slice(split+1)};
         if (!isPeriodSelection(selection)) continue;
         if (selection.mode !== 'last12Months' && selection.value === undefined) continue;
-        try { result.set(declaration.id,{type:'timeRange',...resolvePeriodSelection(selection,new Date(),declaration.precision === 'month' ? 'month' : 'date')}); } catch {}
+        try {
+          const value = {type:'timeRange' as const,...resolvePeriodSelection(selection,new Date(),declaration.precision === 'month' ? 'month' : 'date')};
+          if (!timeFilterBoundaryError(declaration, value)) result.set(declaration.id,value);
+        } catch {}
         continue;
       }
       const from = read('from'), to = read('to');
@@ -215,7 +224,7 @@ export function parseFilterSearch(search: string, declarations: readonly FilterD
       value = {type:'numberRange', ...(fromText?.trim() ? {from:Number(fromText)} : {}), ...(toText?.trim() ? {to:Number(toText)} : {})};
     } else if (declaration.type === 'timePoint') {
       const raw = read('value');
-      if (!raw || validateTimePointValue(raw, declaration.granularity, declaration.min, declaration.disableFuture)) continue;
+      if (!raw || validateTimePointValue(raw, declaration.granularity, declaration.min, declaration.disableFuture !== false)) continue;
       value = {type:'timePoint', granularity:declaration.granularity, value:raw};
     } else if (declaration.type === 'boolean') {
       const raw = read('value');
@@ -227,7 +236,7 @@ export function parseFilterSearch(search: string, declarations: readonly FilterD
       if (!raw?.trim()) continue;
       value = {type:'search', query:raw};
     }
-    const valid = normalize(value);
+    const valid = normalize(value, declaration);
     if (valid) result.set(declaration.id, valid);
   }
   return result;

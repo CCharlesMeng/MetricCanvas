@@ -1,4 +1,4 @@
-import { periodSelectionFromRange } from '@metriccanvas/page/internal';
+import { timeFilterBoundaryError, periodSelectionFromRange } from '@metriccanvas/page/internal';
 import { validateTimePointValue, matchesParamDeclaration, materializePageParams } from '@metriccanvas/page/internal';
 import type { PageParamValue } from '@metriccanvas/page/internal';
 type PageParamValues = ReadonlyMap<string, PageParamValue>;
@@ -29,14 +29,20 @@ export function seedPageParamFilters(page: import('@metriccanvas/page').Page, va
         if (declaration.display === 'period') {
           const selection = periodSelectionFromRange(range,declaration.initialMode ?? 'month',declaration.precision === 'month' ? 'month' : 'date');
           if (!selection) throw new Error(`筛选器 ${declaration.id}: 参数不是完整自然期间`);
+          const error = timeFilterBoundaryError(declaration, {type:'timeRange',...range,selection});
+          if (error) throw new Error(`筛选器 ${declaration.id}: ${error}`);
           declaration.default = selection;
-        } else declaration.default = range;
+        } else {
+          const error = timeFilterBoundaryError(declaration, {type:'timeRange',...range});
+          if (error) throw new Error(`筛选器 ${declaration.id}: ${error}`);
+          declaration.default = range;
+        }
       }
     } else if (declaration.type === 'timePoint') {
       // 单点 times 输入的两端相同，取哪一端都一样；缺值时不写初值＝不筛。
       const point = value as { start?: string } | undefined;
       if (typeof point?.start === 'string') {
-        const issue = validateTimePointValue(point.start, declaration.granularity, declaration.min, declaration.disableFuture);
+        const issue = validateTimePointValue(point.start, declaration.granularity, declaration.min, declaration.disableFuture !== false);
         if (issue) throw new Error(`筛选器 ${declaration.id}: ${issue}`);
         declaration.default = point.start;
       }

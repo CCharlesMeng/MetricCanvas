@@ -1,7 +1,8 @@
-import {expect,it} from 'vitest';
+import {expect,it,vi,afterEach} from 'vitest';
 import source from '../fixtures/parameter-extraction/tokens-parameter-source.json';
 import {extractPageParams,applyPageParamSelection,resolvePageParams,validate} from '../src';
 
+afterEach(() => vi.useRealTimers());
 export function tokensTemplate(){
   const identities=Object.fromEntries(Object.keys(source.dataSources).map(id=>[id,{'区域':'region'}]));
   const e=extractPageParams(source,{baseline:'tokens-r1',timeIdentities:Object.fromEntries(Object.keys(source.dataSources).map(id=>[id,'tokens-business-period'])),dimensionIdentities:identities});
@@ -11,6 +12,7 @@ export function tokensTemplate(){
   return {e,s};
 }
 it('Tokens: all five verified queries round-trip, changed region/period changes only values and authorized DQE targets',()=>{
+  vi.useFakeTimers(); vi.setSystemTime(new Date(2027,0,15));
   const original=structuredClone(source);const {e,s}=tokensTemplate();
   expect(e.candidates.map(c=>[c.id,c.coveredQueries.length,c.defaultSelected])).toEqual([['region',5,true],['report-period',5,true]]);
   expect(validate(s.document)).toEqual([]);

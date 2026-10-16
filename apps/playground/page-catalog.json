@@ -36,15 +36,6 @@
       ]
     },
     {
-      "id": "report-title-filter-example",
-      "group": "features",
-      "summary": "主标题组合时间与固定文字，覆盖单点、范围、清空和导出捕获；无业务数据与查询。",
-      "tags": [
-        "动态标题",
-        "日期筛选"
-      ]
-    },
-    {
       "id": "query-numeric-tolerance",
       "group": "verification",
       "summary": "八种查询数值样例验证初始行和动态响应的单元格容错；使用合成数据及本地 DQE 仿真。",
@@ -156,9 +147,12 @@
     {
       "id": "report-date-filter-example",
       "group": "features",
-      "summary": "月份范围输入联动期间文字与月度查询，使用本地 DQE 仿真。",
+      "summary": "统一演示单月、月份范围、动态标题、清空和禁止未来日期；范围明细使用本地 DQE 仿真。",
       "tags": [
-        "日期筛选"
+        "时间选择",
+        "日期筛选",
+        "动态标题",
+        "禁止未来"
       ]
     },
     {
@@ -234,15 +228,6 @@
       ]
     },
     {
-      "id": "time-point-no-future",
-      "group": "verification",
-      "summary": "月份与日期禁止选择未来时间，覆盖键盘、手工输入与URL恢复。",
-      "tags": [
-        "月份选择",
-        "未来时间限制"
-      ]
-    },
-    {
       "id": "commercial-sdt-efficiency-ultimate-monthly",
       "group": "reports",
       "summary": "商务SDT行权效率专项月报，支持月份筛选和 PDF 下载，业务数据需要 DQE。",
@@ -264,36 +249,10 @@
     },
     {
       "id": "dashboard-period-filter",
-      "group": "verification",
-      "summary": "年季月／近一年期间筛选、时间绑定与未绑定查询隔离（合成数据）。",
+      "group": "features",
+      "summary": "顶部筛选统一切换年、季、月、近一年，回显绑定查询范围；月份精度、更多筛选和只读边界由测试夹具覆盖。",
       "tags": [
-        "期间筛选",
-        "Dashboard"
-      ]
-    },
-    {
-      "id": "dashboard-period-filter-month",
-      "group": "verification",
-      "summary": "年季月／近一年期间筛选、时间绑定与未绑定查询隔离（合成数据）。",
-      "tags": [
-        "期间筛选",
-        "Dashboard"
-      ]
-    },
-    {
-      "id": "dashboard-period-filter-more",
-      "group": "verification",
-      "summary": "期间筛选的更多筛选／紧凑只读场景（合成验收数据）。",
-      "tags": [
-        "期间筛选",
-        "Dashboard"
-      ]
-    },
-    {
-      "id": "dashboard-period-filter-readonly",
-      "group": "verification",
-      "summary": "期间筛选的更多筛选／紧凑只读场景（合成验收数据）。",
-      "tags": [
+        "时间选择",
         "期间筛选",
         "Dashboard"
       ]

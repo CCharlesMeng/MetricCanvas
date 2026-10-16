@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "6.23",
+  "schemaVersion": "6.25",
   "id": "report-date-filter-example",
   "layout": "report",
   "meta": {
-    "title": "报告页头时间筛选示例",
-    "description": "月份范围：页面参数提供初值，页头展示日期框，筛选绑定驱动月度查询；数据来自本地 DQE 仿真。"
+    "title": "Report 时间选择与联动",
+    "description": "集中演示单月与范围选择、标题文字联动、月份和日期禁止未来时间；仅范围明细使用本地 DQE 仿真。"
   },
   "params": {
     "query": {
@@ -16,7 +16,14 @@
           "end": "2026-06"
         }
       ]
-    }
+    },
+    "display": [
+      {
+        "id": "report-name",
+        "type": "string",
+        "value": "经营分析报告"
+      }
+    ]
   },
   "filters": [
     {
@@ -26,6 +33,61 @@
       "label": "报告期间",
       "required": true,
       "initialParam": "report-period"
+    },
+    {
+      "id": "report-month",
+      "type": "timePoint",
+      "granularity": "month",
+      "label": "报告月份",
+      "default": "2026-09"
+    },
+    {
+      "id": "report-range",
+      "type": "timeRange",
+      "precision": "month",
+      "label": "对照期间",
+      "default": {
+        "from": "2026-01",
+        "to": "2026-06"
+      }
+    },
+    {
+      "id": "bounded-month",
+      "type": "timePoint",
+      "granularity": "month",
+      "label": "受限月份",
+      "required": true,
+      "default": "2026-10",
+      "min": "2020-06"
+    },
+    {
+      "id": "bounded-date",
+      "type": "timePoint",
+      "granularity": "date",
+      "label": "受限日期",
+      "required": true,
+      "default": "2020-06-15",
+      "min": "2020-06-01"
+    },
+    {
+      "id": "bounded-date-range",
+      "type": "timeRange",
+      "precision": "date",
+      "label": "日期范围",
+      "default": {
+        "from": "2020-06-15",
+        "to": "2020-06-30"
+      }
+    },
+    {
+      "id": "bounded-datetime-range",
+      "type": "timeRange",
+      "precision": "datetime",
+      "label": "精确时间范围",
+      "default": {
+        "from": "2020-06-15T09:00",
+        "to": "2020-06-15T10:00"
+      }
     }
   ],
   "dataSources": {
@@ -80,6 +142,103 @@
   },
   "sections": [
     {
+      "id": "title-composition",
+      "container": "plain",
+      "components": [
+        {
+          "id": "title-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": {
+              "parts": [
+                {
+                  "filter": "report-month",
+                  "format": "period"
+                },
+                " ",
+                {
+                  "param": "report-name"
+                }
+              ]
+            },
+            "subtitle": {
+              "parts": [
+                "打开时名称：",
+                {
+                  "param": "report-name"
+                },
+                "；已应用月份：",
+                {
+                  "filter": "report-month",
+                  "format": "period"
+                }
+              ]
+            },
+            "filterIds": [
+              "report-month",
+              "report-range"
+            ],
+            "decoration": "shortBar",
+            "asOf": {
+              "label": "对照期间",
+              "value": {
+                "parts": [
+                  {
+                    "filter": "report-range",
+                    "format": "period"
+                  },
+                  " 对照分析"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "title": "一、单月与范围文字联动"
+    },
+    {
+      "id": "instructions",
+      "container": "plain",
+      "components": [
+        {
+          "id": "instructions-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "切换报告月份，标题和正文随已应用筛选变化；清空显示“全部期间”。对照期间可独立改为范围或同月。本节只演示文字联动，不改变下方明细查询。"
+          }
+        },
+        {
+          "id": "two-filters",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "parts": [
+                "当前：",
+                {
+                  "filter": "report-month",
+                  "format": "period"
+                },
+                "；对照：",
+                {
+                  "filter": "report-range",
+                  "format": "period"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "id": "header",
       "container": "plain",
       "components": [
@@ -99,7 +258,7 @@
                 " Tokens 消耗分析报告"
               ]
             },
-            "subtitle": "选择右上角的月份范围，当前期间与下方月度数据同步更新。",
+            "subtitle": "报告期间由页面参数初始化；修改本节月份范围，只更新当前期间和下方月度明细。数据为本地 DQE 仿真。",
             "decoration": "shortBar",
             "asOf": {
               "label": "当前期间",
@@ -113,7 +272,8 @@
             ]
           }
         }
-      ]
+      ],
+      "title": "二、范围筛选与查询联动"
     },
     {
       "id": "monthly-detail",
@@ -151,6 +311,45 @@
           }
         }
       ]
+    },
+    {
+      "id": "bounded-time",
+      "container": "plain",
+      "components": [
+        {
+          "id": "bounded-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": {
+              "parts": [
+                {
+                  "filter": "bounded-month",
+                  "format": "period"
+                },
+                " 禁止未来时间验收"
+              ]
+            },
+            "filterIds": [
+              "bounded-month",
+              "bounded-date",
+              "bounded-date-range",
+              "bounded-datetime-range"
+            ],
+            "asOf": {
+              "label": "受限日期",
+              "value": {
+                "filter": "bounded-date",
+                "format": "period"
+              }
+            },
+            "subtitle": "所有时间控件默认禁止未来时间；此节同时展示月份／日期下限，以及日期和精确时间范围。面板、输入及 URL 恢复均受限，不触发明细查询。"
+          }
+        }
+      ],
+      "title": "三、月份与日期禁止未来时间"
     }
   ]
 }

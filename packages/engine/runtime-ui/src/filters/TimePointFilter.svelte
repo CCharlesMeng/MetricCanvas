@@ -11,7 +11,7 @@
     value: string | null;
     onchange: (value: string | null) => void;
   }
-  let { label, min, disableFuture = false, granularity, value, onchange, required = false, readOnly = false }: Props = $props();
+  let { label, min, disableFuture = true, granularity, value, onchange, required = false, readOnly = false }: Props = $props();
 </script>
 <DatePicker {label} {required} {min} {disableFuture} precision={granularity} disabled={readOnly}
   value={value ? { from: value, to: value } : null} onchange={next => { if (!next || !validateTimePointValue(next.from, granularity, min, disableFuture)) onchange(next?.from ?? null); }} />

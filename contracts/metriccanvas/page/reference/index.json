@@ -147,6 +147,10 @@
       "sha256": "c288d7375532e4700d25f7420d7eb62f0293aff6f1fbb284a331aa7726705939"
     },
     {
+      "file": "packages/page/src/time-filter-boundary.ts",
+      "sha256": "9abad4fcdf155b46c4c3e726fd4c75c3528f0fe41aa6bb1194652c1875a513e0"
+    },
+    {
       "file": "packages/page/src/time-param.ts",
       "sha256": "d567d0457111b52d8f854c26e7ba7434470ef9111436082ad85e1816b77dfacb"
     },
@@ -427,7 +431,8 @@
         "packages/page/src/period-filter.ts",
         "packages/page/src/report-date-filters.ts",
         "packages/page/src/chart-filter.ts",
-        "packages/page/src/schema/chart-filter.ts"
+        "packages/page/src/schema/chart-filter.ts",
+        "packages/page/src/time-filter-boundary.ts"
       ],
       "rules": [
         "filter-id-unique",

@@ -3,7 +3,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { createFilterState, initialFilterValues, parseFilterSearch } from '../src/filter-state';
 import type { FilterDeclaration } from '@metriccanvas/page/internal';
 
-const page = () => JSON.parse(readFileSync(new URL('../../../../pages/time-point-no-future.json', import.meta.url), 'utf8'));
+const page = () => JSON.parse(readFileSync(new URL('../../../page/fixtures/contract-valid/time-point-no-future.json', import.meta.url), 'utf8'));
 const point = (value: string) => ({ type: 'timePoint' as const, granularity: 'month' as const, value });
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date(2026, 9, 15, 12)); });
 afterEach(() => vi.useRealTimers());

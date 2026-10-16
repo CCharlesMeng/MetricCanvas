@@ -272,6 +272,7 @@ compositeCardChildTypes
 computeDependencies
 computeOutputFields
 conditionSourceIds
+currentTimeValue
 dataSourceMode
 daysInGregorianMonth
 declaredPaginationLimit
@@ -356,6 +357,7 @@ tablePredicates
 tableQueryViewZ
 tableSortZ
 textValueScope
+timeFilterBoundaryError
 timePointPredicateValue
 timeWindowCompatible
 toLocalDate

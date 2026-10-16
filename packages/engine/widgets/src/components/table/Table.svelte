@@ -5,6 +5,9 @@
 <script lang="ts">
   import type {TablePaginationState,TableSelectedCell} from './view-state';
   import { getContext } from 'svelte';
+  import { currentTimeValue } from '@metriccanvas/page/internal';
+  let dateMaximum = $state(currentTimeValue('date'));
+  let dateError = $state('');
   import TableToolbar from './TableToolbar.svelte';
   import TableControlIcon from './TableControlIcon.svelte';
   import { tableFilterPopover } from './filter-popover';
@@ -208,6 +211,9 @@
 
   /** 每次端点变更都上抛草稿,由壳回显并决定何时重查;两端清空即清除。 */
   function emitDateRange(field: string, from: string, to: string) {
+    dateMaximum = currentTimeValue('date');
+    dateError = from > dateMaximum || to > dateMaximum ? `日期不得晚于 ${dateMaximum}` : '';
+    if (dateError) return;
     onheaderfilter?.(field, from || to ? { mode: 'dateRange', from, to } : null);
   }
 
@@ -407,6 +413,8 @@
                             <div class="range">
                               <input
                                 type="date"
+                                max={dateMaximum}
+                                onfocus={() => { dateMaximum = currentTimeValue('date'); dateError = ''; }}
                                 value={range.from}
                                 onchange={(e) =>
                                   emitDateRange(columnField(column), e.currentTarget.value, range.to)}
@@ -414,11 +422,14 @@
                               <span class="sep">至</span>
                               <input
                                 type="date"
+                                max={dateMaximum}
+                                onfocus={() => { dateMaximum = currentTimeValue('date'); dateError = ''; }}
                                 value={range.to}
                                 onchange={(e) =>
                                   emitDateRange(columnField(column), range.from, e.currentTarget.value)}
                               />
                             </div>
+                            {#if dateError}<span class="hint" role="status">{dateError}</span>{/if}
                           {:else if column.filterable.mode === 'numberRange'}
                             {@const range=numberRangeOf(columnField(column))}
                             <div class="range">
