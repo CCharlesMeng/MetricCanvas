@@ -3,7 +3,7 @@ import { expect, test, type Locator } from '@playwright/test';
 const expectSelected = (group: Locator, value: string) => expect(group.locator(`button[data-value="${value}"]`)).toHaveAttribute('aria-pressed', 'true');
 const choose = (group: Locator, value: string) => group.locator(`button[data-value="${value}"]`).click();
 
-for (const width of [1440, 390]) test(`${width}: chart filters refresh only their owner and export captured choices`, async ({page}, info) => {
+for (const width of [1440, 390]) test(`${width}: chart filters refresh only their owner and retain applied choices`, async ({page}, info) => {
   await page.setViewportSize({width,height:1000});
   const requests: any[] = [];
   page.on('request', request => {
@@ -67,14 +67,6 @@ for (const width of [1440, 390]) test(`${width}: chart filters refresh only thei
   await expect(page.locator('[data-component="charts/share"]')).toContainText('渠道占比');
   await choose(revenue, 'CN'); await choose(map, 'OVERSEAS');
   await expect.poll(() => requests.length).toBe(9);
-  const captured = await page.evaluate(async () => {
-    let result: any;
-    await window.runtime.withExportView(async view => {
-      result = {choices:[...view.target.querySelectorAll('[data-chart-filter-selection]')].map(el => el.textContent),controls:view.target.querySelectorAll('[data-chart-filter] button').length};
-    });
-    return result;
-  });
-  expect(captured).toEqual({choices:['海外','中国区','欧洲（空结果）','海外'],controls:0});
   const geometry = await orders.evaluate(select => {
     const cell = select.closest('article')!.getBoundingClientRect();
     const control = select.getBoundingClientRect();

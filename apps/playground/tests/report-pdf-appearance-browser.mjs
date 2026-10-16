@@ -38,12 +38,14 @@ try {
         window.exportBackgrounds.push(getComputedStyle(view).backgroundColor);
       }
     }, true);
-    const original = HTMLCanvasElement.prototype.toDataURL;
-    HTMLCanvasElement.prototype.toDataURL = function (...args) {
-      const result = original.apply(this, args);
-      const view = document.querySelector('[data-report-pdf-frame]')?.contentDocument?.querySelector('[data-export-view]');
-      if (view && this.width === Math.floor(view.getBoundingClientRect().width * 2)) window.encodedImages.push(result);
-      return result;
+    const original = Worker.prototype.postMessage;
+    Worker.prototype.postMessage = function(data,...args) {
+      if(data.kind==='bitmap')for(const slice of data.slices){
+        const canvas=document.createElement('canvas');canvas.width=data.bitmap.width;canvas.height=slice.sourceBottom-slice.sourceTop;
+        canvas.getContext('2d').drawImage(data.bitmap,0,slice.sourceTop,canvas.width,canvas.height,0,0,canvas.width,canvas.height);
+        window.encodedImages.push(canvas.toDataURL('image/png'));
+      }
+      return original.call(this,data,...args);
     };
   });
   const download = page.waitForEvent('download');

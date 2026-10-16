@@ -14,14 +14,14 @@ try {
   await page.evaluate(() => {
     window.fidelityImages = [];
     window.tableHeaderColors = [];
-    const original = HTMLCanvasElement.prototype.toDataURL;
-    HTMLCanvasElement.prototype.toDataURL = function (...args) {
-      const result = original.apply(this, args);
-      if (document.querySelector('[data-report-pdf-frame]') && this.width === 1436) window.fidelityImages.push(result);
-      if (document.querySelector('[data-report-pdf-frame]') && this.width > 600 && this.width < 800 && this.height < 100) {
-        window.tableHeaderColors.push(Array.from(this.getContext('2d').getImageData(5, 5, 1, 1).data));
+    const original = Worker.prototype.postMessage;
+    Worker.prototype.postMessage = function(data,...args) {
+      if(data.kind==='bitmap')for(const slice of data.slices){
+        const canvas=document.createElement('canvas');canvas.width=data.bitmap.width;canvas.height=slice.sourceBottom-slice.sourceTop;
+        canvas.getContext('2d').drawImage(data.bitmap,0,slice.sourceTop,canvas.width,canvas.height,0,0,canvas.width,canvas.height);
+        window.fidelityImages.push(canvas.toDataURL('image/png'));
       }
-      return result;
+      return original.call(this,data,...args);
     };
     const facts = root => {
       const origin = root.getBoundingClientRect();

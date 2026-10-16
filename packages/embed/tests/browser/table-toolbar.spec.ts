@@ -25,13 +25,7 @@ test('table-local search finds a later row and downloads all matches while anoth
   const sheet = workbook.worksheets[0]; expect(sheet.rowCount).toBe(8); expect(sheet.getCell('A8').value).toBe('客户25');
   expect(sheet.getCell('B8').value).toBe(25);
   await page.screenshot({ path: testInfo.outputPath('independent-search.png'), fullPage: true });
-  // Keep the submitted scope while a draft remains unsubmitted; PDF must omit controls.
-  await table.getByRole('searchbox').fill('客户1');
-  const exported = await page.evaluate(async () => window.runtime.withExportView(async ({ target }) => ({
-    tools: target.querySelectorAll('[data-table-toolbar]').length,
-    text: target.textContent
-  })));
-  expect(exported.tools).toBe(0); expect(exported.text).toContain('客户25');
+
 });
 
 test('query search forwards mapped fields and full export traverses every matching page', async ({ page }) => {

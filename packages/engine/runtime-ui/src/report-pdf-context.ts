@@ -6,7 +6,6 @@ export interface ReportPdfContext {
   readonly error?: string;
   readonly message: string;
   download(props: ReportHeaderProps): Promise<void>;
-  cancel(): void;
 }
 
 export function reportPdfFilename(props: ReportHeaderProps): string {

@@ -245,4 +245,4 @@ ESM 同名导出也可用。初始实际参数/筛选及逐源快照来自执行
 
 从页面协议6.28起，Report顶层页头声明`props.pdfExport: {label: "下载报告", filename: "经营分析报告.pdf"}`即可启用内置下载；两项可省略，默认按钮为“下载 PDF”，文件名取页头标题。按钮与filterIds共用工具带，无日期控件也可显示。HTML运行时单文件已包含PDF依赖，集成应用无需自行安装html2canvas或jsPDF，也无需编写下载回调。更新使用包含本能力的新运行时产物。
 
-需要自定义PDF输出时，`RuntimeHandle.withExportView`仍向异步回调提供已准备的静态DOM，集成应用自行编码与保存。日期控件被移除，静态期间保留。完整范围、固定限额、错误码与生命周期见 [接入说明](../../docs/report-export.md)。
+`withExportView`及其静态DOM类型已移除，不提供旧入口兼容。整页PDF只通过页面声明的内置按钮下载，没有取消按钮。图片与PDF编码在Dedicated Worker执行，主线程分批处理DOM；浏览器须支持Worker、ImageBitmap、OffscreenCanvas，宿主CSP允许`worker-src blob:`。范围、固定限额、错误与生命周期见[接入说明](../../docs/report-export.md)。

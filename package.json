@@ -27,7 +27,9 @@
     "packages:check": "tsx tools/package-build/check.ts",
     "compatibility:check": "node tools/package-build/compatibility.mjs",
     "ci:wait": "node tools/scripts/wait-ci.mjs",
-    "test:ui": "pnpm --filter @metriccanvas/ui test:browser"
+    "test:ui": "pnpm --filter @metriccanvas/ui test:browser",
+    "report-pdf:build": "node tools/scripts/build-report-pdf.mjs",
+    "report-pdf:check": "node tools/scripts/build-report-pdf.mjs --check"
   },
   "devDependencies": {
     "@sveltejs/package": "2.5.8",

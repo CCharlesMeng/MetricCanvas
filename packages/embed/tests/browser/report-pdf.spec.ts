@@ -64,7 +64,7 @@ test('页面配置驱动ShadowRoot里的PDF按钮和实际下载，无新窗口'
 
 test('编码失败显示错误，恢复按钮并清理临时视图', async ({ page }) => {
   await page.addInitScript(() => {
-    HTMLCanvasElement.prototype.toDataURL = () => { throw new Error('PDF_ENCODE_FAILURE'); };
+    window.Worker = class extends Worker { constructor(url:string|URL,options?:WorkerOptions) {super(url,options);this.terminate();throw new Error('PDF_ENCODE_FAILURE');} };
   });
   await page.goto('/examples/report-pdf-download.html');
   const button = page.locator('[data-report-pdf-download]').first();
@@ -76,20 +76,55 @@ test('编码失败显示错误，恢复按钮并清理临时视图', async ({ pa
   await expect(page.locator('[data-metriccanvas-export-stage]')).toHaveCount(0);
 });
 
-test('准备期间可取消，不发起下载', async ({ page }) => {
-  let downloadCount = 0;
-  page.on('download', () => downloadCount++);
-  await page.goto('/examples/report-pdf-download.html');
-  await expect(page.locator('[data-report-pdf-download]')).toHaveCount(2);
-  await page.evaluate(async () => {
-    const root = document.querySelector('[data-metriccanvas-runtime]')!.shadowRoot!;
-    root.querySelector<HTMLButtonElement>('[data-report-pdf-download]')!.click();
-    await Promise.resolve();
-    root.querySelector<HTMLButtonElement>('[data-report-pdf-cancel]')!.click();
+test('导出无取消入口，重复点击不创建并行任务，实例销毁清理后台任务', async ({page}) => {
+  await page.addInitScript(() => {
+    const OriginalWorker=Worker;
+    (window as any).workerFacts={created:0,terminated:0};
+    window.Worker=class extends OriginalWorker {
+      constructor(url:string|URL,options?:WorkerOptions){super(url,options);(window as any).workerFacts.created++;}
+      terminate(){(window as any).workerFacts.terminated++;super.terminate();}
+    };
   });
-  await expect(page.locator('[data-report-pdf-download]').first()).toHaveText('下载经营报告');
-  await expect(page.locator('[data-report-pdf-status]')).toHaveCount(0);
-  await expect(page.locator('[data-report-pdf-download]').first()).toBeEnabled();
-  await expect(page.locator('[data-metriccanvas-export-stage]')).toHaveCount(0);
-  expect(downloadCount).toBe(0);
+  await page.goto('/examples/report-pdf-download.html');
+  await expect(page.locator('[data-report-pdf-cancel]')).toHaveCount(0);
+  const button=page.locator('[data-report-pdf-download]').first();
+  await button.click();
+  await expect(button).toBeDisabled();
+  await expect.poll(()=>page.evaluate(()=>(window as any).workerFacts.created)).toBe(1);
+  await page.evaluate(()=>window.runtime.destroy());
+  await expect.poll(()=>page.evaluate(()=>(window as any).workerFacts.terminated)).toBe(1);
+  await expect(page.locator('[data-report-pdf-frame], [data-metriccanvas-export-stage], .html2canvas-container')).toHaveCount(0);
+});
+
+test('点击后月份交互继续响应，PDF标题和文件名保留点击时的月份', async ({page}) => {
+  await page.addInitScript(() => {
+    document.addEventListener('load',event=>{
+      const frame=event.target;
+      if(frame instanceof HTMLIFrameElement && frame.hasAttribute('data-report-pdf-frame')){
+        (window as any).pdfCapturedTitle=frame.contentDocument?.querySelector('h1')?.textContent;
+      }
+    },true);
+  });
+  await page.goto('/examples/report-pdf-download.html');
+  const month=page.getByRole('combobox',{name:'报告月份',exact:true});
+  await month.fill('2026-10');await month.press('Enter');
+  const downloaded=page.waitForEvent('download');
+  await page.locator('[data-report-pdf-download]').first().click();
+  await month.fill('2026-11');await month.press('Enter');
+  await expect(page.getByRole('heading',{level:1}).first()).toHaveText('2026-11 经营分析报告');
+  expect((await downloaded).suggestedFilename()).toBe('经营分析报告-2026-10.pdf');
+  expect(await page.evaluate(()=>(window as any).pdfCapturedTitle)).toBe('2026-10 经营分析报告');
+});
+
+test('宿主禁止Blob Worker时明确失败并释放资源', async ({page}) => {
+  await page.route('**/examples/report-pdf-download.html',async route=>{
+    const response=await route.fetch();
+    await route.fulfill({response,headers:{...response.headers(),'Content-Security-Policy':"worker-src 'none'"}});
+  });
+  await page.goto('/examples/report-pdf-download.html');
+  const button=page.locator('[data-report-pdf-download]').first();await button.click();
+  await expect(button).toHaveText('下载失败，重试');
+  await expect(button).toHaveAttribute('title',/Worker|worker-src|SecurityError/i);
+  await expect(button).toBeEnabled();
+  await expect(page.locator('[data-report-pdf-frame],[data-metriccanvas-export-stage],.html2canvas-container')).toHaveCount(0);
 });

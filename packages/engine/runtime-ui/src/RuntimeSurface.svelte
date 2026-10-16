@@ -68,10 +68,9 @@
     type TableSelectedCell,
     type TableViewState
   } from '../../widgets/src';
-  import { withPreparedExportView } from './export-view';
+  import { withReportView } from './report-view';
   import { downloadReportPdf } from './report-pdf-client';
   import { REPORT_PDF_CONTEXT, reportPdfFilename, type ReportPdfContext } from './report-pdf-context';
-  import type { ExportViewConsumer, ExportViewOptions } from './export-types';
   import { SUMMARY_EXPORT_CAPTURE, type SummaryCapture } from './export-render-state';
   import { ExportViewError } from '../../runtime/src/export-snapshots';
   import ComponentRenderer from './ComponentRenderer.svelte';
@@ -162,9 +161,11 @@
       reportPdfError = undefined;
       reportPdfMessage = '正在准备报告…';
       try {
-        await withExportView(async ({target, signal}) => {
+        await prepareReport(async ({target, signal}) => {
           if (generation === reportPdfGeneration) reportPdfMessage = '正在生成 PDF…';
-          await downloadReportPdf(target, signal, filename);
+          await downloadReportPdf(target, signal, filename, (done,total) => {
+            if(generation===reportPdfGeneration)reportPdfMessage=`正在生成 PDF（${done}/${total} 页）…`;
+          });
         });
       } catch (cause) {
         if (generation !== reportPdfGeneration) return;
@@ -175,14 +176,13 @@
       } finally {
         if (generation === reportPdfGeneration) reportPdfMessage = '';
       }
-    },
-    cancel() { exportController.cancel(pageExportTask); }
+    }
   };
   setContext(REPORT_PDF_CONTEXT, reportPdf);
   let tableController: ReturnType<typeof createTableController> | undefined;
   let tableRevision = $state(0);
   onDestroy(() => { reportPdfGeneration++; exportController.reset(); tableController?.dispose(); });
-  export async function withExportView<T>(consume:ExportViewConsumer<T>,options?:ExportViewOptions):Promise<T> {
+  async function prepareReport<T>(consume:(view:{target:HTMLElement;signal:AbortSignal})=>Promise<T>):Promise<T> {
     if(pageState.phase!=='ready'||!stream||!surfaceRoot)throw new ExportViewError('EXPORT_NOT_READY','页面实例尚未就绪');
     // Capture every runtime value before the first await; later interactions stay independent.
     const page=JSON.parse(JSON.stringify(pageState.page)) as Page;
@@ -193,7 +193,7 @@
     const state={page,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
     const queries=stream.captureQueries();
     const program=stream.getSourceProgram();
-    return exportController.run(pageExportTask, controller => withPreparedExportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program},consume,options));
+    return exportController.run(pageExportTask, controller => withReportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program},consume));
   }
   let pageState = $state<PageState>({ phase: 'loading' });
   let snapshots = $state<PageDataSnapshots>(new Map());

@@ -19,7 +19,7 @@
 | 协议总览 | 本文件：页面组成、能力边界、版本与专题导航 |
 | 参数与筛选专题 | [PAGE-PARAMETERS.md](PAGE-PARAMETERS.md)：维度与时间输入、初始化、页内筛选、期间文字、时间窗口和兼容用法 |
 | 查询依赖专题 | [级联查询](docs/cascading-queries.md)：结果绑定、请求顺序、明细完整性、计算与完整示例 |
-| 集成应用接入专题 | [报告导出与PDF下载](docs/report-export.md)：实例方法、下载范围、编码器、取消及失败处理 |
+| 集成应用接入专题 | [报告导出与PDF下载](docs/report-export.md)：内置下载、后台编码、运行环境及失败处理 |
 | 模块语义源与生成参考 | `docs/page-metadata/`维护作者语义；[模块参考](contracts/metriccanvas/page/reference/README.md)提供Schema生成的字段表、分支、合法示例和反例，同时分发到Authoring Bundle与Skill |
 
 [机器索引](contracts/metriccanvas/page/reference/index.json)记录Schema位置、模块与示例覆盖；[完整Schema](contracts/metriccanvas/page/reference/schema.json)与参考正文同时生成。修改模块语义或示例索引后运行 `pnpm authoring:contracts`，不要手工维护分发副本。
@@ -82,7 +82,7 @@
 
 ## 报告下载与完整导出
 
-Report 顶层页头可用 `reportHeader.props.pdfExport`（6.28）启用引擎内置 PDF 下载，并按需配置按钮名称和文件名；声明、默认值与示例见[报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628)。标准下载由引擎按原有布局连续保存，采用零外边距；集成应用也可通过 `withExportView` 自行消费静态视图并负责编码与保存。整页下载保留成功取得的内容，部分取数失败不阻断其余内容；下载成功不代表数据完整。公共方法、下载范围、限制与演示统一见[报告导出与PDF下载接入](docs/report-export.md)。
+Report 顶层页头可用 `reportHeader.props.pdfExport`（6.28）启用引擎内置 PDF 下载，并按需配置按钮名称和文件名；声明、默认值与示例见[报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628)。标准下载由引擎按原有布局连续保存，采用零外边距；主线程分批准备画面，Web Worker负责编码，移除取消按钮和旧withExportView入口。整页下载保留成功取得的内容，部分取数失败不阻断其余内容；下载成功不代表数据完整。下载范围、限制与演示统一见[报告导出与PDF下载接入](docs/report-export.md)。
 
 ## 版本、初始化与持久化
 

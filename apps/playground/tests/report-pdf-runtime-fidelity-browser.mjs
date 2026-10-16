@@ -62,7 +62,12 @@ try {
   for (const id of ['cover', 'metrics', 'nested', 'charts']) {
     const screen = result.screen.find(section => section.id === id);
     const prepared = result.prepared.find(section => section.id === id);
-    sameBoxes(prepared.cells, screen.cells);
+    // The supported action adds a 60px toolbar to the live header; export omits it.
+    if(id==='cover'){
+      const toolbarHeight=await page.locator('#runtime-fidelity [data-report-toolbar]').evaluate(el=>el.getBoundingClientRect().height);
+      const adjusted=screen.cells.map((box,index)=>({...box,top:index?box.top-toolbarHeight:box.top,height:index?box.height:box.height-toolbarHeight}));
+      sameBoxes(prepared.cells,adjusted);
+    } else sameBoxes(prepared.cells, screen.cells);
   }
   if (width > 1050) expect(result.prepared.find(section => section.id === 'metrics').cells[0].top).toBe(result.prepared.find(section => section.id === 'metrics').cells[2].top);
   expect(errors).toEqual([]);

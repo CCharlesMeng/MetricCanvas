@@ -21,7 +21,6 @@
     {#if showPdf && pdf}
       <div class="pdf-actions">
         <button type="button" class="pdf-download" data-report-pdf-download disabled={pdf.busy} aria-busy={pdf.busy} aria-live="polite" title={pdf.error ? `导出失败：${pdf.error}` : undefined} onclick={() => pdf.download(props)}>{pdf.busy ? (pdf.message || '正在准备报告…') : pdf.error ? '下载失败，重试' : (props.pdfExport?.label?.trim() || '下载 PDF')}</button>
-        {#if pdf.busy}<button type="button" data-report-pdf-cancel onclick={() => pdf.cancel()}>取消</button>{/if}
       </div>
     {/if}
   </div>

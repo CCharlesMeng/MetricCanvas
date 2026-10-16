@@ -5,14 +5,12 @@ import { prepareExportSnapshots, ExportViewError, EXPORT_PREPARATION_TIMEOUT_MS 
 import ExportView from './ExportView.svelte';
 import type { ExportRenderState } from './export-render-state';
 
-import type { ExportViewConsumer, ExportViewOptions } from './export-types';
+import { reportScheduler } from './report-scheduler';
+interface ReportView {target:HTMLElement;signal:AbortSignal}
 
-export async function withPreparedExportView<T>(input:{state:ExportRenderState;queries:ReadonlyMap<string,EffectiveQuery>;gateway:RuntimeDataGateway;sourceRoot:HTMLElement;controller:AbortController;program?:import('@metriccanvas/data-execution/runtime').SourceProgram}, consume:ExportViewConsumer<T>,options:ExportViewOptions={}):Promise<T> {
+export async function withReportView<T>(input:{state:ExportRenderState;queries:ReadonlyMap<string,EffectiveQuery>;gateway:RuntimeDataGateway;sourceRoot:HTMLElement;controller:AbortController;program?:import('@metriccanvas/data-execution/runtime').SourceProgram}, consume:(view:ReportView)=>Promise<T>):Promise<T> {
   const {state,controller,sourceRoot}=input;
   const signal=controller.signal;
-  const abort=()=>controller.abort(new ExportViewError('EXPORT_CANCELLED','导出已取消'));
-  options.signal?.addEventListener('abort',abort,{once:true});
-  if(options.signal?.aborted)abort();
   const timer=setTimeout(()=>controller.abort(new ExportViewError('EXPORT_TIMEOUT','导出准备超过 60 秒')),EXPORT_PREPARATION_TIMEOUT_MS);
   const holder=sourceRoot.ownerDocument.createElement('div');
   holder.dataset.metriccanvasExportStage='';
@@ -33,6 +31,7 @@ export async function withPreparedExportView<T>(input:{state:ExportRenderState;q
   const gap=sectionStyle?.gap??'16px';
   const root=sourceRoot.getRootNode();
   const parent=root instanceof ShadowRoot?root:sourceRoot.ownerDocument.body;
+  const objectUrls:string[]=[];
   let instance:ReturnType<typeof mount>|undefined;
   try {
     const prepared=await abortable(prepareExportSnapshots(state.page,input.gateway,input.queries,state.filters,signal,undefined,state.currentYear,[],state.sourceViews,input.program,{allowPartial:true}),signal);
@@ -54,14 +53,14 @@ export async function withPreparedExportView<T>(input:{state:ExportRenderState;q
     await tick();
     const target=holder.querySelector<HTMLElement>('[data-export-view]');
     if(!target) throw new ExportViewError('EXPORT_RENDER_FAILED','导出视图未挂载');
-    await abortable(prepareDom(target,signal),signal);
+    await abortable(prepareDom(target,signal,objectUrls),signal);
     signal.throwIfAborted();
     clearTimeout(timer); // Host PDF encoding and saving are outside the engine's deadline.
-    return await abortable(consume({target,pageId:state.page.id,paper:'A4',wideElements:Array.from(target.querySelectorAll<HTMLElement>('[data-export-orientation="landscape"]')),signal}),signal);
+    return await abortable(consume({target,signal}),signal);
   } finally {
     clearTimeout(timer);
-    options.signal?.removeEventListener('abort',abort);
     controller.abort(new ExportViewError('EXPORT_CANCELLED','导出视图生命周期已结束'));
+    for(const url of objectUrls)URL.revokeObjectURL(url);
     try {if(instance)await unmount(instance);} finally {holder.remove();}
   }
 }
@@ -78,7 +77,7 @@ async function frame(signal:AbortSignal) {
   await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));
   signal.throwIfAborted();
 }
-async function prepareDom(target:HTMLElement,signal:AbortSignal) {
+async function prepareDom(target:HTMLElement,signal:AbortSignal,objectUrls:string[]) {
   await target.ownerDocument.fonts.ready;
   await frame(signal); await frame(signal);
   const style=getComputedStyle(target);
@@ -98,16 +97,22 @@ async function prepareDom(target:HTMLElement,signal:AbortSignal) {
   await frame(signal); await frame(signal);
   // Wait for all mounted charts to finish their static option and responsive resize.
   while(target.querySelector('[data-export-pending="true"]')||Array.from(target.querySelectorAll<HTMLElement>('[data-export-chart]')).some(chart=>chart.dataset.exportChartReady!=='true')) await frame(signal);
+  const pause=reportScheduler(signal);
   for(const chart of target.querySelectorAll<HTMLElement>('[data-export-chart]')) {
-    const images=Array.from(chart.querySelectorAll<HTMLCanvasElement>('canvas')).map(canvas=>{
+    const images:HTMLImageElement[]=[];
+    for(const canvas of chart.querySelectorAll<HTMLCanvasElement>('canvas')) {
+      const pending=pause();if(pending)await pending;
       const image=target.ownerDocument.createElement('img');
-      try {image.src=canvas.toDataURL('image/png');}
+      try {
+        const blob=await new Promise<Blob>((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(Error('图表图片编码失败')),'image/png'));
+        image.src=URL.createObjectURL(blob);objectUrls.push(image.src);
+      }
       catch {throw new ExportViewError('EXPORT_RENDER_FAILED','图表画布无法生成静态导出图像');}
       image.style.cssText=canvas.style.cssText;
       image.style.width=`${canvas.getBoundingClientRect().width}px`;
       image.style.height=`${canvas.getBoundingClientRect().height}px`;
-      image.alt='图表';return image;
-    });
+      image.alt='图表';images.push(image);
+    }
     chart.dispatchEvent(new Event('metriccanvas:freeze-export-chart'));
     chart.replaceChildren(...images);
   }

@@ -94,7 +94,7 @@
 
 [SDT月报](sdt/commercial-sdt-efficiency-ultimate-monthly.json)可在`http://localhost:5173/pages/commercial-sdt-efficiency-ultimate-monthly`预览，目录中的经营分析分组提供入口；下载文件名包含已应用月份，业务数据仍依赖DQE。页面仓库现在递归读取pages子目录。
 
-按钮使用白底描边，准备/生成状态在按钮内显示，成功或取消后恢复配置名称；失败可重试，悬停可看原因。本批次按用户要求未运行测试或构建。
+按钮使用白底描边，准备/生成状态在按钮内显示，成功后恢复配置名称，不提供取消按钮；失败可重试，悬停可看原因。自动回归通过内置下载入口检查Worker、实际文件和临时资源清理；真实DQE与部署另验。
 
 ## Dashboard 期间筛选
 
@@ -110,7 +110,7 @@
 
 [report-pdf-export.json](report-pdf-export.json)（页面 id：`report-pdf-export`，页面试验场 `/pages/report-pdf-export`）使用纯 inline 合成数据，无外部网关。顶部更改月份后点击“下载经营报告”，预期下载包含全部45行的多页PDF，文件名和正文期间使用点击时已应用的月份；日期与下载工具带不进入PDF。第二个页头不配置日期，`pdfExport: {}` 显示默认“下载 PDF”；最后一个页头未配置导出，不显示按钮。点击任意按钮均下载整页，文件名取触发按钮所在页头的配置或标题。
 
-取消、生成失败、实例更新/销毁、并发和宽内容由对应行为回归覆盖；单个不可拆分块高于一页时显示明确错误，不下载部分文件。本次按用户要求未执行验收，不代表真实DQE、内网浏览器或部署已验证。
+生成失败、实例更新/销毁、并发和宽内容由对应行为回归覆盖；高于一页的块按原布局连续切片。图片和PDF编码在Worker，DOM按时间预算分批处理；无取消入口，旧withExportView已移除。浏览器需要Worker/ImageBitmap/OffscreenCanvas及允许Blob Worker的CSP。合成数据验收不代表真实DQE、内网浏览器或部署已验证。
 ## Dashboard 图表独立筛选
 
 - 页面：[chart-local-filter-page.json](chart-local-filter-page.json)，页面试验场「验收样例」，入口 `/pages/chart-local-filter-page`。启动 `pnpm dev:dqe`，数据由本地 DQE Sim 提供，为固定合成数据。
@@ -118,5 +118,5 @@
 - 将订单切到海外：只重新查询订单，图中从国内一组/二组变为海外一组/二组；其他三个筛选和全区域对照图保持原值。收入与地图也能独立切换。
 - 渠道切到“欧洲（空结果）”：图表为空，但标题和筛选仍可操作；切回亚太恢复两组数据。查询失败同样保留筛选。
 - URL 带独立筛选值，重开保留选择；未知值或多值 URL 回退各图默认项。静态导出保留捕获时的选项名称与数据，去掉按钮交互。宽/窄屏中控件均在图表左上角，不进入公共工具栏。
-- 自动验收：`packages/embed/tests/browser/chart-local-filter.spec.ts` 直接加载本页面，通过真实浏览器与网关检查请求范围、候选值请求缺席、URL、空结果和导出。协议反例覆盖共享源、跨查询依赖、非法初值及版本下限。
+- 自动验收：`packages/embed/tests/browser/chart-local-filter.spec.ts` 直接加载本页面，通过真实浏览器与网关检查请求范围、候选值请求缺席、URL和空结果。静态导出投影由引擎内部测试覆盖。协议反例覆盖共享源、跨查询依赖、非法初值及版本下限。
 - 协议：[图表独立筛选](../docs/page-metadata/filters.md#图表独立筛选629)。这些本地证据不代表真实 DQE/Relay、DS 模型或部署验收。

@@ -50,12 +50,15 @@ try {
   download = page.waitForEvent('download');
   const seams = await page.evaluate(async () => {
     const { downloadReportPdf } = await import('/src/lib/report-pdf-client.ts');
-    const original = HTMLCanvasElement.prototype.toDataURL;
+    const original = Worker.prototype.postMessage;
     const slices = [];
-    HTMLCanvasElement.prototype.toDataURL = function (...args) {
-      const data = original.apply(this, args);
-      if (this.width === 1436 && document.querySelector('[data-report-pdf-frame]')) slices.push(data);
-      return data;
+    Worker.prototype.postMessage = function (data,...args) {
+      if(data.kind==='bitmap')for(const slice of data.slices){
+        const canvas=document.createElement('canvas');canvas.width=data.bitmap.width;canvas.height=slice.sourceBottom-slice.sourceTop;
+        canvas.getContext('2d').drawImage(data.bitmap,0,slice.sourceTop,canvas.width,canvas.height,0,0,canvas.width,canvas.height);
+        slices.push(canvas.toDataURL('image/png'));
+      }
+      return original.call(this,data,...args);
     };
     const source = document.createElement('div'); source.dataset.exportView = ''; source.style.cssText = 'width:718px;height:3500px;margin:0;padding:0';
     const raster = document.createElement('canvas'); raster.width = 718; raster.height = 3500;
@@ -80,7 +83,7 @@ try {
         }
       }
       return { ...pdf, sourceRows: row / 2, mismatch };
-    } finally { source.remove(); HTMLCanvasElement.prototype.toDataURL = original; }
+    } finally { source.remove(); Worker.prototype.postMessage = original; }
   });
   await (await download).saveAs(path.join(output, 'seams.pdf'));
   expect(seams.sourceRows).toBe(3500);

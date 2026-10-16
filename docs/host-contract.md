@@ -234,4 +234,4 @@ const runtime = MetricCanvas.mount('#dashboard', {
 
 ## 报告完整导出
 
-Report页头通过`pdfExport: {label?, filename?}`启用引擎内置PDF下载，与日期控件共用工具带；集成应用无需安装编码库，自定义输出仍可使用实例的`withExportView`消费静态DOM。引擎重取捕获查询作用域内的完整数据、展开正文、移除日期输入、固定资源并在方法结束后清理。见 [公共方法与完整性边界](report-export.md)。
+Report页头通过`pdfExport: {label?, filename?}`启用引擎内置PDF下载，与日期控件共用工具带；集成应用无需安装编码库，旧`withExportView`入口已移除。编码由内嵌Dedicated Worker执行，主线程分批准备DOM；宿主浏览器支持Worker、ImageBitmap、OffscreenCanvas，并允许`worker-src blob:`。引擎重取捕获查询作用域内的完整数据、展开正文、移除日期输入、固定资源并在任务结束后清理。见 [内置下载与完整性边界](report-export.md)。

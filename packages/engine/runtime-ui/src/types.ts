@@ -91,5 +91,3 @@ export interface RuntimeViewProps {
   /** 精确修订预览标识，仅用于查询诊断定位。 */
   pageRevisionId?: string;
 }
-
-export type { ExportViewOptions, PreparedExportView, ExportViewConsumer } from './export-types';

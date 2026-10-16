@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 for (const width of [1440, 390]) {
-  test(`${width}: report title follows applied month, range and clear; export freezes text`, async ({ page }, testInfo) => {
+  test(`${width}: report title follows applied month, range and clear`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -22,12 +22,8 @@ for (const width of [1440, 390]) {
     await end.fill('2026-02');
     await end.press('Enter');
     await expect(page.locator('.as-of')).toHaveText('对照期间：2026-02 对照分析');
-    const captured = await page.evaluate(async () => {
-      let text = '';
-      await window.runtime.withExportView(async view => { text = view.target.querySelector('h1')?.textContent ?? ''; });
-      return text;
-    });
-    expect(captured).toBe('2026-10 经营分析报告');
+    // Export assertions run through the configured Report PDF action (report-pdf.spec.ts).
+    expect(await page.evaluate(() => 'withExportView' in window.runtime)).toBe(false);
     await month.hover();
     await page.getByRole('button', { name: '清除时间点', exact: true }).click();
     await expect(title).toHaveText('全部期间 经营分析报告');
