@@ -64,6 +64,7 @@ export function normalizeAuthoringDropTarget(
 
 export type AuthoringIntent =
   | { type: 'select_component'; locator: AuthoringComponentLocator }
+  | { type: 'delete_component'; locator: AuthoringComponentLocator }
   | {
       type: 'move_component';
       locator: AuthoringComponentLocator;
@@ -82,8 +83,10 @@ export interface AuthoringOptions {
   /**
    * 是否在画布内展示选中组件的行内控件条(标题/宽度)。缺省 true 保持
    * canvas 编辑器既有行为;工作台等把编辑收进外部配置面板的宿主传 false,
-   * 选中与拖拽交互不受影响。
+   * 选中与拖拽交互不受影响；false 时选中组件旁显示移动及已启用的删除。
    */
   inlineControls?: boolean;
+  /** 集成应用接管删除与撤销时显式启用；缺省不展示删除操作。 */
+  allowDelete?: boolean;
   onintent(intent: AuthoringIntent): void;
 }

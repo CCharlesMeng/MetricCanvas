@@ -1,0 +1,10 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run tests/local-authoring-skill.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts apps/platform/tests/workbench/canvas-experience.test.ts apps/platform/tests/workbench/document-edit.test.ts apps/platform/tests/workbench/authoring-coordinator.test.ts apps/platform/tests/workbench/authoring-sync.test.ts apps/platform/tests/workbench/property-edit.test.ts packages/metric-canvas/tests/authoring-layout.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/platform-canvas-experience/DataDashboard
+
+
+ Test Files  9 passed (9)
+      Tests  96 passed (96)
+   Start at  12:25:42
+   Duration  186.15s (transform 1.56s, setup 0ms, import 7.79s, tests 191.05s, environment 0ms)
+

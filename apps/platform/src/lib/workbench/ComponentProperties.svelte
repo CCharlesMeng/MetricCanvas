@@ -31,8 +31,8 @@
   </section>
 {/if}
 <style>
-  section { display: grid; gap: 16px; }
-  h5 { margin: 0; color: #595959; font-size: 14px; }
-  .property-field { display: grid; gap: 8px; font-size: 14px; color: #595959; }
-  small { color: var(--muted); }
+  section { display: grid; gap: 14px; padding-bottom: 18px; border-bottom: 1px solid #eef0f4; }
+  h5 { margin: 0; color: #303b4d; font-size: 12px; }
+  .property-field { display: grid; gap: 7px; font-size: 12px; color: #647084; }
+  small { color: var(--muted); font-size: 11px; line-height: 1.6; }
 </style>

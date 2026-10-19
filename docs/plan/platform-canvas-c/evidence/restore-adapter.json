@@ -1,0 +1,310 @@
+{
+  "schema_version": 2,
+  "rules": {
+    "R1-1-back": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "aside[aria-label=\"检查器\"] .selection-header .back-link"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-1-type": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "aside[aria-label=\"检查器\"] .selection-type"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-1-summary": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "aside[aria-label=\"检查器\"] .selbar"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-1-duplicate-title": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "aside[aria-label=\"检查器\"] .selbar b"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-1-technical-id": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "aside[aria-label=\"检查器\"] .selbar small"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-1-actions": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "aside[aria-label=\"检查器\"] .component-actions button"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-1-editable-title": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "aside[aria-label=\"检查器\"] input[aria-label=\"组件标题\"]"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-2-toolbar": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".selection-actions:popover-open"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-2-title": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".selection-actions:popover-open .selection-title"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-2-buttons": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".selection-actions:popover-open button"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-3-selection": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".authoring-selected"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-3-preview-selection": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".authoring-selected"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-3-preview-toolbar": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".selection-actions"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-3-render-selection": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".authoring-selected"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R1-3-render-toolbar": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".selection-actions"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R2-1-back": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "aside[aria-label=\"检查器\"] .selection-header .back-link"
+        }
+      ],
+      "collect": {
+        "kind": "text",
+        "single": true
+      }
+    },
+    "R2-1-type": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "aside[aria-label=\"检查器\"] .selection-type"
+        }
+      ],
+      "collect": {
+        "kind": "text",
+        "single": true
+      }
+    },
+    "R2-1-tabs": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "aside[aria-label=\"检查器\"] .panel-tabs button"
+        }
+      ],
+      "collect": {
+        "kind": "order"
+      }
+    },
+    "R2-2-buttons": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".selection-actions:popover-open button"
+        }
+      ],
+      "collect": {
+        "kind": "text",
+        "single": false
+      }
+    },
+    "R4-1-radius": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".authoring-selected"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "border-top-left-radius"
+        ]
+      }
+    },
+    "R4-1-padding": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".authoring-selected"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "padding-top"
+        ],
+        "pseudo": "::after"
+      }
+    },
+    "R4-1-gradient": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".authoring-selected"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "background-image"
+        ],
+        "pseudo": "::after"
+      }
+    },
+    "R4-1-pointer-events": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".authoring-selected"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "pointer-events"
+        ],
+        "pseudo": "::after"
+      }
+    },
+    "R4-1-fill": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".authoring-selected"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "background-image"
+        ]
+      }
+    },
+    "R4-1-shadow": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".authoring-selected"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "box-shadow"
+        ]
+      }
+    }
+  }
+}

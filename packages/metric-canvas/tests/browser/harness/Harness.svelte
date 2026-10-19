@@ -5,14 +5,15 @@
 
   const params = new URLSearchParams(location.search);
   const layout = params.get('layout') === 'dashboard' ? 'dashboard' : 'report';
-  const { layout: _defaultLayout, ...content } = document;
+  const { layout: _defaultLayout, ...baseContent } = document;
+  const content = { ...baseContent, sections: baseContent.sections.map(section => ({ ...section, container: params.get('container') === 'panel' ? 'panel' : section.container })) };
   const initial = params.get('schemaVersion') === '6.0'
     ? { ...content, schemaVersion: '6.5', layoutForm: layout }
     : { ...content, schemaVersion: '6.5', layout };
   let current = $state.raw(validDocument(initial));
   let selected = $state<AuthoringComponentLocator>();
   let enabled = $state(true);
-  let inlineControls = $state(true);
+  let inlineControls = $state(params.get('controls') !== 'contextual');
   let mounted = $state(true);
   let draftSections = $state<AuthoringDraftSection[]>();
   let intents = $state<AuthoringIntent[]>([]);
@@ -62,7 +63,7 @@
 <output data-intents>{JSON.stringify(intents)}</output>
 <div id="canvas">
   {#if mounted}
-    <MetricCanvas document={current} dataGateway={canvasGateway} {selected} {enabled} {inlineControls} {draftSections} {onintent} />
+    <MetricCanvas document={current} dataGateway={canvasGateway} {selected} {enabled} {inlineControls} allowDelete={params.get('delete') === 'true'} {draftSections} {onintent} />
   {/if}
 </div>
 <div id="runtime"><RuntimeView document={current} dataGateway={runtimeGateway} /></div>

@@ -31,7 +31,7 @@
   import { workbenchPageViewModel } from './workbench/transient-page';
   import {
     changeComponentType, componentCandidatesFor,
-    editComponent, editPageTitle, locatorOfComponent, moveComponent,
+    deleteComponent, editComponent, editPageTitle, locatorOfComponent, moveComponent,
     type ComponentLocator, type DocumentEditResult
   } from './workbench/document-edit';
   import { editReportDate } from './workbench/report-date-edit';
@@ -337,6 +337,8 @@
           intent.locator.componentId
         );
       }
+    } else if (intent.type === 'delete_component') {
+      applyDocumentEdit(deleteComponent(currentDraft, intent.locator));
     } else if (intent.type === 'edit_component') {
       applyDocumentEdit(editComponent(currentDraft, intent.locator, intent.edit));
     }
@@ -503,6 +505,7 @@
           selected={selectedComponent ?? undefined}
           draftSections={currentDraft?.authoringSections}
           inlineControls={false}
+          allowDelete
           onintent={handleAuthoringIntent}
         />
       {:else}
@@ -528,6 +531,7 @@
       {selectedView}
       {selectedSpan}
       {selectedColumnCount}
+      onClearSelection={() => selectedComponent = null}
       dateDraft={currentDraft}
       onDateEdit={(edit)=>{if(currentDraft&&!previewOpen&&!loading&&(currentDraft.pageDocument.layout==='dashboard'||selectedComponent))applyDocumentEdit(editReportDate(currentDraft,currentDraft.pageDocument.layout==='dashboard'?null:selectedComponent,edit));}}
       properties={propertyControls(currentDraft, selectedComponent)}

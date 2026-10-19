@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "contract_sha256": "da453e5e1298025859a47985eecbedf3b68bd56b55df8b9ee33b5deb64ce7921",
+  "page_available": true,
+  "observed": {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "route": "/dialogue?page=platform-canvas-experience"
+  },
+  "environment": {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "dpr": 1,
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+    "scroll": {
+      "width": 1440,
+      "height": 1000
+    }
+  },
+  "rules": {
+    "R1-3-preview-selection": {
+      "status": "ok",
+      "actual": 0,
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".authoring-selected"
+      },
+      "matched": 0
+    },
+    "R1-3-preview-toolbar": {
+      "status": "ok",
+      "actual": 0,
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".selection-actions"
+      },
+      "matched": 0
+    }
+  }
+}

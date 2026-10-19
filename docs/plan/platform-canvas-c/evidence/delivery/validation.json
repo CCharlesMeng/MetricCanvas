@@ -1,0 +1,165 @@
+{
+  "validated_checkout": "af712072cd743178f44dd0f27c2d1c2877a10a2c",
+  "integrated_main_base": "8ff56a268a659dc026ec76b90d6bcc4353c48d5d",
+  "scope": "Approved Platform canvas C; inherited main report export changes preserved; own canvas/workbench source unchanged",
+  "inputs": [
+    {
+      "path": "PAGE-METADATA.md",
+      "sha256": "5a7440540424f059ccf72a583a9fa5249dd6710d308a289ec373d20578b5509b"
+    },
+    {
+      "path": "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "sha256": "d7dd63f4bb1a257c334000b4c73ac4a8d589f6812dccd6ef1faf9f4e456448e2"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/ComponentProperties.svelte",
+      "sha256": "a37a3236ae1543eba5a8755357fa4e8bddf226c2aace2d8b44e63dd0aee09ac2"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/Inspector.svelte",
+      "sha256": "ec4b86ecd8fe7a7a50f98b60532b87306e407390ebacd127b814f2eb9ec8044c"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/document-edit.ts",
+      "sha256": "a06477193efea396ed8e3acdd2ce1309e866d07469829095ee9270c0d01ac3ee"
+    },
+    {
+      "path": "apps/platform/tests/workbench/canvas-experience-browser.mjs",
+      "sha256": "69fc68e2149347a3c2b668a50d762592d965fd3f3df8ed64a35ab3a68a384cc6"
+    },
+    {
+      "path": "apps/platform/tests/workbench/canvas-experience.test.ts",
+      "sha256": "452006df80f43cded6520cb000433fb1b9c3592ee5e7bca233b289d857c7dfbf"
+    },
+    {
+      "path": "apps/playground/page-catalog.json",
+      "sha256": "142f2952534303f951be0eac3307d4f433efe2fc5e844dd00d05d979f0d70ed6"
+    },
+    {
+      "path": "contracts/metriccanvas/manifest.json",
+      "sha256": "bd421fafd8185950ac58c2a77d5f07e3df44c6f5a51ac5441303ff4b834c84de"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/sections-and-layout.md",
+      "sha256": "c9767c84e5bfd039f63a1d71a81f923b4820acbc8962a1a6a291c878be849a12"
+    },
+    {
+      "path": "docs/page-metadata/sections-and-layout.md",
+      "sha256": "c5aaf3c97819fd4103578365bfab02dec0cdbb3791701c19e84e4f3dfd155e92"
+    },
+    {
+      "path": "metriccanvas-authoring/bundle.lock.json",
+      "sha256": "e332859a7f27f2fd281d8cee1c8716211d436cd292b43587f8b1bc80094afd0b"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-lock.json",
+      "sha256": "76bfc680681a70fe56a6d17fac8b3158b8635bc1b13aa6c047b67471c10baccb"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/manifest.json",
+      "sha256": "bd421fafd8185950ac58c2a77d5f07e3df44c6f5a51ac5441303ff4b834c84de"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/sections-and-layout.md",
+      "sha256": "c9767c84e5bfd039f63a1d71a81f923b4820acbc8962a1a6a291c878be849a12"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/knowledge.json",
+      "sha256": "9bc049009b3e9db6ff3cdc6242dc80eed58a0548819fdfd06aa67ff5ae38b2fe"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/sections-and-layout.md",
+      "sha256": "5c45bffa9a24719dc6093d59fadc3f5950edac62c8a6a961d3c0681ce14833f4"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/sections-and-layout.md",
+      "sha256": "c9767c84e5bfd039f63a1d71a81f923b4820acbc8962a1a6a291c878be849a12"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/RuntimeSection.svelte",
+      "sha256": "75042153f7a44c8d2714e460e1822678ded42f556ab41b5e3183275f2f28c1b8"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "sha256": "2491937801c85d98a3cfc83448955353e8d076b88c6d00a87e467af5293a3cb9"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/RuntimeView.svelte",
+      "sha256": "7e8f6ee25db29818282f608734fb5324212edafb10b706dfd1f5c12405533f1f"
+    },
+    {
+      "path": "packages/metric-canvas/package.json",
+      "sha256": "b1953a1934cb115a9110fb5dba24fc672851ac00f71cf9d5e9647bb7c2c095ed"
+    },
+    {
+      "path": "packages/metric-canvas/src/AuthoringSection.svelte",
+      "sha256": "6f5226f962968ce96ac613e12c2146fe8ca7510a79b370bd9ed7cf41e01ca7ef"
+    },
+    {
+      "path": "packages/metric-canvas/src/CanvasSelectionActions.svelte",
+      "sha256": "f4a30bd473da02c267f2e26f0a7b1364a5d2c5840797f3f95db2fd0997af974a"
+    },
+    {
+      "path": "packages/metric-canvas/src/MetricCanvas.svelte",
+      "sha256": "7ed197e74242a9e712fd68bf242b446405cdc8a77c49bea810dd6658dad06e91"
+    },
+    {
+      "path": "packages/metric-canvas/src/authoring-layout.ts",
+      "sha256": "2f781372b80d8cfa918fba0d8c3109b89a95966b137cd8a6328ef09eb42b933c"
+    },
+    {
+      "path": "packages/metric-canvas/src/selection-actions.ts",
+      "sha256": "c11d24525abd59fa76a07fae49bfc811bdc25dd08f0ad7cde97f9f402d414a1b"
+    },
+    {
+      "path": "packages/metric-canvas/src/types.ts",
+      "sha256": "d8f5a78c15fe4362bef47eb0d7ba06837b106d86c82c86e85294ca00520d02e7"
+    },
+    {
+      "path": "packages/metric-canvas/tests/browser/harness/Harness.svelte",
+      "sha256": "d69f98199b4c880ce252270710aedf500f4476bb029608b90b014b04527dd7a9"
+    },
+    {
+      "path": "packages/metric-canvas/tests/browser/metric-canvas.spec.ts",
+      "sha256": "7d340dbef7fb28f0e029fddbc9b77af9cc541cb5cad7ac8c7fb65ecadf1abad5"
+    },
+    {
+      "path": "pages/README.md",
+      "sha256": "dcac18c361b8062f6209cb21465a3b4a6f3cf4998f0f50cc24998b1db943651b"
+    },
+    {
+      "path": "pages/platform-canvas-experience.json",
+      "sha256": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "63f17f9b6cf5abb75bdcb9217e01bdba3d12ef2578403e256beb4316376d72a0"
+    }
+  ],
+  "results": {
+    "types": "passed",
+    "platform_build": "passed; existing chunk size warning",
+    "canvas_package_build": "passed",
+    "targeted_tests": "9 files, 98 passed",
+    "canvas_browser": "15 passed",
+    "workbench_browser": "full native drag/move/delete/undo/save flow passed with mocked assets/save",
+    "restore": "25 green, 0 red, 0 yellow",
+    "contracts": "751 product, 4 authoring, 1 interface; 2709 bundle digests",
+    "pages": "29 passed"
+  },
+  "boundaries": [
+    "Original dirty checkout untouched",
+    "No real DQE/Relay/Java/model/deployment acceptance"
+  ],
+  "logs": [
+    "docs/plan/platform-canvas-c/evidence/delivery/browser.log",
+    "docs/plan/platform-canvas-c/evidence/delivery/contracts.log",
+    "docs/plan/platform-canvas-c/evidence/delivery/restore-preview.json",
+    "docs/plan/platform-canvas-c/evidence/delivery/restore-render.json",
+    "docs/plan/platform-canvas-c/evidence/delivery/restore-report.json",
+    "docs/plan/platform-canvas-c/evidence/delivery/restore-selected.json",
+    "docs/plan/platform-canvas-c/evidence/delivery/restore.log",
+    "docs/plan/platform-canvas-c/evidence/delivery/tests.log",
+    "docs/plan/platform-canvas-c/evidence/delivery/types-build.log"
+  ]
+}

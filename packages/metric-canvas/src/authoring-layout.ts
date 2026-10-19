@@ -14,16 +14,16 @@ export function authoringDropSlots(componentCount: number): number[] {
 }
 
 /**
- * 把组件主体分成前后两个落点区域。用户不需要精确命中边缘插槽：拖到
- * 组件左半区表示插到它前面，右半区表示插到它后面。
+ * 按主排列轴的中点区分组件前后插槽。整行组件传入纵向坐标，
+ * 同行组件传入横向坐标，不需要精确命中边缘插槽。
  */
 export function authoringComponentDropIndex(
   componentIndex: number,
-  pointerX: number,
-  componentLeft: number,
-  componentWidth: number
+  pointer: number,
+  start: number,
+  size: number
 ): number {
-  return pointerX < componentLeft + componentWidth / 2
+  return pointer < start + size / 2
     ? componentIndex
     : componentIndex + 1;
 }

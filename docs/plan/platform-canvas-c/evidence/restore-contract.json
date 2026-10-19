@@ -1,0 +1,219 @@
+{
+  "baseline_sha256": "52389f28f94de2334f6729e1bc70726f612f934158a5cadc6a89adb26211d59b",
+  "contract_sha256": "da453e5e1298025859a47985eecbedf3b68bd56b55df8b9ee33b5deb64ce7921",
+  "rules": [
+    {
+      "baseline_id": "R1-1",
+      "check_mode": "exact",
+      "expected": 1,
+      "id": "R1-1-back",
+      "subject": "R1-1-back"
+    },
+    {
+      "baseline_id": "R1-1",
+      "check_mode": "exact",
+      "expected": 1,
+      "id": "R1-1-type",
+      "subject": "R1-1-type"
+    },
+    {
+      "baseline_id": "R1-1",
+      "check_mode": "exact",
+      "expected": 0,
+      "id": "R1-1-summary",
+      "subject": "R1-1-summary"
+    },
+    {
+      "baseline_id": "R1-1",
+      "check_mode": "exact",
+      "expected": 0,
+      "id": "R1-1-duplicate-title",
+      "subject": "R1-1-duplicate-title"
+    },
+    {
+      "baseline_id": "R1-1",
+      "check_mode": "exact",
+      "expected": 0,
+      "id": "R1-1-technical-id",
+      "subject": "R1-1-technical-id"
+    },
+    {
+      "baseline_id": "R1-1",
+      "check_mode": "exact",
+      "expected": 0,
+      "id": "R1-1-actions",
+      "subject": "R1-1-actions"
+    },
+    {
+      "baseline_id": "R1-1",
+      "check_mode": "exact",
+      "expected": 1,
+      "id": "R1-1-editable-title",
+      "subject": "R1-1-editable-title"
+    },
+    {
+      "baseline_id": "R1-2",
+      "check_mode": "exact",
+      "expected": 1,
+      "id": "R1-2-toolbar",
+      "subject": "R1-2-toolbar"
+    },
+    {
+      "baseline_id": "R1-2",
+      "check_mode": "exact",
+      "expected": 1,
+      "id": "R1-2-title",
+      "subject": "R1-2-title"
+    },
+    {
+      "baseline_id": "R1-2",
+      "check_mode": "exact",
+      "expected": 3,
+      "id": "R1-2-buttons",
+      "subject": "R1-2-buttons"
+    },
+    {
+      "baseline_id": "R1-3",
+      "check_mode": "exact",
+      "expected": 1,
+      "id": "R1-3-selection",
+      "subject": "R1-3-selection"
+    },
+    {
+      "baseline_id": "R1-3",
+      "check_mode": "exact",
+      "expected": 0,
+      "id": "R1-3-preview-selection",
+      "subject": "R1-3-preview-selection"
+    },
+    {
+      "baseline_id": "R1-3",
+      "check_mode": "exact",
+      "expected": 0,
+      "id": "R1-3-preview-toolbar",
+      "subject": "R1-3-preview-toolbar"
+    },
+    {
+      "baseline_id": "R1-3",
+      "check_mode": "exact",
+      "expected": 0,
+      "id": "R1-3-render-selection",
+      "subject": "R1-3-render-selection"
+    },
+    {
+      "baseline_id": "R1-3",
+      "check_mode": "exact",
+      "expected": 0,
+      "id": "R1-3-render-toolbar",
+      "subject": "R1-3-render-toolbar"
+    },
+    {
+      "baseline_id": "R2-1",
+      "check_mode": "exact",
+      "expected": "‹ 全部组件",
+      "id": "R2-1-back",
+      "subject": "R2-1-back"
+    },
+    {
+      "baseline_id": "R2-1",
+      "check_mode": "exact",
+      "expected": "文本属性",
+      "id": "R2-1-type",
+      "subject": "R2-1-type"
+    },
+    {
+      "baseline_id": "R2-1",
+      "check_mode": "exact",
+      "expected": [
+        "组件配置",
+        "页面设置"
+      ],
+      "id": "R2-1-tabs",
+      "subject": "R2-1-tabs"
+    },
+    {
+      "baseline_id": "R2-2",
+      "check_mode": "exact",
+      "expected": [
+        "↑ 上移",
+        "↓ 下移",
+        "删除"
+      ],
+      "id": "R2-2-buttons",
+      "subject": "R2-2-buttons"
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "numeric",
+      "expected": {
+        "border-top-left-radius": "6px"
+      },
+      "id": "R4-1-radius",
+      "subject": "R4-1-radius",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "numeric",
+      "expected": {
+        "padding-top": "1.5px"
+      },
+      "id": "R4-1-padding",
+      "subject": "R4-1-padding",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "numeric",
+      "expected": {
+        "background-image": "linear-gradient(118deg, rgb(23, 107, 250) 0%, rgb(51, 142, 255) 46%, rgb(104, 185, 255) 73%, rgb(51, 124, 240) 100%)"
+      },
+      "id": "R4-1-gradient",
+      "subject": "R4-1-gradient",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "numeric",
+      "expected": {
+        "pointer-events": "none"
+      },
+      "id": "R4-1-pointer-events",
+      "subject": "R4-1-pointer-events",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "numeric",
+      "expected": {
+        "background-image": "linear-gradient(118deg, rgba(29, 111, 255, 0.043), rgba(86, 174, 255, 0.01) 62%, rgba(0, 0, 0, 0))"
+      },
+      "id": "R4-1-fill",
+      "subject": "R4-1-fill",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "numeric",
+      "expected": {
+        "box-shadow": "rgba(29, 105, 218, 0.055) 0px 2px 9px 0px"
+      },
+      "id": "R4-1-shadow",
+      "subject": "R4-1-shadow",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    }
+  ],
+  "schema_version": 3
+}

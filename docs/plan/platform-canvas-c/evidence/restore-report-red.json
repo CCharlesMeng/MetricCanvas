@@ -1,0 +1,362 @@
+{
+  "contract_sha256": "da453e5e1298025859a47985eecbedf3b68bd56b55df8b9ee33b5deb64ce7921",
+  "entries": [
+    {
+      "actual": 0,
+      "comparison": {
+        "actual": 0,
+        "expected": 1
+      },
+      "expected": 1,
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R1-1-back",
+      "status": "red"
+    },
+    {
+      "actual": 0,
+      "comparison": {
+        "actual": 0,
+        "expected": 1
+      },
+      "expected": 1,
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R1-1-type",
+      "status": "red"
+    },
+    {
+      "actual": 1,
+      "comparison": {
+        "actual": 1,
+        "expected": 0
+      },
+      "expected": 0,
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R1-1-summary",
+      "status": "red"
+    },
+    {
+      "actual": 1,
+      "comparison": {
+        "actual": 1,
+        "expected": 0
+      },
+      "expected": 0,
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R1-1-duplicate-title",
+      "status": "red"
+    },
+    {
+      "actual": 1,
+      "comparison": {
+        "actual": 1,
+        "expected": 0
+      },
+      "expected": 0,
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R1-1-technical-id",
+      "status": "red"
+    },
+    {
+      "actual": 3,
+      "comparison": {
+        "actual": 3,
+        "expected": 0
+      },
+      "expected": 0,
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R1-1-actions",
+      "status": "red"
+    },
+    {
+      "actual": 1,
+      "rule_id": "R1-1-editable-title",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "comparison": {
+        "actual": 0,
+        "expected": 1
+      },
+      "expected": 1,
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R1-2-toolbar",
+      "status": "red"
+    },
+    {
+      "actual": 0,
+      "comparison": {
+        "actual": 0,
+        "expected": 1
+      },
+      "expected": 1,
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R1-2-title",
+      "status": "red"
+    },
+    {
+      "actual": 0,
+      "comparison": {
+        "actual": 0,
+        "expected": 3
+      },
+      "expected": 3,
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R1-2-buttons",
+      "status": "red"
+    },
+    {
+      "actual": 1,
+      "rule_id": "R1-3-selection",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R1-3-preview-selection",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R1-3-preview-toolbar",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R1-3-render-selection",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R1-3-render-toolbar",
+      "status": "green"
+    },
+    {
+      "actual": null,
+      "reasons": [
+        "no implementation locator matched"
+      ],
+      "rule_id": "R2-1-back",
+      "status": "red"
+    },
+    {
+      "actual": null,
+      "reasons": [
+        "no implementation locator matched"
+      ],
+      "rule_id": "R2-1-type",
+      "status": "red"
+    },
+    {
+      "actual": [
+        "组件配置",
+        "页面设置"
+      ],
+      "rule_id": "R2-1-tabs",
+      "status": "green"
+    },
+    {
+      "actual": null,
+      "reasons": [
+        "no implementation locator matched"
+      ],
+      "rule_id": "R2-2-buttons",
+      "status": "red"
+    },
+    {
+      "actual": {
+        "border-top-left-radius": "10px"
+      },
+      "comparison": {
+        "differences": [
+          {
+            "actual": 10.0,
+            "delta": 4.0,
+            "expected": 6.0,
+            "path": "$.border-top-left-radius"
+          }
+        ],
+        "tolerance_css_px": 0.0
+      },
+      "expected": {
+        "border-top-left-radius": "6px"
+      },
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R4-1-radius",
+      "status": "red"
+    },
+    {
+      "actual": {
+        "padding-top": "0px"
+      },
+      "comparison": {
+        "differences": [
+          {
+            "actual": 0.0,
+            "delta": 1.5,
+            "expected": 1.5,
+            "path": "$.padding-top"
+          }
+        ],
+        "tolerance_css_px": 0.0
+      },
+      "expected": {
+        "padding-top": "1.5px"
+      },
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R4-1-padding",
+      "status": "red"
+    },
+    {
+      "actual": {
+        "background-image": "none"
+      },
+      "comparison": {
+        "differences": [
+          {
+            "actual": "none",
+            "expected": "linear-gradient(118deg, rgb(23, 107, 250) 0%, rgb(51, 142, 255) 46%, rgb(104, 185, 255) 73%, rgb(51, 124, 240) 100%)",
+            "path": "$.background-image",
+            "reason": "not-numeric"
+          }
+        ],
+        "tolerance_css_px": 0.0
+      },
+      "expected": {
+        "background-image": "linear-gradient(118deg, rgb(23, 107, 250) 0%, rgb(51, 142, 255) 46%, rgb(104, 185, 255) 73%, rgb(51, 124, 240) 100%)"
+      },
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R4-1-gradient",
+      "status": "red"
+    },
+    {
+      "actual": {
+        "pointer-events": "auto"
+      },
+      "comparison": {
+        "differences": [
+          {
+            "actual": "auto",
+            "expected": "none",
+            "path": "$.pointer-events",
+            "reason": "not-numeric"
+          }
+        ],
+        "tolerance_css_px": 0.0
+      },
+      "expected": {
+        "pointer-events": "none"
+      },
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R4-1-pointer-events",
+      "status": "red"
+    },
+    {
+      "actual": {
+        "background-image": "none"
+      },
+      "comparison": {
+        "differences": [
+          {
+            "actual": "none",
+            "expected": "linear-gradient(118deg, rgba(29, 111, 255, 0.043), rgba(86, 174, 255, 0.01) 62%, rgba(0, 0, 0, 0))",
+            "path": "$.background-image",
+            "reason": "not-numeric"
+          }
+        ],
+        "tolerance_css_px": 0.0
+      },
+      "expected": {
+        "background-image": "linear-gradient(118deg, rgba(29, 111, 255, 0.043), rgba(86, 174, 255, 0.01) 62%, rgba(0, 0, 0, 0))"
+      },
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R4-1-fill",
+      "status": "red"
+    },
+    {
+      "actual": {
+        "box-shadow": "color(srgb 0.309804 0.27451 0.898039 / 0.18) 0px 0px 0px 3px"
+      },
+      "comparison": {
+        "differences": [
+          {
+            "actual": "color(srgb 0.309804 0.27451 0.898039 / 0.18) 0px 0px 0px 3px",
+            "expected": "rgba(29, 105, 218, 0.055) 0px 2px 9px 0px",
+            "path": "$.box-shadow",
+            "reason": "not-numeric"
+          }
+        ],
+        "tolerance_css_px": 0.0
+      },
+      "expected": {
+        "box-shadow": "rgba(29, 105, 218, 0.055) 0px 2px 9px 0px"
+      },
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "rule_id": "R4-1-shadow",
+      "status": "red"
+    }
+  ],
+  "observed": {
+    "captures": [
+      {
+        "route": "/dialogue?page=platform-canvas-experience",
+        "viewport": {
+          "height": 1000,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/dialogue?page=platform-canvas-experience",
+        "viewport": {
+          "height": 1000,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/dialogue?page=platform-canvas-experience",
+        "viewport": {
+          "height": 1000,
+          "width": 1440
+        }
+      }
+    ]
+  },
+  "overall": "red",
+  "phase": "red",
+  "schema_version": 3,
+  "summary": {
+    "green": 7,
+    "red": 18,
+    "total": 25,
+    "yellow": 0
+  }
+}

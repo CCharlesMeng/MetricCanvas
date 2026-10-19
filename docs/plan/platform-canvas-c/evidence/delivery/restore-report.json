@@ -1,0 +1,183 @@
+{
+  "contract_sha256": "da453e5e1298025859a47985eecbedf3b68bd56b55df8b9ee33b5deb64ce7921",
+  "entries": [
+    {
+      "actual": 1,
+      "rule_id": "R1-1-back",
+      "status": "green"
+    },
+    {
+      "actual": 1,
+      "rule_id": "R1-1-type",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R1-1-summary",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R1-1-duplicate-title",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R1-1-technical-id",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R1-1-actions",
+      "status": "green"
+    },
+    {
+      "actual": 1,
+      "rule_id": "R1-1-editable-title",
+      "status": "green"
+    },
+    {
+      "actual": 1,
+      "rule_id": "R1-2-toolbar",
+      "status": "green"
+    },
+    {
+      "actual": 1,
+      "rule_id": "R1-2-title",
+      "status": "green"
+    },
+    {
+      "actual": 3,
+      "rule_id": "R1-2-buttons",
+      "status": "green"
+    },
+    {
+      "actual": 1,
+      "rule_id": "R1-3-selection",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R1-3-preview-selection",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R1-3-preview-toolbar",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R1-3-render-selection",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R1-3-render-toolbar",
+      "status": "green"
+    },
+    {
+      "actual": "‹ 全部组件",
+      "rule_id": "R2-1-back",
+      "status": "green"
+    },
+    {
+      "actual": "文本属性",
+      "rule_id": "R2-1-type",
+      "status": "green"
+    },
+    {
+      "actual": [
+        "组件配置",
+        "页面设置"
+      ],
+      "rule_id": "R2-1-tabs",
+      "status": "green"
+    },
+    {
+      "actual": [
+        "↑ 上移",
+        "↓ 下移",
+        "删除"
+      ],
+      "rule_id": "R2-2-buttons",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "border-top-left-radius": "6px"
+      },
+      "rule_id": "R4-1-radius",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "padding-top": "1.5px"
+      },
+      "rule_id": "R4-1-padding",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "background-image": "linear-gradient(118deg, rgb(23, 107, 250) 0%, rgb(51, 142, 255) 46%, rgb(104, 185, 255) 73%, rgb(51, 124, 240) 100%)"
+      },
+      "rule_id": "R4-1-gradient",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "pointer-events": "none"
+      },
+      "rule_id": "R4-1-pointer-events",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "background-image": "linear-gradient(118deg, rgba(29, 111, 255, 0.043), rgba(86, 174, 255, 0.01) 62%, rgba(0, 0, 0, 0))"
+      },
+      "rule_id": "R4-1-fill",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "box-shadow": "rgba(29, 105, 218, 0.055) 0px 2px 9px 0px"
+      },
+      "rule_id": "R4-1-shadow",
+      "status": "green"
+    }
+  ],
+  "observed": {
+    "captures": [
+      {
+        "route": "/dialogue?page=platform-canvas-experience",
+        "viewport": {
+          "height": 1000,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/dialogue?page=platform-canvas-experience",
+        "viewport": {
+          "height": 1000,
+          "width": 1440
+        }
+      },
+      {
+        "route": "/dialogue?page=platform-canvas-experience",
+        "viewport": {
+          "height": 1000,
+          "width": 1440
+        }
+      }
+    ]
+  },
+  "overall": "green",
+  "phase": "green",
+  "schema_version": 3,
+  "summary": {
+    "green": 25,
+    "red": 0,
+    "total": 25,
+    "yellow": 0
+  }
+}

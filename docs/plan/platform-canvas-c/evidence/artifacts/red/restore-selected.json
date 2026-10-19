@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "contract_sha256": "da453e5e1298025859a47985eecbedf3b68bd56b55df8b9ee33b5deb64ce7921",
+  "page_available": true,
+  "observed": {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "route": "/dialogue?page=platform-canvas-experience"
+  },
+  "environment": {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "dpr": 1,
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+    "scroll": {
+      "width": 1440,
+      "height": 1000
+    }
+  },
+  "rules": {
+    "R1-1-back": {
+      "status": "ok",
+      "actual": 0,
+      "locator_used": {
+        "strategy": "css",
+        "selector": "aside[aria-label=\"检查器\"] .selection-header .back-link"
+      },
+      "matched": 0
+    },
+    "R1-1-type": {
+      "status": "ok",
+      "actual": 0,
+      "locator_used": {
+        "strategy": "css",
+        "selector": "aside[aria-label=\"检查器\"] .selection-type"
+      },
+      "matched": 0
+    },
+    "R1-1-summary": {
+      "status": "ok",
+      "actual": 1,
+      "locator_used": {
+        "strategy": "css",
+        "selector": "aside[aria-label=\"检查器\"] .selbar"
+      },
+      "matched": 1
+    },
+    "R1-1-duplicate-title": {
+      "status": "ok",
+      "actual": 1,
+      "locator_used": {
+        "strategy": "css",
+        "selector": "aside[aria-label=\"检查器\"] .selbar b"
+      },
+      "matched": 1
+    },
+    "R1-1-technical-id": {
+      "status": "ok",
+      "actual": 1,
+      "locator_used": {
+        "strategy": "css",
+        "selector": "aside[aria-label=\"检查器\"] .selbar small"
+      },
+      "matched": 1
+    },
+    "R1-1-actions": {
+      "status": "ok",
+      "actual": 3,
+      "locator_used": {
+        "strategy": "css",
+        "selector": "aside[aria-label=\"检查器\"] .component-actions button"
+      },
+      "matched": 3
+    },
+    "R1-1-editable-title": {
+      "status": "ok",
+      "actual": 1,
+      "locator_used": {
+        "strategy": "css",
+        "selector": "aside[aria-label=\"检查器\"] input[aria-label=\"组件标题\"]"
+      },
+      "matched": 1
+    },
+    "R1-2-toolbar": {
+      "status": "ok",
+      "actual": 0,
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".selection-actions:popover-open"
+      },
+      "matched": 0
+    },
+    "R1-2-title": {
+      "status": "ok",
+      "actual": 0,
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".selection-actions:popover-open .selection-title"
+      },
+      "matched": 0
+    },
+    "R1-2-buttons": {
+      "status": "ok",
+      "actual": 0,
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".selection-actions:popover-open button"
+      },
+      "matched": 0
+    },
+    "R1-3-selection": {
+      "status": "ok",
+      "actual": 1,
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".authoring-selected"
+      },
+      "matched": 1
+    },
+    "R2-1-back": {
+      "status": "error",
+      "reason": "no implementation locator matched",
+      "locator_used": {
+        "strategy": "css",
+        "selector": "aside[aria-label=\"检查器\"] .selection-header .back-link"
+      },
+      "matched": 0
+    },
+    "R2-1-type": {
+      "status": "error",
+      "reason": "no implementation locator matched",
+      "locator_used": {
+        "strategy": "css",
+        "selector": "aside[aria-label=\"检查器\"] .selection-type"
+      },
+      "matched": 0
+    },
+    "R2-1-tabs": {
+      "status": "ok",
+      "actual": [
+        "组件配置",
+        "页面设置"
+      ],
+      "locator_used": {
+        "strategy": "css",
+        "selector": "aside[aria-label=\"检查器\"] .panel-tabs button"
+      },
+      "matched": 2
+    },
+    "R2-2-buttons": {
+      "status": "error",
+      "reason": "no implementation locator matched",
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".selection-actions:popover-open button"
+      },
+      "matched": 0
+    },
+    "R4-1-radius": {
+      "status": "ok",
+      "actual": {
+        "border-top-left-radius": "10px"
+      },
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".authoring-selected"
+      },
+      "matched": 1
+    },
+    "R4-1-padding": {
+      "status": "ok",
+      "actual": {
+        "padding-top": "0px"
+      },
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".authoring-selected"
+      },
+      "matched": 1
+    },
+    "R4-1-gradient": {
+      "status": "ok",
+      "actual": {
+        "background-image": "none"
+      },
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".authoring-selected"
+      },
+      "matched": 1
+    },
+    "R4-1-pointer-events": {
+      "status": "ok",
+      "actual": {
+        "pointer-events": "auto"
+      },
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".authoring-selected"
+      },
+      "matched": 1
+    },
+    "R4-1-fill": {
+      "status": "ok",
+      "actual": {
+        "background-image": "none"
+      },
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".authoring-selected"
+      },
+      "matched": 1
+    },
+    "R4-1-shadow": {
+      "status": "ok",
+      "actual": {
+        "box-shadow": "color(srgb 0.309804 0.27451 0.898039 / 0.18) 0px 0px 0px 3px"
+      },
+      "locator_used": {
+        "strategy": "css",
+        "selector": ".authoring-selected"
+      },
+      "matched": 1
+    }
+  }
+}

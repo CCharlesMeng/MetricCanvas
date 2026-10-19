@@ -1,0 +1,25 @@
+{
+  "selection": {
+    "radius": "6px",
+    "gradient": "linear-gradient(118deg, rgb(23, 107, 250) 0%, rgb(51, 142, 255) 46%, rgb(104, 185, 255) 73%, rgb(51, 124, 240) 100%)",
+    "padding": "1.5px",
+    "pointerEvents": "none",
+    "shadow": "rgba(29, 105, 218, 0.055) 0px 2px 9px 0px",
+    "fill": "linear-gradient(118deg, rgba(29, 111, 255, 0.043), rgba(86, 174, 255, 0.01) 62%, rgba(0, 0, 0, 0))"
+  },
+  "url": "http://127.0.0.1:5198/dialogue?variant=C",
+  "sidebar": {
+    "text": "‹ 全部组件文本属性",
+    "buttons": [
+      "‹ 全部组件"
+    ]
+  },
+  "actions": {
+    "buttons": [
+      "↑ 上移",
+      "↓ 下移",
+      "删除"
+    ],
+    "radius": "7px"
+  }
+}

@@ -1,0 +1,918 @@
+{
+  "code": {
+    "base_ref": "7ec7bb855273d76e54034104a88585f2953a5420",
+    "code_fingerprint": "28f10e3d8777999b7c7ea5c30eddaeb0d6517ebd5c9c08a29e224c96c14c6956",
+    "files": [
+      {
+        "path": "PAGE-METADATA.md",
+        "sha256": "a746f95c72d977c57d73b962e2cc8eada40a7eb843cecf0c889db853800601ea"
+      },
+      {
+        "path": "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+        "sha256": "d7dd63f4bb1a257c334000b4c73ac4a8d589f6812dccd6ef1faf9f4e456448e2"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/ComponentProperties.svelte",
+        "sha256": "a37a3236ae1543eba5a8755357fa4e8bddf226c2aace2d8b44e63dd0aee09ac2"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/Inspector.svelte",
+        "sha256": "ec4b86ecd8fe7a7a50f98b60532b87306e407390ebacd127b814f2eb9ec8044c"
+      },
+      {
+        "path": "apps/platform/src/lib/workbench/document-edit.ts",
+        "sha256": "a06477193efea396ed8e3acdd2ce1309e866d07469829095ee9270c0d01ac3ee"
+      },
+      {
+        "path": "apps/platform/tests/workbench/canvas-experience-browser.mjs",
+        "sha256": "69fc68e2149347a3c2b668a50d762592d965fd3f3df8ed64a35ab3a68a384cc6"
+      },
+      {
+        "path": "apps/platform/tests/workbench/canvas-experience.test.ts",
+        "sha256": "452006df80f43cded6520cb000433fb1b9c3592ee5e7bca233b289d857c7dfbf"
+      },
+      {
+        "path": "apps/playground/page-catalog.json",
+        "sha256": "19e57e8bf79a09c41cb24fdc4de797e69f0f89c2962f848461ec56b075e0272e"
+      },
+      {
+        "path": "contracts/metriccanvas/manifest.json",
+        "sha256": "832aae569c406fa2bcfd4f95f0a50c7ea057683e1116a05d662536e69fff8c13"
+      },
+      {
+        "path": "contracts/metriccanvas/page/reference/sections-and-layout.md",
+        "sha256": "d587f35768fb5487d443b130144581dc2320e003425f64a785ec80fba64b4013"
+      },
+      {
+        "path": "docs/page-metadata/sections-and-layout.md",
+        "sha256": "c5aaf3c97819fd4103578365bfab02dec0cdbb3791701c19e84e4f3dfd155e92"
+      },
+      {
+        "path": "metriccanvas-authoring/bundle.lock.json",
+        "sha256": "6610b5f7484223ffaf265fecd06245b447af011b865c4d985246800669d90f04"
+      },
+      {
+        "path": "metriccanvas-authoring/contract-lock.json",
+        "sha256": "81e5dd796ec7f973f18054311046c6a906af84c2174fd5f2bfd9267c52ba6b00"
+      },
+      {
+        "path": "metriccanvas-authoring/contract-snapshot/manifest.json",
+        "sha256": "832aae569c406fa2bcfd4f95f0a50c7ea057683e1116a05d662536e69fff8c13"
+      },
+      {
+        "path": "metriccanvas-authoring/contract-snapshot/page/reference/sections-and-layout.md",
+        "sha256": "d587f35768fb5487d443b130144581dc2320e003425f64a785ec80fba64b4013"
+      },
+      {
+        "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/knowledge.json",
+        "sha256": "a5e01b30c5e324ef9817df61cb4534e83cf4e1ba1b3f10db6920a71ea9ef9e7c"
+      },
+      {
+        "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/sections-and-layout.md",
+        "sha256": "8b08423b3b2edba31e2a7808e3fc4ca21c494a28e648340158e34cdd32d75bb4"
+      },
+      {
+        "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/sections-and-layout.md",
+        "sha256": "d587f35768fb5487d443b130144581dc2320e003425f64a785ec80fba64b4013"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/RuntimeSection.svelte",
+        "sha256": "28296ecd32eca68d28e2a0a98751138f3a5e4d5ee239e0666425d0a821bd6cd3"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+        "sha256": "870d81a92ad5eb464065f68df20985fdf0dd731f0f5549018da57779af3a5254"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/RuntimeView.svelte",
+        "sha256": "7e8f6ee25db29818282f608734fb5324212edafb10b706dfd1f5c12405533f1f"
+      },
+      {
+        "path": "packages/metric-canvas/package.json",
+        "sha256": "b1953a1934cb115a9110fb5dba24fc672851ac00f71cf9d5e9647bb7c2c095ed"
+      },
+      {
+        "path": "packages/metric-canvas/src/AuthoringSection.svelte",
+        "sha256": "6f5226f962968ce96ac613e12c2146fe8ca7510a79b370bd9ed7cf41e01ca7ef"
+      },
+      {
+        "path": "packages/metric-canvas/src/CanvasSelectionActions.svelte",
+        "sha256": "f4a30bd473da02c267f2e26f0a7b1364a5d2c5840797f3f95db2fd0997af974a"
+      },
+      {
+        "path": "packages/metric-canvas/src/MetricCanvas.svelte",
+        "sha256": "7ed197e74242a9e712fd68bf242b446405cdc8a77c49bea810dd6658dad06e91"
+      },
+      {
+        "path": "packages/metric-canvas/src/authoring-layout.ts",
+        "sha256": "2f781372b80d8cfa918fba0d8c3109b89a95966b137cd8a6328ef09eb42b933c"
+      },
+      {
+        "path": "packages/metric-canvas/src/selection-actions.ts",
+        "sha256": "c11d24525abd59fa76a07fae49bfc811bdc25dd08f0ad7cde97f9f402d414a1b"
+      },
+      {
+        "path": "packages/metric-canvas/src/types.ts",
+        "sha256": "d8f5a78c15fe4362bef47eb0d7ba06837b106d86c82c86e85294ca00520d02e7"
+      },
+      {
+        "path": "packages/metric-canvas/tests/browser/harness/Harness.svelte",
+        "sha256": "d69f98199b4c880ce252270710aedf500f4476bb029608b90b014b04527dd7a9"
+      },
+      {
+        "path": "packages/metric-canvas/tests/browser/metric-canvas.spec.ts",
+        "sha256": "7d340dbef7fb28f0e029fddbc9b77af9cc541cb5cad7ac8c7fb65ecadf1abad5"
+      },
+      {
+        "path": "pages/README.md",
+        "sha256": "ae0da31a4e154add40ef23ab1f249ee04cef0ea896e57657c5c0f2f0f01764db"
+      },
+      {
+        "path": "pages/platform-canvas-experience.json",
+        "sha256": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+      },
+      {
+        "path": "pnpm-lock.yaml",
+        "sha256": "18d66c62d608d9642217c2a359b6ecd6ec7647fe015b7c4b1adca7dc6071b3a8"
+      }
+    ],
+    "head": "7ec7bb855273d76e54034104a88585f2953a5420"
+  },
+  "evidence_epoch": "canvas-c-20261019-1",
+  "quality_gate": {
+    "code_fingerprint": "28f10e3d8777999b7c7ea5c30eddaeb0d6517ebd5c9c08a29e224c96c14c6956",
+    "commands": [
+      {
+        "command": "pnpm --filter @metriccanvas/metric-canvas check && pnpm --filter platform check && pnpm exec tsc --noEmit -p tests/tsconfig.json",
+        "exit_code": 0,
+        "failures": [],
+        "name": "types"
+      },
+      {
+        "command": "pnpm --filter platform build && pnpm --filter @metriccanvas/metric-canvas build",
+        "exit_code": 0,
+        "failures": [],
+        "name": "build",
+        "observed": "existing large chunk warning retained"
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/metric-canvas test:browser",
+        "exit_code": 0,
+        "failures": [],
+        "name": "canvas-browser",
+        "observed": "15 passed"
+      },
+      {
+        "command": "node apps/platform/tests/workbench/canvas-experience-browser.mjs",
+        "exit_code": 0,
+        "failures": [],
+        "name": "workbench-browser"
+      },
+      {
+        "command": "pnpm authoring:contracts:check && python3 metriccanvas-authoring/scripts/check_bundle.py && pnpm validate pages",
+        "exit_code": 0,
+        "failures": [],
+        "name": "contracts",
+        "observed": "2631 digest checks; 26 pages passed"
+      },
+      {
+        "command": "pnpm test tests/local-authoring-skill.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts apps/platform/tests/workbench/canvas-experience.test.ts apps/platform/tests/workbench/document-edit.test.ts apps/platform/tests/workbench/authoring-coordinator.test.ts apps/platform/tests/workbench/authoring-sync.test.ts apps/platform/tests/workbench/property-edit.test.ts packages/metric-canvas/tests/authoring-layout.test.ts",
+        "exit_code": 0,
+        "failures": [],
+        "name": "targeted-tests",
+        "observed": "9 files, 96 passed"
+      },
+      {
+        "command": "locked Python environment: metriccanvas-authoring/test-harness/run_tests.py",
+        "exit_code": 0,
+        "failures": [],
+        "name": "authoring-scripted",
+        "observed": "540 total; 539 passed, 1 skipped; scripted-no-model"
+      }
+    ]
+  },
+  "runtime": {
+    "account": "canvas-preview",
+    "api_mode": "mock",
+    "browser": "155.0.8059.82",
+    "dpr": 1,
+    "driver": "Playwright Chrome; actual Platform dev entry with local in-memory assets/save fixtures",
+    "font_fingerprint": "08df1d6110e12c3804aea5e7c0676f5c561e906b28cc6bade76827482799fd09",
+    "role": "fixture",
+    "tenant": "canvas-preview",
+    "url": "http://127.0.0.1:5199/dialogue?page=platform-canvas-experience"
+  },
+  "scenarios": [
+    {
+      "artifacts": [],
+      "captured_at_code_fingerprint": "28f10e3d8777999b7c7ea5c30eddaeb0d6517ebd5c9c08a29e224c96c14c6956",
+      "captured_dependency_hashes": {
+        "apps/platform/src/lib/PageAuthoringWorkbench.svelte": "d7dd63f4bb1a257c334000b4c73ac4a8d589f6812dccd6ef1faf9f4e456448e2",
+        "apps/platform/src/lib/workbench/Inspector.svelte": "ec4b86ecd8fe7a7a50f98b60532b87306e407390ebacd127b814f2eb9ec8044c",
+        "packages/metric-canvas/src/CanvasSelectionActions.svelte": "f4a30bd473da02c267f2e26f0a7b1364a5d2c5840797f3f95db2fd0997af974a",
+        "packages/metric-canvas/src/MetricCanvas.svelte": "7ed197e74242a9e712fd68bf242b446405cdc8a77c49bea810dd6658dad06e91",
+        "packages/metric-canvas/src/selection-actions.ts": "c11d24525abd59fa76a07fae49bfc811bdc25dd08f0ad7cde97f9f402d414a1b",
+        "pages/platform-canvas-experience.json": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+      },
+      "captured_runtime": {
+        "account": "canvas-preview",
+        "api_mode": "mock",
+        "browser": "155.0.8059.82",
+        "dpr": 1,
+        "driver": "Playwright Chrome; actual Platform dev entry with local in-memory assets/save fixtures",
+        "font_fingerprint": "08df1d6110e12c3804aea5e7c0676f5c561e906b28cc6bade76827482799fd09",
+        "role": "fixture",
+        "tenant": "canvas-preview",
+        "url": "http://127.0.0.1:5199/dialogue?page=platform-canvas-experience"
+      },
+      "depends_on": [
+        "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+        "apps/platform/src/lib/workbench/Inspector.svelte",
+        "packages/metric-canvas/src/CanvasSelectionActions.svelte",
+        "packages/metric-canvas/src/MetricCanvas.svelte",
+        "packages/metric-canvas/src/selection-actions.ts",
+        "pages/platform-canvas-experience.json"
+      ],
+      "fixture": {
+        "mutation": "在未保存工作副本中把 overview/first 标题设为“这是用于边界验收的超长业务组件标题ABCDEFGHIJKLMNOPQRSTUVWXYZ”重复六次",
+        "name": "platform-canvas-experience.json",
+        "sha256": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+      },
+      "id": "BE-1",
+      "merged_at_code_fingerprint": "28f10e3d8777999b7c7ea5c30eddaeb0d6517ebd5c9c08a29e224c96c14c6956",
+      "observations": [
+        {
+          "actions": {
+            "height": 42.5,
+            "left": 901.875,
+            "right": 1116,
+            "width": 214.125
+          },
+          "inspectorLeft": 1161,
+          "selectedRight": 1116,
+          "width": 1440
+        },
+        {
+          "actions": {
+            "height": 42.5,
+            "left": 741.875,
+            "right": 956,
+            "width": 214.125
+          },
+          "inspectorLeft": 1001,
+          "selectedRight": 956,
+          "width": 1280
+        },
+        {
+          "buttons": [
+            {
+              "disabled": true,
+              "label": "上移组件",
+              "opacity": "0.4",
+              "width": 42.5625
+            },
+            {
+              "disabled": false,
+              "label": "下移组件",
+              "opacity": "1",
+              "width": 42.5625
+            },
+            {
+              "disabled": false,
+              "label": "删除组件 first",
+              "opacity": "1",
+              "width": 34
+            }
+          ],
+          "documentHorizontalOverflow": false,
+          "inspectorLeft": 1001,
+          "longTitle": {
+            "clientWidth": 160,
+            "overflow": "hidden",
+            "scrollWidth": 2300,
+            "text-overflow": "ellipsis"
+          },
+          "toolbarRight": 956,
+          "width": 1280
+        },
+        {
+          "background-color": "rgb(237, 245, 255)",
+          "button": "下移组件",
+          "state": "hover"
+        },
+        {
+          "button": "下移组件",
+          "focus-visible": true,
+          "outline-color": "rgb(36, 111, 227)",
+          "outline-style": "solid",
+          "outline-width": "2px",
+          "state": "keyboard focus"
+        }
+      ],
+      "page": "http://127.0.0.1:5199/dialogue?page=platform-canvas-experience",
+      "profile": "mock",
+      "scenario_key": "654256d651215d31a10703c0785ad5381c62f77fe0b38fb5712ca1b363c2cb42",
+      "source": "review-layout",
+      "steps": [
+        "打开实际 /dialogue 工作台并选择 overview/first",
+        "分别在 1440、1280 宽度等待两个 requestAnimationFrame 后读取组件、操作条与检查器矩形",
+        "通过属性输入框设置声明的长标题，按 Tab 提交本地编辑，等待两个 requestAnimationFrame",
+        "读取标题截断、按钮尺寸与禁用样式、页面横向溢出",
+        "悬停下移按钮读取背景，再通过键盘与焦点操作读取 focus-visible 轮廓"
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1280
+      }
+    },
+    {
+      "artifacts": [],
+      "captured_at_code_fingerprint": "28f10e3d8777999b7c7ea5c30eddaeb0d6517ebd5c9c08a29e224c96c14c6956",
+      "captured_dependency_hashes": {
+        "apps/platform/src/lib/PageAuthoringWorkbench.svelte": "d7dd63f4bb1a257c334000b4c73ac4a8d589f6812dccd6ef1faf9f4e456448e2",
+        "apps/platform/src/lib/workbench/Inspector.svelte": "ec4b86ecd8fe7a7a50f98b60532b87306e407390ebacd127b814f2eb9ec8044c",
+        "packages/metric-canvas/src/CanvasSelectionActions.svelte": "f4a30bd473da02c267f2e26f0a7b1364a5d2c5840797f3f95db2fd0997af974a",
+        "packages/metric-canvas/src/MetricCanvas.svelte": "7ed197e74242a9e712fd68bf242b446405cdc8a77c49bea810dd6658dad06e91",
+        "packages/metric-canvas/src/selection-actions.ts": "c11d24525abd59fa76a07fae49bfc811bdc25dd08f0ad7cde97f9f402d414a1b",
+        "pages/platform-canvas-experience.json": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+      },
+      "captured_runtime": {
+        "account": "canvas-preview",
+        "api_mode": "mock",
+        "browser": "155.0.8059.82",
+        "dpr": 1,
+        "driver": "Playwright Chrome; actual Platform dev entry with local in-memory assets/save fixtures",
+        "font_fingerprint": "08df1d6110e12c3804aea5e7c0676f5c561e906b28cc6bade76827482799fd09",
+        "role": "fixture",
+        "tenant": "canvas-preview",
+        "url": "http://127.0.0.1:5199/dialogue?page=platform-canvas-experience"
+      },
+      "depends_on": [
+        "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+        "apps/platform/src/lib/workbench/Inspector.svelte",
+        "packages/metric-canvas/src/CanvasSelectionActions.svelte",
+        "packages/metric-canvas/src/MetricCanvas.svelte",
+        "packages/metric-canvas/src/selection-actions.ts",
+        "pages/platform-canvas-experience.json"
+      ],
+      "fixture": {
+        "name": "platform-canvas-experience.json",
+        "sha256": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+      },
+      "id": "BE-2",
+      "merged_at_code_fingerprint": "28f10e3d8777999b7c7ea5c30eddaeb0d6517ebd5c9c08a29e224c96c14c6956",
+      "observations": [
+        {
+          "actions": {
+            "border-radius": "7px",
+            "font-size": "11px",
+            "gap": "5px",
+            "line-height": "16.5px",
+            "padding": "6px"
+          },
+          "button": {
+            "border-radius": "4px",
+            "font-size": "11px",
+            "line-height": "16.5px",
+            "padding": "6px"
+          },
+          "inspectorLeftMinusActionsRight": 45,
+          "route": "/dialogue",
+          "selectedRadius": "6px",
+          "selectionHeader": {
+            "border-bottom-width": "1px",
+            "gap": "12px",
+            "padding-bottom": "13px"
+          }
+        },
+        {
+          "actions": {
+            "border-radius": "7px",
+            "font-size": "11px",
+            "gap": "5px",
+            "line-height": "16.5px",
+            "padding": "6px"
+          },
+          "button": {
+            "border-radius": "4px",
+            "font-size": "11px",
+            "line-height": "16.5px",
+            "padding": "6px"
+          },
+          "inspectorLeftMinusActionsRight": 45,
+          "route": "/create?page=platform-canvas-experience&resource=canvas-candidate-resource",
+          "selectedRadius": "6px",
+          "selectionHeader": {
+            "border-bottom-width": "1px",
+            "gap": "12px",
+            "padding-bottom": "13px"
+          }
+        }
+      ],
+      "page": "http://127.0.0.1:5199/dialogue?page=platform-canvas-experience",
+      "profile": "mock",
+      "scenario_key": "bf41bb4825429bd505df3f21525df2445771278947d91bdc303c397c9725c08a",
+      "source": "review-layout",
+      "steps": [
+        "打开 /dialogue?page=platform-canvas-experience，勾选嵌入工作台，选择 overview/first",
+        "等待两个 requestAnimationFrame，读取操作条、按钮、属性入口的计算样式及操作条与检查器间距",
+        "打开 /?page=platform-canvas-experience，等待规范化至 /create?page=platform-canvas-experience&resource=canvas-candidate-resource",
+        "选择 overview/first，等待两个 requestAnimationFrame，读取相同元素计算样式及间距"
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/platform-canvas-c/evidence/artifacts/candidate-measurements.json",
+        "docs/plan/platform-canvas-c/evidence/artifacts/candidate-1440.png",
+        "docs/plan/platform-canvas-c/evidence/artifacts/candidate-1280.png",
+        "docs/plan/platform-canvas-c/evidence/artifacts/candidate-measurements-stable.json"
+      ],
+      "captured_dependency_hashes": {
+        "apps/platform/src/lib/PageAuthoringWorkbench.svelte": "d7dd63f4bb1a257c334000b4c73ac4a8d589f6812dccd6ef1faf9f4e456448e2",
+        "apps/platform/src/lib/workbench/ComponentProperties.svelte": "a37a3236ae1543eba5a8755357fa4e8bddf226c2aace2d8b44e63dd0aee09ac2",
+        "apps/platform/src/lib/workbench/Inspector.svelte": "ec4b86ecd8fe7a7a50f98b60532b87306e407390ebacd127b814f2eb9ec8044c",
+        "apps/platform/src/lib/workbench/document-edit.ts": "a06477193efea396ed8e3acdd2ce1309e866d07469829095ee9270c0d01ac3ee",
+        "packages/metric-canvas/package.json": "b1953a1934cb115a9110fb5dba24fc672851ac00f71cf9d5e9647bb7c2c095ed",
+        "packages/metric-canvas/src/AuthoringSection.svelte": "6f5226f962968ce96ac613e12c2146fe8ca7510a79b370bd9ed7cf41e01ca7ef",
+        "packages/metric-canvas/src/CanvasSelectionActions.svelte": "f4a30bd473da02c267f2e26f0a7b1364a5d2c5840797f3f95db2fd0997af974a",
+        "packages/metric-canvas/src/MetricCanvas.svelte": "7ed197e74242a9e712fd68bf242b446405cdc8a77c49bea810dd6658dad06e91",
+        "packages/metric-canvas/src/authoring-layout.ts": "2f781372b80d8cfa918fba0d8c3109b89a95966b137cd8a6328ef09eb42b933c",
+        "packages/metric-canvas/src/selection-actions.ts": "c11d24525abd59fa76a07fae49bfc811bdc25dd08f0ad7cde97f9f402d414a1b",
+        "packages/metric-canvas/src/types.ts": "d8f5a78c15fe4362bef47eb0d7ba06837b106d86c82c86e85294ca00520d02e7",
+        "packages/metric-canvas/tests/browser/harness/Harness.svelte": "d69f98199b4c880ce252270710aedf500f4476bb029608b90b014b04527dd7a9",
+        "packages/metric-canvas/tests/browser/metric-canvas.spec.ts": "7d340dbef7fb28f0e029fddbc9b77af9cc541cb5cad7ac8c7fb65ecadf1abad5",
+        "pages/platform-canvas-experience.json": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+      },
+      "captured_runtime": {
+        "account": "canvas-preview",
+        "api_mode": "mock",
+        "browser": "155.0.8059.82",
+        "dpr": 1,
+        "driver": "Playwright Chrome; actual Platform dev entry with local in-memory assets/save fixtures",
+        "font_fingerprint": "08df1d6110e12c3804aea5e7c0676f5c561e906b28cc6bade76827482799fd09",
+        "role": "fixture",
+        "tenant": "canvas-preview",
+        "url": "http://127.0.0.1:5199/dialogue?page=platform-canvas-experience"
+      },
+      "depends_on": [
+        "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+        "apps/platform/src/lib/workbench/ComponentProperties.svelte",
+        "apps/platform/src/lib/workbench/Inspector.svelte",
+        "apps/platform/src/lib/workbench/document-edit.ts",
+        "packages/metric-canvas/package.json",
+        "packages/metric-canvas/src/AuthoringSection.svelte",
+        "packages/metric-canvas/src/CanvasSelectionActions.svelte",
+        "packages/metric-canvas/src/MetricCanvas.svelte",
+        "packages/metric-canvas/src/authoring-layout.ts",
+        "packages/metric-canvas/src/selection-actions.ts",
+        "packages/metric-canvas/src/types.ts",
+        "packages/metric-canvas/tests/browser/harness/Harness.svelte",
+        "packages/metric-canvas/tests/browser/metric-canvas.spec.ts",
+        "pages/platform-canvas-experience.json"
+      ],
+      "fixture": {
+        "name": "platform-canvas-experience.json",
+        "sha256": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+      },
+      "id": "C-geometry",
+      "observations": [
+        {
+          "actions": {
+            "bottom": 349,
+            "height": 42.5,
+            "right": 1116,
+            "width": 214.125,
+            "x": 901.875,
+            "y": 306.5
+          },
+          "inspector": {
+            "bottom": 1000,
+            "height": 797,
+            "right": 1440,
+            "width": 280,
+            "x": 1160,
+            "y": 203
+          },
+          "overflow": false,
+          "selected": {
+            "bottom": 403.796875,
+            "height": 48.796875,
+            "right": 1116,
+            "width": 613,
+            "x": 503,
+            "y": 355
+          },
+          "width": 1440
+        },
+        {
+          "actions": {
+            "bottom": 349,
+            "height": 42.5,
+            "right": 1116,
+            "width": 214.125,
+            "x": 901.875,
+            "y": 306.5
+          },
+          "inspector": {
+            "bottom": 1000,
+            "height": 797,
+            "right": 1280,
+            "width": 280,
+            "x": 1000,
+            "y": 203
+          },
+          "overflow": false,
+          "selected": {
+            "bottom": 403.796875,
+            "height": 48.796875,
+            "right": 956,
+            "width": 453,
+            "x": 503,
+            "y": 355
+          },
+          "width": 1280
+        },
+        "1280 initial raw measurement sampled immediately after resize, before rAF positioning. Final stable geometry is C-layout-overflow-states and candidate-measurements-stable.json; stable screenshots replace candidate PNGs."
+      ],
+      "page": "http://127.0.0.1:5199/dialogue?page=platform-canvas-experience",
+      "profile": "mock",
+      "steps": [
+        "Load real workbench with direct page scenario",
+        "Resize to 1440 and 1280"
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/platform-canvas-c/evidence/canvas-browser.log"
+      ],
+      "captured_dependency_hashes": {
+        "apps/platform/src/lib/PageAuthoringWorkbench.svelte": "d7dd63f4bb1a257c334000b4c73ac4a8d589f6812dccd6ef1faf9f4e456448e2",
+        "apps/platform/src/lib/workbench/ComponentProperties.svelte": "a37a3236ae1543eba5a8755357fa4e8bddf226c2aace2d8b44e63dd0aee09ac2",
+        "apps/platform/src/lib/workbench/Inspector.svelte": "ec4b86ecd8fe7a7a50f98b60532b87306e407390ebacd127b814f2eb9ec8044c",
+        "apps/platform/src/lib/workbench/document-edit.ts": "a06477193efea396ed8e3acdd2ce1309e866d07469829095ee9270c0d01ac3ee",
+        "packages/metric-canvas/package.json": "b1953a1934cb115a9110fb5dba24fc672851ac00f71cf9d5e9647bb7c2c095ed",
+        "packages/metric-canvas/src/AuthoringSection.svelte": "6f5226f962968ce96ac613e12c2146fe8ca7510a79b370bd9ed7cf41e01ca7ef",
+        "packages/metric-canvas/src/CanvasSelectionActions.svelte": "f4a30bd473da02c267f2e26f0a7b1364a5d2c5840797f3f95db2fd0997af974a",
+        "packages/metric-canvas/src/MetricCanvas.svelte": "7ed197e74242a9e712fd68bf242b446405cdc8a77c49bea810dd6658dad06e91",
+        "packages/metric-canvas/src/authoring-layout.ts": "2f781372b80d8cfa918fba0d8c3109b89a95966b137cd8a6328ef09eb42b933c",
+        "packages/metric-canvas/src/selection-actions.ts": "c11d24525abd59fa76a07fae49bfc811bdc25dd08f0ad7cde97f9f402d414a1b",
+        "packages/metric-canvas/src/types.ts": "d8f5a78c15fe4362bef47eb0d7ba06837b106d86c82c86e85294ca00520d02e7",
+        "packages/metric-canvas/tests/browser/harness/Harness.svelte": "d69f98199b4c880ce252270710aedf500f4476bb029608b90b014b04527dd7a9",
+        "packages/metric-canvas/tests/browser/metric-canvas.spec.ts": "7d340dbef7fb28f0e029fddbc9b77af9cc541cb5cad7ac8c7fb65ecadf1abad5",
+        "pages/platform-canvas-experience.json": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+      },
+      "captured_runtime": {
+        "account": "canvas-preview",
+        "api_mode": "mock",
+        "browser": "155.0.8059.82",
+        "dpr": 1,
+        "driver": "Playwright Chrome; actual Platform dev entry with local in-memory assets/save fixtures",
+        "font_fingerprint": "08df1d6110e12c3804aea5e7c0676f5c561e906b28cc6bade76827482799fd09",
+        "role": "fixture",
+        "tenant": "canvas-preview",
+        "url": "http://127.0.0.1:5199/dialogue?page=platform-canvas-experience"
+      },
+      "depends_on": [
+        "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+        "apps/platform/src/lib/workbench/ComponentProperties.svelte",
+        "apps/platform/src/lib/workbench/Inspector.svelte",
+        "apps/platform/src/lib/workbench/document-edit.ts",
+        "packages/metric-canvas/package.json",
+        "packages/metric-canvas/src/AuthoringSection.svelte",
+        "packages/metric-canvas/src/CanvasSelectionActions.svelte",
+        "packages/metric-canvas/src/MetricCanvas.svelte",
+        "packages/metric-canvas/src/authoring-layout.ts",
+        "packages/metric-canvas/src/selection-actions.ts",
+        "packages/metric-canvas/src/types.ts",
+        "packages/metric-canvas/tests/browser/harness/Harness.svelte",
+        "packages/metric-canvas/tests/browser/metric-canvas.spec.ts",
+        "pages/platform-canvas-experience.json"
+      ],
+      "fixture": {
+        "name": "platform-canvas-experience.json",
+        "sha256": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+      },
+      "id": "C-lifecycle",
+      "observations": [
+        "Package browser regression passes; no residual actions or callbacks"
+      ],
+      "page": "http://127.0.0.1:5199/dialogue?page=platform-canvas-experience",
+      "profile": "mock",
+      "steps": [
+        "Scroll target fully outside viewport, scroll back, resize, disable, re-enable, unmount"
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/platform-canvas-c/evidence/restore-report-green.json",
+        "docs/plan/platform-canvas-c/evidence/restore-report-red.json"
+      ],
+      "captured_dependency_hashes": {
+        "apps/platform/src/lib/PageAuthoringWorkbench.svelte": "d7dd63f4bb1a257c334000b4c73ac4a8d589f6812dccd6ef1faf9f4e456448e2",
+        "apps/platform/src/lib/workbench/ComponentProperties.svelte": "a37a3236ae1543eba5a8755357fa4e8bddf226c2aace2d8b44e63dd0aee09ac2",
+        "apps/platform/src/lib/workbench/Inspector.svelte": "ec4b86ecd8fe7a7a50f98b60532b87306e407390ebacd127b814f2eb9ec8044c",
+        "apps/platform/src/lib/workbench/document-edit.ts": "a06477193efea396ed8e3acdd2ce1309e866d07469829095ee9270c0d01ac3ee",
+        "packages/metric-canvas/package.json": "b1953a1934cb115a9110fb5dba24fc672851ac00f71cf9d5e9647bb7c2c095ed",
+        "packages/metric-canvas/src/AuthoringSection.svelte": "6f5226f962968ce96ac613e12c2146fe8ca7510a79b370bd9ed7cf41e01ca7ef",
+        "packages/metric-canvas/src/CanvasSelectionActions.svelte": "f4a30bd473da02c267f2e26f0a7b1364a5d2c5840797f3f95db2fd0997af974a",
+        "packages/metric-canvas/src/MetricCanvas.svelte": "7ed197e74242a9e712fd68bf242b446405cdc8a77c49bea810dd6658dad06e91",
+        "packages/metric-canvas/src/authoring-layout.ts": "2f781372b80d8cfa918fba0d8c3109b89a95966b137cd8a6328ef09eb42b933c",
+        "packages/metric-canvas/src/selection-actions.ts": "c11d24525abd59fa76a07fae49bfc811bdc25dd08f0ad7cde97f9f402d414a1b",
+        "packages/metric-canvas/src/types.ts": "d8f5a78c15fe4362bef47eb0d7ba06837b106d86c82c86e85294ca00520d02e7",
+        "packages/metric-canvas/tests/browser/harness/Harness.svelte": "d69f98199b4c880ce252270710aedf500f4476bb029608b90b014b04527dd7a9",
+        "packages/metric-canvas/tests/browser/metric-canvas.spec.ts": "7d340dbef7fb28f0e029fddbc9b77af9cc541cb5cad7ac8c7fb65ecadf1abad5",
+        "pages/platform-canvas-experience.json": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+      },
+      "captured_runtime": {
+        "account": "canvas-preview",
+        "api_mode": "mock",
+        "browser": "155.0.8059.82",
+        "dpr": 1,
+        "driver": "Playwright Chrome; actual Platform dev entry with local in-memory assets/save fixtures",
+        "font_fingerprint": "08df1d6110e12c3804aea5e7c0676f5c561e906b28cc6bade76827482799fd09",
+        "role": "fixture",
+        "tenant": "canvas-preview",
+        "url": "http://127.0.0.1:5199/dialogue?page=platform-canvas-experience"
+      },
+      "depends_on": [
+        "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+        "apps/platform/src/lib/workbench/ComponentProperties.svelte",
+        "apps/platform/src/lib/workbench/Inspector.svelte",
+        "apps/platform/src/lib/workbench/document-edit.ts",
+        "packages/metric-canvas/package.json",
+        "packages/metric-canvas/src/AuthoringSection.svelte",
+        "packages/metric-canvas/src/CanvasSelectionActions.svelte",
+        "packages/metric-canvas/src/MetricCanvas.svelte",
+        "packages/metric-canvas/src/authoring-layout.ts",
+        "packages/metric-canvas/src/selection-actions.ts",
+        "packages/metric-canvas/src/types.ts",
+        "packages/metric-canvas/tests/browser/harness/Harness.svelte",
+        "packages/metric-canvas/tests/browser/metric-canvas.spec.ts",
+        "pages/platform-canvas-experience.json"
+      ],
+      "fixture": {
+        "name": "platform-canvas-experience.json",
+        "sha256": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+      },
+      "id": "C-restore",
+      "observations": [
+        "25 frozen rules green; pre-C baseline gives 18 red and 7 green"
+      ],
+      "page": "http://127.0.0.1:5199/dialogue?page=platform-canvas-experience",
+      "profile": "mock",
+      "steps": [
+        "Load page, select first component; sample frozen rules; enter working-copy preview"
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/platform-canvas-c/evidence/workbench-browser.log"
+      ],
+      "captured_dependency_hashes": {
+        "apps/platform/src/lib/PageAuthoringWorkbench.svelte": "d7dd63f4bb1a257c334000b4c73ac4a8d589f6812dccd6ef1faf9f4e456448e2",
+        "apps/platform/src/lib/workbench/ComponentProperties.svelte": "a37a3236ae1543eba5a8755357fa4e8bddf226c2aace2d8b44e63dd0aee09ac2",
+        "apps/platform/src/lib/workbench/Inspector.svelte": "ec4b86ecd8fe7a7a50f98b60532b87306e407390ebacd127b814f2eb9ec8044c",
+        "apps/platform/src/lib/workbench/document-edit.ts": "a06477193efea396ed8e3acdd2ce1309e866d07469829095ee9270c0d01ac3ee",
+        "packages/metric-canvas/package.json": "b1953a1934cb115a9110fb5dba24fc672851ac00f71cf9d5e9647bb7c2c095ed",
+        "packages/metric-canvas/src/AuthoringSection.svelte": "6f5226f962968ce96ac613e12c2146fe8ca7510a79b370bd9ed7cf41e01ca7ef",
+        "packages/metric-canvas/src/CanvasSelectionActions.svelte": "f4a30bd473da02c267f2e26f0a7b1364a5d2c5840797f3f95db2fd0997af974a",
+        "packages/metric-canvas/src/MetricCanvas.svelte": "7ed197e74242a9e712fd68bf242b446405cdc8a77c49bea810dd6658dad06e91",
+        "packages/metric-canvas/src/authoring-layout.ts": "2f781372b80d8cfa918fba0d8c3109b89a95966b137cd8a6328ef09eb42b933c",
+        "packages/metric-canvas/src/selection-actions.ts": "c11d24525abd59fa76a07fae49bfc811bdc25dd08f0ad7cde97f9f402d414a1b",
+        "packages/metric-canvas/src/types.ts": "d8f5a78c15fe4362bef47eb0d7ba06837b106d86c82c86e85294ca00520d02e7",
+        "packages/metric-canvas/tests/browser/harness/Harness.svelte": "d69f98199b4c880ce252270710aedf500f4476bb029608b90b014b04527dd7a9",
+        "packages/metric-canvas/tests/browser/metric-canvas.spec.ts": "7d340dbef7fb28f0e029fddbc9b77af9cc541cb5cad7ac8c7fb65ecadf1abad5",
+        "pages/platform-canvas-experience.json": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+      },
+      "captured_runtime": {
+        "account": "canvas-preview",
+        "api_mode": "mock",
+        "browser": "155.0.8059.82",
+        "dpr": 1,
+        "driver": "Playwright Chrome; actual Platform dev entry with local in-memory assets/save fixtures",
+        "font_fingerprint": "08df1d6110e12c3804aea5e7c0676f5c561e906b28cc6bade76827482799fd09",
+        "role": "fixture",
+        "tenant": "canvas-preview",
+        "url": "http://127.0.0.1:5199/dialogue?page=platform-canvas-experience"
+      },
+      "depends_on": [
+        "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+        "apps/platform/src/lib/workbench/ComponentProperties.svelte",
+        "apps/platform/src/lib/workbench/Inspector.svelte",
+        "apps/platform/src/lib/workbench/document-edit.ts",
+        "packages/metric-canvas/package.json",
+        "packages/metric-canvas/src/AuthoringSection.svelte",
+        "packages/metric-canvas/src/CanvasSelectionActions.svelte",
+        "packages/metric-canvas/src/MetricCanvas.svelte",
+        "packages/metric-canvas/src/authoring-layout.ts",
+        "packages/metric-canvas/src/selection-actions.ts",
+        "packages/metric-canvas/src/types.ts",
+        "packages/metric-canvas/tests/browser/harness/Harness.svelte",
+        "packages/metric-canvas/tests/browser/metric-canvas.spec.ts",
+        "pages/platform-canvas-experience.json"
+      ],
+      "fixture": {
+        "name": "platform-canvas-experience.json",
+        "sha256": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58"
+      },
+      "id": "C-workbench",
+      "observations": [
+        "Full workflow exit 0; no page errors; no save before explicit save"
+      ],
+      "page": "http://127.0.0.1:5199/dialogue?page=platform-canvas-experience",
+      "profile": "mock",
+      "steps": [
+        "Select, resize, move down, native cross-section drag, delete, undo, text/Delete, delete keyboard, undo, save, page tab"
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    }
+  ],
+  "schema_version": 1,
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-01",
+        "modules": [
+          "causal",
+          "render"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "T1",
+        "verification_method": "restore_contract",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-02",
+        "modules": [
+          "causal",
+          "render"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "T1",
+        "verification_method": "restore_contract",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-03",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "T2,T3",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-04",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "T2,T3",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-05",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "T3",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      }
+    ],
+    "facts": {
+      "cross_page": true,
+      "frozen_r": true,
+      "frozen_r5": false,
+      "frozen_r6": false,
+      "has_f3": true,
+      "has_s3_claim": false,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "restore-final",
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "render",
+        "regression",
+        "restore-final",
+        "review-layout",
+        "review-convention",
+        "review-quality"
+      ],
+      "phase": "final",
+      "required_profiles": {
+        "AT-01": "mock",
+        "AT-02": "mock",
+        "AT-03": "mock",
+        "AT-04": "mock",
+        "AT-05": "mock"
+      },
+      "review_roles": [
+        "review-layout",
+        "review-convention",
+        "review-quality"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C5"
+      ],
+      "review-layout": [
+        "L1",
+        "L2",
+        "L5"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q5",
+        "Q6",
+        "Q7"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "risk_triggers": [
+      "async-state",
+      "interaction",
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "shared-boundary"
+      ],
+      "changed_files": 71,
+      "max_changed_files": 5,
+      "restore_tasks": [
+        "T1"
+      ],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "async-state": [
+        "agent"
+      ],
+      "interaction": [
+        "plan"
+      ],
+      "shared-boundary": [
+        "diff",
+        "plan"
+      ],
+      "visual": [
+        "diff",
+        "plan"
+      ]
+    }
+  }
+}

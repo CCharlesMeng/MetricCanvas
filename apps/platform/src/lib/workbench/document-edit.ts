@@ -184,6 +184,24 @@ export function moveComponent(
   return projectCanvasDraft(next);
 }
 
+/** 删除顶层组件，保留共享数据源；双投影统一校验，引用失效时原子拒绝。 */
+export function deleteComponent(
+  draft: CanvasAuthoringDraft,
+  locator: ComponentLocator
+): DocumentEditResult {
+  const next = jsonClone(draft.canvasDocument);
+  const section = findSection(next, locator.sectionId);
+  if (!section) return { ok: false, message: '分区不存在' };
+  const index = componentIndex(section, locator.componentId);
+  if (index < 0) return { ok: false, message: '选中的组件不在当前文档里' };
+  if (draft.authoringSections.reduce((count, section) => count + section.componentIds.length, 0) <= 1) {
+    return { ok: false, message: '页面至少需要一个组件，无法删除最后一个组件' };
+  }
+  (section.components as unknown[]).splice(index, 1);
+  const result = projectCanvasDraft(next);
+  return result.ok ? result : { ok: false, message: `无法删除该组件：${result.message}` };
+}
+
 /** 组件标题与宽度编辑；宽度按所属分区的实际列轨数夹取。 */
 /** Explicitly edit only the page-level title declaration, retaining all component titles and bindings. */
 export function editPageTitle(draft:CanvasAuthoringDraft,title:string):DocumentEditResult {

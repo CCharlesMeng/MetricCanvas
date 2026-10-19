@@ -1,0 +1,414 @@
+{
+  "claim_ledger": [
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "C-restore；evidence/review-evidence.json",
+      "id": "AT-01",
+      "note": "C 属性入口；R1-1、R2-1"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "C-restore；evidence/review-evidence.json",
+      "id": "AT-02",
+      "note": "蓝色渐变细框；R1-3、R4-1"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "C-workbench; quality_gate；evidence/review-evidence.json",
+      "id": "AT-03",
+      "note": "移动、删除、撤销、显式保存与输入隔离；F3-1～3"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "C-lifecycle; C-workbench; C-layout-overflow-states；evidence/review-evidence.json",
+      "id": "AT-04",
+      "note": "选择切换、滚动/尺寸跟随、停用与卸载；R1-2、R2-2、F3-4/7"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "C-lifecycle; quality_gate; C-restore；evidence/review-evidence.json",
+      "id": "AT-05",
+      "note": "正式渲染与预览无装饰，查询/分页状态保留；F3-5/6"
+    }
+  ],
+  "code_fingerprint": "28f10e3d8777999b7c7ea5c30eddaeb0d6517ebd5c9c08a29e224c96c14c6956",
+  "counts": {
+    "blocker": 0,
+    "claims_deferred": 0,
+    "claims_unverified": 0,
+    "decided": 0,
+    "deferred": 0,
+    "handoff": 0,
+    "manual_acceptance": 0,
+    "manual_pending": 0,
+    "norm_candidate": 0,
+    "open_question": 0,
+    "skipped": 0,
+    "suggestion": 0,
+    "unplanned_carry": 0
+  },
+  "coverage": {
+    "review-convention": [
+      {
+        "dimension": "C1",
+        "evidence_ids": [
+          "PATTERN-STRUCT-1",
+          "PATTERN-COMP-1",
+          "packages/metric-canvas/src/AuthoringSection.svelte:L1-L7",
+          "packages/metric-canvas/src/CanvasSelectionActions.svelte:L1-L24",
+          "packages/metric-canvas/src/selection-actions.ts:L1-L7"
+        ],
+        "result": "unrun",
+        "scope": "最终工作区新增 CanvasSelectionActions.svelte、selection-actions.ts 及相关跨目录导入；已复核 PATTERN-STRUCT-1 与 PATTERN-COMP-1，没有找到可据以判断目录命名、文件大小写或导入别名的明文规范。"
+      },
+      {
+        "dimension": "C5",
+        "evidence_ids": [
+          "PATTERN-COMP-1",
+          "PATTERN-STRUCT-1",
+          "packages/metric-canvas/src/MetricCanvas.svelte:L1-L27",
+          "packages/metric-canvas/src/AuthoringSection.svelte:L1-L7",
+          "packages/metric-canvas/src/AuthoringSection.svelte:L235-L315",
+          "packages/metric-canvas/src/CanvasSelectionActions.svelte:L1-L24",
+          "apps/platform/src/lib/workbench/Inspector.svelte:L1-L11",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L318-L343",
+          "apps/platform/src/lib/workbench/document-edit.ts:L187-L205"
+        ],
+        "result": "clear",
+        "scope": "最终工作区中工作台配置组件、创作操作条、页面修改接线及统一运行时组合入口；所判断文件内容哈希均与证据包一致。"
+      }
+    ],
+    "review-layout": [
+      {
+        "dimension": "L1",
+        "evidence_ids": [
+          "BE-2"
+        ],
+        "result": "clear",
+        "scope": "/dialogue 嵌入工作台与 / 规范化后的 /create；操作条、按钮及属性入口的字号、间距和圆角"
+      },
+      {
+        "dimension": "L2",
+        "evidence_ids": [
+          "BE-1"
+        ],
+        "result": "clear",
+        "scope": "声明的静态页面 fixture；1280 宽度下超长组件标题与主操作可见性"
+      },
+      {
+        "dimension": "L5",
+        "evidence_ids": [
+          "C-workbench",
+          "C-lifecycle",
+          "BE-1"
+        ],
+        "result": "clear",
+        "scope": "实际工作台的 selected、disabled、hover、keyboard focus 状态"
+      }
+    ],
+    "review-quality": [
+      {
+        "dimension": "Q2",
+        "evidence_ids": [
+          "packages/metric-canvas/src/AuthoringSection.svelte:L190-L198",
+          "packages/metric-canvas/src/CanvasSelectionActions.svelte:L14-L17",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L318-L344",
+          "apps/platform/src/lib/workbench/document-edit.ts:L187-L203"
+        ],
+        "result": "clear",
+        "scope": "正式实现 diff：组件操作通过统一 AuthoringIntent、document-edit 及现有 coordinator 执行；浮层定位集中于 selection-actions.ts，未发现引入具有可观察缺陷的独立重复实现。"
+      },
+      {
+        "dimension": "Q5",
+        "evidence_ids": [
+          "packages/metric-canvas/src/AuthoringSection.svelte:L26-L64",
+          "packages/metric-canvas/src/CanvasSelectionActions.svelte:L14-L17",
+          "packages/metric-canvas/src/selection-actions.ts:L44-L60",
+          "packages/metric-canvas/tests/browser/metric-canvas.spec.ts:L213-L234",
+          "C-lifecycle",
+          "canvas-browser"
+        ],
+        "result": "clear",
+        "scope": "attachment、ResizeObserver、scroll/resize 监听、requestAnimationFrame 和顶层 popover 的生命周期；清理路径完整，最新代码及场景依赖哈希均与证据包一致。"
+      },
+      {
+        "dimension": "Q6",
+        "evidence_ids": [
+          "packages/metric-canvas/src/CanvasSelectionActions.svelte:L22-L24",
+          "packages/metric-canvas/src/AuthoringSection.svelte:L43-L47",
+          "packages/metric-canvas/src/AuthoringSection.svelte:L190-L198",
+          "packages/metric-canvas/src/selection-actions.ts:L27-L31",
+          "apps/platform/src/lib/workbench/document-edit.ts:L187-L203",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L318-L344",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L482-L510",
+          "C-workbench",
+          "C-lifecycle",
+          "canvas-browser",
+          "workbench-browser",
+          "targeted-tests"
+        ],
+        "result": "clear",
+        "scope": "冻结 F3-1 至 F3-7：排列首末与分区边界、最后组件删除拒绝、输入 Delete 隔离、不可见和停用隐藏、预览边界、保留渲染会话及卸载清理；失败文档改写反馈到现有 editError，删除沿用本地副本和显式保存链路。"
+      },
+      {
+        "dimension": "Q7",
+        "evidence_ids": [
+          "packages/metric-canvas/src/CanvasSelectionActions.svelte:L1-L39",
+          "packages/metric-canvas/src/selection-actions.ts:L1-L61",
+          "apps/platform/src/lib/workbench/document-edit.ts:L187-L203",
+          "apps/platform/src/lib/PageAuthoringWorkbench.svelte:L340-L343"
+        ],
+        "result": "clear",
+        "scope": "正式实现新增与修改代码；未发现调试输出、临时视觉标记、占位实现或以写死样例替代真实页面数据。独立原型文件按请求排除，未读取。"
+      }
+    ]
+  },
+  "decisions": [],
+  "deferred_candidates": [],
+  "evidence_epoch": "canvas-c-20261019-1",
+  "findings": [],
+  "handoff": [],
+  "judged_files": {
+    "review-convention": [
+      "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "apps/platform/src/lib/workbench/Inspector.svelte",
+      "apps/platform/src/lib/workbench/ComponentProperties.svelte",
+      "apps/platform/src/lib/workbench/document-edit.ts",
+      "packages/metric-canvas/src/AuthoringSection.svelte",
+      "packages/metric-canvas/src/CanvasSelectionActions.svelte",
+      "packages/metric-canvas/src/MetricCanvas.svelte",
+      "packages/metric-canvas/src/selection-actions.ts",
+      "packages/metric-canvas/src/authoring-layout.ts",
+      "packages/metric-canvas/src/types.ts"
+    ],
+    "review-layout": [
+      "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "apps/platform/src/lib/workbench/Inspector.svelte",
+      "packages/metric-canvas/src/CanvasSelectionActions.svelte",
+      "packages/metric-canvas/src/MetricCanvas.svelte",
+      "packages/metric-canvas/src/selection-actions.ts",
+      "pages/platform-canvas-experience.json",
+      "packages/metric-canvas/tests/browser/metric-canvas.spec.ts"
+    ],
+    "review-quality": [
+      "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "apps/platform/src/lib/workbench/ComponentProperties.svelte",
+      "apps/platform/src/lib/workbench/Inspector.svelte",
+      "apps/platform/src/lib/workbench/document-edit.ts",
+      "apps/platform/tests/workbench/canvas-experience.test.ts",
+      "packages/metric-canvas/src/AuthoringSection.svelte",
+      "packages/metric-canvas/src/CanvasSelectionActions.svelte",
+      "packages/metric-canvas/src/MetricCanvas.svelte",
+      "packages/metric-canvas/src/authoring-layout.ts",
+      "packages/metric-canvas/src/selection-actions.ts",
+      "packages/metric-canvas/src/types.ts",
+      "packages/metric-canvas/tests/browser/metric-canvas.spec.ts"
+    ]
+  },
+  "known_gaps": {
+    "review-convention": [
+      "C1 未验证：diff 含新增文件和跨目录导入，不能命中该维度的 skip_when。已选 PATTERN-STRUCT-1 仅明确 Svelte 单文件及领域逻辑与视图分离，PATTERN-COMP-1 仅明确公开组件入口复用；两者均未建立目录命名、文件大小写或导入别名的明文约束。缺少可复核命名判据，不能从依据样本推导额外规范或伪造 clear；按本次退回要求记录 coverage unrun。本轮没有修改产品代码或基线。"
+    ],
+    "review-layout": [],
+    "review-quality": []
+  },
+  "manual_acceptance": [],
+  "norm_candidates": [],
+  "open_questions": [],
+  "portfolio_narrowed": [],
+  "restore_contract": {
+    "contract_sha256": "da453e5e1298025859a47985eecbedf3b68bd56b55df8b9ee33b5deb64ce7921",
+    "overall": "green",
+    "summary": {
+      "green": 25,
+      "red": 0,
+      "total": 25,
+      "yellow": 0
+    }
+  },
+  "roles": {
+    "review-convention": "executed",
+    "review-layout": "executed",
+    "review-quality": "executed"
+  },
+  "schema_version": 1,
+  "skipped": {
+    "review-convention": [],
+    "review-layout": [],
+    "review-quality": []
+  },
+  "unplanned_carry": [],
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-01",
+        "modules": [
+          "causal",
+          "render"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "T1",
+        "verification_method": "restore_contract",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-02",
+        "modules": [
+          "causal",
+          "render"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "T1",
+        "verification_method": "restore_contract",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-03",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "T2,T3",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-04",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "T2,T3",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-05",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "T3",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      }
+    ],
+    "facts": {
+      "cross_page": true,
+      "frozen_r": true,
+      "frozen_r5": false,
+      "frozen_r6": false,
+      "has_f3": true,
+      "has_s3_claim": false,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "restore-final",
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "render",
+        "regression",
+        "restore-final",
+        "review-layout",
+        "review-convention",
+        "review-quality"
+      ],
+      "phase": "final",
+      "required_profiles": {
+        "AT-01": "mock",
+        "AT-02": "mock",
+        "AT-03": "mock",
+        "AT-04": "mock",
+        "AT-05": "mock"
+      },
+      "review_roles": [
+        "review-layout",
+        "review-convention",
+        "review-quality"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C5"
+      ],
+      "review-layout": [
+        "L1",
+        "L2",
+        "L5"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q5",
+        "Q6",
+        "Q7"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "risk_triggers": [
+      "async-state",
+      "interaction",
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "shared-boundary"
+      ],
+      "changed_files": 71,
+      "max_changed_files": 5,
+      "restore_tasks": [
+        "T1"
+      ],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "async-state": [
+        "agent"
+      ],
+      "interaction": [
+        "plan"
+      ],
+      "shared-boundary": [
+        "diff",
+        "plan"
+      ],
+      "visual": [
+        "diff",
+        "plan"
+      ]
+    }
+  }
+}

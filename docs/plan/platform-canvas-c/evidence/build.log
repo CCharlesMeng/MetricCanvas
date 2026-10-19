@@ -1,0 +1,21 @@
+$ vite build
+vite v8.1.5 building client environment for production...
+[2Ktransforming...✓ 1254 modules transformed.
+rendering chunks...
+computing gzip size...
+build/index.html                               0.48 kB │ gzip:   0.30 kB
+build/assets/index-DlTLCn8S.css              287.89 kB │ gzip:  43.29 kB
+build/assets/rolldown-runtime-DAXXjFlN.js      1.26 kB │ gzip:   0.70 kB
+build/assets/china-DwbDKGiY.js               117.73 kB │ gzip:  34.16 kB
+build/assets/world-AHhAxG5S.js               171.08 kB │ gzip:  54.92 kB
+build/assets/exceljs.min-BSnPgFSx.js         929.90 kB │ gzip: 256.47 kB
+build/assets/index-DZlObqkc.js             2,709.80 kB │ gzip: 860.08 kB
+
+✓ built in 1.73s
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+$ node ../../tools/package-build/build.mjs metric-canvas
+.svelte-kit/package-input -> dist

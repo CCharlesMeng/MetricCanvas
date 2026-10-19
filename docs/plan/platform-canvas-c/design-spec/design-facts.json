@@ -1,0 +1,1854 @@
+{
+  "blocks": [
+    {
+      "anchor": ".rail",
+      "content_sha256": "0c1e0d3b33b1b9ee9a07c65571fdc2a14ea293c3b7da91b1588926639bdc33d6",
+      "design_tokens": [],
+      "layout_declarations": {
+        "svelte-1v5j8un": []
+      },
+      "lines": "L5787–L5787",
+      "nodes": 4,
+      "static_texts": [
+        "M",
+        "▢",
+        "▦"
+      ],
+      "structure": {
+        "children": [
+          {
+            "children": [],
+            "classes": [
+              "svelte-1v5j8un"
+            ],
+            "tag": "strong",
+            "texts": [
+              "M"
+            ]
+          },
+          {
+            "children": [],
+            "classes": [
+              "svelte-1v5j8un"
+            ],
+            "tag": "span",
+            "texts": [
+              "▢"
+            ]
+          },
+          {
+            "children": [],
+            "classes": [
+              "svelte-1v5j8un"
+            ],
+            "tag": "span",
+            "texts": [
+              "▦"
+            ]
+          }
+        ],
+        "classes": [
+          "rail",
+          "svelte-1v5j8un"
+        ],
+        "tag": "nav",
+        "texts": []
+      }
+    },
+    {
+      "anchor": ".docbar",
+      "content_sha256": "4334ca5c1f4425c2c15086a3bc52f62ba446bd28ef5f5f6871c8978249d47b3f",
+      "design_tokens": [],
+      "layout_declarations": {
+        "svelte-1v5j8un": []
+      },
+      "lines": "L5787–L5787",
+      "nodes": 7,
+      "static_texts": [
+        "←",
+        "画布交互验收（静态演示）",
+        "工作副本",
+        "↶ 撤销",
+        "配置区域原型"
+      ],
+      "structure": {
+        "children": [
+          {
+            "children": [],
+            "classes": [
+              "back",
+              "svelte-1v5j8un"
+            ],
+            "tag": "span",
+            "texts": [
+              "←"
+            ]
+          },
+          {
+            "children": [],
+            "classes": [
+              "page-title",
+              "svelte-1v5j8un"
+            ],
+            "tag": "span",
+            "texts": [
+              "画布交互验收（静态演示）"
+            ]
+          },
+          {
+            "children": [],
+            "classes": [
+              "draft-tag",
+              "svelte-1v5j8un"
+            ],
+            "tag": "span",
+            "texts": [
+              "工作副本"
+            ]
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "classes": [
+                  "svelte-1v5j8un"
+                ],
+                "tag": "button",
+                "texts": [
+                  "↶ 撤销"
+                ]
+              },
+              {
+                "children": [],
+                "classes": [
+                  "svelte-1v5j8un"
+                ],
+                "tag": "span",
+                "texts": [
+                  "配置区域原型"
+                ]
+              }
+            ],
+            "classes": [
+              "svelte-1v5j8un",
+              "top-actions"
+            ],
+            "tag": "div",
+            "texts": []
+          }
+        ],
+        "classes": [
+          "docbar",
+          "svelte-1v5j8un"
+        ],
+        "tag": "header",
+        "texts": []
+      }
+    },
+    {
+      "anchor": ".chat",
+      "content_sha256": "9e2433a34b973b73dd2adcdadeef77d8b93db80b49af03770dbfeccd97a6c4b6",
+      "design_tokens": [],
+      "layout_declarations": {
+        "svelte-1v5j8un": []
+      },
+      "lines": "L5787–L5787",
+      "nodes": 6,
+      "static_texts": [
+        "页面搭建",
+        "调整页面组件与布局",
+        "选择画布中的组件，在右侧配置展示效果。",
+        "描述需要调整的内容…",
+        "↑"
+      ],
+      "structure": {
+        "children": [
+          {
+            "children": [],
+            "classes": [
+              "chat-title",
+              "svelte-1v5j8un"
+            ],
+            "tag": "div",
+            "texts": [
+              "页面搭建"
+            ]
+          },
+          {
+            "children": [],
+            "classes": [
+              "chat-message",
+              "svelte-1v5j8un"
+            ],
+            "tag": "div",
+            "texts": [
+              "调整页面组件与布局"
+            ]
+          },
+          {
+            "children": [],
+            "classes": [
+              "svelte-1v5j8un"
+            ],
+            "tag": "p",
+            "texts": [
+              "选择画布中的组件，在右侧配置展示效果。"
+            ]
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "classes": [
+                  "svelte-1v5j8un"
+                ],
+                "tag": "span",
+                "texts": [
+                  "↑"
+                ]
+              }
+            ],
+            "classes": [
+              "chat-bottom",
+              "svelte-1v5j8un"
+            ],
+            "tag": "div",
+            "texts": [
+              "描述需要调整的内容…"
+            ]
+          }
+        ],
+        "classes": [
+          "chat",
+          "svelte-1v5j8un"
+        ],
+        "tag": "aside",
+        "texts": []
+      }
+    },
+    {
+      "anchor": ".canvas",
+      "content_sha256": "61d51b9bbb51836101bb134331911d6a7e3b6820c4b54673fd7712ff4b0566e4",
+      "design_tokens": [],
+      "layout_declarations": {
+        "svelte-18k8pg7": [],
+        "svelte-1cqpwej": [],
+        "svelte-1efjb1h": [],
+        "svelte-1v5j8un": [],
+        "svelte-m0mujf": [],
+        "svelte-q2mgmj": [],
+        "svelte-uhaep0": []
+      },
+      "lines": "L5787–L5787",
+      "nodes": 73,
+      "static_texts": [
+        "页面内容",
+        "等待方案决策 · 所有操作只保留在当前原型中",
+        "经营概况",
+        "↑ 上移",
+        "↓ 下移",
+        "删除",
+        "画布交互验收（静态演示）",
+        "同分区排序与宽度",
+        "静态演示。悬停右上角，使用手柄拖动调整顺序。",
+        "区域表现",
+        "选中后使用常用宽度、上移或下移。",
+        "跨分区移动与删除",
+        "分析说明",
+        "拖动到此组件的上半区或下半区。删除后可通过顶部撤销恢复。"
+      ],
+      "structure": {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [],
+                "classes": [
+                  "svelte-1v5j8un"
+                ],
+                "tag": "span",
+                "texts": [
+                  "页面内容"
+                ]
+              },
+              {
+                "children": [],
+                "classes": [
+                  "svelte-1v5j8un"
+                ],
+                "tag": "small",
+                "texts": [
+                  "等待方案决策 · 所有操作只保留在当前原型中"
+                ]
+              }
+            ],
+            "classes": [
+              "canvas-title",
+              "svelte-1v5j8un"
+            ],
+            "tag": "div",
+            "texts": []
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "classes": [
+                  "svelte-1v5j8un"
+                ],
+                "tag": "span",
+                "texts": [
+                  "经营概况"
+                ]
+              },
+              {
+                "children": [],
+                "classes": [
+                  "svelte-1v5j8un"
+                ],
+                "tag": "button",
+                "texts": [
+                  "↑ 上移"
+                ]
+              },
+              {
+                "children": [],
+                "classes": [
+                  "svelte-1v5j8un"
+                ],
+                "tag": "button",
+                "texts": [
+                  "↓ 下移"
+                ]
+              },
+              {
+                "children": [],
+                "classes": [
+                  "svelte-1v5j8un"
+                ],
+                "tag": "i",
+                "texts": []
+              },
+              {
+                "children": [],
+                "classes": [
+                  "svelte-1v5j8un",
+                  "trash"
+                ],
+                "tag": "button",
+                "texts": [
+                  "删除"
+                ]
+              }
+            ],
+            "classes": [
+              "context-actions",
+              "svelte-1v5j8un"
+            ],
+            "tag": "div",
+            "texts": []
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "children": [
+                                  {
+                                    "children": [],
+                                    "classes": [
+                                      "svelte-uhaep0"
+                                    ],
+                                    "tag": "h1",
+                                    "texts": [
+                                      "画布交互验收（静态演示）"
+                                    ]
+                                  }
+                                ],
+                                "classes": [
+                                  "dashboard-heading",
+                                  "svelte-uhaep0"
+                                ],
+                                "tag": "div",
+                                "texts": []
+                              },
+                              {
+                                "children": [
+                                  {
+                                    "children": [
+                                      {
+                                        "children": [],
+                                        "classes": [
+                                          "filter-bar",
+                                          "svelte-1efjb1h"
+                                        ],
+                                        "tag": "div",
+                                        "texts": []
+                                      }
+                                    ],
+                                    "classes": [
+                                      "primary-filters",
+                                      "svelte-uhaep0"
+                                    ],
+                                    "tag": "div",
+                                    "texts": []
+                                  }
+                                ],
+                                "classes": [
+                                  "dashboard-filter-area",
+                                  "svelte-uhaep0"
+                                ],
+                                "tag": "div",
+                                "texts": []
+                              }
+                            ],
+                            "classes": [
+                              "dashboard-toolbar",
+                              "svelte-uhaep0"
+                            ],
+                            "tag": "header",
+                            "texts": []
+                          },
+                          {
+                            "children": [
+                              {
+                                "children": [
+                                  {
+                                    "children": [
+                                      {
+                                        "children": [],
+                                        "classes": [
+                                          "svelte-1cqpwej"
+                                        ],
+                                        "tag": "span",
+                                        "texts": [
+                                          "同分区排序与宽度"
+                                        ]
+                                      }
+                                    ],
+                                    "classes": [
+                                      "section-title",
+                                      "svelte-1cqpwej"
+                                    ],
+                                    "tag": "h2",
+                                    "texts": []
+                                  },
+                                  {
+                                    "children": [
+                                      {
+                                        "children": [
+                                          {
+                                            "children": [
+                                              {
+                                                "children": [
+                                                  {
+                                                    "children": [
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      }
+                                                    ],
+                                                    "classes": [],
+                                                    "tag": "svg",
+                                                    "texts": []
+                                                  }
+                                                ],
+                                                "classes": [
+                                                  "authoring-drag-handle"
+                                                ],
+                                                "tag": "button",
+                                                "texts": []
+                                              }
+                                            ],
+                                            "classes": [
+                                              "authoring-toolbar"
+                                            ],
+                                            "tag": "div",
+                                            "texts": []
+                                          },
+                                          {
+                                            "children": [],
+                                            "classes": [
+                                              "authoring-drop-slot",
+                                              "authoring-drop-slot-before"
+                                            ],
+                                            "tag": "div",
+                                            "texts": []
+                                          },
+                                          {
+                                            "children": [
+                                              {
+                                                "children": [],
+                                                "classes": [
+                                                  "heading",
+                                                  "svelte-18k8pg7"
+                                                ],
+                                                "tag": "h3",
+                                                "texts": [
+                                                  "经营概况"
+                                                ]
+                                              },
+                                              {
+                                                "children": [],
+                                                "classes": [
+                                                  "body",
+                                                  "svelte-18k8pg7"
+                                                ],
+                                                "tag": "p",
+                                                "texts": [
+                                                  "静态演示。悬停右上角，使用手柄拖动调整顺序。"
+                                                ]
+                                              }
+                                            ],
+                                            "classes": [
+                                              "svelte-18k8pg7",
+                                              "text-block"
+                                            ],
+                                            "tag": "div",
+                                            "texts": []
+                                          }
+                                        ],
+                                        "classes": [
+                                          "authoring-cell",
+                                          "authoring-full-row",
+                                          "authoring-selected",
+                                          "cell",
+                                          "svelte-1cqpwej"
+                                        ],
+                                        "tag": "article",
+                                        "texts": []
+                                      },
+                                      {
+                                        "children": [
+                                          {
+                                            "children": [
+                                              {
+                                                "children": [
+                                                  {
+                                                    "children": [
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      }
+                                                    ],
+                                                    "classes": [],
+                                                    "tag": "svg",
+                                                    "texts": []
+                                                  }
+                                                ],
+                                                "classes": [
+                                                  "authoring-drag-handle"
+                                                ],
+                                                "tag": "button",
+                                                "texts": []
+                                              }
+                                            ],
+                                            "classes": [
+                                              "authoring-toolbar"
+                                            ],
+                                            "tag": "div",
+                                            "texts": []
+                                          },
+                                          {
+                                            "children": [],
+                                            "classes": [
+                                              "authoring-drop-slot",
+                                              "authoring-drop-slot-before"
+                                            ],
+                                            "tag": "div",
+                                            "texts": []
+                                          },
+                                          {
+                                            "children": [],
+                                            "classes": [
+                                              "authoring-drop-slot",
+                                              "authoring-drop-slot-after"
+                                            ],
+                                            "tag": "div",
+                                            "texts": []
+                                          },
+                                          {
+                                            "children": [
+                                              {
+                                                "children": [],
+                                                "classes": [
+                                                  "heading",
+                                                  "svelte-18k8pg7"
+                                                ],
+                                                "tag": "h3",
+                                                "texts": [
+                                                  "区域表现"
+                                                ]
+                                              },
+                                              {
+                                                "children": [],
+                                                "classes": [
+                                                  "body",
+                                                  "svelte-18k8pg7"
+                                                ],
+                                                "tag": "p",
+                                                "texts": [
+                                                  "选中后使用常用宽度、上移或下移。"
+                                                ]
+                                              }
+                                            ],
+                                            "classes": [
+                                              "svelte-18k8pg7",
+                                              "text-block"
+                                            ],
+                                            "tag": "div",
+                                            "texts": []
+                                          }
+                                        ],
+                                        "classes": [
+                                          "authoring-cell",
+                                          "authoring-full-row",
+                                          "cell",
+                                          "svelte-1cqpwej"
+                                        ],
+                                        "tag": "article",
+                                        "texts": []
+                                      }
+                                    ],
+                                    "classes": [
+                                      "section-grid",
+                                      "svelte-1cqpwej"
+                                    ],
+                                    "tag": "div",
+                                    "texts": []
+                                  }
+                                ],
+                                "classes": [
+                                  "container-card",
+                                  "page-section",
+                                  "svelte-1cqpwej"
+                                ],
+                                "tag": "section",
+                                "texts": []
+                              },
+                              {
+                                "children": [
+                                  {
+                                    "children": [
+                                      {
+                                        "children": [],
+                                        "classes": [
+                                          "svelte-1cqpwej"
+                                        ],
+                                        "tag": "span",
+                                        "texts": [
+                                          "跨分区移动与删除"
+                                        ]
+                                      }
+                                    ],
+                                    "classes": [
+                                      "section-title",
+                                      "svelte-1cqpwej"
+                                    ],
+                                    "tag": "h2",
+                                    "texts": []
+                                  },
+                                  {
+                                    "children": [
+                                      {
+                                        "children": [
+                                          {
+                                            "children": [
+                                              {
+                                                "children": [
+                                                  {
+                                                    "children": [
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      },
+                                                      {
+                                                        "children": [],
+                                                        "classes": [],
+                                                        "tag": "circle",
+                                                        "texts": []
+                                                      }
+                                                    ],
+                                                    "classes": [],
+                                                    "tag": "svg",
+                                                    "texts": []
+                                                  }
+                                                ],
+                                                "classes": [
+                                                  "authoring-drag-handle"
+                                                ],
+                                                "tag": "button",
+                                                "texts": []
+                                              }
+                                            ],
+                                            "classes": [
+                                              "authoring-toolbar"
+                                            ],
+                                            "tag": "div",
+                                            "texts": []
+                                          },
+                                          {
+                                            "children": [],
+                                            "classes": [
+                                              "authoring-drop-slot",
+                                              "authoring-drop-slot-before"
+                                            ],
+                                            "tag": "div",
+                                            "texts": []
+                                          },
+                                          {
+                                            "children": [],
+                                            "classes": [
+                                              "authoring-drop-slot",
+                                              "authoring-drop-slot-after"
+                                            ],
+                                            "tag": "div",
+                                            "texts": []
+                                          },
+                                          {
+                                            "children": [
+                                              {
+                                                "children": [],
+                                                "classes": [
+                                                  "heading",
+                                                  "svelte-18k8pg7"
+                                                ],
+                                                "tag": "h3",
+                                                "texts": [
+                                                  "分析说明"
+                                                ]
+                                              },
+                                              {
+                                                "children": [],
+                                                "classes": [
+                                                  "body",
+                                                  "svelte-18k8pg7"
+                                                ],
+                                                "tag": "p",
+                                                "texts": [
+                                                  "拖动到此组件的上半区或下半区。删除后可通过顶部撤销恢复。"
+                                                ]
+                                              }
+                                            ],
+                                            "classes": [
+                                              "svelte-18k8pg7",
+                                              "text-block"
+                                            ],
+                                            "tag": "div",
+                                            "texts": []
+                                          }
+                                        ],
+                                        "classes": [
+                                          "authoring-cell",
+                                          "authoring-full-row",
+                                          "cell",
+                                          "svelte-1cqpwej"
+                                        ],
+                                        "tag": "article",
+                                        "texts": []
+                                      }
+                                    ],
+                                    "classes": [
+                                      "section-grid",
+                                      "svelte-1cqpwej"
+                                    ],
+                                    "tag": "div",
+                                    "texts": []
+                                  }
+                                ],
+                                "classes": [
+                                  "container-card",
+                                  "page-section",
+                                  "svelte-1cqpwej"
+                                ],
+                                "tag": "section",
+                                "texts": []
+                              }
+                            ],
+                            "classes": [
+                              "page-sections",
+                              "svelte-q2mgmj"
+                            ],
+                            "tag": "div",
+                            "texts": []
+                          }
+                        ],
+                        "classes": [
+                          "layout-dashboard",
+                          "page-content",
+                          "svelte-q2mgmj"
+                        ],
+                        "tag": "div",
+                        "texts": []
+                      }
+                    ],
+                    "classes": [
+                      "runtime-view",
+                      "svelte-q2mgmj"
+                    ],
+                    "tag": "div",
+                    "texts": []
+                  }
+                ],
+                "classes": [
+                  "metric-canvas",
+                  "svelte-m0mujf"
+                ],
+                "tag": "div",
+                "texts": []
+              }
+            ],
+            "classes": [
+              "canvas-scroll",
+              "svelte-1v5j8un"
+            ],
+            "tag": "div",
+            "texts": []
+          }
+        ],
+        "classes": [
+          "canvas",
+          "svelte-1v5j8un"
+        ],
+        "tag": "main",
+        "texts": []
+      }
+    },
+    {
+      "anchor": ".inspector-track",
+      "content_sha256": "17c7c80caaa760e6e79d1ed46f09678790136f72e3564f9ce090f4abe116c97a",
+      "design_tokens": [],
+      "layout_declarations": {
+        "svelte-11etrp1": [],
+        "svelte-1v5j8un": [],
+        "svelte-28nifc": [],
+        "svelte-mp5b0e": [],
+        "svelte-xub7pv": []
+      },
+      "lines": "L5787–L5787",
+      "nodes": 35,
+      "static_texts": [
+        "页面配置",
+        "选择组件，调整布局与展示效果",
+        "组件配置",
+        "页面设置",
+        "‹ 全部组件",
+        "文本属性",
+        "布局",
+        "组件标题",
+        "3/12",
+        "4/12",
+        "6/12",
+        "整行",
+        "宽度"
+      ],
+      "structure": {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [],
+                        "classes": [
+                          "svelte-mp5b0e"
+                        ],
+                        "tag": "b",
+                        "texts": [
+                          "页面配置"
+                        ]
+                      },
+                      {
+                        "children": [],
+                        "classes": [
+                          "svelte-mp5b0e"
+                        ],
+                        "tag": "span",
+                        "texts": [
+                          "3 个组件"
+                        ]
+                      }
+                    ],
+                    "classes": [
+                      "inspector-heading",
+                      "svelte-mp5b0e"
+                    ],
+                    "tag": "div",
+                    "texts": []
+                  },
+                  {
+                    "children": [],
+                    "classes": [
+                      "svelte-mp5b0e"
+                    ],
+                    "tag": "p",
+                    "texts": [
+                      "选择组件，调整布局与展示效果"
+                    ]
+                  },
+                  {
+                    "children": [
+                      {
+                        "children": [],
+                        "classes": [
+                          "active",
+                          "svelte-mp5b0e"
+                        ],
+                        "tag": "button",
+                        "texts": [
+                          "组件配置"
+                        ]
+                      },
+                      {
+                        "children": [],
+                        "classes": [
+                          "svelte-mp5b0e"
+                        ],
+                        "tag": "button",
+                        "texts": [
+                          "页面设置"
+                        ]
+                      }
+                    ],
+                    "classes": [
+                      "panel-tabs",
+                      "svelte-mp5b0e"
+                    ],
+                    "tag": "div",
+                    "texts": []
+                  }
+                ],
+                "classes": [
+                  "svelte-mp5b0e"
+                ],
+                "tag": "header",
+                "texts": []
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [],
+                            "classes": [
+                              "svelte-xub7pv"
+                            ],
+                            "tag": "button",
+                            "texts": [
+                              "‹ 全部组件"
+                            ]
+                          },
+                          {
+                            "children": [],
+                            "classes": [
+                              "svelte-xub7pv"
+                            ],
+                            "tag": "span",
+                            "texts": [
+                              "文本属性"
+                            ]
+                          }
+                        ],
+                        "classes": [
+                          "svelte-xub7pv",
+                          "variant-c"
+                        ],
+                        "tag": "div",
+                        "texts": []
+                      },
+                      {
+                        "children": [
+                          {
+                            "children": [],
+                            "classes": [
+                              "svelte-mp5b0e"
+                            ],
+                            "tag": "h5",
+                            "texts": [
+                              "布局"
+                            ]
+                          },
+                          {
+                            "children": [
+                              {
+                                "children": [],
+                                "classes": [
+                                  "svelte-mp5b0e"
+                                ],
+                                "tag": "span",
+                                "texts": [
+                                  "组件标题"
+                                ]
+                              },
+                              {
+                                "children": [
+                                  {
+                                    "children": [],
+                                    "classes": [
+                                      "mc-ui-input"
+                                    ],
+                                    "tag": "div",
+                                    "texts": []
+                                  }
+                                ],
+                                "classes": [
+                                  "mc-ui-theme",
+                                  "svelte-11etrp1"
+                                ],
+                                "tag": "div",
+                                "texts": []
+                              }
+                            ],
+                            "classes": [
+                              "field",
+                              "svelte-mp5b0e"
+                            ],
+                            "tag": "label",
+                            "texts": []
+                          },
+                          {
+                            "children": [
+                              {
+                                "children": [],
+                                "classes": [
+                                  "svelte-mp5b0e"
+                                ],
+                                "tag": "button",
+                                "texts": [
+                                  "3/12"
+                                ]
+                              },
+                              {
+                                "children": [],
+                                "classes": [
+                                  "svelte-mp5b0e"
+                                ],
+                                "tag": "button",
+                                "texts": [
+                                  "4/12"
+                                ]
+                              },
+                              {
+                                "children": [],
+                                "classes": [
+                                  "active",
+                                  "svelte-mp5b0e"
+                                ],
+                                "tag": "button",
+                                "texts": [
+                                  "6/12"
+                                ]
+                              },
+                              {
+                                "children": [],
+                                "classes": [
+                                  "svelte-mp5b0e"
+                                ],
+                                "tag": "button",
+                                "texts": [
+                                  "整行"
+                                ]
+                              }
+                            ],
+                            "classes": [
+                              "svelte-mp5b0e",
+                              "width-presets"
+                            ],
+                            "tag": "div",
+                            "texts": []
+                          },
+                          {
+                            "children": [
+                              {
+                                "children": [],
+                                "classes": [
+                                  "svelte-mp5b0e"
+                                ],
+                                "tag": "span",
+                                "texts": [
+                                  "宽度"
+                                ]
+                              },
+                              {
+                                "children": [
+                                  {
+                                    "children": [
+                                      {
+                                        "children": [],
+                                        "classes": [
+                                          "svelte-28nifc"
+                                        ],
+                                        "tag": "path",
+                                        "texts": []
+                                      }
+                                    ],
+                                    "classes": [
+                                      "svelte-28nifc"
+                                    ],
+                                    "tag": "svg",
+                                    "texts": []
+                                  }
+                                ],
+                                "classes": [
+                                  "icon-only",
+                                  "svelte-28nifc",
+                                  "tool-action"
+                                ],
+                                "tag": "button",
+                                "texts": []
+                              },
+                              {
+                                "children": [],
+                                "classes": [
+                                  "svelte-mp5b0e"
+                                ],
+                                "tag": "b",
+                                "texts": [
+                                  "6/12"
+                                ]
+                              },
+                              {
+                                "children": [
+                                  {
+                                    "children": [
+                                      {
+                                        "children": [],
+                                        "classes": [
+                                          "svelte-28nifc"
+                                        ],
+                                        "tag": "path",
+                                        "texts": []
+                                      }
+                                    ],
+                                    "classes": [
+                                      "svelte-28nifc"
+                                    ],
+                                    "tag": "svg",
+                                    "texts": []
+                                  }
+                                ],
+                                "classes": [
+                                  "icon-only",
+                                  "svelte-28nifc",
+                                  "tool-action"
+                                ],
+                                "tag": "button",
+                                "texts": []
+                              }
+                            ],
+                            "classes": [
+                              "span-row",
+                              "svelte-mp5b0e"
+                            ],
+                            "tag": "div",
+                            "texts": []
+                          }
+                        ],
+                        "classes": [
+                          "svelte-mp5b0e"
+                        ],
+                        "tag": "section",
+                        "texts": []
+                      }
+                    ],
+                    "classes": [
+                      "panel",
+                      "svelte-mp5b0e"
+                    ],
+                    "tag": "div",
+                    "texts": []
+                  }
+                ],
+                "classes": [
+                  "inspector-content",
+                  "svelte-mp5b0e"
+                ],
+                "tag": "div",
+                "texts": []
+              }
+            ],
+            "classes": [
+              "inspector",
+              "svelte-mp5b0e"
+            ],
+            "tag": "aside",
+            "texts": []
+          }
+        ],
+        "classes": [
+          "inspector-track",
+          "svelte-1v5j8un"
+        ],
+        "tag": "div",
+        "texts": []
+      }
+    },
+    {
+      "anchor": ".prototype-switcher",
+      "content_sha256": "a5ef0d4d776e47b8c6a6b0fb10bb82e5e334c28cbc0164ce94eb4dac10c1735b",
+      "design_tokens": [],
+      "layout_declarations": {
+        "svelte-1att0ue": []
+      },
+      "lines": "L5787–L5787",
+      "nodes": 9,
+      "static_texts": [
+        "原型",
+        "←",
+        "A · 紧凑标题栏",
+        "B · 组件导航",
+        "C · 画布就地操作",
+        "→",
+        "C · 当前：经营概况 · 顺序：first → second → third"
+      ],
+      "structure": {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [],
+                "classes": [
+                  "prototype-label",
+                  "svelte-1att0ue"
+                ],
+                "tag": "span",
+                "texts": [
+                  "原型"
+                ]
+              },
+              {
+                "children": [],
+                "classes": [
+                  "svelte-1att0ue"
+                ],
+                "tag": "button",
+                "texts": [
+                  "←"
+                ]
+              },
+              {
+                "children": [],
+                "classes": [
+                  "svelte-1att0ue"
+                ],
+                "tag": "button",
+                "texts": [
+                  "A · 紧凑标题栏"
+                ]
+              },
+              {
+                "children": [],
+                "classes": [
+                  "svelte-1att0ue"
+                ],
+                "tag": "button",
+                "texts": [
+                  "B · 组件导航"
+                ]
+              },
+              {
+                "children": [],
+                "classes": [
+                  "active",
+                  "svelte-1att0ue"
+                ],
+                "tag": "button",
+                "texts": [
+                  "C · 画布就地操作"
+                ]
+              },
+              {
+                "children": [],
+                "classes": [
+                  "svelte-1att0ue"
+                ],
+                "tag": "button",
+                "texts": [
+                  "→"
+                ]
+              }
+            ],
+            "classes": [
+              "svelte-1att0ue",
+              "variants"
+            ],
+            "tag": "div",
+            "texts": []
+          },
+          {
+            "children": [],
+            "classes": [
+              "state",
+              "svelte-1att0ue"
+            ],
+            "tag": "div",
+            "texts": [
+              "C · 当前：经营概况 · 顺序：first → second → third"
+            ]
+          }
+        ],
+        "classes": [
+          "prototype-switcher",
+          "svelte-1att0ue"
+        ],
+        "tag": "div",
+        "texts": []
+      }
+    }
+  ],
+  "coverage_gaps": [
+    {
+      "count": 24,
+      "detail": [
+        "@container ×14",
+        "@media ×10"
+      ],
+      "impact": "整块跳过；@media 内的响应式取值与 @layer / @container 内的声明全部不可见",
+      "kind": "at 规则"
+    },
+    {
+      "count": 9,
+      "detail": [
+        "9 个元素带非空 style 属性"
+      ],
+      "impact": "行内声明不参与类 → 声明映射，这些元素的尺寸与间距不可见",
+      "kind": "行内 style 属性"
+    },
+    {
+      "count": 1320,
+      "detail": [
+        ".activity-progress.svelte-pdrxmn",
+        ".activity-progress.svelte-pdrxmn .change-label:where(.svelte-pdrxmn)",
+        ".activity-progress.svelte-pdrxmn .change:where(.svelte-pdrxmn)",
+        ".activity-progress.svelte-pdrxmn .changes:where(.svelte-pdrxmn)",
+        ".activity-progress.svelte-pdrxmn .metric-content:where(.svelte-pdrxmn)",
+        ".activity-progress.svelte-pdrxmn .metric-row:where(.svelte-pdrxmn)",
+        ".activity-progress.svelte-pdrxmn .metric-values:where(.svelte-pdrxmn)",
+        ".activity-progress.svelte-pdrxmn .progress-slot:where(.svelte-pdrxmn)",
+        ".activity-progress.svelte-pdrxmn .row-label:where(.svelte-pdrxmn)",
+        ".activity-progress.svelte-pdrxmn .row-value:where(.svelte-pdrxmn)",
+        ".activity-progress.svelte-pdrxmn .unit:where(.svelte-pdrxmn)",
+        ".activity-progress.svelte-pdrxmn .value-line:where(.svelte-pdrxmn)",
+        ".activity-progress.svelte-pdrxmn h3:where(.svelte-pdrxmn)",
+        ".ai-summary.report-inline.svelte-cx68n",
+        ".ai-summary.svelte-cx68n",
+        ".analysis-stack.svelte-wrtxs7 .pager",
+        ".analysis-stack.svelte-wrtxs7 .scroll",
+        ".analysis-stack.svelte-wrtxs7 .tab-list:where(.svelte-wrtxs7)",
+        ".analysis-stack.svelte-wrtxs7 .tab-panel:where(.svelte-wrtxs7)",
+        ".analysis-stack.svelte-wrtxs7 .table-heading",
+        "…另 1300 条"
+      ],
+      "impact": "伪类、后代与组合选择器只登记不解析，R4 状态样式取不到期望值",
+      "kind": "非单类选择器"
+    }
+  ],
+  "design_tokens": [],
+  "dom_css": {
+    "legacy_doc_hash": "adad63b3",
+    "legacy_sha256": "adad63b3f7a438702f10bf8a1638e57db4964983f1cb898d12fd12fc6b12200d",
+    "sha256": "3d2cefb20079d28fdac4b923a792f13b83d7bddd602dee5ff83e112c31722741"
+  },
+  "facts_sha256": "fe73e17ff67a19f28f30da5f51c1b3f2871cfb08998d809575f757c1d19cb8db",
+  "layout_declarations": {
+    "svelte-11etrp1": [],
+    "svelte-12tkfad": [],
+    "svelte-13rqdsp": [],
+    "svelte-14tlm90": [],
+    "svelte-1792esg": [],
+    "svelte-18k8pg7": [],
+    "svelte-18m7oan": [],
+    "svelte-196d7x8": [],
+    "svelte-1a1925d": [],
+    "svelte-1att0ue": [],
+    "svelte-1b8bdoy": [],
+    "svelte-1cqpwej": [],
+    "svelte-1d0yhbs": [],
+    "svelte-1efjb1h": [],
+    "svelte-1ek92or": [],
+    "svelte-1evqkyg": [],
+    "svelte-1f95758": [],
+    "svelte-1j34okm": [],
+    "svelte-1m6ir0w": [],
+    "svelte-1nbkpfy": [],
+    "svelte-1ohuc5t": [],
+    "svelte-1oweog9": [],
+    "svelte-1r0947l": [],
+    "svelte-1r1ii1p": [],
+    "svelte-1sier50": [],
+    "svelte-1sruz4k": [],
+    "svelte-1sxefpo": [],
+    "svelte-1uqicg8": [],
+    "svelte-1v1rqr6": [],
+    "svelte-1v5j8un": [],
+    "svelte-1vywrz0": [],
+    "svelte-1x3m3vd": [],
+    "svelte-1xnhy4n": [],
+    "svelte-28nifc": [],
+    "svelte-2e1qtw": [],
+    "svelte-4wdncs": [],
+    "svelte-6djwwm": [],
+    "svelte-cx68n": [],
+    "svelte-gstuvj": [],
+    "svelte-h5o3f2": [],
+    "svelte-hano02": [],
+    "svelte-ic6zw7": [],
+    "svelte-ilx0pi": [],
+    "svelte-k3d6k8": [],
+    "svelte-m0mujf": [],
+    "svelte-mp5b0e": [],
+    "svelte-pdrxmn": [],
+    "svelte-q2mgmj": [],
+    "svelte-qz0o1t": [],
+    "svelte-siolgr": [],
+    "svelte-uhaep0": [],
+    "svelte-un44tl": [],
+    "svelte-wrtxs7": [],
+    "svelte-wt1yqc": [],
+    "svelte-x15neg": [],
+    "svelte-xe4lp5": [],
+    "svelte-xub7pv": [],
+    "svelte-yhxqux": [],
+    "svelte-yppogg": [],
+    "svelte-yxvg8a": [],
+    "svelte-yz2t3h": []
+  },
+  "prototype_fingerprint": "97348ebeb957ed41cda6f72d70a5dad05e45df403ca3128fd63e1be3889768d5",
+  "resources": [
+    {
+      "content_sha256": "4ff286857945d8713fd2e6744ee452fb51aadd3bca707c9850cb95ef18bba878",
+      "missing": false,
+      "remote": false,
+      "status": "embedded",
+      "url": "data:,"
+    },
+    {
+      "content_sha256": "eb53f9c383f391e4aa20337b72299305e7c8259f18ace9e8de91e8e7f2f0bfff",
+      "missing": false,
+      "remote": false,
+      "status": "embedded",
+      "url": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGNsaXBQYXRoIGlkPSJhIj48cGF0aCBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAiIGQ9Ik0wIDBoODB2ODBIMHoiLz48L2NsaXBQYXRoPjwvZGVmcz48ZyBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGQ9Ik03My42MSAzOS4zOXYzMC42N2MwIDIuMTctMS43NiAzLjkzLTMuOTQgMy45M0g1Mi41OXYtLjg3aDE3LjA4YzEuNyAwIDMuMDctMS4zNyAzLjA3LTMuMDZWMzkuMzloLjg3eiIgZmlsbD0iZ3JheSIvPjxwYXRoIGQ9Ik03My42MSAzOS4zOXYzMC42N2MwIDIuMTctMS43NiAzLjkzLTMuOTQgMy45M0g1Mi41OXYtLjg3aDE3LjA4YzEuNyAwIDMuMDctMS4zNyAzLjA3LTMuMDZWMzkuMzloLjg3eiIgZmlsbD0iZ3JheSIvPjxwYXRoIGQ9Ik01Ni45MiAyNXY0NS4wNmMwIDIuMTctMS43NyAzLjkzLTMuOTUgMy45M0gxMC45NEEzLjk0IDMuOTQgMCAwIDEgNyA3MC4wNlYzOS4zOWguODh2MzAuNjdhMy4wNiAzLjA2IDAgMCAwIDMuMDYgMy4wNmg0Mi4wM2MxLjcgMCAzLjA3LTEuMzcgMy4wNy0zLjA2VjI1Ljg3SDEwLjY3VjI1aDQ2LjI1eiIgZmlsbD0iZ3JheSIvPjxwYXRoIGQ9Ik05LjQzIDI1Yy0uNiAwLTEuMTUuMzEtMS40Ni44MkwuMTMgMzguNjRjLS4yNi40Mi0uMTMuOTYuMjcgMS4yMi4xNC4wOS4yOS4xNC40Ni4xNGg0NC44MmMxLjE3IDAgMi4yNi0uNjEgMi45LTEuNjJMNTcuMDQgMjVIOS40M3ptLjIyIDFoNDUuNTJsLTcuNTIgMTEuODFjLS40Ny43NC0xLjI4IDEuMTktMi4xNCAxLjE5SDEuMTdsNy43NS0xMi42Yy4xNi0uMjUuNDMtLjQuNzMtLjR6IiBmaWxsPSJncmF5Ii8+PHBhdGggZD0iTTcwLjc1IDI1Yy41NiAwIDEuMDguMyAxLjM5LjhsNy43MiAxMi43MmMuMjUuNDEuMTQuOTUtLjI1IDEuMjEtLjEzLjA5LS4yOC4xNC0uNDQuMTRINjYuMTRjLTEuMTcgMC0yLjI1LS42Ni0yLjg1LTEuNzNMNTUuOTggMjVoMTQuNzd6bS0uMDMgMUg1Ny44bDYuMzggMTEuNzFjLjQzLjggMS4yMiAxLjI5IDIuMDggMS4yOWgxMi42M0w3MS40IDI2LjM5YS44MDIuODAyIDAgMCAwLS42OC0uMzl6IiBmaWxsPSJncmF5Ii8+PHJlY3QgeD0iMTMuNSIgeT0iNTYiIHJ4PSIxLjg4NiIgd2lkdGg9IjE0IiBoZWlnaHQ9IjQiIGZpbGw9IiMxNDc2RkYiLz48cGF0aCBkPSJNMjMuNTYgNjNjLjI0IDAgLjQ0LjIyLjQ0LjUgMCAuMjctLjIuNS0uNDQuNWgtOS42M2MtLjI0IDAtLjQzLS4yMy0uNDMtLjUgMC0uMjguMTktLjUuNDMtLjVoOS42M3oiIGZpbGw9ImdyYXkiLz48cmVjdCB4PSIxMy41IiB5PSI2NiIgcng9Ii41IiB3aWR0aD0iNSIgaGVpZ2h0PSIxIiBmaWxsPSJncmF5Ii8+PHBhdGggZD0iTTQwIDZjLjI3IDAgLjUuMTkuNS40NHY2LjE2YzAgLjI1LS4yMy40NC0uNS40NC0uMjggMC0uNTEtLjE5LS41MS0uNDRWNi40NGMwLS4yNS4yMy0uNDQuNTEtLjQ0ek01Ni41NSA4LjY0Yy4yNC4xNC4zMy40Mi4yMS42M2wtMy4wOCA1LjM0Yy0uMTIuMjEtLjQyLjI3LS42Ni4xMy0uMjQtLjE0LS4zMy0uNDItLjIxLS42M2wzLjA4LTUuMzRjLjEyLS4yMS40Mi0uMjcuNjYtLjEzek0yMy40NCA4LjY0Yy4yNC0uMTQuNTQtLjA4LjY2LjEzbDMuMDggNS4zNGMuMTIuMjEuMDMuNDktLjIxLjYzcy0uNTQuMDgtLjY2LS4xM2wtMy4wOC01LjM0Yy0uMTItLjIxLS4wMy0uNDkuMjEtLjYzeiIgZmlsbD0iZ3JheSIvPjwvZz48L3N2Zz4="
+    }
+  ],
+  "schema_version": 2,
+  "source_file": "index.html",
+  "static_texts": [
+    {
+      "blocks": [
+        ".inspector-track"
+      ],
+      "count": 2,
+      "text": "6/12"
+    },
+    {
+      "blocks": [
+        ".docbar",
+        ".prototype-switcher"
+      ],
+      "count": 2,
+      "text": "←"
+    },
+    {
+      "blocks": [
+        ".docbar",
+        ".canvas"
+      ],
+      "count": 2,
+      "text": "画布交互验收（静态演示）"
+    },
+    {
+      "blocks": [
+        ".canvas"
+      ],
+      "count": 2,
+      "text": "经营概况"
+    },
+    {
+      "blocks": [
+        ".inspector-track"
+      ],
+      "count": 1,
+      "text": "3/12"
+    },
+    {
+      "blocks": [
+        ".inspector-track"
+      ],
+      "count": 1,
+      "text": "4/12"
+    },
+    {
+      "blocks": [
+        ".prototype-switcher"
+      ],
+      "count": 1,
+      "text": "A · 紧凑标题栏"
+    },
+    {
+      "blocks": [
+        ".prototype-switcher"
+      ],
+      "count": 1,
+      "text": "B · 组件导航"
+    },
+    {
+      "blocks": [
+        ".prototype-switcher"
+      ],
+      "count": 1,
+      "text": "C · 当前：经营概况 · 顺序：first → second → third"
+    },
+    {
+      "blocks": [
+        ".prototype-switcher"
+      ],
+      "count": 1,
+      "text": "C · 画布就地操作"
+    },
+    {
+      "blocks": [
+        ".rail"
+      ],
+      "count": 1,
+      "text": "M"
+    },
+    {
+      "blocks": [
+        ".inspector-track"
+      ],
+      "count": 1,
+      "text": "‹ 全部组件"
+    },
+    {
+      "blocks": [
+        ".chat"
+      ],
+      "count": 1,
+      "text": "↑"
+    },
+    {
+      "blocks": [
+        ".canvas"
+      ],
+      "count": 1,
+      "text": "↑ 上移"
+    },
+    {
+      "blocks": [
+        ".prototype-switcher"
+      ],
+      "count": 1,
+      "text": "→"
+    },
+    {
+      "blocks": [
+        ".canvas"
+      ],
+      "count": 1,
+      "text": "↓ 下移"
+    },
+    {
+      "blocks": [
+        ".docbar"
+      ],
+      "count": 1,
+      "text": "↶ 撤销"
+    },
+    {
+      "blocks": [
+        ".rail"
+      ],
+      "count": 1,
+      "text": "▢"
+    },
+    {
+      "blocks": [
+        ".rail"
+      ],
+      "count": 1,
+      "text": "▦"
+    },
+    {
+      "blocks": [
+        ".canvas"
+      ],
+      "count": 1,
+      "text": "分析说明"
+    },
+    {
+      "blocks": [
+        ".canvas"
+      ],
+      "count": 1,
+      "text": "删除"
+    },
+    {
+      "blocks": [
+        ".canvas"
+      ],
+      "count": 1,
+      "text": "区域表现"
+    },
+    {
+      "blocks": [
+        ".prototype-switcher"
+      ],
+      "count": 1,
+      "text": "原型"
+    },
+    {
+      "blocks": [
+        ".canvas"
+      ],
+      "count": 1,
+      "text": "同分区排序与宽度"
+    },
+    {
+      "blocks": [
+        ".inspector-track"
+      ],
+      "count": 1,
+      "text": "宽度"
+    },
+    {
+      "blocks": [
+        ".docbar"
+      ],
+      "count": 1,
+      "text": "工作副本"
+    },
+    {
+      "blocks": [
+        ".inspector-track"
+      ],
+      "count": 1,
+      "text": "布局"
+    },
+    {
+      "blocks": [
+        ".canvas"
+      ],
+      "count": 1,
+      "text": "拖动到此组件的上半区或下半区。删除后可通过顶部撤销恢复。"
+    },
+    {
+      "blocks": [
+        ".chat"
+      ],
+      "count": 1,
+      "text": "描述需要调整的内容…"
+    },
+    {
+      "blocks": [
+        ".inspector-track"
+      ],
+      "count": 1,
+      "text": "整行"
+    },
+    {
+      "blocks": [
+        ".inspector-track"
+      ],
+      "count": 1,
+      "text": "文本属性"
+    },
+    {
+      "blocks": [
+        ".canvas"
+      ],
+      "count": 1,
+      "text": "等待方案决策 · 所有操作只保留在当前原型中"
+    },
+    {
+      "blocks": [
+        ".inspector-track"
+      ],
+      "count": 1,
+      "text": "组件标题"
+    },
+    {
+      "blocks": [
+        ".inspector-track"
+      ],
+      "count": 1,
+      "text": "组件配置"
+    },
+    {
+      "blocks": [
+        ".chat"
+      ],
+      "count": 1,
+      "text": "调整页面组件与布局"
+    },
+    {
+      "blocks": [
+        ".canvas"
+      ],
+      "count": 1,
+      "text": "跨分区移动与删除"
+    },
+    {
+      "blocks": [
+        ".canvas"
+      ],
+      "count": 1,
+      "text": "选中后使用常用宽度、上移或下移。"
+    },
+    {
+      "blocks": [
+        ".chat"
+      ],
+      "count": 1,
+      "text": "选择画布中的组件，在右侧配置展示效果。"
+    },
+    {
+      "blocks": [
+        ".inspector-track"
+      ],
+      "count": 1,
+      "text": "选择组件，调整布局与展示效果"
+    },
+    {
+      "blocks": [
+        ".docbar"
+      ],
+      "count": 1,
+      "text": "配置区域原型"
+    },
+    {
+      "blocks": [
+        ".canvas"
+      ],
+      "count": 1,
+      "text": "静态演示。悬停右上角，使用手柄拖动调整顺序。"
+    },
+    {
+      "blocks": [
+        ".canvas"
+      ],
+      "count": 1,
+      "text": "页面内容"
+    },
+    {
+      "blocks": [
+        ".chat"
+      ],
+      "count": 1,
+      "text": "页面搭建"
+    },
+    {
+      "blocks": [
+        ".inspector-track"
+      ],
+      "count": 1,
+      "text": "页面设置"
+    },
+    {
+      "blocks": [
+        ".inspector-track"
+      ],
+      "count": 1,
+      "text": "页面配置"
+    }
+  ]
+}

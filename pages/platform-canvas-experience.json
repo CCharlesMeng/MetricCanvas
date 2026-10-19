@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "6.29",
+  "layout": "dashboard",
+  "id": "platform-canvas-experience",
+  "meta": {
+    "title": "画布交互验收（静态演示）"
+  },
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "overview",
+      "title": "同分区排序与宽度",
+      "container": "card",
+      "components": [
+        {
+          "id": "first",
+          "type": "text",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "经营概况",
+            "body": "静态演示。悬停右上角，使用手柄拖动调整顺序。"
+          }
+        },
+        {
+          "id": "second",
+          "type": "text",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "区域表现",
+            "body": "选中后使用常用宽度、上移或下移。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "details",
+      "title": "跨分区移动与删除",
+      "container": "card",
+      "components": [
+        {
+          "id": "third",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "分析说明",
+            "body": "拖动到此组件的上半区或下半区。删除后可通过顶部撤销恢复。"
+          }
+        }
+      ]
+    }
+  ]
+}
