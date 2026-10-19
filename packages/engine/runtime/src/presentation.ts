@@ -61,6 +61,15 @@ export function compilePresentation(page:Page) {
   };
 }
 export type Presentation = ReturnType<ReturnType<typeof compilePresentation>['evaluate']>;
+/** Resolve callbacks against the current private row view; ambiguous keys never execute. */
+export function resolvePresentationRow(table:TableComponent,rows:readonly Row[],clicked:Row):Row|undefined {
+  const field=table.props.rowKey;
+  if(!field)return rows.includes(clicked)?clicked:undefined;
+  const key=clicked[field];
+  if(typeof key!=='string'&&(typeof key!=='number'||!Number.isFinite(key)))return;
+  const matches=rows.filter(row=>row[field]===key);
+  return matches.length===1?matches[0]:undefined;
+}
 export function projectPresentationRows(table:TableComponent,rows:readonly Row[],context:ConditionContext):Row[]{
   if(!table.props.rowVisibleWhen)return [...rows];
   return rows.filter(row=>evaluateCondition(table.props.rowVisibleWhen,{...context,row}).status==='allow');

@@ -31,3 +31,15 @@ it('requires a stable key for row-dependent entries even without a row projectio
  delete table.props.rowVisibleWhen;delete table.props.rowKey;
  expect(parsePage(page).errors.some(error=>error.path.endsWith('rowKey'))).toBe(true);
 });
+
+it('rejects a conditional row identity that is not a declared scalar dimension',()=>{
+ const page=input();const table=page.sections.flatMap((section:any)=>section.components).find((component:any)=>component.id==='projected-table');
+ table.props.rowKey='missing';expect(parsePage(page).errors.some(error=>error.path.endsWith('rowKey'))).toBe(true);
+});
+
+it('rejects row projection on a remote query window',()=>{
+ const page=JSON.parse(readFileSync(new URL('../fixtures/contract-valid/query-dashboard.json',import.meta.url),'utf8'));
+ page.schemaVersion='6.34';const table=page.sections[0].components[0];
+ table.props.rowKey='region';table.props.rowVisibleWhen={row:'region',op:'eq',value:'华东'};
+ expect(parsePage(page).errors.some(error=>error.path.endsWith('rowVisibleWhen')&&error.message.includes('完整本地'))).toBe(true);
+});

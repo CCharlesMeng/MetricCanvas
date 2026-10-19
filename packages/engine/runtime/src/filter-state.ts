@@ -58,11 +58,13 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   function commit(updates: ReadonlyArray<readonly [string, FilterValue | null]>) {
     const map = new Map(current);
     const changed = new Set<string>();
-    const explicit = new Set(updates.map(([id]) => id));
+    const explicit = new Set<string>();
     for(const [id,value] of updates) {
       if(byId.size && !byId.has(id)) continue;
       const next = normalize(value,byId.get(id));
-      if(next === undefined || !accepted(id,next) || sameValue(map.get(id),next))continue;
+      if(next === undefined || !accepted(id,next))continue;
+      explicit.add(id);
+      if(sameValue(map.get(id),next))continue;
       if(next === null)map.delete(id);else map.set(id,next);
       changed.add(id);
     }

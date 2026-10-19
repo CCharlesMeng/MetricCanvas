@@ -102,6 +102,10 @@ export function presentationPolicyErrors(page: Page): TypedError[] {
       const interaction=!!c.props.actions?.length||JSON.stringify(c.props.columns).includes('selection')||JSON.stringify(c.props.columns).includes('openDetail')||JSON.stringify(c.props.columns).includes('navigate');
       const conditionalRows=!!c.props.rowVisibleWhen||policies.some(site=>site.path.startsWith(`${path}/props/`)&&[site.node.visibleWhen,site.node.enabledWhen].some(condition=>condition&&conditionLeaves(condition).some(leaf=>'row' in leaf)));
       if(conditionalRows&&interaction&&!c.props.rowKey)fail(`${path}/props/rowKey`,'条件行的选择、动作与详情需要稳定rowKey');
+      if(conditionalRows&&interaction&&c.props.rowKey&&source){
+        const key=resolveDataSourceFields(source)[c.props.rowKey];
+        if(!key||key.role!=='dimension'||!['string','number'].includes(key.type))fail(`${path}/props/rowKey`,'条件行键必须引用已声明的string/number维度');
+      }
     }
     if(c.type==='button' && 'openDetail' in c.props.action){
       if('fields' in c.props.action.openDetail)fail(`${path}/props/action`,'独立按钮没有行上下文，不能打开行字段详情');

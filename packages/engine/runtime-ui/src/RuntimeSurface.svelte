@@ -1,6 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
-  import { compilePresentation } from '../../runtime/src/presentation';
+  import { compilePresentation, resolvePresentationRow } from '../../runtime/src/presentation';
   import type { DisplaySnapshot } from '../../runtime/src/display-inputs';
   import { PRESENTATION_CONTEXT } from './presentation-context';
   import { chartOptionPaths, isChartOptionError } from '@metriccanvas/page/internal';
@@ -231,16 +231,17 @@
   const presentationProgram=$derived(pageState.phase==='ready'?compilePresentation(pageState.page):null);
   const presentation=$derived(presentationProgram?.evaluate({filters:filterValues,filterRevision,displaySnapshot})??null);
   setContext(PRESENTATION_CONTEXT,()=>presentation);
+  let permissionRevision:string|undefined;
+  let permissionInvalidated=false;
   $effect(()=>{
     const source=displayInputs;
     if(!source){displaySnapshot=undefined;return;}
-    let permissionRevision:string|undefined;
     let stopped=false;
     const update=(snapshot:DisplaySnapshot)=>{
-      if(stopped)return;
+      if(stopped||permissionInvalidated)return;
       if(!snapshot||typeof snapshot.permissionRevision!=='string'||!snapshot.permissionRevision){displaySnapshot=undefined;return;}
       if(permissionRevision!==undefined&&permissionRevision!==snapshot.permissionRevision){
-        stopped=true;dispose();snapshots=new Map();displaySnapshot=undefined;
+        stopped=true;permissionInvalidated=true;dispose();snapshots=new Map();displaySnapshot=undefined;
         const error={code:'DISPLAY_PERMISSION_CHANGED' as const,message:'权限会话已变化，请以当前身份重新初始化页面'};
         pageState={phase:'configuration-error',error};onevent?.({type:'configuration-error',...error});return;
       }
@@ -323,6 +324,7 @@
     revisionId: string | undefined,
     bootstrap: import('../../runtime/src').ExecutionBootstrap | undefined
   ) {
+    if(permissionInvalidated)return;
     exportController.reset(); tableController?.dispose(); tableController=undefined;
     const mySession = ++session;
     pageState = { phase: 'loading' };
@@ -337,7 +339,7 @@
 
     // 保持异步初始化接缝，避免外层 effect 把初始化中的状态读取纳入依赖。
     await Promise.resolve();
-    if (session !== mySession) return;
+    if (session !== mySession || permissionInvalidated) return;
 
     if (bootstrap && canonicalizeJson(raw) !== canonicalizeJson(bootstrap.document)) {
       pageState = {phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/',message:'执行快照与页面文档不匹配'}]};
@@ -612,7 +614,7 @@
   ) {
     if (!column.selection || !componentCapability(component)?.actions) return;
     const currentRows=visibleTableRows(component);
-    const row=clickedRow?(component.props.rowKey?currentRows.find(row=>row[component.props.rowKey!]===clickedRow[component.props.rowKey!]):currentRows.find(row=>row===clickedRow)):currentRows[rowIndex];
+    const row=clickedRow?resolvePresentationRow(component,currentRows,clickedRow):currentRows[rowIndex];
     if (!row || !actionAllowed(component,column.selection,row)) return;
 
     const updates: Array<readonly [string, FilterValue | null]> = [];
@@ -746,8 +748,7 @@
 
   function handleTableLink(component: TableComponent, row: Row, event: MouseEvent, column?: TableColumn) {
     if(component.props.rowKey){
-      const key=component.props.rowKey;
-      const current=visibleTableRows(component).find(candidate=>candidate[key]===row[key]);
+      const current=resolvePresentationRow(component,visibleTableRows(component),row);
       if(!current){event.preventDefault();return;}
       row=current;
     }
@@ -815,8 +816,7 @@
     if(!origin||!openDetail||!presentation)return;
     if(!actionAllowed(origin.component,origin.action,origin.row)||!actionAllowed(origin.component,origin.action.openDetail,origin.row)) {closeDetail(false);return;}
     if(origin.component.type==='table'&&origin.component.props.rowKey){
-      const key=origin.component.props.rowKey;
-      if(!visibleTableRows(origin.component).some(row=>row[key]===origin.row[key]))closeDetail(false);
+      if(!resolvePresentationRow(origin.component,visibleTableRows(origin.component),origin.row))closeDetail(false);
     }
   });
   let detailGeneration = $state(0);

@@ -93,6 +93,10 @@ try{
   window.visibilityEmbed={publish(allowed,revision='public-1'){
    snapshot={permissionRevision:revision,permissions:{'department.read':{status:'ready',value:allowed}},values:{ready:{status:'ready',value:allowed}}};
    for(const run of listeners)run(snapshot);
+  },replaceSource(){
+   snapshot={permissionRevision:'public-2',permissions:{'department.read':{status:'ready',value:false}},values:{ready:{status:'ready',value:false}}};
+   options.displayInputs={getSnapshot:()=>snapshot,subscribe:run=>{listeners.add(run);return()=>listeners.delete(run);}};
+   handle.update(options);
   },remount(){handle.destroy();handle=mount(host,options);},destroy(){handle.destroy();host.remove();},events};
  },{document:inputDocument,embedModule});
  const embed=page.locator('#public-embed');
@@ -100,13 +104,13 @@ try{
  await expect(embed.locator('[data-section-id="protected"]')).toHaveCount(0);
  await page.evaluate(()=>window.visibilityEmbed.publish(true));
  await expect(embed.locator('[data-section-id="protected"]')).toBeVisible();
- await page.evaluate(()=>window.visibilityEmbed.publish(false,'public-2'));
+ await page.evaluate(()=>window.visibilityEmbed.replaceSource());
  await expect(embed.getByText('权限会话已变化，请以当前身份重新初始化页面',{exact:true})).toBeVisible();
  await page.evaluate(()=>window.visibilityEmbed.remount());
  await expect(embed.locator('[data-section-id="intro"]')).toBeVisible();
  await expect(embed.locator('[data-section-id="protected"]')).toHaveCount(0);
  await page.evaluate(()=>window.visibilityEmbed.destroy());
  expect(errors).toEqual([]);
- const result={status:'pass',browser:browser.version(),scenarios:['level-only-switch','parent-retained','tab-fallback','conditional-parts','url-level-restore','fixed-filter-buttons','wide-and-narrow','fact-inputs','permission-invalidation','pdf-frozen-content','png-export','xlsx-export','permission-cancels-download','public-js-display-inputs','section-group-fallback-and-empty'],errors};
+ const result={status:'pass',browser:browser.version(),scenarios:['level-only-switch','parent-retained','tab-fallback','conditional-parts','url-level-restore','fixed-filter-buttons','wide-and-narrow','fact-inputs','permission-invalidation','pdf-frozen-content','png-export','xlsx-export','permission-cancels-download','public-js-display-inputs','section-group-fallback-and-empty','replaced-source-keeps-permission-boundary'],errors};
  await writeFile(path.join(output,'result.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
 }finally{await browser.close();}

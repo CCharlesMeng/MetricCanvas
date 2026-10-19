@@ -25,14 +25,14 @@
 `pnpm --filter playground dev --port 5185` 后运行：
 
 ```sh
-VISIBILITY_BASE_URL=http://127.0.0.1:5185 node apps/playground/tests/page-visibility-browser.mjs /tmp/metriccanvas-visibility-groups
+VISIBILITY_BASE_URL=http://127.0.0.1:5185 node apps/playground/tests/page-visibility-browser.mjs /tmp/metriccanvas-visibility-verified
 ```
 
-Chrome 151，1440/390，15 类行为通过，pageerror 为零。脚本直接读取三份实际页面，未改写交互声明。已人工查看截图：地区部分区消失，父容器保留，组B子项隐藏后组入口仍在，Tab回退正确；宽窄屏可读。新按钮复用 UI Button。
+Chrome 151，1440/390，16 类行为通过，pageerror 为零。脚本直接读取三份实际页面，未改写交互声明。已人工查看截图：地区部分区消失，父容器保留，组B子项隐藏后组入口仍在，Tab回退正确；宽窄屏可读。新按钮复用 UI Button。
 
-实际 PDF 验证 `%PDF` 文件头；Worker 接缝捕获真实导出 DOM，断言目标分区缺席、空父容器保留、只展开允许的 Tab、投影表格恰好两行；捕获后普通筛选变化不会改变内容。实际 PNG 已查看；XLSX 用 ExcelJS 读取，内容为“名称/金额、代表处A/60、代表处B/40”。权限修订发生在实际 Worker 启动接缝时，取消本次下载。下载文件保留在 `/tmp/metriccanvas-visibility-groups/`。
+实际 PDF 验证 `%PDF` 文件头；Worker 接缝捕获真实导出 DOM，断言目标分区缺席、空父容器保留、只展开允许的 Tab、投影表格恰好两行；捕获后普通筛选变化不会改变内容。实际 PNG 已查看；XLSX 用 ExcelJS 读取，内容为“名称/金额、代表处A/60、代表处B/40”。权限修订发生在实际 Worker 启动接缝时，取消本次下载。下载文件保留在 `/tmp/metriccanvas-visibility-verified/`。
 
-公共 JS `mount` 直接注入稳定 displayInputs：等待、允许、修订失效及 destroy/remount 均通过。平台保存重开使用真实 DS 产物和本地 HTTP Java/DQE 替身，在1440/640下通过，重开重新发出7次DQE请求，[报告](model-browser.json)。已人工查看640截图，标题、区域、18/12行值及柱图可读。
+公共 JS `mount` 直接注入稳定 displayInputs：等待、允许、修订失效及 destroy/remount 均通过。新增替换source对象的真实回归，确认页面重新初始化不能覆盖实例级权限失效锁；旧实例必须重新挂载。筛选批次中无效子级写入不再阻止父级清理旧后代；条件行回调重取当前行，缺键、重复键和已移除行均拒绝执行。平台保存重开使用真实 DS 产物和本地 HTTP Java/DQE 替身，在1440/640下通过，重开重新发出7次DQE请求，[报告](model-browser.json)。已人工查看640截图，标题、区域、18/12行值及柱图可读。
 
 ## 模型与受控链路
 
@@ -57,3 +57,21 @@ Python完整回归已通过：544项，1项既有skip。详情工具栏补齐执
 ## 外部边界
 
 真实 CloudIOC、内网 Java、生产 DQE、Relay 身份/权限和部署验收均 NOT_RUN：本机未配置相应生产身份与可达内网端点。本地 inline、Sim、受控 HTTP、Chrome 和 DS 不能替代这些证据。恢复方式：由真实集成应用注入当前身份权限与有限事实，复用以上三页和 C01–C17，分别核验身份失效、真实候选级联、DQE重查及导出取消；不改页面增加模拟后门。本批不部署、不发布页面、不改现有权限。
+
+## C01–C17 对照
+
+| 编号 | 本地证据 | 结论 |
+|---|---|---|
+| C01/C02 | 层级空选、URL reload、FilterState URL与事务行为测试 | pass |
+| C03/C04 | 目标分区隐藏、保留空父级、动态/静态隐藏筛选仍保留状态 | pass |
+| C05 | Tab/组回退、无可用项、恢复不复活旧选择、空组入口保留 | pass |
+| C06 | SourceProgram既有回归、纯展示投影保留源图；inline浏览器无查询 | pass，本轮无真实门户查询 |
+| C07/C08 | 同源另一Tab仍三行、本表/XLSX两行；远程窗口拒绝单测 | pass |
+| C09 | 门禁与嵌套动作、详情工具栏、当前行重取/重复键拒绝 | pass，本地行为/类型接线 |
+| C10/C11 | 正文片段、Text Value既有回归；not/any缺键/等待/错误 | pass |
+| C12 | 候选代次、消费者隔离、递归级联与单次通知单测 | pass |
+| C13 | Worker真实导出捕获与冻结、普通变化/权限变化下载分支 | pass |
+| C14 | 版本绕行拒绝、合法旧页面conformance | pass |
+| C15 | 产品受控operation、属性编辑、Python stdio和保存重开模型基线 | pass，新条件真实DS单列NOT_RUN |
+| C16 | JS mount与仓外Skill已验证；安装包矩阵待完成 | pending安装矩阵 |
+| C17 | 只读输入、已有权限修订、换source不能越过失效锁 | pass |

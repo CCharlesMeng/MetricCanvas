@@ -277,3 +277,15 @@ it('preserves explicit empty hierarchy through URL and recursively clears descen
  const restored=createFilterState(undefined,declarations);restored.fromURL(state.toURL(),declarations);
  let value:unknown;restored.subscribe(next=>value=next.get('org'));expect(value).toEqual(current.get('org'));
 });
+
+it('invalid child writes do not protect stale descendants in the same parent transaction',()=>{
+ const declarations:import('@metriccanvas/page/internal').FilterDeclaration[]=[
+  {id:'parent',type:'dimension',dimension:'parent'},
+  {id:'child',type:'dimension',dimension:'child',dependsOn:'parent'}
+ ];
+ const state=createFilterState(new Map([['child',{type:'dimension',dimension:'child',values:['old']}]]),declarations);
+ const {pushes}=collect(state);
+ state.writeMany([['parent',{type:'dimension',dimension:'parent',values:['new']}],['child',{type:'boolean',value:true}]]);
+ expect(pushes).toHaveLength(2);
+ expect(pushes.at(-1)?.has('child')).toBe(false);
+});
