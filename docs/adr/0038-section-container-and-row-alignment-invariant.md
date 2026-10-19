@@ -1,6 +1,6 @@
 ---
 status: accepted
-revised-by: [0054]
+revised-by: [0054, 0111]
 ---
 
 # 分区容器单一真源与行对齐运行时不变量

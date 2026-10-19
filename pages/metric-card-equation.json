@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.31",
+  "schemaVersion": "6.34",
   "id": "metric-card-equation",
   "layout": "dashboard",
   "meta": {
@@ -60,21 +60,12 @@
       "id": "equation",
       "title": "收入构成",
       "container": "plain",
-      "columnTracks": [
-        24,
-        1,
-        24,
-        1,
-        24,
-        1,
-        24
-      ],
       "components": [
         {
           "id": "total-card",
           "type": "metricCard",
           "layout": {
-            "span": 1
+            "span": 3
           },
           "data": {
             "main": "demo-metrics"
@@ -95,21 +86,14 @@
           }
         },
         {
-          "id": "equals",
-          "type": "text",
-          "layout": {
-            "span": 1
-          },
-          "props": {
-            "variant": "plain",
-            "title": "="
-          }
-        },
-        {
           "id": "product-card",
           "type": "metricCard",
           "layout": {
-            "span": 1
+            "span": 3,
+            "before": {
+              "text": "=",
+              "gap": 8
+            }
           },
           "data": {
             "main": "demo-metrics"
@@ -130,21 +114,14 @@
           }
         },
         {
-          "id": "plus-service",
-          "type": "text",
-          "layout": {
-            "span": 1
-          },
-          "props": {
-            "variant": "plain",
-            "title": "+"
-          }
-        },
-        {
           "id": "service-card",
           "type": "metricCard",
           "layout": {
-            "span": 1
+            "span": 3,
+            "before": {
+              "text": "+",
+              "gap": 8
+            }
           },
           "data": {
             "main": "demo-metrics"
@@ -165,21 +142,14 @@
           }
         },
         {
-          "id": "plus-other",
-          "type": "text",
-          "layout": {
-            "span": 1
-          },
-          "props": {
-            "variant": "plain",
-            "title": "+"
-          }
-        },
-        {
           "id": "other-card",
           "type": "metricCard",
           "layout": {
-            "span": 1
+            "span": 3,
+            "before": {
+              "text": "+",
+              "gap": 8
+            }
           },
           "data": {
             "main": "demo-metrics"
@@ -205,21 +175,12 @@
       "id": "word-connection",
       "title": "业务拆分",
       "container": "plain",
-      "columnTracks": [
-        24,
-        8,
-        24,
-        1,
-        24,
-        1,
-        24
-      ],
       "components": [
         {
           "id": "word-total",
           "type": "metricCard",
           "layout": {
-            "span": 1
+            "span": 3
           },
           "data": {
             "main": "demo-metrics"
@@ -240,21 +201,14 @@
           }
         },
         {
-          "id": "including",
-          "type": "text",
-          "layout": {
-            "span": 1
-          },
-          "props": {
-            "variant": "plain",
-            "title": "其中"
-          }
-        },
-        {
           "id": "word-product",
           "type": "metricCard",
           "layout": {
-            "span": 1
+            "span": 3,
+            "before": {
+              "text": "其中",
+              "gap": 8
+            }
           },
           "data": {
             "main": "demo-metrics"
@@ -275,21 +229,14 @@
           }
         },
         {
-          "id": "and-service",
-          "type": "text",
-          "layout": {
-            "span": 1
-          },
-          "props": {
-            "variant": "plain",
-            "title": "+"
-          }
-        },
-        {
           "id": "word-service",
           "type": "metricCard",
           "layout": {
-            "span": 1
+            "span": 3,
+            "before": {
+              "text": "+",
+              "gap": 8
+            }
           },
           "data": {
             "main": "demo-metrics"
@@ -310,21 +257,14 @@
           }
         },
         {
-          "id": "and-other",
-          "type": "text",
-          "layout": {
-            "span": 1
-          },
-          "props": {
-            "variant": "plain",
-            "title": "+"
-          }
-        },
-        {
           "id": "word-other",
           "type": "metricCard",
           "layout": {
-            "span": 1
+            "span": 3,
+            "before": {
+              "text": "+",
+              "gap": 8
+            }
           },
           "data": {
             "main": "demo-metrics"

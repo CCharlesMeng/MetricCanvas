@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.33",
-  "schemaSha256": "59956065a7be3345c7ead7e1bd50479ec29ccf9a3714baa9c249901d0ad783e7",
+  "schemaVersion": "6.34",
+  "schemaSha256": "0305d28888fcb5a48600584439d7bb512ec5643a2b8d667addbfac530b690a75",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -455,21 +455,24 @@
     "components/metricCard.md": {
       "title": "指标卡 metricCard",
       "definitions": [
-        "metricCardComponent"
+        "metricCardComponent",
+        "metricCardLayout"
       ],
       "keywords": [
         "components/metricCard",
         "指标卡 metricCard"
       ],
       "examples": [
-        "inline-report"
+        "inline-report",
+        "metric-card-equation"
       ],
       "rules": [
         "schema-structure",
         "data-slot-known-source",
         "field-binding-resolves",
         "field-binding-role",
-        "field-binding-match"
+        "field-binding-match",
+        "metric-card-before"
       ]
     },
     "components/barChart.md": {
@@ -913,7 +916,8 @@
         "6.30",
         "6.31",
         "6.32",
-        "6.33"
+        "6.33",
+        "6.34"
       ]
     },
     {
@@ -5991,7 +5995,64 @@
       "path": "@metricCardComponent.layout",
       "required": "本分支必填",
       "module": "components/metricCard.md",
-      "ref": "#/definitions/componentLayout"
+      "ref": "#/definitions/metricCardLayout"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout",
+      "path": "@metricCardLayout",
+      "required": "类型/分支",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/span",
+      "path": "@metricCardLayout.span",
+      "required": "本分支必填",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/connectPrevious",
+      "path": "@metricCardLayout.connectPrevious",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/layer",
+      "path": "@metricCardLayout.layer",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/layer/allOf/0",
+      "path": "@metricCardLayout.layer · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/metricCard.md",
+      "ref": "#/definitions/componentLayer"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/before",
+      "path": "@metricCardLayout.before",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/before/properties/text",
+      "path": "@metricCardLayout.before.text",
+      "required": "本分支必填",
+      "module": "components/metricCard.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/before/properties/gap",
+      "path": "@metricCardLayout.before.gap",
+      "required": "本分支可选",
+      "module": "components/metricCard.md",
+      "enum": [
+        4,
+        8,
+        12,
+        16,
+        24
+      ]
     },
     {
       "pointer": "#/definitions/metricCardComponent/properties/data",
@@ -12230,5 +12291,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "4c6bea711b75cab2a0ade164d0289a599a4036e09695db64c1a8df7efa69770e"
+  "semanticSourceDigest": "d3cf3a7b3b71d470b9c283a087aa2865093821174fcdd4a13dc9e3b514deb8b3"
 }

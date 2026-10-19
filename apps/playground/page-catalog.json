@@ -441,7 +441,7 @@
     {
       "id": "metric-card-equation",
       "group": "features",
-      "summary": "将指标卡与等号、加号和“其中”排列在同一行，表达收入构成与业务拆分。",
+      "summary": "指标卡前置等号、加号与文字按内容占宽，两侧各 8px；四卡同行并在窄屏自动堆叠。",
       "tags": [
         "指标卡",
         "文字混排",
@@ -458,12 +458,14 @@
       },
       "guide": {
         "steps": [
-          "查看收入构成中的等号、加号与指标卡排列。",
-          "对照业务拆分一行，查看文字和卡片的宽度声明。"
+          "查看收入构成：四卡等宽同行，等号、加号两侧各 8px。",
+          "对照业务拆分中的“其中”，文字按内容占宽。",
+          "缩小容器：卡片转为单列，文字在两张卡之间居中。"
         ],
         "configPaths": [
-          "sections[].components[].layout",
-          "sections[].components[].type"
+          "sections[].components[].layout.span",
+          "sections[].components[].layout.before.text",
+          "sections[].components[].layout.before.gap"
         ],
         "boundary": "等号与加号是展示文字，不建立计算关系；数值来自静态演示数据。",
         "related": [

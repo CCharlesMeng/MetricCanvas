@@ -9,7 +9,7 @@
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.33。结构真源为本册[schema.json](../schema.json)，SHA256 `59956065a7be3345c7ead7e1bd50479ec29ccf9a3714baa9c249901d0ad783e7`。字段表自动生成；可选不等于有默认值。
+页面协议 6.34。结构真源为本册[schema.json](../schema.json)，SHA256 `0305d28888fcb5a48600584439d7bb512ec5643a2b8d667addbfac530b690a75`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -362,15 +362,14 @@ Schema位置：`#/definitions/textComponent/properties/props/properties/links/it
 
 ```json
 {
-  "id": "explanation",
+  "id": "intro-text",
   "type": "text",
   "layout": {
     "span": 12
   },
   "props": {
-    "title": "章节说明",
-    "body": "这是页面中的静态说明正文。",
-    "variant": "plain"
+    "variant": "plain",
+    "body": "收入概览 · 单位：万元 · 演示数据"
   }
 }
 ```

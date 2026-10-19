@@ -232,7 +232,8 @@
 
 
 
-<RuntimeSection {section} {componentContent} cellAttachment={attachCell}>
+<RuntimeSection {section} {componentContent} cellAttachment={attachCell}
+  onbeforeselect={authoring ? (component) => authoring?.onintent({ type: 'select_component', locator: locator(component.id) }) : undefined}>
   {#snippet emptyContent()}
     {#if authoring}
       <div

@@ -42,11 +42,18 @@ const metricCardProgressZ = z
   })
   .strict();
 
+const metricCardLayoutZ = componentLayoutZ.extend({
+  before: z.object({
+    text: nonEmptyTextValueZ,
+    gap: z.literal([4, 8, 12, 16, 24]).optional()
+  }).strict().optional()
+}).meta({ id: 'metricCardLayout' });
+
 export const metricCardComponentZ = z
   .object({
     id: componentIdZ,
     type: z.literal('metricCard'),
-    layout: componentLayoutZ,
+    layout: metricCardLayoutZ,
     data: metricDataZ,
     props: z
       .object({

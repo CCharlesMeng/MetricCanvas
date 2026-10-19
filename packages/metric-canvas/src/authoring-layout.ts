@@ -56,7 +56,13 @@ export function resolveAuthoringSections(
       const component = componentsById.get(componentId);
       if (!component || seenComponents.has(componentId)) return pageSections;
       seenComponents.add(componentId);
-      components.push(component);
+      const oldSection = pageSections.find(section => section.components.some(item => item.id === componentId));
+      const oldIndex = oldSection?.components.findIndex(item => item.id === componentId) ?? -1;
+      if (component.type === 'metricCard' && component.layout.before &&
+          (oldSection?.id !== draftSection.id || oldSection?.components[oldIndex - 1]?.id !== components.at(-1)?.id)) {
+        const { before: _before, ...layout } = component.layout;
+        components.push({ ...component, layout });
+      } else components.push(component);
     }
     resolved.push({
       id: draftSection.id,

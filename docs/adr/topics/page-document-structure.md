@@ -18,6 +18,8 @@
 
 内容分区的外观自 Schema 5.0 起由可选的 `section.container` 单一声明(封闭三档:`plain`/`panel`/`card`,缺省为通用看板外观);`section.variant` 与 `section.layout` 已删除。内容分区缺省是 12 列等权 Grid；Schema 5.3 起，真实结构无法表达时可声明最多 12 条受控正整数权重轨，不开放 CSS、坐标或像素宽高([ADR-0054](../0054-section-weighted-column-tracks.md))。统一运行时不得按组件组合或子组件 `props.variant` 推断分区外观。同一视觉行内同类型、同 `props.variant` 且具备行对齐能力的组件由统一运行时自动对齐行轨高度,这是运行时不变量而非页面声明;对齐通过显式契约协作,统一运行时不出现组件内部选择器。新增 `container` 档位必须证明"结构上不可区分且视觉上必须不同"。
 
+**指标卡前置连接文字（[ADR-0111](../0111-metric-card-before-connection-layout.md)）：** 6.34 在指标卡 `layout.before` 声明短连接文字和双侧间距档位，由统一运行时派生内部排布盒；整组占成员 span 之和，内部扣除文字和间距后按 span 比例分配。仅支持 Dashboard、plain/card、默认 12 列顶层指标卡。原相邻两卡都呈现才显示连接，不跨隐藏项重连。该能力只为连接关系放开受控 gap，修订 ADR-0038/0054 的全面拒绝；页面树、直接组件尺寸盒和无配置页面保持原有语义。
+
 **响应式宽度所有权([ADR-0059](../0059-direct-component-box-responsive-ownership.md)):** `RuntimeView` 的 `mc-runtime` 只负责页面级与跨组件排布；`RuntimeSection` 顶层单元、组合卡 slot 与 Tab 活动面板以 `mc-component-box` 给直接 Page Component 提供可用 inline-size；组件内部只使用最近的直接布局盒或匿名 self container。旧 viewport 数值不得机械迁移为容器阈值，优先用流式 CSS；组件根填满直接盒，固有内容尺寸必须有收缩或内部 overflow owner。该边界不进入 Page Metadata，不新增响应字段或生产态断点注册表。
 
 **组件能力目录的 `defaultSpan` 是相对比例,不是绝对宽度([ADR-0057](../0057-proportional-row-packing-and-page-header-in-assembly.md))。** 依据是人工搭的看板对它的用法:33 个分区里 14 个覆盖了 `defaultSpan`,但覆盖后的宽度几乎都保持了默认值之间的比例(指标卡 3 配柱状图 6 写成 4 + 8,三张指标卡各 3 写成 4 + 4 + 4)。创作期装配据此在**每个分区内**按比例贪心分行、每行缩放到恰好占满整行,因此视觉行的 span 之和恒等于分区列数;装箱不跨分区搬动组件,ADR-0055 的一组一分区不动。装箱是装配期的确定性纯函数(`packages/server/mcp/src/authoring/section-layout.ts`),模型不参与 span 决策——span 是纯几何,模型只会带来方差。分行判断只在比例空间里做,受控权重列轨只改变最终整数分配。手写页面继续显式声明 `span`,不受影响;目录没有「宽度上限」概念,装配因此会把独占分区的饼图与排行卡拉到通栏,该现象留待有真实产物证据后单独裁决。

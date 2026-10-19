@@ -1,6 +1,22 @@
 {
   "invariants": [
     {
+      "id": "metric-card-before",
+      "description": "6.34 Dashboard 顶层指标卡前置文字、受控间距与整组跨度",
+      "valid": [
+        "metric-card-equation"
+      ],
+      "invalid": [
+        "metric-before-version",
+        "metric-before-report",
+        "metric-before-tracks",
+        "metric-before-span",
+        "metric-before-empty",
+        "metric-before-gap",
+        "metric-before-nested"
+      ]
+    },
+    {
       "id": "tab-url-initialization",
       "description": "6.33 Tab 显式 URL 初值与页面输入名称互斥",
       "valid": [

@@ -243,6 +243,8 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 7.4 `metricCard` → [模块参考](contracts/metriccanvas/page/reference/components/metricCard.md)。
 
+6.34 支持 Dashboard 顶层指标卡 `layout.before` 连接文字，双侧间距缺省 8px，保留外层 12 列；完整场景见 [指标卡连接排布](pages/metric-card-equation.json)。
+
 <a id="75-图表组件"></a>
 
 7.5 图表组件 → [模块参考](contracts/metriccanvas/page/reference/components/README.md)。

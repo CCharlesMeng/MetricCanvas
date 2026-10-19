@@ -1,22 +1,21 @@
 {
-  "schemaVersion": "6.5",
-  "layout": "report",
-  "id": "reference-text-page",
+  "schemaVersion": "6.34",
+  "id": "metric-card-equation",
+  "layout": "dashboard",
   "dataSources": {},
   "sections": [
     {
       "id": "main",
       "components": [
         {
-          "id": "explanation",
+          "id": "intro-text",
           "type": "text",
           "layout": {
             "span": 12
           },
           "props": {
-            "title": "章节说明",
-            "body": "这是页面中的静态说明正文。",
-            "variant": "insight"
+            "variant": "insight",
+            "body": "收入概览 · 单位：万元 · 演示数据"
           }
         }
       ]

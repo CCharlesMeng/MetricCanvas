@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.33",
-  "schemaSha256": "59956065a7be3345c7ead7e1bd50479ec29ccf9a3714baa9c249901d0ad783e7",
+  "schemaVersion": "6.34",
+  "schemaSha256": "0305d28888fcb5a48600584439d7bb512ec5643a2b8d667addbfac530b690a75",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -41,6 +41,10 @@
     {
       "file": "packages/page/src/filter-text-value.ts",
       "sha256": "0677ae512e8447a5dbc3a347bef5b970ed598d3e12ec855487bebbe4d822768a"
+    },
+    {
+      "file": "packages/page/src/metric-before.ts",
+      "sha256": "2559b3b6cb07deb89cd1385b91d981dd775b6ce9b95a3232c4c5b1eb44df7b31"
     },
     {
       "file": "packages/page/src/navigate.ts",
@@ -112,7 +116,7 @@
     },
     {
       "file": "packages/page/src/schema/components/metric-card.ts",
-      "sha256": "1042d255be12987bbde6c9a8f551c1e53ef18df2126409662bea561b2af8a891"
+      "sha256": "149a842934170009d2752320b1159463cd818cc41de515e74bae5944756c4b55"
     },
     {
       "file": "packages/page/src/schema/components/ranking-card.ts",
@@ -188,11 +192,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "6dce87441127e71ff39886b0ab3d9ca1a8458804f4663a2ea6d13759db067fe8"
+      "sha256": "4a8a80cd370ebb9afb87f4e3364b40dd90a8b09e758fe677edbcb32623e2cca8"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "9eb525ff34114e8a260eb411586ab3e6e1fa697617121c4a58b64596270c0b84"
+      "sha256": "09fd4ccc7d1e7edf7a7395925d7be7bb11558e673efdfc9d8b14a59e3fa299da"
     }
   ],
   "modules": {
@@ -730,25 +734,29 @@
     "components/metricCard.md": {
       "title": "指标卡 metricCard",
       "definitions": [
-        "metricCardComponent"
+        "metricCardComponent",
+        "metricCardLayout"
       ],
       "keywords": [
         "components/metricCard",
         "指标卡 metricCard"
       ],
       "examples": [
-        "inline-report"
+        "inline-report",
+        "metric-card-equation"
       ],
       "sources": [
         "packages/page/src/schema/components/metric-card.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/page/src/metric-before.ts"
       ],
       "rules": [
         "schema-structure",
         "data-slot-known-source",
         "field-binding-resolves",
         "field-binding-role",
-        "field-binding-match"
+        "field-binding-match",
+        "metric-card-before"
       ]
     },
     "components/barChart.md": {
@@ -1261,7 +1269,8 @@
         "6.30",
         "6.31",
         "6.32",
-        "6.33"
+        "6.33",
+        "6.34"
       ]
     },
     {
@@ -6339,7 +6348,64 @@
       "path": "@metricCardComponent.layout",
       "required": "本分支必填",
       "module": "components/metricCard.md",
-      "ref": "#/definitions/componentLayout"
+      "ref": "#/definitions/metricCardLayout"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout",
+      "path": "@metricCardLayout",
+      "required": "类型/分支",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/span",
+      "path": "@metricCardLayout.span",
+      "required": "本分支必填",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/connectPrevious",
+      "path": "@metricCardLayout.connectPrevious",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/layer",
+      "path": "@metricCardLayout.layer",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/layer/allOf/0",
+      "path": "@metricCardLayout.layer · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/metricCard.md",
+      "ref": "#/definitions/componentLayer"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/before",
+      "path": "@metricCardLayout.before",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/before/properties/text",
+      "path": "@metricCardLayout.before.text",
+      "required": "本分支必填",
+      "module": "components/metricCard.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/before/properties/gap",
+      "path": "@metricCardLayout.before.gap",
+      "required": "本分支可选",
+      "module": "components/metricCard.md",
+      "enum": [
+        4,
+        8,
+        12,
+        16,
+        24
+      ]
     },
     {
       "pointer": "#/definitions/metricCardComponent/properties/data",
@@ -11261,42 +11327,42 @@
       "type": "text",
       "file": "examples/component-text.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-text-page.json"
+      "source": "page/conformance/valid/metric-card-equation.json"
     },
     {
       "type": "text",
       "variant": "plain",
       "file": "examples/component-text-plain.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-text-page.json"
+      "source": "page/conformance/valid/metric-card-equation.json"
     },
     {
       "type": "text",
       "variant": "heading",
       "file": "examples/component-text-heading.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-text-page.json"
+      "source": "page/conformance/valid/metric-card-equation.json"
     },
     {
       "type": "text",
       "variant": "insight",
       "file": "examples/component-text-insight.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-text-page.json"
+      "source": "page/conformance/valid/metric-card-equation.json"
     },
     {
       "type": "text",
       "variant": "reportInline",
       "file": "examples/component-text-reportInline.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-text-page.json"
+      "source": "page/conformance/valid/metric-card-equation.json"
     },
     {
       "type": "text",
       "variant": "riskNotice",
       "file": "examples/component-text-riskNotice.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-text-page.json"
+      "source": "page/conformance/valid/metric-card-equation.json"
     },
     {
       "type": "aiSummary",

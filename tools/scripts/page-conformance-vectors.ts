@@ -54,6 +54,15 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'metric-card-before',description:'6.34 Dashboard 顶层指标卡前置文字、受控间距与整组跨度',valid:['metric-card-equation'],cases:[
+    {case:'metric-before-version',base:'metric-card-equation',expect:/由 6.34 引入/,mutate:d=>{d.schemaVersion='6.33';}},
+    {case:'metric-before-report',base:'metric-card-equation',expect:/before 仅支持 Dashboard/,mutate:d=>{d.layout='report';}},
+    {case:'metric-before-tracks',base:'metric-card-equation',expect:/默认 12 列/,mutate:d=>{d.sections[1].columnTracks=[1,1,1,1];}},
+    {case:'metric-before-span',base:'metric-card-equation',expect:/span 之和不能超过 12/,mutate:d=>{d.sections[1].components[0].layout.span=4;}},
+    {case:'metric-before-empty',base:'metric-card-equation',expect:/非空连接文字/,mutate:d=>{d.sections[1].components[1].layout.before.text=' ';}},
+    {case:'metric-before-gap',base:'metric-card-equation',expect:/允许范围/,mutate:d=>{d.sections[1].components[1].layout.before.gap=7;}},
+    {case:'metric-before-nested',base:'metric-card-equation',expect:/顶层指标卡/,mutate:d=>{d.sections[1].components=[{id:'nested',type:'compositeCard',layout:{span:12},props:{components:d.sections[1].components}}];}}
+  ]},
   {id:'tab-url-initialization',description:'6.33 Tab 显式 URL 初值与页面输入名称互斥',valid:['tab-url-initialization','tab-url-source'],cases:[
     {case:'tab-url-before-6.33',base:'tab-url-initialization',expect:/由 6.33 引入/,mutate:d=>{d.schemaVersion='6.32';}},
     {case:'tab-url-empty-key',base:'tab-url-initialization',expect:/initialTabUrlParam/,mutate:d=>{firstComponent(d).props.initialTabUrlParam='';}},

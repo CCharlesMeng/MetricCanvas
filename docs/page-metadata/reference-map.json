@@ -534,25 +534,29 @@
     "components/metricCard.md": {
       "title": "指标卡 metricCard",
       "definitions": [
-        "metricCardComponent"
+        "metricCardComponent",
+        "metricCardLayout"
       ],
       "keywords": [
         "components/metricCard",
         "指标卡 metricCard"
       ],
       "examples": [
-        "inline-report"
+        "inline-report",
+        "metric-card-equation"
       ],
       "sources": [
         "packages/page/src/schema/components/metric-card.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/page/src/metric-before.ts"
       ],
       "rules": [
         "schema-structure",
         "data-slot-known-source",
         "field-binding-resolves",
         "field-binding-role",
-        "field-binding-match"
+        "field-binding-match",
+        "metric-card-before"
       ]
     },
     "components/barChart.md": {
@@ -1265,7 +1269,10 @@
     "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/filename": "可选非空文本取值，支持参数、已应用筛选和parts；点击时捕获，默认页头标题，清理非法字符后规范为对应格式的单一扩展名。",
     "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/filename": "可选非空文本取值，支持参数、已应用筛选和parts；点击时捕获，默认页头标题，清理非法字符后规范为对应格式的单一扩展名。",
     "echartsOption": "6.32 高级呈现 JSON；仅显式需求时使用，保护数据、结构与交互，异常单次回退且诊断仅console。",
-    "initialTabUrlParam": "6.33 起显式声明初始化 Tab 的 URL 参数名；值匹配 Tab id，缺失、空值、重复或未知值回退 defaultTab / 首个 Tab。与本页其他 URL 输入名称互斥。"
+    "initialTabUrlParam": "6.33 起显式声明初始化 Tab 的 URL 参数名；值匹配 Tab id，缺失、空值、重复或未知值回退 defaultTab / 首个 Tab。与本页其他 URL 输入名称互斥。",
+    "#/definitions/metricCardLayout/properties/before": "与原文档前一张相邻指标卡之间的前置连接文字；仅 Dashboard 顶层默认12列的plain/card分区支持。",
+    "#/definitions/metricCardLayout/properties/before/properties/text": "按纯文本呈现的连接文字，复用文本取值；缺失可选参数时整个连接缺席。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap": "文字内容盒到两侧卡片的间距，单位CSS px，缺省8；不是卡片内部padding。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1460,7 +1467,13 @@
     "6.30": "Report导出图片：独立文档、3/4倍高清、始终一张完整PNG。",
     "6.31": "Report统一exportButtons，按按钮配置PDF/PNG格式、名称、文件名与渲染倍数，点击直接下载。",
     "6.32": "柱/线/饼图隐含echartsOption呈现扩展，保护数据结构，单次降级与console诊断。",
-    "6.33": "Tab 容器通过显式 URL 参数初始化活动页签。"
+    "6.33": "Tab 容器通过显式 URL 参数初始化活动页签。",
+    "6.34": "Dashboard 指标卡前置连接文字与双侧受控间距。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=4": "连接文字两侧各留4 CSS px。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=8": "连接文字两侧各留8 CSS px。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=12": "连接文字两侧各留12 CSS px。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=16": "连接文字两侧各留16 CSS px。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=24": "连接文字两侧各留24 CSS px。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
