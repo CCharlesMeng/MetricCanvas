@@ -17,7 +17,7 @@ report定宽居中，dashboard占满宿主宽度。dashboardToolbar缺省visible
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.33。结构真源为本册[schema.json](schema.json)，SHA256 `59956065a7be3345c7ead7e1bd50479ec29ccf9a3714baa9c249901d0ad783e7`。字段表自动生成；可选不等于有默认值。
+页面协议 6.34。结构真源为本册[schema.json](schema.json)，SHA256 `82654beca54f3cc5e0039b54382cb05bc16b3e972b9a4fca40faad2d147238b3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -39,7 +39,7 @@ Schema位置：`#/properties/schemaVersion`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 |
+| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -72,6 +72,7 @@ Schema位置：`#/properties/schemaVersion`。
 | "6.31" | Report统一exportButtons，按按钮配置PDF/PNG格式、名称、文件名与渲染倍数，点击直接下载。 |
 | "6.32" | 柱/线/饼图隐含echartsOption呈现扩展，保护数据结构，单次降级与console诊断。 |
 | "6.33" | Tab 容器通过显式 URL 参数初始化活动页签。 |
+| "6.34" | 统一条件显隐、行投影、按钮及条件正文片段；父级约束后代，子项不反推父级。 |
 
 <a id="schema-232f70726f706572746965732f6964"></a>
 
@@ -672,6 +673,16 @@ Schema位置：`#/properties/detailViews/items/properties/components/items/oneOf
 |---|---|---|---|---|
 | 引用 #/definitions/aiSummaryComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f70726f706572746965732f64657461696c56696577732f6974656d732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f3137"></a>
+
+### `$.detailViews[].components[] · oneOf[17]`
+
+Schema位置：`#/properties/detailViews/items/properties/components/items/oneOf/17`。目标：[#/definitions/buttonComponent](components/button.md#schema-232f646566696e6974696f6e732f627574746f6e436f6d706f6e656e74)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/buttonComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f70726f706572746965732f73656374696f6e47726f757073"></a>
 
 ### `$.sectionGroups`
@@ -701,6 +712,26 @@ Schema位置：`#/properties/sectionGroups/items/properties/id`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f70726f706572746965732f73656374696f6e47726f7570732f6974656d732f70726f706572746965732f76697369626c655768656e"></a>
+
+### `$.sectionGroups[].visibleWhen`
+
+Schema位置：`#/properties/sectionGroups/items/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f70726f706572746965732f73656374696f6e47726f7570732f6974656d732f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `$.sectionGroups[].visibleWhen · allOf[0]`
+
+Schema位置：`#/properties/sectionGroups/items/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f70726f706572746965732f73656374696f6e47726f7570732f6974656d732f70726f706572746965732f6c6162656c"></a>
 
@@ -817,7 +848,7 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - `page-layout-compatibility`：6.1 layout 能力下限与单布局真源；6.0 layoutForm 仍可读取。反例：[layout-before-6.1](errors/layout-before-6.1.json)、[layout-dual-equal](errors/layout-dual-equal.json)、[layout-dual-conflict](errors/layout-dual-conflict.json)、[layout-invalid-value](errors/layout-invalid-value.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `schema-structure`：Page Schema 结构校验（ajv allErrors 文案与顺序）。反例：[missing-schema-version](errors/missing-schema-version.json)、[unknown-top-level-field](errors/unknown-top-level-field.json)、[layout-span-out-of-range](errors/layout-span-out-of-range.json)、[field-id-pattern](errors/field-id-pattern.json)、[sections-empty](errors/sections-empty.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `schema-version-supported`：schemaVersion 必须是当前主版本内的受支持次版本。反例：[version-major-unsupported](errors/version-major-unsupported.json)、[version-minor-ahead](errors/version-minor-ahead.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `detail-view-component-types`：详情只允许说明、图表和表格；共享 Schema 其它组件分支有显式拒绝见证。反例：[detail-component-reject-reportheader](errors/detail-component-reject-reportheader.json)、[detail-component-reject-metriccard](errors/detail-component-reject-metriccard.json)、[detail-component-reject-mapchart](errors/detail-component-reject-mapchart.json)、[detail-component-reject-tabcontainer](errors/detail-component-reject-tabcontainer.json)、[detail-component-reject-compositecard](errors/detail-component-reject-compositecard.json)、[detail-component-reject-rankingcard](errors/detail-component-reject-rankingcard.json)、[detail-component-reject-rankingdetailcard](errors/detail-component-reject-rankingdetailcard.json)、[detail-component-reject-keyvaluepanel](errors/detail-component-reject-keyvaluepanel.json)、[detail-component-reject-categorybreakdown](errors/detail-component-reject-categorybreakdown.json)、[detail-component-reject-fieldtext](errors/detail-component-reject-fieldtext.json)、[detail-component-reject-aisummary](errors/detail-component-reject-aisummary.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `detail-view-component-types`：详情只允许说明、图表和表格；共享 Schema 其它组件分支有显式拒绝见证。反例：[detail-component-reject-reportheader](errors/detail-component-reject-reportheader.json)、[detail-component-reject-metriccard](errors/detail-component-reject-metriccard.json)、[detail-component-reject-mapchart](errors/detail-component-reject-mapchart.json)、[detail-component-reject-tabcontainer](errors/detail-component-reject-tabcontainer.json)、[detail-component-reject-compositecard](errors/detail-component-reject-compositecard.json)、[detail-component-reject-rankingcard](errors/detail-component-reject-rankingcard.json)、[detail-component-reject-rankingdetailcard](errors/detail-component-reject-rankingdetailcard.json)、[detail-component-reject-keyvaluepanel](errors/detail-component-reject-keyvaluepanel.json)、[detail-component-reject-categorybreakdown](errors/detail-component-reject-categorybreakdown.json)、[detail-component-reject-fieldtext](errors/detail-component-reject-fieldtext.json)、[detail-component-reject-aisummary](errors/detail-component-reject-aisummary.json)、[detail-component-reject-button](errors/detail-component-reject-button.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -859,3 +890,4 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - `#/properties/detailViews/items/properties/components/items/oneOf/14`：[语义拒绝反例](errors/detail-component-reject-fieldtext.json)：详情的展示闭集拒绝 fieldText；共享组件 Schema 分支只存在语义反例。（规则 `detail-view-component-types`）。此项不计入合法示例覆盖。
 - `#/properties/detailViews/items/properties/components/items/oneOf/15`：[合法完整页面](examples/reference-export-detail-branches.json)，JSON Pointer `#/detailViews/0/components/0`。
 - `#/properties/detailViews/items/properties/components/items/oneOf/16`：[语义拒绝反例](errors/detail-component-reject-aisummary.json)：详情的展示闭集拒绝 aiSummary；共享组件 Schema 分支只存在语义反例。（规则 `detail-view-component-types`）。此项不计入合法示例覆盖。
+- `#/properties/detailViews/items/properties/components/items/oneOf/17`：[语义拒绝反例](errors/detail-component-reject-button.json)：详情展示闭集不开放独立按钮和递归动作，只有语义拒绝见证。（规则 `detail-view-component-types`）。此项不计入合法示例覆盖。

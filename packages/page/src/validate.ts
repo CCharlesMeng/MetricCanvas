@@ -1,3 +1,4 @@
+import { filterHasObservableConsumer, presentationPolicyErrors } from './presentation-policy';
 import { chartOptionErrors, withoutChartOptions } from './chart-option';
 import { chartFilterErrors } from './chart-filter';
 import { pagedJoinErrors } from './validate-paged-join';
@@ -140,7 +141,7 @@ export function parsePage(
 
   const page = canonicalLayoutDocument(materialized.document as Page);
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
-  const errors = [...invariantErrors(page), ...chartFilterErrors(page, compatibleDocument), ...navigationErrors(page), ...urlInputErrors(page)];
+  const errors = [...presentationPolicyErrors(page), ...invariantErrors(page), ...chartFilterErrors(page, compatibleDocument), ...navigationErrors(page), ...urlInputErrors(page)];
   return errors.length === 0
     ? { ok: true, page, errors: [] }
     : { ok: false, errors };
@@ -2151,7 +2152,7 @@ function actionErrors(
   if (!actions) return [];
   const errors: TypedError[] = [];
   if (!deriveComponentCapabilities(page, component).live) {
-    const hasWriteFilter = actions.some((action) => 'writeFilter' in action);
+    const hasWriteFilter = actions.some((action) => 'writeFilter' in action && !(Number(page.schemaVersion.split('.')[1])>=34&&filterHasObservableConsumer(page,action.writeFilter)));
     if (hasWriteFilter) {
       errors.push(
         schemaError(
@@ -2174,7 +2175,7 @@ function actionErrors(
           schemaError(`${path}/writeFilter`, `回写目标必须是 dimension 筛选器:${action.writeFilter}`)
         );
       }
-      check(action.field, `${path}/field`, 'dimension');
+      if ('field' in action) check(action.field, `${path}/field`, 'dimension');
       return;
     }
     if ('openDetail' in action) {

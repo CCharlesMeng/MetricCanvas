@@ -1,3 +1,4 @@
+import { visibilityShape } from '../condition';
 import { chartFilterZ } from '../chart-filter';
 import { z } from 'zod';
 import {
@@ -55,6 +56,7 @@ const mapPinnedSummaryZ = z
 export const mapChartComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('mapChart'),
     layout: componentLayoutZ,
     data: mainDataZ,

@@ -88,6 +88,7 @@ export function mount(
 function runtimeInput(input: RuntimeInput): RuntimeInput {
   return {
     document: input.document,
+    ...(input.displayInputs !== undefined ? {displayInputs:input.displayInputs} : {}),
     ...(input.execution !== undefined ? {execution:input.execution} : {}),
     ...(input.navigation !== undefined ? { navigation: input.navigation } : {}),
     ...(input.dataGateway !== undefined

@@ -4,6 +4,13 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
+      "message": "筛选写入必须有查询绑定或显隐消费方",
+      "paths": [
+        "/sections/0/components/0/props/actions/0"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "writeFilter 只允许绑定 query 数据源的组件；navigate 与 openDetail 可以挂在 inline 组件上",
       "paths": [
         "/sections/0/components/0/props/actions"

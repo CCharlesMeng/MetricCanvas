@@ -59,6 +59,7 @@ export function resolveAuthoringSections(
       components.push(component);
     }
     resolved.push({
+      ...(sourceSection?.visibleWhen===undefined?{}:{visibleWhen:sourceSection.visibleWhen}),
       id: draftSection.id,
       ...(draftSection.title === undefined ? {} : { title: draftSection.title }),
       ...(draftSection.container === undefined

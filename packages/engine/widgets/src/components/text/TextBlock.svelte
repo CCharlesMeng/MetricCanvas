@@ -4,6 +4,7 @@
   export interface TextBlockLink {
     label: string;
     href: string;
+    disabled?:boolean;
     onclick?: (event: MouseEvent) => void;
   }
 </script>
@@ -76,7 +77,7 @@
   {#if links.length > 0}
     <nav class="links">
       {#each links as link, linkIndex (linkIndex)}
-        <a href={link.href} onclick={link.onclick}>{link.label} →</a>
+        {#if link.disabled}<span aria-disabled="true">{link.label} →</span>{:else}<a href={link.href} onclick={link.onclick}>{link.label} →</a>{/if}
       {/each}
     </nav>
   {/if}

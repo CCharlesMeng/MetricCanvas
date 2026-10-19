@@ -23,7 +23,8 @@ export interface RuntimeNavigation {
 
 export type RuntimeConfigurationErrorCode =
   | 'DATA_GATEWAY_REQUIRED'
-  | 'DATA_GATEWAY_INVALID';
+  | 'DATA_GATEWAY_INVALID'
+  | 'DISPLAY_PERMISSION_CHANGED';
 
 export interface RuntimeConfigurationError {
   code: RuntimeConfigurationErrorCode;
@@ -47,7 +48,7 @@ export type RuntimeViewEvent =
       message: string;
     }
   | DataErrorEvent
-  | { type: 'filter-change'; search: string }
+  | { type: 'filter-change'; search: string; filterRevision?: number }
   | {
       type: 'navigate';
       href: string;
@@ -81,6 +82,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 /** 正式渲染输入；创作行为不属于该 Interface。 */
 export interface RuntimeViewProps {
+  displayInputs?: import('../../runtime/src/display-inputs').DisplayInputs;
   document: unknown;
   execution?: import('../../runtime/src').ExecutionBootstrap;
   dataGateway?: RuntimeDataGateway;

@@ -8,7 +8,7 @@ import { exportComponentData, type ExportRenderState } from './export-render-sta
 /** Freeze upstream inputs before any await. Fetch only this table's transitive dependency closure. */
 export async function prepareTableExport(input: {
   page: Page; component: TableComponent; queries: ReadonlyMap<string, EffectiveQuery>;
-  gateway: RuntimeDataGateway; state: Pick<ExportRenderState, 'filters' | 'tables' | 'headerFilters' | 'currentYear'>;
+  gateway: RuntimeDataGateway; state: Pick<ExportRenderState, 'filters' | 'tables' | 'headerFilters' | 'currentYear' | 'filterRevision' | 'displaySnapshot'>;
   controller: AbortController; views?: ReadonlyMap<string, import('@metriccanvas/page/internal').TableQueryView>; program?: import('@metriccanvas/data-execution/runtime').SourceProgram;
 }): Promise<NamedDataSlots> {
   const page = JSON.parse(JSON.stringify(input.page)) as Page;

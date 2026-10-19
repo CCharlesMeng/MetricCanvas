@@ -29,3 +29,5 @@
 创作工具的 `add_tab_container` 可直接声明 `initialTabUrlParam`；`set_properties` 可修改它和 `defaultTab`。写入 URL 初值字段时自动采用当前写出版本，普通标题编辑保留已有配置，冲突或非法页签配置由完整页面校验拒绝。
 
 完整场景为 `tab-url-initialization`，来源页面为 `tab-url-source`。两页均使用内联演示数据，仅验证链接和页签行为。
+
+6.34条件呈现及相关限制见[条件显隐](../conditions.md)；子项全部隐藏不自动收起父容器。

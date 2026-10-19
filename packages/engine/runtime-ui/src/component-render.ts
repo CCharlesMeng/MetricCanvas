@@ -25,7 +25,9 @@ export interface TableRenderBinding {
   onpagesize: (pageSize: number) => void;
   onsort: (sort: TableSortRule[]) => void;
   onheaderfilter: (field: string, value: TableHeaderFilterValue | null) => void;
-  oncellselect: (context: { rowIndex: number; column: TableColumn }) => void;
+  oncellselect: (context: { rowIndex: number; column: TableColumn; row?:Row }) => void;
+  interactionGate?: (row:Row,column:TableColumn)=>{eligible:boolean;enabled:boolean};
+  toolbarEnabled?: {search:boolean;export:boolean};
   linkHref?: (row: Row, column?: TableColumn) => string | undefined;
   onlink?: (context: { rowIndex: number; column: TableColumn; row: Row }, event: MouseEvent) => void;
 }

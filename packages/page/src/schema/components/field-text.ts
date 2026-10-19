@@ -1,3 +1,4 @@
+import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import {
   componentIdZ,
@@ -11,6 +12,7 @@ import { componentCatalogRegistry } from '../registry';
 export const fieldTextComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('fieldText'),
     layout: componentLayoutZ,
     data: mainDataZ,

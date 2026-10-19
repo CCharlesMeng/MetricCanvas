@@ -44,7 +44,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
     binding(table:TableComponent,presentation:Omit<TableRenderBinding,'view'|'searchDraft'|'onsearchdraft'|'onsearch'|'onpage'|'onpagesize'|'onsort'|'onheaderfilter'>):TableRenderBinding {
       const source=page.dataSources[table.data.main];
       return {...presentation,sortReset:source?.source.type==='pagedJoin'?source.source.ordering.default:undefined,view:controller.render(table),searchDraft:controller.searchDraft(table),
-        onsearchdraft:query=>controller.setSearchDraft(table,query),onsearch:query=>controller.search(table,query),
+        onsearchdraft:query=>{if(presentation.toolbarEnabled?.search!==false)controller.setSearchDraft(table,query);},onsearch:query=>{if(presentation.toolbarEnabled?.search!==false)controller.search(table,query);},
         onpage:index=>controller.page(table,index),onpagesize:size=>controller.pageSize(table,size),
         onsort:sort=>controller.sort(table,sort),onheaderfilter:(field,value)=>controller.header(table,field,value)};
     },

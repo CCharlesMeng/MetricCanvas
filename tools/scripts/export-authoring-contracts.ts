@@ -115,6 +115,13 @@ async function buildProductOutputs(): Promise<OutputMap> {
     outputs.set(`page/conformance/valid/${fileName}`, content);
   }
 
+  // Feature pages are the single source for both browser acceptance and exported examples.
+  for(const name of ['page-visibility-region-linkage','page-visibility-inputs','page-visibility-report']) {
+    const content=await readFile(path.join(repoRoot,'pages',`${name}.json`),'utf8');
+    const document=JSON.parse(content);const errors=validate(document);
+    if(errors.length)throw Error(JSON.stringify(errors));
+    outputs.set(`page/conformance/valid/${name}.json`,content);fixtures.set(name,document);
+  }
   const { layout: _currentLayout, layoutForm: _currentLegacyLayout, ...layoutBase } = fixtures.get('inline-report') as Record<string, unknown>;
   const layoutCases = [];
   for (const schemaVersion of ['5.0', '5.4', '6.0', '6.1', '6.2', '6.3', '6.4', '6.5', '6.6', '7.0']) {

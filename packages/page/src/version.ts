@@ -15,7 +15,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 33;
+const CURRENT_MINOR = 34;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -608,7 +608,11 @@ export const pageCapabilities = {
         document,
         (component) => component.type === 'compositeCard' && props(component)?.variant === 'metricGrid'
       ).map((path) => `${path}/props/variant`)
-  }
+  },
+  'conditional-presentation': {
+    minor: 34, legacyReadable: false, description: '统一条件显隐、按钮与正文片段',
+    usedAt(document: unknown) { return presentationCapabilityPaths(document); }
+  },
 } satisfies Record<string, PageCapabilityDefinition>;
 
 export type PageCapability = keyof typeof pageCapabilities;
@@ -1019,4 +1023,30 @@ function numberRangeTablePaths(document:unknown):string[]{
     function visit(columns:unknown,base:string){if(!Array.isArray(columns))return;columns.forEach((value,index)=>{const column=record(value);if(!column)return;const location=`${base}/${index}`;if(record(column.filterable)?.mode==='numberRange')paths.push(`${location}/filterable/mode`);visit(column.children,`${location}/children`);});}
     visit(props(component)?.columns,`${path}/props/columns`);
   });return paths;
+}
+
+function presentationCapabilityPaths(document: unknown): string[] {
+  const found: string[] = [];
+  const root=record(document); if(!root)return found;
+  const visit=(value:unknown,path:string)=>{
+    const node=record(value);if(!node)return;
+    for(const key of ['visibleWhen','enabledWhen','rowVisibleWhen'])if(has(node,key))found.push(`${path}/${key}`);
+  };
+  for(const key of ['sections','filters','sectionGroups']){
+    const nodes=root[key];if(Array.isArray(nodes))nodes.forEach((node,i)=>visit(node,`/${key}/${i}`));
+  }
+  walkDocumentComponents(document,(node,path)=>{
+    visit(node,path);const props=record(node.props);if(!props)return;
+    if(node.type==='button')found.push(`${path}/type`);
+    visit(props,`${path}/props`);
+    function entries(value:unknown,p:string):void {
+      if(Array.isArray(value)){value.forEach((item,i)=>entries(item,`${p}/${i}`));return;}
+      const obj=record(value);if(!obj)return;visit(obj,p);
+      if(has(obj,'writeFilter')&&has(obj,'value'))found.push(`${p}/value`);
+      for(const key of ['navigate','openDetail','selection','children','search','export'])if(has(obj,key))entries(obj[key],`${p}/${key}`);
+    }
+    for(const key of ['actions','action','tabs','links','toolbar','columns'])entries(props[key],`${path}/props/${key}`);
+    if(node.type==='text'&&has(props,'parts')){found.push(`${path}/props/parts`);entries(props.parts,`${path}/props/parts`);}
+  });
+  return found;
 }

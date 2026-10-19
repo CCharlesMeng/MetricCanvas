@@ -25,6 +25,7 @@ description: 在本地 Coding Agent 中，根据自然语言、设计稿或旧�
 
 先读[页面协议索引](references/page-metadata/README.md)和[本地创作与验收](references/local-workflow.md)。按本次涉及的能力读取对应模块与完整示例，不要求加载全部参考：
 
+- 按筛选、层级、已有权限或业务事实控制显隐，以及条件按钮、表格行或文字片段：先读[条件规则](references/page-metadata/conditions.md)。条件写在目标节点；子项全隐藏不自动收起父容器，需要整块隐藏时写父级条件。
 - 页面版本与已确认形态的布局：[页面](references/page-metadata/page.md)、[分区与布局](references/page-metadata/sections-and-layout.md)。
 - 概览页先读[常见布局](references/overview-layouts.md)和[常用合法写法](references/component-recipes.md)；涉及地图再读[地图绑定](references/map-bindings.md)。按信息关系选择布局，示例数据不作为业务事实。
 - 明确要求 ECharts 定制，或现有属性不能表达且用户已接受时，读[图表高级扩展](references/page-metadata/chart-option.md)再使用隐含 `props.echartsOption`。常规任务使用已有属性；普通修改保留已有透传，切换图表类型时按协议清除。

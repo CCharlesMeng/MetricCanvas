@@ -1,0 +1,74 @@
+{
+  "evidenceKind": "real-model-local-http-main-flow",
+  "model": "deepseek-v4-flash",
+  "toleranceProbe": false,
+  "metadataPartialProbe": false,
+  "evidenceProbe": null,
+  "elapsedSeconds": 43.204,
+  "modelCalls": 15,
+  "tokens": 435370,
+  "tokenBudget": 600000,
+  "requestReserve": "utf8-bytes/2 + 8192 + max_tokens",
+  "requestedCases": [
+    "edit-add-data"
+  ],
+  "executedCases": [
+    "create-report",
+    "edit-report",
+    "edit-add-data"
+  ],
+  "cases": [
+    {
+      "id": "create-report",
+      "workflow": "create",
+      "passed": true,
+      "status": "pass",
+      "issues": [],
+      "toolCalls": 5,
+      "final": "已完成 2026 年 8 月区域运营报告（report 布局）的创建与预览交接。\n\n**执行结果**\n- 上下文：新建空基线，workVersion 0 → 1。\n- 数据证据：按已确认计划查询「Tokens请求量」按「区域」分组，2026-08 月度；结果完整（returnedCount=2，totalCount=2，truncated=false）。\n  - 华东 18 次、华南 12 次（单位：次，来自元数据）。\n- 页面结构：单业务章节「各区域 Tokens 请求量」（panel），含横向对比条形图（half）与明细表（half），两组件共用同一数据源，未重复取数。\n- 操作回执：两个组件均 applied，无 issues/adjustments。\n- 保存：saveStatus=saved，draftId=resource-main-flow-report，revisionId=r1。\n- 预览交接：ready（Adapter 已接收匹配 artifactRef 的产物，不代表你已在界面上看到页面）。\n\n**需要说明的缺口**\n- 查询以 relaxed 校验模式执行，并返回 DATA_CONTEXT_GOVERNANCE_UNKNOWN 警告：该指标的 additivity（可加性）与 timeAggregation（时间聚合）治理属性未知。因此本页只做区域间对比与明细核对，未做跨区域合计或占比结论。\n- 指标 frequency 为 unknown，页面期间以查询条件（2026 年 8 月）标注，未冒充指标固有统计周期。\n- 仅两个区域返回，未做排名或全量占比表述。\n\n{{RESPONSE_START}}\n{{PAGE_METADATA_PREVIEW_JSON}}",
+      "ref": {
+        "pageId": "main-flow-report",
+        "revisionId": "r1",
+        "resourceId": "resource-main-flow-report"
+      }
+    },
+    {
+      "id": "edit-report",
+      "workflow": "edit",
+      "passed": true,
+      "status": "pass",
+      "issues": [],
+      "toolCalls": 3,
+      "final": "已完成页头标题修改。\n\n**操作结果**\n- `retitle-header`（set_title，目标 `page-header`）：applied\n  - 原标题：2026年8月区域运营报告\n  - 新标题：2026年8月区域运营复盘\n\n**未改动内容**\n- 章节 `region-tokens` 及其两个组件（`region-tokens-bar` 柱状图、`region-tokens-table` 明细表）保持原样，未重新取数、未改口径。\n- 本次为纯配置修改，未调用数据发现或查询。\n\n**保存与交接**\n- saveStatus：saved；workVersion 0 → 1；revisionId r1 → r2；draftId `resource-main-flow-report`；operationId `49c36e42-19c1-45f7-9b66-6b61d124c43e`\n- 预览交接：ready（artifactRef 与 ref 匹配）\n\n说明：ready 表示预览产物已被 Adapter 接收，不代表你已在界面上看到页面；实际渲染效果需在应用中确认。\n\n{{RESPONSE_START}}\n{{PAGE_METADATA_PREVIEW_JSON}}",
+      "ref": {
+        "pageId": "main-flow-report",
+        "revisionId": "r2",
+        "resourceId": "resource-main-flow-report"
+      }
+    },
+    {
+      "id": "edit-add-data",
+      "workflow": "edit",
+      "passed": true,
+      "status": "pass",
+      "issues": [],
+      "toolCalls": 5,
+      "final": "已完成。\n\n**执行结果**\n- 读取页面：`main-flow-report`，workVersion 0，原有 2 个章节（页头 + 「各区域 Tokens 请求量」），已有内容全部保留。\n- 数据发现：`运营分析` / `Tokens请求量`（单位「次」，维度「区域」），dataContextVersion 已复用。\n- 查询（按已确认计划）：2026-08 单月、筛选 区域=华东、按区域分组 → 返回 1 行，`华东 = 18 次`；coverage 完整（returnedCount=1，totalCount=1，resultComplete=true）。\n- 页面修改：操作 `add-east-china-table` 状态 **applied**，新增表格「华东区域请求量补充明细」，挂载到现有章节 `region-tokens`，绑定新查询源 `supplement`（独立筛选口径，未复用全区域数据源），字段为「区域」「Tokens请求量」。\n- 保存：saveStatus=**saved**，workVersion 1，revisionId `r3`，draftId `resource-main-flow-report`。\n- 预览交接：**ready**，artifactRef 与保存产物一致。\n\n**需要说明的局限**\n- 查询以 `validationMode=relaxed` 执行，并带有 `DATA_CONTEXT_GOVERNANCE_UNKNOWN` 警告：`Tokens请求量` 的 additivity（可加性）与 timeAggregation（时间聚合方式）在语义层未登记。本次只取单月单区域单值，不涉及跨期或跨区域求和，因此不影响该数值本身；但若后续要做跨期累加或占比，需先确认口径。\n- 数值格式为 `number`（原值 18，单位「次」），未做缩放。\n- 预览 ready 表示交接适配器已接收产物，不代表页面已在你的界面上渲染；实际呈现需在应用中查看确认。\n\n{{RESPONSE_START}}\n{{PAGE_METADATA_PREVIEW_JSON}}\n{{RESPONSE_END}}",
+      "ref": {
+        "pageId": "main-flow-report",
+        "revisionId": "r3",
+        "resourceId": "resource-main-flow-report"
+      }
+    }
+  ],
+  "notRun": [
+    "create-dashboard",
+    "create-complex-report",
+    "edit-dashboard"
+  ],
+  "limitations": [
+    "Local Java, DQE and Relay substitutes",
+    "No production integration evidence"
+  ],
+  "passed": true
+}

@@ -1,3 +1,5 @@
+import { compilePresentation, projectPresentationRows } from '../../runtime/src/presentation';
+import type { DisplaySnapshot } from '../../runtime/src/display-inputs';
 import type { Page, Component, DataSnapshot, Row } from '@metriccanvas/page/internal';
 import { resolveDataSourceFields } from '@metriccanvas/page/internal';
 import type { PageDataSnapshots, FilterValues } from '../../runtime/src';
@@ -16,6 +18,8 @@ export interface ExportRenderState {
   page: Page;
   currentYear:number;
   filters: FilterValues;
+  filterRevision?:number;
+  displaySnapshot?:DisplaySnapshot;
   snapshots: PageDataSnapshots;
   tables: Record<string, TableViewState>;
   headerFilters: Record<string, import('@metriccanvas/page/internal').TableHeaderFilters>;
@@ -40,7 +44,7 @@ export function exportComponentData(state:ExportRenderState,component:Component)
     if(!source||!snapshot) continue;
     const fields=resolveDataSourceFields(source);
     const ready=renderableDataSnapshot(snapshot); if(!ready)continue;
-    let rows:Row[]=ready.rows;
+    let rows:Row[]=component.type==='table'&&slot==='main'?projectPresentationRows(component,ready.rows,{declarations:state.page.filters??[],filters:state.filters,filterRevision:state.filterRevision,displaySnapshot:state.displaySnapshot}):ready.rows;
     if(component.type==='table'&&slot==='main'&&source.source.type!=='pagedJoin') {
       rows=applyTableSearch(rows,component,state.tables[component.id]?.searchQuery);
     }

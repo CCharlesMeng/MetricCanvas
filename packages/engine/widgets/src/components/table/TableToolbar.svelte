@@ -3,8 +3,8 @@
   import type { TableProps } from '@metriccanvas/page/internal';
   import { Button } from '@metriccanvas/ui';
   import TableControlIcon from './TableControlIcon.svelte';
-  let { toolbar, draft = '', busy = false, canExport = true, error, ondraft, onsearch, onexport, oncancel }: {
-    toolbar: TableProps['toolbar']; draft?: string; busy?: boolean; canExport?: boolean; error?: string;
+  let { toolbar, draft = '', busy = false, canExport = true, searchEnabled = true, error, ondraft, onsearch, onexport, oncancel }: {
+    toolbar: TableProps['toolbar']; draft?: string; busy?: boolean; canExport?: boolean; searchEnabled?:boolean; error?: string;
     ondraft?: (query: string) => void; onsearch?: (query: string) => void;
     onexport?: () => void; oncancel?: () => void;
   } = $props();
@@ -13,10 +13,10 @@
 <div class="tools" data-table-toolbar>
   {#if toolbar?.search}
     <form class="search" onsubmit={event => { event.preventDefault(); onsearch?.(draft); }}>
-      <input type="search" aria-label="表格搜索" placeholder={toolbar.search.placeholder ?? '搜索表格'}
+      <input disabled={!searchEnabled} type="search" aria-label="表格搜索" placeholder={toolbar.search.placeholder ?? '搜索表格'}
         value={draft} oninput={event => ondraft?.(event.currentTarget.value)} />
-      {#if draft}<button class="clear" type="button" aria-label="清空表格搜索" title="清空" onclick={() => { ondraft?.(''); onsearch?.(''); }}><TableControlIcon name="clear" /></button>{/if}
-      <button class="submit" type="submit" aria-label="搜索" title="搜索"><TableControlIcon name="search" /></button>
+      {#if draft}<button disabled={!searchEnabled} class="clear" type="button" aria-label="清空表格搜索" title="清空" onclick={() => { ondraft?.(''); onsearch?.(''); }}><TableControlIcon name="clear" /></button>{/if}
+      <button disabled={!searchEnabled} class="submit" type="submit" aria-label="搜索" title="搜索"><TableControlIcon name="search" /></button>
     </form>
   {/if}
   {#if toolbar?.export}

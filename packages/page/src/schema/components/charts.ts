@@ -1,3 +1,4 @@
+import { visibilityShape } from '../condition';
 import { chartFilterZ } from '../chart-filter';
 import { z } from 'zod';
 import type { JsonValue } from '../../query';
@@ -40,6 +41,7 @@ export const barChartSeriesZ = chartSeriesZ
 export const barChartComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('barChart'),
     layout: componentLayoutZ,
     data: mainDataZ,
@@ -84,6 +86,7 @@ componentCatalogRegistry.add(barChartComponentZ, {
 export const lineChartComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('lineChart'),
     layout: componentLayoutZ,
     data: mainDataZ,
@@ -127,6 +130,7 @@ componentCatalogRegistry.add(lineChartComponentZ, {
 export const pieChartComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('pieChart'),
     layout: componentLayoutZ,
     data: mainDataZ,

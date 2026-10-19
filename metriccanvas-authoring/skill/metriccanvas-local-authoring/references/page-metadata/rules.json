@@ -1,6 +1,26 @@
 {
   "invariants": [
     {
+      "id": "conditional-presentation",
+      "description": "6.34共用展示条件、稳定目标和本地行边界",
+      "valid": [
+        "page-visibility-region-linkage",
+        "page-visibility-inputs",
+        "page-visibility-report",
+        "reference-conditions-page"
+      ],
+      "invalid": [
+        "condition-before-6.34",
+        "condition-row-outside-table",
+        "condition-level-set-unknown",
+        "condition-filter-unknown",
+        "condition-mixed-literals",
+        "condition-depth-limit",
+        "condition-part-duplicate",
+        "condition-row-key-required"
+      ]
+    },
+    {
       "id": "tab-url-initialization",
       "description": "6.33 Tab 显式 URL 初值与页面输入名称互斥",
       "valid": [
@@ -1128,7 +1148,7 @@
     },
     {
       "id": "actions-live-only",
-      "description": "writeFilter 只允许绑定 query 数据源的组件",
+      "description": "旧版本writeFilter只允许query组件；6.34的本地入口必须有查询或显隐消费方",
       "valid": [
         "query-dashboard",
         "filters-page",
@@ -1235,7 +1255,8 @@
         "detail-component-reject-keyvaluepanel",
         "detail-component-reject-categorybreakdown",
         "detail-component-reject-fieldtext",
-        "detail-component-reject-aisummary"
+        "detail-component-reject-aisummary",
+        "detail-component-reject-button"
       ]
     }
   ]

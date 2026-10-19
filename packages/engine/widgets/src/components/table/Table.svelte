@@ -70,8 +70,10 @@
     onsort?: (sort: TableSortRule[]) => void;
     sortReset?:readonly TableSortRule[];
     onheaderfilter?: (field: string, value: TableHeaderFilterValue | null) => void;
-    oncellselect?: (context: { rowIndex: number; column: TableColumn }) => void;
-    linkHref?: (row: Row, column?: TableColumn) => string | undefined;
+    oncellselect?: (context: { rowIndex: number; column: TableColumn; row?:Row }) => void;
+    interactionGate?: (row:Row,column:TableColumn)=>{eligible:boolean;enabled:boolean};
+  toolbarEnabled?: {search:boolean;export:boolean};
+  linkHref?: (row: Row, column?: TableColumn) => string | undefined;
     onlink?: (context: { rowIndex: number; column: TableColumn; row: Row }, event: MouseEvent) => void;
   }
 
@@ -90,7 +92,7 @@
     onheaderfilter,
     oncellselect,
     onlink,
-    linkHref
+    interactionGate, toolbarEnabled, linkHref
   }: Props = $props();
 
   const columnLayout = $derived(buildTableColumnLayout(props.columns, data.main.fields));
@@ -332,7 +334,7 @@
         <div class="subtitle"><span aria-hidden="true">*</span>{props.subtitle}</div>
       {/if}
       {#if interactive && !staticExport && props.toolbar}
-        <TableToolbar toolbar={props.toolbar} draft={searchDraft} busy={exporting} error={exportError}
+        <TableToolbar toolbar={props.toolbar} searchEnabled={toolbarEnabled?.search??true} canExport={toolbarEnabled?.export??true} draft={searchDraft} busy={exporting} error={exportError}
           ondraft={onsearchdraft} {onsearch} {onexport} oncancel={oncancelexport} />
       {/if}
     </div>
@@ -483,12 +485,13 @@
                     <small class="cell-badge">{formatValue(alignedFieldValue(column.badgeField, data, row), badge.format, badge.missingText)}</small>
                   {/if}
                 {/snippet}
+                {@const actionGate=interactionGate?.(row.main,column)??{eligible:true,enabled:true}}
                 <td
                   class:align-right={column.align === 'right'}
                   class:fixed={!!column.fixed}
                   class:emphasized={column.emphasis === 'strong'}
-                  class:selectable={Boolean(column.selection && interactive)}
-                  class:linkable={Boolean(column.link && interactive && !column.selection)}
+                  class:selectable={Boolean(column.selection && interactive && actionGate.eligible)}
+                  class:linkable={Boolean(column.link && interactive && !column.selection && actionGate.eligible)}
                   class:selected={isSelected(i, column)}
                   class:danger={isDanger(column, rawValue)}
                   class:negative={semanticPresentation === undefined && color === 'red'}
@@ -499,12 +502,13 @@
                   style={cellStyle(column)}
                   style:color={column.colorRule ? valueColorStyle(color) : undefined}
                 >
-                  {#if column.selection && interactive}
+                  {#if column.selection && interactive && actionGate.eligible}
                     <button
                       type="button"
                       class="selectable-cell"
                       aria-pressed={isSelected(i, column)}
-                      onclick={() => oncellselect?.({ rowIndex: i, column })}
+                      disabled={!actionGate.enabled}
+                      onclick={() => oncellselect?.({ rowIndex: i, column, row:row.main })}
                     >
                       <span class="cell-stack">
                         {#if semanticPresentation}
@@ -520,19 +524,20 @@
                         {@render supplementaryFields()}
                       </span>
                     </button>
-                  {:else if column.link && interactive && !column.selection}
+                  {:else if column.link && interactive && !column.selection && actionGate.eligible}
                     <a
-                      href={linkHref?.(row.main, column)}
+                      href={actionGate.enabled?linkHref?.(row.main, column):undefined}
+                      aria-disabled={!actionGate.enabled}
                       role={linkHref?.(row.main, column) ? undefined : 'button'}
-                      tabindex={linkHref?.(row.main, column) ? undefined : 0}
+                      tabindex={!actionGate.enabled?-1:linkHref?.(row.main,column)?undefined:0}
                       class="link-cell"
                       onkeydown={(event) => {
-                        if (!linkHref?.(row.main, column) && (event.key === 'Enter' || event.key === ' ')) {
+                        if (actionGate.enabled && !linkHref?.(row.main, column) && (event.key === 'Enter' || event.key === ' ')) {
                           event.preventDefault();
                           event.currentTarget.click();
                         }
                       }}
-                      onclick={(event) => onlink?.({ rowIndex: i, column, row: row.main }, event)}
+                      onclick={(event) => {if(actionGate.enabled)onlink?.({ rowIndex: i, column, row: row.main }, event);else event.preventDefault();}}
                     >
                       <span class="cell-stack">
                         {#if semanticPresentation}

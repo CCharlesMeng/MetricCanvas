@@ -1,5 +1,8 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { compilePresentation } from '../../runtime/src/presentation';
+  import type { DisplaySnapshot } from '../../runtime/src/display-inputs';
+  import { PRESENTATION_CONTEXT } from './presentation-context';
   import { chartOptionPaths, isChartOptionError } from '@metriccanvas/page/internal';
   import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
   import { createTableController } from './table-controller';
@@ -100,7 +103,7 @@
   import { dashboardFilterGroups } from './dashboard/filter-groups';
   import {
     cascadeConstraints,
-    clearDependentUpdates,
+    dependentFilterIds,
     dimensionValueOf
   } from './filters/cascade';
   import { hasVisibleFilters } from './filters/filter-bar';
@@ -137,6 +140,7 @@
 
   let {
     document,
+    displayInputs,
     sectionsContent,
     dataGateway,
     aiSummary,
@@ -208,7 +212,7 @@
       const value=get();
       return [id,value.status==='ready'||value.status==='streaming'?{status:'ready' as const,text:value.text}:{status:'empty' as const}];
     }));
-    const state={page,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
+    const state={page,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),filterRevision,displaySnapshot:displaySnapshot?structuredClone(displaySnapshot):undefined,snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
     const queries=stream.captureQueries();
     const program=stream.getSourceProgram();
     return exportController.run(pageExportTask, controller => withReportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program,scale},consume));
@@ -222,12 +226,49 @@
   let snapshots = $state<PageDataSnapshots>(new Map());
   let filterValues = $state<FilterValues>(new Map());
   let pageParams = $state<PageParamValues>(new Map());
+  let displaySnapshot=$state.raw<DisplaySnapshot|undefined>();
+  let filterRevision=$state(0);
+  const presentationProgram=$derived(pageState.phase==='ready'?compilePresentation(pageState.page):null);
+  const presentation=$derived(presentationProgram?.evaluate({filters:filterValues,filterRevision,displaySnapshot})??null);
+  setContext(PRESENTATION_CONTEXT,()=>presentation);
+  $effect(()=>{
+    const source=displayInputs;
+    if(!source){displaySnapshot=undefined;return;}
+    let permissionRevision:string|undefined;
+    let stopped=false;
+    const update=(snapshot:DisplaySnapshot)=>{
+      if(stopped)return;
+      if(!snapshot||typeof snapshot.permissionRevision!=='string'||!snapshot.permissionRevision){displaySnapshot=undefined;return;}
+      if(permissionRevision!==undefined&&permissionRevision!==snapshot.permissionRevision){
+        stopped=true;dispose();snapshots=new Map();displaySnapshot=undefined;
+        const error={code:'DISPLAY_PERMISSION_CHANGED' as const,message:'权限会话已变化，请以当前身份重新初始化页面'};
+        pageState={phase:'configuration-error',error};onevent?.({type:'configuration-error',...error});return;
+      }
+      permissionRevision=snapshot.permissionRevision;displaySnapshot=snapshot;
+    };
+    let unsubscribe=()=>{};
+    try {
+      unsubscribe=source.subscribe(update);
+      update(source.getSnapshot());
+    } catch {
+      displaySnapshot=undefined;
+    }
+    return ()=>{stopped=true;unsubscribe();};
+  });
+
   let initialTabs = $state<ReadonlyMap<string, string>>(new Map());
   /** 筛选候选值快照(维度名 → 显式状态):筛选控件与表头筛选共用。 */
   let dimensionCandidates = $state<DimensionValuesSnapshots>(new Map());
   let tableViews = $state<Record<string, TableViewState>>({});
   let selectedGroup = $state<string | undefined>();
   let surfaceRoot: HTMLDivElement;
+  $effect(()=>{
+    if(pageState.phase!=='ready'||!pageState.page.sectionGroups)return;
+    const groups=pageState.page.sectionGroups.filter(group=>presentation?.groups.get(group.id)?.eligible!==false);
+    const next=selectedSectionGroup({...pageState.page,sectionGroups:groups},selectedGroup);
+    if(next!==selectedGroup)selectedGroup=next;
+  });
+
 
   async function locateSection(page: Page, sectionId: string) {
     const currentSession = session;
@@ -388,15 +429,17 @@
       state.subscribe((values) => {
         const previous = filterValues;
         filterValues = values;
+        filterRevision=state.revision??0;
         const presentation = filterTextPage(loaded, textBindings, values);
         declarations = presentation.filters ?? [];
         pageState = { phase: 'ready', page: presentation, capabilities };
         if (primed && capabilities.filters) {
           const nextSearch = mergedSearch(state, search);
           navigationAdapter?.replaceSearch?.(nextSearch);
-          emit?.({ type: 'filter-change', search: nextSearch });
+          emit?.({ type: 'filter-change', search: nextSearch, filterRevision:state.revision??0 });
           try { bootstrap?.recordFilters?.(values); } catch { /* 记录失败不能回滚当前筛选或中止查询 */ }
           if (changedFilters(previous, values).size > 0) closeDetail(false);
+          for(const id of changedFilters(previous,values))reloadDependentCandidates(id);
           for (const component of flattenPageComponents({sections:loaded.sections})) if(component.type==='table') tableController?.reset(component,previous,values);
         }
         primed = true;
@@ -442,6 +485,20 @@
       loader.subscribe((next) => {
         if (session !== mySession) return;
         dimensionCandidates = next;
+        const corrections:Array<readonly [string,import('../../runtime/src').FilterValue|null]>=[];
+        for(const declaration of declarations){
+          if(declaration.type!=='dimension'||localOptions.has(declaration.id))continue;
+          // A map drill may intentionally carry the parent code as the next level's scope.
+          if(declaration.hierarchy&&pageComponents(loaded).some(component=>component.type==='mapChart'&&component.props.hierarchyFilter===declaration.id))continue;
+          const selected=dimensionValueOf(filterValues,declaration.id);
+          const dimension=declaration.hierarchy?.find(level=>level.id===(selected.level??declaration.defaultLevel??declaration.hierarchy?.[0]?.id))?.dimension??declaration.dimension;
+          const snapshot=next.get(`${declaration.id}:${dimension}`);
+          if(snapshot?.status!=='ready'&&snapshot?.status!=='empty')continue;
+          const available=new Set(snapshot.status==='ready'?snapshot.candidates.map(candidate=>candidate.value):[]);
+          const values=selected.values.filter(value=>available.has(value));
+          if(values.length!==selected.values.length)corrections.push([declaration.id,{type:'dimension',dimension,values,...(selected.level?{level:selected.level}:{})}]);
+        }
+        if(corrections.length)state.writeMany(corrections);
       })
     );
 
@@ -510,11 +567,11 @@
     tableRevision+=1;
   }
   async function exportTable(component: TableComponent) {
-    if(pageState.phase!=='ready'||!stream||!component.props.toolbar?.export)return;
+    if(pageState.phase!=='ready'||!stream||!component.props.toolbar?.export||!actionAllowed(component,component.props.toolbar.export))return;
     const frozen=JSON.parse(JSON.stringify(component)) as TableComponent;
     const input={page:pageState.page,component:frozen,queries:stream.captureQueries(),gateway:activeGateway,
       program:stream.getSourceProgram(),views:stream.captureViews(),
-      state:{currentYear:stream.captureComputeYear(),filters:filterValues,tables:tableViews,headerFilters:appliedTableHeaderFilters}};
+      state:{currentYear:stream.captureComputeYear(),filters:filterValues,filterRevision,displaySnapshot:displaySnapshot?structuredClone(displaySnapshot):undefined,tables:tableViews,headerFilters:appliedTableHeaderFilters}};
     try { await exportController.run(component.id,async controller=>{
       const data=await prepareTableExport({...input,controller}); controller.signal.throwIfAborted();
       await downloadTableWorkbook(frozen,data,controller.signal);
@@ -550,11 +607,13 @@
   function handleTableCellSelect(
     component: TableComponent,
     rowIndex: number,
-    column: TableColumn
+    column: TableColumn,
+    clickedRow?:Row
   ) {
     if (!column.selection || !componentCapability(component)?.actions) return;
-    const row = visibleTableRows(component)[rowIndex];
-    if (!row) return;
+    const currentRows=visibleTableRows(component);
+    const row=clickedRow?(component.props.rowKey?currentRows.find(row=>row[component.props.rowKey!]===clickedRow[component.props.rowKey!]):currentRows.find(row=>row===clickedRow)):currentRows[rowIndex];
+    if (!row || !actionAllowed(component,column.selection,row)) return;
 
     const updates: Array<readonly [string, FilterValue | null]> = [];
     for (const [filterId, write] of Object.entries(column.selection.writes)) {
@@ -600,7 +659,7 @@
     filterState?.writeMany([
       [
         declaration.id,
-        values.length > 0
+        (values.length > 0 || !!declaration.hierarchy && !!level)
           ? {
               type: 'dimension',
               dimension,
@@ -609,9 +668,9 @@
             }
           : null
       ],
-      ...clearDependentUpdates(declarations, declaration.id)
+
     ]);
-    reloadDependentCandidates(declaration.id);
+
   }
 
   function writeTimeRange(filterId: string, range: TimeRangeValue | null) {
@@ -655,39 +714,49 @@
     const constraints = cascadeConstraints(declaration, declarations, values);
     if (declaration.hierarchy) {
       for (const level of declaration.hierarchy) {
-        loader.load(level.dimension, constraints);
+        loader.load(level.dimension, constraints, declaration.id);
       }
       return;
     }
-    loader.load(declaration.dimension, constraints);
+    loader.load(declaration.dimension, constraints, declaration.id);
   }
 
   function reloadDependentCandidates(parentId: string) {
     if (!candidatesLoader) return;
     for (const declaration of declarations) {
-      if (declaration.type !== 'dimension' || declaration.dependsOn !== parentId) continue;
+      if (declaration.type !== 'dimension' || !dependentFilterIds(declarations,parentId).includes(declaration.id)) continue;
       const constraints = cascadeConstraints(declaration, declarations, filterValues);
       const current = dimensionValueOf(filterValues, declaration.id);
       const dimension = declaration.hierarchy
         ? (declaration.hierarchy.find((item) => item.id === current.level)?.dimension ??
           declaration.hierarchy[0]!.dimension)
         : declaration.dimension;
-      candidatesLoader.reload(dimension, constraints);
+      candidatesLoader.load(dimension, constraints, declaration.id);
     }
   }
 
+  function actionAllowed(component:Component,action:import('@metriccanvas/page/internal').PolicyNode,row?:Row):boolean {
+    return presentation?.gate(action,row,presentation.component(component.id)).enabled!==false;
+  }
   function componentHref(component: Component, row: Row): string | undefined {
     if (!componentCapability(component)?.actions || !('actions' in component.props)) return undefined;
-    const action = component.props.actions?.find(a => 'navigate' in a);
+    const action = component.props.actions?.find(a => 'navigate' in a && actionAllowed(component,a,row) && actionAllowed(component,a.navigate,row));
     return action && 'navigate' in action ? navigationHref(action.navigate, filterValues, pageParams, row) : undefined;
   }
 
   function handleTableLink(component: TableComponent, row: Row, event: MouseEvent, column?: TableColumn) {
-    if (column?.navigate) {
+    if(component.props.rowKey){
+      const key=component.props.rowKey;
+      const current=visibleTableRows(component).find(candidate=>candidate[key]===row[key]);
+      if(!current){event.preventDefault();return;}
+      row=current;
+    }
+    if(column&&!tableInteractionGate(component,row,column).enabled){event.preventDefault();return;}
+    if (column?.navigate && actionAllowed(component,column.navigate,row)) {
       navigate(navigationHref(column.navigate, filterValues, pageParams, row), event);
       return;
     }
-    if (column?.openDetail) {
+    if (column?.openDetail && actionAllowed(component,column.openDetail,row)) {
       event.preventDefault();
       openDetailFor(component, { on: 'click', openDetail: column.openDetail }, row, event.currentTarget as HTMLElement);
       return;
@@ -739,6 +808,17 @@
     | undefined
   >(undefined);
   let detailSnapshots = $state<PageDataSnapshots>(new Map());
+  let detailFilters=$state<FilterValues>(new Map());
+  let detailOrigin=$state.raw<{component:Component;row:Row;action:OpenDetailAction}|undefined>();
+  $effect(()=>{
+    const origin=detailOrigin;
+    if(!origin||!openDetail||!presentation)return;
+    if(!actionAllowed(origin.component,origin.action,origin.row)||!actionAllowed(origin.component,origin.action.openDetail,origin.row)) {closeDetail(false);return;}
+    if(origin.component.type==='table'&&origin.component.props.rowKey){
+      const key=origin.component.props.rowKey;
+      if(!visibleTableRows(origin.component).some(row=>row[key]===origin.row[key]))closeDetail(false);
+    }
+  });
   let detailGeneration = $state(0);
   let detailDispose: (() => void) | undefined;
   let detailTrigger: HTMLElement | undefined;
@@ -748,6 +828,7 @@
     detailDispose?.();
     detailDispose = undefined;
     openDetail = undefined;
+    detailOrigin=undefined;
     detailSnapshots = new Map();
     if (restoreFocus && detailTrigger?.isConnected) detailTrigger.focus();
     detailTrigger = undefined;
@@ -758,7 +839,9 @@
   }
 
   function openDetailFor(component: Component, action: OpenDetailAction, row: Row, trigger?: HTMLElement) {
+    if(!actionAllowed(component,action,row)||!actionAllowed(component,action.openDetail,row))return;
     untrack(() => closeDetail(false));
+    detailOrigin={component,row,action};
     const root = surfaceRoot.getRootNode() as Document | ShadowRoot;
     const sourceCell = Array.from(surfaceRoot.querySelectorAll<HTMLElement>('[data-component]'))
       .find(element => element.dataset.component?.split('/').at(-1) === component.id);
@@ -780,6 +863,7 @@
       const view = page.detailViews?.find(candidate => candidate.id === detail.view);
       try {
         const input = detailViewInput(page, action, row, filterValues, pageParams);
+        detailFilters=input.filters;
         openDetail = { ...openDetail, view, page: input.page };
         if (view?.mode === 'query') {
           const generation = detailGeneration;
@@ -799,8 +883,8 @@
     return typeof title === 'string' ? title : undefined;
   }
 
-  function handleChartClick(component: ChartComponent | Extract<Component, { type: 'gauge' | 'rankingCard' }>, row: Row) {
-    if (!componentCapability(component)?.actions) return;
+  function handleChartClick(component: Component, row: Row) {
+    if (!componentCapability(component)?.actions || presentation?.component(component.id).enabled===false) return;
     if (component.type === 'mapChart' && component.props.hierarchyFilter) {
       const declaration = declarations.find(
         (item) => item.id === component.props.hierarchyFilter
@@ -819,22 +903,26 @@
         }
       }
     }
-    for (const action of component.props.actions ?? []) {
+    const actions=component.type==='button'?[component.props.action]:('actions' in component.props?component.props.actions??[]:[]);
+    for (const action of actions) {
+      if(!actionAllowed(component,action,row))continue;
       if ('navigate' in action) {
+        if(!actionAllowed(component,action.navigate,row))continue;
         navigate(navigationHref(action.navigate, filterValues, pageParams, row));
         return;
       }
       if ('openDetail' in action) {
+        if(!actionAllowed(component,action.openDetail,row))continue;
         openDetailFor(component, action, row);
         return;
       }
-      const code = fieldName(action.field);
-      const clicked = row[code];
+      const clicked = 'field' in action ? row[fieldName(action.field)] : action.value;
       const target = declarations.find((declaration) => declaration.id === action.writeFilter);
       if (clicked == null || target?.type !== 'dimension') continue;
       filterState?.write(action.writeFilter, {
         type: 'dimension',
         dimension: target.dimension,
+        ...(target.hierarchy?{level:action.level??dimensionValueOf(filterValues,target.id).level??target.defaultLevel??target.hierarchy[0]?.id}:{}),
         values: [String(clicked)]
       });
     }
@@ -920,13 +1008,13 @@
     if (resolvedTablePagination(component)?.mode === 'query') return snapshot;
     const pagination = resolvedTablePagination(component,snapshot);
     const source=pageState.phase==='ready'?pageState.page.dataSources[component.data.main]:undefined;
-    const rows=applySearchFilters(snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
+    const rows=applySearchFilters(presentation?.rows(component,snapshot.rows)??snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
     return {status:'ready',rows:tableController?.present(component,rows,pagination?.mode!=='local').rows??rows};
   }
   function filteredTableRows(component: TableComponent,snapshot: Extract<DataSnapshot,{status:'ready'}>):Row[] {
     void tableRevision;
     const source=pageState.phase==='ready'?pageState.page.dataSources[component.data.main]:undefined;
-    const rows=applySearchFilters(snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
+    const rows=applySearchFilters(presentation?.rows(component,snapshot.rows)??snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
     return tableController?.present(component,rows,true).rows??rows;
   }
 
@@ -1005,6 +1093,13 @@
     return tablePageSizes[component.id] ?? stream?.getQueryPageSize(component.data.main) ?? queryPageSize(loaded, component);
   }
 
+  function tableInteractionGate(component:TableComponent,row:Row,column:TableColumn){
+    const node=column.selection??column.navigate??column.openDetail;
+    if(node)return presentation?.gate(node,row,presentation.component(component.id))??{eligible:true,enabled:true};
+    const actions=component.props.actions??[];
+    const gates=actions.map(action=>presentation?.gate(action,row,presentation.component(component.id))??{eligible:true,enabled:true});
+    return {eligible:gates.some(g=>g.eligible),enabled:gates.some(g=>g.enabled)};
+  }
   function tableBinding(
     loaded: Page,
     component: Component,
@@ -1022,9 +1117,11 @@
       filterOptionsStatus: tableController?.candidateStates(component,dimensionCandidates),
       pagination: tablePaginationState(loaded, component, slots),
       paginationConfig: resolvedTablePagination(component, slots.get('main')),
-      oncellselect: ({ rowIndex, column }) =>
-        handleTableCellSelect(component, rowIndex, column),
-      linkHref: (row, column) => column?.navigate ? navigationHref(column.navigate, filterValues, pageParams, row)
+      interactionGate:(row,column)=>tableInteractionGate(component,row,column),
+      toolbarEnabled:{search:component.props.toolbar?.search?actionAllowed(component,component.props.toolbar.search):true,export:component.props.toolbar?.export?actionAllowed(component,component.props.toolbar.export):true},
+      oncellselect: ({ rowIndex, column, row }) =>
+        handleTableCellSelect(component, rowIndex, column,row),
+      linkHref: (row, column) => column?.navigate && actionAllowed(component,column.navigate,row) ? navigationHref(column.navigate, filterValues, pageParams, row)
         : column?.openDetail ? undefined : componentHref(component, row),
       onlink: ({ row, column }, event) => handleTableLink(component, row, event, column)
     });
@@ -1032,7 +1129,7 @@
 
   function chartClickHandler(component: Component): ((row: Row) => void) | undefined {
     if (!componentCapability(component)?.actions ||
-      !(isChartComponent(component) || component.type === 'gauge' || component.type === 'rankingCard')) {
+      !(isChartComponent(component) || component.type === 'gauge' || component.type === 'rankingCard' || component.type==='button')) {
       return undefined;
     }
     return (row: Row) => handleChartClick(component, row);
@@ -1118,7 +1215,7 @@
     {/if}
   {:else}
     {@const readyPage = pageState.page}
-    {@const contentFilters = contentFilterDeclarations(readyPage, declarations)}
+    {@const contentFilters = contentFilterDeclarations(readyPage, presentation?.filters??declarations)}
     {@const layoutForm = readyPage.layout ?? 'report'}
     {@const firstComponent = readyPage.sections[0]?.components[0]}
     {@const leadingDateToolbar = layoutForm === 'report' && !readyPage.sections[0]?.title && firstComponent?.type === 'reportHeader' && firstComponent.layout.span === 12 && (!!firstComponent.props.filterIds?.length || !!firstComponent.props.exportButtons?.length || !!firstComponent.props.pdfExport || !!firstComponent.props.pngExport)}
@@ -1192,12 +1289,12 @@
 
     {#if readyPage.sectionGroups || readyPage.sectionAnchors}
       <nav class="section-navigation" aria-label="内容导航">
-        {#each readyPage.sectionGroups ?? [] as group (group.id)}
+        {#each (readyPage.sectionGroups ?? []).filter(group=>presentation?.groups.get(group.id)?.eligible!==false) as group (group.id)}
           <button type="button" data-section-group={group.id}
             aria-pressed={selectedSectionGroup(readyPage, selectedGroup) === group.id}
             onclick={() => (selectedGroup = group.id)}>{group.label}</button>
         {/each}
-        {#each readyPage.sectionAnchors ?? [] as anchor (anchor.sectionId)}
+        {#each (readyPage.sectionAnchors ?? []).filter(anchor=>presentation?.sectionGates.get(anchor.sectionId)?.eligible!==false) as anchor (anchor.sectionId)}
           <button type="button" data-section-anchor={anchor.sectionId}
             onclick={() => locateSection(readyPage, anchor.sectionId)}>{anchor.label}</button>
         {/each}
@@ -1205,7 +1302,7 @@
     {/if}
     <div class="page-sections">
       {#snippet headerControls(ids: string[])}
-        <FilterBar declarations={ids.flatMap(id=>declarations.find(f=>f.id===id)??[])} values={filterValues}
+        <FilterBar declarations={ids.flatMap(id=>presentation?.filters.find(f=>f.id===id)??[])} values={filterValues}
           candidates={dimensionCandidates} ondimension={writeDimension} ontimerange={writeTimeRange}
           ontimepoint={writeTimePoint} onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
       {/snippet}
@@ -1231,7 +1328,7 @@
           pageSnapshots={snapshots}
           {aiSummary}
           textLinks={component.type === 'text'
-            ? (component.props.links ?? []).map(textLink)
+            ? (component.props.links ?? []).filter(link=>presentation?.gate(link).eligible!==false).map(link=>({...textLink(link),disabled:presentation?.gate(link).enabled===false}))
             : []}
           onchartclick={chartClickHandler(component)}
           onmetriclink={metricLinkHandler(component)}
@@ -1243,11 +1340,11 @@
         />
       {/snippet}
       {#if sectionsContent}
-        {@render sectionsContent(visibleSections(readyPage, selectedGroup), componentContent)}
+        {@render sectionsContent(visibleSections({...readyPage,sections:presentation?.sections??readyPage.sections,sectionGroups:readyPage.sectionGroups?.filter(group=>presentation?.groups.get(group.id)?.eligible!==false)}, selectedGroup), componentContent)}
       {:else}
-        {#each readyPage.sections as section (section.id)}
+        {#each presentation?.sections ?? readyPage.sections as section (section.id)}
           <RuntimeSection {section} {componentContent}
-            hidden={!visibleSections(readyPage, selectedGroup).includes(section)} />
+            hidden={!visibleSections({...readyPage,sections:presentation?.sections??readyPage.sections,sectionGroups:readyPage.sectionGroups?.filter(group=>presentation?.groups.get(group.id)?.eligible!==false)}, selectedGroup).some(item=>item.id===section.id)} />
         {/each}
       {/if}
     </div>
@@ -1280,7 +1377,7 @@
           <p role="alert">{openDetail.error}</p>
         {:else if openDetail.view && openDetail.page}
           {#key detailGeneration}
-            <DetailContent page={openDetail.page} components={openDetail.view.components} snapshots={detailSnapshots} />
+            <DetailContent page={openDetail.page} components={openDetail.view.components} snapshots={detailSnapshots} filters={detailFilters} {displaySnapshot} {filterRevision} />
           {/key}
         {:else}
         <dl>

@@ -33,6 +33,7 @@ BarChartSeries
 BarForecastBoundaryIssue
 BarSeriesRole
 BooleanFilterDeclaration
+ButtonComponent
 CagrOperator
 CalendarTimeRangeIssue
 CategoryBreakdownColumn
@@ -54,6 +55,12 @@ CompositeCardChild
 CompositeCardComponent
 CompositeCardProps
 ComputeOperator
+Condition
+ConditionContext
+ConditionInput
+ConditionResult
+ConditionScalar
+ConditionValue
 DashboardToolbar
 DataComponent
 DataRow
@@ -65,6 +72,7 @@ DeltaOperator
 DetailRecord
 DetailRecordList
 DimensionFilterDeclaration
+DisplaySnapshot
 DqeBooleanFilterBinding
 DqeDimensionFilterBinding
 DqeEffectiveQuery
@@ -165,6 +173,10 @@ PieChartComponent
 PieChartProps
 PivotColumn
 PivotOperator
+PolicyNode
+PolicySite
+PresentationOperation
+PresentationTarget
 QUERY_ERROR_CODES
 QUERY_LANGUAGES
 QueryDataSource
@@ -257,6 +269,7 @@ WriteFilterAction
 ZeroDenominatorSemantics
 affectedSourceIds
 applyFilterTextValues
+applyPresentationOperation
 assertNoQueryParamReferences
 barForecastBoundaryIssues
 bindingQueryField
@@ -278,7 +291,10 @@ componentCatalogEntry
 compositeCardChildTypes
 computeDependencies
 computeOutputFields
+conditionDepth
+conditionLeaves
 conditionSourceIds
+conditionTestTypeError
 currentTimeValue
 dataSourceMode
 daysInGregorianMonth
@@ -289,9 +305,12 @@ derivePageCapabilities
 dimensionOfLevel
 documentLayoutForm
 documentUsesRuntimeBackToolbar
+evaluateCondition
 fieldContractViolations
 fieldName
 fileNameErrors
+filterHasObservableConsumer
+filterHasPresentationConsumer
 filterQueryResultRows
 filterTextValueErrors
 filterURLKeys
@@ -306,6 +325,7 @@ initializeQueryParams
 isBoundedResultSource
 isChartComponent
 isChartOptionError
+isConditionValue
 isDataComponent
 isDqeQueryDefinition
 isExtensibleChart
@@ -341,6 +361,10 @@ pageSchema
 parsePage
 periodRangeLabel
 periodSelectionFromRange
+presentationPolicies
+presentationPolicyErrors
+presentationTarget
+presentationTargets
 queryErrorDisposition
 queryResultDependencies
 queryResultFieldContract
@@ -366,6 +390,7 @@ tablePredicateZ
 tablePredicates
 tableQueryViewZ
 tableSortZ
+testConditionValue
 textValueScope
 timeFilterBoundaryError
 timePointPredicateValue

@@ -53,3 +53,8 @@ export function filterPageCatalog(
     })
   })).filter((group) => group.pages.length > 0);
 }
+
+/** Optional development-only inputs are configured outside Page metadata. */
+export function pageExternalInputs(id: string | undefined): 'visibility' | undefined {
+  return catalog.pages.find(entry => entry.id === id)?.externalInputs === 'visibility' ? 'visibility' : undefined;
+}

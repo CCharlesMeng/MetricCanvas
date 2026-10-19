@@ -1,3 +1,4 @@
+import { visibilityShape } from './condition';
 import { z } from 'zod';
 import { fieldNameZ, idZ } from './primitives';
 
@@ -27,6 +28,7 @@ const dimensionFilterZ = z
     hierarchyPicker: z.enum(['tabs', 'hidden']).optional(),
     display: z.enum(['select', 'tabs', 'tree', 'search']).optional(),
     visible: z.boolean().optional(),
+    ...visibilityShape,
     default: z.array(z.string()).optional(),
     initialParam: idZ.optional(),
     hierarchy: z.array(filterHierarchyLevelZ).min(2).optional(),
@@ -67,6 +69,7 @@ const timeRangeFilterZ = z
     initialParam: idZ.optional(),
     required: z.boolean().optional(),
     visible: z.boolean().optional(),
+    ...visibilityShape,
     default: z
       .union([
         z.enum(['today', 'last7d', 'last30d', 'last90d']),
@@ -85,6 +88,7 @@ const timePointFilterZ = z
     type: z.literal('timePoint'),
     label: z.string().optional(),
     visible: z.boolean().optional(),
+    ...visibilityShape,
     granularity: z.enum(['month', 'date']),
     min: z.string().optional(),
     disableFuture: z.boolean().optional(),
@@ -101,6 +105,7 @@ const booleanFilterZ = z
     type: z.literal('boolean'),
     label: z.string().optional(),
     visible: z.boolean().optional(),
+    ...visibilityShape,
     default: z.boolean().optional()
   })
   .meta({ id: 'booleanFilter' });
@@ -119,6 +124,7 @@ const numberRangeFilterZ = z
     type: z.literal('numberRange'),
     label: z.string().optional(),
     visible: z.boolean().optional(),
+    ...visibilityShape,
     default: numberRangeValueZ.optional()
   })
   .meta({ id: 'numberRangeFilter' });
@@ -130,6 +136,7 @@ const searchFilterZ = z
     type: z.literal('search'),
     label: z.string().optional(),
     visible: z.boolean().optional(),
+    ...visibilityShape,
     default: z.string().optional()
   })
   .meta({ id: 'searchFilter' });

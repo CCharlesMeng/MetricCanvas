@@ -36,9 +36,9 @@ export interface DimensionValuesStream extends Subscribable<DimensionValuesSnaps
    * 请求一个维度的候选值。同一会话内按维度幂等:已在加载或已有终态的
    * 维度不重复请求。约束变化时用 `reload` 重新取。
    */
-  load(dimension: string, constraints?: Readonly<Record<string, readonly string[]>>): void;
+  load(dimension: string, constraints?: Readonly<Record<string, readonly string[]>>, consumerId?: string): void;
   /** 丢弃该维度当前快照并按新约束重新请求。 */
-  reload(dimension: string, constraints?: Readonly<Record<string, readonly string[]>>): void;
+  reload(dimension: string, constraints?: Readonly<Record<string, readonly string[]>>, consumerId?: string): void;
   /** 结束会话:取消全部在途候选值请求,过期结果不再发布。 */
   dispose(): void;
 }
@@ -60,6 +60,8 @@ export function createDimensionValuesLoader(
   const subscribers = new Set<(value: DimensionValuesSnapshots) => void>();
   const controllers = new Map<string, AbortController>();
   let disposed = false;
+  const generations=new Map<string,number>();
+  const identities=new Map<string,string>();
 
   function publish(dimension: string, snapshot: DimensionValuesSnapshot): void {
     snapshots.set(dimension, snapshot);
@@ -67,9 +69,9 @@ export function createDimensionValuesLoader(
     for (const subscriber of subscribers) notify(subscriber, current);
   }
 
-  function settle(dimension: string, snapshot: DimensionValuesSnapshot): void {
+  function settle(dimension: string, generation: number, snapshot: DimensionValuesSnapshot): void {
     // dispose 后或该维度已不在加载中(理论上不会发生)时丢弃过期结果。
-    if (disposed || snapshots.get(dimension)?.status !== 'loading') return;
+    if (disposed || generations.get(dimension)!==generation || snapshots.get(dimension)?.status !== 'loading') return;
     controllers.delete(dimension);
     publish(dimension, snapshot);
   }
@@ -77,23 +79,28 @@ export function createDimensionValuesLoader(
   function start(
     dimension: string,
     constraints: Readonly<Record<string, readonly string[]>> | undefined,
-    force: boolean
+    force: boolean,
+    consumerId?: string
   ): void {
     if (disposed) return;
-    if (!force && snapshots.get(dimension) !== undefined) return;
-    controllers.get(dimension)?.abort();
+    const key=candidateKey(dimension,consumerId);
+    const identity=JSON.stringify([dimension,Object.entries(constraints??{}).sort(([a],[b])=>a.localeCompare(b)).map(([name,values])=>[name,[...values].sort()])]);
+    if (!force && identities.get(key)===identity && snapshots.has(key)) return;
+    const generation=(generations.get(key)??0)+1;
+    generations.set(key,generation);identities.set(key,identity);
+    controllers.get(key)?.abort();
     const fetchDimensionValues = capability(gateway);
     if (!fetchDimensionValues) {
-      publish(dimension, { status: 'unavailable' });
+      publish(key, { status: 'unavailable' });
       return;
     }
     const controller = new AbortController();
-    controllers.set(dimension, controller);
-    publish(dimension, { status: 'loading' });
+    controllers.set(key, controller);
+    publish(key, { status: 'loading' });
     fetchDimensionValues(dimension, { signal: controller.signal, constraints }).then(
       (result) => {
         settle(
-          dimension,
+          key, generation,
           result.kind === 'unavailable'
             ? { status: 'unavailable' }
             : result.candidates.length === 0
@@ -102,7 +109,7 @@ export function createDimensionValuesLoader(
         );
       },
       (cause: unknown) => {
-        settle(dimension, { status: 'error', error: preservedQueryError(cause) });
+        settle(key, generation, { status: 'error', error: preservedQueryError(cause) });
       }
     );
   }
@@ -113,11 +120,11 @@ export function createDimensionValuesLoader(
       notify(run, new Map(snapshots));
       return () => subscribers.delete(run);
     },
-    load(dimension, constraints) {
-      start(dimension, constraints, false);
+    load(dimension, constraints, consumerId) {
+      start(dimension, constraints, false, consumerId);
     },
-    reload(dimension, constraints) {
-      start(dimension, constraints, true);
+    reload(dimension, constraints, consumerId) {
+      start(dimension, constraints, true, consumerId);
     },
     dispose() {
       if (disposed) return;
@@ -131,9 +138,10 @@ export function createDimensionValuesLoader(
 /** 便于消费方取快照缺省值:未请求过的维度视为 idle。 */
 export function dimensionValuesSnapshot(
   snapshots: DimensionValuesSnapshots,
-  dimension: string
+  dimension: string,
+  consumerId?: string
 ): DimensionValuesSnapshot {
-  return snapshots.get(dimension) ?? IDLE;
+  return snapshots.get(candidateKey(dimension,consumerId)) ?? IDLE;
 }
 
 function capability(
@@ -154,3 +162,5 @@ function notify(
     console.error('筛选候选值订阅方回调抛出异常(已隔离):', cause);
   }
 }
+
+export function candidateKey(dimension:string,consumerId?:string):string {return consumerId ? `${consumerId}:${dimension}` : dimension;}

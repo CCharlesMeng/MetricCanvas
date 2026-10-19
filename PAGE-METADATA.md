@@ -391,3 +391,5 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 6.27 增量：Dashboard 顶部 timeRange 的年／季／月／近一年选择形态，声明、状态及查询规则见[期间筛选](docs/page-metadata/filters.md#dashboard-期间选择627)。
 6.29 增加 Dashboard 正文图表左上角独立筛选 `props.filter`，支持自定义显示名称、查询值和单选默认项；查询依赖校验保证只影响所属图表。完整声明、限制与验收页面见[图表独立筛选](docs/page-metadata/filters.md#图表独立筛选629)。
+
+条件呈现与动作资格见[条件规则](docs/page-metadata/conditions.md)：6.34就地声明visibleWhen/enabledWhen，父级约束后代，子项不反推父级。

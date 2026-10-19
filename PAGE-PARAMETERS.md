@@ -485,3 +485,7 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 ## URL 初始化 Tab
 
 6.33 起，Tab 容器可通过 `props.initialTabUrlParam` 声明打开时读取的 URL 参数名，用目标 Tab id 决定初始页签。这是呈现输入，无需添加 `params.display` 声明；名称与本页页面参数和筛选器的 URL 名称互斥。来源页面可通过已有超链接的 `href` 或 `query` 传递该值。完整规则见 [Tab 容器](docs/page-metadata/components/tabContainer.md#url-初始化页签633)，配置示例见[链接传参与目标页签](docs/page-metadata/actions-and-navigation.md#链接传参与目标页签)。
+
+### 层级筛选与展示条件（6.34）
+
+层级维度筛选可只通过 `<filterId>.level` 恢复当前层级；没有附加取值时保留 `values: []`，不写空值查询谓词。`visibleWhen` 读取已提交的同一筛选状态；隐藏控件不会删除筛选值。示例 `/pages/page-visibility-region-linkage?organization.level=department` 和完整规则见 [条件显隐](docs/page-metadata/conditions.md)。

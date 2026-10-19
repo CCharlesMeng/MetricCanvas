@@ -1,21 +1,20 @@
 {
-  "schemaVersion": "6.33",
+  "schemaVersion": "6.34",
+  "id": "page-visibility-inputs",
   "layout": "report",
-  "id": "reference-text-page",
   "dataSources": {},
   "sections": [
     {
       "id": "main",
       "components": [
         {
-          "id": "explanation",
+          "id": "fact-text",
           "type": "text",
           "layout": {
             "span": 12
           },
           "props": {
-            "title": "章节说明",
-            "body": "这是页面中的静态说明正文。",
+            "body": "业务事实已就绪。",
             "variant": "riskNotice"
           }
         }

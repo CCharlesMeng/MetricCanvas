@@ -54,6 +54,16 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'conditional-presentation',description:'6.34共用展示条件、稳定目标和本地行边界',valid:['page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','reference-conditions-page'],cases:[
+    {case:'condition-before-6.34',base:'page-visibility-region-linkage',expect:/由 6.34 引入/,mutate:d=>{d.schemaVersion='6.33';}},
+    {case:'condition-row-outside-table',base:'page-visibility-region-linkage',expect:/缺少行上下文/,mutate:d=>{d.sections[1].visibleWhen={row:'kind',op:'eq',value:'department'};}},
+    {case:'condition-level-set-unknown',base:'page-visibility-region-linkage',expect:/未声明的层级/,mutate:d=>{d.sections[1].visibleWhen={filter:'organization',part:'level',op:'in',values:['department','unknown']};}},
+    {case:'condition-filter-unknown',base:'page-visibility-region-linkage',expect:/不存在的来源/,mutate:d=>{d.sections[1].visibleWhen={filter:'unknown',part:'value',op:'eq',value:true};}},
+    {case:'condition-mixed-literals',base:'page-visibility-region-linkage',expect:/类型不匹配/,mutate:d=>{d.sections[1].visibleWhen={filter:'organization',part:'values',op:'containsAny',values:['department',1]};}},
+    {case:'condition-depth-limit',base:'page-visibility-region-linkage',expect:/超过4层/,mutate:d=>{let rule=d.sections[1].visibleWhen;for(let i=0;i<5;i++)rule={not:rule};d.sections[1].visibleWhen=rule;}},
+    {case:'condition-part-duplicate',base:'page-visibility-region-linkage',expect:/片段id必须唯一/,mutate:d=>{const c=d.sections.flatMap((s:Doc)=>s.components).find((c:Doc)=>c.type==='text'&&c.props.parts);c.props.parts.push(structuredClone(c.props.parts[0]));}},
+    {case:'condition-row-key-required',base:'page-visibility-region-linkage',expect:/稳定rowKey/,mutate:d=>{const c=d.sections.flatMap((s:Doc)=>s.components).find((c:Doc)=>c.id==='projected-table');delete c.props.rowKey;}}
+  ]},
   {id:'tab-url-initialization',description:'6.33 Tab 显式 URL 初值与页面输入名称互斥',valid:['tab-url-initialization','tab-url-source'],cases:[
     {case:'tab-url-before-6.33',base:'tab-url-initialization',expect:/由 6.33 引入/,mutate:d=>{d.schemaVersion='6.32';}},
     {case:'tab-url-empty-key',base:'tab-url-initialization',expect:/initialTabUrlParam/,mutate:d=>{firstComponent(d).props.initialTabUrlParam='';}},
@@ -2013,7 +2023,7 @@ export const invariants: InvariantDefinition[] = [
   },
   {
     id: 'actions-live-only',
-    description: 'writeFilter 只允许绑定 query 数据源的组件',
+    description: '旧版本writeFilter只允许query组件；6.34的本地入口必须有查询或显隐消费方',
     valid: ['query-dashboard', 'filters-page', 'params-page', 'composite-page', 'map-page'],
     cases: [
       {
@@ -2027,6 +2037,7 @@ export const invariants: InvariantDefinition[] = [
           };
           firstComponent(document).data = { main: 'fixed' };
           firstComponent(document).props.columns = [{ field: 'region' }];
+          for(const source of Object.values(document.dataSources) as any[])if(source.source.type==='query')delete source.source.query.filterBindings;
         }
       }
     ]
@@ -2182,3 +2193,9 @@ invariants.push({id:"detail-view-component-types",description:"详情只允许�
 {case:"detail-component-reject-fieldtext",base:"compute-page",expect:/详情只允许说明/,mutate(d){let selected:any;const visit=(c:any)=>{if(c.type==="fieldText"&&!selected)selected=c;if(c.props?.components)c.props.components.forEach(visit);for(const t of c.props?.tabs??[])(t.components??[t.component]).forEach(visit);};d.sections.forEach((s:any)=>s.components.forEach(visit));const c=structuredClone(selected);const rename=(n:any)=>{n.id="detail-negative-"+n.id;if(n.props?.components)n.props.components.forEach(rename);for(const t of n.props?.tabs??[])(t.components??[t.component]).forEach(rename);};rename(c);d.schemaVersion="6.13";d.detailViews=[{id:"negative-detail",mode:"snapshot",components:[c]}];}},
 {case:"detail-component-reject-aisummary",base:"forecast-page",expect:/详情只允许说明/,mutate(d){let selected:any;const visit=(c:any)=>{if(c.type==="aiSummary"&&!selected)selected=c;if(c.props?.components)c.props.components.forEach(visit);for(const t of c.props?.tabs??[])(t.components??[t.component]).forEach(visit);};d.sections.forEach((s:any)=>s.components.forEach(visit));const c=structuredClone(selected);const rename=(n:any)=>{n.id="detail-negative-"+n.id;if(n.props?.components)n.props.components.forEach(rename);for(const t of n.props?.tabs??[])(t.components??[t.component]).forEach(rename);};rename(c);d.schemaVersion="6.13";d.detailViews=[{id:"negative-detail",mode:"snapshot",components:[c]}];}},
 ]});
+
+const detailButtonRule=invariants.find(rule=>rule.id==='detail-view-component-types');
+detailButtonRule?.cases.push({case:'detail-component-reject-button',base:'reference-conditions-page',expect:/详情只允许说明/,mutate(document){
+ const button=structuredClone(document.sections[0].components[0]);button.id='negative-detail-button';
+ document.detailViews=[{id:'button-detail',mode:'snapshot',components:[button]}];
+}});

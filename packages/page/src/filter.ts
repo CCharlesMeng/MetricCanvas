@@ -44,6 +44,7 @@ export interface DimensionFilterDeclaration {
   display?: 'select' | 'tabs' | 'tree' | 'search';
   /** false 时仅作为组件联动使用，不在页面筛选器区呈现控件。 */
   visible?: boolean;
+  visibleWhen?: import('./schema/condition').Condition;
   /** 初始选中的维度值;缺省为不筛选 */
   default?: string[];
   /** 只在实例化时读取参数；与default互斥。 */
@@ -81,6 +82,7 @@ export interface TimeRangeFilterDeclaration {
   required?: boolean;
   /** false 时仅作为组件联动使用，不在页面筛选器区呈现控件。 */
   visible?: boolean;
+  visibleWhen?: import('./schema/condition').Condition;
   /** 初始范围:相对预设、结构化相对时间或绝对范围;缺省为不筛选 */
   default?: TimeRangePreset | TimeRangeValue | RelativeTimeExpression | PeriodSelection;
 }
@@ -128,6 +130,7 @@ export interface TimePointFilterDeclaration {
   type: 'timePoint';
   label?: string;
   visible?: boolean;
+  visibleWhen?: import('./schema/condition').Condition;
   /** 单个时间点的粒度。谓词是等值,不是区间。 */
   granularity: 'month' | 'date';
   /** 可选的包含式下限，格式与 granularity 一致（6.24）。 */
@@ -148,6 +151,7 @@ export interface BooleanFilterDeclaration {
   type: 'boolean';
   label?: string;
   visible?: boolean;
+  visibleWhen?: import('./schema/condition').Condition;
   /** true 表示打开时勾选;未勾选不占位(无条件)。 */
   default?: boolean;
 }
@@ -164,6 +168,7 @@ export interface NumberRangeFilterDeclaration {
   type: 'numberRange';
   label?: string;
   visible?: boolean;
+  visibleWhen?: import('./schema/condition').Condition;
   default?: NumberRangeValue;
 }
 
@@ -174,6 +179,7 @@ export interface SearchFilterDeclaration {
   type: 'search';
   label?: string;
   visible?: boolean;
+  visibleWhen?: import('./schema/condition').Condition;
   default?: string;
 }
 

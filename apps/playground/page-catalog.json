@@ -362,6 +362,34 @@
         "URL参数",
         "跨页导航"
       ]
+    },
+    {
+      "id": "page-visibility-region-linkage",
+      "group": "verification",
+      "summary": "层级空选、分区与子项条件、父容器保留、Tab回退、行投影、按钮和文字片段。内联演示数据。",
+      "tags": [
+        "条件显隐",
+        "层级联动"
+      ]
+    },
+    {
+      "id": "page-visibility-inputs",
+      "group": "verification",
+      "summary": "已有权限与业务事实的就绪、拒绝及错误输入；本地Sim事实验收。",
+      "tags": [
+        "条件显隐",
+        "Sim"
+      ],
+      "externalInputs": "visibility"
+    },
+    {
+      "id": "page-visibility-report",
+      "group": "verification",
+      "summary": "报告导出使用相同条件：整块隐藏、父容器保留、全部允许Tab展开、行投影与PDF/PNG/XLSX。",
+      "tags": [
+        "条件显隐",
+        "导出"
+      ]
     }
   ]
 }

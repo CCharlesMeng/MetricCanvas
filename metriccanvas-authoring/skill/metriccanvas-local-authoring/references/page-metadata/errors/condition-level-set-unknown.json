@@ -1,0 +1,30 @@
+{
+  "case": "condition-level-set-unknown",
+  "invariant": "conditional-presentation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "条件引用了未声明的层级",
+      "paths": [
+        "/sections/1/visibleWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "visibleWhen": {
+          "filter": "organization",
+          "part": "level",
+          "op": "in",
+          "values": [
+            "department",
+            "unknown"
+          ]
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

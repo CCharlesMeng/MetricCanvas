@@ -1,5 +1,7 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import {compilePresentation} from '../../runtime/src/presentation';
+  import {PRESENTATION_CONTEXT} from './presentation-context';
   import { chartOptionPaths } from '@metriccanvas/page/internal';
   import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
   import { setContext, untrack } from 'svelte';
@@ -11,6 +13,8 @@
   import RuntimeSection from './RuntimeSection.svelte';
   import type { NestedComponentRender,TableRenderBinding } from './component-render';
   let {state,width,padding,gap,scale=2}: {state:ExportRenderState;width:number;padding:string;gap:string;scale?:number}=$props();
+  const presentation=$derived(compilePresentation(state.page).evaluate({filters:state.filters,filterRevision:state.filterRevision,displaySnapshot:state.displaySnapshot}));
+  setContext(PRESENTATION_CONTEXT,()=>presentation);
   setContext(CHART_OPTION_PATHS, () => chartOptionPaths(state.page));
   setContext(STATIC_EXPORT_CONTEXT,true);
   setContext(EXPORT_SCALE_CONTEXT,untrack(() => scale));
@@ -34,7 +38,7 @@
       headerPeriod={header=>headerPeriod(header.props,state.page.filters??[],state.filters,state.page.schemaVersion)}/>
     </div>
   {/snippet}
-  {#each state.page.sections as section (section.id)}
+  {#each presentation.sections as section (section.id)}
     <RuntimeSection {section} {componentContent}/>
   {/each}
 </div>

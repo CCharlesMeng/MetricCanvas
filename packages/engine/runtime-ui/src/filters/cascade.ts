@@ -27,9 +27,13 @@ export function dependentFilterIds(
   declarations: readonly FilterDeclaration[],
   parentId: string
 ): string[] {
-  return declarations
-    .filter((item) => item.type === 'dimension' && item.dependsOn === parentId)
-    .map((item) => item.id);
+  const ids=new Set<string>();
+  const pending=[parentId];
+  while(pending.length) {
+    const parent=pending.shift()!;
+    for(const item of declarations)if(item.type==='dimension'&&item.dependsOn===parent&&!ids.has(item.id)&&item.id!==parentId){ids.add(item.id);pending.push(item.id);}
+  }
+  return [...ids];
 }
 
 export function clearDependentUpdates(

@@ -1,3 +1,4 @@
+import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import {
   componentIdZ,
@@ -45,6 +46,7 @@ const metricCardProgressZ = z
 export const metricCardComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('metricCard'),
     layout: componentLayoutZ,
     data: metricDataZ,

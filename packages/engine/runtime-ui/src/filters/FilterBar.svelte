@@ -139,14 +139,14 @@
         values={current.values}
         picker={declaration.hierarchyPicker ?? 'tabs'}
         display={declaration.display ?? 'select'}
-        candidates={dimensionValuesSnapshot(candidates, currentDimension(declaration))}
+        candidates={dimensionValuesSnapshot(candidates, currentDimension(declaration), declaration.id)}
         onchange={(next) => ondimension(declaration, next.values, next.level)}
       />
     {:else if declaration.type === 'dimension'}
       <DimensionFilter
         label={declaration.label}
         emptyLabel={declaration.emptyLabel}
-        candidates={dimensionValuesSnapshot(candidates, declaration.dimension)}
+        candidates={dimensionValuesSnapshot(candidates, declaration.dimension, declaration.id)}
         value={dimensionValueOf(values, declaration.id).values}
         display={declaration.display ?? 'select'}
         onchange={(next) => ondimension(declaration, next)}

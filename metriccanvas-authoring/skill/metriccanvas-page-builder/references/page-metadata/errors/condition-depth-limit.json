@@ -1,0 +1,28 @@
+{
+  "case": "condition-depth-limit",
+  "invariant": "conditional-presentation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "条件超过4层或64个叶子",
+      "paths": [
+        "/sections/1/visibleWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "visibleWhen": {
+          "not": {
+            "not": {
+              "…": "共1个键"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/condition-depth-limit.json"
+}

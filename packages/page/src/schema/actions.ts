@@ -1,3 +1,4 @@
+import { interactionShape } from './condition';
 import { navigationTargetZ, navigationBindingZ } from './navigation';
 import { z } from 'zod';
 import { fieldReferenceZ, idZ } from './primitives';
@@ -8,17 +9,15 @@ import { fieldReferenceZ, idZ } from './primitives';
  * union 表达，JSON Schema 侧从手写的 `oneOf` 变为生成的 `anyOf`——语义等价，
  * 结构互斥（`additionalProperties:false` 决定），仅 ajv 错误对象形状不同。
  */
-export const writeFilterActionZ = z
-  .object({
-    on: z.literal('click'),
-    writeFilter: idZ,
-    field: fieldReferenceZ
-  })
-  .strict();
+export const writeFilterActionZ = z.union([
+  z.object({ on: z.literal('click'), ...interactionShape, writeFilter: idZ, field: fieldReferenceZ, level: idZ.optional() }).strict(),
+  z.object({ on: z.literal('click'), ...interactionShape, writeFilter: idZ, value: z.string(), level: idZ.optional() }).strict()
+]);
 
 export const navigateActionZ = z
   .object({
     on: z.literal('click'),
+    ...interactionShape,
     navigate: navigationTargetZ
   })
   .strict();
@@ -31,8 +30,10 @@ export const navigateActionZ = z
 export const openDetailActionZ = z
   .object({
     on: z.literal('click'),
+    ...interactionShape,
     openDetail: z.union([z.object({
         surface: z.enum(['modal', 'drawer']),
+        ...interactionShape,
         /** 标题取被点行的某个字段；省略时用组件标题。 */
         titleField: fieldReferenceZ.optional(),
         fields: z
@@ -45,6 +46,7 @@ export const openDetailActionZ = z
       })
       .strict(), z.object({
         surface: z.enum(['modal', 'drawer']),
+        ...interactionShape,
         titleField: fieldReferenceZ.optional(),
         view: idZ,
         bindings: z.record(idZ, navigationBindingZ).optional()

@@ -22,6 +22,7 @@
 </script>
 
 <RuntimeView
+  displayInputs={input.displayInputs}
   document={input.document}
   execution={input.execution}
   dataGateway={input.dataGateway}

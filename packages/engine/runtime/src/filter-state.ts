@@ -19,6 +19,7 @@ export type { FilterValue, FilterValues, DimensionFilterValue, TimeRangeFilterVa
  * subscribe 兼容 svelte store 契约(立即同步推送当前值),subscribe/write 永不 throw。
  */
 export interface FilterState {
+  readonly revision?: number;
   subscribe(run: (values: FilterValues) => void): () => void;
   write(filterId: string, value: FilterValue | null): void;
   /** 原子写入多个筛选值，只向订阅方推送一次完整状态。 */
@@ -39,17 +40,44 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   for (const [id, value] of initial ?? []) {
     const declaration = byId.get(id);
     const timed = declaration?.type === 'timeRange' || declaration?.type === 'timePoint';
-    const valid = timed ? normalize(value, declaration) : value;
+    const valid = normalize(value, declaration);
     if (timed && !valid) throw new Error(`筛选器 ${id} 初值不符合时间边界`);
     if (!accepted(id, valid)) throw new Error(`图表筛选器 ${id} 初值不在候选项中`);
     if (valid) current.set(id, valid);
   }
+  let revision = 0;
   const subscribers = new Set<(values: FilterValues) => void>();
 
   function replace(next: Map<string, FilterValue>) {
     // 先构造新 Map 再整体替换:已推送出去的实例永不被原地修改,订阅方可安全持有与比较
     current = next;
+    revision++;
     for (const run of subscribers) notify(run, current);
+  }
+
+  function commit(updates: ReadonlyArray<readonly [string, FilterValue | null]>) {
+    const map = new Map(current);
+    const changed = new Set<string>();
+    const explicit = new Set(updates.map(([id]) => id));
+    for(const [id,value] of updates) {
+      if(byId.size && !byId.has(id)) continue;
+      const next = normalize(value,byId.get(id));
+      if(next === undefined || !accepted(id,next) || sameValue(map.get(id),next))continue;
+      if(next === null)map.delete(id);else map.set(id,next);
+      changed.add(id);
+    }
+    if(!changed.size)return;
+    const pending=[...changed];
+    const visited=new Set<string>();
+    while(pending.length) {
+      const parent=pending.shift()!;if(visited.has(parent))continue;visited.add(parent);
+      for(const declaration of declarations) {
+        if(declaration.type!=='dimension'||declaration.dependsOn!==parent)continue;
+        pending.push(declaration.id);
+        if(!explicit.has(declaration.id))map.delete(declaration.id);
+      }
+    }
+    replace(map);
   }
 
   return {
@@ -61,29 +89,9 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
       };
     },
 
-    write(filterId, value) {
-      const next = normalize(value, byId.get(filterId));
-      // 非法时间范围是无效写入,既不落状态也不清除已有合法值。
-      if (next === undefined || !accepted(filterId, next)) return;
-      if (sameValue(current.get(filterId), next)) return;
-      const map = new Map(current);
-      if (next === null) map.delete(filterId);
-      else map.set(filterId, next);
-      replace(map);
-    },
-
-    writeMany(updates) {
-      const map = new Map(current);
-      let changed = false;
-      for (const [filterId, value] of updates) {
-        const next = normalize(value, byId.get(filterId));
-        if (next === undefined || !accepted(filterId, next) || sameValue(map.get(filterId), next)) continue;
-        if (next === null) map.delete(filterId);
-        else map.set(filterId, next);
-        changed = true;
-      }
-      if (changed) replace(map);
-    },
+    get revision() { return revision; },
+    write(filterId, value) { commit([[filterId,value]]); },
+    writeMany(updates) { commit(updates); },
 
     toURL(explicitDeclarations = declarations) {
       return filterSearch(current, explicitDeclarations);
@@ -102,7 +110,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
         const fallback = current.get(id) ?? (declaration ? initialFilterValues([declaration]).get(id) : undefined);
         if (fallback) next.set(id, fallback);
       }
-      replace(next);
+      if([...new Set([...current.keys(),...next.keys()])].some(id=>!sameValue(current.get(id),next.get(id)??null)))replace(next);
     }
 
   };
@@ -119,6 +127,7 @@ function notify(run: (values: FilterValues) => void, values: FilterValues): void
 
 /** 空值集合等同不筛选,归一为清除,保持 URL 与状态干净 */
 function normalize(value: FilterValue | null, declaration?: FilterDeclaration): FilterValue | null | undefined {
+  if(value && declaration && value.type!==declaration.type)return undefined;
   if (declaration?.type === 'timeRange' && declaration.display === 'period') {
     if (value?.type !== 'timeRange' || !isPeriodSelection(value.selection)) return undefined;
     if (timeFilterBoundaryError(declaration, value)) return undefined;
@@ -136,6 +145,14 @@ function normalize(value: FilterValue | null, declaration?: FilterDeclaration): 
   if (declaration?.type === 'timeRange') {
     if (!value) return declaration.required ? undefined : null;
     if (value.type !== 'timeRange' || validateCalendarTimeRange(value, declaration.precision).length || timeFilterBoundaryError(declaration, value)) return undefined;
+  }
+  if (value?.type === 'dimension' && declaration?.type === 'dimension') {
+    if(declaration.hierarchy) {
+      const level=value.level ?? declaration.defaultLevel ?? declaration.hierarchy[0]?.id;
+      if(!declaration.hierarchy.some(item=>item.id===level))return undefined;
+      return {...value,level,dimension:dimensionOfLevel(declaration,level)};
+    }
+    if(value.level!==undefined)return undefined;
   }
   if (value && value.type === 'dimension' && value.values.length === 0) return null;
   if (value?.type === 'timeRange' && validateCalendarTimeRange(value).length > 0) {
@@ -199,7 +216,7 @@ export function parseFilterSearch(search: string, declarations: readonly FilterD
     let value: FilterValue | null | undefined;
     if (declaration.type === 'dimension') {
       const values = query.getAll(keys.value!).filter(v => v !== '');
-      if (!values.length) continue;
+      if (!values.length && !(declaration.hierarchy && read('level'))) continue;
       const level = read('level') ?? declaration.defaultLevel ?? declaration.hierarchy?.[0]?.id;
       if (level && declaration.hierarchy && !declaration.hierarchy.some(l => l.id === level)) continue;
       value = { type: 'dimension', values, dimension: dimensionOfLevel(declaration, level), ...(level ? { level } : {}) };

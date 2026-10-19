@@ -183,3 +183,16 @@ describe('筛选候选值加载器', () => {
     });
   });
 });
+
+it('isolates consumer identities and discards both success and error from a canceled generation',async()=>{
+ const {gateway,calls}=deferredGateway();const loader=createDimensionValuesLoader(gateway);
+ let snapshots:DimensionValuesSnapshots=new Map();loader.subscribe(next=>snapshots=next);
+ loader.load('region',{parent:['a']},'first');loader.load('region',{parent:['b']},'second');
+ loader.reload('region',{parent:['c']},'first');
+ calls[0]!.deferred.resolve({kind:'values',candidates:[{value:'stale',label:'stale'}]});await settled();
+ expect(dimensionValuesSnapshot(snapshots,'region','first').status).toBe('loading');
+ calls[1]!.deferred.resolve({kind:'values',candidates:[{value:'b',label:'b'}]});calls[2]!.deferred.resolve({kind:'values',candidates:[{value:'c',label:'c'}]});await settled();
+ expect(dimensionValuesSnapshot(snapshots,'region','first')).toEqual({status:'ready',candidates:[{value:'c',label:'c'}]});
+ expect(dimensionValuesSnapshot(snapshots,'region','second')).toEqual({status:'ready',candidates:[{value:'b',label:'b'}]});
+ loader.dispose();
+});

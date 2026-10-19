@@ -4,7 +4,7 @@
   import { RuntimeView } from '@metriccanvas/engine/ui';
   import type { PageRevision } from './page-assets/contract';
   import {usePlatformServices} from './integration/services';
-  const {pageAssets, dataGateway} = usePlatformServices();
+  const {pageAssets, dataGateway,displayInputs} = usePlatformServices();
 
   let { pageId, revisionId, readRevision = pageAssets.getRevision, executeRevision }: {
     pageId: string; revisionId: string;
@@ -61,7 +61,7 @@
   {#if error}
     <div role="alert"><p>{error}</p><button onclick={() => retry += 1}>重试</button></div>
   {:else if revision}
-    <RuntimeView document={renderedDocument ?? revision.document} {execution} {dataGateway} pageRevisionId={revision.revisionId} />
+    <RuntimeView {displayInputs} document={renderedDocument ?? revision.document} {execution} {dataGateway} pageRevisionId={revision.revisionId} />
   {:else}
     <p role="status">加载精确修订…</p>
   {/if}

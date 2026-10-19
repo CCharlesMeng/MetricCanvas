@@ -190,3 +190,13 @@ Report 页面按三节组织，控件相互独立：
 - 直接打开目标页时，销售容器选中已声明默认“销售概览”（不是第一项），工单容器选中第一项“未关闭工单”。来源页的无效、空值、重复值链接均回退同样的默认页签。
 - 打开 `?sales-tab=detail&support-tab=closed` 后手动切换销售页签，工单保持原选择，地址不变化；刷新后重新应用 URL 初值。未声明的 `?tab=detail` 不影响容器。
 - 页面协议、参数命名互斥、初始化及导出边界见 [Tab 容器](../docs/page-metadata/components/tabContainer.md#url-初始化页签633)。自动浏览器验收直接消费以上两页；本地导航和内联渲染成功不代表真实门户、DQE、Relay 或模型验收。
+
+## 统一条件显隐（6.34）
+
+使用 `pnpm --filter playground dev --port 5185` 启动；以下页面均为 inline 本地演示，不需要 DQE。自动验收直接消费这三份页面：`node apps/playground/tests/page-visibility-browser.mjs /tmp/visibility-browser`；使用其他端口时设置 `VISIBILITY_BASE_URL`。
+
+- `/pages/page-visibility-region-linkage`：切换“地区部”，地区部行权规范分区消失；“保留父容器”仍保留标题和空容器；局部文字、Tab 与表格行一起变化。切回全球，内容恢复；Tab 保持仍有效的当前项。URL 可只携带 `?organization.level=department`，刷新仍保留层级。“显示扩展内容／恢复基础内容”由独立按钮写入同一个筛选状态。
+- `/pages/page-visibility-inputs`：Sim 控制在页面文档之外，初始等待时只展示独立内容；允许、拒绝、等待、错误即时改变依赖内容。“更换权限会话”使旧实例失效，需点击“重新初始化页面”；导出期间更换权限会话应取消下载。JS/平台接入通过 `displayInputs` 提供已有权限结果和有限具名事实。
+- `/pages/page-visibility-report`：在地区部层级下载 PDF、PNG、表格 XLSX，核对地区部分区未导出、允许的空父容器保留、所有允许 Tab 展开、条件表格只保留两行代表处记录。导出捕获后普通筛选变化不改变本次内容。
+
+规则非法来源、未知层级、类型错误、深度超限、重复片段 id 和缺少稳定行键由共享 conformance 向量验证；异步候选隔离、迟到响应和筛选级联由行为测试验证。宽窄屏、页面导出和公共 JS 输入由上述 Chrome 脚本验证。本地 Sim、inline 以及模型受控 HTTP 替身不代表真实 CloudIOC、Java、DQE 或 Relay 验收。

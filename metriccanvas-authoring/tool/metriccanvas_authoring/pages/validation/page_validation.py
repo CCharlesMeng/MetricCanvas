@@ -69,11 +69,20 @@ def _is_report_export_header(node):
 
 
 def _uses_product_bridge(node):
-    if isinstance(node, list): return any(_uses_product_bridge(v) for v in node)
-    if _is_url_initialized_tab(node): return True
-    if _is_report_export_header(node): return True
-    if isinstance(node, dict): return node.get('type') == 'pagedJoin' or _is_chart_filter(node) or _is_period_filter(node) or _is_bounded_time_point(node) or node.get('mode') == 'numberRange' or any(_uses_product_bridge(v) for v in node.values())
-    return False
+    if isinstance(node, list):
+        return any(_uses_product_bridge(value) for value in node)
+    if not isinstance(node, dict):
+        return False
+    if any(key in node for key in ('visibleWhen', 'enabledWhen', 'rowVisibleWhen', 'writeFilter')):
+        return True
+    if node.get('type') in {'button', 'pagedJoin'}:
+        return True
+    if node.get('type') == 'text' and 'parts' in node.get('props', {}):
+        return True
+    features = (_is_url_initialized_tab, _is_report_export_header, _is_chart_filter, _is_period_filter, _is_bounded_time_point)
+    if any(feature(node) for feature in features) or node.get('mode') == 'numberRange':
+        return True
+    return any(_uses_product_bridge(value) for value in node.values())
 
 
 def validate_page_document(value: Any) -> list[PageContractIssue]:
