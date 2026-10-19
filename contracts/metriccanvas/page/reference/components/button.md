@@ -183,4 +183,3 @@ Schema位置：`#/definitions/buttonComponent/properties/props/properties/action
 - 源码/验证定位：`packages/page/src/schema/components/button.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
-

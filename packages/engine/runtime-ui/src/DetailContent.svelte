@@ -27,7 +27,11 @@
   const exportController=createExportController(next=>exports=next);
   onDestroy(()=>{controller.dispose();exportController.reset();});
   function searchedRows(component:TableComponent,rows:Row[]){void revision;return controller.present(component,presentation.rows(component,rows),true).rows;}
+  function toolbarEnabled(component:TableComponent,slot:'search'|'export'){
+    return presentation.gate(component.props.toolbar?.[slot]??{},undefined,presentation.component(component.id)).enabled;
+  }
   async function exportTable(component:TableComponent){
+    if(!toolbarEnabled(component,'export'))return;
     const frozen=JSON.parse(JSON.stringify(component)) as TableComponent;
     try{
       await exportController.run(component.id,async task=>{
@@ -51,6 +55,7 @@
     if(component.type!=='table')return;void revision;
     const source=snapshots.get(component.data.main),pagination=component.props.pagination;
     return controller.binding(component,{filterOptions:{},paginationConfig:pagination,
+      toolbarEnabled:{search:toolbarEnabled(component,'search'),export:toolbarEnabled(component,'export')},
       onexport:()=>{void exportTable(component);},oncancelexport:()=>exportController.cancel(component.id),
       exporting:exports[component.id]?.busy,exportError:exports[component.id]?.error,
       pagination:pagination?.mode==='local'?{pageSize:controller.view(component).pageSize,totalCount:source?.status==='ready'?searchedRows(component,source.rows).length:0}:undefined,

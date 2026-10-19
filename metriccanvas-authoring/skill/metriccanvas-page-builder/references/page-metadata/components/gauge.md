@@ -265,4 +265,3 @@ Schema位置：`#/definitions/gaugeComponent/properties/props/properties/actions
 - 源码/验证定位：`packages/engine/widgets/src/components/gauge/gauge.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
-

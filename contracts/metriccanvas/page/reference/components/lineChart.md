@@ -389,4 +389,3 @@ Schema位置：`#/definitions/lineChartComponent/properties/props/properties/act
 - 源码/验证定位：`packages/embed/tests/browser/embed.spec.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
-

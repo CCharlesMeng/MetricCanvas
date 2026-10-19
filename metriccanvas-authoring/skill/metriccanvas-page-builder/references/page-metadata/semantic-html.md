@@ -152,4 +152,3 @@ Schema位置：`#/definitions/querySemanticHtmlField/properties/nullable`。
 - 源码/验证定位：`packages/engine/widgets/src/shared/semantic-html.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
-
