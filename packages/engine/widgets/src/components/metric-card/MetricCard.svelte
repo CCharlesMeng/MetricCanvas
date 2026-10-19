@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   import type { FieldBinding, MetricCardProps, Row } from '@metriccanvas/page/internal';
   import type { MetricDataSlots } from '../../shared/component-data';

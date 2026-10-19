@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script module lang="ts">
   import type { PeriodRange } from '@metriccanvas/page/internal';
 </script>

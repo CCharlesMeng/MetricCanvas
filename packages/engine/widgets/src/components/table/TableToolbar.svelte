@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   import type { TableProps } from '@metriccanvas/page/internal';
   import { Button } from '@metriccanvas/ui';

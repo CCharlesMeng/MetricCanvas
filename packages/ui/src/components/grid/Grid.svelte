@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts" generics="Row">
  import type {Snippet} from 'svelte';import Theme from '../../shared/Theme.svelte';import Empty from '../empty/Empty.svelte';import type {GridColumn,GridSort} from '../../types';
  let {rows,columns,rowKey,cell,headers,sort,onsort,loading=false,error='',emptyText='暂无数据',label='数据列表',responsive='scroll'}:{rows:Row[];columns:GridColumn[];rowKey:(row:Row)=>string;cell:Snippet<[Row,GridColumn]>;headers?:Record<string,Snippet>;sort?:GridSort;onsort?:(sort:GridSort)=>void;loading?:boolean;error?:string;emptyText?:string;label?:string;responsive?:'scroll'|'stack'}=$props();

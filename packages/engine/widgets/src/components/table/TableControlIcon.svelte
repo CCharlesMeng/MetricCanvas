@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   // OpenTiny TinyVue OS Theme icons, MIT; license retained at packages/ui/LICENSE.
   let { name }: { name: 'search' | 'clear' | 'left' | 'right' | 'down' } = $props();

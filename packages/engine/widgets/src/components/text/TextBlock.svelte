@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts" module>
   /** 已解析的跳转链接:href 由运行时按筛选状态当前值组装(组件不感知序列化机制) */
   export interface TextBlockLink {

@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   import type { ValueFormatPreset } from '@metriccanvas/page/internal';
   import {

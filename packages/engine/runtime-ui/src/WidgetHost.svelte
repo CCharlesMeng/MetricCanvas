@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { DataSnapshot } from '@metriccanvas/page/internal';

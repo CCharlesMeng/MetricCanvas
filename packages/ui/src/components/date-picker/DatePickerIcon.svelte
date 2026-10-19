@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   // OpenTiny TinyVue SVG paths, MIT. See tiny-vue-LICENSE.txt.
   let { name }: { name: 'calendar' | 'left' | 'right' | 'double-left' | 'double-right' | 'clear' | 'down' } = $props();

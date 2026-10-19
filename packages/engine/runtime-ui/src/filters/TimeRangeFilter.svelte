@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   import { untrack } from 'svelte';
   import { DatePicker } from '@metriccanvas/ui';

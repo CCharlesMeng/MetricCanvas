@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
  import Theme from '../../shared/Theme.svelte';import type {UiOption} from '../../types';
  let {options,value,onchange,label='页签'}:{options:UiOption[];value:string;onchange?:(value:string)=>void;label?:string}=$props();

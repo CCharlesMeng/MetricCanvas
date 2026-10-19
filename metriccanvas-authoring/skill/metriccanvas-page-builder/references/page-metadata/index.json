@@ -1,14 +1,18 @@
 {
-  "schemaVersion": "6.29",
-  "schemaSha256": "41d3a5e3f31d39f0eef81f4555d3a04c1fbd485bf8dd1bb9c745eb39e9c772d1",
+  "schemaVersion": "6.31",
+  "schemaSha256": "c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
       "sha256": "07f01423d8a9bede12d2d9d070ba694fc9fa9a82430f5c174a895ca02b069119"
     },
     {
+      "file": "packages/embed/tests/browser/report-image.spec.ts",
+      "sha256": "15ca9a7dcd412819874e8ecc23bf4af125739706d7c1c854c058449591e31df6"
+    },
+    {
       "file": "packages/engine/widgets/src/components/gauge/Gauge.svelte",
-      "sha256": "905b68e174215e9168696af02ff2bf607525d21c6d3ce7f477e819931fae7de5"
+      "sha256": "b55b9308450b45940f5e644b53a0b76c4288d561dcf6af7bab5d109a38b6ac69"
     },
     {
       "file": "packages/engine/widgets/src/components/gauge/gauge.ts",
@@ -48,7 +52,11 @@
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
-      "sha256": "8a0ab6d3a24b9b4d0bdb62abc5f35f4e07ff78745d5f8bca7ad8678548891ca5"
+      "sha256": "ea6ca800ab64eb622cc90ee7a65dc91ae157b28c71270ada1d8b5bb7692d8d31"
+    },
+    {
+      "file": "packages/page/src/report-export.ts",
+      "sha256": "f62cc3d424562ae3f74c2821b74400b47ad3052a03766e1fa3f4548d35e5eb84"
     },
     {
       "file": "packages/page/src/schema/actions.ts",
@@ -104,7 +112,7 @@
     },
     {
       "file": "packages/page/src/schema/components/report-header.ts",
-      "sha256": "77d26e99ff090a21975bf872d7ec2c8e56669572c1a796276f02731bbd23dda9"
+      "sha256": "d32f21959920e1b9baed509f09944aa4ad829670a6b5b2ab3deb8f30d3191907"
     },
     {
       "file": "packages/page/src/schema/components/tab-container.ts",
@@ -164,11 +172,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "9189939b699dc70740cae331665261a220fb65acef28008db0bce671d8959c2e"
+      "sha256": "2facf78271db1a318fb283c59176a72c483fe3385d415a6e74a52bb5aa97421c"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "69c4d79ffad09db2d3498eba5caf86465b4f145c93e73b90ba6146a05e72c94b"
+      "sha256": "fc4c51b309a4724cbe2285dff2dd0501c89d21323460a95524db1fa9d57ccaa4"
     }
   ],
   "modules": {
@@ -678,11 +686,16 @@
       "examples": [
         "inline-report",
         "text-composition-page",
-        "report-pdf-export"
+        "report-pdf-export",
+        "report-png-export",
+        "report-export-buttons",
+        "report-export-scale-fallback"
       ],
       "sources": [
         "packages/page/src/schema/components/report-header.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/embed/tests/browser/report-image.spec.ts",
+        "packages/page/src/report-export.ts"
       ],
       "rules": [
         "schema-structure",
@@ -690,7 +703,9 @@
         "field-binding-resolves",
         "field-binding-role",
         "field-binding-match",
-        "report-header-pdf-export"
+        "report-header-pdf-export",
+        "report-header-png-export",
+        "report-header-export-buttons"
       ]
     },
     "components/metricCard.md": {
@@ -1196,7 +1211,9 @@
         "6.26",
         "6.27",
         "6.28",
-        "6.29"
+        "6.29",
+        "6.30",
+        "6.31"
       ]
     },
     {
@@ -5958,6 +5975,108 @@
       "module": "components/reportHeader.md"
     },
     {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons",
+      "path": "@reportHeaderComponent.props.exportButtons",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items",
+      "path": "@reportHeaderComponent.props.exportButtons[]",
+      "required": "每个数组项",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/format",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[0].format",
+      "required": "本分支必填",
+      "module": "components/reportHeader.md",
+      "const": "pdf"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/label",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[0].label",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/label/allOf/0",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[0].label · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/filename",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[0].filename",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/filename/allOf/0",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[0].filename · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/scale",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[0].scale",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/format",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[1].format",
+      "required": "本分支必填",
+      "module": "components/reportHeader.md",
+      "const": "png"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/label",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[1].label",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/label/allOf/0",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[1].label · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/filename",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[1].filename",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/filename/allOf/0",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[1].filename · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/scale",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[1].scale",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
       "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pdfExport",
       "path": "@reportHeaderComponent.props.pdfExport",
       "required": "本分支可选",
@@ -5988,6 +6107,31 @@
       "required": "独立分支（不合并required）",
       "module": "components/reportHeader.md",
       "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pngExport",
+      "path": "@reportHeaderComponent.props.pngExport",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pngExport/properties/filename",
+      "path": "@reportHeaderComponent.props.pngExport.filename",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pngExport/properties/filename/allOf/0",
+      "path": "@reportHeaderComponent.props.pngExport.filename · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pngExport/properties/scale",
+      "path": "@reportHeaderComponent.props.pngExport.scale",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
     },
     {
       "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/subtitle",
@@ -11702,6 +11846,18 @@
         "rule": "detail-view-component-types",
         "source": "packages/page/src/validate.ts"
       }
+    },
+    {
+      "schemaPointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0",
+      "module": "components/reportHeader.md",
+      "file": "examples/report-export-buttons.json",
+      "pointer": "#/sections/0/components/0/props/exportButtons/0"
+    },
+    {
+      "schemaPointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1",
+      "module": "components/reportHeader.md",
+      "file": "examples/report-export-buttons.json",
+      "pointer": "#/sections/0/components/0/props/exportButtons/1"
     },
     {
       "schemaPointer": "#/definitions/textValue/anyOf/0",

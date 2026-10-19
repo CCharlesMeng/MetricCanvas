@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
  import Theme from '../../shared/Theme.svelte';import Icon from '../date-picker/DatePickerIcon.svelte';
  let {page,total,pageSize=20,onchange,disabled=false}:{page:number;total:number;pageSize?:number;onchange?:(page:number)=>void;disabled?:boolean}=$props();const count=$derived(Math.max(1,Math.ceil(total/Math.max(1,pageSize))));const pages=$derived(Array.from({length:Math.min(7,count)},(_,i)=>Math.max(1,Math.min(page-3,count-6))+i));

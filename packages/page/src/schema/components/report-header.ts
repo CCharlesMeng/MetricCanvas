@@ -8,6 +8,19 @@ import {
 } from '../primitives';
 import { componentCatalogRegistry } from '../registry';
 
+const exportButtonFields = {
+  label: nonEmptyTextValueZ.optional(),
+  filename: nonEmptyTextValueZ.optional()
+};
+const exportButtonZ = z.discriminatedUnion('format', [
+  z.object({ format: z.literal('pdf'), ...exportButtonFields,
+    scale: z.unknown().optional()
+  }).strict(),
+  z.object({ format: z.literal('png'), ...exportButtonFields,
+    scale: z.unknown().optional()
+  }).strict()
+]);
+
 export const reportHeaderComponentZ = z
   .object({
     id: componentIdZ,
@@ -17,9 +30,14 @@ export const reportHeaderComponentZ = z
       .object({
         title: nonEmptyTextValueZ,
         filterIds: z.array(idZ).min(1).optional(),
+        exportButtons: z.array(exportButtonZ).min(1).max(2).optional(),
         pdfExport: z.object({
           label: nonEmptyTextValueZ.optional(),
           filename: nonEmptyTextValueZ.optional()
+        }).strict().optional(),
+        pngExport: z.object({
+          filename: nonEmptyTextValueZ.optional(),
+          scale: z.unknown().optional()
         }).strict().optional(),
         subtitle: textValueZ.optional(),
         subtitleFormat: z.literal('semanticHtml').optional(),

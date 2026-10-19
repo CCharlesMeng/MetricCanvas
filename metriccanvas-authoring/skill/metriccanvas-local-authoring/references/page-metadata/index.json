@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.29",
-  "schemaSha256": "41d3a5e3f31d39f0eef81f4555d3a04c1fbd485bf8dd1bb9c745eb39e9c772d1",
+  "schemaVersion": "6.31",
+  "schemaSha256": "c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -435,7 +435,10 @@
       "examples": [
         "inline-report",
         "text-composition-page",
-        "report-pdf-export"
+        "report-pdf-export",
+        "report-png-export",
+        "report-export-buttons",
+        "report-export-scale-fallback"
       ],
       "rules": [
         "schema-structure",
@@ -443,7 +446,9 @@
         "field-binding-resolves",
         "field-binding-role",
         "field-binding-match",
-        "report-header-pdf-export"
+        "report-header-pdf-export",
+        "report-header-png-export",
+        "report-header-export-buttons"
       ]
     },
     "components/metricCard.md": {
@@ -883,7 +888,9 @@
         "6.26",
         "6.27",
         "6.28",
-        "6.29"
+        "6.29",
+        "6.30",
+        "6.31"
       ]
     },
     {
@@ -5645,6 +5652,108 @@
       "module": "components/reportHeader.md"
     },
     {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons",
+      "path": "@reportHeaderComponent.props.exportButtons",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items",
+      "path": "@reportHeaderComponent.props.exportButtons[]",
+      "required": "每个数组项",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/format",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[0].format",
+      "required": "本分支必填",
+      "module": "components/reportHeader.md",
+      "const": "pdf"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/label",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[0].label",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/label/allOf/0",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[0].label · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/filename",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[0].filename",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/filename/allOf/0",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[0].filename · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/scale",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[0].scale",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/format",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[1].format",
+      "required": "本分支必填",
+      "module": "components/reportHeader.md",
+      "const": "png"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/label",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[1].label",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/label/allOf/0",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[1].label · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/filename",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[1].filename",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/filename/allOf/0",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[1].filename · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/scale",
+      "path": "@reportHeaderComponent.props.exportButtons[] · oneOf[1].scale",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
       "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pdfExport",
       "path": "@reportHeaderComponent.props.pdfExport",
       "required": "本分支可选",
@@ -5675,6 +5784,31 @@
       "required": "独立分支（不合并required）",
       "module": "components/reportHeader.md",
       "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pngExport",
+      "path": "@reportHeaderComponent.props.pngExport",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pngExport/properties/filename",
+      "path": "@reportHeaderComponent.props.pngExport.filename",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pngExport/properties/filename/allOf/0",
+      "path": "@reportHeaderComponent.props.pngExport.filename · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/pngExport/properties/scale",
+      "path": "@reportHeaderComponent.props.pngExport.scale",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
     },
     {
       "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/subtitle",
@@ -11332,6 +11466,18 @@
       }
     },
     {
+      "schemaPointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0",
+      "module": "components/reportHeader.md",
+      "file": "examples/report-export-buttons.json",
+      "pointer": "#/sections/0/components/0/props/exportButtons/0"
+    },
+    {
+      "schemaPointer": "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1",
+      "module": "components/reportHeader.md",
+      "file": "examples/report-export-buttons.json",
+      "pointer": "#/sections/0/components/0/props/exportButtons/1"
+    },
+    {
       "schemaPointer": "#/definitions/textValue/anyOf/0",
       "module": "params-and-text-values.md",
       "file": "examples/component-barChart.json",
@@ -11899,5 +12045,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "fb2f5b4514af4384ba742c0343c10a55af3d75794ab543254189aca41de6c54d"
+  "semanticSourceDigest": "a7315a2bca353aa97c0050e75b9e5941d9e5fa63293780e032a21e232b99fcda"
 }

@@ -1,16 +1,17 @@
+<svelte:options css="injected" />
 <script lang="ts">
   import { getContext, type Snippet } from 'svelte';
-  import { REPORT_PDF_CONTEXT, type ReportPdfContext } from './report-pdf-context';
+  import { REPORT_EXPORT_CONTEXT, reportExportButtons, type ReportExportContext } from './report-export-context';
   import type { ReportHeaderProps } from '@metriccanvas/page/internal';
   import { ReportHeader } from '../../widgets/src';
   let { props, period, controls, onback, exportMode = false }: {
     props: ReportHeaderProps; period?: string; controls?: Snippet<[string[]]>;
     onback?: () => void; exportMode?: boolean;
   } = $props();
-  const pdf = getContext<ReportPdfContext | undefined>(REPORT_PDF_CONTEXT);
+  const exporter = getContext<ReportExportContext | undefined>(REPORT_EXPORT_CONTEXT);
+  const buttons = $derived(reportExportButtons(props));
   const showDates = $derived(!!props.filterIds?.length && !!controls);
-  const showPdf = $derived(!!props.pdfExport && !!pdf);
-  const showToolbar = $derived(!exportMode && (showDates || showPdf));
+  const showToolbar = $derived(!exportMode && (showDates || (!!exporter && buttons.length > 0)));
   const rendered = $derived(period === undefined ? props : { ...props, asOf: {label:props.asOf?.label??'当前期间',value:period} });
 </script>
 {#if showToolbar}
@@ -18,9 +19,16 @@
     {#if showDates && controls && props.filterIds}
       <div class="controls">{@render controls(props.filterIds)}</div>
     {/if}
-    {#if showPdf && pdf}
+    {#if exporter && buttons.length}
       <div class="pdf-actions">
-        <button type="button" class="pdf-download" data-report-pdf-download disabled={pdf.busy} aria-busy={pdf.busy} aria-live="polite" title={pdf.error ? `导出失败：${pdf.error}` : undefined} onclick={() => pdf.download(props)}>{pdf.busy ? (pdf.message || '正在准备报告…') : pdf.error ? '下载失败，重试' : (props.pdfExport?.label?.trim() || '下载 PDF')}</button>
+        {#each buttons as button}
+          {@const active = exporter.active === button}
+          <button type="button" data-report-pdf-download={button.format === 'pdf' ? '' : undefined} data-report-image-download={button.format === 'png' ? '' : undefined}
+            disabled={exporter.busy} aria-busy={active && exporter.busy} aria-live="polite"
+            title={active && exporter.error ? `导出失败：${exporter.error}` : undefined}
+            onclick={() => exporter.download(props, button)}>{active && exporter.busy ? (exporter.message || '正在准备报告…') : active && exporter.error ? '导出失败，重试' : (button.label?.trim() || (button.format === 'pdf' ? '导出 PDF' : '导出图片'))}</button>
+        {/each}
+        {#if exporter.error && buttons.includes(exporter.active!)}<span role="alert">导出失败：{exporter.error}</span>{/if}
       </div>
     {/if}
   </div>

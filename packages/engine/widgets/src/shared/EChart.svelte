@@ -1,6 +1,7 @@
+<svelte:options css="injected" />
 <script lang="ts">
   import { getContext, onMount } from 'svelte';
-  import { STATIC_EXPORT_CONTEXT } from './export-context';
+  import { EXPORT_SCALE_CONTEXT, STATIC_EXPORT_CONTEXT } from './export-context';
   import * as echarts from 'echarts';
   import type { EChartsOption, XAXisComponentOption } from 'echarts';
   import { cartesianFrame } from './chart-presentation';
@@ -38,6 +39,7 @@
   }: Props = $props();
 
   const staticExport = getContext<boolean>(STATIC_EXPORT_CONTEXT) ?? false;
+  const exportScale = getContext<number>(EXPORT_SCALE_CONTEXT) ?? 2;
   let chart = $state<echarts.ECharts>();
   let width = $state(0);
   const frame = $derived(cartesian ? cartesianFrame(option, width, expandForLabels) : { option, minHeight: undefined });
@@ -52,7 +54,11 @@
       if (stopped || el.clientWidth <= 0 || el.clientHeight <= 0) return;
       width = el.clientWidth;
       if (!instance) {
-        instance = echarts.init(el);
+        if (staticExport && (Math.ceil(el.clientWidth * exportScale) > 8192 || Math.ceil(el.clientHeight * exportScale) > 8192 || el.clientWidth * el.clientHeight * exportScale ** 2 > 16_777_216)) {
+          el.dataset.exportChartError = '图表尺寸超出图片导出支持范围';
+          return;
+        }
+        instance = echarts.init(el, undefined, staticExport ? { devicePixelRatio: exportScale } : undefined);
         chart = instance;
         if (onitemclick) instance.on('click', (params) =>
           onitemclick(params.dataIndex, typeof params.name === 'string' ? params.name : undefined)

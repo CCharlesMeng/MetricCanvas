@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   /**
    * 布尔筛选器(纯渲染):勾选才生成条件,未勾选无条件。

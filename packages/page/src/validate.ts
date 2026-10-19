@@ -2,6 +2,7 @@ import { chartFilterErrors } from './chart-filter';
 import { pagedJoinErrors } from './validate-paged-join';
 import { queryResultBindingErrors } from './validate-query-results';
 import { reportDateFilterErrors } from './report-date-filters';
+import { normalizeReportExportScales } from './report-export';
 import { crossSourceComputeErrors } from './validate-compute-dependencies';
 import { queryParamReferenceErrors } from './query-param-references';
 import { paramBindingErrors } from './param-bindings';
@@ -89,7 +90,7 @@ export function parsePage(
   document: unknown,
   options: PageParseOptions = {}
 ): PageParseResult {
-  const compatibleDocument = adaptLegacyPageDocument(document);
+  const compatibleDocument = normalizeReportExportScales(adaptLegacyPageDocument(document));
   if (!validateStructure(compatibleDocument)) {
     const structural = (validateStructure.errors ?? []).map(toTypedError);
     const guided = [...versionErrors(compatibleDocument), ...compositeCardStructureErrors(compatibleDocument)];
@@ -146,7 +147,7 @@ export function parsePage(
 export function normalizePageDocument(document: unknown):
   | { ok: true; document: PageDocument; errors: [] }
   | { ok: false; errors: TypedError[] } {
-  const compatibleDocument = adaptLegacyPageDocument(document);
+  const compatibleDocument = normalizeReportExportScales(adaptLegacyPageDocument(document));
   const parsed = parsePage(compatibleDocument);
   if (!parsed.ok) return parsed;
   // JSON 文档也可能是 Svelte Proxy，使用 JSON 树复制，不使用 structuredClone。

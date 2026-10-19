@@ -1,0 +1,6 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>导出图片</title><style>body{margin:0}#app{width:100%;min-height:100vh}</style></head><body><div id="app"></div>
+<script src="../dist/metriccanvas-runtime.global.js"></script>
+<script>
+(async()=>{const name=new URL(location.href).searchParams.get('page')||'report-png-export';const document=await fetch('/pages/'+name+'.json').then(r=>r.json());window.runtime=MetricCanvas.mount('#app',{document});})();
+</script></body></html>

@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   import type { LineChartProps, Row } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';

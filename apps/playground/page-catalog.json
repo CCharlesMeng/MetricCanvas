@@ -248,6 +248,34 @@
       ]
     },
     {
+      "id": "report-png-export",
+      "group": "features",
+      "summary": "同一种导出按钮配置PDF/PNG与各自清晰度，点击直接下载；PNG始终一张。合成数据。",
+      "tags": [
+        "PNG",
+        "导出图片"
+      ]
+    },
+    {
+      "id": "report-png-long-export",
+      "group": "verification",
+      "summary": "140行合成数据，跨截图块流式生成单张长PNG。",
+      "tags": [
+        "长图",
+        "PNG"
+      ]
+    },
+    {
+      "id": "report-export-scale-fallback",
+      "group": "verification",
+      "summary": "新旧导出配置的无效scale回退默认值：PDF 2倍、PNG 3倍。合成数据。",
+      "tags": [
+        "PDF",
+        "PNG",
+        "默认倍率"
+      ]
+    },
+    {
       "id": "dashboard-period-filter",
       "group": "features",
       "summary": "顶部筛选统一切换年、季、月、近一年，回显绑定查询范围；月份精度、更多筛选和只读边界由测试夹具覆盖。",

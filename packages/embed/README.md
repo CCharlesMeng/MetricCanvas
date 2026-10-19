@@ -246,3 +246,7 @@ ESM 同名导出也可用。初始实际参数/筛选及逐源快照来自执行
 从页面协议6.28起，Report顶层页头声明`props.pdfExport: {label: "下载报告", filename: "经营分析报告.pdf"}`即可启用内置下载；两项可省略，默认按钮为“下载 PDF”，文件名取页头标题。按钮与filterIds共用工具带，无日期控件也可显示。HTML运行时单文件已包含PDF依赖，集成应用无需自行安装html2canvas或jsPDF，也无需编写下载回调。更新使用包含本能力的新运行时产物。
 
 `withExportView`及其静态DOM类型已移除，不提供旧入口兼容。整页PDF只通过页面声明的内置按钮下载，没有取消按钮。图片与PDF编码在Dedicated Worker执行，主线程分批处理DOM；浏览器须支持Worker、ImageBitmap、OffscreenCanvas，宿主CSP允许`worker-src blob:`。范围、固定限额、错误与生命周期见[接入说明](../../docs/report-export.md)。
+
+### Report 导出按钮（6.31）
+
+在报表顶层页头统一配置`exportButtons: [{format, label?, filename?, scale?}]`，每项一个直接下载按钮；PNG默认3倍、支持3/4倍，PDF默认2倍、支持2/3/4倍；结果始终为一张完整PNG。单张长图由独立文档和Worker行流式编码生成，不提供多文件或其他图片格式回退。既有PDF独立保留；完整声明及运行限制见[报告页头](../../docs/page-metadata/components/reportHeader.md#导出按钮631)和[报告导出](../../docs/report-export.md)。[HTML例子](examples/report-image-download.html)直接消费`pages/report-png-export.json`，不需集成应用安装截图/编码依赖。正常父文档水印被隔离，主动向frame注入的门户脚本仍需真实接入验收。

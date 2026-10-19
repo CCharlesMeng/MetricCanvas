@@ -54,6 +54,20 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'report-header-export-buttons',description:'6.31 同一种导出按钮按格式配置名称、文件名和清晰度，直接下载',valid:['report-export-buttons','report-export-scale-fallback'],cases:[
+    {case:'report-export-before-6.31',base:'report-export-buttons',expect:/由 6.31 引入/,mutate:d=>{d.schemaVersion='6.30';}},
+    {case:'report-export-dashboard',base:'report-export-buttons',expect:/导出按钮只允许/,mutate:d=>{d.layout='dashboard';}},
+    {case:'report-export-other-format',base:'report-export-buttons',expect:/./,mutate:d=>{d.sections[0].components[0].props.exportButtons[1].format='jpeg';}},
+    {case:'report-export-duplicate-format',base:'report-export-buttons',expect:/每种格式只能/,mutate:d=>{d.sections[0].components[0].props.exportButtons[1].format='pdf';}},
+    {case:'report-export-mixed-legacy',base:'report-export-buttons',expect:/不能与旧/,mutate:d=>{d.sections[0].components[0].props.pdfExport={};}}
+  ]},
+  {id:'report-header-png-export',description:'6.30 Report导出图片，只输出一张PNG，固定名称与3/4倍倍率',valid:['report-png-export','report-export-scale-fallback'],cases:[
+    {case:'report-png-before-6.30',base:'report-png-export',expect:/由 6.30 引入/,mutate:d=>{d.schemaVersion='6.29';}},
+    {case:'report-png-dashboard',base:'report-png-export',expect:/导出图片只允许/,mutate:d=>{d.layout='dashboard';delete d.sections[0].components[0].props.filterIds;delete d.sections[0].components[0].props.pdfExport;}},
+    {case:'report-png-empty-filename',base:'report-png-export',expect:/./,mutate:d=>{d.sections[0].components[0].props.pngExport.filename='';}},
+    {case:'report-png-fixed-label',base:'report-png-export',expect:/./,mutate:d=>{d.sections[0].components[0].props.pngExport.label='PNG';}},
+    {case:'report-png-other-format',base:'report-png-export',expect:/./,mutate:d=>{d.sections[0].components[0].props.pngExport.format='jpeg';}}
+  ]},
   {id:'period-filter',description:'6.27 Dashboard 年季月与近一年期间筛选',valid:['dashboard-period-filter','dashboard-period-filter-month','dashboard-period-filter-more','dashboard-period-filter-readonly','period-filter-year-page','period-filter-quarter-page','period-filter-last12-months-page','period-filter-parameter-page'],cases:[
     {case:'period-filter-before-6.27',base:'dashboard-period-filter',expect:/由 6.27 引入/,mutate:d=>{d.schemaVersion='6.26';}},
     {case:'period-filter-quarter-invalid',base:'dashboard-period-filter',expect:/期间默认选择不合法/,mutate:d=>{d.filters[0].default={mode:'quarter',value:'2026-Q5'};}},

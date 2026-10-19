@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   /**
    * 层级维度筛选器(纯渲染):层级 tabs + 维度取值控件。

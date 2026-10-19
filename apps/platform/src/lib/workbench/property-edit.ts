@@ -3,6 +3,7 @@ import { projectCanvasDraft, type CanvasAuthoringDraft, type ComponentLocator, t
 type PropertyName = 'filterIds' | 'subtitle' | 'badge' | 'tags' | 'showTrendArrows' | 'horizontal' | 'stacked' | 'rounded' | 'showSegmentLabels' | 'showStackTotalLabels' | 'smooth' | 'areaGradient' | 'showPointLabels' | 'hideYAxis' | 'ring' | 'labelLine' | 'fit';
 export type PropertyTarget =
   | { kind: 'property'; name: PropertyName }
+  | { kind: 'report-export'; format: 'pdf' | 'png'; field: 'enabled' | 'label' | 'filename' | 'scale' }
   | { kind: 'series-label'; index: number }
   | { kind: 'metric-row'; rows: 'rows' | 'secondaryRows'; index: number; field: 'label' | 'context' | 'unit' }
   | { kind: 'table-column'; indices: number[]; field: 'title' | 'width' | 'fixed' | 'align' };
@@ -15,6 +16,13 @@ const names: Record<string, readonly PropertyName[]> = {
 };
 const labels: Record<PropertyName, string> = { filterIds: '页头日期筛选器 ID（按显示顺序，每行一个）', subtitle: '副标题', badge: '徽标', tags: '标签（每行一个）', showTrendArrows: '趋势箭头', horizontal: '横向显示', stacked: '堆叠', rounded: '圆角', showSegmentLabels: '分段标签', showStackTotalLabels: '堆叠合计标签', smooth: '平滑曲线', areaGradient: '面积渐变', showPointLabels: '数据点标签', hideYAxis: '隐藏纵轴', ring: '环形内径（如 50%）', labelLine: '引导线', fit: '表格适配' };
 const object = (value: unknown): Record<string, unknown> | null => value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null;
+function exportButtons(props: Record<string, unknown>): Record<string, unknown>[] {
+  if (Array.isArray(props.exportButtons)) return props.exportButtons.map(value => ({...object(value)}));
+  return [
+    ...(object(props.pdfExport) ? [{format:'pdf',label:'下载 PDF',...object(props.pdfExport)}] : []),
+    ...(object(props.pngExport) ? [{format:'png',...object(props.pngExport)}] : [])
+  ];
+}
 function componentOf(document: Record<string, unknown>, locator: ComponentLocator) {
   const section = (Array.isArray(document.sections) ? document.sections : []).map(object).find((value) => value?.id === locator.sectionId);
   return (Array.isArray(section?.components) ? section.components : []).map(object).find((value) => value?.id === locator.componentId) ?? null;
@@ -24,6 +32,19 @@ export function propertyControls(draft: CanvasAuthoringDraft | null, locator: Co
   const component = componentOf(draft.canvasDocument, locator), props = object(component?.props), type = String(component?.type);
   if (!props || !names[type]) return [];
   const controls: PropertyControl[] = names[type].map((name) => ({ id: name, label: labels[name], target: { kind: 'property', name }, value: props[name], kind: ['tags','filterIds'].includes(name) ? 'tags' : name === 'fit' ? 'choice' : ['subtitle', 'badge', 'ring'].includes(name) ? 'text' : 'boolean', ...(name === 'fit' ? { choices: ['content', 'container'] } : {}) }));
+  if (type === 'reportHeader' && (draft.canvasDocument.layout ?? draft.canvasDocument.layoutForm ?? 'report') === 'report') {
+    const buttons = exportButtons(props);
+    for (const format of ['pdf', 'png'] as const) {
+      const button = buttons.find(value => value.format === format), label = format === 'pdf' ? 'PDF' : 'PNG';
+      const target = { kind: 'report-export' as const, format };
+      controls.push({id:`export-${format}-enabled`,label:`导出 ${label}`,kind:'boolean',target:{...target,field:'enabled'},value:!!button});
+      if (button) controls.push(
+        {id:`export-${format}-label`,label:`${label} 按钮名称`,kind:'text',target:{...target,field:'label'},value:button.label},
+        {id:`export-${format}-scale`,label:`${label} 清晰度（倍）`,kind:'choice',choices:format === 'pdf' ? ['2','3','4'] : ['3','4'],target:{...target,field:'scale'},value:button.scale ?? (format === 'pdf' ? 2 : 3)},
+        {id:`export-${format}-filename`,label:`${label} 文件名`,kind:'text',target:{...target,field:'filename'},value:button.filename}
+      );
+    }
+  }
   if (type === 'barChart' || type === 'lineChart') (Array.isArray(props.series) ? props.series : []).forEach((series, index) => controls.push({ id: `series-${index}`, label: `系列 ${index + 1} 标签`, kind: 'text', target: { kind: 'series-label', index }, value: object(series)?.label }));
   if (type === 'metricCard') for (const rows of ['rows', 'secondaryRows'] as const) (Array.isArray(props[rows]) ? props[rows] : []).forEach((row, index) => {
     for (const field of ['label', 'context', 'unit'] as const) controls.push({ id: `${rows}-${index}-${field}`, label: `${rows === 'rows' ? '主' : '次'}指标 ${index + 1} ${{ label: '行说明', context: '上下文', unit: '单位' }[field]}`, kind: 'text', target: { kind: 'metric-row', rows, index, field }, value: object(row)?.[field] });
@@ -46,6 +67,26 @@ export function editProperty(draft: CanvasAuthoringDraft, locator: ComponentLoca
   const next = JSON.parse(JSON.stringify(draft.canvasDocument)) as Record<string, unknown>, component = componentOf(next, locator), props = object(component?.props), type = String(component?.type);
   const fail = (): DocumentEditResult => ({ ok: false, message: '属性不在白名单内或目标已变化，未修改页面。' });
   if (!props || !names[type]) return fail();
+  if (edit.kind === 'report-export') {
+    if (type !== 'reportHeader' || !['pdf','png'].includes(edit.format) || !['enabled','label','filename','scale'].includes(edit.field)) return fail();
+    next.schemaVersion = versionPolicy.current;
+    const format = edit.format;
+    const buttons = exportButtons(props), button = buttons.find(value => value.format === format);
+    if (edit.field === 'enabled') {
+      if (edit.value !== undefined && typeof edit.value !== 'boolean') return fail();
+      if (edit.value && !button) buttons.push({format:edit.format});
+      else if (!edit.value && button) buttons.splice(buttons.indexOf(button), 1);
+    } else {
+      if (!button) return fail();
+      const allowed = edit.format === 'pdf' ? [2,3,4,'2','3','4'] : [3,4,'3','4'];
+      const value = edit.field === 'scale' ? (allowed.includes(edit.value as number) ? Number(edit.value) : undefined) : edit.value;
+      if (value === undefined || value === '') delete button[edit.field];
+      else button[edit.field] = structuredClone(value);
+    }
+    delete props.pdfExport; delete props.pngExport;
+    if (buttons.length) props.exportButtons = buttons; else delete props.exportButtons;
+    return projectCanvasDraft(next);
+  }
   let target: Record<string, unknown> | null = null, key: string;
   if (edit.kind === 'property') { if (!names[type].includes(edit.name)) return fail(); target = props; key = edit.name; }
   else if (edit.kind === 'series-label') {

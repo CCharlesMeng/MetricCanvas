@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   import EChart from '../../shared/EChart.svelte';
   import { normalizeProgressValue, progressRingOption } from './ring-options';

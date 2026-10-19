@@ -1,0 +1,90 @@
+{
+  "case": "report-export-dashboard",
+  "invariant": "report-header-export-buttons",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "导出按钮只允许放在报表的顶层页头",
+      "paths": [
+        "/sections/0/components/0/props/exportButtons",
+        "/sections/3/components/0/props/exportButtons",
+        "/sections/4/components/0/props/exportButtons"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "日期工具带只允许放在报表的顶层页头",
+      "paths": [
+        "/sections/0/components/0/props/filterIds"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "exportButtons": [
+                {
+                  "format": "pdf",
+                  "label": "导出 PDF",
+                  "filename": {
+                    "…": "共1个键"
+                  },
+                  "scale": 2
+                },
+                {
+                  "format": "png",
+                  "filename": {
+                    "…": "共1个键"
+                  },
+                  "scale": 3
+                }
+              ],
+              "filterIds": [
+                "report-month"
+              ]
+            }
+          }
+        ]
+      },
+      "…",
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "exportButtons": [
+                {
+                  "format": "pdf",
+                  "label": "导出 PDF（4倍）",
+                  "scale": 4
+                },
+                {
+                  "format": "png",
+                  "scale": 4
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "props": {
+              "exportButtons": [
+                {
+                  "format": "pdf",
+                  "scale": 3
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/report-export-dashboard.json"
+}

@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   import { getContext } from 'svelte';
   import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';

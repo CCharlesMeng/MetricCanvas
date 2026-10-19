@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fixture from '../fixtures/contract-valid/report-date-filters-page.json';
-import { applyPageParamSelection, extractPageParams, parsePage, resolvePageParams } from '../src';
+import { applyPageParamSelection, extractPageParams, parsePage, resolvePageParams, versionPolicy } from '../src';
 import { runPageParameterProgram } from '../src/parameter-program';
 import { validateCalendarTimeRange } from '../src/filter';
 
@@ -40,7 +40,7 @@ describe('report date contracts and atomic extraction',()=>{
       const candidate=extraction.candidates.find(c=>c.declaration.type==='timeRange')!;
       expect(candidate.dateForm).toBe(`${granularity}${single?'':'Range'}`);
       const applied=applyPageParamSelection(extraction,[candidate.id]);if(!applied.ok)throw Error(JSON.stringify(applied.issues));
-      expect(applied.document.schemaVersion).toBe('6.29');
+      expect(applied.document.schemaVersion).toBe(versionPolicy.current);
       expect(applied.document.filters?.[0].type).toBe(single?'timePoint':'timeRange');
       expect(applied.document.sections[0].components[0].type).toBe('reportHeader');
       expect(applied.document.filters?.[0].default).toBeUndefined();

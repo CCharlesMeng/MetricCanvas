@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   /**
    * 搜索筛选器(纯渲染):自由文本,跨字段模糊匹配属于查询谓词,

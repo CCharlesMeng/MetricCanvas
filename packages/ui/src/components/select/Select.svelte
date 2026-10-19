@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
  import {popoverPosition,observePopover,movePopoverFocus} from '../../shared/popover';
  import Theme from '../../shared/Theme.svelte';import type {UiOption} from '../../types';import Icon from '../date-picker/DatePickerIcon.svelte';

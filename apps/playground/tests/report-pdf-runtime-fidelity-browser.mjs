@@ -35,7 +35,10 @@ try {
     });
     document.addEventListener('load', event => {
       const frame = event.target;
-      if (frame instanceof HTMLIFrameElement && frame.hasAttribute('data-report-pdf-frame')) window.runtimeCopied = window.runtimeFacts(frame.contentDocument.querySelector('[data-export-view]'));
+      if (frame instanceof HTMLIFrameElement && frame.hasAttribute('data-report-export-frame')) frame.contentDocument.addEventListener('load', event => {
+        const copy=event.target;
+        if(copy?.tagName==='IFRAME' && copy.hasAttribute('data-report-pdf-frame')) window.runtimeCopied=window.runtimeFacts(copy.contentDocument.querySelector('[data-export-view]'));
+      },true);
     }, true);
   }, { width, layout });
   await expect(page.locator('#runtime-fidelity [data-section-id="charts"] canvas')).toHaveCount(2);

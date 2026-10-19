@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   /**
    * 组件分发:页面组件类型 → 纯渲染组件的唯一落点。

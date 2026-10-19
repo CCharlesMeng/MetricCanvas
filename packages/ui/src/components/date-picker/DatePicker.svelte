@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   import { tick, untrack } from 'svelte';
   import type { DateRangeValue } from '../../types';

@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts" module>
   export type {TableHeaderFilterValue,TableViewState,TablePaginationState,TableSelectedCell} from './view-state';
 </script>

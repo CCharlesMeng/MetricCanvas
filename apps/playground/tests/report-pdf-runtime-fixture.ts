@@ -19,7 +19,7 @@ export function mountPdfRuntimeFixture(target: HTMLElement, input: unknown, data
       window.Worker = class extends OriginalWorker {
         constructor(url: string | URL, options?: WorkerOptions) {
           super(url,options);
-          const view = target.ownerDocument.querySelector<HTMLElement>('[data-export-view]');
+          const view = target.ownerDocument.querySelector<HTMLIFrameElement>('[data-report-export-frame]')?.contentDocument?.querySelector<HTMLElement>('[data-export-view]');
           if (view) {
             consume(view);
             const width=view.getBoundingClientRect().width,height=view.getBoundingClientRect().height;

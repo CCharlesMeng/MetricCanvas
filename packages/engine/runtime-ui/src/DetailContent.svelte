@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   import {onDestroy,untrack} from 'svelte';
   import {detailExportData} from './table-export';

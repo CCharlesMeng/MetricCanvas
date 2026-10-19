@@ -1,0 +1,85 @@
+{
+  "case": "report-export-before-6.31",
+  "invariant": "report-header-export-buttons",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "Report 统一导出按钮，按格式配置名称、文件名和渲染倍率 由 6.31 引入，文档声明的是 6.30",
+      "paths": [
+        "/sections/0/components/0",
+        "/sections/3/components/0",
+        "/sections/4/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "report-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": {
+                "…": "共1个键"
+              },
+              "subtitle": "本地合成数据。导出图片只保存一张完整高清PNG，日期与文件名按点击时捕获。",
+              "filterIds": [
+                "…（共1项）"
+              ],
+              "asOf": {
+                "…": "共2个键"
+              },
+              "decoration": "shortBar",
+              "exportButtons": [
+                "…（共2项）"
+              ]
+            }
+          }
+        ]
+      },
+      "…",
+      "…",
+      {
+        "components": [
+          {
+            "id": "default-download-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "元数据配置为4倍的导出按钮",
+              "subtitle": "两个按钮复用同一种配置，清晰度均由元数据固定为4倍。",
+              "exportButtons": [
+                "…（共2项）"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "ordinary-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "未启用下载的对照页头",
+              "subtitle": "未启用任何导出配置。",
+              "exportButtons": [
+                "…（共1项）"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/report-export-before-6.31.json"
+}

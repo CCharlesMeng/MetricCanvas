@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   import SafeMarkdown from './SafeMarkdown.svelte';
   import type { AiSummarySnapshot } from './session';

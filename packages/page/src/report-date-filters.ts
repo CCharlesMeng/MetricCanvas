@@ -12,8 +12,17 @@ export function reportDateFilterErrors(page: Page): TypedError[] {
   const placed = new Set<string>();
   walkPageComponents(page, (component, path) => {
     if (component.type !== 'reportHeader') return;
+    const buttons = component.props.exportButtons;
+    if (buttons) {
+      if (component.props.pdfExport || component.props.pngExport) error(`${path}/props/exportButtons`, 'exportButtons 不能与旧 pdfExport/pngExport 混用');
+      if (page.layout === 'dashboard' || !/^\/sections\/\d+\/components\/\d+$/.test(path)) error(`${path}/props/exportButtons`, '导出按钮只允许放在报表的顶层页头');
+      if (new Set(buttons.map(button => button.format)).size !== buttons.length) error(`${path}/props/exportButtons`, '每种格式只能配置一个导出按钮');
+    }
     if (component.props.pdfExport && (page.layout === 'dashboard' || !/^\/sections\/\d+\/components\/\d+$/.test(path))) {
       error(`${path}/props/pdfExport`, 'PDF 下载工具带只允许放在报表的顶层页头');
+    }
+    if (component.props.pngExport && (page.layout === 'dashboard' || !/^\/sections\/\d+\/components\/\d+$/.test(path))) {
+      error(`${path}/props/pngExport`, '导出图片只允许放在报表的顶层页头');
     }
     if (!component.props.filterIds) return;
     if (page.layout === 'dashboard' || !/^\/sections\/\d+\/components\/\d+$/.test(path)) {

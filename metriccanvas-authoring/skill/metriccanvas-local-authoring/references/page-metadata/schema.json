@@ -29,9 +29,11 @@
         "6.26",
         "6.27",
         "6.28",
-        "6.29"
+        "6.29",
+        "6.30",
+        "6.31"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31"
     },
     "id": {
       "type": "string",
@@ -3832,6 +3834,71 @@
                 "pattern": "^[a-z0-9][a-z0-9-]*$"
               }
             },
+            "exportButtons": {
+              "minItems": 1,
+              "maxItems": 2,
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "format": {
+                        "type": "string",
+                        "const": "pdf"
+                      },
+                      "label": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/nonEmptyTextValue"
+                          }
+                        ]
+                      },
+                      "filename": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/nonEmptyTextValue"
+                          }
+                        ]
+                      },
+                      "scale": {}
+                    },
+                    "required": [
+                      "format"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "format": {
+                        "type": "string",
+                        "const": "png"
+                      },
+                      "label": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/nonEmptyTextValue"
+                          }
+                        ]
+                      },
+                      "filename": {
+                        "allOf": [
+                          {
+                            "$ref": "#/definitions/nonEmptyTextValue"
+                          }
+                        ]
+                      },
+                      "scale": {}
+                    },
+                    "required": [
+                      "format"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            },
             "pdfExport": {
               "type": "object",
               "properties": {
@@ -3849,6 +3916,20 @@
                     }
                   ]
                 }
+              },
+              "additionalProperties": false
+            },
+            "pngExport": {
+              "type": "object",
+              "properties": {
+                "filename": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/nonEmptyTextValue"
+                    }
+                  ]
+                },
+                "scale": {}
               },
               "additionalProperties": false
             },
@@ -7126,5 +7207,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.29"
+  "$id": "https://metriccanvas/page/v6.31"
 }

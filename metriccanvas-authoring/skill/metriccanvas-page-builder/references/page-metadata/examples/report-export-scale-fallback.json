@@ -1,0 +1,254 @@
+{
+  "schemaVersion": "6.31",
+  "id": "report-export-scale-fallback",
+  "layout": "report",
+  "meta": {
+    "title": "导出清晰度无效值回退",
+    "description": "本地合成数据：单张高清PNG、独立文档水印隔离、日期与文件名冻结、既有PDF回归。"
+  },
+  "filters": [
+    {
+      "id": "report-month",
+      "type": "timePoint",
+      "granularity": "month",
+      "label": "报告月份",
+      "default": "2026-09"
+    }
+  ],
+  "dataSources": {
+    "sales": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "unit": "元"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "演示区域 01",
+            "amount": 12345
+          },
+          {
+            "region": "演示区域 02",
+            "amount": 24690
+          },
+          {
+            "region": "演示区域 03",
+            "amount": 37035
+          },
+          {
+            "region": "演示区域 04",
+            "amount": 49380
+          },
+          {
+            "region": "演示区域 05",
+            "amount": 61725
+          },
+          {
+            "region": "演示区域 06",
+            "amount": 74070
+          },
+          {
+            "region": "演示区域 07",
+            "amount": 86415
+          },
+          {
+            "region": "演示区域 08",
+            "amount": 98760
+          },
+          {
+            "region": "演示区域 09",
+            "amount": 111105
+          },
+          {
+            "region": "演示区域 10",
+            "amount": 123450
+          },
+          {
+            "region": "演示区域 11",
+            "amount": 135795
+          },
+          {
+            "region": "演示区域 12",
+            "amount": 148140
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "report-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": {
+              "parts": [
+                {
+                  "filter": "report-month",
+                  "format": "period"
+                },
+                " 经营分析报告"
+              ]
+            },
+            "subtitle": "不支持的scale按未配置处理：PDF回退2倍，PNG回退3倍。",
+            "filterIds": [
+              "report-month"
+            ],
+            "asOf": {
+              "label": "统计期间",
+              "value": {
+                "filter": "report-month",
+                "format": "period"
+              }
+            },
+            "decoration": "shortBar",
+            "exportButtons": [
+              {
+                "format": "pdf",
+                "label": "导出 PDF",
+                "filename": {
+                  "parts": [
+                    "经营分析报告-",
+                    {
+                      "filter": "report-month",
+                      "format": "period"
+                    }
+                  ]
+                }
+              },
+              {
+                "format": "png",
+                "filename": {
+                  "parts": [
+                    "经营分析报告-",
+                    {
+                      "filter": "report-month",
+                      "format": "period"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "sales-chart",
+      "title": "经营图表（合成数据）",
+      "container": "plain",
+      "components": [
+        {
+          "id": "sales-chart-bars",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "title": "全部区域",
+            "categoryField": "region",
+            "series": [
+              {
+                "field": "amount",
+                "label": "金额"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "sales-detail",
+      "title": "经营明细（合成数据）",
+      "container": "plain",
+      "components": [
+        {
+          "id": "sales-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域"
+              },
+              {
+                "field": {
+                  "field": "amount",
+                  "format": "number-grouped",
+                  "data": "main"
+                },
+                "title": "金额（元）"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "no-date",
+      "container": "plain",
+      "components": [
+        {
+          "id": "default-download-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "旧PNG配置的无效值回退",
+            "subtitle": "字符串不是有效倍率，旧配置也按默认3倍直接下载。",
+            "pngExport": {
+              "filename": "旧配置默认倍率.png"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "without-export",
+      "container": "plain",
+      "components": [
+        {
+          "id": "ordinary-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "未启用下载的对照页头",
+            "subtitle": "未启用任何导出配置。"
+          }
+        }
+      ]
+    }
+  ]
+}

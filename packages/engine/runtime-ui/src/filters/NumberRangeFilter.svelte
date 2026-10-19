@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   /**
    * 数值区间筛选器(纯渲染):上下界任一端可缺省,两端都空则清除。

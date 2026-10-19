@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   import { createTableController } from './table-controller';
   import { createExportController } from './export-controller';
@@ -68,9 +69,11 @@
     type TableSelectedCell,
     type TableViewState
   } from '../../widgets/src';
+  import { reportExportScale } from '@metriccanvas/page/internal';
   import { withReportView } from './report-view';
+  import { generateReportPng } from './report-png-client';
+  import { REPORT_EXPORT_CONTEXT, reportExportFilename, downloadReportBlob, type ReportExportContext } from './report-export-context';
   import { downloadReportPdf } from './report-pdf-client';
-  import { REPORT_PDF_CONTEXT, reportPdfFilename, type ReportPdfContext } from './report-pdf-context';
   import { SUMMARY_EXPORT_CAPTURE, type SummaryCapture } from './export-render-state';
   import { ExportViewError } from '../../runtime/src/export-snapshots';
   import ComponentRenderer from './ComponentRenderer.svelte';
@@ -147,42 +150,54 @@
   const exportController = createExportController(next => tableExportStates = next);
   // ':' cannot occur in a component id; page tasks cannot collide with table exports.
   const pageExportTask = 'page:export';
-  let reportPdfMessage = $state('');
-  let reportPdfError = $state<string | undefined>();
-  let reportPdfGeneration = 0;
-  const reportPdf: ReportPdfContext = {
+  let reportExportMessage = $state('');
+  let reportExportError = $state<string | undefined>();
+  let reportExportActive = $state.raw<ReportExportContext['active']>();
+  let reportExportGeneration = 0;
+  const reportExport: ReportExportContext = {
     get busy() { return tableExportStates[pageExportTask]?.busy ?? false; },
-    get error() { return reportPdfError; },
-    get message() { return reportPdfMessage; },
-    async download(props) {
-      if (reportPdf.busy) return;
-      const generation = ++reportPdfGeneration;
-      const filename = reportPdfFilename(props);
-      reportPdfError = undefined;
-      reportPdfMessage = '正在准备报告…';
+    get active() { return reportExportActive; },
+    get error() { return reportExportError; },
+    get message() { return reportExportMessage; },
+    async download(props, button) {
+      if (reportExport.busy) return;
+      const generation = ++reportExportGeneration;
+      const filename = reportExportFilename(props, button);
+      const scale = reportExportScale(button.format, button.scale);
+      reportExportActive = button;
+      reportExportError = undefined;
+      reportExportMessage = '正在准备报告…';
       try {
         await prepareReport(async ({target, signal}) => {
-          if (generation === reportPdfGeneration) reportPdfMessage = '正在生成 PDF…';
-          await downloadReportPdf(target, signal, filename, (done,total) => {
-            if(generation===reportPdfGeneration)reportPdfMessage=`正在生成 PDF（${done}/${total} 页）…`;
-          });
-        });
+          if (button.format === 'pdf') {
+            await downloadReportPdf(target, signal, filename, (done, total) => {
+              if (generation === reportExportGeneration) reportExportMessage = `正在生成 PDF（${done}/${total} 页）…`;
+            }, scale);
+          } else {
+            const file = await generateReportPng(target, signal, reportExportScale('png', button.scale), (done, total) => {
+              if (generation === reportExportGeneration) reportExportMessage = `正在生成图片（${Math.floor(done / total * 100)}%）…`;
+            });
+            signal.throwIfAborted();
+            if (generation === reportExportGeneration) downloadReportBlob(surfaceRoot.ownerDocument, file.blob, filename);
+          }
+        }, scale);
       } catch (cause) {
-        if (generation !== reportPdfGeneration) return;
+        if (generation !== reportExportGeneration) return;
         if (!(cause instanceof ExportViewError && cause.code === 'EXPORT_CANCELLED')) {
-          reportPdfError = cause instanceof Error ? cause.message : '导出失败';
-          console.error('[MetricCanvas][REPORT_PDF_FAILED] PDF 下载失败', cause);
+          reportExportError = cause instanceof Error ? cause.message : '导出失败';
+          console.error('[MetricCanvas][REPORT_EXPORT_FAILED] 报告导出失败', cause);
         }
       } finally {
-        if (generation === reportPdfGeneration) reportPdfMessage = '';
+        if (generation === reportExportGeneration) reportExportMessage = '';
       }
     }
   };
-  setContext(REPORT_PDF_CONTEXT, reportPdf);
+  setContext(REPORT_EXPORT_CONTEXT, reportExport);
+
   let tableController: ReturnType<typeof createTableController> | undefined;
   let tableRevision = $state(0);
-  onDestroy(() => { reportPdfGeneration++; exportController.reset(); tableController?.dispose(); });
-  async function prepareReport<T>(consume:(view:{target:HTMLElement;signal:AbortSignal})=>Promise<T>):Promise<T> {
+  onDestroy(() => { reportExportGeneration++; exportController.reset(); tableController?.dispose(); });
+  async function prepareReport<T>(consume:(view:{target:HTMLElement;signal:AbortSignal})=>Promise<T>,scale=2):Promise<T> {
     if(pageState.phase!=='ready'||!stream||!surfaceRoot)throw new ExportViewError('EXPORT_NOT_READY','页面实例尚未就绪');
     // Capture every runtime value before the first await; later interactions stay independent.
     const page=JSON.parse(JSON.stringify(pageState.page)) as Page;
@@ -193,7 +208,7 @@
     const state={page,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
     const queries=stream.captureQueries();
     const program=stream.getSourceProgram();
-    return exportController.run(pageExportTask, controller => withReportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program},consume));
+    return exportController.run(pageExportTask, controller => withReportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program,scale},consume));
   }
   let pageState = $state<PageState>({ phase: 'loading' });
   let snapshots = $state<PageDataSnapshots>(new Map());
@@ -238,9 +253,9 @@
 
   function dispose() {
     untrack(() => closeDetail(false));
-    reportPdfGeneration++;
-    reportPdfMessage = '';
-    reportPdfError = undefined;
+    reportExportGeneration++;
+    reportExportMessage = '';
+    reportExportError = undefined;
     exportController.reset();
     session += 1;
     for (const fn of disposers) fn();
@@ -1094,7 +1109,7 @@
     {@const contentFilters = contentFilterDeclarations(readyPage, declarations)}
     {@const layoutForm = readyPage.layout ?? 'report'}
     {@const firstComponent = readyPage.sections[0]?.components[0]}
-    {@const leadingDateToolbar = layoutForm === 'report' && !readyPage.sections[0]?.title && firstComponent?.type === 'reportHeader' && firstComponent.layout.span === 12 && (!!firstComponent.props.filterIds?.length || !!firstComponent.props.pdfExport)}
+    {@const leadingDateToolbar = layoutForm === 'report' && !readyPage.sections[0]?.title && firstComponent?.type === 'reportHeader' && firstComponent.layout.span === 12 && (!!firstComponent.props.filterIds?.length || !!firstComponent.props.exportButtons?.length || !!firstComponent.props.pdfExport || !!firstComponent.props.pngExport)}
     {@const dashboardToolbar = readyPage.dashboardToolbar ?? 'visible'}
     {@const dashboardToolbarConfig =
       typeof dashboardToolbar === 'object' ? dashboardToolbar : undefined}

@@ -69,7 +69,7 @@ test('编码失败显示错误，恢复按钮并清理临时视图', async ({ pa
   await page.goto('/examples/report-pdf-download.html');
   const button = page.locator('[data-report-pdf-download]').first();
   await button.click();
-  await expect(button).toHaveText('下载失败，重试');
+  await expect(button).toHaveText('导出失败，重试');
   await expect(button).toHaveAttribute('title', /PDF_ENCODE_FAILURE/);
   await expect(button).toBeEnabled();
   await expect(page.locator('[data-report-pdf-frame]')).toHaveCount(0);
@@ -101,8 +101,11 @@ test('点击后月份交互继续响应，PDF标题和文件名保留点击时�
   await page.addInitScript(() => {
     document.addEventListener('load',event=>{
       const frame=event.target;
-      if(frame instanceof HTMLIFrameElement && frame.hasAttribute('data-report-pdf-frame')){
-        (window as any).pdfCapturedTitle=frame.contentDocument?.querySelector('h1')?.textContent;
+      if(frame instanceof HTMLIFrameElement && frame.hasAttribute('data-report-export-frame')){
+        frame.contentDocument?.addEventListener('load',event=>{
+          const copy=event.target;
+          if((copy as Element)?.tagName==='IFRAME' && (copy as Element).hasAttribute('data-report-pdf-frame')) (window as any).pdfCapturedTitle=(copy as HTMLIFrameElement).contentDocument?.querySelector('h1')?.textContent;
+        },true);
       }
     },true);
   });
@@ -124,7 +127,7 @@ test('宿主禁止Blob Worker时明确失败并释放资源', async ({page}) => 
   });
   await page.goto('/examples/report-pdf-download.html');
   const button=page.locator('[data-report-pdf-download]').first();await button.click();
-  await expect(button).toHaveText('下载失败，重试');
+  await expect(button).toHaveText('导出失败，重试');
   await expect(button).toHaveAttribute('title',/Worker|worker-src|SecurityError/i);
   await expect(button).toBeEnabled();
   await expect(page.locator('[data-report-pdf-frame],[data-metriccanvas-export-stage],.html2canvas-container')).toHaveCount(0);

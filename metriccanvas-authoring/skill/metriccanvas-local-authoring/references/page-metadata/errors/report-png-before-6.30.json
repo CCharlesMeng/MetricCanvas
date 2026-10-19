@@ -1,0 +1,69 @@
+{
+  "case": "report-png-before-6.30",
+  "invariant": "report-header-png-export",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "Report 单张高清PNG导出 由 6.30 引入，文档声明的是 6.29",
+      "paths": [
+        "/sections/0/components/0",
+        "/sections/3/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "report-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": {
+                "…": "共1个键"
+              },
+              "subtitle": "本地合成数据。导出图片只保存一张完整高清PNG，日期与文件名按生成时捕获。",
+              "filterIds": [
+                "…（共1项）"
+              ],
+              "asOf": {
+                "…": "共2个键"
+              },
+              "pdfExport": {
+                "…": "共2个键"
+              },
+              "pngExport": {
+                "…": "共2个键"
+              },
+              "decoration": "shortBar"
+            }
+          }
+        ]
+      },
+      "…",
+      "…",
+      {
+        "components": [
+          {
+            "id": "default-download-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "仅启用导出图片",
+              "subtitle": "入口固定“导出图片”，示例配置4倍，文件名取标题。",
+              "pngExport": {
+                "…": "共1个键"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

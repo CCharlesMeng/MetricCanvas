@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
  let {message='暂无数据'}:{message?:string}=$props();
 </script>

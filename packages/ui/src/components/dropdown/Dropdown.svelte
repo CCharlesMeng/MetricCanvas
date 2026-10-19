@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
  import {popoverPosition,observePopover,movePopoverFocus} from '../../shared/popover';
  import Theme from '../../shared/Theme.svelte';import Button from '../button/Button.svelte';import type {UiOption} from '../../types';

@@ -1,0 +1,185 @@
+{
+  "date": "2026-10-19",
+  "baseCommit": "7ec7bb855273d76e54034104a88585f2953a5420",
+  "fullValidationTree": "edb86811eca7b49ac877ee64eac96ed458f31164",
+  "finalRuntimeTree": "ef6d98f42e04efe6db5582b1f842d1843b2879e7",
+  "finalDelta": [
+    "packages/engine/runtime-ui/src/ReportImageDialog.svelte"
+  ],
+  "sourceTests": {
+    "files": 253,
+    "passed": 2189,
+    "skipped": 5
+  },
+  "authoringTests": {
+    "total": 540,
+    "skipped": 1
+  },
+  "finalPageValidationTests": 14,
+  "uiBrowserTests": 24,
+  "installedConsumerBrowserTests": 138,
+  "finalInstalledConsumerDeltaBrowserTests": 9,
+  "browser": {
+    "chrome": "155.0.8059.82"
+  },
+  "completeBrowserMatrix": false,
+  "pngExamples": [
+    {
+      "page": "report-png-export",
+      "scale": 3,
+      "width": 3600,
+      "height": 4565,
+      "bytes": 516868
+    },
+    {
+      "page": "report-png-long-export",
+      "scale": 4,
+      "width": 4800,
+      "height": 23539,
+      "bytes": 2839101,
+      "rulerRowMismatches": 0
+    }
+  ],
+  "performance": {
+    "browser": "155.0.8059.82",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "page": "report-png-long-export",
+    "rows": 140,
+    "scale": 4,
+    "runs": [
+      {
+        "durationMs": 8389.299999952316,
+        "longtaskMaxMs": 0,
+        "heartbeatP95Ms": 17,
+        "heartbeatMaxMs": 31.700000047683716
+      },
+      {
+        "durationMs": 8432.5,
+        "longtaskMaxMs": 0,
+        "heartbeatP95Ms": 17.40000009536743,
+        "heartbeatMaxMs": 33.09999990463257
+      },
+      {
+        "durationMs": 8440.400000095367,
+        "longtaskMaxMs": 0,
+        "heartbeatP95Ms": 17.5,
+        "heartbeatMaxMs": 31.399999856948853
+      }
+    ]
+  },
+  "resourceObservation": {
+    "browser": "155.0.8059.82",
+    "page": "report-png-export",
+    "scale": 3,
+    "before": {
+      "heap": {
+        "usedSize": 17294060,
+        "totalSize": 18137088,
+        "embedderHeapUsedSize": 2225224,
+        "backingStorageSize": 4244966
+      },
+      "dom": {
+        "documents": 3,
+        "nodes": 1275,
+        "jsEventListeners": 48
+      },
+      "frames": 1
+    },
+    "runs": [
+      {
+        "heap": {
+          "usedSize": 18832136,
+          "totalSize": 19709952,
+          "embedderHeapUsedSize": 3242160,
+          "backingStorageSize": 4262878
+        },
+        "dom": {
+          "documents": 7,
+          "nodes": 1350,
+          "jsEventListeners": 57
+        },
+        "frames": 1
+      },
+      {
+        "heap": {
+          "usedSize": 19231088,
+          "totalSize": 19972096,
+          "embedderHeapUsedSize": 2784928,
+          "backingStorageSize": 4263067
+        },
+        "dom": {
+          "documents": 7,
+          "nodes": 1354,
+          "jsEventListeners": 65
+        },
+        "frames": 1
+      },
+      {
+        "heap": {
+          "usedSize": 19468048,
+          "totalSize": 20234240,
+          "embedderHeapUsedSize": 2888296,
+          "backingStorageSize": 4263256
+        },
+        "dom": {
+          "documents": 7,
+          "nodes": 1358,
+          "jsEventListeners": 73
+        },
+        "frames": 1
+      }
+    ],
+    "afterImageTimeout": {
+      "heap": {
+        "usedSize": 19457632,
+        "totalSize": 20234240,
+        "embedderHeapUsedSize": 2805352,
+        "backingStorageSize": 4262689
+      },
+      "dom": {
+        "documents": 7,
+        "nodes": 1346,
+        "jsEventListeners": 49
+      },
+      "frames": 1
+    },
+    "note": "CDP heap/DOM after explicit GC; does not measure GPU/native peak memory"
+  },
+  "tarballs": {
+    "metriccanvas-png-engine-delta.tgz": "99b07ff414ab00b811810e9922f44227e832e0538fa2b1d5b9ede5043557589a",
+    "metriccanvas-png-embed-delta.tgz": "afd8ba2803ef7f79766696c0b7ff78df41809f3c1fb6aac847bdd9db56c64084"
+  },
+  "unverified": [
+    "Edge",
+    "real portal watermark injection",
+    "real DQE/Relay",
+    "production deployment",
+    "GPU/native peak memory"
+  ],
+  "gitDelivery": "Copied to original working directory with an explicit allowlist; no commit or push.",
+  "copyback": {
+    "base": "7ec7bb855273d76e54034104a88585f2953a5420",
+    "unrelatedFilesPreserved": 32,
+    "stagedTreeUnchanged": true,
+    "readmeOtherRowsPreserved": true,
+    "pathCount": 534
+  },
+  "mainCheckoutSmoke": {
+    "filename": "经营分析报告-2026-09.png",
+    "width": 3600,
+    "height": 4565,
+    "bytes": 516862,
+    "errors": []
+  },
+  "mainCheckoutRecheck": {
+    "testFiles": 3,
+    "passed": 19,
+    "authoringContracts": "current",
+    "generatedReportSources": "current",
+    "packageBuilds": "passed",
+    "htmlEsIifeBuild": "passed"
+  }
+}

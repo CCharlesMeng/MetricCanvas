@@ -1,6 +1,36 @@
 {
   "invariants": [
     {
+      "id": "report-header-export-buttons",
+      "description": "6.31 同一种导出按钮按格式配置名称、文件名和清晰度，直接下载",
+      "valid": [
+        "report-export-buttons",
+        "report-export-scale-fallback"
+      ],
+      "invalid": [
+        "report-export-before-6.31",
+        "report-export-dashboard",
+        "report-export-other-format",
+        "report-export-duplicate-format",
+        "report-export-mixed-legacy"
+      ]
+    },
+    {
+      "id": "report-header-png-export",
+      "description": "6.30 Report导出图片，只输出一张PNG，固定名称与3/4倍倍率",
+      "valid": [
+        "report-png-export",
+        "report-export-scale-fallback"
+      ],
+      "invalid": [
+        "report-png-before-6.30",
+        "report-png-dashboard",
+        "report-png-empty-filename",
+        "report-png-fixed-label",
+        "report-png-other-format"
+      ]
+    },
+    {
       "id": "period-filter",
       "description": "6.27 Dashboard 年季月与近一年期间筛选",
       "valid": [

@@ -1,0 +1,48 @@
+{
+  "case": "report-png-dashboard",
+  "invariant": "report-header-png-export",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "导出图片只允许放在报表的顶层页头",
+      "paths": [
+        "/sections/0/components/0/props/pngExport",
+        "/sections/3/components/0/props/pngExport"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "pngExport": {
+                "filename": {
+                  "parts": [
+                    "…（共2项）"
+                  ]
+                },
+                "scale": 3
+              }
+            }
+          }
+        ]
+      },
+      "…",
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "pngExport": {
+                "scale": 4
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

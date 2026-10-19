@@ -5,32 +5,24 @@ import { prepareExportSnapshots, ExportViewError, EXPORT_PREPARATION_TIMEOUT_MS 
 import ExportView from './ExportView.svelte';
 import type { ExportRenderState } from './export-render-state';
 
+import { createReportDocument } from './report-document';
+import { abortable } from './report-capture-view';
 import { reportScheduler } from './report-scheduler';
 interface ReportView {target:HTMLElement;signal:AbortSignal}
 
-export async function withReportView<T>(input:{state:ExportRenderState;queries:ReadonlyMap<string,EffectiveQuery>;gateway:RuntimeDataGateway;sourceRoot:HTMLElement;controller:AbortController;program?:import('@metriccanvas/data-execution/runtime').SourceProgram}, consume:(view:ReportView)=>Promise<T>):Promise<T> {
+export async function withReportView<T>(input:{state:ExportRenderState;queries:ReadonlyMap<string,EffectiveQuery>;gateway:RuntimeDataGateway;sourceRoot:HTMLElement;controller:AbortController;scale?:number;program?:import('@metriccanvas/data-execution/runtime').SourceProgram}, consume:(view:ReportView)=>Promise<T>):Promise<T> {
   const {state,controller,sourceRoot}=input;
   const signal=controller.signal;
   const timer=setTimeout(()=>controller.abort(new ExportViewError('EXPORT_TIMEOUT','导出准备超过 60 秒')),EXPORT_PREPARATION_TIMEOUT_MS);
-  const holder=sourceRoot.ownerDocument.createElement('div');
-  holder.dataset.metriccanvasExportStage='';
-  holder.setAttribute('aria-hidden','true');
-  holder.inert=true;
   const content=sourceRoot.querySelector<HTMLElement>('.page-content')??sourceRoot;
   const contentWidth=content.getBoundingClientRect().width;
   const runtimeWidth=sourceRoot.getBoundingClientRect().width;
-  holder.style.cssText=`position:fixed;left:-100000px;top:0;width:${runtimeWidth}px;container:mc-runtime / inline-size;pointer-events:none;`;
-  // Preserve the instance's inherited theme, font and shadow-root styling.
   const style=getComputedStyle(content);
-  for(const name of Array.from(style)) if(name.startsWith('--mc-')||['font-family','font-size','line-height','color'].includes(name)) holder.style.setProperty(name,style.getPropertyValue(name));
-  holder.style.backgroundColor=style.backgroundColor;
-  holder.style.backgroundImage=style.backgroundImage;
   const sections=sourceRoot.querySelector<HTMLElement>('.page-sections');
   const sectionStyle=sections?getComputedStyle(sections):undefined;
   const padding=['top','right','bottom','left'].map(side=>`${parseFloat(style.getPropertyValue(`padding-${side}`))+(sectionStyle?parseFloat(sectionStyle.getPropertyValue(`padding-${side}`)):0)}px`).join(' ');
   const gap=sectionStyle?.gap??'16px';
-  const root=sourceRoot.getRootNode();
-  const parent=root instanceof ShadowRoot?root:sourceRoot.ownerDocument.body;
+  let document:Awaited<ReturnType<typeof createReportDocument>>|undefined;
   const objectUrls:string[]=[];
   let instance:ReturnType<typeof mount>|undefined;
   try {
@@ -47,9 +39,10 @@ export async function withReportView<T>(input:{state:ExportRenderState;queries:R
     }
     state.snapshots=prepared;
     signal.throwIfAborted();
-    parent.appendChild(holder);
+    document=await createReportDocument(sourceRoot,runtimeWidth,signal);
+    const holder=document.holder;
     // Establish the visible box before charts mount; post-mount resizing can look like overflow.
-    instance=mount(ExportView,{target:holder,props:{state,width:contentWidth,padding,gap}});
+    instance=mount(ExportView,{target:holder,props:{state,width:contentWidth,padding,gap,scale:input.scale??2}});
     await tick();
     const target=holder.querySelector<HTMLElement>('[data-export-view]');
     if(!target) throw new ExportViewError('EXPORT_RENDER_FAILED','导出视图未挂载');
@@ -61,16 +54,8 @@ export async function withReportView<T>(input:{state:ExportRenderState;queries:R
     clearTimeout(timer);
     controller.abort(new ExportViewError('EXPORT_CANCELLED','导出视图生命周期已结束'));
     for(const url of objectUrls)URL.revokeObjectURL(url);
-    try {if(instance)await unmount(instance);} finally {holder.remove();}
+    try {if(instance)await unmount(instance);} finally {document?.dispose();}
   }
-}
-function abortable<T>(work:Promise<T>,signal:AbortSignal):Promise<T> {
-  if(signal.aborted){void work.catch(()=>{});return Promise.reject(signal.reason);}
-  return new Promise((resolve,reject)=>{
-    const aborted=()=>reject(signal.reason);
-    signal.addEventListener('abort',aborted,{once:true});
-    work.then(resolve,reject).finally(()=>signal.removeEventListener('abort',aborted));
-  });
 }
 async function frame(signal:AbortSignal) {
   signal.throwIfAborted();
@@ -96,7 +81,11 @@ async function prepareDom(target:HTMLElement,signal:AbortSignal,objectUrls:strin
   }
   await frame(signal); await frame(signal);
   // Wait for all mounted charts to finish their static option and responsive resize.
-  while(target.querySelector('[data-export-pending="true"]')||Array.from(target.querySelectorAll<HTMLElement>('[data-export-chart]')).some(chart=>chart.dataset.exportChartReady!=='true')) await frame(signal);
+  while(target.querySelector('[data-export-pending="true"]')||Array.from(target.querySelectorAll<HTMLElement>('[data-export-chart]')).some(chart=>chart.dataset.exportChartReady!=='true')) {
+    const error=target.querySelector<HTMLElement>('[data-export-chart-error]');
+    if(error)throw new ExportViewError('EXPORT_RENDER_FAILED',error.dataset.exportChartError!);
+    await frame(signal);
+  }
   const pause=reportScheduler(signal);
   for(const chart of target.querySelectorAll<HTMLElement>('[data-export-chart]')) {
     const images:HTMLImageElement[]=[];

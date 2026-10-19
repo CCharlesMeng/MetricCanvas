@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.28**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27和6.28；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.31**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30和6.31；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
 
 ## 从需求到页面
 
@@ -33,6 +33,7 @@
 | 顶部切换月份或日期并联动查询与文字 | [时间参数与顶部筛选](PAGE-PARAMETERS.md#时间参数与顶部筛选) | [报告页头时间筛选页面](pages/report-date-filter-example.json) |
 | 先查对象集合，再查明细并关联展示 | [级联查询](docs/cascading-queries.md) | [商务SDT报告](pages/business-sdt-cascade-example.json) |
 | 配置每张表的独立搜索与完整Excel导出 | [表格工具区](docs/table-export.md) | [表格工具区示例](packages/page/fixtures/contract-valid/table-toolbar-page.json) |
+| 配置 PDF / PNG 导出按钮（6.31） | [报告页头](docs/page-metadata/components/reportHeader.md#导出按钮631) | [导出图片](pages/report-png-export.json)、[单张长图](pages/report-png-long-export.json) |
 | 配置 Report 工具带内置 PDF 下载与按钮文字（6.28） | [报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628) | [内置PDF下载页面](pages/report-pdf-export.json) |
 | 下载当前筛选范围内的完整报告PDF | [导出与PDF下载接入](docs/report-export.md) | [HTML接入示例](packages/embed/examples/report-export.html) |
 
@@ -83,6 +84,8 @@
 ## 报告下载与完整导出
 
 Report 顶层页头可用 `reportHeader.props.pdfExport`（6.28）启用引擎内置 PDF 下载，并按需配置按钮名称和文件名；声明、默认值与示例见[报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628)。标准下载由引擎按原有布局连续保存，采用零外边距；主线程分批准备画面，Web Worker负责编码，移除取消按钮和旧withExportView入口。整页下载保留成功取得的内容，部分取数失败不阻断其余内容；下载成功不代表数据完整。下载范围、限制与演示统一见[报告导出与PDF下载接入](docs/report-export.md)。
+
+Report顶层页头统一声明`exportButtons`（6.31），每项配置`format`、`label?`、`filename?`、`scale?`；一项一个按钮，点击直接下载。PDF默认2倍、支持2/3/4倍；PNG默认3倍、支持3/4倍，始终只输出一张完整PNG。不支持的scale值按未配置处理，回退对应默认倍率，不阻止打开或下载。旧`pdfExport`/`pngExport`保留读取兼容；声明与限制见[报告页头](docs/page-metadata/components/reportHeader.md#导出按钮631)。
 
 ## 版本、初始化与持久化
 

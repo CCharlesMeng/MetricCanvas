@@ -5,6 +5,7 @@ import { affectedSourceIds } from './data-source-references';
 import { matchesParamDeclaration, pageParamDeclarations, type PageParamValue } from './page-param';
 import { initializeQueryParams } from './query';
 import { parsePage } from './validate';
+import { normalizeReportExportScales } from './report-export';
 import type { Page } from './page';
 import type { PageDocument } from './page-document';
 import type { TypedError } from './errors';
@@ -24,7 +25,7 @@ export function resolvePageParams(page:unknown, suppliedValues:Readonly<Record<s
   const structural=parsePage(page);
   if(!structural.ok)return {ok:false,issues:structural.errors.map(e=>issue(e))};
   if(!suppliedValues||typeof suppliedValues!=='object'||Array.isArray(suppliedValues))return {ok:false,issues:[{code:'INVALID_VALUE',path:'/params',message:'输入必须是id到值的映射'}]};
-  const document=JSON.parse(JSON.stringify(page)) as PageDocument;
+  const document=JSON.parse(JSON.stringify(normalizeReportExportScales(page))) as PageDocument;
   const declarations=pageParamDeclarations(document.params);
   const byId=new Map(declarations.map(p=>[p.id,p]));
   const issues:ParamResolutionIssue[]=[];

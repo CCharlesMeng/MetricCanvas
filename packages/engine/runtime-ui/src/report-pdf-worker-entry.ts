@@ -7,7 +7,7 @@ const port = globalThis as unknown as {
   onmessage: (event: MessageEvent<PdfWorkerRequest>) => void;
   postMessage(message: PdfWorkerReply, transfer?: Transferable[]): void;
 };
-let pdf: jsPDF | undefined, spec: PdfDocumentSpec | undefined, completed = 0;
+let pdf: jsPDF | undefined, spec: PdfDocumentSpec | undefined, completed = 0, currentPage = 1;
 let processing = false;
 port.onmessage = async ({ data }) => {
   if (processing) { port.postMessage({id:data.id,kind:'error',message:'PDF Worker 收到并行请求'}); return; }
@@ -25,16 +25,16 @@ port.onmessage = async ({ data }) => {
         try {
           for (const slice of data.slices) {
             canvas.height = slice.sourceBottom - slice.sourceTop;
-            if (canvas.height < 1 || completed >= spec.pageCount) throw Error('PDF 切片尺寸或顺序无效');
+            if (canvas.height < 1 || completed >= spec.pageCount || slice.page < currentPage || slice.page > currentPage + 1 || slice.page > spec.pageCount) throw Error('PDF 切片尺寸或顺序无效');
             const context = canvas.getContext('2d',{alpha:false});
             if (!context) throw Error('无法创建后台 PDF 画布');
             context.drawImage(data.bitmap,0,slice.sourceTop,data.bitmap.width,canvas.height,0,0,canvas.width,canvas.height);
             const png = await canvas.convertToBlob({type:'image/png'});
-            if (completed) pdf.addPage();
+            if (slice.page > currentPage) { pdf.addPage(); currentPage = slice.page; }
             const bytes=new Uint8Array(await png.arrayBuffer());
             await prepareNativePng(bytes);
-            pdf.addImage(bytes,'PNG',0,0,spec.paperWidth,slice.heightMm,undefined,'FAST');
-            completed++;
+            pdf.addImage(bytes,'PNG',0,slice.topMm,spec.paperWidth,slice.heightMm,undefined,'FAST');
+            if (slice.complete) completed++;
           }
         } finally { canvas.width = 0; canvas.height = 0; }
       } finally { data.bitmap.close(); }

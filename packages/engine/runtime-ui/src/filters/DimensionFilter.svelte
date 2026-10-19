@@ -1,3 +1,4 @@
+<svelte:options css="injected" />
 <script lang="ts">
   /**
    * 维度筛选器(纯渲染):候选值快照与当前值由运行时传入,变更只上抛事件,不直接写筛选状态。

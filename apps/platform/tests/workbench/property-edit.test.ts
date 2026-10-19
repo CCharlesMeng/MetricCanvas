@@ -59,3 +59,42 @@ it('property edits preserve empty authoring sections outside the formal projecti
   expect(result.ok).toBe(true); if (!result.ok) return;
   expect(result.draft.authoringSections.at(-1)).toEqual({ id: 'empty', componentIds: [] }); expect(result.draft.pageDocument.sections).toHaveLength(1);
 });
+
+it('报告图片导出启用、倍率和文件名保存重开，保持已有PDF和文本引用', () => {
+  const draft = setup(), locator = {sectionId:'s',componentId:'header'};
+  const enabled = editProperty(draft, locator, {kind:'report-export',format:'png',field:'enabled',value:true});
+  expect(enabled.ok).toBe(true); if(!enabled.ok)return;
+  expect(enabled.draft.pageDocument.schemaVersion).toBe('6.31');
+  expect(propertyControls(enabled.draft,locator).map(c=>c.id)).toEqual(expect.arrayContaining(['export-png-enabled','export-png-scale','export-png-filename']));
+  const scale = editProperty(enabled.draft,locator,{kind:'report-export',format:'png',field:'scale',value:'4'});
+  expect(scale.ok).toBe(true); if(!scale.ok)return;
+  const filename=editProperty(scale.draft,locator,{kind:'report-export',format:'png',field:'filename',value:'经营报告.png'});
+  expect(filename.ok).toBe(true); if(!filename.ok)return;
+  const reopened=createCanvasAuthoringDraft(filename.draft.pageDocument);
+  expect(reopened.ok).toBe(true);if(!reopened.ok)return;
+  expect(propertyControls(reopened.draft,locator).find(c=>c.id==='export-png-scale')?.value).toBe(4);
+  expect(propertyControls(reopened.draft,locator).find(c=>c.id==='export-png-filename')?.value).toBe('经营报告.png');
+  const disabled=editProperty(reopened.draft,locator,{kind:'report-export',format:'png',field:'enabled',value:false});
+  expect(disabled.ok).toBe(true);if(!disabled.ok)return;
+  expect(propertyControls(disabled.draft,locator).find(c=>c.id==='export-png-enabled')?.value).toBe(false);
+  expect(disabled.draft.pageDocument.dataSources).toEqual(draft.pageDocument.dataSources);
+  const fallback=editProperty(enabled.draft,locator,{kind:'report-export',format:'png',field:'scale',value:'2'});
+  expect(fallback.ok).toBe(true);if(fallback.ok)expect(propertyControls(fallback.draft,locator).find(c=>c.id==='export-png-scale')?.value).toBe(3);
+  expect(editProperty(draft,{sectionId:'s',componentId:'bar'},{kind:'report-export',format:'png',field:'enabled',value:true}).ok).toBe(false);
+});
+
+it('同一种导出按钮配置支持 PDF 和 PNG 不同名称和倍率，编辑旧字段时迁移且保留配置', () => {
+  const draft=setup(), locator={sectionId:'s',componentId:'header'};
+  const props=(draft.canvasDocument.sections as {components:{props:Record<string,unknown>}[]}[])[0].components[0].props;
+  props.pdfExport={label:'旧 PDF',filename:'旧文件'};
+  const result=editProperty(draft,locator,{kind:'report-export',format:'png',field:'enabled',value:true});
+  expect(result.ok).toBe(true); if (!result.ok) return;
+  const controls=propertyControls(result.draft,locator);
+  expect(controls.find(c=>c.id==='export-pdf-label')?.value).toBe('旧 PDF');
+  const updated=editProperty(result.draft,locator,{kind:'report-export',format:'pdf',field:'scale',value:'4'});
+  expect(updated.ok).toBe(true); if (!updated.ok) return;
+  const header=(updated.draft.pageDocument.sections as {components:{props:Record<string,unknown>}[]}[])[0].components[0];
+  expect(header.props.exportButtons).toEqual([{format:'pdf',label:'旧 PDF',filename:'旧文件',scale:4},{format:'png'}]);
+  expect(header.props).not.toHaveProperty('pdfExport');
+  expect(header.props).not.toHaveProperty('pngExport');
+});
