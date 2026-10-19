@@ -56,6 +56,7 @@
 
   interface Props {
     component: Component;
+    initialTabs?: ReadonlyMap<string, string>;
     summarySnapshot?: import('./ai-summary/session').AiSummarySnapshot;
     exportMode?: boolean;
     chartFilterValue?: (component: Component) => string | undefined;
@@ -86,6 +87,7 @@
 
   let {
     component,
+    initialTabs,
     exportMode = false, chartFilterValue, onchartfilter, headerControls, headerPeriod, summarySnapshot,
     data,
     snapshot,
@@ -122,6 +124,7 @@
   {#if nested}
     <Self
       component={nestedComponent}
+      {initialTabs}
       {exportMode} {chartFilterValue} {onchartfilter} {headerControls} {headerPeriod}
       data={nested.data(nestedComponent)}
       snapshot={nested.snapshot(nestedComponent)}
@@ -168,7 +171,7 @@
       variant={component.props.variant}
       tabs={component.props.tabs.map((tab) => ({ id: tab.id, label: tab.label,
         contentCount: 'components' in tab ? tab.components.length : 1 }))}
-      defaultTab={component.props.defaultTab}
+      defaultTab={initialTabs?.get(component.id) ?? component.props.defaultTab}
     >
       {#snippet children(activeId)}
         {@const tab = component.props.tabs.find((candidate) => candidate.id === activeId)}

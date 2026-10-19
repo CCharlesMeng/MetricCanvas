@@ -365,12 +365,15 @@
       ],
       "examples": [
         "url-navigation-page",
-        "reference-export-detail-bindings"
+        "reference-export-detail-bindings",
+        "tab-url-source"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/actions.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/page/src/schema/navigation.ts",
+        "packages/engine/runtime/src/navigate.ts"
       ],
       "rules": [
         "url-navigation-source-contract",
@@ -727,14 +730,18 @@
         "Tab 容器 tabContainer"
       ],
       "examples": [
-        "composite-page"
+        "composite-page",
+        "tab-url-initialization"
       ],
       "sources": [
         "packages/page/src/schema/components/tab-container.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/engine/runtime-ui/src/initial-tabs.ts",
+        "packages/page/src/navigate.ts"
       ],
       "rules": [
-        "tab-container"
+        "tab-container",
+        "tab-url-initialization"
       ]
     },
     "components/compositeCard.md": {
@@ -1257,7 +1264,8 @@
     "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons": "6.31统一导出按钮数组，1至2项，每种格式最多一项，顺序即显示顺序；不能混用旧导出字段。每项声明format、可选label/filename/scale，点击直接下载。",
     "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/filename": "可选非空文本取值，支持参数、已应用筛选和parts；点击时捕获，默认页头标题，清理非法字符后规范为对应格式的单一扩展名。",
     "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/filename": "可选非空文本取值，支持参数、已应用筛选和parts；点击时捕获，默认页头标题，清理非法字符后规范为对应格式的单一扩展名。",
-    "echartsOption": "6.32 高级呈现 JSON；仅显式需求时使用，保护数据、结构与交互，异常单次回退且诊断仅console。"
+    "echartsOption": "6.32 高级呈现 JSON；仅显式需求时使用，保护数据、结构与交互，异常单次回退且诊断仅console。",
+    "initialTabUrlParam": "6.33 起显式声明初始化 Tab 的 URL 参数名；值匹配 Tab id，缺失、空值、重复或未知值回退 defaultTab / 首个 Tab。与本页其他 URL 输入名称互斥。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1451,7 +1459,8 @@
     "6.29": "Dashboard图表独立筛选：黑色圆角单选按钮组及自定义候选项。",
     "6.30": "Report导出图片：独立文档、3/4倍高清、始终一张完整PNG。",
     "6.31": "Report统一exportButtons，按按钮配置PDF/PNG格式、名称、文件名与渲染倍数，点击直接下载。",
-    "6.32": "柱/线/饼图隐含echartsOption呈现扩展，保护数据结构，单次降级与console诊断。"
+    "6.32": "柱/线/饼图隐含echartsOption呈现扩展，保护数据结构，单次降级与console诊断。",
+    "6.33": "Tab 容器通过显式 URL 参数初始化活动页签。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

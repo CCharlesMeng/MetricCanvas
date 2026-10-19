@@ -1,0 +1,27 @@
+{
+  "case": "tab-url-param-conflict",
+  "invariant": "tab-url-initialization",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "URL 参数名重复:sales-tab",
+      "paths": [
+        "/sections/0/components/0/props/initialTabUrlParam"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "initialTabUrlParam": "sales-tab"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/tab-url-param-conflict.json"
+}

@@ -17,6 +17,7 @@ PROPERTY_WHITELIST = {
     "lineChart": {"smooth", "areaGradient", "showPointLabels", "hideYAxis"},
     "pieChart": {"ring", "labelLine"},
     "table": {"subtitle", "fit", "toolbar"},
+    "tabContainer": {"defaultTab", "initialTabUrlParam"},
 }
 
 
@@ -69,7 +70,7 @@ def set_component_layout(page, op):
 def set_properties(page, op):
     component = component_by_id(page, op["componentId"])
     _patch(component["props"], op["properties"], PROPERTY_WHITELIST.get(component["type"], set()))
-    if component['type'] == 'table' and 'toolbar' in op['properties']:
+    if (component['type'] == 'table' and 'toolbar' in op['properties']) or (component['type'] == 'tabContainer' and 'initialTabUrlParam' in op['properties']):
         from metriccanvas_authoring.bundle_info import load_bundle_info
         page['schemaVersion'] = load_bundle_info()['pageSchemaVersion']
     return []

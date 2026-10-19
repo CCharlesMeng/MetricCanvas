@@ -1,6 +1,21 @@
 {
   "invariants": [
     {
+      "id": "tab-url-initialization",
+      "description": "6.33 Tab 显式 URL 初值与页面输入名称互斥",
+      "valid": [
+        "tab-url-initialization",
+        "tab-url-source"
+      ],
+      "invalid": [
+        "tab-url-before-6.33",
+        "tab-url-empty-key",
+        "tab-url-duplicate-key",
+        "tab-url-filter-conflict",
+        "tab-url-param-conflict"
+      ]
+    },
+    {
       "id": "chart-echarts-option",
       "description": "6.32 三图高级呈现 JSON、保护数据结构、系列和轴补丁边界",
       "valid": [

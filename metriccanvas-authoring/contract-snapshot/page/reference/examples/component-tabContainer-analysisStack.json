@@ -1,32 +1,11 @@
 {
-  "schemaVersion": "6.5",
-  "id": "composite-page",
-  "layout": "dashboard",
-  "dashboardToolbar": {
-    "variant": "compact",
-    "readOnly": true,
-    "note": "只读"
-  },
+  "schemaVersion": "6.33",
+  "id": "tab-url-initialization",
+  "layout": "report",
   "dataSources": {
-    "summary": {
+    "demo": {
       "fields": {
-        "channel": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "amount": {
-          "type": "number",
-          "role": "measure"
-        },
-        "share": {
-          "type": "number",
-          "role": "measure"
-        },
-        "score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "owner": {
+        "name": {
           "type": "string",
           "role": "dimension"
         }
@@ -35,60 +14,9 @@
         "type": "inline",
         "rows": [
           {
-            "channel": "线上",
-            "amount": 60,
-            "share": 60,
-            "score": 88,
-            "owner": "张三"
-          },
-          {
-            "channel": "线下",
-            "amount": 40,
-            "share": 40,
-            "score": 70,
-            "owner": "李四"
+            "name": "合成数据，仅验证页签与导航"
           }
         ]
-      }
-    },
-    "top": {
-      "fields": {
-        "name": {
-          "queryField": "name",
-          "type": "string",
-          "role": "dimension"
-        },
-        "value": {
-          "queryField": "value",
-          "type": "number",
-          "role": "measure"
-        }
-      },
-      "source": {
-        "type": "query",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "name"
-                ],
-                "output_metrics": [
-                  "value"
-                ],
-                "filter": {
-                  "dims": [],
-                  "metrics": []
-                },
-                "order": {
-                  "offset": 0,
-                  "limit": 10
-                }
-              }
-            ]
-          }
-        }
       }
     }
   },
@@ -97,72 +25,63 @@
       "id": "main",
       "components": [
         {
-          "id": "tab-container",
+          "id": "support-tabs",
           "type": "tabContainer",
           "layout": {
-            "span": 12
+            "span": 6
           },
           "props": {
-            "variant": "analysisStack",
-            "defaultTab": "top",
+            "title": "support-tabs",
+            "initialTabUrlParam": "support-tab",
             "tabs": [
               {
-                "id": "top",
-                "label": "TOP",
+                "id": "open",
+                "label": "未关闭工单",
                 "component": {
-                  "id": "top-table",
+                  "id": "support-tabs-open",
                   "type": "table",
                   "layout": {
                     "span": 12
                   },
                   "data": {
-                    "main": "top"
+                    "main": "demo"
                   },
                   "props": {
-                    "variant": "embedded",
-                    "bottomFade": true,
+                    "title": "未关闭工单：内联演示数据",
                     "columns": [
                       {
-                        "field": "name"
-                      },
-                      {
-                        "field": "value"
+                        "field": "name",
+                        "title": "演示内容"
                       }
                     ]
                   }
                 }
               },
               {
-                "id": "all",
-                "label": "全部",
-                "components": [
-                  {
-                    "id": "all-table",
-                    "type": "table",
-                    "layout": {
-                      "span": 12
-                    },
-                    "data": {
-                      "main": "summary"
-                    },
-                    "props": {
-                      "columns": [
-                        {
-                          "field": "channel"
-                        },
-                        {
-                          "field": "amount"
-                        }
-                      ],
-                      "pagination": {
-                        "mode": "local",
-                        "pageSize": 10
+                "id": "closed",
+                "label": "已关闭工单",
+                "component": {
+                  "id": "support-tabs-closed",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "demo"
+                  },
+                  "props": {
+                    "title": "已关闭工单：内联演示数据",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "title": "演示内容"
                       }
-                    }
+                    ]
                   }
-                ]
+                }
               }
-            ]
+            ],
+            "variant": "analysisStack"
           }
         }
       ]

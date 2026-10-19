@@ -243,6 +243,14 @@
                         }
                       }
                     }
+                  },
+                  "initialTabUrlParam": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "defaultTab": {
+                    "type": "string",
+                    "minLength": 1
                   }
                 }
               }
@@ -1049,6 +1057,10 @@
                   "compact",
                   "analysisStack"
                 ]
+              },
+              "initialTabUrlParam": {
+                "type": "string",
+                "minLength": 1
               }
             },
             "required": [

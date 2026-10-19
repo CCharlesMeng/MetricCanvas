@@ -54,6 +54,13 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'tab-url-initialization',description:'6.33 Tab 显式 URL 初值与页面输入名称互斥',valid:['tab-url-initialization','tab-url-source'],cases:[
+    {case:'tab-url-before-6.33',base:'tab-url-initialization',expect:/由 6.33 引入/,mutate:d=>{d.schemaVersion='6.32';}},
+    {case:'tab-url-empty-key',base:'tab-url-initialization',expect:/initialTabUrlParam/,mutate:d=>{firstComponent(d).props.initialTabUrlParam='';}},
+    {case:'tab-url-duplicate-key',base:'tab-url-initialization',expect:/URL 参数名重复:sales-tab/,mutate:d=>{firstComponent(d,0,1).props.initialTabUrlParam='sales-tab';}},
+    {case:'tab-url-filter-conflict',base:'tab-url-initialization',expect:/URL 参数名重复:sales-tab/,mutate:d=>{d.filters=[{id:'sales-tab',type:'search'}];}},
+    {case:'tab-url-param-conflict',base:'tab-url-initialization',expect:/URL 参数名重复:sales-tab/,mutate:d=>{d.params={display:[{id:'sales-tab',type:'string',value:'detail'}]};firstComponent(d).props.title={param:'sales-tab'};}}
+  ]},
   {id:'chart-echarts-option',description:'6.32 三图高级呈现 JSON、保护数据结构、系列和轴补丁边界',valid:['chart-echarts-option-page'],cases:[
     {case:'chart-option-before-6.32',base:'chart-echarts-option-page',expect:/由 6.32 引入/,mutate:d=>{d.schemaVersion='6.31';}},
     {case:'chart-option-legacy-version',base:'chart-echarts-option-page',expect:/5.x 只读文档不能声明/,mutate:d=>{d.schemaVersion='5.4';}},

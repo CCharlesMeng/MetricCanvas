@@ -36,6 +36,7 @@ export const tabContainerComponentZ = z
         title: textValueZ.optional(),
         variant: z.enum(['compact', 'analysisStack']).optional(),
         defaultTab: idZ.optional(),
+        initialTabUrlParam: z.string().min(1).optional(),
         tabs: z.array(tabItemZ).min(1)
       })
       .strict()

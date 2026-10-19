@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.32",
-  "schemaSha256": "fe47c71b14727e765ef348492defbedfa7ce0ce19c534880fa72f3995dc4b8c9",
+  "schemaVersion": "6.33",
+  "schemaSha256": "59956065a7be3345c7ead7e1bd50479ec29ccf9a3714baa9c249901d0ad783e7",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -9,6 +9,14 @@
     {
       "file": "packages/embed/tests/browser/report-image.spec.ts",
       "sha256": "15ca9a7dcd412819874e8ecc23bf4af125739706d7c1c854c058449591e31df6"
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/initial-tabs.ts",
+      "sha256": "5a65ff2f61b13981bdf03857cf0bebc3b6568e526bdc6bca993d6e4eb45a0387"
+    },
+    {
+      "file": "packages/engine/runtime/src/navigate.ts",
+      "sha256": "97f43eba8bda604a1e05a5fe788f96b5df259ce6f3be77ce62c0903c9b8eeca7"
     },
     {
       "file": "packages/engine/widgets/src/components/gauge/Gauge.svelte",
@@ -36,7 +44,7 @@
     },
     {
       "file": "packages/page/src/navigate.ts",
-      "sha256": "c6ea4da8b499954f8132d6d14e31c3208e3bd298edfb091f0f0942174d01cb36"
+      "sha256": "f4d7f98de08fb408b60347d6fa1357ea9029981175b0d41e4a88a93ecfcd05a9"
     },
     {
       "file": "packages/page/src/param-bindings.ts",
@@ -120,7 +128,7 @@
     },
     {
       "file": "packages/page/src/schema/components/tab-container.ts",
-      "sha256": "894d18a06f25b6414ff86c0ec1bf9f6cbf00d3abd2f46dbe46988a48643ae27c"
+      "sha256": "83bc7540507da5b4886e6ca768a1304234bdffe09f57afbdbfa438792c9a6b26"
     },
     {
       "file": "packages/page/src/schema/components/table.ts",
@@ -141,6 +149,10 @@
     {
       "file": "packages/page/src/schema/filter.ts",
       "sha256": "041070273e2367517ebe0dbbc9fae5b5a31ad7a8f11154ed3498a54c1ea86f2e"
+    },
+    {
+      "file": "packages/page/src/schema/navigation.ts",
+      "sha256": "6daa54dc7c4695e122d1d9aaa0df96f754ec6abc944670ca8850018f7713d638"
     },
     {
       "file": "packages/page/src/schema/page.ts",
@@ -180,7 +192,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "155d3b64d2fa06b2964cd668a38e4c1e7992259bebc8dcd54248e03bbd802100"
+      "sha256": "9eb525ff34114e8a260eb411586ab3e6e1fa697617121c4a58b64596270c0b84"
     }
   ],
   "modules": {
@@ -549,12 +561,15 @@
       ],
       "examples": [
         "url-navigation-page",
-        "reference-export-detail-bindings"
+        "reference-export-detail-bindings",
+        "tab-url-source"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/actions.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/page/src/schema/navigation.ts",
+        "packages/engine/runtime/src/navigate.ts"
       ],
       "rules": [
         "url-navigation-source-contract",
@@ -911,14 +926,18 @@
         "Tab 容器 tabContainer"
       ],
       "examples": [
-        "composite-page"
+        "composite-page",
+        "tab-url-initialization"
       ],
       "sources": [
         "packages/page/src/schema/components/tab-container.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/engine/runtime-ui/src/initial-tabs.ts",
+        "packages/page/src/navigate.ts"
       ],
       "rules": [
-        "tab-container"
+        "tab-container",
+        "tab-url-initialization"
       ]
     },
     "components/compositeCard.md": {
@@ -1241,7 +1260,8 @@
         "6.29",
         "6.30",
         "6.31",
-        "6.32"
+        "6.32",
+        "6.33"
       ]
     },
     {
@@ -9368,6 +9388,12 @@
       "module": "components/tabContainer.md"
     },
     {
+      "pointer": "#/definitions/tabContainerComponent/properties/props/properties/initialTabUrlParam",
+      "path": "@tabContainerComponent.props.initialTabUrlParam",
+      "required": "本分支可选",
+      "module": "components/tabContainer.md"
+    },
+    {
       "pointer": "#/definitions/tabContainerComponent/properties/props/properties/tabs",
       "path": "@tabContainerComponent.props.tabs",
       "required": "本分支必填",
@@ -11028,28 +11054,28 @@
       "type": "table",
       "file": "examples/component-table.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-export-compute-branches.json"
+      "source": "page/conformance/valid/tab-url-initialization.json"
     },
     {
       "type": "table",
       "variant": "reportCompact",
       "file": "examples/component-table-reportCompact.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-export-compute-branches.json"
+      "source": "page/conformance/valid/tab-url-initialization.json"
     },
     {
       "type": "table",
       "variant": "embedded",
       "file": "examples/component-table-embedded.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-export-compute-branches.json"
+      "source": "page/conformance/valid/tab-url-initialization.json"
     },
     {
       "type": "table",
       "variant": "forecastMatrix",
       "file": "examples/component-table-forecastMatrix.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-export-compute-branches.json"
+      "source": "page/conformance/valid/tab-url-initialization.json"
     },
     {
       "type": "mapChart",
@@ -11081,21 +11107,21 @@
       "type": "tabContainer",
       "file": "examples/component-tabContainer.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/composite-page.json"
+      "source": "page/conformance/valid/tab-url-initialization.json"
     },
     {
       "type": "tabContainer",
       "variant": "compact",
       "file": "examples/component-tabContainer-compact.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/composite-page.json"
+      "source": "page/conformance/valid/tab-url-initialization.json"
     },
     {
       "type": "tabContainer",
       "variant": "analysisStack",
       "file": "examples/component-tabContainer-analysisStack.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/composite-page.json"
+      "source": "page/conformance/valid/tab-url-initialization.json"
     },
     {
       "type": "compositeCard",
@@ -11512,8 +11538,8 @@
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/3",
       "module": "compute.md",
-      "file": "examples/component-table.json",
-      "pointer": "#/dataSources/fill-1/compute/0"
+      "file": "examples/reference-export-compute-branches.json",
+      "pointer": "#/dataSources/fill-0/compute/0"
     },
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/3/properties/range/anyOf/0",
@@ -11524,7 +11550,7 @@
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/3/properties/range/anyOf/1",
       "module": "compute.md",
-      "file": "examples/component-table.json",
+      "file": "examples/reference-export-compute-branches.json",
       "pointer": "#/dataSources/fill-1/compute/0/range"
     },
     {
@@ -12254,8 +12280,8 @@
     {
       "schemaPointer": "#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/0",
       "module": "components/table.md",
-      "file": "examples/reference-export-column-actions.json",
-      "pointer": "#/sections/8/components/0/props/columns/0/navigate/query/customer"
+      "file": "examples/tab-url-source.json",
+      "pointer": "#/sections/0/components/1/props/columns/0/navigate/query/sales-tab"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/1",
@@ -12284,8 +12310,8 @@
     {
       "schemaPointer": "#/definitions/tableComponent/properties/props/properties/pagination/oneOf/1",
       "module": "components/table.md",
-      "file": "examples/component-tabContainer.json",
-      "pointer": "#/sections/0/components/0/props/tabs/1/components/0/props/pagination"
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/sections/0/components/6/props/pagination"
     },
     {
       "schemaPointer": "#/definitions/tableComponent/properties/props/properties/pagination/oneOf/2",
@@ -12340,8 +12366,8 @@
     {
       "schemaPointer": "#/definitions/tabItem/anyOf/1",
       "module": "components/tabContainer.md",
-      "file": "examples/component-tabContainer.json",
-      "pointer": "#/sections/0/components/0/props/tabs/1"
+      "file": "examples/composite-page.json",
+      "pointer": "#/sections/1/components/0/props/tabs/1"
     },
     {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/9",

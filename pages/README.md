@@ -181,3 +181,12 @@ Report 页面按三节组织，控件相互独立：
 入口：[chart-echarts-option-page.json](chart-echarts-option-page.json)，页面 id 与文件名一致，Playground 注册于验证分组。全部为 inline 演示数据，无外部查询依赖。
 
 查看柱图声明序/stackOrder 的颜色对应、折线平滑与标签模板、饼图半径数组；调整容器宽度并下载 PDF/PNG。移除 echartsOption 后应恢复普通属性效果。缺失行不绘成零，真实零保留。页面不出现诊断文案；错误、单次回退和导出终止由浏览器故障注入用例验证，详情仅 console；保护路径拒绝由契约向量验证。静态/浏览器证据不等于真实 DQE 或真实模型验收。
+
+## URL 初始化 Tab 与跨页链接
+
+- 入口 `/pages/tab-url-source`（[来源页](tab-url-source.json)）及 `/pages/tab-url-initialization`（[目标页](tab-url-initialization.json)）。使用内联合成数据，无需 DQE 服务。
+- 来源页点击“固定打开明细与已关闭工单”，目标两个独立容器分别选中“销售明细”和“已关闭工单”；URL 保留 `#tabs` 锚点，引擎不额外负责定位滚动。
+- 点击“页面参数打开明细”或表格中的当前行链接，核对 `sales-tab` 来自来源页参数或行字段，目标选中对应页签。参数绑定不自动携带其他来源页输入。
+- 直接打开目标页时，销售容器选中已声明默认“销售概览”（不是第一项），工单容器选中第一项“未关闭工单”。来源页的无效、空值、重复值链接均回退同样的默认页签。
+- 打开 `?sales-tab=detail&support-tab=closed` 后手动切换销售页签，工单保持原选择，地址不变化；刷新后重新应用 URL 初值。未声明的 `?tab=detail` 不影响容器。
+- 页面协议、参数命名互斥、初始化及导出边界见 [Tab 容器](../docs/page-metadata/components/tabContainer.md#url-初始化页签633)。自动浏览器验收直接消费以上两页；本地导航和内联渲染成功不代表真实门户、DQE、Relay 或模型验收。

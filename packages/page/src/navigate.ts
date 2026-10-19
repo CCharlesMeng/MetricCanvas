@@ -91,5 +91,11 @@ export function urlInputErrors(page: Page): TypedError[] {
       used.add(key);
     }
   });
+  walkPageComponents(page, (component, path) => {
+    if (component.type !== 'tabContainer' || component.props.initialTabUrlParam === undefined) return;
+    const key = component.props.initialTabUrlParam;
+    if (used.has(key)) errors.push({ type:'SCHEMA_ERROR', path:`${path}/props/initialTabUrlParam`, message:`URL 参数名重复:${key}` });
+    used.add(key);
+  });
   return errors;
 }

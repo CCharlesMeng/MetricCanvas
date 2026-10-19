@@ -28,9 +28,9 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 
 提交、push 或跨分支交付使用 [scoped-main-delivery](.agents/skills/scoped-main-delivery/SKILL.md)，以本仓入口为准。
 
-### 新功能验收（必选）
+### 功能与协议能力验收（必选）
 
-所有新功能均须按 [新功能验收要求](docs/agents/feature-acceptance.md) 完成 `pages/` 场景、页面元数据文档及 `metriccanvas-local-authoring` 同步，作为实施完成条件；验收直接消费对应页面。
+所有新功能及页面协议能力更新（新增、调整、修复、收紧或废弃），均须按 [功能与协议能力验收要求](docs/agents/feature-acceptance.md) 完成 Playground 可观察场景、页面元数据文档及 `metriccanvas-local-authoring` 同步，作为实施完成条件。
 
 ### Issue tracker
 

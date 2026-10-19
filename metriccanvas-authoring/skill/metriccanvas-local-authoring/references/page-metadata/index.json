@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.32",
-  "schemaSha256": "fe47c71b14727e765ef348492defbedfa7ce0ce19c534880fa72f3995dc4b8c9",
+  "schemaVersion": "6.33",
+  "schemaSha256": "59956065a7be3345c7ead7e1bd50479ec29ccf9a3714baa9c249901d0ad783e7",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -310,7 +310,8 @@
       ],
       "examples": [
         "url-navigation-page",
-        "reference-export-detail-bindings"
+        "reference-export-detail-bindings",
+        "tab-url-source"
       ],
       "rules": [
         "url-navigation-source-contract",
@@ -620,10 +621,12 @@
         "Tab 容器 tabContainer"
       ],
       "examples": [
-        "composite-page"
+        "composite-page",
+        "tab-url-initialization"
       ],
       "rules": [
-        "tab-container"
+        "tab-container",
+        "tab-url-initialization"
       ]
     },
     "components/compositeCard.md": {
@@ -909,7 +912,8 @@
         "6.29",
         "6.30",
         "6.31",
-        "6.32"
+        "6.32",
+        "6.33"
       ]
     },
     {
@@ -9036,6 +9040,12 @@
       "module": "components/tabContainer.md"
     },
     {
+      "pointer": "#/definitions/tabContainerComponent/properties/props/properties/initialTabUrlParam",
+      "path": "@tabContainerComponent.props.initialTabUrlParam",
+      "required": "本分支可选",
+      "module": "components/tabContainer.md"
+    },
+    {
       "pointer": "#/definitions/tabContainerComponent/properties/props/properties/tabs",
       "path": "@tabContainerComponent.props.tabs",
       "required": "本分支必填",
@@ -11127,8 +11137,8 @@
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/3",
       "module": "compute.md",
-      "file": "examples/component-table.json",
-      "pointer": "#/dataSources/fill-1/compute/0"
+      "file": "examples/reference-export-compute-branches.json",
+      "pointer": "#/dataSources/fill-0/compute/0"
     },
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/3/properties/range/anyOf/0",
@@ -11139,7 +11149,7 @@
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/3/properties/range/anyOf/1",
       "module": "compute.md",
-      "file": "examples/component-table.json",
+      "file": "examples/reference-export-compute-branches.json",
       "pointer": "#/dataSources/fill-1/compute/0/range"
     },
     {
@@ -11862,8 +11872,8 @@
     {
       "schemaPointer": "#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/0",
       "module": "components/table.md",
-      "file": "examples/reference-export-column-actions.json",
-      "pointer": "#/sections/8/components/0/props/columns/0/navigate/query/customer"
+      "file": "examples/tab-url-source.json",
+      "pointer": "#/sections/0/components/1/props/columns/0/navigate/query/sales-tab"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/1",
@@ -11892,8 +11902,8 @@
     {
       "schemaPointer": "#/definitions/tableComponent/properties/props/properties/pagination/oneOf/1",
       "module": "components/table.md",
-      "file": "examples/component-tabContainer.json",
-      "pointer": "#/sections/0/components/0/props/tabs/1/components/0/props/pagination"
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/sections/0/components/6/props/pagination"
     },
     {
       "schemaPointer": "#/definitions/tableComponent/properties/props/properties/pagination/oneOf/2",
@@ -11946,8 +11956,8 @@
     {
       "schemaPointer": "#/definitions/tabItem/anyOf/1",
       "module": "components/tabContainer.md",
-      "file": "examples/component-tabContainer.json",
-      "pointer": "#/sections/0/components/0/props/tabs/1"
+      "file": "examples/composite-page.json",
+      "pointer": "#/sections/1/components/0/props/tabs/1"
     },
     {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/9",
@@ -12220,5 +12230,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "ac6a3f7f9194acda2c053db376befb6a3e25b48fb33fd5a7b7309de0cc671a0d"
+  "semanticSourceDigest": "4c6bea711b75cab2a0ade164d0289a599a4036e09695db64c1a8df7efa69770e"
 }

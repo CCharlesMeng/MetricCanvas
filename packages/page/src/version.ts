@@ -15,7 +15,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 32;
+const CURRENT_MINOR = 33;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -26,6 +26,8 @@ export interface PageCapabilityDefinition {
   /** 引入该能力的次版本。 */
   minor: number;
   description: string;
+  /** 显式 false 的新能力不得借 5.x 只读兼容通道进入。既有能力保持原策略。 */
+  legacyReadable?: false;
   /**
    * 文档中使用该能力的位置(JSON Pointer),空数组表示未使用。
    *
@@ -37,6 +39,11 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'tab-url-initialization': {
+    minor: 33, description: 'Tab 容器通过显式 URL 参数初始化活动页签',
+    legacyReadable: false,
+    usedAt: document => componentPaths(document, component => component.type === 'tabContainer' && has(props(component), 'initialTabUrlParam')).map(path => `${path}/props/initialTabUrlParam`)
+  },
   'chart-echarts-option': {
     minor: 32, description: '柱状图、折线图、饼图高级 ECharts 呈现扩展',
     usedAt: document => componentPaths(document, component => ['barChart', 'lineChart', 'pieChart'].includes(String(component.type)) && has(props(component), 'echartsOption')).map(path => `${path}/props/echartsOption`)
@@ -684,7 +691,7 @@ export function requiredMinorVersion(document: unknown): number {
 /**
  * 能力下限判定:文档使用了高于其声明次版本的能力即报错。
  * 声明版本本身的合法性由 `versionErrors` 负责,这里只在版本可解析且
- * 主版本一致时给出定位到具体使用点的错误。
+ * 主版本一致或新能力显式拒绝旧版兼容读取时给出具体使用点的错误。
  */
 export function capabilityFloorErrors(
   document: unknown,
@@ -692,10 +699,13 @@ export function capabilityFloorErrors(
 ): TypedError[] {
   const version = schemaVersionOf(document);
   const declared = version === undefined ? undefined : parseVersion(version);
-  if (declared === undefined || declared.major !== policy.major) return [];
+  if (declared === undefined) return [];
+  const legacy = LEGACY_READABLE_PAGE_SCHEMA_VERSIONS.some(value => value === version);
+  if (declared.major !== policy.major && !legacy) return [];
   const errors: TypedError[] = [];
-  for (const definition of Object.values(pageCapabilities)) {
-    if (definition.minor <= declared.minor) continue;
+  const definitions: PageCapabilityDefinition[] = Object.values(pageCapabilities);
+  for (const definition of definitions) {
+    if (legacy ? definition.legacyReadable !== false : definition.minor <= declared.minor) continue;
     for (const path of definition.usedAt(document)) {
       errors.push({
         type: 'SCHEMA_ERROR',

@@ -31,7 +31,7 @@
 完整场景 `chart-echarts-option-page` 由本模块的示例路由提供，全部为内联演示数据。数据/结构拒绝由契约反例验证；绘制恢复与导出终止由浏览器故障注入验证，不依赖某个 ECharts 属性恰好报错。地图和其他组件不支持本入口。
 
 
-页面协议 6.32。结构真源为本册[schema.json](schema.json)，SHA256 `fe47c71b14727e765ef348492defbedfa7ce0ce19c534880fa72f3995dc4b8c9`。字段表自动生成；可选不等于有默认值。
+页面协议 6.33。结构真源为本册[schema.json](schema.json)，SHA256 `59956065a7be3345c7ead7e1bd50479ec29ccf9a3714baa9c249901d0ad783e7`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

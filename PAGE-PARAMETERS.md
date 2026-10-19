@@ -481,3 +481,7 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 时间选择器默认禁止未来时间；日期参数作为筛选初值时同样遵守运行时上限，非法初值拒绝初始化，不静默截断。查询窗口保持显式声明，当前年／季／月仍为完整自然期间。见[默认时间上限](docs/page-metadata/filters.md#时间选择的默认上限)。
 
 图表高级 `props.echartsOption` 是不透明的 ECharts JSON，参数/筛选文本引用与 parts 组合不在其内部解析；详见[高级呈现扩展](docs/page-metadata/chart-option.md)。
+
+## URL 初始化 Tab
+
+6.33 起，Tab 容器可通过 `props.initialTabUrlParam` 声明打开时读取的 URL 参数名，用目标 Tab id 决定初始页签。这是呈现输入，无需添加 `params.display` 声明；名称与本页页面参数和筛选器的 URL 名称互斥。来源页面可通过已有超链接的 `href` 或 `query` 传递该值。完整规则见 [Tab 容器](docs/page-metadata/components/tabContainer.md#url-初始化页签633)，配置示例见[链接传参与目标页签](docs/page-metadata/actions-and-navigation.md#链接传参与目标页签)。

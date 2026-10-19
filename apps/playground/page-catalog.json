@@ -342,6 +342,26 @@
         "高级配置",
         "图表"
       ]
+    },
+    {
+      "id": "tab-url-source",
+      "group": "features",
+      "summary": "配置固定值、页面参数和行字段，跳转到指定页签。",
+      "tags": [
+        "Tab",
+        "URL参数",
+        "跨页导航"
+      ]
+    },
+    {
+      "id": "tab-url-initialization",
+      "group": "features",
+      "summary": "两个独立Tab容器验证URL初始化、默认值及异常回退；内联演示数据。",
+      "tags": [
+        "Tab",
+        "URL参数",
+        "跨页导航"
+      ]
     }
   ]
 }

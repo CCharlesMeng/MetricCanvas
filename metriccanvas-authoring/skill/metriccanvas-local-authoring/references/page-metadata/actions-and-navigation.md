@@ -15,8 +15,46 @@
 表格链接可定位Tab子树/分组列；必须显式给出安全href及非空row/param/filter映射。selection抢占、多navigate歧义或共享目标不一致会拒绝；删除最后链接时清导航并保留其它动作。它不是通用actions或表头筛选编辑器。
 
 
+<a id="链接传参与目标页签"></a>
 
-页面协议 6.32。结构真源为本册[schema.json](schema.json)，SHA256 `fe47c71b14727e765ef348492defbedfa7ce0ce19c534880fa72f3995dc4b8c9`。字段表自动生成；可选不等于有默认值。
+## 链接传参与目标页签
+
+现有 URL 导航允许在 `href` 中配置固定查询参数，并用 `query` 显式绑定动态来源。文本组件的 `props.links[]`、表格列的 `navigate` 和组件动作中的 `navigate` 使用同一目标结构；行字段来源只在有当前行的入口适用。
+
+```json
+{
+  "label": "查看销售明细",
+  "href": "/pages/tab-url-initialization?sales-tab=detail#tabs"
+}
+```
+
+上例为文本组件的一项链接；目标容器配置 `initialTabUrlParam: "sales-tab"`，且声明 `id: "detail"` 的 Tab。该初值接收能力自 6.33 起支持，来源侧链接传参为既有能力。
+
+动态链接的 `query` 键是**目标页面公开的 URL 参数名**，绑定内容指向**当前来源页**的页面参数、筛选器或行字段。以下为一项文本链接（来源页须声明 `preferred-tab` 参数）：
+
+```json
+{
+  "label": "按参数打开页签",
+  "href": "/pages/tab-url-initialization",
+  "query": { "sales-tab": { "source": "param", "id": "preferred-tab" } }
+}
+```
+
+| 取值来源 | `query` 单项配置示例 | 适用条件 |
+|---|---|---|
+| 固定值 | 写入 `href`，例如 `?sales-tab=detail` | 固定入口；`query` 不提供 literal 分支 |
+| 页面参数 | `{"source":"param","id":"preferred-tab"}` | 来源页已声明该参数 |
+| 筛选状态 | `{"source":"filter","id":"tab-choice"}` | 来源页已声明筛选器；范围使用 `part: "from" / "to"`，层级可用 `part: "level"` |
+| 当前行字段 | `{"source":"row","field":"tab-id"}` | 表格链接等有当前行数据的入口；字段须为可传参的标量 |
+
+运行时只携带显式配置的值，保留 `href` 中其他静态参数和 `#` 锚点。有有效动态值时覆盖同名静态参数，并按普通 URL 编码；数组写成重复键，缺值时保留原静态值。Tab 初值仅接受单个合法 id，因此多选筛选器输出多个同名值时会回退默认页签。
+
+参数位于 URL 的标准查询部分；`/#/detail?sales-tab=detail` 的 hash 内参数不会被引擎自动解析。集成应用负责将目标 URL 的查询部分作为 `initialSearch` 传给渲染引擎，并保持普通 anchor 的打开新标签页等能力。
+
+目标页签的优先级、异常回退、命名互斥和初始化边界由 [Tab 容器](components/tabContainer.md#url-初始化页签633)维护。完整可运行的双页配置见 `tab-url-source` 与 `tab-url-initialization`，完整示例由本模块索引分发；目标部署路径由集成应用提供，不由本仓页面 id 推断。
+
+
+页面协议 6.33。结构真源为本册[schema.json](schema.json)，SHA256 `59956065a7be3345c7ead7e1bd50479ec29ccf9a3714baa9c249901d0ad783e7`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -622,6 +660,7 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 
 - [url-navigation-page](examples/url-navigation-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-export-detail-bindings](examples/reference-export-detail-bindings.json)：完整合法页面；查询仅为静态契约证据。
+- [tab-url-source](examples/tab-url-source.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

@@ -79,6 +79,7 @@
   import { SUMMARY_EXPORT_CAPTURE, type SummaryCapture } from './export-render-state';
   import { ExportViewError } from '../../runtime/src/export-snapshots';
   import ComponentRenderer from './ComponentRenderer.svelte';
+  import { initialTabsFromSearch } from './initial-tabs';
   import DetailContent from './DetailContent.svelte';
   import { detailViewInput } from '../../runtime/src/detail-view';
   import type { NestedComponentRender, TableRenderBinding } from './component-render';
@@ -221,6 +222,7 @@
   let snapshots = $state<PageDataSnapshots>(new Map());
   let filterValues = $state<FilterValues>(new Map());
   let pageParams = $state<PageParamValues>(new Map());
+  let initialTabs = $state<ReadonlyMap<string, string>>(new Map());
   /** 筛选候选值快照(维度名 → 显式状态):筛选控件与表头筛选共用。 */
   let dimensionCandidates = $state<DimensionValuesSnapshots>(new Map());
   let tableViews = $state<Record<string, TableViewState>>({});
@@ -317,6 +319,7 @@
       return;
     }
     const paramDeclarations = declared.page.params ?? [];
+    initialTabs = initialTabsFromSearch(declared.page, search);
     const params = bootstrap ? {values:bootstrap.params,missing:[]} : resolvePageParams(search, paramDeclarations);
     pageParams = params.values;
     if (params.missing.length > 0) {
@@ -1210,6 +1213,7 @@
         {@const slots = componentSnapshots(component)}
         <ComponentRenderer
           {component}
+          {initialTabs}
           {headerControls}
           chartFilterValue={component => {
             if (!isChartComponent(component) || !component.props.filter) return undefined;
