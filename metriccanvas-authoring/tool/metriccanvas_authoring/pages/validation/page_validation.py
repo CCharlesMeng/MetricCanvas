@@ -54,10 +54,24 @@ def _is_bounded_time_point(node):
     return node.get('type') == 'timePoint' and ('min' in node or 'disableFuture' in node)
 
 
+def _is_url_initialized_tab(node):
+    if not isinstance(node, dict):
+        return False
+    props = node.get('props')
+    return node.get('type') == 'tabContainer' and isinstance(props, dict) and 'initialTabUrlParam' in props
+
+
+def _is_report_export_header(node):
+    if not isinstance(node, dict):
+        return False
+    props = node.get('props')
+    return node.get('type') == 'reportHeader' and isinstance(props, dict) and any(key in props for key in ('pdfExport', 'pngExport', 'exportButtons'))
+
+
 def _uses_product_bridge(node):
     if isinstance(node, list): return any(_uses_product_bridge(v) for v in node)
-    if isinstance(node, dict) and node.get('type') == 'tabContainer' and isinstance(node.get('props'), dict) and 'initialTabUrlParam' in node['props']: return True
-    if isinstance(node, dict) and node.get('type') == 'reportHeader' and isinstance(node.get('props'), dict) and any(key in node['props'] for key in ('pdfExport', 'pngExport', 'exportButtons')): return True
+    if _is_url_initialized_tab(node): return True
+    if _is_report_export_header(node): return True
     if isinstance(node, dict): return node.get('type') == 'pagedJoin' or _is_chart_filter(node) or _is_period_filter(node) or _is_bounded_time_point(node) or node.get('mode') == 'numberRange' or any(_uses_product_bridge(v) for v in node.values())
     return False
 

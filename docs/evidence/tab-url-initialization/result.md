@@ -49,3 +49,5 @@ pnpm exec vitest run packages/page/tests/tab-url-initialization.test.ts packages
 用户授权提交并推送 main，并要求快速交付。交付前 fetch 确认 `origin/main` 仍为实施基线 `227f7c61b913e686617042ae7c8b4af243654a86`，复用上文同一产品输入的完整本地验收。新增的通用 Playground 验收要求同步于 AGENTS.md 与 docs/agents/feature-acceptance.md。
 
 补跑 `pnpm test` 指定页面协议、版本、Tab URL 初始化、导航与 Playground 目录五个测试文件，28 项通过；`pnpm authoring:contracts:check`、Bundle 2818 项摘要检查与差异检查通过。显式路径清单只覆盖本次功能、协议派生物、页面场景、验收记录和验收约定。远端提交与 CI 结论以实际交付结果为准。
+
+首次推送提交 `66fba44026e086c719484bf8f3590f276bd0dc7b` 的 CI 报告 `_uses_product_bridge` 圈复杂度 19，超过 15。随后仅抽取 Tab URL 与报告导出页头的检测函数，保持路由条件不变，并更新 Bundle 源文件摘要。`python tools/scripts/check-authoring-complexity.py` 确认 0 违规、全局最大值 15；Tab 容器与完整页面校验 23 项回归通过，契约生成、Bundle 2818 项摘要检查和差异检查通过。后续 CI 以修复提交为准。
