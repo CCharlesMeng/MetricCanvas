@@ -14,12 +14,13 @@
 | 尝试快照 | Skill 的 scripts/snapshot-attempt.mjs |
 | 页面字段、约束、校验 | packages/page/src/ 及合法/非法夹具；涉及公共协议时按产品契约流程同步 |
 | 协议语义正文、示例路由 | docs/page-metadata/ 与 tools/scripts/page-reference.ts |
+| 成型页面范式 | `tools/scripts/local-authoring-patterns.ts` 选择 `pages/` 中页面并提炼结构；形态识别及分支范式卡由 Skill 作者维护 |
 | 通用概览完整样例 | tools/scripts/local-authoring-overview-example.ts；使用当前写出版本并重新校验 |
 | 目录封闭、参考净化与校验器打包 | tools/scripts/local-authoring-projection.ts、local-authoring-validator.ts |
 | 实际地图地名 | 产品底图，经导出器投影；保留源摘要，移除仓库路径 |
 | 注册与分发 | metriccanvas-authoring/bundle.json、scripts/check_bundle.py |
 
-生成范围由导出器管理：references/page-metadata/、references/map-regions.json、references/knowledge.json、assets/layouts/overview-map-led.json、scripts/validate-page.mjs、scripts/THIRD-PARTY-LICENSES.md。其他文件归作者维护，重新生成必须保留。真源映射总表见[真源与派生链](../../metriccanvas-authoring/SOURCES.md)。
+生成范围由导出器管理：references/page-metadata/、references/page-patterns/、references/map-regions.json、references/knowledge.json、assets/layouts/overview-map-led.json、scripts/validate-page.mjs、scripts/THIRD-PARTY-LICENSES.md。其他文件归作者维护，重新生成必须保留。真源映射总表见[真源与派生链](../../metriccanvas-authoring/SOURCES.md)。
 
 ## 更新与交付
 

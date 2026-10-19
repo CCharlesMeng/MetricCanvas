@@ -1,0 +1,210 @@
+{
+  "id": "dashboard-analysis",
+  "kind": "structural-pattern",
+  "source": {
+    "pageId": "ioc-opportunity-analysis",
+    "sha256": "728289694173ad4b51299321f437d17c20011117806bb1d82f541c2c0e29bfc0"
+  },
+  "layout": "dashboard",
+  "dashboardToolbar": "compact",
+  "filters": [
+    {
+      "type": "boolean"
+    },
+    {
+      "type": "timePoint"
+    },
+    {
+      "type": "dimension"
+    },
+    {
+      "type": "dimension"
+    },
+    {
+      "type": "dimension"
+    },
+    {
+      "type": "dimension"
+    },
+    {
+      "type": "dimension"
+    }
+  ],
+  "sections": [
+    {
+      "container": "plain",
+      "columnTracks": [
+        2,
+        2,
+        3,
+        3
+      ],
+      "components": [
+        {
+          "type": "compositeCard",
+          "layout": {
+            "span": 1
+          },
+          "variant": "metricGrid",
+          "components": [
+            {
+              "type": "metricCard",
+              "layout": {
+                "span": 12
+              },
+              "variant": "compactStrip"
+            },
+            {
+              "type": "metricCard",
+              "layout": {
+                "span": 12
+              },
+              "variant": "compactStrip"
+            }
+          ]
+        },
+        {
+          "type": "compositeCard",
+          "layout": {
+            "span": 1
+          },
+          "variant": "metricGrid",
+          "components": [
+            {
+              "type": "metricCard",
+              "layout": {
+                "span": 12
+              },
+              "variant": "compactStrip"
+            },
+            {
+              "type": "metricCard",
+              "layout": {
+                "span": 12
+              },
+              "variant": "compactStrip"
+            }
+          ]
+        },
+        {
+          "type": "compositeCard",
+          "layout": {
+            "span": 1
+          },
+          "variant": "metricGrid",
+          "components": [
+            {
+              "type": "metricCard",
+              "layout": {
+                "span": 4
+              },
+              "variant": "compactStack"
+            },
+            {
+              "type": "metricCard",
+              "layout": {
+                "span": 4
+              },
+              "variant": "compactStack"
+            },
+            {
+              "type": "metricCard",
+              "layout": {
+                "span": 4
+              },
+              "variant": "compactStack"
+            }
+          ]
+        },
+        {
+          "type": "compositeCard",
+          "layout": {
+            "span": 1
+          },
+          "variant": "metricGrid",
+          "components": [
+            {
+              "type": "metricCard",
+              "layout": {
+                "span": 4
+              },
+              "variant": "compactStack"
+            },
+            {
+              "type": "metricCard",
+              "layout": {
+                "span": 4
+              },
+              "variant": "compactStack"
+            },
+            {
+              "type": "metricCard",
+              "layout": {
+                "span": 4
+              },
+              "variant": "compactStack"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "container": "plain",
+      "components": [
+        {
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "variant": "analysisStack",
+          "tabs": [
+            {
+              "components": [
+                {
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  }
+                },
+                {
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  }
+                },
+                {
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  }
+                }
+              ]
+            },
+            {
+              "components": [
+                {
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  }
+                },
+                {
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  }
+                },
+                {
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -7,6 +7,7 @@
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
 | Report 高清 PNG 导出 | 本仓实现与Chrome安装验收完成，真实门户/Edge待验 | [导出主方案](2026-10-16-report-png-export.md)、[验收记录](../evidence/report-png-export/result.md)、[按钮简化验收](../evidence/report-png-export/export-buttons.md)：6.31统一exportButtons、按配置直接下载PDF/单张PNG、独立文档与流式编码，页面/文档/Skill/属性编辑/分发及PDF回归完成；真实门户/DQE/Relay、Edge与部署另验 |
+| 本地创作页面范式 | 独立规划待用户细化；六类为候选草案 | [范式设计规划](2026-10-19-local-authoring-patterns.md)：业务分组、阅读／操作顺序、选型与替换边界；先定分类及样卡，再实现与验收 |
 | 已有权限下的页面显隐与区域联动 | 完整构建方案待用户审核，产品代码未实施 | [构建与审核主方案](2026-10-15-page-visibility-and-region-interactions.md)：首批六类对象、架构冲突A01–A08、兼容矩阵、技术债务T01–T11、实施B0–B8及验收C01–C15；重点审核U1–U5 |
 | Dashboard 年季月与近一年筛选 | 本地实现及定向验收完成；真实接入未验证 | [验收记录](../evidence/dashboard-period-filter/result.md)；[实施规划](2026-10-15-dashboard-period-filter.md)：Schema 6.27、顶部 filter、模式恢复、创作和独立安装包；保留原查询聚合 |
 | 多查询表格分页和共享查询 | P0–P5 已实施，P6 缺真实 DQE/Relay 上下文 | [实施方案与状态](2026-10-14-multi-query-table.md)、[验收证据](../evidence/multi-query-table/result.md)；6.22 组合查询源、共享执行、视图所有权与校验分发闭合 |

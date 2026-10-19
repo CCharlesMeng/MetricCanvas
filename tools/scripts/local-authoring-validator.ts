@@ -6,9 +6,18 @@ import { fileNameErrors } from '../../packages/page/src/file-name';
 import { versionPolicy } from '../../packages/page/src/version';
 import type { TypedError } from '../../packages/page/src/errors';
 
-export function inspectPageDocument(fileName: string, document: unknown): TypedError[] {
+type ExpectedLayout = 'dashboard' | 'report';
+
+export function inspectPageDocument(fileName: string, document: unknown, expectedLayout?: ExpectedLayout): TypedError[] {
   const parsed = parsePage(document);
-  return parsed.ok ? fileNameErrors(fileName, parsed.page) : parsed.errors;
+  if (!parsed.ok) return parsed.errors;
+  const errors = fileNameErrors(fileName, parsed.page);
+  const actual = parsed.page.layout ?? 'report';
+  if (expectedLayout && actual !== expectedLayout) errors.push({
+    type: 'SCHEMA_ERROR', path: '/layout',
+    message: `布局形态与本次确认不一致：预期 ${expectedLayout}，实际 ${actual}`
+  });
+  return errors;
 }
 
 /** Distribution entrypoint: bundled with the product validator, never imports the author's checkout. */
@@ -17,8 +26,15 @@ function main(args: string[]): number {
     console.log(JSON.stringify({ schemaVersion: versionPolicy.current, validation: 'page-and-file-name' }));
     return 0;
   }
-  if (args.length !== 1) {
-    console.error('Usage: node validate-page.mjs <page.json|directory> | --version');
+  let expectedLayout: ExpectedLayout | undefined;
+  const option = args.indexOf('--expected-layout');
+  const value = args[option + 1];
+  if (option >= 0 && (value === 'dashboard' || value === 'report')) {
+    expectedLayout = value;
+    args = args.filter((_, index) => index !== option && index !== option + 1);
+  }
+  if (args.length !== 1 || (option >= 0 && !expectedLayout)) {
+    console.error('Usage: node validate-page.mjs [--expected-layout dashboard|report] <page.json|directory> | --version');
     return 2;
   }
   const target = resolve(args[0]);
@@ -36,7 +52,7 @@ function main(args: string[]): number {
   for (const file of files) {
     let errors: TypedError[];
     try {
-      errors = inspectPageDocument(basename(file), JSON.parse(readFileSync(file, 'utf8')));
+      errors = inspectPageDocument(basename(file), JSON.parse(readFileSync(file, 'utf8')), expectedLayout);
     } catch (cause) {
       errors = [{ type: 'SCHEMA_ERROR', path: '/', message: String(cause) }];
     }

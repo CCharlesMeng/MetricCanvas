@@ -1,0 +1,123 @@
+{
+  "id": "dashboard-detail",
+  "kind": "structural-pattern",
+  "source": {
+    "pageId": "ioc-project-detail",
+    "sha256": "d327818655a68d7690b73e6d4f1787ed517404da34e9b082703859ccef7e6b4d"
+  },
+  "layout": "dashboard",
+  "dashboardToolbar": "hidden",
+  "filters": [],
+  "sections": [
+    {
+      "container": "plain",
+      "components": [
+        {
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "variant": "projectDetail"
+        }
+      ]
+    },
+    {
+      "container": "plain",
+      "columnTracks": [
+        225,
+        583
+      ],
+      "components": [
+        {
+          "type": "keyValuePanel",
+          "layout": {
+            "span": 1
+          },
+          "variant": "detailSummary"
+        },
+        {
+          "type": "compositeCard",
+          "layout": {
+            "span": 1
+          },
+          "variant": "projectNorms",
+          "components": [
+            {
+              "type": "keyValuePanel",
+              "layout": {
+                "span": 12
+              },
+              "variant": "detailNormMatrix"
+            },
+            {
+              "type": "keyValuePanel",
+              "layout": {
+                "span": 12
+              },
+              "variant": "detailNormMatrix"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "container": "plain",
+      "components": [
+        {
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "variant": "forecastMatrix"
+        }
+      ]
+    },
+    {
+      "container": "plain",
+      "components": [
+        {
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "variant": "narrativeShort"
+        },
+        {
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "variant": "narrativeShort"
+        },
+        {
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "variant": "narrativeShort"
+        },
+        {
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "variant": "narrativeMeeting"
+        },
+        {
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "variant": "narrativeRisk"
+        },
+        {
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "variant": "narrativeProgress"
+        }
+      ]
+    }
+  ]
+}

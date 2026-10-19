@@ -7,7 +7,15 @@ description: 在本地 Coding Agent 中，根据自然语言、设计稿或旧�
 
 交付统一运行时可消费的页面 JSON。直接编辑用户指定的文件；知识和辅助脚本只读取本 Skill 目录，不依赖其他 Skill、仓库源码、在线 MCP 或仓库中的文档路径。用户提供的页面、设计源、数据契约是工作输入，可以位于项目目录。
 
-## 先确定需求与数据依据
+## 先识别并确认布局形态
+
+新建、整页重组或切换布局形态时，先读[形态识别与确认](references/page-form.md)，根据本次需求或设计源给出推荐的 Dashboard（看板）／Report（报表）、具体依据与冲突，取得用户对形态的明确确认后再生成页面。未确认时只交付识别摘要和确认问题，等待回复；不写页面 JSON、模板或章节骨架。自动识别是建议，不是用户确认。
+
+确认摘要包含推荐形态、内容分组与阅读／操作顺序、主要交互位置、候选范式，以及冲突／未知项。用户本轮已明确指定形态，或本任务已有仍然有效的明确确认，且没有未解决冲突时，直接引用选择并简述组织方向后继续，不重复询问。用户指定与设计源或已有页面发生实质冲突时，列出冲突和适配选项，取得针对冲突的明确确认后再生成；已有形态选择不自动解决后来发现的冲突。已有页面的局部修改沿用原形态。确认绑定本次目标页面，修改业务口径不自动撤销确认。
+
+确认后按形态分流：Dashboard 读[看板范式](references/dashboard-patterns.md)，Report 读[报表范式](references/report-patterns.md)，选最接近的一张范式卡，再读其结构摘要与对应协议模块。范式帮助组织内容，不替代用户设计和数据契约。新页面显式写 `layout: "dashboard"` 或 `layout: "report"`；生成与最终交付均核对它与已确认形态一致。省略布局会默认 report，不能作为识别结论。
+
+## 确定需求与数据依据
 
 确认新建或修改、目标文件、业务口径、布局形态及必要交互。修改已有页面先查看原文与文件差异，保留未要求修改的显式设置。以用户确认的需求为准，不从示例推断 IOC 业务事实。
 
@@ -17,7 +25,7 @@ description: 在本地 Coding Agent 中，根据自然语言、设计稿或旧�
 
 先读[页面协议索引](references/page-metadata/README.md)和[本地创作与验收](references/local-workflow.md)。按本次涉及的能力读取对应模块与完整示例，不要求加载全部参考：
 
-- 页面版本与看板/报表布局：[页面](references/page-metadata/page.md)、[分区与布局](references/page-metadata/sections-and-layout.md)。
+- 页面版本与已确认形态的布局：[页面](references/page-metadata/page.md)、[分区与布局](references/page-metadata/sections-and-layout.md)。
 - 概览页先读[常见布局](references/overview-layouts.md)和[常用合法写法](references/component-recipes.md)；涉及地图再读[地图绑定](references/map-bindings.md)。按信息关系选择布局，示例数据不作为业务事实。
 - 组件选型与属性：[组件索引](references/page-metadata/components/README.md)；先用已有组件，缺少表达能力时记录具体缺口。
 - 数据与字段：[数据源](references/page-metadata/data-sources.md)、[结果字段契约](references/page-metadata/fields.md)、[字段绑定与格式](references/page-metadata/field-bindings-and-formats.md)。
@@ -41,6 +49,8 @@ description: 在本地 Coding Agent 中，根据自然语言、设计稿或旧�
 node "<skill-dir>/scripts/validate-page.mjs" "<page-file-or-directory>"
 ```
 
+已有明确形态确认时，加 `--expected-layout dashboard` 或 `--expected-layout report` 对照有效布局，例如 `node "<skill-dir>/scripts/validate-page.mjs" --expected-layout dashboard "<page-file-or-directory>"`。该参数来自本次用户确认，不从待验文件反推；它检查结果与选择一致，不证明已取得用户确认。
+
 校验器包含产品的结构和文档内语义校验，另检查文件名与页面 id 一致；返回 JSON 行，保留 type、path、message。退出码 0 为通过，1 为文档错误，2 为调用或目标目录错误。目录模式只读取该层的 .json 文件；不要对混有其他 JSON 的目录直接执行。每次完整生成后、校验前，按[尝试快照](references/local-workflow.md)冻结原始字节；修复只改工作文件，下一轮使用新目录，不覆盖或重建失败样本。按[校验与错误](references/page-metadata/validation.md)修复原文并重跑，不放宽规则或删除合法配置来掩盖问题。
 
 脚本无需 npm 安装、仓库依赖或网络。Node 不可用时报告“自动校验未执行”，仍可据参考生成文件；不能把人工核对说成脚本通过。
@@ -49,7 +59,7 @@ node "<skill-dir>/scripts/validate-page.mjs" "<page-file-or-directory>"
 
 ## 交付
 
-报告文件位置、需求覆盖、实际校验结果和剩余缺口；设计源还原须附实际截图对照，查询变化须另列真实执行证据。静态校验、视觉/交互验收和真实数据验真分别报告。本地文件完成不等于线上保存或发布成功。
+报告文件位置、已确认的布局形态及确认依据、采用的范式、需求覆盖、实际校验结果和剩余缺口；设计源还原须附实际截图对照，查询变化须另列真实执行证据。静态校验、视觉/交互验收和真实数据验真分别报告。本地文件完成不等于线上保存或发布成功。
 
 ## 安装与知识更新
 

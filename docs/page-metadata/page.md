@@ -6,6 +6,12 @@
 
 report定宽居中，dashboard占满宿主宽度。dashboardToolbar缺省visible；hidden用于页面已有自有页头；compact对象表达紧凑工具栏，readOnly只影响呈现，不是服务权限。meta.title是页面级标题，缺席时消费方可回退页头再回退页面id。
 
+## 创作时显式选择布局形态
+
+新页面建议显式声明 `layout: "dashboard"` 或 `layout: "report"`，便于核对用户选择；这是创作要求，读取边界继续接受省略布局并默认 report。布局形态描述外框，不按组件名称、query／inline、图表数量或是否带日期筛选自动推断。`reportHeader` 也可用于 Dashboard 对象详情；Report 专用工具带仍受其组件约束。
+
+完整结构对照使用 `ioc-project-overview`、`ioc-opportunity-analysis`、`ioc-opportunity-list`、`ioc-project-detail`、`business-sdt-report-monthly`、`flow-analysis-report` 六个成型页面；独立本地创作 Skill 从这些页面提炼结构范式，先识别、取得明确形态确认，再分流生成。确认是创作会话行为，不新增页面字段，不由 Schema 校验器判断。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。

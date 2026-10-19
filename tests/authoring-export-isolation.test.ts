@@ -35,7 +35,7 @@ function withChangedFile(relative: string, content: string, verify: () => void, 
 
 describe.sequential('当前契约检查无需旧服务源码', () => {
   beforeAll(() => {
-    for (const relative of ['tools/scripts', 'docs/page-metadata', 'service', 'tools/fixtures/legacy-contracts', 'packages/page', 'packages/engine/widgets/src/components/map-chart/maps/china.json', 'packages/engine/widgets/src/components/map-chart/maps/world.json', 'contracts', 'metriccanvas-authoring']) {
+    for (const relative of ['tools/scripts', 'docs/page-metadata', 'pages', 'service', 'tools/fixtures/legacy-contracts', 'packages/page', 'packages/engine/widgets/src/components/map-chart/maps/china.json', 'packages/engine/widgets/src/components/map-chart/maps/world.json', 'contracts', 'metriccanvas-authoring']) {
       mkdirSync(path.dirname(path.join(isolated, relative)), { recursive: true });
       cpSync(path.join(root, relative), path.join(isolated, relative), {
         recursive: true,
@@ -132,7 +132,7 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
     } finally { writeFileSync(file,original); }
   }, scenarioTimeout);
 
-  it.each(['references/page-metadata/schema.json', 'references/knowledge.json', 'scripts/validate-page.mjs'])('拒绝独立本地 Skill 生成内容漂移：%s', file => {
+  it.each(['references/page-metadata/schema.json', 'references/knowledge.json', 'references/page-patterns/dashboard-detail.json', 'scripts/validate-page.mjs'])('拒绝独立本地 Skill 生成内容漂移：%s', file => {
     const relative = `metriccanvas-authoring/skill/metriccanvas-local-authoring/${file}`;
     withChangedFile(relative, readFileSync(path.join(isolated,relative),'utf8') + '\nchanged generated content\n', () => {
       const result = runExport();

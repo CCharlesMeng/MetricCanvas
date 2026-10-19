@@ -24,7 +24,7 @@
     },
     {
       "file": "contract-lock.json",
-      "sha256": "76bfc680681a70fe56a6d17fac8b3158b8635bc1b13aa6c047b67471c10baccb"
+      "sha256": "cb1eda4b031f90f2aec0422ba633aff52b519343daf27d8fe9d6e7b740a5e9df"
     },
     {
       "file": "contract-snapshot/authoring/publication-conformance.json",
@@ -44,7 +44,7 @@
     },
     {
       "file": "contract-snapshot/manifest.json",
-      "sha256": "bd421fafd8185950ac58c2a77d5f07e3df44c6f5a51ac5441303ff4b834c84de"
+      "sha256": "5d4d889182cd1e520f5b4da8cb3b2e63f398a42d26d42c539459bab10b3173ec"
     },
     {
       "file": "contract-snapshot/page/component-catalog.json",
@@ -2988,7 +2988,7 @@
     },
     {
       "file": "contract-snapshot/page/reference/page.md",
-      "sha256": "5aa27db12cce72f5bef79cd38b4bb26aea8859f77ba41e547d7303c7db931c78"
+      "sha256": "2ff8a0790508a9593fb4d379779097f1bd1696fce0590269e65b53fa72cb365c"
     },
     {
       "file": "contract-snapshot/page/reference/params-and-text-values.md",
@@ -3363,16 +3363,20 @@
       "sha256": "072c01e502c46a29e257c76b810704af7abde780f15a3cc9bd93255ec9d5fcd7"
     },
     {
+      "file": "skill/metriccanvas-local-authoring/references/dashboard-patterns.md",
+      "sha256": "5609efb8176be5810e038a6674b89491f6f2732c09a134bb2cabb2b06818b560"
+    },
+    {
       "file": "skill/metriccanvas-local-authoring/references/knowledge.json",
-      "sha256": "9bc049009b3e9db6ff3cdc6242dc80eed58a0548819fdfd06aa67ff5ae38b2fe"
+      "sha256": "abbe354abc058c60105897675ed6b5a6266bc7406263b2564a5cf6bfe5e53f5f"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/local-workflow.md",
-      "sha256": "324d4738533a285effbde058ee5a70da5b5de898aec7b6ea201c4c48abeffe08"
+      "sha256": "91146e68b1232fc20e8a7903498edfdf6a2276be9b77187bb801f613aff30228"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/maintenance.md",
-      "sha256": "db8bca0d18442278a9f0bc5e36432e74b2237a7924eb3073a429c3c4add35166"
+      "sha256": "66ed2d97aad5f2579f10feb50b203d2085f0980f9e806bc7e11a5ae504853ee6"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/map-bindings.md",
@@ -3384,7 +3388,11 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/overview-layouts.md",
-      "sha256": "981686ea6889f7cf6174cd15b165c0f426a34e0269bc6896203cb11dab7938c8"
+      "sha256": "027c801f8f4bc21b8f992083d9b8ed162e2806e8605ef2ab20e3f43a821958f2"
+    },
+    {
+      "file": "skill/metriccanvas-local-authoring/references/page-form.md",
+      "sha256": "c945ac9c44f37fd3114ba4215d0fbe3b430f2bb970fe7dfd8400dab03ccc0289"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/actions-and-navigation.md",
@@ -4980,7 +4988,7 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/page.md",
-      "sha256": "a0a0a13150a2faaeb258e8536ac418deaa4c49b8024ab09e079f3246b4a0438a"
+      "sha256": "d2b5fcdfb70e72cffae762c43488e3de3863473a5f013597870adc3b27d84afa"
     },
     {
       "file": "skill/metriccanvas-local-authoring/references/page-metadata/params-and-text-values.md",
@@ -5015,6 +5023,34 @@
       "sha256": "77fcdbb306c2a3ff468b38ec3024721a05903c4727c72203914a6ed850a3b19f"
     },
     {
+      "file": "skill/metriccanvas-local-authoring/references/page-patterns/dashboard-analysis.json",
+      "sha256": "d6009835dcda58f615d396c8fc44094fd26e48f5cdfec79a1154b2444b6744c4"
+    },
+    {
+      "file": "skill/metriccanvas-local-authoring/references/page-patterns/dashboard-detail.json",
+      "sha256": "90c2b4044b29f83dce598af38922cadac6fb8acb381770f66ddf97e2c4fa5d43"
+    },
+    {
+      "file": "skill/metriccanvas-local-authoring/references/page-patterns/dashboard-list.json",
+      "sha256": "7383e135e776b619a9be0e3f0df27db6ffe8525b25d960ef44484b03bd9c4006"
+    },
+    {
+      "file": "skill/metriccanvas-local-authoring/references/page-patterns/dashboard-map.json",
+      "sha256": "89532d49b6a71d425312a128478d4d1a766c8a1509be96e4ec6ca1f14c4be72a"
+    },
+    {
+      "file": "skill/metriccanvas-local-authoring/references/page-patterns/report-briefing.json",
+      "sha256": "0180c246a572628c345e7f119221d3df4e20f7da112cbeec1814fe50a745cef7"
+    },
+    {
+      "file": "skill/metriccanvas-local-authoring/references/page-patterns/report-monthly.json",
+      "sha256": "e1dcf21cdd208b95452d3bac781f4d4cd9aff1333cd741b330045ac3e036cc7a"
+    },
+    {
+      "file": "skill/metriccanvas-local-authoring/references/report-patterns.md",
+      "sha256": "c14adda234a63c0a1f3b6229d6061ffb07f2b5e9a25ea56525a72e1524fa345a"
+    },
+    {
       "file": "skill/metriccanvas-local-authoring/scripts/snapshot-attempt.mjs",
       "sha256": "f54ecb32f127fcb2684d091c0965516ec4a2478a84bb8e7c80a292058be24d3a"
     },
@@ -5024,11 +5060,11 @@
     },
     {
       "file": "skill/metriccanvas-local-authoring/scripts/validate-page.mjs",
-      "sha256": "76bfcf6542bd4112c8f9ec5444c70f4b51fb6818c72c18a38bda52f3e3173838"
+      "sha256": "4dc9442e52700f02e22ad84daafc23251c010d2617cfe31599719f9a8ace9c7a"
     },
     {
       "file": "skill/metriccanvas-local-authoring/SKILL.md",
-      "sha256": "dedfeb5982bf950c8584a126b2917f43b374030a58aaeb0211ea6e73b39c7c5f"
+      "sha256": "e43ac28ca547df031d767956d1101a69bcb27eeb5894a813bbcc5b2c3911c70e"
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/actions-and-navigation.md",
@@ -6624,7 +6660,7 @@
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/page.md",
-      "sha256": "5aa27db12cce72f5bef79cd38b4bb26aea8859f77ba41e547d7303c7db931c78"
+      "sha256": "2ff8a0790508a9593fb4d379779097f1bd1696fce0590269e65b53fa72cb365c"
     },
     {
       "file": "skill/metriccanvas-page-builder/references/page-metadata/params-and-text-values.md",
@@ -6728,7 +6764,7 @@
     },
     {
       "file": "SOURCES.md",
-      "sha256": "2653c9a5f556838973958b37041c1d9e7af739c4f734fce541b71fef8b3ebdee"
+      "sha256": "328a18af23c06d75d1ce8ba41ad1b4fe7ebd79ea36b3110ba9c31355b83f7f04"
     },
     {
       "file": "test-harness/adapters/__init__.py",

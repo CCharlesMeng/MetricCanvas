@@ -8,6 +8,8 @@ import { parsePage } from '../packages/page/src/validate';
 import { fileNameErrors } from '../packages/page/src/file-name';
 import { versionPolicy } from '../packages/page/src/version';
 import { validateReferenceLinks } from '../tools/scripts/page-reference';
+import { pagePattern, pagePatternSources } from '../tools/scripts/local-authoring-patterns';
+import { flattenPageComponents } from '../packages/page/src/component-walk';
 
 const source = 'metriccanvas-authoring/skill/metriccanvas-local-authoring';
 const isolated = await mkdtemp(path.join(tmpdir(), 'metriccanvas-local-skill-'));
@@ -25,6 +27,82 @@ afterAll(() => rm(isolated, {recursive: true, force: true}));
 const run = (args: string[]) => spawnSync(process.execPath, [script, ...args], {cwd: isolated, encoding: 'utf8', timeout: 10_000, env: {PATH: process.env.PATH}});
 
 describe('独立本地创作 Skill', () => {
+  it.each([
+    ['report', 'report', 0],
+    ['dashboard', 'dashboard', 0],
+    ['report', 'dashboard', 1],
+    [undefined, 'dashboard', 1],
+    [undefined, 'report', 0]
+  ] as const)('仓外按确认形态核对：文档 %s，确认 %s', async (layout, expected, status) => {
+    const page = JSON.parse(files.get('references/page-metadata/examples/inline-report.json')!);
+    delete page.layoutForm;
+    if (layout) page.layout = layout;
+    else delete page.layout;
+    const target = path.join(await mkdtemp(path.join(isolated, 'layout-')), `${page.id}.json`);
+    await writeFile(target, JSON.stringify(page));
+    // The same document is a legal Page; failure must come from the user's expected form.
+    expect(parsePage(page).ok).toBe(true);
+    const result = run(['--expected-layout', expected, target]);
+    expect(result.status, result.stderr).toBe(status);
+    const receipt = JSON.parse(result.stdout);
+    if (status) expect(receipt.errors).toEqual([{
+      type: 'SCHEMA_ERROR', path: '/layout',
+      message: '布局形态与本次确认不一致：预期 dashboard，实际 report'
+    }]);
+    else expect(receipt.errors).toEqual([]);
+  });
+
+  it('拒绝未知或缺失的确认形态参数', () => {
+    expect(run(['--expected-layout', 'unknown', 'page.json']).status).toBe(2);
+    expect(run(['--expected-layout']).status).toBe(2);
+  });
+
+  it('成型页面范式覆盖真实布局和全部嵌套组件，且仓外知识仅保留结构', async () => {
+    for (const source of pagePatternSources) {
+      const content = await readFile(`pages/${source.pageId}.json`, 'utf8');
+      const parsed = parsePage(JSON.parse(content));
+      expect(parsed.ok).toBe(true);
+      if (!parsed.ok) continue;
+      const pattern = JSON.parse(files.get(`references/page-patterns/${source.id}.json`)!);
+      expect(pattern.source).toEqual({pageId: source.pageId, sha256: createHash('sha256').update(content).digest('hex')});
+      expect(pattern.layout).toBe(source.layout);
+      expect(pattern.sections.map((section: {columnTracks?: number[]}) => section.columnTracks))
+        .toEqual(parsed.page.sections.map(section => section.columnTracks));
+      // Generic object traversal is independent of the projection's container dispatch.
+      const types: string[] = [];
+      const visit = (value: unknown): void => {
+        if (Array.isArray(value)) value.forEach(visit);
+        else if (value && typeof value === 'object') {
+          for (const [key, item] of Object.entries(value)) {
+            expect(['rows', 'query', 'dataSources', 'data', 'href', 'queryField', 'title', 'label']).not.toContain(key);
+            if (key === 'type' && typeof item === 'string') types.push(item);
+            else visit(item);
+          }
+        }
+      };
+      visit(pattern.sections);
+      expect(types).toEqual(flattenPageComponents(parsed.page).map(component => component.type));
+    }
+    const detail = JSON.parse(files.get('references/page-patterns/dashboard-detail.json')!);
+    expect(detail.dashboardToolbar).toBe('hidden');
+    expect(detail.sections[0].components[0]).toMatchObject({type: 'reportHeader', variant: 'projectDetail'});
+    expect(detail.layout).toBe('dashboard');
+  });
+
+  it('范式生成拒绝形态漂移、损坏页面与身份错配，且不复制自由文本', async () => {
+    const source = pagePatternSources[5];
+    const page = JSON.parse(await readFile(`pages/${source.pageId}.json`, 'utf8'));
+    page.sections[0].components[0].props.title = 'PRIVATE-CONTENT-MUST-STAY-IN-SOURCE';
+    expect(JSON.stringify(pagePattern(source, JSON.stringify(page)))).not.toContain('PRIVATE-CONTENT');
+    page.layout = 'dashboard';
+    expect(() => pagePattern(source, JSON.stringify(page))).toThrow('identity/layout changed');
+    page.layout = 'report';
+    page.id = 'another-page';
+    expect(() => pagePattern(source, JSON.stringify(page))).toThrow('identity/layout changed');
+    delete page.sections;
+    expect(() => pagePattern(source, JSON.stringify(page))).toThrow('Invalid pattern source');
+  });
+
   it('查询数值容错示例可在仓外独立校验，维度和缺字段仍被拒绝', async () => {
     const sourcePage = files.get('references/page-metadata/examples/query-numeric-tolerance.json');
     expect(sourcePage).toBeDefined();

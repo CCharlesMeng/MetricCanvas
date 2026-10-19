@@ -1,0 +1,187 @@
+{
+  "id": "dashboard-map",
+  "kind": "structural-pattern",
+  "source": {
+    "pageId": "ioc-project-overview",
+    "sha256": "dc683d7331ed695edb77eb270e860adfbe57324d9b27fd410371e99a4b711e29"
+  },
+  "layout": "dashboard",
+  "dashboardToolbar": "visible",
+  "filters": [
+    {
+      "type": "timePoint"
+    },
+    {
+      "type": "boolean"
+    },
+    {
+      "type": "timePoint"
+    },
+    {
+      "type": "dimension"
+    },
+    {
+      "type": "dimension"
+    },
+    {
+      "type": "dimension"
+    }
+  ],
+  "sections": [
+    {
+      "container": "plain",
+      "columnTracks": [
+        29,
+        29,
+        22
+      ],
+      "components": [
+        {
+          "type": "mapChart",
+          "layout": {
+            "span": 12,
+            "layer": "backdrop"
+          },
+          "variant": "regionalOverview"
+        },
+        {
+          "type": "compositeCard",
+          "layout": {
+            "span": 1
+          },
+          "variant": "compact",
+          "components": [
+            {
+              "type": "metricCard",
+              "layout": {
+                "span": 12
+              },
+              "variant": "compactStrip"
+            },
+            {
+              "type": "pieChart",
+              "layout": {
+                "span": 3
+              },
+              "variant": "compactRing"
+            },
+            {
+              "type": "categoryBreakdown",
+              "layout": {
+                "span": 6
+              },
+              "variant": "compactList"
+            },
+            {
+              "type": "gauge",
+              "layout": {
+                "span": 3
+              },
+              "variant": "mini"
+            }
+          ]
+        },
+        {
+          "type": "compositeCard",
+          "layout": {
+            "span": 1
+          },
+          "variant": "compact",
+          "components": [
+            {
+              "type": "metricCard",
+              "layout": {
+                "span": 3
+              },
+              "variant": "compactStack"
+            },
+            {
+              "type": "pieChart",
+              "layout": {
+                "span": 3
+              },
+              "variant": "compactRing"
+            },
+            {
+              "type": "categoryBreakdown",
+              "layout": {
+                "span": 6
+              },
+              "variant": "compactList"
+            },
+            {
+              "type": "metricCard",
+              "layout": {
+                "span": 12
+              },
+              "variant": "compactStrip"
+            }
+          ]
+        },
+        {
+          "type": "compositeCard",
+          "layout": {
+            "span": 1
+          },
+          "variant": "compact",
+          "components": [
+            {
+              "type": "metricCard",
+              "layout": {
+                "span": 12
+              },
+              "variant": "compactStrip"
+            },
+            {
+              "type": "keyValuePanel",
+              "layout": {
+                "span": 12
+              },
+              "variant": "counterStrip"
+            }
+          ]
+        },
+        {
+          "type": "tabContainer",
+          "layout": {
+            "span": 1
+          },
+          "variant": "compact",
+          "tabs": [
+            {
+              "components": [
+                {
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "variant": "embedded"
+                }
+              ]
+            },
+            {
+              "components": [
+                {
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  }
+                }
+              ]
+            },
+            {
+              "components": [
+                {
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

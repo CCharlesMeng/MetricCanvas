@@ -1,0 +1,193 @@
+{
+  "id": "report-briefing",
+  "kind": "structural-pattern",
+  "source": {
+    "pageId": "flow-analysis-report",
+    "sha256": "7afe51d4083c9241fa14b52f282cb8eb8a451f266ca9206fe8b3954a9a7fca54"
+  },
+  "layout": "report",
+  "filters": [],
+  "sections": [
+    {
+      "container": "plain",
+      "components": [
+        {
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          }
+        }
+      ]
+    },
+    {
+      "container": "panel",
+      "components": [
+        {
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "variant": "compactSummary"
+        },
+        {
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "variant": "compactSummary"
+        },
+        {
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "variant": "compactSummary"
+        },
+        {
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "variant": "reportForecast"
+        }
+      ]
+    },
+    {
+      "container": "panel",
+      "components": [
+        {
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "variant": "dualSummary"
+        },
+        {
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "variant": "dualSummary"
+        },
+        {
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "variant": "dualSummary"
+        },
+        {
+          "type": "metricCard",
+          "layout": {
+            "span": 12
+          },
+          "variant": "dualSummary"
+        },
+        {
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "variant": "riskNotice"
+        },
+        {
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "variant": "reportForecast"
+        }
+      ]
+    },
+    {
+      "container": "plain",
+      "components": [
+        {
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "variant": "heading"
+        }
+      ]
+    },
+    {
+      "container": "card",
+      "components": [
+        {
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "variant": "reportInline"
+        },
+        {
+          "type": "rankingDetailCard",
+          "layout": {
+            "span": 6
+          },
+          "variant": "report"
+        },
+        {
+          "type": "rankingDetailCard",
+          "layout": {
+            "span": 6
+          },
+          "variant": "report"
+        },
+        {
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "variant": "reportCompact"
+        },
+        {
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "variant": "reportCompact"
+        }
+      ]
+    },
+    {
+      "container": "card",
+      "components": [
+        {
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "variant": "reportInline"
+        },
+        {
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "variant": "reportCompact"
+        }
+      ]
+    },
+    {
+      "container": "card",
+      "components": [
+        {
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "variant": "reportInline"
+        },
+        {
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "variant": "reportCompact"
+        }
+      ]
+    }
+  ]
+}

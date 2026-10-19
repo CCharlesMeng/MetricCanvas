@@ -1,0 +1,121 @@
+{
+  "id": "report-monthly",
+  "kind": "structural-pattern",
+  "source": {
+    "pageId": "business-sdt-report-monthly",
+    "sha256": "9cd5e4b55408f6a452dcd436f3d964aa5f9ea6e37ce9e9a19a9f13bfc5ebcc0e"
+  },
+  "layout": "report",
+  "filters": [
+    {
+      "type": "timePoint"
+    }
+  ],
+  "sections": [
+    {
+      "container": "plain",
+      "components": [
+        {
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          }
+        }
+      ]
+    },
+    {
+      "container": "panel",
+      "components": [
+        {
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "variant": "compactSummary"
+        },
+        {
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "variant": "compactSummary"
+        },
+        {
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "variant": "compactSummary"
+        },
+        {
+          "type": "lineChart",
+          "layout": {
+            "span": 4
+          }
+        },
+        {
+          "type": "lineChart",
+          "layout": {
+            "span": 4
+          }
+        },
+        {
+          "type": "lineChart",
+          "layout": {
+            "span": 4
+          }
+        }
+      ]
+    },
+    {
+      "container": "panel",
+      "components": [
+        {
+          "type": "table",
+          "layout": {
+            "span": 6
+          }
+        },
+        {
+          "type": "table",
+          "layout": {
+            "span": 6
+          }
+        }
+      ]
+    },
+    {
+      "container": "panel",
+      "components": [
+        {
+          "type": "table",
+          "layout": {
+            "span": 12
+          }
+        }
+      ]
+    },
+    {
+      "container": "panel",
+      "components": [
+        {
+          "type": "table",
+          "layout": {
+            "span": 12
+          }
+        }
+      ]
+    },
+    {
+      "container": "panel",
+      "components": [
+        {
+          "type": "table",
+          "layout": {
+            "span": 12
+          }
+        }
+      ]
+    }
+  ]
+}

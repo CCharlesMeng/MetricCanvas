@@ -6,9 +6,10 @@
 
 | 内容 | 维护方式 |
 |---|---|
-| SKILL.md、本地流程、布局指南、短写法、地图说明、本说明 | 作者维护；记录实际问题，再修改对应规则 |
+| SKILL.md、形态确认、两种形态范式卡、本地流程、布局指南、短写法、地图说明、本说明 | 作者维护；记录实际问题，再修改对应规则 |
 | scripts/snapshot-attempt.mjs | 作者维护；验证原始字节保留、重复目录拒绝和哈希检查 |
 | references/page-metadata/ | 从产品协议、字段语义和完整示例统一生成 |
+| references/page-patterns/*.json | 从选定成型页面自动提炼结构与来源哈希；不分发业务行、查询体、导航或字段绑定 |
 | references/map-regions.json、assets/layouts/overview-map-led.json | 从实际底图和通用布局维护源生成；完整样例生成时必须校验 |
 | scripts/validate-page.mjs、scripts/THIRD-PARTY-LICENSES.md | 从产品校验器及锁定依赖生成，运行只依赖 Node 内建模块 |
 | references/knowledge.json | 锁定生成文件的版本与SHA256；不包含作者说明文件的哈希 |

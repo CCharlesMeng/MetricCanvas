@@ -2,6 +2,23 @@
 
 新功能按[必选验收要求](../docs/agents/feature-acceptance.md)维护完整页面、协议文档和本地创作 Skill。页面试验场首页按用途列出所有页面；下列场景提供明确操作与预期。JSON 是运行输入，测试直接读取同一文件。
 
+## 本地创作的布局形态范式
+
+本批增强本地创作流程，不新增运行时能力；复用以下已注册的完整页面作为范式源，避免另造同能力演示页。试验场可搜索“创作范式”。选择依据与业务边界由 Skill 的范式卡说明，结构摘要由导出器读取这些精确页面生成，不复制其业务数据、查询或地址。
+
+| 布局形态／范式 | 实际页面与入口 | 核对重点 | 数据环境 |
+|---|---|---|---|
+| Dashboard 地图概览 | [ioc-project-overview](ioc-project-overview.json)，`/pages/ioc-project-overview` | backdrop 地图、权重轨、业务组合卡和 Tab 明细 | 合成页面；动态交互需对应网关 |
+| Dashboard 主题分析 | [ioc-opportunity-analysis](ioc-opportunity-analysis.json)，`/pages/ioc-opportunity-analysis` | 四组主题指标和每个组织 Tab 内的多表 | 合成数据；筛选下推需对应查询服务 |
+| Dashboard 筛选清单 | [ioc-opportunity-list](ioc-opportunity-list.json)，`/pages/ioc-opportunity-list` | 页面筛选与全宽主表，完整列和表格操作 | 合成页面；查询分页依赖网关 |
+| Dashboard 对象详情 | [ioc-project-detail](ioc-project-detail.json)，`/pages/ioc-project-detail` | hidden 工具栏、自有 reportHeader、概况／规范、预测／叙述 | 合成页面；对象参数与查询需项目提供 |
+| Report 经营月报 | [business-sdt-report-monthly](business-sdt-report-monthly.json)，`/pages/business-sdt-report-monthly` | 报告期间、总览／趋势、分层明细章节 | 业务查询；完整取数需真实 DQE，不由仿真保证 |
+| Report 分析简报 | [flow-analysis-report](flow-analysis-report.json)，`/pages/flow-analysis-report` | 指标／趋势／风险及客户、赛道、产业的阅读顺序 | 页面初始行供预览，真实查询另验 |
+
+自动验收直接读取上表页面，核对提炼后的布局、权重轨与完整嵌套组件树，并在仓外复制安装 Skill 检查链接和知识哈希。原页面的 `reportHeader`、Tab、多筛选保留，特别验证“详情页含 reportHeader 仍为 Dashboard”。创作行为复测分别覆盖未确认时只提问、明确指定 Dashboard 后显式写 layout、确认后沿分支范式生成；确认状态属于会话，不写入页面 JSON。
+
+结构摘要及静态检查不能证明识别模型的准确率、视觉还原、筛选真实取数或生产交付；本批证据见[验收记录](../docs/evidence/local-authoring-layout-form/result.md)。
+
 ## Windows gray 开发环境
 
 这是页面试验场的开发服务器配置，不新增页面能力或协议字段，页面文档与本地创作 Skill 沿用当前版本。配置与 hosts/HTTPS 步骤见[试验场说明](../apps/playground/README.md#windows-本地连接-gray-cloudioc)。

@@ -1,0 +1,55 @@
+{
+  "id": "dashboard-list",
+  "kind": "structural-pattern",
+  "source": {
+    "pageId": "ioc-opportunity-list",
+    "sha256": "7f1e91132aa2388e7e9877a82d9ccab6612e4279aa3b3cc8a1a3cb8e7aeab1b6"
+  },
+  "layout": "dashboard",
+  "dashboardToolbar": "visible",
+  "filters": [
+    {
+      "type": "timePoint"
+    },
+    {
+      "type": "boolean"
+    },
+    {
+      "type": "dimension"
+    },
+    {
+      "type": "dimension"
+    },
+    {
+      "type": "dimension"
+    },
+    {
+      "type": "dimension"
+    },
+    {
+      "type": "dimension"
+    },
+    {
+      "type": "dimension"
+    },
+    {
+      "type": "dimension"
+    },
+    {
+      "type": "numberRange"
+    }
+  ],
+  "sections": [
+    {
+      "container": "card",
+      "components": [
+        {
+          "type": "table",
+          "layout": {
+            "span": 12
+          }
+        }
+      ]
+    }
+  ]
+}
