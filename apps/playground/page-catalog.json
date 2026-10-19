@@ -182,6 +182,17 @@
       ]
     },
     {
+      "id": "table-detail-overlay",
+      "group": "features",
+      "summary": "点击订单数打开弹窗表格、待交付打开抽屉、异常订单查看空结果；全部使用内联合成数据，无需 DQE。",
+      "tags": [
+        "表格点击",
+        "详情弹窗",
+        "抽屉",
+        "内联数据"
+      ]
+    },
+    {
       "id": "custom-component-dashboard",
       "group": "features",
       "summary": "区域经营看板中的页面自定义组件。",
