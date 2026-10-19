@@ -32,6 +32,8 @@
 
 ## 快速查阅与验证
 
+需要先观察效果再查配置时，使用[页面示例与能力索引](pages/README.md#能力索引)。页面试验场按能力、布局形态、用途和运行条件查找完整页面，并提供体验步骤、当前 JSON 配置与关联入口；这些导航说明属于开发工具，不进入页面协议或本地创作 Skill 的运行依赖。
+
 | 使用场景 | 规则与用法 | 完整页面或接入示例 |
 |---|---|---|
 | 声明页面结构、布局与组件 | [页面与布局](contracts/metriccanvas/page/reference/page.md)、[组件参考](contracts/metriccanvas/page/reference/components/README.md) | [完整页面示例索引](contracts/metriccanvas/page/reference/examples/README.md) |
