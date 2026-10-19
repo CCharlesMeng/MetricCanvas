@@ -173,8 +173,10 @@
     {
       "id": "table-toolbar-demo",
       "group": "features",
-      "summary": "每张表独立搜索，导出完整匹配结果到 Excel。",
+      "summary": "三层表头、跨行跨列合并；每张客户表独立搜索并导出完整匹配结果。静态演示数据。",
       "tags": [
+        "三层表头",
+        "多级表头",
         "表格搜索",
         "Excel 导出"
       ]
