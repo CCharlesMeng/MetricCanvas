@@ -4,7 +4,7 @@ import type { DataGateway, QueryDiagnosticContext } from './ports';
 import type { FilterValues } from './filter-state';
 export { EXPORT_MAX_ROWS, EXPORT_PREPARATION_TIMEOUT_MS } from '@metriccanvas/data-execution/runtime';
 export class ExportViewError extends Error {
-  constructor(public readonly code: 'EXPORT_NOT_READY' | 'EXPORT_BUSY' | 'EXPORT_ROW_LIMIT' | 'EXPORT_TIMEOUT' | 'EXPORT_INCOMPLETE_DATA' | 'EXPORT_RENDER_FAILED' | 'EXPORT_CANCELLED', message: string) { super(message); this.name = 'ExportViewError'; }
+  constructor(public readonly code: 'EXPORT_NOT_READY' | 'EXPORT_BUSY' | 'EXPORT_ROW_LIMIT' | 'EXPORT_TIMEOUT' | 'EXPORT_INCOMPLETE_DATA' | 'EXPORT_RENDER_FAILED' | 'EXPORT_CHART_FAILED' | 'EXPORT_CANCELLED', message: string) { super(message); this.name = 'ExportViewError'; }
 }
 /** A thin complete-read adapter. Existing callers may supply captured ordinary queries. */
 export async function prepareExportSnapshots(page: Page, gateway: DataGateway, queries: ReadonlyMap<string, EffectiveQuery>, filters: FilterValues, signal: AbortSignal, diagnosticBase?: QueryDiagnosticContext, currentYear = new Date().getFullYear(), completeSources: readonly string[] = [], views?: ReadonlyMap<string, TableQueryView>, sharedProgram?: SourceProgram, options: { allowPartial?: boolean } = {}): Promise<Map<string, DataSnapshot>> {

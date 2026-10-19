@@ -22,13 +22,14 @@ export function pieOption(
   props: PieChartProps,
   palette?: ColorList
 ): EChartsOption {
-  const rows = data.main.snapshot.rows;
+  const rows = pieRows(data, props);
   const category = resolveField(props.categoryField, data);
   const value = resolveField(props.valueField, data);
   const showLabelLine = props.labelLine ?? true;
   const compactRing = props.variant === 'compactRing';
   const names = rows.map((row) => formatValue(row[category.field], category.format, category.missingText));
-  const domain = categoryDomain(names);
+  // Keep the full category domain so a missing sector never shifts colors shared with other views.
+  const domain = categoryDomain(data.main.snapshot.rows.map(row => formatValue(row[category.field], category.format, category.missingText)));
   return {
     tooltip: {
       trigger: 'item',
@@ -64,4 +65,10 @@ export function pieOption(
       }
     ]
   };
+}
+
+/** One projection for sectors and click identities: missing numbers do not shift original-row selection. */
+export function pieRows(data: MainDataSlots, props: PieChartProps) {
+  const value = resolveField(props.valueField, data);
+  return data.main.snapshot.rows.filter(row => finiteNumber(row[value.field]) !== undefined);
 }

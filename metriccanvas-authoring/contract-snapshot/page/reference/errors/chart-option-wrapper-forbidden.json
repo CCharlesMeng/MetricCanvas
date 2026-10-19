@@ -1,0 +1,37 @@
+{
+  "case": "chart-option-wrapper-forbidden",
+  "invariant": "chart-echarts-option",
+  "expected": [
+    {
+      "type": "CHART_OPTION_ERROR",
+      "message": "不支持的 ECharts 根入口：media；只开放呈现扩展",
+      "paths": [
+        "/sections/0/components/1/props/echartsOption/media"
+      ]
+    },
+    {
+      "type": "CHART_OPTION_ERROR",
+      "message": "禁止覆盖引擎数据、结构、交互或资源路径：media",
+      "paths": [
+        "/sections/0/components/1/props/echartsOption/media"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "echartsOption": {
+                "media": []
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/chart-option-wrapper-forbidden.json"
+}

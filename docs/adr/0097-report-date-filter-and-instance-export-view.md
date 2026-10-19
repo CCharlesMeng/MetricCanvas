@@ -1,6 +1,6 @@
 ---
 status: accepted
-revised-by: [0100]
+revised-by: [0100, 0110]
 date: 2026-10-11
 note: 6.31统一直接下载按钮及元数据清晰度；6.30单张高清PNG与独立文档；移除公共DOM导出与用户取消，采用Worker编码及主线程分批截图
 ---

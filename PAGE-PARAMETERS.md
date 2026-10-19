@@ -479,3 +479,5 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 6.27 的 `timeRange.display="period"` 可用 `initialParam` 读取时间参数，同时显式声明 `initialMode` 为 year、quarter 或 month；参数必须正好覆盖一个对应自然期间。它与期间 default 互斥，运行中选择只写筛选状态。近一年独立按当前月之前十二个完整月份计算，不由绝对参数初始化，也不自动提取成固定参数。完整声明与示例见[筛选模块](docs/page-metadata/filters.md#dashboard-期间选择627)。
 
 时间选择器默认禁止未来时间；日期参数作为筛选初值时同样遵守运行时上限，非法初值拒绝初始化，不静默截断。查询窗口保持显式声明，当前年／季／月仍为完整自然期间。见[默认时间上限](docs/page-metadata/filters.md#时间选择的默认上限)。
+
+图表高级 `props.echartsOption` 是不透明的 ECharts JSON，参数/筛选文本引用与 parts 组合不在其内部解析；详见[高级呈现扩展](docs/page-metadata/chart-option.md)。

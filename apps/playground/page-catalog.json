@@ -309,6 +309,16 @@
         "页面搭建",
         "静态演示"
       ]
+    },
+    {
+      "id": "chart-echarts-option-page",
+      "group": "verification",
+      "summary": "柱/线/饼图高级呈现扩展；声明序系列补丁、模板与静态导出。内联演示数据。",
+      "tags": [
+        "ECharts",
+        "高级配置",
+        "图表"
+      ]
     }
   ]
 }

@@ -922,6 +922,29 @@
       "rules": [
         "ai-summary-related-data"
       ]
+    },
+    "chart-option.md": {
+      "title": "图表高级 ECharts 呈现扩展",
+      "definitions": [
+        "chartOption",
+        "chartOptionValue"
+      ],
+      "keywords": [
+        "echartsOption",
+        "ECharts",
+        "高级呈现"
+      ],
+      "examples": [
+        "chart-echarts-option-page"
+      ],
+      "sources": [
+        "packages/page/src/chart-option.ts",
+        "packages/page/src/schema/components/charts.ts",
+        "tools/scripts/page-conformance-vectors.ts"
+      ],
+      "rules": [
+        "chart-echarts-option"
+      ]
     }
   },
   "fieldNotes": {
@@ -1233,7 +1256,8 @@
     "#/definitions/reportHeaderComponent/properties/props/properties/pngExport/properties/scale": "有效数值PDF为2/3/4，PNG为3/4；其他值按未配置处理，读取时移除scale，分别使用默认2/3倍。字符串不转换为数值。",
     "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons": "6.31统一导出按钮数组，1至2项，每种格式最多一项，顺序即显示顺序；不能混用旧导出字段。每项声明format、可选label/filename/scale，点击直接下载。",
     "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/filename": "可选非空文本取值，支持参数、已应用筛选和parts；点击时捕获，默认页头标题，清理非法字符后规范为对应格式的单一扩展名。",
-    "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/filename": "可选非空文本取值，支持参数、已应用筛选和parts；点击时捕获，默认页头标题，清理非法字符后规范为对应格式的单一扩展名。"
+    "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/filename": "可选非空文本取值，支持参数、已应用筛选和parts；点击时捕获，默认页头标题，清理非法字符后规范为对应格式的单一扩展名。",
+    "echartsOption": "6.32 高级呈现 JSON；仅显式需求时使用，保护数据、结构与交互，异常单次回退且诊断仅console。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1426,7 +1450,8 @@
     "6.28": "Report页头内置PDF下载及可配置按钮文字、文件名的兼容读取版本。",
     "6.29": "Dashboard图表独立筛选：黑色圆角单选按钮组及自定义候选项。",
     "6.30": "Report导出图片：独立文档、3/4倍高清、始终一张完整PNG。",
-    "6.31": "Report统一exportButtons，按按钮配置PDF/PNG格式、名称、文件名与渲染倍数，点击直接下载。"
+    "6.31": "Report统一exportButtons，按按钮配置PDF/PNG格式、名称、文件名与渲染倍数，点击直接下载。",
+    "6.32": "柱/线/饼图隐含echartsOption呈现扩展，保护数据结构，单次降级与console诊断。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

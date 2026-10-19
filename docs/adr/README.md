@@ -14,13 +14,13 @@
 
 <!-- adr-index:start 由 tools/scripts/adr-index.py 生成，不要手改 -->
 
-共 108 份 ADR（0001–0109）：现行 101、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
+共 109 份 ADR（0001–0110）：现行 102、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
 
 | 编号 | 标题 | 现状 |
 |---|---|---|
 | [0001](./0001-domain-dsl-over-a2ui.md) | 页面规格采用自研领域 DSL,不以 A2UI 为资产格式 | 现行；部分由 [0014](./0014-query-artifacts-replace-metrics.md) 修订 |
 | [0002](./0002-svelte-runtime.md) | 统一运行时采用 Svelte + shadcn-svelte | 现行；部分由 [0066](./0066-self-contained-rendering-engine-host-boundary.md) 修订；shadcn-svelte 选型未落地，当前自建组件是实现事实 |
-| [0003](./0003-strict-declarative-spec.md) | 页面规格采用严格声明式,禁止表达式与脚本 | 现行；部分由 [0014](./0014-query-artifacts-replace-metrics.md) 修订 |
+| [0003](./0003-strict-declarative-spec.md) | 页面规格采用严格声明式,禁止表达式与脚本 | 现行；部分由 [0014](./0014-query-artifacts-replace-metrics.md)、[0110](./0110-hidden-echarts-presentation-options.md) 修订 |
 | [0004](./0004-git-storage-first-platform-later.md) | 一期规格存 Git,平台后端与可视化管理延后 | 现行；作为二期平台之外的离线/静态实现，与 0009 并存 |
 | [0005](./0005-build-over-open-source-bi.md) | 自研看板运行时,不采用/魔改 Grafana、Superset、Rill 等开源 BI | 现行；部分由 [0014](./0014-query-artifacts-replace-metrics.md) 修订；“数据服务唯一入口”前提已失效，其余理由不变 |
 | [0006](./0006-metadomain-layering-and-naming.md) | 领域层建模为规格语言(元领域),包按 DDD 分层围绕聚合根"看板页面"命名 | 现行；部分由 [0014](./0014-query-artifacts-replace-metrics.md)、[0017](./0017-page-schema-v3-hard-cutover.md) 修订；取数边界与第 3 条“包名 widgets 取自规格字段”的前提均已失效，欠账记于 0025 待决 |
@@ -30,7 +30,7 @@
 | [0010](./0010-page-templates-reference-published-revisions.md) | 页面模板引用已发布页面修订而不复制页面文档 | 现行 |
 | [0011](./0011-derive-query-fields-from-catalog.md) | query 字段契约由结构化查询与元数据快照解析 | 已取代，见 [0014](./0014-query-artifacts-replace-metrics.md) |
 | [0012](./0012-query-dp-and-verify-data-service-for-metric-fulfillment.md) | 指标履约只查询 DP 并以数据服务目录验真 | 已取代，见 [0014](./0014-query-artifacts-replace-metrics.md) |
-| [0013](./0013-format-belongs-to-component-field-binding.md) | 展示格式属于组件字段绑定 | 现行 |
+| [0013](./0013-format-belongs-to-component-field-binding.md) | 展示格式属于组件字段绑定 | 现行；部分由 [0110](./0110-hidden-echarts-presentation-options.md) 修订 |
 | [0014](./0014-query-artifacts-replace-metrics.md) | 查询产物取代指标成为页面的数据基础 | 现行；部分由 [0016](./0016-send-embedded-query-definitions.md) 修订；“仅提交查询执行引用、禁止提交查询原文”的边界已被推翻，其余结论有效 |
 | [0015](./0015-defer-cascading-data-source-input-semantics.md) | 挂起级联页面数据源的输入绑定语义 | 提议中；未实现，暂不接受相关 schema 改动 |
 | [0016](./0016-send-embedded-query-definitions.md) | 看板页面内嵌并直接提交查询定义 | 现行 |
@@ -114,11 +114,11 @@
 | [0094](./0094-independent-platform-deployment-adapters.md) | 平台与门户部署 Adapter 分别维护和发布 | 现行；门户专属接线由独立部署项目维护，平台仅发布版本化契约与静态产物 |
 | [0095](./0095-cross-source-computation-and-ioc-schema-compatibility.md) | 跨源计算仍属于页面数据源，6.12 保留 6.11 读取 | 现行；6.12 增量；用户确认保留 6.11 读取；创作契约按实施顺序最后同步 |
 | [0096](./0096-ioc-view-state-and-post-query-presentation.md) | 内容切换与详情视图共享组件，分别持有状态 | 现行；IOC 已确认行为的 6.12 增量；创作契约待最后阶段同步 |
-| [0097](./0097-report-date-filter-and-instance-export-view.md) | 报告日期筛选、实例静态导出视图与内置 PDF 下载 | 现行；部分由 [0100](./0100-explicit-filter-text-values-and-period-format.md) 修订；6.31统一直接下载按钮及元数据清晰度；6.30单张高清PNG与独立文档；移除公共DOM导出与用户取消，采用Worker编码及主线程分批截图 |
+| [0097](./0097-report-date-filter-and-instance-export-view.md) | 报告日期筛选、实例静态导出视图与内置 PDF 下载 | 现行；部分由 [0100](./0100-explicit-filter-text-values-and-period-format.md)、[0110](./0110-hidden-echarts-presentation-options.md) 修订；6.31统一直接下载按钮及元数据清晰度；6.30单张高清PNG与独立文档；移除公共DOM导出与用户取消，采用Worker编码及主线程分批截图 |
 | [0098](./0098-profiled-page-composition-and-incremental-navigation.md) | 平台创作共用入口，报告与看板分别装配，导航按需增量建立 | 现行；用户完成 D1–D7 grill；统一入口、内部装配策略与受控结构树；实施尚未开始 |
 | [0099](./0099-raw-query-result-bindings-and-bounded-left-joins.md) | 查询以原始结果集合声明输入 计算继续在页面数据源内执行 | 现行；部分由 [0105](./0105-shared-page-data-execution-and-initial-consumption.md)、[0107](./0107-query-page-windows-drive-result-dependencies.md) 修订；用户确认商务SDT两阶段请求和小增量复用方案，并授权实施验证；真实DQE验真单独记录 |
 | [0100](./0100-explicit-filter-text-values-and-period-format.md) | 文本显式读取参数或筛选状态，期间只使用统一 period 格式 | 现行；部分由 [0109](./0109-explicit-text-value-composition.md) 修订；用户批准显式筛选文本引用，只保留 period 格式；6.15 增量 |
-| [0101](./0101-explicit-value-colors-and-chart-labels.md) | 数字颜色由展示位置声明，图表标签策略显式可控 | 现行；用户批准红绿规则就地声明、全部类别标签与常驻数值标签；6.16 增量 |
+| [0101](./0101-explicit-value-colors-and-chart-labels.md) | 数字颜色由展示位置声明，图表标签策略显式可控 | 现行；部分由 [0110](./0110-hidden-echarts-presentation-options.md) 修订；用户批准红绿规则就地声明、全部类别标签与常驻数值标签；6.16 增量 |
 | [0102](./0102-independent-neutral-ui-with-unified-product-engineering.md) | MetricCanvas UI 独立版本并共用产品工程 | 现行；用户确认 Q14–Q21；UI 独立版本，同仓工程；部分修订 ADR-0071 |
 | [0103](./0103-signed-numbers-use-displayed-polarity.md) | 带符号普通数值以展示精度统一方向 | 现行；用户确认全部8处变化量带正号，舍入后零无符号、无颜色、无箭头，并授权实施 |
 | [0105](./0105-shared-page-data-execution-and-initial-consumption.md) | Relay与浏览器共用页面查询执行，单次入口返回完整页面文档 | 现行；用户完成Q1–Q14裁决并授权实施；真实Relay/DQE接入单列验收 |
@@ -126,6 +126,7 @@
 | [0107](./0107-query-page-windows-drive-result-dependencies.md) | 查询分页窗口通过现有结果绑定驱动依赖更新 | 现行；用户确认任意列排序可驱动其他查询，排序回到第一页，并授权实施 |
 | [0108](./0108-paged-join-and-unified-source-program.md) | 组合查询源引用普通查询定义，SourceProgram 统一执行规则 | 现行；用户授权按既定方案连续实施 P0–P5；真实 DQE/Relay 单列验收 |
 | [0109](./0109-explicit-text-value-composition.md) | 文本取值用显式片段组合动态引用与固定文字 | 现行；用户要求报告主标题随时间筛选变化，批准补充动态时间与固定文字组合；6.23 增量 |
+| [0110](./0110-hidden-echarts-presentation-options.md) | 图表以隐含协议入口支持 ECharts 呈现透传，失败单次降级且只向 console 输出诊断 | 现行；Schema 6.32 已在隔离检出完成首批柱/线/饼图实施、分发及本地完整验收；单次降级、console-only |
 
 <!-- adr-index:end -->
 
@@ -138,9 +139,9 @@
 | 主题 | 讲什么 | 覆盖的 ADR |
 |---|---|---|
 | [IOC 作战地图批次（0045–0053）](./topics/ioc-operation-map-batch.md) | 一个多页 GraphQL 数据应用触发的九份决策：哪些已生效、哪些仍是提议、以及驱动它们的三条业务裁决。 | 0045 0046 0047 0048 0049 0050 0051 0052 0053 0095 0096 |
-| [技术栈与建设策略](./topics/tech-stack-and-strategy.md) | 为什么自研封闭领域 DSL 与 Svelte 运行时，而不是 A2UI 或开源 BI；严格声明式的边界在哪。 | 0001 0002 0003 0005 0035 0046 |
+| [技术栈与建设策略](./topics/tech-stack-and-strategy.md) | 为什么自研封闭领域 DSL 与 Svelte 运行时，而不是 A2UI 或开源 BI；严格声明式的边界在哪。 | 0001 0002 0003 0005 0035 0046 0110 |
 | [领域建模、包边界与部署形态](./topics/domain-modeling-and-package-boundaries.md) | 聚合根只有「页面」；包按 DDD 分层命名；从 Node 平台迁到静态 Svelte + Java 页面资产 + Relay/Python 的目标形态。 | 0004 0006 0007 0009 0023 0024 0025 0029 0060 0061 0062 0063 0064 0065 0066 0067 0069 0070 0071 0072 0073 0074 0075 0076 0077 0090 0093 0094 0102 0105 0108 |
-| [页面文档结构与书写原则](./topics/page-document-structure.md) | 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。 | 0013 0017 0018 0021 0026 0028 0035 0036 0038 0042 0047 0048 0049 0050 0052 0053 0054 0057 0059 0086 0097 0099 0100 0101 0103 0109 |
+| [页面文档结构与书写原则](./topics/page-document-structure.md) | 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。 | 0013 0017 0018 0021 0026 0028 0035 0036 0038 0042 0047 0048 0049 0050 0052 0053 0054 0057 0059 0086 0097 0099 0100 0101 0103 0109 0110 |
 | [数据获取与查询模型](./topics/data-fetching-and-query-model.md) | 演进链条最长、最容易读错现状的一组：从预定义指标到内嵌 DQE 查询定义，当前实际生效模型与版本策略。 | 0008 0010 0011 0012 0014 0015 0016 0017 0019 0020 0022 0026 0028 0030 0031 0032 0033 0034 0038 0044 0045 0046 0050 0051 0053 0054 0068 0081 0084 0085 0091 0092 0095 0099 0105 0106 0107 0108 |
 | [产品形态谱系与两速生命周期](./topics/product-forms-and-lifecycle.md) | 问数、探索、报告、Data App 共用一份页面文档；临时页面态与资产态的两速生命周期，以及分析会话的归属。 | 0009 0020 0021 0022 0030 0035 0036 0058 0060 0064 0079 0083 0090 |
 | [问数编排与口径治理](./topics/ask-orchestration-and-scope-governance.md) | 创作期编排的固定顺序、临时指标的非阻塞边界、口径组与业务章节如何决定分区、盘古接入的第一版边界。 | 0030 0031 0032 0035 0036 0037 0039 0040 0041 0043 0055 0057 0077 0082 0098 |

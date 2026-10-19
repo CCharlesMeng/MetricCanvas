@@ -23,6 +23,7 @@
 - [具名算子](compute.md)：compute
 - [筛选声明与运行状态](filters.md)：filters
 - [内容分区与布局](sections-and-layout.md)：sections-and-layout
+- [图表高级 ECharts 呈现扩展](chart-option.md)：chart-option（仅明确高级需求时查阅）
 - [数据槽、字段绑定与格式](field-bindings-and-formats.md)：field-bindings-and-formats
 - [交互与导航](actions-and-navigation.md)：actions-and-navigation
 - [受控语义HTML](semantic-html.md)：semantic-html

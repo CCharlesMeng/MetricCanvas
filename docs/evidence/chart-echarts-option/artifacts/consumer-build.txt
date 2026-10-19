@@ -1,0 +1,19 @@
+12:37:10 PM [vite-plugin-svelte] no Svelte config found at /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-chart-option-acceptance-1aja6ie5/5.56.6/consumer/packages/metric-canvas - using default configuration.
+vite v8.1.5 building client environment for production...
+[2K
+transforming...✓ 1146 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/canvas/tests/browser/harness/index.html      0.37 kB │ gzip:   0.29 kB
+dist/canvas/assets/index-DASef4pB.css             3.77 kB │ gzip:   0.84 kB
+dist/canvas/assets/china.json-DwbDKGiY.js       117.73 kB │ gzip:  34.16 kB
+dist/canvas/assets/world.json-AHhAxG5S.js       171.08 kB │ gzip:  54.92 kB
+dist/canvas/assets/exceljs.min-DwMiaUqo.js      929.89 kB │ gzip: 256.47 kB
+dist/canvas/assets/index-C0FikOXX.js          2,796.31 kB │ gzip: 855.94 kB
+
+✓ built in 1.37s
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.

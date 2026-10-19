@@ -54,6 +54,16 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'chart-echarts-option',description:'6.32 三图高级呈现 JSON、保护数据结构、系列和轴补丁边界',valid:['chart-echarts-option-page'],cases:[
+    {case:'chart-option-before-6.32',base:'chart-echarts-option-page',expect:/由 6.32 引入/,mutate:d=>{d.schemaVersion='6.31';}},
+    {case:'chart-option-legacy-version',base:'chart-echarts-option-page',expect:/5.x 只读文档不能声明/,mutate:d=>{d.schemaVersion='5.4';}},
+    {case:'chart-option-html-template',base:'chart-echarts-option-page',expect:/不接受 HTML 标记/,mutate:d=>{d.sections[0].components[1].props.echartsOption.tooltip={formatter:'<b>{c}</b>'};}},
+    {case:'chart-option-css-fragment',base:'chart-echarts-option-page',expect:/CSS 声明片段/,mutate:d=>{d.sections[0].components[1].props.echartsOption.textStyle={fontFamily:'Arial;position:fixed'};}},
+    {case:'chart-option-data-protected',base:'chart-echarts-option-page',expect:/禁止覆盖/,mutate:d=>{d.sections[0].components[1].props.echartsOption.series[0].data=[99];}},
+    {case:'chart-option-series-overflow',base:'chart-echarts-option-page',expect:/补丁越界/,mutate:d=>{d.sections[0].components[1].props.echartsOption.series.push({});}},
+    {case:'chart-option-wrapper-forbidden',base:'chart-echarts-option-page',expect:/不支持的 ECharts 根入口/,mutate:d=>{d.sections[0].components[1].props.echartsOption.media=[];}},
+    {case:'chart-option-other-component',base:'chart-echarts-option-page',expect:/只支持/,mutate:d=>{d.sections[0].components[0].props.echartsOption={};}}
+  ]},
   {id:'report-header-export-buttons',description:'6.31 同一种导出按钮按格式配置名称、文件名和清晰度，直接下载',valid:['report-export-buttons','report-export-scale-fallback'],cases:[
     {case:'report-export-before-6.31',base:'report-export-buttons',expect:/由 6.31 引入/,mutate:d=>{d.schemaVersion='6.30';}},
     {case:'report-export-dashboard',base:'report-export-buttons',expect:/导出按钮只允许/,mutate:d=>{d.layout='dashboard';}},

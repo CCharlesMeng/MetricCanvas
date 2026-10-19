@@ -58,3 +58,5 @@ export { chartFilterOptions } from './chart-filter';
 export { currentTimeValue, timeFilterBoundaryError } from './time-filter-boundary';
 
 export { reportExportScale } from './report-export';
+
+export * from './chart-option';

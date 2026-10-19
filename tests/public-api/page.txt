@@ -40,6 +40,7 @@ CategoryBreakdownComponent
 CategoryBreakdownProps
 CategoryLabels
 ChartComponent
+ChartOption
 ChartSeries
 ColorRule
 Component
@@ -77,6 +78,7 @@ EffectiveQuery
 EmbeddedInitialRows
 EmbeddedInitialRowsDocument
 ErrorType
+ExtensibleChartType
 FieldBinding
 FieldContractIssue
 FieldContractViolation
@@ -263,6 +265,11 @@ canonicalizeJson
 capabilityFloorErrors
 cascadeSourceIds
 chartFilterOptions
+chartOptionErrors
+chartOptionErrorsFor
+chartOptionPaths
+chartOptionScopes
+chartOptionTypes
 collectFilterTextValueReferences
 collectTextValueCompositions
 collectTextValueReferences
@@ -298,8 +305,10 @@ initialFilterTextValues
 initializeQueryParams
 isBoundedResultSource
 isChartComponent
+isChartOptionError
 isDataComponent
 isDqeQueryDefinition
+isExtensibleChart
 isFilterTextValueReference
 isFirstQueryWindow
 isFoldingOperator
@@ -375,3 +384,4 @@ versionPolicy
 walkComponents
 walkDocumentComponents
 walkPageComponents
+withoutChartOptions

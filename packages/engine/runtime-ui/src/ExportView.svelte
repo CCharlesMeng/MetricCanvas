@@ -1,5 +1,7 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { chartOptionPaths } from '@metriccanvas/page/internal';
+  import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
   import { setContext, untrack } from 'svelte';
   import { isChartComponent, type Component } from '@metriccanvas/page/internal';
   import { EXPORT_SCALE_CONTEXT, STATIC_EXPORT_CONTEXT } from '../../widgets/src/shared/export-context';
@@ -9,6 +11,7 @@
   import RuntimeSection from './RuntimeSection.svelte';
   import type { NestedComponentRender,TableRenderBinding } from './component-render';
   let {state,width,padding,gap,scale=2}: {state:ExportRenderState;width:number;padding:string;gap:string;scale?:number}=$props();
+  setContext(CHART_OPTION_PATHS, () => chartOptionPaths(state.page));
   setContext(STATIC_EXPORT_CONTEXT,true);
   setContext(EXPORT_SCALE_CONTEXT,untrack(() => scale));
   function table(component:Component):TableRenderBinding|undefined {

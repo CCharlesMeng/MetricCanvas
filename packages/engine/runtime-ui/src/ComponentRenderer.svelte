@@ -11,7 +11,8 @@
    * 那几个类型:两处各列一遍时,新增一个纯容器只改了模板、判定函数就落在后面
    * (组合卡这次正是这么漏的)。
    */
-  import type { Snippet } from 'svelte';
+  import { getContext, type Snippet } from 'svelte';
+  import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
   import ReportHeaderView from './ReportHeaderView.svelte';
   import { isChartComponent, type Component, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
   import type { PageDataSnapshots } from '../../runtime/src';
@@ -50,6 +51,8 @@
     type TableRenderBinding
   } from './component-render';
   import Self from './ComponentRenderer.svelte';
+
+  const optionPaths = getContext<() => Map<string, string>>(CHART_OPTION_PATHS);
 
   interface Props {
     component: Component;
@@ -207,18 +210,21 @@
         <MetricCard data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />
       {:else if component.type === 'barChart'}
         <BarChart
+          diagnostic={ { componentId: component.id, componentType: component.type, path: optionPaths?.().get(component.id) ?? '/props/echartsOption' } }
           data={mainData}
           props={component.props}
           onbarclick={onchartclick && (({ row }) => onchartclick?.(row))}
         />
       {:else if component.type === 'lineChart'}
         <LineChart
+          diagnostic={ { componentId: component.id, componentType: component.type, path: optionPaths?.().get(component.id) ?? '/props/echartsOption' } }
           data={mainData}
           props={component.props}
           onpointclick={onchartclick && (({ row }) => onchartclick?.(row))}
         />
       {:else if component.type === 'pieChart'}
         <PieChart
+          diagnostic={ { componentId: component.id, componentType: component.type, path: optionPaths?.().get(component.id) ?? '/props/echartsOption' } }
           data={mainData}
           props={component.props}
           onsliceclick={onchartclick && (({ row }) => onchartclick?.(row))}

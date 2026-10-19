@@ -1,6 +1,23 @@
 {
   "invariants": [
     {
+      "id": "chart-echarts-option",
+      "description": "6.32 三图高级呈现 JSON、保护数据结构、系列和轴补丁边界",
+      "valid": [
+        "chart-echarts-option-page"
+      ],
+      "invalid": [
+        "chart-option-before-6.32",
+        "chart-option-legacy-version",
+        "chart-option-html-template",
+        "chart-option-css-fragment",
+        "chart-option-data-protected",
+        "chart-option-series-overflow",
+        "chart-option-wrapper-forbidden",
+        "chart-option-other-component"
+      ]
+    },
+    {
       "id": "report-header-export-buttons",
       "description": "6.31 同一种导出按钮按格式配置名称、文件名和清晰度，直接下载",
       "valid": [

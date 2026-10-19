@@ -1,0 +1,77 @@
+{
+  "case": "chart-option-before-6.32",
+  "invariant": "chart-echarts-option",
+  "expected": [
+    {
+      "type": "CHART_OPTION_ERROR",
+      "message": "柱状图、折线图、饼图高级 ECharts 呈现扩展 由 6.32 引入，文档声明的是 6.31",
+      "paths": [
+        "/sections/0/components/1/props/echartsOption",
+        "/sections/0/components/2/props/echartsOption",
+        "/sections/0/components/3/props/echartsOption"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "echartsOption": {
+                "animation": false,
+                "grid": {
+                  "top": "18%",
+                  "right": 24
+                },
+                "legend": {
+                  "textStyle": {
+                    "…": "共1个键"
+                  }
+                },
+                "series": [
+                  {
+                    "…": "共1个键"
+                  },
+                  {
+                    "…": "共1个键"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "props": {
+              "echartsOption": {
+                "animation": false,
+                "series": [
+                  {
+                    "…": "共3个键"
+                  },
+                  {
+                    "…": "共1个键"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "props": {
+              "echartsOption": {
+                "animation": false,
+                "series": [
+                  {
+                    "…": "共2个键"
+                  }
+                ],
+                "backgroundColor": null
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/chart-option-before-6.32.json"
+}

@@ -5,7 +5,7 @@ import {
 } from './component-building';
 import { recommendComponents, type ComponentCandidate } from './component-selection';
 import { validate, normalizePageDocument } from '@metriccanvas/page';
-import type { QueryFieldDefinition } from '@metriccanvas/page/internal';
+import { isChartOptionError, type QueryFieldDefinition } from '@metriccanvas/page/internal';
 import {
   normalizeAuthoringDropTarget,
   type AuthoringDraftSection,
@@ -131,6 +131,7 @@ export function changeComponentType(
   const next = jsonClone(draft.canvasDocument);
   const component = findComponent(next, locator);
   if (!component) return { ok: false, message: '选中的组件不在当前文档里' };
+  if (component.type === newType) return projectCanvasDraft(next);
   const dataSourceId =
     typeof recordOf(component.data)?.main === 'string'
       ? (recordOf(component.data)!.main as string)
@@ -146,6 +147,7 @@ export function changeComponentType(
 
   const built = constructComponent(unit, newType);
   if (!built.ok) return built;
+  if (recordOf(component.props)?.echartsOption !== undefined) console.warn('[MetricCanvas][CHART_OPTION_DROPPED]', { componentId: component.id, from: component.type, to: newType, path: 'props.echartsOption' });
   component.type = built.component.type;
   component.props = built.component.props;
   return projectCanvasDraft(next);
@@ -315,7 +317,8 @@ function authoringSectionsOf(
 function invalidResult(
   errors: ReturnType<typeof validate>
 ): Extract<DocumentEditResult, { ok: false }> {
-  return { ok: false, message: errors.map((error) => error.message).join('、') };
+  for (const error of errors) if (isChartOptionError(error)) console.error('[MetricCanvas][CHART_OPTION_INVALID]', error);
+  return { ok: false, message: errors.filter(error => !isChartOptionError(error)).map((error) => error.message).join('、') };
 }
 
 interface MutableComponent extends Record<string, unknown> {

@@ -1,5 +1,7 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { chartOptionPaths, isChartOptionError } from '@metriccanvas/page/internal';
+  import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
   import { createTableController } from './table-controller';
   import { createExportController } from './export-controller';
   import { type TableHeaderFilters, type TableQueryView, hasQueryFieldMapping } from '@metriccanvas/page/internal';
@@ -184,7 +186,7 @@
       } catch (cause) {
         if (generation !== reportExportGeneration) return;
         if (!(cause instanceof ExportViewError && cause.code === 'EXPORT_CANCELLED')) {
-          reportExportError = cause instanceof Error ? cause.message : '导出失败';
+          if (!(cause instanceof ExportViewError && cause.code === 'EXPORT_CHART_FAILED')) reportExportError = cause instanceof Error ? cause.message : '导出失败';
           console.error('[MetricCanvas][REPORT_EXPORT_FAILED] 报告导出失败', cause);
         }
       } finally {
@@ -211,6 +213,11 @@
     return exportController.run(pageExportTask, controller => withReportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program,scale},consume));
   }
   let pageState = $state<PageState>({ phase: 'loading' });
+  setContext(CHART_OPTION_PATHS, () => pageState.phase === 'ready' ? chartOptionPaths(pageState.page) : new Map<string, string>());
+  function visibleValidationErrors(errors: TypedError[]): TypedError[] {
+    for (const error of errors) if (isChartOptionError(error)) console.error('[MetricCanvas][CHART_OPTION_INVALID]', error);
+    return errors.filter(error => !isChartOptionError(error));
+  }
   let snapshots = $state<PageDataSnapshots>(new Map());
   let filterValues = $state<FilterValues>(new Map());
   let pageParams = $state<PageParamValues>(new Map());
@@ -305,7 +312,7 @@
     // 整值替换掉。首次解析只为读到 params 声明,替换后的文档才是渲染依据。
     const declared = parsePage(raw);
     if (!declared.ok) {
-      pageState = { phase: 'invalid', errors: declared.errors };
+      pageState = { phase: 'invalid', errors: visibleValidationErrors(declared.errors) };
       emit?.({ type: 'invalid', errors: declared.errors });
       return;
     }
@@ -326,7 +333,7 @@
         ? declared
         : parsePage(raw, { textValues: { values: params.values, format: (value, format) => Array.isArray(value) ? value.join('、') : typeof value === 'object' ? formatPeriod(value) : formatValue(value, format) } });
     if (!parsed.ok) {
-      pageState = { phase: 'invalid', errors: parsed.errors };
+      pageState = { phase: 'invalid', errors: visibleValidationErrors(parsed.errors) };
       emit?.({ type: 'invalid', errors: parsed.errors });
       return;
     }
@@ -1091,6 +1098,7 @@
       </ul>
     </div>
   {:else if pageState.phase === 'invalid'}
+    {#if pageState.errors.length > 0}
     <div class="error-page">
       <h1>页面文档未通过校验</h1>
       <p class="muted">修复以下错误后保存，页面会自动刷新。</p>
@@ -1104,6 +1112,7 @@
         {/each}
       </ul>
     </div>
+    {/if}
   {:else}
     {@const readyPage = pageState.page}
     {@const contentFilters = contentFilterDeclarations(readyPage, declarations)}

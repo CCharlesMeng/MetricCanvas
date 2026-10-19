@@ -1,3 +1,4 @@
+import { chartOptionScopes } from './chart-option';
 import type { ValueFormatPreset } from './field';
 import { isFilterTextValueReference } from './filter-text-value';
 import {
@@ -55,6 +56,7 @@ function resolveTexts(document: unknown, resolution: TextValueResolution, preser
   if (typeof document !== 'object' || document === null || Array.isArray(document)) {
     return document;
   }
+  const opaque = chartOptionScopes(document);
   const source = document as Record<string, unknown>;
   const resolved = visit(textValueScope(source)) as Record<string, unknown>;
   return Object.hasOwn(source, 'dataSources')
@@ -62,6 +64,7 @@ function resolveTexts(document: unknown, resolution: TextValueResolution, preser
     : resolved;
 
   function visit(value: unknown): unknown | typeof ABSENT {
+    if (value && typeof value === 'object' && opaque.has(value)) return value;
     if (Array.isArray(value)) {
       return value.map(visit).filter((item) => item !== ABSENT);
     }

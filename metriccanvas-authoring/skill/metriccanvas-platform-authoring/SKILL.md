@@ -35,6 +35,8 @@ read_page_context 返回 pageId、当前 workVersion 与 Java 核对过的 ref�
 
 执行前读[执行检查点](references/execution.md)：每一步必须有工具回执，流程文字本身不证明执行成功。
 
+常规图表创作使用已有封闭属性。仅用户明确要求 ECharts 定制，或现有属性不足且用户已接受时，才使用隐含 `props.echartsOption`；普通修改保留已有高级配置，跨类型切换按协议清除。 字段、保护路径与版本以本轮注入的页面协议为准。
+
 ## 完成与交付
 
 compose_page/edit_page 内部保存合法变化，包括 partial。逐项说明 applied/failed/skipped；核心证据不足时保留未完成状态，不声称回答完整。全失败、无变化或页面非法不新增保存。冲突或未知保存保留工作并停止，由程序核对原提交，不能更换入口或参数重发。

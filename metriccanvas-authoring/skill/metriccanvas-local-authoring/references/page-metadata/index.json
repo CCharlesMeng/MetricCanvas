@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.31",
-  "schemaSha256": "c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d",
+  "schemaVersion": "6.32",
+  "schemaSha256": "fe47c71b14727e765ef348492defbedfa7ce0ce19c534880fa72f3995dc4b8c9",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -779,6 +779,24 @@
       "rules": [
         "ai-summary-related-data"
       ]
+    },
+    "chart-option.md": {
+      "title": "图表高级 ECharts 呈现扩展",
+      "definitions": [
+        "chartOption",
+        "chartOptionValue"
+      ],
+      "keywords": [
+        "echartsOption",
+        "ECharts",
+        "高级呈现"
+      ],
+      "examples": [
+        "chart-echarts-option-page"
+      ],
+      "rules": [
+        "chart-echarts-option"
+      ]
     }
   },
   "components": [
@@ -890,7 +908,8 @@
         "6.28",
         "6.29",
         "6.30",
-        "6.31"
+        "6.31",
+        "6.32"
       ]
     },
     {
@@ -7004,6 +7023,100 @@
       "module": "filters.md"
     },
     {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/echartsOption",
+      "path": "@barChartComponent.props.echartsOption",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/echartsOption/allOf/0",
+      "path": "@barChartComponent.props.echartsOption · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md",
+      "ref": "#/definitions/chartOption"
+    },
+    {
+      "pointer": "#/definitions/chartOption",
+      "path": "@chartOption",
+      "required": "类型/分支",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOption/additionalProperties",
+      "path": "@chartOption{key}",
+      "required": "动态键的值",
+      "module": "chart-option.md",
+      "ref": "#/definitions/chartOptionValue"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue",
+      "path": "@chartOptionValue",
+      "required": "类型/分支",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/0",
+      "path": "@chartOptionValue · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/1",
+      "path": "@chartOptionValue · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/2",
+      "path": "@chartOptionValue · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/3",
+      "path": "@chartOptionValue · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/4",
+      "path": "@chartOptionValue · anyOf[4]",
+      "required": "独立分支（不合并required）",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/4/items",
+      "path": "@chartOptionValue · anyOf[4][]",
+      "required": "每个数组项",
+      "module": "chart-option.md",
+      "ref": "#/definitions/chartOptionValue"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/5",
+      "path": "@chartOptionValue · anyOf[5]",
+      "required": "独立分支（不合并required）",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/5/additionalProperties",
+      "path": "@chartOptionValue · anyOf[5]{key}",
+      "required": "动态键的值",
+      "module": "chart-option.md",
+      "ref": "#/definitions/chartOptionValue"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/5/propertyNames",
+      "path": "@chartOptionValue · anyOf[5] · propertyNames",
+      "required": "条件结构",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOption/propertyNames",
+      "path": "@chartOption · propertyNames",
+      "required": "条件结构",
+      "module": "chart-option.md"
+    },
+    {
       "pointer": "#/definitions/barChartComponent/properties/props/properties/variant",
       "path": "@barChartComponent.props.variant",
       "required": "本分支可选",
@@ -7256,6 +7369,19 @@
       "ref": "#/definitions/chartFilter"
     },
     {
+      "pointer": "#/definitions/lineChartComponent/properties/props/properties/echartsOption",
+      "path": "@lineChartComponent.props.echartsOption",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/lineChartComponent/properties/props/properties/echartsOption/allOf/0",
+      "path": "@lineChartComponent.props.echartsOption · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md",
+      "ref": "#/definitions/chartOption"
+    },
+    {
       "pointer": "#/definitions/lineChartComponent/properties/props/properties/xField",
       "path": "@lineChartComponent.props.xField",
       "required": "本分支必填",
@@ -7441,6 +7567,19 @@
       "required": "独立分支（不合并required）",
       "module": "components/pieChart.md",
       "ref": "#/definitions/chartFilter"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/properties/echartsOption",
+      "path": "@pieChartComponent.props.echartsOption",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/properties/echartsOption/allOf/0",
+      "path": "@pieChartComponent.props.echartsOption · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/chartOption"
     },
     {
       "pointer": "#/definitions/pieChartComponent/properties/props/properties/variant",
@@ -11619,6 +11758,42 @@
       "pointer": "#/detailViews/0/components/2"
     },
     {
+      "schemaPointer": "#/definitions/chartOptionValue/anyOf/0",
+      "module": "chart-option.md",
+      "file": "examples/chart-echarts-option-page.json",
+      "pointer": "#/sections/0/components/1/props/echartsOption/grid/top"
+    },
+    {
+      "schemaPointer": "#/definitions/chartOptionValue/anyOf/1",
+      "module": "chart-option.md",
+      "file": "examples/chart-echarts-option-page.json",
+      "pointer": "#/sections/0/components/1/props/echartsOption/grid/right"
+    },
+    {
+      "schemaPointer": "#/definitions/chartOptionValue/anyOf/2",
+      "module": "chart-option.md",
+      "file": "examples/chart-echarts-option-page.json",
+      "pointer": "#/sections/0/components/1/props/echartsOption/animation"
+    },
+    {
+      "schemaPointer": "#/definitions/chartOptionValue/anyOf/3",
+      "module": "chart-option.md",
+      "file": "examples/chart-echarts-option-page.json",
+      "pointer": "#/sections/0/components/3/props/echartsOption/backgroundColor"
+    },
+    {
+      "schemaPointer": "#/definitions/chartOptionValue/anyOf/4",
+      "module": "chart-option.md",
+      "file": "examples/chart-echarts-option-page.json",
+      "pointer": "#/sections/0/components/1/props/echartsOption/series"
+    },
+    {
+      "schemaPointer": "#/definitions/chartOptionValue/anyOf/5",
+      "module": "chart-option.md",
+      "file": "examples/chart-echarts-option-page.json",
+      "pointer": "#/sections/0/components/1/props/echartsOption/grid"
+    },
+    {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/3",
       "module": "page.md",
       "file": "examples/reference-export-detail-branches.json",
@@ -12045,5 +12220,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "a7315a2bca353aa97c0050e75b9e5941d9e5fa63293780e032a21e232b99fcda"
+  "semanticSourceDigest": "ac6a3f7f9194acda2c053db376befb6a3e25b48fb33fd5a7b7309de0cc671a0d"
 }

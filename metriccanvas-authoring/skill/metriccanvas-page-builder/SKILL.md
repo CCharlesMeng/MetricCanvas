@@ -14,6 +14,8 @@ metadata:
 
 生成通过页面校验的临时页面态。由模型理解业务问题并形成 Page Build Spec；由确定性工具派生 DQE 查询、字段绑定、组件、布局和页面元数据。
 
+常规图表创作使用已有封闭属性。仅用户明确要求 ECharts 定制，或现有属性不足且用户已接受时，才使用隐含 `props.echartsOption`；普通修改保留已有高级配置，跨类型切换按协议清除。 详细规则见[高级呈现扩展](references/page-metadata/chart-option.md)。
+
 ## 按需查阅页面协议
 
 选组件时读 [组件选型](references/page-metadata/components/README.md)；核对字段、分支或版本约束时从 [模块索引](references/page-metadata/README.md) 定位，再读对应模块和完整示例。结构表随契约生成，示例只证明静态合法；正常装配仍按 Page Build Spec 和已授权工具完成。

@@ -10,8 +10,10 @@
 
 Dashboard 正文可通过 `props.filter` 在左上角配置独立单选筛选。选项名称和值分离，default 与查询绑定显式声明；见[图表独立筛选](../filters.md#chart-local-filter)和 `chart-local-filter-page` 完整页面。
 
+6.32 的隐含高级入口 `props.echartsOption` 用于显式要求的 ECharts 呈现定制；普通创作优先使用上面的封闭属性。规则、保护路径、console 诊断与降级见[高级呈现扩展](../chart-option.md)。
 
-页面协议 6.31。结构真源为本册[schema.json](../schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+
+页面协议 6.32。结构真源为本册[schema.json](../schema.json)，SHA256 `fe47c71b14727e765ef348492defbedfa7ce0ce19c534880fa72f3995dc4b8c9`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -118,6 +120,26 @@ Schema位置：`#/definitions/lineChartComponent/properties/props/properties/fil
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/chartFilter | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6c696e654368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f656368617274734f7074696f6e"></a>
+
+### `@lineChartComponent.props.echartsOption`
+
+Schema位置：`#/definitions/lineChartComponent/properties/props/properties/echartsOption`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 6.32 高级呈现 JSON；仅显式需求时使用，保护数据、结构与交互，异常单次回退且诊断仅console。 |
+
+<a id="schema-232f646566696e6974696f6e732f6c696e654368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f656368617274734f7074696f6e2f616c6c4f662f30"></a>
+
+### `@lineChartComponent.props.echartsOption · allOf[0]`
+
+Schema位置：`#/definitions/lineChartComponent/properties/props/properties/echartsOption/allOf/0`。目标：[#/definitions/chartOption](../chart-option.md#schema-232f646566696e6974696f6e732f63686172744f7074696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/chartOption | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f6c696e654368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f784669656c64"></a>
 

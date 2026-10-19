@@ -1,3 +1,4 @@
+import { chartOptionErrors, withoutChartOptions } from './chart-option';
 import { chartFilterErrors } from './chart-filter';
 import { pagedJoinErrors } from './validate-paged-join';
 import { queryResultBindingErrors } from './validate-query-results';
@@ -90,6 +91,11 @@ export function parsePage(
   document: unknown,
   options: PageParseOptions = {}
 ): PageParseResult {
+  const optionErrors = chartOptionErrors(document);
+  if (optionErrors.length) {
+    const other = parsePage(withoutChartOptions(document), options);
+    return { ok: false, errors: [...optionErrors, ...(other.ok ? [] : other.errors)] };
+  }
   const compatibleDocument = normalizeReportExportScales(adaptLegacyPageDocument(document));
   if (!validateStructure(compatibleDocument)) {
     const structural = (validateStructure.errors ?? []).map(toTypedError);
@@ -105,7 +111,7 @@ export function parsePage(
   const declarations = pageParamDeclarations(compatibleDocument);
   const documentErrors = [
     ...(typeof (compatibleDocument as PageDocument).params === 'object' && !Array.isArray((compatibleDocument as PageDocument).params) && declarations.length === 0 ? [schemaError('/params', '分组参数至少声明一个参数')] : []),
-    ...capabilityFloorErrors(compatibleDocument),
+    ...capabilityFloorErrors(compatibleDocument).map(error => error.path.endsWith('/props/echartsOption') ? { ...error, type: 'CHART_OPTION_ERROR' as const } : error),
     ...layoutCompatibilityErrors(compatibleDocument),
     ...paramBindingErrors(compatibleDocument),
     ...queryParamReferenceErrors(compatibleDocument),
@@ -147,6 +153,8 @@ export function parsePage(
 export function normalizePageDocument(document: unknown):
   | { ok: true; document: PageDocument; errors: [] }
   | { ok: false; errors: TypedError[] } {
+  const optionErrors = chartOptionErrors(document);
+  if (optionErrors.length) return { ok: false, errors: parsePage(document).errors };
   const compatibleDocument = normalizeReportExportScales(adaptLegacyPageDocument(document));
   const parsed = parsePage(compatibleDocument);
   if (!parsed.ok) return parsed;

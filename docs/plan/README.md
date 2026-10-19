@@ -6,6 +6,7 @@
 
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
+| 图表 ECharts 隐含透传 | P0–P6 本地验收完成，已授权交付 main | [唯一主计划](2026-10-19-chart-echarts-option.md)、[ADR-0110](../adr/0110-hidden-echarts-presentation-options.md)、[验收证据](../evidence/chart-echarts-option/result.md)：Schema 6.32，首批柱/线/饼图、保护数据结构、单次回退、console-only、导出终止及安装消费闭合 |
 | Report 高清 PNG 导出 | 本仓实现与Chrome安装验收完成，真实门户/Edge待验 | [导出主方案](2026-10-16-report-png-export.md)、[验收记录](../evidence/report-png-export/result.md)、[按钮简化验收](../evidence/report-png-export/export-buttons.md)：6.31统一exportButtons、按配置直接下载PDF/单张PNG、独立文档与流式编码，页面/文档/Skill/属性编辑/分发及PDF回归完成；真实门户/DQE/Relay、Edge与部署另验 |
 | 本地创作页面范式 | 独立规划待用户细化；六类为候选草案 | [范式设计规划](2026-10-19-local-authoring-patterns.md)：业务分组、阅读／操作顺序、选型与替换边界；先定分类及样卡，再实现与验收 |
 | 已有权限下的页面显隐与区域联动 | 完整构建方案待用户审核，产品代码未实施 | [构建与审核主方案](2026-10-15-page-visibility-and-region-interactions.md)：首批六类对象、架构冲突A01–A08、兼容矩阵、技术债务T01–T11、实施B0–B8及验收C01–C15；重点审核U1–U5 |

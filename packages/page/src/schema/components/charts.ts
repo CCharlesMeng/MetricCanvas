@@ -1,5 +1,6 @@
 import { chartFilterZ } from '../chart-filter';
 import { z } from 'zod';
+import type { JsonValue } from '../../query';
 import {
   componentIdZ,
   componentLayoutZ,
@@ -10,6 +11,9 @@ import {
 import { actionsZ } from '../actions';
 import { componentCatalogRegistry } from '../registry';
 import { categoryLabelsZ } from '../presentation';
+
+const chartOptionValueZ: z.ZodType<JsonValue> = z.lazy(() => z.union([z.string(), z.number(), z.boolean(), z.null(), z.array(chartOptionValueZ), z.record(z.string(), chartOptionValueZ)])).meta({ id: 'chartOptionValue' });
+export const chartOptionZ = z.record(z.string(), chartOptionValueZ).meta({ id: 'chartOption', description: '高级 ECharts 呈现 JSON；数据、结构和交互由引擎管理，不执行代码' });
 
 export const chartSeriesZ = z
   .object({
@@ -43,6 +47,7 @@ export const barChartComponentZ = z
       .object({
         title: textValueZ.optional(),
         filter: chartFilterZ.optional(),
+        echartsOption: chartOptionZ.optional(),
         variant: z.literal('reportForecast').optional(),
         categoryField: fieldBindingZ,
         series: z.array(barChartSeriesZ).min(1),
@@ -86,6 +91,7 @@ export const lineChartComponentZ = z
       .object({
         title: textValueZ.optional(),
         filter: chartFilterZ.optional(),
+        echartsOption: chartOptionZ.optional(),
         xField: fieldBindingZ,
         series: z.array(chartSeriesZ).min(1),
         smooth: z.boolean().optional(),
@@ -128,6 +134,7 @@ export const pieChartComponentZ = z
       .object({
         title: textValueZ.optional(),
         filter: chartFilterZ.optional(),
+        echartsOption: chartOptionZ.optional(),
         variant: z.literal('compactRing').optional(),
         categoryField: fieldBindingZ,
         valueField: fieldBindingZ,
