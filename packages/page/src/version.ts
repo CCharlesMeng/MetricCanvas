@@ -39,7 +39,7 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
-  'tab-url-initialization': {
+  'tab-url-initial-state': {
     minor: 33, description: 'Tab 容器通过显式 URL 参数初始化活动页签',
     legacyReadable: false,
     usedAt: document => componentPaths(document, component => component.type === 'tabContainer' && has(props(component), 'initialTabUrlParam')).map(path => `${path}/props/initialTabUrlParam`)

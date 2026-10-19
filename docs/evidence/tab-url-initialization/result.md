@@ -51,3 +51,5 @@ pnpm exec vitest run packages/page/tests/tab-url-initialization.test.ts packages
 补跑 `pnpm test` 指定页面协议、版本、Tab URL 初始化、导航与 Playground 目录五个测试文件，28 项通过；`pnpm authoring:contracts:check`、Bundle 2818 项摘要检查与差异检查通过。显式路径清单只覆盖本次功能、协议派生物、页面场景、验收记录和验收约定。远端提交与 CI 结论以实际交付结果为准。
 
 首次推送提交 `66fba44026e086c719484bf8f3590f276bd0dc7b` 的 CI 报告 `_uses_product_bridge` 圈复杂度 19，超过 15。随后仅抽取 Tab URL 与报告导出页头的检测函数，保持路由条件不变，并更新 Bundle 源文件摘要。`python tools/scripts/check-authoring-complexity.py` 确认 0 违规、全局最大值 15；Tab 容器与完整页面校验 23 项回归通过，契约生成、Bundle 2818 项摘要检查和差异检查通过。后续 CI 以修复提交为准。
+
+修复提交 `8e8d297aea71e04f82a145e13a61d13d409bb169` 的完整 TypeScript CI 为 2268 成功、5 跳过、1 失败：示例页面 id `tab-url-initialization` 与内部能力标识同名，触发页面 id 中立性约束。随后把内部能力标识改为 `tab-url-initial-state`，不更改公开字段、版本号、页面 id 或 URL；同步独立校验器及摘要。页面 id 中立性、版本、页面协议和初始化行为四个文件的 18 项回归通过，Bundle 2818 项摘要检查与差异检查通过。
