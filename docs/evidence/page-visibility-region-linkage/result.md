@@ -18,7 +18,7 @@
 | 协议版本、非法来源、类型、深度、行键、片段定位 | 产品与分发 conformance 向量、page/runtime 单元测试 | Schema 6.34、`reference-conditions-page.json` |
 | 人工/AI 操作差分、失败回滚、隐藏目标 | 产品 operation、属性编辑与 Python stdio 测试 | `set_presentation_condition`、`add_button`、`set_text_parts` |
 
-三页均注册在 Playground 目录；Sim 只由开发应用的目录配置注入，页面没有模拟权限开关。`PAGE-METADATA.md`、`PAGE-PARAMETERS.md`、`pages/README.md` 和本地创作 Skill 已同步。生成器输出同版契约、参考文档、示例、Bundle 和独立 Node Bridge。独立安装及最终文件树验收结果在收尾后补齐。
+三页均注册在 Playground 目录；Sim 只由开发应用的目录配置注入，页面没有模拟权限开关。`PAGE-METADATA.md`、`PAGE-PARAMETERS.md`、`pages/README.md` 和本地创作 Skill 已同步。生成器输出同版契约、参考文档、示例、Bundle 和独立 Node Bridge。最终文件树与独立安装结果见[安装验收](installed-acceptance.json)，原始失败阶段记录另存[原矩阵记录](compatibility-original.json)。
 
 ## 浏览器与导出
 
@@ -52,7 +52,7 @@ Chrome 151，1440/390，16 类行为通过，pageerror 为零。脚本直接读�
 
 ## 最终回归与安装兼容
 
-Python完整回归已通过：544项，1项既有skip。详情工具栏补齐执行条件与触发复核，参考文档生成器统一结尾换行。隔离安装矩阵正在基于最终提交运行；其余已通过类型检查、产品/Playground构建、定向行为回归、共享契约检查、2910项Bundle digest检查、ADR索引及Python复杂度检查（366函数、最大15、超限0）。全量回归首次发现旧目录/组件计数/页面身份断言，已修正并定向全绿；一次Python完整回归与契约生成并行，命中重建目录短暂不存在的测试设施竞态；冻结后完整重跑通过。首次全量TS有3项生成隔离场景在并行构建期间超过30秒，单独测量生成器为5.62秒；最终安装矩阵将顺序完成测试和构建，不扩大超时门槛。
+冻结产品源码为`0c6464bf`，运行时与构建输入hash见[frozen-inputs.json](frozen-inputs.json)。完整TS回归263文件、2295通过、4项既有skip；Python完整回归544项、1项既有skip，最终Bridge相关18项另行通过。详情工具栏补齐执行条件与触发复核，参考文档生成器统一结尾换行。类型检查、全部包/Platform/Playground生产构建及独立安装均通过；另已通过、产品/Playground构建、定向行为回归、共享契约检查、2910项Bundle digest检查、ADR索引及Python复杂度检查（366函数、最大15、超限0）。全量回归首次发现旧目录/组件计数/页面身份断言，已修正并定向全绿；一次Python完整回归与契约生成并行，命中重建目录短暂不存在的测试设施竞态；冻结后完整重跑通过。首次全量TS及安装矩阵遇到生成隔离场景超时；复用同一Schema的联合分支编译后，独立检查从5.62秒降至2.94秒，产物完全不变。26项参考/生成隔离回归及最终2295项全量回归通过，未扩大超时门槛。
 
 ## 外部边界
 
@@ -73,5 +73,17 @@ Python完整回归已通过：544项，1项既有skip。详情工具栏补齐执
 | C13 | Worker真实导出捕获与冻结、普通变化/权限变化下载分支 | pass |
 | C14 | 版本绕行拒绝、合法旧页面conformance | pass |
 | C15 | 产品受控operation、属性编辑、Python stdio和保存重开模型基线 | pass，新条件真实DS单列NOT_RUN |
-| C16 | JS mount与仓外Skill已验证；安装包矩阵待完成 | pending安装矩阵 |
+| C16 | JS mount、仓外Skill、Node、严格peer安装、UI/组合消费者和Chrome浏览器 | pass，Edge NOT_RUN |
 | C17 | 只读输入、已有权限修订、换source不能越过失效锁 | pass |
+
+## Chrome安装验收收口
+
+[完整安装记录](installed-acceptance.json) 对应`/tmp/visibility-compatibility-complete/`。从冻结Git树重新安装依赖，完整测试、全仓类型检查和生产构建通过；六个包均tar安装到仓外，确认没有指回工作区。page-only Node ESM、UI-only无产品依赖、Svelte/TS类型及Vite构建通过，UI浏览器24项通过。
+
+组合浏览器最初因其他工作区占用4176端口而停止；后续Chrome完整运行138通过、16失败，均为新增按钮后旧矩阵仍要求53个分支。计数同步为54，并为受权限控制的静态参考按钮提供明确有限事实；保留原有所有测试，新条件用例使用独立文件。最终通过可配置空闲端口63453续跑，Chrome155下156项全部通过、零skip，包含实际层级页、事实页中的层级/父容器/私有行及替换输入源后失效锁。
+
+续跑仅更新浏览器测试与端口配置，已编译产品文件与冻结hash一致；源码未在安装测试期间修改。首次失败报告和日志保留，不能把原始`compatibility:check`退出1写成默认全矩阵通过。Chrome本地安装验收通过；默认要求的Edge未运行，因为本机未安装Microsoft Edge。恢复方式：安装真实Edge后，在空闲端口下运行默认双浏览器矩阵；不可将Chrome可执行文件冒充Edge。
+
+真实DS的新增条件创作未运行，六个既有主流程合并通过；真实CloudIOC/Java/DQE/Relay亦未运行。上述限制不影响已完成的本仓条件声明、同一引擎语义和Chrome本地验收，生产接入结论仍待相应环境提供证据。
+
+安装验收后的测试/端口修改再次通过 `pnpm check`（零错误/警告）；最终Playground生产构建、契约检查、2910项Bundle校验和ADR索引检查均通过。浏览器测试提交与运行时冻结提交分别记录在JSON中，原工作区和其他任务的4176服务保留。分支本地提交可审阅，尚未合并主线或推送，不宣称远端CI通过。

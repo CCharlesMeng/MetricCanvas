@@ -1,6 +1,6 @@
 # 计划总览
 
-更新：2026-10-12。先按下表选择任务；**plan只保留未完成工作**，已完成实施记录和被替代的分稿移到证据或归档。这里的完成状态区分方案、本仓实现、本地验收与真实集成，不按文档日期或旧勾选推断生产完成。
+更新：2026-10-19。先按下表选择任务；**plan只保留未完成工作**，已完成实施记录和被替代的分稿移到证据或归档。这里的完成状态区分方案、本仓实现、本地验收与真实集成，不按文档日期或旧勾选推断生产完成。
 
 ## 当前未完成工作
 
@@ -9,7 +9,7 @@
 | 图表 ECharts 隐含透传 | P0–P6 本地验收完成，已授权交付 main | [唯一主计划](2026-10-19-chart-echarts-option.md)、[ADR-0110](../adr/0110-hidden-echarts-presentation-options.md)、[验收证据](../evidence/chart-echarts-option/result.md)：Schema 6.32，首批柱/线/饼图、保护数据结构、单次回退、console-only、导出终止及安装消费闭合 |
 | Report 高清 PNG 导出 | 本仓实现与Chrome安装验收完成，真实门户/Edge待验 | [导出主方案](2026-10-16-report-png-export.md)、[验收记录](../evidence/report-png-export/result.md)、[按钮简化验收](../evidence/report-png-export/export-buttons.md)：6.31统一exportButtons、按配置直接下载PDF/单张PNG、独立文档与流式编码，页面/文档/Skill/属性编辑/分发及PDF回归完成；真实门户/DQE/Relay、Edge与部署另验 |
 | 本地创作页面范式 | 独立规划待用户细化；六类为候选草案 | [范式设计规划](2026-10-19-local-authoring-patterns.md)：业务分组、阅读／操作顺序、选型与替换边界；先定分类及样卡，再实现与验收 |
-| 已有权限下的页面显隐与区域联动 | 本仓实现与浏览器验收完成；最终回归及分发收尾，真实内网待验 | [唯一执行方案](2026-10-15-page-visibility-and-region-interactions.md)、[验收记录](../evidence/page-visibility-region-linkage/result.md)：6.34统一展示条件、显式父级规则、筛选事务、事实修订、交互/详情/导出、人工/AI创作与安装分发 |
+| 已有权限下的页面显隐与区域联动 | 本仓实现、完整回归与Chrome安装验收完成；Edge及真实内网待验 | [唯一执行方案](2026-10-15-page-visibility-and-region-interactions.md)、[验收记录](../evidence/page-visibility-region-linkage/result.md)：6.34统一展示条件、显式父级规则、筛选事务、事实修订、交互/详情/导出、人工/AI创作与安装分发 |
 | Dashboard 年季月与近一年筛选 | 本地实现及定向验收完成；真实接入未验证 | [验收记录](../evidence/dashboard-period-filter/result.md)；[实施规划](2026-10-15-dashboard-period-filter.md)：Schema 6.27、顶部 filter、模式恢复、创作和独立安装包；保留原查询聚合 |
 | 多查询表格分页和共享查询 | P0–P5 已实施，P6 缺真实 DQE/Relay 上下文 | [实施方案与状态](2026-10-14-multi-query-table.md)、[验收证据](../evidence/multi-query-table/result.md)；6.22 组合查询源、共享执行、视图所有权与校验分发闭合 |
 | 查询结果过滤与分页级联 | 本仓实现与本地验收完成，真实接入待验 | [实施计划](2026-10-14-query-result-page-input.md)：6.19 where、6.20查询窗口输入与任意列排序、共享执行/导出、配置说明及独立Skill；真实DS/DQE/Relay接入单独验收 |
