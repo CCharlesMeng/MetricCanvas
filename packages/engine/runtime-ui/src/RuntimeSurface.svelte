@@ -738,7 +738,7 @@
   }
 
   function actionAllowed(component:Component,action:import('@metriccanvas/page/internal').PolicyNode,row?:Row):boolean {
-    return presentation?.gate(action,row,presentation.component(component.id)).enabled!==false;
+    return presentation?.gate(action,row,presentation.component(component.id)).enabled===true;
   }
   function componentHref(component: Component, row: Row): string | undefined {
     if (!componentCapability(component)?.actions || !('actions' in component.props)) return undefined;
