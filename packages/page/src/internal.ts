@@ -52,6 +52,7 @@ export * from './query-result-where';
 
 export * from './paged-join';
 export * from './table-query-view';
+export * from './table-search';
 export * from './data-source-references';
 export * from './period-filter';
 export { chartFilterOptions } from './chart-filter';

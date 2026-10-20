@@ -11,7 +11,7 @@ SCHEMA_ERROR对应结构和页面语义；FIELD_CONTRACT_ERROR对应结果字段
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.41。结构真源为本册[schema.json](schema.json)，SHA256 `b0a5b66ced329ba98a5b36fc6b3e9da19a5c1d7eb7029eb032843ea703dd4597`。字段表自动生成；可选不等于有默认值。
+页面协议 6.42。结构真源为本册[schema.json](schema.json)，SHA256 `653ef9706e83d0d4a4b2f13478cf737ce9dfec67f60a491cb737a2135ae4ebf8`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

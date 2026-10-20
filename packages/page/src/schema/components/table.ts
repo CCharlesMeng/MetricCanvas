@@ -142,11 +142,20 @@ export const tableComponentZ = z
         title: textValueZ.optional(),
         subtitle: textValueZ.optional(),
         toolbar: z.object({
-          search: z.object({
+          search: z.union([z.object({
             ...interactionShape,
             fields: z.array(fieldNameZ).min(1).max(64).meta({ uniqueItems: true }),
             placeholder: textValueZ.optional()
-          }).strict().optional(),
+          }).strict(), z.object({
+            ...interactionShape,
+            options: z.array(z.object({
+              value: idZ,
+              label: nonEmptyTextValueZ,
+              field: fieldNameZ,
+              placeholder: textValueZ.optional()
+            }).strict()).min(1).max(64),
+            defaultValue: idZ.optional()
+          }).strict()]).optional(),
           export: z.object({
             ...interactionShape,
             format: z.literal('xlsx'),

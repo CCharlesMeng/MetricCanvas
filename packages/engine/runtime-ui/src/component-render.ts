@@ -8,6 +8,8 @@ import type {TableHeaderFilterValue,TablePaginationState,TableSelectedCell,Table
  */
 export interface TableRenderBinding {
   searchDraft?: string;
+  searchOption?: string;
+  onsearchoption?: (value: string) => void;
   exporting?: boolean;
   exportError?: string;
   onsearchdraft?: (query: string) => void;

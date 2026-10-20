@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.41",
-  "schemaSha256": "b0a5b66ced329ba98a5b36fc6b3e9da19a5c1d7eb7029eb032843ea703dd4597",
+  "schemaVersion": "6.42",
+  "schemaSha256": "653ef9706e83d0d4a4b2f13478cf737ce9dfec67f60a491cb737a2135ae4ebf8",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -100,7 +100,7 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "9823339e7d471bf791e871e1ac40d3a1d47f84355141819f9ce88a4b18f811c4"
+      "sha256": "bfd14c1de1ef9c193597ef34d808b964a14c77e72b12c7c38365f10be2c36d7d"
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
@@ -176,7 +176,7 @@
     },
     {
       "file": "packages/page/src/schema/components/table.ts",
-      "sha256": "93ea139195cf0ec82970bb3a2467720c138f50b8424da781479781fc3614597c"
+      "sha256": "28d23801f80de44e52e270e56b30351764b3cb504c3b801341827cfad0782e41"
     },
     {
       "file": "packages/page/src/schema/components/text.ts",
@@ -240,7 +240,7 @@
     },
     {
       "file": "packages/page/src/validate-paged-join.ts",
-      "sha256": "ed68e169d4a6a6ed4770aa1e3f0f6b2a1ecdc042c0b4d8b53b2a4972b5a3448c"
+      "sha256": "61e9db1b96e48c7a4f0636b5befd5c7aa6dac7a1839c6838d44dad18573a7830"
     },
     {
       "file": "packages/page/src/validate-query-results.ts",
@@ -248,11 +248,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "5111bf54f74b3a19eace60550cc437cf4f661be65f90de4e754d24c86521a64d"
+      "sha256": "f490136b512dfbe380654dec185816d54f2bd97f09497ee266f1c32b9b3b29b2"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "b4649cddcea374ecd86474884a17e3a732d8f84d03c325e7fc585c61c08225d4"
+      "sha256": "7848933c93ee8b769e486c01422f134a2e580a7fae0a717b161a67ff8dc1a981"
     }
   ],
   "modules": {
@@ -957,7 +957,8 @@
         "reference-export-column-actions",
         "table-toolbar-page",
         "table-number-range-page",
-        "paged-join-fixed-rank-page"
+        "paged-join-fixed-rank-page",
+        "table-search-options-page"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -976,7 +977,8 @@
         "pagination-initial-rows",
         "pagination-exclusive-source",
         "table-toolbar-search",
-        "paged-join"
+        "paged-join",
+        "table-search-options"
       ]
     },
     "components/mapChart.md": {
@@ -1432,7 +1434,8 @@
         "6.38",
         "6.39",
         "6.40",
-        "6.41"
+        "6.41",
+        "6.42"
       ]
     },
     {
@@ -5808,6 +5811,13 @@
       "path": "@pagedJoinSource.initial.view.search.query",
       "required": "本分支必填",
       "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/search/properties/match",
+      "path": "@pagedJoinSource.initial.view.search.match",
+      "required": "本分支可选",
+      "module": "data-sources.md",
+      "const": "equals"
     },
     {
       "pointer": "#/properties/dataSources/propertyNames",
@@ -10594,55 +10604,143 @@
       "module": "components/table.md"
     },
     {
-      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/visibleWhen",
-      "path": "@tableComponent.props.toolbar.search.visibleWhen",
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/visibleWhen",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].visibleWhen",
       "required": "本分支可选",
       "module": "components/table.md"
     },
     {
-      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/visibleWhen/allOf/0",
-      "path": "@tableComponent.props.toolbar.search.visibleWhen · allOf[0]",
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/visibleWhen/allOf/0",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].visibleWhen · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/table.md",
       "ref": "#/definitions/condition"
     },
     {
-      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/enabledWhen",
-      "path": "@tableComponent.props.toolbar.search.enabledWhen",
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/enabledWhen",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].enabledWhen",
       "required": "本分支可选",
       "module": "components/table.md"
     },
     {
-      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/enabledWhen/allOf/0",
-      "path": "@tableComponent.props.toolbar.search.enabledWhen · allOf[0]",
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/enabledWhen/allOf/0",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].enabledWhen · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/table.md",
       "ref": "#/definitions/condition"
     },
     {
-      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/fields",
-      "path": "@tableComponent.props.toolbar.search.fields",
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/fields",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].fields",
       "required": "本分支必填",
       "module": "components/table.md"
     },
     {
-      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/fields/items",
-      "path": "@tableComponent.props.toolbar.search.fields[]",
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/fields/items",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].fields[]",
       "required": "每个数组项",
       "module": "components/table.md"
     },
     {
-      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/placeholder",
-      "path": "@tableComponent.props.toolbar.search.placeholder",
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/placeholder",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].placeholder",
       "required": "本分支可选",
       "module": "components/table.md"
     },
     {
-      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/placeholder/allOf/0",
-      "path": "@tableComponent.props.toolbar.search.placeholder · allOf[0]",
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/placeholder/allOf/0",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].placeholder · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/table.md",
       "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/visibleWhen",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/visibleWhen/allOf/0",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/enabledWhen",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/enabledWhen/allOf/0",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].options",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].options[]",
+      "required": "每个数组项",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/value",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].options[].value",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/label",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].options[].label",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/field",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].options[].field",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/placeholder",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].options[].placeholder",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/placeholder/allOf/0",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].options[].placeholder · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/defaultValue",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].defaultValue",
+      "required": "本分支可选",
+      "module": "components/table.md"
     },
     {
       "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export",
@@ -15553,6 +15651,18 @@
       "module": "page.md",
       "file": "examples/detail-views.json",
       "pointer": "#/detailViews/0/components/0"
+    },
+    {
+      "schemaPointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0",
+      "module": "components/table.md",
+      "file": "examples/paged-join-fixed-rank-page.json",
+      "pointer": "#/sections/0/components/1/props/toolbar/search"
+    },
+    {
+      "schemaPointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1",
+      "module": "components/table.md",
+      "file": "examples/table-search-options-page.json",
+      "pointer": "#/sections/0/components/0/props/toolbar/search"
     },
     {
       "schemaPointer": "#/definitions/tableColumnNode/anyOf/0",

@@ -11,6 +11,7 @@ export type TableHeaderFilterValue =
 export interface TableViewState {
   /** Submitted literal search; draft input is held separately by the runtime. */
   searchQuery?: string;
+  search?: import('@metriccanvas/page/internal').TableQueryView['search'];
   /** 当前页码(0 起)；查询分页的总页数由 totalCount 派生。 */
   pageIndex: number;
   /** 多列排序,数组序即优先级 */

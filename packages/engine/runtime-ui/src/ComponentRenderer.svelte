@@ -206,7 +206,7 @@
   {/if}
 {:else}
   {#if component.type === 'table' && table && component.props.toolbar && !exportMode && snapshot.status === 'loading'}
-    <TableToolbar toolbar={component.props.toolbar} draft={table.searchDraft} busy={table.exporting}
+    <TableToolbar toolbar={component.props.toolbar} draft={table.searchDraft} option={table.searchOption} onoption={table.onsearchoption} searchEnabled={table.toolbarEnabled?.search??true} busy={table.exporting}
       error={table.exportError} canExport={false} ondraft={table.onsearchdraft} onsearch={table.onsearch}
       onexport={table.onexport} oncancel={table.oncancelexport} />
   {/if}
@@ -267,7 +267,7 @@
           filterOptions={table.filterOptions}
           filterOptionsStatus={table.filterOptionsStatus}
           pagination={table.pagination}
-          searchDraft={table.searchDraft} exporting={table.exporting} exportError={table.exportError}
+          searchDraft={table.searchDraft} searchOption={table.searchOption} onsearchoption={table.onsearchoption} exporting={table.exporting} exportError={table.exportError}
           onsearchdraft={table.onsearchdraft} onsearch={table.onsearch} onexport={table.onexport} oncancelexport={table.oncancelexport}
           onpage={table.onpage}
           onpagesize={table.onpagesize}

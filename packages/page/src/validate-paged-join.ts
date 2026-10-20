@@ -82,6 +82,7 @@ export function pagedJoinErrors(page: Page): TypedError[] {
     if (consumers !== 1) error(path, '组合源必须由一张查询分页表独占');
     const initial = source.initial;
     if (initial) {
+      if (initial.view.search?.match === 'equals' && initial.view.search.fields.length !== 1) error(`${path}/source/initial/view/search`, '等值搜索只允许一个字段');
       if (initial.view.pageIndex !== 0 || initial.view.pageSize !== source.pagination.pageSize || JSON.stringify(initial.view.sort) !== JSON.stringify(source.ordering.default) || initial.view.predicates.length || initial.view.search?.query.trim()) error(`${path}/source/initial/view`, '组合初始行必须匹配默认视图');
       const fields = Object.fromEntries(Object.entries(data.fields).map(([id, field]) => [id, queryResultFieldContract(field)]));
       if (initial.rows.length !== Math.min(initial.totalCount, source.pagination.pageSize) || !validateContractRows(initial.rows, fields).ok) error(`${path}/source/initial/rows`, '组合初始行必须符合最终字段契约及完整第一页');

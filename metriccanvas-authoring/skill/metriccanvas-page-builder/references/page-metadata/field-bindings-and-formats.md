@@ -81,7 +81,7 @@ FieldBinding增加非递归`{byFilter:{filterId,cases:{RMB:{data:"main",field:"b
 字段选择投影只替换表格字段列标题与单位；显式指标行label、系列label/name和组件业务标题保持上下文含义。money自适应格式已带货币单位时不再追加独立unit，避免双重单位。
 
 
-页面协议 6.41。结构真源为本册[schema.json](schema.json)，SHA256 `b0a5b66ced329ba98a5b36fc6b3e9da19a5c1d7eb7029eb032843ea703dd4597`。字段表自动生成；可选不等于有默认值。
+页面协议 6.42。结构真源为本册[schema.json](schema.json)，SHA256 `653ef9706e83d0d4a4b2f13478cf737ce9dfec67f60a491cb737a2135ae4ebf8`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

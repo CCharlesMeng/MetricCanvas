@@ -58,6 +58,8 @@
     filterOptionsStatus?:Record<string,'idle'|'loading'|'ready'|'empty'|'unavailable'|'error'|'denied'|'unconfigured'>;
     pagination?: TablePaginationState;
     searchDraft?: string;
+    searchOption?: string;
+    onsearchoption?: (value: string) => void;
     exporting?: boolean;
     exportError?: string;
     onsearchdraft?: (query: string) => void;
@@ -84,7 +86,7 @@
     view,
     filterOptions = {}, filterOptionsStatus = {},
     pagination,
-    searchDraft, exporting, exportError, onsearchdraft, onsearch, onexport, oncancelexport,
+    searchDraft, searchOption, onsearchoption, exporting, exportError, onsearchdraft, onsearch, onexport, oncancelexport,
     selectedCell,
     onpage,
     onpagesize,
@@ -334,7 +336,7 @@
         <div class="subtitle"><span aria-hidden="true">*</span>{props.subtitle}</div>
       {/if}
       {#if interactive && !staticExport && props.toolbar}
-        <TableToolbar toolbar={props.toolbar} searchEnabled={toolbarEnabled?.search??true} canExport={toolbarEnabled?.export??true} draft={searchDraft} busy={exporting} error={exportError}
+        <TableToolbar toolbar={props.toolbar} searchEnabled={toolbarEnabled?.search??true} canExport={toolbarEnabled?.export??true} option={searchOption} onoption={onsearchoption} draft={searchDraft} busy={exporting} error={exportError}
           ondraft={onsearchdraft} {onsearch} {onexport} oncancel={oncancelexport} />
       {/if}
     </div>

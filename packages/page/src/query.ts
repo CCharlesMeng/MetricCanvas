@@ -183,8 +183,8 @@ export interface DqeEffectiveQuery {
   language: 'dqe';
   body: DqeRequestBody;
   fieldMappings: Record<string, QueryDataSourceFieldDefinition>;
-  /** Table-local, case-insensitive literal substring search. Gateway owns protocol encoding. */
-  search?: { queryFields: string[]; query: string };
+  /** Omitted match preserves literal substring search; equals uses native dimension equality. */
+  search?: { queryFields: string[]; query: string; match?: 'equals' };
   pagination?: {
     offset: number;
     limit: number;

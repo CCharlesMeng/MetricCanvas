@@ -18,7 +18,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 41;
+const CURRENT_MINOR = 42;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -42,6 +42,13 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'table-search-options': {
+    minor: 42, legacyReadable: false, description: '表格静态搜索选项与单文本字段等值匹配',
+    usedAt: document => [
+      ...componentPaths(document, component => component.type === 'table' && has(record(record(props(component)?.toolbar)?.search), 'options')),
+      ...dataSourcePaths(document, source => has(record(record(record(record(source.source)?.initial)?.view)?.search), 'match'))
+    ]
+  },
   'period-filter-modes': {minor:41,description:'自然期间筛选可选模式与单年份选择',usedAt:document=>filterPaths(document,filter=>filter.type==='timeRange'&&has(filter,'periodModes')).map(path=>`${path}/periodModes`)},
   'unified-page-header': {minor:41,description:'唯一页头实现及行内布局、更多筛选和只读说明',usedAt:document=>{
     const page=record(document),header=record(page?.iocHeader),presentation=record(header?.presentation);

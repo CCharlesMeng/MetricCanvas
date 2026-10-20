@@ -23,7 +23,7 @@ export function composeEffectiveQuery(
   pageIndex: number,
   sortRules: ReadonlyArray<{ field: string; direction: 'asc' | 'desc' }>,
   headerFilters: QueryHeaderFilters,
-  search?: { fields: readonly string[]; query: string }
+  search?: { fields: readonly string[]; query: string; match?: 'equals' }
 ): EffectiveQuery {
   const bindingFilters=binding.filters,now=binding.now;
   const dataSource = binding.dataSource;
@@ -124,7 +124,7 @@ export function composeEffectiveQuery(
     language: query.language,
     body: query.body,
     fieldMappings: dataSource.fields,
-    ...(term && queryFields ? { search: { queryFields: queryFields as string[], query: term } } : {}),
+    ...(term && queryFields ? { search: { queryFields: queryFields as string[], query: term, ...(search?.match ? { match: search.match } : {}) } } : {}),
     ...(sort.length > 0 ? { sort } : {}),
     ...(binding.pagination
       ? {

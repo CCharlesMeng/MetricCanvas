@@ -1851,6 +1851,41 @@
           "page-visibility-inputs"
         ]
       }
+    },
+    {
+      "id": "table-search-options-demo",
+      "group": "features",
+      "summary": "静态搜索字段下拉框、精确匹配、切换即搜索及旧包含搜索对照；合成数据与 DQE 仿真。",
+      "tags": [
+        "表格搜索",
+        "精确匹配",
+        "字段切换"
+      ],
+      "displayTitle": "表格搜索｜字段切换与精确匹配",
+      "capabilities": [
+        "tables"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "本地表可直接体验；查询表需启动 DQE Sim"
+      },
+      "guide": {
+        "steps": [
+          "默认按项目名称精确搜索星河项目，结果不包含二期。",
+          "切到责任人立即用现有输入搜索；切到项目编码搜索00123，清空保留选项。",
+          "修改未提交草稿后导出，仍使用已生效的字段与关键词。"
+        ],
+        "configPaths": [
+          "sections[].components[].props.toolbar.search",
+          "dataSources.queried.source.query"
+        ],
+        "boundary": "本地与 DQE Sim 不代表真实 DQE 服务验收。",
+        "related": [
+          "table-toolbar-demo",
+          "multi-query-table"
+        ]
+      }
     }
   ],
   "capabilities": [

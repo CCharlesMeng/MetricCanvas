@@ -10,7 +10,8 @@ export const tablePredicateZ = z.union([
 export const tableQueryViewZ = z.object({
   pageIndex: z.int().min(0), pageSize: z.int().min(1),
   sort: z.array(tableSortZ), predicates: z.array(tablePredicateZ),
-  search: z.object({ fields: z.array(fieldNameZ).min(1), query: z.string() }).strict().optional()
+  search: z.object({ fields: z.array(fieldNameZ).min(1), query: z.string(), match: z.literal('equals').optional() }).strict()
+    .refine(search => search.match !== 'equals' || search.fields.length === 1, '等值搜索只允许一个字段').optional()
 }).strict();
 export type TableSortRule = z.infer<typeof tableSortZ>;
 export type TablePredicate = z.infer<typeof tablePredicateZ>;

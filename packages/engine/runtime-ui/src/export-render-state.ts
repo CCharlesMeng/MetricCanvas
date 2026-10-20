@@ -45,8 +45,8 @@ export function exportComponentData(state:ExportRenderState,component:Component)
     const fields=resolveDataSourceFields(source);
     const ready=renderableDataSnapshot(snapshot); if(!ready)continue;
     let rows:Row[]=component.type==='table'&&slot==='main'?projectPresentationRows(component,ready.rows,{declarations:state.page.filters??[],filters:state.filters,filterRevision:state.filterRevision,displaySnapshot:state.displaySnapshot}):ready.rows;
-    if(component.type==='table'&&slot==='main'&&source.source.type!=='pagedJoin') {
-      rows=applyTableSearch(rows,component,state.tables[component.id]?.searchQuery);
+    if(component.type==='table'&&slot==='main'&&(source.source.type==='inline'||(source.source.type==='query'&&source.source.resultScope==='complete'))) {
+      rows=applyTableSearch(rows,component,state.tables[component.id]?.searchQuery,state.tables[component.id]?.search);
     }
     if(component.type==='table'&&slot==='main'&&component.props.pagination?.mode!=='query') {
       rows=filterTableRowsByHeaders(applySearchFilters(rows,state.filters,fields),state.headerFilters[component.id]??{});

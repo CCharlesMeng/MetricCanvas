@@ -1504,11 +1504,19 @@ function componentErrors(
       if (search) {
         const source = page.dataSources[component.data.main];
         const fields = source ? resolveDataSourceFields(source) : {};
-        if (new Set(search.fields).size !== search.fields.length) errors.push(schemaError(`${componentPath}/props/toolbar/search/fields`, '搜索字段不得重复'));
-        search.fields.forEach((id, index) => {
+        const base = `${componentPath}/props/toolbar/search`;
+        const targets = 'fields' in search
+          ? search.fields.map((id, index) => ({ id, path: `${base}/fields/${index}` }))
+          : search.options.map((option, index) => ({ id: option.field, path: `${base}/options/${index}/field` }));
+        if ('fields' in search && new Set(search.fields).size !== search.fields.length) errors.push(schemaError(`${base}/fields`, '搜索字段不得重复'));
+        if ('options' in search) {
+          if (new Set(search.options.map(option => option.value)).size !== search.options.length) errors.push(schemaError(`${base}/options`, '搜索选项值不得重复'));
+          if (search.defaultValue !== undefined && !search.options.some(option => option.value === search.defaultValue)) errors.push(schemaError(`${base}/defaultValue`, '默认搜索选项必须存在'));
+        }
+        targets.forEach(({ id, path }) => {
           const field = fields[id];
-          if (!field || field.type !== 'string') errors.push(schemaError(`${componentPath}/props/toolbar/search/fields/${index}`, '搜索必须引用 main 数据槽中的文本标量字段'));
-          if (source?.source.type === 'query' && source.source.resultScope !== 'complete' && (!source.fields[id] || !hasQueryFieldMapping(source.fields[id]))) errors.push(schemaError(`${componentPath}/props/toolbar/search/fields/${index}`, '查询搜索字段必须具有 queryField 映射'));
+          if (!field || field.type !== 'string') errors.push(schemaError(path, '搜索必须引用 main 数据槽中的文本标量字段'));
+          if (source?.source.type === 'query' && source.source.resultScope !== 'complete' && (!source.fields[id] || !hasQueryFieldMapping(source.fields[id]))) errors.push(schemaError(path, '查询搜索字段必须具有 queryField 映射'));
         });
       }
       errors.push(...tableDataErrors(page, component, componentPath));

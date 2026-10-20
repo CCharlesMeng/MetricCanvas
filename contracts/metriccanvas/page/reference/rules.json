@@ -326,6 +326,20 @@
       ]
     },
     {
+      "id": "table-search-options",
+      "description": "6.42 静态搜索选项唯一、默认项有效且每项引用文本字段",
+      "valid": [
+        "table-search-options-page"
+      ],
+      "invalid": [
+        "table-search-options-before-6.42",
+        "table-search-options-duplicate",
+        "table-search-options-default-missing",
+        "table-search-options-nontext",
+        "table-search-options-unmapped"
+      ]
+    },
+    {
       "id": "signed-number-family-capability",
       "description": "两位小数与千分位带符号数值格式由6.18引入",
       "valid": [

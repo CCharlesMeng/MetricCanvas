@@ -22,7 +22,7 @@ export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
   setQueryPageSize(dataSourceId: string, pageSize: number): void;
   setQuerySort(dataSourceId: string, sort: ReadonlyArray<{ field: string; direction: 'asc' | 'desc' }>): void;
   setQueryHeaderFilters(dataSourceId: string, filters: QueryHeaderFilters): void;
-  setQuerySearch(dataSourceId: string, search: { fields: readonly string[]; query: string }): void;
+  setQuerySearch(dataSourceId: string, search: { fields: readonly string[]; query: string; match?: 'equals' }): void;
 }
 export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterState,
   diagnostics?: Pick<QueryDiagnosticContext, 'pageRevisionId'>,
@@ -149,7 +149,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     setQueryPageSize(id, value) { if(page.dataSources[id]?.source.type==='pagedJoin'&&value>1000)return; if (active?.pageSize(id)) active.tables.get(id)?.setPageSize(value); },
     setQuerySort(id, value) { const source=page.dataSources[id];const sortable=source?.source.type==='pagedJoin'?source.source.ordering.sortableFields:undefined;if(sortable&&value.some(rule=>!sortable.includes(rule.field)))return; if (active?.mutable(id)) active.tables.get(id)?.setSort((source?.source.type==='pagedJoin'&&!value.length?source.source.ordering.default:value).map(v => ({ ...v }))); },
     setQueryHeaderFilters(id, value) { if (active?.mutable(id)) active.tables.get(id)?.setHeaders(value); },
-    setQuerySearch(id, value) { active?.tables.get(id)?.setSearch({ fields: [...value.fields], query: value.query }); }
+    setQuerySearch(id, value) { active?.tables.get(id)?.setSearch({ ...value, fields: [...value.fields], query: value.query }); }
   };
 }
 function same(left: FilterValues, right: FilterValues) { return [...new Set([...left.keys(), ...right.keys()])].every(id => JSON.stringify(left.get(id)) === JSON.stringify(right.get(id))); }

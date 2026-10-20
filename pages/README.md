@@ -325,3 +325,17 @@ Report 页面按三节组织，控件相互独立：
 - 1440/1024/390 宿主宽度下检查更多面板及年份面板不导致页面横向溢出。历史 compact/readOnly、无显式页头和 hidden 文档由完整夹具回归，运行时只有 IocHeader 实现。
 
 非法声明夹具包括 unified-header-version、unified-header-conflict、period-modes-empty、period-modes-duplicate、period-modes-default、period-modes-plain-range。参数模式冲突、只读写入与候选重试由契约和浏览器测试补充。真实 DQE／Relay／CloudIOC／门户／模型未由这些场景验收。
+
+## 表格搜索字段切换（6.42）
+
+- 页面：[table-search-options-demo.json](table-search-options-demo.json)，目录「功能演示」，入口 `/pages/table-search-options-demo`，不需要 URL 参数。
+- 根目录运行 `pnpm dev:dqe`，同时启动页面试验场和 DQE Sim。第一、三张表使用 inline 合成数据，第二张表使用真实 HTTP 链路访问本地 DQE Sim；均不包含真实业务数据。
+- 默认选「项目名称」。输入「星河项目」并 Enter：等值表匹配2行，不含「星河项目二期」；旧包含搜索则匹配更多行。
+- 保留「星河项目」切到「责任人」：立即匹配责任人为该文本的「其他项目」记录；切换 placeholder。输入「00123」后切到「项目编码」：立即匹配前导零完整编码。清空保留「项目编码」，恢复7行并回第一页。
+- 正常输入仍需 Enter/搜索按钮；只修改输入草稿后点击导出，下载内容沿用上次已提交条件。搜索、排序与翻页彼此协作，其他表的选中项与关键词不变化。
+- 编码 `ABC`、`abc` 在本地/Sim中区分；`A%_` 按字面量等值匹配；输入 `123` 不匹配 `00123`。宽屏及320/390窄屏检查下拉框、输入、清空和导出入口。
+- 非法配置复现：在页面试验场的 JSON 预览中复制本页，修改默认项为 `missing`、重复选项 value，或将任一选项 field 改为 `amount`，应显示校验错误；恢复配置后正常。命令行反例由 table-search-options 契约向量分发。
+- 自动验收：`node apps/playground/tests/table-search-options-browser.mjs`，默认访问5173，可用 `TABLE_SEARCH_BASE_URL` 指向隔离服务。脚本保留页面中的搜索配置，验证静态选项、精确匹配、切换、查询请求体、清空、独立状态、导出与窄屏。
+- 证据边界：协议、本地与 Sim 通过不等于真实 DQE/Relay/生产验收；真实服务大小写规则、重复同字段条件 AND 及匹配总数仍待核验。
+
+本批验收结果见[搜索字段切换验收记录](../docs/evidence/table-search-options/acceptance.json)，包含场景映射、测试命令及真实服务未验收边界。

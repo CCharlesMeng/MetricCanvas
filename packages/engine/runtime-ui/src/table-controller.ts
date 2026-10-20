@@ -2,9 +2,10 @@ import {fieldSelectionIds,queryFilterIds} from '@metriccanvas/page/internal';
 import type {TableRenderBinding} from './component-render';
 import {buildTableColumnLayout} from '../../widgets/src/components/table/columns';
 import type {DimensionValuesSnapshots} from '../../runtime/src/dimension-values';
-import { conditionSourceIds, hasQueryFieldMapping, fieldName, tableHeaders, type Page, type TableHeaderFilters, type TableQueryView, type TableComponent } from '@metriccanvas/page/internal';
+import { conditionSourceIds, hasQueryFieldMapping, fieldName, tableHeaders, tableSearchOption, tableSearchValue, type Page, type TableHeaderFilters, type TableQueryView, type TableComponent } from '@metriccanvas/page/internal';
 import { evaluateTableView, defaultSourceView } from '@metriccanvas/data-execution/runtime';
 import { createTableSession, type TableSession } from '../../runtime/src/table-session';
+import { remoteTableSearch } from './table-search';
 import type { PageSnapshotStream, FilterValues } from '../../runtime/src';
 import { shouldApplyTableHeaderFilter, type TableHeaderFilterValue, type TableViewState } from '../../widgets/src/components/table/view-state';
 
@@ -24,7 +25,9 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
   const sessions = new Map<string, TableSession>();
   const headers = new Map<string, Record<string, TableHeaderFilterValue>>();
   const searches = new Map<string, string>();
-  const remote = (table: TableComponent) => table.props.pagination?.mode === 'query' || stream()?.getQueryPageSize(table.data.main) !== undefined;
+  const searchOptions = new Map<string, string>();
+  const remote = (table: TableComponent) => stream()?.getQueryView(table.data.main) !== undefined &&
+    (table.props.pagination?.mode === 'query' || stream()?.getQueryPageSize(table.data.main) !== undefined || remoteTableSearch(page.dataSources[table.data.main]));
   function local(table: TableComponent) {
     let session = sessions.get(table.id);
     if (!session) { session = createTableSession(defaultSourceView(page, table.data.main, table.props.pagination?.mode === 'local' ? table.props.pagination.pageSize : 20), changed); sessions.set(table.id, session); }
@@ -42,9 +45,10 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
       }));
     },
     candidateStates(table:TableComponent,states:DimensionValuesSnapshots){return Object.fromEntries(Object.entries(controller.candidateDimensions(table)).map(([field,dimension])=>[field,states.get(dimension)?.status??'idle']));},
-    binding(table:TableComponent,presentation:Omit<TableRenderBinding,'view'|'searchDraft'|'onsearchdraft'|'onsearch'|'onpage'|'onpagesize'|'onsort'|'onheaderfilter'>):TableRenderBinding {
+    binding(table:TableComponent,presentation:Omit<TableRenderBinding,'view'|'searchDraft'|'searchOption'|'onsearchoption'|'onsearchdraft'|'onsearch'|'onpage'|'onpagesize'|'onsort'|'onheaderfilter'>):TableRenderBinding {
       const source=page.dataSources[table.data.main];
-      return {...presentation,sortReset:source?.source.type==='pagedJoin'?source.source.ordering.default:undefined,view:controller.render(table),searchDraft:controller.searchDraft(table),
+      return {...presentation,sortReset:source?.source.type==='pagedJoin'?source.source.ordering.default:undefined,view:controller.render(table),searchDraft:controller.searchDraft(table),searchOption:controller.searchOption(table),
+        onsearchoption:value=>{if(presentation.toolbarEnabled?.search!==false)controller.selectSearchOption(table,value);},
         onsearchdraft:query=>{if(presentation.toolbarEnabled?.search!==false)controller.setSearchDraft(table,query);},onsearch:query=>{if(presentation.toolbarEnabled?.search!==false)controller.search(table,query);},
         onpage:index=>controller.page(table,index),onpagesize:size=>controller.pageSize(table,size),
         onsort:sort=>controller.sort(table,sort),onheaderfilter:(field,value)=>controller.header(table,field,value)};
@@ -52,16 +56,22 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
     present(table:TableComponent,rows:readonly import('@metriccanvas/page/internal').Row[],complete=false){return evaluateTableView(rows,view(table),complete);},
     render(table: TableComponent): TableViewState {
       const committed = view(table);
-      return { pageIndex: committed.pageIndex, sort: committed.sort, searchQuery: committed.search?.query,
+      return { pageIndex: committed.pageIndex, sort: committed.sort, searchQuery: committed.search?.query, search: committed.search,
         headerFilters: { ...renderHeaders(tableHeaders(committed.predicates)), ...headers.get(table.id) } };
     },
     headers(table: TableComponent) { return tableHeaders(view(table).predicates); },
     searchDraft(table: TableComponent) { return searches.get(table.id) ?? view(table).search?.query ?? ''; },
+    searchOption(table: TableComponent) { return tableSearchOption(table.props.toolbar?.search, searchOptions.get(table.id))?.value; },
+    selectSearchOption(table: TableComponent, value: string) {
+      const search = table.props.toolbar?.search;
+      if (!search || !('options' in search) || !search.options.some(option => option.value === value) || controller.searchOption(table) === value) return;
+      searchOptions.set(table.id, value);
+      controller.search(table, controller.searchDraft(table));
+    },
     setSearchDraft(table: TableComponent, query: string) { searches.set(table.id, query); changed(); },
     search(table: TableComponent, query: string) {
-      const fields = table.props.toolbar?.search?.fields; if (!fields) return;
+      const search = tableSearchValue(table.props.toolbar?.search, query.trim(), controller.searchOption(table)); if (!search) return;
       searches.set(table.id, query);
-      const search = { fields: [...fields], query: query.trim() };
       if (remote(table)) stream()?.setQuerySearch(table.data.main, search); else local(table).setSearch(search);
       changed();
     },
@@ -80,7 +90,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
     },
     reset(table: TableComponent, previous: FilterValues, next: FilterValues) {
       const changedIds = new Set([...new Set([...previous.keys(), ...next.keys()])].filter(id => JSON.stringify(previous.get(id)) !== JSON.stringify(next.get(id))));
-      if(fieldSelectionIds(table.props).some(id=>changedIds.has(id))){headers.delete(table.id);searches.delete(table.id);if(!remote(table))local(table).resetPresentation();changed();return;}
+      if(fieldSelectionIds(table.props).some(id=>changedIds.has(id))){headers.delete(table.id);searches.delete(table.id);searchOptions.delete(table.id);if(!remote(table))local(table).resetPresentation();changed();return;}
       if(remote(table))return;
       const affected = [...conditionSourceIds(page, table.data.main)].some(id => {
         const source = page.dataSources[id];
@@ -89,7 +99,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
       }) || page.filters?.some(f => f.type === 'search' && changedIds.has(f.id));
       if (affected) local(table).resetPage(); changed();
     },
-    dispose() { for (const session of sessions.values()) session.dispose(); sessions.clear(); headers.clear(); searches.clear(); }
+    dispose() { for (const session of sessions.values()) session.dispose(); sessions.clear(); headers.clear(); searches.clear(); searchOptions.clear(); }
   };
   return controller;
 }

@@ -48,6 +48,12 @@ describe('SourceProgram pagedJoin behavior',()=>{
   expect(rows(await read({...view,predicates:[...view.predicates,{field:'analysis-meeting-rate',op:'gte',value:85}]}))).toHaveLength(1);
   expect(rows(await read({search:{fields:['rep-office-name'],query:'天津'}}))[0]['rep-office-code']).toBe('TJ-01');
  });
+ it('applies exact matching to the complete joined population and retains it for export',async()=>{
+  const search={fields:['rep-office-name'],query:'天津代表处',match:'equals' as const};
+  expect(rows(await read({search})).map(row=>row['rep-office-code'])).toEqual(['TJ-01']);
+  expect(rows(await read({search},'complete')).map(row=>row['rep-office-code'])).toEqual(['TJ-01']);
+  expect((await read({search:{...search,query:'天津'}})).get(root)).toMatchObject({status:'empty',totalCount:0});
+ });
  it('exports every matching page with frozen sort and keeps member initial independent',async()=>{
   const result=await read({sort:[{field:'analysis-meeting-rate',direction:'desc'}]},'complete');
   expect(rows(result)).toHaveLength(8);expect(rows(result).map(r=>r.rank)).toEqual([1,2,3,4,5,6,7,8]);

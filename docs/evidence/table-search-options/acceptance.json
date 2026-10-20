@@ -1,0 +1,211 @@
+{
+  "date": "2026-10-20",
+  "baseline": "64343f28dd605bd3be29dd7a852f535fbffa8181",
+  "schemaVersion": "6.42",
+  "status": "local-main-integration-verified",
+  "scope": {
+    "configuration": "props.toolbar.search.options + defaultValue; mutually exclusive with legacy fields/placeholder",
+    "matching": "one text field per option, exact equality, no case folding; legacy contains/OR retained",
+    "behavior": [
+      "switch commits current input immediately",
+      "clear retains selection",
+      "default option or first option",
+      "search resets pagination, preserves sort and other filters",
+      "export captures committed field/match/query",
+      "per-table state isolation"
+    ]
+  },
+  "acceptance": {
+    "page": "pages/table-search-options-demo.json",
+    "route": "/pages/table-search-options-demo",
+    "catalog": "apps/playground/page-catalog.json",
+    "documentation": [
+      "PAGE-METADATA.md",
+      "docs/page-metadata/components/table.md",
+      "docs/table-export.md",
+      "pages/README.md"
+    ],
+    "skill": "metriccanvas-authoring/skill/metriccanvas-local-authoring"
+  },
+  "notRun": [
+    "real DQE/Java/Relay integration",
+    "production equality collation and duplicate-dimension AND behavior",
+    "real DS model",
+    "deployment"
+  ],
+  "evidenceBoundary": "HTTP requests use DQE Sim with synthetic data. Local exact comparison preserves case and leading zeros. Production DQE native equality is not yet measured.",
+  "implementationBaseline": "952b3a273f0f4f8be5820f5af1bb76c2f5afa513",
+  "previousImplementationEvidence": {
+    "baseline": "952b3a273f0f4f8be5820f5af1bb76c2f5afa513",
+    "schemaVersion": "6.32",
+    "checks": [
+      {
+        "command": "pnpm exec vitest run packages/page/tests packages/data-execution/tests packages/engine/runtime/tests packages/engine/runtime-ui/tests tools/dqe-sim/tests apps/playground/tests/page-catalog.test.ts",
+        "result": "pass",
+        "files": 157,
+        "tests": 1168
+      },
+      {
+        "command": "pnpm check",
+        "result": "pass"
+      },
+      {
+        "command": "pnpm validate",
+        "result": "pass",
+        "pages": 30
+      },
+      {
+        "command": "pnpm build:packages",
+        "result": "pass"
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/embed build",
+        "result": "pass"
+      },
+      {
+        "command": "pnpm packages:check",
+        "result": "pass",
+        "packages": 6
+      },
+      {
+        "command": "TABLE_SEARCH_BASE_URL=http://127.0.0.1:54927 node apps/playground/tests/table-search-options-browser.mjs",
+        "result": "pass",
+        "report": "browser.json"
+      },
+      {
+        "command": "MC_EMBED_EXAMPLE_PORT=54929 pnpm --filter @metriccanvas/embed exec playwright test table-toolbar.spec.ts table-search-options.spec.ts",
+        "result": "pass",
+        "tests": 7
+      },
+      {
+        "command": "pnpm authoring:contracts:check",
+        "result": "pass",
+        "productFiles": 763
+      },
+      {
+        "command": "python3 metriccanvas-authoring/scripts/check_bundle.py",
+        "result": "pass",
+        "digestChecks": 2754
+      },
+      {
+        "command": "pnpm exec vitest run tests/local-authoring-skill.test.ts tests/page-reference.test.ts",
+        "result": "pass",
+        "tests": 26
+      },
+      {
+        "command": "copy local-authoring Skill outside repository and run installed validate-page.mjs on valid and invalid-default acceptance page",
+        "result": "pass",
+        "validExit": 0,
+        "invalidExit": 1
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/embed check",
+        "result": "pass"
+      },
+      {
+        "command": "pnpm exec tsc --noEmit -p tests/tsconfig.json",
+        "result": "pass"
+      },
+      {
+        "command": "pnpm exec vitest run tests/authoring-export-isolation.test.ts -t '生成器保留作者参考且只清理生成子树'",
+        "result": "pass",
+        "tests": 1,
+        "note": "Other 19 isolation tests passed in the original run; no timeout threshold changes."
+      }
+    ],
+    "transientFailures": [
+      {
+        "command": "pnpm exec vitest run tests/local-authoring-skill.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts",
+        "result": "45 passed, 1 timed out at 30 seconds",
+        "test": "生成器保留作者参考且只清理生成子树",
+        "retry": "pass; same test run alone, original timeout unchanged"
+      }
+    ]
+  },
+  "previousIntegrationEvidence": {
+    "baseline": "187b9c996bd5523889d740acb74e9826b1ae727e",
+    "schemaVersion": "6.41",
+    "checks": [
+      {
+        "command": "pnpm authoring:contracts:check",
+        "result": "pass",
+        "productFiles": 927
+      },
+      {
+        "command": "pnpm test apps/playground/tests/page-catalog.test.ts tests/public-api.test.ts packages/engine/runtime-ui/tests/table-search-options.test.ts packages/page/tests/table-search-options.test.ts",
+        "result": "pass",
+        "tests": 33
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/engine check",
+        "result": "pass"
+      },
+      {
+        "command": "pnpm build:packages",
+        "result": "pass"
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/embed build",
+        "result": "pass"
+      },
+      {
+        "command": "pnpm validate",
+        "result": "pass",
+        "pages": 53
+      },
+      {
+        "command": "TABLE_SEARCH_BASE_URL=http://127.0.0.1:54927 node apps/playground/tests/table-search-options-browser.mjs",
+        "result": "pass",
+        "report": "browser.json"
+      }
+    ]
+  },
+  "integrationChecks": [
+    {
+      "command": "pnpm test packages/page/tests packages/data-execution/tests packages/engine/runtime/tests packages/engine/runtime-ui/tests tools/dqe-sim/tests apps/playground/tests/page-catalog.test.ts tests/public-api.test.ts tests/local-authoring-skill.test.ts tests/page-reference.test.ts",
+      "result": "pass",
+      "files": 185,
+      "tests": 1453
+    },
+    {
+      "command": "pnpm check",
+      "result": "pass"
+    },
+    {
+      "command": "pnpm build:packages",
+      "result": "pass"
+    },
+    {
+      "command": "pnpm --filter @metriccanvas/embed build",
+      "result": "pass"
+    },
+    {
+      "command": "pnpm validate",
+      "result": "pass",
+      "pages": 53
+    },
+    {
+      "command": "pnpm authoring:contracts:check",
+      "result": "pass",
+      "productFiles": 943
+    },
+    {
+      "command": "TABLE_SEARCH_BASE_URL=http://127.0.0.1:54927 node apps/playground/tests/table-search-options-browser.mjs",
+      "result": "pass",
+      "report": "browser.json"
+    },
+    {
+      "command": "MC_EMBED_EXAMPLE_PORT=54929 pnpm --filter @metriccanvas/embed exec playwright test table-toolbar.spec.ts table-search-options.spec.ts",
+      "result": "pass",
+      "tests": 8
+    }
+  ],
+  "deliveryReportedSeparately": true,
+  "integrationNotes": [
+    "Preserved main toolbar enabled/visible conditions and presentation row projection.",
+    "New option callback observes the same execution gate as search submission.",
+    "Field-selection invalidation clears the option selection with committed search.",
+    "The first port needed catalog guide/schema and internal API snapshot updates; targeted rechecks and the final scoped suite passed.",
+    "Schema minor advanced from the original isolated 6.32 to 6.42 after concurrent main releases."
+  ]
+}

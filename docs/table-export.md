@@ -4,7 +4,7 @@
 
 ## 查询搜索接口
 
-生效查询新增可选 `search: { queryFields: string[]; query: string }`，字段已由共享查询执行模块按 `queryField` 映射。查询分页、排序和原有筛选仍同时保留，匹配总数必须由数据网关返回。内联与显式完整查询结果在客户端搜索，不改变共享数据源快照。
+生效查询的 `search: { queryFields: string[]; query: string; match?: 'equals' }` 字段已按 `queryField` 映射。省略 `match` 保留旧包含搜索；`equals` 只允许一个文本查询字段，默认网关编码为 `filter.dims` 的单值、无 operator 等值条件，与既有条件并列保留。查询分页、排序和原有筛选仍同时保留，匹配总数必须由数据网关返回。内联与显式完整查询结果在客户端搜索，不改变共享数据源快照。
 
 `createDqeGateway` 的可选 `encodeSearch` 消费已经应用其他筛选、排序和分页的 DQE 项，返回增加搜索条件后的 DQE 项。编码器必须与当前服务协议匹配，保证多个字段 OR、与已有条件 AND、字面量匹配和大小写规则；不能拼接未经转义的用户输入。原页面查询定义保持不可变。
 
@@ -19,7 +19,7 @@ const gateway = createDqeGateway({
 });
 ```
 
-`verifiedDqeSearchEncoder` 为集成应用按实际协议提供的函数，上例不是某个已存在的 DQE 请求字段。本仓尚未获得当前真实 DQE 文本包含的编码证据；默认网关遇到搜索时在发出请求前拒绝并报告 `DQE_CONFIG_ERROR`。搜索入口保留，用户可清空搜索恢复查询。
+`verifiedDqeSearchEncoder` 为集成应用按实际协议提供的函数，上例不是某个已存在的 DQE 请求字段。本仓尚未获得当前真实 DQE 文本包含的编码证据；默认网关遇到旧包含搜索时在发出请求前拒绝并报告 `DQE_CONFIG_ERROR`。新等值搜索不需要该编码器，但真实服务大小写与重复维度 AND 语义仍需请求／响应验收。搜索入口保留，用户可清空搜索恢复查询。
 
 自定义 `dataGateway.fetchData` 可直接消费 `search`，但必须在完整查询作用域中搜索后分页并返回匹配总数；不能忽略该属性或者只在已返回窗口中匹配。
 

@@ -1086,6 +1086,7 @@
     if (resolvedTablePagination(component)?.mode === 'query') return snapshot;
     const pagination = resolvedTablePagination(component,snapshot);
     const source=pageState.phase==='ready'?pageState.page.dataSources[component.data.main]:undefined;
+    if (remoteTableSearch(source)) return { ...snapshot, rows: presentation?.rows(component,snapshot.rows) ?? snapshot.rows };
     const rows=applySearchFilters(presentation?.rows(component,snapshot.rows)??snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
     return {status:'ready',rows:tableController?.present(component,rows,pagination?.mode!=='local').rows??rows};
   }

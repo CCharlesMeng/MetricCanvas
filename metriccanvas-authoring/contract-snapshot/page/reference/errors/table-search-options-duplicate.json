@@ -1,0 +1,52 @@
+{
+  "case": "table-search-options-duplicate",
+  "invariant": "table-search-options",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "搜索选项值不得重复",
+      "paths": [
+        "/sections/0/components/0/props/toolbar/search/options"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "默认搜索选项必须存在",
+      "paths": [
+        "/sections/0/components/0/props/toolbar/search/defaultValue"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "toolbar": {
+                "search": {
+                  "options": [
+                    {
+                      "value": "code",
+                      "label": "项目编码",
+                      "field": "code",
+                      "placeholder": "请输入完整项目编码"
+                    },
+                    {
+                      "value": "code",
+                      "label": "项目名称",
+                      "field": "name",
+                      "placeholder": "请输入完整项目名称"
+                    }
+                  ],
+                  "defaultValue": "name"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-search-options-duplicate.json"
+}

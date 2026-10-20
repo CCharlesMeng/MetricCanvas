@@ -239,6 +239,21 @@ export const invariants: InvariantDefinition[] = [
     ]
   },
   {
+    id: 'table-search-options', description: '6.42 静态搜索选项唯一、默认项有效且每项引用文本字段',
+    valid: ['table-search-options-page'], cases: [
+      { case: 'table-search-options-before-6.42', base: 'table-search-options-page', expect: /由 6.42 引入/,
+        mutate: d => { d.schemaVersion = '6.41'; } },
+      { case: 'table-search-options-duplicate', base: 'table-search-options-page', expect: /搜索选项值不得重复/,
+        mutate: d => { const options = firstComponent(d).props.toolbar.search.options; options[1].value = options[0].value; } },
+      { case: 'table-search-options-default-missing', base: 'table-search-options-page', expect: /默认搜索选项必须存在/,
+        mutate: d => { firstComponent(d).props.toolbar.search.defaultValue = 'missing'; } },
+      { case: 'table-search-options-nontext', base: 'table-search-options-page', expect: /文本标量字段/,
+        mutate: d => { firstComponent(d).props.toolbar.search.options[1].field = 'amount'; } },
+      { case: 'table-search-options-unmapped', base: 'table-search-options-page', expect: /queryField 映射/,
+        mutate: d => { delete d.dataSources.queried.fields.owner.queryField; } }
+    ]
+  },
+  {
     id: 'signed-number-family-capability', description: '两位小数与千分位带符号数值格式由6.18引入',
     valid: ['signed-number-family-page'], cases: [
       { case: 'signed-number-two-decimal-before-6.18', base: 'inline-report', expect: /由 6.18 引入/,

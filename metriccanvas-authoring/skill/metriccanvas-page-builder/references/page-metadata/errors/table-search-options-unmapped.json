@@ -1,0 +1,82 @@
+{
+  "case": "table-search-options-unmapped",
+  "invariant": "table-search-options",
+  "expected": [
+    {
+      "type": "QUERY_MAPPING_ERROR",
+      "message": "页面字段 owner 既没有 queryField 映射，也不是计算阶段产出字段",
+      "paths": [
+        "/dataSources/queried/fields/owner"
+      ]
+    },
+    {
+      "type": "QUERY_MAPPING_ERROR",
+      "message": "DQE 输出字段 search_demo_owner 缺少显式 queryField 映射",
+      "paths": [
+        "/dataSources/queried/fields"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "查询搜索字段必须具有 queryField 映射",
+      "paths": [
+        "/sections/0/components/1/props/toolbar/search/options/2/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "queried": {
+        "fields": {
+          "code": {
+            "type": "string",
+            "role": "dimension",
+            "label": "项目编码",
+            "queryField": "search_demo_code"
+          },
+          "name": {
+            "type": "string",
+            "role": "dimension",
+            "label": "项目名称",
+            "queryField": "search_demo_name"
+          },
+          "owner": {
+            "type": "string",
+            "role": "dimension",
+            "label": "责任人"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "label": "金额",
+            "unit": "元",
+            "queryField": "search_demo_amount"
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "toolbar": {
+                "search": {
+                  "options": [
+                    "…",
+                    "…",
+                    {
+                      "field": "owner"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-search-options-unmapped.json"
+}
