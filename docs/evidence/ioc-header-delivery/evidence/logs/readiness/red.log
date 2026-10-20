@@ -1,0 +1,37 @@
+[WebServer] (node:36815) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:36826) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 packages/embed/tests/browser/ioc-header.spec.ts:68:1 › two embedded instances own their month anchors and destroy independently (5.6s)
+
+
+  1) packages/embed/tests/browser/ioc-header.spec.ts:68:1 › two embedded instances own their month anchors and destroy independently 
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator: locator('#second-ioc [data-period-filter]').getByRole('combobox')
+    Expected: "2026-09"
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveValue" with timeout 5000ms
+      - waiting for locator('#second-ioc [data-period-filter]').getByRole('combobox')
+
+
+      71 |   await page.goto('/pages/ioc-header-overview-demo');
+      72 |   await page.evaluate(()=>{const w=window as any;const target=document.createElement('main');target.id='second-ioc';document.body.append(target);w.secondRuntime=MetricCanvas.mount(target,{document:w.pageDocument,dataGateway:w.dataGateway});});
+    > 73 |   const first=page.locator('#dashboard [data-period-filter]'),second=page.locator('#second-ioc [data-period-filter]');await expect(second.getByRole('combobox')).toHaveValue('2026-09');
+         |                                                                                                                                                                  ^
+      74 |   await first.getByRole('combobox').fill('2026-08');await first.getByRole('combobox').press('Enter');await first.getByRole('button',{name:'季',exact:true}).click();await first.getByRole('button',{name:'月',exact:true}).click();await expect(first.getByRole('combobox')).toHaveValue('2026-08');await expect(second.getByRole('combobox')).toHaveValue('2026-09');
+      75 |   await page.evaluate(()=>window.runtime.destroy());await expect(page.locator('#dashboard [data-ioc-header]')).toHaveCount(0);await expect(second.getByRole('combobox')).toHaveValue('2026-09');
+      76 | });
+        at /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/ioc-ci-closure-gWccAy/consumer/packages/embed/tests/browser/ioc-header.spec.ts:73:162
+
+    Error Context: test-results/ioc-header-two-embedded-in-a6888-s-and-destroy-independently/error-context.md
+
+  1 failed
+    packages/embed/tests/browser/ioc-header.spec.ts:68:1 › two embedded instances own their month anchors and destroy independently 

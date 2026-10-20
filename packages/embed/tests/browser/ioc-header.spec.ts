@@ -66,9 +66,13 @@ test('selected URL value waits for candidates; failed candidates retry current r
 });
 
 test('two embedded instances own their month anchors and destroy independently',async({page})=>{
+  // Exercise metadata arriving after the host document has loaded.
+  await page.route('**/pages/ioc-header-overview-demo.json',async route=>{await new Promise(resolve=>setTimeout(resolve,150));await route.continue();});
   await page.goto('/pages/ioc-header-overview-demo');
+  const first=page.locator('#dashboard [data-period-filter]');
+  await expect(first.getByRole('combobox')).toHaveValue('2026-09');
   await page.evaluate(()=>{const w=window as any;const target=document.createElement('main');target.id='second-ioc';document.body.append(target);w.secondRuntime=MetricCanvas.mount(target,{document:w.pageDocument,dataGateway:w.dataGateway});});
-  const first=page.locator('#dashboard [data-period-filter]'),second=page.locator('#second-ioc [data-period-filter]');await expect(second.getByRole('combobox')).toHaveValue('2026-09');
+  const second=page.locator('#second-ioc [data-period-filter]');await expect(second.getByRole('combobox')).toHaveValue('2026-09');
   await first.getByRole('combobox').fill('2026-08');await first.getByRole('combobox').press('Enter');await first.getByRole('button',{name:'季',exact:true}).click();await first.getByRole('button',{name:'月',exact:true}).click();await expect(first.getByRole('combobox')).toHaveValue('2026-08');await expect(second.getByRole('combobox')).toHaveValue('2026-09');
   await page.evaluate(()=>window.runtime.destroy());await expect(page.locator('#dashboard [data-ioc-header]')).toHaveCount(0);await expect(second.getByRole('combobox')).toHaveValue('2026-09');
 });

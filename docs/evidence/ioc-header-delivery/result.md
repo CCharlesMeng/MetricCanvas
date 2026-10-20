@@ -17,3 +17,5 @@
 首次推送后的兼容性失败与修复见[安装消费者收口](ci-closure.md)。首次合并指纹及日志保留为历史输入；后续发布输入以release-source-manifest.json为准。此补充不扩大B5/B6范围，也不把首次失败工作流记为通过。
 
 兼容性修复后的最终本地验真：check/build通过，全量283文件、2480项通过、5跳过；六包安装消费者完整浏览器182/182，实际Playground6/6；local-authoring独立安装53页及915/4/1生成一致性通过。源码在该轮验证期间冻结为`f9fe044b653e76a63732f6211b74c6a6dc2b2d8eb633d08775c3c19c4f08c80f`。最终准确SHA的远端CI以GitHub工作流回执为准。
+
+双实例测试的异步页面就绪前置条件及第二次CI收口见ci-closure.md最后一节；仅测试输入变化，产品源码保持db892ce0。最终测试输入以readiness-source-manifest.json为准。
