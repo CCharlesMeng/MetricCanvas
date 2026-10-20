@@ -1936,6 +1936,43 @@
           "multi-query-table"
         ]
       }
+    },
+    {
+      "id": "table-tiny-os",
+      "group": "verification",
+      "displayTitle": "TinyVue OS 表格样式与变体",
+      "summary": "对照普通、预测矩阵、内嵌与保留的报表紧凑表格，检查排序、筛选、分页和多级固定表头。",
+      "tags": [
+        "表格样式",
+        "TinyVue OS",
+        "固定列",
+        "变体"
+      ],
+      "capabilities": [
+        "tables",
+        "export"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接体验"
+      },
+      "guide": {
+        "steps": [
+          "比较四种表格，reportCompact 保留旧样式。",
+          "点击金额排序，展开数值或日期筛选，搜索客户25后清空并翻页。",
+          "窄屏横向滚动检查固定列；查看多级表头和导出结果。"
+        ],
+        "configPaths": [
+          "sections[].components[].props.variant",
+          "sections[].components[].props.columns"
+        ],
+        "boundary": "内联合成数据，不代表真实 DQE 验收；维度候选值未注入时如实显示能力不可用。",
+        "related": [
+          "table-toolbar-demo",
+          "table-detail-overlay"
+        ]
+      }
     }
   ],
   "capabilities": [

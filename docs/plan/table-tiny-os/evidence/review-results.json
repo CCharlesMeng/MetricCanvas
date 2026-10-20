@@ -1,0 +1,441 @@
+{
+  "claim_ledger": [
+    {
+      "actual_profile": "mock",
+      "claim_status": "UNVERIFIED",
+      "evidence": "BE-1, BE-7; evidence/restore-report-green.json（26 GREEN）",
+      "id": "AT-01",
+      "note": "三种基础网格在相同浏览器、字体、内容、列宽下 PNG 字节相等；字体、表头/体尺寸、边框、基础图标已验证。完整筛选日历、枚举面板以及全部 hover/focus/disabled 像素尚未逐项对照，不能宣称整体100%。"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "BE-2, BE-3, BE-5, BE-6, BE-9; 15项浏览器测试",
+      "id": "AT-02",
+      "note": "内联操作和仓内查询/导出契约 mock；不代表真实DQE/Relay。"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "BE-1; compact-preserved.png",
+      "id": "AT-03",
+      "note": "旧字重、内边距、行高及字符图标保持；所有新皮肤与几何排除compact。"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "BE-4, BE-8; fixed-geometry.json, fixed-overflow-geometry.json",
+      "id": "AT-04",
+      "note": "宽屏两侧各2列的累计偏移与实际列宽一致；390px可内滚；过宽固定区域临时取消横向固定，单元格邻接间隙均0，恢复宽度后恢复固定。"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "quality_gate/authoring-local,authoring-contracts,bundle",
+      "id": "AT-05",
+      "note": "隔离真源导出后只合并table文档及对应哈希；70项知识/独立安装/引用测试通过，最新生成一致性及2718个摘要核对通过。"
+    }
+  ],
+  "code_fingerprint": "268b23130c6b0d09be05c3ce31ef29ff71b2212683d85613f6b278e79cb284ff",
+  "counts": {
+    "blocker": 0,
+    "claims_deferred": 0,
+    "claims_unverified": 1,
+    "decided": 0,
+    "deferred": 0,
+    "handoff": 0,
+    "manual_acceptance": 0,
+    "manual_pending": 0,
+    "norm_candidate": 0,
+    "open_question": 0,
+    "skipped": 0,
+    "suggestion": 0,
+    "unplanned_carry": 0
+  },
+  "coverage": {
+    "review-convention": [
+      {
+        "dimension": "C1",
+        "evidence_ids": [
+          "PATTERN-TEST-1",
+          "packages/embed/tests/browser/table-tiny-os.spec.ts:L1-L13",
+          "packages/embed/tests/fixtures/tiny-os-grid-reference.json:L1-L5",
+          "packages/engine/widgets/src/components/table/Table.svelte:L12-L16",
+          "packages/engine/widgets/src/components/table/table-geometry.ts:L1-L2"
+        ],
+        "result": "clear",
+        "scope": "新增 browser spec 位于现有 Playwright browser 目录并采用相邻用例的 kebab-case.spec.ts 命名；官方 CSS 与来源清单位于测试 fixtures；几何 action 与现有 filter-popover.ts 同目录，以局部相对路径导入。已检查实际新增路径及用途，未发现目录职责或命名冲突；无明文覆盖的命名细节不增加要求。"
+      },
+      {
+        "dimension": "C3",
+        "evidence_ids": [
+          "PATTERN-STYLE-1",
+          "PATTERN-STYLE-2",
+          "PATTERN-STYLE-5",
+          "packages/engine/widgets/src/components/table/Table.svelte:L1511-L1640",
+          "packages/engine/widgets/src/components/table/TableControlIcon.svelte:L17-L18",
+          "packages/engine/widgets/src/components/table/table-geometry.ts:L16-L70",
+          "BE-4",
+          "BE-8"
+        ],
+        "result": "clear",
+        "scope": "OS 皮肤、筛选图标跨文件尺寸下发、固定列几何和窄视口呈现状态；前轮 C3-1 已修复"
+      },
+      {
+        "dimension": "C5",
+        "evidence_ids": [
+          "PATTERN-COMP-2",
+          "packages/engine/widgets/src/components/table/Table.svelte:L12-L41",
+          "packages/engine/widgets/src/components/table/Table.svelte:L49-L95",
+          "packages/engine/widgets/src/components/table/table-geometry.ts:L1-L79",
+          "BE-9"
+        ],
+        "result": "clear",
+        "scope": "沿用 TableToolbar、TableControlIcon、筛选 action、共享值格式化与运行时回调；新增窄屏状态仅参与几何呈现"
+      }
+    ],
+    "review-layout": [
+      {
+        "dimension": "L1",
+        "evidence_ids": [
+          "BE-1",
+          "BE-7",
+          "BE-9"
+        ],
+        "result": "clear",
+        "scope": "普通、forecastMatrix、embedded 的共享网格外观及 reportCompact 排除边界；不同 fixture 的既有表格场景"
+      },
+      {
+        "dimension": "L2",
+        "evidence_ids": [
+          "BE-2",
+          "BE-5",
+          "BE-8"
+        ],
+        "result": "clear",
+        "scope": "声明 fixture 的长文本换行、自动列宽变化、空列表结构及窄屏内容可达性"
+      },
+      {
+        "dimension": "L3",
+        "evidence_ids": [
+          "BE-4",
+          "BE-8"
+        ],
+        "result": "clear",
+        "scope": "R6-1：默认宽度与390px、多级表头、两侧固定列及固定区域过宽后的降级"
+      },
+      {
+        "dimension": "L5",
+        "evidence_ids": [
+          "BE-2",
+          "BE-3"
+        ],
+        "result": "clear",
+        "scope": "R4 冻结的排序激活、筛选打开与激活状态"
+      }
+    ],
+    "review-quality": [
+      {
+        "dimension": "Q2",
+        "evidence_ids": [
+          "packages/engine/widgets/src/components/table/table-geometry.ts:L24-L56",
+          "packages/engine/widgets/src/components/table/Table.svelte:L1616-L1621",
+          "packages/engine/widgets/src/components/table/TableControlIcon.svelte:L18"
+        ],
+        "result": "clear",
+        "scope": "新固定列溢出判定集中于table-geometry单一测量入口，恢复逻辑由同一判定驱动；SVG尺寸采用单一CSS变量消费点。未发现新增具有可观察后果的重复实现。"
+      },
+      {
+        "dimension": "Q6",
+        "evidence_ids": [
+          "BE-1",
+          "BE-2",
+          "BE-3",
+          "BE-5",
+          "BE-6",
+          "BE-8",
+          "BE-9",
+          "packages/engine/widgets/src/components/table/Table.svelte:L1616-L1619",
+          "packages/engine/widgets/src/components/table/Table.svelte:L1666-L1674"
+        ],
+        "result": "clear",
+        "scope": "空结果、非法日期、reportCompact排除、业务颜色和静态导出边界有对应呈现路径；固定列总宽超出视口时取消横向固定和阴影，恢复宽度后重新固定。当前BE场景的依赖哈希全部匹配。"
+      }
+    ],
+    "self-test": [
+      {
+        "dimension": "F3-1",
+        "evidence_ids": [
+          "BE-1",
+          "packages/engine/widgets/src/components/table/Table.svelte:L317-L325",
+          "packages/engine/widgets/src/components/table/Table.svelte:L1620-L1621",
+          "packages/engine/widgets/src/components/table/TableControlIcon.svelte:L18"
+        ],
+        "result": "clear",
+        "scope": "reportCompact仍不启用os-theme或几何action；原字符图标保留，新增SVG尺寸变量仅在非compact筛选摘要定义，其他图标继续回退16px。浏览器记录保留字重500、表头内边距5px 8px、表体42px及字符排序图标。"
+      },
+      {
+        "dimension": "F3-2",
+        "evidence_ids": [
+          "BE-2",
+          "BE-3",
+          "BE-5",
+          "BE-8",
+          "BE-9",
+          "browser",
+          "packages/embed/tests/browser/table-tiny-os.spec.ts:L163-L193"
+        ],
+        "result": "clear",
+        "scope": "排序、搜索、清空、分页、数值与日期筛选及完整结果导出的当前结果与作用域符合冻结声明；另一表不受操作污染。新增固定列窄屏降级只改变呈现，390px下单元格无重叠且内容可达，恢复1280px后重新固定。"
+      },
+      {
+        "dimension": "F3-3",
+        "evidence_ids": [
+          "BE-6",
+          "packages/engine/widgets/src/components/table/Table.svelte:L317-L325",
+          "packages/engine/widgets/src/components/table/Table.svelte:L1666-L1674"
+        ],
+        "result": "clear",
+        "scope": "静态导出仍禁用几何action，导出视图包含25行，无测量表头偏移和固定列阴影；解除屏幕高度及滚动限制，保留表头短分隔线，下载后导出iframe移除。"
+      }
+    ]
+  },
+  "decisions": [],
+  "deferred_candidates": [],
+  "evidence_epoch": "table-os-final-20261020",
+  "findings": [],
+  "handoff": [],
+  "judged_files": {
+    "review-convention": [
+      "packages/engine/widgets/src/components/table/Table.svelte",
+      "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+      "packages/engine/widgets/src/components/table/table-geometry.ts",
+      "packages/embed/tests/browser/table-tiny-os.spec.ts",
+      "packages/embed/tests/fixtures/tiny-os-grid-reference.json",
+      "packages/embed/tests/fixtures/tiny-os-grid.css"
+    ],
+    "review-layout": [
+      "packages/engine/widgets/src/components/table/Table.svelte",
+      "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+      "packages/engine/widgets/src/components/table/table-geometry.ts",
+      "packages/embed/tests/browser/table-tiny-os.spec.ts",
+      "pages/table-tiny-os.json"
+    ],
+    "review-quality": [
+      "packages/engine/widgets/src/components/table/Table.svelte",
+      "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+      "packages/engine/widgets/src/components/table/table-geometry.ts",
+      "packages/embed/tests/browser/table-tiny-os.spec.ts"
+    ],
+    "self-test": [
+      "packages/engine/widgets/src/components/table/Table.svelte",
+      "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+      "packages/engine/widgets/src/components/table/table-geometry.ts",
+      "packages/embed/tests/browser/table-tiny-os.spec.ts"
+    ]
+  },
+  "known_gaps": {
+    "review-convention": [],
+    "review-layout": [
+      "完整原生日期日历及全部 hover/focus/disabled 像素未取证；本次 L5 仅判断冻结 R4 要求的可观察状态，不据此声称所有状态100%还原。"
+    ],
+    "review-quality": [],
+    "self-test": [
+      "执行起点未完整运行质量命令；本结论确认当前候选满足分配的F3声明，不声称已通过与起点对比的无回归验收。"
+    ]
+  },
+  "manual_acceptance": [],
+  "norm_candidates": [],
+  "open_questions": [],
+  "portfolio_narrowed": [],
+  "restore_contract": {
+    "contract_sha256": "5d8e792dc846a0a00f5806246a92633c7f44098fb8b6b3ca75c970944c28a409",
+    "overall": "green",
+    "summary": {
+      "green": 26,
+      "red": 0,
+      "total": 26,
+      "yellow": 0
+    }
+  },
+  "roles": {
+    "review-convention": "executed",
+    "review-layout": "executed",
+    "review-quality": "executed",
+    "self-test": "executed"
+  },
+  "schema_version": 1,
+  "skipped": {
+    "review-convention": [],
+    "review-layout": [],
+    "review-quality": [],
+    "self-test": []
+  },
+  "unplanned_carry": [],
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-01",
+        "modules": [
+          "causal",
+          "render"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1,2",
+        "verification_method": "restore_contract",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-02",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "1,2",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-03",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1,2",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-04",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1,2",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-05",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "3",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      }
+    ],
+    "facts": {
+      "cross_page": true,
+      "frozen_r": true,
+      "frozen_r5": true,
+      "frozen_r6": true,
+      "has_f3": true,
+      "has_s3_claim": true,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "story",
+      "regression",
+      "restore-final",
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "story",
+        "self-test"
+      ],
+      "phase": "initial",
+      "required_profiles": {
+        "AT-01": "mock",
+        "AT-02": "contract",
+        "AT-03": "mock",
+        "AT-04": "mock",
+        "AT-05": "mock"
+      },
+      "review_roles": [
+        "self-test"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C3",
+        "C5"
+      ],
+      "review-layout": [
+        "L1",
+        "L2",
+        "L3",
+        "L5"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q6"
+      ],
+      "self-test": [
+        "F3-1",
+        "F3-2",
+        "F3-3"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "risk_triggers": [
+      "shared-boundary",
+      "spec-gap",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "shared-boundary"
+      ],
+      "changed_files": 20,
+      "max_changed_files": 5,
+      "restore_tasks": [
+        "1"
+      ],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "shared-boundary": [
+        "diff"
+      ],
+      "spec-gap": [
+        "agent",
+        "plan"
+      ],
+      "visual": [
+        "diff"
+      ]
+    }
+  }
+}

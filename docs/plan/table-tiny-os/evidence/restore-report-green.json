@@ -1,0 +1,247 @@
+{
+  "contract_sha256": "5d8e792dc846a0a00f5806246a92633c7f44098fb8b6b3ca75c970944c28a409",
+  "entries": [
+    {
+      "actual": {
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "line-height": "21px"
+      },
+      "rule_id": "R3-1-ordinary-font",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "background-color": "rgb(245, 245, 245)",
+        "color": "rgb(89, 89, 89)",
+        "font-weight": "600",
+        "height": "40px",
+        "padding": "4px 16px"
+      },
+      "rule_id": "R3-2-ordinary-header",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "background-color": "rgb(219, 219, 219)",
+        "height": "16px",
+        "width": "1px"
+      },
+      "rule_id": "R3-3-ordinary-divider",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "border-bottom": "1px solid rgb(240, 240, 240)",
+        "border-right-width": "0px"
+      },
+      "rule_id": "R3-3-ordinary-borders",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "height": "48px",
+        "padding": "12px 16px"
+      },
+      "rule_id": "R3-4-ordinary-body",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "fill": "rgb(128, 128, 128)",
+        "width": "16px"
+      },
+      "rule_id": "R3-5-ordinary-sort",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "line-height": "21px"
+      },
+      "rule_id": "R3-1-forecast-font",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "background-color": "rgb(245, 245, 245)",
+        "color": "rgb(89, 89, 89)",
+        "font-weight": "600",
+        "height": "40px",
+        "padding": "4px 16px"
+      },
+      "rule_id": "R3-2-forecast-header",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "background-color": "rgb(219, 219, 219)",
+        "height": "16px",
+        "width": "1px"
+      },
+      "rule_id": "R3-3-forecast-divider",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "border-bottom": "1px solid rgb(240, 240, 240)",
+        "border-right-width": "0px"
+      },
+      "rule_id": "R3-3-forecast-borders",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "height": "48px",
+        "padding": "12px 16px"
+      },
+      "rule_id": "R3-4-forecast-body",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "fill": "rgb(128, 128, 128)",
+        "width": "16px"
+      },
+      "rule_id": "R3-5-forecast-sort",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "line-height": "21px"
+      },
+      "rule_id": "R3-1-embedded-font",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "background-color": "rgb(245, 245, 245)",
+        "color": "rgb(89, 89, 89)",
+        "font-weight": "600",
+        "height": "40px",
+        "padding": "4px 16px"
+      },
+      "rule_id": "R3-2-embedded-header",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "background-color": "rgb(219, 219, 219)",
+        "height": "16px",
+        "width": "1px"
+      },
+      "rule_id": "R3-3-embedded-divider",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "border-bottom": "1px solid rgb(240, 240, 240)",
+        "border-right-width": "0px"
+      },
+      "rule_id": "R3-3-embedded-borders",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "height": "48px",
+        "padding": "12px 16px"
+      },
+      "rule_id": "R3-4-embedded-body",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "fill": "rgb(128, 128, 128)",
+        "width": "16px"
+      },
+      "rule_id": "R3-5-embedded-sort",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "fill": "rgb(25, 25, 25)",
+        "width": "16px"
+      },
+      "rule_id": "R3-5-active-sort",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "matched_via": "exact",
+        "matching_files": [
+          "packages/engine/widgets/src/components/table/TableControlIcon.svelte"
+        ],
+        "needle": "m8 1.26.15.01c.18.03.36.1.52.23l.05.04 3.85 4.18.07.1c.28.4.22.95-.16 1.26l-.1.07c-.17.11-.36.17-.57.17H4.19l-.12-.01c-.5-.06-.88-.46-.88-.96l.01-.12c.02-.19.11-.38.24-.52l3.81-4.15c.2-.18.47-.3.75-.3zm.01 1.01h-.02L4.24 6.34h7.52L8.02 2.28h.01l-.02-.01zm3.8 5.92c.56 0 .99.44.99.97 0 .23-.08.46-.25.64l-3.79 4.13c-.36.4-.99.44-1.41.08l-.05-.02-3.86-4.2a.946.946 0 0 1 .08-1.36c.18-.16.42-.24.67-.24h7.62zm-.05 1H4.24l3.75 4.07h.02l3.75-4.07z"
+      },
+      "rule_id": "R3-5-official-paths",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "box-shadow": "rgba(0, 0, 0, 0.2) 0px 2px 12px 0px",
+        "min-width": "270px"
+      },
+      "rule_id": "R4-1-panel",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "fill": "rgb(25, 25, 25)",
+        "width": "14px"
+      },
+      "rule_id": "R4-1-open-icon",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "box-shadow": "rgba(0, 0, 0, 0.15) 10px 0px 8px -8px inset",
+        "width": "30px"
+      },
+      "rule_id": "R4-2-left-shadow",
+      "status": "green"
+    },
+    {
+      "actual": {
+        "align-items": "center",
+        "display": "flex",
+        "justify-content": "center",
+        "min-height": "60px",
+        "padding": "60px 0px"
+      },
+      "rule_id": "R5-1-empty",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R6-1-page-overflow",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R6-1-fixed-banks-overlap",
+      "status": "green"
+    }
+  ],
+  "observed": {
+    "route": "/examples/inline.html; 390px separate scenario",
+    "viewport": {
+      "height": 720,
+      "width": 1280
+    }
+  },
+  "overall": "green",
+  "phase": "green",
+  "schema_version": 3,
+  "summary": {
+    "green": 26,
+    "red": 0,
+    "total": 26,
+    "yellow": 0
+  }
+}

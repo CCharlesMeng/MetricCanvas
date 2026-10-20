@@ -34,6 +34,15 @@
 
 ## 能力索引
 
+### TinyVue OS 表格外观
+
+- 页面：[table-tiny-os.json](table-tiny-os.json)，直接打开 [TinyVue OS 表格样式验收](http://localhost:5173/pages/table-tiny-os)。启动 `pnpm dev:playground`，无需 DQE。
+- 普通、预测矩阵、内嵌三种表格显示灰色 40px 表头、短分隔线、SVG 排序图标与统一网格间距；`reportCompact` 保持原外观。点击金额列切换排序，搜索客户25、清空、翻页，展开数值下限与日期筛选后清除；导出沿用完整匹配结果范围。
+- 窄屏在表格内部横滚，固定列随实际列宽定位；下方多级表头按实际层高定位。维度候选值端口未注入时显示不可用，不用假候选项冒充真实取值。
+- 浏览器验证直接读取上述 JSON：`packages/embed/tests/browser/table-tiny-os.spec.ts`。冻结官方 CSS 与相同数据/宽度的局部像素比较只证明对应网格场景，不代表所有业务页面和全部交互状态均已像素一致；真实 DQE/Relay 未在本场景验收。
+
+### 其他能力
+
 | 能力 | 推荐主示例 | 扩展与业务应用 |
 |---|---|---|
 | 布局与内容组织 | [指标卡与文字混排](metric-card-equation.json)、[内容导航](ioc-content-navigation.json) | [IOC 地图概览](ioc-project-overview.json)、[分析简报](flow-analysis-report.json) |
