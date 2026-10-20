@@ -1,0 +1,31 @@
+{
+  "case": "time-output-mismatch",
+  "invariant": "time-extensions",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "模式case必须输出相同字段/类型/货币映射",
+      "paths": [
+        "/dataSources/bound/source/query"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "bound": {
+        "source": {
+          "query": {
+            "language": "dqe",
+            "timeModes": {
+              "filterId": "period",
+              "cases": {
+                "…": "共3个键"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

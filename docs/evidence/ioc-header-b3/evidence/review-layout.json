@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "role": "review-layout",
+  "evidence_epoch": "ioc-b3-final-1",
+  "code_fingerprint": "1fe02a2761bb5f97141e16c76f21bbf1ce0f3206e049e4cac32128629ccdddeb",
+  "judged_files": ["packages/ui/src/components/select/RangePicker.svelte", "packages/engine/runtime-ui/src/filters/NumberRangeFilter.svelte", "packages/engine/runtime-ui/src/filters/FilterBar.svelte", "packages/engine/runtime-ui/src/RuntimeSurface.svelte", "packages/embed/tests/browser/ioc-currency.spec.ts", "pages/ioc-header-currency-demo.json"],
+  "status": "executed",
+  "coverage": [{
+    "dimension": "L3",
+    "scope": "冻结390×850视口下金额验收页的自然回流与金额面板打开态。复用新鲜原始事实：页头 overflow=0，文档宽390；面板 left74/right374/width300，位于视口内。截图显示上下限、预设及确定/取消按钮完整可操作，未见关键内容被裁切。",
+    "evidence_ids": ["BE-34", "BE-31", "packages/embed/tests/browser/ioc-currency.spec.ts:L27-L27", "packages/ui/src/components/select/RangePicker.svelte:L5-L6", "packages/ui/src/components/select/RangePicker.svelte:L18-L28"],
+    "result": "clear"
+  }],
+  "findings": [], "skipped": [], "open_questions": [], "deferred_candidates": [], "evidence_reused": ["BE-34", "BE-31"], "evidence_added": [], "known_gaps": []
+}

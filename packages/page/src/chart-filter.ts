@@ -1,3 +1,4 @@
+import { filterDependencies } from './filter-dependencies';
 import { collectFilterTextValueReferences } from './filter-text-value';
 import { flattenPageComponents, walkPageComponents } from './component-walk';
 import { affectedSourceIds, conditionSourceIds } from './data-source-references';
@@ -23,7 +24,7 @@ export function chartFilterErrors(page: Page, document: unknown = page): TypedEr
     const location = `${path}/props/filter`;
     if (page.layout !== 'dashboard' || path.startsWith('/detailViews/')) error(location, '图表筛选只用于 Dashboard 正文图表');
     const declaration = page.filters?.find(filter => filter.id === control.filterId);
-    if (!declaration || declaration.type !== 'dimension' || declaration.hierarchy || declaration.dependsOn || declaration.initialParam || declaration.visible === false) {
+    if (!declaration || declaration.type !== 'dimension' || declaration.hierarchy || declaration.dependsOn || declaration.candidateContext || declaration.clearOnChangeOf || declaration.options || declaration.selection || declaration.initialParam || declaration.visible === false) {
       error(`${location}/filterId`, '图表筛选必须引用独立、可见、非层级的维度筛选器，初值由 default 声明');
       return;
     }
@@ -32,7 +33,7 @@ export function chartFilterErrors(page: Page, document: unknown = page): TypedEr
     const values = control.options.map(option => option.value);
     if (new Set(values).size !== values.length) error(`${location}/options`, '图表筛选选项的 value 不得重复');
     if (declaration.default?.length !== 1 || !values.includes(declaration.default[0]!)) error(`${location}/filterId`, '图表筛选 default 必须是候选项中的一个值');
-    if (page.filters?.some(filter => filter.type === 'dimension' && filter.dependsOn === declaration.id)) error(`${location}/filterId`, '图表筛选不能驱动其他筛选器的级联');
+    if (page.filters?.some(filter => filterDependencies(filter).includes(declaration.id))) error(`${location}/filterId`, '图表筛选不能驱动其他筛选器的级联');
 
     const roots = Object.entries(page.dataSources).flatMap(([id, source]) =>
       source.source.type === 'query' && source.source.query.filterBindings?.[declaration.id] ? [id] : []);

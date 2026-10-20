@@ -64,7 +64,7 @@ it('报告图片导出启用、倍率和文件名保存重开，保持已有PDF�
   const draft = setup(), locator = {sectionId:'s',componentId:'header'};
   const enabled = editProperty(draft, locator, {kind:'report-export',format:'png',field:'enabled',value:true});
   expect(enabled.ok).toBe(true); if(!enabled.ok)return;
-  expect(enabled.draft.pageDocument.schemaVersion).toBe('6.31');
+  expect(enabled.draft.pageDocument.schemaVersion).toBe('6.36');
   expect(propertyControls(enabled.draft,locator).map(c=>c.id)).toEqual(expect.arrayContaining(['export-png-enabled','export-png-scale','export-png-filename']));
   const scale = editProperty(enabled.draft,locator,{kind:'report-export',format:'png',field:'scale',value:'4'});
   expect(scale.ok).toBe(true); if(!scale.ok)return;

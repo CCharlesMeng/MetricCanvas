@@ -1,4 +1,6 @@
 import type { TypedError } from './errors';
+import {declaredNavigationTargets} from './navigate';
+import type {Page} from './page';
 import { collectTextValueReferences, collectTextValueCompositions } from './page-param';
 import { collectFilterTextValueReferences } from './filter-text-value';
 import { walkDocumentComponents } from './component-walk';
@@ -15,7 +17,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 31;
+const CURRENT_MINOR = 36;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -37,6 +39,17 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+ 'navigation-inputs':{minor:36,description:'显式跨页传值与目标输入契约验证',usedAt:document=>{const paths:string[]=record(document)?.strictURLInputs===true?['/strictURLInputs']:[];walkDocumentComponents(document,(component,path)=>{const page={sections:[{components:[component]}]} as unknown as Page;if(declaredNavigationTargets(page).some(target=>target?.validateTargetInputs===true))paths.push(path);});return paths;}},
+ 'time-modes':{minor:35,description:'日月ISO周模式及完整静态查询case',usedAt:document=>[...filterPaths(document,f=>f.display==='modes'),...dataSourcePaths(document,d=>!!record(record(d.source)?.query)?.timeModes)]},
+ 'time-availability':{minor:35,description:'可信期间事实与显式日期边界',usedAt:document=>[...filterPaths(document,f=>['availability','max','blockedRanges'].some(key=>has(f,key))),...(Array.isArray(record(record(record(document)?.iocHeader)?.identity)?.facts)&&((record(record(record(document)?.iocHeader)?.identity)?.facts) as unknown[]).some(value=>has(record(record(value)?.value),'fact'))?['/iocHeader/identity/facts']:[])]},
+ 'time-presets':{minor:35,description:'时间快捷范围与候选月份窗口',usedAt:document=>filterPaths(document,f=>f.type==='timeRange'&&has(f,'presets')||f.type==='dimension'&&has(f,'candidateWindow'))},
+  'business-filter-selection':{minor:33,description:'页级单多选、封闭枚举及显式结构树',usedAt:document=>filterPaths(document,f=>['selection','options','treeSelection'].some(key=>has(f,key)))},
+  'business-filter-context':{minor:33,description:'页级候选依赖与明确清理',usedAt:document=>filterPaths(document,f=>['candidateContext','clearOnChangeOf'].some(key=>has(f,key)))},
+  'money-usd':{minor:34,description:'显式美元金额及格式',usedAt:document=>[...dataSourcePaths(document,d=>findPaths(d.fields,v=>v.type==='money'&&v.currency==='USD').length>0),...namedFormatPaths(document,/^usd-adaptive$/),...filterPaths(document,f=>f.type==='numberRange'&&findPaths(f.units,v=>v.currency==='USD').length>0)]},
+  'amount-range':{minor:34,description:'金额范围约束单位预设和metric选择',usedAt:document=>filterPaths(document,f=>f.type==='numberRange'&&(has(f,'units')||has(f,'constraints')||has(f,'presets')))},
+  'field-selection':{minor:34,description:'静态货币字段选择',usedAt:document=>componentPaths(document,c=>findPaths(c.props,v=>has(v,'byFilter')).length>0)},
+  'filter-hint':{minor:33,description:'筛选说明文本',usedAt:document=>filterPaths(document,f=>has(f,'hint'))},
+  'ioc-header': { minor:32, description:'页级 IOC 身份、筛选归属与实际首行折叠', usedAt: document => has(record(document), 'iocHeader') ? ['/iocHeader'] : [] },
   'period-filter': {minor:27,description:'Dashboard 年季月与近一年期间筛选',usedAt:document => filterPaths(document, filter => filter.type === 'timeRange' && (has(filter,'display') || has(filter,'initialMode') || !!(record(filter.default) && has(record(filter.default),'mode'))))},
   'chart-local-filter': {
     minor: 29, description: 'Dashboard 图表左上角独立筛选与自定义选项',
@@ -1005,4 +1018,9 @@ function numberRangeTablePaths(document:unknown):string[]{
     function visit(columns:unknown,base:string){if(!Array.isArray(columns))return;columns.forEach((value,index)=>{const column=record(value);if(!column)return;const location=`${base}/${index}`;if(record(column.filterable)?.mode==='numberRange')paths.push(`${location}/filterable/mode`);visit(column.children,`${location}/children`);});}
     visit(props(component)?.columns,`${path}/props/columns`);
   });return paths;
+}
+function findPaths(document:unknown,matches:(value:Record<string,unknown>)=>boolean):string[]{
+ const paths:string[]=[];
+ function visit(value:unknown,path:string){if(Array.isArray(value))value.forEach((item,i)=>visit(item,`${path}/${i}`));else if(value&&typeof value==='object'){const item=value as Record<string,unknown>;if(matches(item))paths.push(path);for(const [key,child]of Object.entries(item))visit(child,`${path}/${key}`);}}
+ visit(document,'');return paths;
 }

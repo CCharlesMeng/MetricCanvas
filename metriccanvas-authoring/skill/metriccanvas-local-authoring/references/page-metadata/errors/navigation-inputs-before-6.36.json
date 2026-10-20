@@ -1,0 +1,38 @@
+{
+  "case": "navigation-inputs-before-6.36",
+  "invariant": "navigation-target-inputs",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "显式跨页传值与目标输入契约验证 由 6.36 引入，文档声明的是 6.35",
+      "paths": [
+        "/strictURLInputs",
+        "/sections/0/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "strictURLInputs": true,
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "forward",
+            "type": "text",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "进入项目清单",
+              "body": "选择期间、币种、区域后进入清单；页面之间各自独立。",
+              "links": [
+                "…（共2项）"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

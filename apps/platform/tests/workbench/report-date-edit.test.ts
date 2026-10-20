@@ -27,7 +27,7 @@ it('Dashboard page-level period editing does not need a report header and preser
   const parsed=parsePage(edit.draft.pageDocument);if(!parsed.ok)throw Error('invalid');const page=parsed.page;
   expect(page.filters?.[0]).toMatchObject({display:'period',default:{mode:'quarter',value:'2026-Q4'}});
   const sales=page.dataSources.sales.source;if(sales.type!=='query')throw Error('query');
-  expect(sales.query.body.dsl_list[0].filter).toMatchObject({time:{period:'day',is_aggregate:false}});
+  expect(sales.query.body!.dsl_list[0].filter).toMatchObject({time:{period:'day',is_aggregate:false}});
   expect(page.sections.some(s=>s.components.some(c=>c.type==='reportHeader'))).toBe(false);
   const removed=editReportDate(edit.draft,null,{filterId:'period-filter',remove:true});expect(removed.ok).toBe(true);
 });

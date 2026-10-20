@@ -7,7 +7,7 @@ import type { DialogueAdapter } from '../../src/lib/dialogue/port';
 // The service factory only reads base; navigation itself is outside this SDK boundary.
 function navigation(): PlatformNavigation {
   return {
-    base: '/metrics', resolve: path => `/metrics${path}`,
+    base: '/metrics', replaceSearch:()=>{}, resolve: path => `/metrics${path}`,
     navigate: async () => false, canLeave: () => true,
     current: () => new URL('https://platform.test/metrics'),
     checkpoint: () => ({ href: 'https://platform.test/metrics', revision: 0 }),

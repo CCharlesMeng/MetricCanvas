@@ -2,7 +2,7 @@
 
 <a id="页面参数维度与时间的现行方案"></a>
 
-本文是页面参数的使用专题，承接[页面元数据总规范](PAGE-METADATA.md)。当前作者协议为 **6.28**；版本与可读范围以总规范及生成契约为准。本文先说明当前分层参数、打开与保存、顶部时间筛选和共享窗口规则，再说明程序化提取，最后集中保留旧数组参数的兼容用法。字段表由Schema生成，见[参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
+本文是页面参数的使用专题，承接[页面元数据总规范](PAGE-METADATA.md)。当前作者协议为 **6.36**；版本与可读范围以总规范及生成契约为准。本文先说明当前分层参数、打开与保存、顶部时间筛选和共享窗口规则，再说明程序化提取，最后集中保留旧数组参数的兼容用法。字段表由Schema生成，见[参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
 
 ## 阅读入口
 
@@ -479,3 +479,19 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 6.27 的 `timeRange.display="period"` 可用 `initialParam` 读取时间参数，同时显式声明 `initialMode` 为 year、quarter 或 month；参数必须正好覆盖一个对应自然期间。它与期间 default 互斥，运行中选择只写筛选状态。近一年独立按当前月之前十二个完整月份计算，不由绝对参数初始化，也不自动提取成固定参数。完整声明与示例见[筛选模块](docs/page-metadata/filters.md#dashboard-期间选择627)。
 
 时间选择器默认禁止未来时间；日期参数作为筛选初值时同样遵守运行时上限，非法初值拒绝初始化，不静默截断。查询窗口保持显式声明，当前年／季／月仍为完整自然期间。见[默认时间上限](docs/page-metadata/filters.md#时间选择的默认上限)。
+
+### IOC身份与独立详情月份（6.32）
+
+根iocHeader的title/code/description/tags/facts消费同一TextValue引用与一层parts；参数不反向读取筛选草稿。显式标题缺值显示“未命名”，可选身份项缺值整体省略，不生成当前刷新时间。详情用timePoint.initialParam取得单月初值，后续修改只改变FilterState；完整例见[详情单月](pages/ioc-header-detail-demo.json)，行为与限制由[页面模块](docs/page-metadata/page.md#ioc-公共页头632)拥有。
+
+业务筛选6.33的selection/options也约束initialParam物化值、URL和restore；参数仍只初始化，不随页内筛选回写。详见[业务筛选](docs/page-metadata/filters.md#business-filters)。
+
+6.34金额default、URL及恢复值使用基本单位；仅控件输入/预设按当前units.scale换算一次。控制币种是required单选封闭枚举，也可沿用dimension.initialParam，但numberRange没有新增initialParam。byFilter不新增页面参数类别。
+
+6.35：模式范围不使用initialParam，导航使用目标筛选的完整mode/from/to。可信期间事实由displayInputs提供，URL/页面参数不能覆盖；availability.initial与default/initialParam互斥，合法筛选URL优先但仍受独立max校验。
+
+## 6.36跨页输入
+
+跨页值由显式query传给目标声明，参数只在打开时确定，目标筛选不回写来源。显式非法数字/布尔/重复单值显示输入错误，不回退default。强类型导航需要目标输入投影；季度/多月不截成单月。新窗口和刷新消费URL，不恢复来源阅读状态。场景见pages/README.md。
+
+`strictURLInputs:true`由页面显式开启，兼容规范化升版本不自动开启。来源和目标可分别选择该策略；本批三个验收页均开启。受控编辑使用`set_url_input_validation`，enabled=false仅删除该标记。

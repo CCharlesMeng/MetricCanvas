@@ -9,7 +9,7 @@
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.31。结构真源为本册[schema.json](../schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.36。结构真源为本册[schema.json](../schema.json)，SHA256 `2efb37f681de86719e9bd7c0f1816c99d827097e0adb53e74e2c82fb955bf67a`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -179,6 +179,20 @@ Schema位置：`#/definitions/textComponent/properties/props/properties/links/it
 |---|---|---|---|---|
 | "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 目标URL，必须通过安全协议及结构检查。 |
 
+<a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6c696e6b732f6974656d732f70726f706572746965732f76616c6964617465546172676574496e70757473"></a>
+
+### `@textComponent.props.links[].validateTargetInputs`
+
+Schema位置：`#/definitions/textComponent/properties/props/properties/links/items/properties/validateTargetInputs`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | const=true | Schema未设默认；装配/运行时默认见语义说明 | 显式要求集成应用提供目标输入投影后才允许跨页导航；仅传URL输入，不恢复视图。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| true | 用于选择@textComponent.props.links[].validateTargetInputs分支；同分支其它约束同时成立。 |
+
 <a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6c696e6b732f6974656d732f70726f706572746965732f7175657279"></a>
 
 ### `@textComponent.props.links[].query`
@@ -309,7 +323,7 @@ Schema位置：`#/definitions/textComponent/properties/props/properties/links/it
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["value","from","to","level"] | Schema未设默认；装配/运行时默认见语义说明 | 导航取筛选值的value/from/to/level部分。 |
+| "string" | 本分支可选 | enum=["value","from","to","level","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -317,6 +331,7 @@ Schema位置：`#/definitions/textComponent/properties/props/properties/links/it
 | "from" | 范围起点部分。 |
 | "to" | 范围终点部分。 |
 | "level" | 层级维度的层级部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
 
 <a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6c696e6b732f6974656d732f70726f706572746965732f71756572792f70726f70657274794e616d6573"></a>
 

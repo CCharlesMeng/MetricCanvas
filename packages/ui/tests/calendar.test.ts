@@ -70,3 +70,10 @@ it('年季值与键盘移动严格使用期间编码',()=>{
   expect(calendarDraft('2026-Q4','','quarter',false,true)).toMatchObject({ok:true,value:{from:'2026-Q4',to:'2026-Q4'}});
   expect(validCalendarValue('2026-Q5','quarter')).toBe(false);
 });
+import {calendarBound,calendarSpan,calendarExclusion} from '../src/components/date-picker/calendar';
+it('projects caps to navigation precision but checks whole natural spans',()=>{
+ expect(calendarBound('2026-10-19','quarter',true)).toBe('2026-Q4');expect(calendarSpan('2026-Q4','quarter').to).toBe('2026-12-31');expect(calendarBound('2026-10','date',true)).toBe('2026-10-31');expect(calendarSpan('2024-02','month').to).toBe('2024-02-29');
+});
+it('detects a blocked date inside a range and within a larger natural period',()=>{
+ const blocked=[{from:'2026-07-15',to:'2026-07-16'}];expect(calendarExclusion({from:'2026-07-01',to:'2026-08-01'},'date',blocked)).toBe(true);expect(calendarExclusion({from:'2026-Q3',to:'2026-Q3'},'quarter',blocked)).toBe(true);expect(calendarExclusion({from:'2026-08',to:'2026-09'},'month',blocked)).toBe(false);
+});

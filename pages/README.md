@@ -160,3 +160,47 @@ Report 页面按三节组织，控件相互独立：
 - 组件配置提供常用宽度、逐轨调节及展示属性，不再重复摘要卡或移动/删除按钮；页面设置独立呈现日期筛选配置。操作条跟随选择、尺寸和滚动，目标完全滚出视野后隐藏。选中组件按 Delete 可删除，输入框中的 Delete 不触发删除。
 - 删除或移动一个分区的最后组件时，该分区在搭建草稿中保留并可继续接收拖入，正式页面投影移除空分区。页面须至少保留一个组件；删除最后一个组件会显示原因且保留原文档。删除不回收共享页面数据源。
 - 修改与删除可用顶部「撤销上一步」恢复；点击「保存草稿」才提交。本地浏览器测试证明交互、文档投影与受控保存回读，不能替代真实 Java 资产服务或部署验收。
+
+## IOC公共页头 B0+B1（6.32）
+
+| 入口 | 操作与预期 |
+| --- | --- |
+| `/pages/ioc-header-overview-demo` | 月→季→年→月仍保留原月份；近一年排除当前月；统计期间和服务条件回显一起变化，无关表查询不刷新。区域只出现一次。 |
+| `/pages/ioc-header-dense-filter-demo` | 展开/收起不发查询；缩窄容器首行实测折叠，隐藏项不可聚焦。区域→地区部→代表处选值后改区域，递归清空后代并门禁；用户显式选择/清空后再执行。 |
+| `/pages/ioc-header-detail-demo` | Report外框；身份来自参数，可选标签/刷新时间缺值不显示；单月独立修改不反写输入参数。直接打开无返回；集成应用给合法returnContext+back才显示。 |
+| `/pages/ioc-header-month-set-demo` | 无身份行；选2026-01和2026-03，条件回显只含两个值，不包含2月。仅复用既有dimension；B2动态月份窗口未实施。 |
+
+数据环境：以上是**本地DQE仿真合成验收**。服务回显实际声明绑定收到的时间/维度谓词，响应标识固定为1，并非业务指标。可用DQE Sim或嵌入测试内容服务交互；候选失败/迟到/多实例由配套行为测试补充。源码/安装校验、浏览器HTTP往返与真实DQE/CloudIOC/Relay分别报告，合成成功不代表真实服务验收。现有IOC四页没有迁移，可选动作未默认启用。
+
+### IOC公共页头B2业务筛选（本地合成）
+
+- `ioc-header-business-options-demo`：单选替换且停用档位不可选；突破枚举全选保留URL而省动态谓词；勾选/明确false分别回显1/0。
+- `ioc-header-business-tree-demo`：显式结构树切层不混值，旧斜杠树仍批量选叶子；2026-08候选仅B、07仅C形成空交集待明确清空、06拒绝、05未配置、04空候选。相关查询及导出等待，无关源继续。
+- `ioc-header-business-detail-demo`：详情独立单月与详情枚举，不改变概览或参数。
+
+独立内容服务使用 `MC_EMBED_EXAMPLE_PORT=4198 node packages/embed/tests/serve.mjs`；三个页面的导航宿主注入合成V2 Adapter。Playground没有V2 Adapter时显示不可用是预期边界。不要把合成回显标识1当业务指标，真实服务/模型验收未执行。
+
+- `ioc-header-currency-demo`：B3 Dashboard金额验收页。合成HTTP端口提供独立CNY/USD静态字段，sumFields分别计算同币种含费用金额；切币种与清范围一次提交，明确选择范围后重查。输入/预设按万元/万美元，URL及查询使用基本单位；取消不写入，负数/相等双边拒绝。表格/图表/指标卡同步选择字段，XLSX冻结对应货币。直接打开`http://127.0.0.1:4200/pages/ioc-header-currency-demo`，或页面试验场注入同一仿真数据网关；真实USD、DQE/CloudIOC/Relay/DS/门户与部署未验收。
+
+## IOC B4：复杂时间与候选（本地合成）
+
+- `ioc-header-time-modes-demo`：日/月/ISO周切换、模式URL、查询回显与XLSX；不是生产周聚合证明。
+- `ioc-header-time-presets-demo`：含今日近7天、上个完整月、显式锚点，禁选区间内预设拒绝。
+- `ioc-header-availability-demo`：可信latest=2026-10、complete=2026-09；默认完成期，合法URL优先；缺数7月禁选。测试宿主可切事实状态/身份，观察相关查询门禁及无关源继续。
+- `ioc-header-calendar-window-demo`：V2十二个日历月候选、1/3月离散集合和时间模型交集。
+
+完整交互宿主：`MC_EMBED_EXAMPLE_PORT=4204 node packages/embed/tests/serve.mjs`，先构建embed，然后打开 `/pages/<id>`。后两页由测试宿主的 `examples/ioc-time-inputs.mjs` 注入稳定可信输入；候选服务为本地 `/__fixtures/filter-candidates`。Playground目录也注册这些页，集成应用若没有注入displayInputs/V2则明确显示不可用。数据环境是同源合成HTTP，真实DQE/CloudIOC/Relay/DS/门户及生产数据未验收。
+
+## IOC B5：显式跨页传值
+
+本地合成验收，三个实际页面可从Playground“验收样例”目录发现：
+
+- `/pages/ioc-header-navigation-source-demo`：选择期间/币种/多值区域，点“携带已应用条件进入清单”。
+- `/pages/ioc-header-navigation-list-demo?origin=直接入口`：来源标签和条件来自显式映射；选单月后点“示例项目甲”。季度或近一年不得截成详情单月；缺编码行拒绝并显示原因。
+- `/pages/ioc-header-navigation-detail-demo?project-id=P001&project-name=示例项目&origin=直接入口&month=2026-09&currency=RMB&regions=north`：页头显示项目参数，合成HTTP回显项目/月/币种/区域谓词；修改详情筛选不回写来源。新窗口及刷新只消费URL。
+
+启动：根目录`pnpm --filter playground dev --host 127.0.0.1 --port 4208`，DQE_SIM_PORT=4210配置本地DQE代理端口；确切命令见B5结果。Embed用`MC_EMBED_EXAMPLE_PORT=4212 pnpm --filter @metriccanvas/embed exec playwright test ioc-navigation.spec.ts`。
+
+异常：概览缺目标能力链接提示不可用；清单切季度或点击缺编码行拒绝；详情将month改为quarter:2026-Q3/bad，或删project-id、改未知区域，显示输入错误且不发业务查询。
+
+内联清单为导航边界样例，不是实际筛选结果。详情合成HTTP不代表真实DQE/CloudIOC/Relay验收。无viewstate、历史存储或恢复，B6挂起。

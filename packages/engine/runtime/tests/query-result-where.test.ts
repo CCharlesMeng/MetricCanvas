@@ -89,7 +89,7 @@ describe('filtered query inputs across consumers and export',()=>{
 function pagedFixture(): Page {
   const p=fixture();p.schemaVersion='6.20';
   const source=p.dataSources.projects.source;if(source.type!=='query')throw Error('query');
-  delete source.resultScope;source.query.body.dsl_list[0].order={offset:0,limit:2};
+  delete source.resultScope;source.query.body!.dsl_list[0].order={offset:0,limit:2};
   const table=p.sections.flatMap(section=>section.components).find(component=>component.type==='table'&&component.data.main==='projects');
   if(table?.type!=='table')throw Error('table');table.props.pagination={mode:'query'};return p;
 }
@@ -103,7 +103,7 @@ it('sort invalidation follows branches, waits for joined inputs, propagates furt
     {source:'details-low',field:'project-id',target:'dimension',queryField:'小额编号',maxValues:500}
   ];
   next.source.query.resultBindings=[{source:'joined',field:'project-id',target:'dimension',queryField:'汇总编号',maxValues:500}];
-  delete unrelated.source.query.resultBindings;unrelated.source.query.body.dsl_list[0].order={order_by_field:'独立',type:'asc'};
+  delete unrelated.source.query.resultBindings;unrelated.source.query.body!.dsl_list[0].order={order_by_field:'独立',type:'asc'};
   p.dataSources.joined=joined;p.dataSources.next=next;p.dataSources.unrelated=unrelated;
   const table=p.sections.flatMap(section=>section.components).find(component=>component.type==='table');if(!table)throw Error('table');
   p.sections[0].components.push({...structuredClone(table),id:'next-table',data:{main:'next'}},{...structuredClone(table),id:'unrelated-table',data:{main:'unrelated'}});
@@ -137,7 +137,7 @@ it('sort invalidation follows branches, waits for joined inputs, propagates furt
 
 it('upstream sorting resets a paged downstream query and permits actual page sizes above the original declaration',async()=>{
   const p=pagedFixture(), source=p.dataSources['details-high'].source;
-  if(source.type!=='query')throw Error('query');delete source.resultScope;source.query.body.dsl_list[0].order={offset:0,limit:1};
+  if(source.type!=='query')throw Error('query');delete source.resultScope;source.query.body!.dsl_list[0].order={offset:0,limit:1};
   const table=p.sections.flatMap(section=>section.components).find(component=>component.type==='table'&&component.data.main==='details-high');
   if(table?.type!=='table')throw Error('table');table.props.pagination={mode:'query'};
   const h=harness(p);h.calls[0].resolve({rows:[project('HIGH',2e6)],totalCount:80});await flush();

@@ -1,0 +1,15 @@
+{
+  "case": "ioc-header-toolbar-conflict",
+  "invariant": "ioc-header",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC 看板必须显式关闭通用工具栏",
+      "paths": [
+        "/dashboardToolbar"
+      ]
+    }
+  ],
+  "inputExcerpt": {},
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

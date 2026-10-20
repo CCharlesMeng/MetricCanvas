@@ -1,7 +1,7 @@
 export type {
   PageRepository,
   DataGateway,
-  DataGatewayResult,
+  FilterCandidate, FilterCandidatesRequest, FilterCandidatesResult, FilterCandidatesGateway, DataGatewayResult,
   DimensionValueCandidate,
   DimensionValuesGateway,
   DimensionValuesResult,
@@ -32,7 +32,8 @@ export {
   serializePageParam
 } from './page-params';
 export type { PageParamState, PageParamValues } from './page-params';
-export { navigationHref } from './navigate';
+export { navigationHref, resolveNavigationTarget, type NavigationResolution } from './navigate';
+export {projectNavigationInputs,type NavigationInputContract} from './navigation-inputs';
 export type {
   FilterState,
   FilterValue,

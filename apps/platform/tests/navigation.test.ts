@@ -84,3 +84,6 @@ describe('navigation transactions',()=>{
     expect(navigation.current().pathname).toBe('/create');expect(entries[0].state).toEqual({portal:'previous-instance'});navigation.destroy();
   });
 });
+it('reading filter URL replacement updates the current entry without a navigation or restoration entry',()=>{
+ const b=browser('/manage/pages/P?resource=r');let notifications=0;const stop=b.navigation.subscribe(()=>notifications++);b.navigation.replaceSearch('resource=r&month=2026-08');expect(b.navigation.current().searchParams.get('month')).toBe('2026-08');expect(b.entries).toHaveLength(1);expect(notifications).toBe(1);stop();b.navigation.destroy();
+});

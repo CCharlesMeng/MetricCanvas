@@ -14,7 +14,8 @@ export const SUMMARY_EXPORT_CAPTURE = Symbol('metriccanvas.summaryCapture');
 export type SummaryCapture = Map<string, () => AiSummarySnapshot>;
 export interface ExportRenderState {
   page: Page;
-  currentYear:number;
+  displayInputs?:import('@metriccanvas/page/internal').DisplayInputsSnapshot;filterRevision?:number;
+  currentYear:number;now?:Date;
   filters: FilterValues;
   snapshots: PageDataSnapshots;
   tables: Record<string, TableViewState>;

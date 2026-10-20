@@ -1,0 +1,17 @@
+{
+  "case": "ioc-header-empty",
+  "invariant": "ioc-header",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC 页头需要身份、筛选或返回意图",
+      "paths": [
+        "/iocHeader"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "iocHeader": {}
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,47 @@
+{
+  "case": "currency-case-missing",
+  "invariant": "currency-selection",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字段选择必须穷尽required单选封闭枚举",
+      "paths": [
+        "/sections/0/components/2/props"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          {
+            "props": {
+              "title": "金额明细（查询后分别计算两种静态货币）",
+              "rowKey": "project",
+              "columns": [
+                {
+                  "…": "共3个键"
+                },
+                {
+                  "…": "共4个键"
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 20
+              },
+              "toolbar": {
+                "export": {
+                  "…": "共2个键"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/currency-case-missing.json"
+}

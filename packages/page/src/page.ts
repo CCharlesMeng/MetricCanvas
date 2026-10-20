@@ -209,6 +209,8 @@ export interface Page {
   layout?: PageLayoutForm;
   /** dashboard 统一工具栏；缺省显示，页面有自有页头时可显式关闭。 */
   dashboardToolbar?: DashboardToolbar;
+  iocHeader?: import('./schema/ioc-header').IocHeaderDeclaration;
+  strictURLInputs?:true;
   /** 页面参数声明（ADR-0047）；取值在页面打开时由 URL 确定。 */
   params?: PageParamDeclaration[];
   dataSources: DataSources;
@@ -243,6 +245,8 @@ export function documentLayoutForm(document: unknown): PageLayoutForm {
  * RuntimeView 只会在 dashboard 形态渲染它，report 仍须保留宿主 breadcrumb。
  */
 export function documentUsesRuntimeBackToolbar(document: unknown): boolean {
+  const ioc = (document as { iocHeader?: { back?: unknown } } | null)?.iocHeader;
+  if (ioc?.back === true) return true;
   if (documentLayoutForm(document) !== 'dashboard') return false;
   if (typeof document !== 'object' || document === null || Array.isArray(document)) return false;
   const toolbar = (document as { dashboardToolbar?: unknown }).dashboardToolbar;

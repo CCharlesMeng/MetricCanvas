@@ -1,4 +1,5 @@
 export * from './page';
+export type { IocHeaderDeclaration } from './schema/ioc-header';
 export * from './page-document';
 export * from './page-param';
 export * from './text-value';
@@ -30,7 +31,7 @@ export {
   type PageParseResult
 } from './validate';
 export { fileNameErrors } from './file-name';
-export { navigationErrors, isNavigationHref, filterURLKeys, urlInputErrors } from './navigate';
+export { navigationErrors, isNavigationHref, filterURLKeys, urlInputErrors, declaredNavigationTargets } from './navigate';
 export type { NavigationTarget, NavigationBinding } from './schema/navigation';
 export * from './version';
 export type { ColorRule, CategoryLabels } from './schema/presentation';
@@ -58,3 +59,11 @@ export { chartFilterOptions } from './chart-filter';
 export { currentTimeValue, timeFilterBoundaryError } from './time-filter-boundary';
 
 export { reportExportScale } from './report-export';
+
+export { candidateDependencies, filterDependencies, dimensionSelectionIssue } from './filter-dependencies';
+
+export * from './amount-filter';
+export * from './field-selection';
+
+export * from './time-mode';
+export * from './period-facts';

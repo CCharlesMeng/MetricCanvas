@@ -54,7 +54,7 @@ it.each([
   const page=loaded();
   if(!scenario.paged) {
     const source=page.dataSources.sales.source;if(source.type!=='query')throw Error('fixture');
-    delete source.query.body.dsl_list[0].order;
+    delete source.query.body!.dsl_list[0].order;
     const table=page.sections[1].components[0];if(table.type==='table')table.props.pagination={mode:'none'};
   }
   const requests:EffectiveQuery[]=[];
@@ -134,7 +134,7 @@ it('explicit time-point windows share a mutable base without changing immutable 
 
 it('requires completeness evidence for an unpaged query',async()=>{
   const page=loaded();const source=page.dataSources.sales.source;if(source.type!=='query')throw Error('fixture');
-  delete (source.query.body.dsl_list[0] as any).order;
+  delete (source.query.body!.dsl_list[0] as any).order;
   const table=page.sections[1].components[0];if(table.type==='table')table.props.pagination={mode:'none'};
   const filters=createFilterState(initialFilterValues(page.filters??[]));const gateway:DataGateway={async fetchData(){return {rows:[{entry:'only visible',amount:1}]};}};
   const stream=orchestrate(page,gateway,filters);const off=stream.subscribe(()=>{});
@@ -145,7 +145,7 @@ it('requires completeness evidence for an unpaged query',async()=>{
 });
 
 it('keeps a static business TopN on a graph without treating it as an export page window',async()=>{
- const page=loaded(),source=page.dataSources.sales.source;if(source.type!=='query')throw Error('query');source.query.body.dsl_list[0].order={limit:5};
+ const page=loaded(),source=page.dataSources.sales.source;if(source.type!=='query')throw Error('query');source.query.body!.dsl_list[0].order={limit:5};
  const table=page.sections[1].components[0];if(table.type==='table')table.props.pagination={mode:'none'};
  const calls:EffectiveQuery[]=[];const gateway:DataGateway={async fetchData(query){calls.push(query);return {rows:Array.from({length:5},(_,i)=>({entry:String(i),amount:i})),totalCount:100};}};
  const stream=orchestrate(page,gateway),off=stream.subscribe(()=>{});
@@ -160,7 +160,7 @@ it('downloads healthy sources even when another source fails',async()=>{
   const page=loaded();
   page.dataSources.failed=structuredClone(page.dataSources.sales);
   const failed=page.dataSources.failed.source;if(failed.type!=='query')throw Error('fixture');
-  failed.query.body.dsl_list[0].filter={time:{period:'month',is_aggregate:true}};
+  failed.query.body!.dsl_list[0].filter={time:{period:'month',is_aggregate:true}};
   const table=structuredClone(page.sections[1].components[0]);
   table.id='failed-table';table.data={main:'failed'};
   page.sections[1].components.push(table);

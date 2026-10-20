@@ -1,0 +1,150 @@
+{
+  "schemaVersion": "6.36",
+  "id": "ioc-header-navigation-source-demo",
+  "layout": "dashboard",
+  "dashboardToolbar": "hidden",
+  "meta": {
+    "title": "IOC B5：概览传值",
+    "description": "本地合成跨页传值验收；不保存或恢复来源视图。"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "IOC B5：概览传值",
+      "tags": [
+        {
+          "id": "synthetic",
+          "text": "合成验收",
+          "tone": "info"
+        }
+      ]
+    },
+    "filterIds": [
+      "period",
+      "currency",
+      "regions"
+    ]
+  },
+  "filters": [
+    {
+      "id": "period",
+      "type": "timeRange",
+      "label": "期间",
+      "display": "period",
+      "precision": "month",
+      "required": true,
+      "default": {
+        "mode": "month",
+        "value": "2026-09"
+      }
+    },
+    {
+      "id": "currency",
+      "type": "dimension",
+      "label": "币种",
+      "dimension": "currency_code",
+      "display": "select",
+      "selection": {
+        "mode": "single",
+        "required": true
+      },
+      "options": [
+        {
+          "value": "RMB",
+          "label": "人民币"
+        },
+        {
+          "value": "USD",
+          "label": "美元"
+        }
+      ],
+      "default": [
+        "RMB"
+      ]
+    },
+    {
+      "id": "regions",
+      "type": "dimension",
+      "label": "区域",
+      "dimension": "region_code",
+      "display": "select",
+      "selection": {
+        "mode": "multiple"
+      },
+      "options": [
+        {
+          "value": "north",
+          "label": "北区"
+        },
+        {
+          "value": "south",
+          "label": "南区"
+        }
+      ],
+      "default": [
+        "north",
+        "south"
+      ]
+    }
+  ],
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "links",
+      "container": "plain",
+      "components": [
+        {
+          "id": "forward",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "进入项目清单",
+            "body": "选择期间、币种、区域后进入清单；页面之间各自独立。",
+            "links": [
+              {
+                "label": "携带已应用条件进入清单",
+                "href": "/pages/ioc-header-navigation-list-demo",
+                "validateTargetInputs": true,
+                "query": {
+                  "origin": {
+                    "source": "param",
+                    "id": "source-label"
+                  },
+                  "period": {
+                    "source": "filter",
+                    "id": "period",
+                    "part": "value"
+                  },
+                  "currency": {
+                    "source": "filter",
+                    "id": "currency"
+                  },
+                  "regions": {
+                    "source": "filter",
+                    "id": "regions"
+                  }
+                }
+              },
+              {
+                "label": "目标能力缺失示例",
+                "href": "/pages/ioc-header-navigation-missing-demo",
+                "validateTargetInputs": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "params": {
+    "display": [
+      {
+        "id": "source-label",
+        "type": "string",
+        "value": "概览入口A"
+      }
+    ]
+  },
+  "strictURLInputs": true
+}

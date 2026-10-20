@@ -1,3 +1,4 @@
+import {ordinaryQuery} from './time-mode';
 import { isPeriodSelection, resolvePeriodSelection } from './period-filter';
 import type { Page } from './page';
 import type { TypedError } from './errors';
@@ -42,7 +43,7 @@ export function reportDateFilterErrors(page: Page): TypedError[] {
     if (filter.type === 'timeRange') {
       const path = `/filters/${index}`;
       if (filter.display === 'period') {
-        if (page.layout !== 'dashboard') error(path, '期间筛选仅支持 Dashboard 顶部筛选');
+        if (page.layout !== 'dashboard' && !page.iocHeader?.filterIds?.includes(filter.id)) error(path, '期间筛选仅支持 Dashboard 顶部筛选或 IOC 页头');
         if (filter.precision === 'datetime') error(path, '期间筛选不支持 datetime');
         if (!filter.initialParam && !isPeriodSelection(filter.default)) error(`${path}/default`, '期间筛选需要期间默认选择或参数初值');
         if (filter.initialParam && !filter.initialMode) error(`${path}/initialMode`, '参数初始化期间筛选必须显式声明模式');
@@ -50,7 +51,7 @@ export function reportDateFilterErrors(page: Page): TypedError[] {
         if (isPeriodSelection(filter.default)) { try { resolvePeriodSelection(filter.default,new Date(2026,0,1),filter.precision === 'month' ? 'month' : 'date'); } catch { error(`${path}/default`,'期间默认选择不合法'); } }
       } else if (isPeriodSelection(filter.default) || filter.initialMode) error(path,'期间选择只能用于 display=period');
     }
-    if (filter.required && filter.default === undefined && !filter.initialParam) error(`/filters/${index}`, '必需日期筛选器需要 default 或 initialParam 初值');
+    if (filter.required && filter.default === undefined && !filter.initialParam && !filter.availability?.initial && !(filter.type==='timeRange'&&filter.display==='modes')) error(`/filters/${index}`, '必需日期筛选器需要 default 或 initialParam 初值');
     if (filter.type === 'timeRange' && filter.display !== 'period' && filter.precision === 'month' && filter.default !== undefined &&
       (typeof filter.default === 'string' || !('from' in filter.default))) error(`/filters/${index}/default`, '月份范围使用显式 YYYY-MM 起止值');
   }
@@ -62,7 +63,7 @@ export function reportDateFilterErrors(page: Page): TypedError[] {
     for (const [filterId, binding] of times) {
       if (binding.target !== 'time') continue;
       const declaration = filters.get(filterId);
-      const time = query.body.dsl_list[0].filter;
+      const time = ordinaryQuery(query).body.dsl_list[0].filter;
       const value = time && typeof time === 'object' && !Array.isArray(time) ? time.time : undefined;
       const config = value && typeof value === 'object' && !Array.isArray(value) ? value : undefined;
       const path = `/dataSources/${id}/source/query/filterBindings/${filterId}`;

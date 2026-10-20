@@ -81,7 +81,7 @@ describe('结果总数不一致仅告警', () => {
     const loaded = page(), source = loaded.dataSources.samples as QueryDataSource;
     delete source.source.initial;
     delete source.source.resultScope;
-    source.source.query.body.dsl_list[0].order = { offset: 0, limit: 10 };
+    source.source.query.body!.dsl_list[0].order = { offset: 0, limit: 10 };
     loaded.sections = loaded.sections.map(section => ({ ...section, components: section.components.filter(component => component.type === 'table') }));
     const table = loaded.sections[0].components[0];
     if (table.type !== 'table') throw Error('fixture');

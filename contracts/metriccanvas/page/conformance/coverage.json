@@ -1,6 +1,89 @@
 {
   "invariants": [
     {
+      "id": "navigation-target-inputs",
+      "description": "6.36 显式跨页传值意图与受控来源",
+      "valid": [
+        "navigation-source-page",
+        "navigation-list-page",
+        "navigation-detail-page"
+      ],
+      "invalid": [
+        "navigation-inputs-before-6.36",
+        "navigation-policy-fixed-input",
+        "navigation-policy-false",
+        "navigation-inputs-false",
+        "navigation-inputs-unknown-filter"
+      ]
+    },
+    {
+      "id": "time-extensions",
+      "description": "6.35 显式时间模式、可信期间事实、快捷范围及V2月份窗口",
+      "valid": [
+        "time-modes-page",
+        "time-presets-page",
+        "availability-page",
+        "calendar-window-page",
+        "time-binding-branches-page"
+      ],
+      "invalid": [
+        "time-before-6.35",
+        "time-case-missing",
+        "time-query-xor",
+        "time-period-mismatch",
+        "time-output-mismatch",
+        "time-default-week",
+        "time-availability-default",
+        "time-fact-kind",
+        "time-window-static-options"
+      ]
+    },
+    {
+      "id": "currency-selection",
+      "description": "6.34金额范围和静态货币字段选择",
+      "valid": [
+        "currency-selection-page"
+      ],
+      "invalid": [
+        "currency-before-6.34",
+        "currency-case-missing",
+        "currency-metric-mismatch",
+        "currency-negative-default",
+        "currency-equal-default",
+        "currency-compute-mixed"
+      ]
+    },
+    {
+      "id": "business-filters",
+      "description": "6.33 封闭枚举与业务选择语义",
+      "valid": [
+        "business-filter-page"
+      ],
+      "invalid": [
+        "business-filter-before-6.33",
+        "business-filter-single-many",
+        "business-filter-disabled-default",
+        "business-filter-options-dependent",
+        "business-filter-unrestricted-without-options",
+        "business-filter-cycle"
+      ]
+    },
+    {
+      "id": "ioc-header",
+      "description": "6.32 页级IOC身份与唯一筛选归属",
+      "valid": [
+        "ioc-header-page"
+      ],
+      "invalid": [
+        "ioc-header-before-6.32",
+        "ioc-header-empty",
+        "ioc-header-toolbar-conflict",
+        "ioc-header-hidden-filter",
+        "ioc-header-missing-filter",
+        "ioc-header-duplicate-identity"
+      ]
+    },
+    {
       "id": "report-header-export-buttons",
       "description": "6.31 同一种导出按钮按格式配置名称、文件名和清晰度，直接下载",
       "valid": [

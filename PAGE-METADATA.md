@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.31**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30和6.31；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.36**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35和6.36；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
 
 ## 从需求到页面
 
@@ -37,6 +37,7 @@
 | 顶部切换月份或日期并联动查询与文字 | [时间参数与顶部筛选](PAGE-PARAMETERS.md#时间参数与顶部筛选) | [报告页头时间筛选页面](pages/report-date-filter-example.json) |
 | 先查对象集合，再查明细并关联展示 | [级联查询](docs/cascading-queries.md) | [商务SDT报告](pages/business-sdt-cascade-example.json) |
 | 配置每张表的独立搜索与完整Excel导出 | [表格工具区](docs/table-export.md) | [表格工具区示例](packages/page/fixtures/contract-valid/table-toolbar-page.json) |
+| 配置 IOC 公共页头（6.32） | [IOC 公共页头](docs/page-metadata/page.md#ioc-公共页头632) | [普通](pages/ioc-header-overview-demo.json)、[密集](pages/ioc-header-dense-filter-demo.json)、[详情](pages/ioc-header-detail-demo.json) |
 | 配置 PDF / PNG 导出按钮（6.31） | [报告页头](docs/page-metadata/components/reportHeader.md#导出按钮631) | [导出图片](pages/report-png-export.json)、[单张长图](pages/report-png-long-export.json) |
 | 配置 Report 工具带内置 PDF 下载与按钮文字（6.28） | [报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628) | [内置PDF下载页面](pages/report-pdf-export.json) |
 | 下载当前筛选范围内的完整报告PDF | [导出与PDF下载接入](docs/report-export.md) | [HTML接入示例](packages/embed/examples/report-export.html) |
@@ -388,3 +389,17 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 6.27 增量：Dashboard 顶部 timeRange 的年／季／月／近一年选择形态，声明、状态及查询规则见[期间筛选](docs/page-metadata/filters.md#dashboard-期间选择627)。
 6.29 增加 Dashboard 正文图表左上角独立筛选 `props.filter`，支持自定义显示名称、查询值和单选默认项；查询依赖校验保证只影响所属图表。完整声明、限制与验收页面见[图表独立筛选](docs/page-metadata/filters.md#图表独立筛选629)。
+
+6.33 新增[业务筛选](docs/page-metadata/filters.md#business-filters)：单多选、封闭枚举、结构树、候选依赖与hint；共用执行入口先核验当前候选再复用初始结果或查询，不在页头内另建规则解释器。
+
+6.34增加USD静态money、非递归FieldBinding.byFilter、numberRange约束/单位/预设及metricByFilter。参见[金额范围](docs/page-metadata/filters.md#amount-range)、[字段选择](docs/page-metadata/field-bindings-and-formats.md#field-selection)和`pages/ioc-header-currency-demo.json`。不同币种结果保持独立静态字段，不提供前端换汇；旧普通相等范围兼容。
+
+## 6.35 复杂时间与可信期间输入
+
+共用筛选新增 `timeRange.display:"modes"`、完整静态 `query.timeModes`、时间 `presets`、`availability` 和动态维度 `candidateWindow`；边界见[筛选语义](docs/page-metadata/filters.md)、[查询绑定](docs/page-metadata/queries-and-bindings.md)。实际验收为 `pages/ioc-header-time-modes-demo.json`、`ioc-header-time-presets-demo.json`、`ioc-header-availability-demo.json`、`ioc-header-calendar-window-demo.json`，均为本地合成数据。旧年季月/近一年、详情单月、离散月份和 datetime 保持各自语义。可信期间事实由 RuntimeView/embed 的可选稳定 `displayInputs` 源提供，不写入 Page/参数/URL；本批不开放 Condition、任意对象路径或权限表达式。
+
+### 6.36 跨页传值
+
+导航可显式配置`validateTargetInputs:true`，集成应用提供目标输入投影；校验row/param/filter映射，拒绝缺必需值、类型/粒度不兼容及无目标能力，普通URL兼容。目标独立校验并等待当前候选；显式开启`strictURLInputs:true`时，非法筛选URL不回退默认查询。见[交互与导航](docs/page-metadata/actions-and-navigation.md)。无视图恢复，B6挂起。
+
+`strictURLInputs:true`由页面显式开启，兼容规范化升版本不自动开启。来源和目标可分别选择该策略；本批三个验收页均开启。受控编辑使用`set_url_input_validation`，enabled=false仅删除该标记。

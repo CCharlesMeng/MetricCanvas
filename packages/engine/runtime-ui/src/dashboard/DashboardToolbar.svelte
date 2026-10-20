@@ -16,7 +16,7 @@
 
   interface Props {
     title: string;
-    declarations: FilterDeclaration[];
+    declarations: FilterDeclaration[];timeContext?:import('../filters/time-controls').TimeControlContext;
     values: FilterValues;
     candidates: DimensionValuesSnapshots;
     ondimension: (declaration: DimensionDeclaration, values: string[], level?: string) => void;
@@ -33,7 +33,7 @@
 
   let {
     title,
-    declarations,
+    declarations,timeContext,
     values,
     candidates,
     ondimension,
@@ -70,7 +70,7 @@
   </div>
   <div class="dashboard-filter-area">
     <div data-dashboard-primary-filters class="primary-filters">
-      <FilterBar
+      <FilterBar {timeContext}
         declarations={filterGroups.primary}
         {values}
         {candidates}
@@ -94,7 +94,7 @@
           <span aria-hidden="true" class="filter-overflow-arrow">▾</span>
         </summary>
         <div data-dashboard-overflow-panel class="overflow-panel">
-          <FilterBar
+          <FilterBar {timeContext}
             declarations={filterGroups.overflow}
             {values}
             {candidates}

@@ -55,7 +55,7 @@
     view: TableViewState;
     /** select 模式表头筛选候选项(壳经数据网关 fetchDimensionValues 供给),key = 列 field */
     filterOptions?: Record<string, string[]>;
-    filterOptionsStatus?:Record<string,'idle'|'loading'|'ready'|'empty'|'unavailable'|'error'>;
+    filterOptionsStatus?:Record<string,'idle'|'loading'|'ready'|'empty'|'unavailable'|'error'|'denied'|'unconfigured'>;
     pagination?: TablePaginationState;
     searchDraft?: string;
     exporting?: boolean;
@@ -407,7 +407,7 @@
                                 <span>{option}</span>
                               </label>
                             {:else}
-                              <span class="hint">{filterOptionsStatus[columnField(column)]==='unavailable'?'候选值能力不可用':filterOptionsStatus[columnField(column)]==='error'?'候选项加载失败':['ready','empty'].includes(filterOptionsStatus[columnField(column)])?'没有候选项':'候选项加载中…'}</span>
+                              <span class="hint">{filterOptionsStatus[columnField(column)]==='denied'?'无权访问候选项':filterOptionsStatus[columnField(column)]==='unconfigured'?'候选能力未配置':filterOptionsStatus[columnField(column)]==='unavailable'?'候选值能力不可用':filterOptionsStatus[columnField(column)]==='error'?'候选项加载失败':['ready','empty'].includes(filterOptionsStatus[columnField(column)])?'没有候选项':'候选项加载中…'}</span>
                             {/each}
                           {:else if column.filterable.mode === 'dateRange'}
                             {@const range = dateRangeOf(columnField(column))}

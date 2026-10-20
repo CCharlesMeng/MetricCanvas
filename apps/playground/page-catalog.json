@@ -309,6 +309,144 @@
         "页面搭建",
         "静态演示"
       ]
+    },
+    {
+      "id": "ioc-header-overview-demo",
+      "group": "verification",
+      "summary": "B1普通页头：年季月、单一筛选归属与受影响查询。",
+      "tags": [
+        "IOC公共页头",
+        "本地合成验收"
+      ]
+    },
+    {
+      "id": "ioc-header-dense-filter-demo",
+      "group": "verification",
+      "summary": "B0/B1密集页头：首行折叠、三级依赖和查询门禁。",
+      "tags": [
+        "IOC公共页头",
+        "本地合成验收"
+      ]
+    },
+    {
+      "id": "ioc-header-detail-demo",
+      "group": "verification",
+      "summary": "B1详情报表：参数身份、独立单月、合法来源返回。",
+      "tags": [
+        "IOC公共页头",
+        "本地合成验收"
+      ]
+    },
+    {
+      "id": "ioc-header-month-set-demo",
+      "group": "verification",
+      "summary": "无身份行；既有维度绑定保持离散月份集合，不提供B2候选窗口。",
+      "tags": [
+        "IOC公共页头",
+        "本地合成验收"
+      ]
+    },
+    {
+      "id": "ioc-header-business-options-demo",
+      "group": "verification",
+      "summary": "IOC B2：封闭枚举与勾选；本地合成验收，结构/时间依赖需V2 Adapter。",
+      "tags": [
+        "IOC B2",
+        "本地合成验收"
+      ]
+    },
+    {
+      "id": "ioc-header-business-tree-demo",
+      "group": "verification",
+      "summary": "IOC B2：结构树与候选交集；本地合成验收，结构/时间依赖需V2 Adapter。",
+      "tags": [
+        "IOC B2",
+        "本地合成验收"
+      ]
+    },
+    {
+      "id": "ioc-header-business-detail-demo",
+      "group": "verification",
+      "summary": "IOC B2：详情私有筛选；本地合成验收，结构/时间依赖需V2 Adapter。",
+      "tags": [
+        "IOC B2",
+        "本地合成验收"
+      ]
+    },
+    {
+      "id": "ioc-header-currency-demo",
+      "group": "verification",
+      "summary": "IOC B3金额单位、静态货币字段及导出一致性；本地合成双货币数据",
+      "tags": [
+        "IOC B3",
+        "本地合成验收"
+      ]
+    },
+    {
+      "id": "ioc-header-availability-demo",
+      "group": "verification",
+      "summary": "本地合成验收；不代表真实DQE、CloudIOC、Relay或私有周编码验收。",
+      "tags": [
+        "IOC B4",
+        "本地合成验收"
+      ]
+    },
+    {
+      "id": "ioc-header-calendar-window-demo",
+      "group": "verification",
+      "summary": "本地合成验收；不代表真实DQE、CloudIOC、Relay或私有周编码验收。",
+      "tags": [
+        "IOC B4",
+        "本地合成验收"
+      ]
+    },
+    {
+      "id": "ioc-header-time-modes-demo",
+      "group": "verification",
+      "summary": "本地合成验收；不代表真实DQE、CloudIOC、Relay或私有周编码验收。",
+      "tags": [
+        "IOC B4",
+        "本地合成验收"
+      ]
+    },
+    {
+      "id": "ioc-header-time-presets-demo",
+      "group": "verification",
+      "summary": "本地合成验收；不代表真实DQE、CloudIOC、Relay或私有周编码验收。",
+      "tags": [
+        "IOC B4",
+        "本地合成验收"
+      ]
+    },
+    {
+      "id": "ioc-header-navigation-source-demo",
+      "group": "verification",
+      "summary": "IOC B5：概览传值；显式传值，不恢复视图。",
+      "tags": [
+        "IOC",
+        "跨页传值",
+        "B5"
+      ]
+    },
+    {
+      "id": "ioc-header-navigation-list-demo",
+      "group": "verification",
+      "summary": "IOC B5：项目清单；显式传值，不恢复视图。",
+      "tags": [
+        "IOC",
+        "跨页传值",
+        "B5"
+      ]
+    },
+    {
+      "id": "ioc-header-navigation-detail-demo",
+      "group": "verification",
+      "summary": "IOC B5：项目详情；显式传值，不恢复视图。",
+      "tags": [
+        "IOC",
+        "跨页传值",
+        "B5"
+      ]
     }
   ]
 }

@@ -31,9 +31,14 @@
         "6.28",
         "6.29",
         "6.30",
-        "6.31"
+        "6.31",
+        "6.32",
+        "6.33",
+        "6.34",
+        "6.35",
+        "6.36"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36"
     },
     "id": {
       "type": "string",
@@ -75,6 +80,190 @@
           "$ref": "#/definitions/dashboardToolbar"
         }
       ]
+    },
+    "iocHeader": {
+      "type": "object",
+      "properties": {
+        "identity": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/nonEmptyTextValue"
+                }
+              ]
+            },
+            "code": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "$ref": "#/definitions/nonEmptyTextValue"
+                },
+                "value": {
+                  "$ref": "#/definitions/nonEmptyTextValue"
+                }
+              },
+              "required": [
+                "label",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "description": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "$ref": "#/definitions/nonEmptyTextValue"
+                },
+                "presentation": {
+                  "type": "string",
+                  "enum": [
+                    "inline",
+                    "tooltip"
+                  ]
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "additionalProperties": false
+            },
+            "tags": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "text": {
+                    "$ref": "#/definitions/nonEmptyTextValue"
+                  },
+                  "tone": {
+                    "type": "string",
+                    "enum": [
+                      "neutral",
+                      "info",
+                      "success",
+                      "warning",
+                      "danger"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "text"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "facts": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "queryPeriod",
+                      "latestDataPeriod",
+                      "refreshedAt",
+                      "generatedAt"
+                    ]
+                  },
+                  "label": {
+                    "$ref": "#/definitions/nonEmptyTextValue"
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/nonEmptyTextValue"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "fact": {
+                            "type": "string",
+                            "pattern": "^[a-z0-9][a-z0-9-]*$"
+                          },
+                          "part": {
+                            "type": "string",
+                            "enum": [
+                              "latest",
+                              "latestComplete",
+                              "refreshedAt",
+                              "generatedAt"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "fact",
+                          "part"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "label",
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "back": {
+          "type": "boolean",
+          "const": true
+        },
+        "filterIds": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "uniqueItems": true
+        },
+        "presentation": {
+          "type": "object",
+          "properties": {
+            "density": {
+              "type": "string",
+              "enum": [
+                "normal",
+                "compact"
+              ]
+            },
+            "collapse": {
+              "type": "string",
+              "enum": [
+                "none",
+                "firstRow"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "strictURLInputs": {
+      "type": "boolean",
+      "const": true
     },
     "params": {
       "anyOf": [
@@ -342,6 +531,7 @@
             "compact-million-2",
             "compact-yi-1",
             "cny-adaptive",
+            "usd-adaptive",
             "percent-0",
             "percent-1",
             "percent-2",
@@ -384,6 +574,7 @@
             "compact-million-2",
             "compact-yi-1",
             "cny-adaptive",
+            "usd-adaptive",
             "percent-0",
             "percent-1",
             "percent-2",
@@ -934,6 +1125,7 @@
                 "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
+                "usd-adaptive",
                 "percent-0",
                 "percent-1",
                 "percent-2",
@@ -963,7 +1155,10 @@
             },
             "currency": {
               "type": "string",
-              "const": "CNY"
+              "enum": [
+                "CNY",
+                "USD"
+              ]
             },
             "label": {
               "type": "string",
@@ -998,6 +1193,7 @@
                 "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
+                "usd-adaptive",
                 "percent-0",
                 "percent-1",
                 "percent-2",
@@ -1827,6 +2023,7 @@
                 "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
+                "usd-adaptive",
                 "percent-0",
                 "percent-1",
                 "percent-2",
@@ -1861,7 +2058,10 @@
             },
             "currency": {
               "type": "string",
-              "const": "CNY"
+              "enum": [
+                "CNY",
+                "USD"
+              ]
             },
             "label": {
               "type": "string",
@@ -1896,6 +2096,7 @@
                 "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
+                "usd-adaptive",
                 "percent-0",
                 "percent-1",
                 "percent-2",
@@ -2090,6 +2291,7 @@
               "compact-million-2",
               "compact-yi-1",
               "cny-adaptive",
+              "usd-adaptive",
               "percent-0",
               "percent-1",
               "percent-2",
@@ -2166,6 +2368,7 @@
                   "compact-million-2",
                   "compact-yi-1",
                   "cny-adaptive",
+                  "usd-adaptive",
                   "percent-0",
                   "percent-1",
                   "percent-2",
@@ -2195,7 +2398,10 @@
               },
               "currency": {
                 "type": "string",
-                "const": "CNY"
+                "enum": [
+                  "CNY",
+                  "USD"
+                ]
               },
               "label": {
                 "type": "string",
@@ -2230,6 +2436,7 @@
                   "compact-million-2",
                   "compact-yi-1",
                   "cny-adaptive",
+                  "usd-adaptive",
                   "percent-0",
                   "percent-1",
                   "percent-2",
@@ -2576,21 +2783,273 @@
                   "metric": {
                     "type": "string",
                     "minLength": 1
+                  },
+                  "metricByFilter": {
+                    "type": "object",
+                    "properties": {
+                      "filterId": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "cases": {
+                        "type": "object",
+                        "propertyNames": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "additionalProperties": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    "required": [
+                      "filterId",
+                      "cases"
+                    ],
+                    "additionalProperties": false
                   }
                 },
                 "required": [
-                  "target",
-                  "metric"
+                  "target"
                 ],
                 "additionalProperties": false
               }
             ]
           }
+        },
+        "timeModes": {
+          "type": "object",
+          "properties": {
+            "filterId": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "cases": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "minLength": 1
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "type": "object",
+                    "properties": {
+                      "dsl_list": {
+                        "minItems": 1,
+                        "maxItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "additionalProperties": {}
+                        }
+                      }
+                    },
+                    "required": [
+                      "dsl_list"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "filterBindings": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    },
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "target": {
+                              "type": "string",
+                              "const": "dimension"
+                            },
+                            "queryField": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": [
+                            "target",
+                            "queryField"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "target": {
+                              "type": "string",
+                              "const": "dimension"
+                            },
+                            "levelQueryFields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "pattern": "^[a-z0-9][a-z0-9-]*$"
+                              },
+                              "additionalProperties": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "minProperties": 2
+                            }
+                          },
+                          "required": [
+                            "target",
+                            "levelQueryFields"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "target": {
+                              "type": "string",
+                              "const": "time"
+                            },
+                            "window": {
+                              "allOf": [
+                                {
+                                  "$ref": "#/definitions/timeWindow"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "target"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "target": {
+                              "type": "string",
+                              "const": "timePoint"
+                            },
+                            "queryField": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "valueFormat": {
+                              "type": "string",
+                              "enum": [
+                                "iso",
+                                "compact"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "target",
+                            "queryField"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "target": {
+                              "type": "string",
+                              "const": "boolean"
+                            },
+                            "queryField": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "whenTrue": {
+                              "minItems": 1,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            },
+                            "whenFalse": {
+                              "minItems": 1,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            }
+                          },
+                          "required": [
+                            "target",
+                            "queryField",
+                            "whenTrue"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "target": {
+                              "type": "string",
+                              "const": "numberRange"
+                            },
+                            "metric": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "metricByFilter": {
+                              "type": "object",
+                              "properties": {
+                                "filterId": {
+                                  "type": "string",
+                                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                                },
+                                "cases": {
+                                  "type": "object",
+                                  "propertyNames": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "additionalProperties": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  }
+                                }
+                              },
+                              "required": [
+                                "filterId",
+                                "cases"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "target"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "body",
+                  "filterBindings"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "filterId",
+            "cases"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
-        "language",
-        "body"
+        "language"
       ],
       "additionalProperties": false
     },
@@ -3249,6 +3708,21 @@
     "dimensionFilter": {
       "type": "object",
       "properties": {
+        "hint": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "clearOnChangeOf": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        },
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
@@ -3351,6 +3825,113 @@
         "dependsOn": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "selection": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "single",
+                "multiple"
+              ]
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "allBehavior": {
+              "type": "string",
+              "enum": [
+                "values",
+                "unrestricted"
+              ]
+            }
+          },
+          "required": [
+            "mode"
+          ],
+          "additionalProperties": false
+        },
+        "options": {
+          "minItems": 1,
+          "maxItems": 1000,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "disabled": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "value",
+              "label"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "treeSelection": {
+          "type": "string",
+          "const": "level"
+        },
+        "candidateWindow": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "type": "string",
+              "const": "month"
+            },
+            "n": {
+              "type": "number",
+              "const": 12
+            },
+            "includeCurrent": {
+              "type": "boolean"
+            },
+            "anchorFact": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          "required": [
+            "unit",
+            "n",
+            "includeCurrent"
+          ],
+          "additionalProperties": false
+        },
+        "candidateContext": {
+          "type": "object",
+          "properties": {
+            "filterIds": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              }
+            },
+            "reconcile": {
+              "type": "string",
+              "enum": [
+                "clear",
+                "intersection"
+              ]
+            }
+          },
+          "required": [
+            "filterIds",
+            "reconcile"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -3360,9 +3941,40 @@
       ],
       "additionalProperties": false
     },
+    "textValue": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/textValueReference"
+        },
+        {
+          "$ref": "#/definitions/filterTextValueReference"
+        },
+        {
+          "$ref": "#/definitions/textValueComposition"
+        }
+      ]
+    },
     "timeRangeFilter": {
       "type": "object",
       "properties": {
+        "hint": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "clearOnChangeOf": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        },
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
@@ -3393,9 +4005,152 @@
           "type": "string",
           "const": "timeRange"
         },
+        "min": {
+          "type": "string"
+        },
+        "max": {
+          "type": "string"
+        },
+        "blockedRanges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "availability": {
+          "type": "object",
+          "properties": {
+            "fact": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "initial": {
+              "type": "string",
+              "enum": [
+                "latest",
+                "latestComplete"
+              ]
+            },
+            "max": {
+              "type": "string",
+              "enum": [
+                "latest",
+                "latestComplete"
+              ]
+            },
+            "blockMissing": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "required": [
+            "fact",
+            "max"
+          ],
+          "additionalProperties": false
+        },
+        "disableFuture": {
+          "type": "boolean"
+        },
         "display": {
           "type": "string",
-          "const": "period"
+          "enum": [
+            "period",
+            "modes"
+          ]
+        },
+        "modes": {
+          "minItems": 1,
+          "maxItems": 3,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "enum": [
+                  "day",
+                  "month",
+                  "isoWeek"
+                ]
+              },
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "type": "string"
+                      },
+                      "to": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "from",
+                      "to"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "$ref": "#/definitions/relativeTimeExpression"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "default"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "defaultMode": {
+          "type": "string",
+          "enum": [
+            "day",
+            "month",
+            "isoWeek"
+          ]
+        },
+        "presets": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "range": {
+                "$ref": "#/definitions/relativeTimeExpression"
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "range"
+            ],
+            "additionalProperties": false
+          }
         },
         "initialMode": {
           "type": "string",
@@ -3584,6 +4339,21 @@
     "timePointFilter": {
       "type": "object",
       "properties": {
+        "hint": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "clearOnChangeOf": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        },
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
@@ -3620,15 +4390,69 @@
         "visible": {
           "type": "boolean"
         },
+        "min": {
+          "type": "string"
+        },
+        "max": {
+          "type": "string"
+        },
+        "blockedRanges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "availability": {
+          "type": "object",
+          "properties": {
+            "fact": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "initial": {
+              "type": "string",
+              "enum": [
+                "latest",
+                "latestComplete"
+              ]
+            },
+            "max": {
+              "type": "string",
+              "enum": [
+                "latest",
+                "latestComplete"
+              ]
+            },
+            "blockMissing": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "required": [
+            "fact",
+            "max"
+          ],
+          "additionalProperties": false
+        },
         "granularity": {
           "type": "string",
           "enum": [
             "month",
             "date"
           ]
-        },
-        "min": {
-          "type": "string"
         },
         "disableFuture": {
           "type": "boolean"
@@ -3654,6 +4478,21 @@
     "booleanFilter": {
       "type": "object",
       "properties": {
+        "hint": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "clearOnChangeOf": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        },
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
@@ -3703,6 +4542,21 @@
     "numberRangeFilter": {
       "type": "object",
       "properties": {
+        "hint": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "clearOnChangeOf": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        },
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
@@ -3750,6 +4604,108 @@
             }
           },
           "additionalProperties": false
+        },
+        "constraints": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            },
+            "bounds": {
+              "type": "string",
+              "enum": [
+                "strict",
+                "inclusive"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "units": {
+          "type": "object",
+          "properties": {
+            "filterId": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "cases": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "minLength": 1
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "currency": {
+                    "type": "string",
+                    "enum": [
+                      "CNY",
+                      "USD"
+                    ]
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "scale": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "currency",
+                  "label",
+                  "scale"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "filterId",
+            "cases"
+          ],
+          "additionalProperties": false
+        },
+        "presets": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "range": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "number"
+                  },
+                  "to": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "range"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "required": [
@@ -3761,6 +4717,21 @@
     "searchFilter": {
       "type": "object",
       "properties": {
+        "hint": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "clearOnChangeOf": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        },
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
@@ -4037,22 +5008,6 @@
         "backdrop"
       ],
       "description": "backdrop 铺满分区并置于同分区其余组件之下；省略为普通流"
-    },
-    "textValue": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "$ref": "#/definitions/textValueReference"
-        },
-        {
-          "$ref": "#/definitions/filterTextValueReference"
-        },
-        {
-          "$ref": "#/definitions/textValueComposition"
-        }
-      ]
     },
     "metricCardComponent": {
       "type": "object",
@@ -4337,6 +5292,46 @@
     "fieldBinding": {
       "anyOf": [
         {
+          "$ref": "#/definitions/staticFieldBinding"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "byFilter": {
+              "type": "object",
+              "properties": {
+                "filterId": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "cases": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "additionalProperties": {
+                    "$ref": "#/definitions/staticFieldBinding"
+                  }
+                }
+              },
+              "required": [
+                "filterId",
+                "cases"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "byFilter"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "staticFieldBinding": {
+      "anyOf": [
+        {
           "type": "string",
           "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
         },
@@ -4376,6 +5371,7 @@
                 "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
+                "usd-adaptive",
                 "percent-0",
                 "percent-1",
                 "percent-2",
@@ -4510,6 +5506,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "validateTargetInputs": {
+                  "type": "boolean",
+                  "const": true
+                },
                 "query": {
                   "type": "object",
                   "propertyNames": {
@@ -4571,7 +5571,8 @@
                               "value",
                               "from",
                               "to",
-                              "level"
+                              "level",
+                              "mode"
                             ]
                           }
                         },
@@ -4733,7 +5734,8 @@
                                   "value",
                                   "from",
                                   "to",
-                                  "level"
+                                  "level",
+                                  "mode"
                                 ]
                               }
                             },
@@ -5670,7 +6672,8 @@
                               "value",
                               "from",
                               "to",
-                              "level"
+                              "level",
+                              "mode"
                             ]
                           }
                         },
@@ -5698,6 +6701,10 @@
             "href": {
               "type": "string",
               "minLength": 1
+            },
+            "validateTargetInputs": {
+              "type": "boolean",
+              "const": true
             },
             "query": {
               "type": "object",
@@ -5760,7 +6767,8 @@
                           "value",
                           "from",
                           "to",
-                          "level"
+                          "level",
+                          "mode"
                         ]
                       }
                     },
@@ -6730,6 +7738,7 @@
                         "compact-million-2",
                         "compact-yi-1",
                         "cny-adaptive",
+                        "usd-adaptive",
                         "percent-0",
                         "percent-1",
                         "percent-2",
@@ -6890,6 +7899,10 @@
                     "type": "string",
                     "minLength": 1
                   },
+                  "validateTargetInputs": {
+                    "type": "boolean",
+                    "const": true
+                  },
                   "query": {
                     "type": "object",
                     "propertyNames": {
@@ -6951,7 +7964,8 @@
                                 "value",
                                 "from",
                                 "to",
-                                "level"
+                                "level",
+                                "mode"
                               ]
                             }
                           },
@@ -7207,5 +8221,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.31"
+  "$id": "https://metriccanvas/page/v6.36"
 }

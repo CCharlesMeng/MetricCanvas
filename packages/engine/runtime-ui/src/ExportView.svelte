@@ -1,14 +1,18 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import FilterBar from './filters/FilterBar.svelte';
+  import IocHeader from './ioc-header/IocHeader.svelte';
+  import { resolvedIocHeader } from './ioc-header/model';
   import { setContext, untrack } from 'svelte';
-  import { isChartComponent, type Component } from '@metriccanvas/page/internal';
+  import { projectFieldSelections,isChartComponent, type Component } from '@metriccanvas/page/internal';
   import { EXPORT_SCALE_CONTEXT, STATIC_EXPORT_CONTEXT } from '../../widgets/src/shared/export-context';
   import { headerPeriod } from './report-date-header';
   import { exportComponentData,exportComponentSnapshot,exportComponentMap,type ExportRenderState } from './export-render-state';
   import ComponentRenderer from './ComponentRenderer.svelte';
   import RuntimeSection from './RuntimeSection.svelte';
   import type { NestedComponentRender,TableRenderBinding } from './component-render';
-  let {state,width,padding,gap,scale=2}: {state:ExportRenderState;width:number;padding:string;gap:string;scale?:number}=$props();
+  let {state:inputState,width,padding,gap,scale=2}: {state:ExportRenderState;width:number;padding:string;gap:string;scale?:number}=$props();
+  const state=$derived({...inputState,page:projectFieldSelections({...inputState.page,detailViews:undefined},inputState.filters)});
   setContext(STATIC_EXPORT_CONTEXT,true);
   setContext(EXPORT_SCALE_CONTEXT,untrack(() => scale));
   function table(component:Component):TableRenderBinding|undefined {
@@ -17,7 +21,14 @@
   const nested:NestedComponentRender={map:c=>exportComponentMap(state,c),data:c=>exportComponentData(state,c),snapshot:c=>exportComponentSnapshot(state,c),table,onchartclick:()=>undefined,onmetriclink:()=>undefined,metricHref:()=>()=>undefined};
 </script>
 <div class="export-view" data-export-view style:width={`${width}px`} style:padding={padding} style:gap={gap}>
-  {#each state.page.filters??[] as filter}{#if filter.type==='timeRange' && filter.display==='period'}{@const applied=state.filters.get(filter.id)}{#if applied?.type==='timeRange'}<p data-export-period>{filter.label??'统计期间'}：{applied.from} 至 {applied.to}</p>{/if}{/if}{/each}
+  {#if state.page.iocHeader}
+    <IocHeader model={resolvedIocHeader(state.page.iocHeader)} filterIds={state.page.iocHeader.filterIds??[]} controls={iocStaticControls} staticView/>
+  {/if}
+  {#snippet iocStaticControls(id:string,readOnly:boolean)}
+    <FilterBar timeContext={{snapshot:state.displayInputs,revision:state.filterRevision}} declarations={(state.page.filters??[]).filter(f=>f.id===id)} values={state.filters} candidates={new Map()} {readOnly}
+      ondimension={()=>{}} ontimerange={()=>{}} ontimepoint={()=>{}} onboolean={()=>{}} onnumberrange={()=>{}} onsearch={()=>{}}/>
+  {/snippet}
+  {#each state.page.filters??[] as filter}{#if filter.type==='timeRange' && filter.display==='period' && !state.page.iocHeader?.filterIds?.includes(filter.id)}{@const applied=state.filters.get(filter.id)}{#if applied?.type==='timeRange'}<p data-export-period>{filter.label??'统计期间'}：{applied.from} 至 {applied.to}</p>{/if}{/if}{/each}
   {#snippet componentContent(component:Component)}
     <div data-export-component={component.id}>
     <ComponentRenderer {component} data={exportComponentData(state,component)} snapshot={exportComponentSnapshot(state,component)}

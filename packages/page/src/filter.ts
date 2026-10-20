@@ -1,4 +1,17 @@
 import type { PeriodSelection } from './period-filter';
+import type { TextValue } from './page-param';
+
+/** Shared declaration metadata; no expression or permission inputs. */
+export interface TimeAvailability {fact:string;initial?:'latest'|'latestComplete';max:'latest'|'latestComplete';blockMissing?:true}
+
+export interface FilterInteractionExtension { hint?: TextValue; clearOnChangeOf?: string[]; }
+export interface DimensionSelectionExtension {
+  selection?: {mode:'single'|'multiple';required?:boolean;allBehavior?:'values'|'unrestricted'};
+  options?: Array<{value:string;label:string;disabled?:boolean}>;
+  treeSelection?: 'level';
+  candidateContext?: {filterIds:string[];reconcile:'clear'|'intersection'};
+  candidateWindow?:{unit:'month';n:12;includeCurrent:boolean;anchorFact?:string};
+}
 /**
  * 筛选器声明:页面级筛选状态 (Filter State) 的 DSL 形态。
  * 页面声明若干筛选器构成共享筛选状态;query 页面数据源通过 query.filters.subscribe 订阅,
@@ -23,7 +36,7 @@ export interface FilterHierarchyLevel {
 }
 
 /** 维度筛选器:约束某个维度的取值集合 */
-export interface DimensionFilterDeclaration {
+export interface DimensionFilterDeclaration extends FilterInteractionExtension, DimensionSelectionExtension {
   id: string;
   /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
   urlParams?: { value?: string; from?: string; to?: string; level?: string };
@@ -63,13 +76,18 @@ export interface DimensionFilterDeclaration {
 }
 
 /** 时间范围筛选器:约束查询的时间范围 */
-export interface TimeRangeFilterDeclaration {
+export interface TimeRangeFilterDeclaration extends FilterInteractionExtension {
   id: string;
   /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
   urlParams?: { value?: string; from?: string; to?: string; level?: string };
   type: 'timeRange';
   /** Period picker; omitted preserves the ordinary range editor. */
-  display?: 'period';
+  display?: 'period'|'modes';
+  modes?:Array<{id:import('./time-mode').TimeMode;default:TimeRangeValue|RelativeTimeExpression}>;
+  defaultMode?:import('./time-mode').TimeMode;
+  presets?:Array<{id:string;label:string;range:RelativeTimeExpression}>;
+  min?:string;max?:string;blockedRanges?:TimeRangeValue[];disableFuture?:boolean;
+  availability?:TimeAvailability;
   /** Explicit mode when a page parameter seeds a complete natural period. */
   initialMode?: 'year' | 'quarter' | 'month';
   /** 筛选器标签,显示于筛选器区 */
@@ -92,6 +110,8 @@ export type TimeRangePreset = 'today' | 'last7d' | 'last30d' | 'last90d';
 
 /** 时间范围值:闭区间;date 精度为 YYYY-MM-DD,datetime 精度为 YYYY-MM-DDTHH:mm */
 export interface TimeRangeValue {
+  /** Runtime-only for display:modes; ordinary defaults remain plain ranges. */
+  mode?:import('./time-mode').TimeMode;
   from: string;
   to: string;
 }
@@ -121,7 +141,7 @@ export interface RelativeTimeExpression {
   anchor?: string;
 }
 
-export interface TimePointFilterDeclaration {
+export interface TimePointFilterDeclaration extends FilterInteractionExtension {
   id: string;
   /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
   urlParams?: { value?: string; from?: string; to?: string; level?: string };
@@ -130,6 +150,7 @@ export interface TimePointFilterDeclaration {
   visible?: boolean;
   /** 单个时间点的粒度。谓词是等值,不是区间。 */
   granularity: 'month' | 'date';
+  max?:string;blockedRanges?:TimeRangeValue[];availability?:TimeAvailability;
   /** 可选的包含式下限，格式与 granularity 一致（6.24）。 */
   min?: string;
   /** 禁止选择晚于本地当前月份／日期的时间点（6.25）；未声明默认禁止，false 显式放开。 */
@@ -141,7 +162,7 @@ export interface TimePointFilterDeclaration {
   initialParam?: string;
 }
 
-export interface BooleanFilterDeclaration {
+export interface BooleanFilterDeclaration extends FilterInteractionExtension {
   id: string;
   /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
   urlParams?: { value?: string; from?: string; to?: string; level?: string };
@@ -157,7 +178,7 @@ export interface NumberRangeValue {
   to?: number;
 }
 
-export interface NumberRangeFilterDeclaration {
+export interface NumberRangeFilterDeclaration extends FilterInteractionExtension {
   id: string;
   /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
   urlParams?: { value?: string; from?: string; to?: string; level?: string };
@@ -165,9 +186,12 @@ export interface NumberRangeFilterDeclaration {
   label?: string;
   visible?: boolean;
   default?: NumberRangeValue;
+  constraints?:{min?:number;max?:number;bounds?:'strict'|'inclusive'};
+  units?:{filterId:string;cases:Record<string,{currency:'CNY'|'USD';label:string;scale:number}>};
+  presets?:Array<{id:string;label:string;range:NumberRangeValue}>;
 }
 
-export interface SearchFilterDeclaration {
+export interface SearchFilterDeclaration extends FilterInteractionExtension {
   id: string;
   /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
   urlParams?: { value?: string; from?: string; to?: string; level?: string };
@@ -276,7 +300,7 @@ export function resolveRelativeTime(
   precision: TimeRangePrecision = 'date'
 ): TimeRangeValue {
   const anchor = expression.anchor ? parseAnchorDate(expression.anchor, now) : startOfLocalDay(now);
-  const { from, to } = rangeFor(expression, anchor, now);
+  const { from, to } = rangeFor(expression, anchor, expression.anchor?anchor:now);
   if (precision === 'datetime') {
     const toIsToday = sameLocalDay(to, now);
     return {
@@ -284,6 +308,7 @@ export function resolveRelativeTime(
       to: toIsToday ? `${toLocalDate(to)}T${toLocalTime(now)}` : `${toLocalDate(to)}T23:59`
     };
   }
+  if(precision==='month')return {from:toLocalDate(from).slice(0,7),to:toLocalDate(to).slice(0,7)};
   return { from: toLocalDate(from), to: toLocalDate(to) };
 }
 

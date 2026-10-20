@@ -1,3 +1,4 @@
+import {ordinaryQuery,timeQueryLeaves} from './time-mode';
 import type { TypedError } from './errors';
 import { pageParamDeclarations, type PageParamDeclaration, type GroupedPageParams } from './page-param';
 import type { FilterDeclaration } from './filter';
@@ -13,8 +14,9 @@ export function paramBindingErrors(document: unknown): TypedError[] {
   const error = (path: string, message: string) => errors.push({ type: 'SCHEMA_ERROR', path, message });
   const filterConsumers = new Set<string>();
   for (const [sourceId, source] of Object.entries(page.dataSources)) {
-    const query = source.source.query;
-    if (source.source.type !== 'query' || !query) continue;
+    const definition = source.source.query;
+    if (source.source.type !== 'query' || !definition) continue;
+    for(const query of timeQueryLeaves(definition)){
     const owners = new Map<string, string>();
     let timeOwner: string | undefined;
     for (const [id, binding] of Object.entries(query.paramBindings ?? {})) {
@@ -25,7 +27,7 @@ export function paramBindingErrors(document: unknown): TypedError[] {
         if (timeOwner !== undefined) error(path, '同一查询的时间只能有一个参数来源');
         timeOwner = id;
         if (Object.values(query.filterBindings ?? {}).some(f => f.target === 'time')) error(path, '固定时间参数不得与页内时间筛选器共同控制查询');
-        const filter = query.body.dsl_list[0].filter;
+        const filter = ordinaryQuery(query).body.dsl_list[0].filter;
         const time = filter && typeof filter === 'object' && !Array.isArray(filter) ? filter.time : undefined;
         if (!time || typeof time !== 'object' || Array.isArray(time)) {
           error(path, '时间绑定需要显式filter.time，保留查询粒度与聚合设置');
@@ -44,7 +46,7 @@ export function paramBindingErrors(document: unknown): TypedError[] {
       if (params.get(id)?.type !== 'dimension') error(path, '查询参数绑定必须引用已声明的dimension参数');
       if (owners.has(binding.queryField)) error(path, '同一查询目标只能有一个参数来源');
       owners.set(binding.queryField, id);
-      const filter = query.body.dsl_list[0].filter;
+      const filter = ordinaryQuery(query).body.dsl_list[0].filter;
       if (filter && typeof filter === 'object' && !Array.isArray(filter) && Array.isArray(filter.dims) && filter.dims.some(d => d && typeof d === 'object' && !Array.isArray(d) && d.dim_name === binding.queryField)) {
         error(path, '参数绑定目标不得另有查询体默认条件');
       }
@@ -70,6 +72,7 @@ export function paramBindingErrors(document: unknown): TypedError[] {
         filterConsumers.add(filterId);
       }
     }
+  }
   }
   (page.filters ?? []).forEach((filter, index) => {
     if (filter.type !== 'dimension' && filter.type !== 'timePoint' && filter.type !== 'timeRange') return;

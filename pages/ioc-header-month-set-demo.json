@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "6.32",
+  "id": "ioc-header-month-set-demo",
+  "layout": "dashboard",
+  "dashboardToolbar": "hidden",
+  "meta": {
+    "title": "IOC 页头：无标题与离散月份",
+    "description": "本地DQE仿真合成验收，条件回显不是业务指标。"
+  },
+  "iocHeader": {
+    "filterIds": [
+      "months"
+    ]
+  },
+  "filters": [
+    {
+      "id": "months",
+      "type": "dimension",
+      "dimension": "ioc-header-month",
+      "label": "月份集合"
+    }
+  ],
+  "dataSources": {
+    "bound": {
+      "fields": {
+        "scope": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "ioc_header_scope"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "ioc_header_count"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "ioc_header_scope"
+                ],
+                "output_metrics": [
+                  "ioc_header_count"
+                ],
+                "filter": {
+                  "dims": []
+                },
+                "order": {
+                  "limit": 10,
+                  "offset": 0
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "months": {
+              "target": "dimension",
+              "queryField": "month_code"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "body",
+      "container": "card",
+      "components": [
+        {
+          "id": "months-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "bound"
+          },
+          "props": {
+            "title": "仅选1月和3月时不包含2月（合成演示）",
+            "columns": [
+              {
+                "field": "scope",
+                "title": "服务收到的条件（本地合成）"
+              },
+              {
+                "field": "count",
+                "title": "合成响应标识"
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "本地页头验收"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

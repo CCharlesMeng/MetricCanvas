@@ -18,10 +18,24 @@
     // query 数据源要真往返：内容服务在 DQE 默认端点上同源提供数据，
     // 宿主注入真实网关，不写死路径。
     window.dataGateway = MetricCanvas.createDqeGateway();
-    window.runtime = MetricCanvas.mount('#dashboard', {
+    // Only these synthetic acceptance pages use the local V2 fixture Adapter.
+    if(id.startsWith('ioc-header-business-')||id==='ioc-header-calendar-window-demo')window.dataGateway.fetchFilterCandidates=async(request,{signal})=>{
+      const response=await fetch('/__fixtures/filter-candidates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(request),signal});
+      if(!response.ok)throw new Error('本地候选服务不可用');return response.json();
+    };
+    const temporal=['ioc-header-availability-demo','ioc-header-calendar-window-demo'].includes(id);
+    if(temporal){const fixture=await import('/examples/ioc-time-inputs.mjs');window.displayInputs=fixture.createTimeInputs();fixture.timeInputsPanel(window.displayInputs,()=>{window.runtime.destroy();mountPage();});}
+    function mountPage(){window.runtime = MetricCanvas.mount('#dashboard', {
       document: window.pageDocument,
+      displayInputs:window.displayInputs,
       dataGateway: window.dataGateway,
       initialSearch: location.search,
+      navigation:{async resolveTargetInputs(href,{signal}){
+        const target=new URL(href,document.baseURI),match=/^\/pages\/([^/]+)$/.exec(target.pathname);
+        if(target.origin!==location.origin||!match)return undefined;
+        const response=await fetch(`/pages/${encodeURIComponent(decodeURIComponent(match[1]))}.json`,{signal});
+        if(!response.ok)return undefined;return MetricCanvas.projectNavigationInputs(await response.json());
+      }},
       onEvent(event) {
         window.queryEvents.push(event);
         if (event.type === 'filter-change') {
@@ -31,7 +45,8 @@
           // 不原样回灌 update，真实切页由浏览器加载完整输入。
         }
       }
-    });
+    });}
+    mountPage();
   </script>
 </body>
 </html>

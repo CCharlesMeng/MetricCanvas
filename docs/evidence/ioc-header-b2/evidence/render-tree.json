@@ -1,0 +1,35 @@
+{
+  "contract_sha256": "bca20d3bdae44a4a275bfe53cdd6dea2cd9d519759025e29a5fd623773c411ee",
+  "environment": {
+    "dpr": 1,
+    "scroll": {
+      "height": 1119,
+      "width": 390
+    },
+    "user_agent": "Codex IAB Chromium; version unavailable",
+    "viewport": {
+      "height": 850,
+      "width": 390
+    }
+  },
+  "observed": {
+    "route": "/pages/ioc-header-business-tree-demo?period=month%3A2026-09&region=same&region.level=department&model=A&model=B",
+    "viewport": {
+      "height": 850,
+      "width": 390
+    }
+  },
+  "page_available": true,
+  "rules": {
+    "R6-21-overflow": {
+      "actual": 0,
+      "locator_used": {
+        "selector": "[data-ioc-header]",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    }
+  },
+  "schema_version": 1
+}

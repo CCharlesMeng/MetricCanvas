@@ -6,6 +6,7 @@ import {
 import type {
   DataGateway,
   DimensionValuesGateway,
+  FilterCandidatesGateway,
   DimensionValuesResult,
   RuntimeDataGateway
 } from '../ports';
@@ -29,7 +30,7 @@ export type DataGatewayAdapters = Readonly<Record<QueryLanguage, RuntimeDataGate
  */
 export function createDataGateway(
   adapters: DataGatewayAdapters
-): DataGateway & DimensionValuesGateway {
+): DataGateway & DimensionValuesGateway & FilterCandidatesGateway {
   return {
     fetchData(query, diagnosticContext, signal) {
       if (!isQueryLanguage(query.language)) {
@@ -43,6 +44,13 @@ export function createDataGateway(
         );
       }
       return adapters[query.language].fetchData(query, diagnosticContext, signal);
+    },
+    async fetchFilterCandidates(request, options) {
+      const capable=[...new Set(QUERY_LANGUAGES.map(language=>adapters[language]))].filter(adapter=>typeof adapter.fetchFilterCandidates==='function');
+      // Candidate ownership must be unambiguous; never union authorization domains.
+      if(!capable.length)return {kind:'unavailable'};
+      if(capable.length!==1)return {kind:'unconfigured'};
+      return capable[0]!.fetchFilterCandidates!(request,options);
     },
     async fetchDimensionValues(dimension, options) {
       // 维度候选值端口不携带 language:按协议闭集声明顺序询问声明了候选值

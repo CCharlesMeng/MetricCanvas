@@ -1,0 +1,33 @@
+{
+  "case": "time-availability-default",
+  "invariant": "time-extensions",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "availability.initial与default/initialParam互斥",
+      "paths": [
+        "/filters/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "month",
+        "type": "timePoint",
+        "granularity": "month",
+        "label": "数据月份",
+        "required": true,
+        "availability": {
+          "fact": "sales",
+          "initial": "latestComplete",
+          "max": "latest",
+          "blockMissing": true
+        },
+        "min": "2025-01",
+        "default": "2026-09"
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,4 +1,4 @@
-export type { DataGateway, DataGatewayResult, QueryDiagnosticContext, DimensionValueCandidate, DimensionValuesResult, DimensionValuesRequest, DimensionValuesGateway, RuntimeDataGateway } from '@metriccanvas/data-execution';
+export type { DataGateway, FilterCandidate, FilterCandidatesRequest, FilterCandidatesResult, FilterCandidatesGateway, DataGatewayResult, QueryDiagnosticContext, DimensionValueCandidate, DimensionValuesResult, DimensionValuesRequest, DimensionValuesGateway, RuntimeDataGateway } from '@metriccanvas/data-execution';
 
 /**
  * 页面仓储端口(DDD Repository):按 id 取页面。

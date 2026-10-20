@@ -1,0 +1,23 @@
+{
+  "case": "ioc-header-missing-filter",
+  "invariant": "ioc-header",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC 页头只能认领静态可见的页级筛选",
+      "paths": [
+        "/iocHeader/filterIds/2"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "iocHeader": {
+      "filterIds": [
+        "…",
+        "…",
+        "missing"
+      ]
+    }
+  },
+  "fullInput": "page/conformance/invalid/ioc-header-missing-filter.json"
+}

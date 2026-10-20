@@ -1,5 +1,5 @@
 import type { Page } from '@metriccanvas/page';
-import { validateCalendarTimeRange, validateTimePointValue, type OpenDetailAction, type Row } from '@metriccanvas/page/internal';
+import { projectFieldSelections, validateCalendarTimeRange, validateTimePointValue, type OpenDetailAction, type Row } from '@metriccanvas/page/internal';
 import type { FilterValues, FilterValue } from './filter-state';
 import type { PageParamValues } from './page-params';
 
@@ -47,7 +47,7 @@ export function detailViewInput(page: Page, action: OpenDetailAction, row: Row, 
   const dataSources = Object.fromEntries(Object.entries(page.dataSources).map(([id, source]) => [id,
     view.mode === 'query' && source.source.type === 'query'
       ? { ...source, source: { ...source.source, initial: undefined } } : source]));
-  return { page: { ...page, dataSources, detailViews: undefined, sectionGroups: undefined,
+  return { page: projectFieldSelections({ ...page, dataSources, detailViews: undefined, sectionGroups: undefined,
     defaultSectionGroup: undefined, sectionGroupParam: undefined, sectionAnchors: undefined,
-    sections: [{ id: view.id, components: view.components }] }, filters: scoped };
+    sections: [{ id: view.id, components: view.components }] },scoped), filters: scoped };
 }

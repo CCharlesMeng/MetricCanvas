@@ -1,3 +1,6 @@
+import {ordinaryQuery} from './time-mode';
+import {queryFilterIds} from './amount-filter';
+import {fieldName} from './field';
 import type { Page } from './page';
 import type { TypedError } from './errors';
 import { walkPageComponents } from './component-walk';
@@ -23,13 +26,13 @@ export function pagedJoinErrors(page: Page): TypedError[] {
     const params=new Set<string>();
     for (const member of Object.values(source.members)) {
       const ref = page.dataSources[member.source];
-      if (ref?.source.type === 'query') { Object.keys(ref.source.query.filterBindings ?? {}).forEach(id => bindings.add(id));queryParams(ref.source.query).forEach(id=>params.add(id)); }
+      if (ref?.source.type === 'query') { queryFilterIds(ref.source.query).forEach(id => bindings.add(id));queryParams(ref.source.query).forEach(id=>params.add(id)); }
     }
     for (const [name, member] of Object.entries(source.members)) {
       const mp = `${path}/source/members/${ptr(name)}`;
       const ref = page.dataSources[member.source];
       if (!ref || ref.source.type !== 'query') { error(`${mp}/source`, '成员必须引用普通查询源'); continue; }
-      const order = ref.source.query.body.dsl_list[0]?.order;
+      const order = ordinaryQuery(ref.source.query).body.dsl_list[0]?.order;
       if (ref.compute?.length || ref.source.query.resultBindings?.length || ref.source.resultScope !== 'complete' ||
         (order && typeof order === 'object' && ('limit' in order || 'offset' in order))) error(`${mp}/source`, '成员必须无计算、无结果绑定、无业务窗口且声明完整');
       const field = ref.fields[member.key.field];
@@ -70,7 +73,7 @@ export function pagedJoinErrors(page: Page): TypedError[] {
         if (component.props.rowKey !== source.rowKey) error(`${cp}/props/rowKey`, '表格行键必须使用组合业务行键');
         const visit = (columns: typeof component.props.columns) => columns.forEach(col => {
           if (col.kind === 'group') return visit(col.children);
-          const field = typeof col.field === 'string' ? col.field : col.field.field;
+          const field = fieldName(col.field);
           if (col.sortable && !source.ordering.sortableFields.includes(field)) error(`${cp}/props/columns`, '交互排序字段必须在组合排序声明中');
         });
         visit(component.props.columns);

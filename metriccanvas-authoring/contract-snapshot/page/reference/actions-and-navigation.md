@@ -16,8 +16,24 @@
 
 `t11-evidence.md`记录两形态真实Chrome→createDqeGateway→本地HTTP，选择/清空raw_region、未绑定表格保留，以及真实anchor跳转携row/param/filter/fixed/hash。实际外部DQE、权限及目标业务页仍待独立联调。源码定位：`metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/interaction_editing.py`、`page_editing.py`，公开回归`test_content_interactions.py`。
 
+6.35：modes范围的导航筛选引用支持part:"mode"；显式映射目标mode/from/to三个查询键，目标页按整组校验。不把模式放入普通月份或timePoint参数，不依赖同名猜测。完整示例见time-modes-page。
 
-页面协议 6.31。结构真源为本册[schema.json](schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+## 6.36 显式跨页传值
+
+`navigate`及文本链接可声明`validateTargetInputs:true`，由集成应用的`RuntimeNavigation.resolveTargetInputs(href,{signal})`提供目标当前页级公开声明投影。`projectNavigationInputs(document)`验证并提取pageId/params/filters，不含业务结果、凭据或授权候选，排除详情私有筛选。投影未就绪/失败/缺能力时链接没有可导航href，操作返回navigation-error及原因；销毁或换页忽略旧投影。集成应用保证目标身份与实际路由对应。未声明该意图的普通URL保持兼容。
+
+仅映射query声明的row/param/filter，保留0/false，多值重复编码；不按同名继承。受控链接缺值清除href同名静态旧值后再验必需输入。显式映射的必需值缺失时，即使目标有默认值也拒绝，避免进入另一实体。未知目标键、单值重复、类型/层级/枚举不符、半范围及不完整mode/from/to拒绝；季度或多月不能取起点变成详情单月。目标授权候选由目标实例加载确认，相关查询保持门禁。
+
+6.36声明`strictURLInputs:true`的目标页面显式非法筛选URL给错误，不回退默认查询；非法数字/布尔/重复单值参数不回退default。`RuntimeNavigation.resolveHref`可映射集成应用部署路径，真实href和点击共用映射。仅传值，无分页/排序/Tab/滚动/行展开/来源视图恢复。
+
+实际示例：navigation-source-page、navigation-list-page、navigation-detail-page。Playground来源`/pages/ioc-header-navigation-source-demo`；清单直达需`?origin=直接入口`，详情需`?project-id=P001&project-name=示例项目&origin=直接入口&month=2026-09&currency=RMB&regions=north`。清单切季度或点缺编码行拒绝；概览缺目标能力链接提示不可用。B6挂起。
+
+`strictURLInputs:true`由页面显式开启，兼容规范化升版本不自动开启。来源和目标可分别选择该策略；本批三个验收页均开启。受控编辑使用`set_url_input_validation`，enabled=false仅删除该标记。
+
+目标输入投影排除不可由URL覆盖的旧数组固定参数；该旧模式整体不接收筛选URL，因此其筛选也不作为可传入接口。strictURLInputs与旧数组固定参数互斥，应显式使用分组参数；不自动迁移业务页。
+
+
+页面协议 6.36。结构真源为本册[schema.json](schema.json)，SHA256 `2efb37f681de86719e9bd7c0f1816c99d827097e0adb53e74e2c82fb955bf67a`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -138,6 +154,20 @@ Schema位置：`#/definitions/componentAction/anyOf/1/properties/navigate/proper
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 目标URL，必须通过安全协议及结构检查。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f312f70726f706572746965732f6e617669676174652f70726f706572746965732f76616c6964617465546172676574496e70757473"></a>
+
+### `@componentAction · anyOf[1].navigate.validateTargetInputs`
+
+Schema位置：`#/definitions/componentAction/anyOf/1/properties/navigate/properties/validateTargetInputs`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | const=true | Schema未设默认；装配/运行时默认见语义说明 | 显式要求集成应用提供目标输入投影后才允许跨页导航；仅传URL输入，不恢复视图。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| true | 用于选择@componentAction · anyOf[1].navigate.validateTargetInputs分支；同分支其它约束同时成立。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f312f70726f706572746965732f6e617669676174652f70726f706572746965732f7175657279"></a>
 
@@ -269,7 +299,7 @@ Schema位置：`#/definitions/componentAction/anyOf/1/properties/navigate/proper
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["value","from","to","level"] | Schema未设默认；装配/运行时默认见语义说明 | 导航取筛选值的value/from/to/level部分。 |
+| "string" | 本分支可选 | enum=["value","from","to","level","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -277,6 +307,7 @@ Schema位置：`#/definitions/componentAction/anyOf/1/properties/navigate/proper
 | "from" | 范围起点部分。 |
 | "to" | 范围终点部分。 |
 | "level" | 层级维度的层级部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f312f70726f706572746965732f6e617669676174652f70726f706572746965732f71756572792f70726f70657274794e616d6573"></a>
 
@@ -592,7 +623,7 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["value","from","to","level"] | Schema未设默认；装配/运行时默认见语义说明 | 导航取筛选值的value/from/to/level部分。 |
+| "string" | 本分支可选 | enum=["value","from","to","level","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -600,6 +631,7 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 | "from" | 范围起点部分。 |
 | "to" | 范围终点部分。 |
 | "level" | 层级维度的层级部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c2f616e794f662f312f70726f706572746965732f62696e64696e67732f70726f70657274794e616d6573"></a>
 
@@ -623,9 +655,17 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 
 - [url-navigation-page](examples/url-navigation-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-export-detail-bindings](examples/reference-export-detail-bindings.json)：完整合法页面；查询仅为静态契约证据。
+- [time-modes-page](examples/time-modes-page.json)：完整合法页面；查询仅为静态契约证据。
+- [navigation-source-page](examples/navigation-source-page.json)：完整合法页面；查询仅为静态契约证据。
+- [navigation-list-page](examples/navigation-list-page.json)：完整合法页面；查询仅为静态契约证据。
+- [navigation-detail-page](examples/navigation-detail-page.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/actions.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/schema/navigation.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/navigate.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/engine/runtime/src/navigate.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/engine/runtime/src/navigation-inputs.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 

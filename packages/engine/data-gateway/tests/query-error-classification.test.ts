@@ -204,7 +204,7 @@ describe('查询错误分类:上游状况 → 稳定可判别分类(表驱动,is
       }) as typeof fetch
     });
     const query = sentinelQuery();
-    delete ((query.body.dsl_list[0] as JsonObject).filter as JsonObject).time;
+    delete ((query.body!.dsl_list[0] as JsonObject).filter as JsonObject).time;
     query.filterValues = [
       { target: 'time', value: { from: '2026-01', to: '2026-06' } }
     ];

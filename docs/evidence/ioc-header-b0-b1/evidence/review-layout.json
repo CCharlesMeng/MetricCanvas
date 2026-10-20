@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "role": "review-layout",
+  "evidence_epoch": "ioc-b0-b1-final-2",
+  "code_fingerprint": "59d46f9fd22af7b0c55ba6d6ceb67d0be9bf74e2e06284c4cd68c1d1946b683e",
+  "judged_files": [
+    "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte",
+    "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+    "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+    "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte",
+    "packages/embed/tests/browser/ioc-header.spec.ts",
+    "pages/ioc-header-overview-demo.json",
+    "pages/ioc-header-dense-filter-demo.json",
+    "pages/ioc-header-detail-demo.json"
+  ],
+  "status": "executed",
+  "coverage": [
+    {
+      "dimension": "L3",
+      "scope": "冻结390宽视口下普通、密集和详情页头自然回流；密集页收起、展开及区域候选层打开状态。当前源码哈希与证据一致；390宽展开页头左右边界在视口内、scrollWidth等于clientWidth、inert数量为0，候选层打开后整页无横向滚动；截图显示候选层完整且未被页头裁切。普通页1440/1024作为补充观察。",
+      "evidence_ids": [
+        "BE-1",
+        "BE-2",
+        "BE-3",
+        "packages/embed/tests/browser/ioc-header.spec.ts:L35-L43",
+        "docs/evidence/ioc-header-b0-b1/evidence/browser-final.log:L12-L17",
+        "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte:L14-L27",
+        "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte:L50-L81"
+      ],
+      "result": "clear"
+    }
+  ],
+  "findings": [],
+  "skipped": [],
+  "open_questions": [],
+  "deferred_candidates": [],
+  "evidence_reused": [
+    "BE-1",
+    "BE-2",
+    "BE-3",
+    "quality_gate"
+  ],
+  "evidence_added": [],
+  "known_gaps": []
+}

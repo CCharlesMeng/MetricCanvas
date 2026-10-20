@@ -54,11 +54,27 @@ def _is_bounded_time_point(node):
     return node.get('type') == 'timePoint' and ('min' in node or 'disableFuture' in node)
 
 
+def _is_export_header(node):
+    props = node.get('props')
+    return (node.get('type') == 'reportHeader' and isinstance(props, dict)
+            and any(key in props for key in ('pdfExport', 'pngExport', 'exportButtons')))
+
+
+def _is_business_filter(node):
+    return node.get('type') in {'dimension', 'timePoint', 'timeRange', 'boolean', 'numberRange', 'search'} and any(
+        key in node for key in ('selection', 'options', 'treeSelection', 'candidateContext', 'clearOnChangeOf', 'hint'))
+
+
 def _uses_product_bridge(node):
-    if isinstance(node, list): return any(_uses_product_bridge(v) for v in node)
-    if isinstance(node, dict) and node.get('type') == 'reportHeader' and isinstance(node.get('props'), dict) and any(key in node['props'] for key in ('pdfExport', 'pngExport', 'exportButtons')): return True
-    if isinstance(node, dict): return node.get('type') == 'pagedJoin' or _is_chart_filter(node) or _is_period_filter(node) or _is_bounded_time_point(node) or node.get('mode') == 'numberRange' or any(_uses_product_bridge(v) for v in node.values())
-    return False
+    if isinstance(node, list):
+        return any(_uses_product_bridge(value) for value in node)
+    if not isinstance(node, dict):
+        return False
+    if any(('byFilter' in node, 'metricByFilter' in node, node.get('currency') == 'USD', node.get('format') == 'usd-adaptive', node.get('defaultFormat') == 'usd-adaptive', 'units' in node, 'constraints' in node, 'presets' in node, 'strictURLInputs' in node, 'validateTargetInputs' in node, 'timeModes' in node, 'candidateWindow' in node, 'availability' in node, 'blockedRanges' in node, (node.get('type') in {'timeRange','timePoint'} and 'max' in node), 'iocHeader' in node, node.get('type') == 'pagedJoin',
+            _is_business_filter(node), _is_chart_filter(node), _is_period_filter(node), _is_bounded_time_point(node),
+            node.get('mode') == 'numberRange', _is_export_header(node))):
+        return True
+    return any(_uses_product_bridge(value) for value in node.values())
 
 
 def validate_page_document(value: Any) -> list[PageContractIssue]:

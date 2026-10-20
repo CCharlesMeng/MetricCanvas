@@ -1,0 +1,236 @@
+{
+  "case": "ioc-header-before-6.32",
+  "invariant": "ioc-header",
+  "input": {
+    "schemaVersion": "6.31",
+    "id": "ioc-header-page",
+    "layout": "dashboard",
+    "dashboardToolbar": "hidden",
+    "meta": {
+      "title": "IOC 公共页头：普通验收",
+      "description": "本地DQE仿真合成验收，条件回显不是业务指标。"
+    },
+    "iocHeader": {
+      "identity": {
+        "title": "项目概览",
+        "description": {
+          "text": "本地合成验收 · 控件改变真实声明的查询条件"
+        },
+        "tags": [
+          {
+            "id": "demo",
+            "text": "合成数据",
+            "tone": "info"
+          }
+        ],
+        "facts": [
+          {
+            "id": "period",
+            "kind": "queryPeriod",
+            "label": "统计期间",
+            "value": {
+              "filter": "period",
+              "format": "period"
+            }
+          }
+        ]
+      },
+      "filterIds": [
+        "period",
+        "region"
+      ]
+    },
+    "filters": [
+      {
+        "id": "period",
+        "type": "timeRange",
+        "display": "period",
+        "precision": "month",
+        "required": true,
+        "label": "统计期间",
+        "default": {
+          "mode": "month",
+          "value": "2026-09"
+        }
+      },
+      {
+        "id": "region",
+        "type": "dimension",
+        "dimension": "geo-pc-code",
+        "label": "区域"
+      }
+    ],
+    "dataSources": {
+      "bound": {
+        "fields": {
+          "scope": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "ioc_header_scope"
+          },
+          "count": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "ioc_header_count"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "ioc_header_scope"
+                  ],
+                  "output_metrics": [
+                    "ioc_header_count"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": false
+                    }
+                  },
+                  "order": {
+                    "limit": 10,
+                    "offset": 0
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "period": {
+                "target": "time"
+              },
+              "region": {
+                "target": "dimension",
+                "queryField": "geo_pc_code"
+              }
+            }
+          }
+        }
+      },
+      "unbound": {
+        "fields": {
+          "scope": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "ioc_header_scope"
+          },
+          "count": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "ioc_header_count"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "ioc_header_scope"
+                  ],
+                  "output_metrics": [
+                    "ioc_header_count"
+                  ],
+                  "filter": {
+                    "dims": []
+                  },
+                  "order": {
+                    "limit": 10,
+                    "offset": 0
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "body",
+        "container": "card",
+        "components": [
+          {
+            "id": "bound-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bound"
+            },
+            "props": {
+              "title": "已绑定条件",
+              "columns": [
+                {
+                  "field": "scope",
+                  "title": "服务收到的条件（本地合成）"
+                },
+                {
+                  "field": "count",
+                  "title": "合成响应标识"
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "本地页头验收"
+                }
+              }
+            }
+          },
+          {
+            "id": "unbound-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "unbound"
+            },
+            "props": {
+              "title": "无关查询（不随筛选刷新）",
+              "columns": [
+                {
+                  "field": "scope",
+                  "title": "服务收到的条件（本地合成）"
+                },
+                {
+                  "field": "count",
+                  "title": "合成响应标识"
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "本地页头验收"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/iocHeader",
+      "message": "页级 IOC 身份、筛选归属与实际首行折叠 由 6.32 引入，文档声明的是 6.31"
+    }
+  ]
+}

@@ -15,18 +15,30 @@
         "reference-branches-page",
         "detail-views",
         "report-date-filters-page",
-        "reference-export-detail-branches"
+        "reference-export-detail-branches",
+        "ioc-header-page",
+        "time-modes-page",
+        "time-presets-page",
+        "availability-page",
+        "calendar-window-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/page.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/page/src/schema/ioc-header.ts",
+        "packages/page/src/ioc-header.ts",
+        "packages/page/src/time-mode.ts",
+        "packages/page/src/period-facts.ts",
+        "packages/page/src/time-extension-validation.ts"
       ],
       "rules": [
         "page-layout-compatibility",
         "schema-structure",
         "schema-version-supported",
-        "detail-view-component-types"
+        "detail-view-component-types",
+        "ioc-header",
+        "time-extensions"
       ]
     },
     "params-and-text-values.md": {
@@ -176,18 +188,27 @@
         "query-cascade-page",
         "query-result-where-page",
         "query-result-where-branches",
-        "query-result-page-window-page"
+        "query-result-page-window-page",
+        "time-modes-page",
+        "time-presets-page",
+        "availability-page",
+        "calendar-window-page",
+        "time-binding-branches-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/query.ts",
         "tools/scripts/page-conformance-vectors.ts",
         "packages/page/src/query-result-where.ts",
-        "packages/page/src/validate-query-results.ts"
+        "packages/page/src/validate-query-results.ts",
+        "packages/page/src/time-mode.ts",
+        "packages/page/src/period-facts.ts",
+        "packages/page/src/time-extension-validation.ts"
       ],
       "rules": [
         "query-field-mapping",
-        "filter-binding"
+        "filter-binding",
+        "time-extensions"
       ]
     },
     "compute.md": {
@@ -250,7 +271,13 @@
         "period-filter-parameter-page",
         "dashboard-period-filter-more",
         "dashboard-period-filter-readonly",
-        "chart-local-filter-page"
+        "chart-local-filter-page",
+        "business-filter-page",
+        "currency-selection-page",
+        "time-modes-page",
+        "time-presets-page",
+        "availability-page",
+        "calendar-window-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -260,7 +287,14 @@
         "packages/page/src/report-date-filters.ts",
         "packages/page/src/chart-filter.ts",
         "packages/page/src/schema/chart-filter.ts",
-        "packages/page/src/time-filter-boundary.ts"
+        "packages/page/src/time-filter-boundary.ts",
+        "packages/page/src/filter-dependencies.ts",
+        "packages/page/src/amount-filter.ts",
+        "packages/page/src/amount-validation.ts",
+        "packages/page/src/field-selection.ts",
+        "packages/page/src/time-mode.ts",
+        "packages/page/src/period-facts.ts",
+        "packages/page/src/time-extension-validation.ts"
       ],
       "rules": [
         "filter-id-unique",
@@ -276,7 +310,10 @@
         "time-point-min",
         "time-point-disable-future",
         "period-filter",
-        "chart-local-filter"
+        "chart-local-filter",
+        "business-filters",
+        "currency-selection",
+        "time-extensions"
       ]
     },
     "sections-and-layout.md": {
@@ -321,7 +358,8 @@
         "fieldBinding",
         "fieldReference",
         "colorRule",
-        "categoryLabels"
+        "categoryLabels",
+        "staticFieldBinding"
       ],
       "keywords": [
         "field-bindings-and-formats",
@@ -333,13 +371,17 @@
         "reference-branches-page",
         "explicit-presentation-page",
         "signed-number-page",
-        "signed-number-family-page"
+        "signed-number-family-page",
+        "currency-selection-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/primitives.ts",
         "tools/scripts/page-conformance-vectors.ts",
-        "packages/page/src/schema/presentation.ts"
+        "packages/page/src/schema/presentation.ts",
+        "packages/page/src/amount-filter.ts",
+        "packages/page/src/amount-validation.ts",
+        "packages/page/src/field-selection.ts"
       ],
       "rules": [
         "data-slot-known-source",
@@ -350,7 +392,8 @@
         "chart-value-label-exclusive",
         "presentation-capability",
         "signed-number-format-capability",
-        "signed-number-family-capability"
+        "signed-number-family-capability",
+        "currency-selection"
       ]
     },
     "actions-and-navigation.md": {
@@ -365,12 +408,20 @@
       ],
       "examples": [
         "url-navigation-page",
-        "reference-export-detail-bindings"
+        "reference-export-detail-bindings",
+        "time-modes-page",
+        "navigation-source-page",
+        "navigation-list-page",
+        "navigation-detail-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/actions.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/page/src/schema/navigation.ts",
+        "packages/page/src/navigate.ts",
+        "packages/engine/runtime/src/navigate.ts",
+        "packages/engine/runtime/src/navigation-inputs.ts"
       ],
       "rules": [
         "url-navigation-source-contract",
@@ -1036,7 +1087,7 @@
     "match": "按声明维度等值选择行。",
     "matchField": "用于匹配地域/行的字段。",
     "matchValue": "与matchField类型一致的匹配值。",
-    "max": "量表上界；Schema数值约束与运行时范围规则同时适用。",
+    "max": "时间上限与min/disableFuture/禁选范围取交集；完整自然期不能截短。",
     "maxWidth": "受控最大宽度数值，不接受任意CSS。",
     "measures": "度量字段集合或分组。",
     "mergeBy": "表格合并分组字段，必须是已声明列。",
@@ -1062,7 +1113,7 @@
     "param": "已声明页面参数id，整值替换，不插值拼接。",
     "params": "一次初始化的不可变页面参数声明。",
     "parentField": "父地域/父级字段绑定。",
-    "part": "导航取筛选值的value/from/to/level部分。",
+    "part": "引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。",
     "pinnedSummary": "地图固定地域摘要，须符合regionalOverview分支。",
     "precision": "显示精度，不改原始数据。",
     "progress": "进度呈现相关结构。",
@@ -1163,7 +1214,6 @@
     "#/definitions/querySource/properties/resultScope": "complete 声明完整结果；计算不把分页窗口当作全量。",
     "#/properties/detailViews": "按 id 声明快照或独立查询详情；导出页面不包含详情浮层。",
     "#/definitions/reportHeaderComponent/properties/props/properties/filterIds": "页头按序引用已声明的日期筛选器；同一控件只出现一次，期间文字使用当前已应用筛选。",
-    "#/definitions/fieldBinding/anyOf/1/properties/missingText": "字段缺值时的展示文字，不生成业务数值。",
     "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/view": "引用已经声明的详情视图 id。",
     "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/bindings": "显式映射详情参数来源，支持行、页面参数或筛选器。",
     "#/definitions/barChartSeries/properties/axis": "系列使用 primary 或 secondary 坐标轴。",
@@ -1233,7 +1283,69 @@
     "#/definitions/reportHeaderComponent/properties/props/properties/pngExport/properties/scale": "有效数值PDF为2/3/4，PNG为3/4；其他值按未配置处理，读取时移除scale，分别使用默认2/3倍。字符串不转换为数值。",
     "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons": "6.31统一导出按钮数组，1至2项，每种格式最多一项，顺序即显示顺序；不能混用旧导出字段。每项声明format、可选label/filename/scale，点击直接下载。",
     "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/filename": "可选非空文本取值，支持参数、已应用筛选和parts；点击时捕获，默认页头标题，清理非法字符后规范为对应格式的单一扩展名。",
-    "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/filename": "可选非空文本取值，支持参数、已应用筛选和parts；点击时捕获，默认页头标题，清理非法字符后规范为对应格式的单一扩展名。"
+    "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/filename": "可选非空文本取值，支持参数、已应用筛选和parts；点击时捕获，默认页头标题，清理非法字符后规范为对应格式的单一扩展名。",
+    "#/properties/iocHeader": "IOC页级身份与筛选位置声明；不承担查询编排，见page.md的IOC公共页头。",
+    "#/properties/iocHeader/properties/identity": "可选身份行；省略不自动使用目录标题。",
+    "#/properties/iocHeader/properties/identity/properties/code": "标签与业务编码整体显示；缺值整体省略。",
+    "#/properties/iocHeader/properties/identity/properties/description/properties/text": "纯文本说明，沿用TextValue引用。",
+    "#/properties/iocHeader/properties/identity/properties/description/properties/presentation": "说明直接显示或通过键盘可达说明入口展开。",
+    "#/properties/iocHeader/properties/identity/properties/tags/items/properties/text": "业务标签文字；缺值不产生空色块。",
+    "#/properties/iocHeader/properties/identity/properties/facts": "显式期间/时间事实；不根据类别自动生成当前时间。",
+    "#/properties/iocHeader/properties/back": "返回意图；必须同时有合法returnContext和back处理函数。",
+    "#/properties/iocHeader/properties/filterIds": "按序唯一认领静态可见的页级筛选；不含图表独立或详情私有筛选。",
+    "#/properties/iocHeader/properties/presentation": "仅改变密度和折叠，不改变筛选语义。",
+    "#/properties/iocHeader/properties/presentation/properties/density": "普通或紧凑页头。",
+    "#/properties/iocHeader/properties/presentation/properties/collapse": "保持全部筛选或按实测首行折叠；隐藏项退出焦点序列。",
+    "#/properties/filters/items/properties/selection": "6.33：单/多选及必选基数；见filters.md业务筛选。",
+    "#/definitions/dimensionFilter/properties/selection": "单/多选及必选基数；required恰好一个值。",
+    "#/definitions/dimensionFilter/properties/selection/properties/allBehavior": "全选保留实际选择；仅穷尽封闭多选枚举可省动态谓词。",
+    "#/definitions/dimensionFilter/properties/options": "创作期确认的穷尽枚举；不请求候选网关，不作权限失败回退。",
+    "#/definitions/dimensionFilter/properties/options/items/properties/disabled": "不可选且不能作为默认值，不计入全选集合。",
+    "#/definitions/dimensionFilter/properties/treeSelection": "level使用显式level/parent结构，父节点只选择自身。",
+    "#/definitions/dimensionFilter/properties/candidateContext": "候选依赖与可信候选到达后的协调策略。",
+    "#/definitions/dimensionFilter/properties/candidateContext/properties/filterIds": "维度及已应用期间依赖，合并旧dependsOn后检环。",
+    "#/definitions/dimensionFilter/properties/candidateContext/properties/reconcile": "clear递归清理；intersection等待新完整可信候选再取交集。",
+    "#/definitions/dimensionFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
+    "#/definitions/dimensionFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
+    "#/definitions/timeRangeFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
+    "#/definitions/timeRangeFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
+    "#/definitions/timePointFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
+    "#/definitions/timePointFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
+    "#/definitions/booleanFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
+    "#/definitions/booleanFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
+    "#/definitions/numberRangeFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
+    "#/definitions/numberRangeFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
+    "#/definitions/searchFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
+    "#/definitions/searchFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
+    "#/definitions/staticFieldBinding/anyOf/1/properties/missingText": "字段缺值时的展示文字，不生成业务数值。",
+    "#/definitions/numberRangeFilter/properties/constraints": "基本单位上下限及双边严格/允许相等规则。",
+    "#/definitions/numberRangeFilter/properties/units": "币种required单选穷尽case；显示单位按scale换算一次，状态与URL为基本单位。",
+    "#/definitions/numberRangeFilter/properties/presets": "显示单位范围草稿；确定时换算，全部为空范围。",
+    "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter": "金额度量由required单选封闭枚举选择，cases必须穷尽并匹配静态money币种；选择器为隐式查询依赖。",
+    "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/filterId": "引用金额units使用的required单选封闭枚举筛选。",
+    "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/cases": "每个启用枚举值必须且只能映射一个已声明同币种money queryField。",
+    "#/definitions/numberRangeFilter/properties/constraints/properties/bounds": "strict拒绝双边相等，inclusive允许相等；新金额units/presets缺省严格，旧范围缺省兼容。",
+    "#/definitions/numberRangeFilter/properties/units/properties/filterId": "引用required单选封闭枚举，金额clearOnChangeOf必须包含该选择器。",
+    "#/definitions/numberRangeFilter/properties/units/properties/cases": "穷尽启用枚举项，每项声明静态货币、显示单位与正安全整数scale；状态始终为基本单位。",
+    "#/definitions/fieldBinding/anyOf/1/properties/byFilter": "Schema6.34非递归字段选择；只选择已有静态money字段，所有case均校验。",
+    "#/definitions/fieldBinding/anyOf/1/properties/byFilter/properties/filterId": "控制器必须为required单选封闭枚举，无未知值或首case回退。",
+    "#/definitions/fieldBinding/anyOf/1/properties/byFilter/properties/cases": "穷尽启用枚举项，每个case只能为静态FieldBinding，元数据与导出同已应用case。",
+    "timeModes": "与普通body/filterBindings互斥；filterId引用modes筛选，cases完整声明每一模式的静态查询体及绑定。",
+    "modes": "day/month/isoWeek有序闭集，各模式必须有合法默认范围，运行时原子保存mode/from/to。",
+    "defaultMode": "首次无URL输入时使用的已配置模式。",
+    "availability": "具名可信期间事实；initial与default/initialParam互斥，max独立校验。",
+    "blockMissing": "仅显式true时禁选missingRanges；缺数默认仍可查询空结果。",
+    "blockedRanges": "完整范围与任一禁选区间相交即拒绝，不静默截断。",
+    "candidateWindow": "V2候选必须携带12个日历月闭区间及完整上下文，不能降级旧维度端口。",
+    "anchorFact": "可信具名期间事实的latest作为月份锚点；省略使用同次时钟。",
+    "fact": "只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。",
+    "presets": "快捷范围按同次时钟或显式anchor解析，不改变已应用值直至合法提交。",
+    "filterId": "显式引用当前页面已声明筛选器；timeModes要求modes范围，metricByFilter要求required单选枚举。",
+    "cases": "完整穷尽已声明模式或封闭枚举的静态case，没有隐式首项回退。",
+    "metricByFilter": "按required单选币种选择静态基本单位metric，各case与units货币一致。",
+    "disableFuture": "默认保持禁止未来期间；显式false取消该项限制，仍受min/max/可信期间及禁选范围约束。",
+    "validateTargetInputs": "显式要求集成应用提供目标输入投影后才允许跨页导航；仅传URL输入，不恢复视图。",
+    "strictURLInputs": "显式开启目标页URL输入严格校验；省略保留兼容读取，文档规范化升版本不会自动开启。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1276,7 +1388,7 @@
     "zero": "零/缺分母时输出0。",
     "subtotal": "分组小计行标记。",
     "total": "全局合计行标记。",
-    "day": "日粒度。",
+    "day": "YYYY-MM-DD日范围及匹配静态day查询。",
     "week": "周粒度。",
     "month": "月粒度；timePoint使用YYYY-MM。",
     "quarter": "季度粒度。",
@@ -1389,7 +1501,6 @@
     "#/definitions/groupedDimensionQueryFieldGroup/additionalProperties/properties/defaultFormat=\"period\"": "日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。",
     "#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/0/properties/defaultFormat=\"period\"": "日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。",
     "#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/1/properties/defaultFormat=\"period\"": "日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。",
-    "#/definitions/fieldBinding/anyOf/1/properties/format=\"period\"": "日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。",
     "#/definitions/rankingDetailCardComponent/properties/props/properties/details/properties/valueField/properties/format=\"period\"": "日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。",
     "red": "统一主题的红色，业务含义由当前声明确定。",
     "green": "统一主题的绿色，业务含义由当前声明确定。",
@@ -1426,7 +1537,46 @@
     "6.28": "Report页头内置PDF下载及可配置按钮文字、文件名的兼容读取版本。",
     "6.29": "Dashboard图表独立筛选：黑色圆角单选按钮组及自定义候选项。",
     "6.30": "Report导出图片：独立文档、3/4倍高清、始终一张完整PNG。",
-    "6.31": "Report统一exportButtons，按按钮配置PDF/PNG格式、名称、文件名与渲染倍数，点击直接下载。"
+    "6.31": "Report统一exportButtons，按按钮配置PDF/PNG格式、名称、文件名与渲染倍数，点击直接下载。",
+    "#/properties/iocHeader/properties/identity/properties/description/properties/presentation=\"inline\"": "在身份区直接显示说明。",
+    "#/properties/iocHeader/properties/identity/properties/description/properties/presentation=\"tooltip\"": "通过可聚焦说明入口展开完整文字。",
+    "#/properties/iocHeader/properties/identity/properties/tags/items/properties/tone=\"neutral\"": "中性标签，不推断业务含义。",
+    "#/properties/iocHeader/properties/identity/properties/tags/items/properties/tone=\"info\"": "提示信息标签。",
+    "#/properties/iocHeader/properties/identity/properties/tags/items/properties/tone=\"success\"": "显式成功语义标签。",
+    "#/properties/iocHeader/properties/identity/properties/tags/items/properties/tone=\"warning\"": "显式提醒语义标签。",
+    "#/properties/iocHeader/properties/identity/properties/tags/items/properties/tone=\"danger\"": "显式危险语义标签。",
+    "#/properties/iocHeader/properties/identity/properties/facts/items/properties/kind=\"queryPeriod\"": "显式已应用查询期间。",
+    "#/properties/iocHeader/properties/identity/properties/facts/items/properties/kind=\"latestDataPeriod\"": "由可信输入给出的最新数据期。",
+    "#/properties/iocHeader/properties/identity/properties/facts/items/properties/kind=\"refreshedAt\"": "可信数据刷新时间，缺值省略。",
+    "#/properties/iocHeader/properties/identity/properties/facts/items/properties/kind=\"generatedAt\"": "可信页面生成时间，缺值省略。",
+    "#/properties/iocHeader/properties/presentation/properties/density=\"normal\"": "正常密度（缺省）。",
+    "#/properties/iocHeader/properties/presentation/properties/density=\"compact\"": "紧凑密度，不改查询。",
+    "#/properties/iocHeader/properties/presentation/properties/collapse=\"none\"": "全部展开（缺省）。",
+    "#/properties/iocHeader/properties/presentation/properties/collapse=\"firstRow\"": "按实际换行收起到首行。",
+    "6.32": "IOC根级页头增量；保持独立详情单月与原有页面兼容。",
+    "#/definitions/dimensionFilter/properties/selection/properties/mode=\"single\"": "至多选择一个值。",
+    "#/definitions/dimensionFilter/properties/selection/properties/mode=\"multiple\"": "保留多个显式值，required仍要求恰好一个。",
+    "#/definitions/dimensionFilter/properties/selection/properties/allBehavior=\"values\"": "完整传递已选值集合。",
+    "#/definitions/dimensionFilter/properties/selection/properties/allBehavior=\"unrestricted\"": "穷尽有效封闭枚举全部选中时省略动态维度谓词。",
+    "#/definitions/dimensionFilter/properties/candidateContext/properties/reconcile=\"clear\"": "上游变化递归清值并等待显式确认。",
+    "#/definitions/dimensionFilter/properties/candidateContext/properties/reconcile=\"intersection\"": "新完整可信候选就绪后保留交集；空交集保持门禁。",
+    "#/properties/schemaVersion=\"6.33\"": "业务筛选选择规则、封闭枚举、结构树和依赖候选。",
+    "#/definitions/staticFieldBinding/anyOf/1/properties/format=\"period\"": "日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。",
+    "CNY": "静态人民币金额，基本单位元。",
+    "USD": "静态美元金额，基本单位美元；没有隐式汇率换算。",
+    "usd-adaptive": "美元数值带千分位、两位小数和美元单位。",
+    "strict": "双边范围必须from<to，不改变下推>=/<=语义。",
+    "inclusive": "双边范围允许相等，仍校验上下限。",
+    "#/properties/schemaVersion=\"6.34\"": "USD、金额范围和静态货币字段选择独立能力增量。",
+    "modes": "显式日/月/ISO周模式范围，不与period或initialParam混用。",
+    "isoWeek": "同一ISO周的周一至周日，ISO所属年由日历计算；未知私有周码拒绝。",
+    "latest": "事实粒度下最新有数据期间，不隐含完成。",
+    "latestComplete": "事实粒度下最新完成期间；缺少时不可回退latest。",
+    "6.35": "复杂时间模式、可信期间事实及月份候选窗口。",
+    "refreshedAt": "可信服务实际刷新时间，使用带时区ISO输入；不取浏览器当前时间。",
+    "generatedAt": "可信产物生成时间，使用带时区ISO输入；不取浏览器当前时间。",
+    "mode": "导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。",
+    "6.36": "显式跨页传值与目标输入契约校验。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
