@@ -1,28 +1,65 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
+  import { afterNavigate, beforeNavigate } from '$app/navigation';
+  import type { Snapshot } from '@sveltejs/kit';
+  import { onDestroy, tick } from 'svelte';
   import { pageRepository } from '$lib/services';
   import { catalogCapabilities, catalogCategories, catalogLayouts, catalogRuntimes, filterPageCatalog, organizePageCatalog, runtimeInfo } from '$lib/page-catalog';
+  import { normalizeCatalogNavigationState, readCatalogNavigationState, rememberCatalogNavigationState, type CatalogNavigationState } from '$lib/catalog-navigation-state';
 
   const catalog = pageRepository.list().then(organizePageCatalog);
-  // Catalog sections arrive asynchronously; resolve direct directory links after they render.
-  onMount(() => {
-    let active = true;
-    void catalog.then(async () => {
-      await tick();
-      if (active && location.hash.startsWith('#group-')) document.getElementById(location.hash.slice(1))?.scrollIntoView();
-    }).catch(() => {}); // The await block displays catalog failures.
-    return () => { active = false; };
+  const saved = readCatalogNavigationState();
+  let query = $state(saved.query);
+  let category = $state(saved.category);
+  let layoutForm = $state(saved.layoutForm);
+  let capability = $state(saved.capability);
+  let runtime = $state(saved.runtime);
+  let mounted = true;
+  onDestroy(() => { mounted = false; });
+
+  function captureState(): CatalogNavigationState {
+    return { query, category, layoutForm, capability, runtime, scrollY: window.scrollY };
+  }
+
+  function rememberState() {
+    rememberCatalogNavigationState(captureState());
+  }
+
+  async function restoreScroll(scrollY: number, restoreAnchor = false) {
+    // 目录异步加载且筛选会改变高度，等卡片渲染后再恢复位置。
+    try {
+      await catalog;
+    } catch {
+      return;
+    }
+    await tick();
+    if (!mounted) return;
+    const anchor = restoreAnchor && location.hash.startsWith('#group-')
+      ? document.getElementById(location.hash.slice(1)) : null;
+    if (anchor) anchor.scrollIntoView();
+    else window.scrollTo(0, scrollY);
+  }
+
+  beforeNavigate(rememberState);
+  afterNavigate(({ type }) => {
+    if (type !== 'popstate') void restoreScroll(saved.scrollY, true);
   });
-  let query = $state('');
-  let category = $state('all');
-  let layoutForm = $state('all');
-  let capability = $state('all');
-  let runtime = $state('all');
+
+  // 浏览器前进/后退按各历史记录恢复；“页面目录”链接则恢复最近一次目录。
+  export const snapshot: Snapshot<CatalogNavigationState> = {
+    capture: captureState,
+    restore(value) {
+      const state = normalizeCatalogNavigationState(value);
+      ({ query, category, layoutForm, capability, runtime } = state);
+      void restoreScroll(state.scrollY);
+    }
+  };
 
   function resetFilters() {
     query = ''; category = 'all'; layoutForm = 'all'; capability = 'all'; runtime = 'all';
   }
 </script>
+
+<svelte:window onpagehide={rememberState} />
 
 <main class="catalog-page">
   <header class="page-heading">

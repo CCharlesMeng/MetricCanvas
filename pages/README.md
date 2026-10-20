@@ -8,6 +8,13 @@
 
 本轮信息结构改进的范围、浏览器结果与截图见[目录验收记录](../docs/evidence/page-catalog-information-structure/result.md)。
 
+### 目录返回时恢复查找条件
+
+- 启动 `pnpm dev:playground`，入口 `/`；无需 DQE，详情复用内联合成示例 `/pages/table-detail-overlay` 和 `/pages/table-toolbar-demo`。
+- 在目录选择“表格与明细”、Dashboard、“无需网关”、“功能演示”，搜索“详情弹窗”。打开唯一结果，再点顶部“页面目录”：关键词、四项选择、匹配结果及滚动位置保持原样。也可从详情的相关示例继续跳转后返回目录。
+- 切换为 Report，修改搜索为“Excel”并打开结果，连续使用浏览器后退／前进：各目录历史记录恢复各自的条件；刷新目录或详情后返回，条件仍保留。无匹配结果也保留；点击“重置筛选”后再往返，不恢复旧条件。
+- 会话存储损坏或分类选项已删除时回退默认值；存储被禁用时保留当前应用内状态。范围仅为试验场目录，不改变页面协议、业务页面筛选、页面参数或本地创作 Skill。浏览器验收脚本：`node apps/playground/tests/catalog-navigation-browser.mjs`；可用 `PLAYGROUND_BASE_URL` 指定服务地址。
+
 ## 能力索引
 
 | 能力 | 推荐主示例 | 扩展与业务应用 |
