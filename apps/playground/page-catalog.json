@@ -13,6 +13,12 @@
       "description": "从区域概览到机会点分析、清单与项目详情。使用合成演示数据。"
     },
     {
+      "id": "ioc-header",
+      "category": "verification",
+      "title": "IOC 公共页头",
+      "description": "选择功能，操作筛选并查看结果。涵盖时间、业务条件、金额币种，以及概览、清单、详情之间的条件传递。"
+    },
+    {
       "id": "features",
       "category": "features",
       "title": "功能演示",
@@ -1235,21 +1241,22 @@
     },
     {
       "id": "ioc-header-overview-demo",
-      "group": "verification",
-      "summary": "B1普通页头：年季月、单一筛选归属与受影响查询。",
+      "group": "ioc-header",
+      "summary": "切换年、季度、月或近一年，并按区域筛选，页头期间与数据结果同步更新。",
       "tags": [
-        "IOC公共页头",
-        "本地合成验收"
+        "年季月",
+        "近一年",
+        "区域筛选"
       ],
-      "displayTitle": "IOC 公共页头：普通验收",
+      "displayTitle": "按年、季度、月查看数据",
       "capabilities": [
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "本地合成验收",
+        "data": "演示数据",
         "runtime": "sim",
-        "scope": "候选或可信期间事实需要配套宿主能力"
+        "scope": "切换条件后查看数据变化"
       },
       "guide": {
         "steps": [
@@ -1269,21 +1276,21 @@
     },
     {
       "id": "ioc-header-dense-filter-demo",
-      "group": "verification",
-      "summary": "B0/B1密集页头：首行折叠、三级依赖和查询门禁。",
+      "group": "ioc-header",
+      "summary": "展开更多条件；改变上级区域时，下级选择随之清空，再按新范围选择。",
       "tags": [
-        "IOC公共页头",
-        "本地合成验收"
+        "更多筛选",
+        "上下级联动"
       ],
-      "displayTitle": "IOC 公共页头：密集与依赖验收",
+      "displayTitle": "更多筛选与上下级联动",
       "capabilities": [
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "本地合成验收",
+        "data": "演示数据",
         "runtime": "sim",
-        "scope": "候选或可信期间事实需要配套宿主能力"
+        "scope": "可展开、收起并联动筛选"
       },
       "guide": {
         "steps": [
@@ -1302,21 +1309,21 @@
     },
     {
       "id": "ioc-header-detail-demo",
-      "group": "verification",
-      "summary": "B1详情报表：参数身份、独立单月、合法来源返回。",
+      "group": "ioc-header",
+      "summary": "在项目详情中选择单个月份查看数据，月份调整仅作用于当前详情。",
       "tags": [
-        "IOC公共页头",
-        "本地合成验收"
+        "项目详情",
+        "单月筛选"
       ],
-      "displayTitle": "IOC 公共页头：详情单月验收",
+      "displayTitle": "按月查看项目详情",
       "capabilities": [
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "本地合成验收",
+        "data": "演示数据",
         "runtime": "sim",
-        "scope": "候选或可信期间事实需要配套宿主能力"
+        "scope": "可直接修改详情月份"
       },
       "guide": {
         "steps": [
@@ -1335,21 +1342,21 @@
     },
     {
       "id": "ioc-header-month-set-demo",
-      "group": "verification",
-      "summary": "无身份行；既有维度绑定保持离散月份集合，不提供B2候选窗口。",
+      "group": "ioc-header",
+      "summary": "同时选择1月和3月，只查看这两个月的数据，不包含中间的2月。",
       "tags": [
-        "IOC公共页头",
-        "本地合成验收"
+        "月份多选",
+        "不连续月份"
       ],
-      "displayTitle": "IOC 页头：无标题与离散月份",
+      "displayTitle": "选择多个不连续月份",
       "capabilities": [
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "本地合成验收",
+        "data": "演示数据",
         "runtime": "sim",
-        "scope": "候选或可信期间事实需要配套宿主能力"
+        "scope": "可直接多选月份"
       },
       "guide": {
         "steps": [
@@ -1367,21 +1374,23 @@
     },
     {
       "id": "ioc-header-business-options-demo",
-      "group": "verification",
-      "summary": "IOC B2：封闭枚举与勾选；本地合成验收，结构/时间依赖需V2 Adapter。",
+      "group": "ioc-header",
+      "summary": "体验单选、多选和是/否勾选；停用项不能选，选择“全部”可取消对应限制。",
       "tags": [
-        "IOC B2",
-        "本地合成验收"
+        "单选",
+        "多选",
+        "勾选",
+        "全部"
       ],
-      "displayTitle": "IOC B2：封闭枚举与勾选语义",
+      "displayTitle": "单选、多选与勾选筛选",
       "capabilities": [
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "本地合成验收",
+        "data": "演示数据",
         "runtime": "sim",
-        "scope": "候选或可信期间事实需要配套宿主能力"
+        "scope": "可直接体验不同选择方式"
       },
       "guide": {
         "steps": [
@@ -1400,21 +1409,21 @@
     },
     {
       "id": "ioc-header-business-tree-demo",
-      "group": "verification",
-      "summary": "IOC B2：结构树与候选交集；本地合成验收，结构/时间依赖需V2 Adapter。",
+      "group": "ioc-header",
+      "summary": "切换地区部、代表处等区域层级；更换时间后，检查原有选择是否仍可用。",
       "tags": [
-        "IOC B2",
-        "本地合成验收"
+        "区域层级",
+        "时间联动"
       ],
-      "displayTitle": "IOC B2：结构树与候选交集",
+      "displayTitle": "按区域层级筛选",
       "capabilities": [
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "本地合成验收",
+        "data": "演示数据",
         "runtime": "sim",
-        "scope": "候选或可信期间事实需要配套宿主能力"
+        "scope": "需提供区域层级与可选项"
       },
       "guide": {
         "steps": [
@@ -1433,21 +1442,21 @@
     },
     {
       "id": "ioc-header-business-detail-demo",
-      "group": "verification",
-      "summary": "IOC B2：详情私有筛选；本地合成验收，结构/时间依赖需V2 Adapter。",
+      "group": "ioc-header",
+      "summary": "切换详情月份和业务档位，只更新当前详情的数据。",
       "tags": [
-        "IOC B2",
-        "本地合成验收"
+        "详情筛选",
+        "业务选项"
       ],
-      "displayTitle": "IOC B2：详情私有枚举",
+      "displayTitle": "详情页单独选择业务条件",
       "capabilities": [
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "本地合成验收",
+        "data": "演示数据",
         "runtime": "sim",
-        "scope": "候选或可信期间事实需要配套宿主能力"
+        "scope": "可切换月份与业务档位"
       },
       "guide": {
         "steps": [
@@ -1465,21 +1474,23 @@
     },
     {
       "id": "ioc-header-currency-demo",
-      "group": "verification",
-      "summary": "IOC B3金额单位、静态货币字段及导出一致性；本地合成双货币数据",
+      "group": "ioc-header",
+      "summary": "切换人民币或美元后，重新选择金额范围；显示单位与导出结果保持一致。",
       "tags": [
-        "IOC B3",
-        "本地合成验收"
+        "人民币",
+        "美元",
+        "金额范围",
+        "单位"
       ],
-      "displayTitle": "IOC B3：金额与币种",
+      "displayTitle": "切换币种与金额范围",
       "capabilities": [
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "本地合成验收",
+        "data": "演示数据",
         "runtime": "sim",
-        "scope": "候选或可信期间事实需要配套宿主能力"
+        "scope": "可切换币种、单位与金额范围"
       },
       "guide": {
         "steps": [
@@ -1497,22 +1508,87 @@
       }
     },
     {
-      "id": "ioc-header-availability-demo",
-      "group": "verification",
-      "summary": "本地合成验收；不代表真实DQE、CloudIOC、Relay或私有周编码验收。",
+      "id": "ioc-header-time-modes-demo",
+      "group": "ioc-header",
+      "summary": "按天、按月或按周选择期间；周范围固定为周一至周日。",
       "tags": [
-        "IOC B4",
-        "本地合成验收"
+        "日月周",
+        "ISO周"
       ],
-      "displayTitle": "IOC B4：可信最新期",
+      "displayTitle": "按日、月和周筛选",
       "capabilities": [
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "本地合成验收",
+        "data": "演示数据",
         "runtime": "sim",
-        "scope": "候选或可信期间事实需要配套宿主能力"
+        "scope": "可直接切换日期粒度"
+      },
+      "guide": {
+        "steps": [
+          "切换日、月、ISO周，核对URL与查询保持完整模式范围。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters"
+        ],
+        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "related": [
+          "ioc-header-overview-demo"
+        ]
+      }
+    },
+    {
+      "id": "ioc-header-time-presets-demo",
+      "group": "ioc-header",
+      "summary": "用今日、近7天、上个完整月等快捷项填写日期范围。",
+      "tags": [
+        "今日",
+        "近7天",
+        "上个完整月"
+      ],
+      "displayTitle": "日期快捷选择",
+      "capabilities": [
+        "layout",
+        "filters"
+      ],
+      "environment": {
+        "data": "演示数据",
+        "runtime": "sim",
+        "scope": "可直接选择日期快捷项"
+      },
+      "guide": {
+        "steps": [
+          "选择今日、近7天或上个完整月预设，核对统一时钟与日期边界。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters"
+        ],
+        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "related": [
+          "ioc-header-overview-demo"
+        ]
+      }
+    },
+    {
+      "id": "ioc-header-availability-demo",
+      "group": "ioc-header",
+      "summary": "以最新数据期或最新完整期选择期间；手动指定日期可覆盖默认值。",
+      "tags": [
+        "最新数据期",
+        "最新完整期"
+      ],
+      "displayTitle": "选择最新数据期或完整期",
+      "capabilities": [
+        "layout",
+        "filters"
+      ],
+      "environment": {
+        "data": "演示数据",
+        "runtime": "sim",
+        "scope": "需提供最新数据期与完整期"
       },
       "guide": {
         "steps": [
@@ -1531,21 +1607,21 @@
     },
     {
       "id": "ioc-header-calendar-window-demo",
-      "group": "verification",
-      "summary": "本地合成验收；不代表真实DQE、CloudIOC、Relay或私有周编码验收。",
+      "group": "ioc-header",
+      "summary": "按最新数据期列出近12个月，可选择1月、3月等不连续月份。",
       "tags": [
-        "IOC B4",
-        "本地合成验收"
+        "近12个月",
+        "月份多选"
       ],
-      "displayTitle": "IOC B4：离散月份与时间模型",
+      "displayTitle": "从近12个月中多选",
       "capabilities": [
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "本地合成验收",
+        "data": "演示数据",
         "runtime": "sim",
-        "scope": "候选或可信期间事实需要配套宿主能力"
+        "scope": "需提供可选月份与最新数据期"
       },
       "guide": {
         "steps": [
@@ -1563,88 +1639,23 @@
       }
     },
     {
-      "id": "ioc-header-time-modes-demo",
-      "group": "verification",
-      "summary": "本地合成验收；不代表真实DQE、CloudIOC、Relay或私有周编码验收。",
-      "tags": [
-        "IOC B4",
-        "本地合成验收"
-      ],
-      "displayTitle": "IOC B4：日 / 月 / ISO周",
-      "capabilities": [
-        "layout",
-        "filters"
-      ],
-      "environment": {
-        "data": "本地合成验收",
-        "runtime": "sim",
-        "scope": "候选或可信期间事实需要配套宿主能力"
-      },
-      "guide": {
-        "steps": [
-          "切换日、月、ISO周，核对URL与查询保持完整模式范围。"
-        ],
-        "configPaths": [
-          "iocHeader",
-          "filters"
-        ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
-        "related": [
-          "ioc-header-overview-demo"
-        ]
-      }
-    },
-    {
-      "id": "ioc-header-time-presets-demo",
-      "group": "verification",
-      "summary": "本地合成验收；不代表真实DQE、CloudIOC、Relay或私有周编码验收。",
-      "tags": [
-        "IOC B4",
-        "本地合成验收"
-      ],
-      "displayTitle": "IOC B4：日期快捷范围",
-      "capabilities": [
-        "layout",
-        "filters"
-      ],
-      "environment": {
-        "data": "本地合成验收",
-        "runtime": "sim",
-        "scope": "候选或可信期间事实需要配套宿主能力"
-      },
-      "guide": {
-        "steps": [
-          "选择今日、近7天或上个完整月预设，核对统一时钟与日期边界。"
-        ],
-        "configPaths": [
-          "iocHeader",
-          "filters"
-        ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
-        "related": [
-          "ioc-header-overview-demo"
-        ]
-      }
-    },
-    {
       "id": "ioc-header-navigation-source-demo",
-      "group": "verification",
-      "summary": "IOC B5：概览传值；显式传值，不恢复视图。",
+      "group": "ioc-header",
+      "summary": "选择期间、币种和区域后进入项目清单，清单自动带入这些条件。",
       "tags": [
-        "IOC",
         "跨页传值",
-        "B5"
+        "概览到清单"
       ],
-      "displayTitle": "IOC B5：概览传值",
+      "displayTitle": "带筛选条件进入清单",
       "capabilities": [
         "layout",
         "filters",
         "navigation"
       ],
       "environment": {
-        "data": "本地合成验收",
+        "data": "演示数据",
         "runtime": "none",
-        "scope": "来源与目标独立；真实服务另验"
+        "scope": "从这里开始跨页体验"
       },
       "guide": {
         "steps": [
@@ -1664,23 +1675,22 @@
     },
     {
       "id": "ioc-header-navigation-list-demo",
-      "group": "verification",
-      "summary": "IOC B5：项目清单；显式传值，不恢复视图。",
+      "group": "ioc-header",
+      "summary": "在单月清单中点击项目，将项目、月份、币种和区域带入详情。",
       "tags": [
-        "IOC",
         "跨页传值",
-        "B5"
+        "清单到详情"
       ],
-      "displayTitle": "IOC B5：项目清单",
+      "displayTitle": "从清单打开项目详情",
       "capabilities": [
         "layout",
         "filters",
         "navigation"
       ],
       "environment": {
-        "data": "本地合成验收",
+        "data": "演示数据",
         "runtime": "none",
-        "scope": "来源与目标独立；真实服务另验"
+        "scope": "建议从概览进入"
       },
       "guide": {
         "steps": [
@@ -1700,23 +1710,23 @@
     },
     {
       "id": "ioc-header-navigation-detail-demo",
-      "group": "verification",
-      "summary": "IOC B5：项目详情；显式传值，不恢复视图。",
+      "group": "ioc-header",
+      "summary": "查看传入的项目和筛选条件；在详情中调整月份、币种或区域，不影响来源页。",
       "tags": [
-        "IOC",
-        "跨页传值",
-        "B5"
+        "项目详情",
+        "传入条件",
+        "独立筛选"
       ],
-      "displayTitle": "IOC B5：项目详情",
+      "displayTitle": "查看并调整传入条件",
       "capabilities": [
         "layout",
         "filters",
         "navigation"
       ],
       "environment": {
-        "data": "本地合成验收",
+        "data": "演示数据",
         "runtime": "sim",
-        "scope": "来源与目标独立；真实服务另验"
+        "scope": "建议从清单打开项目"
       },
       "guide": {
         "steps": [

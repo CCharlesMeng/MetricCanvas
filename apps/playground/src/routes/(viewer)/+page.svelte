@@ -1,8 +1,18 @@
 <script lang="ts">
+  import { onMount, tick } from 'svelte';
   import { pageRepository } from '$lib/services';
   import { catalogCapabilities, catalogCategories, catalogLayouts, catalogRuntimes, filterPageCatalog, organizePageCatalog, runtimeInfo } from '$lib/page-catalog';
 
   const catalog = pageRepository.list().then(organizePageCatalog);
+  // Catalog sections arrive asynchronously; resolve direct directory links after they render.
+  onMount(() => {
+    let active = true;
+    void catalog.then(async () => {
+      await tick();
+      if (active && location.hash.startsWith('#group-')) document.getElementById(location.hash.slice(1))?.scrollIntoView();
+    }).catch(() => {}); // The await block displays catalog failures.
+    return () => { active = false; };
+  });
   let query = $state('');
   let category = $state('all');
   let layoutForm = $state('all');
