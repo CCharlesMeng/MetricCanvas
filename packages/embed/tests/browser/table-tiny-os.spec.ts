@@ -1,6 +1,10 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 import { readFileSync, writeFileSync } from 'node:fs';
 
+// Compare CSS with a consistent text rasterizer on Linux, including sticky layers.
+// Chromium documents this switch in content/public/common/content_switches.cc.
+test.use({ launchOptions: { args: ['--disable-lcd-text'] } });
+
 const fixture = () => JSON.parse(readFileSync(new URL('../../../../pages/table-tiny-os.json', import.meta.url), 'utf8'));
 async function mount(page: Page, document = fixture()) {
   await page.goto('/examples/inline.html');
@@ -269,7 +273,7 @@ test('grid pixels equal the frozen official CSS reference with identical content
   const refPage = await context.newPage();
   const headings = reference.columns.map((title: string, index: number) => `<th class="tiny-grid-header__column"><div class="tiny-grid-cell"><div class="tiny-grid-cell-text">${title}</div></div>${index < 3 ? '<div class="tiny-grid-resizable is__line"></div>' : ''}</th>`).join('');
   const body = reference.rows.map((row: string[]) => `<tr class="tiny-grid-body__row">${row.map(value => `<td class="tiny-grid-body__column"><div class="tiny-grid-cell">${value}</div></td>`).join('')}</tr>`).join('');
-  await refPage.setContent(`<style>*{box-sizing:border-box}body{margin:0}table{font:inherit;color:inherit;transform:translateZ(0)}.tiny-grid{font-family:Helvetica,Arial,PingFangSC-Regular,'Hiragino Sans GB','Microsoft YaHei',微软雅黑,'Microsoft JhengHei';width:520px;line-height:14px}</style><style>${css}</style><div class="tiny-grid__wrapper tiny-grid view_default tiny-grid__animat"><div class="tiny-grid__body-wrapper body__wrapper block"><table class="tiny-grid__body" cellspacing="0" cellpadding="0" border="0" style="width:520px"><colgroup>${'<col width="130">'.repeat(4)}</colgroup><thead><tr class="tiny-grid-header__row">${headings}</tr></thead><tbody>${body}</tbody></table></div></div>`);
+  await refPage.setContent(`<style>*{box-sizing:border-box}body{margin:0}table{font:inherit;color:inherit}.tiny-grid{font-family:Helvetica,Arial,PingFangSC-Regular,'Hiragino Sans GB','Microsoft YaHei',微软雅黑,'Microsoft JhengHei';width:520px;line-height:14px}</style><style>${css}</style><div class="tiny-grid__wrapper tiny-grid view_default tiny-grid__animat"><div class="tiny-grid__body-wrapper body__wrapper block"><table class="tiny-grid__body" cellspacing="0" cellpadding="0" border="0" style="width:520px"><colgroup>${'<col width="130">'.repeat(4)}</colgroup><thead><tr class="tiny-grid-header__row">${headings}</tr></thead><tbody>${body}</tbody></table></div></div>`);
   for (const variant of [undefined, 'forecastMatrix', 'embedded']) {
     await refPage.locator('th, td').evaluateAll((cells, centered) => cells.forEach(cell => cell.classList.toggle('col__center', centered)), variant === 'forecastMatrix');
     const expected = await refPage.locator('table').screenshot();
@@ -283,9 +287,6 @@ test('grid pixels equal the frozen official CSS reference with identical content
     await mount(page, document);
     const widget = table(page, 'ordinary');
     await widget.locator('.scroll').evaluate(e => Object.assign((e as HTMLElement).style, { position: 'fixed', left: '0', top: '0', width: '520px', zIndex: '10000' }));
-    // Give both renderers the same compositing layer; Linux otherwise uses
-    // subpixel AA for the flow reference and grayscale AA for the fixed host.
-    await widget.locator('table').evaluate(e => { (e as HTMLElement).style.transform = 'translateZ(0)'; });
     const actual = await widget.locator('table').screenshot();
     writeFileSync(testInfo.outputPath(`${variant ?? 'ordinary'}-grid.png`), actual);
     expect(actual.equals(expected), `${variant ?? 'ordinary'} grid must equal frozen official CSS pixels`).toBe(true);

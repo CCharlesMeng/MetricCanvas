@@ -1,0 +1,20 @@
+{
+  "base_ref": "b0e736a2b7d81a2f65df1d5c713b5f9332af1842",
+  "failed_ci": "https://github.com/CCharlesMeng/MetricCanvas/actions/runs/39405843299",
+  "linux_passed": 418,
+  "linux_failed": 2,
+  "remaining_failure": "PNG equality in Chrome and Edge; the other four-category regressions are now clear",
+  "switch": "--disable-lcd-text",
+  "source": "https://chromium.googlesource.com/chromium/src/%2B/HEAD/content/public/common/content_switches.cc",
+  "scope": "New table style test file only; both reference and implementation use the same browser switch. Frozen CSS, layout metrics and zero-tolerance PNG assertion stay unchanged. No product code change.",
+  "test_sha256": "be84f0d6131d85d764f78b79e1efc11aceb19c19cd3ed300f7d04914e551a3bf",
+  "local_browser_results": {
+    "startTime": "2026-10-20T10:27:33.629Z",
+    "duration": 8955.543,
+    "expected": 9,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "types": "embed check:0 errors,0 warnings"
+}
