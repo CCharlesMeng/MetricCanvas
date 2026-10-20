@@ -54,3 +54,9 @@ PLAYGROUND_BASE_URL=http://127.0.0.1:4220 node apps/playground/tests/page-catalo
 - [上游目录导航回归](catalog-navigation-result.json)：详情重载返回、滚动、独立历史条目、空结果/重置/相关导航、锚点、新标签及禁用存储场景均通过。命令为 `PLAYGROUND_BASE_URL=http://127.0.0.1:4220 node apps/playground/tests/catalog-navigation-browser.mjs /tmp/ioc-header-hub-main-navigation`。
 
 本轮页面协议及 local-authoring 产物相对最新 main 仍无改动；原工作区并行内容继续保留。CI 最终结论在交付报告中单独核对，不将上述本地结果计作 CI 或真实服务验收。
+
+### 生产构建编译冲突修复
+
+首次合入后生产构建暴露 main 既有的 RuntimeSurface 同名 snippet：页级 IOC 控件与正文 reportHeader 控件均叫 headerControls，Svelte 生成服务端 JavaScript 时出现重复声明。7cb7d24c 已先行推送；随后将 IOC 控件模板改名为 iocHeaderControls，保留参数、FilterBar 配置及正文模板，未改变运行语义。
+
+新增 runtime-surface-build.test.ts 对完整 RuntimeSurface 做 Svelte server 编译，再用 esbuild 解析生成 JavaScript：修复前确实失败于重复绑定，修复后通过。最终本地 `pnpm test packages/engine/runtime-ui/tests/runtime-surface-build.test.ts apps/playground/tests` 为 15 文件、64 项通过；Playground check、生产 build、authoring 导出一致性及 15 场景浏览器均通过。原 54 页目录回归和导航状态回归结果保留。该修复不新增页面字段或创作契约；真实服务仍未验收。

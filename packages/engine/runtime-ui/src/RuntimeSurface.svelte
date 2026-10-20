@@ -1317,10 +1317,10 @@
     >
     {#if header.model}
       <IocHeader model={header.model} filterIds={header.primary.map(filter=>filter.id)} overflowIds={header.overflow.map(filter=>filter.id)}
-        returnContext={navigation?.returnContext} onback={navigation?.back} controls={headerControls}
+        returnContext={navigation?.returnContext} onback={navigation?.back} controls={iocHeaderControls}
         readOnly={pageReadOnly} note={blockedFilters.length ? `等待筛选确认或可信候选：${blockedFilters.map(id=>declarations.find(f=>f.id===id)?.label ?? id).join('、')}` : pageReadOnly ? filterEditing?.reason ?? header.note ?? '筛选只读' : header.note}/>
     {/if}
-    {#snippet headerControls(id: string, readOnly: boolean)}
+    {#snippet iocHeaderControls(id: string, readOnly: boolean)}
       <FilterBar {timeContext} onretry={retryCandidates} declarations={(presentation?.filters??declarations).filter(filter=>filter.id===id)} values={filterValues} candidates={dimensionCandidates}
         {readOnly} ondimension={writeDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
         onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
