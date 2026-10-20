@@ -26,6 +26,9 @@ const dimensionFilterZ = z
     /** 层级声明的级别切换器；缺省显示，地图等其它交互可承担切层时可隐藏。 */
     hierarchyPicker: z.enum(['tabs', 'hidden']).optional(),
     display: z.enum(['select', 'tabs', 'tree', 'search']).optional(),
+    selection: z.enum(['single', 'multiple']).optional(),
+    searchable: z.boolean().optional(),
+    treeSelection: z.enum(['descendants', 'independent', 'leaf']).optional(),
     visible: z.boolean().optional(),
     default: z.array(z.string()).optional(),
     initialParam: idZ.optional(),

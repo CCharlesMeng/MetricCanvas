@@ -17,6 +17,8 @@
     pageRepository
   } from '$lib/services';
 
+  import { iocSelectionGateway } from '$lib/ioc-selection-gateway';
+
   type PageLoadState =
     | { phase: 'loading' }
     | { phase: 'missing'; message: string }
@@ -81,7 +83,7 @@
       pageState = {
         phase: 'ready',
         document,
-        dataGateway
+        dataGateway: pageId === 'ioc-header-selection' ? iocSelectionGateway : dataGateway
       };
     } catch (cause) {
       if (session !== loadSession) return;

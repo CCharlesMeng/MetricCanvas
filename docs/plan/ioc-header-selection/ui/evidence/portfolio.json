@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "phase": "final",
+  "tier": {
+    "value": "standard",
+    "restore_tasks": [],
+    "blocking_triggers": [
+      "navigation",
+      "shared-boundary"
+    ],
+    "changed_files": 505,
+    "max_changed_files": 5
+  },
+  "risk_triggers": [
+    "interaction",
+    "navigation",
+    "shared-boundary",
+    "visual"
+  ],
+  "trigger_sources": {
+    "visual": [
+      "diff",
+      "plan"
+    ],
+    "interaction": [
+      "plan"
+    ],
+    "shared-boundary": [
+      "diff",
+      "plan"
+    ],
+    "navigation": [
+      "diff"
+    ]
+  },
+  "portfolio_narrowed": [],
+  "facts": {
+    "cross_page": false,
+    "shared_style": false,
+    "overflow_state": false,
+    "frozen_r": false,
+    "frozen_r5": false,
+    "frozen_r6": false,
+    "has_f3": true,
+    "has_s3_claim": false
+  },
+  "modules": [
+    "causal",
+    "targeted-quality",
+    "render",
+    "story",
+    "regression",
+    "review-convention",
+    "review-quality",
+    "self-test"
+  ],
+  "review_roles": [
+    "review-convention",
+    "review-quality",
+    "self-test"
+  ],
+  "review_dimensions": {
+    "review-convention": [
+      "C1",
+      "C3",
+      "C5"
+    ],
+    "review-quality": [
+      "Q2",
+      "Q6",
+      "Q7"
+    ],
+    "self-test": [
+      "F3-1",
+      "F3-2",
+      "F3-3",
+      "F3-4",
+      "F4-1",
+      "F4-2"
+    ]
+  },
+  "claims": [
+    {
+      "id": "AT1",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "test_case",
+      "task": "mock",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT2",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "test_case",
+      "task": "mock",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT3",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "test_case",
+      "task": "mock",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT4",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "test_case",
+      "task": "mock",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT5",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "test_case",
+      "task": "contract",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT6",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "test_case",
+      "task": "mock",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT7",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "test_case",
+      "task": "contract",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "previous": {
+    "phase": "final",
+    "tier": "standard",
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "story",
+      "regression",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "review_roles": [
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "required_profiles": {
+      "AT1": "mock",
+      "AT2": "mock",
+      "AT3": "mock",
+      "AT4": "mock",
+      "AT5": "mock",
+      "AT6": "mock",
+      "AT7": "mock"
+    }
+  }
+}

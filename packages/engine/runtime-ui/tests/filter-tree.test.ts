@@ -86,3 +86,16 @@ describe('toggleNodeValues:节点复选切换', () => {
     expect(toggleNodeValues(leaf, ['华东/上海'], new Set(['华东/上海']))).toEqual([]);
   });
 });
+
+describe('explicit stable-code parent tree',()=>{
+ it('supports arbitrary codes, repeated labels and arbitrary depth',()=>{
+  const result=buildFilterTree([{value:'SZ',label:'总部',parentValue:'CN'},{value:'CN',label:'中国'},{value:'EU',label:'欧洲'},{value:'DE',label:'总部',parentValue:'EU'},{value:'DE-A',label:'小组',parentValue:'DE'}]);
+  expect(result[0].value).toBe('CN');expect(result[0].children[0].value).toBe('SZ');
+  expect(result[1].leaves).toEqual(['EU','DE','DE-A']);
+ });
+ it.each([
+  [{value:'a',label:'a',parentValue:'missing'}],
+  [{value:'a',label:'a',parentValue:'b'},{value:'b',label:'b',parentValue:'a'}],
+  [{value:'a',label:'a'},{value:'a',label:'a',parentValue:'a'}]
+ ])('rejects malformed complete batches',(...batch)=>{expect(()=>buildFilterTree(batch)).toThrow();});
+});

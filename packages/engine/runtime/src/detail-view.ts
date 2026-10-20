@@ -33,6 +33,7 @@ export function detailViewInput(page: Page, action: OpenDetailAction, row: Row, 
     if (declaration.type === 'dimension') {
       const values = Array.isArray(value) ? value : [value];
       if (!values.length || values.some(item => !((typeof item === 'string' && item.length > 0) || (typeof item === 'number' && Number.isFinite(item))))) throw new Error('详情维度参数缺失');
+      if ((declaration.selection === 'single' || declaration.display === 'tabs') && values.length > 1) throw new Error('详情单选维度参数最多允许一个值');
       next = { type: 'dimension', dimension: declaration.dimension, values: values.map(String) };
     } else if (declaration.type === 'timePoint') {
       if (typeof value !== 'string' || validateTimePointValue(value, declaration.granularity)) throw new Error('详情日期参数无效');

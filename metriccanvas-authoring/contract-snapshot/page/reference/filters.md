@@ -74,12 +74,26 @@ Dashboard 正文的 `barChart`、`lineChart`、`pieChart`、`mapChart` 可在 `p
 
 验收页面 `chart-local-filter-page` 与同名协议夹具覆盖四种图表、独立默认项、自定义名称/值、空结果和未筛选对照图；浏览器验收直接消费此页面。数据是本地 Sim 的合成数据，不能证明真实 DQE、Relay 或线上部署结果。
 
+## 选择下拉与树形选择（6.32）
+
+维度筛选 `selection: "single" | "multiple"` 与 `display` 正交；省略仍为多选，tabs 固定单选。`searchable` 缺省 true，false 关闭面板搜索；历史 display=search 继续作为可搜索下拉别名，显式 searchable 优先。搜索仅在已加载候选中按名称、稳定代码和祖先路径匹配，忽略首尾空白与拉丁字母大小写，保留祖先与已选值，不写入筛选状态，不触发业务查询。
+
+多选逐项显示可删除标签，输入区保持单行固定高度，标签在区内横向滚动。清空表示不加该筛选条件。树形单选选择节点自身稳定值并关闭面板，加减号只负责展开收起。树单选不得把父节点转换成多个后代，结构祖先没有候选值时只展开，不提交推导编码。
+
+`treeSelection` 仅用于 display=tree：缺省 descendants 保留存量父选本节点及候选后代；independent 只增删本节点自身值；leaf 只提交叶子。多选中的父级可批量选择本批已加载叶子，单选 leaf 父节点只展开。搜索结果中操作父节点仍作用于该节点原有完整候选子树，不以搜索命中数量重新定义业务范围。候选批次并非远程全量授权集合，默认全选只用于平面完整已加载候选，搜索态隐藏全选。
+
+候选端口可返回 `{value,label,parentValue?}`，parentValue 指向同一完整批次中的稳定代码，允许同名节点和任意层级。重复码、缺父引用和循环关系显示“候选层级无效”，保留已应用值，不猜测父子关系。没有显式父关系时继续按既有 value/label 的 `/` 路径建树；这不是多维度 hierarchy 的切层，后者仍使用 levelQueryFields。端口不承诺远程搜索、分页或懒加载；数据权限由候选端口承担。
+
+单选仍使用 string[] 筛选态，至多一个值。多值 default、initialParam 或初始快照拒绝初始化；write/writeMany 拒绝非法多值并保留已应用状态；非法多值 URL 被忽略并保留合法初值，不截取第一项。正常清空仍合法。详情参数同样校验单选数量。新增三个页面字段须声明 6.32 或以上；普通历史页面可直接获得默认搜索与单行标签，不需重写元数据。
+
+完整演示入口 `/pages/ioc-header-selection`：树单选、三级树多选、仅叶子、平面标签多选、关闭搜索及存量路径树。页面专用本地合成网关只为这个页面提供候选和样例行，不接真实 DQE。协议夹具 `dimension-selection-page` 同时覆盖三种显式树策略；真实候选/权限、DQE、Relay 与部署验收另列。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.31。结构真源为本册[schema.json](schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.32。结构真源为本册[schema.json](schema.json)，SHA256 `a82a821bf9c06c65521b893a71a7b918b3a1d5cd648e0792a0d3ca9c9de63010`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -228,6 +242,47 @@ Schema位置：`#/definitions/dimensionFilter/properties/display`。
 | "tabs" | 平铺Tab选项。 |
 | "tree" | 层级树选择。 |
 | "search" | 普通文本搜索输入。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f73656c656374696f6e"></a>
+
+### `@dimensionFilter.selection`
+
+Schema位置：`#/definitions/dimensionFilter/properties/selection`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["single","multiple"] | Schema未设默认；装配/运行时默认见语义说明 | 维度下拉单/多选；省略 multiple，tabs 固定 single；single 最多一个稳定值。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "single" | 单选，最多一个稳定值 |
+| "multiple" | 多选，完整保留值数组 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f73656172636861626c65"></a>
+
+### `@dimensionFilter.searchable`
+
+Schema位置：`#/definitions/dimensionFilter/properties/searchable`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 面板内搜索缺省 true，可关闭；只过滤已加载候选，不写入筛选。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f7472656553656c656374696f6e"></a>
+
+### `@dimensionFilter.treeSelection`
+
+Schema位置：`#/definitions/dimensionFilter/properties/treeSelection`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["descendants","independent","leaf"] | Schema未设默认；装配/运行时默认见语义说明 | 仅树：descendants 父选后代，independent 本节点，leaf 仅叶子。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "descendants" | 父节点与候选后代联动 |
+| "independent" | 父子独立，提交本节点值 |
+| "leaf" | 仅提交叶子 |
 
 <a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f76697369626c65"></a>
 
@@ -1419,6 +1474,7 @@ Schema位置：`#/definitions/chartFilter/properties/options/items/properties/va
 - [dashboard-period-filter-more](examples/dashboard-period-filter-more.json)：完整合法页面；查询仅为静态契约证据。
 - [dashboard-period-filter-readonly](examples/dashboard-period-filter-readonly.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-local-filter-page](examples/chart-local-filter-page.json)：完整合法页面；查询仅为静态契约证据。
+- [dimension-selection-page](examples/dimension-selection-page.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/filter.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。

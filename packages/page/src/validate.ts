@@ -528,6 +528,9 @@ function filterDeclarationErrors(
       errors.push(schemaError(`${path}/default`, '数值区间 from 不得大于 to'));
     }
   } else if (filter.type === 'dimension') {
+    if ((filter.selection === 'single' || filter.display === 'tabs') && (filter.default?.length ?? 0) > 1) errors.push(schemaError(`${path}/default`, '单选维度筛选器最多允许一个默认值'));
+    if (filter.display === 'tabs' && filter.selection === 'multiple') errors.push(schemaError(`${path}/selection`, 'tabs 仅支持单选'));
+    if (filter.treeSelection !== undefined && filter.display !== 'tree') errors.push(schemaError(`${path}/treeSelection`, 'treeSelection 仅用于 tree'));
     const hierarchy = filter.hierarchy ?? [];
     const levelIds = new Set<string>();
     hierarchy.forEach((level, levelIndex) => {

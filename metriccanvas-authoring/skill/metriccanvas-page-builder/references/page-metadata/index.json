@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.31",
-  "schemaSha256": "c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d",
+  "schemaVersion": "6.32",
+  "schemaSha256": "a82a821bf9c06c65521b893a71a7b918b3a1d5cd648e0792a0d3ca9c9de63010",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -136,7 +136,7 @@
     },
     {
       "file": "packages/page/src/schema/filter.ts",
-      "sha256": "041070273e2367517ebe0dbbc9fae5b5a31ad7a8f11154ed3498a54c1ea86f2e"
+      "sha256": "16209d1a04d8bc0bbfefc55cfe32ef7fa8300b1abaed9b040214955e0a717259"
     },
     {
       "file": "packages/page/src/schema/page.ts",
@@ -172,7 +172,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "2facf78271db1a318fb283c59176a72c483fe3385d415a6e74a52bb5aa97421c"
+      "sha256": "e8c188029884c6585b1804db30dd7996a694fe254426db4187daf494aaa3c873"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
@@ -430,7 +430,8 @@
         "period-filter-parameter-page",
         "dashboard-period-filter-more",
         "dashboard-period-filter-readonly",
-        "chart-local-filter-page"
+        "chart-local-filter-page",
+        "dimension-selection-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1213,7 +1214,8 @@
         "6.28",
         "6.29",
         "6.30",
-        "6.31"
+        "6.31",
+        "6.32"
       ]
     },
     {
@@ -5124,6 +5126,33 @@
         "tabs",
         "tree",
         "search"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/selection",
+      "path": "@dimensionFilter.selection",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "enum": [
+        "single",
+        "multiple"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/searchable",
+      "path": "@dimensionFilter.searchable",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "path": "@dimensionFilter.treeSelection",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "enum": [
+        "descendants",
+        "independent",
+        "leaf"
       ]
     },
     {
@@ -11087,42 +11116,42 @@
       "type": "text",
       "file": "examples/component-text.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-text-page.json"
+      "source": "page/conformance/valid/dimension-selection-page.json"
     },
     {
       "type": "text",
       "variant": "plain",
       "file": "examples/component-text-plain.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-text-page.json"
+      "source": "page/conformance/valid/dimension-selection-page.json"
     },
     {
       "type": "text",
       "variant": "heading",
       "file": "examples/component-text-heading.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-text-page.json"
+      "source": "page/conformance/valid/dimension-selection-page.json"
     },
     {
       "type": "text",
       "variant": "insight",
       "file": "examples/component-text-insight.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-text-page.json"
+      "source": "page/conformance/valid/dimension-selection-page.json"
     },
     {
       "type": "text",
       "variant": "reportInline",
       "file": "examples/component-text-reportInline.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-text-page.json"
+      "source": "page/conformance/valid/dimension-selection-page.json"
     },
     {
       "type": "text",
       "variant": "riskNotice",
       "file": "examples/component-text-riskNotice.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/reference-text-page.json"
+      "source": "page/conformance/valid/dimension-selection-page.json"
     },
     {
       "type": "aiSummary",

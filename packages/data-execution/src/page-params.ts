@@ -23,6 +23,7 @@ export function seedPageParamFilters(page: import('@metriccanvas/page').Page, va
     const value = values.get(declaration.initialParam);
     if (declaration.type === 'dimension') {
       declaration.default = value === undefined ? [] : Array.isArray(value) ? [...value] : [String(value)];
+      if ((declaration.selection === 'single' || declaration.display === 'tabs') && declaration.default.length > 1) throw new Error(`筛选器 ${declaration.id}: 单选参数最多允许一个值`);
     } else if (declaration.type === 'timeRange') {
       if (value && typeof value === 'object' && !Array.isArray(value)) {
         const range = {from:value.start,to:value.end};

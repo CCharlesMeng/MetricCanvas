@@ -1,21 +1,20 @@
 {
-  "schemaVersion": "6.31",
-  "layout": "report",
-  "id": "reference-text-page",
+  "schemaVersion": "6.32",
+  "id": "dimension-selection-page",
+  "layout": "dashboard",
   "dataSources": {},
   "sections": [
     {
       "id": "main",
       "components": [
         {
-          "id": "explanation",
+          "id": "title",
           "type": "text",
           "layout": {
             "span": 12
           },
           "props": {
-            "title": "章节说明",
-            "body": "这是页面中的静态说明正文。",
+            "body": "IOC 项目经营概览 · 选择控件",
             "variant": "heading"
           }
         }

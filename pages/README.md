@@ -160,3 +160,14 @@ Report 页面按三节组织，控件相互独立：
 - 组件配置提供常用宽度、逐轨调节及展示属性，不再重复摘要卡或移动/删除按钮；页面设置独立呈现日期筛选配置。操作条跟随选择、尺寸和滚动，目标完全滚出视野后隐藏。选中组件按 Delete 可删除，输入框中的 Delete 不触发删除。
 - 删除或移动一个分区的最后组件时，该分区在搭建草稿中保留并可继续接收拖入，正式页面投影移除空分区。页面须至少保留一个组件；删除最后一个组件会显示原因且保留原文档。删除不回收共享页面数据源。
 - 修改与删除可用顶部「撤销上一步」恢复；点击「保存草稿」才提交。本地浏览器测试证明交互、文档投影与受控保存回读，不能替代真实 Java 资产服务或部署验收。
+
+## IOC 页头选择控件
+
+启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5186`，访问 [IOC 页头选择控件](http://127.0.0.1:5186/pages/ioc-header-selection)。无需 URL 参数、凭据或外部服务；本页专属合成网关提供候选与三条项目样例，其他页面仍走原网关。
+
+1. 区域打开后搜索 CN-BJ，祖先保留；选择北京，面板关闭，URL 只有一个区域值，表格只保留北京项目。搜索与加减号不更新 URL 或查询。
+2. 客户分类标签在固定高度输入区横向滚动，删除 SMB 后保留其他三项；行业支持三级父子独立多选，业务类型只提交叶子。
+3. 模型关闭搜索；窄屏在“更多筛选”打开。存量路径树点击中国，URL 写入 CN/SZ 与 CN/BJ，保留原有父选后代。
+4. 单选多值 URL `?region=CN-SZ&region=CN-BJ` 忽略非法输入，保留合法默认深圳；同名“总部”通过祖先路径辨认。
+
+自动复测：`node apps/playground/tests/ioc-header-selection-browser.mjs`（先启动上述页面服务）；组件及候选 loading/empty/unavailable/error、禁用、未知已选码、键盘在 `pnpm --filter @metriccanvas/ui exec playwright test selection.spec.ts --project=chrome`。本地浏览器结果不证明真实 DQE/Relay/CloudIOC 或线上部署。

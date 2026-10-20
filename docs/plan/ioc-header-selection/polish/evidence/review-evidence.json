@@ -1,0 +1,551 @@
+{
+  "code": {
+    "base_ref": "952b3a273f0f4f8be5820f5af1bb76c2f5afa513",
+    "code_fingerprint": "17886903b0b78e34ce5a2e73f7167f7da780d5f934dda4b52875292406721cf0",
+    "files": [
+      {
+        "path": "apps/playground/src/lib/ioc-selection-gateway.ts",
+        "sha256": "0f9a11b66e0d8b99e30c98a4ff9ea60645dbaf3c99132fabf9b51a7b4abd6077"
+      },
+      {
+        "path": "apps/playground/tests/ioc-header-selection-browser.mjs",
+        "sha256": "d983d93311f6f7aae3eb12033d8c4885e9acda65c51bd5a05c1bdf33058cdd80"
+      },
+      {
+        "path": "docs/evidence/platform-ui-os-theme-2026-10-12/sources.json",
+        "sha256": "be385350e63d4c1007a8216d8df04af443d5c9bfd517ddefefea8e353a482e5b"
+      },
+      {
+        "path": "docs/plan/ioc-header-selection/polish/story-delta-frontend-design.md",
+        "sha256": "2b511c5502a71b1d973dc576ace351cc78e4508b308ca9d2d49e36acb3cb3b01"
+      },
+      {
+        "path": "packages/engine/runtime-ui/src/report-theme-properties.ts",
+        "sha256": "bc5b22a20d00d66ce8bef2cf79980096fa9bcc040d5e21f385038d070ff5d9cd"
+      },
+      {
+        "path": "packages/ui/scripts/freeze-os-theme.mjs",
+        "sha256": "54654c6d56b37e987ada106397ab3a16d963a5e0f1c9bdfa209b8a09bc4892a6"
+      },
+      {
+        "path": "packages/ui/src/components/select/Select.svelte",
+        "sha256": "59e3214e46a592357e2f6a54faa408afb281cc4a0b84174235f391007fd88c65"
+      },
+      {
+        "path": "packages/ui/src/components/select/Selection.svelte",
+        "sha256": "2247b97350e2e15444f27cfa8caacc779419bff844a9bb97c9d276f6950a43e3"
+      },
+      {
+        "path": "packages/ui/src/components/select/SelectionIcon.svelte",
+        "sha256": "feb73407190b96c7289505b7ebd367b2ae48375c2fc2571a1eac3d007c685176"
+      },
+      {
+        "path": "packages/ui/src/components/select/selection.ts",
+        "sha256": "63e3d8436fb25ac8bb68b2509f87e50d401fb73cf37da6b97149e49a6a1ab886"
+      },
+      {
+        "path": "packages/ui/src/shared/Theme.svelte",
+        "sha256": "c0bd339521c42e4ec08707f06392ca9f8813a7740686266ca6f7bc4fefe1d1d1"
+      },
+      {
+        "path": "packages/ui/src/shared/popover.ts",
+        "sha256": "aa6ae97d146f38295525dac3402dfd3cfbc07b6476c9be2ce873de5c4964c40c"
+      },
+      {
+        "path": "packages/ui/tests/browser/SelectionHarness.svelte",
+        "sha256": "167b11efbb14cf9d593eae119f01fb1202adfe93ea0c392e68db3c78ec40bf13"
+      },
+      {
+        "path": "packages/ui/tests/browser/selection.spec.ts",
+        "sha256": "9d71e787650ef8c2c7c2b7de92462f5cf76dc6bcc0e13be1e0e4c122fdbb3de8"
+      },
+      {
+        "path": "pages/ioc-header-selection.json",
+        "sha256": "15c130dffbe7d7099a0880e97bcfb986199adc0d47615ec87cf34c3a1df20306"
+      }
+    ],
+    "head": "952b3a273f0f4f8be5820f5af1bb76c2f5afa513"
+  },
+  "evidence_epoch": "ioc-polish-final-1",
+  "quality_gate": {
+    "code_fingerprint": "17886903b0b78e34ce5a2e73f7167f7da780d5f934dda4b52875292406721cf0",
+    "commands": [
+      {
+        "command": "pnpm --filter @metriccanvas/ui exec playwright test selection.spec.ts components.spec.ts --project=chrome --timeout=10000",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/plan/ioc-header-selection/polish/evidence/browser-final.txt",
+        "name": "browser-final"
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/ui check",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/plan/ioc-header-selection/polish/evidence/ui-check.txt",
+        "name": "ui-check"
+      },
+      {
+        "command": "node apps/playground/tests/ioc-header-selection-browser.mjs",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/plan/ioc-header-selection/polish/evidence/page-final.txt",
+        "name": "page-final"
+      },
+      {
+        "command": "pnpm exec vitest run packages/ui/tests packages/engine/runtime-ui/tests/filter-tree.test.ts packages/engine/runtime-ui/tests/map-hierarchy.test.ts packages/engine/runtime-ui/tests/filter-bar.test.ts packages/engine/runtime-ui/tests/report-pdf-png.test.ts",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/plan/ioc-header-selection/polish/evidence/targeted-tests.txt",
+        "name": "targeted-tests"
+      },
+      {
+        "command": "pnpm report-pdf:build",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/plan/ioc-header-selection/polish/evidence/report-build.txt",
+        "name": "report-build"
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/ui exec pnpm pack --out /tmp/ioc-selection-ui-consumer/ui-polish.tgz",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/plan/ioc-header-selection/polish/evidence/package-build.txt",
+        "name": "package-build"
+      },
+      {
+        "command": "pnpm --dir /tmp/ioc-selection-ui-consumer exec playwright test",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/plan/ioc-header-selection/polish/evidence/consumer-final.txt",
+        "name": "consumer-final"
+      }
+    ]
+  },
+  "runtime": {
+    "account": "fixture",
+    "api_mode": "local synthetic in-memory gateway",
+    "browser": "Chrome",
+    "dpr": 1,
+    "driver": "Playwright1.62 Chrome + CUA IAB",
+    "font_fingerprint": "Helvetica,Arial,PingFang SC",
+    "role": "developer",
+    "tenant": "none",
+    "url": "http://127.0.0.1:5186/pages/ioc-header-selection"
+  },
+  "scenarios": [
+    {
+      "artifacts": [],
+      "captured_at_code_fingerprint": "17886903b0b78e34ce5a2e73f7167f7da780d5f934dda4b52875292406721cf0",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ioc-selection-gateway.ts": "0f9a11b66e0d8b99e30c98a4ff9ea60645dbaf3c99132fabf9b51a7b4abd6077",
+        "apps/playground/tests/ioc-header-selection-browser.mjs": "d983d93311f6f7aae3eb12033d8c4885e9acda65c51bd5a05c1bdf33058cdd80",
+        "docs/evidence/platform-ui-os-theme-2026-10-12/sources.json": "be385350e63d4c1007a8216d8df04af443d5c9bfd517ddefefea8e353a482e5b",
+        "docs/plan/ioc-header-selection/polish/story-delta-frontend-design.md": "2b511c5502a71b1d973dc576ace351cc78e4508b308ca9d2d49e36acb3cb3b01",
+        "packages/engine/runtime-ui/src/report-theme-properties.ts": "bc5b22a20d00d66ce8bef2cf79980096fa9bcc040d5e21f385038d070ff5d9cd",
+        "packages/ui/scripts/freeze-os-theme.mjs": "54654c6d56b37e987ada106397ab3a16d963a5e0f1c9bdfa209b8a09bc4892a6",
+        "packages/ui/src/components/select/Select.svelte": "59e3214e46a592357e2f6a54faa408afb281cc4a0b84174235f391007fd88c65",
+        "packages/ui/src/components/select/Selection.svelte": "2247b97350e2e15444f27cfa8caacc779419bff844a9bb97c9d276f6950a43e3",
+        "packages/ui/src/components/select/SelectionIcon.svelte": "feb73407190b96c7289505b7ebd367b2ae48375c2fc2571a1eac3d007c685176",
+        "packages/ui/src/components/select/selection.ts": "63e3d8436fb25ac8bb68b2509f87e50d401fb73cf37da6b97149e49a6a1ab886",
+        "packages/ui/src/shared/Theme.svelte": "c0bd339521c42e4ec08707f06392ca9f8813a7740686266ca6f7bc4fefe1d1d1",
+        "packages/ui/src/shared/popover.ts": "aa6ae97d146f38295525dac3402dfd3cfbc07b6476c9be2ce873de5c4964c40c",
+        "packages/ui/tests/browser/SelectionHarness.svelte": "167b11efbb14cf9d593eae119f01fb1202adfe93ea0c392e68db3c78ec40bf13",
+        "packages/ui/tests/browser/selection.spec.ts": "9d71e787650ef8c2c7c2b7de92462f5cf76dc6bcc0e13be1e0e4c122fdbb3de8",
+        "pages/ioc-header-selection.json": "15c130dffbe7d7099a0880e97bcfb986199adc0d47615ec87cf34c3a1df20306"
+      },
+      "captured_runtime": {
+        "account": "fixture",
+        "api_mode": "local synthetic in-memory gateway",
+        "browser": "Chrome",
+        "dpr": 1,
+        "driver": "Playwright1.62 Chrome + CUA IAB",
+        "font_fingerprint": "Helvetica,Arial,PingFang SC",
+        "role": "developer",
+        "tenant": "none",
+        "url": "http://127.0.0.1:5186/pages/ioc-header-selection"
+      },
+      "depends_on": [
+        "apps/playground/src/lib/ioc-selection-gateway.ts",
+        "apps/playground/tests/ioc-header-selection-browser.mjs",
+        "docs/evidence/platform-ui-os-theme-2026-10-12/sources.json",
+        "docs/plan/ioc-header-selection/polish/story-delta-frontend-design.md",
+        "packages/engine/runtime-ui/src/report-theme-properties.ts",
+        "packages/ui/scripts/freeze-os-theme.mjs",
+        "packages/ui/src/components/select/Select.svelte",
+        "packages/ui/src/components/select/Selection.svelte",
+        "packages/ui/src/components/select/SelectionIcon.svelte",
+        "packages/ui/src/components/select/selection.ts",
+        "packages/ui/src/shared/Theme.svelte",
+        "packages/ui/src/shared/popover.ts",
+        "packages/ui/tests/browser/SelectionHarness.svelte",
+        "packages/ui/tests/browser/selection.spec.ts",
+        "pages/ioc-header-selection.json"
+      ],
+      "fixture": {
+        "name": "SelectionHarness",
+        "sha256": "167b11efbb14cf9d593eae119f01fb1202adfe93ea0c392e68db3c78ec40bf13"
+      },
+      "id": "BE-1",
+      "observations": [
+        "[WebServer] (node:41632) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (node:41633) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 29 tests using 1 worker\n\n(node:41639) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n  ✓   1 [chrome] › tests/browser/components.spec.ts:4:2 › root false › controlled forms commit the last input without blur; shadow=false (349ms)\n  ✓   2 [chrome] › tests/browser/components.spec.ts:5:2 › root false › select and menu keyboard, disabled item and original root; shadow=false (280ms)\n  ✓   3 [chrome] › tests/browser/components.spec.ts:6:2 › root false › controlled grid does not sort or slice rows; shadow=false (237ms)\n  ✓   4 [chrome] › tests/browser/components.spec.ts:7:2 › root false › styles follow the mount root and keyboard focus is visible; shadow=false (150ms)\n  ✓   5 [chrome] › tests/browser/components.spec.ts:8:2 › root false › dialog Escape restores focus; shadow=false (217ms)\n  ✓   6 [chrome] › tests/browser/components.spec.ts:9:2 › root false › dialog mouse close remains inside the desktop dialog; shadow=false (254ms)\n  ✓   7 [chrome] › tests/browser/components.spec.ts:10:2 › root false › year and quarter select and preserve keyboard semantics; shadow=false (366ms)\n  ✓   8 [chrome] › tests/browser/components.spec.ts:11:62 › root false › date date valid manual input, narrow panel and no page errors; shadow=false (175ms)\n  ✓   9 [chrome] › tests/browser/components.spec.ts:11:62 › root false › date month valid manual input, narrow panel and no page errors; shadow=false (192ms)\n  ✓  10 [chrome] › tests/browser/components.spec.ts:11:62 › root false › date daterange valid manual input, narrow panel and no page errors; shadow=false (192ms)\n  ✓  11 [chrome] › tests/browser/components.spec.ts:11:62 › root false › date monthrange valid manual input, narrow panel and no page errors; shadow=false (178ms)\n  ✓  12 [chrome] › tests/browser/components.spec.ts:12:2 › root false › short viewport popovers stay visible and release focus; shadow=false (594ms)\n  ✓  13 [chrome] › tests/browser/components.spec.ts:4:2 › root true › controlled forms commit the last input without blur; shadow=true (222ms)\n  ✓  14 [chrome] › tests/browser/components.spec.ts:5:2 › root true › select and menu keyboard, disabled item and original root; shadow=true (281ms)\n  ✓  15 [chrome] › tests/browser/components.spec.ts:6:2 › root true › controlled grid does not sort or slice rows; shadow=true (222ms)\n  ✓  16 [chrome] › tests/browser/components.spec.ts:7:2 › root true › styles follow the mount root and keyboard focus is visible; shadow=true (158ms)\n  ✓  17 [chrome] › tests/browser/components.spec.ts:8:2 › root true › dialog Escape restores focus; shadow=true (195ms)\n  ✓  18 [chrome] › tests/browser/components.spec.ts:9:2 › root true › dialog mouse close remains inside the desktop dialog; shadow=true (259ms)\n  ✓  19 [chrome] › tests/browser/components.spec.ts:10:2 › root true › year and quarter select and preserve keyboard semantics; shadow=true (369ms)\n  ✓  20 [chrome] › tests/browser/components.spec.ts:11:62 › root true › date date valid manual input, narrow panel and no page errors; shadow=true (179ms)\n  ✓  21 [chrome] › tests/browser/components.spec.ts:11:62 › root true › date month valid manual input, narrow panel and no page errors; shadow=true (206ms)\n  ✓  22 [chrome] › tests/browser/components.spec.ts:11:62 › root true › date daterange valid manual input, narrow panel and no page errors; shadow=true (204ms)\n  ✓  23 [chrome] › tests/browser/components.spec.ts:11:62 › root true › date monthrange valid manual input, narrow panel and no page errors; shadow=true (194ms)\n  ✓  24 [chrome] › tests/browser/components.spec.ts:12:2 › root true › short viewport popovers stay visible and release focus; shadow=true (597ms)\n  ✓  25 [chrome] › tests/browser/selection.spec.ts:3:1 › tree single, local search, geometry and keyboard (377ms)\n  ✓  26 [chrome] › tests/browser/selection.spec.ts:27:1 › tags keep height, scroll and delete exactly one; disabled and states (472ms)\n  ✓  27 [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=false (504ms)\n  ✓  28 [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=true (517ms)\n  ✓  29 [chrome] › tests/browser/selection.spec.ts:74:1 › official geometry, neutral tag colors, icons and panel rows (304ms)\n\n  29 passed (9.5s)\n"
+      ],
+      "page": "/tests/browser/index.html?selection",
+      "profile": "mock",
+      "source": "phase-c",
+      "steps": [
+        "Actual mouse label, frame gap and arrow open; second click closes; delete/clear/disabled isolated in document and shadow roots."
+      ],
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [],
+      "captured_at_code_fingerprint": "17886903b0b78e34ce5a2e73f7167f7da780d5f934dda4b52875292406721cf0",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ioc-selection-gateway.ts": "0f9a11b66e0d8b99e30c98a4ff9ea60645dbaf3c99132fabf9b51a7b4abd6077",
+        "apps/playground/tests/ioc-header-selection-browser.mjs": "d983d93311f6f7aae3eb12033d8c4885e9acda65c51bd5a05c1bdf33058cdd80",
+        "docs/evidence/platform-ui-os-theme-2026-10-12/sources.json": "be385350e63d4c1007a8216d8df04af443d5c9bfd517ddefefea8e353a482e5b",
+        "docs/plan/ioc-header-selection/polish/story-delta-frontend-design.md": "2b511c5502a71b1d973dc576ace351cc78e4508b308ca9d2d49e36acb3cb3b01",
+        "packages/engine/runtime-ui/src/report-theme-properties.ts": "bc5b22a20d00d66ce8bef2cf79980096fa9bcc040d5e21f385038d070ff5d9cd",
+        "packages/ui/scripts/freeze-os-theme.mjs": "54654c6d56b37e987ada106397ab3a16d963a5e0f1c9bdfa209b8a09bc4892a6",
+        "packages/ui/src/components/select/Select.svelte": "59e3214e46a592357e2f6a54faa408afb281cc4a0b84174235f391007fd88c65",
+        "packages/ui/src/components/select/Selection.svelte": "2247b97350e2e15444f27cfa8caacc779419bff844a9bb97c9d276f6950a43e3",
+        "packages/ui/src/components/select/SelectionIcon.svelte": "feb73407190b96c7289505b7ebd367b2ae48375c2fc2571a1eac3d007c685176",
+        "packages/ui/src/components/select/selection.ts": "63e3d8436fb25ac8bb68b2509f87e50d401fb73cf37da6b97149e49a6a1ab886",
+        "packages/ui/src/shared/Theme.svelte": "c0bd339521c42e4ec08707f06392ca9f8813a7740686266ca6f7bc4fefe1d1d1",
+        "packages/ui/src/shared/popover.ts": "aa6ae97d146f38295525dac3402dfd3cfbc07b6476c9be2ce873de5c4964c40c",
+        "packages/ui/tests/browser/SelectionHarness.svelte": "167b11efbb14cf9d593eae119f01fb1202adfe93ea0c392e68db3c78ec40bf13",
+        "packages/ui/tests/browser/selection.spec.ts": "9d71e787650ef8c2c7c2b7de92462f5cf76dc6bcc0e13be1e0e4c122fdbb3de8",
+        "pages/ioc-header-selection.json": "15c130dffbe7d7099a0880e97bcfb986199adc0d47615ec87cf34c3a1df20306"
+      },
+      "captured_runtime": {
+        "account": "fixture",
+        "api_mode": "local synthetic in-memory gateway",
+        "browser": "Chrome",
+        "dpr": 1,
+        "driver": "Playwright1.62 Chrome + CUA IAB",
+        "font_fingerprint": "Helvetica,Arial,PingFang SC",
+        "role": "developer",
+        "tenant": "none",
+        "url": "http://127.0.0.1:5186/pages/ioc-header-selection"
+      },
+      "depends_on": [
+        "apps/playground/src/lib/ioc-selection-gateway.ts",
+        "apps/playground/tests/ioc-header-selection-browser.mjs",
+        "docs/evidence/platform-ui-os-theme-2026-10-12/sources.json",
+        "docs/plan/ioc-header-selection/polish/story-delta-frontend-design.md",
+        "packages/engine/runtime-ui/src/report-theme-properties.ts",
+        "packages/ui/scripts/freeze-os-theme.mjs",
+        "packages/ui/src/components/select/Select.svelte",
+        "packages/ui/src/components/select/Selection.svelte",
+        "packages/ui/src/components/select/SelectionIcon.svelte",
+        "packages/ui/src/components/select/selection.ts",
+        "packages/ui/src/shared/Theme.svelte",
+        "packages/ui/src/shared/popover.ts",
+        "packages/ui/tests/browser/SelectionHarness.svelte",
+        "packages/ui/tests/browser/selection.spec.ts",
+        "pages/ioc-header-selection.json"
+      ],
+      "fixture": {
+        "name": "SelectionHarness",
+        "sha256": "167b11efbb14cf9d593eae119f01fb1202adfe93ea0c392e68db3c78ec40bf13"
+      },
+      "id": "BE-2",
+      "observations": [
+        "[WebServer] (node:41632) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (node:41633) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 29 tests using 1 worker\n\n(node:41639) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n  ✓   1 [chrome] › tests/browser/components.spec.ts:4:2 › root false › controlled forms commit the last input without blur; shadow=false (349ms)\n  ✓   2 [chrome] › tests/browser/components.spec.ts:5:2 › root false › select and menu keyboard, disabled item and original root; shadow=false (280ms)\n  ✓   3 [chrome] › tests/browser/components.spec.ts:6:2 › root false › controlled grid does not sort or slice rows; shadow=false (237ms)\n  ✓   4 [chrome] › tests/browser/components.spec.ts:7:2 › root false › styles follow the mount root and keyboard focus is visible; shadow=false (150ms)\n  ✓   5 [chrome] › tests/browser/components.spec.ts:8:2 › root false › dialog Escape restores focus; shadow=false (217ms)\n  ✓   6 [chrome] › tests/browser/components.spec.ts:9:2 › root false › dialog mouse close remains inside the desktop dialog; shadow=false (254ms)\n  ✓   7 [chrome] › tests/browser/components.spec.ts:10:2 › root false › year and quarter select and preserve keyboard semantics; shadow=false (366ms)\n  ✓   8 [chrome] › tests/browser/components.spec.ts:11:62 › root false › date date valid manual input, narrow panel and no page errors; shadow=false (175ms)\n  ✓   9 [chrome] › tests/browser/components.spec.ts:11:62 › root false › date month valid manual input, narrow panel and no page errors; shadow=false (192ms)\n  ✓  10 [chrome] › tests/browser/components.spec.ts:11:62 › root false › date daterange valid manual input, narrow panel and no page errors; shadow=false (192ms)\n  ✓  11 [chrome] › tests/browser/components.spec.ts:11:62 › root false › date monthrange valid manual input, narrow panel and no page errors; shadow=false (178ms)\n  ✓  12 [chrome] › tests/browser/components.spec.ts:12:2 › root false › short viewport popovers stay visible and release focus; shadow=false (594ms)\n  ✓  13 [chrome] › tests/browser/components.spec.ts:4:2 › root true › controlled forms commit the last input without blur; shadow=true (222ms)\n  ✓  14 [chrome] › tests/browser/components.spec.ts:5:2 › root true › select and menu keyboard, disabled item and original root; shadow=true (281ms)\n  ✓  15 [chrome] › tests/browser/components.spec.ts:6:2 › root true › controlled grid does not sort or slice rows; shadow=true (222ms)\n  ✓  16 [chrome] › tests/browser/components.spec.ts:7:2 › root true › styles follow the mount root and keyboard focus is visible; shadow=true (158ms)\n  ✓  17 [chrome] › tests/browser/components.spec.ts:8:2 › root true › dialog Escape restores focus; shadow=true (195ms)\n  ✓  18 [chrome] › tests/browser/components.spec.ts:9:2 › root true › dialog mouse close remains inside the desktop dialog; shadow=true (259ms)\n  ✓  19 [chrome] › tests/browser/components.spec.ts:10:2 › root true › year and quarter select and preserve keyboard semantics; shadow=true (369ms)\n  ✓  20 [chrome] › tests/browser/components.spec.ts:11:62 › root true › date date valid manual input, narrow panel and no page errors; shadow=true (179ms)\n  ✓  21 [chrome] › tests/browser/components.spec.ts:11:62 › root true › date month valid manual input, narrow panel and no page errors; shadow=true (206ms)\n  ✓  22 [chrome] › tests/browser/components.spec.ts:11:62 › root true › date daterange valid manual input, narrow panel and no page errors; shadow=true (204ms)\n  ✓  23 [chrome] › tests/browser/components.spec.ts:11:62 › root true › date monthrange valid manual input, narrow panel and no page errors; shadow=true (194ms)\n  ✓  24 [chrome] › tests/browser/components.spec.ts:12:2 › root true › short viewport popovers stay visible and release focus; shadow=true (597ms)\n  ✓  25 [chrome] › tests/browser/selection.spec.ts:3:1 › tree single, local search, geometry and keyboard (377ms)\n  ✓  26 [chrome] › tests/browser/selection.spec.ts:27:1 › tags keep height, scroll and delete exactly one; disabled and states (472ms)\n  ✓  27 [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=false (504ms)\n  ✓  28 [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=true (517ms)\n  ✓  29 [chrome] › tests/browser/selection.spec.ts:74:1 › official geometry, neutral tag colors, icons and panel rows (304ms)\n\n  29 passed (9.5s)\n"
+      ],
+      "page": "/tests/browser/index.html?selection",
+      "profile": "mock",
+      "source": "phase-c",
+      "steps": [
+        "Computed input32px, tag24px RGB245 background andRGB25 text, arrow16px RGB128 centered, radius6px, search padding-left20px margin16px, option32px; search/guide assertions unchanged.",
+        "Geometry test uses1440x900; separate tags overflow test uses390x720."
+      ],
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/ioc-header-selection/polish/evidence/artifacts/page-tree-single.png",
+        "docs/plan/ioc-header-selection/polish/evidence/artifacts/page-narrow.png",
+        "docs/plan/ioc-header-selection/polish/evidence/artifacts/customer-popup.jpg",
+        "docs/plan/ioc-header-selection/polish/evidence/artifacts/tree-current.jpg"
+      ],
+      "captured_at_code_fingerprint": "17886903b0b78e34ce5a2e73f7167f7da780d5f934dda4b52875292406721cf0",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ioc-selection-gateway.ts": "0f9a11b66e0d8b99e30c98a4ff9ea60645dbaf3c99132fabf9b51a7b4abd6077",
+        "apps/playground/tests/ioc-header-selection-browser.mjs": "d983d93311f6f7aae3eb12033d8c4885e9acda65c51bd5a05c1bdf33058cdd80",
+        "docs/evidence/platform-ui-os-theme-2026-10-12/sources.json": "be385350e63d4c1007a8216d8df04af443d5c9bfd517ddefefea8e353a482e5b",
+        "docs/plan/ioc-header-selection/polish/story-delta-frontend-design.md": "2b511c5502a71b1d973dc576ace351cc78e4508b308ca9d2d49e36acb3cb3b01",
+        "packages/engine/runtime-ui/src/report-theme-properties.ts": "bc5b22a20d00d66ce8bef2cf79980096fa9bcc040d5e21f385038d070ff5d9cd",
+        "packages/ui/scripts/freeze-os-theme.mjs": "54654c6d56b37e987ada106397ab3a16d963a5e0f1c9bdfa209b8a09bc4892a6",
+        "packages/ui/src/components/select/Select.svelte": "59e3214e46a592357e2f6a54faa408afb281cc4a0b84174235f391007fd88c65",
+        "packages/ui/src/components/select/Selection.svelte": "2247b97350e2e15444f27cfa8caacc779419bff844a9bb97c9d276f6950a43e3",
+        "packages/ui/src/components/select/SelectionIcon.svelte": "feb73407190b96c7289505b7ebd367b2ae48375c2fc2571a1eac3d007c685176",
+        "packages/ui/src/components/select/selection.ts": "63e3d8436fb25ac8bb68b2509f87e50d401fb73cf37da6b97149e49a6a1ab886",
+        "packages/ui/src/shared/Theme.svelte": "c0bd339521c42e4ec08707f06392ca9f8813a7740686266ca6f7bc4fefe1d1d1",
+        "packages/ui/src/shared/popover.ts": "aa6ae97d146f38295525dac3402dfd3cfbc07b6476c9be2ce873de5c4964c40c",
+        "packages/ui/tests/browser/SelectionHarness.svelte": "167b11efbb14cf9d593eae119f01fb1202adfe93ea0c392e68db3c78ec40bf13",
+        "packages/ui/tests/browser/selection.spec.ts": "9d71e787650ef8c2c7c2b7de92462f5cf76dc6bcc0e13be1e0e4c122fdbb3de8",
+        "pages/ioc-header-selection.json": "15c130dffbe7d7099a0880e97bcfb986199adc0d47615ec87cf34c3a1df20306"
+      },
+      "captured_runtime": {
+        "account": "fixture",
+        "api_mode": "local synthetic in-memory gateway",
+        "browser": "Chrome",
+        "dpr": 1,
+        "driver": "Playwright1.62 Chrome + CUA IAB",
+        "font_fingerprint": "Helvetica,Arial,PingFang SC",
+        "role": "developer",
+        "tenant": "none",
+        "url": "http://127.0.0.1:5186/pages/ioc-header-selection"
+      },
+      "depends_on": [
+        "apps/playground/src/lib/ioc-selection-gateway.ts",
+        "apps/playground/tests/ioc-header-selection-browser.mjs",
+        "docs/evidence/platform-ui-os-theme-2026-10-12/sources.json",
+        "docs/plan/ioc-header-selection/polish/story-delta-frontend-design.md",
+        "packages/engine/runtime-ui/src/report-theme-properties.ts",
+        "packages/ui/scripts/freeze-os-theme.mjs",
+        "packages/ui/src/components/select/Select.svelte",
+        "packages/ui/src/components/select/Selection.svelte",
+        "packages/ui/src/components/select/SelectionIcon.svelte",
+        "packages/ui/src/components/select/selection.ts",
+        "packages/ui/src/shared/Theme.svelte",
+        "packages/ui/src/shared/popover.ts",
+        "packages/ui/tests/browser/SelectionHarness.svelte",
+        "packages/ui/tests/browser/selection.spec.ts",
+        "pages/ioc-header-selection.json"
+      ],
+      "fixture": {
+        "name": "ioc-header-selection",
+        "sha256": "15c130dffbe7d7099a0880e97bcfb986199adc0d47615ec87cf34c3a1df20306"
+      },
+      "id": "BE-3",
+      "observations": [
+        "5 page scenarios passed; 0 page errors\n"
+      ],
+      "page": "http://127.0.0.1:5186/pages/ioc-header-selection",
+      "profile": "mock",
+      "source": "phase-c",
+      "steps": [
+        "Five real page flows: customer and industry tag mouse open; stable code URL/table; searchfalse; legacy tree; deletion;390px overflow and popup bounds.",
+        "PAGE-4 temporarily uses390x844, then resets1440x1000; CUA customer-popup.jpg uses620x804.",
+        "CUA tree-current.jpg at620x804: expanded China root, bordered minus, collapsed Europe bordered plus, pale gray connectors."
+      ],
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      }
+    },
+    {
+      "artifacts": [],
+      "captured_at_code_fingerprint": "17886903b0b78e34ce5a2e73f7167f7da780d5f934dda4b52875292406721cf0",
+      "captured_dependency_hashes": {
+        "apps/playground/src/lib/ioc-selection-gateway.ts": "0f9a11b66e0d8b99e30c98a4ff9ea60645dbaf3c99132fabf9b51a7b4abd6077",
+        "apps/playground/tests/ioc-header-selection-browser.mjs": "d983d93311f6f7aae3eb12033d8c4885e9acda65c51bd5a05c1bdf33058cdd80",
+        "docs/evidence/platform-ui-os-theme-2026-10-12/sources.json": "be385350e63d4c1007a8216d8df04af443d5c9bfd517ddefefea8e353a482e5b",
+        "docs/plan/ioc-header-selection/polish/story-delta-frontend-design.md": "2b511c5502a71b1d973dc576ace351cc78e4508b308ca9d2d49e36acb3cb3b01",
+        "packages/engine/runtime-ui/src/report-theme-properties.ts": "bc5b22a20d00d66ce8bef2cf79980096fa9bcc040d5e21f385038d070ff5d9cd",
+        "packages/ui/scripts/freeze-os-theme.mjs": "54654c6d56b37e987ada106397ab3a16d963a5e0f1c9bdfa209b8a09bc4892a6",
+        "packages/ui/src/components/select/Select.svelte": "59e3214e46a592357e2f6a54faa408afb281cc4a0b84174235f391007fd88c65",
+        "packages/ui/src/components/select/Selection.svelte": "2247b97350e2e15444f27cfa8caacc779419bff844a9bb97c9d276f6950a43e3",
+        "packages/ui/src/components/select/SelectionIcon.svelte": "feb73407190b96c7289505b7ebd367b2ae48375c2fc2571a1eac3d007c685176",
+        "packages/ui/src/components/select/selection.ts": "63e3d8436fb25ac8bb68b2509f87e50d401fb73cf37da6b97149e49a6a1ab886",
+        "packages/ui/src/shared/Theme.svelte": "c0bd339521c42e4ec08707f06392ca9f8813a7740686266ca6f7bc4fefe1d1d1",
+        "packages/ui/src/shared/popover.ts": "aa6ae97d146f38295525dac3402dfd3cfbc07b6476c9be2ce873de5c4964c40c",
+        "packages/ui/tests/browser/SelectionHarness.svelte": "167b11efbb14cf9d593eae119f01fb1202adfe93ea0c392e68db3c78ec40bf13",
+        "packages/ui/tests/browser/selection.spec.ts": "9d71e787650ef8c2c7c2b7de92462f5cf76dc6bcc0e13be1e0e4c122fdbb3de8",
+        "pages/ioc-header-selection.json": "15c130dffbe7d7099a0880e97bcfb986199adc0d47615ec87cf34c3a1df20306"
+      },
+      "captured_runtime": {
+        "account": "fixture",
+        "api_mode": "local synthetic in-memory gateway",
+        "browser": "Chrome",
+        "dpr": 1,
+        "driver": "Playwright1.62 Chrome + CUA IAB",
+        "font_fingerprint": "Helvetica,Arial,PingFang SC",
+        "role": "developer",
+        "tenant": "none",
+        "url": "http://127.0.0.1:5186/pages/ioc-header-selection"
+      },
+      "depends_on": [
+        "apps/playground/src/lib/ioc-selection-gateway.ts",
+        "apps/playground/tests/ioc-header-selection-browser.mjs",
+        "docs/evidence/platform-ui-os-theme-2026-10-12/sources.json",
+        "docs/plan/ioc-header-selection/polish/story-delta-frontend-design.md",
+        "packages/engine/runtime-ui/src/report-theme-properties.ts",
+        "packages/ui/scripts/freeze-os-theme.mjs",
+        "packages/ui/src/components/select/Select.svelte",
+        "packages/ui/src/components/select/Selection.svelte",
+        "packages/ui/src/components/select/SelectionIcon.svelte",
+        "packages/ui/src/components/select/selection.ts",
+        "packages/ui/src/shared/Theme.svelte",
+        "packages/ui/src/shared/popover.ts",
+        "packages/ui/tests/browser/SelectionHarness.svelte",
+        "packages/ui/tests/browser/selection.spec.ts",
+        "pages/ioc-header-selection.json"
+      ],
+      "fixture": {
+        "name": "SelectionHarness",
+        "sha256": "167b11efbb14cf9d593eae119f01fb1202adfe93ea0c392e68db3c78ec40bf13"
+      },
+      "id": "BE-4",
+      "observations": [
+        "[WebServer] (node:46077) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (node:46078) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 5 tests using 1 worker\n\n(node:46104) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n  ✓  1 selection.spec.ts:3:1 › tree single, local search, geometry and keyboard (605ms)\n  ✓  2 selection.spec.ts:27:1 › tags keep height, scroll and delete exactly one; disabled and states (502ms)\n  ✓  3 selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=false (527ms)\n  ✓  4 selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=true (535ms)\n  ✓  5 selection.spec.ts:74:1 › official geometry, neutral tag colors, icons and panel rows (302ms)\n\n  5 passed (5.2s)\n"
+      ],
+      "page": "/tests/browser/index.html?selection",
+      "profile": "mock",
+      "source": "phase-c",
+      "steps": [
+        "Fresh ui-polish.tgz installed outside repo, same five selection browser scenarios ordinary and shadow roots."
+      ],
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      }
+    }
+  ],
+  "schema_version": 1,
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-P1",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "点击标签文字/空白/箭头后面板保持打开；再次触发关闭；删除只删除；禁用不打开",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-P2",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "输入32px、标签灰底深字、箭头灰色16px垂直居中、圆角6px；搜索和树行间距取冻结官方值",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-P3",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "实际IOC客户分类与行业均可点开；浮层不裁切，搜索、标签滚动、窄屏和只读保持正确",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      }
+    ],
+    "facts": {
+      "cross_page": false,
+      "frozen_r": false,
+      "frozen_r5": false,
+      "frozen_r6": false,
+      "has_f3": true,
+      "has_s3_claim": false,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "render",
+        "regression",
+        "review-convention",
+        "review-quality"
+      ],
+      "phase": "final",
+      "required_profiles": {
+        "AT-P1": "mock",
+        "AT-P2": "mock",
+        "AT-P3": "mock"
+      },
+      "review_roles": [
+        "review-convention",
+        "review-quality"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C3",
+        "C5"
+      ],
+      "review-layout": [
+        "L2",
+        "L3",
+        "L5"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q6"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "risk_triggers": [
+      "interaction",
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "shared-boundary"
+      ],
+      "changed_files": 5,
+      "max_changed_files": 5,
+      "restore_tasks": [],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "interaction": [
+        "plan"
+      ],
+      "shared-boundary": [
+        "diff",
+        "plan"
+      ],
+      "visual": [
+        "diff",
+        "plan"
+      ]
+    }
+  }
+}

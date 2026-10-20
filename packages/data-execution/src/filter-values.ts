@@ -78,6 +78,7 @@ export function initialFilterValues(
 function initialValue(decl: FilterDeclaration, now: Date): FilterValue | undefined {
   if (decl.type === 'dimension') {
     if (!decl.default || decl.default.length === 0) return undefined;
+    if ((decl.selection === 'single' || decl.display === 'tabs') && decl.default.length > 1) throw new Error(`筛选器 ${decl.id}: 单选最多允许一个值`);
     const level = hierarchyLevelOf(decl);
     return {
       type: 'dimension',

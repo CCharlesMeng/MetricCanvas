@@ -309,6 +309,25 @@
         "页面搭建",
         "静态演示"
       ]
+    },
+    {
+      "id": "ioc-header-selection",
+      "group": "features",
+      "summary": "树形单选、多选标签横向滚动、可选搜索和父子规则。",
+      "tags": [
+        "IOC",
+        "树形选择",
+        "筛选"
+      ],
+      "displayTitle": "IOC 页头选择控件",
+      "capabilities": [
+        "filters"
+      ],
+      "environment": {
+        "data": "本地合成数据",
+        "runtime": "local",
+        "scope": "页面专属候选与查询夹具，无外部服务"
+      }
     }
   ]
 }

@@ -16,7 +16,7 @@
 
 
 
-页面协议 6.31。结构真源为本册[schema.json](schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.32。结构真源为本册[schema.json](schema.json)，SHA256 `a82a821bf9c06c65521b893a71a7b918b3a1d5cd648e0792a0d3ca9c9de63010`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

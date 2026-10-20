@@ -388,3 +388,7 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 6.27 增量：Dashboard 顶部 timeRange 的年／季／月／近一年选择形态，声明、状态及查询规则见[期间筛选](docs/page-metadata/filters.md#dashboard-期间选择627)。
 6.29 增加 Dashboard 正文图表左上角独立筛选 `props.filter`，支持自定义显示名称、查询值和单选默认项；查询依赖校验保证只影响所属图表。完整声明、限制与验收页面见[图表独立筛选](docs/page-metadata/filters.md#图表独立筛选629)。
+
+### 维度选择控件（6.32）
+
+维度筛选新增 selection（single/multiple）、searchable（默认 true）及仅树使用的 treeSelection（descendants/independent/leaf）。所有下拉共享单行多标签与搜索；单选多值在初始化、URL、状态写入与详情输入统一受限。候选可用稳定 parentValue 构成树，既有路径树与父选后代保持兼容。声明、限制和完整示例见 [筛选声明](docs/page-metadata/filters.md#选择下拉与树形选择632)，页面试验场入口为 ioc-header-selection。

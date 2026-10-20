@@ -99,9 +99,6 @@
     return declaration.dimension;
   }
 
-  function dimensionDisplay(declaration: DimensionDeclaration): string {
-    return dimensionValueOf(values, declaration.id).values[0] ?? declaration.emptyLabel ?? declaration.label ?? '全部';
-  }
 </script>
 
 <div class:read-only={readOnly} class="filter-bar">
@@ -121,10 +118,11 @@
       <TimeRangeFilter label={declaration.label} required={declaration.required} precision={declaration.precision ?? 'date'}
         value={timeRangeValue(declaration.id)} readOnly onchange={() => {}} />
     {:else if readOnly && declaration.type === 'dimension'}
-      <button type="button" class="readonly-select" aria-label={declaration.label} disabled>
-        <span data-filter-display>{dimensionDisplay(declaration)}</span>
-        <span aria-hidden="true" class="readonly-arrow">▾</span>
-      </button>
+      <DimensionFilter label={declaration.label} emptyLabel={declaration.emptyLabel}
+        candidates={dimensionValuesSnapshot(candidates, currentDimension(declaration))}
+        value={dimensionValueOf(values, declaration.id).values} display={declaration.display ?? 'select'}
+        selection={declaration.selection} searchable={declaration.searchable} treeSelection={declaration.treeSelection}
+        disabled onchange={() => {}}/>
     {:else if readOnly}
       <button type="button" class="readonly-select" aria-label={declaration.label} disabled>
         <span data-filter-display>{declaration.label ?? '筛选'}</span>
@@ -139,6 +137,7 @@
         values={current.values}
         picker={declaration.hierarchyPicker ?? 'tabs'}
         display={declaration.display ?? 'select'}
+        selection={declaration.selection} searchable={declaration.searchable} treeSelection={declaration.treeSelection}
         candidates={dimensionValuesSnapshot(candidates, currentDimension(declaration))}
         onchange={(next) => ondimension(declaration, next.values, next.level)}
       />
@@ -149,6 +148,7 @@
         candidates={dimensionValuesSnapshot(candidates, declaration.dimension)}
         value={dimensionValueOf(values, declaration.id).values}
         display={declaration.display ?? 'select'}
+        selection={declaration.selection} searchable={declaration.searchable} treeSelection={declaration.treeSelection}
         onchange={(next) => ondimension(declaration, next)}
       />
     {:else if declaration.type === 'timeRange'}
@@ -244,9 +244,6 @@
   .readonly-boolean input:disabled {
     cursor: not-allowed;
     opacity: 1;
-  }
-  .readonly-arrow {
-    color: #8c8c8c;
   }
   .filter-note {
     flex: var(--mc-filter-note-flex, 1 0 100%);

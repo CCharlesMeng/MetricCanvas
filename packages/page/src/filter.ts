@@ -42,6 +42,12 @@ export interface DimensionFilterDeclaration {
    * | search=输入过滤 + 多选
    */
   display?: 'select' | 'tabs' | 'tree' | 'search';
+  /** 6.32: dropdown cardinality; omitted preserves multiple (tabs are always single). */
+  selection?: 'single' | 'multiple';
+  /** 6.32: local candidate search, default true. */
+  searchable?: boolean;
+  /** 6.32: tree only; descendants preserves legacy parent selection. */
+  treeSelection?: 'descendants' | 'independent' | 'leaf';
   /** false 时仅作为组件联动使用，不在页面筛选器区呈现控件。 */
   visible?: boolean;
   /** 初始选中的维度值;缺省为不筛选 */

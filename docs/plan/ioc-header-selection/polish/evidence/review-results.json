@@ -1,0 +1,311 @@
+{
+  "claim_ledger": [
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "BE-1、BE-4；browser-final、consumer-final",
+      "id": "AT-P1",
+      "note": "普通根与ShadowRoot鼠标点击、重复关闭、清空、移除、禁用"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "BE-2、BE-4；browser-final",
+      "id": "AT-P2",
+      "note": "官方默认颜色和几何值逐项断言，树线与半选保留回归"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "BE-3；page-final",
+      "id": "AT-P3",
+      "note": "5个本地页面场景、1440×1000与390×844，无页面错误"
+    }
+  ],
+  "code_fingerprint": "17886903b0b78e34ce5a2e73f7167f7da780d5f934dda4b52875292406721cf0",
+  "counts": {
+    "blocker": 0,
+    "claims_deferred": 0,
+    "claims_unverified": 0,
+    "decided": 0,
+    "deferred": 0,
+    "handoff": 0,
+    "manual_acceptance": 0,
+    "manual_pending": 0,
+    "norm_candidate": 0,
+    "open_question": 0,
+    "skipped": 0,
+    "suggestion": 0,
+    "unplanned_carry": 0
+  },
+  "coverage": {
+    "review-convention": [
+      {
+        "dimension": "C3",
+        "evidence_ids": [
+          "PATTERN-STYLE-1",
+          "packages/ui/src/components/select/Selection.svelte:L179-L212",
+          "packages/ui/src/components/select/SelectionIcon.svelte:L3-L8",
+          "packages/ui/src/shared/Theme.svelte:L236-L258",
+          "BE-2",
+          "BE-4"
+        ],
+        "result": "clear",
+        "scope": "本轮样式与生成Theme：主题所有权、冻结来源和token使用"
+      },
+      {
+        "dimension": "C5",
+        "evidence_ids": [
+          "PATTERN-COMP-1",
+          "PATTERN-STYLE-1",
+          "packages/ui/src/components/select/Selection.svelte:L1-L8",
+          "packages/ui/src/components/select/Selection.svelte:L112-L160"
+        ],
+        "result": "clear",
+        "scope": "沿用Selection、Theme、SelectionIcon及popover接缝，没有复制公共能力"
+      }
+    ],
+    "review-layout": [
+      {
+        "dimension": "L2",
+        "evidence_ids": [
+          "BE-1",
+          "BE-2",
+          "BE-3",
+          "BE-4"
+        ],
+        "result": "clear",
+        "scope": "多标签和UNKNOWN-LONG-CODE保持高度、可横向到达末项，实际分类可滚动删除，候选状态可见"
+      },
+      {
+        "dimension": "L3",
+        "evidence_ids": [
+          "BE-2",
+          "BE-3",
+          "BE-4"
+        ],
+        "result": "clear",
+        "scope": "组件1440×900/390×720，页面1440×1000/390×844；浮层边界位于视口，页面无横向溢出，关键操作无重叠"
+      },
+      {
+        "dimension": "L5",
+        "evidence_ids": [
+          "BE-1",
+          "BE-2",
+          "BE-3",
+          "BE-4"
+        ],
+        "result": "clear",
+        "scope": "普通根、ShadowRoot和安装包真实鼠标打开/关闭；搜索焦点、hover清空、禁用、选中半选颜色与灰色标签可区分"
+      }
+    ],
+    "review-quality": [
+      {
+        "dimension": "Q2",
+        "evidence_ids": [
+          "packages/ui/src/components/select/Selection.svelte:L54-L60",
+          "packages/ui/src/components/select/Selection.svelte:L115-L129",
+          "PATTERN-COMP-1"
+        ],
+        "result": "clear",
+        "scope": "标签与触发器复用toggleFromClick，无可观察后果的独立重复实现"
+      },
+      {
+        "dimension": "Q6",
+        "evidence_ids": [
+          "packages/ui/src/components/select/Selection.svelte:L46-L63",
+          "packages/ui/tests/browser/selection.spec.ts:L27-L71",
+          "BE-1",
+          "BE-3",
+          "BE-4",
+          "browser-final",
+          "consumer-final"
+        ],
+        "result": "clear",
+        "scope": "F3-1至F3-4：值提交分离、禁用、候选状态、窄屏、ShadowRoot、安装包边界，依赖哈希新鲜"
+      }
+    ]
+  },
+  "decisions": [],
+  "deferred_candidates": [],
+  "evidence_epoch": "ioc-polish-final-1",
+  "findings": [],
+  "handoff": [],
+  "judged_files": {
+    "review-convention": [
+      "packages/ui/src/components/select/Selection.svelte",
+      "packages/ui/src/components/select/SelectionIcon.svelte",
+      "packages/ui/src/shared/Theme.svelte",
+      "packages/ui/scripts/freeze-os-theme.mjs"
+    ],
+    "review-layout": [
+      "packages/ui/src/components/select/Selection.svelte",
+      "packages/ui/src/components/select/SelectionIcon.svelte",
+      "packages/ui/src/shared/Theme.svelte",
+      "packages/ui/tests/browser/SelectionHarness.svelte",
+      "packages/ui/tests/browser/selection.spec.ts",
+      "apps/playground/tests/ioc-header-selection-browser.mjs",
+      "pages/ioc-header-selection.json"
+    ],
+    "review-quality": [
+      "packages/ui/src/components/select/Selection.svelte",
+      "packages/ui/src/components/select/SelectionIcon.svelte",
+      "packages/ui/src/shared/Theme.svelte",
+      "packages/ui/tests/browser/selection.spec.ts",
+      "packages/ui/tests/browser/SelectionHarness.svelte",
+      "apps/playground/tests/ioc-header-selection-browser.mjs"
+    ]
+  },
+  "known_gaps": {
+    "review-convention": [],
+    "review-layout": [],
+    "review-quality": []
+  },
+  "manual_acceptance": [],
+  "norm_candidates": [],
+  "open_questions": [],
+  "portfolio_narrowed": [],
+  "restore_contract": null,
+  "roles": {
+    "review-convention": "executed",
+    "review-layout": "executed",
+    "review-quality": "executed"
+  },
+  "schema_version": 1,
+  "skipped": {
+    "review-convention": [],
+    "review-layout": [],
+    "review-quality": []
+  },
+  "unplanned_carry": [],
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-P1",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "点击标签文字/空白/箭头后面板保持打开；再次触发关闭；删除只删除；禁用不打开",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-P2",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "输入32px、标签灰底深字、箭头灰色16px垂直居中、圆角6px；搜索和树行间距取冻结官方值",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT-P3",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "实际IOC客户分类与行业均可点开；浮层不裁切，搜索、标签滚动、窄屏和只读保持正确",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      }
+    ],
+    "facts": {
+      "cross_page": false,
+      "frozen_r": false,
+      "frozen_r5": false,
+      "frozen_r6": false,
+      "has_f3": true,
+      "has_s3_claim": false,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "render",
+        "regression",
+        "review-convention",
+        "review-quality"
+      ],
+      "phase": "final",
+      "required_profiles": {
+        "AT-P1": "mock",
+        "AT-P2": "mock",
+        "AT-P3": "mock"
+      },
+      "review_roles": [
+        "review-convention",
+        "review-quality"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C3",
+        "C5"
+      ],
+      "review-layout": [
+        "L2",
+        "L3",
+        "L5"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q6"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "risk_triggers": [
+      "interaction",
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "shared-boundary"
+      ],
+      "changed_files": 5,
+      "max_changed_files": 5,
+      "restore_tasks": [],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "interaction": [
+        "plan"
+      ],
+      "shared-boundary": [
+        "diff",
+        "plan"
+      ],
+      "visual": [
+        "diff",
+        "plan"
+      ]
+    }
+  }
+}

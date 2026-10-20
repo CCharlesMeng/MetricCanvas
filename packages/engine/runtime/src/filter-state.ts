@@ -39,8 +39,9 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   for (const [id, value] of initial ?? []) {
     const declaration = byId.get(id);
     const timed = declaration?.type === 'timeRange' || declaration?.type === 'timePoint';
-    const valid = timed ? normalize(value, declaration) : value;
-    if (timed && !valid) throw new Error(`筛选器 ${id} 初值不符合时间边界`);
+    const single = declaration?.type === 'dimension' && (declaration.selection === 'single' || declaration.display === 'tabs');
+    const valid = timed || single ? normalize(value, declaration) : value;
+    if (timed && !valid || single && valid === undefined) throw new Error(`筛选器 ${id} 初值不符合筛选约束`);
     if (!accepted(id, valid)) throw new Error(`图表筛选器 ${id} 初值不在候选项中`);
     if (valid) current.set(id, valid);
   }
@@ -96,6 +97,13 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
         const fallback = current.get(declaration.id) ?? initialFilterValues([declaration]).get(declaration.id);
         if (fallback) next.set(declaration.id, fallback);
       }
+      const query = new URLSearchParams(stripQuestionMark(search));
+      for (const declaration of declarations) {
+        if (declaration.type !== 'dimension' || !(declaration.selection === 'single' || declaration.display === 'tabs')) continue;
+        if (query.getAll(filterURLKeys(declaration).value!).filter(Boolean).length <= 1) continue;
+        const fallback = current.get(declaration.id) ?? initialFilterValues([declaration]).get(declaration.id);
+        if (fallback) next.set(declaration.id, fallback);
+      }
       for (const id of dimensionOptions.keys()) {
         if (accepted(id, next.get(id))) continue;
         const declaration = byId.get(id);
@@ -119,6 +127,7 @@ function notify(run: (values: FilterValues) => void, values: FilterValues): void
 
 /** 空值集合等同不筛选,归一为清除,保持 URL 与状态干净 */
 function normalize(value: FilterValue | null, declaration?: FilterDeclaration): FilterValue | null | undefined {
+  if (declaration?.type === 'dimension' && (declaration.selection === 'single' || declaration.display === 'tabs') && value && (value.type !== 'dimension' || value.values.length > 1)) return undefined;
   if (declaration?.type === 'timeRange' && declaration.display === 'period') {
     if (value?.type !== 'timeRange' || !isPeriodSelection(value.selection)) return undefined;
     if (timeFilterBoundaryError(declaration, value)) return undefined;

@@ -1,0 +1,5 @@
+$ svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json
+Loading svelte-check in workspace: /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/apps/playground
+Getting Svelte diagnostics...
+
+svelte-check found 0 errors and 0 warnings

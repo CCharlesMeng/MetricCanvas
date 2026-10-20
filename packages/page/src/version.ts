@@ -15,7 +15,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 31;
+const CURRENT_MINOR = 32;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -45,6 +45,10 @@ export const pageCapabilities = {
   'report-header-export-buttons': {
     minor: 31, description: 'Report 统一导出按钮，按格式配置名称、文件名和渲染倍率',
     usedAt: document => componentPaths(document, component => component.type === 'reportHeader' && has(props(component), 'exportButtons'))
+  },
+  'dimension-selection': {
+    minor: 32, description: '维度下拉单多选、可选搜索与显式树选择规则',
+    usedAt: document => filterPaths(document, filter => filter.type === 'dimension' && ['selection','searchable','treeSelection'].some(key => has(filter, key)))
   },
   'report-header-png-export': {
     minor: 30,

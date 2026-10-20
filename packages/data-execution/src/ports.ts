@@ -50,6 +50,8 @@ export interface DataGateway {
 export interface DimensionValueCandidate {
   value: string;
   label: string;
+  /** Optional explicit parent code in this complete candidate batch; never a display path. */
+  parentValue?: string;
 }
 
 /**

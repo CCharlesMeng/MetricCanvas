@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.31",
-  "schemaSha256": "c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d",
+  "schemaVersion": "6.32",
+  "schemaSha256": "a82a821bf9c06c65521b893a71a7b918b3a1d5cd648e0792a0d3ca9c9de63010",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -216,7 +216,8 @@
         "period-filter-parameter-page",
         "dashboard-period-filter-more",
         "dashboard-period-filter-readonly",
-        "chart-local-filter-page"
+        "chart-local-filter-page",
+        "dimension-selection-page"
       ],
       "rules": [
         "filter-id-unique",
@@ -890,7 +891,8 @@
         "6.28",
         "6.29",
         "6.30",
-        "6.31"
+        "6.31",
+        "6.32"
       ]
     },
     {
@@ -4801,6 +4803,33 @@
         "tabs",
         "tree",
         "search"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/selection",
+      "path": "@dimensionFilter.selection",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "enum": [
+        "single",
+        "multiple"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/searchable",
+      "path": "@dimensionFilter.searchable",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "path": "@dimensionFilter.treeSelection",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "enum": [
+        "descendants",
+        "independent",
+        "leaf"
       ]
     },
     {
@@ -12045,5 +12074,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "a7315a2bca353aa97c0050e75b9e5941d9e5fa63293780e032a21e232b99fcda"
+  "semanticSourceDigest": "e94f5f3693e80eca107f29d0e42d89f26c2d94e11b01393a0dba1628917ce716"
 }

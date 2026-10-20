@@ -1,0 +1,207 @@
+{
+  "code": {
+    "base_ref": "952b3a273f0f4f8be5820f5af1bb76c2f5afa513",
+    "code_fingerprint": "bd19670d4376b6e5570da3526a91f85102184638eccb9ac907a441ee7ba7a783",
+    "files": [
+      {
+        "path": "docs/plan/ioc-header-selection/left-inset/story-delta-frontend-design.md",
+        "sha256": "3b261d9f2922beba4908394ad39d3fad79edfe76dd2e4c25ef228f55d2ecc878"
+      },
+      {
+        "path": "packages/ui/scripts/freeze-os-theme.mjs",
+        "sha256": "54654c6d56b37e987ada106397ab3a16d963a5e0f1c9bdfa209b8a09bc4892a6"
+      },
+      {
+        "path": "packages/ui/src/components/select/Selection.svelte",
+        "sha256": "a6f1a23400a7dbed012114aa71eab28dfb37b821970fb8648ca4da5a3cf22634"
+      },
+      {
+        "path": "packages/ui/src/shared/Theme.svelte",
+        "sha256": "c0bd339521c42e4ec08707f06392ca9f8813a7740686266ca6f7bc4fefe1d1d1"
+      },
+      {
+        "path": "packages/ui/tests/browser/selection.spec.ts",
+        "sha256": "0cb116c0cc27406eea38551abe5fb88a7fca538dca665118adca92c2f0702e33"
+      }
+    ],
+    "head": "952b3a273f0f4f8be5820f5af1bb76c2f5afa513"
+  },
+  "evidence_epoch": "ioc-inset-1",
+  "quality_gate": {
+    "code_fingerprint": "bd19670d4376b6e5570da3526a91f85102184638eccb9ac907a441ee7ba7a783",
+    "commands": [
+      {
+        "command": "pnpm --filter @metriccanvas/ui exec playwright test selection.spec.ts --project=chrome --timeout=10000",
+        "duration_ms": 3600,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/plan/ioc-header-selection/left-inset/evidence/green.txt",
+        "name": "selection-browser"
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/ui check",
+        "duration_ms": 0,
+        "exit_code": 0,
+        "failures": [],
+        "log": "docs/plan/ioc-header-selection/left-inset/evidence/ui-check.txt",
+        "name": "ui-check"
+      }
+    ]
+  },
+  "runtime": {
+    "account": "fixture",
+    "api_mode": "local fixture",
+    "browser": "Chrome",
+    "dpr": 1,
+    "driver": "Chrome Playwright + CUA IAB",
+    "font_fingerprint": "OS default Helvetica/Arial",
+    "role": "developer",
+    "tenant": "none",
+    "url": "http://127.0.0.1:5186/pages/ioc-header-selection"
+  },
+  "scenarios": [
+    {
+      "artifacts": [
+        "docs/plan/ioc-header-selection/left-inset/evidence/tree-inset.jpg",
+        "docs/plan/ioc-header-selection/left-inset/evidence/tree-inset-detail.jpg"
+      ],
+      "captured_at_code_fingerprint": "bd19670d4376b6e5570da3526a91f85102184638eccb9ac907a441ee7ba7a783",
+      "captured_dependency_hashes": {
+        "docs/plan/ioc-header-selection/left-inset/story-delta-frontend-design.md": "3b261d9f2922beba4908394ad39d3fad79edfe76dd2e4c25ef228f55d2ecc878",
+        "packages/ui/scripts/freeze-os-theme.mjs": "54654c6d56b37e987ada106397ab3a16d963a5e0f1c9bdfa209b8a09bc4892a6",
+        "packages/ui/src/components/select/Selection.svelte": "a6f1a23400a7dbed012114aa71eab28dfb37b821970fb8648ca4da5a3cf22634",
+        "packages/ui/src/shared/Theme.svelte": "c0bd339521c42e4ec08707f06392ca9f8813a7740686266ca6f7bc4fefe1d1d1",
+        "packages/ui/tests/browser/selection.spec.ts": "0cb116c0cc27406eea38551abe5fb88a7fca538dca665118adca92c2f0702e33"
+      },
+      "captured_runtime": {
+        "account": "fixture",
+        "api_mode": "local fixture",
+        "browser": "Chrome",
+        "dpr": 1,
+        "driver": "Chrome Playwright + CUA IAB",
+        "font_fingerprint": "OS default Helvetica/Arial",
+        "role": "developer",
+        "tenant": "none",
+        "url": "http://127.0.0.1:5186/pages/ioc-header-selection"
+      },
+      "depends_on": [
+        "packages/ui/src/components/select/Selection.svelte",
+        "packages/ui/tests/browser/selection.spec.ts",
+        "packages/ui/src/shared/Theme.svelte",
+        "packages/ui/scripts/freeze-os-theme.mjs",
+        "docs/plan/ioc-header-selection/left-inset/story-delta-frontend-design.md"
+      ],
+      "fixture": {
+        "name": "frozen16px specification with SelectionHarness and IOC page",
+        "sha256": "3b261d9f2922beba4908394ad39d3fad79edfe76dd2e4c25ef228f55d2ecc878"
+      },
+      "id": "BE-1",
+      "observations": [
+        "7 selection browser cases completed; leftInset=16 both roots before/after expansion.",
+        "Actual IOC tree computed padding=0px16px; first expand.left-panel.left=16."
+      ],
+      "page": "http://127.0.0.1:5186/pages/ioc-header-selection",
+      "profile": "mock",
+      "source": "phase-c",
+      "steps": [
+        "Cold Vite: open region, measure first expand icon left minus panel.left before/after expansion, in document and shadow roots.",
+        "CUA actual page refreshed620x804, open region and expandChina."
+      ],
+      "viewport": {
+        "height": 900,
+        "width": 1440
+      }
+    }
+  ],
+  "schema_version": 1,
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT1",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "树首层加减号左边距面板16px，展开后不变，普通根和ShadowRoot一致",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      }
+    ],
+    "facts": {
+      "cross_page": false,
+      "frozen_r": false,
+      "frozen_r5": false,
+      "frozen_r6": false,
+      "has_f3": true,
+      "has_s3_claim": false,
+      "overflow_state": false,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "review-convention",
+      "review-quality"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "render",
+        "regression",
+        "review-convention",
+        "review-quality"
+      ],
+      "phase": "final",
+      "required_profiles": {},
+      "review_roles": [
+        "review-convention",
+        "review-quality"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C5"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q6"
+      ]
+    },
+    "review_roles": [
+      "review-convention",
+      "review-quality"
+    ],
+    "risk_triggers": [
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "shared-boundary"
+      ],
+      "changed_files": 2,
+      "max_changed_files": 5,
+      "restore_tasks": [],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "shared-boundary": [
+        "diff",
+        "plan"
+      ],
+      "visual": [
+        "diff",
+        "plan"
+      ]
+    }
+  }
+}

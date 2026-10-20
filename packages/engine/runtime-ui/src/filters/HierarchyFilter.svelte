@@ -17,6 +17,9 @@
     values: string[];
     picker?: 'tabs' | 'hidden';
     display?: 'select' | 'tabs' | 'tree' | 'search';
+    selection?: 'single' | 'multiple';
+    searchable?: boolean;
+    treeSelection?: 'descendants' | 'independent' | 'leaf';
     candidates: DimensionValuesSnapshot;
     onchange: (next: { level: string; values: string[] }) => void;
   }
@@ -29,7 +32,7 @@
     values,
     picker = 'tabs',
     display = 'select',
-    candidates,
+    candidates, selection, searchable, treeSelection,
     onchange
   }: Props = $props();
 
@@ -40,7 +43,7 @@
 </script>
 
 <div class="hierarchy">
-  {#if label}<span class="label">{label}</span>{/if}
+
   {#if picker === 'tabs'}
     <div class="tabs" role="tablist">
       {#each levels as item (item.id)}
@@ -67,7 +70,9 @@
     </button>
   {/if}
   <DimensionFilter
+    label={label}
     {emptyLabel}
+    {selection} {searchable} {treeSelection}
     candidates={candidates}
     value={controlValues}
     display={display}
@@ -84,11 +89,6 @@
     align-items: center;
     gap: 8px;
     font-size: var(--mc-filter-font-size, 13px);
-  }
-  .label {
-    display: var(--mc-filter-label-display, inline);
-    color: #71717a;
-    white-space: nowrap;
   }
   .tabs {
     display: flex;
