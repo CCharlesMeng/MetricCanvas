@@ -1,3 +1,4 @@
+import {chartOptionScopes} from './chart-option';
 import type { TypedError } from './errors';
 import {declaredNavigationTargets} from './navigate';
 import type {Page} from './page';
@@ -63,7 +64,7 @@ export const pageCapabilities = {
   'business-filter-context':{minor:36,description:'页级候选依赖与明确清理',usedAt:document=>filterPaths(document,f=>['candidateContext','clearOnChangeOf'].some(key=>has(f,key)))},
   'money-usd':{minor:37,description:'显式美元金额及格式',usedAt:document=>[...dataSourcePaths(document,d=>findPaths(d.fields,v=>v.type==='money'&&v.currency==='USD').length>0),...namedFormatPaths(document,/^usd-adaptive$/),...filterPaths(document,f=>f.type==='numberRange'&&findPaths(f.units,v=>v.currency==='USD').length>0)]},
   'amount-range':{minor:37,description:'金额范围约束单位预设和metric选择',usedAt:document=>filterPaths(document,f=>f.type==='numberRange'&&(has(f,'units')||has(f,'constraints')||has(f,'presets')))},
-  'field-selection':{minor:37,description:'静态货币字段选择',usedAt:document=>componentPaths(document,c=>findPaths(c.props,v=>has(v,'byFilter')).length>0)},
+  'field-selection':{minor:37,description:'静态货币字段选择',usedAt:document=>{const opaque=chartOptionScopes(document);return componentPaths(document,c=>findPaths(c.props,v=>has(v,'byFilter'),opaque).length>0);}},
   'filter-hint':{minor:36,description:'筛选说明文本',usedAt:document=>filterPaths(document,f=>has(f,'hint'))},
   'ioc-header': { minor:35, description:'页级 IOC 身份、筛选归属与实际首行折叠', usedAt: document => has(record(document), 'iocHeader') ? ['/iocHeader'] : [] },
   'period-filter': {minor:27,description:'Dashboard 年季月与近一年期间筛选',usedAt:document => filterPaths(document, filter => filter.type === 'timeRange' && (has(filter,'display') || has(filter,'initialMode') || !!(record(filter.default) && has(record(filter.default),'mode'))))},
@@ -1038,8 +1039,8 @@ function numberRangeTablePaths(document:unknown):string[]{
     visit(props(component)?.columns,`${path}/props/columns`);
   });return paths;
 }
-function findPaths(document:unknown,matches:(value:Record<string,unknown>)=>boolean):string[]{
+function findPaths(document:unknown,matches:(value:Record<string,unknown>)=>boolean,opaque=new WeakSet<object>()):string[]{
  const paths:string[]=[];
- function visit(value:unknown,path:string){if(Array.isArray(value))value.forEach((item,i)=>visit(item,`${path}/${i}`));else if(value&&typeof value==='object'){const item=value as Record<string,unknown>;if(matches(item))paths.push(path);for(const [key,child]of Object.entries(item))visit(child,`${path}/${key}`);}}
+ function visit(value:unknown,path:string){if(Array.isArray(value))value.forEach((item,i)=>visit(item,`${path}/${i}`));else if(value&&typeof value==='object'){if(opaque.has(value))return;const item=value as Record<string,unknown>;if(matches(item))paths.push(path);for(const [key,child]of Object.entries(item))visit(child,`${path}/${key}`);}}
  visit(document,'');return paths;
 }

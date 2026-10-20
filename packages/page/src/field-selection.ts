@@ -1,3 +1,4 @@
+import {chartOptionScopes,isExtensibleChart} from './chart-option';
 import type {Page,Component,ComponentData} from './page';
 import type {FieldBinding,StaticFieldBinding,FieldDefinition} from './field';
 import {fieldName} from './field';
@@ -7,17 +8,20 @@ import type {TypedError} from './errors';
 export interface SelectionValue {type:string;values?:readonly string[]}
 export type SelectionValues=ReadonlyMap<string,SelectionValue>;
 function isSelection(value:unknown):value is Extract<FieldBinding,{byFilter:unknown}>{if(!value||typeof value!=='object'||!('byFilter' in value))return false;const selection=value.byFilter;return !!selection&&typeof selection==='object'&&'filterId' in selection&&typeof selection.filterId==='string'&&'cases' in selection&&!!selection.cases&&typeof selection.cases==='object';}
-function visit(value:unknown,fn:(binding:Extract<FieldBinding,{byFilter:unknown}>)=>void):void {
+function visit(value:unknown,fn:(binding:Extract<FieldBinding,{byFilter:unknown}>)=>void,opaque=new WeakSet<object>()):void {
+  if(value&&typeof value==='object'&&opaque.has(value))return;
   if(isSelection(value)){fn(value);return;}
-  if(Array.isArray(value))for(const item of value)visit(item,fn);
-  else if(value&&typeof value==='object')for(const item of Object.values(value))visit(item,fn);
+  if(Array.isArray(value))for(const item of value)visit(item,fn,opaque);
+  else if(value&&typeof value==='object')for(const item of Object.values(value))visit(item,fn,opaque);
 }
-export function fieldSelectionIds(value:unknown):string[]{const ids=new Set<string>();const collect=(props:unknown)=>visit(props,binding=>ids.add(binding.byFilter.filterId));if(value&&typeof value==='object'&&'sections' in value){walkPageComponents(value as Page,component=>collect(component.props));}else collect(value);return [...ids];}
+export function fieldSelectionIds(value:unknown):string[]{const ids=new Set<string>();const opaque=chartOptionScopes(value);const collect=(props:unknown)=>visit(props,binding=>ids.add(binding.byFilter.filterId),opaque);if(value&&typeof value==='object'&&'sections' in value){walkPageComponents(value as Page,component=>collect(component.props));}else collect(value);return [...ids];}
 function definition(page:Page,component:Component,binding:StaticFieldBinding):FieldDefinition|undefined {
  const slot=typeof binding==='string'?'main':binding.data;return page.dataSources[(component.data as ComponentData|undefined)?.[slot]??'']?.fields[fieldName(binding)];
 }
 export function projectComponentFields(page:Page,component:Component,values:SelectionValues):Component {
+ const opaque=isExtensibleChart(component.type)&&'echartsOption' in component.props?component.props.echartsOption:undefined;
  function project(value:unknown):unknown {
+  if(value&&typeof value==='object'&&value===opaque)return value;
   if(isSelection(value))return selectedCase(value.byFilter.cases,values.get(value.byFilter.filterId)?.values);
   if(Array.isArray(value))return value.map(project);
   if(!value||typeof value!=='object')return value;
@@ -46,7 +50,7 @@ export function projectFieldSelections(page:Page,values:SelectionValues,pending=
  return clone;
 }
 export function fieldSelectionErrors(page:Page):TypedError[]{
- const errors:TypedError[]=[];
+ const errors:TypedError[]=[];const opaque=chartOptionScopes(page);
  walkPageComponents(page,(component,path)=>visit(component.props,binding=>{
   const selection=binding.byFilter;
   if(!exhaustiveCases(page.filters??[],selection.filterId,selection.cases))errors.push({type:'SCHEMA_ERROR',path:path+'/props',message:'字段选择必须穷尽required单选封闭枚举'});
@@ -57,7 +61,7 @@ export function fieldSelectionErrors(page:Page):TypedError[]{
    if(field?.type==='money'&&range?.type==='numberRange'&&range.units?.cases[value]?.currency!==field.currency)errors.push({type:'SCHEMA_ERROR',path:path+'/props',message:'字段选择币种与units case不匹配'});
    if(field?.type==='money'&&typeof leaf!=='string'&&((leaf.format==='cny-adaptive'&&field.currency!=='CNY')||(leaf.format==='usd-adaptive'&&field.currency!=='USD')))errors.push({type:'SCHEMA_ERROR',path:path+'/props',message:'金额格式与静态货币不匹配'});
   }
- }));return errors;
+ },opaque));return errors;
 }
 /** Validate each coherent assignment, including conflicts between simultaneously selected leaves. */
 export function* fieldSelectionVariants(page:Page):Generator<Page>{

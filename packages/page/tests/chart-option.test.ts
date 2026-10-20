@@ -63,3 +63,16 @@ describe('高级 ECharts 呈现协议', () => {
     expect(resolveTextValues(document, { values: new Map() })).toEqual(document);
   });
 });
+
+it('opaque ECharts byFilter keys neither enable IOC currency capabilities nor get projected', async () => {
+  const {fieldSelectionIds,projectComponentFields}=await import('../src/field-selection');
+  const document=withOption({textStyle:{byFilter:{filterId:'opaque-name',cases:{RMB:'red',USD:'blue'}}}});
+  expect(requiredMinorVersion(document)).toBe(32);
+  expect(parsePage(document).ok).toBe(true);
+  expect(fieldSelectionIds(document)).toEqual([]);
+  const parsed=parsePage(scene);expect(parsed.ok).toBe(true);if(!parsed.ok)return;
+  const component=parsed.page.sections[0]!.components[1]!;
+  if(component.type!=='barChart')throw Error('expected actual bar chart');
+  const applied={...component,props:{...component.props,echartsOption:{textStyle:{byFilter:{filterId:'opaque-name',cases:{RMB:'red',USD:'blue'}}}}}};
+  expect(projectComponentFields(parsed.page,applied,new Map()).props).toEqual(applied.props);
+});
