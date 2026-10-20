@@ -1,6 +1,10 @@
 <script lang="ts">
   import {pageExternalInputs} from '$lib/page-catalog';
+  import {browser} from '$app/environment';
+  const framed = browser && window.self !== window.top;
   import {createVisibilityDemoInputs} from '$lib/visibility-inputs';
+  import {createIocHeaderPreview} from '$lib/ioc-header-preview-inputs';
+  const headerPreview = createIocHeaderPreview();
   const visibilityDemo=createVisibilityDemoInputs();
   let visibilityInstance=$state(0);
   import { goto, replaceState } from '$app/navigation';
@@ -93,7 +97,7 @@
       pageState = {
         phase: 'ready',
         document,
-        dataGateway
+        dataGateway: pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : dataGateway
       };
     } catch (cause) {
       if (session !== loadSession) return;
@@ -105,7 +109,7 @@
   }
 </script>
 
-{#if pageState.phase === 'ready'}
+{#if pageState.phase === 'ready' && !framed}
   <PageGuide pageId={page.params.pageId!} document={pageState.document} />
 {/if}
 
@@ -137,7 +141,7 @@
     {/if}
     {#key visibilityInstance}
     <RuntimeView
-      displayInputs={pageExternalInputs(page.params.pageId)==='visibility'?visibilityDemo.source:undefined}
+      displayInputs={pageExternalInputs(page.params.pageId)==='visibility'?visibilityDemo.source:pageExternalInputs(page.params.pageId)==='ioc-header'?headerPreview.displayInputs:undefined}
       document={pageState.document}
       dataGateway={pageState.dataGateway}
       {aiSummary}

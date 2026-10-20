@@ -1,5 +1,6 @@
 <script lang="ts">
   import { catalogCapabilities, pageCatalogGuide, runtimeInfo } from './page-catalog';
+  import { headerSceneKey } from './ioc-header-showcase';
   import { guideConfig } from './page-guide-config';
 
   let { pageId, document }: { pageId: string; document: unknown } = $props();
@@ -12,6 +13,7 @@
 {#if entry}
   {#key pageId}
     <aside class="page-guide" aria-label="示例使用说明">
+      {#if entry.group === 'ioc-header'}<a class="header-entry" href={`/ioc-header?scene=${headerSceneKey(pageId)}`} target="_top">IOC 公共页头 · 完整演示与能力一览 →</a>{/if}
       <details>
         <summary><strong>体验与配置说明</strong><span>{entry.displayTitle}</span></summary>
         <div class="guide-content">
@@ -66,6 +68,7 @@
 {/if}
 
 <style>
+  .header-entry { display: block; padding: 10px 16px; border-bottom: 1px solid #e4e4e7; }
   .page-guide { margin: 16px 24px; border: 1px solid #d4d4d8; border-radius: 8px; background: white; color: #3f3f46; font-size: 13px; line-height: 1.7; }
   summary { cursor: pointer; padding: 12px 16px; overflow-wrap: anywhere; }
   summary > span { margin-left: 16px; color: #71717a; }

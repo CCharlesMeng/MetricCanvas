@@ -14,9 +14,14 @@
     },
     {
       "id": "ioc-header",
-      "category": "verification",
+      "category": "features",
       "title": "IOC 公共页头",
-      "description": "选择功能，操作筛选并查看结果。涵盖时间、业务条件、金额币种，以及概览、清单、详情之间的条件传递。"
+      "description": "从完整演示开始，按时间、业务条件、币种金额和跨页传值查看功能，或查阅全部能力。",
+      "collection": {
+        "href": "/ioc-header",
+        "title": "IOC 公共页头 · 完整演示与能力一览",
+        "summary": "在同一入口体验公共页头，按四个功能专题切换场景，并查看当前支持范围与接入条件。"
+      }
     },
     {
       "id": "features",
@@ -1253,12 +1258,13 @@
       ],
       "displayTitle": "按年、季度、月查看数据",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "演示数据",
-        "runtime": "sim",
+        "data": "内置合成演示数据",
+        "runtime": "none",
         "scope": "切换条件后查看数据变化"
       },
       "guide": {
@@ -1270,12 +1276,14 @@
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-dense-filter-demo",
           "ioc-header-detail-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "overview"
     },
     {
       "id": "ioc-header-dense-filter-demo",
@@ -1287,12 +1295,13 @@
       ],
       "displayTitle": "更多筛选与上下级联动",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "演示数据",
-        "runtime": "sim",
+        "data": "内置合成演示数据",
+        "runtime": "none",
         "scope": "可展开、收起并联动筛选"
       },
       "guide": {
@@ -1304,11 +1313,13 @@
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-overview-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "dense-filter"
     },
     {
       "id": "ioc-header-detail-demo",
@@ -1320,12 +1331,13 @@
       ],
       "displayTitle": "按月查看项目详情",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "演示数据",
-        "runtime": "sim",
+        "data": "内置合成演示数据",
+        "runtime": "none",
         "scope": "可直接修改详情月份"
       },
       "guide": {
@@ -1337,11 +1349,13 @@
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-overview-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "detail"
     },
     {
       "id": "ioc-header-month-set-demo",
@@ -1353,12 +1367,13 @@
       ],
       "displayTitle": "选择多个不连续月份",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "演示数据",
-        "runtime": "sim",
+        "data": "内置合成演示数据",
+        "runtime": "none",
         "scope": "可直接多选月份"
       },
       "guide": {
@@ -1369,11 +1384,13 @@
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-overview-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "month-set"
     },
     {
       "id": "ioc-header-business-options-demo",
@@ -1387,12 +1404,13 @@
       ],
       "displayTitle": "单选、多选与勾选筛选",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "演示数据",
-        "runtime": "sim",
+        "data": "内置合成演示数据",
+        "runtime": "none",
         "scope": "可直接体验不同选择方式"
       },
       "guide": {
@@ -1404,11 +1422,13 @@
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-overview-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "business-options"
     },
     {
       "id": "ioc-header-business-tree-demo",
@@ -1420,28 +1440,31 @@
       ],
       "displayTitle": "按区域层级筛选",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "演示数据",
-        "runtime": "sim",
-        "scope": "需提供区域层级与可选项"
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "已提供演示区域层级与可选项"
       },
       "guide": {
         "steps": [
-          "通过配套Embed宿主注入V2候选后切换层级。",
+          "使用内置演示候选切换层级。",
           "切换候选时间，观察交集、空交集待确认和不可用状态。"
         ],
         "configPaths": [
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-overview-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "business-tree"
     },
     {
       "id": "ioc-header-business-detail-demo",
@@ -1453,12 +1476,13 @@
       ],
       "displayTitle": "详情页单独选择业务条件",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "演示数据",
-        "runtime": "sim",
+        "data": "内置合成演示数据",
+        "runtime": "none",
         "scope": "可切换月份与业务档位"
       },
       "guide": {
@@ -1469,11 +1493,13 @@
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-overview-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "business-detail"
     },
     {
       "id": "ioc-header-currency-demo",
@@ -1487,12 +1513,13 @@
       ],
       "displayTitle": "切换币种与金额范围",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "演示数据",
-        "runtime": "sim",
+        "data": "内置合成演示数据",
+        "runtime": "none",
         "scope": "可切换币种、单位与金额范围"
       },
       "guide": {
@@ -1504,11 +1531,13 @@
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-overview-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "currency"
     },
     {
       "id": "ioc-header-time-modes-demo",
@@ -1520,12 +1549,13 @@
       ],
       "displayTitle": "按日、月和周筛选",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "演示数据",
-        "runtime": "sim",
+        "data": "内置合成演示数据",
+        "runtime": "none",
         "scope": "可直接切换日期粒度"
       },
       "guide": {
@@ -1536,11 +1566,13 @@
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-overview-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "time-modes"
     },
     {
       "id": "ioc-header-time-presets-demo",
@@ -1553,12 +1585,13 @@
       ],
       "displayTitle": "日期快捷选择",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "演示数据",
-        "runtime": "sim",
+        "data": "内置合成演示数据",
+        "runtime": "none",
         "scope": "可直接选择日期快捷项"
       },
       "guide": {
@@ -1569,11 +1602,13 @@
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-overview-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "time-presets"
     },
     {
       "id": "ioc-header-availability-demo",
@@ -1585,28 +1620,31 @@
       ],
       "displayTitle": "选择最新数据期或完整期",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "演示数据",
-        "runtime": "sim",
-        "scope": "需提供最新数据期与完整期"
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "已提供演示最新期与完整期"
       },
       "guide": {
         "steps": [
-          "通过配套Embed宿主注入可信期间事实，观察完成期初值。",
+          "使用内置期间事实，观察完成期初值。",
           "显式URL优先于动态初值；不可用日期或身份变化停止相关执行。"
         ],
         "configPaths": [
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-overview-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "availability"
     },
     {
       "id": "ioc-header-calendar-window-demo",
@@ -1618,28 +1656,31 @@
       ],
       "displayTitle": "从近12个月中多选",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters"
       ],
       "environment": {
-        "data": "演示数据",
-        "runtime": "sim",
-        "scope": "需提供可选月份与最新数据期"
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "已提供演示月份与最新数据期"
       },
       "guide": {
         "steps": [
-          "通过配套Embed宿主注入V2候选和可信期间事实。",
+          "试验场已提供演示月份候选和期间事实。",
           "选择1月与3月，核对离散集合与十二个月候选窗口。"
         ],
         "configPaths": [
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-overview-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "calendar-window"
     },
     {
       "id": "ioc-header-navigation-source-demo",
@@ -1651,30 +1692,33 @@
       ],
       "displayTitle": "带筛选条件进入清单",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters",
         "navigation"
       ],
       "environment": {
-        "data": "演示数据",
+        "data": "内置合成演示数据",
         "runtime": "none",
         "scope": "从这里开始跨页体验"
       },
       "guide": {
         "steps": [
           "选择期间、币种和区域，再点击携带条件进入清单。",
-          "目标能力缺失的链接明确拒绝；详情回显需启动本地DQE Sim。"
+          "目标能力缺失的链接明确拒绝；详情使用内置合成数据回显。"
         ],
         "configPaths": [
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-navigation-list-demo",
           "ioc-header-navigation-detail-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "navigation-source"
     },
     {
       "id": "ioc-header-navigation-list-demo",
@@ -1686,12 +1730,13 @@
       ],
       "displayTitle": "从清单打开项目详情",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters",
         "navigation"
       ],
       "environment": {
-        "data": "演示数据",
+        "data": "内置合成演示数据",
         "runtime": "none",
         "scope": "建议从概览进入"
       },
@@ -1704,12 +1749,14 @@
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-navigation-source-demo",
           "ioc-header-navigation-detail-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "navigation-list"
     },
     {
       "id": "ioc-header-navigation-detail-demo",
@@ -1722,13 +1769,14 @@
       ],
       "displayTitle": "查看并调整传入条件",
       "capabilities": [
+        "ioc-header",
         "layout",
         "filters",
         "navigation"
       ],
       "environment": {
-        "data": "演示数据",
-        "runtime": "sim",
+        "data": "内置合成演示数据",
+        "runtime": "none",
         "scope": "建议从清单打开项目"
       },
       "guide": {
@@ -1740,12 +1788,14 @@
           "iocHeader",
           "filters"
         ],
-        "boundary": "演示使用合成数据，不代表真实DQE、CloudIOC或Relay验收；需要V2候选或displayInputs时，未注入能力将明确不可用。B5仅传值、不恢复，B6挂起。",
+        "boundary": "试验场为本组示例注入内置合成查询、候选和期间事实，无需启动服务。页面声明及查询绑定保持原样；真实业务需要接入数据网关、授权候选和可信期间事实。本地演示不代表真实 DQE、CloudIOC 或 Relay 验收。跨页仅传值，不恢复来源视图；页头可选操作仍挂起。",
         "related": [
           "ioc-header-navigation-source-demo",
           "ioc-header-navigation-list-demo"
         ]
-      }
+      },
+      "externalInputs": "ioc-header",
+      "scenario": "navigation-detail"
     },
     {
       "id": "page-visibility-region-linkage",
@@ -1889,6 +1939,17 @@
     }
   ],
   "capabilities": [
+    {
+      "id": "ioc-header",
+      "title": "IOC 公共页头",
+      "question": "如何组合页头信息、时间、业务条件、币种金额与跨页传值？",
+      "docs": [
+        "page",
+        "filters",
+        "field-bindings-and-formats",
+        "actions-and-navigation"
+      ]
+    },
     {
       "id": "layout",
       "title": "布局与内容组织",

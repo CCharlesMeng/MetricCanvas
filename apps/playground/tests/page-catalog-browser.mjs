@@ -5,6 +5,7 @@ import path from 'node:path';
 const base = process.env.PLAYGROUND_BASE_URL ?? 'http://127.0.0.1:5173';
 const output = process.argv[2] ?? '/tmp/metriccanvas-page-catalog';
 const catalog = JSON.parse(await readFile(new URL('../page-catalog.json', import.meta.url), 'utf8'));
+const cardCount = catalog.groups.reduce((sum, group) => sum + (group.collection ? 1 : catalog.pages.filter(entry => entry.group === group.id).length), 0);
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
@@ -18,7 +19,7 @@ async function fitsViewport() {
 
 try {
   await page.goto(base);
-  await expect(page.locator('.page-card')).toHaveCount(catalog.pages.length);
+  await expect(page.locator('.page-card')).toHaveCount(cardCount);
   await page.screenshot({ path: path.join(output, 'catalog-desktop.png') });
   await fitsViewport();
   facts.desktop = true;
@@ -27,14 +28,14 @@ try {
   await page.getByRole('button', { name: /^Dashboard/ }).click();
   await page.getByLabel('运行条件', { exact: true }).selectOption('sim');
   await page.getByRole('searchbox').fill('只刷新');
-  await expect(page.locator('.page-card')).toHaveCount(2);
+  await expect(page.locator('.page-card')).toHaveCount(1);
   await expect(page.locator('.page-card[href="/pages/chart-local-filter-page"]')).toBeVisible();
   await page.getByRole('button', { name: /^验收样例/ }).click();
   await expect(page.locator('.page-card')).toHaveCount(1);
   await page.getByRole('searchbox').fill('不存在的配置组合');
   await expect(page.getByRole('heading', { name: '没有找到匹配页面' })).toBeVisible();
   await page.locator('.empty').getByRole('button', { name: '重置筛选' }).click();
-  await expect(page.locator('.page-card')).toHaveCount(catalog.pages.length);
+  await expect(page.locator('.page-card')).toHaveCount(cardCount);
   await page.getByRole('searchbox').fill('收入构成看板');
   await expect(page.locator('.page-card')).toHaveCount(1);
   await expect(page.locator('.page-card h3')).toHaveText('指标卡与文字混排｜收入构成');
@@ -78,7 +79,10 @@ try {
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(base);
-  await expect(page.locator('.page-card')).toHaveCount(catalog.pages.length);
+  await expect(page.getByRole('searchbox')).toBeVisible();
+  const reset = page.getByRole('button', { name: '重置筛选', exact: true });
+  if (await reset.isVisible()) await reset.click();
+  await expect(page.locator('.page-card')).toHaveCount(cardCount);
   await fitsViewport();
   await page.screenshot({ path: path.join(output, 'catalog-mobile.png'), fullPage: true });
   await page.getByRole('searchbox').fill('详情弹窗');

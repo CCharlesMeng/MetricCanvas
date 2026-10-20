@@ -3,7 +3,7 @@ import type { PlaygroundPageEntry } from './page-catalog-entry';
 
 export const catalogCapabilities = catalog.capabilities;
 export const catalogRuntimes = [
-  { id: 'none', title: '无需网关', startup: 'pnpm dev:playground' },
+  { id: 'none', title: '无需额外服务', startup: 'pnpm dev:playground' },
   { id: 'sim', title: '本地 DQE Sim', startup: '已有试验场时运行 pnpm sim:dqe；一起启动用 pnpm dev:dqe' },
   { id: 'service', title: '对应业务服务', startup: '启动试验场，并在集成环境接入匹配的数据网关、数据集与权限' },
   { id: 'platform', title: 'Platform 页面搭建', startup: 'pnpm dev:platform；在页面搭建工作台加载此页面资产' }
@@ -19,6 +19,7 @@ export function runtimeInfo(id: string) {
 
 type CatalogDefinition = typeof catalog.pages[number];
 interface CatalogPage extends PlaygroundPageEntry {
+  scenario?: string;
   displayTitle: string;
   summary: string;
   tags: string[];
@@ -30,6 +31,7 @@ interface CatalogPage extends PlaygroundPageEntry {
 function describePage(page: PlaygroundPageEntry, entry?: CatalogDefinition): CatalogPage {
   return {
     ...page,
+    scenario: entry?.scenario,
     displayTitle: entry?.displayTitle ?? page.title,
     summary: entry?.summary ?? page.description ?? '打开预览查看页面内容。',
     tags: entry?.tags ?? [],
@@ -97,6 +99,7 @@ export function filterPageCatalog(
 }
 
 /** Optional development-only inputs are configured outside Page metadata. */
-export function pageExternalInputs(id: string | undefined): 'visibility' | undefined {
-  return catalog.pages.find(entry => entry.id === id)?.externalInputs === 'visibility' ? 'visibility' : undefined;
+export function pageExternalInputs(id: string | undefined): 'visibility' | 'ioc-header' | undefined {
+  const input = catalog.pages.find(entry => entry.id === id)?.externalInputs;
+  return input === 'visibility' || input === 'ioc-header' ? input : undefined;
 }

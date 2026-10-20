@@ -136,6 +136,16 @@
               <p>{group.description}</p>
             </header>
             <ul class="page-list">
+              {#if group.collection}
+                <li class="collection-entry">
+                  <a class="page-card collection-card" href={group.collection.href + (group.pages.length < (groups.find(item => item.id === group.id)?.pages.length ?? 0) ? `?scene=${group.pages[0]!.scenario}` : '')}>
+                    <div class="card-heading"><h3>{group.collection.title}</h3><span class="arrow" aria-hidden="true">↗</span></div>
+                    <p class="summary">{group.collection.summary}</p>
+                    <div class="tags"><span>时间选择</span><span>业务筛选</span><span>币种与金额</span><span>跨页传值</span><span>能力一览</span></div>
+                    <p class="collection-count">{group.pages.length} 个匹配场景 · 在同一入口中体验</p>
+                  </a>
+                </li>
+              {:else}
               {#each group.pages as entry (entry.id)}
                 <li>
                   <a class="page-card" href={`/pages/${encodeURIComponent(entry.id)}`}>
@@ -153,6 +163,7 @@
                   </a>
                 </li>
               {/each}
+              {/if}
             </ul>
           </section>
         {/each}
@@ -164,6 +175,8 @@
 </main>
 
 <style>
+  .collection-entry { grid-column: 1 / -1; }
+  .collection-count { margin: 16px 0 0; color: #71717a; font-size: 12px; }
   .catalog-page {
     max-width: 1200px;
     padding: 40px 32px 64px;

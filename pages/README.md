@@ -1,6 +1,6 @@
 # 页面示例与验收场景
 
-页面试验场为引擎使用者提供“查找能力 → 体验操作 → 查看配置 → 参考业务页面”的路径。首页保留业务示例／功能演示／验收样例及 Dashboard／Report 布局形态筛选，并新增能力主题、运行条件筛选；同一页面可属于多个能力主题，只显示一个目录卡片。
+页面试验场为引擎使用者提供“查找能力 → 体验操作 → 查看配置 → 参考业务页面”的路径。首页保留业务示例／功能演示／验收样例及 Dashboard／Report 布局形态筛选，并新增能力主题、运行条件筛选；同一页面可属于多个能力主题；IOC 公共页头的多个场景集中为一个目录入口，其余页面各显示一个目录卡片。
 
 每页顶部的“体验与配置说明”提供操作与预期、数据环境、启动方式、关键配置、完整 JSON 下载、适用边界和关联入口。配置片段从当前加载文档提取，不维护第二份运行声明。说明属于试验场外框，不进入引擎页面或导出结果。协议文档链接指向仓库 main，当前运行输入以下载的 JSON 为准。
 
@@ -11,9 +11,26 @@
 ### 目录返回时恢复查找条件
 
 - 启动 `pnpm dev:playground`，入口 `/`；无需 DQE，详情复用内联合成示例 `/pages/table-detail-overlay` 和 `/pages/table-toolbar-demo`。
-- 在目录选择“表格与明细”、Dashboard、“无需网关”、“功能演示”，搜索“详情弹窗”。打开唯一结果，再点顶部“页面目录”：关键词、四项选择、匹配结果及滚动位置保持原样。也可从详情的相关示例继续跳转后返回目录。
+- 在目录选择“表格与明细”、Dashboard、“无需额外服务”、“功能演示”，搜索“详情弹窗”。打开唯一结果，再点顶部“页面目录”：关键词、四项选择、匹配结果及滚动位置保持原样。也可从详情的相关示例继续跳转后返回目录。
 - 切换为 Report，修改搜索为“Excel”并打开结果，连续使用浏览器后退／前进：各目录历史记录恢复各自的条件；刷新目录或详情后返回，条件仍保留。无匹配结果也保留；点击“重置筛选”后再往返，不恢复旧条件。
 - 会话存储损坏或分类选项已删除时回退默认值；存储被禁用时保留当前应用内状态。范围仅为试验场目录，不改变页面协议、业务页面筛选、页面参数或本地创作 Skill。浏览器验收脚本：`node apps/playground/tests/catalog-navigation-browser.mjs`；可用 `PLAYGROUND_BASE_URL` 指定服务地址。
+
+## IOC 公共页头统一入口
+
+打开 Playground 的 `/ioc-header`；首页可选择“IOC 公共页头”能力和“功能演示”用途，或用 `/#group-ioc-header` 定位入口。首页收拢为一张卡片，原始 15 份页面 JSON 与 `/pages/<id>` 地址保持有效。
+
+- `/ioc-header`：常用完整演示，期间、币种、区域可以直接操作。
+- `/ioc-header?topic=time&scene=time-modes`：时间专题，含年季月、详情单月、离散月份、日/月/ISO周、快捷范围与可信最新期场景。
+- `/ioc-header?topic=business&scene=business-options`：业务筛选专题，含单多选、勾选、区域树、级联与详情独立条件。
+- `/ioc-header?topic=currency&scene=currency`：币种与金额专题，观察范围确认、币种切换及独立货币字段。
+- `/ioc-header?topic=navigation&scene=navigation-source`：从概览选择条件，点击进入清单，再点击项目进入详情；修改详情不影响来源。
+- `/ioc-header?view=capabilities`：查阅 32 项使用能力，按名称、说明或规划编号搜索，展开适用条件并进入对应演示。暂缓实施项单列，全部原 88 项编号可追溯。
+
+本组当前 Playground 入口提供**内置合成查询、候选和期间事实**，只需 `pnpm dev:playground`；不需要 DQE Sim 或 Embed 示例服务。直接查看清单/详情时，统一入口会填写明确标识的演示参数。业务页面 JSON 和查询绑定不变，真实服务仍需集成应用注入相应能力。后文各批次中的 HTTP、Embed 和外部输入要求描述独立验收环境，不是本统一入口的启动前置。
+
+操作后观察正文数据、期间说明和候选变化；日/月/周同步静态查询，不连续月份不扩成连续范围。切到业务树的 2026-06/05 可观察无权限/未配置门禁；时间事实固定为演示 latest=2026-10、latestComplete=2026-09。B5 仅传值、B6 挂起，真实 DQE/Relay/CloudIOC/门户未因此获得验收。
+
+使用与验证记录见 [IOC 页头 Playground 优化验收](../docs/evidence/ioc-header-playground/acceptance.md)。此处只增加开发工具查看路径，不修改页面协议及 local-authoring 知识规则。
 
 ## 能力索引
 
@@ -28,11 +45,11 @@
 
 ## 数据与运行条件
 
-数据性质与运行条件独立描述：“合成演示”不等于“无需网关”，“内嵌初始行可预览”不等于“动态交互已接通”。
+数据性质与运行条件独立描述：“合成演示”不等于“无需额外服务”，“内嵌初始行可预览”不等于“动态交互已接通”。
 
 | 运行条件 | 启动方式 | 体验范围 |
 |---|---|---|
-| 无需网关 | `pnpm dev:playground` | 内联页面可直接体验 |
+| 无需额外服务 | `pnpm dev:playground` | 内联页面可直接体验 |
 | 本地 DQE Sim | 一起启动用 `pnpm dev:dqe`；已有试验场时仅运行 `pnpm sim:dqe` | 支持范围以各页说明及夹具为准；不匹配的查询显式失败 |
 | 对应业务服务 | 启动试验场，接入匹配的数据网关、数据集与权限 | 内嵌初始行只证明首屏可展示，不能替代业务取数 |
 | Platform 页面搭建 | `pnpm dev:platform`，在页面搭建工作台加载对应页面资产 | 试验场仅展示页面内容，拖拽、删除与撤销须在工作台操作 |
@@ -60,8 +77,8 @@
 
 ### 指标卡与文字混排、内容导航
 
-- [metric-card-equation](metric-card-equation.json)，入口 `/pages/metric-card-equation`：内联合成数据，无需网关。观察等号、加号与指标卡的同行排列，再查看文字和组件的 `layout.span`；符号只表达展示关系，不声明计算公式。
-- [ioc-content-navigation](ioc-content-navigation.json)，入口 `/pages/ioc-content-navigation`：内联合成数据，无需网关。在分区 A 翻页，切到 B 再返回 A，检查局部状态保留。它是匿名导航样例，不是 IOC 来源页面。
+- [metric-card-equation](metric-card-equation.json)，入口 `/pages/metric-card-equation`：内联合成数据，无需额外服务。观察等号、加号与指标卡的同行排列，再查看文字和组件的 `layout.span`；符号只表达展示关系，不声明计算公式。
+- [ioc-content-navigation](ioc-content-navigation.json)，入口 `/pages/ioc-content-navigation`：内联合成数据，无需额外服务。在分区 A 翻页，切到 B 再返回 A，检查局部状态保留。它是匿名导航样例，不是 IOC 来源页面。
 
 ### Platform 搭建画布体验
 
