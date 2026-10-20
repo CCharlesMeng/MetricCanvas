@@ -534,25 +534,29 @@
     "components/metricCard.md": {
       "title": "指标卡 metricCard",
       "definitions": [
-        "metricCardComponent"
+        "metricCardComponent",
+        "metricCardLayout"
       ],
       "keywords": [
         "components/metricCard",
         "指标卡 metricCard"
       ],
       "examples": [
-        "inline-report"
+        "inline-report",
+        "metric-card-equation"
       ],
       "sources": [
         "packages/page/src/schema/components/metric-card.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/page/src/metric-before.ts"
       ],
       "rules": [
         "schema-structure",
         "data-slot-known-source",
         "field-binding-resolves",
         "field-binding-role",
-        "field-binding-match"
+        "field-binding-match",
+        "metric-card-before"
       ]
     },
     "components/barChart.md": {
@@ -1318,7 +1322,10 @@
     "values": "集合比较的同类型字面量，不能与单值value混用。",
     "action": "沿用既有受控click动作，独立按钮无行上下文。",
     "text": "当前正文片段的文本取值；标点属于片段本身。",
-    "#/definitions/textComponent/properties/props/properties/parts": "text专用条件正文片段：id、text和可选visibleWhen；与body/bodyFormat互斥，不改变全局Text Value组合语义。"
+    "#/definitions/textComponent/properties/props/properties/parts": "text专用条件正文片段：id、text和可选visibleWhen；与body/bodyFormat互斥，不改变全局Text Value组合语义。",
+    "#/definitions/metricCardLayout/properties/before": "与原文档前一张相邻指标卡之间的前置连接文字；仅 Dashboard 顶层默认12列的plain/card分区支持。",
+    "#/definitions/metricCardLayout/properties/before/properties/text": "按纯文本呈现的连接文字，复用文本取值；缺失可选参数时整个连接缺席。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap": "文字内容盒到两侧卡片的间距，单位CSS px，缺省8；不是卡片内部padding。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1519,7 +1526,13 @@
     "containsAll": "来源集合包含全部给定值。",
     "isEmpty": "字符串或集合为空；未知输入不同于空值。",
     "isNotEmpty": "字符串或集合非空。",
-    "6.34": "统一条件显隐、行投影、按钮及条件正文片段；父级约束后代，子项不反推父级。"
+    "6.35": "统一条件显隐、行投影、按钮及条件正文片段；父级约束后代，子项不反推父级。",
+    "6.34": "Dashboard 指标卡前置连接文字与双侧受控间距。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=4": "连接文字两侧各留4 CSS px。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=8": "连接文字两侧各留8 CSS px。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=12": "连接文字两侧各留12 CSS px。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=16": "连接文字两侧各留16 CSS px。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=24": "连接文字两侧各留24 CSS px。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

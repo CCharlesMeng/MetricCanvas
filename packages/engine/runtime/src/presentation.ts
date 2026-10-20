@@ -48,7 +48,17 @@ export function compilePresentation(page:Page) {
       const renderSections:PageSection[]=page.sections.flatMap(section=>{
         const group=page.sectionGroups?.find(group=>group.sectionIds.includes(section.id));
         const gate=policyGate(section,context,group?groups.get(group.id):allowed);sections.set(section.id,gate);
-        return gate.eligible?[{...section,components:section.components.flatMap(child=>component(child,gate)??[])}]:[];
+        if(!gate.eligible)return [];
+        const children=section.components.flatMap((child,index)=>{
+          const projected=component(child,gate);if(!projected)return [];
+          // A connection belongs to the original adjacent pair; hiding an endpoint breaks it.
+          if(projected.type==='metricCard'&&projected.layout.before&&index>0&&!components.get(section.components[index-1].id)?.eligible){
+            const {before,...layout}=projected.layout;
+            return [{...projected,layout}];
+          }
+          return [projected];
+        });
+        return [{...section,components:children}];
       });
       const filters=(page.filters??[]).filter(filter=>filter.visible!==false&&policyGate(filter,context).eligible);
       return {

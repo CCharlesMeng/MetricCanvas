@@ -5,6 +5,7 @@ type PropertyName = 'filterIds' | 'subtitle' | 'badge' | 'tags' | 'showTrendArro
 export type PropertyTarget =
   | {kind:'presentation';target:PresentationTarget;field:'visibleWhen'|'enabledWhen'}
   | { kind: 'property'; name: PropertyName }
+  | { kind: 'metric-before'; field: 'text' | 'gap' }
   | { kind: 'report-export'; format: 'pdf' | 'png'; field: 'enabled' | 'label' | 'filename' | 'scale' }
   | { kind: 'series-label'; index: number }
   | { kind: 'metric-row'; rows: 'rows' | 'secondaryRows'; index: number; field: 'label' | 'context' | 'unit' }
@@ -34,6 +35,15 @@ export function propertyControls(draft: CanvasAuthoringDraft | null, locator: Co
   const component = componentOf(draft.canvasDocument, locator), props = object(component?.props), type = String(component?.type);
   if (!props) return [];
   const controls: PropertyControl[] = (names[type]??[]).map((name) => ({ id: name, label: labels[name], target: { kind: 'property', name }, value: props[name], kind: ['tags','filterIds'].includes(name) ? 'tags' : name === 'fit' ? 'choice' : ['subtitle', 'badge', 'ring'].includes(name) ? 'text' : 'boolean', ...(name === 'fit' ? { choices: ['content', 'container'] } : {}) }));
+  if (type === 'metricCard' && (draft.canvasDocument.layout ?? draft.canvasDocument.layoutForm) === 'dashboard') {
+    const sections = Array.isArray(draft.canvasDocument.sections) ? draft.canvasDocument.sections : [];
+    const section = sections.map(object).find(value => value?.id === locator.sectionId);
+    if (section && ['plain','card'].includes(String(section.container)) && section.columnTracks === undefined) {
+      const before = object(object(component?.layout)?.before);
+      controls.push({id:'metric-before-text',label:'前置连接文字',kind:'text',target:{kind:'metric-before',field:'text'},value:before?.text});
+      if (before) controls.push({id:'metric-before-gap',label:'连接文字两侧间距（px）',kind:'choice',choices:['4','8','12','16','24'],target:{kind:'metric-before',field:'gap'},value:before.gap ?? 8});
+    }
+  }
   if (type === 'reportHeader' && (draft.canvasDocument.layout ?? draft.canvasDocument.layoutForm ?? 'report') === 'report') {
     const buttons = exportButtons(props);
     for (const format of ['pdf', 'png'] as const) {
@@ -74,6 +84,23 @@ export function editProperty(draft: CanvasAuthoringDraft, locator: ComponentLoca
   const next = JSON.parse(JSON.stringify(draft.canvasDocument)) as Record<string, unknown>, component = componentOf(next, locator), props = object(component?.props), type = String(component?.type);
   const fail = (): DocumentEditResult => ({ ok: false, message: '属性不在白名单内或目标已变化，未修改页面。' });
   if (!props || !names[type]) return fail();
+  if (edit.kind === 'metric-before') {
+    if (type !== 'metricCard' || !component || !['text','gap'].includes(edit.field)) return fail();
+    const layout = object(component.layout); if (!layout) return fail();
+    const before = object(layout.before);
+    if (edit.field === 'text') {
+      if (edit.value !== undefined && typeof edit.value !== 'string') return fail();
+      if (typeof edit.value === 'string' && edit.value.trim()) layout.before = {...before,text:edit.value};
+      else delete layout.before;
+    } else {
+      if (!before) return fail();
+      if (edit.value === undefined || edit.value === '') delete before.gap;
+      else if ([4,8,12,16,24,'4','8','12','16','24'].includes(edit.value as number)) before.gap = Number(edit.value);
+      else return fail();
+    }
+    next.schemaVersion = versionPolicy.current;
+    return projectCanvasDraft(next);
+  }
   if (edit.kind === 'report-export') {
     if (type !== 'reportHeader' || !['pdf','png'].includes(edit.format) || !['enabled','label','filename','scale'].includes(edit.field)) return fail();
     next.schemaVersion = versionPolicy.current;

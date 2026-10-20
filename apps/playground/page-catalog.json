@@ -29,339 +29,1209 @@
     {
       "id": "business-sdt-report",
       "group": "reports",
-      "summary": "固定2026年10月商务SDT报告，保留人工维护内容。",
+      "summary": "查看经营总览、趋势和阶段明细；报告期间固定为 2026 年 10 月。",
       "tags": [
         "商务SDT",
         "固定月份"
-      ]
+      ],
+      "displayTitle": "商务 SDT 固定月份报告",
+      "capabilities": [
+        "layout",
+        "queries"
+      ],
+      "environment": {
+        "data": "业务查询",
+        "runtime": "service",
+        "scope": "业务查询需对应服务"
+      },
+      "guide": {
+        "steps": [
+          "按总览、趋势、阶段明细阅读报告，比较不同组件的展示方式。",
+          "需更换月份时，从关联入口打开单月筛选版。"
+        ],
+        "configPaths": [
+          "sections[].components[].type",
+          "dataSources.*.source.query"
+        ],
+        "boundary": "固定内容不随当前日期更新；本地 DQE Sim 不覆盖全部业务查询。",
+        "related": [
+          "business-sdt-report-monthly",
+          "commercial-sdt-efficiency-ultimate-monthly"
+        ]
+      }
     },
     {
       "id": "query-numeric-tolerance",
       "group": "verification",
-      "summary": "八种查询数值样例验证初始行和动态响应的单元格容错；使用合成数据及本地 DQE 仿真。",
+      "summary": "将占位符、空值和非法数值显示为缺失，保留真实零；比较表格、折线和指标卡。",
       "tags": [
         "数值容错",
         "缺失值"
-      ]
+      ],
+      "displayTitle": "查询数值容错与缺失值呈现",
+      "capabilities": [
+        "queries",
+        "tables"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "首屏可预览；动态查询需仿真"
+      },
+      "guide": {
+        "steps": [
+          "检查八行数值依次为 10.0、—、—、12.5、0.0、-4.0、—、—。",
+          "排序后检查八行仍保留，比较缺失指标卡与真实 0% 的区别。"
+        ],
+        "configPaths": [
+          "dataSources.*.fields",
+          "dataSources.*.source.initial"
+        ],
+        "boundary": "容错仅针对查询数值度量；字段缺失、维度类型错误和 inline 数据仍受严格校验。HTTP 异常注入由回归测试覆盖。",
+        "related": [
+          "empty-state-showcase"
+        ]
+      }
     },
     {
       "id": "business-sdt-report-monthly",
       "group": "reports",
-      "summary": "单月筛选联动所有图表、报告主标题与统计月份，最早2020-06。",
+      "summary": "提交报告月份后，同步图表查询、报告标题和统计月份；趋势取截至所选月的近 6 个月。",
       "tags": [
         "单月筛选",
         "月份下限",
         "近6月趋势",
         "创作范式"
-      ]
+      ],
+      "displayTitle": "单月筛选与业务月报｜商务 SDT",
+      "capabilities": [
+        "layout",
+        "filters",
+        "queries"
+      ],
+      "environment": {
+        "data": "业务查询",
+        "runtime": "service",
+        "scope": "业务查询需对应服务"
+      },
+      "guide": {
+        "steps": [
+          "选择报告月份并提交，观察标题与统计月份同步变化。",
+          "查看趋势窗口；尝试早于 2020-06 的月份，已应用状态应保持不变。"
+        ],
+        "configPaths": [
+          "filters",
+          "dataSources.*.source.query.filterBindings"
+        ],
+        "boundary": "固定摘要不会随月份更新；本地 DQE Sim 不覆盖全部业务查询。",
+        "related": [
+          "report-date-filter-example",
+          "business-sdt-report",
+          "commercial-sdt-efficiency-ultimate-monthly"
+        ]
+      }
     },
     {
       "id": "flow-analysis-report",
       "group": "reports",
-      "summary": "代表处流水分析，展示概况、趋势与结构。",
+      "summary": "按概况、趋势和结构阅读流水分析，参考指标、图表与文字的章节组合。",
       "tags": [
         "流水分析",
         "创作范式"
-      ]
+      ],
+      "displayTitle": "分析简报布局｜代表处流水",
+      "capabilities": [
+        "layout",
+        "queries"
+      ],
+      "environment": {
+        "data": "业务查询与初始快照",
+        "runtime": "service",
+        "scope": "初始行可预览；查询需对应服务"
+      },
+      "guide": {
+        "steps": [
+          "先阅读概况，再查看趋势与客户、赛道、产业结构。",
+          "打开参数版，对照报告期间与代表处如何成为显式输入。"
+        ],
+        "configPaths": [
+          "sections[].components[].type",
+          "dataSources.*.source.query"
+        ],
+        "boundary": "首屏内嵌初始行不证明后续查询已接通；业务结果需单独核验。",
+        "related": [
+          "flow-analysis-report-params",
+          "business-sdt-report-monthly"
+        ]
+      }
     },
     {
       "id": "flow-analysis-report-params",
       "group": "reports",
-      "summary": "流水分析的参数版，显式指定代表处与报告月份。",
+      "summary": "打开时确定代表处和报告月份，再显式绑定月度、全年及近 12 月等查询窗口。",
       "tags": [
         "页面参数"
-      ]
+      ],
+      "displayTitle": "页面参数与查询时间窗口｜流水分析",
+      "capabilities": [
+        "navigation",
+        "queries"
+      ],
+      "environment": {
+        "data": "业务查询与初始快照",
+        "runtime": "service",
+        "scope": "初始行可预览；查询需对应服务"
+      },
+      "guide": {
+        "steps": [
+          "展开关键配置，查看 params.query 中的代表处和报告月份。",
+          "比较不同查询对同一报告月份的时间窗口声明。"
+        ],
+        "configPaths": [
+          "params",
+          "dataSources.*.source.query"
+        ],
+        "boundary": "页面参数是打开时确定的输入；查询仍需数据服务支持对应字段与口径。",
+        "related": [
+          "flow-analysis-report",
+          "report-date-filter-example"
+        ]
+      }
     },
     {
       "id": "tokens-report",
       "group": "reports",
-      "summary": "固定采集时点的 Tokens 运营分析简报。",
+      "summary": "查看固定采集时点的运营快照，参考概况、趋势与分析文字的组织。",
       "tags": [
         "Tokens 运营"
-      ]
+      ],
+      "displayTitle": "运营简报布局｜Tokens 固定快照",
+      "capabilities": [
+        "layout"
+      ],
+      "environment": {
+        "data": "固定运营快照",
+        "runtime": "none",
+        "scope": "可直接预览"
+      },
+      "guide": {
+        "steps": [
+          "按报告章节阅读指标与分析文字。",
+          "下载完整 JSON，查看内联页面数据源与组件的绑定。"
+        ],
+        "configPaths": [
+          "dataSources.*.source.type",
+          "sections[].components[].type"
+        ],
+        "boundary": "固定快照不随当前时间更新，也不代表实时运营数据。",
+        "related": [
+          "tokens-monthly-trend"
+        ]
+      }
     },
     {
       "id": "tokens-monthly-trend",
       "group": "reports",
-      "summary": "上半年 Tokens 运营月报与月度趋势。",
+      "summary": "查看上半年运营趋势和月度明细，对照图表与表格的数据组织。",
       "tags": [
         "Tokens 运营"
-      ]
+      ],
+      "displayTitle": "运营月报与查询分页｜Tokens 趋势",
+      "capabilities": [
+        "layout",
+        "queries",
+        "tables"
+      ],
+      "environment": {
+        "data": "业务查询与初始快照",
+        "runtime": "service",
+        "scope": "初始行可预览；查询需对应服务"
+      },
+      "guide": {
+        "steps": [
+          "查看趋势与月度明细，注意总数和当前展示行数。",
+          "查询服务可用时操作表格分页，核对后续查询窗口。"
+        ],
+        "configPaths": [
+          "dataSources.*.source.query",
+          "sections[].components[].type"
+        ],
+        "boundary": "内嵌初始行只供首屏展示；分页取数需对应查询服务。",
+        "related": [
+          "tokens-report",
+          "query-result-where-page"
+        ]
+      }
     },
     {
       "id": "customer-activity-risk-briefing",
       "group": "reports",
-      "summary": "客户活动风险分析与简报呈现。",
+      "summary": "结合客户概况、活动数据和风险分析文字，阅读完整业务简报。",
       "tags": [
         "客户风险"
-      ]
+      ],
+      "displayTitle": "客户风险简报与分析文字",
+      "capabilities": [
+        "layout",
+        "queries"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "本地仿真；非真实业务验收"
+      },
+      "guide": {
+        "steps": [
+          "启动本地 DQE Sim 后打开简报，查看客户概况与明细。",
+          "对照数据组件和分析文字，区分固定内容与查询结果。"
+        ],
+        "configPaths": [
+          "dataSources.*.source.query",
+          "sections[].components[].type"
+        ],
+        "boundary": "本地仿真返回合成数据；不证明真实业务口径或模型分析质量。",
+        "related": [
+          "flow-analysis-report"
+        ]
+      }
     },
     {
       "id": "ioc-project-overview",
       "group": "ioc",
-      "summary": "全球与区域项目概览、指标和区域分布。",
+      "summary": "在地图、指标与分类明细之间建立区域经营概览，参考 Dashboard 页面结构。",
       "tags": [
         "概览",
         "创作范式"
-      ]
+      ],
+      "displayTitle": "地图概览与业务组合｜IOC",
+      "capabilities": [
+        "layout",
+        "filters",
+        "queries"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "初始行可预览；动态交互需仿真"
+      },
+      "guide": {
+        "steps": [
+          "先查看地图、指标和业务分类的布局关系。",
+          "启动本地 DQE Sim 后体验已绑定的筛选，比较局部查询变化。"
+        ],
+        "configPaths": [
+          "filters",
+          "dataSources.*.source.query",
+          "sections[].components[].type"
+        ],
+        "boundary": "查询页面数据源带合成内嵌初始行；真实编码、身份、权限与业务服务另行接入。",
+        "related": [
+          "ioc-opportunity-analysis",
+          "ioc-opportunity-list",
+          "region-map"
+        ]
+      }
     },
     {
       "id": "ioc-opportunity-analysis",
       "group": "ioc",
-      "summary": "机会点数量与结构分析；首版筛选未接入查询。",
+      "summary": "查看按组织组织的主题指标与多张表格，参考分析页的信息层次。",
       "tags": [
         "分析",
         "创作范式"
-      ]
+      ],
+      "displayTitle": "主题分析与 Tab 多表｜IOC",
+      "capabilities": [
+        "layout",
+        "filters"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "初始行可预览；筛选未接查询"
+      },
+      "guide": {
+        "steps": [
+          "切换组织 Tab，查看各主题指标与明细表的组合。",
+          "对照筛选声明与查询配置，确认本页未演示筛选下推。"
+        ],
+        "configPaths": [
+          "filters",
+          "sections[].components[].type"
+        ],
+        "boundary": "首版筛选尚未接入查询，不应据此判断筛选取数能力；数据为合成演示。",
+        "related": [
+          "ioc-project-overview",
+          "dashboard-period-filter"
+        ]
+      }
     },
     {
       "id": "ioc-opportunity-list",
       "group": "ioc",
-      "summary": "机会点明细、条件筛选与项目详情导航。",
+      "summary": "查看全宽机会点明细和条件筛选，点击项目进入详情页并携带页面参数。",
       "tags": [
         "清单",
         "创作范式"
-      ]
+      ],
+      "displayTitle": "筛选清单与详情导航｜IOC",
+      "capabilities": [
+        "tables",
+        "filters",
+        "navigation"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "初始行可预览；动态交互需仿真"
+      },
+      "guide": {
+        "steps": [
+          "查看顶部筛选与更多筛选中的条件。",
+          "点击项目入口进入详情，再返回清单，核对上下文。"
+        ],
+        "configPaths": [
+          "filters",
+          "sections[].components[].props.columns",
+          "sections[].components[].props.actions"
+        ],
+        "boundary": "数据是带合成内嵌初始行的查询源；真实查询分页、权限和业务数据需独立验收。",
+        "related": [
+          "ioc-project-detail",
+          "demo"
+        ]
+      }
     },
     {
       "id": "ioc-project-detail",
       "group": "ioc",
-      "summary": "项目基本信息、规范性、销售预测与项目叙事。",
+      "summary": "从来源页接收对象参数，展示项目概况、规范性、销售预测与叙事。",
       "tags": [
         "详情",
         "页面参数",
         "创作范式"
-      ]
+      ],
+      "displayTitle": "对象详情与页面参数｜IOC",
+      "capabilities": [
+        "layout",
+        "navigation"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "初始行可预览；动态交互需仿真"
+      },
+      "guide": {
+        "steps": [
+          "建议先从机会点清单点击进入，再查看项目标题和标识。",
+          "对照基本信息、规范性双卡及销售预测表的组织方式。"
+        ],
+        "configPaths": [
+          "params",
+          "dashboardToolbar",
+          "sections[].components[].type"
+        ],
+        "boundary": "单独打开使用页面默认演示参数；合成初始数据不构成真实结果字段契约。",
+        "related": [
+          "ioc-opportunity-list",
+          "flow-analysis-report-params"
+        ]
+      }
     },
     {
       "id": "metric-card-equation",
       "group": "features",
-      "summary": "指标卡与等号、加号及“其中”文字交替排列；使用静态演示数据。",
+      "summary": "指标卡前置等号、加号与文字按内容占宽，两侧各 8px；四卡同行并在窄屏自动堆叠。",
       "tags": [
         "指标卡",
         "文字混排",
         "公式布局"
-      ]
+      ],
+      "displayTitle": "指标卡与文字混排｜收入构成",
+      "capabilities": [
+        "layout"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接预览"
+      },
+      "guide": {
+        "steps": [
+          "查看收入构成：四卡等宽同行，等号、加号两侧各 8px。",
+          "对照业务拆分中的“其中”，文字按内容占宽。",
+          "缩小容器：卡片转为单列，文字在两张卡之间居中。"
+        ],
+        "configPaths": [
+          "sections[].components[].layout.span",
+          "sections[].components[].layout.before.text",
+          "sections[].components[].layout.before.gap"
+        ],
+        "boundary": "等号与加号是展示文字，不建立计算关系；数值来自静态演示数据。",
+        "related": [
+          "ioc-project-overview"
+        ]
+      }
     },
     {
       "id": "demo",
       "group": "features",
-      "summary": "筛选联动、页内下钻与跳转销售明细的完整链路。",
+      "summary": "点击区域或渠道图表，体验页内筛选；再跳转销售明细并恢复条件。",
       "tags": [
         "筛选",
         "跨页下钻"
-      ]
+      ],
+      "displayTitle": "筛选、页内下钻与跨页导航",
+      "capabilities": [
+        "filters",
+        "navigation"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "初始行可预览；动态交互需仿真"
+      },
+      "guide": {
+        "steps": [
+          "启动本地 DQE Sim，点击区域或渠道图表观察联动。",
+          "通过图表入口跳到销售明细，检查 URL 和目标页筛选条件。"
+        ],
+        "configPaths": [
+          "filters",
+          "sections[].components[].props.actions"
+        ],
+        "boundary": "跨页导航需要集成应用承接路由；本页使用本地仿真数据。",
+        "related": [
+          "sales-detail",
+          "region-map"
+        ]
+      }
     },
     {
       "id": "sales-detail",
       "group": "features",
-      "summary": "演示看板的下钻目标，从 URL 恢复区域与渠道筛选。",
+      "summary": "接收演示页传来的区域、渠道条件，从 URL 恢复筛选后展示明细。",
       "tags": [
         "跨页下钻"
-      ]
+      ],
+      "displayTitle": "跨页导航目标｜销售明细",
+      "capabilities": [
+        "navigation",
+        "tables"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "建议从来源页进入"
+      },
+      "guide": {
+        "steps": [
+          "先打开关联的筛选与导航示例，再点击进入本页。",
+          "比较 URL、筛选器和明细范围，返回来源页。"
+        ],
+        "configPaths": [
+          "filters",
+          "dataSources.*.source.query"
+        ],
+        "boundary": "直接打开不会自动得到来源页的点击上下文；本地仿真不证明真实服务。",
+        "related": [
+          "demo"
+        ]
+      }
     },
     {
       "id": "report-date-filter-example",
       "group": "features",
-      "summary": "统一演示单月、月份范围、动态标题、清空和禁止未来日期；范围明细使用本地 DQE 仿真。",
+      "summary": "提交单月或范围后同步期间文字；范围查询独立联动，非法未来时间保持已应用状态。",
       "tags": [
         "时间选择",
         "日期筛选",
         "动态标题",
         "禁止未来"
-      ]
+      ],
+      "displayTitle": "Report 时间选择、查询与标题联动",
+      "capabilities": [
+        "filters",
+        "queries"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "文字联动可直接体验；范围查询需仿真"
+      },
+      "guide": {
+        "steps": [
+          "在第一节提交报告月份，观察主标题和期间文字；清除后显示全部期间。",
+          "在范围查询一节修改期间，观察明细；在最后一节尝试未来日期或早于下限的值。"
+        ],
+        "configPaths": [
+          "filters",
+          "params",
+          "dataSources.*.source.query.filterBindings",
+          "sections[].components[].props.filterIds"
+        ],
+        "boundary": "三节控件相互独立；文字联动不等于该筛选已绑定所有查询。",
+        "related": [
+          "dashboard-period-filter",
+          "business-sdt-report-monthly"
+        ]
+      }
     },
     {
       "id": "query-result-where-page",
       "group": "features",
-      "summary": "本地 DQE 仿真的排序分页，下游查询独立过滤当前窗口。",
+      "summary": "改变主表排序或翻页后，下游分别筛选当前查询窗口中的大额和小额项目再取评估明细。",
       "tags": [
         "查询分页",
         "结果绑定"
-      ]
+      ],
+      "displayTitle": "查询分页、排序与级联取数｜项目评估",
+      "capabilities": [
+        "queries",
+        "tables"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "交互取数需本地仿真"
+      },
+      "guide": {
+        "steps": [
+          "启动本地 DQE Sim，切换主表任意列排序，观察回到第一页。",
+          "翻到下一页，比较主表项目与两张下游评估表的编号。"
+        ],
+        "configPaths": [
+          "dataSources.*.source.query.resultBindings",
+          "sections[].components[].props.pagination"
+        ],
+        "boundary": "下游使用当前查询窗口，不是全部 80 个项目；两个下游条件彼此独立。",
+        "related": [
+          "business-sdt-cascade-example",
+          "multi-query-table"
+        ]
+      }
     },
     {
       "id": "table-toolbar-demo",
       "group": "features",
-      "summary": "三层表头、跨行跨列合并；每张客户表独立搜索并导出完整匹配结果。静态演示数据。",
+      "summary": "查看三层表头和跨行跨列合并；搜索客户后导出全部匹配结果，两张表互不影响。",
       "tags": [
         "三层表头",
         "多级表头",
         "表格搜索",
         "Excel 导出"
-      ]
+      ],
+      "displayTitle": "多级表头、独立搜索与 Excel 导出",
+      "capabilities": [
+        "tables",
+        "export"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接体验"
+      },
+      "guide": {
+        "steps": [
+          "点击顶部表格收入实际列排序，表头仍保持三层。",
+          "在客户表搜索客户2并导出 Excel，核对全部匹配记录；另一张表保持原状。"
+        ],
+        "configPaths": [
+          "sections[].components[].props.columns",
+          "sections[].components[].props.toolbar"
+        ],
+        "boundary": "本页使用内联页面数据源；完整结果导出与当前分页显示范围不同。",
+        "related": [
+          "table-detail-overlay",
+          "multi-query-table"
+        ]
+      }
     },
     {
       "id": "table-detail-overlay",
       "group": "features",
-      "summary": "点击订单数打开弹窗表格、待交付打开抽屉、异常订单查看空结果；全部使用内联合成数据，无需 DQE。",
+      "summary": "点击订单数打开全部订单弹窗，点击待交付打开抽屉，点击异常订单查看空结果。",
       "tags": [
         "表格点击",
         "详情弹窗",
         "抽屉",
         "内联数据"
-      ]
-    },
-    {
-      "id": "custom-component-dashboard",
-      "group": "features",
-      "summary": "区域经营看板中的页面自定义组件。",
-      "tags": [
-        "自定义组件"
-      ]
+      ],
+      "displayTitle": "表格点击、详情弹窗与抽屉",
+      "capabilities": [
+        "tables"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接体验"
+      },
+      "guide": {
+        "steps": [
+          "点击订单数 8，在弹窗中搜索、排序、翻页或导出。",
+          "关闭后点击待交付 3 和异常订单 0；按 Esc 或关闭按钮返回。"
+        ],
+        "configPaths": [
+          "detailViews",
+          "sections[].components[].props.columns"
+        ],
+        "boundary": "三个入口使用已准备好的完整快照；不演示按任意点击行传参查询，query 详情需另接数据网关。",
+        "related": [
+          "demo",
+          "table-toolbar-demo"
+        ]
+      }
     },
     {
       "id": "region-map",
       "group": "features",
-      "summary": "地图着色与散点、带参链接及层级维度筛选器。",
+      "summary": "结合地图着色与散点展示区域指标，体验层级维度筛选和带参链接。",
       "tags": [
         "地图",
         "层级筛选"
-      ]
+      ],
+      "displayTitle": "地图着色、散点与层级筛选",
+      "capabilities": [
+        "layout",
+        "filters",
+        "navigation"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "初始行可预览；动态交互需仿真"
+      },
+      "guide": {
+        "steps": [
+          "查看中国地图的区域颜色与散点叠加。",
+          "启动本地 DQE Sim 后体验层级筛选，并查看说明文字中的带参链接。"
+        ],
+        "configPaths": [
+          "filters",
+          "sections[].components[].props.actions",
+          "sections[].components[].props.links"
+        ],
+        "boundary": "地图展示与筛选取数分别由组件和查询绑定声明；示例不代表真实地理业务数据。",
+        "related": [
+          "ioc-project-overview",
+          "demo"
+        ]
+      }
     },
     {
       "id": "ioc-content-navigation",
       "group": "verification",
-      "summary": "用匿名合成数据检查内容导航的运行时行为。",
+      "summary": "切换内容分区，再返回原分区，检查明细的局部状态仍然保留。",
       "tags": [
         "内容导航"
-      ]
+      ],
+      "displayTitle": "内容导航与局部状态保留",
+      "capabilities": [
+        "layout"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接体验"
+      },
+      "guide": {
+        "steps": [
+          "进入分区 A，操作明细表的分页。",
+          "切到分区 B 再返回 A，查看原局部状态。"
+        ],
+        "configPaths": [
+          "sectionGroups",
+          "sectionAnchors"
+        ],
+        "boundary": "匿名合成行集用于演示内容导航；不作为 IOC 业务页面或真实数据验收。",
+        "related": [
+          "ioc-opportunity-analysis"
+        ]
+      }
     },
     {
       "id": "multi-query-table",
       "group": "verification",
-      "summary": "两张独立组合表对照当前序号与固定预签金额排名，支持全局排序、跨源范围和导出；使用本地 DQE 仿真。",
+      "summary": "组合多个查询进行全局排序、跨源范围筛选和导出；对比当前序号与固定业务排名。",
       "tags": [
         "多查询表格",
         "全局排序",
         "跨源筛选"
-      ]
+      ],
+      "displayTitle": "多查询组合表、全局排序与固定排名",
+      "capabilities": [
+        "queries",
+        "tables",
+        "export"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "固定 2026-09 仿真场景"
+      },
+      "guide": {
+        "steps": [
+          "启动本地 DQE Sim，保持 2026-09；将召开率切到降序并翻页。",
+          "对比两表序号与排名，再筛选或搜索天津，导出全部匹配行。"
+        ],
+        "configPaths": [
+          "dataSources.*.source.type",
+          "dataSources.*.source.ordinalField",
+          "sections[].components[].props.pagination"
+        ],
+        "boundary": "固定排名来自上游普通查询字段；组合查询源不生成业务排名，其他月份在本地仿真中显式失败。",
+        "related": [
+          "query-result-where-page",
+          "table-toolbar-demo"
+        ]
+      }
     },
     {
       "id": "empty-state-showcase",
       "group": "verification",
-      "summary": "检查空数据与请求失败时的组件呈现。",
+      "summary": "在没有数据行时，检查指标、图表、表格和地图仍保留标题与基本结构。",
       "tags": [
         "空态",
         "错误状态"
-      ]
+      ],
+      "displayTitle": "空数据下的组件呈现",
+      "capabilities": [
+        "queries",
+        "layout"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接预览空态"
+      },
+      "guide": {
+        "steps": [
+          "查看指标卡、图表、表格和地图的空数据表现。",
+          "比较表头、坐标轴、底图与组件标题是否保留。"
+        ],
+        "configPaths": [
+          "dataSources.*.source",
+          "sections[].components[].type"
+        ],
+        "boundary": "本页只直接演示空快照；请求失败后的空数据呈现需通过对应异常测试验证。",
+        "related": [
+          "query-numeric-tolerance"
+        ]
+      }
     },
     {
       "id": "business-sdt-cascade-example",
       "group": "verification",
-      "summary": "保留Top5项目到阶段明细的两条独立级联链，使用本地DQE仿真验收。",
+      "summary": "用 Top5 项目的商务编号驱动阶段明细，两条独立链分别保留各自上下文。",
       "tags": [
         "级联查询",
         "Top5",
         "仿真"
-      ]
+      ],
+      "displayTitle": "查询结果绑定与两条级联链｜SDT",
+      "capabilities": [
+        "queries"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "仅支持 2026-09／10 仿真"
+      },
+      "guide": {
+        "steps": [
+          "启动本地 DQE Sim，观察 Top5 项目和阶段明细。",
+          "对照两条级联链的商务编号及下游结果绑定配置。"
+        ],
+        "configPaths": [
+          "dataSources.*.source.query.resultBindings"
+        ],
+        "boundary": "只证明合成查询链路；本地夹具不支持任意月份，也不覆盖业务月报全部查询。",
+        "related": [
+          "query-result-where-page",
+          "business-sdt-report-monthly"
+        ]
+      }
     },
     {
       "id": "commercial-sdt-efficiency-ultimate-monthly",
       "group": "reports",
-      "summary": "商务SDT行权效率专项月报，支持月份筛选和 PDF 下载，业务数据需要 DQE。",
+      "summary": "切换月份查看专项月报，并下载文件名包含已应用月份的 PDF。",
       "tags": [
         "商务SDT",
         "月份筛选",
         "PDF下载"
-      ]
+      ],
+      "displayTitle": "月份筛选与 PDF 下载｜SDT 专项月报",
+      "capabilities": [
+        "layout",
+        "filters",
+        "export"
+      ],
+      "environment": {
+        "data": "业务查询",
+        "runtime": "service",
+        "scope": "业务查询需对应服务"
+      },
+      "guide": {
+        "steps": [
+          "提交月份，观察报告期间与查询联动。",
+          "点击下载，检查正文期间与文件名一致。"
+        ],
+        "configPaths": [
+          "filters",
+          "sections[].components[].props.pdfExport"
+        ],
+        "boundary": "业务取数依赖对应 DQE 数据与权限；本地演示不能证明业务结果。",
+        "related": [
+          "report-pdf-export",
+          "business-sdt-report-monthly"
+        ]
+      }
     },
     {
       "id": "report-pdf-export",
       "group": "features",
-      "summary": "Report 工具带内置 PDF 下载，可配置按钮文字和动态文件名，包含默认与关闭对照。",
+      "summary": "提交月份后下载整页 PDF，正文与文件名使用已应用月份；对照默认按钮及未启用状态。",
       "tags": [
         "PDF下载",
         "报告工具带",
         "本地合成数据"
-      ]
+      ],
+      "displayTitle": "报告 PDF 下载、按钮与动态文件名",
+      "capabilities": [
+        "export",
+        "filters"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接体验"
+      },
+      "guide": {
+        "steps": [
+          "提交报告月份，点击下载经营报告，检查 PDF 包含全部 45 行。",
+          "比较默认下载按钮和未启用下载的页头；任意按钮均下载整页。"
+        ],
+        "configPaths": [
+          "sections[].components[].props.pdfExport",
+          "filters"
+        ],
+        "boundary": "日期工具带不进入 PDF；浏览器需支持 Worker、ImageBitmap、OffscreenCanvas 及 Blob Worker。",
+        "related": [
+          "report-png-export",
+          "report-png-long-export",
+          "report-export-scale-fallback",
+          "commercial-sdt-efficiency-ultimate-monthly"
+        ]
+      }
     },
     {
       "id": "report-png-export",
       "group": "features",
-      "summary": "同一种导出按钮配置PDF/PNG与各自清晰度，点击直接下载；PNG始终一张。合成数据。",
+      "summary": "同一页头配置 PDF 和 PNG 按钮，点击直接下载；文件名与正文期间同步。",
       "tags": [
         "PNG",
         "导出图片"
-      ]
+      ],
+      "displayTitle": "报告 PDF／PNG 导出与清晰度",
+      "capabilities": [
+        "export",
+        "filters"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接体验"
+      },
+      "guide": {
+        "steps": [
+          "提交月份，分别点击导出 PDF 和导出图片。",
+          "比较默认与 4 倍按钮；PNG 应保存为一张完整图片。"
+        ],
+        "configPaths": [
+          "sections[].components[].props.exportButtons",
+          "filters"
+        ],
+        "boundary": "倍率由元数据固定；长图和无效倍率通过关联场景单独体验，合成数据不证明真实门户接入。",
+        "related": [
+          "report-pdf-export",
+          "report-png-long-export",
+          "report-export-scale-fallback"
+        ]
+      }
     },
     {
       "id": "report-png-long-export",
       "group": "verification",
-      "summary": "140行合成数据，跨截图块流式生成单张长PNG。",
+      "summary": "将 140 行明细导出为一张完整长 PNG，下载范围包含当前分页外的数据。",
       "tags": [
         "长图",
         "PNG"
-      ]
+      ],
+      "displayTitle": "报告导出变体｜完整单张长图",
+      "capabilities": [
+        "export",
+        "tables"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接体验"
+      },
+      "guide": {
+        "steps": [
+          "查看表格当前显示行数，再点击导出图片。",
+          "打开下载文件，检查 140 行均在同一张长图中。"
+        ],
+        "configPaths": [
+          "sections[].components[].props.exportButtons",
+          "sections[].components[].props.pagination"
+        ],
+        "boundary": "内部可能分块处理，但最终文件是一张 PNG；不是对当前可见分页截图。",
+        "related": [
+          "report-png-export",
+          "report-pdf-export"
+        ]
+      }
     },
     {
       "id": "report-export-scale-fallback",
       "group": "verification",
-      "summary": "新旧导出配置的无效scale回退默认值：PDF 2倍、PNG 3倍。合成数据。",
+      "summary": "给导出配置无效倍率，观察仍可下载，并使用 PDF 2 倍、PNG 3 倍默认值。",
       "tags": [
         "PDF",
         "PNG",
         "默认倍率"
-      ]
+      ],
+      "displayTitle": "报告导出边界｜无效清晰度回退",
+      "capabilities": [
+        "export"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接体验"
+      },
+      "guide": {
+        "steps": [
+          "查看关键配置中的 PDF 99、PNG 2 和旧 PNG 字符串倍率。",
+          "分别点击按钮，核对默认回退；像素尺寸由自动浏览器测试检查。"
+        ],
+        "configPaths": [
+          "sections[].components[].props.exportButtons",
+          "sections[].components[].props.pngExport"
+        ],
+        "boundary": "这是边界场景；首次接入应参考主导出示例中的有效配置。",
+        "related": [
+          "report-png-export",
+          "report-pdf-export"
+        ]
+      }
     },
     {
       "id": "dashboard-period-filter",
       "group": "features",
-      "summary": "顶部筛选统一切换年、季、月、近一年，回显绑定查询范围；月份精度、更多筛选和只读边界由测试夹具覆盖。",
+      "summary": "切换期间只刷新已绑定的查询，未绑定的对照表保持不变。",
       "tags": [
         "时间选择",
         "期间筛选",
         "Dashboard"
-      ]
+      ],
+      "displayTitle": "Dashboard 年、季、月与近一年筛选",
+      "capabilities": [
+        "filters",
+        "queries"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "交互取数需本地仿真"
+      },
+      "guide": {
+        "steps": [
+          "启动本地 DQE Sim，切换年、季、月并选择期间。",
+          "观察经营明细的生效查询范围；选择近一年，再比较未绑定查询。"
+        ],
+        "configPaths": [
+          "filters",
+          "dataSources.*.source.query.filterBindings"
+        ],
+        "boundary": "近一年表示当前月之前 12 个完整月份；本页只展示日期精度，其他变体由专用夹具覆盖。",
+        "related": [
+          "report-date-filter-example",
+          "chart-local-filter-page"
+        ]
+      }
     },
     {
       "id": "chart-local-filter-page",
       "group": "verification",
-      "summary": "每张图左上角独立筛选；自定义选项、默认值、URL 和静态导出。合成数据。",
+      "summary": "切换订单图区域只刷新该图，其他图保持不变；选择写入 URL，重新打开可恢复。",
       "tags": [
         "图表筛选",
         "Dashboard"
-      ]
+      ],
+      "displayTitle": "图表独立筛选与 URL 恢复",
+      "capabilities": [
+        "filters",
+        "queries",
+        "export"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "交互取数需本地仿真"
+      },
+      "guide": {
+        "steps": [
+          "启动本地 DQE Sim，将订单切到海外，观察其他图和全区域对照不变。",
+          "渠道切到欧洲查看空结果，再切回亚太；复制当前 URL 重新打开。"
+        ],
+        "configPaths": [
+          "filters",
+          "sections[].components[].props.filter",
+          "dataSources.*.source.query.filterBindings"
+        ],
+        "boundary": "每张图使用独立筛选及查询；导出状态投影由行为测试覆盖，本页没有下载按钮。",
+        "related": [
+          "dashboard-period-filter",
+          "report-png-export"
+        ]
+      }
     },
     {
       "id": "platform-canvas-experience",
       "group": "verification",
-      "summary": "Platform 搭建画布手柄拖拽、跨分区移动、组件删除与撤销、配置面板验收。静态演示。",
+      "summary": "在 Platform 页面搭建工作台调整顺序、跨分区移动、删除并撤销；试验场仅展示内容。",
       "tags": [
         "画布",
         "页面搭建",
         "静态演示"
-      ]
+      ],
+      "displayTitle": "页面搭建｜拖拽、删除与撤销",
+      "capabilities": [
+        "layout"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "platform",
+        "scope": "仅展示结构；操作需页面搭建工作台"
+      },
+      "guide": {
+        "steps": [
+          "本预览只检查页面内容与分区；不会出现搭建手柄。",
+          "在 Platform 页面搭建工作台打开此页面，再体验拖拽、删除和撤销；完整操作见仓库 pages/README.md。"
+        ],
+        "configPaths": [
+          "sections[].components[].layout",
+          "sections[].components[].type"
+        ],
+        "boundary": "本页地址不是搭建入口；搭建工作台由 Platform 提供，具体页面资产须在对应环境加载。",
+        "related": [
+          "metric-card-equation"
+        ]
+      }
     },
     {
       "id": "chart-echarts-option-page",
       "group": "verification",
-      "summary": "柱/线/饼图高级呈现扩展；声明序系列补丁、模板与静态导出。内联演示数据。",
+      "summary": "调整柱、线、饼图的高级呈现选项，对照声明顺序、标签模板和 PDF／PNG 导出。",
       "tags": [
         "ECharts",
         "高级配置",
         "图表"
-      ]
+      ],
+      "displayTitle": "图表高级呈现配置｜柱、线、饼图",
+      "capabilities": [
+        "layout",
+        "export"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接体验"
+      },
+      "guide": {
+        "steps": [
+          "查看三种图表的高级呈现配置，比较颜色、线形和半径。",
+          "调整容器宽度，再体验 PDF／PNG 导出。"
+        ],
+        "configPaths": [
+          "sections[].components[].props.echartsOption"
+        ],
+        "boundary": "内联合成数据；数据与交互仍由正式属性负责，高级选项只扩展受控的呈现能力。",
+        "related": [
+          "report-png-export"
+        ]
+      }
     },
     {
       "id": "tab-url-source",
       "group": "features",
-      "summary": "配置固定值、页面参数和行字段，跳转到指定页签。",
+      "summary": "通过固定值、页面参数或当前行字段生成链接，进入目标页指定的独立页签。",
       "tags": [
         "Tab",
         "URL参数",
         "跨页导航"
-      ]
+      ],
+      "displayTitle": "指定目标页签的跨页导航｜来源页",
+      "capabilities": [
+        "navigation",
+        "layout"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接体验"
+      },
+      "guide": {
+        "steps": [
+          "点击固定打开明细与已关闭工单，观察目标页两个 Tab 容器的选中项。",
+          "返回后用页面参数或表格行入口再次跳转，对照目标 URL。"
+        ],
+        "configPaths": [
+          "params",
+          "sections[].components[].props.links"
+        ],
+        "boundary": "跨页参数只携带显式绑定内容；无效、空值或重复值按目标页默认规则回退。",
+        "related": [
+          "tab-url-initialization",
+          "demo"
+        ]
+      }
     },
     {
       "id": "tab-url-initialization",
       "group": "features",
-      "summary": "两个独立Tab容器验证URL初始化、默认值及异常回退；内联演示数据。",
+      "summary": "从 URL 初始化两个独立 Tab 容器；手动切换互不影响，刷新后重新应用 URL 初值。",
       "tags": [
         "Tab",
         "URL参数",
         "跨页导航"
-      ]
+      ],
+      "displayTitle": "URL 初始化独立 Tab 容器｜目标页",
+      "capabilities": [
+        "navigation",
+        "layout"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接体验"
+      },
+      "guide": {
+        "steps": [
+          "建议先从关联来源页进入，核对销售明细和已关闭工单分别选中。",
+          "手动切换销售页签，检查工单页签不变、地址不变；刷新重新应用 URL。"
+        ],
+        "configPaths": [
+          "sections[].components[].props.initialTabUrlParam"
+        ],
+        "boundary": "URL 仅提供初始化输入；未声明参数不生效，无效或重复值回退默认页签。",
+        "related": [
+          "tab-url-source"
+        ]
+      }
     },
     {
       "id": "page-visibility-region-linkage",
@@ -370,7 +1240,34 @@
       "tags": [
         "条件显隐",
         "层级联动"
-      ]
+      ],
+      "displayTitle": "统一条件显隐与地区层级联动",
+      "capabilities": [
+        "conditions",
+        "filters",
+        "tables"
+      ],
+      "environment": {
+        "data": "内联演示数据",
+        "runtime": "none",
+        "scope": "无需 DQE；只验证本地条件规则与呈现"
+      },
+      "guide": {
+        "steps": [
+          "切换地区部，观察地区部行权规范分区隐藏、父容器保留，Tab及表格行同步变化。",
+          "切回全球，点击显示扩展内容和恢复基础内容，刷新后检查 URL 层级恢复。"
+        ],
+        "configPaths": [
+          "filters",
+          "sections[].visibleWhen",
+          "sections[].components[].props"
+        ],
+        "boundary": "本地演示不代表真实 CloudIOC、Java、DQE 或 Relay 接入验收。",
+        "related": [
+          "page-visibility-inputs",
+          "page-visibility-report"
+        ]
+      }
     },
     {
       "id": "page-visibility-inputs",
@@ -380,7 +1277,30 @@
         "条件显隐",
         "Sim"
       ],
-      "externalInputs": "visibility"
+      "externalInputs": "visibility",
+      "displayTitle": "已有权限与业务事实显隐",
+      "capabilities": [
+        "conditions"
+      ],
+      "environment": {
+        "data": "内联演示数据；权限与事实使用本地 Sim",
+        "runtime": "none",
+        "scope": "无需 DQE；只验证本地条件规则与呈现"
+      },
+      "guide": {
+        "steps": [
+          "使用页面外的 Sim 事实控制切换允许、拒绝、等待与错误，观察内容变化。",
+          "更换权限会话后旧实例停用；重新初始化后按当前权限显示。"
+        ],
+        "configPaths": [
+          "sections[].visibleWhen"
+        ],
+        "boundary": "本地演示不代表真实 CloudIOC、Java、DQE 或 Relay 接入验收。",
+        "related": [
+          "page-visibility-region-linkage",
+          "page-visibility-report"
+        ]
+      }
     },
     {
       "id": "page-visibility-report",
@@ -389,6 +1309,103 @@
       "tags": [
         "条件显隐",
         "导出"
+      ],
+      "displayTitle": "条件显隐报告与导出",
+      "capabilities": [
+        "conditions",
+        "export",
+        "tables"
+      ],
+      "environment": {
+        "data": "内联演示数据",
+        "runtime": "none",
+        "scope": "无需 DQE；只验证本地条件规则与呈现"
+      },
+      "guide": {
+        "steps": [
+          "切换地区部后下载 PDF、PNG 和表格 XLSX。",
+          "核对地区部分区缺席、允许的空父容器保留、Tab 展开及两行代表处记录。"
+        ],
+        "configPaths": [
+          "filters",
+          "sections[].visibleWhen",
+          "sections[].components[].props"
+        ],
+        "boundary": "本地演示不代表真实 CloudIOC、Java、DQE 或 Relay 接入验收。",
+        "related": [
+          "page-visibility-region-linkage",
+          "page-visibility-inputs"
+        ]
+      }
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "layout",
+      "title": "布局与内容组织",
+      "question": "如何组合指标、文字、地图和内容分区？",
+      "docs": [
+        "sections-and-layout",
+        "components/metricCard",
+        "components/mapChart",
+        "components/tabContainer",
+        "chart-option"
+      ]
+    },
+    {
+      "id": "filters",
+      "title": "筛选与状态联动",
+      "question": "如何筛选整页或单张图，并同步标题？",
+      "docs": [
+        "filters",
+        "params-and-text-values"
+      ]
+    },
+    {
+      "id": "tables",
+      "title": "表格与明细",
+      "question": "如何配置表头、搜索、排序和详情弹窗？",
+      "docs": [
+        "components/table",
+        "actions-and-navigation"
+      ]
+    },
+    {
+      "id": "queries",
+      "title": "查询与数据处理",
+      "question": "如何查询分页、级联取数和处理缺失值？",
+      "docs": [
+        "data-sources",
+        "queries-and-bindings",
+        "fields",
+        "compute"
+      ]
+    },
+    {
+      "id": "navigation",
+      "title": "导航与页面参数",
+      "question": "如何携带条件跳转，并恢复页面状态？",
+      "docs": [
+        "params-and-text-values",
+        "actions-and-navigation"
+      ]
+    },
+    {
+      "id": "export",
+      "title": "导出与分享",
+      "question": "如何下载完整表格、报告 PDF 和长图？",
+      "docs": [
+        "components/reportHeader",
+        "components/table"
+      ]
+    },
+    {
+      "id": "conditions",
+      "title": "条件显隐与动作资格",
+      "question": "如何按层级、已有权限或业务事实控制展示与操作？",
+      "docs": [
+        "conditions",
+        "components/button"
       ]
     }
   ]

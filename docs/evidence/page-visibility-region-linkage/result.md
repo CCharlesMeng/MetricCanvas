@@ -1,6 +1,6 @@
 # 统一展示条件验收记录
 
-日期：2026-10-19。基线 `origin/main` = `9c39d6455776cfbd0084d78394fe4edeb55dc3f7`，实施分支 `codex/unified-visibility`。原工作区未修改；所有产品变更在隔离 worktree。协议从 6.33 增量到 6.34，现行决策 [ADR-0111](../../adr/0111-unified-presentation-conditions.md)，唯一执行计划 [B0–B8/C01–C17](../../plan/2026-10-15-page-visibility-and-region-interactions.md)。
+日期：2026-10-19。基线 `origin/main` = `9c39d6455776cfbd0084d78394fe4edeb55dc3f7`，实施分支 `codex/unified-visibility`。原工作区未修改；所有产品变更在隔离 worktree。协议从 6.33 增量到 6.34，现行决策 [ADR-0112](../../adr/0112-unified-presentation-conditions.md)，唯一执行计划 [B0–B8/C01–C17](../../plan/2026-10-15-page-visibility-and-region-interactions.md)。
 
 ## 本仓实现
 
@@ -87,3 +87,16 @@ Chrome 151，1440/390，16 类行为通过，pageerror 为零。脚本直接读�
 真实DS的新增条件创作未运行，六个既有主流程合并通过；真实CloudIOC/Java/DQE/Relay亦未运行。上述限制不影响已完成的本仓条件声明、同一引擎语义和Chrome本地验收，生产接入结论仍待相应环境提供证据。
 
 安装验收后的测试/端口修改再次通过 `pnpm check`（零错误/警告）；最终Playground生产构建、契约检查、2910项Bundle校验和ADR索引检查均通过。浏览器测试提交与运行时冻结提交分别记录在JSON中，原工作区和其他任务的4176服务保留。分支本地提交可审阅，尚未合并主线或推送，不宣称远端CI通过。
+
+
+## 主线交付合并（2026-10-20）
+
+本节为后续交付记录；前文的 6.34、冻结提交及安装报告保留为当时证据。交付合入最新 `origin/main` `5dcfe6f6d97e87bb789bcecc4d3741b3c76929f8`，保留指标卡前置连接文字和 Playground 目录/操作说明。主线已登记 6.34／ADR-0111，因此统一展示条件递增为 **6.35／ADR-0112**；页面、能力门禁、反例、文档、知识和独立校验器从合并后的产品真源重新生成。
+
+补齐两项整合：三份功能页加入新版目录的能力、环境与操作说明；展示投影隐藏指标卡时切断原相邻连接，避免跨过隐藏卡片重新连接，恢复后沿用原声明。只调整渲染投影，不改原 Page。新增行为回归同时检查连接分组及原文档不变。
+
+合并后的 `pnpm check` 零错误/警告，补丁后的 engine 类型检查、`pnpm build && pnpm build:playground` 均通过；页面 37/37 校验通过，契约生成一致性及 ADR 索引通过。版本、条件、属性编辑、指标卡、目录和投影的 45 项定向回归通过；仓外 local-authoring 安装与独立校验 20 项通过。未追加其他 Skill 或真实 DS 模型复验。
+
+`VISIBILITY_BASE_URL=http://127.0.0.1:5185 node apps/playground/tests/page-visibility-browser.mjs /tmp/metriccanvas-visibility-main-635` 在 6.35 三份实际页面上完成 16 类场景，pageerror 为零，包括公共 JS 输入、权限失效、替换输入源、PDF/PNG/XLSX 和导出取消。[浏览器结果](merge-browser-6.35.json)与[合并输入和检查记录](main-merge-6.35.json)分别保留机器证据。合并后的仓外浏览器矩阵交由远端 CI；真实 CloudIOC/Java/DQE/Relay 与新条件真实 DS 创作仍未运行。
+
+首次合并全量 TS 回归覆盖267文件，2329通过、5项既有skip、2项目录失败：自动合并把新增页面放入了能力列表，导致目录缺页及能力缺少文档。已修复为独立能力及三份完整页面说明，目录9/9与合并回归45/45通过。最终提交的全量结论以远端CI为准，未把首次失败写成全绿。

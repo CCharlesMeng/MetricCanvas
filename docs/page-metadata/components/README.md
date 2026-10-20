@@ -36,4 +36,4 @@
 
 溯源（仓库路径）：`metriccanvas-authoring/tool/metriccanvas_authoring/pages/components/component_editing.py`、`pages/composition/page_building.py`、`pages/components/text_map_building.py`、`pages/components/container_building.py`；公开闭集测试`metriccanvas-authoring/test-harness/tests/test_content_containers.py`。t08/t09/t10/t11证据位于`docs/archive/authoring-tickets-126/`，它们分别记录本仓静态、实际本地协议与外部待验收边界。
 
-6.34 新增 [按钮](button.md)，支持与其他交互入口相同的展示与执行条件，规则见 [条件显隐](../conditions.md)。
+6.35 新增 [按钮](button.md)，支持与其他交互入口相同的展示与执行条件，规则见 [条件显隐](../conditions.md)。

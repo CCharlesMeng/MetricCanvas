@@ -1,6 +1,6 @@
 # 条件显隐与动作资格
 
-6.34起，使用visibleWhen控制节点展示，使用enabledWhen控制动作执行；条件写在其控制的节点，未声明时沿用原行为。分区、组件、筛选器、分区组、Tab和正文片段使用同一条件。父级隐藏覆盖后代，子项全隐藏不反推父级；标题、容器和原布局占位保留。需要整块隐藏时把条件写在父级。
+6.35起，使用visibleWhen控制节点展示，使用enabledWhen控制动作执行；条件写在其控制的节点，未声明时沿用原行为。分区、组件、筛选器、分区组、Tab和正文片段使用同一条件。父级隐藏覆盖后代，子项全隐藏不反推父级；标题、容器和原布局占位保留。需要整块隐藏时把条件写在父级。
 
 ```json
 {"visibleWhen":{"filter":"organization","part":"level","op":"ne","value":"department"}}
@@ -25,7 +25,7 @@ PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不
 验收入口：[层级联动](examples/page-visibility-region-linkage.json)、[外部事实Sim](examples/page-visibility-inputs.json)。示例使用明确的本地演示输入；内联数据与Sim事实不能替代真实CloudIOC/DQE联调。
 
 
-页面协议 6.34。结构真源为本册[schema.json](schema.json)，SHA256 `82654beca54f3cc5e0039b54382cb05bc16b3e972b9a4fca40faad2d147238b3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.35。结构真源为本册[schema.json](schema.json)，SHA256 `8e1ecbe23b513ec133a66c9fcfa907d5e2f73649b4e0e5ab14c725e2fbedf8f4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

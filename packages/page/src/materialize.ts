@@ -8,6 +8,7 @@ import type { FilterDeclaration } from './filter';
 import type { TypedError } from './errors';
 import { pageParamDeclarations, type GroupedPageParams } from './page-param';
 import { initialFilterTextValues } from './filter-text-value';
+import { removeAbsentMetricBefore } from './metric-before';
 import {
   normalizeQueryRows,
   type QueryRowNormalizationIssue
@@ -44,6 +45,7 @@ export function materializePageDocument(
     { ...textValues ?? validationResolution(declarations),
       filterValues: textValues?.filterValues ?? initialFilterTextValues((cloned.filters ?? []) as FilterDeclaration[]) }
   ) as Record<string, unknown>;
+  removeAbsentMetricBefore(document);
   const errors: TypedError[] = [];
 
   if (!isRecord(document.dataSources)) return { document, errors };

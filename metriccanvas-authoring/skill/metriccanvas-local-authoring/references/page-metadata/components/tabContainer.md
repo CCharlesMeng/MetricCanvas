@@ -30,10 +30,10 @@
 
 完整场景为 `tab-url-initialization`，来源页面为 `tab-url-source`。两页均使用内联演示数据，仅验证链接和页签行为。
 
-6.34条件呈现及相关限制见[条件显隐](../conditions.md)；子项全部隐藏不自动收起父容器。
+6.35条件呈现及相关限制见[条件显隐](../conditions.md)；子项全部隐藏不自动收起父容器。
 
 
-页面协议 6.34。结构真源为本册[schema.json](../schema.json)，SHA256 `82654beca54f3cc5e0039b54382cb05bc16b3e972b9a4fca40faad2d147238b3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.35。结构真源为本册[schema.json](../schema.json)，SHA256 `8e1ecbe23b513ec133a66c9fcfa907d5e2f73649b4e0e5ab14c725e2fbedf8f4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

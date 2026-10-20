@@ -15,7 +15,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 34;
+const CURRENT_MINOR = 35;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -39,6 +39,11 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'metric-card-before': {
+    minor: 34, description: 'Dashboard 指标卡前置连接文字与双侧受控间距',
+    legacyReadable: false,
+    usedAt: document => componentPaths(document, component => has(record(component.layout), 'before')).map(path => `${path}/layout/before`)
+  },
   'tab-url-initial-state': {
     minor: 33, description: 'Tab 容器通过显式 URL 参数初始化活动页签',
     legacyReadable: false,
@@ -610,7 +615,7 @@ export const pageCapabilities = {
       ).map((path) => `${path}/props/variant`)
   },
   'conditional-presentation': {
-    minor: 34, legacyReadable: false, description: '统一条件显隐、按钮与正文片段',
+    minor: 35, legacyReadable: false, description: '统一条件显隐、按钮与正文片段',
     usedAt(document: unknown) { return presentationCapabilityPaths(document); }
   },
 } satisfies Record<string, PageCapabilityDefinition>;

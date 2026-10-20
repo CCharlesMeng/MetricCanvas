@@ -1,0 +1,50 @@
+{
+  "case": "metric-before-tracks",
+  "invariant": "metric-card-before",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "before 使用默认 12 列，不与 columnTracks 混用",
+      "paths": [
+        "/sections/1/components/1/layout/before",
+        "/sections/1/components/2/layout/before",
+        "/sections/1/components/3/layout/before"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          "…",
+          {
+            "layout": {
+              "before": {
+                "text": "=",
+                "gap": 8
+              }
+            }
+          },
+          {
+            "layout": {
+              "before": {
+                "text": "+",
+                "gap": 8
+              }
+            }
+          },
+          {
+            "layout": {
+              "before": {
+                "text": "+",
+                "gap": 8
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/metric-before-tracks.json"
+}

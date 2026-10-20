@@ -1,6 +1,7 @@
 import { filterHasObservableConsumer, presentationPolicyErrors } from './presentation-policy';
 import { chartOptionErrors, withoutChartOptions } from './chart-option';
 import { chartFilterErrors } from './chart-filter';
+import { metricBeforeErrors } from './metric-before';
 import { pagedJoinErrors } from './validate-paged-join';
 import { queryResultBindingErrors } from './validate-query-results';
 import { reportDateFilterErrors } from './report-date-filters';
@@ -111,6 +112,7 @@ export function parsePage(
   // 拿解析产物去判会漏掉「声明 5.0 却引用了页面参数」这类文档。
   const declarations = pageParamDeclarations(compatibleDocument);
   const documentErrors = [
+    ...metricBeforeErrors(compatibleDocument),
     ...(typeof (compatibleDocument as PageDocument).params === 'object' && !Array.isArray((compatibleDocument as PageDocument).params) && declarations.length === 0 ? [schemaError('/params', '分组参数至少声明一个参数')] : []),
     ...capabilityFloorErrors(compatibleDocument).map(error => error.path.endsWith('/props/echartsOption') ? { ...error, type: 'CHART_OPTION_ERROR' as const } : error),
     ...layoutCompatibilityErrors(compatibleDocument),

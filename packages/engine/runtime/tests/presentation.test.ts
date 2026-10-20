@@ -1,6 +1,7 @@
 import {readFileSync} from 'node:fs';
 import {it,expect} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
+import {metricConnectionItems} from '../../runtime-ui/src/metric-connections';
 import {compilePresentation,resolvePresentationRow} from '../src/presentation';
 const parsed=parsePage(JSON.parse(readFileSync(new URL('../../../../pages/page-visibility-region-linkage.json',import.meta.url),'utf8')));
 if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));
@@ -62,4 +63,19 @@ it('hides filter controls without deleting the declared filter or its applied st
  expect(result.filters.some(filter=>filter.id==='mode')).toBe(false);
  expect(copy.filters?.some(filter=>filter.id==='mode')).toBe(true);
  expect(filters.get('mode')?.values).toEqual(['base']);
+});
+
+it('breaks original metric connections at hidden endpoints without changing the page',()=>{
+ const document=JSON.parse(readFileSync('pages/metric-card-equation.json','utf8'));
+ document.schemaVersion='6.35';
+ const section=document.sections.find((section:{id:string})=>section.id==='equation');
+ section.components[1].visibleWhen={permission:'read'};
+ const parsed=parsePage(document);if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));
+ const program=compilePresentation(parsed.page);
+ const evaluate=(value:boolean)=>program.evaluate({filters:new Map(),displaySnapshot:{permissionRevision:'a',values:{},permissions:{read:{status:'ready',value}}}}).sections.find(section=>section.id==='equation')!.components;
+ const hidden=evaluate(false);
+ expect(metricConnectionItems(hidden).map(item=>item.members.map(member=>member.component.id)))
+  .toEqual([[section.components[0].id],[section.components[2].id,section.components[3].id]]);
+ expect(parsed.page.sections.find(section=>section.id==='equation')!.components[2].layout).toHaveProperty('before');
+ expect(metricConnectionItems(evaluate(true))).toHaveLength(1);
 });

@@ -1,11 +1,11 @@
 # 按钮
 
-6.34起，button组件以props.label和单个props.action声明受控操作，不绑定页面数据源。顶层visibleWhen控制展示，enabledWhen控制执行，动作继续使用导航、筛选写入或受控详情。独立按钮没有行上下文。
+6.35起，button组件以props.label和单个props.action声明受控操作，不绑定页面数据源。顶层visibleWhen控制展示，enabledWhen控制执行，动作继续使用导航、筛选写入或受控详情。独立按钮没有行上下文。
 
 完整规则和限制见[条件显隐](../conditions.md)，演示见page-visibility-region-linkage。
 
 
-页面协议 6.34。结构真源为本册[schema.json](../schema.json)，SHA256 `82654beca54f3cc5e0039b54382cb05bc16b3e972b9a4fca40faad2d147238b3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.35。结构真源为本册[schema.json](../schema.json)，SHA256 `8e1ecbe23b513ec133a66c9fcfa907d5e2f73649b4e0e5ab14c725e2fbedf8f4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

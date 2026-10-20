@@ -1,8 +1,8 @@
 {
-  "case": "condition-before-6.34",
+  "case": "condition-before-6.35",
   "invariant": "conditional-presentation",
   "input": {
-    "schemaVersion": "6.33",
+    "schemaVersion": "6.34",
     "id": "page-visibility-region-linkage",
     "layout": "dashboard",
     "meta": {
@@ -489,87 +489,87 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/1/visibleWhen",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/4/visibleWhen",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sectionGroups/0/visibleWhen",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sectionGroups/1/visibleWhen",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/0/type",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/0/props/action/value",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/1/type",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/1/props/action/value",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/2/components/0/visibleWhen",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/3/components/0/props/rowVisibleWhen",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/3/components/0/props/columns/0/navigate/visibleWhen",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/3/components/0/props/columns/0/navigate/enabledWhen",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/3/components/1/props/parts",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/3/components/1/props/parts/1/visibleWhen",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/3/components/1/props/parts/2/visibleWhen",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/3/components/2/props/tabs/0/visibleWhen",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/6/components/0/visibleWhen",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33"
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34"
     }
   ]
 }

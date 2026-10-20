@@ -15,7 +15,7 @@ nameMap 的方向是数据地名 → 底图区域名，例如 {"中国":"China"}
 Dashboard 正文可通过 `props.filter` 在左上角配置独立单选筛选。选项名称和值分离，default 与查询绑定显式声明；见[图表独立筛选](../filters.md#chart-local-filter)和 `chart-local-filter-page` 完整页面。
 
 
-页面协议 6.34。结构真源为本册[schema.json](../schema.json)，SHA256 `82654beca54f3cc5e0039b54382cb05bc16b3e972b9a4fca40faad2d147238b3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.35。结构真源为本册[schema.json](../schema.json)，SHA256 `8e1ecbe23b513ec133a66c9fcfa907d5e2f73649b4e0e5ab14c725e2fbedf8f4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

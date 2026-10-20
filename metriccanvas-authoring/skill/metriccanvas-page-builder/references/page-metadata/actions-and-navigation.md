@@ -54,10 +54,10 @@
 
 目标页签的优先级、异常回退、命名互斥和初始化边界由 [Tab 容器](components/tabContainer.md#url-初始化页签633)维护。完整可运行的双页配置见 `tab-url-source` 与 `tab-url-initialization`，完整示例由本模块索引分发；目标部署路径由集成应用提供，不由本仓页面 id 推断。
 
-6.34新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
+6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
 
 
-页面协议 6.34。结构真源为本册[schema.json](schema.json)，SHA256 `82654beca54f3cc5e0039b54382cb05bc16b3e972b9a4fca40faad2d147238b3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.35。结构真源为本册[schema.json](schema.json)，SHA256 `8e1ecbe23b513ec133a66c9fcfa907d5e2f73649b4e0e5ab14c725e2fbedf8f4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1009,7 +1009,7 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 
 - `url-navigation-source-contract`：URL 与来源绑定可校验，目标存在性与必填项由目标负责。反例：[navigation-invalid-authority](errors/navigation-invalid-authority.json)、[navigation-invalid-port](errors/navigation-invalid-port.json)、[navigation-scheme-without-authority](errors/navigation-scheme-without-authority.json)、[navigation-unsafe-url](errors/navigation-unsafe-url.json)、[navigation-missing-row-field](errors/navigation-missing-row-field.json)、[navigation-unknown-param](errors/navigation-unknown-param.json)、[navigation-wrong-filter-part](errors/navigation-wrong-filter-part.json)、[navigation-text-row-source](errors/navigation-text-row-source.json)、[navigation-text-unsafe-url](errors/navigation-text-unsafe-url.json)、[navigation-url-input-collision](errors/navigation-url-input-collision.json)、[navigation-url-input-wrong-part](errors/navigation-url-input-wrong-part.json)、[navigation-clicked-slot-missing-field](errors/navigation-clicked-slot-missing-field.json)、[navigation-legacy-target-rejected](errors/navigation-legacy-target-rejected.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `metric-row-link-needs-navigate`：指标行声明 link 时组件必须至少有一个 navigate 动作。反例：[metric-row-link-without-navigate](errors/metric-row-link-without-navigate.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `actions-live-only`：旧版本writeFilter只允许query组件；6.34的本地入口必须有查询或显隐消费方。反例：[write-filter-on-inline-component](errors/write-filter-on-inline-component.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `actions-live-only`：旧版本writeFilter只允许query组件；6.35的本地入口必须有查询或显隐消费方。反例：[write-filter-on-inline-component](errors/write-filter-on-inline-component.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `write-filter-target`：回写目标是已声明的 dimension 筛选器。反例：[write-filter-undeclared](errors/write-filter-undeclared.json)、[write-filter-non-dimension](errors/write-filter-non-dimension.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `navigation-filter-source`：导航绑定只能引用已声明的筛选器。反例：[navigation-filter-undeclared](errors/navigation-filter-undeclared.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 

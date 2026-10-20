@@ -39,7 +39,7 @@ it('rejects a conditional row identity that is not a declared scalar dimension',
 
 it('rejects row projection on a remote query window',()=>{
  const page=JSON.parse(readFileSync(new URL('../fixtures/contract-valid/query-dashboard.json',import.meta.url),'utf8'));
- page.schemaVersion='6.34';const table=page.sections[0].components[0];
+ page.schemaVersion='6.35';const table=page.sections[0].components[0];
  table.props.rowKey='region';table.props.rowVisibleWhen={row:'region',op:'eq',value:'华东'};
  expect(parsePage(page).errors.some(error=>error.path.endsWith('rowVisibleWhen')&&error.message.includes('完整本地'))).toBe(true);
 });

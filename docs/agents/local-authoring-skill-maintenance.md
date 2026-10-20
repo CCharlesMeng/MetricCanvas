@@ -22,6 +22,10 @@
 
 生成范围由导出器管理：references/page-metadata/、references/page-patterns/、references/map-regions.json、references/knowledge.json、assets/layouts/overview-map-led.json、scripts/validate-page.mjs、scripts/THIRD-PARTY-LICENSES.md。其他文件归作者维护，重新生成必须保留。真源映射总表见[真源与派生链](../../metriccanvas-authoring/SOURCES.md)。
 
+## 验收范围
+
+Skill 验证按 [仓库约定](../../AGENTS.md#skill-验收范围) 只验收 local-authoring。知识、示例、独立校验器与分发清单仍从产品真源生成；不把其他 Skill、历史 Bundle 行为测试或真实模型验收作为默认完成条件。产品契约和受影响代码的测试仍照常执行。
+
 ## 更新与交付
 
 先确认实际产品版本；混合工作区中在独立检出承接本次改动，再从该检出的产品真源生成。不能把其他任务未提交的 Schema 或组件知识散入安装包。
@@ -30,10 +34,8 @@
 pnpm install --frozen-lockfile
 pnpm authoring:contracts
 pnpm authoring:contracts:check
-python3 metriccanvas-authoring/scripts/check_bundle.py
-pnpm exec vitest run tests/local-authoring-skill.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts
+pnpm authoring:check
 pnpm exec tsc --noEmit -p tests/tsconfig.json
-pnpm authoring:test
 ```
 
 Python 测试需要 Bundle 锁定依赖；使用已装依赖的环境执行，不能把缺依赖当成产品失败。独立安装运行校验只需 Node.js 22+，无需上述维护工具链。

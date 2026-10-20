@@ -1,10 +1,10 @@
 {
-  "case": "condition-before-6.34",
+  "case": "condition-before-6.35",
   "invariant": "conditional-presentation",
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "统一条件显隐、按钮与正文片段 由 6.34 引入，文档声明的是 6.33",
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34",
       "paths": [
         "/sections/1/visibleWhen",
         "/sections/4/visibleWhen",

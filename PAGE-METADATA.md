@@ -32,6 +32,8 @@
 
 ## 快速查阅与验证
 
+需要先观察效果再查配置时，使用[页面示例与能力索引](pages/README.md#能力索引)。页面试验场按能力、布局形态、用途和运行条件查找完整页面，并提供体验步骤、当前 JSON 配置与关联入口；这些导航说明属于开发工具，不进入页面协议或本地创作 Skill 的运行依赖。
+
 | 使用场景 | 规则与用法 | 完整页面或接入示例 |
 |---|---|---|
 | 声明页面结构、布局与组件 | [页面与布局](contracts/metriccanvas/page/reference/page.md)、[组件参考](contracts/metriccanvas/page/reference/components/README.md) | [完整页面示例索引](contracts/metriccanvas/page/reference/examples/README.md) |
@@ -241,6 +243,8 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 7.4 `metricCard` → [模块参考](contracts/metriccanvas/page/reference/components/metricCard.md)。
 
+6.34 支持 Dashboard 顶层指标卡 `layout.before` 连接文字，双侧间距缺省 8px，保留外层 12 列；完整场景见 [指标卡连接排布](pages/metric-card-equation.json)。
+
 <a id="75-图表组件"></a>
 
 7.5 图表组件 → [模块参考](contracts/metriccanvas/page/reference/components/README.md)。
@@ -392,4 +396,4 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 6.27 增量：Dashboard 顶部 timeRange 的年／季／月／近一年选择形态，声明、状态及查询规则见[期间筛选](docs/page-metadata/filters.md#dashboard-期间选择627)。
 6.29 增加 Dashboard 正文图表左上角独立筛选 `props.filter`，支持自定义显示名称、查询值和单选默认项；查询依赖校验保证只影响所属图表。完整声明、限制与验收页面见[图表独立筛选](docs/page-metadata/filters.md#图表独立筛选629)。
 
-条件呈现与动作资格见[条件规则](docs/page-metadata/conditions.md)：6.34就地声明visibleWhen/enabledWhen，父级约束后代，子项不反推父级。
+条件呈现与动作资格见[条件规则](docs/page-metadata/conditions.md)：6.35就地声明visibleWhen/enabledWhen，父级约束后代，子项不反推父级。

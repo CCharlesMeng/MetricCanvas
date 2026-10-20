@@ -34,9 +34,10 @@
         "6.31",
         "6.32",
         "6.33",
-        "6.34"
+        "6.34",
+        "6.35"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35"
     },
     "id": {
       "type": "string",
@@ -4622,7 +4623,7 @@
           "const": "metricCard"
         },
         "layout": {
-          "$ref": "#/definitions/componentLayout"
+          "$ref": "#/definitions/metricCardLayout"
         },
         "data": {
           "$ref": "#/definitions/metricData"
@@ -4867,6 +4868,52 @@
         "layout",
         "data",
         "props"
+      ],
+      "additionalProperties": false
+    },
+    "metricCardLayout": {
+      "type": "object",
+      "properties": {
+        "span": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "connectPrevious": {
+          "type": "boolean"
+        },
+        "layer": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/componentLayer"
+            }
+          ]
+        },
+        "before": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "$ref": "#/definitions/nonEmptyTextValue"
+            },
+            "gap": {
+              "type": "number",
+              "enum": [
+                4,
+                8,
+                12,
+                16,
+                24
+              ]
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "span"
       ],
       "additionalProperties": false
     },
@@ -8277,5 +8324,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.34"
+  "$id": "https://metriccanvas/page/v6.35"
 }

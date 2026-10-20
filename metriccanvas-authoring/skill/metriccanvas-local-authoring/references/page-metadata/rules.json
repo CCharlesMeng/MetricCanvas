@@ -2,7 +2,7 @@
   "invariants": [
     {
       "id": "conditional-presentation",
-      "description": "6.34共用展示条件、稳定目标和本地行边界",
+      "description": "6.35共用展示条件、稳定目标和本地行边界",
       "valid": [
         "page-visibility-region-linkage",
         "page-visibility-inputs",
@@ -10,7 +10,7 @@
         "reference-conditions-page"
       ],
       "invalid": [
-        "condition-before-6.34",
+        "condition-before-6.35",
         "condition-row-outside-table",
         "condition-level-set-unknown",
         "condition-filter-unknown",
@@ -18,6 +18,22 @@
         "condition-depth-limit",
         "condition-part-duplicate",
         "condition-row-key-required"
+      ]
+    },
+    {
+      "id": "metric-card-before",
+      "description": "6.34 Dashboard 顶层指标卡前置文字、受控间距与整组跨度",
+      "valid": [
+        "metric-card-equation"
+      ],
+      "invalid": [
+        "metric-before-version",
+        "metric-before-report",
+        "metric-before-tracks",
+        "metric-before-span",
+        "metric-before-empty",
+        "metric-before-gap",
+        "metric-before-nested"
       ]
     },
     {
@@ -1148,7 +1164,7 @@
     },
     {
       "id": "actions-live-only",
-      "description": "旧版本writeFilter只允许query组件；6.34的本地入口必须有查询或显隐消费方",
+      "description": "旧版本writeFilter只允许query组件；6.35的本地入口必须有查询或显隐消费方",
       "valid": [
         "query-dashboard",
         "filters-page",

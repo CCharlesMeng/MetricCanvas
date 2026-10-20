@@ -41,4 +41,4 @@
 
 [ADR-0108](../0108-paged-join-and-unified-source-program.md) 增加 6.22 组合查询源，引用普通查询定义并独立产出窗口结果；全局同源选页补列与有界完整关联由 SourceProgram.read 执行，固定结果绑定不变。TableSession 唯一持有已提交视图，纯 TableView 求值；普通、组合、单次和完整导出共用规则。仅作组合成员的普通定义不额外成为单次普通执行根；新 Python 规则经产品 Node Bridge。真实 DQE/Relay 验收单列。
 
-[ADR-0111](../0111-unified-presentation-conditions.md) 保持现行执行根集合，隐藏不自动停查；筛选通过既有绑定刷新。层级空选保留显式level且不生成空谓词，URL可只恢复层级。完整本地表格行条件是组件私有展示投影，不改变raw/compute/resultBindings；远程分页使用查询条件改变全局范围。权限会话修订先硬失效旧初始化、缓存、详情和导出，再由集成应用重建。
+[ADR-0112](../0112-unified-presentation-conditions.md) 保持现行执行根集合，隐藏不自动停查；筛选通过既有绑定刷新。层级空选保留显式level且不生成空谓词，URL可只恢复层级。完整本地表格行条件是组件私有展示投影，不改变raw/compute/resultBindings；远程分页使用查询条件改变全局范围。权限会话修订先硬失效旧初始化、缓存、详情和导出，再由集成应用重建。

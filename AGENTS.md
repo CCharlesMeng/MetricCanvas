@@ -44,6 +44,10 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 
 单上下文布局:根目录 `CONTEXT.md` + `docs/adr/`。详见 `docs/agents/domain.md`。
 
+### Skill 验收范围
+
+后续 Skill 验证默认只验收 `metriccanvas-local-authoring`（local-authoring），包括知识生成一致性、仓外独立安装及页面校验。其他 Skill、历史 authoring Bundle 行为测试和真实 DS 模型验收仅在用户明确要求时追加。产品协议、运行时、页面搭建、Playground 浏览器和 CI 检查仍按改动执行。
+
 ### Skill 对接 DS 模型验收
 
-新增或调整 Skill，并需要对接或复验 DS 真实模型时，按 `docs/agents/skill-ds-model-acceptance.md` 分层验收无模型预检、确定性主流程、真实模型、页面产物、浏览器与分发自洽性，并分别报告结论。
+仅在用户明确要求对接或复验 DS 真实模型时，按 `docs/agents/skill-ds-model-acceptance.md` 分层验收无模型预检、确定性主流程、真实模型、页面产物、浏览器与分发自洽性，并分别报告结论。

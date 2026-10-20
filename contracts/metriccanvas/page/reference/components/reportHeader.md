@@ -55,7 +55,7 @@ PNG内部按有界块截图、Worker持续行流式编码，结果始终是一�
 后台导出需要浏览器支持Worker、ImageBitmap和OffscreenCanvas，宿主CSP允许`worker-src blob:`。这些属于引擎运行环境，不新增页面字段。线程调度与资源清理由引擎负责。
 
 
-页面协议 6.34。结构真源为本册[schema.json](../schema.json)，SHA256 `82654beca54f3cc5e0039b54382cb05bc16b3e972b9a4fca40faad2d147238b3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.35。结构真源为本册[schema.json](../schema.json)，SHA256 `8e1ecbe23b513ec133a66c9fcfa907d5e2f73649b4e0e5ab14c725e2fbedf8f4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

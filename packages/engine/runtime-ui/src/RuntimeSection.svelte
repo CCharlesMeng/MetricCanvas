@@ -17,6 +17,8 @@
   } from './backdrop-safe-area';
   import type { RuntimeSectionProps } from './composition-types';
   import { sectionGridTemplate } from './section-grid';
+  import MetricConnectionRow from './MetricConnectionRow.svelte';
+  import { metricConnectionItems } from './metric-connections';
 
   /**
    * 内容分区 Module:Page Metadata 仍是 Section → Component 直接包含；这里为每个
@@ -27,9 +29,10 @@
    */
   /* IOC 参考视口的 [29,29,22] 三轨在通用 gap 下产出 580px / 580px / 440px；
      数字是验收事实，运行时仍只消费页面声明的权重。 */
-  let { section, hidden = false, componentContent, cellAttachment, cellOverlay, emptyContent }: RuntimeSectionProps = $props();
+  let { section, hidden = false, componentContent, cellAttachment, cellOverlay, emptyContent, onbeforeselect }: RuntimeSectionProps = $props();
   let sectionGrid = $state<HTMLElement | null>(null);
   const container = $derived(section.container);
+  const layoutItems = $derived(metricConnectionItems(section.components));
   const backdropId = $derived(sectionBackdrop(section)?.id);
   const backdropOnly = $derived(
     backdropId !== undefined && section.components.every((component) => component.id === backdropId)
@@ -142,6 +145,35 @@
 
 </script>
 
+{#snippet cell(component: Component, componentIndex: number, gridColumn?: string)}
+      <article
+        class:chart-cell={isChartComponent(component)}
+        class:header-cell={component.type === 'reportHeader'}
+        class:metric-cell={component.type === 'metricCard' || component.type === 'gauge'}
+        class:table-cell={component.type === 'table' || component.type === 'tabContainer'}
+        class:ranking-detail-cell={component.type === 'rankingDetailCard'}
+        class:ai-summary-cell={component.type === 'aiSummary'}
+        class:composite-cell={component.type === 'compositeCard'}
+        class:connect-next={section.components[componentIndex + 1]?.layout
+          .connectPrevious === true}
+        class:connect-previous={componentIndex > 0 &&
+          component.layout.connectPrevious === true}
+        class:backdrop-cell={component.id === backdropId}
+        class="cell"
+        data-component={`${section.id}/${component.id}`}
+        data-component-type={component.type}
+        data-component-variant={componentVariant(component)}
+        data-backdrop-safe={component.id === backdropId ? safeAreaAnchor : undefined}
+        style={`grid-column: ${gridColumn ?? `span ${component.layout.span}`};${
+          component.id === backdropId ? safeAreaStyle : ''
+        }`}
+        {@attach cellAttachment?.(component, componentIndex)}
+      >
+        {@render cellOverlay?.(component, componentIndex)}
+        {@render componentContent(component)}
+      </article>
+{/snippet}
+
 <section
   {hidden}
   class:container-plain={container === 'plain'}
@@ -173,33 +205,12 @@
     {#if section.components.length === 0}
       {@render emptyContent?.()}
     {/if}
-    {#each section.components as component, componentIndex (component.id)}
-      <article
-        class:chart-cell={isChartComponent(component)}
-        class:header-cell={component.type === 'reportHeader'}
-        class:metric-cell={component.type === 'metricCard' || component.type === 'gauge'}
-        class:table-cell={component.type === 'table' || component.type === 'tabContainer'}
-        class:ranking-detail-cell={component.type === 'rankingDetailCard'}
-        class:ai-summary-cell={component.type === 'aiSummary'}
-        class:composite-cell={component.type === 'compositeCard'}
-        class:connect-next={section.components[componentIndex + 1]?.layout
-          .connectPrevious === true}
-        class:connect-previous={componentIndex > 0 &&
-          component.layout.connectPrevious === true}
-        class:backdrop-cell={component.id === backdropId}
-        class="cell"
-        data-component={`${section.id}/${component.id}`}
-        data-component-type={component.type}
-        data-component-variant={componentVariant(component)}
-        data-backdrop-safe={component.id === backdropId ? safeAreaAnchor : undefined}
-        style={`grid-column: span ${component.layout.span};${
-          component.id === backdropId ? safeAreaStyle : ''
-        }`}
-        {@attach cellAttachment?.(component, componentIndex)}
-      >
-        {@render cellOverlay?.(component, componentIndex)}
-        {@render componentContent(component)}
-      </article>
+    {#each layoutItems as item (item.id)}
+      {#if item.members.length > 1}
+        <MetricConnectionRow {item} {cell} {onbeforeselect} />
+      {:else}
+        {@render cell(item.members[0].component, item.members[0].index)}
+      {/if}
     {/each}
   </div>
 </section>

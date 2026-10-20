@@ -54,8 +54,8 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
-  {id:'conditional-presentation',description:'6.34共用展示条件、稳定目标和本地行边界',valid:['page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','reference-conditions-page'],cases:[
-    {case:'condition-before-6.34',base:'page-visibility-region-linkage',expect:/由 6.34 引入/,mutate:d=>{d.schemaVersion='6.33';}},
+  {id:'conditional-presentation',description:'6.35共用展示条件、稳定目标和本地行边界',valid:['page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','reference-conditions-page'],cases:[
+    {case:'condition-before-6.35',base:'page-visibility-region-linkage',expect:/由 6.35 引入/,mutate:d=>{d.schemaVersion='6.34';}},
     {case:'condition-row-outside-table',base:'page-visibility-region-linkage',expect:/缺少行上下文/,mutate:d=>{d.sections[1].visibleWhen={row:'kind',op:'eq',value:'department'};}},
     {case:'condition-level-set-unknown',base:'page-visibility-region-linkage',expect:/未声明的层级/,mutate:d=>{d.sections[1].visibleWhen={filter:'organization',part:'level',op:'in',values:['department','unknown']};}},
     {case:'condition-filter-unknown',base:'page-visibility-region-linkage',expect:/不存在的来源/,mutate:d=>{d.sections[1].visibleWhen={filter:'unknown',part:'value',op:'eq',value:true};}},
@@ -63,6 +63,15 @@ export const invariants: InvariantDefinition[] = [
     {case:'condition-depth-limit',base:'page-visibility-region-linkage',expect:/超过4层/,mutate:d=>{let rule=d.sections[1].visibleWhen;for(let i=0;i<5;i++)rule={not:rule};d.sections[1].visibleWhen=rule;}},
     {case:'condition-part-duplicate',base:'page-visibility-region-linkage',expect:/片段id必须唯一/,mutate:d=>{const c=d.sections.flatMap((s:Doc)=>s.components).find((c:Doc)=>c.type==='text'&&c.props.parts);c.props.parts.push(structuredClone(c.props.parts[0]));}},
     {case:'condition-row-key-required',base:'page-visibility-region-linkage',expect:/稳定rowKey/,mutate:d=>{const c=d.sections.flatMap((s:Doc)=>s.components).find((c:Doc)=>c.id==='projected-table');delete c.props.rowKey;}}
+  ]},
+  {id:'metric-card-before',description:'6.34 Dashboard 顶层指标卡前置文字、受控间距与整组跨度',valid:['metric-card-equation'],cases:[
+    {case:'metric-before-version',base:'metric-card-equation',expect:/由 6.34 引入/,mutate:d=>{d.schemaVersion='6.33';}},
+    {case:'metric-before-report',base:'metric-card-equation',expect:/before 仅支持 Dashboard/,mutate:d=>{d.layout='report';}},
+    {case:'metric-before-tracks',base:'metric-card-equation',expect:/默认 12 列/,mutate:d=>{d.sections[1].columnTracks=[1,1,1,1];}},
+    {case:'metric-before-span',base:'metric-card-equation',expect:/span 之和不能超过 12/,mutate:d=>{d.sections[1].components[0].layout.span=4;}},
+    {case:'metric-before-empty',base:'metric-card-equation',expect:/非空连接文字/,mutate:d=>{d.sections[1].components[1].layout.before.text=' ';}},
+    {case:'metric-before-gap',base:'metric-card-equation',expect:/允许范围/,mutate:d=>{d.sections[1].components[1].layout.before.gap=7;}},
+    {case:'metric-before-nested',base:'metric-card-equation',expect:/顶层指标卡/,mutate:d=>{d.sections[1].components=[{id:'nested',type:'compositeCard',layout:{span:12},props:{components:d.sections[1].components}}];}}
   ]},
   {id:'tab-url-initialization',description:'6.33 Tab 显式 URL 初值与页面输入名称互斥',valid:['tab-url-initialization','tab-url-source'],cases:[
     {case:'tab-url-before-6.33',base:'tab-url-initialization',expect:/由 6.33 引入/,mutate:d=>{d.schemaVersion='6.32';}},
@@ -2023,7 +2032,7 @@ export const invariants: InvariantDefinition[] = [
   },
   {
     id: 'actions-live-only',
-    description: '旧版本writeFilter只允许query组件；6.34的本地入口必须有查询或显隐消费方',
+    description: '旧版本writeFilter只允许query组件；6.35的本地入口必须有查询或显隐消费方',
     valid: ['query-dashboard', 'filters-page', 'params-page', 'composite-page', 'map-page'],
     cases: [
       {

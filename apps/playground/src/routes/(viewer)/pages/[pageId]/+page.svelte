@@ -5,6 +5,7 @@
   let visibilityInstance=$state(0);
   import { goto, replaceState } from '$app/navigation';
   import { page } from '$app/state';
+  import PageGuide from '$lib/PageGuide.svelte';
   import { documentLayoutForm, documentUsesRuntimeBackToolbar } from '@metriccanvas/page/internal';
   import type { DataGateway } from '@metriccanvas/engine';
   import {
@@ -96,6 +97,10 @@
     }
   }
 </script>
+
+{#if pageState.phase === 'ready'}
+  <PageGuide pageId={page.params.pageId!} document={pageState.document} />
+{/if}
 
 <div class="page-frame" class:frame-dashboard={layoutForm === 'dashboard'}>
   {#if returnHref && !compactRuntimeToolbar}
