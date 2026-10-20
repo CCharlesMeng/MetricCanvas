@@ -34,7 +34,7 @@ filterIds（6.13）按序引用页面 timePoint/timeRange 筛选器，采用封�
 
 已有6.28 `pdfExport: {label?, filename?}` 和6.30 `pngExport: {filename?, scale?}` 继续读取，并转换为同一种直接下载按钮；旧PDF默认文字“下载 PDF”保留，旧PNG的有效scale作为直接导出的倍率，无效值同样回退3倍，不再提供运行时选择。编辑器修改导出配置时写入 `exportButtons` 并升级至6.31。
 
-完整作者页面见 `report-png-export`：首个页头同时启用PDF 2倍和PNG 3倍，第二个页头展示PDF与PNG 4倍，普通页头为未启用对照；长图见 `report-png-long-export`，PNG 4倍。它们使用本地合成数据。既有 `report-pdf-export` 覆盖旧PDF兼容读取。`report-export-scale-fallback` 覆盖PDF的99、PNG的2及旧PNG字符串倍率，分别回退2/3/3倍。
+完整作者页面见 `report-png-export`：首个页头同时启用PDF 2倍和PNG 3倍，第二个页头展示PDF与PNG 4倍，普通页头为未启用对照；长图见 `report-png-long-export`，PNG 3倍。它们使用本地合成数据。既有 `report-pdf-export` 覆盖旧PDF兼容读取。`report-export-scale-fallback` 覆盖PDF的99、PNG的2及旧PNG字符串倍率，分别回退2/3/3倍。
 
 PDF默认A4竖向，存在引擎标记的宽内容时整份横向；零额外外边距，按原有排布连续切片，不按章节强制换页、不重复表头或添加页码。单页像素超过截图块预算时进一步分块并写入同一纸张，保持配置倍率。主线程按时间预算让出执行权，Worker无损编码，全部成功才下载。
 

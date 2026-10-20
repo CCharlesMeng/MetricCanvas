@@ -1596,8 +1596,6 @@
     line-height: 21px;
     overflow-wrap: break-word;
   }
-  .table-widget.os-theme.embedded.fit-container tbody td,
-  .table-widget.os-theme.embedded.fit-container tbody .cell-primary-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .table-widget.os-theme tbody td.positive { color: var(--mc-color-positive, #52c41a); }
   .table-widget.os-theme tbody td.negative { color: var(--mc-color-negative, #f5222d); }
   .table-widget.os-theme .link-cell { color: #191919; text-decoration: none; }

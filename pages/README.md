@@ -247,7 +247,7 @@ Report 页面按三节组织，控件相互独立：
 ### Report 导出图片
 
 - `report-png-export`：本地合成12行，包含日期、图表、表格、2倍PDF+3倍图片、4倍PDF+4倍图片及未启用对照。Playground `/pages/report-png-export`；页头直接显示“导出 PDF”和“导出图片”，点击按元数据倍率下载；无格式/清晰度弹窗或二次保存。文件名与标题使用点击时的月份。
-- `report-png-long-export`：本地合成140行；`/pages/report-png-long-export`。4倍导出跨多个内部截图块，最终仍只有一张完整长PNG。不能按当前表格10行分页截取；无ZIP或其他格式。
+- `report-png-long-export`：本地合成140行；`/pages/report-png-long-export`。3倍导出跨多个内部截图块，最终仍只有一张完整长PNG。不能按当前表格10行分页截取；无ZIP或其他格式。
 - HTML单文件接入：`packages/embed/examples/report-image-download.html`消费同一作者页面，`?page=report-png-long-export`切换长图。水印由浏览器测试在父文档注入，业务页面不声明水印。合成场景不证明实际门户、真实DQE/Relay、生产部署或终端扩展隔离。
 
 - `report-export-scale-fallback`：本地合成数据，PDF配置99、PNG配置2、旧PNG配置字符串“4”；页面正常打开，按钮直接下载，分别采用默认2/3/3倍。入口 `/pages/report-export-scale-fallback`。图表和输出像素尺寸由浏览器测试验证，不代表真实门户/DQE验收。
