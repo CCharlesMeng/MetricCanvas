@@ -30,8 +30,10 @@
 
 完整场景为 `tab-url-initialization`，来源页面为 `tab-url-source`。两页均使用内联演示数据，仅验证链接和页签行为。
 
+6.35条件呈现及相关限制见[条件显隐](../conditions.md)；子项全部隐藏不自动收起父容器。
 
-页面协议 6.39。结构真源为本册[schema.json](../schema.json)，SHA256 `0807888a77d8710b9fd65166760bb094210dd2cbc7507ae72dd2f24d07a58cd3`。字段表自动生成；可选不等于有默认值。
+
+页面协议 6.40。结构真源为本册[schema.json](../schema.json)，SHA256 `90400cbd2aa370809afb7fa5124ef0b62c049da7e48493bfd98d4668663704df`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -54,6 +56,26 @@ Schema位置：`#/definitions/tabContainerComponent/properties/id`。目标：[#
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/componentId | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f746162436f6e7461696e6572436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@tabContainerComponent.visibleWhen`
+
+Schema位置：`#/definitions/tabContainerComponent/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f746162436f6e7461696e6572436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tabContainerComponent.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tabContainerComponent/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f746162436f6e7461696e6572436f6d706f6e656e742f70726f706572746965732f74797065"></a>
 
@@ -194,6 +216,26 @@ Schema位置：`#/definitions/tabItem/anyOf/0/properties/id`。
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
 
+<a id="schema-232f646566696e6974696f6e732f7461624974656d2f616e794f662f302f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@tabItem · anyOf[0].visibleWhen`
+
+Schema位置：`#/definitions/tabItem/anyOf/0/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461624974656d2f616e794f662f302f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tabItem · anyOf[0].visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tabItem/anyOf/0/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f7461624974656d2f616e794f662f302f70726f706572746965732f6c6162656c"></a>
 
 ### `@tabItem · anyOf[0].label`
@@ -233,6 +275,26 @@ Schema位置：`#/definitions/tabItem/anyOf/1/properties/id`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461624974656d2f616e794f662f312f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@tabItem · anyOf[1].visibleWhen`
+
+Schema位置：`#/definitions/tabItem/anyOf/1/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461624974656d2f616e794f662f312f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tabItem · anyOf[1].visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tabItem/anyOf/1/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461624974656d2f616e794f662f312f70726f706572746965732f6c6162656c"></a>
 

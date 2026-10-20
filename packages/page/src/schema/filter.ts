@@ -1,3 +1,4 @@
+import { visibilityShape } from './condition';
 import { z } from 'zod';
 import { fieldNameZ, idZ, textValueZ } from './primitives';
 const interaction = {hint:textValueZ.optional(),clearOnChangeOf:z.array(idZ).min(1).optional()};
@@ -29,6 +30,7 @@ const dimensionFilterZ = z
     hierarchyPicker: z.enum(['tabs', 'hidden']).optional(),
     display: z.enum(['select', 'tabs', 'tree', 'search']).optional(),
     visible: z.boolean().optional(),
+    ...visibilityShape,
     default: z.array(z.string()).optional(),
     initialParam: idZ.optional(),
     hierarchy: z.array(filterHierarchyLevelZ).min(2).optional(),
@@ -82,6 +84,7 @@ const timeRangeFilterZ = z
     initialParam: idZ.optional(),
     required: z.boolean().optional(),
     visible: z.boolean().optional(),
+    ...visibilityShape,
     default: z
       .union([
         z.enum(['today', 'last7d', 'last30d', 'last90d']),
@@ -102,6 +105,7 @@ const timePointFilterZ = z
     label: z.string().optional(),
     visible: z.boolean().optional(),
     ...calendarExtras,
+    ...visibilityShape,
     granularity: z.enum(['month', 'date']),
     min: z.string().optional(),
     disableFuture: z.boolean().optional(),
@@ -119,6 +123,7 @@ const booleanFilterZ = z
     type: z.literal('boolean'),
     label: z.string().optional(),
     visible: z.boolean().optional(),
+    ...visibilityShape,
     default: z.boolean().optional()
   })
   .meta({ id: 'booleanFilter' });
@@ -138,6 +143,7 @@ const numberRangeFilterZ = z
     type: z.literal('numberRange'),
     label: z.string().optional(),
     visible: z.boolean().optional(),
+    ...visibilityShape,
     default: numberRangeValueZ.optional(),
     constraints:z.object({min:z.number().optional(),max:z.number().optional(),bounds:z.enum(['strict','inclusive']).optional()}).strict().optional(),
     units:z.object({filterId:idZ,cases:z.record(z.string().min(1),z.object({currency:z.enum(['CNY','USD']),label:z.string().min(1),scale:z.number().int().positive().max(Number.MAX_SAFE_INTEGER)}).strict())}).strict().optional(),
@@ -153,6 +159,7 @@ const searchFilterZ = z
     type: z.literal('search'),
     label: z.string().optional(),
     visible: z.boolean().optional(),
+    ...visibilityShape,
     default: z.string().optional()
   })
   .meta({ id: 'searchFilter' });

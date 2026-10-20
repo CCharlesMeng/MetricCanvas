@@ -830,9 +830,10 @@
             "6.36",
             "6.37",
             "6.38",
-            "6.39"
+            "6.39",
+            "6.40"
           ],
-          "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39"
+          "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40"
         },
         "id": {
           "type": "string",
@@ -1189,6 +1190,9 @@
                     },
                     {
                       "$ref": "#/$defs/Page/definitions/aiSummaryComponent"
+                    },
+                    {
+                      "$ref": "#/$defs/Page/definitions/buttonComponent"
                     }
                   ]
                 }
@@ -1211,6 +1215,13 @@
               "id": {
                 "type": "string",
                 "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "visibleWhen": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Page/definitions/condition"
+                  }
+                ]
               },
               "label": {
                 "type": "string",
@@ -4577,6 +4588,13 @@
             "visible": {
               "type": "boolean"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
             "default": {
               "type": "array",
               "items": {
@@ -4748,6 +4766,494 @@
             },
             {
               "$ref": "#/$defs/Page/definitions/textValueComposition"
+            }
+          ]
+        },
+        "condition": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "all": {
+                  "minItems": 1,
+                  "maxItems": 64,
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/Page/definitions/condition"
+                  }
+                }
+              },
+              "required": [
+                "all"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "any": {
+                  "minItems": 1,
+                  "maxItems": 64,
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/Page/definitions/condition"
+                  }
+                }
+              },
+              "required": [
+                "any"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "not": {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              },
+              "required": [
+                "not"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "permission": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "permission"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "filter": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "part": {
+                  "type": "string",
+                  "enum": [
+                    "level",
+                    "values",
+                    "value",
+                    "from",
+                    "to"
+                  ]
+                },
+                "op": {
+                  "type": "string",
+                  "enum": [
+                    "eq",
+                    "ne"
+                  ]
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "filter",
+                "part",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "filter": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "part": {
+                  "type": "string",
+                  "enum": [
+                    "level",
+                    "values",
+                    "value",
+                    "from",
+                    "to"
+                  ]
+                },
+                "op": {
+                  "type": "string",
+                  "enum": [
+                    "in",
+                    "notIn",
+                    "containsAny",
+                    "containsAll"
+                  ]
+                },
+                "values": {
+                  "minItems": 1,
+                  "maxItems": 1000,
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "boolean"
+                      }
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "filter",
+                "part",
+                "op",
+                "values"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "filter": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "part": {
+                  "type": "string",
+                  "enum": [
+                    "level",
+                    "values",
+                    "value",
+                    "from",
+                    "to"
+                  ]
+                },
+                "op": {
+                  "type": "string",
+                  "enum": [
+                    "gt",
+                    "gte",
+                    "lt",
+                    "lte"
+                  ]
+                },
+                "value": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "filter",
+                "part",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "filter": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "part": {
+                  "type": "string",
+                  "enum": [
+                    "level",
+                    "values",
+                    "value",
+                    "from",
+                    "to"
+                  ]
+                },
+                "op": {
+                  "type": "string",
+                  "enum": [
+                    "isNull",
+                    "isNotNull",
+                    "isEmpty",
+                    "isNotEmpty"
+                  ]
+                }
+              },
+              "required": [
+                "filter",
+                "part",
+                "op"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fact": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "type": "string",
+                  "enum": [
+                    "eq",
+                    "ne"
+                  ]
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "fact",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fact": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "type": "string",
+                  "enum": [
+                    "in",
+                    "notIn",
+                    "containsAny",
+                    "containsAll"
+                  ]
+                },
+                "values": {
+                  "minItems": 1,
+                  "maxItems": 1000,
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "boolean"
+                      }
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "fact",
+                "op",
+                "values"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fact": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "type": "string",
+                  "enum": [
+                    "gt",
+                    "gte",
+                    "lt",
+                    "lte"
+                  ]
+                },
+                "value": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "fact",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fact": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "type": "string",
+                  "enum": [
+                    "isNull",
+                    "isNotNull",
+                    "isEmpty",
+                    "isNotEmpty"
+                  ]
+                }
+              },
+              "required": [
+                "fact",
+                "op"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "row": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "type": "string",
+                  "enum": [
+                    "eq",
+                    "ne"
+                  ]
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "row",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "row": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "type": "string",
+                  "enum": [
+                    "in",
+                    "notIn",
+                    "containsAny",
+                    "containsAll"
+                  ]
+                },
+                "values": {
+                  "minItems": 1,
+                  "maxItems": 1000,
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "boolean"
+                      }
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "row",
+                "op",
+                "values"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "row": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "type": "string",
+                  "enum": [
+                    "gt",
+                    "gte",
+                    "lt",
+                    "lte"
+                  ]
+                },
+                "value": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "row",
+                "op",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "row": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "op": {
+                  "type": "string",
+                  "enum": [
+                    "isNull",
+                    "isNotNull",
+                    "isEmpty",
+                    "isNotEmpty"
+                  ]
+                }
+              },
+              "required": [
+                "row",
+                "op"
+              ],
+              "additionalProperties": false
             }
           ]
         },
@@ -4974,6 +5480,13 @@
             },
             "visible": {
               "type": "boolean"
+            },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
             },
             "default": {
               "anyOf": [
@@ -5241,6 +5754,13 @@
               ],
               "additionalProperties": false
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
             "granularity": {
               "type": "string",
               "enum": [
@@ -5323,6 +5843,13 @@
             "visible": {
               "type": "boolean"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
             "default": {
               "type": "boolean"
             }
@@ -5386,6 +5913,13 @@
             },
             "visible": {
               "type": "boolean"
+            },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
             },
             "default": {
               "type": "object",
@@ -5562,6 +6096,13 @@
             "visible": {
               "type": "boolean"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
             "default": {
               "type": "string"
             }
@@ -5577,6 +6118,13 @@
           "properties": {
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
+            },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
             },
             "type": {
               "type": "string",
@@ -5808,6 +6356,13 @@
           "properties": {
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
+            },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
             },
             "type": {
               "type": "string",
@@ -6311,26 +6866,88 @@
         "componentAction": {
           "anyOf": [
             {
-              "type": "object",
-              "properties": {
-                "on": {
-                  "type": "string",
-                  "const": "click"
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "on": {
+                      "type": "string",
+                      "const": "click"
+                    },
+                    "visibleWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/$defs/Page/definitions/condition"
+                        }
+                      ]
+                    },
+                    "enabledWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/$defs/Page/definitions/condition"
+                        }
+                      ]
+                    },
+                    "writeFilter": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    },
+                    "field": {
+                      "$ref": "#/$defs/Page/definitions/fieldReference"
+                    },
+                    "level": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    }
+                  },
+                  "required": [
+                    "on",
+                    "writeFilter",
+                    "field"
+                  ],
+                  "additionalProperties": false
                 },
-                "writeFilter": {
-                  "type": "string",
-                  "pattern": "^[a-z0-9][a-z0-9-]*$"
-                },
-                "field": {
-                  "$ref": "#/$defs/Page/definitions/fieldReference"
+                {
+                  "type": "object",
+                  "properties": {
+                    "on": {
+                      "type": "string",
+                      "const": "click"
+                    },
+                    "visibleWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/$defs/Page/definitions/condition"
+                        }
+                      ]
+                    },
+                    "enabledWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/$defs/Page/definitions/condition"
+                        }
+                      ]
+                    },
+                    "writeFilter": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    },
+                    "value": {
+                      "type": "string"
+                    },
+                    "level": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    }
+                  },
+                  "required": [
+                    "on",
+                    "writeFilter",
+                    "value"
+                  ],
+                  "additionalProperties": false
                 }
-              },
-              "required": [
-                "on",
-                "writeFilter",
-                "field"
-              ],
-              "additionalProperties": false
+              ]
             },
             {
               "type": "object",
@@ -6339,9 +6956,37 @@
                   "type": "string",
                   "const": "click"
                 },
+                "visibleWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/Page/definitions/condition"
+                    }
+                  ]
+                },
+                "enabledWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/Page/definitions/condition"
+                    }
+                  ]
+                },
                 "navigate": {
                   "type": "object",
                   "properties": {
+                    "visibleWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/$defs/Page/definitions/condition"
+                        }
+                      ]
+                    },
+                    "enabledWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/$defs/Page/definitions/condition"
+                        }
+                      ]
+                    },
                     "href": {
                       "type": "string",
                       "minLength": 1
@@ -6445,6 +7090,20 @@
                   "type": "string",
                   "const": "click"
                 },
+                "visibleWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/Page/definitions/condition"
+                    }
+                  ]
+                },
+                "enabledWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/Page/definitions/condition"
+                    }
+                  ]
+                },
                 "openDetail": {
                   "anyOf": [
                     {
@@ -6455,6 +7114,20 @@
                           "enum": [
                             "modal",
                             "drawer"
+                          ]
+                        },
+                        "visibleWhen": {
+                          "allOf": [
+                            {
+                              "$ref": "#/$defs/Page/definitions/condition"
+                            }
+                          ]
+                        },
+                        "enabledWhen": {
+                          "allOf": [
+                            {
+                              "$ref": "#/$defs/Page/definitions/condition"
+                            }
                           ]
                         },
                         "titleField": {
@@ -6500,6 +7173,20 @@
                           "enum": [
                             "modal",
                             "drawer"
+                          ]
+                        },
+                        "visibleWhen": {
+                          "allOf": [
+                            {
+                              "$ref": "#/$defs/Page/definitions/condition"
+                            }
+                          ]
+                        },
+                        "enabledWhen": {
+                          "allOf": [
+                            {
+                              "$ref": "#/$defs/Page/definitions/condition"
+                            }
                           ]
                         },
                         "titleField": {
@@ -6637,6 +7324,13 @@
           "properties": {
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
+            },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
             },
             "type": {
               "type": "string",
@@ -6901,6 +7595,13 @@
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
             "type": {
               "type": "string",
               "const": "lineChart"
@@ -7022,6 +7723,13 @@
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
             "type": {
               "type": "string",
               "const": "pieChart"
@@ -7103,6 +7811,13 @@
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
             "type": {
               "type": "string",
               "const": "table"
@@ -7116,6 +7831,13 @@
             "props": {
               "type": "object",
               "properties": {
+                "rowVisibleWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/Page/definitions/condition"
+                    }
+                  ]
+                },
                 "title": {
                   "allOf": [
                     {
@@ -7136,6 +7858,20 @@
                     "search": {
                       "type": "object",
                       "properties": {
+                        "visibleWhen": {
+                          "allOf": [
+                            {
+                              "$ref": "#/$defs/Page/definitions/condition"
+                            }
+                          ]
+                        },
+                        "enabledWhen": {
+                          "allOf": [
+                            {
+                              "$ref": "#/$defs/Page/definitions/condition"
+                            }
+                          ]
+                        },
                         "fields": {
                           "minItems": 1,
                           "maxItems": 64,
@@ -7162,6 +7898,20 @@
                     "export": {
                       "type": "object",
                       "properties": {
+                        "visibleWhen": {
+                          "allOf": [
+                            {
+                              "$ref": "#/$defs/Page/definitions/condition"
+                            }
+                          ]
+                        },
+                        "enabledWhen": {
+                          "allOf": [
+                            {
+                              "$ref": "#/$defs/Page/definitions/condition"
+                            }
+                          ]
+                        },
                         "format": {
                           "type": "string",
                           "const": "xlsx"
@@ -7361,6 +8111,20 @@
             "selection": {
               "type": "object",
               "properties": {
+                "visibleWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/Page/definitions/condition"
+                    }
+                  ]
+                },
+                "enabledWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/Page/definitions/condition"
+                    }
+                  ]
+                },
                 "writes": {
                   "type": "object",
                   "propertyNames": {
@@ -7457,6 +8221,20 @@
                         "drawer"
                       ]
                     },
+                    "visibleWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/$defs/Page/definitions/condition"
+                        }
+                      ]
+                    },
+                    "enabledWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/$defs/Page/definitions/condition"
+                        }
+                      ]
+                    },
                     "titleField": {
                       "allOf": [
                         {
@@ -7500,6 +8278,20 @@
                       "enum": [
                         "modal",
                         "drawer"
+                      ]
+                    },
+                    "visibleWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/$defs/Page/definitions/condition"
+                        }
+                      ]
+                    },
+                    "enabledWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/$defs/Page/definitions/condition"
+                        }
                       ]
                     },
                     "titleField": {
@@ -7600,6 +8392,20 @@
             "navigate": {
               "type": "object",
               "properties": {
+                "visibleWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/Page/definitions/condition"
+                    }
+                  ]
+                },
+                "enabledWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/Page/definitions/condition"
+                    }
+                  ]
+                },
                 "href": {
                   "type": "string",
                   "minLength": 1
@@ -7756,6 +8562,13 @@
           "properties": {
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
+            },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
             },
             "type": {
               "type": "string",
@@ -7998,6 +8811,13 @@
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
             "type": {
               "type": "string",
               "const": "gauge"
@@ -8075,6 +8895,13 @@
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
             "type": {
               "type": "string",
               "const": "tabContainer"
@@ -8138,6 +8965,13 @@
                   "type": "string",
                   "pattern": "^[a-z0-9][a-z0-9-]*$"
                 },
+                "visibleWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/Page/definitions/condition"
+                    }
+                  ]
+                },
                 "label": {
                   "$ref": "#/$defs/Page/definitions/nonEmptyTextValue"
                 },
@@ -8158,6 +8992,13 @@
                 "id": {
                   "type": "string",
                   "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "visibleWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/Page/definitions/condition"
+                    }
+                  ]
                 },
                 "label": {
                   "$ref": "#/$defs/Page/definitions/nonEmptyTextValue"
@@ -8184,6 +9025,13 @@
           "properties": {
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
+            },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
             },
             "type": {
               "type": "string",
@@ -8267,6 +9115,13 @@
           "properties": {
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
+            },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
             },
             "type": {
               "type": "string",
@@ -8385,6 +9240,13 @@
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
             "type": {
               "type": "string",
               "const": "categoryBreakdown"
@@ -8472,6 +9334,13 @@
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
             "type": {
               "type": "string",
               "const": "rankingCard"
@@ -8534,6 +9403,13 @@
           "properties": {
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
+            },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
             },
             "type": {
               "type": "string",
@@ -8697,6 +9573,13 @@
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
             "type": {
               "type": "string",
               "const": "fieldText"
@@ -8753,6 +9636,13 @@
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
             "type": {
               "type": "string",
               "const": "text"
@@ -8776,6 +9666,35 @@
                       "$ref": "#/$defs/Page/definitions/textValue"
                     }
                   ]
+                },
+                "parts": {
+                  "minItems": 1,
+                  "maxItems": 64,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "text": {
+                        "$ref": "#/$defs/Page/definitions/textValue"
+                      },
+                      "visibleWhen": {
+                        "allOf": [
+                          {
+                            "$ref": "#/$defs/Page/definitions/condition"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "text"
+                    ],
+                    "additionalProperties": false
+                  }
                 },
                 "bodyFormat": {
                   "type": "string",
@@ -8801,6 +9720,20 @@
                   "items": {
                     "type": "object",
                     "properties": {
+                      "visibleWhen": {
+                        "allOf": [
+                          {
+                            "$ref": "#/$defs/Page/definitions/condition"
+                          }
+                        ]
+                      },
+                      "enabledWhen": {
+                        "allOf": [
+                          {
+                            "$ref": "#/$defs/Page/definitions/condition"
+                          }
+                        ]
+                      },
                       "href": {
                         "type": "string",
                         "minLength": 1
@@ -8913,6 +9846,13 @@
             "id": {
               "$ref": "#/$defs/Page/definitions/componentId"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
             "type": {
               "type": "string",
               "const": "aiSummary"
@@ -9012,12 +9952,71 @@
           ],
           "additionalProperties": false
         },
+        "buttonComponent": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/Page/definitions/componentId"
+            },
+            "type": {
+              "type": "string",
+              "const": "button"
+            },
+            "layout": {
+              "$ref": "#/$defs/Page/definitions/componentLayout"
+            },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
+            "enabledWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
+            },
+            "props": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "$ref": "#/$defs/Page/definitions/nonEmptyTextValue"
+                },
+                "action": {
+                  "$ref": "#/$defs/Page/definitions/componentAction"
+                }
+              },
+              "required": [
+                "label",
+                "action"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "layout",
+            "props"
+          ],
+          "additionalProperties": false
+        },
         "section": {
           "type": "object",
           "properties": {
             "id": {
               "type": "string",
               "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/condition"
+                }
+              ]
             },
             "title": {
               "allOf": [
@@ -9095,6 +10094,9 @@
                   },
                   {
                     "$ref": "#/$defs/Page/definitions/aiSummaryComponent"
+                  },
+                  {
+                    "$ref": "#/$defs/Page/definitions/buttonComponent"
                   }
                 ]
               }

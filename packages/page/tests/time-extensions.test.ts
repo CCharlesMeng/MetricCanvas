@@ -3,7 +3,7 @@ import {describe,it,expect} from 'vitest';
 import {validate,isoWeekRange,isoWeekLabel,resolveRelativeTime,periodFact,timeAvailabilityIssue,type DisplayInputsSnapshot} from '../src/internal';
 const load=(name='time-modes')=>JSON.parse(readFileSync(`pages/ioc-header-${name}-demo.json`,'utf8'));
 const now=new Date(2026,9,19,12);
-const facts:DisplayInputsSnapshot={contextRevision:'u1',timeZone:'Asia/Shanghai',periods:{sales:{status:'ready',granularity:'month',latest:'2026-10',latestComplete:'2026-09',missingRanges:[{from:'2026-07',to:'2026-07'}]}}};
+const facts:DisplayInputsSnapshot={permissions:{},values:{},permissionRevision:'u1',timeZone:'Asia/Shanghai',periods:{sales:{status:'ready',granularity:'month',latest:'2026-10',latestComplete:'2026-09',missingRanges:[{from:'2026-07',to:'2026-07'}]}}};
 describe('B4 static time contracts',()=>{
  it.each(['time-modes','time-presets','availability','calendar-window'])('validates actual %s page',name=>expect(validate(load(name))).toEqual([]));
  it.each(['missing','ordinary','wrong-period','wrong-output','wrong-binding','unknown-mode'])('rejects %s mode program',kind=>{
@@ -35,8 +35,8 @@ describe('B4 static time contracts',()=>{
   const filter={id:'p',type:'timeRange' as const,display:'period' as const,availability:{fact:'sales',max:'latest' as const}};
   expect(timeAvailabilityIssue(filter,{type:'timeRange',from:'2026-01-01',to:'2026-12-31'},facts)).toContain('上限');
  });
- it('gates new declarations at 6.38 and ignores opaque data with fact-like keys',()=>{
-  const page=load();page.schemaVersion='6.37';expect(validate(page).some(e=>e.message.includes('6.38'))).toBe(true);
+ it('gates new declarations at 6.39 and ignores opaque data with fact-like keys',()=>{
+  const page=load();page.schemaVersion='6.38';expect(validate(page).some(e=>e.message.includes('6.39'))).toBe(true);
   const old=JSON.parse(readFileSync('pages/ioc-header-overview-demo.json','utf8'));old.iocHeader.identity.description={text:'fact is just text'};expect(validate(old)).toEqual([]);
  });
 });

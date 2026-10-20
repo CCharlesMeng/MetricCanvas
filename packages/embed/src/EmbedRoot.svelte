@@ -22,8 +22,8 @@
 </script>
 
 <RuntimeView
-  document={input.document}
   displayInputs={input.displayInputs}
+  document={input.document}
   execution={input.execution}
   dataGateway={input.dataGateway}
   aiSummary={input.aiSummary}

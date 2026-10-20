@@ -72,12 +72,18 @@ def _is_business_filter(node):
         key in node for key in ('selection', 'options', 'treeSelection', 'candidateContext', 'clearOnChangeOf', 'hint'))
 
 
+def _is_presentation_node(node):
+    return (any(key in node for key in ('visibleWhen', 'enabledWhen', 'rowVisibleWhen', 'writeFilter'))
+            or node.get('type') in {'button', 'pagedJoin'}
+            or node.get('type') == 'text' and isinstance(node.get('props'), dict) and 'parts' in node['props'])
+
+
 def _uses_product_bridge(node):
     if isinstance(node, list):
         return any(_uses_product_bridge(value) for value in node)
     if not isinstance(node, dict):
         return False
-    if any(('byFilter' in node, 'metricByFilter' in node, node.get('currency') == 'USD', node.get('format') == 'usd-adaptive', node.get('defaultFormat') == 'usd-adaptive', 'units' in node, 'constraints' in node, 'presets' in node, 'strictURLInputs' in node, 'validateTargetInputs' in node, 'timeModes' in node, 'candidateWindow' in node, 'availability' in node, 'blockedRanges' in node, (node.get('type') in {'timeRange','timePoint'} and 'max' in node), 'iocHeader' in node, node.get('type') == 'pagedJoin',
+    if any((_is_presentation_node(node), 'byFilter' in node, 'metricByFilter' in node, node.get('currency') == 'USD', node.get('format') == 'usd-adaptive', node.get('defaultFormat') == 'usd-adaptive', 'units' in node, 'constraints' in node, 'presets' in node, 'strictURLInputs' in node, 'validateTargetInputs' in node, 'timeModes' in node, 'candidateWindow' in node, 'availability' in node, 'blockedRanges' in node, (node.get('type') in {'timeRange','timePoint'} and 'max' in node), 'iocHeader' in node, node.get('type') == 'pagedJoin',
             _is_url_initialized_tab(node), _is_business_filter(node), _is_chart_filter(node), _is_period_filter(node), _is_bounded_time_point(node),
             node.get('mode') == 'numberRange', _is_export_header(node))):
         return True

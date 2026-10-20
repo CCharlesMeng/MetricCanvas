@@ -66,7 +66,7 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 
 <a id="field-selection"></a>
 
-## 静态货币字段选择（6.37）
+## 静态货币字段选择（6.38）
 
 FieldBinding增加非递归`{byFilter:{filterId,cases:{RMB:{data:"main",field:"base-cny",format:"number-grouped"},USD:{data:"main",field:"base-usd",format:"number-grouped"}}}}`。cases叶子是原StaticFieldBinding（字符串或data/field/format/missingText/match对象），不能再次byFilter。控制筛选必须是required单选封闭枚举，cases穷尽有效选项，无默认货币兜底。FieldReference、导航行字段和compute输入仍是静态字段，不接受该分支。
 

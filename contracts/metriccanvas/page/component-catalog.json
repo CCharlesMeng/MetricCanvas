@@ -448,5 +448,24 @@
     ],
     "title": "optional",
     "defaultSpan": 12
+  },
+  {
+    "type": "button",
+    "label": "按钮",
+    "aliases": [],
+    "purpose": "执行受控导航、详情或筛选动作",
+    "chooseWhen": [
+      "独立操作入口"
+    ],
+    "dataShape": "不绑定数据源",
+    "authoringShape": {
+      "bindsData": false
+    },
+    "requiredProps": [
+      "label",
+      "action"
+    ],
+    "title": "unsupported",
+    "defaultSpan": 3
   }
 ]

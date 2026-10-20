@@ -92,7 +92,7 @@ export interface TextValueComposition {
 export function isTextValueComposition(value: unknown): value is TextValueComposition {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const node = value as Record<string, unknown>;
-  return Object.keys(node).length === 1 && Array.isArray(node.parts);
+  return Object.keys(node).length === 1 && Array.isArray(node.parts) && node.parts.every(part=>typeof part==='string'||isTextValueReference(part)||!!part&&typeof part==='object'&&Object.keys(part).every(key=>key==='filter'||key==='format')&&typeof part.filter==='string');
 }
 
 /** 文本取值在物化后统一成为字符串。 */

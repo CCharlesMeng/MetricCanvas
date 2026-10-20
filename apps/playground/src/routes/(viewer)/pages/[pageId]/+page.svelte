@@ -1,4 +1,8 @@
 <script lang="ts">
+  import {pageExternalInputs} from '$lib/page-catalog';
+  import {createVisibilityDemoInputs} from '$lib/visibility-inputs';
+  const visibilityDemo=createVisibilityDemoInputs();
+  let visibilityInstance=$state(0);
   import { goto, replaceState } from '$app/navigation';
   import { page } from '$app/state';
   import PageGuide from '$lib/PageGuide.svelte';
@@ -120,7 +124,20 @@
       <p>{pageState.message}</p>
     </div>
   {:else}
+    {#if pageExternalInputs(page.params.pageId)==='visibility'}
+      <div data-sim-facts aria-label="Sim事实控制">
+        <strong>Sim 事实输入</strong>
+        <button onclick={()=>visibilityDemo.publish('allow')}>允许</button>
+        <button onclick={()=>visibilityDemo.publish('deny')}>拒绝</button>
+        <button onclick={()=>visibilityDemo.publish('pending')}>等待</button>
+        <button onclick={()=>visibilityDemo.publish('error')}>输入错误</button>
+        <button onclick={()=>visibilityDemo.publish('revoke')}>更换权限会话</button>
+        <button onclick={()=>visibilityInstance++}>重新初始化</button>
+      </div>
+    {/if}
+    {#key visibilityInstance}
     <RuntimeView
+      displayInputs={pageExternalInputs(page.params.pageId)==='visibility'?visibilityDemo.source:undefined}
       document={pageState.document}
       dataGateway={pageState.dataGateway}
       {aiSummary}
@@ -128,6 +145,7 @@
       {navigation}
       {pageRevisionId}
     />
+    {/key}
   {/if}
 </div>
 

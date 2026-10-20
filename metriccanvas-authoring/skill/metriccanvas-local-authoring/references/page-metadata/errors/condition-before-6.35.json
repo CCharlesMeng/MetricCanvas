@@ -1,0 +1,200 @@
+{
+  "case": "condition-before-6.35",
+  "invariant": "conditional-presentation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "统一条件显隐、按钮与正文片段 由 6.35 引入，文档声明的是 6.34",
+      "paths": [
+        "/sections/1/visibleWhen",
+        "/sections/4/visibleWhen",
+        "/sectionGroups/0/visibleWhen",
+        "/sectionGroups/1/visibleWhen",
+        "/sections/0/components/0/type",
+        "/sections/0/components/0/props/action/value",
+        "/sections/0/components/1/type",
+        "/sections/0/components/1/props/action/value",
+        "/sections/2/components/0/visibleWhen",
+        "/sections/3/components/0/props/rowVisibleWhen",
+        "/sections/3/components/0/props/columns/0/navigate/visibleWhen",
+        "/sections/3/components/0/props/columns/0/navigate/enabledWhen",
+        "/sections/3/components/1/props/parts",
+        "/sections/3/components/1/props/parts/1/visibleWhen",
+        "/sections/3/components/1/props/parts/2/visibleWhen",
+        "/sections/3/components/2/props/tabs/0/visibleWhen",
+        "/sections/6/components/0/visibleWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "type": "button",
+            "props": {
+              "action": {
+                "value": "extended"
+              }
+            }
+          },
+          {
+            "type": "button",
+            "props": {
+              "action": {
+                "value": "base"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "visibleWhen": {
+          "filter": "organization",
+          "part": "level",
+          "op": "ne",
+          "value": "department"
+        }
+      },
+      {
+        "components": [
+          {
+            "visibleWhen": {
+              "filter": "organization",
+              "part": "level",
+              "op": "ne",
+              "value": "department"
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "props": {
+              "rowVisibleWhen": {
+                "any": [
+                  {
+                    "…": "共3个键"
+                  },
+                  {
+                    "…": "共4个键"
+                  }
+                ]
+              },
+              "columns": [
+                {
+                  "navigate": {
+                    "visibleWhen": {
+                      "row": "kind",
+                      "op": "eq",
+                      "value": "office"
+                    },
+                    "enabledWhen": {
+                      "filter": "mode",
+                      "part": "values",
+                      "op": "containsAny",
+                      "values": [
+                        "extended"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "parts": [
+                {
+                  "id": "base",
+                  "text": "当前展示："
+                },
+                {
+                  "id": "dept",
+                  "text": "地区部，",
+                  "visibleWhen": {
+                    "filter": "organization",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "department"
+                  }
+                },
+                {
+                  "visibleWhen": {
+                    "filter": "organization",
+                    "part": "level",
+                    "op": "ne",
+                    "value": "department"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "tabs": [
+                {
+                  "visibleWhen": {
+                    "filter": "organization",
+                    "part": "level",
+                    "op": "ne",
+                    "value": "department"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "visibleWhen": {
+          "filter": "mode",
+          "part": "values",
+          "op": "containsAny",
+          "values": [
+            "extended"
+          ]
+        }
+      },
+      "…",
+      {
+        "components": [
+          {
+            "visibleWhen": {
+              "filter": "organization",
+              "part": "level",
+              "op": "ne",
+              "value": "department"
+            }
+          }
+        ]
+      }
+    ],
+    "sectionGroups": [
+      {
+        "visibleWhen": {
+          "all": [
+            {
+              "…": "共4个键"
+            },
+            {
+              "…": "共4个键"
+            }
+          ]
+        }
+      },
+      {
+        "visibleWhen": {
+          "filter": "mode",
+          "part": "values",
+          "op": "containsAny",
+          "values": [
+            "base"
+          ]
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

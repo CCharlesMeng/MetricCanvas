@@ -8,7 +8,7 @@ import { exportComponentData, type ExportRenderState } from './export-render-sta
 /** Freeze upstream inputs before any await. Fetch only this table's transitive dependency closure. */
 export async function prepareTableExport(input: {
   page: Page; component: TableComponent; queries: ReadonlyMap<string, EffectiveQuery>;
-  gateway: RuntimeDataGateway; state: Pick<ExportRenderState, 'filters' | 'tables' | 'headerFilters' | 'currentYear' | 'displayInputs' | 'filterRevision' | 'now'>;
+  gateway: RuntimeDataGateway; state: Pick<ExportRenderState, 'filters' | 'tables' | 'headerFilters' | 'currentYear' | 'displaySnapshot' | 'filterRevision' | 'now'>;
   controller: AbortController; views?: ReadonlyMap<string, import('@metriccanvas/page/internal').TableQueryView>; program?: import('@metriccanvas/data-execution/runtime').SourceProgram;
 }): Promise<NamedDataSlots> {
   const page = JSON.parse(JSON.stringify(input.page)) as Page;
@@ -19,7 +19,7 @@ export async function prepareTableExport(input: {
   const { signal } = input.controller;
   const timer = setTimeout(() => input.controller.abort(new ExportViewError('EXPORT_TIMEOUT', '导出准备超过 60 秒')), EXPORT_PREPARATION_TIMEOUT_MS);
   try {
-    const snapshots = await abortable(prepareExportSnapshots(page, input.gateway, queries, state.filters, signal, undefined, state.currentYear, Object.values(component.data), input.views && structuredClone(new Map(input.views)), input.program,{displayInputs:state.displayInputs,filterRevision:state.filterRevision,now:state.now}), signal);
+    const snapshots = await abortable(prepareExportSnapshots(page, input.gateway, queries, state.filters, signal, undefined, state.currentYear, Object.values(component.data), input.views && structuredClone(new Map(input.views)), input.program,{displayInputs:state.displaySnapshot,filterRevision:state.filterRevision,now:state.now}), signal);
     signal.throwIfAborted();
     return exportComponentData({ ...state, page, snapshots, summaries: {} }, component);
   } finally { clearTimeout(timer); }

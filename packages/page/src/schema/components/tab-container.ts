@@ -1,3 +1,4 @@
+import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import { componentIdZ, componentLayoutZ, idZ, nonEmptyTextValueZ, textValueZ } from '../primitives';
 import { componentCatalogRegistry } from '../registry';
@@ -8,6 +9,7 @@ const tabItemZ = z
     z
       .object({
         id: idZ,
+        ...visibilityShape,
         label: nonEmptyTextValueZ,
         component: tableComponentZ
       })
@@ -15,6 +17,7 @@ const tabItemZ = z
     z
       .object({
         id: idZ,
+        ...visibilityShape,
         label: nonEmptyTextValueZ,
         components: z.array(tableComponentZ).min(1)
       })
@@ -29,6 +32,7 @@ const tabItemZ = z
 export const tabContainerComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('tabContainer'),
     layout: componentLayoutZ,
     props: z

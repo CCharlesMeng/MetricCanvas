@@ -66,7 +66,7 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 
 <a id="field-selection"></a>
 
-## 静态货币字段选择（6.37）
+## 静态货币字段选择（6.38）
 
 FieldBinding增加非递归`{byFilter:{filterId,cases:{RMB:{data:"main",field:"base-cny",format:"number-grouped"},USD:{data:"main",field:"base-usd",format:"number-grouped"}}}}`。cases叶子是原StaticFieldBinding（字符串或data/field/format/missingText/match对象），不能再次byFilter。控制筛选必须是required单选封闭枚举，cases穷尽有效选项，无默认货币兜底。FieldReference、导航行字段和compute输入仍是静态字段，不接受该分支。
 
@@ -81,7 +81,7 @@ FieldBinding增加非递归`{byFilter:{filterId,cases:{RMB:{data:"main",field:"b
 字段选择投影只替换表格字段列标题与单位；显式指标行label、系列label/name和组件业务标题保持上下文含义。money自适应格式已带货币单位时不再追加独立unit，避免双重单位。
 
 
-页面协议 6.39。结构真源为本册[schema.json](schema.json)，SHA256 `0807888a77d8710b9fd65166760bb094210dd2cbc7507ae72dd2f24d07a58cd3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.40。结构真源为本册[schema.json](schema.json)，SHA256 `90400cbd2aa370809afb7fa5124ef0b62c049da7e48493bfd98d4668663704df`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -290,7 +290,7 @@ Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/byFilter`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 本分支必填 | required=["filterId","cases"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | Schema6.37非递归字段选择；只选择已有静态money字段，所有case均校验。 |
+| "object" | 本分支必填 | required=["filterId","cases"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | Schema6.38非递归字段选择；只选择已有静态money字段，所有case均校验。 |
 
 <a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f627946696c7465722f70726f706572746965732f66696c7465724964"></a>
 
@@ -581,7 +581,7 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - `presentation-capability`：颜色与图表标签声明由6.16引入。反例：[presentation-before-6.16](errors/presentation-before-6.16.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `signed-number-format-capability`：带符号普通数值格式由6.17引入。反例：[signed-number-binding-before-6.17](errors/signed-number-binding-before-6.17.json)、[signed-number-default-before-6.17](errors/signed-number-default-before-6.17.json)、[signed-number-param-before-6.17](errors/signed-number-param-before-6.17.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `signed-number-family-capability`：两位小数与千分位带符号数值格式由6.18引入。反例：[signed-number-two-decimal-before-6.18](errors/signed-number-two-decimal-before-6.18.json)、[signed-number-grouped-before-6.18](errors/signed-number-grouped-before-6.18.json)、[signed-number-family-param-before-6.18](errors/signed-number-family-param-before-6.18.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `currency-selection`：6.37金额范围和静态货币字段选择。反例：[currency-before-6.37](errors/currency-before-6.37.json)、[currency-case-missing](errors/currency-case-missing.json)、[currency-metric-mismatch](errors/currency-metric-mismatch.json)、[currency-negative-default](errors/currency-negative-default.json)、[currency-equal-default](errors/currency-equal-default.json)、[currency-compute-mixed](errors/currency-compute-mixed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `currency-selection`：6.38金额范围和静态货币字段选择。反例：[currency-before-6.38](errors/currency-before-6.38.json)、[currency-case-missing](errors/currency-case-missing.json)、[currency-metric-mismatch](errors/currency-metric-mismatch.json)、[currency-negative-default](errors/currency-negative-default.json)、[currency-equal-default](errors/currency-equal-default.json)、[currency-compute-mixed](errors/currency-compute-mixed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 

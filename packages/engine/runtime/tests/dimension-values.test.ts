@@ -246,3 +246,15 @@ for (const late of ['success', 'failure'] as const) it('unavailable invalidates 
   await settled();expect(snapshotOf(slot)).toEqual({status:'unavailable'});
   loader.load('month',undefined,scope);expect(calls).toHaveLength(2);calls[1]!.deferred.resolve({kind:'values',candidates:[{value:'new',label:'new'}]});await settled();expect(snapshotOf(slot)).toEqual({status:'ready',candidates:[{value:'new',label:'new'}]});loader.dispose();
 });
+it('isolates consumer identities and discards both success and error from a canceled generation',async()=>{
+ const {gateway,calls}=deferredGateway();const loader=createDimensionValuesLoader(gateway);
+ let snapshots:DimensionValuesSnapshots=new Map();loader.subscribe(next=>snapshots=next);
+ loader.load('region',{parent:['a']},'first');loader.load('region',{parent:['b']},'second');
+ loader.reload('region',{parent:['c']},'first');
+ calls[0]!.deferred.resolve({kind:'values',candidates:[{value:'stale',label:'stale'}]});await settled();
+ expect(dimensionValuesSnapshot(snapshots,'region','first').status).toBe('loading');
+ calls[1]!.deferred.resolve({kind:'values',candidates:[{value:'b',label:'b'}]});calls[2]!.deferred.resolve({kind:'values',candidates:[{value:'c',label:'c'}]});await settled();
+ expect(dimensionValuesSnapshot(snapshots,'region','first')).toEqual({status:'ready',candidates:[{value:'c',label:'c'}]});
+ expect(dimensionValuesSnapshot(snapshots,'region','second')).toEqual({status:'ready',candidates:[{value:'b',label:'b'}]});
+ loader.dispose();
+});

@@ -245,6 +245,16 @@ Report 页面按三节组织，控件相互独立：
 - 打开 `?sales-tab=detail&support-tab=closed` 后手动切换销售页签，工单保持原选择，地址不变化；刷新后重新应用 URL 初值。未声明的 `?tab=detail` 不影响容器。
 - 页面协议、参数命名互斥、初始化及导出边界见 [Tab 容器](../docs/page-metadata/components/tabContainer.md#url-初始化页签633)。自动浏览器验收直接消费以上两页；本地导航和内联渲染成功不代表真实门户、DQE、Relay 或模型验收。
 
+## 统一条件显隐（6.35）
+
+使用 `pnpm --filter playground dev --port 5185` 启动；以下页面均为 inline 本地演示，不需要 DQE。自动验收直接消费这三份页面：`node apps/playground/tests/page-visibility-browser.mjs /tmp/visibility-browser`；使用其他端口时设置 `VISIBILITY_BASE_URL`。
+
+- `/pages/page-visibility-region-linkage`：切换“地区部”，地区部行权规范分区消失；“保留父容器”仍保留标题和空容器；局部文字、Tab 与表格行一起变化。切回全球，内容恢复；Tab 保持仍有效的当前项。URL 可只携带 `?organization.level=department`，刷新仍保留层级。“显示扩展内容／恢复基础内容”由独立按钮写入同一个筛选状态。
+- `/pages/page-visibility-inputs`：Sim 控制在页面文档之外，初始等待时只展示独立内容；允许、拒绝、等待、错误即时改变依赖内容。“更换权限会话”使旧实例失效，需点击“重新初始化页面”；导出期间更换权限会话应取消下载。JS/平台接入通过 `displayInputs` 提供已有权限结果和有限具名事实。
+- `/pages/page-visibility-report`：在地区部层级下载 PDF、PNG、表格 XLSX，核对地区部分区未导出、允许的空父容器保留、所有允许 Tab 展开、条件表格只保留两行代表处记录。导出捕获后普通筛选变化不改变本次内容。
+
+规则非法来源、未知层级、类型错误、深度超限、重复片段 id 和缺少稳定行键由共享 conformance 向量验证；异步候选隔离、迟到响应和筛选级联由行为测试验证。宽窄屏、页面导出和公共 JS 输入由上述 Chrome 脚本验证。本地 Sim、inline 以及模型受控 HTTP 替身不代表真实 CloudIOC、Java、DQE 或 Relay 验收。
+
 ## 指标卡前置连接文字
 
 入口：`/pages/metric-card-equation`（`pages/metric-card-equation.json`），`pnpm dev:playground` 后在页面目录选择“指标卡与文字混排｜收入构成”。无需 URL 参数、数据网关或 DQE，使用静态演示数据。
@@ -253,7 +263,7 @@ Report 页面按三节组织，控件相互独立：
 
 协议边界由 metric-before 契约向量及单元测试覆盖：Report、自定义列轨、嵌套、backdrop、connectPrevious、非法间距及连接跨度超过 12 均被拒绝。连接是展示关系，不执行收入计算；本页不证明真实 DQE、权限隐藏或生产部署。
 
-## IOC公共页头 B0+B1（6.35）
+## IOC公共页头 B0+B1（6.36）
 
 | 入口 | 操作与预期 |
 | --- | --- |
@@ -278,7 +288,7 @@ Report 页面按三节组织，控件相互独立：
 
 - `ioc-header-time-modes-demo`：日/月/ISO周切换、模式URL、查询回显与XLSX；不是生产周聚合证明。
 - `ioc-header-time-presets-demo`：含今日近7天、上个完整月、显式锚点，禁选区间内预设拒绝。
-- `ioc-header-availability-demo`：可信latest=2026-10、complete=2026-09；默认完成期，合法URL优先；缺数7月禁选。测试宿主可切事实状态/身份，观察相关查询门禁及无关源继续。
+- `ioc-header-availability-demo`：可信latest=2026-10、complete=2026-09；默认完成期，合法URL优先；缺数7月禁选。测试宿主可切事实状态/身份，观察相关查询门禁及无关源继续。6.39组合场景使用同一displayInputs提供标量展示事实和periods；切换“隐藏/显示期间说明”只改变文字可见性，不增加查询，权限修订变化停止整个旧实例。
 - `ioc-header-calendar-window-demo`：V2十二个日历月候选、1/3月离散集合和时间模型交集。
 
 完整交互宿主：`MC_EMBED_EXAMPLE_PORT=4204 node packages/embed/tests/serve.mjs`，先构建embed，然后打开 `/pages/<id>`。后两页由测试宿主的 `examples/ioc-time-inputs.mjs` 注入稳定可信输入；候选服务为本地 `/__fixtures/filter-candidates`。Playground目录也注册这些页，集成应用若没有注入displayInputs/V2则明确显示不可用。数据环境是同源合成HTTP，真实DQE/CloudIOC/Relay/DS/门户及生产数据未验收。

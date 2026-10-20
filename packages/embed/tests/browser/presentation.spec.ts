@@ -5,14 +5,20 @@ import { configuredTitles, drawingCount, presentationFixtures, scalarPage } from
 async function show(page: Page, document: unknown) {
   await page.evaluate(document => {
     window.runtime.destroy();
-    window.runtime = MetricCanvas.mount('#dashboard', { document, dataGateway: MetricCanvas.createDqeGateway() });
+    const snapshot = {
+      permissionRevision: 'presentation-matrix',
+      permissions: { read: { status: 'ready' as const, value: true }, deny: { status: 'ready' as const, value: false }, 'hidden-filter': { status: 'ready' as const, value: true } },
+      values: { flag: { status: 'ready' as const, value: true } }
+    };
+    const displayInputs = { getSnapshot: () => snapshot, subscribe: () => () => {} };
+    window.runtime = MetricCanvas.mount('#dashboard', { document, dataGateway: MetricCanvas.createDqeGateway(), displayInputs });
   }, document);
   await expect(page.locator('[data-page-layout-form]')).toHaveCount(1);
 }
 
 for (const width of [1440, 390]) for (const layout of ['report', 'dashboard'] as const) {
   for (const container of [undefined, 'plain', 'panel', 'card'] as const) {
-    test(`${width} ${layout} ${container ?? 'default'}: all 53 declared component branches remain visible`, async ({ page }) => {
+    test(`${width} ${layout} ${container ?? 'default'}: all 54 declared component branches remain visible`, async ({ page }) => {
       test.setTimeout(120_000);
       await page.setViewportSize({ width, height: 900 });
       await page.goto('/examples/inline.html');
@@ -20,7 +26,7 @@ for (const width of [1440, 390]) for (const layout of ['report', 'dashboard'] as
       page.on('pageerror', error => errors.push(error.message));
       const failures: string[] = [];
       const fixtures = presentationFixtures();
-      expect(fixtures).toHaveLength(53);
+      expect(fixtures).toHaveLength(54);
       for (const fixture of fixtures) {
         const document = { ...fixture.document, layout, sections: fixture.document.sections.map(section => ({ ...section, container })) };
         await show(page, document);

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.39",
-  "schemaSha256": "0807888a77d8710b9fd65166760bb094210dd2cbc7507ae72dd2f24d07a58cd3",
+  "schemaVersion": "6.40",
+  "schemaSha256": "90400cbd2aa370809afb7fa5124ef0b62c049da7e48493bfd98d4668663704df",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -832,6 +832,39 @@
       "rules": [
         "chart-echarts-option"
       ]
+    },
+    "conditions.md": {
+      "title": "条件显隐与动作资格",
+      "definitions": [
+        "condition"
+      ],
+      "keywords": [
+        "visibleWhen",
+        "enabledWhen",
+        "rowVisibleWhen",
+        "显隐",
+        "层级"
+      ],
+      "examples": [
+        "page-visibility-region-linkage",
+        "page-visibility-inputs",
+        "reference-conditions-page",
+        "page-visibility-report"
+      ]
+    },
+    "components/button.md": {
+      "title": "按钮",
+      "definitions": [
+        "buttonComponent"
+      ],
+      "keywords": [
+        "button",
+        "按钮"
+      ],
+      "examples": [
+        "page-visibility-region-linkage",
+        "reference-conditions-page"
+      ]
     }
   },
   "components": [
@@ -902,6 +935,10 @@
     {
       "type": "aiSummary",
       "file": "components/aiSummary.md"
+    },
+    {
+      "type": "button",
+      "file": "components/button.md"
     }
   ],
   "nodes": [
@@ -951,7 +988,8 @@
         "6.36",
         "6.37",
         "6.38",
-        "6.39"
+        "6.39",
+        "6.40"
       ]
     },
     {
@@ -5484,6 +5522,602 @@
       "module": "filters.md"
     },
     {
+      "pointer": "#/definitions/dimensionFilter/properties/visibleWhen",
+      "path": "@dimensionFilter.visibleWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/visibleWhen/allOf/0",
+      "path": "@dimensionFilter.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/condition",
+      "path": "@condition",
+      "required": "类型/分支",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/0",
+      "path": "@condition · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/0/properties/all",
+      "path": "@condition · anyOf[0].all",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/0/properties/all/items",
+      "path": "@condition · anyOf[0].all[]",
+      "required": "每个数组项",
+      "module": "conditions.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/1",
+      "path": "@condition · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/1/properties/any",
+      "path": "@condition · anyOf[1].any",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/1/properties/any/items",
+      "path": "@condition · anyOf[1].any[]",
+      "required": "每个数组项",
+      "module": "conditions.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/2",
+      "path": "@condition · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/2/properties/not",
+      "path": "@condition · anyOf[2].not",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/3",
+      "path": "@condition · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/3/properties/permission",
+      "path": "@condition · anyOf[3].permission",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4",
+      "path": "@condition · anyOf[4]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/filter",
+      "path": "@condition · anyOf[4].filter",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/part",
+      "path": "@condition · anyOf[4].part",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "level",
+        "values",
+        "value",
+        "from",
+        "to"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/op",
+      "path": "@condition · anyOf[4].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "eq",
+        "ne"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/value",
+      "path": "@condition · anyOf[4].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/0",
+      "path": "@condition · anyOf[4].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/1",
+      "path": "@condition · anyOf[4].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/2",
+      "path": "@condition · anyOf[4].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5",
+      "path": "@condition · anyOf[5]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/filter",
+      "path": "@condition · anyOf[5].filter",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/part",
+      "path": "@condition · anyOf[5].part",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "level",
+        "values",
+        "value",
+        "from",
+        "to"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/op",
+      "path": "@condition · anyOf[5].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "in",
+        "notIn",
+        "containsAny",
+        "containsAll"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values",
+      "path": "@condition · anyOf[5].values",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values/items",
+      "path": "@condition · anyOf[5].values[]",
+      "required": "每个数组项",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/0",
+      "path": "@condition · anyOf[5].values[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/1",
+      "path": "@condition · anyOf[5].values[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/2",
+      "path": "@condition · anyOf[5].values[] · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6",
+      "path": "@condition · anyOf[6]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6/properties/filter",
+      "path": "@condition · anyOf[6].filter",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6/properties/part",
+      "path": "@condition · anyOf[6].part",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "level",
+        "values",
+        "value",
+        "from",
+        "to"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6/properties/op",
+      "path": "@condition · anyOf[6].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "gt",
+        "gte",
+        "lt",
+        "lte"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6/properties/value",
+      "path": "@condition · anyOf[6].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/7",
+      "path": "@condition · anyOf[7]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/7/properties/filter",
+      "path": "@condition · anyOf[7].filter",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/7/properties/part",
+      "path": "@condition · anyOf[7].part",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "level",
+        "values",
+        "value",
+        "from",
+        "to"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/7/properties/op",
+      "path": "@condition · anyOf[7].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "isNull",
+        "isNotNull",
+        "isEmpty",
+        "isNotEmpty"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8",
+      "path": "@condition · anyOf[8]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/fact",
+      "path": "@condition · anyOf[8].fact",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/op",
+      "path": "@condition · anyOf[8].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "eq",
+        "ne"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/value",
+      "path": "@condition · anyOf[8].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/0",
+      "path": "@condition · anyOf[8].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/1",
+      "path": "@condition · anyOf[8].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/2",
+      "path": "@condition · anyOf[8].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9",
+      "path": "@condition · anyOf[9]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/fact",
+      "path": "@condition · anyOf[9].fact",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/op",
+      "path": "@condition · anyOf[9].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "in",
+        "notIn",
+        "containsAny",
+        "containsAll"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values",
+      "path": "@condition · anyOf[9].values",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values/items",
+      "path": "@condition · anyOf[9].values[]",
+      "required": "每个数组项",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/0",
+      "path": "@condition · anyOf[9].values[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/1",
+      "path": "@condition · anyOf[9].values[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/2",
+      "path": "@condition · anyOf[9].values[] · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/10",
+      "path": "@condition · anyOf[10]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/10/properties/fact",
+      "path": "@condition · anyOf[10].fact",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/10/properties/op",
+      "path": "@condition · anyOf[10].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "gt",
+        "gte",
+        "lt",
+        "lte"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/10/properties/value",
+      "path": "@condition · anyOf[10].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/11",
+      "path": "@condition · anyOf[11]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/11/properties/fact",
+      "path": "@condition · anyOf[11].fact",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/11/properties/op",
+      "path": "@condition · anyOf[11].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "isNull",
+        "isNotNull",
+        "isEmpty",
+        "isNotEmpty"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12",
+      "path": "@condition · anyOf[12]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/row",
+      "path": "@condition · anyOf[12].row",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/op",
+      "path": "@condition · anyOf[12].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "eq",
+        "ne"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/value",
+      "path": "@condition · anyOf[12].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/0",
+      "path": "@condition · anyOf[12].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/1",
+      "path": "@condition · anyOf[12].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/2",
+      "path": "@condition · anyOf[12].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13",
+      "path": "@condition · anyOf[13]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/row",
+      "path": "@condition · anyOf[13].row",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/op",
+      "path": "@condition · anyOf[13].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "in",
+        "notIn",
+        "containsAny",
+        "containsAll"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values",
+      "path": "@condition · anyOf[13].values",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values/items",
+      "path": "@condition · anyOf[13].values[]",
+      "required": "每个数组项",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/0",
+      "path": "@condition · anyOf[13].values[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/1",
+      "path": "@condition · anyOf[13].values[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/2",
+      "path": "@condition · anyOf[13].values[] · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/14",
+      "path": "@condition · anyOf[14]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/14/properties/row",
+      "path": "@condition · anyOf[14].row",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/14/properties/op",
+      "path": "@condition · anyOf[14].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "gt",
+        "gte",
+        "lt",
+        "lte"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/14/properties/value",
+      "path": "@condition · anyOf[14].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/15",
+      "path": "@condition · anyOf[15]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/15/properties/row",
+      "path": "@condition · anyOf[15].row",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/15/properties/op",
+      "path": "@condition · anyOf[15].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "isNull",
+        "isNotNull",
+        "isEmpty",
+        "isNotEmpty"
+      ]
+    },
+    {
       "pointer": "#/definitions/dimensionFilter/properties/default",
       "path": "@dimensionFilter.default",
       "required": "本分支可选",
@@ -6069,6 +6703,19 @@
       "module": "filters.md"
     },
     {
+      "pointer": "#/definitions/timeRangeFilter/properties/visibleWhen",
+      "path": "@timeRangeFilter.visibleWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/visibleWhen/allOf/0",
+      "path": "@timeRangeFilter.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/timeRangeFilter/properties/default",
       "path": "@timeRangeFilter.default",
       "required": "本分支可选",
@@ -6329,6 +6976,19 @@
       "const": true
     },
     {
+      "pointer": "#/definitions/timePointFilter/properties/visibleWhen",
+      "path": "@timePointFilter.visibleWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/visibleWhen/allOf/0",
+      "path": "@timePointFilter.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/timePointFilter/properties/granularity",
       "path": "@timePointFilter.granularity",
       "required": "本分支必填",
@@ -6456,6 +7116,19 @@
       "module": "filters.md"
     },
     {
+      "pointer": "#/definitions/booleanFilter/properties/visibleWhen",
+      "path": "@booleanFilter.visibleWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/booleanFilter/properties/visibleWhen/allOf/0",
+      "path": "@booleanFilter.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/booleanFilter/properties/default",
       "path": "@booleanFilter.default",
       "required": "本分支可选",
@@ -6553,6 +7226,19 @@
       "path": "@numberRangeFilter.visible",
       "required": "本分支可选",
       "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/visibleWhen",
+      "path": "@numberRangeFilter.visibleWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/visibleWhen/allOf/0",
+      "path": "@numberRangeFilter.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/numberRangeFilter/properties/default",
@@ -6788,6 +7474,19 @@
       "module": "filters.md"
     },
     {
+      "pointer": "#/definitions/searchFilter/properties/visibleWhen",
+      "path": "@searchFilter.visibleWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/searchFilter/properties/visibleWhen/allOf/0",
+      "path": "@searchFilter.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/searchFilter/properties/default",
       "path": "@searchFilter.default",
       "required": "本分支可选",
@@ -6870,6 +7569,19 @@
       "path": "@componentId",
       "required": "类型/分支",
       "module": "sections-and-layout.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/visibleWhen",
+      "path": "@reportHeaderComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/visibleWhen/allOf/0",
+      "path": "@reportHeaderComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/reportHeaderComponent/properties/type",
@@ -7221,6 +7933,19 @@
       "required": "本分支必填",
       "module": "components/metricCard.md",
       "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/visibleWhen",
+      "path": "@metricCardComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/visibleWhen/allOf/0",
+      "path": "@metricCardComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/metricCard.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/metricCardComponent/properties/type",
@@ -7900,21 +8625,53 @@
       "module": "actions-and-navigation.md"
     },
     {
-      "pointer": "#/definitions/componentAction/anyOf/0/properties/on",
-      "path": "@componentAction · anyOf[0].on",
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0",
+      "path": "@componentAction · anyOf[0] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/on",
+      "path": "@componentAction · anyOf[0] · anyOf[0].on",
       "required": "本分支必填",
       "module": "actions-and-navigation.md",
       "const": "click"
     },
     {
-      "pointer": "#/definitions/componentAction/anyOf/0/properties/writeFilter",
-      "path": "@componentAction · anyOf[0].writeFilter",
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/visibleWhen",
+      "path": "@componentAction · anyOf[0] · anyOf[0].visibleWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/visibleWhen/allOf/0",
+      "path": "@componentAction · anyOf[0] · anyOf[0].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/enabledWhen",
+      "path": "@componentAction · anyOf[0] · anyOf[0].enabledWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/enabledWhen/allOf/0",
+      "path": "@componentAction · anyOf[0] · anyOf[0].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/writeFilter",
+      "path": "@componentAction · anyOf[0] · anyOf[0].writeFilter",
       "required": "本分支必填",
       "module": "actions-and-navigation.md"
     },
     {
-      "pointer": "#/definitions/componentAction/anyOf/0/properties/field",
-      "path": "@componentAction · anyOf[0].field",
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/field",
+      "path": "@componentAction · anyOf[0] · anyOf[0].field",
       "required": "本分支必填",
       "module": "actions-and-navigation.md",
       "ref": "#/definitions/fieldReference"
@@ -7950,6 +8707,69 @@
       "module": "field-bindings-and-formats.md"
     },
     {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/level",
+      "path": "@componentAction · anyOf[0] · anyOf[0].level",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1",
+      "path": "@componentAction · anyOf[0] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/on",
+      "path": "@componentAction · anyOf[0] · anyOf[1].on",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md",
+      "const": "click"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/visibleWhen",
+      "path": "@componentAction · anyOf[0] · anyOf[1].visibleWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/visibleWhen/allOf/0",
+      "path": "@componentAction · anyOf[0] · anyOf[1].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/enabledWhen",
+      "path": "@componentAction · anyOf[0] · anyOf[1].enabledWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/enabledWhen/allOf/0",
+      "path": "@componentAction · anyOf[0] · anyOf[1].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/writeFilter",
+      "path": "@componentAction · anyOf[0] · anyOf[1].writeFilter",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/value",
+      "path": "@componentAction · anyOf[0] · anyOf[1].value",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/level",
+      "path": "@componentAction · anyOf[0] · anyOf[1].level",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
       "pointer": "#/definitions/componentAction/anyOf/1",
       "path": "@componentAction · anyOf[1]",
       "required": "独立分支（不合并required）",
@@ -7963,10 +8783,62 @@
       "const": "click"
     },
     {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/visibleWhen",
+      "path": "@componentAction · anyOf[1].visibleWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/visibleWhen/allOf/0",
+      "path": "@componentAction · anyOf[1].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/enabledWhen",
+      "path": "@componentAction · anyOf[1].enabledWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/enabledWhen/allOf/0",
+      "path": "@componentAction · anyOf[1].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/componentAction/anyOf/1/properties/navigate",
       "path": "@componentAction · anyOf[1].navigate",
       "required": "本分支必填",
       "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/visibleWhen",
+      "path": "@componentAction · anyOf[1].navigate.visibleWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/visibleWhen/allOf/0",
+      "path": "@componentAction · anyOf[1].navigate.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/enabledWhen",
+      "path": "@componentAction · anyOf[1].navigate.enabledWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/enabledWhen/allOf/0",
+      "path": "@componentAction · anyOf[1].navigate.enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/href",
@@ -8083,6 +8955,32 @@
       "const": "click"
     },
     {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/visibleWhen",
+      "path": "@componentAction · anyOf[2].visibleWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/visibleWhen/allOf/0",
+      "path": "@componentAction · anyOf[2].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/enabledWhen",
+      "path": "@componentAction · anyOf[2].enabledWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/enabledWhen/allOf/0",
+      "path": "@componentAction · anyOf[2].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail",
       "path": "@componentAction · anyOf[2].openDetail",
       "required": "本分支必填",
@@ -8103,6 +9001,32 @@
         "modal",
         "drawer"
       ]
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/visibleWhen",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[0].visibleWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/visibleWhen/allOf/0",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[0].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/enabledWhen",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[0].enabledWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/enabledWhen/allOf/0",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[0].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/titleField",
@@ -8157,6 +9081,32 @@
         "modal",
         "drawer"
       ]
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/visibleWhen",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[1].visibleWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/visibleWhen/allOf/0",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[1].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/enabledWhen",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[1].enabledWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/enabledWhen/allOf/0",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[1].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/titleField",
@@ -8284,6 +9234,19 @@
       "required": "本分支必填",
       "module": "components/barChart.md",
       "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/visibleWhen",
+      "path": "@barChartComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/visibleWhen/allOf/0",
+      "path": "@barChartComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/barChartComponent/properties/type",
@@ -8680,6 +9643,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/lineChartComponent/properties/visibleWhen",
+      "path": "@lineChartComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/lineChartComponent/properties/visibleWhen/allOf/0",
+      "path": "@lineChartComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/lineChartComponent/properties/type",
       "path": "@lineChartComponent.type",
       "required": "本分支必填",
@@ -8880,6 +9856,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/pieChartComponent/properties/visibleWhen",
+      "path": "@pieChartComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/visibleWhen/allOf/0",
+      "path": "@pieChartComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/pieChartComponent/properties/type",
       "path": "@pieChartComponent.type",
       "required": "本分支必填",
@@ -9012,6 +10001,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/tableComponent/properties/visibleWhen",
+      "path": "@tableComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/visibleWhen/allOf/0",
+      "path": "@tableComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tableComponent/properties/type",
       "path": "@tableComponent.type",
       "required": "本分支必填",
@@ -9057,6 +10059,19 @@
       "module": "components/table.md"
     },
     {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/rowVisibleWhen",
+      "path": "@tableComponent.props.rowVisibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/rowVisibleWhen/allOf/0",
+      "path": "@tableComponent.props.rowVisibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tableComponent/properties/props/properties/title",
       "path": "@tableComponent.props.title",
       "required": "本分支可选",
@@ -9095,6 +10110,32 @@
       "module": "components/table.md"
     },
     {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/visibleWhen",
+      "path": "@tableComponent.props.toolbar.search.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/visibleWhen/allOf/0",
+      "path": "@tableComponent.props.toolbar.search.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/enabledWhen",
+      "path": "@tableComponent.props.toolbar.search.enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/enabledWhen/allOf/0",
+      "path": "@tableComponent.props.toolbar.search.enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/fields",
       "path": "@tableComponent.props.toolbar.search.fields",
       "required": "本分支必填",
@@ -9124,6 +10165,32 @@
       "path": "@tableComponent.props.toolbar.export",
       "required": "本分支可选",
       "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/visibleWhen",
+      "path": "@tableComponent.props.toolbar.export.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/visibleWhen/allOf/0",
+      "path": "@tableComponent.props.toolbar.export.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/enabledWhen",
+      "path": "@tableComponent.props.toolbar.export.enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/enabledWhen/allOf/0",
+      "path": "@tableComponent.props.toolbar.export.enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/format",
@@ -9288,6 +10355,32 @@
       "module": "components/table.md"
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/selection/properties/visibleWhen",
+      "path": "@tableColumn.selection.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/selection/properties/visibleWhen/allOf/0",
+      "path": "@tableColumn.selection.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/selection/properties/enabledWhen",
+      "path": "@tableColumn.selection.enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/selection/properties/enabledWhen/allOf/0",
+      "path": "@tableColumn.selection.enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tableColumn/properties/selection/properties/writes",
       "path": "@tableColumn.selection.writes",
       "required": "本分支必填",
@@ -9411,6 +10504,32 @@
       ]
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/visibleWhen",
+      "path": "@tableColumn.openDetail · anyOf[0].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/visibleWhen/allOf/0",
+      "path": "@tableColumn.openDetail · anyOf[0].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/enabledWhen",
+      "path": "@tableColumn.openDetail · anyOf[0].enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/enabledWhen/allOf/0",
+      "path": "@tableColumn.openDetail · anyOf[0].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/titleField",
       "path": "@tableColumn.openDetail · anyOf[0].titleField",
       "required": "本分支可选",
@@ -9463,6 +10582,32 @@
         "modal",
         "drawer"
       ]
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/visibleWhen",
+      "path": "@tableColumn.openDetail · anyOf[1].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/visibleWhen/allOf/0",
+      "path": "@tableColumn.openDetail · anyOf[1].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/enabledWhen",
+      "path": "@tableColumn.openDetail · anyOf[1].enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/enabledWhen/allOf/0",
+      "path": "@tableColumn.openDetail · anyOf[1].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/titleField",
@@ -9576,6 +10721,32 @@
       "path": "@tableColumn.navigate",
       "required": "本分支可选",
       "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigate/properties/visibleWhen",
+      "path": "@tableColumn.navigate.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigate/properties/visibleWhen/allOf/0",
+      "path": "@tableColumn.navigate.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigate/properties/enabledWhen",
+      "path": "@tableColumn.navigate.enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigate/properties/enabledWhen/allOf/0",
+      "path": "@tableColumn.navigate.enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/tableColumn/properties/navigate/properties/href",
@@ -9860,6 +11031,19 @@
       "required": "本分支必填",
       "module": "components/mapChart.md",
       "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/visibleWhen",
+      "path": "@mapChartComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/visibleWhen/allOf/0",
+      "path": "@mapChartComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/mapChartComponent/properties/type",
@@ -10235,6 +11419,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/gaugeComponent/properties/visibleWhen",
+      "path": "@gaugeComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/visibleWhen/allOf/0",
+      "path": "@gaugeComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/gauge.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/gaugeComponent/properties/type",
       "path": "@gaugeComponent.type",
       "required": "本分支必填",
@@ -10360,6 +11557,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/tabContainerComponent/properties/visibleWhen",
+      "path": "@tabContainerComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/tabContainer.md"
+    },
+    {
+      "pointer": "#/definitions/tabContainerComponent/properties/visibleWhen/allOf/0",
+      "path": "@tabContainerComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tabContainerComponent/properties/type",
       "path": "@tabContainerComponent.type",
       "required": "本分支必填",
@@ -10446,6 +11656,19 @@
       "module": "components/tabContainer.md"
     },
     {
+      "pointer": "#/definitions/tabItem/anyOf/0/properties/visibleWhen",
+      "path": "@tabItem · anyOf[0].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/tabContainer.md"
+    },
+    {
+      "pointer": "#/definitions/tabItem/anyOf/0/properties/visibleWhen/allOf/0",
+      "path": "@tabItem · anyOf[0].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tabItem/anyOf/0/properties/label",
       "path": "@tabItem · anyOf[0].label",
       "required": "本分支必填",
@@ -10470,6 +11693,19 @@
       "path": "@tabItem · anyOf[1].id",
       "required": "本分支必填",
       "module": "components/tabContainer.md"
+    },
+    {
+      "pointer": "#/definitions/tabItem/anyOf/1/properties/visibleWhen",
+      "path": "@tabItem · anyOf[1].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/tabContainer.md"
+    },
+    {
+      "pointer": "#/definitions/tabItem/anyOf/1/properties/visibleWhen/allOf/0",
+      "path": "@tabItem · anyOf[1].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/tabItem/anyOf/1/properties/label",
@@ -10510,6 +11746,19 @@
       "required": "本分支必填",
       "module": "components/compositeCard.md",
       "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/compositeCardComponent/properties/visibleWhen",
+      "path": "@compositeCardComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/compositeCard.md"
+    },
+    {
+      "pointer": "#/definitions/compositeCardComponent/properties/visibleWhen/allOf/0",
+      "path": "@compositeCardComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/compositeCard.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/compositeCardComponent/properties/type",
@@ -10631,6 +11880,19 @@
       "required": "本分支必填",
       "module": "components/keyValuePanel.md",
       "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/keyValuePanelComponent/properties/visibleWhen",
+      "path": "@keyValuePanelComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/keyValuePanel.md"
+    },
+    {
+      "pointer": "#/definitions/keyValuePanelComponent/properties/visibleWhen/allOf/0",
+      "path": "@keyValuePanelComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/keyValuePanel.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/keyValuePanelComponent/properties/type",
@@ -10810,6 +12072,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/categoryBreakdownComponent/properties/visibleWhen",
+      "path": "@categoryBreakdownComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/categoryBreakdown.md"
+    },
+    {
+      "pointer": "#/definitions/categoryBreakdownComponent/properties/visibleWhen/allOf/0",
+      "path": "@categoryBreakdownComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/categoryBreakdown.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/categoryBreakdownComponent/properties/type",
       "path": "@categoryBreakdownComponent.type",
       "required": "本分支必填",
@@ -10943,6 +12218,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/rankingCardComponent/properties/visibleWhen",
+      "path": "@rankingCardComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/rankingCard.md"
+    },
+    {
+      "pointer": "#/definitions/rankingCardComponent/properties/visibleWhen/allOf/0",
+      "path": "@rankingCardComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/rankingCard.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/rankingCardComponent/properties/type",
       "path": "@rankingCardComponent.type",
       "required": "本分支必填",
@@ -11041,6 +12329,19 @@
       "required": "本分支必填",
       "module": "components/rankingDetailCard.md",
       "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/rankingDetailCardComponent/properties/visibleWhen",
+      "path": "@rankingDetailCardComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/rankingDetailCard.md"
+    },
+    {
+      "pointer": "#/definitions/rankingDetailCardComponent/properties/visibleWhen/allOf/0",
+      "path": "@rankingDetailCardComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/rankingDetailCard.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/rankingDetailCardComponent/properties/type",
@@ -11289,6 +12590,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/fieldTextComponent/properties/visibleWhen",
+      "path": "@fieldTextComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/fieldText.md"
+    },
+    {
+      "pointer": "#/definitions/fieldTextComponent/properties/visibleWhen/allOf/0",
+      "path": "@fieldTextComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/fieldText.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/fieldTextComponent/properties/type",
       "path": "@fieldTextComponent.type",
       "required": "本分支必填",
@@ -11370,6 +12684,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/textComponent/properties/visibleWhen",
+      "path": "@textComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/visibleWhen/allOf/0",
+      "path": "@textComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/text.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/textComponent/properties/type",
       "path": "@textComponent.type",
       "required": "本分支必填",
@@ -11416,6 +12743,44 @@
       "ref": "#/definitions/textValue"
     },
     {
+      "pointer": "#/definitions/textComponent/properties/props/properties/parts",
+      "path": "@textComponent.props.parts",
+      "required": "本分支可选",
+      "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/parts/items",
+      "path": "@textComponent.props.parts[]",
+      "required": "每个数组项",
+      "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/parts/items/properties/id",
+      "path": "@textComponent.props.parts[].id",
+      "required": "本分支必填",
+      "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/parts/items/properties/text",
+      "path": "@textComponent.props.parts[].text",
+      "required": "本分支必填",
+      "module": "components/text.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/parts/items/properties/visibleWhen",
+      "path": "@textComponent.props.parts[].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/parts/items/properties/visibleWhen/allOf/0",
+      "path": "@textComponent.props.parts[].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/text.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/textComponent/properties/props/properties/bodyFormat",
       "path": "@textComponent.props.bodyFormat",
       "required": "本分支可选",
@@ -11452,6 +12817,32 @@
       "path": "@textComponent.props.links[]",
       "required": "每个数组项",
       "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/visibleWhen",
+      "path": "@textComponent.props.links[].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/visibleWhen/allOf/0",
+      "path": "@textComponent.props.links[].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/text.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/enabledWhen",
+      "path": "@textComponent.props.links[].enabledWhen",
+      "required": "本分支可选",
+      "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/enabledWhen/allOf/0",
+      "path": "@textComponent.props.links[].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/text.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/href",
@@ -11582,6 +12973,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/aiSummaryComponent/properties/visibleWhen",
+      "path": "@aiSummaryComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/visibleWhen/allOf/0",
+      "path": "@aiSummaryComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/aiSummary.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/aiSummaryComponent/properties/type",
       "path": "@aiSummaryComponent.type",
       "required": "本分支必填",
@@ -11696,6 +13100,86 @@
       "module": "components/aiSummary.md"
     },
     {
+      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/17",
+      "path": "$.detailViews[].components[] · oneOf[17]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/buttonComponent"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent",
+      "path": "@buttonComponent",
+      "required": "类型/分支",
+      "module": "components/button.md"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/id",
+      "path": "@buttonComponent.id",
+      "required": "本分支必填",
+      "module": "components/button.md",
+      "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/type",
+      "path": "@buttonComponent.type",
+      "required": "本分支必填",
+      "module": "components/button.md",
+      "const": "button"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/layout",
+      "path": "@buttonComponent.layout",
+      "required": "本分支必填",
+      "module": "components/button.md",
+      "ref": "#/definitions/componentLayout"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/visibleWhen",
+      "path": "@buttonComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/button.md"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/visibleWhen/allOf/0",
+      "path": "@buttonComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/button.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/enabledWhen",
+      "path": "@buttonComponent.enabledWhen",
+      "required": "本分支可选",
+      "module": "components/button.md"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/enabledWhen/allOf/0",
+      "path": "@buttonComponent.enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/button.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/props",
+      "path": "@buttonComponent.props",
+      "required": "本分支必填",
+      "module": "components/button.md"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/props/properties/label",
+      "path": "@buttonComponent.props.label",
+      "required": "本分支必填",
+      "module": "components/button.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/props/properties/action",
+      "path": "@buttonComponent.props.action",
+      "required": "本分支必填",
+      "module": "components/button.md",
+      "ref": "#/definitions/componentAction"
+    },
+    {
       "pointer": "#/properties/sectionGroups",
       "path": "$.sectionGroups",
       "required": "本分支可选",
@@ -11712,6 +13196,19 @@
       "path": "$.sectionGroups[].id",
       "required": "本分支必填",
       "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/sectionGroups/items/properties/visibleWhen",
+      "path": "$.sectionGroups[].visibleWhen",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/sectionGroups/items/properties/visibleWhen/allOf/0",
+      "path": "$.sectionGroups[].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/properties/sectionGroups/items/properties/label",
@@ -11791,6 +13288,19 @@
       "path": "@section.id",
       "required": "本分支必填",
       "module": "sections-and-layout.md"
+    },
+    {
+      "pointer": "#/definitions/section/properties/visibleWhen",
+      "path": "@section.visibleWhen",
+      "required": "本分支可选",
+      "module": "sections-and-layout.md"
+    },
+    {
+      "pointer": "#/definitions/section/properties/visibleWhen/allOf/0",
+      "path": "@section.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "sections-and-layout.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/section/properties/title",
@@ -11984,6 +13494,13 @@
       "required": "独立分支（不合并required）",
       "module": "sections-and-layout.md",
       "ref": "#/definitions/aiSummaryComponent"
+    },
+    {
+      "pointer": "#/definitions/section/properties/components/items/oneOf/17",
+      "path": "@section.components[] · oneOf[17]",
+      "required": "独立分支（不合并required）",
+      "module": "sections-and-layout.md",
+      "ref": "#/definitions/buttonComponent"
     }
   ],
   "exampleCoverage": [
@@ -12286,6 +13803,11 @@
       "type": "aiSummary",
       "variant": "reportInline",
       "file": "examples/component-aiSummary-reportInline.json",
+      "pointer": "#/sections/0/components/0"
+    },
+    {
+      "type": "button",
+      "file": "examples/component-button.json",
       "pointer": "#/sections/0/components/0"
     }
   ],
@@ -12972,6 +14494,210 @@
       "pointer": "#/sections/0/components/0/props/subtitle"
     },
     {
+      "schemaPointer": "#/definitions/condition/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/page-visibility-region-linkage.json",
+      "pointer": "#/sectionGroups/0/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/filters/0/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/3",
+      "module": "conditions.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/filters/0/visibleWhen/not"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/4",
+      "module": "conditions.md",
+      "file": "examples/page-visibility-region-linkage.json",
+      "pointer": "#/sections/1/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/page-visibility-region-linkage.json",
+      "pointer": "#/sections/1/visibleWhen/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/4/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/6/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/5",
+      "module": "conditions.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0/visibleWhen/any/1"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0/visibleWhen/any/1/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/5/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/7/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/6",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/8"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/7",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/9"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/8",
+      "module": "conditions.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0/enabledWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/11/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/13/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0/enabledWhen/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/9",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/12"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/12/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/14/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/16/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/10",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/17"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/11",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/18"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/12",
+      "module": "conditions.md",
+      "file": "examples/page-visibility-region-linkage.json",
+      "pointer": "#/sections/3/components/0/props/columns/0/navigate/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/page-visibility-region-linkage.json",
+      "pointer": "#/sections/3/components/0/props/columns/0/navigate/visibleWhen/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/22/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/24/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/13",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/21"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/21/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/23/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/25/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/14",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/26"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/15",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/27"
+    },
+    {
       "schemaPointer": "#/properties/filters/items/oneOf/1",
       "module": "page.md",
       "file": "examples/reference-branches-page.json",
@@ -13136,6 +14862,12 @@
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/0",
       "module": "actions-and-navigation.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0/props/action"
+    },
+    {
+      "schemaPointer": "#/definitions/componentAction/anyOf/0/anyOf/0",
+      "module": "actions-and-navigation.md",
       "file": "examples/reference-branches-page.json",
       "pointer": "#/sections/0/components/1/props/actions/0"
     },
@@ -13150,6 +14882,12 @@
       "module": "field-bindings-and-formats.md",
       "file": "examples/reference-branches-page.json",
       "pointer": "#/sections/0/components/1/props/actions/0/field"
+    },
+    {
+      "schemaPointer": "#/definitions/componentAction/anyOf/0/anyOf/1",
+      "module": "actions-and-navigation.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0/props/action"
     },
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/1",
@@ -13572,6 +15310,15 @@
       }
     },
     {
+      "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/17",
+      "module": "page.md",
+      "negativeWitness": {
+        "file": "errors/detail-component-reject-button.json",
+        "reason": "详情展示闭集不开放独立按钮和递归动作，只有语义拒绝见证。",
+        "rule": "detail-view-component-types"
+      }
+    },
+    {
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/0",
       "module": "sections-and-layout.md",
       "file": "examples/component-reportHeader.json",
@@ -13672,6 +15419,12 @@
       "module": "sections-and-layout.md",
       "file": "examples/component-aiSummary.json",
       "pointer": "#/sections/0/components/0"
+    },
+    {
+      "schemaPointer": "#/definitions/section/properties/components/items/oneOf/17",
+      "module": "sections-and-layout.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0"
     }
   ],
   "semanticGaps": {
@@ -13680,5 +15433,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "6f3a7a5f82b63b247d2ce82ee6a5d62a1d4856a6adb89d2f2fe6a515d1c2e384"
+  "semanticSourceDigest": "92b016d988d1a81b1ae45070413636072efb2213da7c20f1b5bffaf197d4659d"
 }

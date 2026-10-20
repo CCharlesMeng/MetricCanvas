@@ -36,3 +36,5 @@ pnpm authoring:test
 ```
 
 前两条需在根仓运行；安装后的 Bundle 只消费快照，不反向修改产品协议。`ownership.json` 声明内部自有 adapters 树；`bundle.lock.json` 排除它，并且不散发本地虚拟环境或 Python 缓存。公共参考模板位于 examples/adapter_template，内部复制后独立维护；只修改内部适配无需运行产品导出。历史归档的 hash 校验使用冻结来源，当前派生物变化不应改写历史证据。
+
+条件协议、纯求值及稳定目标修改的真源是packages/page/src/condition.ts、presentation-policy.ts、presentation-edit.ts和presentation-operation.ts；Node Bridge分发同一实现，Python只负责传输。两个page-visibility演示页面由导出器直接投影到契约见证，浏览器消费原页面。

@@ -1733,6 +1733,111 @@
           "ioc-header-navigation-list-demo"
         ]
       }
+    },
+    {
+      "id": "page-visibility-region-linkage",
+      "group": "verification",
+      "summary": "层级空选、分区与子项条件、父容器保留、Tab回退、行投影、按钮和文字片段。内联演示数据。",
+      "tags": [
+        "条件显隐",
+        "层级联动"
+      ],
+      "displayTitle": "统一条件显隐与地区层级联动",
+      "capabilities": [
+        "conditions",
+        "filters",
+        "tables"
+      ],
+      "environment": {
+        "data": "内联演示数据",
+        "runtime": "none",
+        "scope": "无需 DQE；只验证本地条件规则与呈现"
+      },
+      "guide": {
+        "steps": [
+          "切换地区部，观察地区部行权规范分区隐藏、父容器保留，Tab及表格行同步变化。",
+          "切回全球，点击显示扩展内容和恢复基础内容，刷新后检查 URL 层级恢复。"
+        ],
+        "configPaths": [
+          "filters",
+          "sections[].visibleWhen",
+          "sections[].components[].props"
+        ],
+        "boundary": "本地演示不代表真实 CloudIOC、Java、DQE 或 Relay 接入验收。",
+        "related": [
+          "page-visibility-inputs",
+          "page-visibility-report"
+        ]
+      }
+    },
+    {
+      "id": "page-visibility-inputs",
+      "group": "verification",
+      "summary": "已有权限与业务事实的就绪、拒绝及错误输入；本地Sim事实验收。",
+      "tags": [
+        "条件显隐",
+        "Sim"
+      ],
+      "externalInputs": "visibility",
+      "displayTitle": "已有权限与业务事实显隐",
+      "capabilities": [
+        "conditions"
+      ],
+      "environment": {
+        "data": "内联演示数据；权限与事实使用本地 Sim",
+        "runtime": "none",
+        "scope": "无需 DQE；只验证本地条件规则与呈现"
+      },
+      "guide": {
+        "steps": [
+          "使用页面外的 Sim 事实控制切换允许、拒绝、等待与错误，观察内容变化。",
+          "更换权限会话后旧实例停用；重新初始化后按当前权限显示。"
+        ],
+        "configPaths": [
+          "sections[].visibleWhen"
+        ],
+        "boundary": "本地演示不代表真实 CloudIOC、Java、DQE 或 Relay 接入验收。",
+        "related": [
+          "page-visibility-region-linkage",
+          "page-visibility-report"
+        ]
+      }
+    },
+    {
+      "id": "page-visibility-report",
+      "group": "verification",
+      "summary": "报告导出使用相同条件：整块隐藏、父容器保留、全部允许Tab展开、行投影与PDF/PNG/XLSX。",
+      "tags": [
+        "条件显隐",
+        "导出"
+      ],
+      "displayTitle": "条件显隐报告与导出",
+      "capabilities": [
+        "conditions",
+        "export",
+        "tables"
+      ],
+      "environment": {
+        "data": "内联演示数据",
+        "runtime": "none",
+        "scope": "无需 DQE；只验证本地条件规则与呈现"
+      },
+      "guide": {
+        "steps": [
+          "切换地区部后下载 PDF、PNG 和表格 XLSX。",
+          "核对地区部分区缺席、允许的空父容器保留、Tab 展开及两行代表处记录。"
+        ],
+        "configPaths": [
+          "filters",
+          "sections[].visibleWhen",
+          "sections[].components[].props"
+        ],
+        "boundary": "本地演示不代表真实 CloudIOC、Java、DQE 或 Relay 接入验收。",
+        "related": [
+          "page-visibility-region-linkage",
+          "page-visibility-inputs"
+        ]
+      }
     }
   ],
   "capabilities": [
@@ -1793,6 +1898,15 @@
       "docs": [
         "components/reportHeader",
         "components/table"
+      ]
+    },
+    {
+      "id": "conditions",
+      "title": "条件显隐与动作资格",
+      "question": "如何按层级、已有权限或业务事实控制展示与操作？",
+      "docs": [
+        "conditions",
+        "components/button"
       ]
     }
   ]

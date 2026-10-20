@@ -26,7 +26,7 @@ export async function withReportView<T>(input:{state:ExportRenderState;queries:R
   const objectUrls:string[]=[];
   let instance:ReturnType<typeof mount>|undefined;
   try {
-    const prepared=await abortable(prepareExportSnapshots(state.page,input.gateway,input.queries,state.filters,signal,undefined,state.currentYear,[],state.sourceViews,input.program,{allowPartial:true,displayInputs:state.displayInputs,filterRevision:state.filterRevision,now:state.now}),signal);
+    const prepared=await abortable(prepareExportSnapshots(state.page,input.gateway,input.queries,state.filters,signal,undefined,state.currentYear,[],state.sourceViews,input.program,{allowPartial:true,displayInputs:state.displaySnapshot,filterRevision:state.filterRevision,now:state.now}),signal);
     for(const [id,snapshot] of prepared) {
       const captured=state.snapshots.get(id);
       if(snapshot.status==='error' && (captured?.status==='ready'||captured?.status==='empty')) {

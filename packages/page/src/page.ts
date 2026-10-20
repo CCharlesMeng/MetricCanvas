@@ -1,9 +1,11 @@
+import {filterHasObservableConsumer} from './presentation-policy';
 import type { z } from 'zod';
 import type { DataSourceMode, DataSources } from './data-source';
 import type { FilterDeclaration } from './filter';
 import type { PageParamDeclaration } from './page-param';
 import type { VersionPolicy } from './version';
 import {
+  buttonComponentZ,
   reportHeaderComponentZ,
   metricCardComponentZ,
   barChartComponentZ,
@@ -149,7 +151,10 @@ export type AiSummaryRelatedDataDefinition = AiSummaryProps['relatedData'][strin
 export type AiSummaryRelatedField = AiSummaryRelatedDataDefinition['fields'][number];
 export type AiSummaryComponent = z.infer<typeof aiSummaryComponentZ> & { data?: never };
 
+export type ButtonComponent = z.infer<typeof buttonComponentZ> & { data?: never; props: z.infer<typeof buttonComponentZ>['props'] & {title?:never} };
+
 export type Component =
+  | ButtonComponent
   | ReportHeaderComponent
   | MetricCardComponent
   | BarChartComponent
@@ -171,6 +176,7 @@ export type Component =
 export type DataComponent = Exclude<
   Component,
   | ReportHeaderComponent
+  | ButtonComponent
   | TextComponent
   | AiSummaryComponent
   | TabContainerComponent
@@ -196,6 +202,7 @@ export type PageSection = Omit<z.infer<typeof sectionZ>, 'components'> & {
 };
 
 export interface SectionGroup {
+  visibleWhen?: import('./schema/condition').Condition;
   id: string;
   label: string;
   sectionIds: string[];
@@ -266,6 +273,7 @@ export function sectionBackdrop(section: PageSection): Component | undefined {
 
 export function isDataComponent(component: Component): component is DataComponent {
   return (
+    component.type !== 'button' &&
     component.type !== 'reportHeader' &&
     component.type !== 'text' &&
     component.type !== 'aiSummary' &&
@@ -381,7 +389,8 @@ export function deriveComponentCapabilities(
      * 地图层级下钻写的是筛选状态,不是页面文档里的 writeFilter。
      */
     actions:
-      (hasQuery && ((props.actions?.length ?? 0) > 0 || tableSelection)) ||
+      component.type==='button' ||
+      ((hasQuery || Number(page.schemaVersion.split('.')[1])>=34&&hasObservableWrites(page,component)) && ((props.actions?.length ?? 0) > 0 || tableSelection)) ||
       hasNavigate ||
       hasOpenDetail ||
       (component.type === 'table' && columnDetail(component.props.columns)) ||
@@ -395,4 +404,12 @@ function tableColumnHasSelection(column: TableColumnNode): boolean {
   return column.kind === 'group'
     ? column.children.some((child) => tableColumnHasSelection(child))
     : column.selection !== undefined;
+}
+
+function hasObservableWrites(page:Page,component:Component):boolean {
+ const props=component.props as {actions?:ComponentAction[]};
+ if((props.actions??[]).some(action=>'writeFilter' in action&&filterHasObservableConsumer(page,action.writeFilter)))return true;
+ if(component.type!=='table')return false;
+ function columns(nodes:TableColumnNode[]):boolean{return nodes.some(node=>node.kind==='group'?columns(node.children):Object.keys(node.selection?.writes??{}).some(id=>filterHasObservableConsumer(page,id)));}
+ return columns(component.props.columns);
 }

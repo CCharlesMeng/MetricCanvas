@@ -3,6 +3,9 @@
 </script>
 <svelte:options css="injected" />
 <script lang="ts">
+  import { compilePresentation, resolvePresentationRow } from '../../runtime/src/presentation';
+  import type { DisplaySnapshot } from '../../runtime/src/display-inputs';
+  import { PRESENTATION_CONTEXT } from './presentation-context';
   import { chartOptionPaths, isChartOptionError } from '@metriccanvas/page/internal';
   import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
   import {queryFilterIds} from '@metriccanvas/page/internal';
@@ -230,7 +233,7 @@
       return [id,value.status==='ready'||value.status==='streaming'?{status:'ready' as const,text:value.text}:{status:'empty' as const}];
     }));
     if (Object.keys(page.dataSources).some(id=>sourceBlocked(page,id))) throw new ExportViewError('EXPORT_NOT_READY','筛选待确认或候选未就绪，暂不能导出页面');
-    const state={page,now:new Date(),displayInputs:structuredClone(displaySnapshot),filterRevision,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
+    const state={page,now:new Date(),displaySnapshot:structuredClone(displaySnapshot),filterRevision,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
     const queries=stream.captureQueries();
     const program=stream.getSourceProgram();
     return exportController.run(pageExportTask, controller => withReportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program,scale},consume));
@@ -258,12 +261,52 @@
   let blockedFilters = $state<string[]>([]);
   let filterValues = $state<FilterValues>(new Map());
   let pageParams = $state<PageParamValues>(new Map());
+  let displaySnapshot=$state.raw<DisplaySnapshot|undefined>();
+  let filterRevision=$state(0);
+  const presentationProgram=$derived(pageState.phase==='ready'?compilePresentation(pageState.page):null);
+  const presentation=$derived(presentationProgram?.evaluate({filters:filterValues,filterRevision,displaySnapshot})??null);
+  setContext(PRESENTATION_CONTEXT,()=>presentation);
+  let refreshPeriodFacts:((snapshot:DisplaySnapshot|undefined)=>void)|undefined;
+  function clearDisplaySnapshot(){displaySnapshot=undefined;untrack(()=>refreshPeriodFacts?.(undefined));}
+  let permissionRevision:string|undefined;
+  let permissionInvalidated=false;
+  $effect(()=>{
+    const source=displayInputs;
+    if(!source){clearDisplaySnapshot();return;}
+    let stopped=false;
+    const update=(snapshot:DisplaySnapshot)=>{
+      if(stopped||permissionInvalidated)return;
+      if(!snapshot||typeof snapshot.permissionRevision!=='string'||!snapshot.permissionRevision){clearDisplaySnapshot();return;}
+      if(permissionRevision!==undefined&&permissionRevision!==snapshot.permissionRevision){
+        stopped=true;permissionInvalidated=true;dispose();snapshots=new Map();displaySnapshot=undefined;
+        const error={code:'DISPLAY_PERMISSION_CHANGED' as const,message:'权限会话已变化，请以当前身份重新初始化页面'};
+        pageState={phase:'configuration-error',error};onevent?.({type:'configuration-error',...error});return;
+      }
+      permissionRevision=snapshot.permissionRevision;displaySnapshot=snapshot;untrack(()=>refreshPeriodFacts?.(snapshot));
+    };
+    let unsubscribe=()=>{};
+    try {
+      unsubscribe=source.subscribe(update);
+      update(source.getSnapshot());
+    } catch {
+      clearDisplaySnapshot();
+    }
+    return ()=>{stopped=true;unsubscribe();};
+  });
+
   let initialTabs = $state<ReadonlyMap<string, string>>(new Map());
   /** 筛选候选值快照(维度名 → 显式状态):筛选控件与表头筛选共用。 */
   let dimensionCandidates = $state<DimensionValuesSnapshots>(new Map());
   let tableViews = $state<Record<string, TableViewState>>({});
   let selectedGroup = $state<string | undefined>();
   let surfaceRoot: HTMLDivElement;
+  $effect(()=>{
+    if(pageState.phase!=='ready'||!pageState.page.sectionGroups)return;
+    const groups=pageState.page.sectionGroups.filter(group=>presentation?.groups.get(group.id)?.eligible!==false);
+    const next=selectedSectionGroup({...pageState.page,sectionGroups:groups},selectedGroup);
+    if(next!==selectedGroup)selectedGroup=next;
+  });
+
 
   async function locateSection(page: Page, sectionId: string) {
     const currentSession = session;
@@ -285,8 +328,6 @@
   let activeGateway: RuntimeDataGateway = inlineGateway;
 
   let declarations = $state<FilterDeclaration[]>([]);
-  let displaySnapshot=$state.raw<import('@metriccanvas/page/internal').DisplayInputsSnapshot>();
-  let filterRevision=$state(0);
   let candidateClock=$state.raw(new Date());
   const timeContext=$derived({snapshot:displaySnapshot,revision:filterRevision});
   const candidateTimeContext=()=>({displayInputs:displaySnapshot,filterRevision,now:candidateClock});
@@ -297,7 +338,7 @@
   let disposers: Array<() => void> = [];
 
   $effect(() => {
-    void run(document, dataGateway, initialSearch, navigation, onevent, pageRevisionId, execution,displayInputs);
+    void run(document, dataGateway, initialSearch, navigation, onevent, pageRevisionId, execution);
     return dispose;
   });
 
@@ -321,12 +362,12 @@
     navigationAdapter: RuntimeNavigation | undefined,
     emit: ((event: RuntimeViewEvent) => void) | undefined,
     revisionId: string | undefined,
-    bootstrap: import('../../runtime/src').ExecutionBootstrap | undefined,
-    inputs:import('@metriccanvas/page/internal').DisplayInputsSource|undefined
+    bootstrap: import('../../runtime/src').ExecutionBootstrap | undefined
   ) {
+    if(permissionInvalidated)return;
     exportController.reset(); tableController?.dispose(); tableController=undefined;
     const mySession = ++session;
-    displaySnapshot=undefined;filterRevision=0;
+    filterRevision=0;
     pageState = { phase: 'loading' };navigationMessage='';
     snapshots = new Map();
     filterValues = new Map();
@@ -339,9 +380,8 @@
 
     // 保持异步初始化接缝，避免外层 effect 把初始化中的状态读取纳入依赖。
     await Promise.resolve();
-    if (session !== mySession) return;
-    try{if(inputs)displaySnapshot=structuredClone(inputs.getSnapshot());}catch{pageState={phase:'configuration-error',error:configurationError('DISPLAY_INPUTS_INVALID','期间事实输入不可读取')};return;}
-    const inputContext=displaySnapshot?.contextRevision;candidateClock=new Date();
+    if (session !== mySession || permissionInvalidated) return;
+    candidateClock=new Date();
 
     if (bootstrap && canonicalizeJson(raw) !== canonicalizeJson(bootstrap.document)) {
       pageState = {phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/',message:'执行快照与页面文档不匹配'}]};
@@ -458,7 +498,7 @@
     disposers.push(
       state.subscribe((values) => {
         const previous = filterValues;
-        filterValues = values;filterRevision=state.revision();candidateClock=state.clock();
+        filterValues = values;filterRevision=state.revision;candidateClock=state.clock();
         blockedFilters = [...state.blocked()];
         if (blockedFilters.length) {
           for (const component of flattenPageComponents(loaded)) if (component.type==='table' && sourceBlocked(loaded,component.data.main)) exportController.cancel(component.id);
@@ -468,14 +508,14 @@
           for (const declaration of declarations) if (declaration.type === 'dimension' && !localOptions.has(declaration.id) && !declaration.options) loadDimensionCandidates(candidatesLoader,declaration,values);
           receiveCandidates(dimensionCandidates);
         }
-        const presentation = periodFactPage(filterTextPage(loaded, textBindings, values),displaySnapshot,state.revision());
+        const presentation = periodFactPage(filterTextPage(loaded, textBindings, values),displaySnapshot,state.revision);
         if(candidatesLoader)loadTableCandidates(presentation);
         declarations = presentation.filters ?? [];
         pageState = { phase: 'ready', page: presentation, capabilities };
         if (primed && capabilities.filters) {
           const nextSearch = mergedSearch(state, search);
           navigationAdapter?.replaceSearch?.(nextSearch);
-          emit?.({ type: 'filter-change', search: nextSearch,filterRevision:state.revision() });
+          emit?.({ type: 'filter-change', search: nextSearch,filterRevision:state.revision });
           try { bootstrap?.recordFilters?.(values); } catch { /* 记录失败不能回滚当前筛选或中止查询 */ }
           if (changedFilters(previous, values).size > 0) closeDetail(false);
           for (const component of flattenPageComponents({sections:loaded.sections})) if(component.type==='table') tableController?.reset(component,previous,values);
@@ -486,14 +526,14 @@
 
     tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded));
     syncTableState(loaded);
-    pageState = { phase: 'ready', page: periodFactPage(filterTextPage(loaded, textBindings, filterValues),displaySnapshot,state.revision()), capabilities };
+    pageState = { phase: 'ready', page: periodFactPage(filterTextPage(loaded, textBindings, filterValues),displaySnapshot,state.revision), capabilities };
 
     const pageStream = orchestrate(
       loaded,
       activeGateway,
       capabilities.filters ? state : undefined,
       revisionId !== undefined ? { pageRevisionId: revisionId } : undefined,
-      bootstrap,{displayInputs:()=>displaySnapshot,filterRevision:()=>state.revision(),clock:()=>state.clock()}
+      bootstrap,{displayInputs:()=>displaySnapshot,filterRevision:()=>state.revision,clock:()=>state.clock()}
     );
     stream = pageStream;
     const emittedDataErrors = new Map<string, string>();
@@ -509,22 +549,20 @@
     );
     emit?.({ type: 'ready', pageId: loaded.id });
     const pendingInitial=new Set(declarations.filter(f=>(f.type==='timePoint'||f.type==='timeRange')&&f.availability?.initial&&!filterValues.has(f.id)&&!fromURL.has(f.id)).map(f=>f.id));
-    if(inputs)disposers.push(inputs.subscribe(()=>{
+    let periodKey=canonicalizeJson([displaySnapshot?.periods??{},displaySnapshot?.timeZone??null]);
+    refreshPeriodFacts=next=>{
       if(session!==mySession)return;
-      let next:import('@metriccanvas/page/internal').DisplayInputsSnapshot;
-      try{next=structuredClone(inputs.getSnapshot());}catch{dispose();pageState={phase:'configuration-error',error:configurationError('DISPLAY_INPUTS_INVALID','期间事实输入不可读取')};return;}
-      if(!inputContext||next.contextRevision!==inputContext){dispose();snapshots=new Map();displaySnapshot=undefined;pageState={phase:'configuration-error',error:configurationError('DISPLAY_INPUTS_CONTEXT_CHANGED','身份或上下文已变化，请销毁并重新挂载页面')};emit?.({type:'configuration-error',...pageState.error});return;}
-      if(canonicalizeJson(next)===canonicalizeJson(displaySnapshot))return;
-      displaySnapshot=next;
+      const key=canonicalizeJson([next?.periods??{},next?.timeZone??null]);if(key===periodKey)return;periodKey=key;
       // Invalidate authorizing receipts before publishing a new fact context.
       for(const declaration of declarations)if(declaration.type==='dimension'&&declaration.candidateWindow)state.candidate(declaration.id,'loading');
-      let defaults:Map<string,FilterValue>;try{defaults=initialFilterValues(declarations,new Date(),displaySnapshot,state.revision());}catch{defaults=new Map();}
+      let defaults:Map<string,FilterValue>;try{defaults=initialFilterValues(declarations,new Date(),displaySnapshot,state.revision);}catch{defaults=new Map();}
       const seeded=new Map(filterValues);
       for(const id of pendingInitial){if(filterValues.has(id)){pendingInitial.delete(id);continue;}const value=defaults.get(id);if(value){seeded.set(id,value);pendingInitial.delete(id);}}
       if(seeded.size!==filterValues.size)state.commit({type:'initialize',values:seeded});
       state.refreshContext();
       if(candidatesLoader)for(const declaration of declarations)if(declaration.type==='dimension'&&declaration.candidateWindow)loadDimensionCandidates(candidatesLoader,declaration,filterValues);
-    }));
+    };
+    disposers.push(()=>{refreshPeriodFacts=undefined;});
 
     if (!capabilities.filters && !pageComponents(pageState.phase==='ready'?pageState.page:loaded).some(component=>component.type==='table'&&buildTableColumnLayout(component.props.columns).leaves.some(column=>column.filterable?.mode==='select'))) return;
 
@@ -618,11 +656,11 @@
     });
   }
   async function exportTable(component: TableComponent) {
-    if(pageState.phase!=='ready'||!stream||!component.props.toolbar?.export)return;
+    if(pageState.phase!=='ready'||!stream||!component.props.toolbar?.export||!actionAllowed(component,component.props.toolbar.export))return;
     const frozen=JSON.parse(JSON.stringify(component)) as TableComponent;
     const input={page:pageState.page,component:frozen,queries:stream.captureQueries(),gateway:activeGateway,
       program:stream.getSourceProgram(),views:stream.captureViews(),
-      state:{now:new Date(),displayInputs:structuredClone(displaySnapshot),filterRevision,currentYear:stream.captureComputeYear(),filters:filterValues,tables:tableViews,headerFilters:appliedTableHeaderFilters}};
+      state:{now:new Date(),displaySnapshot:structuredClone(displaySnapshot),filterRevision,currentYear:stream.captureComputeYear(),filters:filterValues,tables:tableViews,headerFilters:appliedTableHeaderFilters}};
     try { await exportController.run(component.id,async controller=>{
       if (sourceBlocked(input.page,component.data.main)) throw new ExportViewError('EXPORT_NOT_READY','筛选待确认或候选未就绪，暂不能导出该表');
       const data=await prepareTableExport({...input,controller}); controller.signal.throwIfAborted();
@@ -659,11 +697,13 @@
   function handleTableCellSelect(
     component: TableComponent,
     rowIndex: number,
-    column: TableColumn
+    column: TableColumn,
+    clickedRow?:Row
   ) {
     if (!column.selection || !componentCapability(component)?.actions) return;
-    const row = visibleTableRows(component)[rowIndex];
-    if (!row) return;
+    const currentRows=visibleTableRows(component);
+    const row=clickedRow?resolvePresentationRow(component,currentRows,clickedRow):currentRows[rowIndex];
+    if (!row || !actionAllowed(component,column.selection,row)) return;
 
     const updates: Array<readonly [string, FilterValue | null]> = [];
     for (const [filterId, write] of Object.entries(column.selection.writes)) {
@@ -706,7 +746,7 @@
         ? (declaration.hierarchy.find((item) => item.id === level)?.dimension ??
           declaration.dimension)
         : declaration.dimension;
-    filterState?.write(declaration.id, values.length || declaration.treeSelection ? {type:'dimension',dimension,values,...(level ? {level} : {})} : null);
+    filterState?.write(declaration.id, values.length || declaration.treeSelection || declaration.hierarchy&&level ? {type:'dimension',dimension,values,...(level ? {level} : {})} : null);
   }
 
   function writeTimeRange(filterId: string, range: TimeRangeValue | null) {
@@ -770,18 +810,27 @@
     if(candidatesLoader && declaration?.type==='dimension')loadDimensionCandidates(candidatesLoader,declaration,filterValues,true);
   }
 
+  function actionAllowed(component:Component,action:import('@metriccanvas/page/internal').PolicyNode,row?:Row):boolean {
+    return presentation?.gate(action,row,presentation.component(component.id)).enabled===true;
+  }
   function componentHref(component: Component, row: Row): string | undefined {
     if (!componentCapability(component)?.actions || !('actions' in component.props)) return undefined;
-    const action = component.props.actions?.find(a => 'navigate' in a);
+    const action = component.props.actions?.find(a => 'navigate' in a && actionAllowed(component,a,row) && actionAllowed(component,a.navigate,row));
     return action && 'navigate' in action ? targetHref(action.navigate,row) : undefined;
   }
 
   function handleTableLink(component: TableComponent, row: Row, event: MouseEvent, column?: TableColumn) {
-    if (column?.navigate) {
+    if(component.props.rowKey){
+      const current=resolvePresentationRow(component,visibleTableRows(component),row);
+      if(!current){event.preventDefault();return;}
+      row=current;
+    }
+    if(column&&!tableInteractionGate(component,row,column).enabled){event.preventDefault();return;}
+    if (column?.navigate && actionAllowed(component,column.navigate,row)) {
       navigateTarget(column.navigate,row,event);
       return;
     }
-    if (column?.openDetail) {
+    if (column?.openDetail && actionAllowed(component,column.openDetail,row)) {
       event.preventDefault();
       openDetailFor(component, { on: 'click', openDetail: column.openDetail }, row, event.currentTarget as HTMLElement);
       return;
@@ -830,6 +879,16 @@
     | undefined
   >(undefined);
   let detailSnapshots = $state<PageDataSnapshots>(new Map());
+  let detailFilters=$state<FilterValues>(new Map());
+  let detailOrigin=$state.raw<{component:Component;row:Row;action:OpenDetailAction}|undefined>();
+  $effect(()=>{
+    const origin=detailOrigin;
+    if(!origin||!openDetail||!presentation)return;
+    if(!actionAllowed(origin.component,origin.action,origin.row)||!actionAllowed(origin.component,origin.action.openDetail,origin.row)) {closeDetail(false);return;}
+    if(origin.component.type==='table'&&origin.component.props.rowKey){
+      if(!resolvePresentationRow(origin.component,visibleTableRows(origin.component),origin.row))closeDetail(false);
+    }
+  });
   let detailGeneration = $state(0);
   let detailDispose: (() => void) | undefined;
   let detailTrigger: HTMLElement | undefined;
@@ -839,6 +898,7 @@
     detailDispose?.();
     detailDispose = undefined;
     openDetail = undefined;
+    detailOrigin=undefined;
     detailSnapshots = new Map();
     if (restoreFocus && detailTrigger?.isConnected) detailTrigger.focus();
     detailTrigger = undefined;
@@ -849,7 +909,9 @@
   }
 
   function openDetailFor(component: Component, action: OpenDetailAction, row: Row, trigger?: HTMLElement) {
+    if(!actionAllowed(component,action,row)||!actionAllowed(component,action.openDetail,row))return;
     untrack(() => closeDetail(false));
+    detailOrigin={component,row,action};
     const root = surfaceRoot.getRootNode() as Document | ShadowRoot;
     const sourceCell = Array.from(surfaceRoot.querySelectorAll<HTMLElement>('[data-component]'))
       .find(element => element.dataset.component?.split('/').at(-1) === component.id);
@@ -872,6 +934,7 @@
       try {
         const input = detailViewInput(page, action, row, filterValues, pageParams);
         openDetail = { ...openDetail, view:view?{...view,components:input.page.sections[0]!.components}:undefined, page: input.page };
+        detailFilters=input.filters;
         if (view?.mode === 'query') {
           const generation = detailGeneration;
           detailDispose = orchestrate(input.page, activeGateway, createFilterState(input.filters, input.page.filters ?? [])).subscribe(value => {
@@ -890,8 +953,8 @@
     return typeof title === 'string' ? title : undefined;
   }
 
-  function handleChartClick(component: ChartComponent | Extract<Component, { type: 'gauge' | 'rankingCard' }>, row: Row) {
-    if (!componentCapability(component)?.actions) return;
+  function handleChartClick(component: Component, row: Row) {
+    if (!componentCapability(component)?.actions || presentation?.component(component.id).enabled===false) return;
     if (component.type === 'mapChart' && component.props.hierarchyFilter) {
       const declaration = declarations.find(
         (item) => item.id === component.props.hierarchyFilter
@@ -910,22 +973,26 @@
         }
       }
     }
-    for (const action of component.props.actions ?? []) {
+    const actions=component.type==='button'?[component.props.action]:('actions' in component.props?component.props.actions??[]:[]);
+    for (const action of actions) {
+      if(!actionAllowed(component,action,row))continue;
       if ('navigate' in action) {
+        if(!actionAllowed(component,action.navigate,row))continue;
         navigateTarget(action.navigate,row);
         return;
       }
       if ('openDetail' in action) {
+        if(!actionAllowed(component,action.openDetail,row))continue;
         openDetailFor(component, action, row);
         return;
       }
-      const code = fieldName(action.field);
-      const clicked = row[code];
+      const clicked = 'field' in action ? row[fieldName(action.field)] : action.value;
       const target = declarations.find((declaration) => declaration.id === action.writeFilter);
       if (clicked == null || target?.type !== 'dimension') continue;
       filterState?.write(action.writeFilter, {
         type: 'dimension',
         dimension: target.dimension,
+        ...(target.hierarchy?{level:action.level??dimensionValueOf(filterValues,target.id).level??target.defaultLevel??target.hierarchy[0]?.id}:{}),
         values: [String(clicked)]
       });
     }
@@ -1022,13 +1089,13 @@
     if (resolvedTablePagination(component)?.mode === 'query') return snapshot;
     const pagination = resolvedTablePagination(component,snapshot);
     const source=pageState.phase==='ready'?pageState.page.dataSources[component.data.main]:undefined;
-    const rows=applySearchFilters(snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
+    const rows=applySearchFilters(presentation?.rows(component,snapshot.rows)??snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
     return {status:'ready',rows:tableController?.present(component,rows,pagination?.mode!=='local').rows??rows};
   }
   function filteredTableRows(component: TableComponent,snapshot: Extract<DataSnapshot,{status:'ready'}>):Row[] {
     void tableRevision;
     const source=pageState.phase==='ready'?pageState.page.dataSources[component.data.main]:undefined;
-    const rows=applySearchFilters(snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
+    const rows=applySearchFilters(presentation?.rows(component,snapshot.rows)??snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
     return tableController?.present(component,rows,true).rows??rows;
   }
 
@@ -1107,6 +1174,13 @@
     return tablePageSizes[component.id] ?? stream?.getQueryPageSize(component.data.main) ?? queryPageSize(loaded, component);
   }
 
+  function tableInteractionGate(component:TableComponent,row:Row,column:TableColumn){
+    const node=column.selection??column.navigate??column.openDetail;
+    if(node)return presentation?.gate(node,row,presentation.component(component.id))??{eligible:true,enabled:true};
+    const actions=component.props.actions??[];
+    const gates=actions.map(action=>presentation?.gate(action,row,presentation.component(component.id))??{eligible:true,enabled:true});
+    return {eligible:gates.some(g=>g.eligible),enabled:gates.some(g=>g.enabled)};
+  }
   function tableBinding(
     loaded: Page,
     component: Component,
@@ -1124,9 +1198,11 @@
       filterOptionsStatus: tableController?.candidateStates(component,dimensionCandidates),
       pagination: tablePaginationState(loaded, component, slots),
       paginationConfig: resolvedTablePagination(component, slots.get('main')),
-      oncellselect: ({ rowIndex, column }) =>
-        handleTableCellSelect(component, rowIndex, column),
-      linkHref: (row, column) => column?.navigate ? targetHref(column.navigate,row)
+      interactionGate:(row,column)=>tableInteractionGate(component,row,column),
+      toolbarEnabled:{search:component.props.toolbar?.search?actionAllowed(component,component.props.toolbar.search):true,export:component.props.toolbar?.export?actionAllowed(component,component.props.toolbar.export):true},
+      oncellselect: ({ rowIndex, column, row }) =>
+        handleTableCellSelect(component, rowIndex, column,row),
+      linkHref: (row, column) => column?.navigate && actionAllowed(component,column.navigate,row) ? targetHref(column.navigate,row)
         : column?.openDetail ? undefined : componentHref(component, row),
       onlink: ({ row, column }, event) => handleTableLink(component, row, event, column)
     });
@@ -1134,7 +1210,7 @@
 
   function chartClickHandler(component: Component): ((row: Row) => void) | undefined {
     if (!componentCapability(component)?.actions ||
-      !(isChartComponent(component) || component.type === 'gauge' || component.type === 'rankingCard')) {
+      !(isChartComponent(component) || component.type === 'gauge' || component.type === 'rankingCard' || component.type==='button')) {
       return undefined;
     }
     return (row: Row) => handleChartClick(component, row);
@@ -1223,7 +1299,7 @@
     {/if}
   {:else}
     {@const readyPage = pageState.page}
-    {@const contentFilters = contentFilterDeclarations(readyPage, declarations).filter(filter=>!readyPage.iocHeader?.filterIds?.includes(filter.id))}
+    {@const contentFilters = contentFilterDeclarations(readyPage, presentation?.filters??declarations).filter(filter=>!readyPage.iocHeader?.filterIds?.includes(filter.id))}
     {@const layoutForm = readyPage.layout ?? 'report'}
     {@const firstComponent = readyPage.sections[0]?.components[0]}
     {@const leadingDateToolbar = layoutForm === 'report' && !readyPage.sections[0]?.title && firstComponent?.type === 'reportHeader' && firstComponent.layout.span === 12 && (!!firstComponent.props.filterIds?.length || !!firstComponent.props.exportButtons?.length || !!firstComponent.props.pdfExport || !!firstComponent.props.pngExport)}
@@ -1308,12 +1384,12 @@
 
     {#if readyPage.sectionGroups || readyPage.sectionAnchors}
       <nav class="section-navigation" aria-label="内容导航">
-        {#each readyPage.sectionGroups ?? [] as group (group.id)}
+        {#each (readyPage.sectionGroups ?? []).filter(group=>presentation?.groups.get(group.id)?.eligible!==false) as group (group.id)}
           <button type="button" data-section-group={group.id}
             aria-pressed={selectedSectionGroup(readyPage, selectedGroup) === group.id}
             onclick={() => (selectedGroup = group.id)}>{group.label}</button>
         {/each}
-        {#each readyPage.sectionAnchors ?? [] as anchor (anchor.sectionId)}
+        {#each (readyPage.sectionAnchors ?? []).filter(anchor=>presentation?.sectionGates.get(anchor.sectionId)?.eligible!==false) as anchor (anchor.sectionId)}
           <button type="button" data-section-anchor={anchor.sectionId}
             onclick={() => locateSection(readyPage, anchor.sectionId)}>{anchor.label}</button>
         {/each}
@@ -1321,7 +1397,7 @@
     {/if}
     <div class="page-sections">
       {#snippet headerControls(ids: string[])}
-        <FilterBar {timeContext} onretry={retryCandidates} readOnly={filterEditing?.readOnly} declarations={ids.flatMap(id=>declarations.find(f=>f.id===id)??[])} values={filterValues}
+        <FilterBar {timeContext} onretry={retryCandidates} readOnly={filterEditing?.readOnly} declarations={ids.flatMap(id=>presentation?.filters.find(f=>f.id===id)??[])} values={filterValues}
           candidates={dimensionCandidates} ondimension={writeDimension} ontimerange={writeTimeRange}
           ontimepoint={writeTimePoint} onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
       {/snippet}
@@ -1347,7 +1423,7 @@
           pageSnapshots={snapshots}
           {aiSummary}
           textLinks={component.type === 'text'
-            ? (component.props.links ?? []).map(textLink)
+            ? (component.props.links ?? []).filter(link=>presentation?.gate(link).eligible!==false).map(link=>({...textLink(link),disabled:presentation?.gate(link).enabled===false}))
             : []}
           onchartclick={chartClickHandler(component)}
           onmetriclink={metricLinkHandler(component)}
@@ -1359,11 +1435,11 @@
         />
       {/snippet}
       {#if sectionsContent}
-        {@render sectionsContent(visibleSections(readyPage, selectedGroup), componentContent)}
+        {@render sectionsContent(visibleSections({...readyPage,sections:presentation?.sections??readyPage.sections,sectionGroups:readyPage.sectionGroups?.filter(group=>presentation?.groups.get(group.id)?.eligible!==false)}, selectedGroup), componentContent)}
       {:else}
-        {#each readyPage.sections as section (section.id)}
+        {#each presentation?.sections ?? readyPage.sections as section (section.id)}
           <RuntimeSection {section} {componentContent}
-            hidden={!visibleSections(readyPage, selectedGroup).includes(section)} />
+            hidden={!visibleSections({...readyPage,sections:presentation?.sections??readyPage.sections,sectionGroups:readyPage.sectionGroups?.filter(group=>presentation?.groups.get(group.id)?.eligible!==false)}, selectedGroup).some(item=>item.id===section.id)} />
         {/each}
       {/if}
     </div>
@@ -1396,7 +1472,7 @@
           <p role="alert">{openDetail.error}</p>
         {:else if openDetail.view && openDetail.page}
           {#key detailGeneration}
-            <DetailContent page={openDetail.page} components={openDetail.view.components} snapshots={detailSnapshots} />
+            <DetailContent page={openDetail.page} components={openDetail.view.components} snapshots={detailSnapshots} filters={detailFilters} {displaySnapshot} {filterRevision} />
           {/key}
         {:else}
         <dl>

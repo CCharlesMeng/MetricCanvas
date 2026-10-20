@@ -1,21 +1,21 @@
 {
-  "schemaVersion": "6.34",
-  "id": "metric-card-equation",
-  "layout": "dashboard",
+  "schemaVersion": "6.35",
+  "id": "page-visibility-inputs",
+  "layout": "report",
   "dataSources": {},
   "sections": [
     {
       "id": "main",
       "components": [
         {
-          "id": "intro-text",
+          "id": "fact-text",
           "type": "text",
           "layout": {
             "span": 12
           },
           "props": {
-            "variant": "insight",
-            "body": "收入概览 · 单位：万元 · 演示数据"
+            "body": "业务事实已就绪。",
+            "variant": "insight"
           }
         }
       ]

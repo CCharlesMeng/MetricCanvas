@@ -1,0 +1,43 @@
+{
+  "case": "condition-part-duplicate",
+  "invariant": "conditional-presentation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "条件正文片段id必须唯一",
+      "paths": [
+        "/sections/3/components/1/props/parts"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      "…",
+      "…",
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "parts": [
+                {
+                  "id": "base",
+                  "text": "当前展示："
+                },
+                {
+                  "id": "dept",
+                  "text": "地区部，",
+                  "visibleWhen": {
+                    "…": "共4个键"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/condition-part-duplicate.json"
+}

@@ -31,6 +31,8 @@ export function navigationErrors(page: Page): TypedError[] {
     }
     if (component.type === 'text') {
       (component.props.links ?? []).forEach((link, i) => targets.push([link, `${path}/props/links/${i}`]));
+    } else if (component.type==='button' && 'navigate' in component.props.action) {
+      targets.push([component.props.action.navigate,`${path}/props/action/navigate`]);
     } else if ('actions' in component.props) {
       component.props.actions?.forEach((a, i) => {
         if ('navigate' in a) targets.push([a.navigate, `${path}/props/actions/${i}/navigate`]);

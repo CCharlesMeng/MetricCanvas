@@ -1,3 +1,4 @@
+import { buttonComponentZ } from './components/button';
 import { z } from 'zod';
 import { reportHeaderComponentZ } from './components/report-header';
 import { metricCardComponentZ } from './components/metric-card';
@@ -37,12 +38,14 @@ export const componentSchemas = [
   categoryBreakdownComponentZ,
   fieldTextComponentZ,
   textComponentZ,
-  aiSummaryComponentZ
+  aiSummaryComponentZ,
+  buttonComponentZ
 ] as const;
 
 export const componentZ = z.discriminatedUnion('type', componentSchemas);
 
 export {
+  buttonComponentZ,
   reportHeaderComponentZ,
   metricCardComponentZ,
   barChartComponentZ,

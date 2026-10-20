@@ -57,6 +57,7 @@ export interface DimensionFilterDeclaration extends FilterInteractionExtension, 
   display?: 'select' | 'tabs' | 'tree' | 'search';
   /** false 时仅作为组件联动使用，不在页面筛选器区呈现控件。 */
   visible?: boolean;
+  visibleWhen?: import('./schema/condition').Condition;
   /** 初始选中的维度值;缺省为不筛选 */
   default?: string[];
   /** 只在实例化时读取参数；与default互斥。 */
@@ -99,6 +100,7 @@ export interface TimeRangeFilterDeclaration extends FilterInteractionExtension {
   required?: boolean;
   /** false 时仅作为组件联动使用，不在页面筛选器区呈现控件。 */
   visible?: boolean;
+  visibleWhen?: import('./schema/condition').Condition;
   /** 初始范围:相对预设、结构化相对时间或绝对范围;缺省为不筛选 */
   default?: TimeRangePreset | TimeRangeValue | RelativeTimeExpression | PeriodSelection;
 }
@@ -148,6 +150,7 @@ export interface TimePointFilterDeclaration extends FilterInteractionExtension {
   type: 'timePoint';
   label?: string;
   visible?: boolean;
+  visibleWhen?: import('./schema/condition').Condition;
   /** 单个时间点的粒度。谓词是等值,不是区间。 */
   granularity: 'month' | 'date';
   max?:string;blockedRanges?:TimeRangeValue[];availability?:TimeAvailability;
@@ -169,6 +172,7 @@ export interface BooleanFilterDeclaration extends FilterInteractionExtension {
   type: 'boolean';
   label?: string;
   visible?: boolean;
+  visibleWhen?: import('./schema/condition').Condition;
   /** true 表示打开时勾选;未勾选不占位(无条件)。 */
   default?: boolean;
 }
@@ -185,6 +189,7 @@ export interface NumberRangeFilterDeclaration extends FilterInteractionExtension
   type: 'numberRange';
   label?: string;
   visible?: boolean;
+  visibleWhen?: import('./schema/condition').Condition;
   default?: NumberRangeValue;
   constraints?:{min?:number;max?:number;bounds?:'strict'|'inclusive'};
   units?:{filterId:string;cases:Record<string,{currency:'CNY'|'USD';label:string;scale:number}>};
@@ -198,6 +203,7 @@ export interface SearchFilterDeclaration extends FilterInteractionExtension {
   type: 'search';
   label?: string;
   visible?: boolean;
+  visibleWhen?: import('./schema/condition').Condition;
   default?: string;
 }
 

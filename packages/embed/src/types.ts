@@ -2,8 +2,8 @@ import type { RuntimeDataGateway } from '@metriccanvas/engine';
 import type { AiSummaryConfig, RuntimeViewEvent, RuntimeNavigation } from '@metriccanvas/engine/ui';
 
 export interface RuntimeInput {
+  displayInputs?: import('@metriccanvas/engine').DisplayInputs;
   document: unknown;
-  displayInputs?:import('@metriccanvas/engine/ui').DisplayInputsSource;
   execution?: import('@metriccanvas/engine').ExecutionBootstrap;
   /** 主查询执行必备;维度候选值端口可选,缺席即筛选候选值不可用。 */
   dataGateway?: RuntimeDataGateway;

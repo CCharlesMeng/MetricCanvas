@@ -1,6 +1,26 @@
 {
   "invariants": [
     {
+      "id": "conditional-presentation",
+      "description": "6.35共用展示条件、稳定目标和本地行边界",
+      "valid": [
+        "page-visibility-region-linkage",
+        "page-visibility-inputs",
+        "page-visibility-report",
+        "reference-conditions-page"
+      ],
+      "invalid": [
+        "condition-before-6.35",
+        "condition-row-outside-table",
+        "condition-level-set-unknown",
+        "condition-filter-unknown",
+        "condition-mixed-literals",
+        "condition-depth-limit",
+        "condition-part-duplicate",
+        "condition-row-key-required"
+      ]
+    },
+    {
       "id": "metric-card-before",
       "description": "6.34 Dashboard 顶层指标卡前置文字、受控间距与整组跨度",
       "valid": [
@@ -50,14 +70,14 @@
     },
     {
       "id": "navigation-target-inputs",
-      "description": "6.39 显式跨页传值意图与受控来源",
+      "description": "6.40 显式跨页传值意图与受控来源",
       "valid": [
         "navigation-source-page",
         "navigation-list-page",
         "navigation-detail-page"
       ],
       "invalid": [
-        "navigation-inputs-before-6.39",
+        "navigation-inputs-before-6.40",
         "navigation-policy-fixed-input",
         "navigation-policy-false",
         "navigation-inputs-false",
@@ -66,7 +86,7 @@
     },
     {
       "id": "time-extensions",
-      "description": "6.38 显式时间模式、可信期间事实、快捷范围及V2月份窗口",
+      "description": "6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口",
       "valid": [
         "time-modes-page",
         "time-presets-page",
@@ -75,7 +95,7 @@
         "time-binding-branches-page"
       ],
       "invalid": [
-        "time-before-6.38",
+        "time-before-6.39",
         "time-case-missing",
         "time-query-xor",
         "time-period-mismatch",
@@ -88,12 +108,12 @@
     },
     {
       "id": "currency-selection",
-      "description": "6.37金额范围和静态货币字段选择",
+      "description": "6.38金额范围和静态货币字段选择",
       "valid": [
         "currency-selection-page"
       ],
       "invalid": [
-        "currency-before-6.37",
+        "currency-before-6.38",
         "currency-case-missing",
         "currency-metric-mismatch",
         "currency-negative-default",
@@ -103,12 +123,12 @@
     },
     {
       "id": "business-filters",
-      "description": "6.36 封闭枚举与业务选择语义",
+      "description": "6.37 封闭枚举与业务选择语义",
       "valid": [
         "business-filter-page"
       ],
       "invalid": [
-        "business-filter-before-6.36",
+        "business-filter-before-6.37",
         "business-filter-single-many",
         "business-filter-disabled-default",
         "business-filter-options-dependent",
@@ -118,12 +138,12 @@
     },
     {
       "id": "ioc-header",
-      "description": "6.35 页级IOC身份与唯一筛选归属",
+      "description": "6.36 页级IOC身份与唯一筛选归属",
       "valid": [
         "ioc-header-page"
       ],
       "invalid": [
-        "ioc-header-before-6.35",
+        "ioc-header-before-6.36",
         "ioc-header-empty",
         "ioc-header-toolbar-conflict",
         "ioc-header-hidden-filter",
@@ -1227,7 +1247,7 @@
     },
     {
       "id": "actions-live-only",
-      "description": "writeFilter 只允许绑定 query 数据源的组件",
+      "description": "旧版本writeFilter只允许query组件；6.35的本地入口必须有查询或显隐消费方",
       "valid": [
         "query-dashboard",
         "filters-page",
@@ -1334,7 +1354,8 @@
         "detail-component-reject-keyvaluepanel",
         "detail-component-reject-categorybreakdown",
         "detail-component-reject-fieldtext",
-        "detail-component-reject-aisummary"
+        "detail-component-reject-aisummary",
+        "detail-component-reject-button"
       ]
     }
   ]

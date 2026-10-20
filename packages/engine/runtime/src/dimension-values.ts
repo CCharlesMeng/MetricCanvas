@@ -38,9 +38,9 @@ export interface DimensionValuesStream extends Subscribable<DimensionValuesSnaps
    * 请求一个维度的候选值。同一会话内按维度幂等:已在加载或已有终态的
    * 维度不重复请求。约束变化时用 `reload` 重新取。
    */
-  load(dimension: string, constraints?: Readonly<Record<string, readonly string[]>>, scope?: { filterId: string; level?: string; context?: string }): void;
+  load(dimension: string, constraints?: Readonly<Record<string, readonly string[]>>, scope?: { filterId: string; level?: string; context?: string } | string): void;
   /** 丢弃该维度当前快照并按新约束重新请求。 */
-  reload(dimension: string, constraints?: Readonly<Record<string, readonly string[]>>, scope?: { filterId: string; level?: string; context?: string }): void;
+  reload(dimension: string, constraints?: Readonly<Record<string, readonly string[]>>, scope?: { filterId: string; level?: string; context?: string } | string): void;
   loadFilter(request:FilterCandidatesRequest,context:string,levels?:readonly string[],force?:boolean):void;
   /** 上游事实不可用时取消当前代次并清除其候选回执。 */
   unavailable(dimension: string, scope: { filterId: string; level?: string; context?: string }): void;
@@ -76,9 +76,10 @@ export function createDimensionValuesLoader(
     for (const subscriber of subscribers) notify(subscriber, current);
   }
   function start(dimension: string, constraints: Readonly<Record<string, readonly string[]>> | undefined,
-    force: boolean, scope?: {filterId:string;level?:string;context?:string}, filterRequest?:FilterCandidatesRequest, levels?:readonly string[]): void {
+    force: boolean, inputScope?: {filterId:string;level?:string;context?:string}|string, filterRequest?:FilterCandidatesRequest, levels?:readonly string[]): void {
     if (disposed) return;
-    const slot = scope ? candidateScopeKey(scope.filterId, dimension, scope.level) : dimension;
+    const scope=typeof inputScope==='object'?inputScope:undefined;
+    const slot = typeof inputScope==='string'?candidateKey(dimension,inputScope):scope ? candidateScopeKey(scope.filterId, dimension, scope.level) : dimension;
     const contextSlot = scope?.context !== undefined ? candidateScopeKey(scope.filterId,dimension,scope.level,scope.context) : undefined;
     const normalized = constraints && Object.fromEntries(Object.keys(constraints).sort().map(key => [key, [...new Set(constraints[key])].sort()]));
     const key = JSON.stringify([slot, dimension, normalized ?? {},scope?.context ?? null,filterRequest??null]);
@@ -151,9 +152,9 @@ export function createDimensionValuesLoader(
 /** 便于消费方取快照缺省值:未请求过的维度视为 idle。 */
 export function dimensionValuesSnapshot(
   snapshots: DimensionValuesSnapshots,
-  dimension: string
+  dimension: string, consumerId?:string
 ): DimensionValuesSnapshot {
-  return snapshots.get(dimension) ?? IDLE;
+  return snapshots.get(candidateKey(dimension,consumerId)) ?? IDLE;
 }
 
 function capability(
@@ -179,3 +180,5 @@ function notify(
 export function candidateScopeKey(filterId: string, dimension: string, level?: string, context?: string): string {
   return JSON.stringify(['filter', filterId, dimension, level ?? null, ...(context === undefined ? [] : [context])]);
 }
+
+export function candidateKey(dimension:string,consumerId?:string):string {return consumerId ? `${consumerId}:${dimension}` : dimension;}

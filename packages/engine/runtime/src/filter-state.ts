@@ -34,13 +34,14 @@ interface CoordinatedFilterState extends FilterState, FilterCoordinator {
   /** A legality gate, independent of visibility. The owning runtime feeds candidate receipts. */
   blocked(): ReadonlySet<string>;
   refreshContext():void;
-  revision():number;
+  readonly revision:number;
   clock():Date;
   candidate(filterId: string, status: 'loading' | 'ready' | 'empty' | 'error' | 'unavailable' | 'denied' | 'unconfigured', values?: readonly string[]): void;
 
 }
 
 export interface FilterState {
+  readonly revision?: number;
   subscribe(run: (values: FilterValues) => void): () => void;
   write(filterId: string, value: FilterValue | null): void;
   /** 原子写入多个筛选值，只向订阅方推送一次完整状态。 */
@@ -155,7 +156,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
 
     commit,
     blocked,
-    revision:()=>revision,clock:()=>new Date(operationClock),
+    get revision(){return revision;},clock:()=>new Date(operationClock),
     refreshContext(){operationClock=editing.now?.()??new Date();replace(new Map(current));},
     candidate(filterId, status, values) {
       const previous = [...blocked()].sort().join('\0');
@@ -232,6 +233,14 @@ function normalize(value: FilterValue | null, declaration?: FilterDeclaration, n
     if (!value) return declaration.required ? undefined : null;
     if (value.type !== 'timeRange' || validateCalendarTimeRange(value, declaration.precision).length || timeFilterBoundaryError(declaration, value,now)) return undefined;
   }
+  if (value?.type === 'dimension' && declaration?.type === 'dimension') {
+    if(declaration.hierarchy) {
+      const level=value.level ?? declaration.defaultLevel ?? declaration.hierarchy[0]?.id;
+      if(!declaration.hierarchy.some(item=>item.id===level))return undefined;
+      return {...value,level,dimension:dimensionOfLevel(declaration,level)};
+    }
+    if(value.level!==undefined)return undefined;
+  }
   if (value && value.type === 'dimension' && value.values.length === 0) return declaration?.type==='dimension'&&declaration.treeSelection?value:null;
   if (value?.type === 'timeRange' && validateCalendarTimeRange(value).length > 0) {
     return undefined;
@@ -294,7 +303,7 @@ export function parseFilterSearch(search: string, declarations: readonly FilterD
     let value: FilterValue | null | undefined;
     if (declaration.type === 'dimension') {
       const values = query.getAll(keys.value!).filter(v => v !== '');
-      if (!values.length) continue;
+      if (!values.length && !(declaration.hierarchy && read('level'))) continue;
       const level = read('level') ?? declaration.defaultLevel ?? declaration.hierarchy?.[0]?.id;
       if (level && declaration.hierarchy && !declaration.hierarchy.some(l => l.id === level)) continue;
       value = { type: 'dimension', values, dimension: dimensionOfLevel(declaration, level), ...(level ? { level } : {}) };

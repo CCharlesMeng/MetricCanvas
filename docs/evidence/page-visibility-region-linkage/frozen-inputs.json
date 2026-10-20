@@ -1,0 +1,24 @@
+{
+  "sourceCommit": "0c6464bf065ede9552940a9fffbb7af1f453b95d",
+  "sourceTree": "43b96e832c13f40d74d2ff06b3aa8ba8aa293d42",
+  "baseline": "9c39d6455776cfbd0084d78394fe4edeb55dc3f7",
+  "files": {
+    "pnpm-lock.yaml": "63f17f9b6cf5abb75bdcb9217e01bdba3d12ef2578403e256beb4316376d72a0",
+    "packages/page/src/version.ts": "0610d3b2853738917f6ad3fa602755a07528f719a13f14c5b1315d45c853f1a3",
+    "packages/page/src/condition.ts": "5d5cd98ea147cfb557a398e452ffdc6d66f8df34cd945ff25539aa9ef6e2d170",
+    "packages/page/src/presentation-policy.ts": "2f4cef9fa663dedf8041ea43d1eff0820107f46875a80145d93acef59eed3241",
+    "packages/engine/runtime/src/presentation.ts": "87e33e36e68d6c79d995332a155687daee630d3119201c0e01c7f782f442220e",
+    "packages/engine/runtime/src/filter-state.ts": "65bfb3b2fd787a6bde20630fd8c33ea3698e95e4fd9852795775181e27fe2735",
+    "packages/engine/runtime-ui/src/RuntimeSurface.svelte": "af0c498a7dd56d7fc152c95b94d5fb5879b18ce4e5c8ea6d20e3149c2fb9cb38",
+    "pages/page-visibility-region-linkage.json": "2a81a874e92b5758bb1ad24f460361be8b272b7b705fa7de22072aa006c8f8c4",
+    "pages/page-visibility-inputs.json": "b61c8c588ef4d3f01cc05df1664b0d06a0e5289fa10f448096f2e0a97a6bb6f9",
+    "pages/page-visibility-report.json": "e02c775ae254229179caa726aefddbc052afda1b7db6a1e0a302fce6f5445305",
+    "metriccanvas-authoring/bundle.lock.json": "c890cee5ea12c6b4af8598d3fc9cd6e61cf23900a28d21caa6b841f2a88895a7",
+    "tools/scripts/page-reference.ts": "b04504d457b0581fb127997537f6d6ee2210d8de5ad47afa3c8d00fbb0f60795"
+  },
+  "compatibilityOutput": "/tmp/visibility-compatibility-complete",
+  "browserOutput": "/tmp/metriccanvas-visibility-verified",
+  "productionIntegration": "NOT_RUN",
+  "runtimeSourceUnchangedAfterHarnessUpdates": true,
+  "harnessCommit": "5ad909f0c1aac8a55b9a4b7492bda72380f8baee"
+}

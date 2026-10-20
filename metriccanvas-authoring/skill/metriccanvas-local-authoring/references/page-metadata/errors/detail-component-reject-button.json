@@ -1,0 +1,45 @@
+{
+  "case": "detail-component-reject-button",
+  "invariant": "detail-view-component-types",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "详情只允许说明、图表和表格，不允许递归动作或容器",
+      "paths": [
+        "/detailViews/0/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "detailViews": [
+      {
+        "components": [
+          {
+            "id": "negative-detail-button",
+            "type": "button",
+            "layout": {
+              "span": 3
+            },
+            "visibleWhen": {
+              "any": [
+                "…（共2项）"
+              ]
+            },
+            "enabledWhen": {
+              "fact": "flag",
+              "op": "eq",
+              "value": true
+            },
+            "props": {
+              "label": "静态契约按钮",
+              "action": {
+                "…": "共5个键"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,26 @@
+{
+  "case": "condition-row-outside-table",
+  "invariant": "conditional-presentation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "条件引用了不存在的来源、非法筛选部分或缺少行上下文",
+      "paths": [
+        "/sections/1/visibleWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "visibleWhen": {
+          "row": "kind",
+          "op": "eq",
+          "value": "department"
+        }
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/condition-row-outside-table.json"
+}

@@ -6,7 +6,7 @@ import {createSourceProgram} from '../src/source-program/session';
 import {initialFilterValues} from '../src/filter-values';
 import {filterCandidatesRequest} from '../src/filter-candidates';
 const load=(name='time-modes')=>{const p=parsePage(JSON.parse(readFileSync(`pages/ioc-header-${name}-demo.json`,'utf8')));if(!p.ok)throw Error(JSON.stringify(p.errors));return p.page;};
-const facts:DisplayInputsSnapshot={contextRevision:'u1',timeZone:'Asia/Shanghai',periods:{sales:{status:'ready',granularity:'month',latest:'2026-10',latestComplete:'2026-09'}}};
+const facts:DisplayInputsSnapshot={permissions:{},values:{},permissionRevision:'u1',timeZone:'Asia/Shanghai',periods:{sales:{status:'ready',granularity:'month',latest:'2026-10',latestComplete:'2026-09'}}};
 const collect=async(program:ReturnType<typeof createSourceProgram>,request:Parameters<ReturnType<typeof createSourceProgram>['read']>[0])=>{const result=[];for await(const update of program.read(request))result.push(update);return result;};
 describe('B4 execution boundaries',()=>{
  it.each([['day','2026-10-01','2026-10-07','day'],['month','2026-08','2026-09','month'],['isoWeek','2026-10-05','2026-10-11','week']])('executes full static %s case and never reuses unproved seeds',async(mode,from,to,period)=>{

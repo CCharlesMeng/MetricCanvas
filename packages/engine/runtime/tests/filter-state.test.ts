@@ -262,3 +262,32 @@ it('时间点下限拒绝越界初始状态，序列化沿用已绑定的URL键'
   const state = createFilterState(new Map([['month', { type: 'timePoint', granularity: 'month', value: '2020-06' }]]), declarations);
   expect(state.toURL()).toBe('period=2020-06');
 });
+
+it('preserves explicit empty hierarchy through URL and recursively clears descendants once',()=>{
+ const declarations:import('@metriccanvas/page/internal').FilterDeclaration[]=[
+  {id:'org',type:'dimension',dimension:'global',hierarchy:[{id:'global',dimension:'global'},{id:'department',dimension:'department'}]},
+  {id:'child',type:'dimension',dimension:'child',dependsOn:'org'},
+  {id:'grandchild',type:'dimension',dimension:'grandchild',dependsOn:'child'}
+ ];
+ const state=createFilterState(new Map([['child',{type:'dimension',dimension:'child',values:['a']}],['grandchild',{type:'dimension',dimension:'grandchild',values:['b']}]]),declarations);
+ let current:import('../src/filter-state').FilterValues=new Map();let calls=0;state.subscribe(next=>{current=next;calls++;});
+ state.write('org',{type:'dimension',dimension:'department',level:'department',values:[]});
+ expect(current.get('org')).toEqual({type:'dimension',dimension:'department',level:'department',values:[]});
+ expect(current.has('child')).toBe(false);expect(current.has('grandchild')).toBe(false);expect(calls).toBe(2);
+ const restored=createFilterState(undefined,declarations);restored.fromURL(state.toURL(),declarations);
+ let value:unknown;restored.subscribe(next=>value=next.get('org'));expect(value).toEqual(current.get('org'));
+});
+
+it('an invalid child rejects the entire parent transaction and preserves the original descendant context',()=>{
+ const declarations:import('@metriccanvas/page/internal').FilterDeclaration[]=[
+  {id:'parent',type:'dimension',dimension:'parent'},
+  {id:'child',type:'dimension',dimension:'child',dependsOn:'parent'}
+ ];
+ const state=createFilterState(new Map([['child',{type:'dimension',dimension:'child',values:['old']}]]),declarations);
+ const {pushes}=collect(state);
+ state.writeMany([['parent',{type:'dimension',dimension:'parent',values:['new']}],['child',{type:'boolean',value:true}]]);
+ expect(pushes).toHaveLength(1);
+ expect(pushes.at(-1)?.has('parent')).toBe(false);
+ expect(pushes.at(-1)?.get('child')).toEqual({type:'dimension',dimension:'child',values:['old']});
+ expect(state.revision).toBe(0);
+});

@@ -31,7 +31,8 @@ export type RuntimeConfigurationErrorCode =
   | 'DATA_GATEWAY_REQUIRED'
   | 'DATA_GATEWAY_INVALID'
   | 'DISPLAY_INPUTS_CONTEXT_CHANGED'
-  | 'DISPLAY_INPUTS_INVALID';
+  | 'DISPLAY_INPUTS_INVALID'
+  | 'DISPLAY_PERMISSION_CHANGED';
 
 export interface RuntimeConfigurationError {
   code: RuntimeConfigurationErrorCode;
@@ -91,9 +92,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 /** 正式渲染输入；创作行为不属于该 Interface。 */
 export interface RuntimeViewProps {
+  displayInputs?: import('../../runtime/src/display-inputs').DisplayInputs;
   document: unknown;
-  /** Stable trusted source; same-context snapshots update without remount. */
-  displayInputs?: import('@metriccanvas/page/internal').DisplayInputsSource;
+
   execution?: import('../../runtime/src').ExecutionBootstrap;
   dataGateway?: RuntimeDataGateway;
   aiSummary?: import('./ai-summary/pangu-sse').AiSummaryConfig;

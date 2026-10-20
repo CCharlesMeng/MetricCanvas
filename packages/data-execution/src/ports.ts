@@ -101,7 +101,7 @@ export interface FilterCandidatesRequest {
   dimension:string;
   level?:string;
   calendarWindow?:{granularity:'month';from:string;to:string};
-  factRevision?:string;contextRevision?:string;filterRevision?:number;
+  factRevision?:string;permissionRevision?:string;filterRevision?:number;
   constraints:{
     dimensions:Readonly<Record<string,readonly string[]>>;
     times:Readonly<Record<string,{from:string;to:string;mode?:'day'|'month'|'isoWeek'}>>;

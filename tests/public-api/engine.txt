@@ -11,6 +11,8 @@ DimensionValuesResult
 DimensionValuesSnapshot
 DimensionValuesSnapshots
 DimensionValuesStream
+DisplayInputs
+DisplaySnapshot
 EXPORT_MAX_ROWS
 EXPORT_PREPARATION_TIMEOUT_MS
 ExecutionBootstrap
@@ -52,6 +54,7 @@ dimensionValuesSnapshot
 filterSearch
 initialFilterValues
 initializePageParams
+isDisplayInputs
 loadExecution
 navigationHref
 orchestrate

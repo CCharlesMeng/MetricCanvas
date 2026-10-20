@@ -1,5 +1,7 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import {compilePresentation} from '../../runtime/src/presentation';
+  import {PRESENTATION_CONTEXT} from './presentation-context';
   import { chartOptionPaths } from '@metriccanvas/page/internal';
   import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
   import FilterBar from './filters/FilterBar.svelte';
@@ -15,6 +17,8 @@
   import type { NestedComponentRender,TableRenderBinding } from './component-render';
   let {state:inputState,width,padding,gap,scale=2}: {state:ExportRenderState;width:number;padding:string;gap:string;scale?:number}=$props();
   const state=$derived({...inputState,page:projectFieldSelections({...inputState.page,detailViews:undefined},inputState.filters)});
+  const presentation=$derived(compilePresentation(state.page).evaluate({filters:state.filters,filterRevision:state.filterRevision,displaySnapshot:state.displaySnapshot}));
+  setContext(PRESENTATION_CONTEXT,()=>presentation);
   setContext(CHART_OPTION_PATHS, () => chartOptionPaths(state.page));
   setContext(STATIC_EXPORT_CONTEXT,true);
   setContext(EXPORT_SCALE_CONTEXT,untrack(() => scale));
@@ -28,7 +32,7 @@
     <IocHeader model={resolvedIocHeader(state.page.iocHeader)} filterIds={state.page.iocHeader.filterIds??[]} controls={iocStaticControls} staticView/>
   {/if}
   {#snippet iocStaticControls(id:string,readOnly:boolean)}
-    <FilterBar timeContext={{snapshot:state.displayInputs,revision:state.filterRevision}} declarations={(state.page.filters??[]).filter(f=>f.id===id)} values={state.filters} candidates={new Map()} {readOnly}
+    <FilterBar timeContext={{snapshot:state.displaySnapshot,revision:state.filterRevision}} declarations={(state.page.filters??[]).filter(f=>f.id===id)} values={state.filters} candidates={new Map()} {readOnly}
       ondimension={()=>{}} ontimerange={()=>{}} ontimepoint={()=>{}} onboolean={()=>{}} onnumberrange={()=>{}} onsearch={()=>{}}/>
   {/snippet}
   {#each state.page.filters??[] as filter}{#if filter.type==='timeRange' && filter.display==='period' && !state.page.iocHeader?.filterIds?.includes(filter.id)}{@const applied=state.filters.get(filter.id)}{#if applied?.type==='timeRange'}<p data-export-period>{filter.label??'统计期间'}：{applied.from} 至 {applied.to}</p>{/if}{/if}{/each}
@@ -45,7 +49,7 @@
       headerPeriod={header=>headerPeriod(header.props,state.page.filters??[],state.filters,state.page.schemaVersion)}/>
     </div>
   {/snippet}
-  {#each state.page.sections as section (section.id)}
+  {#each presentation.sections as section (section.id)}
     <RuntimeSection {section} {componentContent}/>
   {/each}
 </div>

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.39",
+  "schemaVersion": "6.40",
   "id": "availability-page",
   "layout": "dashboard",
   "dashboardToolbar": "hidden",
@@ -242,6 +242,26 @@
                 "filename": "本地页头验收"
               }
             }
+          }
+        }
+      ]
+    },
+    {
+      "id": "shared-input",
+      "components": [
+        {
+          "id": "shared-period-note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "visibleWhen": {
+            "fact": "period-details",
+            "op": "eq",
+            "value": true
+          },
+          "props": {
+            "body": "期间事实与展示条件共用同一可信输入及权限会话。"
           }
         }
       ]

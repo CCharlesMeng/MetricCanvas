@@ -80,7 +80,7 @@ Dashboard 正文的 `barChart`、`lineChart`、`pieChart`、`mapChart` 可在 `p
 
 <a id="business-filters"></a>
 
-## 业务筛选（6.36）
+## 业务筛选（6.37）
 
 本增量适用于页级筛选，与根iocHeader的位置声明分开。普通看板、报表和详情独立消费，不批量改已有业务页。
 
@@ -98,7 +98,7 @@ V2 fetchFilterCandidates由宿主Adapter提供，与旧fetchDimensionValues并�
 
 <a id="amount-range"></a>
 
-## 金额范围（6.37）
+## 金额范围（6.38）
 
 numberRange可声明constraints的min/max（基本单位）和bounds:strict（双边from必须小于to）。单边允许；普通旧范围仍允许相等。全部是无端点的显式清空，不是无限大数字；拒绝负数约束冲突、NaN/Infinity及比例溢出。
 
@@ -110,7 +110,7 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 
 验收页[ioc-header-currency-demo](examples/currency-selection-page.json)使用两种独立静态货币字段、本地合成HTTP与已有XLSX出口。没有真实USD或汇率证据，不声称生产换币可用，不做前端汇率换算。
 
-## 6.38 复杂时间与候选
+## 6.39 复杂时间与候选
 
 `timeRange.display:"modes"` 声明 `required:true`、`defaultMode` 和 `modes:[{id:"day"|"month"|"isoWeek",default:TimeRangeValue|RelativeTimeExpression}]`。普通 default/precision、period、initialParam/initialMode 与 modes 互斥。日为 YYYY-MM-DD，月为 YYYY-MM，ISO周保存同周周一至周日并计算ISO所属年。模式、from、to原子提交，每个模式记忆最近合法范围；失效时尝试合法默认值，不能沿用旧查询。URL使用 `<id>.mode`、`<id>.from`、`<id>.to` 完整整组；未知/缺项/重复/错周拒绝。
 
@@ -121,3 +121,4 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 动态平面 dimension 的 `candidateWindow:{unit:"month",n:12,includeCurrent:boolean,anchorFact?:string}` 通过V2候选接口传 `calendarWindow:{granularity:"month",from,to}`；anchorFact消费可信latest，省略按同次时钟。不能与options/hierarchy混用。V2缺失、事实未就绪或结果失败时阻断相关查询，不降级旧端口。真实年月值按维度集合绑定，选1/3月不补2月；仅dtime的多区间查询不在本批支持范围。candidateContext时间/模式/维度及窗口/事实上下文共同决定缓存键；intersection等待当前完整候选后才取交集。
 
 场景：time-modes-page、time-presets-page、availability-page、calendar-window-page；对应 `pages/ioc-header-*-demo.json` 可交互验收。
+6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。

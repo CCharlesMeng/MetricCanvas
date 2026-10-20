@@ -68,3 +68,9 @@ export * from './field-selection';
 
 export * from './time-mode';
 export * from './period-facts';
+
+export * from './condition';
+export type { Condition, ConditionScalar } from './schema/condition';
+export * from './presentation-policy';
+export * from './presentation-edit';
+export * from './presentation-operation';

@@ -4,6 +4,13 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
+      "message": "动作必须写入已声明维度筛选器",
+      "paths": [
+        "/sections/0/components/0/props/actions/0/writeFilter"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "回写目标必须是 dimension 筛选器:period",
       "paths": [
         "/sections/0/components/0/props/actions/0/writeFilter"

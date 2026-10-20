@@ -1,3 +1,4 @@
+import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import {
   componentIdZ,
@@ -52,6 +53,7 @@ const metricCardLayoutZ = componentLayoutZ.extend({
 export const metricCardComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('metricCard'),
     layout: metricCardLayoutZ,
     data: metricDataZ,

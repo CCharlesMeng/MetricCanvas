@@ -1,3 +1,4 @@
+import { visibilityShape } from './condition';
 import { z } from 'zod';
 import { iocHeaderZ } from './ioc-header';
 import { supportedVersions } from '../version';
@@ -44,6 +45,7 @@ export const sectionColumnTracksZ = z
 export const sectionZ = z
   .object({
     id: idZ,
+    ...visibilityShape,
     title: nonEmptyTextValueZ.optional(),
     container: sectionContainerZ.optional(),
     columnTracks: sectionColumnTracksZ.optional(),
@@ -116,7 +118,7 @@ export const pageDocumentSchemaZ = z
       filters: z.array(idZ).min(1).meta({ uniqueItems: true }).optional(),
       components: z.array(componentZ).min(1)
     }).strict()).min(1).optional(),
-    sectionGroups: z.array(z.object({ id: idZ, label: z.string().min(1), sectionIds: z.array(idZ).min(1).meta({ uniqueItems: true }) }).strict()).min(1).optional(),
+    sectionGroups: z.array(z.object({ id: idZ, ...visibilityShape, label: z.string().min(1), sectionIds: z.array(idZ).min(1).meta({ uniqueItems: true }) }).strict()).min(1).optional(),
     defaultSectionGroup: idZ.optional(),
     sectionGroupParam: idZ.optional(),
     sectionAnchors: z.array(z.object({ sectionId: idZ, label: z.string().min(1) }).strict()).min(1).optional(),

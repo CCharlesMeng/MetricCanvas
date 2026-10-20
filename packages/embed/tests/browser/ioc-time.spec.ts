@@ -27,7 +27,7 @@ test('trusted latest/complete are separate, URL wins initial, subscriptions pres
  await page.goto('/pages/ioc-header-availability-demo?month=2026-08');await expect(table(page)).toContainText('sales_month=2026-08');await expect(page.locator('[data-ioc-header]')).toContainText('2026年10月19日 10:00:00');
  await page.getByRole('button',{name:'事实等待',exact:true}).click();await expect(page.locator('[data-filter-id="month"] input')).toBeDisabled();await expect(page.locator('[data-component="body/unbound-table"]')).toContainText('无绑定条件');await expect(table(page).getByRole('button',{name:'导出',exact:true})).toBeDisabled();
  await page.getByRole('button',{name:'事实恢复',exact:true}).click();await expect(table(page)).toContainText('sales_month=2026-08');
- await page.getByRole('button',{name:'身份变化',exact:true}).click();await expect(page.getByText('身份或上下文已变化，请销毁并重新挂载页面')).toBeVisible();await expect(page.locator('[data-ioc-header]')).toHaveCount(0);
+ await page.getByRole('button',{name:'身份变化',exact:true}).click();await expect(page.getByText('权限会话已变化，请以当前身份重新初始化页面')).toBeVisible();await expect(page.locator('[data-ioc-header]')).toHaveCount(0);
  await page.getByRole('button',{name:'重新挂载',exact:true}).click();await expect(table(page)).toContainText('sales_month=2026-08');
 });
 test('latest initial uses complete period and missing/future choices remain unapplied',async({page})=>{
@@ -48,7 +48,7 @@ test('readonly and responsive mode popup stay within 1440/1024/390 and close on 
 });
 test('a legal URL overrides an unavailable dynamic initial period before default validation',async({page})=>{
  await page.goto('/pages/ioc-header-availability-demo');await expect(table(page)).toContainText('sales_month=2026-09');
- await page.evaluate(()=>{const w=window as any;const snapshot={contextRevision:'new-source',timeZone:'Asia/Shanghai',periods:{sales:{status:'ready',granularity:'month',latest:'2026-10',latestComplete:'2024-09'}}};w.runtime.update({document:w.pageDocument,dataGateway:w.dataGateway,initialSearch:'month=2026-10',displayInputs:{getSnapshot:()=>snapshot,subscribe:()=>()=>{}}});});
+ await page.evaluate(()=>{const w=window as any;const snapshot={permissions:{},values:{},permissionRevision:'new-source',timeZone:'Asia/Shanghai',periods:{sales:{status:'ready' as const,granularity:'month' as const,latest:'2026-10',latestComplete:'2024-09'}}};w.runtime.destroy();w.runtime=MetricCanvas.mount('#dashboard',{document:w.pageDocument,dataGateway:w.dataGateway,initialSearch:'month=2026-10',displayInputs:{getSnapshot:()=>snapshot,subscribe:()=>()=>{}}});});
  await expect(table(page)).toContainText('sales_month=2026-10');
 });
 test('calendar window without V2 stays unavailable and never retries the legacy candidate port',async({page})=>{
@@ -61,4 +61,23 @@ for(const late of ['success','error'])test(`anchor fact unavailable invalidates 
  await page.route('**/__fixtures/filter-candidates',async route=>{if(route.request().postDataJSON().filterId!=='months'){await route.continue();return;}calls++;if(first){first=false;seen();await pending;await route.fulfill({status:late==='success'?200:500,json:late==='success'?{kind:'values',candidates:[{value:'2026-01',label:'旧候选'}]}:{kind:'unavailable'}});}else await route.continue();});
  await page.goto('/pages/ioc-header-calendar-window-demo');await started;const expand=page.getByRole('button',{name:'展开筛选',exact:true});if(await expand.isVisible())await expand.click();await page.getByRole('button',{name:'事实等待',exact:true}).click();const status=page.locator('[data-filter-id="months"] [data-candidates-status="unavailable"]');await expect(status).toBeVisible();
  release();await page.evaluate(()=>new Promise<void>(r=>setTimeout(r,100)));await expect(status).toBeVisible();await expect(page.locator('[data-component="body/bound-table"]').getByRole('button',{name:'导出',exact:true})).toBeDisabled();await page.getByRole('button',{name:'事实恢复',exact:true}).click();await expect(table(page)).toContainText('month_code=2026-01,2026-03');expect(calls).toBeGreaterThan(1);
+});
+
+
+test('one display input source drives both period facts and presentation without extra queries',async({page})=>{
+ const requests:string[]=[];page.on('request',request=>{if(request.method()==='POST'&&request.url().includes('/dsl/execute'))requests.push(request.postData()??'');});
+ await page.goto('/pages/ioc-header-availability-demo');
+ await expect(table(page)).toContainText('2026-09');
+ const note=page.getByText('期间事实与展示条件共用同一可信输入及权限会话。',{exact:true});await expect(note).toBeVisible();
+ const count=requests.length;await page.getByRole('button',{name:'隐藏期间说明',exact:true}).click();await expect(note).toHaveCount(0);expect(requests).toHaveLength(count);
+ await page.getByRole('button',{name:'显示期间说明',exact:true}).click();await expect(note).toBeVisible();expect(requests).toHaveLength(count);
+});
+
+
+test('failed or withdrawn unified inputs keep temporal queries gated and unrelated data readable',async({page})=>{
+ await page.goto('/pages/ioc-header-availability-demo');await expect(table(page)).toContainText('sales_month=2026-09');
+ await page.evaluate(()=>{const w=window as any,snapshot=w.displayInputs.getSnapshot();w.runtime.destroy();w.runtime=MetricCanvas.mount('#dashboard',{document:w.pageDocument,dataGateway:w.dataGateway,displayInputs:{getSnapshot:()=>snapshot,subscribe(){throw Error('synthetic subscription failure');}}});});
+ await expect(page.locator('[data-component="body/unbound-table"]')).toContainText('无绑定条件');await expect(table(page).getByRole('button',{name:'导出',exact:true})).toBeDisabled();await expect(table(page)).not.toContainText('sales_month=2026-09');
+ await page.evaluate(()=>{const w=window as any;w.runtime.destroy();w.runtime=MetricCanvas.mount('#dashboard',{document:w.pageDocument,dataGateway:w.dataGateway,displayInputs:w.displayInputs});});await expect(table(page)).toContainText('sales_month=2026-09');
+ await page.evaluate(()=>{const w=window as any;w.runtime.update({document:w.pageDocument,dataGateway:w.dataGateway});});await expect(table(page).getByRole('button',{name:'导出',exact:true})).toBeDisabled();await expect(table(page)).not.toContainText('sales_month=2026-09');await expect(page.locator('[data-component="body/unbound-table"]')).toContainText('无绑定条件');
 });

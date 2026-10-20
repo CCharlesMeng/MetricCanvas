@@ -1,0 +1,238 @@
+{
+  "source": "/Users/moon/.codex/worktrees/unified-visibility/DataDashboard",
+  "sourceTree": "43b96e832c13f40d74d2ff06b3aa8ba8aa293d42",
+  "sourceCommit": "0c6464bf065ede9552940a9fffbb7af1f453b95d",
+  "sourceValidation": {
+    "mode": "full",
+    "commands": [
+      "test",
+      "check",
+      "build"
+    ],
+    "delegatedJobs": []
+  },
+  "steps": [
+    {
+      "command": "pnpm",
+      "args": [
+        "install",
+        "--frozen-lockfile",
+        "--strict-peer-dependencies"
+      ],
+      "seconds": 1.759,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/source-install.log"
+    },
+    {
+      "command": "pnpm",
+      "args": [
+        "test"
+      ],
+      "seconds": 196.318,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/source-test.log"
+    },
+    {
+      "command": "pnpm",
+      "args": [
+        "check"
+      ],
+      "seconds": 24.787,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/source-check.log"
+    },
+    {
+      "command": "pnpm",
+      "args": [
+        "build"
+      ],
+      "seconds": 15.805,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/source-build.log"
+    },
+    {
+      "command": "pnpm",
+      "args": [
+        "pack",
+        "--out",
+        "/private/tmp/visibility-compatibility-complete/5.56.6/data-execution.tgz"
+      ],
+      "seconds": 2.092,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/pack-data-execution.log"
+    },
+    {
+      "command": "pnpm",
+      "args": [
+        "pack",
+        "--out",
+        "/private/tmp/visibility-compatibility-complete/5.56.6/page.tgz"
+      ],
+      "seconds": 2.438,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/pack-page.log"
+    },
+    {
+      "command": "pnpm",
+      "args": [
+        "pack",
+        "--out",
+        "/private/tmp/visibility-compatibility-complete/5.56.6/ui.tgz"
+      ],
+      "seconds": 1.339,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/pack-ui.log"
+    },
+    {
+      "command": "pnpm",
+      "args": [
+        "pack",
+        "--out",
+        "/private/tmp/visibility-compatibility-complete/5.56.6/engine.tgz"
+      ],
+      "seconds": 3.574,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/pack-engine.log"
+    },
+    {
+      "command": "pnpm",
+      "args": [
+        "pack",
+        "--out",
+        "/private/tmp/visibility-compatibility-complete/5.56.6/metric-canvas.tgz"
+      ],
+      "seconds": 2.737,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/pack-metric-canvas.log"
+    },
+    {
+      "command": "pnpm",
+      "args": [
+        "pack",
+        "--out",
+        "/private/tmp/visibility-compatibility-complete/5.56.6/embed.tgz"
+      ],
+      "seconds": 2.954,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/pack-embed.log"
+    },
+    {
+      "command": "npm",
+      "args": [
+        "install",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "seconds": 0.988,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/page-install.log"
+    },
+    {
+      "command": "node",
+      "args": [
+        "--input-type=module",
+        "-e",
+        "import assert from 'node:assert/strict'; import {createRequire} from 'node:module'; import {parsePage,supportedVersions} from '@metriccanvas/page'; const require=createRequire(import.meta.url); for(const name of ['svelte','echarts','@metriccanvas/ui']) assert.throws(()=>require.resolve(name)); assert(parsePage({schemaVersion:supportedVersions().at(-1),id:'external',dataSources:{},sections:[{id:'main',components:[{id:'title',type:'reportHeader',layout:{span:12},props:{title:'External'}}]}]}).ok); console.log('page-only Node ESM passed');"
+      ],
+      "seconds": 0.173,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/page-runtime.log"
+    },
+    {
+      "command": "npm",
+      "args": [
+        "install",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--strict-peer-deps"
+      ],
+      "seconds": 6.575,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/ui-install.log"
+    },
+    {
+      "command": "/private/tmp/visibility-compatibility-complete/5.56.6/ui-only/node_modules/.bin/svelte-check",
+      "args": [
+        "--tsconfig",
+        "./tsconfig.json"
+      ],
+      "seconds": 1.494,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/ui-svelte-check.log"
+    },
+    {
+      "command": "/private/tmp/visibility-compatibility-complete/5.56.6/ui-only/node_modules/.bin/vite",
+      "args": [
+        "build"
+      ],
+      "seconds": 0.579,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/ui-vite.log"
+    },
+    {
+      "command": "npm",
+      "args": [
+        "install",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--strict-peer-deps"
+      ],
+      "seconds": 6.735,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/consumer-install.log"
+    },
+    {
+      "command": "/private/tmp/visibility-compatibility-complete/5.56.6/consumer/node_modules/.bin/svelte-check",
+      "args": [
+        "--tsconfig",
+        "./tsconfig.json"
+      ],
+      "seconds": 3.775,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/consumer-svelte-check.log"
+    },
+    {
+      "command": "/private/tmp/visibility-compatibility-complete/5.56.6/consumer/node_modules/.bin/tsc",
+      "args": [
+        "--noEmit",
+        "-p",
+        "tsconfig.json"
+      ],
+      "seconds": 3.03,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/consumer-types.log"
+    },
+    {
+      "command": "/private/tmp/visibility-compatibility-complete/5.56.6/consumer/node_modules/.bin/vite",
+      "args": [
+        "build"
+      ],
+      "seconds": 1.379,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/consumer-build.log"
+    },
+    {
+      "command": "/private/tmp/visibility-compatibility-complete/5.56.6/consumer/node_modules/.bin/playwright",
+      "args": [
+        "test",
+        "--config=playwright.config.mjs"
+      ],
+      "seconds": 7.794,
+      "result": "success",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/ui-browser.log"
+    },
+    {
+      "command": "/private/tmp/visibility-compatibility-complete/5.56.6/consumer/node_modules/.bin/playwright",
+      "args": [
+        "test"
+      ],
+      "seconds": 0.382,
+      "result": "failure",
+      "log": "/private/tmp/visibility-compatibility-complete/5.56.6/logs/consumer-browser.log"
+    }
+  ],
+  "versions": []
+}

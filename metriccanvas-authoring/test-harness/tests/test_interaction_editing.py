@@ -368,7 +368,7 @@ class NavigationInputsEditingTest(unittest.TestCase):
         reopened = json.loads(json.dumps(changed['document']))
         action = reopened['sections'][0]['components'][2]['props']['actions'][0]
         self.assertTrue(action['navigate']['validateTargetInputs'])
-        self.assertEqual(reopened['schemaVersion'], '6.39')
+        self.assertEqual(reopened['schemaVersion'], '6.40')
         invalid = deepcopy(op)
         invalid['navigate']['validateTargetInputs'] = False
         failed = run(reopened, invalid)

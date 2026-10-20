@@ -1,3 +1,4 @@
+import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import {
   componentIdZ,
@@ -23,6 +24,7 @@ const keyValueItemZ = z
 export const keyValuePanelComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('keyValuePanel'),
     layout: componentLayoutZ,
     data: mainDataZ,

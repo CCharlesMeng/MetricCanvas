@@ -1,3 +1,4 @@
+import { interactionShape } from './condition';
 import { z } from 'zod';
 import { fieldNameZ, idZ } from './primitives';
 
@@ -8,6 +9,7 @@ export const navigationBindingZ = z.discriminatedUnion('source', [
     part: z.enum(['value', 'from', 'to', 'level', 'mode']).optional() }).strict()
 ]);
 export const navigationTargetZ = z.object({
+  ...interactionShape,
   href: z.string().min(1),
   validateTargetInputs: z.literal(true).optional(),
   query: z.record(z.string().min(1), navigationBindingZ).optional()

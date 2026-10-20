@@ -33,6 +33,7 @@ BarChartSeries
 BarForecastBoundaryIssue
 BarSeriesRole
 BooleanFilterDeclaration
+ButtonComponent
 CagrOperator
 CalendarTimeRangeIssue
 CategoryBreakdownColumn
@@ -54,6 +55,12 @@ CompositeCardChild
 CompositeCardComponent
 CompositeCardProps
 ComputeOperator
+Condition
+ConditionContext
+ConditionInput
+ConditionResult
+ConditionScalar
+ConditionValue
 DashboardToolbar
 DataComponent
 DataPeriodFact
@@ -69,6 +76,7 @@ DimensionFilterDeclaration
 DimensionSelectionExtension
 DisplayInputsSnapshot
 DisplayInputsSource
+DisplaySnapshot
 DqeBooleanFilterBinding
 DqeDimensionFilterBinding
 DqeEffectiveQuery
@@ -172,6 +180,10 @@ PieChartComponent
 PieChartProps
 PivotColumn
 PivotOperator
+PolicyNode
+PolicySite
+PresentationOperation
+PresentationTarget
 QUERY_ERROR_CODES
 QUERY_LANGUAGES
 QueryDataSource
@@ -270,6 +282,7 @@ ZeroDenominatorSemantics
 affectedSourceIds
 appliedAmountRange
 applyFilterTextValues
+applyPresentationOperation
 assertNoQueryParamReferences
 availabilityInitial
 barForecastBoundaryIssues
@@ -294,7 +307,10 @@ componentCatalogEntry
 compositeCardChildTypes
 computeDependencies
 computeOutputFields
+conditionDepth
+conditionLeaves
 conditionSourceIds
+conditionTestTypeError
 currentTimeValue
 dataSourceMode
 daysInGregorianMonth
@@ -308,6 +324,7 @@ dimensionSelectionIssue
 documentLayoutForm
 documentUsesRuntimeBackToolbar
 enumSelector
+evaluateCondition
 exhaustiveCases
 fieldBindingLeaves
 fieldContractViolations
@@ -317,6 +334,8 @@ fieldSelectionIds
 fieldSelectionVariants
 fileNameErrors
 filterDependencies
+filterHasObservableConsumer
+filterHasPresentationConsumer
 filterQueryResultRows
 filterTextValueErrors
 filterURLKeys
@@ -334,6 +353,7 @@ initializeQueryParams
 isBoundedResultSource
 isChartComponent
 isChartOptionError
+isConditionValue
 isDataComponent
 isDqeQueryDefinition
 isExtensibleChart
@@ -375,6 +395,10 @@ parsePage
 periodFact
 periodRangeLabel
 periodSelectionFromRange
+presentationPolicies
+presentationPolicyErrors
+presentationTarget
+presentationTargets
 projectComponentFields
 projectFieldSelections
 queryErrorDisposition
@@ -409,6 +433,7 @@ tablePredicateZ
 tablePredicates
 tableQueryViewZ
 tableSortZ
+testConditionValue
 textValueScope
 timeAvailabilityIssue
 timeFilterBoundaryError

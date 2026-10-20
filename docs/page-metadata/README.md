@@ -47,3 +47,5 @@
 - [AI 总结 aiSummary](components/aiSummary.md)：components/aiSummary
 
 机器检索使用[index.json](../../contracts/metriccanvas/page/reference/index.json)定位Schema位置与所属模块，类型和结构约束查[schema.json](../../contracts/metriccanvas/page/reference/schema.json)或对应模块的结构表。作者仓库中的结构表在导出时生成；独立Bundle/Skill直接阅读生成Markdown。
+
+- [条件显隐与动作资格](conditions.md)：节点条件、容器单向约束、层级空选、表格行与导出。

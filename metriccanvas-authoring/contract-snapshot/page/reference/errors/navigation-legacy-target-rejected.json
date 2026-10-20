@@ -10,6 +10,7 @@
         "/sections/0/components/0/data",
         "/sections/0/components/0/data",
         "/sections/0/components/0/data",
+        "/sections/0/components/0/data",
         "/sections/0/components/0/data"
       ]
     },
@@ -17,6 +18,7 @@
       "type": "SCHEMA_ERROR",
       "message": "must be equal to constant",
       "paths": [
+        "/sections/0/components/0/type",
         "/sections/0/components/0/type",
         "/sections/0/components/0/type",
         "/sections/0/components/0/type",
@@ -61,6 +63,7 @@
         "/sections/0/components/0/props/rows",
         "/sections/0/components/0/props/rows",
         "/sections/0/components/0/props/rows",
+        "/sections/0/components/0/props/rows",
         "/sections/0/components/0/props/rows"
       ]
     },
@@ -76,6 +79,7 @@
         "/sections/0/components/0/props/actions",
         "/sections/0/components/0/props/actions",
         "/sections/0/components/0/props/actions",
+        "/sections/0/components/0/props/actions",
         "/sections/0/components/0/props/actions"
       ]
     },
@@ -83,6 +87,14 @@
       "type": "SCHEMA_ERROR",
       "message": "缺少必填字段 writeFilter",
       "paths": [
+        "/sections/0/components/0/props/actions/0/writeFilter",
+        "/sections/0/components/0/props/actions/0/writeFilter",
+        "/sections/0/components/0/props/actions/0/writeFilter",
+        "/sections/0/components/0/props/actions/0/writeFilter",
+        "/sections/0/components/0/props/actions/0/writeFilter",
+        "/sections/0/components/0/props/actions/0/writeFilter",
+        "/sections/0/components/0/props/actions/0/writeFilter",
+        "/sections/0/components/0/props/actions/0/writeFilter",
         "/sections/0/components/0/props/actions/0/writeFilter",
         "/sections/0/components/0/props/actions/0/writeFilter",
         "/sections/0/components/0/props/actions/0/writeFilter",
@@ -127,7 +139,51 @@
         "/sections/0/components/0/props/actions/0/navigate",
         "/sections/0/components/0/props/actions/0/navigate",
         "/sections/0/components/0/props/actions/0/navigate",
+        "/sections/0/components/0/props/actions/0/navigate",
+        "/sections/0/components/0/props/actions/0/navigate",
+        "/sections/0/components/0/props/actions/0/navigate",
+        "/sections/0/components/0/props/actions/0/navigate",
+        "/sections/0/components/0/props/actions/0/navigate",
+        "/sections/0/components/0/props/actions/0/navigate",
+        "/sections/0/components/0/props/actions/0/navigate",
+        "/sections/0/components/0/props/actions/0/navigate",
         "/sections/0/components/0/props/actions/0/navigate"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 value",
+      "paths": [
+        "/sections/0/components/0/props/actions/0/value",
+        "/sections/0/components/0/props/actions/0/value",
+        "/sections/0/components/0/props/actions/0/value",
+        "/sections/0/components/0/props/actions/0/value",
+        "/sections/0/components/0/props/actions/0/value",
+        "/sections/0/components/0/props/actions/0/value",
+        "/sections/0/components/0/props/actions/0/value",
+        "/sections/0/components/0/props/actions/0/value"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match a schema in anyOf",
+      "paths": [
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0",
+        "/sections/0/components/0/props/actions/0"
       ]
     },
     {
@@ -170,20 +226,6 @@
         "/sections/0/components/0/props/actions/0/openDetail",
         "/sections/0/components/0/props/actions/0/openDetail",
         "/sections/0/components/0/props/actions/0/openDetail"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "must match a schema in anyOf",
-      "paths": [
-        "/sections/0/components/0/props/actions/0",
-        "/sections/0/components/0/props/actions/0",
-        "/sections/0/components/0/props/actions/0",
-        "/sections/0/components/0/props/actions/0",
-        "/sections/0/components/0/props/actions/0",
-        "/sections/0/components/0/props/actions/0",
-        "/sections/0/components/0/props/actions/0",
-        "/sections/0/components/0/props/actions/0"
       ]
     },
     {
@@ -278,6 +320,20 @@
       "message": "缺少必填字段 relatedData",
       "paths": [
         "/sections/0/components/0/props/relatedData"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 label",
+      "paths": [
+        "/sections/0/components/0/props/label"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 action",
+      "paths": [
+        "/sections/0/components/0/props/action"
       ]
     },
     {

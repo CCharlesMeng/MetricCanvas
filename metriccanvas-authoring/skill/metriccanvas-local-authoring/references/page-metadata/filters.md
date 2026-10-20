@@ -80,7 +80,7 @@ Dashboard 正文的 `barChart`、`lineChart`、`pieChart`、`mapChart` 可在 `p
 
 <a id="business-filters"></a>
 
-## 业务筛选（6.36）
+## 业务筛选（6.37）
 
 本增量适用于页级筛选，与根iocHeader的位置声明分开。普通看板、报表和详情独立消费，不批量改已有业务页。
 
@@ -98,7 +98,7 @@ V2 fetchFilterCandidates由宿主Adapter提供，与旧fetchDimensionValues并�
 
 <a id="amount-range"></a>
 
-## 金额范围（6.37）
+## 金额范围（6.38）
 
 numberRange可声明constraints的min/max（基本单位）和bounds:strict（双边from必须小于to）。单边允许；普通旧范围仍允许相等。全部是无端点的显式清空，不是无限大数字；拒绝负数约束冲突、NaN/Infinity及比例溢出。
 
@@ -110,7 +110,7 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 
 验收页[ioc-header-currency-demo](examples/currency-selection-page.json)使用两种独立静态货币字段、本地合成HTTP与已有XLSX出口。没有真实USD或汇率证据，不声称生产换币可用，不做前端汇率换算。
 
-## 6.38 复杂时间与候选
+## 6.39 复杂时间与候选
 
 `timeRange.display:"modes"` 声明 `required:true`、`defaultMode` 和 `modes:[{id:"day"|"month"|"isoWeek",default:TimeRangeValue|RelativeTimeExpression}]`。普通 default/precision、period、initialParam/initialMode 与 modes 互斥。日为 YYYY-MM-DD，月为 YYYY-MM，ISO周保存同周周一至周日并计算ISO所属年。模式、from、to原子提交，每个模式记忆最近合法范围；失效时尝试合法默认值，不能沿用旧查询。URL使用 `<id>.mode`、`<id>.from`、`<id>.to` 完整整组；未知/缺项/重复/错周拒绝。
 
@@ -121,9 +121,10 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 动态平面 dimension 的 `candidateWindow:{unit:"month",n:12,includeCurrent:boolean,anchorFact?:string}` 通过V2候选接口传 `calendarWindow:{granularity:"month",from,to}`；anchorFact消费可信latest，省略按同次时钟。不能与options/hierarchy混用。V2缺失、事实未就绪或结果失败时阻断相关查询，不降级旧端口。真实年月值按维度集合绑定，选1/3月不补2月；仅dtime的多区间查询不在本批支持范围。candidateContext时间/模式/维度及窗口/事实上下文共同决定缓存键；intersection等待当前完整候选后才取交集。
 
 场景：time-modes-page、time-presets-page、availability-page、calendar-window-page；对应 `pages/ioc-header-*-demo.json` 可交互验收。
+6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
 
 
-页面协议 6.39。结构真源为本册[schema.json](schema.json)，SHA256 `0807888a77d8710b9fd65166760bb094210dd2cbc7507ae72dd2f24d07a58cd3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.40。结构真源为本册[schema.json](schema.json)，SHA256 `90400cbd2aa370809afb7fa5124ef0b62c049da7e48493bfd98d4668663704df`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -322,6 +323,26 @@ Schema位置：`#/definitions/dimensionFilter/properties/visible`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 显示状态声明。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@dimensionFilter.visibleWhen`
+
+Schema位置：`#/definitions/dimensionFilter/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@dimensionFilter.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/dimensionFilter/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f64656661756c74"></a>
 
@@ -1277,6 +1298,26 @@ Schema位置：`#/definitions/timeRangeFilter/properties/visible`。
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 显示状态声明。 |
 
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@timeRangeFilter.visibleWhen`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@timeRangeFilter.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f64656661756c74"></a>
 
 ### `@timeRangeFilter.default`
@@ -1692,6 +1733,26 @@ Schema位置：`#/definitions/timePointFilter/properties/availability/properties
 |---|---|
 | true | 用于选择@timePointFilter.availability.blockMissing分支；同分支其它约束同时成立。 |
 
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@timePointFilter.visibleWhen`
+
+Schema位置：`#/definitions/timePointFilter/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@timePointFilter.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/timePointFilter/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f6772616e756c6172697479"></a>
 
 ### `@timePointFilter.granularity`
@@ -1891,6 +1952,26 @@ Schema位置：`#/definitions/booleanFilter/properties/visible`。
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 显示状态声明。 |
 
+<a id="schema-232f646566696e6974696f6e732f626f6f6c65616e46696c7465722f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@booleanFilter.visibleWhen`
+
+Schema位置：`#/definitions/booleanFilter/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f626f6f6c65616e46696c7465722f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@booleanFilter.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/booleanFilter/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f626f6f6c65616e46696c7465722f70726f706572746965732f64656661756c74"></a>
 
 ### `@booleanFilter.default`
@@ -2044,6 +2125,26 @@ Schema位置：`#/definitions/numberRangeFilter/properties/visible`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 显示状态声明。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@numberRangeFilter.visibleWhen`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@numberRangeFilter.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f64656661756c74"></a>
 
@@ -2419,6 +2520,26 @@ Schema位置：`#/definitions/searchFilter/properties/visible`。
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 显示状态声明。 |
 
+<a id="schema-232f646566696e6974696f6e732f73656172636846696c7465722f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@searchFilter.visibleWhen`
+
+Schema位置：`#/definitions/searchFilter/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f73656172636846696c7465722f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@searchFilter.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/searchFilter/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f73656172636846696c7465722f70726f706572746965732f64656661756c74"></a>
 
 ### `@searchFilter.default`
@@ -2505,9 +2626,9 @@ Schema位置：`#/definitions/chartFilter/properties/options/items/properties/va
 - `time-point-disable-future`：6.25 时间点禁止未来月份与日期。反例：[time-point-disable-future-before-6.25](errors/time-point-disable-future-before-6.25.json)、[time-point-disable-future-default-month](errors/time-point-disable-future-default-month.json)、[time-point-disable-future-default-date](errors/time-point-disable-future-default-date.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `period-filter`：6.27 Dashboard 年季月与近一年期间筛选。反例：[period-filter-before-6.27](errors/period-filter-before-6.27.json)、[period-filter-quarter-invalid](errors/period-filter-quarter-invalid.json)、[period-filter-report](errors/period-filter-report.json)、[period-filter-datetime](errors/period-filter-datetime.json)、[period-filter-no-default](errors/period-filter-no-default.json)、[period-filter-static-time](errors/period-filter-static-time.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `chart-local-filter`：6.29 Dashboard 图表独立筛选及查询消费范围。反例：[chart-filter-before-6.29](errors/chart-filter-before-6.29.json)、[chart-filter-report](errors/chart-filter-report.json)、[chart-filter-invalid-default](errors/chart-filter-invalid-default.json)、[chart-filter-duplicate-options](errors/chart-filter-duplicate-options.json)、[chart-filter-shared-source](errors/chart-filter-shared-source.json)、[chart-filter-no-binding](errors/chart-filter-no-binding.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `business-filters`：6.36 封闭枚举与业务选择语义。反例：[business-filter-before-6.36](errors/business-filter-before-6.36.json)、[business-filter-single-many](errors/business-filter-single-many.json)、[business-filter-disabled-default](errors/business-filter-disabled-default.json)、[business-filter-options-dependent](errors/business-filter-options-dependent.json)、[business-filter-unrestricted-without-options](errors/business-filter-unrestricted-without-options.json)、[business-filter-cycle](errors/business-filter-cycle.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `currency-selection`：6.37金额范围和静态货币字段选择。反例：[currency-before-6.37](errors/currency-before-6.37.json)、[currency-case-missing](errors/currency-case-missing.json)、[currency-metric-mismatch](errors/currency-metric-mismatch.json)、[currency-negative-default](errors/currency-negative-default.json)、[currency-equal-default](errors/currency-equal-default.json)、[currency-compute-mixed](errors/currency-compute-mixed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `time-extensions`：6.38 显式时间模式、可信期间事实、快捷范围及V2月份窗口。反例：[time-before-6.38](errors/time-before-6.38.json)、[time-case-missing](errors/time-case-missing.json)、[time-query-xor](errors/time-query-xor.json)、[time-period-mismatch](errors/time-period-mismatch.json)、[time-output-mismatch](errors/time-output-mismatch.json)、[time-default-week](errors/time-default-week.json)、[time-availability-default](errors/time-availability-default.json)、[time-fact-kind](errors/time-fact-kind.json)、[time-window-static-options](errors/time-window-static-options.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `business-filters`：6.37 封闭枚举与业务选择语义。反例：[business-filter-before-6.37](errors/business-filter-before-6.37.json)、[business-filter-single-many](errors/business-filter-single-many.json)、[business-filter-disabled-default](errors/business-filter-disabled-default.json)、[business-filter-options-dependent](errors/business-filter-options-dependent.json)、[business-filter-unrestricted-without-options](errors/business-filter-unrestricted-without-options.json)、[business-filter-cycle](errors/business-filter-cycle.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `currency-selection`：6.38金额范围和静态货币字段选择。反例：[currency-before-6.38](errors/currency-before-6.38.json)、[currency-case-missing](errors/currency-case-missing.json)、[currency-metric-mismatch](errors/currency-metric-mismatch.json)、[currency-negative-default](errors/currency-negative-default.json)、[currency-equal-default](errors/currency-equal-default.json)、[currency-compute-mixed](errors/currency-compute-mixed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `time-extensions`：6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口。反例：[time-before-6.39](errors/time-before-6.39.json)、[time-case-missing](errors/time-case-missing.json)、[time-query-xor](errors/time-query-xor.json)、[time-period-mismatch](errors/time-period-mismatch.json)、[time-output-mismatch](errors/time-output-mismatch.json)、[time-default-week](errors/time-default-week.json)、[time-availability-default](errors/time-availability-default.json)、[time-fact-kind](errors/time-fact-kind.json)、[time-window-static-options](errors/time-window-static-options.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 

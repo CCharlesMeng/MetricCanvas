@@ -1,11 +1,11 @@
 import {daysInGregorianMonth,validateCalendarTimeRange,validateTimePointValue,type FilterDeclaration,type TimeRangeValue} from './filter';
 export type DataPeriodFact=({status:'ready';granularity:'month'|'date';latest:string;latestComplete?:string;missingRanges?:TimeRangeValue[];refreshedAt?:string;generatedAt?:string}|{status:'loading'|'empty'|'unavailable'|'error'})&{filterRevision?:number};
 /** Neutral, immutable, trusted input. Never part of Page/URL/parameter values. */
-export interface DisplayInputsSnapshot {contextRevision:string;timeZone:string;periods:Readonly<Record<string,DataPeriodFact>>}
-export interface DisplayInputsSource {getSnapshot():DisplayInputsSnapshot;subscribe(listener:()=>void):()=>void}
+export type DisplayInputsSnapshot=import('./condition').DisplaySnapshot;
+export interface DisplayInputsSource {getSnapshot():DisplayInputsSnapshot;subscribe(listener:(snapshot:DisplayInputsSnapshot)=>void):()=>void}
 export function periodFact(snapshot:DisplayInputsSnapshot|undefined,id:string,revision?:number):DataPeriodFact {
  const fact=snapshot?.periods?.[id];if(!snapshot||!fact)return {status:'unavailable'};
- if(typeof snapshot.contextRevision!=='string'||!snapshot.contextRevision.trim()||typeof snapshot.timeZone!=='string'||!snapshot.timeZone.trim())return {status:'error'};
+ if(typeof snapshot.permissionRevision!=='string'||!snapshot.permissionRevision.trim()||typeof snapshot.timeZone!=='string'||!snapshot.timeZone.trim())return {status:'error'};
  try{new Intl.DateTimeFormat('en',{timeZone:snapshot.timeZone});}catch{return {status:'error'};}
  if(fact.filterRevision!==undefined&&fact.filterRevision!==revision)return {status:'loading'};
  if(fact.status!=='ready')return ['loading','empty','unavailable','error'].includes(fact.status)?fact:{status:'error'};
@@ -39,7 +39,7 @@ export function formatPeriodFact(snapshot:DisplayInputsSnapshot|undefined,id:str
  const fact=periodFact(snapshot,id,revision);if(fact.status!=='ready')return fact.status==='loading'?'等待期间事实':fact.status==='empty'?'暂无期间数据':'期间事实不可用';
  const value=fact[part];if(!value)return;
  if(part==='latest'||part==='latestComplete')return value;
- return new Intl.DateTimeFormat('zh-CN',{timeZone:snapshot!.timeZone,dateStyle:'medium',timeStyle:'medium',hour12:false}).format(new Date(value));
+ return new Intl.DateTimeFormat('zh-CN',{timeZone:snapshot!.timeZone!,dateStyle:'medium',timeStyle:'medium',hour12:false}).format(new Date(value));
 }
 
 function staticEndpoint(value:string,end=false):string {return value.includes('T')?value:calendarEndpoint(value,end)+(end?'T23:59:59.999':'T00:00');}

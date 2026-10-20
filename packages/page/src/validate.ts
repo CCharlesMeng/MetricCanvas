@@ -1,3 +1,4 @@
+import { filterHasObservableConsumer, presentationPolicyErrors } from './presentation-policy';
 import { chartOptionErrors, withoutChartOptions } from './chart-option';
 import { chartFilterErrors } from './chart-filter';
 import { metricBeforeErrors } from './metric-before';
@@ -157,7 +158,7 @@ export function parsePage(
   const page = canonicalLayoutDocument(materialized.document as Page);
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
   const selectionErrors=[...timeExtensionErrors(page),...fieldSelectionErrors(page),...[...timeQueryVariants(page)].flatMap(variant=>[...amountErrors(variant),...moneyComputeErrors(variant)])];if(selectionErrors.length)return {ok:false,errors:selectionErrors};
-  const errors:TypedError[]=[];try{for(const fields of fieldSelectionVariants(page))for(const variant of timeQueryVariants(fields))errors.push(...invariantErrors(variant), ...chartFilterErrors(variant, compatibleDocument), ...navigationErrors(variant), ...urlInputErrors(variant));}catch(cause){return {ok:false,errors:[schemaError('/sections',String(cause))]};}
+  const errors:TypedError[]=[...presentationPolicyErrors(page)];try{for(const fields of fieldSelectionVariants(page))for(const variant of timeQueryVariants(fields))errors.push(...invariantErrors(variant), ...chartFilterErrors(variant, compatibleDocument), ...navigationErrors(variant), ...urlInputErrors(variant));}catch(cause){return {ok:false,errors:[schemaError('/sections',String(cause))]};}
   return errors.length === 0
     ? { ok: true, page, errors: [] }
     : { ok: false, errors };
@@ -2173,7 +2174,7 @@ function actionErrors(
   if (!actions) return [];
   const errors: TypedError[] = [];
   if (!deriveComponentCapabilities(page, component).live) {
-    const hasWriteFilter = actions.some((action) => 'writeFilter' in action);
+    const hasWriteFilter = actions.some((action) => 'writeFilter' in action && !(Number(page.schemaVersion.split('.')[1])>=34&&filterHasObservableConsumer(page,action.writeFilter)));
     if (hasWriteFilter) {
       errors.push(
         schemaError(
@@ -2196,7 +2197,7 @@ function actionErrors(
           schemaError(`${path}/writeFilter`, `回写目标必须是 dimension 筛选器:${action.writeFilter}`)
         );
       }
-      check(action.field, `${path}/field`, 'dimension');
+      if ('field' in action) check(action.field, `${path}/field`, 'dimension');
       return;
     }
     if ('openDetail' in action) {

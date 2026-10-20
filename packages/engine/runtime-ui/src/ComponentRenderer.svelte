@@ -1,5 +1,7 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { Button } from '@metriccanvas/ui';
+  import { PRESENTATION_CONTEXT,type PresentationReader } from './presentation-context';
   /**
    * 组件分发:页面组件类型 → 纯渲染组件的唯一落点。
    *
@@ -52,6 +54,7 @@
   } from './component-render';
   import Self from './ComponentRenderer.svelte';
 
+  const presentation=getContext<PresentationReader|undefined>(PRESENTATION_CONTEXT);
   const optionPaths = getContext<() => Map<string, string>>(CHART_OPTION_PATHS);
 
   interface Props {
@@ -104,6 +107,7 @@
   }: Props = $props();
 
   // One failed slot makes the whole component empty, including healthy comparison slots.
+  const gate=$derived(presentation?.()?.component(component.id));
   const visibleData = $derived(snapshot.status === 'error'
     ? Object.fromEntries(Object.keys(component.data ?? {}).map(slot => [slot, {
       fields: data[slot]?.fields ?? {}, snapshot: { status: 'ready' as const, rows: [] }
@@ -142,7 +146,10 @@
 {/snippet}
 
 {#if rendersWithoutWidgetHost(component)}
-  {#if component.type === 'reportHeader'}
+  {#if component.type === 'button'}
+    <div data-button-id={component.id}><Button disabled={exportMode||gate?.enabled===false||presentation?.()?.gate(component.props.action).enabled===false}
+      onclick={()=>onchartclick?.({})}>{component.props.label}</Button></div>
+  {:else if component.type === 'reportHeader'}
     <ReportHeaderView props={component.props} period={headerPeriod?.(component)} controls={headerControls} {onback} {exportMode} />
   {:else if component.type === 'text'}
     <TextBlock props={component.props} links={textLinks} />
@@ -167,11 +174,12 @@
     </div>
   {:else if component.type === 'tabContainer'}
     <TabContainer
-      title={component.props.title}
+      title={'title' in component.props ? component.props.title : undefined}
       variant={component.props.variant}
       tabs={component.props.tabs.map((tab) => ({ id: tab.id, label: tab.label,
         contentCount: 'components' in tab ? tab.components.length : 1 }))}
-      defaultTab={initialTabs?.get(component.id) ?? component.props.defaultTab}
+      initialTab={initialTabs?.get(component.id)}
+      defaultTab={component.props.defaultTab}
     >
       {#snippet children(activeId)}
         {@const tab = component.props.tabs.find((candidate) => candidate.id === activeId)}
@@ -184,7 +192,7 @@
     </TabContainer>
   {:else if component.type === 'compositeCard'}
     <CompositeCard
-      title={component.props.title}
+      title={'title' in component.props ? component.props.title : undefined}
       titleIcon={component.props.titleIcon}
       variant={component.props.variant}
       spans={component.props.components.map((item) => item.layout.span)}
@@ -207,7 +215,7 @@
       label={`${component.props.title ?? '图表'}筛选`} {exportMode}
       onchange={value => onchartfilter?.(component, value)} />
   {/if}
-  <WidgetHost {snapshot} title={component.props.title} notices={partialDataNotices(component, pageSnapshots, table?.paginationConfig?.mode === 'query')}>
+  <WidgetHost {snapshot} title={'title' in component.props ? component.props.title : undefined} notices={partialDataNotices(component, pageSnapshots, table?.paginationConfig?.mode === 'query')}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
         <MetricCard data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />
@@ -267,6 +275,8 @@
           onheaderfilter={table.onheaderfilter}
           oncellselect={table.oncellselect}
           onlink={table.onlink}
+          interactionGate={table.interactionGate}
+          toolbarEnabled={table.toolbarEnabled}
           linkHref={table.linkHref}
         />
       {:else if component.type === 'mapChart'}

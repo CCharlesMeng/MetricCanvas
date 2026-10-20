@@ -10,7 +10,7 @@ describe('IOC root header contract from acceptance pages',()=>{
     const doc=load(name);expect(parsePage(doc)).toMatchObject({ok:true});expect(normalizePageDocument(doc)).toMatchObject({ok:true,document:{...doc,schemaVersion:versionPolicy.current}});
   });
   it('gates the new root capability and every header text path',()=>{
-    const doc=load('overview');expect(requiredMinorVersion(doc)).toBe(35);doc.schemaVersion='6.31';expect(capabilityFloorErrors(doc)).not.toEqual([]);
+    const doc=load('overview');expect(requiredMinorVersion(doc)).toBe(36);doc.schemaVersion='6.31';expect(capabilityFloorErrors(doc)).not.toEqual([]);
     expect(versionErrors(load('overview'),{...versionPolicy,minor:31,current:'6.31'})).not.toEqual([]);
     expect(collectFilterTextValueReferences(doc).some(item=>item.path==='/iocHeader/identity/facts/0/value')).toBe(true);
   });

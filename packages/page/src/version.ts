@@ -18,7 +18,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 39;
+const CURRENT_MINOR = 40;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -56,17 +56,17 @@ export const pageCapabilities = {
     minor: 32, description: '柱状图、折线图、饼图高级 ECharts 呈现扩展',
     usedAt: document => componentPaths(document, component => ['barChart', 'lineChart', 'pieChart'].includes(String(component.type)) && has(props(component), 'echartsOption')).map(path => `${path}/props/echartsOption`)
   },
- 'navigation-inputs':{minor:39,description:'显式跨页传值与目标输入契约验证',usedAt:document=>{const paths:string[]=record(document)?.strictURLInputs===true?['/strictURLInputs']:[];walkDocumentComponents(document,(component,path)=>{const page={sections:[{components:[component]}]} as unknown as Page;if(declaredNavigationTargets(page).some(target=>target?.validateTargetInputs===true))paths.push(path);});return paths;}},
- 'time-modes':{minor:38,description:'日月ISO周模式及完整静态查询case',usedAt:document=>[...filterPaths(document,f=>f.display==='modes'),...dataSourcePaths(document,d=>!!record(record(d.source)?.query)?.timeModes)]},
- 'time-availability':{minor:38,description:'可信期间事实与显式日期边界',usedAt:document=>[...filterPaths(document,f=>['availability','max','blockedRanges'].some(key=>has(f,key))),...(Array.isArray(record(record(record(document)?.iocHeader)?.identity)?.facts)&&((record(record(record(document)?.iocHeader)?.identity)?.facts) as unknown[]).some(value=>has(record(record(value)?.value),'fact'))?['/iocHeader/identity/facts']:[])]},
- 'time-presets':{minor:38,description:'时间快捷范围与候选月份窗口',usedAt:document=>filterPaths(document,f=>f.type==='timeRange'&&has(f,'presets')||f.type==='dimension'&&has(f,'candidateWindow'))},
-  'business-filter-selection':{minor:36,description:'页级单多选、封闭枚举及显式结构树',usedAt:document=>filterPaths(document,f=>['selection','options','treeSelection'].some(key=>has(f,key)))},
-  'business-filter-context':{minor:36,description:'页级候选依赖与明确清理',usedAt:document=>filterPaths(document,f=>['candidateContext','clearOnChangeOf'].some(key=>has(f,key)))},
-  'money-usd':{minor:37,description:'显式美元金额及格式',usedAt:document=>[...dataSourcePaths(document,d=>findPaths(d.fields,v=>v.type==='money'&&v.currency==='USD').length>0),...namedFormatPaths(document,/^usd-adaptive$/),...filterPaths(document,f=>f.type==='numberRange'&&findPaths(f.units,v=>v.currency==='USD').length>0)]},
-  'amount-range':{minor:37,description:'金额范围约束单位预设和metric选择',usedAt:document=>filterPaths(document,f=>f.type==='numberRange'&&(has(f,'units')||has(f,'constraints')||has(f,'presets')))},
-  'field-selection':{minor:37,description:'静态货币字段选择',usedAt:document=>{const opaque=chartOptionScopes(document);return componentPaths(document,c=>findPaths(c.props,v=>has(v,'byFilter'),opaque).length>0);}},
-  'filter-hint':{minor:36,description:'筛选说明文本',usedAt:document=>filterPaths(document,f=>has(f,'hint'))},
-  'ioc-header': { minor:35, description:'页级 IOC 身份、筛选归属与实际首行折叠', usedAt: document => has(record(document), 'iocHeader') ? ['/iocHeader'] : [] },
+ 'navigation-inputs':{minor:40,description:'显式跨页传值与目标输入契约验证',usedAt:document=>{const paths:string[]=record(document)?.strictURLInputs===true?['/strictURLInputs']:[];walkDocumentComponents(document,(component,path)=>{const page={sections:[{components:[component]}]} as unknown as Page;if(declaredNavigationTargets(page).some(target=>target?.validateTargetInputs===true))paths.push(path);});return paths;}},
+ 'time-modes':{minor:39,description:'日月ISO周模式及完整静态查询case',usedAt:document=>[...filterPaths(document,f=>f.display==='modes'),...dataSourcePaths(document,d=>!!record(record(d.source)?.query)?.timeModes)]},
+ 'time-availability':{minor:39,description:'可信期间事实与显式日期边界',usedAt:document=>[...filterPaths(document,f=>['availability','max','blockedRanges'].some(key=>has(f,key))),...(Array.isArray(record(record(record(document)?.iocHeader)?.identity)?.facts)&&((record(record(record(document)?.iocHeader)?.identity)?.facts) as unknown[]).some(value=>has(record(record(value)?.value),'fact'))?['/iocHeader/identity/facts']:[])]},
+ 'time-presets':{minor:39,description:'时间快捷范围与候选月份窗口',usedAt:document=>filterPaths(document,f=>f.type==='timeRange'&&has(f,'presets')||f.type==='dimension'&&has(f,'candidateWindow'))},
+  'business-filter-selection':{minor:37,description:'页级单多选、封闭枚举及显式结构树',usedAt:document=>filterPaths(document,f=>['selection','options','treeSelection'].some(key=>has(f,key)))},
+  'business-filter-context':{minor:37,description:'页级候选依赖与明确清理',usedAt:document=>filterPaths(document,f=>['candidateContext','clearOnChangeOf'].some(key=>has(f,key)))},
+  'money-usd':{minor:38,description:'显式美元金额及格式',usedAt:document=>[...dataSourcePaths(document,d=>findPaths(d.fields,v=>v.type==='money'&&v.currency==='USD').length>0),...namedFormatPaths(document,/^usd-adaptive$/),...filterPaths(document,f=>f.type==='numberRange'&&findPaths(f.units,v=>v.currency==='USD').length>0)]},
+  'amount-range':{minor:38,description:'金额范围约束单位预设和metric选择',usedAt:document=>filterPaths(document,f=>f.type==='numberRange'&&(has(f,'units')||has(f,'constraints')||has(f,'presets')))},
+  'field-selection':{minor:38,description:'静态货币字段选择',usedAt:document=>{const opaque=chartOptionScopes(document);return componentPaths(document,c=>findPaths(c.props,v=>has(v,'byFilter'),opaque).length>0);}},
+  'filter-hint':{minor:37,description:'筛选说明文本',usedAt:document=>filterPaths(document,f=>has(f,'hint'))},
+  'ioc-header': { minor:36, description:'页级 IOC 身份、筛选归属与实际首行折叠', usedAt: document => has(record(document), 'iocHeader') ? ['/iocHeader'] : [] },
   'period-filter': {minor:27,description:'Dashboard 年季月与近一年期间筛选',usedAt:document => filterPaths(document, filter => filter.type === 'timeRange' && (has(filter,'display') || has(filter,'initialMode') || !!(record(filter.default) && has(record(filter.default),'mode'))))},
   'chart-local-filter': {
     minor: 29, description: 'Dashboard 图表左上角独立筛选与自定义选项',
@@ -627,7 +627,11 @@ export const pageCapabilities = {
         document,
         (component) => component.type === 'compositeCard' && props(component)?.variant === 'metricGrid'
       ).map((path) => `${path}/props/variant`)
-  }
+  },
+  'conditional-presentation': {
+    minor: 35, legacyReadable: false, description: '统一条件显隐、按钮与正文片段',
+    usedAt(document: unknown) { return presentationCapabilityPaths(document); }
+  },
 } satisfies Record<string, PageCapabilityDefinition>;
 
 export type PageCapability = keyof typeof pageCapabilities;
@@ -1043,4 +1047,30 @@ function findPaths(document:unknown,matches:(value:Record<string,unknown>)=>bool
  const paths:string[]=[];
  function visit(value:unknown,path:string){if(Array.isArray(value))value.forEach((item,i)=>visit(item,`${path}/${i}`));else if(value&&typeof value==='object'){if(opaque.has(value))return;const item=value as Record<string,unknown>;if(matches(item))paths.push(path);for(const [key,child]of Object.entries(item))visit(child,`${path}/${key}`);}}
  visit(document,'');return paths;
+}
+
+function presentationCapabilityPaths(document: unknown): string[] {
+  const found: string[] = [];
+  const root=record(document); if(!root)return found;
+  const visit=(value:unknown,path:string)=>{
+    const node=record(value);if(!node)return;
+    for(const key of ['visibleWhen','enabledWhen','rowVisibleWhen'])if(has(node,key))found.push(`${path}/${key}`);
+  };
+  for(const key of ['sections','filters','sectionGroups']){
+    const nodes=root[key];if(Array.isArray(nodes))nodes.forEach((node,i)=>visit(node,`/${key}/${i}`));
+  }
+  walkDocumentComponents(document,(node,path)=>{
+    visit(node,path);const props=record(node.props);if(!props)return;
+    if(node.type==='button')found.push(`${path}/type`);
+    visit(props,`${path}/props`);
+    function entries(value:unknown,p:string):void {
+      if(Array.isArray(value)){value.forEach((item,i)=>entries(item,`${p}/${i}`));return;}
+      const obj=record(value);if(!obj)return;visit(obj,p);
+      if(has(obj,'writeFilter')&&has(obj,'value'))found.push(`${p}/value`);
+      for(const key of ['navigate','openDetail','selection','children','search','export'])if(has(obj,key))entries(obj[key],`${p}/${key}`);
+    }
+    for(const key of ['actions','action','tabs','links','toolbar','columns'])entries(props[key],`${path}/props/${key}`);
+    if(node.type==='text'&&has(props,'parts')){found.push(`${path}/props/parts`);entries(props.parts,`${path}/props/parts`);}
+  });
+  return found;
 }
