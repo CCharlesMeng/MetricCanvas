@@ -1,3 +1,4 @@
+import {openSelection,closeSelection} from './selection-actions';
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 const navigationPage = JSON.parse(readFileSync(new URL('../../../page/fixtures/contract-valid/url-navigation-page.json', import.meta.url), 'utf8'));
@@ -118,17 +119,17 @@ test('云行业选定后云子行业候选按上游收窄', async ({ page }) => 
   await toolbar.locator('[data-dashboard-filter-overflow] > summary').click();
   const level2 = page.locator('[data-filter-id="industry-l2"]');
   const level1 = page.locator('[data-filter-id="industry-l1"]');
-  const level2Options = level2.locator('.menu .option');
+  const level2Options = level2.locator('[role=option][data-value]');
 
-  await level2.locator('summary').click();
+  await openSelection(level2);
   await expect(level2Options).toHaveCount(10);
-  await level2.locator('summary').click();
+  await closeSelection(level2);
 
-  await level1.locator('summary').click();
-  await level1.locator('.menu .option', { hasText: '零售' }).locator('input').check();
-  await level1.locator('summary').click();
+  await openSelection(level1);
+  await level1.getByRole('option',{name:'零售',exact:true}).click();
+  await closeSelection(level1);
 
-  await level2.locator('summary').click();
+  await openSelection(level2);
   await expect(level2Options).toHaveCount(2);
   await expect(level2Options).toHaveText(['零售-连锁', '零售-外贸']);
 });

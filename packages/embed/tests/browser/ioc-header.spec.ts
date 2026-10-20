@@ -1,3 +1,4 @@
+import {openSelection,chooseTree} from './selection-actions';
 import { expect,test } from '@playwright/test';
 test.use({timezoneId:'Asia/Shanghai'});
 test.beforeEach(async({page})=>{await page.clock.install({time:new Date('2026-10-19T12:00:00+08:00')});});
@@ -22,25 +23,25 @@ test('dense measured collapse, candidate retry, recursive gate and export safety
   const before=requests.length;await header.getByRole('button',{name:'展开筛选'}).click();await header.getByRole('button',{name:'收起筛选'}).click();expect(requests.length).toBe(before);
   expect(await header.locator('[data-ioc-filter][inert]').count()).toBeGreaterThan(0);
   await header.getByRole('button',{name:'展开筛选'}).click();
-  const region=header.locator('[data-filter-id="region"]');await region.locator('summary').click();await region.getByRole('checkbox',{name:'中国',exact:true}).check();
+  const region=header.locator('[data-filter-id="region"]');await openSelection(region);await region.getByRole('option',{name:'中国',exact:true}).click();
   await expect(header).toContainText('等待筛选确认或可信候选');
   // Automatic descendant clearing must not execute the bound query or its export without confirmation.
   const afterRegion=requests.filter(q=>q.output_dims[0]==='ioc_header_scope').length;
   await expect(page.getByRole('button',{name:'导出',exact:true}).first()).toBeDisabled();
   expect(requests.filter(q=>q.output_dims[0]==='ioc_header_scope').length).toBe(afterRegion);
-  const department=header.locator('[data-filter-id="department"]');await department.locator('summary').click();await department.getByRole('checkbox',{name:'华北地区部',exact:true}).check();
-  const office=header.locator('[data-filter-id="office"]');await office.locator('summary').click();await office.getByRole('checkbox').first().check();
+  const department=header.locator('[data-filter-id="department"]');await openSelection(department);await department.getByRole('option',{name:'华北地区部',exact:true}).click();
+  const office=header.locator('[data-filter-id="office"]');await openSelection(office);await office.getByRole('option',{name:'北京代表处',exact:true}).click();
   await expect(header).not.toContainText('等待筛选确认');await expect(page.getByText(/合成 · .*region_dept_code=CN-NORTH/)).toBeVisible();
-  await header.getByRole('button',{name:'收起筛选'}).click();expect(await header.locator('details[open]').count()).toBe(0);
+  await header.getByRole('button',{name:'收起筛选'}).click();await expect(header.getByRole('dialog')).toHaveCount(0);
   await page.setViewportSize({width:390,height:850});expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await page.screenshot({path:info.outputPath('dense-390.png'),fullPage:true});
   await header.getByRole('button',{name:'展开筛选'}).click();
   const expanded=await header.evaluate(node=>({left:node.getBoundingClientRect().left,right:node.getBoundingClientRect().right,scroll:node.scrollWidth,width:node.clientWidth,inert:node.querySelectorAll('[data-ioc-filter][inert]').length}));
   expect(expanded.left).toBeGreaterThanOrEqual(0);expect(expanded.right).toBeLessThanOrEqual(390);expect(expanded.scroll).toBe(expanded.width);expect(expanded.inert).toBe(0);
-  await region.locator('summary').click();await expect(region.getByRole('checkbox',{name:'中国',exact:true})).toBeVisible();
-  const menu=await region.locator('details').evaluate(node=>({left:node.getBoundingClientRect().left,right:node.getBoundingClientRect().right}));expect(menu.left).toBeGreaterThanOrEqual(0);expect(menu.right).toBeLessThanOrEqual(390);
+  await openSelection(region);await expect(region.getByRole('option',{name:'中国',exact:true})).toBeVisible();
+  const menu=await region.getByRole('dialog').evaluate(node=>({left:node.getBoundingClientRect().left,right:node.getBoundingClientRect().right}));expect(menu.left).toBeGreaterThanOrEqual(0);expect(menu.right).toBeLessThanOrEqual(390);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
   await page.screenshot({path:info.outputPath('dense-390-expanded.png'),fullPage:true});
-  await header.getByRole('button',{name:'收起筛选'}).click();expect(await header.locator('details[open]').count()).toBe(0);
+  await header.getByRole('button',{name:'收起筛选'}).click();await expect(header.getByRole('dialog')).toHaveCount(0);
 });
 test('detail single month, optional facts, legal back intent and readonly update',async({page},info)=>{
   await page.goto('/pages/ioc-header-detail-demo');const header=page.locator('[data-ioc-header]');await expect(header.locator('[data-ioc-tag]')).toHaveCount(1);await expect(header.locator('[data-ioc-fact]')).toHaveCount(1);await expect(header.getByRole('button',{name:'返回来源页'})).toHaveCount(0);
@@ -51,7 +52,7 @@ test('detail single month, optional facts, legal back intent and readonly update
   await page.setViewportSize({width:390,height:850});expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await page.screenshot({path:info.outputPath('detail-390.png'),fullPage:true});
 });
 test('titleless header keeps a discrete January/March predicate',async({page})=>{
-  await page.goto('/pages/ioc-header-month-set-demo');const header=page.locator('[data-ioc-header]');await expect(header.getByRole('heading')).toHaveCount(0);const month=header.locator('[data-filter-id="months"]');await month.locator('summary').click();await month.getByRole('checkbox',{name:'2026-01',exact:true}).check();await month.getByRole('checkbox',{name:'2026-03',exact:true}).check();await expect(page.getByText('合成 · month_code=2026-01,2026-03',{exact:true})).toBeVisible();
+  await page.goto('/pages/ioc-header-month-set-demo');const header=page.locator('[data-ioc-header]');await expect(header.getByRole('heading')).toHaveCount(0);const month=header.locator('[data-filter-id="months"]');await openSelection(month);await month.getByRole('option',{name:'2026-01',exact:true}).click();await month.getByRole('option',{name:'2026-03',exact:true}).click();await expect(page.getByText('合成 · month_code=2026-01,2026-03',{exact:true})).toBeVisible();
 });
 
 test('selected URL value waits for candidates; failed candidates retry current request without broadening',async({page})=>{
@@ -61,8 +62,8 @@ test('selected URL value waits for candidates; failed candidates retry current r
     if(items.some((item:any)=>item.output_dims[0]==='geo-pc-code'&&!item.output_metrics.length)&&!failed){failed=true;await route.fulfill({status:503,body:'fixture failure'});return;}
     business.push(...items.filter((item:any)=>item.output_dims[0]==='ioc_header_scope'&&item.filter?.time));await route.continue();
   });
-  await page.goto('/pages/ioc-header-overview-demo?region=R99');const region=page.locator('[data-filter-id="region"]');await region.locator('summary').click();await expect(region.locator('[data-candidates-status="error"]')).toBeVisible();expect(business).toHaveLength(0);
-  await region.getByRole('button',{name:'重试',exact:true}).click();await expect(region.getByRole('checkbox',{name:'中国',exact:true})).toBeChecked();await expect(page.getByText(/合成 · .*geo_pc_code=R99/)).toBeVisible();expect(business).toHaveLength(1);
+  await page.goto('/pages/ioc-header-overview-demo?region=R99');const region=page.locator('[data-filter-id="region"]');await openSelection(region);await expect(region.locator('[data-candidates-status="error"]')).toBeVisible();expect(business).toHaveLength(0);
+  await region.getByRole('button',{name:'重试',exact:true}).click();await openSelection(region);await expect(region.getByRole('option',{name:'中国',exact:true})).toHaveAttribute('aria-selected','true');await expect(page.getByText(/合成 · .*geo_pc_code=R99/)).toBeVisible();expect(business).toHaveLength(1);
 });
 
 test('two embedded instances own their month anchors and destroy independently',async({page})=>{

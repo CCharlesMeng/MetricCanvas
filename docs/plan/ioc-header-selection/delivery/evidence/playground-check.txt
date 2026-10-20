@@ -3,7 +3,7 @@ Loading svelte-check in workspace: /Users/moon/.codex/worktrees/ioc-selection/Da
 Getting Svelte diagnostics...
 
 /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/apps/playground/tests/page-catalog.test.ts:92:31
-Error: 'topic.docs' is possibly 'undefined'. 
+Error: 'topic.docs' is possibly 'undefined'.
     for (const topic of catalogCapabilities) {
       for (const reference of topic.docs) {
         expect(readFileSync(new URL(`../../../docs/page-metadata/${reference}.md`, import.meta.url), 'utf8').length).toBeGreaterThan(0);

@@ -6,16 +6,20 @@
       "sha256": "57abf4fee80cf28b664f0a035060a8817146158207912219e4515864c6993c0f"
     },
     {
-      "path": "apps/playground/page-catalog.json",
-      "sha256": "25142c1f3010ae46fa020022cfba6a1ff7f9de4ab0e913f14b2b78f9d15b4823"
-    },
-    {
-      "path": "apps/playground/src/lib/ioc-selection-gateway.ts",
+      "path": "apps/playground/fixtures/selection-gateway.ts",
       "sha256": "0f9a11b66e0d8b99e30c98a4ff9ea60645dbaf3c99132fabf9b51a7b4abd6077"
     },
     {
+      "path": "apps/playground/page-catalog.json",
+      "sha256": "9a93dfe9efee822afcb1a805df3ca7b0dbd3b994764ed5027ae0b593cb920480"
+    },
+    {
+      "path": "apps/playground/src/lib/page-catalog.ts",
+      "sha256": "c53d7aa7442bf9b4ea142c6f19ce01c3c4910223157ec870051d12e5cf7c127e"
+    },
+    {
       "path": "apps/playground/src/routes/(viewer)/pages/[pageId]/+page.svelte",
-      "sha256": "9dc01326b76cc3b47ef10bc9dd8e154fb160d042027560c9a7db7a4f31293532"
+      "sha256": "cb0a9734d84d7af763d2011863d2c0c1cb16b658fa43f6c86336d3b6522aa1ad"
     },
     {
       "path": "apps/playground/tests/ioc-header-selection-browser.mjs",
@@ -1846,12 +1850,24 @@
       "sha256": "cb423bcc16c39a9aaa726905bb0142194845358316bb10e6d7f674bda1d1a9f6"
     },
     {
+      "path": "packages/embed/tests/browser/ioc-header-business.spec.ts",
+      "sha256": "ed962496f6d829124420b56cd6f48eb733b2296d1d045a6fa474033e38290a97"
+    },
+    {
+      "path": "packages/embed/tests/browser/ioc-header.spec.ts",
+      "sha256": "d65a9620777dfe5edcf9ef15c4998791be087247d85c2fdf04a6a511bf27c9cc"
+    },
+    {
+      "path": "packages/embed/tests/browser/navigation.spec.ts",
+      "sha256": "67dd4ca339adc45b89da810d426e94cefc3f8ee0ddb6431aecdf7d59c134291f"
+    },
+    {
       "path": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
       "sha256": "53904186414b711b2c12ef80530a4d54131b911c4b3850947e8065a533c202ee"
     },
     {
       "path": "packages/engine/runtime-ui/src/filters/DimensionFilter.svelte",
-      "sha256": "0f60f2d250eb05f4b2a6439311f5e897aa3117bdb1bb2fe513940254e7b7a023"
+      "sha256": "1274cfa1bfae7da011bad67bd84de9d12f054933d6abb642a842164581524ce9"
     },
     {
       "path": "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
@@ -1915,7 +1931,7 @@
     },
     {
       "path": "packages/ui/README.md",
-      "sha256": "3aba4277f7e1f620618c134d5a6342e83c625bd902ea81d90e9ebc3249f5b17b"
+      "sha256": "10180935c7244ba01e22090ee0ebd750482e8cec72a6839693bee98272c0060e"
     },
     {
       "path": "packages/ui/scripts/freeze-os-theme.mjs",
@@ -1927,7 +1943,7 @@
     },
     {
       "path": "packages/ui/src/components/select/Selection.svelte",
-      "sha256": "4556d2b2b2f67e19bb842f3463edd6ad4bd21b998dc073e574eb99f7f34fb532"
+      "sha256": "00966ea1897f35489b82b9b48ced742fc425925216d6a442e79e6d31c524b683"
     },
     {
       "path": "packages/ui/src/components/select/SelectionIcon.svelte",
@@ -1955,7 +1971,7 @@
     },
     {
       "path": "packages/ui/tests/browser/components.spec.ts",
-      "sha256": "b4ea41fed13a29b662fe81a1c5ce7f592aa028052d7380d91b86d2b0d4d2393b"
+      "sha256": "92a091312cdf77bfc4ec47fe056090c16f4bbf800a592708fde162a19484aa7b"
     },
     {
       "path": "packages/ui/tests/browser/main.ts",
@@ -1976,6 +1992,10 @@
     {
       "path": "pages/ioc-header-selection.json",
       "sha256": "33aca3a3a0b3adc350ef8bedb349622fb6a8dc0063829cd1f58dcd0e70c97d38"
+    },
+    {
+      "path": "tests/public-api/ui.txt",
+      "sha256": "55674a3b75cb62c011a7c23c79661f2bc7bdf3645217e7e71a1a613491ca115b"
     }
   ]
 }

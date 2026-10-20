@@ -8,10 +8,10 @@
   import { selectionNodes, flattenNodes, filterNodes, selectionState, toggleSelection, type SelectionNode, type TreeSelection } from './selection';
 
   let {options, value = [], label, multiple = true, tree = false, searchable = true,
-    treeSelection = 'independent', clearable = false, disabled = false, placeholder = '请选择', statusText, statusError = false, required = false, onchange}:
+    treeSelection = 'independent', clearable = false, disabled = false, placeholder = '请选择', statusText, statusError = false, required = false, onretry, onchange}:
     {options: UiTreeOption[]; value?: string[]; label: string; multiple?: boolean; tree?: boolean;
      searchable?: boolean; treeSelection?: TreeSelection; disabled?: boolean; placeholder?: string;
-     statusText?: string; statusError?: boolean; clearable?: boolean; required?: boolean; onchange?: (value: string[]) => void} = $props();
+     statusText?: string; statusError?: boolean; clearable?: boolean; required?: boolean; onretry?:()=>void; onchange?: (value: string[]) => void} = $props();
 
   let trigger: HTMLButtonElement;
   let popup: HTMLDivElement;
@@ -45,18 +45,20 @@
     if (!rect.visible) close(false);
   }
   async function show() {
-    if (disabled || open) return;
+    if (disabled || popup.matches(':popover-open')) return;
     keyword = '';
     popup.showPopover(); open = true;
     await tick(); place();
-    if (searchable) searchInput?.focus();
-    else popup.querySelector<HTMLElement>('[data-selection-choice]:not(:disabled)')?.focus();
+    await tick();
+    if(!popup.matches(':popover-open'))return;
+    if (searchable) searchInput?.focus({preventScroll:true});
+    else popup.querySelector<HTMLElement>('[data-selection-choice]:not(:disabled)')?.focus({preventScroll:true});
   }
-  function rememberTriggerState() { pointerWasOpen = open; }
+  function rememberTriggerState() { pointerWasOpen = popup.matches(':popover-open'); }
   function toggleFromClick(event: MouseEvent) {
     if (disabled) return;
     // Native light-dismiss may run before click. Decide from the pointer-down state.
-    if (event.detail === 0 ? open : pointerWasOpen) close();
+    if (event.detail === 0 ? popup.matches(':popover-open') : pointerWasOpen) close();
     else void show();
   }
   function close(focus = true) {
@@ -136,12 +138,13 @@
   </div>
   <div bind:this={popup} popover="auto" class="mc-ui-select-dropdown selection-popup" role="dialog" aria-label={`${label}候选`} tabindex="-1"
     style:left="{left}px" style:top="{top}px" style:min-width="{Math.max(width, 240)}px"
-    ontoggle={event => {open = event.newState === 'open';}} onkeydown={popupKeys}>
+    ontoggle={() => {open = popup.matches(':popover-open');}} onkeydown={popupKeys}>
     {#if searchable}<div class="mc-ui-input mc-ui-input-underline mc-ui-select-dropdown__search">
       <span class="mc-ui-input__prefix"><Icon name="search"/></span>
       <input bind:this={searchInput} class="mc-ui-input__inner" type="text" aria-label={`搜索${label}`} placeholder="输入关键字搜索" bind:value={keyword}/>
     </div>{/if}
-    {#if statusText}<p class="selection-status" role={statusError ? 'alert' : 'status'}>{statusText}</p>
+    {#if clearable && !required && !value.length && !statusText && !statusError}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" aria-label="清除筛选" onclick={()=>onchange?.([])}>{placeholder}</button>{/if}
+    {#if statusText}<p class="selection-status" role={statusError ? 'alert' : 'status'}>{statusText}</p>{#if statusError && onretry}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" onclick={onretry}>重试</button>{/if}
     {:else if !visible.length}<p class="selection-status" role="status">{searchActive ? '无匹配候选项' : '无候选项'}</p>
     {:else if tree}
       <div class="mc-ui-tree mc-ui-tree--show-line selection-tree" role="tree" aria-label={`${label}选项`} aria-multiselectable={multiple}>
@@ -149,7 +152,7 @@
       </div>
     {:else}
       <div role="listbox" aria-label={`${label}选项`} aria-multiselectable={multiple}>
-        {#if multiple && !searchActive}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" role="option" aria-selected={allSelected} data-selection-choice onclick={() => onchange?.(allSelected ? value.filter(item => !selectable.some(node => node.value === item)) : [...new Set([...value, ...selectable.map(node => node.value)])])}>
+        {#if multiple && !required && !searchActive}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" role="option" aria-selected={allSelected} data-selection-choice onclick={() => onchange?.(allSelected ? value.filter(item => !selectable.some(node => node.value === item)) : [...new Set([...value, ...selectable.map(node => node.value)])])}>
           {@render checkbox(allSelected, someSelected && !allSelected)}<span>全选</span>
         </button>{/if}
         {#each visible as node (node.value)}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" class:selected={value.includes(node.value)} class:is-disabled={node.disabled}

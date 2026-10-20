@@ -35,8 +35,7 @@
     {#if statusText}<span role={candidates.status === 'error' ? 'alert' : 'status'} data-candidates-status={candidates.status}>{statusText}</span>{/if}
   {:else}
     <div class="dropdown" data-candidates-status={candidates.status}>
-      <Selection label={label ?? '维度筛选'} options={treeResult.options} {value} tree={display === 'tree'} multiple={selection?.mode !== 'single' && !selection?.required} {searchable} treeSelection={structural?'independent':treeSelection} {disabled} required={selection?.required} clearable={!selection?.required} placeholder={emptyLabel} {statusText} statusError={treeResult.error || candidates.status === 'error'} onchange={commit}/>
-      {#if candidates.status==='error'&&onretry}<button type="button" onclick={onretry}>重试</button>{/if}
+      <Selection label={label ?? '维度筛选'} options={treeResult.options} {value} {onretry} tree={display === 'tree'} multiple={selection?.mode !== 'single' && !selection?.required} {searchable} treeSelection={structural?'independent':treeSelection} {disabled} required={selection?.required} clearable={!selection?.required} placeholder={emptyLabel} {statusText} statusError={treeResult.error || candidates.status === 'error'} onchange={commit}/>
     </div>
   {/if}
 </div>

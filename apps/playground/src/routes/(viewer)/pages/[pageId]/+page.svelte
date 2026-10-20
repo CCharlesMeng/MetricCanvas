@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {iocSelectionGateway} from '$lib/ioc-selection-gateway';
+  import {iocSelectionGateway} from '../../../../../fixtures/selection-gateway';
   import {pageExternalInputs} from '$lib/page-catalog';
   import {browser} from '$app/environment';
   const framed = browser && window.self !== window.top;
@@ -98,7 +98,7 @@
       pageState = {
         phase: 'ready',
         document,
-        dataGateway: pageId === 'ioc-header-selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : dataGateway
+        dataGateway: pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : dataGateway
       };
     } catch (cause) {
       if (session !== loadSession) return;

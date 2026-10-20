@@ -1,0 +1,53 @@
+[WebServer] (node:29209) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:29210) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[DEBUG-merge] 区域 click false false false 589 149
+[DEBUG-merge] 区域 show false false
+[DEBUG-merge] 地区部 click false false false 93 186
+[DEBUG-merge] 地区部 show false false
+[DEBUG-merge] 代表处 click false false false 399 186
+[DEBUG-merge] 代表处 show false false
+[DEBUG-merge] 代表处 close {"x":396,"y":169,"width":240,"height":32,"top":169,"right":636,"bottom":201,"left":396}     at re (http://127.0.0.1:4197/dist/metriccanvas-runtime.global.js:310:67640)     at MutationObserver.<anonymous> (http://127.0.0.1:4197/dist/metriccanvas-runtime.global.js:310:66780)
+[DEBUG-merge] 区域 click false false false 79 336
+[DEBUG-merge] 区域 show false false
+[DEBUG-merge] 区域 close {"x":-360,"y":319,"width":202,"height":32,"top":319,"right":-158,"bottom":351,"left":-360}     at re (http://127.0.0.1:4197/dist/metriccanvas-runtime.global.js:310:67640)     at ee (http://127.0.0.1:4197/dist/metriccanvas-runtime.global.js:310:67044)
+  ✘  1 tests/browser/ioc-header.spec.ts:19:1 › dense measured collapse, candidate retry, recursive gate and export safety (6.0s)
+
+
+  1) tests/browser/ioc-header.spec.ts:19:1 › dense measured collapse, candidate retry, recursive gate and export safety
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[data-ioc-header]').locator('[data-filter-id="region"]').getByRole('dialog')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('[data-ioc-header]').locator('[data-filter-id="region"]').getByRole('dialog')
+
+
+       at selection-actions.ts:6
+
+      4 |  const trigger=control.locator('button[aria-haspopup]').first();
+      5 |  if(!await control.getByRole('dialog').isVisible())await trigger.click({position:{x:2,y:16}});
+    > 6 |  await expect(control.getByRole('dialog')).toBeVisible();
+        |                                            ^
+      7 | }
+      8 | export async function closeSelection(control:Locator){
+      9 |  const dialog=control.getByRole('dialog');
+        at openSelection (/Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/embed/tests/browser/selection-actions.ts:6:44)
+        at /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/embed/tests/browser/ioc-header.spec.ts:42:3
+
+    Error Context: ../../../../../../../../tmp/ioc-dense-current/ioc-header-dense-measured--2433a-sive-gate-and-export-safety/error-context.md
+
+  1 failed
+    tests/browser/ioc-header.spec.ts:19:1 › dense measured collapse, candidate retry, recursive gate and export safety
+undefined
+/Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/embed:
+[ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL] Command failed with exit code 1: playwright test ioc-header.spec.ts --grep 'dense measured' '--workers=1' '--timeout=15000' '--output=/tmp/ioc-dense-current'

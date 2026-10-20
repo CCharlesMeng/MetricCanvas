@@ -60,8 +60,27 @@
       "command": "pnpm validate",
       "log": "validate.txt",
       "exit_code": 0
+    },
+    {
+      "command": "pnpm test",
+      "log": "full-tests.txt",
+      "exit_code": 0,
+      "passed": 2534,
+      "skipped": 5
+    },
+    {
+      "command": "MC_EMBED_EXAMPLE_PORT=4197 pnpm --filter @metriccanvas/embed exec playwright test ioc-header.spec.ts ioc-header-business.spec.ts navigation.spec.ts --workers=1 --timeout=15000",
+      "log": "embed-ioc-browser-current.txt",
+      "exit_code": 0,
+      "passed": 29
+    },
+    {
+      "command": "pnpm test tests/public-api.test.ts apps/playground/tests/page-id-neutrality.test.ts apps/playground/tests/page-catalog.test.ts apps/playground/tests/ioc-header-showcase.test.ts",
+      "log": "ci-gates.txt",
+      "exit_code": 0,
+      "passed": 24
     }
   ],
-  "full_suite_note": "1417 cases preceded final disabled-parent compatibility fix. Its affected tree path was then checked by17 tests;33 browser,7 installed-package and main page scenarios rerun.",
+  "full_suite_note": "Full suite2534 passed/5 pre-existing skipped. Browser and installed UI rerun after final focus and required-control guards; previous1417 result remains historical.",
   "data": "local synthetic, no real DQE/Relay/CloudIOC"
 }

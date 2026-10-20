@@ -22,15 +22,15 @@ vite v8.1.5 building client environment for production...
 transforming...✓ 1174 modules transformed.
 rendering chunks...
 computing gzip size...
-dist/metriccanvas-runtime.es.js  5,388.25 kB │ gzip: 1,374.58 kB
+dist/metriccanvas-runtime.es.js  5,388.96 kB │ gzip: 1,374.80 kB
 
 [2K
 transforming...✓ 1174 modules transformed.
 rendering chunks...
 computing gzip size...
-dist/metriccanvas-runtime.global.js  4,187.00 kB │ gzip: 1,245.93 kB
+dist/metriccanvas-runtime.global.js  4,187.55 kB │ gzip: 1,246.03 kB
 
-✓ built in 1.44s
+✓ built in 1.33s
 $ vite build
 vite v8.1.5 building client environment for production...
 [2K
@@ -43,9 +43,9 @@ build/assets/rolldown-runtime-DAXXjFlN.js      1.26 kB │ gzip:   0.70 kB
 build/assets/china-DwbDKGiY.js               117.73 kB │ gzip:  34.16 kB
 build/assets/world-AHhAxG5S.js               171.08 kB │ gzip:  54.92 kB
 build/assets/exceljs.min-BSnPgFSx.js         929.90 kB │ gzip: 256.47 kB
-build/assets/index-DhIqjgO7.js             3,207.56 kB │ gzip: 978.37 kB
+build/assets/index-CB6nrqEG.js             3,208.11 kB │ gzip: 978.37 kB
 
-✓ built in 910ms
+✓ built in 864ms
 [plugin builtin:vite-reporter]
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application

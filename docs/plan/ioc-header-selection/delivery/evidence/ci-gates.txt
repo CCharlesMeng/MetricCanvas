@@ -1,0 +1,9 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run tests/public-api.test.ts apps/playground/tests/page-id-neutrality.test.ts apps/playground/tests/page-catalog.test.ts apps/playground/tests/ioc-header-showcase.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/ioc-selection/DataDashboard
+
+
+ Test Files  4 passed (4)
+      Tests  24 passed (24)
+   Start at  21:23:11
+   Duration  838ms (transform 672ms, setup 0ms, import 1.39s, tests 305ms, environment 0ms)

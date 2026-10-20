@@ -18,9 +18,9 @@ packages/engine check: Loading svelte-check in workspace: /Users/moon/.codex/wor
 packages/engine check: Getting Svelte diagnostics...
 packages/engine check: svelte-check found 0 errors and 0 warnings
 packages/engine check: Done
-packages/application-runtime check$ tsc --noEmit -p .
-packages/metric-canvas check$ svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json
 packages/embed check$ svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json
+packages/metric-canvas check$ svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json
+packages/application-runtime check$ tsc --noEmit -p .
 packages/application-runtime check: Done
 packages/embed check: Loading svelte-check in workspace: /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/embed
 packages/embed check: Getting Svelte diagnostics...
@@ -30,8 +30,8 @@ packages/metric-canvas check: Getting Svelte diagnostics...
 packages/metric-canvas check: svelte-check found 0 errors and 0 warnings
 packages/metric-canvas check: Done
 packages/embed check: Done
-apps/playground check$ svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json
 apps/platform check$ svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json
+apps/playground check$ svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json
 apps/platform check: Loading svelte-check in workspace: /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/apps/platform
 apps/platform check: Getting Svelte diagnostics...
 apps/platform check: svelte-check found 0 errors and 0 warnings

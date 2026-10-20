@@ -12,6 +12,6 @@ DatePicker 单点精度新增 year（YYYY）与 quarter（YYYY-Qn），输入分
 
 `Select` 保留 `value: string` / `onchange(string)`，新增 `searchable?: boolean`，默认开启面板内候选搜索。需要数组值时使用 `Selection`，它的 `value: string[]` 和 `onchange(string[])` 始终受控；`multiple=false` 为单选，`tree=true` 展示 `UiTreeOption.children`，所有节点使用稳定 `value`，`label` 只显示，`selectable=false` 为不可提交的结构节点。`treeSelection` 可取 independent（中立组件默认，只操作自身）、descendants（本节点及候选后代）、leaf（仅叶子）；单选始终只提交一个自身值，leaf 单选父节点只展开。
 
-`Selection` 的 `searchable=true`、`disabled=false`、`clearable=false` 可独立配置；`statusText` / `statusError` 显示加载、空结果或错误。多选标签固定单行并在区内横向滚动，移除只回传对应值的删除；候选缺少已选值时回显原稳定码。组件不取数，不提供远程搜索/懒加载/分页，也不保存业务状态。页面维度筛选适配器的缺省父选后代与 string[] 单选约束由页面协议另行声明，不能从视觉树自动推断业务查询。
+`Selection` 的 `searchable=true`、`disabled=false`、`clearable=false` 可独立配置；`statusText` / `statusError` 显示加载、空结果或错误，`onretry`由调用者提供并在错误面板内执行。适配器通过`required`保留必选约束，关闭清空与移除。多选标签固定单行并在区内横向滚动，移除只回传对应值的删除；候选缺少已选值时回显原稳定码。组件不取数，不提供远程搜索/懒加载/分页，也不保存业务状态。页面维度筛选适配器的缺省父选后代与 string[] 单选约束由页面协议另行声明，不能从视觉树自动推断业务查询。
 
 键盘：打开默认聚焦搜索；无搜索时聚焦首个可操作项；上下/Home/End移动候选，树左右键展开/收起/返回父级，Enter选择，Escape关闭并回焦。鼠标滚轮在标签溢出时用于横向滚动；删除按钮可直接获得键盘焦点。演示及自动验收见 [IOC选择控件](../../pages/README.md#ioc-页头选择控件)。
