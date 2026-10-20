@@ -83,20 +83,21 @@ test('超出单块预算的完整长报告也只有一个PNG文件', async ({pag
   const file=await readFile((await download.path())!);
   const width=file.readUInt32BE(16),height=file.readUInt32BE(20);
   expect(height).toBeGreaterThan(8192);expect(width*height).toBeGreaterThan(16_777_216);
-  const decoded=await page.evaluate(async base64=>{
+  const scale = 3;
+  const decoded=await page.evaluate(async ({base64,scale})=>{
     const image=await createImageBitmap(await (await fetch('data:image/png;base64,'+base64)).blob());
     const context=new OffscreenCanvas(1,1).getContext('2d')!;
     let mismatches=0;
     // Every output row, including both sides of every screenshot block join.
     for(let y=0;y<image.height;y++) {
       context.drawImage(image,4,y,1,1,0,0,1,1);
-      const pixel=context.getImageData(0,0,1,1).data,index=Math.floor(y/(64*4));
+      const pixel=context.getImageData(0,0,1,1).data,index=Math.floor(y/(64*scale));
       if(pixel[0]!==((index*43+17)%256)||pixel[1]!==((index*61+29)%256)||pixel[2]!==((index*79+41)%256))mismatches++;
     }
     const result={width:image.width,height:image.height,mismatches};image.close();return result;
-  },file.toString('base64'));
+  },{base64:file.toString('base64'),scale});
   expect([decoded.width,decoded.height]).toEqual([width,height]);expect(decoded.mismatches).toBe(0);expect(count).toBe(1);
-  await testInfo.attach('long-image-facts',{body:Buffer.from(JSON.stringify({...decoded,bytes:file.length,scale:4})),contentType:'application/json'});
+  await testInfo.attach('long-image-facts',{body:Buffer.from(JSON.stringify({...decoded,bytes:file.length,scale})),contentType:'application/json'});
 });
 
 test('Worker失败可重试，销毁清理准备中的独立文档', async ({page}) => {

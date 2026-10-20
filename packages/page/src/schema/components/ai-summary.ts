@@ -1,3 +1,4 @@
+import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import { componentIdZ, componentLayoutZ, fieldNameZ, idZ, textValueZ } from '../primitives';
 import { componentCatalogRegistry } from '../registry';
@@ -24,6 +25,7 @@ const aiSummaryRelatedDataDefinitionZ = z
 export const aiSummaryComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('aiSummary'),
     layout: componentLayoutZ,
     props: z

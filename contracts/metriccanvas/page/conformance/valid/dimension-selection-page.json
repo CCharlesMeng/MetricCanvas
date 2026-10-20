@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.32",
+  "schemaVersion": "6.43",
   "id": "dimension-selection-page",
   "layout": "dashboard",
   "meta": {
@@ -13,7 +13,9 @@
       "dimension": "demo_region",
       "label": "区域",
       "display": "tree",
-      "selection": "single",
+      "selection": {
+        "mode": "single"
+      },
       "searchable": true,
       "default": [
         "CN-SZ"
@@ -26,7 +28,9 @@
       "dimension": "demo_industry",
       "label": "行业",
       "display": "tree",
-      "selection": "multiple",
+      "selection": {
+        "mode": "multiple"
+      },
       "searchable": true,
       "default": [
         "AUTO-EV"
@@ -39,7 +43,9 @@
       "dimension": "demo_business",
       "label": "业务类型",
       "display": "tree",
-      "selection": "multiple",
+      "selection": {
+        "mode": "multiple"
+      },
       "searchable": true,
       "default": [],
       "treeSelection": "leaf"
@@ -50,7 +56,9 @@
       "dimension": "demo_category",
       "label": "客户分类",
       "display": "select",
-      "selection": "multiple",
+      "selection": {
+        "mode": "multiple"
+      },
       "searchable": true,
       "default": [
         "NA1",
@@ -65,7 +73,9 @@
       "dimension": "demo_model",
       "label": "模型",
       "display": "select",
-      "selection": "single",
+      "selection": {
+        "mode": "single"
+      },
       "searchable": false,
       "default": []
     },
@@ -75,7 +85,9 @@
       "dimension": "demo_legacy",
       "label": "存量路径树",
       "display": "tree",
-      "selection": "multiple",
+      "selection": {
+        "mode": "multiple"
+      },
       "searchable": true,
       "default": [],
       "treeSelection": "descendants"

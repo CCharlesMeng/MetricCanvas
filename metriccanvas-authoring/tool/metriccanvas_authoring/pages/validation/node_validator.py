@@ -36,3 +36,24 @@ def validate_with_node(document: Any):
         return issues
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
         return unavailable
+
+
+def edit_presentation_with_node(document, operation):
+    """Transport a closed presentation operation to the same product implementation."""
+    from metriccanvas_authoring.bundle_info import load_bundle_info
+    bridge = bundle_root() / "scripts" / "page-validation-bridge.mjs"
+    node = shutil.which("node")
+    if not node or not bridge.is_file():
+        return None
+    try:
+        lock = json.loads((bundle_root() / 'bundle.lock.json').read_text())
+        expected = next((item['sha256'] for item in lock['artifacts'] if item['file'] == 'scripts/page-validation-bridge.mjs'), None)
+        if expected != hashlib.sha256(bridge.read_bytes()).hexdigest():
+            return None
+        result = subprocess.run([node, str(bridge)], input=json.dumps({'document': document, 'operation': operation}, ensure_ascii=False), capture_output=True, text=True, timeout=20, check=True)
+        receipt = json.loads(result.stdout)
+        if receipt.get('schemaVersion') != load_bundle_info()['pageSchemaVersion']:
+            return None
+        return receipt
+    except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
+        return None

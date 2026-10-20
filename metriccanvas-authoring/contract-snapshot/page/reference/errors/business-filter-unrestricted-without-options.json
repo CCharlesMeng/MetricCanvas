@@ -1,0 +1,25 @@
+{
+  "case": "business-filter-unrestricted-without-options",
+  "invariant": "business-filters",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "全选不限只支持显式封闭多选枚举",
+      "paths": [
+        "/filters/2/selection/allBehavior"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      "…",
+      {
+        "selection": {
+          "allBehavior": "unrestricted"
+        }
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/business-filter-unrestricted-without-options.json"
+}

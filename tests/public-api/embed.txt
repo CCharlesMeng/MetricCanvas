@@ -3,7 +3,10 @@
 ## .
 AiSummaryConfig
 DataGateway
+DataPeriodFact
 DimensionValuesGateway
+DisplayInputsSnapshot
+DisplayInputsSource
 DqeGatewayConfig
 ExecutionBootstrap
 ExecutionError
@@ -16,6 +19,7 @@ LastFilterPort
 LastFilterRequest
 LastFilterStatus
 MountOptions
+NavigationInputContract
 RuntimeDataGateway
 RuntimeEvent
 RuntimeHandle
@@ -28,3 +32,4 @@ createLastFilterRecorder
 loadExecution
 mount
 prepareExecution
+projectNavigationInputs

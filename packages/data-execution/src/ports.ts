@@ -90,4 +90,28 @@ export interface DimensionValuesGateway {
 /**
  * 应用壳注入统一运行时的数据网关形状:主查询执行必备,候选值能力可选。
  */
-export type RuntimeDataGateway = DataGateway & Partial<DimensionValuesGateway>;
+export type RuntimeDataGateway = DataGateway & Partial<DimensionValuesGateway & FilterCandidatesGateway>;
+
+/** Optional complete filter candidates, owned by the injected Adapter. No HTTP or identity secrets. */
+export interface FilterCandidate extends DimensionValueCandidate {
+  disabled?: boolean;
+  level?: string;
+  parent?: {level:string;value:string};
+}
+export interface FilterCandidatesRequest {
+  filterId:string;
+  dimension:string;
+  level?:string;
+  calendarWindow?:{granularity:'month';from:string;to:string};
+  factRevision?:string;permissionRevision?:string;filterRevision?:number;
+  constraints:{
+    dimensions:Readonly<Record<string,readonly string[]>>;
+    times:Readonly<Record<string,{from:string;to:string;mode?:'day'|'month'|'isoWeek'}>>;
+  };
+}
+export type FilterCandidatesResult =
+  | {kind:'values';candidates:FilterCandidate[]}
+  | {kind:'unavailable'|'denied'|'unconfigured'};
+export interface FilterCandidatesGateway {
+  fetchFilterCandidates(request:FilterCandidatesRequest,options:{signal:AbortSignal}):Promise<FilterCandidatesResult>;
+}

@@ -1,0 +1,12 @@
+WARN `--no-project` was provided, but no project was found
+{
+  "analyzer": "radon/6.0.1",
+  "limit": 15,
+  "current": {
+    "files": 15,
+    "functions": 366,
+    "maximum": 15,
+    "overLimit": 0
+  },
+  "violations": []
+}

@@ -123,8 +123,8 @@ describe('数据上下文同面守卫', () => {
   )(
     '业务域「%s」的已验证查询 %s 可经语义面真实执行',
     (_domainName, _queryId, query) => {
-      expect(query.body.dsl_list).toHaveLength(1);
-      const result = executeDqeItem(query.body.dsl_list[0]);
+      expect(query.body!.dsl_list).toHaveLength(1);
+      const result = executeDqeItem(query.body!.dsl_list[0]);
 
       expect(result.code).toBe('SUCCESS');
       expect(result.data.length).toBeGreaterThan(0);

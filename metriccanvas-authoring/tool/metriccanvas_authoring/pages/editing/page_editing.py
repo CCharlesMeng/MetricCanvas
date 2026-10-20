@@ -4,13 +4,14 @@ from typing import Any
 
 from metriccanvas_authoring.pages.components.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
 from metriccanvas_authoring.pages.editing.interaction_editing import INTERACTION_HANDLERS
+from metriccanvas_authoring.pages.editing.presentation_editing import PRESENTATION_HANDLERS
 from metriccanvas_authoring.pages.components.container_building import CONTAINER_HANDLERS, add_ai_summary
 from metriccanvas_authoring.pages.components.text_map_building import TEXT_MAP_HANDLERS
 from metriccanvas_authoring.runtime_assets import bundle_root
 
 EDIT_SCHEMA = json.loads((bundle_root() / "contracts/authored/page-edit-request.schema.json").read_text())
 OPERATION_SCHEMA = EDIT_SCHEMA["properties"]["operations"]["items"]
-OPERATION_HANDLERS = {**COMPONENT_HANDLERS, **TEXT_MAP_HANDLERS, **CONTAINER_HANDLERS, **INTERACTION_HANDLERS}
+OPERATION_HANDLERS = {**COMPONENT_HANDLERS, **TEXT_MAP_HANDLERS, **CONTAINER_HANDLERS, **INTERACTION_HANDLERS, **PRESENTATION_HANDLERS}
 
 
 def apply_page_operation(document, op, *, summary_enabled=False):

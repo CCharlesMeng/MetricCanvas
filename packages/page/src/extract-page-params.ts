@@ -1,3 +1,4 @@
+import {ordinaryQuery} from './time-mode';
 import { isPeriodSelection, resolvePeriodSelection } from './period-filter';
 import { flattenPageComponents } from './component-walk';
 import { versionPolicy } from './version';
@@ -37,7 +38,7 @@ export function extractPageParams(input:unknown, context:ExtractionContext):Page
   if(!valid.ok)return {ok:false,issues:valid.errors.map(e=>({code:'INVALID_PAGE',path:e.path,message:e.message}))};
   if(!context.baseline)return fail('提取需要最终已验证查询的精确基线');
   const source=JSON.parse(JSON.stringify(input)) as PageDocument;
-  const queries=Object.keys(source.dataSources).filter(id=>source.dataSources[id].source.type==='query').sort();
+  const queries=Object.keys(source.dataSources).filter(id=>source.dataSources[id].source.type==='query'&&!('timeModes' in (source.dataSources[id].source as {query:import('./query').PageQuery}).query)).sort();
   const groups=new Map<string,ParameterCandidate>(); const skipped:PageParamExtraction['skipped']=[];
   function add(identity:string,declaration:PageParamDeclaration,value:PageParamValue,location:ParameterCandidate['locations'][number]) {
     const signature=canonicalizeJson({identity,type:declaration.type,value});
@@ -48,7 +49,7 @@ export function extractPageParams(input:unknown, context:ExtractionContext):Page
     const ds=source.dataSources[id];if(ds.source.type!=='query')continue;
     const q=ds.source.query;const base=`/dataSources/${pointer(id)}/source/query/body/dsl_list/0/filter`;
     if(Object.keys(q.paramBindings??{}).length){skipped.push({path:base,reason:'旧绑定须先显式迁移'});continue;}
-    const f:Record<string,any>=record(q.body.dsl_list[0].filter)?q.body.dsl_list[0].filter:{};
+    const rawFilter=ordinaryQuery(q).body.dsl_list[0].filter;const f:Record<string,any>=record(rawFilter)?rawFilter:{};
     if(Array.isArray(f.dims))for(const [index,d] of f.dims.entries()) {
       const path=`${base}/dims/${index}/dim_value_list`;
       if(!record(d)||Object.keys(d).some(k=>!['dim_name','dim_value_list'].includes(k))||typeof d.dim_name!=='string'||!Array.isArray(d.dim_value_list)||!d.dim_value_list.length||!d.dim_value_list.every((x:unknown)=>typeof x==='string'&&x.length)||new Set(d.dim_value_list).size!==d.dim_value_list.length||f.dims.filter((x:any)=>x?.dim_name===d.dim_name).length!==1){skipped.push({path,reason:'仅提取无歧义的简单字符串维度谓词'});continue;}
@@ -210,12 +211,12 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
         if (source.type !== 'query') return fail('来源查询已改变');
         if (location.filterId) continue;
         if (location.datePredicate && location.queryField) {
-          const filter = source.query.body.dsl_list[0].filter as Record<string, any>;
+          const filter = ordinaryQuery(source.query).body.dsl_list[0].filter as Record<string, any>;
           filter.dims=filter.dims.filter((dim:any)=>dim.dim_name!==location.queryField);
           (source.query.filterBindings ??= {})[dateFilterId!]={target:'timePoint',queryField:location.queryField,valueFormat:location.valueFormat};
           continue;
         }
-        const time = (source.query.body.dsl_list[0].filter as Record<string, any>).time;
+        const time = (ordinaryQuery(source.query).body.dsl_list[0].filter as Record<string, any>).time;
         delete time.start; delete time.end;
         const original=c.originalValue as {start:string;end:string};
         (source.query.filterBindings ??= {})[dateFilterId!] = original.start === original.end ?
@@ -239,7 +240,7 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
     const before=extraction.source.dataSources[id].source,after=resolved.resolvedPage.dataSources[id].source;
     if(before.type!=='query'||after.type!=='query')return fail('来源查询已改变');
     // Filter-owned targets are checked with their initialized value reinstated.
-    const body=structuredClone(after.query.body);
+    const body=structuredClone(ordinaryQuery(after.query).body);
     const f:Record<string,any>=record(body.dsl_list[0].filter)?body.dsl_list[0].filter:{};
     const restored=selected.flatMap(c=>c.locations.filter(l=>!l.filterId&&l.dataSourceId===id&&l.queryField&&Object.values(after.query.filterBindings??{}).some(b=>bindingQueryFields(b).includes(l.queryField ?? '')||(b.target==='timePoint'&&b.queryField===l.queryField))).map(l=>({c,l,index:Number(l.path.split('/').at(-2))}))).sort((a,b)=>a.index-b.index);
     for(const {c,l,index} of restored) {

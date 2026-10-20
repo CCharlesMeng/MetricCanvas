@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "evidence_epoch": "ioc-b2-final-1",
+  "code_fingerprint": "821ac2aac23ef7b04db3f87d56323c951489f5909e350dde4f36b7e67985fb07",
+  "role": "self-test",
+  "status": "executed",
+  "judged_files": [
+    "packages/page/src/filter-dependencies.ts",
+    "packages/data-execution/src/candidate-validation.ts",
+    "packages/data-execution/src/source-program/session.ts",
+    "packages/data-execution/src/execute.ts",
+    "packages/engine/runtime/src/filter-state.ts",
+    "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+    "packages/engine/runtime-ui/src/filters/HierarchyFilter.svelte",
+    "packages/embed/tests/browser/ioc-header-business.spec.ts",
+    "packages/data-execution/tests/business-filter-execution.test.ts",
+    "metriccanvas-authoring/test-harness/tests/test_interaction_editing.py"
+  ],
+  "coverage": [
+    {
+      "dimension": "F3-21",
+      "scope": "选择约束覆盖整组写入、默认及输入与有效查询；全选不限只省略动态谓词，静态谓词与URL/UI保持；disabled不可选、boolean false显式查询。",
+      "evidence_ids": [
+        "BE-21",
+        "targeted",
+        "executor",
+        "browser"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F3-22",
+      "scope": "合并依赖图、清理与交集由共用协调持有；分类变更自动清空待确认、期间候选保留合法交集；空交集继续阻断，不自动全量执行。",
+      "evidence_ids": [
+        "BE-21",
+        "BE-22",
+        "executor",
+        "browser"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F3-23",
+      "scope": "显式层级业务码保持自身语义；切层清值或required草稿原子选择、最后必选节点不可取消；其他层父节点不掩盖当前空层。旧斜杠树仍选后代叶子。",
+      "evidence_ids": [
+        "BE-22",
+        "executor",
+        "browser",
+        "installed"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F3-24",
+      "scope": "候选身份/上下文与实例回执、请求代次、完整结果门禁；缺能力/denied/unconfigured及网络失败阻断相关查询与复用，旧legacy祖先正确核验，图表独立闭集豁免；一次性执行清旧initial且普通业务失败语义保持。",
+      "evidence_ids": [
+        "BE-22",
+        "executor",
+        "browser",
+        "installed",
+        "installed-node"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F3-25",
+      "scope": "真实普通/结构树/详情页消费声明；静态已应用值和hint保留，说明正文展开；390两页页头溢出均0；B0+B1年季月锚点、详情单月及离散月份回归通过。",
+      "evidence_ids": [
+        "BE-21",
+        "BE-22",
+        "BE-23",
+        "browser",
+        "static",
+        "installed"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F3-26",
+      "scope": "版本6.33、正反契约、维度/日期受控编辑及重开、独立Skill、Bundle和六包仓外消费者闭合。当前全量260文件2270通过5跳过，Python546项1跳过，36页校验均通过。",
+      "evidence_ids": [
+        "vitest",
+        "authoring",
+        "authoring-distribution",
+        "python",
+        "bundle",
+        "pages",
+        "installed"
+      ],
+      "result": "clear"
+    }
+  ],
+  "findings": [],
+  "skipped": [],
+  "open_questions": [],
+  "deferred_candidates": [],
+  "evidence_reused": [
+    "vitest",
+    "BE-21",
+    "BE-22",
+    "BE-23"
+  ],
+  "evidence_added": [],
+  "known_gaps": [
+    "结论仅覆盖本地源码、合成HTTP契约与仓外安装消费者；真实DQE、CloudIOC、Relay、DS、门户、CI及部署未执行。",
+    "编辑前未采齐独立可比的B2全量质量起点，当前全量通过不替代历史性能或真实服务验收。"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "case": "business-filter-disabled-default",
+  "invariant": "business-filters",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "筛选值不在可用封闭枚举中",
+      "paths": [
+        "/filters/1/default"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "default": [
+          "X"
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/business-filter-disabled-default.json"
+}

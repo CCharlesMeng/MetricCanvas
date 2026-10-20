@@ -1,0 +1,236 @@
+{
+  "schemaVersion": "6.43",
+  "layout": "report",
+  "id": "chart-echarts-option-page",
+  "meta": {
+    "description": "ECharts 隐含呈现扩展示例，全部为内联演示数据。"
+  },
+  "dataSources": {
+    "sales": {
+      "fields": {
+        "month": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "actual": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "实际"
+        },
+        "target": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "label": "目标"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "month": "一月",
+            "actual": 12,
+            "target": 18
+          },
+          {
+            "month": "二月",
+            "actual": null,
+            "target": 20
+          },
+          {
+            "month": "三月",
+            "actual": 0,
+            "target": 16
+          },
+          {
+            "month": "四月",
+            "actual": 26,
+            "target": 24
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "charts",
+      "components": [
+        {
+          "id": "header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "ECharts 高级呈现 · 内联演示",
+            "exportButtons": [
+              {
+                "format": "pdf",
+                "label": "下载 PDF"
+              },
+              {
+                "format": "png",
+                "label": "下载图片",
+                "scale": 3
+              }
+            ]
+          }
+        },
+        {
+          "id": "bars",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "title": "声明序与绘制序",
+            "categoryField": {
+              "data": "main",
+              "field": "month"
+            },
+            "series": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "actual"
+                },
+                "label": "实际",
+                "stackOrder": 20
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "target"
+                },
+                "label": "目标",
+                "stackOrder": 10
+              }
+            ],
+            "echartsOption": {
+              "animation": false,
+              "grid": {
+                "top": "18%",
+                "right": 24
+              },
+              "legend": {
+                "textStyle": {
+                  "fontSize": 14
+                }
+              },
+              "series": [
+                {
+                  "itemStyle": {
+                    "color": "#7c3aed",
+                    "opacity": 0.7
+                  }
+                },
+                {
+                  "itemStyle": {
+                    "color": "#0891b2"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "lines",
+          "type": "lineChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "title": "显式覆盖平滑与标签",
+            "xField": {
+              "data": "main",
+              "field": "month"
+            },
+            "series": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "actual"
+                },
+                "label": "实际"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "target"
+                },
+                "label": "目标"
+              }
+            ],
+            "smooth": false,
+            "showValueLabels": true,
+            "echartsOption": {
+              "animation": false,
+              "series": [
+                {
+                  "smooth": true,
+                  "lineStyle": {
+                    "width": 4,
+                    "color": "#7c3aed"
+                  },
+                  "label": {
+                    "formatter": "{c} 件"
+                  }
+                },
+                {
+                  "lineStyle": {
+                    "width": 2,
+                    "type": "dashed"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "shares",
+          "type": "pieChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "title": "半径数组与缺失行点击",
+            "categoryField": {
+              "data": "main",
+              "field": "month"
+            },
+            "valueField": {
+              "data": "main",
+              "field": "actual"
+            },
+            "echartsOption": {
+              "animation": false,
+              "series": [
+                {
+                  "radius": [
+                    "35%",
+                    "68%"
+                  ],
+                  "label": {
+                    "formatter": "{b}: {c}"
+                  }
+                }
+              ],
+              "backgroundColor": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

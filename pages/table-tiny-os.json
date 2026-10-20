@@ -1,0 +1,623 @@
+{
+  "schemaVersion": "6.31",
+  "id": "table-tiny-os",
+  "layout": "dashboard",
+  "meta": {
+    "title": "TinyVue OS 表格样式验收",
+    "description": "内联合成数据：普通、预测矩阵、内嵌表采用 OS 网格；reportCompact 保持既有外观。"
+  },
+  "dataSources": {
+    "records": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure"
+        },
+        "created": {
+          "type": "date",
+          "role": "dimension"
+        },
+        "note": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "status": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "客户01",
+            "value": 100,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "已完成"
+          },
+          {
+            "name": "客户02",
+            "value": 200,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "进行中"
+          },
+          {
+            "name": "客户03",
+            "value": 300,
+            "created": "2026-09-01",
+            "note": "较长的项目说明用于验证窄列中的自然换行与行高撑开",
+            "status": "已完成"
+          },
+          {
+            "name": "客户04",
+            "value": 400,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "进行中"
+          },
+          {
+            "name": "客户05",
+            "value": 500,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "已完成"
+          },
+          {
+            "name": "客户06",
+            "value": 600,
+            "created": "2026-09-01",
+            "note": "较长的项目说明用于验证窄列中的自然换行与行高撑开",
+            "status": "进行中"
+          },
+          {
+            "name": "客户07",
+            "value": 700,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "已完成"
+          },
+          {
+            "name": "客户08",
+            "value": 800,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "进行中"
+          },
+          {
+            "name": "客户09",
+            "value": 900,
+            "created": "2026-09-01",
+            "note": "较长的项目说明用于验证窄列中的自然换行与行高撑开",
+            "status": "已完成"
+          },
+          {
+            "name": "客户10",
+            "value": 1000,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "进行中"
+          },
+          {
+            "name": "客户11",
+            "value": 1100,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "已完成"
+          },
+          {
+            "name": "客户12",
+            "value": 1200,
+            "created": "2026-09-01",
+            "note": "较长的项目说明用于验证窄列中的自然换行与行高撑开",
+            "status": "进行中"
+          },
+          {
+            "name": "客户13",
+            "value": 1300,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "已完成"
+          },
+          {
+            "name": "客户14",
+            "value": 1400,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "进行中"
+          },
+          {
+            "name": "客户15",
+            "value": 1500,
+            "created": "2026-09-01",
+            "note": "较长的项目说明用于验证窄列中的自然换行与行高撑开",
+            "status": "已完成"
+          },
+          {
+            "name": "客户16",
+            "value": 1600,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "进行中"
+          },
+          {
+            "name": "客户17",
+            "value": 1700,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "已完成"
+          },
+          {
+            "name": "客户18",
+            "value": 1800,
+            "created": "2026-09-01",
+            "note": "较长的项目说明用于验证窄列中的自然换行与行高撑开",
+            "status": "进行中"
+          },
+          {
+            "name": "客户19",
+            "value": 1900,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "已完成"
+          },
+          {
+            "name": "客户20",
+            "value": 2000,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "进行中"
+          },
+          {
+            "name": "客户21",
+            "value": 2100,
+            "created": "2026-09-01",
+            "note": "较长的项目说明用于验证窄列中的自然换行与行高撑开",
+            "status": "已完成"
+          },
+          {
+            "name": "客户22",
+            "value": 2200,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "进行中"
+          },
+          {
+            "name": "客户23",
+            "value": 2300,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "已完成"
+          },
+          {
+            "name": "客户24",
+            "value": 2400,
+            "created": "2026-09-01",
+            "note": "较长的项目说明用于验证窄列中的自然换行与行高撑开",
+            "status": "进行中"
+          },
+          {
+            "name": "客户25",
+            "value": 2500,
+            "created": "2026-09-01",
+            "note": "单行内容",
+            "status": "已完成"
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "ordinary",
+      "title": "普通 Table",
+      "components": [
+        {
+          "id": "ordinary-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "普通 Table",
+            "rowKey": "name",
+            "columns": [
+              {
+                "field": "name",
+                "width": 180,
+                "fixed": "left",
+                "sortable": true,
+                "title": "客户"
+              },
+              {
+                "field": "value",
+                "width": 150,
+                "align": "right",
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                },
+                "title": "金额（元）"
+              },
+              {
+                "field": "created",
+                "width": 180,
+                "filterable": {
+                  "mode": "dateRange"
+                },
+                "title": "创建日期"
+              },
+              {
+                "field": "note",
+                "width": 320,
+                "title": "项目说明"
+              },
+              {
+                "field": "status",
+                "width": 120,
+                "fixed": "right",
+                "filterable": {
+                  "mode": "select"
+                },
+                "title": "状态"
+              }
+            ],
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "name"
+                ],
+                "placeholder": "搜索客户"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "普通 Table"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 5,
+              "numbered": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "forecast",
+      "title": "销售预测矩阵",
+      "components": [
+        {
+          "id": "forecast-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "销售预测矩阵",
+            "rowKey": "name",
+            "columns": [
+              {
+                "field": "name",
+                "width": 180,
+                "fixed": "left",
+                "sortable": true,
+                "title": "客户"
+              },
+              {
+                "field": "value",
+                "width": 150,
+                "align": "right",
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                },
+                "title": "金额（元）"
+              },
+              {
+                "field": "created",
+                "width": 180,
+                "filterable": {
+                  "mode": "dateRange"
+                },
+                "title": "创建日期"
+              },
+              {
+                "field": "note",
+                "width": 320,
+                "title": "项目说明"
+              },
+              {
+                "field": "status",
+                "width": 120,
+                "fixed": "right",
+                "filterable": {
+                  "mode": "select"
+                },
+                "title": "状态"
+              }
+            ],
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "name"
+                ],
+                "placeholder": "搜索客户"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "销售预测矩阵"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 5,
+              "numbered": true
+            },
+            "variant": "forecastMatrix"
+          }
+        }
+      ]
+    },
+    {
+      "id": "embedded",
+      "title": "内嵌 Table",
+      "components": [
+        {
+          "id": "embedded-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "内嵌 Table",
+            "rowKey": "name",
+            "columns": [
+              {
+                "field": "name",
+                "width": 180,
+                "fixed": "left",
+                "sortable": true,
+                "title": "客户"
+              },
+              {
+                "field": "value",
+                "width": 150,
+                "align": "right",
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                },
+                "title": "金额（元）"
+              },
+              {
+                "field": "created",
+                "width": 180,
+                "filterable": {
+                  "mode": "dateRange"
+                },
+                "title": "创建日期"
+              },
+              {
+                "field": "note",
+                "width": 320,
+                "title": "项目说明"
+              },
+              {
+                "field": "status",
+                "width": 120,
+                "fixed": "right",
+                "filterable": {
+                  "mode": "select"
+                },
+                "title": "状态"
+              }
+            ],
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "name"
+                ],
+                "placeholder": "搜索客户"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "内嵌 Table"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 5,
+              "numbered": true
+            },
+            "variant": "embedded"
+          }
+        }
+      ]
+    },
+    {
+      "id": "compact",
+      "title": "reportCompact（外观保留）",
+      "components": [
+        {
+          "id": "compact-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "reportCompact（外观保留）",
+            "rowKey": "name",
+            "columns": [
+              {
+                "field": "name",
+                "width": 180,
+                "fixed": "left",
+                "sortable": true,
+                "title": "客户"
+              },
+              {
+                "field": "value",
+                "width": 150,
+                "align": "right",
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                },
+                "title": "金额（元）"
+              },
+              {
+                "field": "created",
+                "width": 180,
+                "filterable": {
+                  "mode": "dateRange"
+                },
+                "title": "创建日期"
+              },
+              {
+                "field": "note",
+                "width": 320,
+                "title": "项目说明"
+              },
+              {
+                "field": "status",
+                "width": 120,
+                "fixed": "right",
+                "filterable": {
+                  "mode": "select"
+                },
+                "title": "状态"
+              }
+            ],
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "name"
+                ],
+                "placeholder": "搜索客户"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "reportCompact（外观保留）"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 5,
+              "numbered": true
+            },
+            "variant": "reportCompact"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multi",
+      "title": "多级表头",
+      "components": [
+        {
+          "id": "multi-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "多级表头与固定列",
+            "rowKey": "name",
+            "columns": [
+              {
+                "field": "name",
+                "width": 180,
+                "fixed": "left",
+                "sortable": true,
+                "title": "客户"
+              },
+              {
+                "kind": "group",
+                "children": [
+                  {
+                    "kind": "group",
+                    "children": [
+                      {
+                        "field": "value",
+                        "width": 150,
+                        "align": "right",
+                        "sortable": true,
+                        "filterable": {
+                          "mode": "numberRange"
+                        },
+                        "title": "金额（元）"
+                      },
+                      {
+                        "field": "created",
+                        "width": 180,
+                        "filterable": {
+                          "mode": "dateRange"
+                        },
+                        "title": "创建日期"
+                      }
+                    ],
+                    "title": "经营指标",
+                    "id": "group-1"
+                  },
+                  {
+                    "field": "note",
+                    "width": 320,
+                    "title": "项目说明"
+                  }
+                ],
+                "title": "业务字段分组标题：用长标题验证换行后的实际表头偏移",
+                "id": "group-0"
+              },
+              {
+                "field": "status",
+                "width": 120,
+                "fixed": "right",
+                "filterable": {
+                  "mode": "select"
+                },
+                "title": "状态"
+              }
+            ],
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "name"
+                ],
+                "placeholder": "搜索客户"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "多级表头与固定列"
+              }
+            },
+            "pagination": {
+              "mode": "none"
+            },
+            "fit": "container"
+          }
+        }
+      ]
+    }
+  ]
+}

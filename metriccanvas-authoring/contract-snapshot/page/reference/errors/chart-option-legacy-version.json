@@ -1,0 +1,77 @@
+{
+  "case": "chart-option-legacy-version",
+  "invariant": "chart-echarts-option",
+  "expected": [
+    {
+      "type": "CHART_OPTION_ERROR",
+      "message": "echartsOption 由 6.32 引入，5.x 只读文档不能声明此能力",
+      "paths": [
+        "/sections/0/components/1/props/echartsOption",
+        "/sections/0/components/2/props/echartsOption",
+        "/sections/0/components/3/props/echartsOption"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "echartsOption": {
+                "animation": false,
+                "grid": {
+                  "top": "18%",
+                  "right": 24
+                },
+                "legend": {
+                  "textStyle": {
+                    "…": "共1个键"
+                  }
+                },
+                "series": [
+                  {
+                    "…": "共1个键"
+                  },
+                  {
+                    "…": "共1个键"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "props": {
+              "echartsOption": {
+                "animation": false,
+                "series": [
+                  {
+                    "…": "共3个键"
+                  },
+                  {
+                    "…": "共1个键"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "props": {
+              "echartsOption": {
+                "animation": false,
+                "series": [
+                  {
+                    "…": "共2个键"
+                  }
+                ],
+                "backgroundColor": null
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/chart-option-legacy-version.json"
+}

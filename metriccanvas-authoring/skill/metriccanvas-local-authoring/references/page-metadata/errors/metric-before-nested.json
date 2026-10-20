@@ -1,0 +1,56 @@
+{
+  "case": "metric-before-nested",
+  "invariant": "metric-card-before",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "before 仅支持内容分区顶层指标卡",
+      "paths": [
+        "/sections/1/components/0/props/components/1/layout/before",
+        "/sections/1/components/0/props/components/2/layout/before",
+        "/sections/1/components/0/props/components/3/layout/before"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                "…",
+                {
+                  "layout": {
+                    "before": {
+                      "text": "=",
+                      "gap": 8
+                    }
+                  }
+                },
+                {
+                  "layout": {
+                    "before": {
+                      "text": "+",
+                      "gap": 8
+                    }
+                  }
+                },
+                {
+                  "layout": {
+                    "before": {
+                      "text": "+",
+                      "gap": 8
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

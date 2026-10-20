@@ -41,7 +41,7 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 `paged-join-fixed-rank-page` 完整示例使用这一配置。运行场景的两张表独占不同组合源，共用普通查询定义：召开率降序第一页相同，但当前序号为 1、2、3，预签金额排名为 1、4、2。Sim 在完整月份行域按金额降序、编码升序生成名次，表格筛选与搜索保留它；这只是示范查询契约，不证明真实 DQE 已支持排名算子。
 
 
-页面协议 6.32。结构真源为本册[schema.json](schema.json)，SHA256 `a82a821bf9c06c65521b893a71a7b918b3a1d5cd648e0792a0d3ca9c9de63010`。字段表自动生成；可选不等于有默认值。
+页面协议 6.43。结构真源为本册[schema.json](schema.json)，SHA256 `7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1141,6 +1141,20 @@ Schema位置：`#/definitions/pagedJoinSource/properties/initial/properties/view
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 受控查询定义，或导航URL参数映射，按所属结构判别。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f696e697469616c2f70726f706572746965732f766965772f70726f706572746965732f7365617263682f70726f706572746965732f6d61746368"></a>
+
+### `@pagedJoinSource.initial.view.search.match`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/initial/properties/view/properties/search/properties/match`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | const="equals" | Schema未设默认；装配/运行时默认见语义说明 | 按声明维度等值选择行。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "equals" | 用于选择@pagedJoinSource.initial.view.search.match分支；同分支其它约束同时成立。 |
 
 ## 语义规则与反例（生成）
 

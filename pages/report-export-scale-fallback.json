@@ -4,7 +4,7 @@
   "layout": "report",
   "meta": {
     "title": "导出清晰度无效值回退",
-    "description": "本地合成数据：单张高清PNG、独立文档水印隔离、日期与文件名冻结、既有PDF回归。"
+    "description": "本地合成数据：无效清晰度按默认值处理，PDF 回退 2 倍、PNG 回退 3 倍；包含旧 PNG 配置对照。"
   },
   "filters": [
     {

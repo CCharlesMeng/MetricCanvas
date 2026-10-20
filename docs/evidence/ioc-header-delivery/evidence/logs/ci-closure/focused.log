@@ -1,0 +1,10 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/engine/runtime/tests/execution.test.ts packages/page/tests/business-filters.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/ioc-header-delivery/DataDashboard
+
+
+ Test Files  2 passed (2)
+      Tests  43 passed (43)
+   Start at  10:24:46
+   Duration  684ms (transform 473ms, setup 0ms, import 899ms, tests 132ms, environment 0ms)
+

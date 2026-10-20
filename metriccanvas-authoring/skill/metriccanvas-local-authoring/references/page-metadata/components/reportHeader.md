@@ -34,7 +34,7 @@ filterIds（6.13）按序引用页面 timePoint/timeRange 筛选器，采用封�
 
 已有6.28 `pdfExport: {label?, filename?}` 和6.30 `pngExport: {filename?, scale?}` 继续读取，并转换为同一种直接下载按钮；旧PDF默认文字“下载 PDF”保留，旧PNG的有效scale作为直接导出的倍率，无效值同样回退3倍，不再提供运行时选择。编辑器修改导出配置时写入 `exportButtons` 并升级至6.31。
 
-完整作者页面见 `report-png-export`：首个页头同时启用PDF 2倍和PNG 3倍，第二个页头展示PDF与PNG 4倍，普通页头为未启用对照；长图见 `report-png-long-export`，PNG 4倍。它们使用本地合成数据。既有 `report-pdf-export` 覆盖旧PDF兼容读取。`report-export-scale-fallback` 覆盖PDF的99、PNG的2及旧PNG字符串倍率，分别回退2/3/3倍。
+完整作者页面见 `report-png-export`：首个页头同时启用PDF 2倍和PNG 3倍，第二个页头展示PDF与PNG 4倍，普通页头为未启用对照；长图见 `report-png-long-export`，PNG 3倍。它们使用本地合成数据。既有 `report-pdf-export` 覆盖旧PDF兼容读取。`report-export-scale-fallback` 覆盖PDF的99、PNG的2及旧PNG字符串倍率，分别回退2/3/3倍。
 
 PDF默认A4竖向，存在引擎标记的宽内容时整份横向；零额外外边距，按原有排布连续切片，不按章节强制换页、不重复表头或添加页码。单页像素超过截图块预算时进一步分块并写入同一纸张，保持配置倍率。主线程按时间预算让出执行权，Worker无损编码，全部成功才下载。
 
@@ -55,7 +55,7 @@ PNG内部按有界块截图、Worker持续行流式编码，结果始终是一�
 后台导出需要浏览器支持Worker、ImageBitmap和OffscreenCanvas，宿主CSP允许`worker-src blob:`。这些属于引擎运行环境，不新增页面字段。线程调度与资源清理由引擎负责。
 
 
-页面协议 6.32。结构真源为本册[schema.json](../schema.json)，SHA256 `a82a821bf9c06c65521b893a71a7b918b3a1d5cd648e0792a0d3ca9c9de63010`。字段表自动生成；可选不等于有默认值。
+页面协议 6.43。结构真源为本册[schema.json](../schema.json)，SHA256 `7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -78,6 +78,26 @@ Schema位置：`#/definitions/reportHeaderComponent/properties/id`。目标：[#
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/componentId | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7265706f7274486561646572436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@reportHeaderComponent.visibleWhen`
+
+Schema位置：`#/definitions/reportHeaderComponent/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f7265706f7274486561646572436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@reportHeaderComponent.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/reportHeaderComponent/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7265706f7274486561646572436f6d706f6e656e742f70726f706572746965732f74797065"></a>
 

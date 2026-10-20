@@ -3,9 +3,11 @@
   import type { PropertyControl, PropertyEdit } from './property-edit';
   let { controls, busy = false, onEdit }: { controls: PropertyControl[]; busy?: boolean; onEdit: (edit: PropertyEdit) => void } = $props();
   const valueText = (value: unknown) => typeof value === 'string' || typeof value === 'number' ? String(value) : '';
+  let conditionError=$state('');
   function submit(control: PropertyControl, raw: string) {
     let value: unknown = raw;
-    if (control.kind === 'boolean') value = raw === '' ? undefined : raw === 'true';
+    if(control.kind==='json'){try{value=raw.trim()?JSON.parse(raw):undefined;conditionError='';}catch{conditionError='条件必须是合法JSON；原条件未修改。';return;}}
+    else if (control.kind === 'boolean') value = raw === '' ? undefined : raw === 'true';
     else if (control.kind === 'number') value = raw.trim() === '' ? undefined : Number(raw);
     else if (control.kind === 'choice') value = raw === '' ? undefined : raw;
     else if (control.kind === 'tags') value = raw.split('\n').map((item) => item.trim()).filter(Boolean);
@@ -20,14 +22,17 @@
         <span>{control.label}</span>
         {#if control.kind === 'boolean' || control.kind === 'choice'}
           <Select label={control.label} disabled={busy} value={control.value === undefined?'':String(control.value)} options={[{value:'',label:'默认'},...(control.kind==='boolean'?[{value:'true',label:'开启'},{value:'false',label:'关闭'}]:(control.choices??[]).map(choice=>({value:choice,label:({content:'按内容',container:'适配容器',left:'左侧',right:'右侧'} as Record<string,string>)[choice]??choice})))]} onchange={value=>submit(control,value)}/>
+        {:else if control.kind==='json'}
+          <Textarea label={control.label} disabled={busy} value={control.value===undefined?'':JSON.stringify(control.value,null,2)} oncommit={value=>submit(control,value)}/>
         {:else if control.kind === 'tags'}
           <Textarea label={control.label} disabled={busy} value={Array.isArray(control.value)?control.value.map(valueText).join('\n'):''} oncommit={value=>submit(control,value)}/>
         {:else}
           <Input label={control.label} type={control.kind==='number'?'number':'text'} disabled={busy} value={valueText(control.value)} oncommit={value=>submit(control,value)}/>
         {/if}
-        {#if control.value && typeof control.value === 'object' && (!Array.isArray(control.value) || control.value.some((item) => item && typeof item === 'object'))}<small>此值含参数引用，编辑此项将替换为固定文字。</small>{/if}
+        {#if control.kind!=='json' && control.value && typeof control.value === 'object' && (!Array.isArray(control.value) || control.value.some((item) => item && typeof item === 'object'))}<small>此值含参数引用，编辑此项将替换为固定文字。</small>{/if}
       </div>
     {/each}
+    {#if conditionError}<p role="alert">{conditionError}</p>{/if}
   </section>
 {/if}
 <style>

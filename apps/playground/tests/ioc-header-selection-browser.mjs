@@ -3,13 +3,13 @@ import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 const require=createRequire(new URL('../../../packages/ui/package.json',import.meta.url));
 const {chromium,expect}=require('@playwright/test');
 const fixture=JSON.parse(readFileSync(new URL('../../../pages/ioc-header-selection.json',import.meta.url),'utf8'));
-const out=new URL('../../../docs/plan/ioc-header-selection/polish/evidence/',import.meta.url);mkdirSync(out,{recursive:true});
+const out=new URL('../../../docs/plan/ioc-header-selection/delivery/evidence/',import.meta.url);mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({channel:'chrome',headless:true});
 const page=await browser.newPage({viewport:{width:1440,height:1000}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
 const results=[];const url=process.env.IOC_SELECTION_URL ?? 'http://127.0.0.1:5186/pages/ioc-header-selection';
 try {
  await page.goto(url);await expect(page.getByRole('table')).toBeVisible();
- const region=fixture.filters.find(f=>f.id==='region');expect(region.selection).toBe('single');
+ const region=fixture.filters.find(f=>f.id==='region');expect(region.selection.mode).toBe('single');
  await expect(page.getByRole('cell',{name:'算力中心升级项目',exact:true})).toBeVisible();
  await expect(page.getByRole('cell',{name:'云平台建设项目',exact:true})).toHaveCount(0);
  const initialURL=page.url();

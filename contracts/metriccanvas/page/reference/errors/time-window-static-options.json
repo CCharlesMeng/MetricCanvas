@@ -1,0 +1,44 @@
+{
+  "case": "time-window-static-options",
+  "invariant": "time-extensions",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "月份窗口仅用于动态平面年月维度",
+      "paths": [
+        "/filters/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "id": "months",
+        "type": "dimension",
+        "dimension": "ioc_b4_month",
+        "label": "离散月份",
+        "display": "search",
+        "candidateWindow": {
+          "unit": "month",
+          "n": 12,
+          "includeCurrent": true,
+          "anchorFact": "sales"
+        },
+        "selection": {
+          "mode": "multiple"
+        },
+        "default": [
+          "2026-01",
+          "2026-03"
+        ],
+        "options": [
+          {
+            "…": "共2个键"
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/time-window-static-options.json"
+}

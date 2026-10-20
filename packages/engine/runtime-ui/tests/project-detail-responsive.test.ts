@@ -9,8 +9,8 @@ const runtimeViewSource = readFileSync(
   new URL('../src/RuntimeSurface.svelte', import.meta.url),
   'utf8'
 );
-const dashboardToolbarSource = readFileSync(
-  new URL('../src/dashboard/DashboardToolbar.svelte', import.meta.url),
+const pageHeaderSource = readFileSync(
+  new URL('../src/ioc-header/IocHeader.svelte', import.meta.url),
   'utf8'
 );
 
@@ -36,11 +36,11 @@ describe('运行时组件布局盒响应式契约', () => {
     expect(runtimeViewSource).toMatch(
       /\.runtime-view\s*\{[^}]*container:\s*mc-runtime\s*\/\s*inline-size;/s
     );
-    for (const source of [runtimeViewSource, runtimeSectionSource, dashboardToolbarSource]) {
+    for (const source of [runtimeViewSource, runtimeSectionSource, pageHeaderSource]) {
       expect(source).not.toContain('@media (max-width');
     }
     expect(runtimeSectionSource).toContain('@container mc-runtime (max-width: 1050px)');
     expect(runtimeSectionSource).toContain('@container mc-runtime (max-width: 760px)');
-    expect(dashboardToolbarSource).toContain('@container mc-runtime (max-width: 1050px)');
+    expect(pageHeaderSource).toContain('@container mc-runtime (max-width: 1050px)');
   });
 });

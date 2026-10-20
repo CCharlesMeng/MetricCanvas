@@ -1,4 +1,7 @@
+import {chartOptionScopes} from './chart-option';
 import type { TypedError } from './errors';
+import {declaredNavigationTargets} from './navigate';
+import type {Page} from './page';
 import { collectTextValueReferences, collectTextValueCompositions } from './page-param';
 import { collectFilterTextValueReferences } from './filter-text-value';
 import { walkDocumentComponents } from './component-walk';
@@ -15,7 +18,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 32;
+const CURRENT_MINOR = 43;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -26,6 +29,8 @@ export interface PageCapabilityDefinition {
   /** 引入该能力的次版本。 */
   minor: number;
   description: string;
+  /** 显式 false 的新能力不得借 5.x 只读兼容通道进入。既有能力保持原策略。 */
+  legacyReadable?: false;
   /**
    * 文档中使用该能力的位置(JSON Pointer),空数组表示未使用。
    *
@@ -37,6 +42,45 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'dimension-search-tree-policy': {minor:43,description:'维度下拉可选搜索与普通树父子策略',usedAt:document=>filterPaths(document,f=>f.type==='dimension'&&(has(f,'searchable')||['descendants','independent','leaf'].includes(String(f.treeSelection))))},
+  'table-search-options': {
+    minor: 42, legacyReadable: false, description: '表格静态搜索选项与单文本字段等值匹配',
+    usedAt: document => [
+      ...componentPaths(document, component => component.type === 'table' && has(record(record(props(component)?.toolbar)?.search), 'options')),
+      ...dataSourcePaths(document, source => has(record(record(record(record(source.source)?.initial)?.view)?.search), 'match'))
+    ]
+  },
+  'period-filter-modes': {minor:41,description:'自然期间筛选可选模式与单年份选择',usedAt:document=>filterPaths(document,filter=>filter.type==='timeRange'&&has(filter,'periodModes')).map(path=>`${path}/periodModes`)},
+  'unified-page-header': {minor:41,description:'唯一页头实现及行内布局、更多筛选和只读说明',usedAt:document=>{
+    const page=record(document),header=record(page?.iocHeader),presentation=record(header?.presentation);
+    if(!header)return [];
+    return has(header,'readOnly')||has(header,'note')||has(presentation,'layout')||presentation?.collapse==='overflow'||page?.layout==='dashboard'&&!has(page,'dashboardToolbar')?['/iocHeader']:[];
+  }},
+  'metric-card-before': {
+    minor: 34, description: 'Dashboard 指标卡前置连接文字与双侧受控间距',
+    legacyReadable: false,
+    usedAt: document => componentPaths(document, component => has(record(component.layout), 'before')).map(path => `${path}/layout/before`)
+  },
+  'tab-url-initial-state': {
+    minor: 33, description: 'Tab 容器通过显式 URL 参数初始化活动页签',
+    legacyReadable: false,
+    usedAt: document => componentPaths(document, component => component.type === 'tabContainer' && has(props(component), 'initialTabUrlParam')).map(path => `${path}/props/initialTabUrlParam`)
+  },
+  'chart-echarts-option': {
+    minor: 32, description: '柱状图、折线图、饼图高级 ECharts 呈现扩展',
+    usedAt: document => componentPaths(document, component => ['barChart', 'lineChart', 'pieChart'].includes(String(component.type)) && has(props(component), 'echartsOption')).map(path => `${path}/props/echartsOption`)
+  },
+ 'navigation-inputs':{minor:40,description:'显式跨页传值与目标输入契约验证',usedAt:document=>{const paths:string[]=record(document)?.strictURLInputs===true?['/strictURLInputs']:[];walkDocumentComponents(document,(component,path)=>{const page={sections:[{components:[component]}]} as unknown as Page;if(declaredNavigationTargets(page).some(target=>target?.validateTargetInputs===true))paths.push(path);});return paths;}},
+ 'time-modes':{minor:39,description:'日月ISO周模式及完整静态查询case',usedAt:document=>[...filterPaths(document,f=>f.display==='modes'),...dataSourcePaths(document,d=>!!record(record(d.source)?.query)?.timeModes)]},
+ 'time-availability':{minor:39,description:'可信期间事实与显式日期边界',usedAt:document=>[...filterPaths(document,f=>['availability','max','blockedRanges'].some(key=>has(f,key))),...(Array.isArray(record(record(record(document)?.iocHeader)?.identity)?.facts)&&((record(record(record(document)?.iocHeader)?.identity)?.facts) as unknown[]).some(value=>has(record(record(value)?.value),'fact'))?['/iocHeader/identity/facts']:[])]},
+ 'time-presets':{minor:39,description:'时间快捷范围与候选月份窗口',usedAt:document=>filterPaths(document,f=>f.type==='timeRange'&&has(f,'presets')||f.type==='dimension'&&has(f,'candidateWindow'))},
+  'business-filter-selection':{minor:37,description:'页级单多选、封闭枚举及显式结构树',usedAt:document=>filterPaths(document,f=>['selection','options','treeSelection'].some(key=>has(f,key)))},
+  'business-filter-context':{minor:37,description:'页级候选依赖与明确清理',usedAt:document=>filterPaths(document,f=>['candidateContext','clearOnChangeOf'].some(key=>has(f,key)))},
+  'money-usd':{minor:38,description:'显式美元金额及格式',usedAt:document=>[...dataSourcePaths(document,d=>findPaths(d.fields,v=>v.type==='money'&&v.currency==='USD').length>0),...namedFormatPaths(document,/^usd-adaptive$/),...filterPaths(document,f=>f.type==='numberRange'&&findPaths(f.units,v=>v.currency==='USD').length>0)]},
+  'amount-range':{minor:38,description:'金额范围约束单位预设和metric选择',usedAt:document=>filterPaths(document,f=>f.type==='numberRange'&&(has(f,'units')||has(f,'constraints')||has(f,'presets')))},
+  'field-selection':{minor:38,description:'静态货币字段选择',usedAt:document=>{const opaque=chartOptionScopes(document);return componentPaths(document,c=>findPaths(c.props,v=>has(v,'byFilter'),opaque).length>0);}},
+  'filter-hint':{minor:37,description:'筛选说明文本',usedAt:document=>filterPaths(document,f=>has(f,'hint'))},
+  'ioc-header': { minor:36, description:'页级 IOC 身份、筛选归属与实际首行折叠', usedAt: document => has(record(document), 'iocHeader') ? ['/iocHeader'] : [] },
   'period-filter': {minor:27,description:'Dashboard 年季月与近一年期间筛选',usedAt:document => filterPaths(document, filter => filter.type === 'timeRange' && (has(filter,'display') || has(filter,'initialMode') || !!(record(filter.default) && has(record(filter.default),'mode'))))},
   'chart-local-filter': {
     minor: 29, description: 'Dashboard 图表左上角独立筛选与自定义选项',
@@ -45,10 +89,6 @@ export const pageCapabilities = {
   'report-header-export-buttons': {
     minor: 31, description: 'Report 统一导出按钮，按格式配置名称、文件名和渲染倍率',
     usedAt: document => componentPaths(document, component => component.type === 'reportHeader' && has(props(component), 'exportButtons'))
-  },
-  'dimension-selection': {
-    minor: 32, description: '维度下拉单多选、可选搜索与显式树选择规则',
-    usedAt: document => filterPaths(document, filter => filter.type === 'dimension' && ['selection','searchable','treeSelection'].some(key => has(filter, key)))
   },
   'report-header-png-export': {
     minor: 30,
@@ -601,7 +641,11 @@ export const pageCapabilities = {
         document,
         (component) => component.type === 'compositeCard' && props(component)?.variant === 'metricGrid'
       ).map((path) => `${path}/props/variant`)
-  }
+  },
+  'conditional-presentation': {
+    minor: 35, legacyReadable: false, description: '统一条件显隐、按钮与正文片段',
+    usedAt(document: unknown) { return presentationCapabilityPaths(document); }
+  },
 } satisfies Record<string, PageCapabilityDefinition>;
 
 export type PageCapability = keyof typeof pageCapabilities;
@@ -684,7 +728,7 @@ export function requiredMinorVersion(document: unknown): number {
 /**
  * 能力下限判定:文档使用了高于其声明次版本的能力即报错。
  * 声明版本本身的合法性由 `versionErrors` 负责,这里只在版本可解析且
- * 主版本一致时给出定位到具体使用点的错误。
+ * 主版本一致或新能力显式拒绝旧版兼容读取时给出具体使用点的错误。
  */
 export function capabilityFloorErrors(
   document: unknown,
@@ -692,10 +736,13 @@ export function capabilityFloorErrors(
 ): TypedError[] {
   const version = schemaVersionOf(document);
   const declared = version === undefined ? undefined : parseVersion(version);
-  if (declared === undefined || declared.major !== policy.major) return [];
+  if (declared === undefined) return [];
+  const legacy = LEGACY_READABLE_PAGE_SCHEMA_VERSIONS.some(value => value === version);
+  if (declared.major !== policy.major && !legacy) return [];
   const errors: TypedError[] = [];
-  for (const definition of Object.values(pageCapabilities)) {
-    if (definition.minor <= declared.minor) continue;
+  const definitions: PageCapabilityDefinition[] = Object.values(pageCapabilities);
+  for (const definition of definitions) {
+    if (legacy ? definition.legacyReadable !== false : definition.minor <= declared.minor) continue;
     for (const path of definition.usedAt(document)) {
       errors.push({
         type: 'SCHEMA_ERROR',
@@ -1009,4 +1056,35 @@ function numberRangeTablePaths(document:unknown):string[]{
     function visit(columns:unknown,base:string){if(!Array.isArray(columns))return;columns.forEach((value,index)=>{const column=record(value);if(!column)return;const location=`${base}/${index}`;if(record(column.filterable)?.mode==='numberRange')paths.push(`${location}/filterable/mode`);visit(column.children,`${location}/children`);});}
     visit(props(component)?.columns,`${path}/props/columns`);
   });return paths;
+}
+function findPaths(document:unknown,matches:(value:Record<string,unknown>)=>boolean,opaque=new WeakSet<object>()):string[]{
+ const paths:string[]=[];
+ function visit(value:unknown,path:string){if(Array.isArray(value))value.forEach((item,i)=>visit(item,`${path}/${i}`));else if(value&&typeof value==='object'){if(opaque.has(value))return;const item=value as Record<string,unknown>;if(matches(item))paths.push(path);for(const [key,child]of Object.entries(item))visit(child,`${path}/${key}`);}}
+ visit(document,'');return paths;
+}
+
+function presentationCapabilityPaths(document: unknown): string[] {
+  const found: string[] = [];
+  const root=record(document); if(!root)return found;
+  const visit=(value:unknown,path:string)=>{
+    const node=record(value);if(!node)return;
+    for(const key of ['visibleWhen','enabledWhen','rowVisibleWhen'])if(has(node,key))found.push(`${path}/${key}`);
+  };
+  for(const key of ['sections','filters','sectionGroups']){
+    const nodes=root[key];if(Array.isArray(nodes))nodes.forEach((node,i)=>visit(node,`/${key}/${i}`));
+  }
+  walkDocumentComponents(document,(node,path)=>{
+    visit(node,path);const props=record(node.props);if(!props)return;
+    if(node.type==='button')found.push(`${path}/type`);
+    visit(props,`${path}/props`);
+    function entries(value:unknown,p:string):void {
+      if(Array.isArray(value)){value.forEach((item,i)=>entries(item,`${p}/${i}`));return;}
+      const obj=record(value);if(!obj)return;visit(obj,p);
+      if(has(obj,'writeFilter')&&has(obj,'value'))found.push(`${p}/value`);
+      for(const key of ['navigate','openDetail','selection','children','search','export'])if(has(obj,key))entries(obj[key],`${p}/${key}`);
+    }
+    for(const key of ['actions','action','tabs','links','toolbar','columns'])entries(props[key],`${path}/props/${key}`);
+    if(node.type==='text'&&has(props,'parts')){found.push(`${path}/props/parts`);entries(props.parts,`${path}/props/parts`);}
+  });
+  return found;
 }

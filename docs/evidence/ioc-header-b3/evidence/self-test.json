@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "evidence_epoch": "ioc-b3-final-1",
+  "code_fingerprint": "1fe02a2761bb5f97141e16c76f21bbf1ce0f3206e049e4cac32128629ccdddeb",
+  "status": "executed",
+  "findings": [],
+  "skipped": [],
+  "open_questions": [],
+  "deferred_candidates": [],
+  "evidence_added": [],
+  "role": "self-test",
+  "judged_files": [
+    "packages/page/src/field-selection.ts",
+    "packages/page/src/amount-filter.ts",
+    "packages/page/src/amount-validation.ts",
+    "packages/page/src/validate.ts",
+    "packages/page/src/version.ts",
+    "packages/page/tests/currency-selection.test.ts",
+    "packages/data-execution/tests/currency-execution.test.ts",
+    "packages/engine/runtime/src/detail-view.ts",
+    "packages/engine/runtime/src/filter-state.ts",
+    "packages/engine/runtime/src/orchestrator.ts",
+    "packages/engine/runtime/tests/currency-coordinator.test.ts",
+    "packages/engine/runtime/tests/detail-view.test.ts",
+    "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+    "packages/engine/runtime-ui/src/ExportView.svelte",
+    "packages/engine/runtime-ui/src/table-controller.ts",
+    "packages/engine/runtime-ui/src/table-export.ts",
+    "packages/engine/runtime-ui/tests/currency-presentation.test.ts",
+    "packages/embed/tests/browser/ioc-currency.spec.ts",
+    "metriccanvas-authoring/test-harness/tests/test_interaction_editing.py",
+    "pages/ioc-header-currency-demo.json"
+  ],
+  "coverage": [
+    {
+      "dimension": "F3-31",
+      "scope": "S1协议测试覆盖required单选枚举、穷尽case、静态USD、缺失及多余分支、非默认分支字段和格式错误、禁止递归叶子、同时生效列冲突及未知选择失败关闭；另覆盖不透明旧业务同名字段兼容。最终39项定向记录有效。",
+      "evidence_ids": [
+        "BE-32",
+        "packages/page/tests/currency-selection.test.ts:L1",
+        "packages/data-execution/tests/currency-execution.test.ts:L1",
+        "targeted"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F3-32",
+      "scope": "S2状态和浏览器证据覆盖非负、有限数字、严格双边、单边、换算溢出及旧通用相等范围；显示输入和预设只乘一次scale，URL及restore保留基本单位，非法混合组整体拒绝且不通知。",
+      "evidence_ids": [
+        "BE-31",
+        "BE-32",
+        "packages/page/tests/currency-selection.test.ts:L1",
+        "packages/engine/runtime/tests/currency-coordinator.test.ts:L1",
+        "packages/embed/tests/browser/ioc-currency.spec.ts:L1",
+        "targeted",
+        "browser"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F3-33",
+      "scope": "币种变化清金额仅产生一次协调更新，相关查询等待显式确认；metricByFilter包含币种隐式依赖，USD范围使用ioc_amount_base_usd及未重复缩放的基本单位。无效范围和缺失或未知币种阻止初始快照及旧seed绕过门禁，无关根查询继续；导出沿用同一受影响查询门禁。",
+      "evidence_ids": [
+        "BE-31",
+        "BE-32",
+        "packages/engine/runtime/tests/currency-coordinator.test.ts:L1",
+        "packages/data-execution/tests/currency-execution.test.ts:L1",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L1",
+        "targeted",
+        "browser"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F3-34",
+      "scope": "一致组合校验覆盖非默认USD分支及混币计算拒绝；实时和静态呈现消费同一已应用case，保留显式业务标签并避免adaptive单位重复。详情先绑定私有币种再投影；切case清旧表格排序、表头和搜索状态。异步XLSX保留捕获的USD标题及310000，后续切RMB不改变该次导出。",
+      "evidence_ids": [
+        "BE-31",
+        "BE-32",
+        "packages/page/tests/currency-selection.test.ts:L1",
+        "packages/engine/runtime/tests/detail-view.test.ts:L1",
+        "packages/engine/runtime-ui/tests/currency-presentation.test.ts:L1",
+        "targeted",
+        "static"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F3-35",
+      "scope": "实际金额页面完成草稿取消、非法输入拒绝、预设、全部显式确认、单边USD提交及换币关闭旧草稿；真实下载的XLSX核对美元标题和310000，静态呈现保留同一已应用条件。源码23项浏览器回归及仓外17项浏览器记录覆盖既有期间、详情单月和离散月份路径；390金额面板确定及取消入口可见。",
+      "evidence_ids": [
+        "BE-31",
+        "BE-32",
+        "BE-33",
+        "BE-34",
+        "packages/embed/tests/browser/ioc-currency.spec.ts:L1",
+        "browser",
+        "browser-regression",
+        "static",
+        "installed"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "F3-36",
+      "scope": "Schema6.34能力门槛和正反契约有对应断言；受控金额添加、更新、回滚、字段选择列编辑及保存重开保持静态分支。authoring导出、Bundle及复杂度检查有效；548项Python记录含1项跳过，最终独立分发3文件46项通过；六包仓外消费者解析页面并完成17项浏览器测试。",
+      "evidence_ids": [
+        "BE-33",
+        "packages/page/tests/currency-selection.test.ts:L1",
+        "metriccanvas-authoring/test-harness/tests/test_interaction_editing.py:L1",
+        "authoring",
+        "bundle",
+        "complexity",
+        "python",
+        "authoring-distribution",
+        "installed"
+      ],
+      "result": "clear"
+    }
+  ],
+  "evidence_reused": [
+    "BE-31",
+    "BE-32",
+    "BE-33",
+    "BE-34",
+    "targeted",
+    "browser",
+    "browser-regression",
+    "static",
+    "installed",
+    "authoring",
+    "bundle",
+    "complexity",
+    "python",
+    "authoring-distribution"
+  ],
+  "known_gaps": [
+    "264文件2300项全量记录属于前驱快照；最终修改按依赖通过39项定向、check、构建、浏览器、静态及分发验证，不将前驱全量记录表述为最终指纹重新全跑。",
+    "结论限本地合成HTTP契约与静态USD字段；真实DQE、CloudIOC、Relay、DS模型、门户、部署及真实USD业务数据均未验证。"
+  ]
+}

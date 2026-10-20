@@ -84,7 +84,12 @@ describe('独立本地创作 Skill', () => {
       expect(types).toEqual(flattenPageComponents(parsed.page).map(component => component.type));
     }
     const detail = JSON.parse(files.get('references/page-patterns/dashboard-detail.json')!);
-    expect(detail.dashboardToolbar).toBe('hidden');
+    expect(detail.legacyHeader).toBe('content');
+    for(const id of ['dashboard-map','dashboard-analysis','dashboard-list']) {
+      const example=JSON.parse(files.get(`references/page-patterns/${id}.json`)!);
+      expect(example.iocHeader).toMatchObject({hasIdentity:true,presentation:{layout:'inline',collapse:'overflow'}});
+      expect(example.dashboardToolbar).toBeUndefined();
+    }
     expect(detail.sections[0].components[0]).toMatchObject({type: 'reportHeader', variant: 'projectDetail'});
     expect(detail.layout).toBe('dashboard');
   });

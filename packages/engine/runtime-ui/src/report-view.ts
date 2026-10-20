@@ -26,7 +26,7 @@ export async function withReportView<T>(input:{state:ExportRenderState;queries:R
   const objectUrls:string[]=[];
   let instance:ReturnType<typeof mount>|undefined;
   try {
-    const prepared=await abortable(prepareExportSnapshots(state.page,input.gateway,input.queries,state.filters,signal,undefined,state.currentYear,[],state.sourceViews,input.program,{allowPartial:true}),signal);
+    const prepared=await abortable(prepareExportSnapshots(state.page,input.gateway,input.queries,state.filters,signal,undefined,state.currentYear,[],state.sourceViews,input.program,{allowPartial:true,displayInputs:state.displaySnapshot,filterRevision:state.filterRevision,now:state.now}),signal);
     for(const [id,snapshot] of prepared) {
       const captured=state.snapshots.get(id);
       if(snapshot.status==='error' && (captured?.status==='ready'||captured?.status==='empty')) {
@@ -80,12 +80,14 @@ async function prepareDom(target:HTMLElement,signal:AbortSignal,objectUrls:strin
     }
   }
   await frame(signal); await frame(signal);
+  // Error must be checked independently of ready: a recovered base chart is still degraded.
+  assertChartExportReady(target);
   // Wait for all mounted charts to finish their static option and responsive resize.
   while(target.querySelector('[data-export-pending="true"]')||Array.from(target.querySelectorAll<HTMLElement>('[data-export-chart]')).some(chart=>chart.dataset.exportChartReady!=='true')) {
-    const error=target.querySelector<HTMLElement>('[data-export-chart-error]');
-    if(error)throw new ExportViewError('EXPORT_RENDER_FAILED',error.dataset.exportChartError!);
+    assertChartExportReady(target);
     await frame(signal);
   }
+  assertChartExportReady(target);
   const pause=reportScheduler(signal);
   for(const chart of target.querySelectorAll<HTMLElement>('[data-export-chart]')) {
     const images:HTMLImageElement[]=[];
@@ -110,4 +112,10 @@ async function prepareDom(target:HTMLElement,signal:AbortSignal,objectUrls:strin
     try {await image.decode();} catch {throw new ExportViewError('EXPORT_RENDER_FAILED','导出图片未能完整加载');}
   }));
   await frame(signal);
+  assertChartExportReady(target);
+}
+
+export function assertChartExportReady(target: ParentNode): void {
+  const error = target.querySelector<HTMLElement>('[data-export-chart-error]');
+  if (error) throw new ExportViewError(error.dataset.exportChartErrorCode === 'CHART_RENDER_FAILED' ? 'EXPORT_CHART_FAILED' : 'EXPORT_RENDER_FAILED', error.dataset.exportChartError!);
 }

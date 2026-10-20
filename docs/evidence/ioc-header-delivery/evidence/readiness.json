@@ -1,0 +1,44 @@
+{
+  "source_commit": "db892ce0ab967b64ca6ee41a7b94fe6cd74f1ad4",
+  "source_manifest": "readiness-source-manifest.json",
+  "code_fingerprint": "f9252c4644c24e0a6e2c2d7bcc240a15990d337d33970811e5d84fefb794ce3f",
+  "product_changes": false,
+  "change": "packages/embed/tests/browser/ioc-header.spec.ts",
+  "ci_run": "https://github.com/CCharlesMeng/MetricCanvas/actions/runs/39359574313",
+  "ci_stats": {
+    "startTime": "2026-10-20T02:36:21.242Z",
+    "duration": 462651.554,
+    "expected": 395,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  },
+  "cause": "The host loads metadata asynchronously after the HTML load event; the test mounted its second instance before pageDocument was ready. Injecting 150ms metadata latency reproduced the exact missing-second-combobox failure.",
+  "fix": "Wait for the first instance to expose its declared initial month before constructing the second. Keep the latency fixture and every month-isolation/destroy assertion.",
+  "checks": [
+    {
+      "command": "playwright test --grep \"two embedded instances\" before readiness assertion",
+      "result": "EXPECTED RED",
+      "log": "logs/readiness/red.log"
+    },
+    {
+      "command": "playwright test --grep \"two embedded instances\" --repeat-each=10 --workers=1",
+      "result": "PASS10/10 with injected metadata latency",
+      "log": "logs/readiness/repeat10.log"
+    },
+    {
+      "command": "playwright test packages/embed/tests/browser/ioc-header.spec.ts --workers=1",
+      "result": "PASS6/6 against the same six installed production packages",
+      "log": "logs/readiness/header.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit -p packages/embed/tsconfig.test.json",
+      "result": "PASS exit0",
+      "log": "logs/readiness/types.log"
+    }
+  ],
+  "assertions_removed": false,
+  "timeout_changed": false,
+  "retries_enabled": false,
+  "post_push_ci": "Verify completed success for the final SHA on GitHub."
+}

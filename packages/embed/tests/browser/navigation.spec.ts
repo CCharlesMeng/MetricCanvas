@@ -156,7 +156,7 @@ test('相对/绝对链接、三种绑定、复制地址、新标签和缺值都�
   });
   const relative=page.getByRole('link',{name:'相对 →',exact:true});
   await expect(relative).toHaveAttribute('href','ioc-project-detail?tab=sales&mtime=2026-04&region=SH&region=BJ#history');
-  expect(await relative.evaluate(a=>(a as HTMLAnchorElement).href)).toBe('http://127.0.0.1:4175/pages/ioc-project-detail?tab=sales&mtime=2026-04&region=SH&region=BJ#history');
+  expect(await relative.evaluate(a=>(a as HTMLAnchorElement).href)).toBe(new URL('/pages/ioc-project-detail?tab=sales&mtime=2026-04&region=SH&region=BJ#history',page.url()).href);
   await expect(page.getByRole('link',{name:'缺值 →',exact:true})).toHaveAttribute('href','/pages/ioc-project-detail');
   const popupPromise=context.waitForEvent('page');
   await relative.click({modifiers:['ControlOrMeta']});

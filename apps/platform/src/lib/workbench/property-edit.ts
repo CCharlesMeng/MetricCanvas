@@ -1,14 +1,17 @@
+import {applyPresentationOperation,presentationTarget,presentationTargets,type PresentationTarget} from '@metriccanvas/page/internal';
 import { versionPolicy } from '@metriccanvas/page';
 import { projectCanvasDraft, type CanvasAuthoringDraft, type ComponentLocator, type DocumentEditResult } from './document-edit';
 type PropertyName = 'filterIds' | 'subtitle' | 'badge' | 'tags' | 'showTrendArrows' | 'horizontal' | 'stacked' | 'rounded' | 'showSegmentLabels' | 'showStackTotalLabels' | 'smooth' | 'areaGradient' | 'showPointLabels' | 'hideYAxis' | 'ring' | 'labelLine' | 'fit';
 export type PropertyTarget =
+  | {kind:'presentation';target:PresentationTarget;field:'visibleWhen'|'enabledWhen'}
   | { kind: 'property'; name: PropertyName }
+  | { kind: 'metric-before'; field: 'text' | 'gap' }
   | { kind: 'report-export'; format: 'pdf' | 'png'; field: 'enabled' | 'label' | 'filename' | 'scale' }
   | { kind: 'series-label'; index: number }
   | { kind: 'metric-row'; rows: 'rows' | 'secondaryRows'; index: number; field: 'label' | 'context' | 'unit' }
   | { kind: 'table-column'; indices: number[]; field: 'title' | 'width' | 'fixed' | 'align' };
 export type PropertyEdit = PropertyTarget & { value: unknown };
-export interface PropertyControl { id: string; label: string; kind: 'text' | 'tags' | 'boolean' | 'number' | 'choice'; target: PropertyTarget; value: unknown; choices?: string[] }
+export interface PropertyControl { id: string; label: string; kind: 'text' | 'tags' | 'boolean' | 'number' | 'choice' | 'json'; target: PropertyTarget; value: unknown; choices?: string[] }
 const names: Record<string, readonly PropertyName[]> = {
   reportHeader: ['subtitle', 'badge', 'tags', 'filterIds'], metricCard: ['showTrendArrows'],
   barChart: ['horizontal', 'stacked', 'rounded', 'showSegmentLabels', 'showStackTotalLabels'],
@@ -30,8 +33,17 @@ function componentOf(document: Record<string, unknown>, locator: ComponentLocato
 export function propertyControls(draft: CanvasAuthoringDraft | null, locator: ComponentLocator | null): PropertyControl[] {
   if (!draft || !locator) return [];
   const component = componentOf(draft.canvasDocument, locator), props = object(component?.props), type = String(component?.type);
-  if (!props || !names[type]) return [];
-  const controls: PropertyControl[] = names[type].map((name) => ({ id: name, label: labels[name], target: { kind: 'property', name }, value: props[name], kind: ['tags','filterIds'].includes(name) ? 'tags' : name === 'fit' ? 'choice' : ['subtitle', 'badge', 'ring'].includes(name) ? 'text' : 'boolean', ...(name === 'fit' ? { choices: ['content', 'container'] } : {}) }));
+  if (!props) return [];
+  const controls: PropertyControl[] = (names[type]??[]).map((name) => ({ id: name, label: labels[name], target: { kind: 'property', name }, value: props[name], kind: ['tags','filterIds'].includes(name) ? 'tags' : name === 'fit' ? 'choice' : ['subtitle', 'badge', 'ring'].includes(name) ? 'text' : 'boolean', ...(name === 'fit' ? { choices: ['content', 'container'] } : {}) }));
+  if (type === 'metricCard' && (draft.canvasDocument.layout ?? draft.canvasDocument.layoutForm) === 'dashboard') {
+    const sections = Array.isArray(draft.canvasDocument.sections) ? draft.canvasDocument.sections : [];
+    const section = sections.map(object).find(value => value?.id === locator.sectionId);
+    if (section && ['plain','card'].includes(String(section.container)) && section.columnTracks === undefined) {
+      const before = object(object(component?.layout)?.before);
+      controls.push({id:'metric-before-text',label:'前置连接文字',kind:'text',target:{kind:'metric-before',field:'text'},value:before?.text});
+      if (before) controls.push({id:'metric-before-gap',label:'连接文字两侧间距（px）',kind:'choice',choices:['4','8','12','16','24'],target:{kind:'metric-before',field:'gap'},value:before.gap ?? 8});
+    }
+  }
   if (type === 'reportHeader' && (draft.canvasDocument.layout ?? draft.canvasDocument.layoutForm ?? 'report') === 'report') {
     const buttons = exportButtons(props);
     for (const format of ['pdf', 'png'] as const) {
@@ -60,13 +72,35 @@ export function propertyControls(draft: CanvasAuthoringDraft | null, locator: Co
       });
     }; visit(props.columns);
   }
-  return controls;
+  return [...controls,...presentationControls(draft).filter(control=>control.target.kind==='presentation'&&control.target.target.id===locator.componentId)];
 }
 /** Closed targets only; no JSON path, binding, action, data source or component creation mutation. */
 export function editProperty(draft: CanvasAuthoringDraft, locator: ComponentLocator, edit: PropertyEdit): DocumentEditResult {
+  if(edit.kind==='presentation'){
+    const result=applyPresentationOperation(draft.canvasDocument,{type:'set_presentation_condition',target:edit.target,field:edit.field,condition:(edit.value??null) as import('@metriccanvas/page/internal').Condition|null});
+    return result.ok&&result.document?projectCanvasDraft(result.document):{ok:false,message:result.errors.map(error=>error.message).join('；')};
+  }
+
   const next = JSON.parse(JSON.stringify(draft.canvasDocument)) as Record<string, unknown>, component = componentOf(next, locator), props = object(component?.props), type = String(component?.type);
   const fail = (): DocumentEditResult => ({ ok: false, message: '属性不在白名单内或目标已变化，未修改页面。' });
   if (!props || !names[type]) return fail();
+  if (edit.kind === 'metric-before') {
+    if (type !== 'metricCard' || !component || !['text','gap'].includes(edit.field)) return fail();
+    const layout = object(component.layout); if (!layout) return fail();
+    const before = object(layout.before);
+    if (edit.field === 'text') {
+      if (edit.value !== undefined && typeof edit.value !== 'string') return fail();
+      if (typeof edit.value === 'string' && edit.value.trim()) layout.before = {...before,text:edit.value};
+      else delete layout.before;
+    } else {
+      if (!before) return fail();
+      if (edit.value === undefined || edit.value === '') delete before.gap;
+      else if ([4,8,12,16,24,'4','8','12','16','24'].includes(edit.value as number)) before.gap = Number(edit.value);
+      else return fail();
+    }
+    next.schemaVersion = versionPolicy.current;
+    return projectCanvasDraft(next);
+  }
   if (edit.kind === 'report-export') {
     if (type !== 'reportHeader' || !['pdf','png'].includes(edit.format) || !['enabled','label','filename','scale'].includes(edit.field)) return fail();
     next.schemaVersion = versionPolicy.current;
@@ -111,4 +145,12 @@ export function editProperty(draft: CanvasAuthoringDraft, locator: ComponentLoca
   if(edit.kind==='property' && edit.name==='filterIds') { next.schemaVersion=versionPolicy.current; if(Array.isArray(edit.value)&&edit.value.length===0) edit={...edit,value:undefined}; }
   if (edit.value === undefined) delete target[key]; else target[key] = structuredClone(edit.value);
   return projectCanvasDraft(next);
+}
+
+export function presentationControls(draft:CanvasAuthoringDraft|null):PropertyControl[]{
+ if(!draft)return [];
+ return presentationTargets(draft.canvasDocument).flatMap(({target,label,enabled})=>{
+  const node=presentationTarget(draft.canvasDocument,target);
+  return (enabled?['visibleWhen','enabledWhen'] as const:['visibleWhen'] as const).map(field=>({id:`condition-${JSON.stringify(target)}-${field}`,label:`${label} · ${field==='visibleWhen'?'显示条件':'执行条件'}`,kind:'json' as const,target:{kind:'presentation' as const,target,field},value:node?.[target.kind==='row'?'rowVisibleWhen':field]}));
+ });
 }

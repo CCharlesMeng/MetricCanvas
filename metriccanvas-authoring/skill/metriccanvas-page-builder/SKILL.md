@@ -14,6 +14,8 @@ metadata:
 
 生成通过页面校验的临时页面态。由模型理解业务问题并形成 Page Build Spec；由确定性工具派生 DQE 查询、字段绑定、组件、布局和页面元数据。
 
+常规图表创作使用已有封闭属性。仅用户明确要求 ECharts 定制，或现有属性不足且用户已接受时，才使用隐含 `props.echartsOption`；普通修改保留已有高级配置，跨类型切换按协议清除。 详细规则见[高级呈现扩展](references/page-metadata/chart-option.md)。
+
 ## 按需查阅页面协议
 
 选组件时读 [组件选型](references/page-metadata/components/README.md)；核对字段、分支或版本约束时从 [模块索引](references/page-metadata/README.md) 定位，再读对应模块和完整示例。结构表随契约生成，示例只证明静态合法；正常装配仍按 Page Build Spec 和已授权工具完成。
@@ -253,3 +255,5 @@ Relay 检查点保存 `entries`、`nextOrdinal`、`routedDomains`、`dataContext
 取得查询证据后核对每个度量字段的业务单位与 `defaultFormat`。确定性工具根据完整执行结果选择统一的固定格式：同一字段及同一查询中相同业务单位的度量共用原单位、万或亿，图表数值轴、柱条标签、Tooltip 和表格继承同一格式。现有固定格式保留一位小数；只要任一非零值会舍入成零，就退回较小单位，必要时显式使用 `number` 保留原值。金额同样采用固定单位，不自动选择逐值变化的 `cny-adaptive`，不生成 `compact-adaptive`。已有显式格式优先；已按万元／亿元计量的数据不重复缩放。金额身份来自元数据，不能由“流水”“收入”等名称猜测。单位缺失时报告业务单位未知，不把不同指标合并为相同单位；结果不完整时使用原值并说明覆盖缺口。
 
 创建后以工具返回的字段证据核对呈现策略；业务单位未知、或用户明确要求的缩放未兑现时说明具体字段和缺口，不能把结构校验通过说成数值呈现验收通过。保持查询与原始数值，由格式负责显示缩放。
+
+时间模式变更使用 `set_time_program`：一个原子操作传filterId、完整时间declaration（不含id）与queries（dataSourceId→完整静态查询），同步替换全部case并清除旧initial；产品校验失败整体回滚。普通date操作用于非模式日期。保存重开须保留模式和所有case，不能只改日期控件。期间事实由可信displayInputs接缝提供；缺事实或V2能力时报告不可用。协议细节见[筛选](references/page-metadata/filters.md)与[查询](references/page-metadata/queries-and-bindings.md)。

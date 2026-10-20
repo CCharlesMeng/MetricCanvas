@@ -323,6 +323,26 @@
     },
     {
       "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar/search/options",
+      "message": "缺少必填字段 options"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar/search/fields",
+      "message": "存在未定义字段 fields(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar/search/placeholder",
+      "message": "存在未定义字段 placeholder(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar/search",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/0/type",
       "message": "must be equal to constant"
     },
@@ -685,6 +705,46 @@
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/0/props/relatedData",
       "message": "缺少必填字段 relatedData"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/label",
+      "message": "缺少必填字段 label"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/action",
+      "message": "缺少必填字段 action"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/title",
+      "message": "存在未定义字段 title(拼写错误?)"
     },
     {
       "type": "SCHEMA_ERROR",

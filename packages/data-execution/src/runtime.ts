@@ -20,3 +20,6 @@ export { createSourceProgram, defaultSourceView, type SourceProgram, type Source
 export { visibleSourceIds, executionSourceIds, compileSources } from './source-program/compiler';
 export { reusableInitialSnapshot, SourceRangeError, EXPORT_MAX_ROWS, EXPORT_PREPARATION_TIMEOUT_MS } from './source-program/range-policy';
 export { automaticQueryPageSize, automaticQueryTableSources } from './source-program/table-pagination';
+
+export { candidateContextKey, filterCandidatesRequest, validFilterCandidates } from './filter-candidates';
+export { createCandidateGatewaySession } from './candidate-session';

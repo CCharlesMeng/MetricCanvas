@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { FilterDeclaration } from '@metriccanvas/page/internal';
-import { dashboardFilterGroups } from '../src/dashboard/filter-groups';
+import { headerFilterGroups } from '../src/ioc-header/filter-groups';
 
 const dimension = (id: string, visible?: boolean): FilterDeclaration => ({
   id,
@@ -21,7 +21,7 @@ describe('dashboard 工具栏筛选分组', () => {
       dimension(`filter-${index + 1}`)
     );
 
-    const groups = dashboardFilterGroups(declarations);
+    const groups = headerFilterGroups(declarations);
 
     expect(ids(groups.primary)).toEqual(ids(declarations));
     expect(groups.overflow).toEqual([]);
@@ -34,7 +34,7 @@ describe('dashboard 工具栏筛选分组', () => {
       search('keyword')
     ];
 
-    const groups = dashboardFilterGroups(declarations);
+    const groups = headerFilterGroups(declarations);
 
     expect(ids(groups.primary)).toEqual([
       'filter-1',
@@ -60,8 +60,8 @@ describe('dashboard 工具栏筛选分组', () => {
       ...Array.from({ length: 6 }, (_, index) => dimension(`visible-${index + 2}`))
     ];
 
-    const standard = dashboardFilterGroups(declarations);
-    const compact = dashboardFilterGroups(declarations, 'compact');
+    const standard = headerFilterGroups(declarations);
+    const compact = headerFilterGroups(declarations, 'compact');
 
     expect(ids(standard.primary)).toEqual(['one', 'visible-2', 'visible-3', 'visible-4']);
     expect(ids(standard.overflow)).toEqual(['visible-5', 'visible-6', 'visible-7']);

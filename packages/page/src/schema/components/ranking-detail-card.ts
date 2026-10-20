@@ -1,3 +1,4 @@
+import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import {
   componentIdZ,
@@ -31,6 +32,7 @@ const nestedDetailsZ = z
 export const rankingDetailCardComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('rankingDetailCard'),
     layout: componentLayoutZ,
     data: mainDataZ,

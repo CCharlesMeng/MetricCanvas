@@ -644,9 +644,23 @@ function encodedDqeItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfig['
     item.order = order;
   }
   if (query.search) {
-    if (!encodeSearch) throw new DqeGatewayError('DQE_CONFIG_ERROR', '数据网关未配置全表文本搜索能力');
-    return encodeSearch(item, structuredClone(query.search));
+    return encodeTableSearch(item, query.search, encodeSearch);
   }
+  return item;
+}
+
+function encodeTableSearch(item: JsonObject, search: NonNullable<EffectiveQuery['search']>, encodeSearch?: DqeGatewayConfig['encodeSearch']): JsonObject {
+  if (search.match !== 'equals') {
+    if (!encodeSearch) throw new DqeGatewayError('DQE_CONFIG_ERROR', '数据网关未配置全表文本搜索能力');
+    return encodeSearch(item, structuredClone(search));
+  }
+  if (search.queryFields.length !== 1) throw new DqeGatewayError('DQE_CONFIG_ERROR', '等值搜索只允许一个查询字段');
+  if (item.filter !== undefined && !isRecord(item.filter)) throw new DqeGatewayError('DQE_CONFIG_ERROR', '等值搜索要求结构化 filter');
+  const filter = ensureRecord(item, 'filter');
+  if (filter.dims !== undefined && !Array.isArray(filter.dims)) throw new DqeGatewayError('DQE_CONFIG_ERROR', '等值搜索要求 filter.dims 数组');
+  const existing = Array.isArray(filter.dims) ? filter.dims : [];
+  // Add a conjunct; replacing a same-field page/header constraint would broaden its scope.
+  filter.dims = [...existing, { dim_name: search.queryFields[0], dim_value_list: [search.query] }];
   return item;
 }
 

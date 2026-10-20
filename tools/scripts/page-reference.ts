@@ -185,19 +185,26 @@ function componentPointer(value: any, type: string, pointer = '#'): string | und
   return undefined;
 }
 
-/** 在完整合法页面上记录实际命中的联合分支；不把结构目录计作示例命中。 */
-export function branchWitnesses(schema: Schema, examples: Map<string,string>, nodes: ReferenceNode[]) {
+const branchMatchers = new WeakMap<Schema, (pointer:string,value:unknown)=>boolean>();
+/** All witnesses in one export share the same immutable schema and compiled checks. */
+function branchMatcher(schema:Schema) {
+  const cached=branchMatchers.get(schema);if(cached)return cached;
   const { Ajv } = createRequire(new URL('../../packages/page/package.json',import.meta.url))('ajv');
   const ajv = new Ajv({strict:false,allErrors:false,validateSchema:false});
   const id='https://metriccanvas/reference/coverage';
   ajv.addSchema({...schema,$id:id});
   const validators = new Map<string,(value:unknown)=>boolean>();
-  const evidence = new Map<string,{file:string;pointer:string}>();
-  const branches=nodes.filter(n=>/\/(?:anyOf|oneOf)\/\d+$/.test(n.pointer));
   function matches(pointer:string,value:unknown) {
     let check=validators.get(pointer);if(!check){check=ajv.compile({$ref:id+pointer});validators.set(pointer,check!);}
     return check!(value);
   }
+  branchMatchers.set(schema,matches);return matches;
+}
+/** 在完整合法页面上记录实际命中的联合分支；不把结构目录计作示例命中。 */
+export function branchWitnesses(schema: Schema, examples: Map<string,string>, nodes: ReferenceNode[]) {
+  const matches=branchMatcher(schema);
+  const evidence = new Map<string,{file:string;pointer:string}>();
+  const branches=nodes.filter(n=>/\/(?:anyOf|oneOf)\/\d+$/.test(n.pointer));
   for(const [file,content] of examples) {
     const visited=new Set<string>();
     function visit(pointer:string,value:any,location:string) {
@@ -322,7 +329,7 @@ export async function buildPageReference(root: string, schema: Schema, catalog: 
       else if (branch.negativeWitness) body += `[语义拒绝反例](${prefix}${branch.negativeWitness.file})：${branch.negativeWitness.reason}（规则 \`${branch.negativeWitness.rule}\`）。此项不计入合法示例覆盖。\n`;
       else body += '缺少见证。\n';
     }
-    output.set(file,body);
+    output.set(file,body.trimEnd()+'\n');
   }
   const missingFields = nodes.filter(n => /\/properties\/[^/]+$/.test(n.pointer) && !map.fieldNotes[n.pointer] && !n.schema.description && !map.fieldNotes[n.path.split('.').at(-1)!]).map(n => n.pointer);
   const semanticGaps = {fields:missingFields,enums:missingEnums,examples:exampleCoverage.filter(e=>!e.file),branches:documentedBranches.filter(b=>!b.file&&!b.negativeWitness)};

@@ -11,6 +11,8 @@ DimensionValuesResult
 DimensionValuesSnapshot
 DimensionValuesSnapshots
 DimensionValuesStream
+DisplayInputs
+DisplaySnapshot
 EXPORT_MAX_ROWS
 EXPORT_PREPARATION_TIMEOUT_MS
 ExecutionBootstrap
@@ -19,6 +21,10 @@ ExecutionPort
 ExecutionRequest
 ExecutionTarget
 ExportViewError
+FilterCandidate
+FilterCandidatesGateway
+FilterCandidatesRequest
+FilterCandidatesResult
 FilterState
 FilterValue
 FilterValues
@@ -26,6 +32,8 @@ LastFilterContext
 LastFilterPort
 LastFilterRequest
 LastFilterStatus
+NavigationInputContract
+NavigationResolution
 NumberRangeFilterValue
 PageDataSnapshots
 PageParamState
@@ -46,12 +54,15 @@ dimensionValuesSnapshot
 filterSearch
 initialFilterValues
 initializePageParams
+isDisplayInputs
 loadExecution
 navigationHref
 orchestrate
 pageParamSearch
 parseFilterSearch
 prepareExecution
+projectNavigationInputs
+resolveNavigationTarget
 resolvePageParams
 serializePageParam
 
@@ -105,6 +116,10 @@ tableRowTier
 
 ## ./ui
 AiSummaryConfig
+DataPeriodFact
+DisplayInputsSnapshot
+DisplayInputsSource
+NavigationInputContract
 RuntimeConfigurationError
 RuntimeConfigurationErrorCode
 RuntimeNavigation
@@ -117,6 +132,7 @@ isDataGateway
 ## ./ui/types
 AiSummaryConfig
 DataErrorEvent
+NavigationInputContract
 RuntimeConfigurationError
 RuntimeConfigurationErrorCode
 RuntimeNavigation

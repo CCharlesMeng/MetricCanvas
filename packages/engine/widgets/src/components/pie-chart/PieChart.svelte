@@ -3,34 +3,36 @@
   import type { PieChartProps, Row } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import EChart from '../../shared/EChart.svelte';
+  import { chartSource, type ChartDiagnostic } from '../../shared/chart-option-extension';
   import { CATEGORICAL_PALETTE_PROPERTY, readColorList } from '../../shared/chart-palette';
-  import { pieOption } from './options';
+  import { pieOption, pieRows } from './options';
 
   /** 饼图(纯渲染,ECharts):数据快照进、事件出 */
   interface Props {
     data: MainDataSlots;
     props: PieChartProps;
+    diagnostic?: ChartDiagnostic;
     /** 扇区点击,携带该扇区对应的数据行 */
     onsliceclick?: (context: { row: Row }) => void;
   }
 
-  let { data, props, onsliceclick }: Props = $props();
+  let { data, props, onsliceclick, diagnostic }: Props = $props();
 
   /* 形态色板从绘图容器的计算样式读:容器挂载后 derived 重算一次,
      option 随之重建。自定义属性不触发观察器,而形态只随页面整体重渲染变化,
      所以读一次就够,不需要 MapChart 那样的重读时机。 */
   let chartContainer = $state<HTMLDivElement>();
   const palette = $derived(readColorList(chartContainer, CATEGORICAL_PALETTE_PROPERTY));
-  const option = $derived(pieOption(data, props, palette));
+  const source = $derived(chartSource(() => pieOption(data, props, palette), props, diagnostic ?? { componentId: 'direct-pie-chart', componentType: 'pieChart', path: '/props/echartsOption' }));
 </script>
 
 <div class:compact-ring={props.variant === 'compactRing'} class="pie-chart">
   {#if props.title}<h3>{props.title}</h3>{/if}
   <EChart
-    {option}
+    {source}
     bind:container={chartContainer}
     onitemclick={onsliceclick
-      ? (dataIndex) => onsliceclick({ row: data.main.snapshot.rows[dataIndex] })
+      ? (dataIndex) => onsliceclick({ row: pieRows(data, props)[dataIndex]! })
       : undefined}
   />
 </div>

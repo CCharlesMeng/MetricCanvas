@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "rules": {
+    "R6-31-overflow": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        }
+      ],
+      "collect": {
+        "kind": "overflow"
+      }
+    }
+  }
+}

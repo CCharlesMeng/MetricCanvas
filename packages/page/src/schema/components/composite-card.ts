@@ -1,3 +1,4 @@
+import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import { componentIdZ, componentLayoutZ, textValueZ } from '../primitives';
 import { componentCatalogRegistry } from '../registry';
@@ -47,6 +48,7 @@ export const compositeCardChildZ = z
 export const compositeCardComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('compositeCard'),
     layout: componentLayoutZ,
     props: z

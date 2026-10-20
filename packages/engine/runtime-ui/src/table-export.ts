@@ -1,5 +1,5 @@
 import type { EffectiveQuery, Page, TableComponent } from '@metriccanvas/page/internal';
-import { resolveDataSourceFields } from '@metriccanvas/page/internal';
+import { projectComponentFields,resolveDataSourceFields } from '@metriccanvas/page/internal';
 import type { RuntimeDataGateway } from '../../runtime/src';
 import { prepareExportSnapshots, ExportViewError, EXPORT_MAX_ROWS, EXPORT_PREPARATION_TIMEOUT_MS } from '../../runtime/src/export-snapshots';
 import type { NamedDataSlots } from '../../widgets/src/shared/component-data';
@@ -8,18 +8,18 @@ import { exportComponentData, type ExportRenderState } from './export-render-sta
 /** Freeze upstream inputs before any await. Fetch only this table's transitive dependency closure. */
 export async function prepareTableExport(input: {
   page: Page; component: TableComponent; queries: ReadonlyMap<string, EffectiveQuery>;
-  gateway: RuntimeDataGateway; state: Pick<ExportRenderState, 'filters' | 'tables' | 'headerFilters' | 'currentYear'>;
+  gateway: RuntimeDataGateway; state: Pick<ExportRenderState, 'filters' | 'tables' | 'headerFilters' | 'currentYear' | 'displaySnapshot' | 'filterRevision' | 'now'>;
   controller: AbortController; views?: ReadonlyMap<string, import('@metriccanvas/page/internal').TableQueryView>; program?: import('@metriccanvas/data-execution/runtime').SourceProgram;
 }): Promise<NamedDataSlots> {
   const page = JSON.parse(JSON.stringify(input.page)) as Page;
-  const component = JSON.parse(JSON.stringify(input.component)) as TableComponent;
+  const component = projectComponentFields(page,JSON.parse(JSON.stringify(input.component)),input.state.filters) as TableComponent;
   page.sections = [{ id: 'table-export', components: [component] }];
   const queries = structuredClone(new Map(input.queries));
   const state = { ...input.state, filters: structuredClone(new Map(input.state.filters)), tables: JSON.parse(JSON.stringify(input.state.tables)), headerFilters: JSON.parse(JSON.stringify(input.state.headerFilters)) };
   const { signal } = input.controller;
   const timer = setTimeout(() => input.controller.abort(new ExportViewError('EXPORT_TIMEOUT', '导出准备超过 60 秒')), EXPORT_PREPARATION_TIMEOUT_MS);
   try {
-    const snapshots = await abortable(prepareExportSnapshots(page, input.gateway, queries, state.filters, signal, undefined, state.currentYear, Object.values(component.data), input.views && structuredClone(new Map(input.views)), input.program), signal);
+    const snapshots = await abortable(prepareExportSnapshots(page, input.gateway, queries, state.filters, signal, undefined, state.currentYear, Object.values(component.data), input.views && structuredClone(new Map(input.views)), input.program,{displayInputs:state.displaySnapshot,filterRevision:state.filterRevision,now:state.now}), signal);
     signal.throwIfAborted();
     return exportComponentData({ ...state, page, snapshots, summaries: {} }, component);
   } finally { clearTimeout(timer); }

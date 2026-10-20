@@ -1,3 +1,4 @@
+import {timeQueryLeaves} from './time-mode';
 import type { DataSource, DataSources } from './data-source';
 import { computeDependencies } from './compute';
 
@@ -10,10 +11,10 @@ export function queryResultDependencies(source: DataSource | undefined): string[
 export function isBoundedResultSource(sources: DataSources, id: string): boolean {
   const source = sources[id];
   if (source?.source.type !== 'query') return false;
-  const order = source.source.query.body.dsl_list[0]?.order;
+  return timeQueryLeaves(source.source.query).every(query=>{const order = query.body.dsl_list[0]?.order;
   return typeof order === 'object' && order !== null && !Array.isArray(order) &&
     Number.isSafeInteger(order.limit) && Number(order.limit) > 0 && !('offset' in order) &&
-    Object.values(sources).some(candidate => queryResultDependencies(candidate).includes(id));
+    Object.values(sources).some(candidate => queryResultDependencies(candidate).includes(id));});
 }
 
 /** Connected query/compute chains cannot reuse unproven initial snapshots. */

@@ -1,9 +1,11 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { browser } from '$app/environment';
+  const framed = browser && window.self !== window.top;
   let { children } = $props();
 </script>
 
-{#if page.url.pathname !== '/'}
+{#if page.url.pathname !== '/' && !framed}
   <nav class="viewer-navigation" aria-label="试验场导航">
     <a href="/">← 页面目录</a>
     {#if page.url.pathname !== '/preview'}<a href="/preview">JSON 即时预览</a>{/if}

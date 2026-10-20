@@ -18,7 +18,8 @@ export function createTableSession(initial: TableQueryView, changed: (view: Tabl
     setPageSize(pageSize: number) { return commit({ ...view, pageSize, pageIndex: 0 }); },
     setSort(sort: TableQueryView['sort']) { return commit({ ...view, sort, pageIndex: 0 }); },
     setHeaders(filters: TableHeaderFilters) { if(Object.values(filters).some(value=>value.mode==='numberRange'&&value.from!==undefined&&value.to!==undefined&&value.from>value.to))return false; return commit({ ...view, predicates: tablePredicates(filters), pageIndex: 0 }); },
-    setSearch(search: NonNullable<TableQueryView['search']>) { return commit({ ...view, search: { fields: [...search.fields], query: search.query.trim() }, pageIndex: 0 }); },
+    setSearch(search: NonNullable<TableQueryView['search']>) { return commit({ ...view, search: { ...search, fields: [...search.fields], query: search.query.trim() }, pageIndex: 0 }); },
+    resetPresentation(){return commit({...view,pageIndex:0,sort:[],predicates:[],search:undefined},false);},
     resetPage() { return commit({ ...view, pageIndex: 0 }, false); },
     correct(next: TableQueryView, expectedGeneration: number) { return expectedGeneration === generation && commit(next, false, false); },
     dispose() { controller.abort(); generation++; }

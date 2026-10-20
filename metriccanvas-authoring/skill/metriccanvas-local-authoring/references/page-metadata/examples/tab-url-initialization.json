@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "6.43",
+  "id": "tab-url-initialization",
+  "layout": "report",
+  "dataSources": {
+    "demo": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "合成数据，仅验证页签与导航"
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "tabs",
+      "components": [
+        {
+          "id": "sales-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "sales-tabs",
+            "initialTabUrlParam": "sales-tab",
+            "tabs": [
+              {
+                "id": "detail",
+                "label": "销售明细",
+                "component": {
+                  "id": "sales-tabs-detail",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "demo"
+                  },
+                  "props": {
+                    "title": "销售明细：内联演示数据",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "title": "演示内容"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "overview",
+                "label": "销售概览",
+                "component": {
+                  "id": "sales-tabs-overview",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "demo"
+                  },
+                  "props": {
+                    "title": "销售概览：内联演示数据",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "title": "演示内容"
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "defaultTab": "overview"
+          }
+        },
+        {
+          "id": "support-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 6
+          },
+          "props": {
+            "title": "support-tabs",
+            "initialTabUrlParam": "support-tab",
+            "tabs": [
+              {
+                "id": "open",
+                "label": "未关闭工单",
+                "component": {
+                  "id": "support-tabs-open",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "demo"
+                  },
+                  "props": {
+                    "title": "未关闭工单：内联演示数据",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "title": "演示内容"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "closed",
+                "label": "已关闭工单",
+                "component": {
+                  "id": "support-tabs-closed",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "demo"
+                  },
+                  "props": {
+                    "title": "已关闭工单：内联演示数据",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "title": "演示内容"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

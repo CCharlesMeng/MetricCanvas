@@ -7,7 +7,10 @@ export type {
   AiSummaryConfig,
   RuntimeConfigurationError,
   RuntimeConfigurationErrorCode,
+  NavigationInputContract,
   RuntimeNavigation,
   RuntimeNavigationTarget,
   RuntimeViewEvent
 } from './types';
+
+export type {DisplayInputsSource,DisplayInputsSnapshot,DataPeriodFact} from '@metriccanvas/page/internal';

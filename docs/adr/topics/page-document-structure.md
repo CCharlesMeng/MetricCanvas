@@ -10,13 +10,15 @@
 
 查询结果绑定自6.14起以稳定数据源与原始维度字段显式声明下游维度集合输入，计算产出不作为查询输入；透视列可覆盖默认取值字段，有限主集合左关联与完整辅助源分别校验，保留此前可读版本（[ADR-0099](../0099-raw-query-result-bindings-and-bounded-left-joins.md)）。
 
-展示格式(`format`)始终归属组件字段绑定,不归属数据源;数据源和元数据快照只提供可被组件覆盖的 `defaultFormat` 展示建议。这样同一字段在指标卡、表格、图表中可以有不同格式,格式化实现仍集中在统一运行时。人民币金额以 `money/CNY` 表达结果字段语义、以 `cny-adaptive` 表达可覆盖的展示策略；受控语义 HTML 中无属性 `<data>` 标记的规范数字也由当前组件字段绑定格式化，Table 只作为显式消费者处理该能力。
+标准展示格式(`format`)归属组件字段绑定,不归属数据源;数据源和元数据快照只提供可被组件覆盖的 `defaultFormat` 展示建议。这样同一字段在指标卡、表格、图表中可以有不同格式,格式化实现仍集中在统一运行时。人民币金额以 `money/CNY` 表达结果字段语义、以 `cny-adaptive` 表达可覆盖的展示策略；受控语义 HTML 中无属性 `<data>` 标记的规范数字也由当前组件字段绑定格式化，Table 只作为显式消费者处理该能力。已在 Schema 6.32 实施并完成[本地验收](../../evidence/chart-echarts-option/result.md)的 [ADR-0110](../0110-hidden-echarts-presentation-options.md) 为柱/线/饼图新增隐含 `props.echartsOption`：允许 JSON 呈现补丁与模板覆盖当前显示格式，不更改原始数据或字段绑定；完整契约可查，面板不展示、AI 默认不主动使用。该子树不参与页面文本引用解析。
 
-**显式数字颜色与图表标签（[ADR-0101](../0101-explicit-value-colors-and-chart-labels.md)）：** 6.16 在表格数字列、指标卡变化项就地声明 `colorRule`，固定颜色与正负映射互斥，颜色闭集只含 red/green，统一运行时不推断业务好坏。新规则的箭头方向与颜色独立；旧声明继续读取。柱状图、折线图和混合图可声明全部类别标签、旋转与常驻数值标签，不隐藏全量标签或用总计代替每项数值。图例、轴名称与文字所需间距归直接绘图容器内的通用几何计算，静态导出保留相同呈现策略。
+**显式数字颜色与图表标签（[ADR-0101](../0101-explicit-value-colors-and-chart-labels.md)）：** 6.16 在表格数字列、指标卡变化项就地声明 `colorRule`，固定颜色与正负映射互斥，颜色闭集只含 red/green，统一运行时不推断业务好坏。新规则的箭头方向与颜色独立；旧声明继续读取。柱状图、折线图和混合图可声明全部类别标签、旋转与常驻数值标签，不隐藏全量标签或用总计代替每项数值。图例、轴名称与文字所需间距归直接绘图容器内的通用几何计算，静态导出保留相同呈现策略。ADR-0110 局部允许高级入口声明 grid 边距，但几何计算保留防裁切修正；扩展失败单次回退基础图，基础失败留空，诊断仅 console，页面不显示提示。静态导出发生降级则终止且仅 console，不复用页头失败文字；这部分是已确认设计，实施状态由对应主计划维护。
 
 页面 `id` 只用于文件命名、页面仓储加载、路由和修订归属,统一运行时不得按某个正式页面 `id` 选择样式、组件或交互;两份除 `id` 外相同的页面元数据必须产生相同的 DOM 结构和计算样式。正式页面 `id` 不得以字面量出现在产品源码中,由自动化门禁校验。
 
 内容分区的外观自 Schema 5.0 起由可选的 `section.container` 单一声明(封闭三档:`plain`/`panel`/`card`,缺省为通用看板外观);`section.variant` 与 `section.layout` 已删除。内容分区缺省是 12 列等权 Grid；Schema 5.3 起，真实结构无法表达时可声明最多 12 条受控正整数权重轨，不开放 CSS、坐标或像素宽高([ADR-0054](../0054-section-weighted-column-tracks.md))。统一运行时不得按组件组合或子组件 `props.variant` 推断分区外观。同一视觉行内同类型、同 `props.variant` 且具备行对齐能力的组件由统一运行时自动对齐行轨高度,这是运行时不变量而非页面声明;对齐通过显式契约协作,统一运行时不出现组件内部选择器。新增 `container` 档位必须证明"结构上不可区分且视觉上必须不同"。
+
+**指标卡前置连接文字（[ADR-0111](../0111-metric-card-before-connection-layout.md)）：** 6.34 在指标卡 `layout.before` 声明短连接文字和双侧间距档位，由统一运行时派生内部排布盒；整组占成员 span 之和，内部扣除文字和间距后按 span 比例分配。仅支持 Dashboard、plain/card、默认 12 列顶层指标卡。原相邻两卡都呈现才显示连接，不跨隐藏项重连。该能力只为连接关系放开受控 gap，修订 ADR-0038/0054 的全面拒绝；页面树、直接组件尺寸盒和无配置页面保持原有语义。
 
 **响应式宽度所有权([ADR-0059](../0059-direct-component-box-responsive-ownership.md)):** `RuntimeView` 的 `mc-runtime` 只负责页面级与跨组件排布；`RuntimeSection` 顶层单元、组合卡 slot 与 Tab 活动面板以 `mc-component-box` 给直接 Page Component 提供可用 inline-size；组件内部只使用最近的直接布局盒或匿名 self container。旧 viewport 数值不得机械迁移为容器阈值，优先用流式 CSS；组件根填满直接盒，固有内容尺寸必须有收缩或内部 overflow owner。该边界不进入 Page Metadata，不新增响应字段或生产态断点注册表。
 
@@ -39,3 +41,5 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 **显式筛选文本与期间格式（[ADR-0100](../0100-explicit-filter-text-values-and-period-format.md)）：** 6.15 文本取值可显式引用参数或当前已应用筛选状态；6.23 按 [ADR-0109](../0109-explicit-text-value-composition.md) 扩展为显式 parts 组合，所有既有文本位置共用，组件最终仍接收字符串。filterIds 只负责控件位置，不自动创建或覆盖 asOf；日期单点、范围统一使用 period 格式，不引入专用连接词或模板插值。运行时投影文字，导出捕获静态结果；6.13/6.14 保留旧页头派生兼容。
 
 2026-10-19修订：6.31使用reportHeader.props.exportButtons数组统一PDF/PNG按钮，每项配置format、label、filename及scale。直接点击下载，取消格式菜单、清晰度弹窗和二次保存；旧字段只在读取接缝兼容。PDF支持2/3/4倍，PNG支持3/4倍，超限明确失败。见[ADR-0097最新修订](../0097-report-date-filter-and-instance-export-view.md)。
+
+条件呈现按 [ADR-0112](../0112-unified-presentation-conditions.md) 就地声明 visibleWhen/enabledWhen，共用封闭条件语法、类型校验与纯求值。分区、组件、Tab、筛选器和受控入口只受自身与祖先约束；子项全隐藏不反推父级，不建设空容器检测与完整性策略。条件资格与导航选择、数据空态分开，展示投影不改变页面查询定义。6.35能力与创作契约、独立校验器同批交付，真实集成单列验收。

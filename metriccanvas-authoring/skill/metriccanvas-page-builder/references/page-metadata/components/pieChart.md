@@ -10,8 +10,10 @@
 
 Dashboard 正文可通过 `props.filter` 在左上角配置独立单选筛选。选项名称和值分离，default 与查询绑定显式声明；见[图表独立筛选](../filters.md#chart-local-filter)和 `chart-local-filter-page` 完整页面。
 
+6.32 的隐含高级入口 `props.echartsOption` 用于显式要求的 ECharts 呈现定制；普通创作优先使用上面的封闭属性。规则、保护路径、console 诊断与降级见[高级呈现扩展](../chart-option.md)。
 
-页面协议 6.32。结构真源为本册[schema.json](../schema.json)，SHA256 `a82a821bf9c06c65521b893a71a7b918b3a1d5cd648e0792a0d3ca9c9de63010`。字段表自动生成；可选不等于有默认值。
+
+页面协议 6.43。结构真源为本册[schema.json](../schema.json)，SHA256 `7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -34,6 +36,26 @@ Schema位置：`#/definitions/pieChartComponent/properties/id`。目标：[#/def
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/componentId | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7069654368617274436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@pieChartComponent.visibleWhen`
+
+Schema位置：`#/definitions/pieChartComponent/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f7069654368617274436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@pieChartComponent.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/pieChartComponent/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7069654368617274436f6d706f6e656e742f70726f706572746965732f74797065"></a>
 
@@ -118,6 +140,26 @@ Schema位置：`#/definitions/pieChartComponent/properties/props/properties/filt
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/chartFilter | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7069654368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f656368617274734f7074696f6e"></a>
+
+### `@pieChartComponent.props.echartsOption`
+
+Schema位置：`#/definitions/pieChartComponent/properties/props/properties/echartsOption`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 6.32 高级呈现 JSON；仅显式需求时使用，保护数据、结构与交互，异常单次回退且诊断仅console。 |
+
+<a id="schema-232f646566696e6974696f6e732f7069654368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f656368617274734f7074696f6e2f616c6c4f662f30"></a>
+
+### `@pieChartComponent.props.echartsOption · allOf[0]`
+
+Schema位置：`#/definitions/pieChartComponent/properties/props/properties/echartsOption/allOf/0`。目标：[#/definitions/chartOption](../chart-option.md#schema-232f646566696e6974696f6e732f63686172744f7074696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/chartOption | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7069654368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f76617269616e74"></a>
 
@@ -230,4 +272,3 @@ Schema位置：`#/definitions/pieChartComponent/properties/props/properties/acti
 - 源码/验证定位：`packages/embed/tests/browser/embed.spec.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
-

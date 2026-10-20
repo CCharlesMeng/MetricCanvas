@@ -3,10 +3,17 @@
   "kind": "structural-pattern",
   "source": {
     "pageId": "ioc-project-overview",
-    "sha256": "dc683d7331ed695edb77eb270e860adfbe57324d9b27fd410371e99a4b711e29"
+    "sha256": "32fe994cb03f91d110bd10c286f96e0f4892ecbc59154eb3d34f8a1daa7d96a6"
   },
   "layout": "dashboard",
-  "dashboardToolbar": "visible",
+  "iocHeader": {
+    "hasIdentity": true,
+    "filterCount": 5,
+    "presentation": {
+      "layout": "inline",
+      "collapse": "overflow"
+    }
+  },
   "filters": [
     {
       "type": "timePoint"

@@ -24,4 +24,6 @@ export interface RuntimeSectionProps {
   cellAttachment?: (component: Component, index: number) => Attachment<HTMLElement>;
   cellOverlay?: Snippet<[Component, number]>;
   emptyContent?: Snippet;
+  /** 创作期连接文字选择其所属指标卡；渲染期不提供动作。 */
+  onbeforeselect?: (component: Component, index: number) => void;
 }

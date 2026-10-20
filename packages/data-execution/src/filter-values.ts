@@ -1,3 +1,6 @@
+import {isoWeekRange} from '@metriccanvas/page/internal';
+import {initialModeRange,availabilityInitial,type DisplayInputsSnapshot,type TimeMode} from '@metriccanvas/page/internal';
+import { numberRangeIssue, dimensionSelectionIssue } from '@metriccanvas/page/internal';
 import { timeFilterBoundaryError, isPeriodSelection, resolvePeriodSelection, type AppliedPeriodSelection, validateTimePointValue, dimensionOfLevel, hierarchyLevelOf, isRelativeTimeExpression, resolveRelativeTime, type FilterDeclaration, type NumberRangeValue } from '@metriccanvas/page/internal';
 
 /**
@@ -27,6 +30,7 @@ export interface DimensionFilterValue {
 export interface TimeRangeFilterValue {
   type: 'timeRange';
   selection?: AppliedPeriodSelection;
+  mode?:TimeMode;
   from: string;
   to: string;
 }
@@ -61,11 +65,15 @@ export type FilterValues = ReadonlyMap<string, FilterValue>;
  */
 export function initialFilterValues(
   declarations: FilterDeclaration[],
-  now: Date = new Date()
+  now: Date = new Date(),
+  displayInputs?:DisplayInputsSnapshot,filterRevision?:number
 ): Map<string, FilterValue> {
   const values = new Map<string, FilterValue>();
   for (const decl of declarations) {
-    const value = initialValue(decl, now);
+    const initial=availabilityInitial(decl,displayInputs,filterRevision);
+    if((decl.type==='timeRange'||decl.type==='timePoint')&&decl.availability?.initial&&!initial)continue;
+    const prepared:FilterDeclaration=initial&&decl.type==='timePoint'?{...decl,default:initial}:initial&&decl.type==='timeRange'?decl.display==='modes'?{...decl,modes:decl.modes?.map(item=>item.id===decl.defaultMode?{...item,default:item.id==='isoWeek'?isoWeekRange(initial):{from:initial,to:initial}}:item)}:{...decl,default:{from:initial,to:initial}}:decl;
+    const value = initialValue(prepared, now);
     if (value && (value.type === 'timePoint' || value.type === 'timeRange')) {
       const issue = timeFilterBoundaryError(decl, value, now);
       if (issue) throw new Error(`筛选器 ${decl.id}: ${issue}`);
@@ -77,8 +85,8 @@ export function initialFilterValues(
 
 function initialValue(decl: FilterDeclaration, now: Date): FilterValue | undefined {
   if (decl.type === 'dimension') {
+    if(decl.default && dimensionSelectionIssue(decl,decl.default))throw new Error('筛选初值不符合已声明选择规则');
     if (!decl.default || decl.default.length === 0) return undefined;
-    if ((decl.selection === 'single' || decl.display === 'tabs') && decl.default.length > 1) throw new Error(`筛选器 ${decl.id}: 单选最多允许一个值`);
     const level = hierarchyLevelOf(decl);
     return {
       type: 'dimension',
@@ -88,6 +96,7 @@ function initialValue(decl: FilterDeclaration, now: Date): FilterValue | undefin
     };
   }
   if (decl.type === 'timeRange') {
+    if(decl.display==='modes')return {type:'timeRange',...initialModeRange(decl,decl.defaultMode!,now)};
     if (!decl.default) return undefined;
     if (isPeriodSelection(decl.default)) return {type:'timeRange',...resolvePeriodSelection(decl.default,now,decl.precision === 'month' ? 'month' : 'date')};
     const precision = decl.precision ?? 'date';
@@ -111,6 +120,7 @@ function initialValue(decl: FilterDeclaration, now: Date): FilterValue | undefin
     return decl.default ? { type: 'boolean', value: true } : undefined;
   }
   if (decl.type === 'numberRange') {
+    if(decl.default&&numberRangeIssue(decl,decl.default))throw new Error('数值范围默认值不符合声明');
     return numberRangeInitial(decl.default);
   }
   if (!decl.default || decl.default.trim() === '') return undefined;

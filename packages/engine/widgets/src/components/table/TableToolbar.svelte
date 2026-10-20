@@ -1,23 +1,33 @@
 <svelte:options css="injected" />
 <script lang="ts">
-  import type { TableProps } from '@metriccanvas/page/internal';
-  import { Button } from '@metriccanvas/ui';
+  import { tableSearchOption, type TableProps } from '@metriccanvas/page/internal';
+  import { Button, Select } from '@metriccanvas/ui';
   import TableControlIcon from './TableControlIcon.svelte';
-  let { toolbar, draft = '', busy = false, canExport = true, error, ondraft, onsearch, onexport, oncancel }: {
-    toolbar: TableProps['toolbar']; draft?: string; busy?: boolean; canExport?: boolean; error?: string;
+  let { toolbar, draft = '', option, busy = false, canExport = true, searchEnabled = true, error, ondraft, onsearch, onoption, onexport, oncancel }: {
+    toolbar: TableProps['toolbar']; draft?: string; busy?: boolean; canExport?: boolean; searchEnabled?: boolean; error?: string;
     ondraft?: (query: string) => void; onsearch?: (query: string) => void;
+    option?: string; onoption?: (value: string) => void;
     onexport?: () => void; oncancel?: () => void;
   } = $props();
+  const selected = $derived(tableSearchOption(toolbar?.search, option));
+  const placeholder = $derived(selected?.placeholder ?? (toolbar?.search && 'fields' in toolbar.search ? toolbar.search.placeholder : undefined) ?? '搜索表格');
 </script>
 
 <div class="tools" data-table-toolbar>
   {#if toolbar?.search}
+    <div class="search-group" class:with-options={selected !== undefined}>
+    {#if 'options' in toolbar.search}
+      <div class="search-option"><Select disabled={!searchEnabled} label="表格搜索字段" value={selected?.value}
+        options={toolbar.search.options.map(item => ({ value: item.value, label: item.label }))}
+        onchange={onoption} /></div>
+    {/if}
     <form class="search" onsubmit={event => { event.preventDefault(); onsearch?.(draft); }}>
-      <input type="search" aria-label="表格搜索" placeholder={toolbar.search.placeholder ?? '搜索表格'}
+      <input disabled={!searchEnabled} type="search" aria-label="表格搜索" {placeholder}
         value={draft} oninput={event => ondraft?.(event.currentTarget.value)} />
-      {#if draft}<button class="clear" type="button" aria-label="清空表格搜索" title="清空" onclick={() => { ondraft?.(''); onsearch?.(''); }}><TableControlIcon name="clear" /></button>{/if}
-      <button class="submit" type="submit" aria-label="搜索" title="搜索"><TableControlIcon name="search" /></button>
+      {#if draft}<button disabled={!searchEnabled} class="clear" type="button" aria-label="清空表格搜索" title="清空" onclick={() => { ondraft?.(''); onsearch?.(''); }}><TableControlIcon name="clear" /></button>{/if}
+      <button disabled={!searchEnabled} class="submit" type="submit" aria-label="搜索" title="搜索"><TableControlIcon name="search" /></button>
     </form>
+    </div>
   {/if}
   {#if toolbar?.export}
     <Button disabled={!canExport || !onexport} loading={busy} onclick={onexport}>{busy ? '正在导出…' : '导出'}</Button>
@@ -28,6 +38,10 @@
 
 <style>
   .tools { display:flex; align-items:center; flex-wrap:wrap; justify-content:flex-end; gap:8px; margin-left:auto; min-width:0; max-width:100%; font-family:Helvetica,Arial,PingFangSC-Regular,'Hiragino Sans GB','Microsoft YaHei',微软雅黑,'Microsoft JhengHei'; }
+  .search-group { display:flex; flex-wrap:wrap; align-items:center; gap:8px; max-width:100%; min-width:0; }
+  .search-group.with-options { width:376px; }
+  .search-option { width:128px; min-width:0; flex:none; }
+  .with-options .search { flex:1 1 180px; min-width:0; }
   .search { box-sizing:border-box; display:flex; align-items:center; width:240px; max-width:100%; height:32px; border:1px solid #c2c2c2; border-radius:6px; background:#fff; transition:border-color .4s; }
   .search:hover, .search:focus-within { border-color:#191919; }
   input { flex:1; box-sizing:border-box; height:100%; width:0; min-width:0; padding:0 0 0 12px; border:0; outline:none; background:transparent; color:#191919; font:inherit; font-size:14px; line-height:1; }

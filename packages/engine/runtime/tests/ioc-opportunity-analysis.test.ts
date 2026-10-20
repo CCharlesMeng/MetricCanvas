@@ -33,17 +33,18 @@ function snapshotsOf(page: Page): PageDataSnapshots {
 }
 
 describe('ioc-opportunity-analysis 页面契约', () => {
-  it('声明 5.4 看板、紧凑可操作页头和七个已下推的筛选位', () => {
+  it('声明统一紧凑可操作页头和七个已下推的筛选位', () => {
     const page = loadPage();
     expect(page.schemaVersion).toBe(versionPolicy.current);
-    expect(requiredMinorVersion(document)).toBe(11);
+    expect(requiredMinorVersion(document)).toBe(41);
     expect(page.layout).toBe('dashboard');
     expect(page.meta).toMatchObject({
       title: '机会点数',
       description: expect.stringContaining('合成演示数据')
     });
-    expect(page.dashboardToolbar).toEqual({
-      variant: 'compact',
+    expect(page.dashboardToolbar).toBeUndefined();
+    expect(page.iocHeader).toMatchObject({
+      presentation:{layout:'inline',density:'compact'},
       note: '合成演示数据，非生产口径；七个筛选位均已下推到查询'
     });
     expect(page.filters?.map((filter) => filter.id)).toEqual([

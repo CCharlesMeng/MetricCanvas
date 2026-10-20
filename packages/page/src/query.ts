@@ -1,3 +1,4 @@
+import {ordinaryQuery,timeQueryLeaves} from './time-mode';
 import { resolveQueryParamReferences } from './query-param-references';
 import type { TimeRangeValue } from './filter';
 import type { QueryDataSourceFieldDefinition } from './field';
@@ -75,7 +76,8 @@ export type DqeBooleanFilterBinding = {
 
 export type DqeNumberRangeFilterBinding = {
   target: 'numberRange';
-  metric: string;
+  metric?: string;
+  metricByFilter?:{filterId:string;cases:Record<string,string>};
 };
 
 export type DqeFilterBinding =
@@ -144,7 +146,8 @@ export type QueryResultWhere =
 export interface DqeQueryDefinition {
   resultBindings?: QueryResultBinding[];
   language: 'dqe';
-  body: DqeRequestBody;
+  body?: DqeRequestBody;
+  timeModes?:{filterId:string;cases:Partial<Record<import('./time-mode').TimeMode,{body:DqeRequestBody;filterBindings:Record<string,DqeFilterBinding>}>>};
   filterBindings?: Record<string, DqeFilterBinding>;
   paramBindings?: Record<string,
     | { target: 'dimension'; queryField: string }
@@ -180,8 +183,8 @@ export interface DqeEffectiveQuery {
   language: 'dqe';
   body: DqeRequestBody;
   fieldMappings: Record<string, QueryDataSourceFieldDefinition>;
-  /** Table-local, case-insensitive literal substring search. Gateway owns protocol encoding. */
-  search?: { queryFields: string[]; query: string };
+  /** Omitted match preserves literal substring search; equals uses native dimension equality. */
+  search?: { queryFields: string[]; query: string; match?: 'equals' };
   pagination?: {
     offset: number;
     limit: number;
@@ -243,9 +246,10 @@ void _queryLanguageClosedSetGuard;
  * 读取分页声明,不解析任何协议分支的内部结构。
  */
 export function declaredPaginationLimit(query: PageQuery): number | undefined {
+  if(query.timeModes){const limits=timeQueryLeaves(query).map(declaredPaginationLimit);return limits.every(value=>value===limits[0])?limits[0]:undefined;}
   switch (query.language) {
     case 'dqe': {
-      const order = query.body.dsl_list[0].order;
+      const order = ordinaryQuery(query).body.dsl_list[0].order;
       if (
         typeof order !== 'object' ||
         order === null ||
@@ -264,9 +268,10 @@ export function declaredPaginationLimit(query: PageQuery): number | undefined {
 
 /** A first window can be paged without discarding a caller's explicit offset. */
 export function isFirstQueryWindow(query: PageQuery): boolean {
+  if(query.timeModes)return timeQueryLeaves(query).every(isFirstQueryWindow);
   switch (query.language) {
     case 'dqe': {
-      const order = query.body.dsl_list[0].order;
+      const order = ordinaryQuery(query).body.dsl_list[0].order;
       return order === undefined || (typeof order === 'object' && order !== null &&
         !Array.isArray(order) && (order.offset === undefined || order.offset === 0));
     }
@@ -277,11 +282,12 @@ export function isFirstQueryWindow(query: PageQuery): boolean {
 /** 参数对查询定义的协议内初始化；有筛选绑定的目标由筛选状态接管。 */
 export function initializeQueryParams(query: PageQuery, values: ReadonlyMap<string, import('./page-param').PageParamValue>): PageQuery {
   const initialized = structuredClone(query);
+  if(initialized.timeModes){for(const leaf of Object.values(initialized.timeModes.cases)){const resolved=initializeQueryParams({language:'dqe',...leaf},values);leaf.body=ordinaryQuery(resolved).body;}return initialized;}
   for (const [id, binding] of Object.entries(initialized.paramBindings ?? {})) {
     if (binding.target === 'time') {
       const value = values.get(id);
       if (typeof value !== 'string') throw new Error(`时间绑定缺少有效参数:${id}`);
-      const item = initialized.body.dsl_list[0];
+      const item = ordinaryQuery(initialized).body.dsl_list[0];
       const filter = item.filter;
       if (!filter || typeof filter !== 'object' || Array.isArray(filter)) throw new Error('时间绑定需要 filter.time');
       const time = filter.time;
@@ -292,7 +298,7 @@ export function initializeQueryParams(query: PageQuery, values: ReadonlyMap<stri
     if (Object.values(initialized.filterBindings ?? {}).some(f => bindingQueryFields(f).includes(binding.queryField))) continue;
     const value = values.get(id);
     if (value === undefined) continue;
-    const item = initialized.body.dsl_list[0];
+    const item = ordinaryQuery(initialized).body.dsl_list[0];
     const rawFilter = item.filter;
     const filter = rawFilter && typeof rawFilter === 'object' && !Array.isArray(rawFilter) ? rawFilter : {};
     const dims = Array.isArray(filter.dims) ? filter.dims : [];

@@ -1,37 +1,42 @@
 <svelte:options css="injected" />
 <script lang="ts">
   import { Selection, type UiTreeOption, type TreeSelection } from '@metriccanvas/ui';
+  import {structuralTree} from './structural-tree';
+  import type {DimensionSelectionExtension} from '@metriccanvas/page/internal';
   import type { DimensionValuesSnapshot } from '../../../runtime/src';
   import { buildFilterTree, type FilterTreeNode } from './tree';
-  let {label, emptyLabel = '全部', candidates, value, display = 'select', selection = 'multiple', searchable = true, treeSelection = 'descendants', disabled = false, onchange}:
+  let {label, emptyLabel = '全部', candidates, value, display = 'select', selection, searchable = true, treeSelection = 'descendants', structural = false, treeLevel = '', disabled = false, onretry, onchange}:
     {label?: string; emptyLabel?: string; candidates: DimensionValuesSnapshot; value: string[];
-     display?: 'select'|'tabs'|'tree'|'search'; selection?: 'single'|'multiple'; searchable?: boolean;
-     treeSelection?: TreeSelection; disabled?: boolean; onchange: (values:string[]) => void} = $props();
+     display?: 'select'|'tabs'|'tree'|'search'; selection?: DimensionSelectionExtension['selection']; searchable?: boolean;
+     treeSelection?: TreeSelection; structural?:boolean; treeLevel?:string; onretry?:()=>void; disabled?: boolean; onchange: (values:string[]) => void} = $props();
   const options = $derived(candidates.status === 'ready' ? candidates.candidates : []);
   function toUi(node: FilterTreeNode): UiTreeOption {
-    return {value: node.value ?? `structure:${node.path}`, label: node.label, selectable: node.value !== null, children: node.children.length ? node.children.map(toUi) : undefined};
+    return {value: node.value ?? `structure:${node.path}`, label: node.label, disabled:node.disabled, selectable: node.value !== null, children: node.children.length ? node.children.map(toUi) : undefined};
   }
+  function toStructuralUi(node:import('@metriccanvas/ui').UiTreeNode):UiTreeOption {return {value:node.value??`structure:${node.key}`,label:node.label,disabled:node.disabled,selectable:node.value!==undefined,children:node.children?.map(toStructuralUi)};}
+  function commit(next:string[]) {if(selection?.required&&next.length!==1)return;onchange(next);}
   const treeResult = $derived.by(() => {
     if (display !== 'tree') return {options, error:false};
-    try {return {options:buildFilterTree(options).map(toUi), error:false};}
+    try {return {options:structural ? structuralTree(options,treeLevel).map(toStructuralUi) : buildFilterTree(options).map(toUi), error:false};}
     catch {return {options:[], error:true};}
   });
   const statusText = $derived(treeResult.error ? '候选层级无效' :
     candidates.status === 'idle' || candidates.status === 'loading' ? '候选项加载中…' :
     candidates.status === 'empty' ? '无候选项' : candidates.status === 'unavailable' ? '候选项不可用' :
-    candidates.status === 'error' ? `候选项加载失败(${candidates.error.code})` : undefined);
+    candidates.status === 'denied' ? '无权访问候选项' : candidates.status === 'unconfigured' ? '候选能力未配置' : candidates.status === 'error' ? `候选项加载失败(${candidates.error.code})` : undefined);
 </script>
 <div class="filter">
   {#if label}<span class="label">{label}</span>{/if}
   {#if display === 'tabs'}
     <div class="tabs" role="tablist" aria-label={label ?? '维度筛选'}>
-      <button type="button" role="tab" class="tab" class:active={!value.length} aria-selected={!value.length} {disabled} onclick={() => onchange([])}>{emptyLabel}</button>
-      {#each options as option (option.value)}<button type="button" role="tab" class="tab" class:active={value.includes(option.value)} aria-selected={value.includes(option.value)} {disabled} onclick={() => onchange([option.value])}>{option.label}</button>{/each}
+      {#if !selection?.required}<button type="button" role="tab" class="tab" class:active={!value.length} aria-selected={!value.length} {disabled} onclick={() => commit([])}>{emptyLabel}</button>{/if}
+      {#each options as option (option.value)}<button type="button" role="tab" class="tab" class:active={value.includes(option.value)} aria-selected={value.includes(option.value)} disabled={disabled||option.disabled} onclick={() => commit([option.value])}>{option.label}</button>{/each}
     </div>
     {#if statusText}<span role={candidates.status === 'error' ? 'alert' : 'status'} data-candidates-status={candidates.status}>{statusText}</span>{/if}
   {:else}
     <div class="dropdown" data-candidates-status={candidates.status}>
-      <Selection label={label ?? '维度筛选'} options={treeResult.options} {value} tree={display === 'tree'} multiple={selection !== 'single'} {searchable} {treeSelection} {disabled} clearable placeholder={emptyLabel} {statusText} statusError={treeResult.error || candidates.status === 'error'} {onchange}/>
+      <Selection label={label ?? '维度筛选'} options={treeResult.options} {value} tree={display === 'tree'} multiple={selection?.mode !== 'single' && !selection?.required} {searchable} treeSelection={structural?'independent':treeSelection} {disabled} required={selection?.required} clearable={!selection?.required} placeholder={emptyLabel} {statusText} statusError={treeResult.error || candidates.status === 'error'} onchange={commit}/>
+      {#if candidates.status==='error'&&onretry}<button type="button" onclick={onretry}>重试</button>{/if}
     </div>
   {/if}
 </div>

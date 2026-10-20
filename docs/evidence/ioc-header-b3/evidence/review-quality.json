@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "evidence_epoch": "ioc-b3-final-1",
+  "code_fingerprint": "1fe02a2761bb5f97141e16c76f21bbf1ce0f3206e049e4cac32128629ccdddeb",
+  "status": "executed",
+  "findings": [
+    {
+      "id": "Q2-1",
+      "canonical_key": "file:packages/page/tests/currency-selection.test.ts|four-duplicate-test-cases",
+      "dimension": "Q2",
+      "level": "suggestion",
+      "summary": "四个金额与字段选择测试各重复执行一次。",
+      "location": "packages/page/tests/currency-selection.test.ts:48-51；与17-20行重复。",
+      "basis": "Q2 duplicated-code：同一文件新增两份相同用例，名称、输入和断言均相同，没有增加分支覆盖。",
+      "evidence_ids": [
+        "packages/page/tests/currency-selection.test.ts:L17-L20",
+        "packages/page/tests/currency-selection.test.ts:L48-L51",
+        "targeted"
+      ],
+      "impact": "最终定向日志中的39项包含4项重复执行；两份断言需要同步维护，执行数量不能理解为39个不同场景。不影响当前生产功能。",
+      "suggested_action": "后续清理时删除48-51行重复组，保留17-20行单份用例，并同步调整验证统计；本次可保持冻结进入handoff。"
+    }
+  ],
+  "skipped": [],
+  "open_questions": [],
+  "deferred_candidates": [],
+  "evidence_added": [],
+  "role": "review-quality",
+  "judged_files": [
+    "packages/page/src/amount-filter.ts",
+    "packages/page/src/amount-validation.ts",
+    "packages/page/src/field-selection.ts",
+    "packages/page/src/validate.ts",
+    "packages/page/src/version.ts",
+    "packages/page/tests/currency-selection.test.ts",
+    "packages/data-execution/src/candidate-validation.ts",
+    "packages/data-execution/src/effective-query.ts",
+    "packages/data-execution/src/source-program/session.ts",
+    "packages/engine/runtime/src/filter-state.ts",
+    "packages/engine/runtime/src/orchestrator.ts",
+    "packages/engine/runtime/src/detail-view.ts",
+    "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+    "packages/engine/runtime-ui/src/ExportView.svelte",
+    "packages/engine/runtime-ui/src/table-controller.ts",
+    "packages/engine/runtime-ui/src/table-export.ts",
+    "packages/engine/runtime-ui/src/filters/NumberRangeFilter.svelte",
+    "packages/engine/runtime-ui/tests/currency-presentation.test.ts",
+    "packages/ui/src/components/select/RangePicker.svelte",
+    "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/range_editing.py"
+  ],
+  "coverage": [
+    {
+      "dimension": "Q2",
+      "scope": "B3共享金额校验、字段投影及新增测试；生产消费者复用共享边界，新增测试存在四组重复用例。",
+      "evidence_ids": [
+        "packages/page/src/amount-filter.ts:L4-L36",
+        "packages/page/src/field-selection.ts:L19-L71",
+        "packages/page/tests/currency-selection.test.ts:L17-L20",
+        "packages/page/tests/currency-selection.test.ts:L48-L51",
+        "targeted"
+      ],
+      "result": "finding"
+    },
+    {
+      "dimension": "Q5",
+      "scope": "金额草稿生命周期、币种原子切换、查询代次与取消、表格状态重置、异步导出冻结、监听和订阅清理。",
+      "evidence_ids": [
+        "BE-31",
+        "BE-32",
+        "BE-33",
+        "packages/ui/src/components/select/RangePicker.svelte:L5-L16",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L211-L225",
+        "packages/engine/runtime/src/orchestrator.ts:L95-L129",
+        "targeted"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "Q6",
+      "scope": "冻结F3-31至F3-36涉及的非法或缺失币种、金额边界与溢出、seed/initial复用门禁、等待确认、详情绑定及导出错误路径。",
+      "evidence_ids": [
+        "BE-31",
+        "BE-32",
+        "BE-33",
+        "packages/page/src/amount-filter.ts:L4-L31",
+        "packages/data-execution/src/candidate-validation.ts:L20-L36",
+        "packages/engine/runtime/src/filter-state.ts:L119-L126",
+        "packages/page/src/validate.ts:L130-L147",
+        "targeted"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "Q7",
+      "scope": "B3净diff中的生产源代码与验收夹具；未发现调试输出、断点、空实现或以固定样例替代正式取数。",
+      "evidence_ids": [
+        "docs/evidence/ioc-header-b3/evidence/b3.diff:L1",
+        "BE-31",
+        "BE-33",
+        "targeted"
+      ],
+      "result": "clear"
+    }
+  ],
+  "evidence_reused": [
+    "BE-31",
+    "BE-32",
+    "BE-33",
+    "targeted"
+  ],
+  "known_gaps": [
+    "全量Vitest的264文件、2300通过及5跳过属于最终微调前的冻结前驱；之后读取到39项定向、check、构建、静态、2项源码浏览器、17项安装浏览器及46项分发验证，未将前驱全量结果升级为最终代码完整复跑。",
+    "浏览器和仓外消费者使用本地合成HTTP及打包产物；真实DQE、CloudIOC、Relay、DS模型、门户、USD业务数据、CI与部署未验证。",
+    "本角色仅只读检查代码及既有证据，未重复执行测试、构建或浏览器采集。"
+  ]
+}

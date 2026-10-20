@@ -1,0 +1,67 @@
+{
+  "source_manifest": "delivery-inputs.json",
+  "checks": [
+    {
+      "command": "pnpm check",
+      "log": "check-all.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm build",
+      "log": "build.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm test [UI/page/runtime/data + local-authoring + references + catalog]",
+      "log": "tests-final.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm test packages/engine/runtime-ui/tests/filter-tree.test.ts",
+      "log": "disabled-tree.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm --filter @metriccanvas/ui exec playwright test selection.spec.ts components.spec.ts --project=chrome --timeout=15000",
+      "log": "browser-ui.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "node apps/playground/tests/ioc-header-selection-browser.mjs",
+      "log": "browser-page.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "PLAYGROUND_BASE_URL=http://127.0.0.1:5186 node apps/playground/tests/ioc-header-showcase-browser.mjs",
+      "log": "browser-main-showcase.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "HEADER_BASE_URL=http://127.0.0.1:5186 node apps/playground/tests/unified-header-browser.mjs",
+      "log": "browser-main-unified.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm --dir /tmp/ioc-selection-ui-consumer exec playwright test",
+      "log": "consumer-browser.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm authoring:contracts:check",
+      "log": "contracts-check.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm report-pdf:check",
+      "log": "report-check.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm validate",
+      "log": "validate.txt",
+      "exit_code": 0
+    }
+  ],
+  "full_suite_note": "1417 cases preceded final disabled-parent compatibility fix. Its affected tree path was then checked by17 tests;33 browser,7 installed-package and main page scenarios rerun.",
+  "data": "local synthetic, no real DQE/Relay/CloudIOC"
+}

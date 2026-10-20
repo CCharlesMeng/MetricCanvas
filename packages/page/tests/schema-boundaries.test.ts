@@ -97,8 +97,8 @@ describe('当前 page schema 边界行为', () => {
     expectValid('grouped money/CNY measure', money);
 
     const wrongCurrency = structuredClone(money);
-    wrongCurrency.dataSources.current.fields.measures.revenue.currency = 'USD';
-    expectInvalid('money 非 CNY', wrongCurrency);
+    wrongCurrency.dataSources.current.fields.measures.revenue.currency = 'EUR';
+    expectInvalid('money 未支持币种', wrongCurrency);
 
     const missingCurrency = structuredClone(money);
     delete missingCurrency.dataSources.current.fields.measures.revenue.currency;

@@ -1,3 +1,4 @@
+import {ordinaryQuery} from './time-mode';
 import { isBoundedResultSource } from './query-dependencies';
 import type { Page } from './page';
 import type { TypedError } from './errors';
@@ -16,7 +17,7 @@ export function crossSourceComputeErrors(page: Page): TypedError[] {
   const full = (id: string, source: DataSource, path: string) => {
     if (source.source.type === 'inline') return;
     if (source.source.type === 'pagedJoin') { error(path, '组合源是窗口结果，不能用于完整跨源计算'); return; }
-    const query = source.source.query.body.dsl_list[0];
+    const query = ordinaryQuery(source.source.query).body.dsl_list[0];
     const order = query?.order;
     if (source.source.resultScope !== 'complete' || paged.has(id) ||
       (order && typeof order === 'object' && ('limit' in order || 'offset' in order))) {

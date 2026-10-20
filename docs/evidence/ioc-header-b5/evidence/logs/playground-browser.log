@@ -1,0 +1,13 @@
+
+Running 6 tests using 1 worker
+
+(node:98229) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/browser/ioc-navigation.spec.ts:4:1 › actual overview/list/detail pass explicit URL inputs and destination changes remain independent (3.6s)
+  ✓  2 tests/browser/ioc-navigation.spec.ts:11:1 › quarter does not truncate to detail month and empty row cannot fall back to a stale href key (1.4s)
+  ✓  3 tests/browser/ioc-navigation.spec.ts:14:1 › missing target capability stays non-navigable (1.3s)
+  ✓  4 tests/browser/ioc-navigation.spec.ts:17:181 › destination invalid input stops query project-name=X&origin=直接&month=2026-09 (1.2s)
+  ✓  5 tests/browser/ioc-navigation.spec.ts:17:181 › destination invalid input stops query project-id=P&project-name=X&origin=直接&month=bad (1.4s)
+  ✓  6 tests/browser/ioc-navigation.spec.ts:17:181 › destination invalid input stops query project-id=P&project-name=X&origin=直接&month=2026-09&currency=BAD (1.3s)
+
+  6 passed (12.5s)

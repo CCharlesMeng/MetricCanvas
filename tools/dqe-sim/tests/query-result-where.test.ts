@@ -62,7 +62,7 @@ describe('query-result-where paged development page',()=>{
   it('sorts before pagination and reports the population count',()=>{
     const item=document().dataSources.projects.source;
     if(item.type!=='query')throw Error('query');
-    const query=item.query.body.dsl_list[0];query.order={by:[{field:'时长',type:'asc',priority:1}],limit:10,offset:10};
+    const query=item.query.body!.dsl_list[0];query.order={by:[{field:'时长',type:'asc',priority:1}],limit:10,offset:10};
     const result=executeQueryResultWhere(query);
     expect(result?.code).toBe('SUCCESS');expect(result?.data).toEqual(sorted('时长','asc').slice(10,20));expect(result?.total_count).toBe(80);
     query.order={by:[{field:'不存在',type:'asc',priority:1}],limit:10};expect(executeQueryResultWhere(query)?.code).toBe('DQE_SIM_UNSUPPORTED_QUERY');

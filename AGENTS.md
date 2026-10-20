@@ -28,9 +28,9 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 
 提交、push 或跨分支交付使用 [scoped-main-delivery](.agents/skills/scoped-main-delivery/SKILL.md)，以本仓入口为准。
 
-### 新功能验收（必选）
+### 功能与协议能力验收（必选）
 
-所有新功能均须按 [新功能验收要求](docs/agents/feature-acceptance.md) 完成 `pages/` 场景、页面元数据文档及 `metriccanvas-local-authoring` 同步，作为实施完成条件；验收直接消费对应页面。
+所有新功能及页面协议能力更新（新增、调整、修复、收紧或废弃），均须按 [功能与协议能力验收要求](docs/agents/feature-acceptance.md) 完成 Playground 可观察场景、页面元数据文档及 `metriccanvas-local-authoring` 同步，作为实施完成条件。
 
 ### Issue tracker
 
@@ -44,6 +44,10 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 
 单上下文布局:根目录 `CONTEXT.md` + `docs/adr/`。详见 `docs/agents/domain.md`。
 
+### Skill 验收范围
+
+后续 Skill 验证默认只验收 `metriccanvas-local-authoring`（local-authoring），包括知识生成一致性、仓外独立安装及页面校验。其他 Skill、历史 authoring Bundle 行为测试和真实 DS 模型验收仅在用户明确要求时追加。产品协议、运行时、页面搭建、Playground 浏览器和 CI 检查仍按改动执行。
+
 ### Skill 对接 DS 模型验收
 
-新增或调整 Skill，并需要对接或复验 DS 真实模型时，按 `docs/agents/skill-ds-model-acceptance.md` 分层验收无模型预检、确定性主流程、真实模型、页面产物、浏览器与分发自洽性，并分别报告结论。
+仅在用户明确要求对接或复验 DS 真实模型时，按 `docs/agents/skill-ds-model-acceptance.md` 分层验收无模型预检、确定性主流程、真实模型、页面产物、浏览器与分发自洽性，并分别报告结论。

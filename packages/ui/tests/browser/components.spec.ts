@@ -1,6 +1,19 @@
 import {test,expect} from '@playwright/test';
 for(const shadow of [false,true]){test.describe(`root ${shadow}`,()=>{
  test.beforeEach(async({page})=>{await page.goto('/tests/browser/index.html'+(shadow?'?shadow':''));});
+ test(`select arrow stays at the right and vertically centered; shadow=${shadow}`,async({page})=>{
+  const trigger=page.getByRole('button',{name:'选择',exact:true});
+  for(const width of [1440,390]){
+   await page.setViewportSize({width,height:900});
+   const alignment=await trigger.evaluate(el=>{
+    const outer=el.getBoundingClientRect(),arrow=el.closest('.mc-selection')!.querySelector('.selection-arrow svg')!.getBoundingClientRect();
+    return {right:outer.right-arrow.right,vertical:Math.abs(outer.y+outer.height/2-arrow.y-arrow.height/2)};
+   });
+   expect(alignment.right).toBeGreaterThanOrEqual(10);
+   expect(alignment.right).toBeLessThanOrEqual(16);
+   expect(alignment.vertical).toBeLessThanOrEqual(1);
+  }
+ });
  test(`controlled forms commit the last input without blur; shadow=${shadow}`,async({page})=>{await page.getByRole('textbox',{name:'标题',exact:true}).fill('未失焦');await page.getByRole('textbox',{name:'说明'}).fill('最后输入');await page.getByRole('button',{name:'保存输入'}).click();await expect(page.getByLabel('保存结果')).toHaveText('未失焦:最后输入');await page.getByLabel('禁用控件').check();await expect(page.getByRole('button',{name:'保存输入'})).toBeDisabled();await expect(page.getByRole('textbox',{name:'标题',exact:true})).toBeDisabled();});
  test(`select and menu keyboard, disabled item and original root; shadow=${shadow}`,async({page})=>{const select=page.getByRole('button',{name:'选择',exact:true});await select.focus();await page.keyboard.press('ArrowDown');await expect(page.getByRole('listbox')).toBeVisible();await page.keyboard.press('ArrowDown');await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');await expect(page.locator('[data-choice]')).toHaveText('b:a');await expect(select).toBeFocused();await select.click();await expect(page.getByRole('option',{name:'禁用选项'})).toBeDisabled();await page.keyboard.press('Escape');await expect(select).toBeFocused();await page.getByRole('button',{name:'更多',exact:true}).click();await page.getByRole('menuitem',{name:'选项二'}).click();await expect(page.getByLabel('菜单结果')).toHaveText('b');const roots=await page.getByRole('listbox',{includeHidden:true}).evaluate(el=>({shadow:el.getRootNode() instanceof ShadowRoot,body:el.parentElement===document.body}));expect(roots).toEqual({shadow,body:false});});
  test(`controlled grid does not sort or slice rows; shadow=${shadow}`,async({page})=>{await page.getByRole('button',{name:'名称',exact:true}).click();await expect(page.getByLabel('排序结果')).toHaveText('{"key":"name","direction":"asc"}');await page.getByRole('button',{name:'下一页'}).click();await expect(page.getByLabel('当前页')).toHaveText('2');await expect(page.getByRole('row')).toHaveCount(3);await expect(page.getByRole('cell').first()).toHaveText('第一行');});

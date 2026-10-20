@@ -47,9 +47,13 @@ export function pagePattern(source: PatternSource, content: string) {
     kind: 'structural-pattern',
     source: {pageId: page.id, sha256: createHash('sha256').update(content).digest('hex')},
     layout,
-    dashboardToolbar: layout === 'dashboard'
-      ? typeof page.dashboardToolbar === 'object' ? page.dashboardToolbar.variant : page.dashboardToolbar ?? 'visible'
-      : undefined,
+    iocHeader: page.iocHeader ? {
+      hasIdentity:!!page.iocHeader.identity,
+      filterCount:page.iocHeader.filterIds?.length ?? 0,
+      presentation:page.iocHeader.presentation,
+      readOnly:page.iocHeader.readOnly
+    } : undefined,
+    legacyHeader:page.dashboardToolbar==='hidden'&&!page.iocHeader?'content':undefined,
     filters: (page.filters ?? []).map(filter => ({type: filter.type})),
     sections: page.sections.map(section => ({
       container: section.container,

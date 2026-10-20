@@ -12,6 +12,10 @@ const bundle = JSON.parse(await readFile('metriccanvas-authoring/bundle.json','u
 const skills: Array<{id:string;entrypoint:string;referenceProjection?:string}> = bundle.skills ?? [{id:'metriccanvas-page-builder',entrypoint:bundle.skill.entrypoint}];
 const authorMap = JSON.parse(await readFile('docs/page-metadata/reference-map.json', 'utf8')) as ReferenceMap;
 const inputs = new Map<string,string>();
+for(const example of new Set(Object.values(authorMap.modules).flatMap(module=>module.examples))){
+  if(['page-visibility-region-linkage','page-visibility-inputs','page-visibility-report'].includes(example))inputs.set(`page/conformance/valid/${example}.json`,await readFile(`pages/${example}.json`,'utf8'));
+}
+
 for (const file of await readdir('packages/page/fixtures/contract-valid')) if (file.endsWith('.json')) inputs.set(`page/conformance/valid/${file}`, await readFile(`packages/page/fixtures/contract-valid/${file}`, 'utf8'));
 inputs.set('page/conformance/coverage.json',await readFile('contracts/metriccanvas/page/conformance/coverage.json','utf8'));
 for(const file of await readdir('contracts/metriccanvas/page/conformance/invalid')) inputs.set(`page/conformance/invalid/${file}`,await readFile(`contracts/metriccanvas/page/conformance/invalid/${file}`,'utf8'));

@@ -1,0 +1,26 @@
+{
+  "contract_sha256": "a379d60bf25a9097a37d5880070b821d18dd49afc7f56aec90e99ce2eff808fd",
+  "entries": [
+    {
+      "actual": 0,
+      "rule_id": "R6-31-overflow",
+      "status": "green"
+    }
+  ],
+  "observed": {
+    "route": "/pages/ioc-header-currency-demo?period=month%3A2026-09&currency=USD",
+    "viewport": {
+      "height": 850,
+      "width": 390
+    }
+  },
+  "overall": "green",
+  "phase": "green",
+  "schema_version": 3,
+  "summary": {
+    "green": 1,
+    "red": 0,
+    "total": 1,
+    "yellow": 0
+  }
+}

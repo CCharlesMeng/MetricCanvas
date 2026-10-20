@@ -1,3 +1,4 @@
+import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import {
   idZ,
@@ -24,6 +25,7 @@ const exportButtonZ = z.discriminatedUnion('format', [
 export const reportHeaderComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('reportHeader'),
     layout: componentLayoutZ,
     props: z

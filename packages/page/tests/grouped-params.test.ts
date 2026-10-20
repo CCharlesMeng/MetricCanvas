@@ -24,7 +24,7 @@ it('同一页面同时写「区间原样用」与「点 + window 派生」', () 
   const time = (id: string) => {
     const source = parsed.page.dataSources[id].source;
     if (source.type !== 'query') throw new Error('not a query');
-    return (source.query.body.dsl_list[0].filter as Record<string, unknown>).time;
+    return (source.query.body!.dsl_list[0].filter as Record<string, unknown>).time;
   };
   // 校验产物保留引用原样,派生发生在取值期;这里只确认两种写法共存且各自完整。
   expect(time('current')).toEqual({ period: 'month', is_aggregate: true, param: 'report-period' });
@@ -55,24 +55,24 @@ it.each([
   ['非法日历', (p: any) => { Object.assign(p.params.query.times[0], { granularity: 'date', start: '2026-02-29', end: '2026-03-01' }); }],
   ['禁止聚合设置进入参数', (p: any) => { p.params.query.times[0].is_aggregate = true; }],
   ['旧default不能充当实际值', (p: any) => { p.params.query.times[0].default = '2026-01'; }],
-  ['引用未知参数', (p: any) => { p.dataSources.current.source.query.body.dsl_list[0].filter.time.param = 'missing'; }],
+  ['引用未知参数', (p: any) => { p.dataSources.current.source.query.body!.dsl_list[0].filter.time.param = 'missing'; }],
   ['两端点写法已退役', (p: any) => {
-    p.dataSources.current.source.query.body.dsl_list[0].filter.time = {
+    p.dataSources.current.source.query.body!.dsl_list[0].filter.time = {
       period: 'month', is_aggregate: true,
       start: { param: 'report-period', part: 'start' }, end: { param: 'report-period', part: 'end' }
     };
   }],
-  ['引用不能与字面量起止并存', (p: any) => { p.dataSources.current.source.query.body.dsl_list[0].filter.time.start = '2026-01'; }],
-  ['窗口与参数精度不相容', (p: any) => { p.dataSources.rolling.source.query.body.dsl_list[0].filter.time.window = { kind: 'lastN', unit: 'day', n: 7 }; }],
-  ['窗口派生要求基准为单点', (p: any) => { p.dataSources.rolling.source.query.body.dsl_list[0].filter.time.param = 'report-period'; }],
+  ['引用不能与字面量起止并存', (p: any) => { p.dataSources.current.source.query.body!.dsl_list[0].filter.time.start = '2026-01'; }],
+  ['窗口与参数精度不相容', (p: any) => { p.dataSources.rolling.source.query.body!.dsl_list[0].filter.time.window = { kind: 'lastN', unit: 'day', n: 7 }; }],
+  ['窗口派生要求基准为单点', (p: any) => { p.dataSources.rolling.source.query.body!.dsl_list[0].filter.time.param = 'report-period'; }],
   ['展示输入不能进查询', (p: any) => {
     p.params.display = [{ id: 'note', type: 'string', value: '中国地区部' }];
-    p.dataSources.current.source.query.body.dsl_list[0].filter.dims[0].dim_value_list = { param: 'note' };
+    p.dataSources.current.source.query.body!.dsl_list[0].filter.dims[0].dim_value_list = { param: 'note' };
   }],
-  ['禁止引用字段名', (p: any) => { p.dataSources.current.source.query.body.dsl_list[0].output_dims = [{ param: 'region' }]; }],
+  ['禁止引用字段名', (p: any) => { p.dataSources.current.source.query.body!.dsl_list[0].output_dims = [{ param: 'region' }]; }],
   ['目标维度必须一致', (p: any) => { p.params.query.dimensions[0].dim_name = 'office'; }],
   ['不允许可选查询时间', (p: any) => { p.params.query.times[0].required = false; }],
-  ['聚合精度不兼容', (p: any) => { p.dataSources.current.source.query.body.dsl_list[0].filter.time.period = 'day'; }],
+  ['聚合精度不兼容', (p: any) => { p.dataSources.current.source.query.body!.dsl_list[0].filter.time.period = 'day'; }],
   ['原位与筛选不能双控', (p: any) => { p.dataSources.current.source.query.filterBindings = { period: { target: 'time' } }; }]
 ])('%s', (_, mutate) => {
   const raw = document(); mutate(raw);

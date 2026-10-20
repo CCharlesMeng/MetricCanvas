@@ -1,0 +1,27 @@
+{
+  "case": "condition-filter-unknown",
+  "invariant": "conditional-presentation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "条件引用了不存在的来源、非法筛选部分或缺少行上下文",
+      "paths": [
+        "/sections/1/visibleWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "visibleWhen": {
+          "filter": "unknown",
+          "part": "value",
+          "op": "eq",
+          "value": true
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

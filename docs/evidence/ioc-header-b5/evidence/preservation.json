@@ -1,0 +1,21 @@
+{
+  "code_fingerprint": "c6886cbcb47c8c806c231c9e31003ae3845b9ff69ec702f8f4857e275bd4ce82",
+  "manifest_hashes_current": true,
+  "staged_paths": [],
+  "head": "952b3a273f0f4f8be5820f5af1bb76c2f5afa513",
+  "original_head": "952b3a273f0f4f8be5820f5af1bb76c2f5afa513",
+  "original_status_start_sha256": "7ec87c38a2c38629c2f575df334c5fff6b5d0d72bede0292844c1f09bafe19e1",
+  "original_status_final_sha256": "b951d09ea1fb3f675a74a983cb50ba0eeb6e5e629496cfc86dfd293795dbb582",
+  "original_status_identical": false,
+  "original_final_status_entries": 49,
+  "B5_changed_source_and_generated_files": 514,
+  "predecessor_other_files_hash_identical": 380,
+  "operations": {
+    "original_checkout_writes": false,
+    "git_stage": false,
+    "git_commit": false,
+    "git_push": false,
+    "worktree_cleanup": false
+  },
+  "note": "Original checkout is observed read-only. Status equality compares path/status, not full content; parallel owners may modify independently. No unrelated files or existing servers cleaned."
+}

@@ -1,3 +1,4 @@
+import { conditionZ, interactionShape, visibilityShape } from '../condition';
 import { z } from 'zod';
 import type { FieldBinding, FieldReference } from '../../field';
 import {
@@ -25,6 +26,8 @@ import { colorRuleZ, type ColorRule } from '../presentation';
 export type TableSelectionWrite = { field: FieldReference } | { value: string };
 
 export interface TableCellSelection {
+  visibleWhen?: import('../condition').Condition;
+  enabledWhen?: import('../condition').Condition;
   writes: Record<string, TableSelectionWrite>;
 }
 
@@ -69,6 +72,7 @@ const tableCellSelectionWriteZ: z.ZodType<TableSelectionWrite> = z.union([
 
 const tableCellSelectionZ: z.ZodType<TableCellSelection> = z
   .object({
+    ...interactionShape,
     writes: z.record(idZ, tableCellSelectionWriteZ).meta({ minProperties: 1 })
   })
   .strict();
@@ -128,19 +132,32 @@ const paginationZ = z.discriminatedUnion('mode', [
 export const tableComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('table'),
     layout: componentLayoutZ,
     data: tableDataZ,
     props: z
       .object({
+        rowVisibleWhen: conditionZ.optional(),
         title: textValueZ.optional(),
         subtitle: textValueZ.optional(),
         toolbar: z.object({
-          search: z.object({
+          search: z.union([z.object({
+            ...interactionShape,
             fields: z.array(fieldNameZ).min(1).max(64).meta({ uniqueItems: true }),
             placeholder: textValueZ.optional()
-          }).strict().optional(),
+          }).strict(), z.object({
+            ...interactionShape,
+            options: z.array(z.object({
+              value: idZ,
+              label: nonEmptyTextValueZ,
+              field: fieldNameZ,
+              placeholder: textValueZ.optional()
+            }).strict()).min(1).max(64),
+            defaultValue: idZ.optional()
+          }).strict()]).optional(),
           export: z.object({
+            ...interactionShape,
             format: z.literal('xlsx'),
             filename: textValueZ.optional()
           }).strict().optional()

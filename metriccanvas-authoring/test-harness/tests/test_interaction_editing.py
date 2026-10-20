@@ -207,3 +207,180 @@ class ReportDateEditingTest(unittest.TestCase):
         self.assertEqual(moved['status'],'changed',moved)
         self.assertNotIn('filterIds',moved['document']['sections'][0]['components'][0]['props'])
         self.assertEqual(moved['document']['sections'][-1]['components'][0]['props']['filterIds'],['period-filter'])
+
+
+class IocHeaderEditingTest(unittest.TestCase):
+    def test_create_edit_and_reopen_acceptance_headers_without_touching_data(self):
+        root = Path(__file__).resolve().parents[3]
+        for name in ['overview', 'dense-filter', 'detail', 'month-set']:
+            original = json.loads((root / f'pages/ioc-header-{name}-demo.json').read_text())
+            self.assertEqual(validate_page_document(original), [])
+            baseline = deepcopy(original)
+            if name not in ['detail']:
+                baseline.pop('iocHeader')
+            # Detail optional identity references are only consumed by its header;
+            # preserve them by editing the complete legal baseline directly.
+            header = deepcopy(original['iocHeader'])
+            header['presentation'] = {'density': 'compact', 'collapse': 'none'}
+            edited = run(baseline, {'id': 'header', 'type': 'set_ioc_header', 'header': header})
+            self.assertEqual(edited['status'], 'changed', edited)
+            result = edited['document']
+            self.assertEqual(result['dataSources'], original['dataSources'])
+            self.assertEqual(result['filters'], original['filters'])
+            self.assertEqual(result['sections'], original['sections'])
+            self.assertEqual(validate_page_document(result), [])
+            self.assertEqual(result['iocHeader'], header)
+
+    def test_invalid_header_conflicts_roll_back_the_whole_operation(self):
+        root = Path(__file__).resolve().parents[3]
+        doc = json.loads((root / 'pages/ioc-header-overview-demo.json').read_text())
+        for header in [{}, {'filterIds': ['missing']}, {'filterIds': ['period', 'period']}]:
+            result = run(doc, {'id': 'invalid', 'type': 'set_ioc_header', 'header': header})
+            self.assertEqual(result['status'], 'failed', result)
+            self.assertIsNone(result['document'])
+
+
+class BusinessFilterEditingTest(unittest.TestCase):
+    def test_real_business_pages_create_edit_and_reopen(self):
+        root = Path(__file__).resolve().parents[3]
+        for name in ['options', 'tree', 'detail']:
+            page = json.loads((root / f'pages/ioc-header-business-{name}-demo.json').read_text())
+            self.assertEqual(validate_page_document(page), [])
+            target = 'kind' if name == 'options' else 'model' if name == 'tree' else 'detail-kind'
+            declaration = next(item for item in page['filters'] if item['id'] == target)
+            bindings = [{'dataSourceId': source_id, **{key: value for key, value in source['source']['query']['filterBindings'][target].items() if key != 'target'}}
+                        for source_id, source in page['dataSources'].items()
+                        if target in source['source'].get('query', {}).get('filterBindings', {})]
+            updated = run(page, {'id': 'update-b2', 'type': 'update_dimension_filter', 'filterId': target,
+                                'changes': {'hint': '创作编辑后提示'}, 'bindings': bindings})
+            self.assertEqual(updated['status'], 'changed', updated)
+            actual = next(item for item in updated['document']['filters'] if item['id'] == target)
+            expected = {**declaration, 'hint': '创作编辑后提示'}
+            self.assertEqual(actual, expected)
+            self.assertEqual(validate_page_document(updated['document']), [])
+            self.assertEqual(updated['document']['sections'], page['sections'])
+
+    def test_add_closed_enum_keeps_new_fields_and_invalid_update_rolls_back(self):
+        baseline = interaction_page()
+        operation = add_filter(selection={'mode': 'single', 'required': True},
+            options=[{'value': 'A', 'label': '重点'}, {'value': 'B', 'label': '一般', 'disabled': True}],
+            default=['A'], hint='确认后显式封闭枚举')
+        result = run(baseline, operation)
+        self.assertEqual(result['status'], 'changed', result)
+        declaration = result['document']['filters'][0]
+        for key in ['selection', 'options', 'hint']:
+            self.assertEqual(declaration[key], operation[key])
+        failed = run(result['document'], {'id': 'invalid-b2', 'type': 'update_dimension_filter',
+            'filterId': 'region-filter', 'changes': {'default': ['B']}, 'bindings': operation['bindings']})
+        self.assertEqual(failed['status'], 'failed', failed)
+        self.assertIsNone(failed['document'])
+
+    def test_structural_tree_edit_preserves_each_level_binding(self):
+        root = Path(__file__).resolve().parents[3]
+        page = json.loads((root / 'pages/ioc-header-business-tree-demo.json').read_text())
+        bindings = [{'dataSourceId': 'bound', 'levelQueryFields': {'department': 'department_code', 'office': 'office_code'}}]
+        result = run(page, {'id': 'tree-b2', 'type': 'update_dimension_filter', 'filterId': 'region',
+            'changes': {'hint': '显式层级保持'}, 'bindings': bindings})
+        self.assertEqual(result['status'], 'changed', result)
+        self.assertEqual(result['document']['dataSources']['bound']['source']['query']['filterBindings']['region'],
+                         {'target': 'dimension', 'levelQueryFields': bindings[0]['levelQueryFields']})
+
+    def test_date_edit_reopens_with_common_interaction_fields(self):
+        root = Path(__file__).resolve().parents[3]
+        page = json.loads((root / 'pages/ioc-header-business-options-demo.json').read_text())
+        declaration = {key: value for key, value in page['filters'][0].items() if key != 'id'}
+        declaration.update(hint='分类变更后确认期间', clearOnChangeOf=['kind'])
+        result = run(page, {'id': 'date-b2', 'type': 'update_date_filter', 'filterId': 'period',
+                           'declaration': declaration, 'bindings': [{'dataSourceId': 'bound', 'target': 'time'}]})
+        self.assertEqual(result['status'], 'changed', result)
+        self.assertEqual(validate_page_document(result['document']), [])
+        self.assertEqual(result['document']['filters'][0]['hint'], declaration['hint'])
+        self.assertEqual(result['document']['filters'][0]['clearOnChangeOf'], ['kind'])
+
+
+class CurrencyRangeEditingTest(unittest.TestCase):
+    def page(self):
+        return json.loads((Path(__file__).resolve().parents[3]/'pages/ioc-header-currency-demo.json').read_text())
+
+    def operation(self, page, kind='update_number_range_filter'):
+        declaration=deepcopy(next(f for f in page['filters'] if f['id']=='amount'));declaration.pop('id')
+        binding=deepcopy(page['dataSources']['main']['source']['query']['filterBindings']['amount']);binding.pop('target')
+        return {'id':'range','type':kind,'filterId':'amount','declaration':declaration,'bindings':[{'dataSourceId':'main',**binding}]}
+
+    def test_amount_update_reopen_and_case_column_edit_preserve_branches(self):
+        original=self.page();op=self.operation(original);op['declaration']['presets'].append({'id':'extra-large','label':'大额','range':{'from':300}})
+        result=run(original,op,{'id':'column','type':'set_table_column','componentId':'amount-table','fieldId':'base-usd','properties':{'width':180}})
+        self.assertEqual(result['status'],'changed',result)
+        reopened=json.loads(json.dumps(result['document']));self.assertEqual(validate_page_document(reopened),[])
+        column=reopened['sections'][0]['components'][2]['props']['columns'][1]
+        self.assertEqual(column['width'],180);self.assertEqual(column['field'],original['sections'][0]['components'][2]['props']['columns'][1]['field'])
+        self.assertEqual(reopened['dataSources']['main']['fields'],original['dataSources']['main']['fields'])
+
+    def test_add_amount_and_invalid_update_rollback(self):
+        original=self.page();op=self.operation(original,'add_number_range_filter');base=deepcopy(original)
+        base['filters']=[f for f in base['filters'] if f['id']!='amount'];base['iocHeader']['filterIds'].remove('amount');del base['dataSources']['main']['source']['query']['filterBindings']['amount']
+        added=run(base,op);self.assertEqual(added['status'],'changed',added);self.assertEqual(validate_page_document(added['document']),[])
+        wrong=self.operation(original);wrong['declaration']['default']={'from':5,'to':5}
+        rejected=run(original,wrong);self.assertIsNone(rejected['document']);self.assertEqual(original,self.page())
+
+class TimeProgramEditingTest(unittest.TestCase):
+    def page(self):
+        return json.loads((Path(__file__).resolve().parents[3] / 'pages/ioc-header-time-modes-demo.json').read_text())
+
+    def test_atomic_time_program_save_reopen_and_invalid_case_rollback(self):
+        baseline = self.page()
+        declaration = deepcopy(baseline['filters'][0])
+        declaration.pop('id')
+        declaration['defaultMode'] = 'month'
+        query = deepcopy(baseline['dataSources']['bound']['source']['query'])
+        changed = run(baseline, {'id': 'time', 'type': 'set_time_program', 'filterId': 'period',
+                                 'declaration': declaration, 'queries': {'bound': query}})
+        self.assertEqual(changed['status'], 'changed', changed)
+        reopened = json.loads(json.dumps(changed['document']))
+        self.assertEqual(validate_page_document(reopened), [])
+        self.assertEqual(reopened['filters'][0]['defaultMode'], 'month')
+        self.assertEqual(set(reopened['dataSources']['bound']['source']['query']['timeModes']['cases']), {'day', 'month', 'isoWeek'})
+        del query['timeModes']['cases']['month']
+        failed = run(reopened, {'id': 'broken', 'type': 'set_time_program', 'filterId': 'period',
+                                'declaration': declaration, 'queries': {'bound': query}})
+        self.assertNotEqual(failed['status'], 'changed', failed)
+        self.assertEqual(baseline, self.page())
+
+    def test_candidate_window_preserved_in_controlled_dimension_edit(self):
+        page = json.loads((Path(__file__).resolve().parents[3] / 'pages/ioc-header-calendar-window-demo.json').read_text())
+        # One controlled dimension edit updates the common binding in every mode case.
+        result = run(page, {'id': 'month-label', 'type': 'update_dimension_filter', 'filterId': 'months',
+                            'changes': {'label': '选择月份', 'candidateWindow': {'unit': 'month', 'n': 12, 'includeCurrent': False}},
+                            'bindings': [{'dataSourceId': 'bound', 'queryField': 'month_code'}]})
+        self.assertEqual(result['status'], 'changed', result)
+        reopened = json.loads(json.dumps(result['document']))
+        self.assertEqual(validate_page_document(reopened), [])
+        self.assertFalse(reopened['filters'][1]['candidateWindow']['includeCurrent'])
+        self.assertEqual(page['filters'][1]['candidateWindow']['includeCurrent'], True)
+
+class NavigationInputsEditingTest(unittest.TestCase):
+    def test_guarded_table_link_saves_reopens_and_invalid_intention_rolls_back(self):
+        baseline = run(interaction_page(), add_filter())['document']
+        op = link()
+        op['navigate']['validateTargetInputs'] = True
+        changed = run(baseline, op)
+        self.assertEqual(changed['status'], 'changed', changed)
+        reopened = json.loads(json.dumps(changed['document']))
+        action = reopened['sections'][0]['components'][2]['props']['actions'][0]
+        self.assertTrue(action['navigate']['validateTargetInputs'])
+        self.assertEqual(reopened['schemaVersion'], '6.40')
+        invalid = deepcopy(op)
+        invalid['navigate']['validateTargetInputs'] = False
+        failed = run(reopened, invalid)
+        self.assertIn(failed['status'], ['failed', 'unchanged'])
+        self.assertTrue(action['navigate']['validateTargetInputs'])
+
+    def test_explicit_url_input_policy_survives_save_reopen_and_can_be_removed(self):
+        baseline = interaction_page()
+        result = run(baseline, {'id': 'policy', 'type': 'set_url_input_validation', 'enabled': True})
+        self.assertEqual(result['status'], 'changed', result)
+        reopened = json.loads(json.dumps(result['document']))
+        self.assertTrue(reopened['strictURLInputs'])
+        removed = run(reopened, {'id': 'remove-policy', 'type': 'set_url_input_validation', 'enabled': False})
+        self.assertNotIn('strictURLInputs', removed['document'])
+        self.assertEqual(baseline, interaction_page())

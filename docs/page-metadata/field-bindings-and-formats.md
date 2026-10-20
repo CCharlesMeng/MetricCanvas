@@ -63,3 +63,19 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 6.15 新增 `period`：用于时间输入的统一展示，单点原值显示，范围“开始 至 结束”，同端点折叠为单点。`{filter, format:"period"}` 读取已应用状态；`{param, format:"period"}` 读取打开时的参数值。没有 period-compact 或自定义连接词。
+
+<a id="field-selection"></a>
+
+## 静态货币字段选择（6.38）
+
+FieldBinding增加非递归`{byFilter:{filterId,cases:{RMB:{data:"main",field:"base-cny",format:"number-grouped"},USD:{data:"main",field:"base-usd",format:"number-grouped"}}}}`。cases叶子是原StaticFieldBinding（字符串或data/field/format/missingText/match对象），不能再次byFilter。控制筛选必须是required单选封闭枚举，cases穷尽有效选项，无默认货币兜底。FieldReference、导航行字段和compute输入仍是静态字段，不接受该分支。
+
+校验遍历每个一致选择组合，覆盖非默认case的字段、槽、role、match、表格冲突及图表同轴货币。组合数量最多4096，超过时拆分页面。字段选择仅用于静态money字段；units存在时同case货币必须一致。运行和静态导出统一按已应用/捕获的筛选投影成静态叶子；没有合法选择时相关呈现等待选择，导出拒绝，不从首case猜货币。
+
+所选字段的标签、单位和格式一起投影，覆盖对应表格列和金额消费者的旧单位文案；依赖该选择的表格清掉旧排序、表头条件、搜索和页码。XLSX在首次等待前冻结组件、筛选和所选case，保留基本单位数值与对应货币标题。图表、表格和计算仍保留两套静态字段，不将不同currency输入混加，也不用selectField制造伪CNY输出。
+
+结果字段money支持显式CNY（元）和USD（美元）；currency不执行汇率转换。`usd-adaptive`显示带千分位、两位小数和“美元”，并非汇率换算；`cny-adaptive`继续人民币元/万/亿规则。金额格式必须与静态货币一致。已有组件另显示单位时优先number-grouped等纯数字格式，避免重复单位。
+
+完整场景：[金额与币种](examples/currency-selection-page.json)。
+
+字段选择投影只替换表格字段列标题与单位；显式指标行label、系列label/name和组件业务标题保持上下文含义。money自适应格式已带货币单位时不再追加独立unit，避免双重单位。

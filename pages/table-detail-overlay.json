@@ -1,0 +1,470 @@
+{
+  "schemaVersion": "6.31",
+  "id": "table-detail-overlay",
+  "layout": "dashboard",
+  "meta": {
+    "title": "表格点击与详情弹窗",
+    "description": "内联合成数据：点击订单数打开弹窗表格，点击待交付打开抽屉，点击异常订单查看空结果；无需 DQE。"
+  },
+  "dataSources": {
+    "summary": {
+      "fields": {
+        "period": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "order-count": {
+          "type": "number",
+          "role": "measure"
+        },
+        "pending-count": {
+          "type": "number",
+          "role": "measure"
+        },
+        "exception-count": {
+          "type": "number",
+          "role": "measure"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "unit": "元"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "period": "2026年9月",
+            "order-count": 8,
+            "pending-count": 3,
+            "exception-count": 0,
+            "amount": 861000
+          }
+        ]
+      }
+    },
+    "all-orders": {
+      "fields": {
+        "order-id": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "customer": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "unit": "元"
+        },
+        "status": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "order-id": "SO-0901",
+            "customer": "北辰科技",
+            "amount": 128000,
+            "status": "已交付"
+          },
+          {
+            "order-id": "SO-0902",
+            "customer": "远山制造",
+            "amount": 86000,
+            "status": "待交付"
+          },
+          {
+            "order-id": "SO-0903",
+            "customer": "海川能源",
+            "amount": 156000,
+            "status": "已交付"
+          },
+          {
+            "order-id": "SO-0904",
+            "customer": "青禾零售",
+            "amount": 42000,
+            "status": "待交付"
+          },
+          {
+            "order-id": "SO-0905",
+            "customer": "星桥物流",
+            "amount": 73000,
+            "status": "已交付"
+          },
+          {
+            "order-id": "SO-0906",
+            "customer": "云帆网络",
+            "amount": 215000,
+            "status": "已交付"
+          },
+          {
+            "order-id": "SO-0907",
+            "customer": "远山制造",
+            "amount": 64000,
+            "status": "待交付"
+          },
+          {
+            "order-id": "SO-0908",
+            "customer": "北辰科技",
+            "amount": 97000,
+            "status": "已交付"
+          }
+        ]
+      }
+    },
+    "pending-orders": {
+      "fields": {
+        "order-id": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "customer": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "unit": "元"
+        },
+        "status": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "order-id": "SO-0902",
+            "customer": "远山制造",
+            "amount": 86000,
+            "status": "待交付"
+          },
+          {
+            "order-id": "SO-0904",
+            "customer": "青禾零售",
+            "amount": 42000,
+            "status": "待交付"
+          },
+          {
+            "order-id": "SO-0907",
+            "customer": "远山制造",
+            "amount": 64000,
+            "status": "待交付"
+          }
+        ]
+      }
+    },
+    "exception-orders": {
+      "fields": {
+        "order-id": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "customer": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "unit": "元"
+        },
+        "status": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": []
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "instructions",
+      "container": "plain",
+      "components": [
+        {
+          "id": "instructions-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成演示数据 · 2026年9月\n点击下表「订单数 8」查看居中弹窗；点击「待交付 3」查看右侧抽屉；点击「异常订单 0」查看空结果。详情内可搜索、排序、翻页和导出，按 Esc 或点击关闭按钮返回。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "order-overview",
+      "title": "订单汇总 · 点击蓝色数字查看详情",
+      "container": "card",
+      "components": [
+        {
+          "id": "order-summary-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "summary"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "period",
+                "title": "统计月份"
+              },
+              {
+                "field": "order-count",
+                "title": "订单数（弹窗）",
+                "link": true,
+                "openDetail": {
+                  "surface": "modal",
+                  "titleField": "period",
+                  "view": "all-order-detail"
+                }
+              },
+              {
+                "field": "pending-count",
+                "title": "待交付（抽屉）",
+                "link": true,
+                "openDetail": {
+                  "surface": "drawer",
+                  "titleField": "period",
+                  "view": "pending-order-detail"
+                }
+              },
+              {
+                "field": "exception-count",
+                "title": "异常订单（空结果）",
+                "link": true,
+                "openDetail": {
+                  "surface": "modal",
+                  "titleField": "period",
+                  "view": "exception-order-detail"
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "amount",
+                  "format": "number-grouped"
+                },
+                "title": "订单总额（元）"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "scope-note",
+      "container": "plain",
+      "components": [
+        {
+          "id": "scope-note-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "演示范围：三个入口分别引用已准备好的完整明细，打开时不发起网络查询；这不是按任意点击行动态过滤的演示。按行传参取数使用 query 详情视图，需另接 DQE 数据网关。"
+          }
+        }
+      ]
+    }
+  ],
+  "detailViews": [
+    {
+      "id": "all-order-detail",
+      "mode": "snapshot",
+      "components": [
+        {
+          "id": "all-order-detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "all-orders"
+          },
+          "props": {
+            "title": "全部订单 · 8笔",
+            "columns": [
+              {
+                "field": "order-id",
+                "title": "订单号"
+              },
+              {
+                "field": "customer",
+                "title": "客户"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "amount",
+                  "format": "number-grouped"
+                },
+                "title": "金额（元）",
+                "sortable": true
+              },
+              {
+                "field": "status",
+                "title": "状态"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 5
+            },
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "order-id",
+                  "customer",
+                  "status"
+                ],
+                "placeholder": "搜索订单号、客户或状态"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "全部订单 · 8笔"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "pending-order-detail",
+      "mode": "snapshot",
+      "components": [
+        {
+          "id": "pending-order-detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "pending-orders"
+          },
+          "props": {
+            "title": "待交付订单 · 3笔",
+            "columns": [
+              {
+                "field": "order-id",
+                "title": "订单号"
+              },
+              {
+                "field": "customer",
+                "title": "客户"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "amount",
+                  "format": "number-grouped"
+                },
+                "title": "金额（元）",
+                "sortable": true
+              },
+              {
+                "field": "status",
+                "title": "状态"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 5
+            },
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "order-id",
+                  "customer",
+                  "status"
+                ],
+                "placeholder": "搜索订单号、客户或状态"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "待交付订单 · 3笔"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "exception-order-detail",
+      "mode": "snapshot",
+      "components": [
+        {
+          "id": "exception-order-detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "exception-orders"
+          },
+          "props": {
+            "title": "异常订单 · 0笔",
+            "columns": [
+              {
+                "field": "order-id",
+                "title": "订单号"
+              },
+              {
+                "field": "customer",
+                "title": "客户"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "amount",
+                  "format": "number-grouped"
+                },
+                "title": "金额（元）",
+                "sortable": true
+              },
+              {
+                "field": "status",
+                "title": "状态"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 5
+            },
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "order-id",
+                  "customer",
+                  "status"
+                ],
+                "placeholder": "搜索订单号、客户或状态"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "异常订单 · 0笔"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

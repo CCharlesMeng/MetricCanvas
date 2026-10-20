@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "role": "review-convention",
+  "evidence_epoch": "ioc-b0-b1-final-2",
+  "code_fingerprint": "59d46f9fd22af7b0c55ba6d6ceb67d0be9bf74e2e06284c4cd68c1d1946b683e",
+  "judged_files": [
+    "packages/engine/runtime/src/filter-state.ts",
+    "packages/engine/runtime/src/dimension-values.ts",
+    "packages/engine/runtime/src/orchestrator.ts",
+    "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+    "packages/engine/runtime-ui/src/ExportView.svelte",
+    "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+    "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte",
+    "packages/engine/runtime-ui/src/filters/cascade.ts",
+    "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte",
+    "packages/engine/runtime-ui/src/ioc-header/model.ts",
+    "packages/embed/src/EmbedRoot.svelte",
+    "packages/embed/src/index.ts"
+  ],
+  "status": "executed",
+  "coverage": [
+    {
+      "dimension": "C5",
+      "scope": "按已采用PATTERN-DATA-4独立复核B0共用筛选写入口和B1公共呈现复用。context候选收据仍由共享loader提供，旧write/writeMany仍委托统一commit；IOC静态数值区间和搜索值在既有FilterBar中呈现，没有新增第二套筛选组件或写状态入口。",
+      "evidence_ids": [
+        "PATTERN-DATA-4",
+        "packages/engine/runtime/src/filter-state.ts:L133-L141",
+        "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L454-L463",
+        "packages/engine/runtime-ui/src/ExportView.svelte:L23-L31",
+        "packages/engine/runtime-ui/src/filters/FilterBar.svelte:L136-L164",
+        "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte:L50-L61"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "C1",
+      "scope": "diff明确涉及新增文件和跨目录导入；工程依据未采用命名或跨包导入对应的PATTERN，无法作规范性结论。",
+      "evidence_ids": [
+        "docs/evidence/ioc-header-b0-b1/dev-baseline.md:L13-L15"
+      ],
+      "result": "unrun"
+    },
+    {
+      "dimension": "C4",
+      "scope": "diff明确涉及候选请求、错误与取消；工程依据未采用请求出口和异步取消对应的PATTERN，无法作规范性结论。",
+      "evidence_ids": [
+        "docs/evidence/ioc-header-b0-b1/dev-baseline.md:L13-L15"
+      ],
+      "result": "unrun"
+    }
+  ],
+  "findings": [],
+  "skipped": [],
+  "open_questions": [],
+  "deferred_candidates": [],
+  "evidence_reused": [],
+  "evidence_added": [],
+  "known_gaps": [
+    "C1：新增文件及跨目录导入已触碰该维度，但冻结工程依据未采用对应命名或导入PATTERN；缺少规范性基准，记unrun，不补造规范、不修改diff事实。",
+    "C4：请求及取消改动已触碰该维度，但冻结工程依据未采用对应请求或异步取消PATTERN；缺少规范性基准，记unrun，不升级为功能缺陷。",
+    "以上仅为规范检视范围限制；功能、质量与响应式由独立证据覆盖，无须用户决策。"
+  ]
+}

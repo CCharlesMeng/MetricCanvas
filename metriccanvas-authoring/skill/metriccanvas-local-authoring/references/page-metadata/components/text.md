@@ -8,8 +8,10 @@
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
+6.35条件呈现及相关限制见[条件显隐](../conditions.md)；子项全部隐藏不自动收起父容器。
 
-页面协议 6.32。结构真源为本册[schema.json](../schema.json)，SHA256 `a82a821bf9c06c65521b893a71a7b918b3a1d5cd648e0792a0d3ca9c9de63010`。字段表自动生成；可选不等于有默认值。
+
+页面协议 6.43。结构真源为本册[schema.json](../schema.json)，SHA256 `7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -32,6 +34,26 @@ Schema位置：`#/definitions/textComponent/properties/id`。目标：[#/definit
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/componentId | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@textComponent.visibleWhen`
+
+Schema位置：`#/definitions/textComponent/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@textComponent.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/textComponent/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f74797065"></a>
 
@@ -107,6 +129,66 @@ Schema位置：`#/definitions/textComponent/properties/props/properties/body/all
 |---|---|---|---|---|
 | 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7061727473"></a>
+
+### `@textComponent.props.parts`
+
+Schema位置：`#/definitions/textComponent/properties/props/properties/parts`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1; maxItems=64 | Schema未设默认；装配/运行时默认见语义说明 | text专用条件正文片段：id、text和可选visibleWhen；与body/bodyFormat互斥，不改变全局Text Value组合语义。 |
+
+<a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f70617274732f6974656d73"></a>
+
+### `@textComponent.props.parts[]`
+
+Schema位置：`#/definitions/textComponent/properties/props/properties/parts/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["id","text"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f70617274732f6974656d732f70726f706572746965732f6964"></a>
+
+### `@textComponent.props.parts[].id`
+
+Schema位置：`#/definitions/textComponent/properties/props/properties/parts/items/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f70617274732f6974656d732f70726f706572746965732f74657874"></a>
+
+### `@textComponent.props.parts[].text`
+
+Schema位置：`#/definitions/textComponent/properties/props/properties/parts/items/properties/text`。目标：[#/definitions/textValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValue | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前正文片段的文本取值；标点属于片段本身。 |
+
+<a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f70617274732f6974656d732f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@textComponent.props.parts[].visibleWhen`
+
+Schema位置：`#/definitions/textComponent/properties/props/properties/parts/items/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f70617274732f6974656d732f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@textComponent.props.parts[].visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/textComponent/properties/props/properties/parts/items/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f626f6479466f726d6174"></a>
 
 ### `@textComponent.props.bodyFormat`
@@ -169,6 +251,46 @@ Schema位置：`#/definitions/textComponent/properties/props/properties/links/it
 |---|---|---|---|---|
 | "object" | 每个数组项 | required=["href","label"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6c696e6b732f6974656d732f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@textComponent.props.links[].visibleWhen`
+
+Schema位置：`#/definitions/textComponent/properties/props/properties/links/items/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6c696e6b732f6974656d732f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@textComponent.props.links[].visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/textComponent/properties/props/properties/links/items/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6c696e6b732f6974656d732f70726f706572746965732f656e61626c65645768656e"></a>
+
+### `@textComponent.props.links[].enabledWhen`
+
+Schema位置：`#/definitions/textComponent/properties/props/properties/links/items/properties/enabledWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 可见入口的执行条件；执行时重新判定。 |
+
+<a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6c696e6b732f6974656d732f70726f706572746965732f656e61626c65645768656e2f616c6c4f662f30"></a>
+
+### `@textComponent.props.links[].enabledWhen · allOf[0]`
+
+Schema位置：`#/definitions/textComponent/properties/props/properties/links/items/properties/enabledWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6c696e6b732f6974656d732f70726f706572746965732f68726566"></a>
 
 ### `@textComponent.props.links[].href`
@@ -178,6 +300,20 @@ Schema位置：`#/definitions/textComponent/properties/props/properties/links/it
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 目标URL，必须通过安全协议及结构检查。 |
+
+<a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6c696e6b732f6974656d732f70726f706572746965732f76616c6964617465546172676574496e70757473"></a>
+
+### `@textComponent.props.links[].validateTargetInputs`
+
+Schema位置：`#/definitions/textComponent/properties/props/properties/links/items/properties/validateTargetInputs`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | const=true | Schema未设默认；装配/运行时默认见语义说明 | 显式要求集成应用提供目标输入投影后才允许跨页导航；仅传URL输入，不恢复视图。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| true | 用于选择@textComponent.props.links[].validateTargetInputs分支；同分支其它约束同时成立。 |
 
 <a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6c696e6b732f6974656d732f70726f706572746965732f7175657279"></a>
 
@@ -309,7 +445,7 @@ Schema位置：`#/definitions/textComponent/properties/props/properties/links/it
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["value","from","to","level"] | Schema未设默认；装配/运行时默认见语义说明 | 导航取筛选值的value/from/to/level部分。 |
+| "string" | 本分支可选 | enum=["value","from","to","level","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -317,6 +453,7 @@ Schema位置：`#/definitions/textComponent/properties/props/properties/links/it
 | "from" | 范围起点部分。 |
 | "to" | 范围终点部分。 |
 | "level" | 层级维度的层级部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
 
 <a id="schema-232f646566696e6974696f6e732f74657874436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6c696e6b732f6974656d732f70726f706572746965732f71756572792f70726f70657274794e616d6573"></a>
 
@@ -362,13 +499,13 @@ Schema位置：`#/definitions/textComponent/properties/props/properties/links/it
 
 ```json
 {
-  "id": "title",
+  "id": "fact-text",
   "type": "text",
   "layout": {
     "span": 12
   },
   "props": {
-    "body": "IOC 项目经营概览 · 选择控件"
+    "body": "业务事实已就绪。"
   }
 }
 ```

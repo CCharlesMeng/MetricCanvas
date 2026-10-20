@@ -209,7 +209,7 @@ describe('流水分析报告页面文档', () => {
         Object.values(source.fields).map((field) => field.queryField).sort(),
         id
       ).toEqual([...queryFixture.output_dims, ...queryFixture.output_metrics].sort());
-      expect(source.source.query.body.dsl_list, id).toEqual([
+      expect(source.source.query.body!.dsl_list, id).toEqual([
         {
           output_dims: queryFixture.output_dims,
           output_metrics: queryFixture.output_metrics,
@@ -335,7 +335,7 @@ describe('流水分析报告页面文档', () => {
       .toMatchObject({ type: 'semanticHtml', role: 'detail' });
     expect(yoy.props.columns.find((column) =>
       column.kind !== 'group' &&
-      typeof column.field !== 'string' &&
+      typeof column.field !== 'string' && 'field' in column.field &&
       column.field.field === 'reason'
     )).toMatchObject({
       field: { data: 'main', field: 'reason', format: 'compact-million-2' },
@@ -343,7 +343,7 @@ describe('流水分析报告页面文档', () => {
     });
     expect(risk.props.columns.find((column) =>
       column.kind !== 'group' &&
-      typeof column.field !== 'string' &&
+      typeof column.field !== 'string' && 'field' in column.field &&
       column.field.field === 'risk-type'
     )).toMatchObject({
       field: { data: 'main', field: 'risk-type', format: 'compact-million-2' },
@@ -362,7 +362,7 @@ describe('流水分析报告页面文档', () => {
         ? undefined
         : typeof column.field === 'string'
           ? column.field
-          : column.field.field
+          : ('field' in column.field ? column.field.field : undefined)
     )).toEqual(['customer-name', 'reason']);
     expect(
       yoy.props.columns.map((column) => column.kind === 'group' ? undefined : column.width)

@@ -5,8 +5,9 @@
   import { resolveField } from '../../shared/component-data';
   import { formatValue } from '../../shared/value-format';
   import EChart from '../../shared/EChart.svelte';
+  import { chartSource, type ChartDiagnostic } from '../../shared/chart-option-extension';
   import { CATEGORICAL_PALETTE_PROPERTY, readColorList } from '../../shared/chart-palette';
-  import { barOption } from './options';
+  import { barOption, barSeriesOrder } from './options';
 
   /**
    * 柱状图(纯渲染,ECharts):点击柱条只上抛行上下文,
@@ -16,16 +17,17 @@
     /** 已解析的 main 数据槽(加载/错误/空态由统一运行时呈现) */
     data: MainDataSlots;
     props: BarChartProps;
+    diagnostic?: ChartDiagnostic;
     /** 柱条点击,携带该柱对应的数据行 */
     onbarclick?: (context: { row: Row }) => void;
   }
 
-  let { data, props, onbarclick }: Props = $props();
+  let { data, props, onbarclick, diagnostic }: Props = $props();
 
   /* 形态色板从绘图容器的计算样式读(见 shared/chart-palette.ts)。 */
   let chartContainer = $state<HTMLDivElement>();
   const palette = $derived(readColorList(chartContainer, CATEGORICAL_PALETTE_PROPERTY));
-  const option = $derived(barOption(data, props, palette));
+  const source = $derived(chartSource(() => barOption(data, props, palette), props, diagnostic ?? { componentId: 'direct-bar-chart', componentType: 'barChart', path: '/props/echartsOption' }, barSeriesOrder(props)));
   const forecast = $derived(props.series.some((series) => series.role === 'forecast'));
   const category = $derived(resolveField(props.categoryField, data));
   const categories = $derived(
@@ -54,7 +56,7 @@
     {props.series.map((series) => series.label).filter(Boolean).join(' ')} {categories.join(' ')}
   </span>
   <EChart
-    {option}
+    {source}
     cartesian
     expandForLabels={props.showValueLabels === true || props.categoryLabels?.mode === 'all'}
     bind:container={chartContainer}

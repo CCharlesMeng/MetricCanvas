@@ -139,6 +139,8 @@ for (const schemaVersion of ['6.0', '6.1']) {
 
 
 test('组件主体不发起拖动，手柄原生拖动到整行下半区且结束后清除反馈', async ({ page }) => {
+  // Keep both native-drag endpoints visible with the OS table's 48px rows.
+  await page.setViewportSize({ width: 1280, height: 1600 });
   const source = page.locator(cell);
   await expect(source).not.toHaveAttribute('draggable', 'true');
   await source.hover();
@@ -146,6 +148,8 @@ test('组件主体不发起拖动，手柄原生拖动到整行下半区且结�
   await expect(handle).toHaveAttribute('draggable', 'true');
   await page.getByRole('button', { name: '添加空分区' }).click();
   const target = page.locator('#canvas [data-section-id="empty"] [data-drop-slot]');
+  await expect(handle).toBeInViewport();
+  await expect(target).toBeInViewport();
   await handle.dragTo(target);
   await expect(page.locator('#canvas [data-component="empty/note"]')).toBeVisible();
   await expect(page.locator('#canvas .authoring-is-dragging')).toHaveCount(0);

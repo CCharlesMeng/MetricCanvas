@@ -54,6 +54,92 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'unified-page-header',description:'6.41 唯一页头及自然年选择',valid:['unified-year-header','unified-overflow-header'],cases:[
+    {case:'unified-header-version',base:'unified-year-header',expect:/由 6.41 引入/,mutate:d=>{d.schemaVersion='6.40';}},
+    {case:'unified-header-conflict',base:'unified-year-header',expect:/显式关闭/,mutate:d=>{d.dashboardToolbar='visible';}},
+    {case:'period-modes-empty',base:'unified-year-header',expect:/./,mutate:d=>{d.filters[0].periodModes=[];}},
+    {case:'period-modes-duplicate',base:'unified-year-header',expect:/不能重复/,mutate:d=>{d.filters[0].periodModes=['year','year'];}},
+    {case:'period-modes-default',base:'unified-year-header',expect:/默认期间模式必须/,mutate:d=>{d.filters[0].default={mode:'month'};}},
+    {case:'period-modes-plain-range',base:'unified-year-header',expect:/display=period/,mutate:d=>{delete d.filters[0].display;d.filters[0].default={from:'2025-01-01',to:'2025-12-31'};}}
+  ]},
+  {id:'conditional-presentation',description:'6.35共用展示条件、稳定目标和本地行边界',valid:['page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','reference-conditions-page'],cases:[
+    {case:'condition-before-6.35',base:'page-visibility-region-linkage',expect:/由 6.35 引入/,mutate:d=>{d.schemaVersion='6.34';}},
+    {case:'condition-row-outside-table',base:'page-visibility-region-linkage',expect:/缺少行上下文/,mutate:d=>{d.sections[1].visibleWhen={row:'kind',op:'eq',value:'department'};}},
+    {case:'condition-level-set-unknown',base:'page-visibility-region-linkage',expect:/未声明的层级/,mutate:d=>{d.sections[1].visibleWhen={filter:'organization',part:'level',op:'in',values:['department','unknown']};}},
+    {case:'condition-filter-unknown',base:'page-visibility-region-linkage',expect:/不存在的来源/,mutate:d=>{d.sections[1].visibleWhen={filter:'unknown',part:'value',op:'eq',value:true};}},
+    {case:'condition-mixed-literals',base:'page-visibility-region-linkage',expect:/类型不匹配/,mutate:d=>{d.sections[1].visibleWhen={filter:'organization',part:'values',op:'containsAny',values:['department',1]};}},
+    {case:'condition-depth-limit',base:'page-visibility-region-linkage',expect:/超过4层/,mutate:d=>{let rule=d.sections[1].visibleWhen;for(let i=0;i<5;i++)rule={not:rule};d.sections[1].visibleWhen=rule;}},
+    {case:'condition-part-duplicate',base:'page-visibility-region-linkage',expect:/片段id必须唯一/,mutate:d=>{const c=d.sections.flatMap((s:Doc)=>s.components).find((c:Doc)=>c.type==='text'&&c.props.parts);c.props.parts.push(structuredClone(c.props.parts[0]));}},
+    {case:'condition-row-key-required',base:'page-visibility-region-linkage',expect:/稳定rowKey/,mutate:d=>{const c=d.sections.flatMap((s:Doc)=>s.components).find((c:Doc)=>c.id==='projected-table');delete c.props.rowKey;}}
+  ]},
+  {id:'metric-card-before',description:'6.34 Dashboard 顶层指标卡前置文字、受控间距与整组跨度',valid:['metric-card-equation'],cases:[
+    {case:'metric-before-version',base:'metric-card-equation',expect:/由 6.34 引入/,mutate:d=>{d.schemaVersion='6.33';}},
+    {case:'metric-before-report',base:'metric-card-equation',expect:/before 仅支持 Dashboard/,mutate:d=>{d.layout='report';}},
+    {case:'metric-before-tracks',base:'metric-card-equation',expect:/默认 12 列/,mutate:d=>{d.sections[1].columnTracks=[1,1,1,1];}},
+    {case:'metric-before-span',base:'metric-card-equation',expect:/span 之和不能超过 12/,mutate:d=>{d.sections[1].components[0].layout.span=4;}},
+    {case:'metric-before-empty',base:'metric-card-equation',expect:/非空连接文字/,mutate:d=>{d.sections[1].components[1].layout.before.text=' ';}},
+    {case:'metric-before-gap',base:'metric-card-equation',expect:/允许范围/,mutate:d=>{d.sections[1].components[1].layout.before.gap=7;}},
+    {case:'metric-before-nested',base:'metric-card-equation',expect:/顶层指标卡/,mutate:d=>{d.sections[1].components=[{id:'nested',type:'compositeCard',layout:{span:12},props:{components:d.sections[1].components}}];}}
+  ]},
+  {id:'tab-url-initialization',description:'6.33 Tab 显式 URL 初值与页面输入名称互斥',valid:['tab-url-initialization','tab-url-source'],cases:[
+    {case:'tab-url-before-6.33',base:'tab-url-initialization',expect:/由 6.33 引入/,mutate:d=>{d.schemaVersion='6.32';}},
+    {case:'tab-url-empty-key',base:'tab-url-initialization',expect:/initialTabUrlParam/,mutate:d=>{firstComponent(d).props.initialTabUrlParam='';}},
+    {case:'tab-url-duplicate-key',base:'tab-url-initialization',expect:/URL 参数名重复:sales-tab/,mutate:d=>{firstComponent(d,0,1).props.initialTabUrlParam='sales-tab';}},
+    {case:'tab-url-filter-conflict',base:'tab-url-initialization',expect:/URL 参数名重复:sales-tab/,mutate:d=>{d.filters=[{id:'sales-tab',type:'search'}];}},
+    {case:'tab-url-param-conflict',base:'tab-url-initialization',expect:/URL 参数名重复:sales-tab/,mutate:d=>{d.params={display:[{id:'sales-tab',type:'string',value:'detail'}]};firstComponent(d).props.title={param:'sales-tab'};}}
+  ]},
+  {id:'chart-echarts-option',description:'6.32 三图高级呈现 JSON、保护数据结构、系列和轴补丁边界',valid:['chart-echarts-option-page'],cases:[
+    {case:'chart-option-before-6.32',base:'chart-echarts-option-page',expect:/由 6.32 引入/,mutate:d=>{d.schemaVersion='6.31';}},
+    {case:'chart-option-legacy-version',base:'chart-echarts-option-page',expect:/5.x 只读文档不能声明/,mutate:d=>{d.schemaVersion='5.4';}},
+    {case:'chart-option-html-template',base:'chart-echarts-option-page',expect:/不接受 HTML 标记/,mutate:d=>{d.sections[0].components[1].props.echartsOption.tooltip={formatter:'<b>{c}</b>'};}},
+    {case:'chart-option-css-fragment',base:'chart-echarts-option-page',expect:/CSS 声明片段/,mutate:d=>{d.sections[0].components[1].props.echartsOption.textStyle={fontFamily:'Arial;position:fixed'};}},
+    {case:'chart-option-data-protected',base:'chart-echarts-option-page',expect:/禁止覆盖/,mutate:d=>{d.sections[0].components[1].props.echartsOption.series[0].data=[99];}},
+    {case:'chart-option-series-overflow',base:'chart-echarts-option-page',expect:/补丁越界/,mutate:d=>{d.sections[0].components[1].props.echartsOption.series.push({});}},
+    {case:'chart-option-wrapper-forbidden',base:'chart-echarts-option-page',expect:/不支持的 ECharts 根入口/,mutate:d=>{d.sections[0].components[1].props.echartsOption.media=[];}},
+    {case:'chart-option-other-component',base:'chart-echarts-option-page',expect:/只支持/,mutate:d=>{d.sections[0].components[0].props.echartsOption={};}}
+  ]},
+ {id:'navigation-target-inputs',description:'6.40 显式跨页传值意图与受控来源',valid:['navigation-source-page','navigation-list-page','navigation-detail-page'],cases:[
+ {case:'navigation-inputs-before-6.40',base:'navigation-source-page',expect:/由 6.40 引入/,mutate:d=>{d.schemaVersion='6.39';}},
+ {case:'navigation-policy-fixed-input',base:'navigation-source-page',expect:/旧数组固定参数/,mutate:d=>{d.params=[{id:'source-label',type:'string',required:true,value:'固定'}];}},
+ {case:'navigation-policy-false',base:'navigation-source-page',expect:/must be equal to constant/,mutate:d=>{d.strictURLInputs=false;}},
+ {case:'navigation-inputs-false',base:'navigation-source-page',expect:/must be equal to constant/,mutate:d=>{d.sections[0].components[0].props.links[0].validateTargetInputs=false;}},
+ {case:'navigation-inputs-unknown-filter',base:'navigation-list-page',expect:/未声明的筛选器/,mutate:d=>{d.sections[0].components[1].props.actions[0].navigate.query.month.id='unknown';}}]},
+  {id:'time-extensions',description:'6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口',valid:['time-modes-page','time-presets-page','availability-page','calendar-window-page','time-binding-branches-page'],cases:[
+    {case:'time-before-6.39',base:'time-modes-page',expect:/由 6.39 引入/,mutate:d=>{d.schemaVersion='6.38';}},
+    {case:'time-case-missing',base:'time-modes-page',expect:/穷尽/,mutate:d=>{delete d.dataSources.bound.source.query.timeModes.cases.month;}},
+    {case:'time-query-xor',base:'time-modes-page',expect:/互斥/,mutate:d=>{const q=d.dataSources.bound.source.query;q.body=q.timeModes.cases.day.body;}},
+    {case:'time-period-mismatch',base:'time-modes-page',expect:/匹配显式模式/,mutate:d=>{d.dataSources.bound.source.query.timeModes.cases.isoWeek.body.dsl_list[0].filter.time.period='month';}},
+    {case:'time-output-mismatch',base:'time-modes-page',expect:/相同字段/,mutate:d=>{d.dataSources.bound.source.query.timeModes.cases.isoWeek.body.dsl_list[0].output_metrics=['other'];}},
+    {case:'time-default-week',base:'time-modes-page',expect:/默认范围/,mutate:d=>{d.filters[0].modes[2].default.from='2026-10-06';}},
+    {case:'time-availability-default',base:'availability-page',expect:/互斥/,mutate:d=>{d.filters[0].default='2026-09';}},
+    {case:'time-fact-kind',base:'availability-page',expect:/part与kind/,mutate:d=>{d.iocHeader.identity.facts[3].value.part='latest';}},
+    {case:'time-window-static-options',base:'calendar-window-page',expect:/动态平面/,mutate:d=>{d.filters[1].options=[{value:'2026-01',label:'一月'}];}}
+  ]},
+
+  {id:'currency-selection',description:'6.38金额范围和静态货币字段选择',valid:['currency-selection-page'],cases:[
+    {case:'currency-before-6.38',base:'currency-selection-page',expect:/由 6.38 引入/,mutate:d=>{d.schemaVersion='6.37';}},
+    {case:'currency-case-missing',base:'currency-selection-page',expect:/穷尽/,mutate:d=>{delete d.sections[0].components[2].props.columns[1].field.byFilter.cases.USD;}},
+    {case:'currency-metric-mismatch',base:'currency-selection-page',expect:/匹配币种/,mutate:d=>{d.dataSources.main.source.query.filterBindings.amount.metricByFilter.cases.USD='ioc_amount_base_cny';}},
+    {case:'currency-negative-default',base:'currency-selection-page',expect:/默认范围/,mutate:d=>{d.filters[2].default={from:-1};}},
+    {case:'currency-equal-default',base:'currency-selection-page',expect:/默认范围/,mutate:d=>{d.filters[2].default={from:1,to:1};}},
+    {case:'currency-compute-mixed',base:'currency-selection-page',expect:/混合静态货币/,mutate:d=>{d.dataSources.main.compute[0].fields[1]='fee-usd';}}
+  ]},
+  {id:'business-filters',description:'6.37 封闭枚举与业务选择语义',valid:['business-filter-page'],cases:[
+    {case:'business-filter-before-6.37',base:'business-filter-page',expect:/由 6.37 引入/,mutate:d=>{d.schemaVersion='6.36';}},
+    {case:'business-filter-single-many',base:'business-filter-page',expect:/单选/,mutate:d=>{d.filters[1].default=['A','B'];}},
+    {case:'business-filter-disabled-default',base:'business-filter-page',expect:/封闭枚举/,mutate:d=>{d.filters[1].default=['X'];}},
+    {case:'business-filter-options-dependent',base:'business-filter-page',expect:/动态候选/,mutate:d=>{d.filters[1].candidateContext={filterIds:['period'],reconcile:'clear'};}},
+    {case:'business-filter-unrestricted-without-options',base:'business-filter-page',expect:/全选不限/,mutate:d=>{delete d.filters[2].options;}},
+    {case:'business-filter-cycle',base:'business-filter-page',expect:/循环/,mutate:d=>{d.filters[0].clearOnChangeOf=['focus'];d.filters[3].clearOnChangeOf=['period'];}}
+  ]},
+  {id:'ioc-header',description:'6.36 页级IOC身份与唯一筛选归属',valid:['ioc-header-page'],cases:[
+    {case:'ioc-header-before-6.36',base:'ioc-header-page',expect:/由 6.36 引入/,mutate:d=>{d.schemaVersion='6.31';}},
+    {case:'ioc-header-empty',base:'ioc-header-page',expect:/需要身份/,mutate:d=>{d.iocHeader={};}},
+    {case:'ioc-header-toolbar-conflict',base:'ioc-header-page',expect:/由 6.41 引入/,mutate:d=>{delete d.dashboardToolbar;}},
+    {case:'ioc-header-hidden-filter',base:'ioc-header-page',expect:/静态可见/,mutate:d=>{d.filters[1].visible=false;}},
+    {case:'ioc-header-missing-filter',base:'ioc-header-page',expect:/静态可见/,mutate:d=>{d.iocHeader.filterIds.push('missing');}},
+    {case:'ioc-header-duplicate-identity',base:'ioc-header-page',expect:/重复承担/,mutate:d=>{d.sections[0].components.unshift({id:'old-header',type:'reportHeader',layout:{span:12},props:{title:'旧标题'}});}}
+  ]},
   {id:'report-header-export-buttons',description:'6.31 同一种导出按钮按格式配置名称、文件名和清晰度，直接下载',valid:['report-export-buttons','report-export-scale-fallback'],cases:[
     {case:'report-export-before-6.31',base:'report-export-buttons',expect:/由 6.31 引入/,mutate:d=>{d.schemaVersion='6.30';}},
     {case:'report-export-dashboard',base:'report-export-buttons',expect:/导出按钮只允许/,mutate:d=>{d.layout='dashboard';}},
@@ -150,6 +236,21 @@ export const invariants: InvariantDefinition[] = [
         mutate: d => { firstComponent(d).props.toolbar.search.fields = ['value']; } },
       { case: 'table-search-duplicate-field', base: 'table-toolbar-page', expect: /不得重复|duplicate/,
         mutate: d => { firstComponent(d).props.toolbar.search.fields = ['name', 'name']; } }
+    ]
+  },
+  {
+    id: 'table-search-options', description: '6.42 静态搜索选项唯一、默认项有效且每项引用文本字段',
+    valid: ['table-search-options-page'], cases: [
+      { case: 'table-search-options-before-6.42', base: 'table-search-options-page', expect: /由 6.42 引入/,
+        mutate: d => { d.schemaVersion = '6.41'; } },
+      { case: 'table-search-options-duplicate', base: 'table-search-options-page', expect: /搜索选项值不得重复/,
+        mutate: d => { const options = firstComponent(d).props.toolbar.search.options; options[1].value = options[0].value; } },
+      { case: 'table-search-options-default-missing', base: 'table-search-options-page', expect: /默认搜索选项必须存在/,
+        mutate: d => { firstComponent(d).props.toolbar.search.defaultValue = 'missing'; } },
+      { case: 'table-search-options-nontext', base: 'table-search-options-page', expect: /文本标量字段/,
+        mutate: d => { firstComponent(d).props.toolbar.search.options[1].field = 'amount'; } },
+      { case: 'table-search-options-unmapped', base: 'table-search-options-page', expect: /queryField 映射/,
+        mutate: d => { delete d.dataSources.queried.fields.owner.queryField; } }
     ]
   },
   {
@@ -1996,7 +2097,7 @@ export const invariants: InvariantDefinition[] = [
   },
   {
     id: 'actions-live-only',
-    description: 'writeFilter 只允许绑定 query 数据源的组件',
+    description: '旧版本writeFilter只允许query组件；6.35的本地入口必须有查询或显隐消费方',
     valid: ['query-dashboard', 'filters-page', 'params-page', 'composite-page', 'map-page'],
     cases: [
       {
@@ -2010,6 +2111,7 @@ export const invariants: InvariantDefinition[] = [
           };
           firstComponent(document).data = { main: 'fixed' };
           firstComponent(document).props.columns = [{ field: 'region' }];
+          for(const source of Object.values(document.dataSources) as any[])if(source.source.type==='query')delete source.source.query.filterBindings;
         }
       }
     ]
@@ -2165,3 +2267,9 @@ invariants.push({id:"detail-view-component-types",description:"详情只允许�
 {case:"detail-component-reject-fieldtext",base:"compute-page",expect:/详情只允许说明/,mutate(d){let selected:any;const visit=(c:any)=>{if(c.type==="fieldText"&&!selected)selected=c;if(c.props?.components)c.props.components.forEach(visit);for(const t of c.props?.tabs??[])(t.components??[t.component]).forEach(visit);};d.sections.forEach((s:any)=>s.components.forEach(visit));const c=structuredClone(selected);const rename=(n:any)=>{n.id="detail-negative-"+n.id;if(n.props?.components)n.props.components.forEach(rename);for(const t of n.props?.tabs??[])(t.components??[t.component]).forEach(rename);};rename(c);d.schemaVersion="6.13";d.detailViews=[{id:"negative-detail",mode:"snapshot",components:[c]}];}},
 {case:"detail-component-reject-aisummary",base:"forecast-page",expect:/详情只允许说明/,mutate(d){let selected:any;const visit=(c:any)=>{if(c.type==="aiSummary"&&!selected)selected=c;if(c.props?.components)c.props.components.forEach(visit);for(const t of c.props?.tabs??[])(t.components??[t.component]).forEach(visit);};d.sections.forEach((s:any)=>s.components.forEach(visit));const c=structuredClone(selected);const rename=(n:any)=>{n.id="detail-negative-"+n.id;if(n.props?.components)n.props.components.forEach(rename);for(const t of n.props?.tabs??[])(t.components??[t.component]).forEach(rename);};rename(c);d.schemaVersion="6.13";d.detailViews=[{id:"negative-detail",mode:"snapshot",components:[c]}];}},
 ]});
+
+const detailButtonRule=invariants.find(rule=>rule.id==='detail-view-component-types');
+detailButtonRule?.cases.push({case:'detail-component-reject-button',base:'reference-conditions-page',expect:/详情只允许说明/,mutate(document){
+ const button=structuredClone(document.sections[0].components[0]);button.id='negative-detail-button';
+ document.detailViews=[{id:'button-detail',mode:'snapshot',components:[button]}];
+}});

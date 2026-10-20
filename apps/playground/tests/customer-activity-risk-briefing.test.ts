@@ -47,7 +47,7 @@ describe('客户活动风险简报页面文档', () => {
     expect(overviewQueries.every(isDqeQueryDefinition)).toBe(true);
     const top100Query = overviewQueries[1]!;
     if (!isDqeQueryDefinition(top100Query)) throw new Error('overview-top 不是 DQE 查询');
-    expect(top100Query.body.dsl_list[0]!.output_metrics).toEqual([
+    expect(top100Query.body!.dsl_list[0]!.output_metrics).toEqual([
       { formula: 'COUNT(*)', alias: '数量' }
     ]);
 

@@ -1,0 +1,231 @@
+{
+  "schemaVersion": "6.43",
+  "id": "navigation-list-page",
+  "layout": "dashboard",
+  "dashboardToolbar": "hidden",
+  "meta": {
+    "title": "IOC B5：项目清单",
+    "description": "本地合成跨页传值验收；不保存或恢复来源视图。"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "IOC B5：项目清单",
+      "tags": [
+        {
+          "id": "synthetic",
+          "text": "合成验收",
+          "tone": "info"
+        }
+      ],
+      "description": {
+        "text": {
+          "parts": [
+            "来源：",
+            {
+              "param": "origin"
+            }
+          ]
+        },
+        "presentation": "inline"
+      }
+    },
+    "filterIds": [
+      "period",
+      "currency",
+      "regions"
+    ]
+  },
+  "filters": [
+    {
+      "id": "period",
+      "type": "timeRange",
+      "label": "期间",
+      "display": "period",
+      "precision": "month",
+      "required": true,
+      "default": {
+        "mode": "month",
+        "value": "2026-09"
+      }
+    },
+    {
+      "id": "currency",
+      "type": "dimension",
+      "label": "币种",
+      "dimension": "currency_code",
+      "display": "select",
+      "selection": {
+        "mode": "single",
+        "required": true
+      },
+      "options": [
+        {
+          "value": "RMB",
+          "label": "人民币"
+        },
+        {
+          "value": "USD",
+          "label": "美元"
+        }
+      ],
+      "default": [
+        "RMB"
+      ]
+    },
+    {
+      "id": "regions",
+      "type": "dimension",
+      "label": "区域",
+      "dimension": "region_code",
+      "display": "select",
+      "selection": {
+        "mode": "multiple"
+      },
+      "options": [
+        {
+          "value": "north",
+          "label": "北区"
+        },
+        {
+          "value": "south",
+          "label": "南区"
+        }
+      ],
+      "default": [
+        "north",
+        "south"
+      ]
+    }
+  ],
+  "dataSources": {
+    "projects": {
+      "fields": {
+        "code": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "code": "P&中文/001",
+            "name": "示例项目甲"
+          },
+          {
+            "code": "",
+            "name": "缺少项目编码（拒绝导航）"
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "list",
+      "components": [
+        {
+          "id": "notice",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "传值边界",
+            "body": "当前为内联导航样例清单。选择单月后进入详情；季度和近一年保持原语义。"
+          }
+        },
+        {
+          "id": "projects-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "projects"
+          },
+          "props": {
+            "title": "导航样例项目",
+            "columns": [
+              {
+                "field": "name",
+                "link": true,
+                "title": "项目名称"
+              },
+              {
+                "field": "code",
+                "title": "项目编码"
+              }
+            ],
+            "actions": [
+              {
+                "on": "click",
+                "navigate": {
+                  "href": "/pages/ioc-header-navigation-detail-demo?project-id=stale",
+                  "validateTargetInputs": true,
+                  "query": {
+                    "project-id": {
+                      "source": "row",
+                      "field": "code"
+                    },
+                    "project-name": {
+                      "source": "row",
+                      "field": "name"
+                    },
+                    "origin": {
+                      "source": "param",
+                      "id": "origin"
+                    },
+                    "month": {
+                      "source": "filter",
+                      "id": "period",
+                      "part": "from"
+                    },
+                    "currency": {
+                      "source": "filter",
+                      "id": "currency"
+                    },
+                    "regions": {
+                      "source": "filter",
+                      "id": "regions"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source-link",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "重新打开概览",
+            "links": [
+              {
+                "label": "打开概览默认条件",
+                "href": "/pages/ioc-header-navigation-source-demo"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "params": {
+    "display": [
+      {
+        "id": "origin",
+        "type": "string",
+        "required": true
+      }
+    ]
+  },
+  "strictURLInputs": true
+}

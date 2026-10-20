@@ -4,6 +4,14 @@
 
 columns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。
 
+## 渲染外观与变体
+
+普通 Table、`variant: "forecastMatrix"` 与 `variant: "embedded"` 的网格采用 TinyVue OS 浅色样式：默认单层表头 40px、14px 字号与 21px 文字行高、灰色表头和短列分隔线；表体基础高度 48px、上下 12px 与左右 16px 内边距，长内容可撑高。多级粘性表头与固定列按实际渲染尺寸定位。固定列总宽超过表内可视宽度时，临时取消横向固定，所有列通过表内滚动访问；空间恢复后自动恢复固定。排序、筛选、搜索、分页和导出范围沿用已有契约。
+
+`forecastMatrix` 保留预测矩阵的容器和对齐；`embedded` 保留内嵌区域高度与容器内滚动，长文本可换行并完整访问。`reportCompact` 保持既有紧凑报表外观，不参与此次网格样式调整。行列结构、合并关系、显式值颜色与业务格式不会因皮肤改变而重写。
+
+可观察示例：`table-tiny-os` 同页提供三种纳入的表格、保留的 `reportCompact`、多级表头与固定列，使用内联合成数据。维度候选值端口未注入时如实显示不可用；数值和日期筛选、搜索、分页及 Excel 导出可直接操作。静态导出沿用完整内容展开，隐藏滚动边界阴影与交互控件。
+
 ## 右上角搜索与 Excel 导出（6.21）
 
 每张表可独立声明 `props.toolbar.search` 和 `props.toolbar.export`，省略哪项就关闭哪项，省略整个工具区保留旧页行为：
@@ -29,6 +37,30 @@ Excel 导出捕获当前已提交搜索、页面筛选、列头筛选和排序�
 
 表头 dateRange 日期选择同样默认禁止未来日期；日历上限为今天，手工提交未来日期保留已应用筛选，不触发重查。上限在聚焦和提交时按本地日期更新。
 
+## 静态搜索选项（6.42）
+
+需要在输入框前选择搜索字段时，使用与旧 `fields/placeholder` 分支互斥的静态选项：
+
+```json
+{
+  "search": {
+    "options": [
+      { "value": "code", "label": "项目编码", "field": "code", "placeholder": "请输入完整项目编码" },
+      { "value": "name", "label": "项目名称", "field": "name", "placeholder": "请输入完整项目名称" }
+    ],
+    "defaultValue": "name"
+  }
+}
+```
+
+选项为页面文档中的静态枚举，不请求候选值接口。每项声明唯一 `value`、显示 `label`、一个 `main` 槽文本字段 `field` 及可选 `placeholder`；1—64项。省略 `defaultValue` 时选第一项，显式默认值必须存在。所有选项均校验字段类型；普通非完整查询还必须具备查询字段映射。原来的 `fields/placeholder` 配置继续采用字面量包含及多字段 OR。
+
+新分支只做单字段精确匹配；关键词提交时去除首尾空白，编码保留前导零，`%`、`_` 按原文匹配。输入仍由 Enter 或搜索按钮提交；切换选项保留当前输入并立即搜索，placeholder 同步切换。清空输入立即移除搜索条件，但保留当前选项。提交回到第一页，保留排序、页面筛选和表头筛选；搜索与既有条件按 AND 组合。选中项和输入草稿按表格实例隔离；导出冻结已提交的字段、匹配方式和关键词，未提交输入不改变导出。
+
+普通查询的等值搜索由网关追加 `filter.dims` 单值条件，不替换同字段既有条件，不依赖包含搜索编码器。空关键词不产生条件。本地完整结果及组合表在完整行域上精确比较，不对输入或数据做大小写转换；真实 DQE 使用服务原生等值规则。当前本地仿真采用区分大小写比较，真实服务的大小写、重复维度条件 AND 及分页总数一致性仍须实测确认，不能以本地结果宣称实服务验收。
+
+完整示例为 `table-search-options-page`，页面试验场入口 `/pages/table-search-options-demo`；并列展示本地等值搜索、DQE 仿真等值搜索及旧包含搜索。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
@@ -43,8 +75,10 @@ Excel 导出捕获当前已提交搜索、页面筛选、列头筛选和排序�
 
 两张表分别展示「序号」和「预签金额排名」。序号随当前顺序变化；固定排名是数据源投影字段，切换召开率排序后仍跟随同一代表处，第一页可显示 1、4、2，第二页显示 5、6、3。召开率下限 85 时固定排名为 1、4，搜索天津时固定排名为 8；导出保留相同业务名次。两张表使用不同组合源，互不改变排序、筛选或页码。
 
+6.35条件呈现及相关限制见[条件显隐](../conditions.md)；子项全部隐藏不自动收起父容器。
 
-页面协议 6.32。结构真源为本册[schema.json](../schema.json)，SHA256 `a82a821bf9c06c65521b893a71a7b918b3a1d5cd648e0792a0d3ca9c9de63010`。字段表自动生成；可选不等于有默认值。
+
+页面协议 6.43。结构真源为本册[schema.json](../schema.json)，SHA256 `7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -67,6 +101,26 @@ Schema位置：`#/definitions/tableComponent/properties/id`。目标：[#/defini
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/componentId | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@tableComponent.visibleWhen`
+
+Schema位置：`#/definitions/tableComponent/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tableComponent.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableComponent/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f74797065"></a>
 
@@ -111,6 +165,26 @@ Schema位置：`#/definitions/tableComponent/properties/props`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 本分支必填 | required=["columns"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 组件的受控呈现配置。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f7756697369626c655768656e"></a>
+
+### `@tableComponent.props.rowVisibleWhen`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/rowVisibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 完整本地表格的私有行展示条件，位于本地视图操作之前。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f7756697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tableComponent.props.rowVisibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/rowVisibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7469746c65"></a>
 
@@ -170,47 +244,227 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 本分支可选 | required=["fields"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 显式文本搜索声明；提交的关键词属于表格实例，省略时关闭入口。 |
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 显式文本搜索声明；提交的关键词属于表格实例，省略时关闭入口。 |
 
-<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f70726f706572746965732f6669656c6473"></a>
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f30"></a>
 
-### `@tableComponent.props.toolbar.search.fields`
+### `@tableComponent.props.toolbar.search · anyOf[0]`
 
-Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/fields`。
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["fields"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f302f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[0].visibleWhen`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f302f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[0].visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f302f70726f706572746965732f656e61626c65645768656e"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[0].enabledWhen`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/enabledWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 可见入口的执行条件；执行时重新判定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f302f70726f706572746965732f656e61626c65645768656e2f616c6c4f662f30"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[0].enabledWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/enabledWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f302f70726f706572746965732f6669656c6473"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[0].fields`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/fields`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "array" | 本分支必填 | minItems=1; maxItems=64; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | main数据槽中的1至64个文本标量字段；不得重复，查询搜索要求有效queryField映射。 |
 
-<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f70726f706572746965732f6669656c64732f6974656d73"></a>
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f302f70726f706572746965732f6669656c64732f6974656d73"></a>
 
-### `@tableComponent.props.toolbar.search.fields[]`
+### `@tableComponent.props.toolbar.search · anyOf[0].fields[]`
 
-Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/fields/items`。
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/fields/items`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 每个数组项 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f70726f706572746965732f706c616365686f6c646572"></a>
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f302f70726f706572746965732f706c616365686f6c646572"></a>
 
-### `@tableComponent.props.toolbar.search.placeholder`
+### `@tableComponent.props.toolbar.search · anyOf[0].placeholder`
 
-Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/placeholder`。
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/placeholder`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 搜索输入提示；省略时显示搜索表格，支持文本取值引用。 |
 
-<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f70726f706572746965732f706c616365686f6c6465722f616c6c4f662f30"></a>
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f302f70726f706572746965732f706c616365686f6c6465722f616c6c4f662f30"></a>
 
-### `@tableComponent.props.toolbar.search.placeholder · allOf[0]`
+### `@tableComponent.props.toolbar.search · anyOf[0].placeholder · allOf[0]`
 
-Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/placeholder/allOf/0`。目标：[#/definitions/textValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/placeholder/allOf/0`。目标：[#/definitions/textValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f31"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[1]`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["options"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f312f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[1].visibleWhen`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f312f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[1].visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f312f70726f706572746965732f656e61626c65645768656e"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[1].enabledWhen`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/enabledWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 可见入口的执行条件；执行时重新判定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f312f70726f706572746965732f656e61626c65645768656e2f616c6c4f662f30"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[1].enabledWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/enabledWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f312f70726f706572746965732f6f7074696f6e73"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[1].options`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1; maxItems=64 | Schema未设默认；装配/运行时默认见语义说明 | 页面内静态枚举；1至64项，value唯一，每项声明label、一个main槽文本field及可选placeholder；只做单字段精确匹配，与旧fields分支互斥。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f312f70726f706572746965732f6f7074696f6e732f6974656d73"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[1].options[]`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["value","label","field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f312f70726f706572746965732f6f7074696f6e732f6974656d732f70726f706572746965732f76616c7565"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[1].options[].value`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/value`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f312f70726f706572746965732f6f7074696f6e732f6974656d732f70726f706572746965732f6c6162656c"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[1].options[].label`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/label`。目标：[#/definitions/nonEmptyTextValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/nonEmptyTextValue | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f312f70726f706572746965732f6f7074696f6e732f6974656d732f70726f706572746965732f6669656c64"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[1].options[].field`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f312f70726f706572746965732f6f7074696f6e732f6974656d732f70726f706572746965732f706c616365686f6c646572"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[1].options[].placeholder`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/placeholder`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前选项的搜索输入提示；切换时同步替换，缺省显示搜索表格。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f312f70726f706572746965732f6f7074696f6e732f6974656d732f70726f706572746965732f706c616365686f6c6465722f616c6c4f662f30"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[1].options[].placeholder · allOf[0]`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/placeholder/allOf/0`。目标：[#/definitions/textValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f616e794f662f312f70726f706572746965732f64656661756c7456616c7565"></a>
+
+### `@tableComponent.props.toolbar.search · anyOf[1].defaultValue`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/defaultValue`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 初始选项value，显式配置必须命中options；省略选第一项。清空关键词不重置选中项。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f6578706f7274"></a>
 
@@ -221,6 +475,46 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 本分支可选 | required=["format"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 完整匹配结果的Excel导出声明；省略时关闭入口。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f6578706f72742f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@tableComponent.props.toolbar.export.visibleWhen`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f6578706f72742f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tableComponent.props.toolbar.export.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f6578706f72742f70726f706572746965732f656e61626c65645768656e"></a>
+
+### `@tableComponent.props.toolbar.export.enabledWhen`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/enabledWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 可见入口的执行条件；执行时重新判定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f6578706f72742f70726f706572746965732f656e61626c65645768656e2f616c6c4f662f30"></a>
+
+### `@tableComponent.props.toolbar.export.enabledWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/enabledWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c6261722f70726f706572746965732f6578706f72742f70726f706572746965732f666f726d6174"></a>
 
@@ -485,6 +779,46 @@ Schema位置：`#/definitions/tableColumn/properties/selection`。
 |---|---|---|---|---|
 | "object" | 本分支可选 | required=["writes"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 单元格选择写回，优先于同列link。 |
 
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f73656c656374696f6e2f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@tableColumn.selection.visibleWhen`
+
+Schema位置：`#/definitions/tableColumn/properties/selection/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f73656c656374696f6e2f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tableColumn.selection.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/selection/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f73656c656374696f6e2f70726f706572746965732f656e61626c65645768656e"></a>
+
+### `@tableColumn.selection.enabledWhen`
+
+Schema位置：`#/definitions/tableColumn/properties/selection/properties/enabledWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 可见入口的执行条件；执行时重新判定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f73656c656374696f6e2f70726f706572746965732f656e61626c65645768656e2f616c6c4f662f30"></a>
+
+### `@tableColumn.selection.enabledWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/selection/properties/enabledWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f73656c656374696f6e2f70726f706572746965732f777269746573"></a>
 
 ### `@tableColumn.selection.writes`
@@ -681,6 +1015,46 @@ Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/0/properti
 | "modal" | 居中模态浮层。 |
 | "drawer" | 右侧贴边抽屉。 |
 
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f302f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@tableColumn.openDetail · anyOf[0].visibleWhen`
+
+Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f302f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tableColumn.openDetail · anyOf[0].visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f302f70726f706572746965732f656e61626c65645768656e"></a>
+
+### `@tableColumn.openDetail · anyOf[0].enabledWhen`
+
+Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/enabledWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 可见入口的执行条件；执行时重新判定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f302f70726f706572746965732f656e61626c65645768656e2f616c6c4f662f30"></a>
+
+### `@tableColumn.openDetail · anyOf[0].enabledWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/enabledWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f302f70726f706572746965732f7469746c654669656c64"></a>
 
 ### `@tableColumn.openDetail · anyOf[0].titleField`
@@ -765,6 +1139,46 @@ Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/1/properti
 |---|---|
 | "modal" | 居中模态浮层。 |
 | "drawer" | 右侧贴边抽屉。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f312f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@tableColumn.openDetail · anyOf[1].visibleWhen`
+
+Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f312f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tableColumn.openDetail · anyOf[1].visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f312f70726f706572746965732f656e61626c65645768656e"></a>
+
+### `@tableColumn.openDetail · anyOf[1].enabledWhen`
+
+Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/enabledWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 可见入口的执行条件；执行时重新判定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f312f70726f706572746965732f656e61626c65645768656e2f616c6c4f662f30"></a>
+
+### `@tableColumn.openDetail · anyOf[1].enabledWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/enabledWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f312f70726f706572746965732f7469746c654669656c64"></a>
 
@@ -926,7 +1340,7 @@ Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/1/properti
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["value","from","to","level"] | Schema未设默认；装配/运行时默认见语义说明 | 导航取筛选值的value/from/to/level部分。 |
+| "string" | 本分支可选 | enum=["value","from","to","level","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -934,6 +1348,7 @@ Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/1/properti
 | "from" | 范围起点部分。 |
 | "to" | 范围终点部分。 |
 | "level" | 层级维度的层级部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f312f70726f706572746965732f62696e64696e67732f70726f70657274794e616d6573"></a>
 
@@ -955,6 +1370,46 @@ Schema位置：`#/definitions/tableColumn/properties/navigate`。
 |---|---|---|---|---|
 | "object" | 本分支可选 | required=["href"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 受控URL与参数来源映射。 |
 
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174652f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@tableColumn.navigate.visibleWhen`
+
+Schema位置：`#/definitions/tableColumn/properties/navigate/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174652f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@tableColumn.navigate.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/navigate/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174652f70726f706572746965732f656e61626c65645768656e"></a>
+
+### `@tableColumn.navigate.enabledWhen`
+
+Schema位置：`#/definitions/tableColumn/properties/navigate/properties/enabledWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 可见入口的执行条件；执行时重新判定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174652f70726f706572746965732f656e61626c65645768656e2f616c6c4f662f30"></a>
+
+### `@tableColumn.navigate.enabledWhen · allOf[0]`
+
+Schema位置：`#/definitions/tableColumn/properties/navigate/properties/enabledWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174652f70726f706572746965732f68726566"></a>
 
 ### `@tableColumn.navigate.href`
@@ -964,6 +1419,20 @@ Schema位置：`#/definitions/tableColumn/properties/navigate/properties/href`�
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 目标URL，必须通过安全协议及结构检查。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174652f70726f706572746965732f76616c6964617465546172676574496e70757473"></a>
+
+### `@tableColumn.navigate.validateTargetInputs`
+
+Schema位置：`#/definitions/tableColumn/properties/navigate/properties/validateTargetInputs`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | const=true | Schema未设默认；装配/运行时默认见语义说明 | 显式要求集成应用提供目标输入投影后才允许跨页导航；仅传URL输入，不恢复视图。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| true | 用于选择@tableColumn.navigate.validateTargetInputs分支；同分支其它约束同时成立。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174652f70726f706572746965732f7175657279"></a>
 
@@ -1095,7 +1564,7 @@ Schema位置：`#/definitions/tableColumn/properties/navigate/properties/query/a
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["value","from","to","level"] | Schema未设默认；装配/运行时默认见语义说明 | 导航取筛选值的value/from/to/level部分。 |
+| "string" | 本分支可选 | enum=["value","from","to","level","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -1103,6 +1572,7 @@ Schema位置：`#/definitions/tableColumn/properties/navigate/properties/query/a
 | "from" | 范围起点部分。 |
 | "to" | 范围终点部分。 |
 | "level" | 层级维度的层级部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174652f70726f706572746965732f71756572792f70726f70657274794e616d6573"></a>
 
@@ -1400,6 +1870,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `pagination-exclusive-source`：查询分页表格必须独占页面数据源。反例：[pagination-shared-source](../errors/pagination-shared-source.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-toolbar-search`：表格工具区由6.21引入，搜索显式引用文本标量字段。反例：[table-toolbar-before-6.21](../errors/table-toolbar-before-6.21.json)、[table-search-nontext-field](../errors/table-search-nontext-field.json)、[table-search-duplicate-field](../errors/table-search-duplicate-field.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `paged-join`：6.22 组合表全局视图与普通查询定义引用。反例：[table-number-range-before-6.22](../errors/table-number-range-before-6.22.json)、[paged-join-initial-predicate-in](../errors/paged-join-initial-predicate-in.json)、[paged-join-initial-predicate-numeric](../errors/paged-join-initial-predicate-numeric.json)、[paged-join-initial-predicate-date](../errors/paged-join-initial-predicate-date.json)、[paged-join-before-6.22](../errors/paged-join-before-6.22.json)、[paged-join-unknown-member](../errors/paged-join-unknown-member.json)、[paged-join-invalid-key](../errors/paged-join-invalid-key.json)、[paged-join-invalid-projection](../errors/paged-join-invalid-projection.json)、[paged-join-member-topn](../errors/paged-join-member-topn.json)、[paged-join-shared-root](../errors/paged-join-shared-root.json)、[paged-join-invalid-initial](../errors/paged-join-invalid-initial.json)、[table-number-range-non-numeric](../errors/table-number-range-non-numeric.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `table-search-options`：6.42 静态搜索选项唯一、默认项有效且每项引用文本字段。反例：[table-search-options-before-6.42](../errors/table-search-options-before-6.42.json)、[table-search-options-duplicate](../errors/table-search-options-duplicate.json)、[table-search-options-default-missing](../errors/table-search-options-default-missing.json)、[table-search-options-nontext](../errors/table-search-options-nontext.json)、[table-search-options-unmapped](../errors/table-search-options-unmapped.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -1413,26 +1884,26 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [table-toolbar-page](../examples/table-toolbar-page.json)：完整合法页面；查询仅为静态契约证据。
 - [table-number-range-page](../examples/table-number-range-page.json)：完整合法页面；查询仅为静态契约证据。
 - [paged-join-fixed-rank-page](../examples/paged-join-fixed-rank-page.json)：完整合法页面；查询仅为静态契约证据。
+- [table-search-options-page](../examples/table-search-options-page.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-table.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 
 ```json
 {
-  "id": "table-fill-1",
+  "id": "sales-tabs-detail",
   "type": "table",
   "layout": {
     "span": 12
   },
   "data": {
-    "main": "fill-1"
+    "main": "demo"
   },
   "props": {
+    "title": "销售明细：内联演示数据",
     "columns": [
       {
-        "field": "time"
-      },
-      {
-        "field": "amount"
+        "field": "name",
+        "title": "演示内容"
       }
     ]
   }
@@ -1444,6 +1915,8 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 
 ## 联合分支见证（生成）
 
+- `#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0`：[合法完整页面](../examples/paged-join-fixed-rank-page.json)，JSON Pointer `#/sections/0/components/1/props/toolbar/search`。
+- `#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1`：[合法完整页面](../examples/table-search-options-page.json)，JSON Pointer `#/sections/0/components/0/props/toolbar/search`。
 - `#/definitions/tableColumnNode/anyOf/0`：[合法完整页面](../examples/component-table.json)，JSON Pointer `#/sections/0/components/0/props/columns/0`。
 - `#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0`：[合法完整页面](../examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/selection/writes/region`。
 - `#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/1`：[合法完整页面](../examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/selection/writes/city`。
@@ -1452,10 +1925,10 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/bindings/additionalProperties/oneOf/0`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/4/components/0/props/columns/0/openDetail/bindings/detail-customer`。
 - `#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/bindings/additionalProperties/oneOf/1`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/5/components/0/props/columns/0/openDetail/bindings/detail-customer`。
 - `#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/bindings/additionalProperties/oneOf/2`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/6/components/0/props/columns/0/openDetail/bindings/detail-customer`。
-- `#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/0`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/8/components/0/props/columns/0/navigate/query/customer`。
+- `#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/0`：[合法完整页面](../examples/tab-url-source.json)，JSON Pointer `#/sections/0/components/1/props/columns/0/navigate/query/sales-tab`。
 - `#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/1`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/9/components/0/props/columns/0/navigate/query/customer`。
 - `#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/10/components/0/props/columns/0/navigate/query/customer`。
 - `#/definitions/tableColumnNode/anyOf/1`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/5/props/columns/0`。
 - `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/0`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/5/props/pagination`。
-- `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/1`：[合法完整页面](../examples/component-tabContainer.json)，JSON Pointer `#/sections/0/components/0/props/tabs/1/components/0/props/pagination`。
+- `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/1`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/6/props/pagination`。
 - `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/2`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/1/props/pagination`。

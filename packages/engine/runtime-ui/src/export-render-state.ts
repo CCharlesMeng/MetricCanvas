@@ -1,3 +1,5 @@
+import { compilePresentation, projectPresentationRows } from '../../runtime/src/presentation';
+import type { DisplaySnapshot } from '../../runtime/src/display-inputs';
 import type { Page, Component, DataSnapshot, Row } from '@metriccanvas/page/internal';
 import { resolveDataSourceFields } from '@metriccanvas/page/internal';
 import type { PageDataSnapshots, FilterValues } from '../../runtime/src';
@@ -14,8 +16,10 @@ export const SUMMARY_EXPORT_CAPTURE = Symbol('metriccanvas.summaryCapture');
 export type SummaryCapture = Map<string, () => AiSummarySnapshot>;
 export interface ExportRenderState {
   page: Page;
-  currentYear:number;
+  currentYear:number;now?:Date;
   filters: FilterValues;
+  filterRevision?:number;
+  displaySnapshot?:DisplaySnapshot;
   snapshots: PageDataSnapshots;
   tables: Record<string, TableViewState>;
   headerFilters: Record<string, import('@metriccanvas/page/internal').TableHeaderFilters>;
@@ -40,9 +44,9 @@ export function exportComponentData(state:ExportRenderState,component:Component)
     if(!source||!snapshot) continue;
     const fields=resolveDataSourceFields(source);
     const ready=renderableDataSnapshot(snapshot); if(!ready)continue;
-    let rows:Row[]=ready.rows;
-    if(component.type==='table'&&slot==='main'&&source.source.type!=='pagedJoin') {
-      rows=applyTableSearch(rows,component,state.tables[component.id]?.searchQuery);
+    let rows:Row[]=component.type==='table'&&slot==='main'?projectPresentationRows(component,ready.rows,{declarations:state.page.filters??[],filters:state.filters,filterRevision:state.filterRevision,displaySnapshot:state.displaySnapshot}):ready.rows;
+    if(component.type==='table'&&slot==='main'&&(source.source.type==='inline'||(source.source.type==='query'&&source.source.resultScope==='complete'))) {
+      rows=applyTableSearch(rows,component,state.tables[component.id]?.searchQuery,state.tables[component.id]?.search);
     }
     if(component.type==='table'&&slot==='main'&&component.props.pagination?.mode!=='query') {
       rows=filterTableRowsByHeaders(applySearchFilters(rows,state.filters,fields),state.headerFilters[component.id]??{});

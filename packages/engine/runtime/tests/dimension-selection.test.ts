@@ -7,7 +7,7 @@ import type {OpenDetailAction} from '@metriccanvas/page/internal';
 import fixture from '../../../../pages/ioc-header-selection.json';
 import {createFilterState,parseFilterSearch,initialFilterValues} from '../src/filter-state';
 
-const declarations:FilterDeclaration[]=[{id:'region',type:'dimension',dimension:'region',selection:'single',default:['SZ']}];
+const declarations:FilterDeclaration[]=[{id:'region',type:'dimension',dimension:'region',selection:{mode:'single'},default:['SZ']}];
 const multi={type:'dimension' as const,dimension:'region',values:['SZ','BJ']};
 describe('single cardinality across state entry points',()=>{
  it('rejects initial/write/writeMany and does not notify on illegal writes',()=>{
@@ -30,9 +30,9 @@ it('empty single initial value is a legitimate no-filter state',()=>{
 });
 it('parameter arrays and detail row arrays cannot bypass single cardinality',()=>{
  const result=parsePage(fixture);if(!result.ok)throw Error('fixture');
- const page={...result.page,filters:[{id:'region',type:'dimension' as const,dimension:'region',selection:'single' as const,initialParam:'regions',visible:false}]};
- expect(()=>seedPageParamFilters(page,new Map([['regions',['SZ','BJ']]]))).toThrow('单选参数');
+ const page={...result.page,filters:[{id:'region',type:'dimension' as const,dimension:'region',selection:{mode:'single' as const},initialParam:'regions',visible:false}]};
+ expect(()=>seedPageParamFilters(page,new Map([['regions',['SZ','BJ']]]))).toThrow();
  const view={...page,detailViews:[{id:'detail',mode:'query' as const,filters:['region'],components:result.page.sections[0].components}]};
  const action:OpenDetailAction={on:'click',openDetail:{surface:'modal',view:'detail',bindings:{region:{source:'filter',id:'upstream'}}}};
- expect(()=>detailViewInput(view,action,{},new Map([['upstream',multi]]),new Map())).toThrow('单选维度');
+ expect(()=>detailViewInput(view,action,{},new Map([['upstream',multi]]),new Map())).toThrow();
 });

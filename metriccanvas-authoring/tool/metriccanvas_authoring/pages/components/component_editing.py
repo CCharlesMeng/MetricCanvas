@@ -1,3 +1,4 @@
+from metriccanvas_authoring.pages.components.field_bindings import binding_keys
 """Controlled mutations; callers validate and commit a complete candidate page."""
 from copy import deepcopy
 from typing import Any
@@ -17,6 +18,7 @@ PROPERTY_WHITELIST = {
     "lineChart": {"smooth", "areaGradient", "showPointLabels", "hideYAxis"},
     "pieChart": {"ring", "labelLine"},
     "table": {"subtitle", "fit", "toolbar"},
+    "tabContainer": {"defaultTab", "initialTabUrlParam"},
 }
 
 
@@ -69,7 +71,7 @@ def set_component_layout(page, op):
 def set_properties(page, op):
     component = component_by_id(page, op["componentId"])
     _patch(component["props"], op["properties"], PROPERTY_WHITELIST.get(component["type"], set()))
-    if component['type'] == 'table' and 'toolbar' in op['properties']:
+    if (component['type'] == 'table' and 'toolbar' in op['properties']) or (component['type'] == 'tabContainer' and 'initialTabUrlParam' in op['properties']):
         from metriccanvas_authoring.bundle_info import load_bundle_info
         page['schemaVersion'] = load_bundle_info()['pageSchemaVersion']
     return []
@@ -110,9 +112,7 @@ def set_table_column(page, op):
     matches = []
     for column in columns(component["props"]["columns"]):
         binding = column["field"]
-        field = binding if isinstance(binding, str) else binding["field"]
-        slot = "main" if isinstance(binding, str) else binding.get("data", "main")
-        if field == op["fieldId"] and slot == op.get("slot", "main"):
+        if (op.get("slot", "main"), op["fieldId"]) in binding_keys(binding):
             matches.append(column)
     if len(matches) != 1:
         raise EditFailure("COLUMN_NOT_FOUND", "/fieldId")

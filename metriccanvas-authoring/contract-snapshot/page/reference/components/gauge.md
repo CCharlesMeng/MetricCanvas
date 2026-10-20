@@ -9,7 +9,7 @@
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.32。结构真源为本册[schema.json](../schema.json)，SHA256 `a82a821bf9c06c65521b893a71a7b918b3a1d5cd648e0792a0d3ca9c9de63010`。字段表自动生成；可选不等于有默认值。
+页面协议 6.43。结构真源为本册[schema.json](../schema.json)，SHA256 `7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -32,6 +32,26 @@ Schema位置：`#/definitions/gaugeComponent/properties/id`。目标：[#/defini
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/componentId | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f6761756765436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@gaugeComponent.visibleWhen`
+
+Schema位置：`#/definitions/gaugeComponent/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f6761756765436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@gaugeComponent.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/gaugeComponent/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f6761756765436f6d706f6e656e742f70726f706572746965732f74797065"></a>
 
@@ -139,7 +159,7 @@ Schema位置：`#/definitions/gaugeComponent/properties/props/properties/max`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "number" | 本分支可选 | exclusiveMinimum=0 | Schema未设默认；装配/运行时默认见语义说明 | 量表上界；Schema数值约束与运行时范围规则同时适用。 |
+| "number" | 本分支可选 | exclusiveMinimum=0 | Schema未设默认；装配/运行时默认见语义说明 | 时间上限与min/disableFuture/禁选范围取交集；完整自然期不能截短。 |
 
 <a id="schema-232f646566696e6974696f6e732f6761756765436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f756e6974"></a>
 
@@ -245,4 +265,3 @@ Schema位置：`#/definitions/gaugeComponent/properties/props/properties/actions
 - 源码/验证定位：`packages/engine/widgets/src/components/gauge/gauge.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
-

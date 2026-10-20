@@ -1,20 +1,20 @@
 {
-  "schemaVersion": "6.32",
-  "id": "dimension-selection-page",
-  "layout": "dashboard",
+  "schemaVersion": "6.43",
+  "id": "page-visibility-inputs",
+  "layout": "report",
   "dataSources": {},
   "sections": [
     {
       "id": "main",
       "components": [
         {
-          "id": "title",
+          "id": "fact-text",
           "type": "text",
           "layout": {
             "span": 12
           },
           "props": {
-            "body": "IOC 项目经营概览 · 选择控件",
+            "body": "业务事实已就绪。",
             "variant": "reportInline"
           }
         }

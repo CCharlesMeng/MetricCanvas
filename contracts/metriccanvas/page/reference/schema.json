@@ -32,9 +32,20 @@
         "6.29",
         "6.30",
         "6.31",
-        "6.32"
+        "6.32",
+        "6.33",
+        "6.34",
+        "6.35",
+        "6.36",
+        "6.37",
+        "6.38",
+        "6.39",
+        "6.40",
+        "6.41",
+        "6.42",
+        "6.43"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43"
     },
     "id": {
       "type": "string",
@@ -76,6 +87,205 @@
           "$ref": "#/definitions/dashboardToolbar"
         }
       ]
+    },
+    "iocHeader": {
+      "type": "object",
+      "properties": {
+        "identity": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/nonEmptyTextValue"
+                }
+              ]
+            },
+            "code": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "$ref": "#/definitions/nonEmptyTextValue"
+                },
+                "value": {
+                  "$ref": "#/definitions/nonEmptyTextValue"
+                }
+              },
+              "required": [
+                "label",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "description": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "$ref": "#/definitions/nonEmptyTextValue"
+                },
+                "presentation": {
+                  "type": "string",
+                  "enum": [
+                    "inline",
+                    "tooltip"
+                  ]
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "additionalProperties": false
+            },
+            "tags": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "text": {
+                    "$ref": "#/definitions/nonEmptyTextValue"
+                  },
+                  "tone": {
+                    "type": "string",
+                    "enum": [
+                      "neutral",
+                      "info",
+                      "success",
+                      "warning",
+                      "danger"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "text"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "facts": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "queryPeriod",
+                      "latestDataPeriod",
+                      "refreshedAt",
+                      "generatedAt"
+                    ]
+                  },
+                  "label": {
+                    "$ref": "#/definitions/nonEmptyTextValue"
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/nonEmptyTextValue"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "fact": {
+                            "type": "string",
+                            "pattern": "^[a-z0-9][a-z0-9-]*$"
+                          },
+                          "part": {
+                            "type": "string",
+                            "enum": [
+                              "latest",
+                              "latestComplete",
+                              "refreshedAt",
+                              "generatedAt"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "fact",
+                          "part"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "label",
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "back": {
+          "type": "boolean",
+          "const": true
+        },
+        "readOnly": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "filterIds": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "uniqueItems": true
+        },
+        "presentation": {
+          "type": "object",
+          "properties": {
+            "density": {
+              "type": "string",
+              "enum": [
+                "normal",
+                "compact"
+              ]
+            },
+            "collapse": {
+              "type": "string",
+              "enum": [
+                "none",
+                "firstRow",
+                "overflow"
+              ]
+            },
+            "layout": {
+              "type": "string",
+              "enum": [
+                "stacked",
+                "inline"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "strictURLInputs": {
+      "type": "boolean",
+      "const": true
     },
     "params": {
       "anyOf": [
@@ -207,6 +417,9 @@
                 },
                 {
                   "$ref": "#/definitions/aiSummaryComponent"
+                },
+                {
+                  "$ref": "#/definitions/buttonComponent"
                 }
               ]
             }
@@ -229,6 +442,13 @@
           "id": {
             "type": "string",
             "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "visibleWhen": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/condition"
+              }
+            ]
           },
           "label": {
             "type": "string",
@@ -343,6 +563,7 @@
             "compact-million-2",
             "compact-yi-1",
             "cny-adaptive",
+            "usd-adaptive",
             "percent-0",
             "percent-1",
             "percent-2",
@@ -385,6 +606,7 @@
             "compact-million-2",
             "compact-yi-1",
             "cny-adaptive",
+            "usd-adaptive",
             "percent-0",
             "percent-1",
             "percent-2",
@@ -468,7 +690,8 @@
           "additionalProperties": false
         }
       ],
-      "description": "dashboard 页面统一工具栏显隐或紧凑只读呈现；缺省 visible"
+      "description": "旧页面兼容字段；统一由 IocHeader 呈现，新页面配置 iocHeader",
+      "deprecated": true
     },
     "pageParam": {
       "anyOf": [
@@ -935,6 +1158,7 @@
                 "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
+                "usd-adaptive",
                 "percent-0",
                 "percent-1",
                 "percent-2",
@@ -964,7 +1188,10 @@
             },
             "currency": {
               "type": "string",
-              "const": "CNY"
+              "enum": [
+                "CNY",
+                "USD"
+              ]
             },
             "label": {
               "type": "string",
@@ -999,6 +1226,7 @@
                 "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
+                "usd-adaptive",
                 "percent-0",
                 "percent-1",
                 "percent-2",
@@ -1828,6 +2056,7 @@
                 "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
+                "usd-adaptive",
                 "percent-0",
                 "percent-1",
                 "percent-2",
@@ -1862,7 +2091,10 @@
             },
             "currency": {
               "type": "string",
-              "const": "CNY"
+              "enum": [
+                "CNY",
+                "USD"
+              ]
             },
             "label": {
               "type": "string",
@@ -1897,6 +2129,7 @@
                 "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
+                "usd-adaptive",
                 "percent-0",
                 "percent-1",
                 "percent-2",
@@ -2091,6 +2324,7 @@
               "compact-million-2",
               "compact-yi-1",
               "cny-adaptive",
+              "usd-adaptive",
               "percent-0",
               "percent-1",
               "percent-2",
@@ -2167,6 +2401,7 @@
                   "compact-million-2",
                   "compact-yi-1",
                   "cny-adaptive",
+                  "usd-adaptive",
                   "percent-0",
                   "percent-1",
                   "percent-2",
@@ -2196,7 +2431,10 @@
               },
               "currency": {
                 "type": "string",
-                "const": "CNY"
+                "enum": [
+                  "CNY",
+                  "USD"
+                ]
               },
               "label": {
                 "type": "string",
@@ -2231,6 +2469,7 @@
                   "compact-million-2",
                   "compact-yi-1",
                   "cny-adaptive",
+                  "usd-adaptive",
                   "percent-0",
                   "percent-1",
                   "percent-2",
@@ -2577,21 +2816,273 @@
                   "metric": {
                     "type": "string",
                     "minLength": 1
+                  },
+                  "metricByFilter": {
+                    "type": "object",
+                    "properties": {
+                      "filterId": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "cases": {
+                        "type": "object",
+                        "propertyNames": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "additionalProperties": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    "required": [
+                      "filterId",
+                      "cases"
+                    ],
+                    "additionalProperties": false
                   }
                 },
                 "required": [
-                  "target",
-                  "metric"
+                  "target"
                 ],
                 "additionalProperties": false
               }
             ]
           }
+        },
+        "timeModes": {
+          "type": "object",
+          "properties": {
+            "filterId": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "cases": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "minLength": 1
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "type": "object",
+                    "properties": {
+                      "dsl_list": {
+                        "minItems": 1,
+                        "maxItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "additionalProperties": {}
+                        }
+                      }
+                    },
+                    "required": [
+                      "dsl_list"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "filterBindings": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    },
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "target": {
+                              "type": "string",
+                              "const": "dimension"
+                            },
+                            "queryField": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": [
+                            "target",
+                            "queryField"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "target": {
+                              "type": "string",
+                              "const": "dimension"
+                            },
+                            "levelQueryFields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "pattern": "^[a-z0-9][a-z0-9-]*$"
+                              },
+                              "additionalProperties": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "minProperties": 2
+                            }
+                          },
+                          "required": [
+                            "target",
+                            "levelQueryFields"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "target": {
+                              "type": "string",
+                              "const": "time"
+                            },
+                            "window": {
+                              "allOf": [
+                                {
+                                  "$ref": "#/definitions/timeWindow"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "target"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "target": {
+                              "type": "string",
+                              "const": "timePoint"
+                            },
+                            "queryField": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "valueFormat": {
+                              "type": "string",
+                              "enum": [
+                                "iso",
+                                "compact"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "target",
+                            "queryField"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "target": {
+                              "type": "string",
+                              "const": "boolean"
+                            },
+                            "queryField": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "whenTrue": {
+                              "minItems": 1,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            },
+                            "whenFalse": {
+                              "minItems": 1,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            }
+                          },
+                          "required": [
+                            "target",
+                            "queryField",
+                            "whenTrue"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "target": {
+                              "type": "string",
+                              "const": "numberRange"
+                            },
+                            "metric": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "metricByFilter": {
+                              "type": "object",
+                              "properties": {
+                                "filterId": {
+                                  "type": "string",
+                                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                                },
+                                "cases": {
+                                  "type": "object",
+                                  "propertyNames": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "additionalProperties": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  }
+                                }
+                              },
+                              "required": [
+                                "filterId",
+                                "cases"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "target"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "body",
+                  "filterBindings"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "filterId",
+            "cases"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
-        "language",
-        "body"
+        "language"
       ],
       "additionalProperties": false
     },
@@ -3207,6 +3698,10 @@
                     },
                     "query": {
                       "type": "string"
+                    },
+                    "match": {
+                      "type": "string",
+                      "const": "equals"
                     }
                   },
                   "required": [
@@ -3250,6 +3745,21 @@
     "dimensionFilter": {
       "type": "object",
       "properties": {
+        "hint": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "clearOnChangeOf": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        },
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
@@ -3307,26 +3817,15 @@
             "search"
           ]
         },
-        "selection": {
-          "type": "string",
-          "enum": [
-            "single",
-            "multiple"
-          ]
-        },
-        "searchable": {
-          "type": "boolean"
-        },
-        "treeSelection": {
-          "type": "string",
-          "enum": [
-            "descendants",
-            "independent",
-            "leaf"
-          ]
-        },
         "visible": {
           "type": "boolean"
+        },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
         },
         "default": {
           "type": "array",
@@ -3370,6 +3869,121 @@
         "dependsOn": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "selection": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "single",
+                "multiple"
+              ]
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "allBehavior": {
+              "type": "string",
+              "enum": [
+                "values",
+                "unrestricted"
+              ]
+            }
+          },
+          "required": [
+            "mode"
+          ],
+          "additionalProperties": false
+        },
+        "options": {
+          "minItems": 1,
+          "maxItems": 1000,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "disabled": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "value",
+              "label"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "treeSelection": {
+          "type": "string",
+          "enum": [
+            "level",
+            "descendants",
+            "independent",
+            "leaf"
+          ]
+        },
+        "searchable": {
+          "type": "boolean"
+        },
+        "candidateWindow": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "type": "string",
+              "const": "month"
+            },
+            "n": {
+              "type": "number",
+              "const": 12
+            },
+            "includeCurrent": {
+              "type": "boolean"
+            },
+            "anchorFact": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          "required": [
+            "unit",
+            "n",
+            "includeCurrent"
+          ],
+          "additionalProperties": false
+        },
+        "candidateContext": {
+          "type": "object",
+          "properties": {
+            "filterIds": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              }
+            },
+            "reconcile": {
+              "type": "string",
+              "enum": [
+                "clear",
+                "intersection"
+              ]
+            }
+          },
+          "required": [
+            "filterIds",
+            "reconcile"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -3379,9 +3993,528 @@
       ],
       "additionalProperties": false
     },
+    "textValue": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/textValueReference"
+        },
+        {
+          "$ref": "#/definitions/filterTextValueReference"
+        },
+        {
+          "$ref": "#/definitions/textValueComposition"
+        }
+      ]
+    },
+    "condition": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "all": {
+              "minItems": 1,
+              "maxItems": 64,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/condition"
+              }
+            }
+          },
+          "required": [
+            "all"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "any": {
+              "minItems": 1,
+              "maxItems": 64,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/condition"
+              }
+            }
+          },
+          "required": [
+            "any"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "not": {
+              "$ref": "#/definitions/condition"
+            }
+          },
+          "required": [
+            "not"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "permission": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "permission"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "part": {
+              "type": "string",
+              "enum": [
+                "level",
+                "values",
+                "value",
+                "from",
+                "to"
+              ]
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "eq",
+                "ne"
+              ]
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            }
+          },
+          "required": [
+            "filter",
+            "part",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "part": {
+              "type": "string",
+              "enum": [
+                "level",
+                "values",
+                "value",
+                "from",
+                "to"
+              ]
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "in",
+                "notIn",
+                "containsAny",
+                "containsAll"
+              ]
+            },
+            "values": {
+              "minItems": 1,
+              "maxItems": 1000,
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "filter",
+            "part",
+            "op",
+            "values"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "part": {
+              "type": "string",
+              "enum": [
+                "level",
+                "values",
+                "value",
+                "from",
+                "to"
+              ]
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "gt",
+                "gte",
+                "lt",
+                "lte"
+              ]
+            },
+            "value": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "filter",
+            "part",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "part": {
+              "type": "string",
+              "enum": [
+                "level",
+                "values",
+                "value",
+                "from",
+                "to"
+              ]
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "isNull",
+                "isNotNull",
+                "isEmpty",
+                "isNotEmpty"
+              ]
+            }
+          },
+          "required": [
+            "filter",
+            "part",
+            "op"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fact": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "eq",
+                "ne"
+              ]
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            }
+          },
+          "required": [
+            "fact",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fact": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "in",
+                "notIn",
+                "containsAny",
+                "containsAll"
+              ]
+            },
+            "values": {
+              "minItems": 1,
+              "maxItems": 1000,
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "fact",
+            "op",
+            "values"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fact": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "gt",
+                "gte",
+                "lt",
+                "lte"
+              ]
+            },
+            "value": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "fact",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "fact": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "isNull",
+                "isNotNull",
+                "isEmpty",
+                "isNotEmpty"
+              ]
+            }
+          },
+          "required": [
+            "fact",
+            "op"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "row": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "eq",
+                "ne"
+              ]
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            }
+          },
+          "required": [
+            "row",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "row": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "in",
+                "notIn",
+                "containsAny",
+                "containsAll"
+              ]
+            },
+            "values": {
+              "minItems": 1,
+              "maxItems": 1000,
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "row",
+            "op",
+            "values"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "row": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "gt",
+                "gte",
+                "lt",
+                "lte"
+              ]
+            },
+            "value": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "row",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "row": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "type": "string",
+              "enum": [
+                "isNull",
+                "isNotNull",
+                "isEmpty",
+                "isNotEmpty"
+              ]
+            }
+          },
+          "required": [
+            "row",
+            "op"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
     "timeRangeFilter": {
       "type": "object",
       "properties": {
+        "hint": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "clearOnChangeOf": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        },
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
@@ -3412,9 +4545,165 @@
           "type": "string",
           "const": "timeRange"
         },
+        "min": {
+          "type": "string"
+        },
+        "max": {
+          "type": "string"
+        },
+        "blockedRanges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "availability": {
+          "type": "object",
+          "properties": {
+            "fact": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "initial": {
+              "type": "string",
+              "enum": [
+                "latest",
+                "latestComplete"
+              ]
+            },
+            "max": {
+              "type": "string",
+              "enum": [
+                "latest",
+                "latestComplete"
+              ]
+            },
+            "blockMissing": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "required": [
+            "fact",
+            "max"
+          ],
+          "additionalProperties": false
+        },
+        "disableFuture": {
+          "type": "boolean"
+        },
         "display": {
           "type": "string",
-          "const": "period"
+          "enum": [
+            "period",
+            "modes"
+          ]
+        },
+        "periodModes": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "year",
+              "quarter",
+              "month",
+              "last12Months"
+            ]
+          }
+        },
+        "modes": {
+          "minItems": 1,
+          "maxItems": 3,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "enum": [
+                  "day",
+                  "month",
+                  "isoWeek"
+                ]
+              },
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "type": "string"
+                      },
+                      "to": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "from",
+                      "to"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "$ref": "#/definitions/relativeTimeExpression"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "default"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "defaultMode": {
+          "type": "string",
+          "enum": [
+            "day",
+            "month",
+            "isoWeek"
+          ]
+        },
+        "presets": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "range": {
+                "$ref": "#/definitions/relativeTimeExpression"
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "range"
+            ],
+            "additionalProperties": false
+          }
         },
         "initialMode": {
           "type": "string",
@@ -3444,6 +4733,13 @@
         },
         "visible": {
           "type": "boolean"
+        },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
         },
         "default": {
           "anyOf": [
@@ -3603,6 +4899,21 @@
     "timePointFilter": {
       "type": "object",
       "properties": {
+        "hint": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "clearOnChangeOf": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        },
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
@@ -3639,15 +4950,76 @@
         "visible": {
           "type": "boolean"
         },
+        "min": {
+          "type": "string"
+        },
+        "max": {
+          "type": "string"
+        },
+        "blockedRanges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "availability": {
+          "type": "object",
+          "properties": {
+            "fact": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "initial": {
+              "type": "string",
+              "enum": [
+                "latest",
+                "latestComplete"
+              ]
+            },
+            "max": {
+              "type": "string",
+              "enum": [
+                "latest",
+                "latestComplete"
+              ]
+            },
+            "blockMissing": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "required": [
+            "fact",
+            "max"
+          ],
+          "additionalProperties": false
+        },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
         "granularity": {
           "type": "string",
           "enum": [
             "month",
             "date"
           ]
-        },
-        "min": {
-          "type": "string"
         },
         "disableFuture": {
           "type": "boolean"
@@ -3673,6 +5045,21 @@
     "booleanFilter": {
       "type": "object",
       "properties": {
+        "hint": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "clearOnChangeOf": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        },
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
@@ -3709,6 +5096,13 @@
         "visible": {
           "type": "boolean"
         },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
         "default": {
           "type": "boolean"
         }
@@ -3722,6 +5116,21 @@
     "numberRangeFilter": {
       "type": "object",
       "properties": {
+        "hint": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "clearOnChangeOf": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        },
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
@@ -3758,6 +5167,13 @@
         "visible": {
           "type": "boolean"
         },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
         "default": {
           "type": "object",
           "properties": {
@@ -3769,6 +5185,108 @@
             }
           },
           "additionalProperties": false
+        },
+        "constraints": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            },
+            "bounds": {
+              "type": "string",
+              "enum": [
+                "strict",
+                "inclusive"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "units": {
+          "type": "object",
+          "properties": {
+            "filterId": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "cases": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "minLength": 1
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "currency": {
+                    "type": "string",
+                    "enum": [
+                      "CNY",
+                      "USD"
+                    ]
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "scale": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "currency",
+                  "label",
+                  "scale"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "filterId",
+            "cases"
+          ],
+          "additionalProperties": false
+        },
+        "presets": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "range": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "number"
+                  },
+                  "to": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "range"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "required": [
@@ -3780,6 +5298,21 @@
     "searchFilter": {
       "type": "object",
       "properties": {
+        "hint": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "clearOnChangeOf": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        },
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
@@ -3816,6 +5349,13 @@
         "visible": {
           "type": "boolean"
         },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
         "default": {
           "type": "string"
         }
@@ -3831,6 +5371,13 @@
       "properties": {
         "id": {
           "$ref": "#/definitions/componentId"
+        },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
         },
         "type": {
           "type": "string",
@@ -4057,34 +5604,25 @@
       ],
       "description": "backdrop 铺满分区并置于同分区其余组件之下；省略为普通流"
     },
-    "textValue": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "$ref": "#/definitions/textValueReference"
-        },
-        {
-          "$ref": "#/definitions/filterTextValueReference"
-        },
-        {
-          "$ref": "#/definitions/textValueComposition"
-        }
-      ]
-    },
     "metricCardComponent": {
       "type": "object",
       "properties": {
         "id": {
           "$ref": "#/definitions/componentId"
         },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
         "type": {
           "type": "string",
           "const": "metricCard"
         },
         "layout": {
-          "$ref": "#/definitions/componentLayout"
+          "$ref": "#/definitions/metricCardLayout"
         },
         "data": {
           "$ref": "#/definitions/metricData"
@@ -4332,6 +5870,52 @@
       ],
       "additionalProperties": false
     },
+    "metricCardLayout": {
+      "type": "object",
+      "properties": {
+        "span": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "connectPrevious": {
+          "type": "boolean"
+        },
+        "layer": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/componentLayer"
+            }
+          ]
+        },
+        "before": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "$ref": "#/definitions/nonEmptyTextValue"
+            },
+            "gap": {
+              "type": "number",
+              "enum": [
+                4,
+                8,
+                12,
+                16,
+                24
+              ]
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "span"
+      ],
+      "additionalProperties": false
+    },
     "metricData": {
       "type": "object",
       "properties": {
@@ -4354,6 +5938,46 @@
       "additionalProperties": false
     },
     "fieldBinding": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/staticFieldBinding"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "byFilter": {
+              "type": "object",
+              "properties": {
+                "filterId": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "cases": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "additionalProperties": {
+                    "$ref": "#/definitions/staticFieldBinding"
+                  }
+                }
+              },
+              "required": [
+                "filterId",
+                "cases"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "byFilter"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "staticFieldBinding": {
       "anyOf": [
         {
           "type": "string",
@@ -4395,6 +6019,7 @@
                 "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
+                "usd-adaptive",
                 "percent-0",
                 "percent-1",
                 "percent-2",
@@ -4494,26 +6119,88 @@
     "componentAction": {
       "anyOf": [
         {
-          "type": "object",
-          "properties": {
-            "on": {
-              "type": "string",
-              "const": "click"
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "on": {
+                  "type": "string",
+                  "const": "click"
+                },
+                "visibleWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/condition"
+                    }
+                  ]
+                },
+                "enabledWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/condition"
+                    }
+                  ]
+                },
+                "writeFilter": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "field": {
+                  "$ref": "#/definitions/fieldReference"
+                },
+                "level": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                }
+              },
+              "required": [
+                "on",
+                "writeFilter",
+                "field"
+              ],
+              "additionalProperties": false
             },
-            "writeFilter": {
-              "type": "string",
-              "pattern": "^[a-z0-9][a-z0-9-]*$"
-            },
-            "field": {
-              "$ref": "#/definitions/fieldReference"
+            {
+              "type": "object",
+              "properties": {
+                "on": {
+                  "type": "string",
+                  "const": "click"
+                },
+                "visibleWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/condition"
+                    }
+                  ]
+                },
+                "enabledWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/condition"
+                    }
+                  ]
+                },
+                "writeFilter": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "level": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                }
+              },
+              "required": [
+                "on",
+                "writeFilter",
+                "value"
+              ],
+              "additionalProperties": false
             }
-          },
-          "required": [
-            "on",
-            "writeFilter",
-            "field"
-          ],
-          "additionalProperties": false
+          ]
         },
         {
           "type": "object",
@@ -4522,12 +6209,44 @@
               "type": "string",
               "const": "click"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/condition"
+                }
+              ]
+            },
+            "enabledWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/condition"
+                }
+              ]
+            },
             "navigate": {
               "type": "object",
               "properties": {
+                "visibleWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/condition"
+                    }
+                  ]
+                },
+                "enabledWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/condition"
+                    }
+                  ]
+                },
                 "href": {
                   "type": "string",
                   "minLength": 1
+                },
+                "validateTargetInputs": {
+                  "type": "boolean",
+                  "const": true
                 },
                 "query": {
                   "type": "object",
@@ -4590,7 +6309,8 @@
                               "value",
                               "from",
                               "to",
-                              "level"
+                              "level",
+                              "mode"
                             ]
                           }
                         },
@@ -4623,6 +6343,20 @@
               "type": "string",
               "const": "click"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/condition"
+                }
+              ]
+            },
+            "enabledWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/condition"
+                }
+              ]
+            },
             "openDetail": {
               "anyOf": [
                 {
@@ -4633,6 +6367,20 @@
                       "enum": [
                         "modal",
                         "drawer"
+                      ]
+                    },
+                    "visibleWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/condition"
+                        }
+                      ]
+                    },
+                    "enabledWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/condition"
+                        }
                       ]
                     },
                     "titleField": {
@@ -4678,6 +6426,20 @@
                       "enum": [
                         "modal",
                         "drawer"
+                      ]
+                    },
+                    "visibleWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/condition"
+                        }
+                      ]
+                    },
+                    "enabledWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/condition"
+                        }
                       ]
                     },
                     "titleField": {
@@ -4752,7 +6514,8 @@
                                   "value",
                                   "from",
                                   "to",
-                                  "level"
+                                  "level",
+                                  "mode"
                                 ]
                               }
                             },
@@ -4815,6 +6578,13 @@
         "id": {
           "$ref": "#/definitions/componentId"
         },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
         "type": {
           "type": "string",
           "const": "barChart"
@@ -4839,6 +6609,13 @@
               "allOf": [
                 {
                   "$ref": "#/definitions/chartFilter"
+                }
+              ]
+            },
+            "echartsOption": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/chartOption"
                 }
               ]
             },
@@ -4958,6 +6735,47 @@
       ],
       "additionalProperties": false
     },
+    "chartOption": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/chartOptionValue"
+      },
+      "description": "高级 ECharts 呈现 JSON；数据、结构和交互由引擎管理，不执行代码"
+    },
+    "chartOptionValue": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/chartOptionValue"
+          }
+        },
+        {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "$ref": "#/definitions/chartOptionValue"
+          }
+        }
+      ]
+    },
     "barChartSeries": {
       "type": "object",
       "properties": {
@@ -5030,6 +6848,13 @@
         "id": {
           "$ref": "#/definitions/componentId"
         },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
         "type": {
           "type": "string",
           "const": "lineChart"
@@ -5054,6 +6879,13 @@
               "allOf": [
                 {
                   "$ref": "#/definitions/chartFilter"
+                }
+              ]
+            },
+            "echartsOption": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/chartOption"
                 }
               ]
             },
@@ -5144,6 +6976,13 @@
         "id": {
           "$ref": "#/definitions/componentId"
         },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
         "type": {
           "type": "string",
           "const": "pieChart"
@@ -5168,6 +7007,13 @@
               "allOf": [
                 {
                   "$ref": "#/definitions/chartFilter"
+                }
+              ]
+            },
+            "echartsOption": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/chartOption"
                 }
               ]
             },
@@ -5218,6 +7064,13 @@
         "id": {
           "$ref": "#/definitions/componentId"
         },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
         "type": {
           "type": "string",
           "const": "table"
@@ -5231,6 +7084,13 @@
         "props": {
           "type": "object",
           "properties": {
+            "rowVisibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/condition"
+                }
+              ]
+            },
             "title": {
               "allOf": [
                 {
@@ -5249,34 +7109,127 @@
               "type": "object",
               "properties": {
                 "search": {
-                  "type": "object",
-                  "properties": {
-                    "fields": {
-                      "minItems": 1,
-                      "maxItems": 64,
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
-                      },
-                      "uniqueItems": true
-                    },
-                    "placeholder": {
-                      "allOf": [
-                        {
-                          "$ref": "#/definitions/textValue"
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "visibleWhen": {
+                          "allOf": [
+                            {
+                              "$ref": "#/definitions/condition"
+                            }
+                          ]
+                        },
+                        "enabledWhen": {
+                          "allOf": [
+                            {
+                              "$ref": "#/definitions/condition"
+                            }
+                          ]
+                        },
+                        "fields": {
+                          "minItems": 1,
+                          "maxItems": 64,
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                          },
+                          "uniqueItems": true
+                        },
+                        "placeholder": {
+                          "allOf": [
+                            {
+                              "$ref": "#/definitions/textValue"
+                            }
+                          ]
                         }
-                      ]
+                      },
+                      "required": [
+                        "fields"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "visibleWhen": {
+                          "allOf": [
+                            {
+                              "$ref": "#/definitions/condition"
+                            }
+                          ]
+                        },
+                        "enabledWhen": {
+                          "allOf": [
+                            {
+                              "$ref": "#/definitions/condition"
+                            }
+                          ]
+                        },
+                        "options": {
+                          "minItems": 1,
+                          "maxItems": 64,
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "value": {
+                                "type": "string",
+                                "pattern": "^[a-z0-9][a-z0-9-]*$"
+                              },
+                              "label": {
+                                "$ref": "#/definitions/nonEmptyTextValue"
+                              },
+                              "field": {
+                                "type": "string",
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                              },
+                              "placeholder": {
+                                "allOf": [
+                                  {
+                                    "$ref": "#/definitions/textValue"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "value",
+                              "label",
+                              "field"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "defaultValue": {
+                          "type": "string",
+                          "pattern": "^[a-z0-9][a-z0-9-]*$"
+                        }
+                      },
+                      "required": [
+                        "options"
+                      ],
+                      "additionalProperties": false
                     }
-                  },
-                  "required": [
-                    "fields"
-                  ],
-                  "additionalProperties": false
+                  ]
                 },
                 "export": {
                   "type": "object",
                   "properties": {
+                    "visibleWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/condition"
+                        }
+                      ]
+                    },
+                    "enabledWhen": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/condition"
+                        }
+                      ]
+                    },
                     "format": {
                       "type": "string",
                       "const": "xlsx"
@@ -5476,6 +7429,20 @@
         "selection": {
           "type": "object",
           "properties": {
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/condition"
+                }
+              ]
+            },
+            "enabledWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/condition"
+                }
+              ]
+            },
             "writes": {
               "type": "object",
               "propertyNames": {
@@ -5572,6 +7539,20 @@
                     "drawer"
                   ]
                 },
+                "visibleWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/condition"
+                    }
+                  ]
+                },
+                "enabledWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/condition"
+                    }
+                  ]
+                },
                 "titleField": {
                   "allOf": [
                     {
@@ -5615,6 +7596,20 @@
                   "enum": [
                     "modal",
                     "drawer"
+                  ]
+                },
+                "visibleWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/condition"
+                    }
+                  ]
+                },
+                "enabledWhen": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/condition"
+                    }
                   ]
                 },
                 "titleField": {
@@ -5689,7 +7684,8 @@
                               "value",
                               "from",
                               "to",
-                              "level"
+                              "level",
+                              "mode"
                             ]
                           }
                         },
@@ -5714,9 +7710,27 @@
         "navigate": {
           "type": "object",
           "properties": {
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/condition"
+                }
+              ]
+            },
+            "enabledWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/condition"
+                }
+              ]
+            },
             "href": {
               "type": "string",
               "minLength": 1
+            },
+            "validateTargetInputs": {
+              "type": "boolean",
+              "const": true
             },
             "query": {
               "type": "object",
@@ -5779,7 +7793,8 @@
                           "value",
                           "from",
                           "to",
-                          "level"
+                          "level",
+                          "mode"
                         ]
                       }
                     },
@@ -5865,6 +7880,13 @@
       "properties": {
         "id": {
           "$ref": "#/definitions/componentId"
+        },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
         },
         "type": {
           "type": "string",
@@ -6107,6 +8129,13 @@
         "id": {
           "$ref": "#/definitions/componentId"
         },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
         "type": {
           "type": "string",
           "const": "gauge"
@@ -6184,6 +8213,13 @@
         "id": {
           "$ref": "#/definitions/componentId"
         },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
         "type": {
           "type": "string",
           "const": "tabContainer"
@@ -6211,6 +8247,10 @@
             "defaultTab": {
               "type": "string",
               "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "initialTabUrlParam": {
+              "type": "string",
+              "minLength": 1
             },
             "tabs": {
               "minItems": 1,
@@ -6243,6 +8283,13 @@
               "type": "string",
               "pattern": "^[a-z0-9][a-z0-9-]*$"
             },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/condition"
+                }
+              ]
+            },
             "label": {
               "$ref": "#/definitions/nonEmptyTextValue"
             },
@@ -6263,6 +8310,13 @@
             "id": {
               "type": "string",
               "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "visibleWhen": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/condition"
+                }
+              ]
             },
             "label": {
               "$ref": "#/definitions/nonEmptyTextValue"
@@ -6289,6 +8343,13 @@
       "properties": {
         "id": {
           "$ref": "#/definitions/componentId"
+        },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
         },
         "type": {
           "type": "string",
@@ -6372,6 +8433,13 @@
       "properties": {
         "id": {
           "$ref": "#/definitions/componentId"
+        },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
         },
         "type": {
           "type": "string",
@@ -6490,6 +8558,13 @@
         "id": {
           "$ref": "#/definitions/componentId"
         },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
         "type": {
           "type": "string",
           "const": "categoryBreakdown"
@@ -6577,6 +8652,13 @@
         "id": {
           "$ref": "#/definitions/componentId"
         },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
         "type": {
           "type": "string",
           "const": "rankingCard"
@@ -6639,6 +8721,13 @@
       "properties": {
         "id": {
           "$ref": "#/definitions/componentId"
+        },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
         },
         "type": {
           "type": "string",
@@ -6749,6 +8838,7 @@
                         "compact-million-2",
                         "compact-yi-1",
                         "cny-adaptive",
+                        "usd-adaptive",
                         "percent-0",
                         "percent-1",
                         "percent-2",
@@ -6800,6 +8890,13 @@
       "properties": {
         "id": {
           "$ref": "#/definitions/componentId"
+        },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
         },
         "type": {
           "type": "string",
@@ -6857,6 +8954,13 @@
         "id": {
           "$ref": "#/definitions/componentId"
         },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
         "type": {
           "type": "string",
           "const": "text"
@@ -6880,6 +8984,35 @@
                   "$ref": "#/definitions/textValue"
                 }
               ]
+            },
+            "parts": {
+              "minItems": 1,
+              "maxItems": 64,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "text": {
+                    "$ref": "#/definitions/textValue"
+                  },
+                  "visibleWhen": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/condition"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "text"
+                ],
+                "additionalProperties": false
+              }
             },
             "bodyFormat": {
               "type": "string",
@@ -6905,9 +9038,27 @@
               "items": {
                 "type": "object",
                 "properties": {
+                  "visibleWhen": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/condition"
+                      }
+                    ]
+                  },
+                  "enabledWhen": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/condition"
+                      }
+                    ]
+                  },
                   "href": {
                     "type": "string",
                     "minLength": 1
+                  },
+                  "validateTargetInputs": {
+                    "type": "boolean",
+                    "const": true
                   },
                   "query": {
                     "type": "object",
@@ -6970,7 +9121,8 @@
                                 "value",
                                 "from",
                                 "to",
-                                "level"
+                                "level",
+                                "mode"
                               ]
                             }
                           },
@@ -7011,6 +9163,13 @@
       "properties": {
         "id": {
           "$ref": "#/definitions/componentId"
+        },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
         },
         "type": {
           "type": "string",
@@ -7111,12 +9270,71 @@
       ],
       "additionalProperties": false
     },
+    "buttonComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "button"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
+        "enabledWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "$ref": "#/definitions/nonEmptyTextValue"
+            },
+            "action": {
+              "$ref": "#/definitions/componentAction"
+            }
+          },
+          "required": [
+            "label",
+            "action"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "props"
+      ],
+      "additionalProperties": false
+    },
     "section": {
       "type": "object",
       "properties": {
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
         },
         "title": {
           "allOf": [
@@ -7194,6 +9412,9 @@
               },
               {
                 "$ref": "#/definitions/aiSummaryComponent"
+              },
+              {
+                "$ref": "#/definitions/buttonComponent"
               }
             ]
           }
@@ -7226,5 +9447,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.32"
+  "$id": "https://metriccanvas/page/v6.43"
 }

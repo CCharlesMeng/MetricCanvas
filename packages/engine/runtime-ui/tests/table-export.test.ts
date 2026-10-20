@@ -62,7 +62,7 @@ it('preserves an upstream page window and executes only the selected table depen
   const component = page.sections.flatMap(section => section.components).find(component => component.id === 'details-high-table') as TableComponent;
   const queries = new Map<string, EffectiveQuery>();
   for (const [id, source] of Object.entries(page.dataSources)) if (source.source.type === 'query') queries.set(id, {
-    language: 'dqe', body: source.source.query.body, fieldMappings: source.fields, filterValues: [],
+    language: 'dqe', body: source.source.query.body!, fieldMappings: source.fields, filterValues: [],
     ...(id === 'projects' ? { pagination: { offset: 10, limit: 5 } } : {})
   });
   const calls: string[] = [];

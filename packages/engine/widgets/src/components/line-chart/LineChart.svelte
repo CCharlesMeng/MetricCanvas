@@ -3,6 +3,7 @@
   import type { LineChartProps, Row } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import EChart from '../../shared/EChart.svelte';
+  import { chartSource, type ChartDiagnostic } from '../../shared/chart-option-extension';
   import { CATEGORICAL_PALETTE_PROPERTY, readColorList } from '../../shared/chart-palette';
   import { lineOption } from './options';
 
@@ -10,21 +11,22 @@
   interface Props {
     data: MainDataSlots;
     props: LineChartProps;
+    diagnostic?: ChartDiagnostic;
     /** 数据点点击,携带该点对应的数据行 */
     onpointclick?: (context: { row: Row }) => void;
   }
 
-  let { data, props, onpointclick }: Props = $props();
+  let { data, props, onpointclick, diagnostic }: Props = $props();
 
   /* 形态色板从绘图容器的计算样式读(见 shared/chart-palette.ts)。 */
   let chartContainer = $state<HTMLDivElement>();
   const palette = $derived(readColorList(chartContainer, CATEGORICAL_PALETTE_PROPERTY));
-  const option = $derived(lineOption(data, props, palette));
+  const source = $derived(chartSource(() => lineOption(data, props, palette), props, diagnostic ?? { componentId: 'direct-line-chart', componentType: 'lineChart', path: '/props/echartsOption' }));
 </script>
 
 {#if props.title}<h3>{props.title}</h3>{/if}
 <EChart
-  {option}
+  {source}
   cartesian
   expandForLabels={props.showValueLabels === true || props.categoryLabels?.mode === 'all'}
   bind:container={chartContainer}

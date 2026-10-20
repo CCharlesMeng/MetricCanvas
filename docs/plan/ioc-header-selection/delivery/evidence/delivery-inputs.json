@@ -1,0 +1,1981 @@
+{
+  "target": "589767c0f6a787562362d64a7b5d73d108ca997a",
+  "files": [
+    {
+      "path": "PAGE-METADATA.md",
+      "sha256": "57abf4fee80cf28b664f0a035060a8817146158207912219e4515864c6993c0f"
+    },
+    {
+      "path": "apps/playground/page-catalog.json",
+      "sha256": "25142c1f3010ae46fa020022cfba6a1ff7f9de4ab0e913f14b2b78f9d15b4823"
+    },
+    {
+      "path": "apps/playground/src/lib/ioc-selection-gateway.ts",
+      "sha256": "0f9a11b66e0d8b99e30c98a4ff9ea60645dbaf3c99132fabf9b51a7b4abd6077"
+    },
+    {
+      "path": "apps/playground/src/routes/(viewer)/pages/[pageId]/+page.svelte",
+      "sha256": "9dc01326b76cc3b47ef10bc9dd8e154fb160d042027560c9a7db7a4f31293532"
+    },
+    {
+      "path": "apps/playground/tests/ioc-header-selection-browser.mjs",
+      "sha256": "e05e800301a4d5346752c5a05e5e99f9fefe685b3aef3c57e472de99cddb1cb5"
+    },
+    {
+      "path": "apps/playground/tests/ioc-header-showcase-browser.mjs",
+      "sha256": "1dda5dbf4d51bb887058dff730eda0b35bfd4ff1a02d670084f65ec3806b3f07"
+    },
+    {
+      "path": "apps/playground/tests/unified-header-browser.mjs",
+      "sha256": "29b14f2a3f25cfad13f84833580c9d96b0ca3a18aaa2b2d8f9461662baee54ac"
+    },
+    {
+      "path": "contracts/metriccanvas/authoring/publication.schema.json",
+      "sha256": "2977fa4c3d328647b770d5eea03ade3997b21896f88f2072d4436923085813bb"
+    },
+    {
+      "path": "contracts/metriccanvas/manifest.json",
+      "sha256": "e1a5044bbe14b6ff5378fe13d9c943b14962f46528d6834332c82792348ee24d"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/grouped-params.json",
+      "sha256": "8088dddd677a14df857a75ca1ce5412668c20f45ccf778d4467c9fd03be9346e"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/inline-params.json",
+      "sha256": "83492519318f0386a7f3856a6fa338d5ec198170427805119490ccba0caf5308"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/layout-before-6.1.json",
+      "sha256": "34622c754e98e3bbc053ce50f0f404e1787d754219a7b0b82d87f9a5f3f9126f"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/version-major-unsupported.json",
+      "sha256": "72ec758276204ec60aab4686f63bc1d9e6fe38544b5e32fcfa4d0b8aff9e8fbc"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/version-minor-ahead.json",
+      "sha256": "17237008b8822a200d9bbe7fd8c4c3658ad0d9b2e3ecb6ba887418a1472c3e0f"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/layout-compatibility.json",
+      "sha256": "e8267f0429fd04fa67ee9b1854143c3d333261c5859b291c7bec4cfc83842538"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/param-bindings.json",
+      "sha256": "88e3008d66e04fc64e8c7d8ca51ded5bc197bfa5e4f5df5dc423c4ba33556736"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/parameter-extraction.json",
+      "sha256": "bee1f3478f0ba8809d0d27e7cf288f7c8e3235627321794edadef140808f8223"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/time-param-bindings.json",
+      "sha256": "bf46be8209016363d4e9b4cca8e12327a186a7691bf8a53b8629b46993998302"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/valid/dimension-selection-page.json",
+      "sha256": "1f5f3de02b8b499acb5f2b046511435af5ff8f3f1023ef3d2ed687f7efd2bd8f"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/actions-and-navigation.md",
+      "sha256": "994c2878af9e170712e60a85714aa1df27db91b24f468a697de472a0e95095f0"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/chart-option.md",
+      "sha256": "6b8d6e8f3f3dc2a96677f7a135eb1317458691f068fb4886ff4a968d0d89245b"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/aiSummary.md",
+      "sha256": "fa2eac58012e66b80d9e61ce84738e504c2493fb1793a4afbd66302c3d404fa2"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/barChart.md",
+      "sha256": "065760a3bc480fe26c8165d0582df3be0ff5f0e6683e47be27e642ee1fa278ae"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/button.md",
+      "sha256": "9375fc2ae9ce6ae14167f7de0326865be8c62da6e9990084a5fef94b7fffa2c9"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/categoryBreakdown.md",
+      "sha256": "4e77d14be9abdafd7b8842eaa0856ea0f5706e81c7bee81641c179042f06a9ed"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/compositeCard.md",
+      "sha256": "374edacb4c1dd191b4b356212a90fd8ff264d273f655c5f2867ca30ec19ff631"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/fieldText.md",
+      "sha256": "fa2779db0d0c84de89aa8332ba01bb44ce2bcbfd33ec73ac760f8b1b73bf54d0"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/gauge.md",
+      "sha256": "f731c5d9b9b422492ad6609ad124fc71344df2373ff8daa2cca0447d0e4e9a28"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/keyValuePanel.md",
+      "sha256": "fb4f9d9d9c8f8fe45a34907952a161bb44d867bcd446274b396090362976a338"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/lineChart.md",
+      "sha256": "d2c8acc4b2d4088a0178b6792b8b9d7c2f557e4af2302f8d3aa91b7e57d6d2fe"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/mapChart.md",
+      "sha256": "6c38c2b72dd61f7b5bb1d50382fa8fe0e0e0fdc34acaf8db01c9c0cb009e857c"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/metricCard.md",
+      "sha256": "ff853cb1a159ccfaf1fb0c4c811cf5af9d67f3e5ae71148cca10d4f8dabf8dce"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/pieChart.md",
+      "sha256": "102da6f6ee216e8c103830497a11e1479e00b98af976f489636a1f8b756e904d"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/rankingCard.md",
+      "sha256": "1b327f0ae2b9ac5bf1f709fd478d8eb3bc16eda4ae8e66b96bf3692e5f62e692"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/rankingDetailCard.md",
+      "sha256": "b89d4b85ff3d71305cd8ef2bae6af17a5576f52cfe1b8714e249619c26a4ddbe"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/reportHeader.md",
+      "sha256": "a0369e769db05b7dd605b9e9852c4ebf54febcf091df48d639fe053b31be22b5"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/tabContainer.md",
+      "sha256": "84270bd4b923cbc2a849d28ae9930a7cec02678baebe50671e21b56b9273dcde"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/table.md",
+      "sha256": "e7e277db36e26121dfb5935a7523ab8a5e71526b5c5379d632ce211600cef9f3"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/text.md",
+      "sha256": "6fcb14bc62a040c80b63430d41eb2ad37ec37120688055d4002a1c9baf6c8570"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/compute.md",
+      "sha256": "01bceef34cb50b2342005c6dd965c0cf2f531fcd5867caf924f9298d524f402c"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/conditions.md",
+      "sha256": "9432779fb0bed7dc32e7a0b9bf8fbd677aba3ccd032ae3cdea98185e36b9527b"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/data-sources.md",
+      "sha256": "898bc225ecfa1338bca1c3df8c14479b77da0eb3607a767b8acbbe5fec33d36f"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/layout-before-6.1.json",
+      "sha256": "89ec83841981f53d072c9979a74d53a903eecb3252de9383028217b0bdf4d4ce"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/version-major-unsupported.json",
+      "sha256": "2adc93c5ec1cb0543fc295fc92f3c9902e4e184797bd9b305b47dbafbd17ddae"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/version-minor-ahead.json",
+      "sha256": "1163b61c737ffff432fbe01502a05b71a86917d1678a5e657a5c3408c901ffd7"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/examples/dimension-selection-page.json",
+      "sha256": "1f5f3de02b8b499acb5f2b046511435af5ff8f3f1023ef3d2ed687f7efd2bd8f"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/field-bindings-and-formats.md",
+      "sha256": "a2bbc17b734c0fd6cdebdf40978e4d6288fdb3bc89aa0444e1b209ed82c885c2"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/fields.md",
+      "sha256": "ca0f4098c39eadb82526552b3264dd1d0ccf61e1e92739191c120d55d1565217"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/filters.md",
+      "sha256": "72c4b858f671da8c0330f015a40401a3a548a686e99f814eff40e5ab73f3cb19"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/index.json",
+      "sha256": "746b4a95ff747eb3229d81d429010be53e3b8a4599336a9712171b5c2285982f"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/page.md",
+      "sha256": "574d7574a8746cca208eda5c7e51be7724f3ae592f75be8b0ef0b1dadcd0ab8a"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/params-and-text-values.md",
+      "sha256": "a3162f5559b8cd8d2c1f5cd6c1aa8381d727ffc335ed020e4cb04df676387e8d"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/queries-and-bindings.md",
+      "sha256": "2a270f854581a3066b25d28b9d2604e7772e51e757c282e099a53c1c209fa356"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/schema.json",
+      "sha256": "7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/sections-and-layout.md",
+      "sha256": "c3327eb1afb933a8068d9a4605b1a804c3e141c67b82b313716afd66cc5ab0c1"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/semantic-html.md",
+      "sha256": "73fdc2fdf66afeb9947b01e6c681b27dc96210daf4a2763c0c8ef5ca55f1ad90"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/validation.md",
+      "sha256": "de904531c575460a79f49f26252d4998e91ae18378699fba12f60d8406d2038b"
+    },
+    {
+      "path": "contracts/metriccanvas/page/schema.json",
+      "sha256": "7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271"
+    },
+    {
+      "path": "docs/page-metadata/filters.md",
+      "sha256": "3893e02b4c5456a8861769af0d5514e19382e7d9bdb0363aabfdebe14cb954c9"
+    },
+    {
+      "path": "docs/page-metadata/reference-map.json",
+      "sha256": "dfe0b5071fd866062bceb9761a455e50711fe5073670f9b366cd6aa76344f121"
+    },
+    {
+      "path": "metriccanvas-authoring/bundle.lock.json",
+      "sha256": "db6c07b7475fc892d6adf153f59feb349292f28daf53cb35ac9037653dff8dfa"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-lock.json",
+      "sha256": "641ca981507f8bbde9ceeeb589707e7883dabc5ac114c0f5e94a86575c593291"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/authoring/publication.schema.json",
+      "sha256": "2977fa4c3d328647b770d5eea03ade3997b21896f88f2072d4436923085813bb"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/manifest.json",
+      "sha256": "e1a5044bbe14b6ff5378fe13d9c943b14962f46528d6834332c82792348ee24d"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/grouped-params.json",
+      "sha256": "8088dddd677a14df857a75ca1ce5412668c20f45ccf778d4467c9fd03be9346e"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/inline-params.json",
+      "sha256": "83492519318f0386a7f3856a6fa338d5ec198170427805119490ccba0caf5308"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/layout-before-6.1.json",
+      "sha256": "34622c754e98e3bbc053ce50f0f404e1787d754219a7b0b82d87f9a5f3f9126f"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/version-major-unsupported.json",
+      "sha256": "72ec758276204ec60aab4686f63bc1d9e6fe38544b5e32fcfa4d0b8aff9e8fbc"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/version-minor-ahead.json",
+      "sha256": "17237008b8822a200d9bbe7fd8c4c3658ad0d9b2e3ecb6ba887418a1472c3e0f"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/layout-compatibility.json",
+      "sha256": "e8267f0429fd04fa67ee9b1854143c3d333261c5859b291c7bec4cfc83842538"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/param-bindings.json",
+      "sha256": "88e3008d66e04fc64e8c7d8ca51ded5bc197bfa5e4f5df5dc423c4ba33556736"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/parameter-extraction.json",
+      "sha256": "bee1f3478f0ba8809d0d27e7cf288f7c8e3235627321794edadef140808f8223"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/time-param-bindings.json",
+      "sha256": "bf46be8209016363d4e9b4cca8e12327a186a7691bf8a53b8629b46993998302"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/valid/dimension-selection-page.json",
+      "sha256": "1f5f3de02b8b499acb5f2b046511435af5ff8f3f1023ef3d2ed687f7efd2bd8f"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/actions-and-navigation.md",
+      "sha256": "994c2878af9e170712e60a85714aa1df27db91b24f468a697de472a0e95095f0"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/chart-option.md",
+      "sha256": "6b8d6e8f3f3dc2a96677f7a135eb1317458691f068fb4886ff4a968d0d89245b"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/aiSummary.md",
+      "sha256": "fa2eac58012e66b80d9e61ce84738e504c2493fb1793a4afbd66302c3d404fa2"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/barChart.md",
+      "sha256": "065760a3bc480fe26c8165d0582df3be0ff5f0e6683e47be27e642ee1fa278ae"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/button.md",
+      "sha256": "9375fc2ae9ce6ae14167f7de0326865be8c62da6e9990084a5fef94b7fffa2c9"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/categoryBreakdown.md",
+      "sha256": "4e77d14be9abdafd7b8842eaa0856ea0f5706e81c7bee81641c179042f06a9ed"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/compositeCard.md",
+      "sha256": "374edacb4c1dd191b4b356212a90fd8ff264d273f655c5f2867ca30ec19ff631"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/fieldText.md",
+      "sha256": "fa2779db0d0c84de89aa8332ba01bb44ce2bcbfd33ec73ac760f8b1b73bf54d0"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/gauge.md",
+      "sha256": "f731c5d9b9b422492ad6609ad124fc71344df2373ff8daa2cca0447d0e4e9a28"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/keyValuePanel.md",
+      "sha256": "fb4f9d9d9c8f8fe45a34907952a161bb44d867bcd446274b396090362976a338"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/lineChart.md",
+      "sha256": "d2c8acc4b2d4088a0178b6792b8b9d7c2f557e4af2302f8d3aa91b7e57d6d2fe"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/mapChart.md",
+      "sha256": "6c38c2b72dd61f7b5bb1d50382fa8fe0e0e0fdc34acaf8db01c9c0cb009e857c"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/metricCard.md",
+      "sha256": "ff853cb1a159ccfaf1fb0c4c811cf5af9d67f3e5ae71148cca10d4f8dabf8dce"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/pieChart.md",
+      "sha256": "102da6f6ee216e8c103830497a11e1479e00b98af976f489636a1f8b756e904d"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/rankingCard.md",
+      "sha256": "1b327f0ae2b9ac5bf1f709fd478d8eb3bc16eda4ae8e66b96bf3692e5f62e692"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/rankingDetailCard.md",
+      "sha256": "b89d4b85ff3d71305cd8ef2bae6af17a5576f52cfe1b8714e249619c26a4ddbe"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/reportHeader.md",
+      "sha256": "a0369e769db05b7dd605b9e9852c4ebf54febcf091df48d639fe053b31be22b5"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/tabContainer.md",
+      "sha256": "84270bd4b923cbc2a849d28ae9930a7cec02678baebe50671e21b56b9273dcde"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/table.md",
+      "sha256": "e7e277db36e26121dfb5935a7523ab8a5e71526b5c5379d632ce211600cef9f3"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/text.md",
+      "sha256": "6fcb14bc62a040c80b63430d41eb2ad37ec37120688055d4002a1c9baf6c8570"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/compute.md",
+      "sha256": "01bceef34cb50b2342005c6dd965c0cf2f531fcd5867caf924f9298d524f402c"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/conditions.md",
+      "sha256": "9432779fb0bed7dc32e7a0b9bf8fbd677aba3ccd032ae3cdea98185e36b9527b"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/data-sources.md",
+      "sha256": "898bc225ecfa1338bca1c3df8c14479b77da0eb3607a767b8acbbe5fec33d36f"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/layout-before-6.1.json",
+      "sha256": "89ec83841981f53d072c9979a74d53a903eecb3252de9383028217b0bdf4d4ce"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/version-major-unsupported.json",
+      "sha256": "2adc93c5ec1cb0543fc295fc92f3c9902e4e184797bd9b305b47dbafbd17ddae"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/version-minor-ahead.json",
+      "sha256": "1163b61c737ffff432fbe01502a05b71a86917d1678a5e657a5c3408c901ffd7"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/examples/dimension-selection-page.json",
+      "sha256": "1f5f3de02b8b499acb5f2b046511435af5ff8f3f1023ef3d2ed687f7efd2bd8f"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/field-bindings-and-formats.md",
+      "sha256": "a2bbc17b734c0fd6cdebdf40978e4d6288fdb3bc89aa0444e1b209ed82c885c2"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/fields.md",
+      "sha256": "ca0f4098c39eadb82526552b3264dd1d0ccf61e1e92739191c120d55d1565217"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/filters.md",
+      "sha256": "72c4b858f671da8c0330f015a40401a3a548a686e99f814eff40e5ab73f3cb19"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/index.json",
+      "sha256": "746b4a95ff747eb3229d81d429010be53e3b8a4599336a9712171b5c2285982f"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/page.md",
+      "sha256": "574d7574a8746cca208eda5c7e51be7724f3ae592f75be8b0ef0b1dadcd0ab8a"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/params-and-text-values.md",
+      "sha256": "a3162f5559b8cd8d2c1f5cd6c1aa8381d727ffc335ed020e4cb04df676387e8d"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/queries-and-bindings.md",
+      "sha256": "2a270f854581a3066b25d28b9d2604e7772e51e757c282e099a53c1c209fa356"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/schema.json",
+      "sha256": "7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/sections-and-layout.md",
+      "sha256": "c3327eb1afb933a8068d9a4605b1a804c3e141c67b82b313716afd66cc5ab0c1"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/semantic-html.md",
+      "sha256": "73fdc2fdf66afeb9947b01e6c681b27dc96210daf4a2763c0c8ef5ca55f1ad90"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/validation.md",
+      "sha256": "de904531c575460a79f49f26252d4998e91ae18378699fba12f60d8406d2038b"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/schema.json",
+      "sha256": "7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271"
+    },
+    {
+      "path": "metriccanvas-authoring/contracts/exported/build-page-conformance.json",
+      "sha256": "07af2ddf45d8fa5bae1501a104c5103056c19452f7d728fcef183e1b6fb0de59"
+    },
+    {
+      "path": "metriccanvas-authoring/contracts/manifest.json",
+      "sha256": "765eb8431194b24876a82e832d065114510863b9efd8a57e874a4906957ed922"
+    },
+    {
+      "path": "metriccanvas-authoring/scripts/page-validation-bridge.mjs",
+      "sha256": "71aa34b416fb4c472d051db7c8fead75f001f5e57ffa5b9932464c84e5ce01ce"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/assets/layouts/overview-map-led.json",
+      "sha256": "167a7c0e5813d6df6050aff34419d125b1d6a52632fe751712b78a5da31fe8c5"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/knowledge.json",
+      "sha256": "bbcdfa3908caecf4772f36bc76870b1c4ae982940d54f5e85a8f717344b25938"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/actions-and-navigation.md",
+      "sha256": "6fcd86851c9af0b7e507fd448b72fdb13f0479616a3a237fe1481c03581c4685"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/chart-option.md",
+      "sha256": "299669b2462eeb04b2fc5a354795752d0a995605fc9a1874d6bbc3d617c385ff"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/aiSummary.md",
+      "sha256": "7b608d372b4397703d8dd4f80b85366d12a52051dc3b772b8532d8f7343047f8"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/barChart.md",
+      "sha256": "cf7807dd6cedc657158ad3f509c5795e9ff10763bd45f5ca6082ff9bb53c7629"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/button.md",
+      "sha256": "228ee59f925b34e5af3198644c19343f7c22aabc3319351fc7232b9e438e7a59"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/categoryBreakdown.md",
+      "sha256": "e9db9ec30c4423dced45553a8ca55733d5113c0c09e27185893f366966f3ae99"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/compositeCard.md",
+      "sha256": "fee07639438cb550b83a9d147e1a06fc6958a5d311b5db5d8ba55baee5a95136"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/fieldText.md",
+      "sha256": "be2edb9d7efbd5e348dc3a1ca889f0df61776c93ae01e80b8a0d744dee4d9cd8"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/gauge.md",
+      "sha256": "63b67bd95da603cfaaa505d5548dc35a754d279590d2fe6c929bd7771775f70c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/keyValuePanel.md",
+      "sha256": "a0af17344d5c6d1c3a2821f9543e21471bb07de7c8b551be95c75c0b937ca36c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/lineChart.md",
+      "sha256": "a0efa3ac4a0baba08cc7040a4bf852685c08ef98f4d6721ff33f8fd4aa7f3a1a"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/mapChart.md",
+      "sha256": "015fe9804d08d24be5662e64f41d753cb27d7f67c850021a463f5f297d1b19c1"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/metricCard.md",
+      "sha256": "e698922cfc18b791e2007f8917208272439ad3dabfddf77c2d48b2ef6f7190d1"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/pieChart.md",
+      "sha256": "4720b164eb5e0deba5c108082482deb2f4768bd9996b55daaf09afc8906add62"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/rankingCard.md",
+      "sha256": "a526872c42d541a75f5f2cc5b2b22d19d50dbc86056f4e21a5b40de50517dead"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/rankingDetailCard.md",
+      "sha256": "da2f19fa09607d18adc98b23bbd4f058e771c229e224534e47556d9de939f9bb"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/reportHeader.md",
+      "sha256": "6d78541c2cf2cd88ee9ab00b7d9e07853f13699cb9bb75d303d369b901a809c6"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/tabContainer.md",
+      "sha256": "1e33ade25a1b208ce883eb63f587c35409318b666f11333e76e024d738788ae4"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/table.md",
+      "sha256": "4e4186f0ee6981b21fa4d100b8f697024f8aee5d0037aaa66c6f2c6cd6bc7ca7"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/text.md",
+      "sha256": "ba9e7630c7aaa1fb0c0cbc6d3032d779201b29ae9045f60634bd79cb77ecd96e"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/compute.md",
+      "sha256": "748f0056a4c151ac63e7dfa6f49748d17a7163e669802371a1ddb11fc236d261"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/conditions.md",
+      "sha256": "5663878e9352994c1e158a974370da2377653e8534e7a17d52f3da05eb96e39e"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/data-sources.md",
+      "sha256": "f2c0c78313ccd7ec41d69acde931c62952c5e024dbb9c6e841c3d4f56790476c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/layout-before-6.1.json",
+      "sha256": "61b4c8622b7e7296243d7cc13e3bd2a023ffb579af8092479af8f6fb34ba2325"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/version-major-unsupported.json",
+      "sha256": "0b34158f5a42cc47fa2fa6349eff82bff2f1971f3299c457aaec9446461afe2d"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/version-minor-ahead.json",
+      "sha256": "cf84ac6f749dd744d8a91f7d96f9818d43367b1fdbd87b1d42d270534b43d75d"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/availability-page.json",
+      "sha256": "2c22aa03da7b3815a12a7228e81ff5cc1bb7290346f4554ed2bad02e7dd22728"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/business-filter-page.json",
+      "sha256": "b190303f7ae6894b95c14bfd6808f81bc8ec7ef78493e32c76533a7bc125f0cb"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/calendar-window-page.json",
+      "sha256": "dc337c4e1722a447d24fa84b90ecccf719af1346e249460de657e233142df8b8"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/chart-echarts-option-page.json",
+      "sha256": "91fe5b8b32059d653fbd58d2e63ff100f0f61a3e1a1ddca03fd396b5e9d68f78"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/chart-local-filter-page.json",
+      "sha256": "220f7eb3cc6494193b6e1835842dc83615ee63b9b1cc822edff6676c892c870a"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-aiSummary-reportInline.json",
+      "sha256": "3f67a9ed90a3accd9f1e2bd8144eafd54d97bb87cb98b0e83e4c8101b7897e0f"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-aiSummary.json",
+      "sha256": "6ce2158ab55105b74d2f31584f64730adc624dc269bfe5368ff0eebe058345d3"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-barChart-reportForecast.json",
+      "sha256": "e597602813d5feb616412568335a7a236030173a40cb75db55b727144bb4256c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-barChart.json",
+      "sha256": "f66a3b938e5848186921ff726798fe77246aa047356af1699975a122bc9e6dab"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-button.json",
+      "sha256": "150e960024c5e35fc988add891b7a353fbc0358576013f6db8275fb43998b3e0"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-categoryBreakdown-compactList.json",
+      "sha256": "a377388e810e0c56692f45e3defeb001e0070a2f5793cbed2914eacc823c03fc"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-categoryBreakdown.json",
+      "sha256": "3ce3bcfe17e804b7a217e751fb3b54e0b6ad8cef8f3315336cd0611e583a9d0c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-compositeCard-compact.json",
+      "sha256": "6f7a6f36aa628f0108f3e75d7bb9b2b5933d1465db644bac0858a3c88bde4d8a"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-compositeCard-metricGrid.json",
+      "sha256": "3ce3bcfe17e804b7a217e751fb3b54e0b6ad8cef8f3315336cd0611e583a9d0c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-compositeCard-projectNorms.json",
+      "sha256": "a94bc093aa28fbde0a055b2f6c2690d23677be263ac21fca8332c1d76dbe7e29"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-compositeCard.json",
+      "sha256": "3ce3bcfe17e804b7a217e751fb3b54e0b6ad8cef8f3315336cd0611e583a9d0c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-fieldText-narrativeMeeting.json",
+      "sha256": "c48569d4a2739aff8876f65f5127c50a6d8dc350ed86b9f31d1d7bde092fa85b"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-fieldText-narrativeProgress.json",
+      "sha256": "18152c1876650d8410e59c197e990d75216afee067dd8aba9500dadfa060eea0"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-fieldText-narrativeRisk.json",
+      "sha256": "5b623176df2c1fa8b1a1b35c4271b0a614475f00fb37e2a868d78943a14e9fe2"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-fieldText-narrativeShort.json",
+      "sha256": "56b26b97a074ee94c64a214eccb8d209ef05ae82fdbd2d4abd1a8508f81d5a59"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-fieldText-plain.json",
+      "sha256": "b86a3a07ed120b63642ce4fb0da4b86e5ef3952cb79175aa1c24f2532a09719d"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-fieldText-quote.json",
+      "sha256": "e973807ee470fb43d9ce6f7b0c56e7fa3c82b0ea2d630142139159ab70e73ea6"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-fieldText.json",
+      "sha256": "e973807ee470fb43d9ce6f7b0c56e7fa3c82b0ea2d630142139159ab70e73ea6"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-gauge-mini.json",
+      "sha256": "46310ff908aea3de22c9aff8876ee6e60215e86e2fd93f5b2c406d77f2884c4c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-gauge.json",
+      "sha256": "46310ff908aea3de22c9aff8876ee6e60215e86e2fd93f5b2c406d77f2884c4c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-keyValuePanel-counterStrip.json",
+      "sha256": "8f19bd61971641d56459106cd22f4e0a184f1d63f8295868a474eb4aa3554fec"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-keyValuePanel-detailNormMatrix.json",
+      "sha256": "702606c8d72defb6b7a4903de03e9f2638862bcc6257f1382f361fedfdd6ac0e"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-keyValuePanel-detailSummary.json",
+      "sha256": "185d72320fc479ca08ab40b4bc6f9191754a8c3419fd3812d5dfe773e0223ffd"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-keyValuePanel.json",
+      "sha256": "07efdfd081a993e8e72a1917ab07d00cb34e264dd140e4afd1cee68e8e7975f7"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-lineChart.json",
+      "sha256": "b67d66ba272bda229fecf7f1c1ad1004d19080aecdc9d5edd69d0479e84ad3d3"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-mapChart-regionalOverview.json",
+      "sha256": "8730c9662feb35910a001116b6885a805050ec2bfe482faff3d1953024439aad"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-mapChart.json",
+      "sha256": "5bc846dc502f872f897228d27a88cda6e45e2fae09db357490ed8029a860a290"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-metricCard-activityProgress.json",
+      "sha256": "d82aee257514acc365013a85b7166e7d9c8d8195599d20938ca9f4fc2f890266"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-metricCard-compactStack.json",
+      "sha256": "b3aec42306a2a3858067e6b48ba8c0089e7ee341e2639971c36a60742d135431"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-metricCard-compactStrip.json",
+      "sha256": "312f6519acb3ecef011958ecc8e392164825f4b203d13a1556580c7ebbcfb07b"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-metricCard-compactSummary.json",
+      "sha256": "44fa570a15a63b7b9684509c93eb035f4328e80252a650cb39d8c4e6a7972210"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-metricCard-dualSummary.json",
+      "sha256": "0a087130e926b02c43a0004ca6d1511f3e31af148d120afe4893c73c80a56cf0"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-metricCard-summary.json",
+      "sha256": "94bf6e8c4401ef07a7afd0fd9a15090fb3c39b09b56faf1e447db7b33f679222"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-metricCard.json",
+      "sha256": "ba7f9dd9b6bf5b5f871114b537774711301b01959487a039c2c012a1ed997929"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-pieChart-compactRing.json",
+      "sha256": "020c4d9c7794038524cab64bc2c00ede6f6940e1abb21e930041145f1d5d14bf"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-pieChart.json",
+      "sha256": "9e4ba7a36189371733561ad45549e3cc8fc73d1684d5712584802d38f3ac4020"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-rankingCard.json",
+      "sha256": "10e027d42dbb022d8656e03bfec407f5d0c286a308e14f411650c46f3ab8b38c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-rankingDetailCard-report.json",
+      "sha256": "0ba3425b06e40255c307b5eaf473e603bf5df97365b616ad9f339edb6372d518"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-rankingDetailCard.json",
+      "sha256": "e028b58403f9bce30a161275107a643411e4619e1bef6b998cc85d57104671f0"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-reportHeader-projectDetail.json",
+      "sha256": "74066af4ff1af429fee0d831745e86960bd66dd7f6d0209ffc877f8393829926"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-reportHeader.json",
+      "sha256": "a92c29c399d091a3871ae79e53a8bc8979de50476e09c1ad751ecc6160aecca4"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-tabContainer-analysisStack.json",
+      "sha256": "9cedc92c9244749a9b6ba5f0484f0297f865b5157afc0c9b49564aef887a0b76"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-tabContainer-compact.json",
+      "sha256": "383dbadfe434668198890e09f9e684f4aa6c3fc7acb4b7c32e26527278ab0ee9"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-tabContainer.json",
+      "sha256": "ecafb20263e8b69edb54a0325c649fc8522f5d1460b5aa67682f4d136755bacf"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-table-embedded.json",
+      "sha256": "256b43afaf91368f9d22fde99624bd563372c81d1ef0ad153ef831a72fd5f838"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-table-forecastMatrix.json",
+      "sha256": "131ee0f09c5fd14739fb1dd0b375bcb87eed5c34712965030ab7f4e6989d7bce"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-table-reportCompact.json",
+      "sha256": "6624d1109aa40ba3a9acd877575bcbfa436b7813bea7ae5f0f357bfc4494581c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-table.json",
+      "sha256": "df11435f2683c1799c5222662b36f608fe1586c9559a5cbbba702c52d7fee98c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-text-heading.json",
+      "sha256": "67d4536b81c1a0d1f9d9dd72222f142a4d6ddd3b6a004dfacb283dd1716a8bc6"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-text-insight.json",
+      "sha256": "ad3693d96ee0c17d7a6275d53e79c6f55eddf11398571e22ba46c03255d06597"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-text-plain.json",
+      "sha256": "9c9223f803719a1a604e6e4f5173a64b95612d201803062b6800fcc76f32204a"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-text-reportInline.json",
+      "sha256": "d71703cd321e0d2f3f06465c8e37bf6f6fb36198e06b61cd449171c1a20d9617"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-text-riskNotice.json",
+      "sha256": "7f490b1fc0832207b27c0db009357905dfaca7321df33bd4376c5814dcd65358"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-text.json",
+      "sha256": "3cc2fcd1035a0f7d4cfa816fb375ff10d090413b8df0b7e52e5afb6e52a93f1e"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/composite-page.json",
+      "sha256": "5716f6b6077b5eea40683d99c80df75d31c623e7555ea98ab434ea1e6adbd2e1"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/compute-page.json",
+      "sha256": "216640ce4f3af6d6e0d40ef7bee12832f23ad573d47a2170a1cf446f9d1cca25"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/cross-source-page.json",
+      "sha256": "c7c9310c621a3db745a663e102045d8ff1cf3fa6cb1c1c6a44d60de24f586ff9"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/currency-selection-page.json",
+      "sha256": "632f5bb59b4191632b7d5ed7b6ea02b11ba7f71b7d9334756962c6491488ccdd"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/dashboard-period-filter-month.json",
+      "sha256": "2caed2fc0733b267ca599adcbf74d35a3d23b6d394cca63ab6075f73d41cbc56"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/dashboard-period-filter-more.json",
+      "sha256": "de67416332944b17ab7452f95c3201ef3edbdb84cfcb1cb1e73261f544f02fe2"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/dashboard-period-filter-readonly.json",
+      "sha256": "3416e81e0696ce3542a5f76f67f1774181d66ee96db4a9fb4f5721b5f34b5aaa"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/dashboard-period-filter.json",
+      "sha256": "83a0fa7651872a629613bd22be1d6b8aa59b8d3ec962a2dfadd74ae94efa32ad"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/detail-views.json",
+      "sha256": "6c6032aff82e1499f22e54fb53915493b3c9e008d0325ac6205cb69d7f6036db"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/dimension-params-page.json",
+      "sha256": "9c30580f8692f59277491260a81554d554d81f5a87c8c8a33b875e2cfc7fefc2"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/dimension-selection-page.json",
+      "sha256": "1f5f3de02b8b499acb5f2b046511435af5ff8f3f1023ef3d2ed687f7efd2bd8f"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/explicit-presentation-page.json",
+      "sha256": "4b3ec64ce674beff5d1943d91ff854869b9ed6d47f4fc25a551beedcea50f472"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/filters-page.json",
+      "sha256": "3e5fbec37fedb6f93fadcf5f15bb48d3e965ae2eee118c2f176881fd8cd195e4"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/forecast-page.json",
+      "sha256": "31d8a6b9bf36617c94c662f84ddb1a8dc14ab71bbdfd7f5c01582f20f02b6514"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/grouped-fields-page.json",
+      "sha256": "f0fbfd4be875d3a8cf4f25e93c5570b320977f15327c88708e824cf47c680c9d"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/grouped-params-page.json",
+      "sha256": "0ae5b5657c5bf724b9d53c5201ff347ce2dbf6b3e666afc3ea2292ece4196cdf"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/grouped-scalar-params-page.json",
+      "sha256": "c30f4b628738975fbb96d102587ae4cc93ee02fe4975d7b9cb040c83bdf8c2b1"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/hierarchy-binding-page.json",
+      "sha256": "d698ab36646493197749d7fc457bcf6ab8d4e7748d074f2890b1a6a0cb2eb990"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/inline-report.json",
+      "sha256": "51230f3e2e95e64ffd8edf072feb30f145e44e8cbd5072b8f6997f0c5427e516"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/ioc-header-page.json",
+      "sha256": "949c362c6db212576784c5afe36cc64bdfc6b54655d56b82d4654f6bb7a7758c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/map-page.json",
+      "sha256": "e9efba189579213f6a57fa7dbb8d2c3346a1816fc28142d6b415a2b29df830e0"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/metric-card-equation.json",
+      "sha256": "06460ab2ff2e71601d3be3ba159485d244612f99484729e41a94d17105718c1e"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/million-formats-page.json",
+      "sha256": "7491e65ee19d01e6148d55005a3a0eb6cf379ef83e1c501b42f2ad3e1afa6f72"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/mixed-page.json",
+      "sha256": "092d970cd15480fd7d1063037b2b71f37bef922dbceae0b8af0d939691a654e9"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/navigation-detail-page.json",
+      "sha256": "6712b2a0c896ec54aaabcc2f612fad41c85510a72dd80f23be13cfa8c9d8a9d8"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/navigation-list-page.json",
+      "sha256": "ff2aa71989e675b54dc07133a465e73ebaa08c259d6801f14e46911279003d8b"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/navigation-source-page.json",
+      "sha256": "ef99ee908817873cdcbf7762a1a2f8046cc1a48d6af32553c935ede9951ed997"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/non-dimension-bindings-page.json",
+      "sha256": "2a2d26ef31988666e12e5acb8641efeb82330412d131d2e627981d75f46a7076"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/page-visibility-inputs.json",
+      "sha256": "811157eb5e1df2281f9ae5c9eff9accbbac58b87a3fd3b7c23e5d2d4c739237c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/page-visibility-region-linkage.json",
+      "sha256": "8054a14dc091a754e9a7dee3617348dd1ad56d1235e80e29466ea34e51fd7dc8"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/page-visibility-report.json",
+      "sha256": "5be0a5d05d6d7813f37caacfdcb64c58b49b902f8a1309288d5e56c3a7e76559"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/paged-join-fixed-rank-page.json",
+      "sha256": "2cd3472e4600d7bb318f2b76d05e1c219374fa6571c11b19301b2e8775b9f2b8"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/paged-join-page.json",
+      "sha256": "e523bd97c694fdb93b5e44cecefa16169903b56c946eb11133b15b232b2642f1"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/period-filter-last12-months-page.json",
+      "sha256": "9b4ec5c36023e5ddb1de4bcc170ae4029eabd924c6d6b61e02b1a61683e9371d"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/period-filter-parameter-page.json",
+      "sha256": "7fb10798987e34ccb398af724f048886bc63ae49293e99e2683fc9a0670aa549"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/period-filter-quarter-page.json",
+      "sha256": "25b7e96c853991f423294a6f05ec93be44c16ab17312338aca85b27b0d9d2022"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/period-filter-year-page.json",
+      "sha256": "cf0485ea73b52a97fe102ac11081f240c1f7527288ea8ffe3ac50bb121b12eb5"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/query-cascade-page.json",
+      "sha256": "ca293dad8bea9c31e8686a4a6f080aeb5980ee4bbd287eb21c28be1166bf2394"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/query-dashboard.json",
+      "sha256": "af68fed54a23363ae1586bcbfe157fbee87426d602ccfd7f54e1a51d0482a26a"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/query-numeric-tolerance.json",
+      "sha256": "aa48f1389f1983c7e0b12c1035462228de5a104024cc5bdbd47f4220cea16f24"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/query-result-page-window-page.json",
+      "sha256": "814b589866bbaee07eae15e550ee91a88f95382f06b91fca1096f44b15d02aef"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/query-result-where-branches.json",
+      "sha256": "d261cbc1401fcc4a1da34b240c0f9c19051b1d1b0c384c32225b8f18e553a5a3"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/query-result-where-page.json",
+      "sha256": "9335f978d53fe371cb0aa14723207231d45fe99620842e6e9c92e697772d49bf"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-branches-page.json",
+      "sha256": "66d1e1def8d7b8576dbdbbbe47c7879d7bfe5c3494c6fa8d6fee3e77fd2aa1e0"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-conditions-page.json",
+      "sha256": "8e144b3ce54c4ed635a6cb16b776d8625525e45125260e535dd4beb40af2a27a"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-export-column-actions.json",
+      "sha256": "1942e6fa992b5949881d3b2e66da115447dbb21dabd285d0b5be630a5f3c4417"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-export-compute-branches.json",
+      "sha256": "ae36d812ba327ca8d9eb5f13fd6e91c19872301d97b9f0156a8bb1506a7ef6f2"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-export-detail-bindings.json",
+      "sha256": "ff0bd7c509e86c79438cedbb008644c3e9a268705a1209cde159fce4aa75632c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-export-detail-branches.json",
+      "sha256": "cea64a7c12b2ed25f86f378a47ced3f511771be0f6f41e15583a530753b981e6"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-text-page.json",
+      "sha256": "c017f51cdca82ab42e2b70e3d9f48e9d6da63b3095287524220c1cd292d948b2"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-variants-page.json",
+      "sha256": "f9b5674f0e3822be1f90b09ad74d052b35e04f1b701eaf0092eb3b4cbf34ca3d"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/report-date-filters-page.json",
+      "sha256": "cfd6d6af88c05f0969c843cf621b56848a44148111af3606567017d0248cf9f3"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/report-export-buttons.json",
+      "sha256": "5c83ea23141141bc0aac56a9fee75b89e637443fbb16965adc1fcb9d018a27b8"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/report-export-scale-fallback.json",
+      "sha256": "0e8b3db777b76f6d6aefc277cdc62baed53a7299063716ea65b5b0438eb2e77b"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/report-filter-text-page.json",
+      "sha256": "cf3c4f83e293cd83b876403a6401e0a25771b6dabe907509c94ae07d168b8a08"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/report-pdf-export.json",
+      "sha256": "809c91a5fffd89b905c45b115ad4144917586bcf681634619b0aa1d356f18958"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/report-png-export.json",
+      "sha256": "1bca1e8802275517a5c2d2a25ab49342ba78a1ce2a4c0c94df81ed62a98d121e"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/signed-number-family-page.json",
+      "sha256": "3df08510bb601319f71967460756609eeda5a4ce5bfc081053c44d1430c852ae"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/signed-number-page.json",
+      "sha256": "25672fe1b597be09c49afbf570701ab42da908a832bd24df179bb00dea1d70c3"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/tab-url-initialization.json",
+      "sha256": "13410348014f1c2af92d80e0fef4593463cf5658e476f118fccaf9ef529cc3a3"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/tab-url-source.json",
+      "sha256": "fa8c9b1246a3f43c82afbb7c06573326fd91b903997287aa7944f0a66d7202d4"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/table-number-range-page.json",
+      "sha256": "686380b61911e852514b6071ce15f9b7ca75ac3e74a948f9c66788186a759a48"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/table-search-options-page.json",
+      "sha256": "12417c5f6433b39d9248cb2f3a18ca92b3f614848505a33ce8c4bb68c39ad16c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/table-toolbar-page.json",
+      "sha256": "08ec133bfcf81a6ca72a496b5cb11b81efa2ac1461dfdaa86bef1fe2bd1e5bb7"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/text-composition-page.json",
+      "sha256": "4ca8fbbb348306d7b181c5f3fdf561141d1841786d95da391069b68ff5370088"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/time-binding-branches-page.json",
+      "sha256": "4fcaef6030448098b7a315e65321af65821818d34f6a983eb183f4263e0536e8"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/time-modes-page.json",
+      "sha256": "cf93be62c5a358ad5902b35cf6d3e8eebbeac44fcbf6a4d761aa12369cba5715"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/time-params-page.json",
+      "sha256": "e017a6f0fd8154f0000784594416c935b9e86420291c00282c0a06880d4a4841"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/time-point-min-page.json",
+      "sha256": "f5312d67e9bc2c3fae4fe1eddbde2aab1ffad37082eb5efedfa885318cb36e29"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/time-point-no-future.json",
+      "sha256": "87d1b46ad6be5e5682e05c31a170e23ae77f55dc8ef76526bcfb8a0023ab37f7"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/time-presets-page.json",
+      "sha256": "1098c2abd490f776061e91b978661edf0d2f1cfe97fe9fbe75c8afb790c32348"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/unified-overflow-header.json",
+      "sha256": "e37b8a3263cf425f94321d1c9d424a6a05c11a12e86e585e16d57e3abbad7355"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/unified-year-header.json",
+      "sha256": "ef4f8b525a0c7e9de20362d9d808550b888d41b225e90364e5b25d16242c1328"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/url-navigation-page.json",
+      "sha256": "cfad62c3f6f7b36168f2c9d3ce6b2956e7c10d311a68308e5682d8cbb83015d1"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/field-bindings-and-formats.md",
+      "sha256": "161ada4140985c9337941c71fa928df29575511aa66569f9e2af88e52a937ceb"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/fields.md",
+      "sha256": "44131d95f01bdf6f633aa79e10e7d8b47696036911902f9dc0ad6e331a7fee3f"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/filters.md",
+      "sha256": "1bec380c67224556d9c81d1fc1779bb7b01f7df3dba0199eea5874a0fc0c5c95"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/index.json",
+      "sha256": "5bf1ebbf647d9df1b6492588c9b4649d535c92b2b707252055acca90545efabd"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/page.md",
+      "sha256": "8c083ac939ec41b4bf310b0ccd09557f9b6aef7f7979342e48be29fa0ff1b034"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/params-and-text-values.md",
+      "sha256": "425347ba365342c880c2fdd18780ce581695d7fe65a6d139db85755045a40d1c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/queries-and-bindings.md",
+      "sha256": "299a7fca40ce00ab23fa2fe9bdc5a6c7c6d4ca43a801847f2e80296a7b0f2bea"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/schema.json",
+      "sha256": "7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/sections-and-layout.md",
+      "sha256": "21dee347fb7c418ddd86e2a9dde3d1fa19874e51cd2049e5438207846b8f4cd6"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/semantic-html.md",
+      "sha256": "3db76af8987b470c76cfa793595e3488e63fc097dcf4aa0c6a3ff335eec57228"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/validation.md",
+      "sha256": "c450979493c31c0117e76e641d7001e16363e6e7a9cd07eaea94f7cf4b7a254b"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/scripts/validate-page.mjs",
+      "sha256": "9f89d227e8224934744b68b65143f6f621022f3e23223fbfc1b74636126304ab"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/actions-and-navigation.md",
+      "sha256": "994c2878af9e170712e60a85714aa1df27db91b24f468a697de472a0e95095f0"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/chart-option.md",
+      "sha256": "6b8d6e8f3f3dc2a96677f7a135eb1317458691f068fb4886ff4a968d0d89245b"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/aiSummary.md",
+      "sha256": "fa2eac58012e66b80d9e61ce84738e504c2493fb1793a4afbd66302c3d404fa2"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/barChart.md",
+      "sha256": "065760a3bc480fe26c8165d0582df3be0ff5f0e6683e47be27e642ee1fa278ae"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/button.md",
+      "sha256": "9375fc2ae9ce6ae14167f7de0326865be8c62da6e9990084a5fef94b7fffa2c9"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/categoryBreakdown.md",
+      "sha256": "4e77d14be9abdafd7b8842eaa0856ea0f5706e81c7bee81641c179042f06a9ed"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/compositeCard.md",
+      "sha256": "374edacb4c1dd191b4b356212a90fd8ff264d273f655c5f2867ca30ec19ff631"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/fieldText.md",
+      "sha256": "fa2779db0d0c84de89aa8332ba01bb44ce2bcbfd33ec73ac760f8b1b73bf54d0"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/gauge.md",
+      "sha256": "f731c5d9b9b422492ad6609ad124fc71344df2373ff8daa2cca0447d0e4e9a28"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/keyValuePanel.md",
+      "sha256": "fb4f9d9d9c8f8fe45a34907952a161bb44d867bcd446274b396090362976a338"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/lineChart.md",
+      "sha256": "d2c8acc4b2d4088a0178b6792b8b9d7c2f557e4af2302f8d3aa91b7e57d6d2fe"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/mapChart.md",
+      "sha256": "6c38c2b72dd61f7b5bb1d50382fa8fe0e0e0fdc34acaf8db01c9c0cb009e857c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/metricCard.md",
+      "sha256": "ff853cb1a159ccfaf1fb0c4c811cf5af9d67f3e5ae71148cca10d4f8dabf8dce"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/pieChart.md",
+      "sha256": "102da6f6ee216e8c103830497a11e1479e00b98af976f489636a1f8b756e904d"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/rankingCard.md",
+      "sha256": "1b327f0ae2b9ac5bf1f709fd478d8eb3bc16eda4ae8e66b96bf3692e5f62e692"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/rankingDetailCard.md",
+      "sha256": "b89d4b85ff3d71305cd8ef2bae6af17a5576f52cfe1b8714e249619c26a4ddbe"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/reportHeader.md",
+      "sha256": "a0369e769db05b7dd605b9e9852c4ebf54febcf091df48d639fe053b31be22b5"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/tabContainer.md",
+      "sha256": "84270bd4b923cbc2a849d28ae9930a7cec02678baebe50671e21b56b9273dcde"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/table.md",
+      "sha256": "e7e277db36e26121dfb5935a7523ab8a5e71526b5c5379d632ce211600cef9f3"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/text.md",
+      "sha256": "6fcb14bc62a040c80b63430d41eb2ad37ec37120688055d4002a1c9baf6c8570"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/compute.md",
+      "sha256": "01bceef34cb50b2342005c6dd965c0cf2f531fcd5867caf924f9298d524f402c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/conditions.md",
+      "sha256": "9432779fb0bed7dc32e7a0b9bf8fbd677aba3ccd032ae3cdea98185e36b9527b"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/data-sources.md",
+      "sha256": "898bc225ecfa1338bca1c3df8c14479b77da0eb3607a767b8acbbe5fec33d36f"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/layout-before-6.1.json",
+      "sha256": "89ec83841981f53d072c9979a74d53a903eecb3252de9383028217b0bdf4d4ce"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/version-major-unsupported.json",
+      "sha256": "2adc93c5ec1cb0543fc295fc92f3c9902e4e184797bd9b305b47dbafbd17ddae"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/version-minor-ahead.json",
+      "sha256": "1163b61c737ffff432fbe01502a05b71a86917d1678a5e657a5c3408c901ffd7"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/availability-page.json",
+      "sha256": "2c22aa03da7b3815a12a7228e81ff5cc1bb7290346f4554ed2bad02e7dd22728"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/business-filter-page.json",
+      "sha256": "b190303f7ae6894b95c14bfd6808f81bc8ec7ef78493e32c76533a7bc125f0cb"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/calendar-window-page.json",
+      "sha256": "dc337c4e1722a447d24fa84b90ecccf719af1346e249460de657e233142df8b8"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/chart-echarts-option-page.json",
+      "sha256": "91fe5b8b32059d653fbd58d2e63ff100f0f61a3e1a1ddca03fd396b5e9d68f78"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/chart-local-filter-page.json",
+      "sha256": "220f7eb3cc6494193b6e1835842dc83615ee63b9b1cc822edff6676c892c870a"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-aiSummary-reportInline.json",
+      "sha256": "3f67a9ed90a3accd9f1e2bd8144eafd54d97bb87cb98b0e83e4c8101b7897e0f"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-aiSummary.json",
+      "sha256": "6ce2158ab55105b74d2f31584f64730adc624dc269bfe5368ff0eebe058345d3"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-barChart-reportForecast.json",
+      "sha256": "e597602813d5feb616412568335a7a236030173a40cb75db55b727144bb4256c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-barChart.json",
+      "sha256": "f66a3b938e5848186921ff726798fe77246aa047356af1699975a122bc9e6dab"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-button.json",
+      "sha256": "150e960024c5e35fc988add891b7a353fbc0358576013f6db8275fb43998b3e0"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-categoryBreakdown-compactList.json",
+      "sha256": "a377388e810e0c56692f45e3defeb001e0070a2f5793cbed2914eacc823c03fc"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-categoryBreakdown.json",
+      "sha256": "3ce3bcfe17e804b7a217e751fb3b54e0b6ad8cef8f3315336cd0611e583a9d0c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-compositeCard-compact.json",
+      "sha256": "6f7a6f36aa628f0108f3e75d7bb9b2b5933d1465db644bac0858a3c88bde4d8a"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-compositeCard-metricGrid.json",
+      "sha256": "3ce3bcfe17e804b7a217e751fb3b54e0b6ad8cef8f3315336cd0611e583a9d0c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-compositeCard-projectNorms.json",
+      "sha256": "a94bc093aa28fbde0a055b2f6c2690d23677be263ac21fca8332c1d76dbe7e29"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-compositeCard.json",
+      "sha256": "3ce3bcfe17e804b7a217e751fb3b54e0b6ad8cef8f3315336cd0611e583a9d0c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-fieldText-narrativeMeeting.json",
+      "sha256": "c48569d4a2739aff8876f65f5127c50a6d8dc350ed86b9f31d1d7bde092fa85b"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-fieldText-narrativeProgress.json",
+      "sha256": "18152c1876650d8410e59c197e990d75216afee067dd8aba9500dadfa060eea0"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-fieldText-narrativeRisk.json",
+      "sha256": "5b623176df2c1fa8b1a1b35c4271b0a614475f00fb37e2a868d78943a14e9fe2"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-fieldText-narrativeShort.json",
+      "sha256": "56b26b97a074ee94c64a214eccb8d209ef05ae82fdbd2d4abd1a8508f81d5a59"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-fieldText-plain.json",
+      "sha256": "b86a3a07ed120b63642ce4fb0da4b86e5ef3952cb79175aa1c24f2532a09719d"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-fieldText-quote.json",
+      "sha256": "e973807ee470fb43d9ce6f7b0c56e7fa3c82b0ea2d630142139159ab70e73ea6"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-fieldText.json",
+      "sha256": "e973807ee470fb43d9ce6f7b0c56e7fa3c82b0ea2d630142139159ab70e73ea6"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-gauge-mini.json",
+      "sha256": "46310ff908aea3de22c9aff8876ee6e60215e86e2fd93f5b2c406d77f2884c4c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-gauge.json",
+      "sha256": "46310ff908aea3de22c9aff8876ee6e60215e86e2fd93f5b2c406d77f2884c4c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-keyValuePanel-counterStrip.json",
+      "sha256": "8f19bd61971641d56459106cd22f4e0a184f1d63f8295868a474eb4aa3554fec"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-keyValuePanel-detailNormMatrix.json",
+      "sha256": "702606c8d72defb6b7a4903de03e9f2638862bcc6257f1382f361fedfdd6ac0e"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-keyValuePanel-detailSummary.json",
+      "sha256": "185d72320fc479ca08ab40b4bc6f9191754a8c3419fd3812d5dfe773e0223ffd"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-keyValuePanel.json",
+      "sha256": "07efdfd081a993e8e72a1917ab07d00cb34e264dd140e4afd1cee68e8e7975f7"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-lineChart.json",
+      "sha256": "b67d66ba272bda229fecf7f1c1ad1004d19080aecdc9d5edd69d0479e84ad3d3"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-mapChart-regionalOverview.json",
+      "sha256": "8730c9662feb35910a001116b6885a805050ec2bfe482faff3d1953024439aad"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-mapChart.json",
+      "sha256": "5bc846dc502f872f897228d27a88cda6e45e2fae09db357490ed8029a860a290"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-metricCard-activityProgress.json",
+      "sha256": "d82aee257514acc365013a85b7166e7d9c8d8195599d20938ca9f4fc2f890266"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-metricCard-compactStack.json",
+      "sha256": "b3aec42306a2a3858067e6b48ba8c0089e7ee341e2639971c36a60742d135431"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-metricCard-compactStrip.json",
+      "sha256": "312f6519acb3ecef011958ecc8e392164825f4b203d13a1556580c7ebbcfb07b"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-metricCard-compactSummary.json",
+      "sha256": "44fa570a15a63b7b9684509c93eb035f4328e80252a650cb39d8c4e6a7972210"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-metricCard-dualSummary.json",
+      "sha256": "0a087130e926b02c43a0004ca6d1511f3e31af148d120afe4893c73c80a56cf0"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-metricCard-summary.json",
+      "sha256": "94bf6e8c4401ef07a7afd0fd9a15090fb3c39b09b56faf1e447db7b33f679222"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-metricCard.json",
+      "sha256": "ba7f9dd9b6bf5b5f871114b537774711301b01959487a039c2c012a1ed997929"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-pieChart-compactRing.json",
+      "sha256": "020c4d9c7794038524cab64bc2c00ede6f6940e1abb21e930041145f1d5d14bf"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-pieChart.json",
+      "sha256": "9e4ba7a36189371733561ad45549e3cc8fc73d1684d5712584802d38f3ac4020"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-rankingCard.json",
+      "sha256": "10e027d42dbb022d8656e03bfec407f5d0c286a308e14f411650c46f3ab8b38c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-rankingDetailCard-report.json",
+      "sha256": "0ba3425b06e40255c307b5eaf473e603bf5df97365b616ad9f339edb6372d518"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-rankingDetailCard.json",
+      "sha256": "e028b58403f9bce30a161275107a643411e4619e1bef6b998cc85d57104671f0"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-reportHeader-projectDetail.json",
+      "sha256": "74066af4ff1af429fee0d831745e86960bd66dd7f6d0209ffc877f8393829926"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-reportHeader.json",
+      "sha256": "a92c29c399d091a3871ae79e53a8bc8979de50476e09c1ad751ecc6160aecca4"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-tabContainer-analysisStack.json",
+      "sha256": "9cedc92c9244749a9b6ba5f0484f0297f865b5157afc0c9b49564aef887a0b76"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-tabContainer-compact.json",
+      "sha256": "383dbadfe434668198890e09f9e684f4aa6c3fc7acb4b7c32e26527278ab0ee9"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-tabContainer.json",
+      "sha256": "ecafb20263e8b69edb54a0325c649fc8522f5d1460b5aa67682f4d136755bacf"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-table-embedded.json",
+      "sha256": "256b43afaf91368f9d22fde99624bd563372c81d1ef0ad153ef831a72fd5f838"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-table-forecastMatrix.json",
+      "sha256": "131ee0f09c5fd14739fb1dd0b375bcb87eed5c34712965030ab7f4e6989d7bce"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-table-reportCompact.json",
+      "sha256": "6624d1109aa40ba3a9acd877575bcbfa436b7813bea7ae5f0f357bfc4494581c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-table.json",
+      "sha256": "df11435f2683c1799c5222662b36f608fe1586c9559a5cbbba702c52d7fee98c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-text-heading.json",
+      "sha256": "67d4536b81c1a0d1f9d9dd72222f142a4d6ddd3b6a004dfacb283dd1716a8bc6"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-text-insight.json",
+      "sha256": "ad3693d96ee0c17d7a6275d53e79c6f55eddf11398571e22ba46c03255d06597"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-text-plain.json",
+      "sha256": "9c9223f803719a1a604e6e4f5173a64b95612d201803062b6800fcc76f32204a"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-text-reportInline.json",
+      "sha256": "d71703cd321e0d2f3f06465c8e37bf6f6fb36198e06b61cd449171c1a20d9617"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-text-riskNotice.json",
+      "sha256": "7f490b1fc0832207b27c0db009357905dfaca7321df33bd4376c5814dcd65358"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-text.json",
+      "sha256": "3cc2fcd1035a0f7d4cfa816fb375ff10d090413b8df0b7e52e5afb6e52a93f1e"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/composite-page.json",
+      "sha256": "5716f6b6077b5eea40683d99c80df75d31c623e7555ea98ab434ea1e6adbd2e1"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/compute-page.json",
+      "sha256": "216640ce4f3af6d6e0d40ef7bee12832f23ad573d47a2170a1cf446f9d1cca25"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/cross-source-page.json",
+      "sha256": "c7c9310c621a3db745a663e102045d8ff1cf3fa6cb1c1c6a44d60de24f586ff9"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/currency-selection-page.json",
+      "sha256": "632f5bb59b4191632b7d5ed7b6ea02b11ba7f71b7d9334756962c6491488ccdd"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/dashboard-period-filter-month.json",
+      "sha256": "2caed2fc0733b267ca599adcbf74d35a3d23b6d394cca63ab6075f73d41cbc56"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/dashboard-period-filter-more.json",
+      "sha256": "de67416332944b17ab7452f95c3201ef3edbdb84cfcb1cb1e73261f544f02fe2"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/dashboard-period-filter-readonly.json",
+      "sha256": "3416e81e0696ce3542a5f76f67f1774181d66ee96db4a9fb4f5721b5f34b5aaa"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/dashboard-period-filter.json",
+      "sha256": "83a0fa7651872a629613bd22be1d6b8aa59b8d3ec962a2dfadd74ae94efa32ad"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/detail-views.json",
+      "sha256": "6c6032aff82e1499f22e54fb53915493b3c9e008d0325ac6205cb69d7f6036db"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/dimension-params-page.json",
+      "sha256": "9c30580f8692f59277491260a81554d554d81f5a87c8c8a33b875e2cfc7fefc2"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/dimension-selection-page.json",
+      "sha256": "1f5f3de02b8b499acb5f2b046511435af5ff8f3f1023ef3d2ed687f7efd2bd8f"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/explicit-presentation-page.json",
+      "sha256": "4b3ec64ce674beff5d1943d91ff854869b9ed6d47f4fc25a551beedcea50f472"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/filters-page.json",
+      "sha256": "3e5fbec37fedb6f93fadcf5f15bb48d3e965ae2eee118c2f176881fd8cd195e4"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/forecast-page.json",
+      "sha256": "31d8a6b9bf36617c94c662f84ddb1a8dc14ab71bbdfd7f5c01582f20f02b6514"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/grouped-fields-page.json",
+      "sha256": "f0fbfd4be875d3a8cf4f25e93c5570b320977f15327c88708e824cf47c680c9d"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/grouped-params-page.json",
+      "sha256": "0ae5b5657c5bf724b9d53c5201ff347ce2dbf6b3e666afc3ea2292ece4196cdf"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/grouped-scalar-params-page.json",
+      "sha256": "c30f4b628738975fbb96d102587ae4cc93ee02fe4975d7b9cb040c83bdf8c2b1"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/hierarchy-binding-page.json",
+      "sha256": "d698ab36646493197749d7fc457bcf6ab8d4e7748d074f2890b1a6a0cb2eb990"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/inline-report.json",
+      "sha256": "51230f3e2e95e64ffd8edf072feb30f145e44e8cbd5072b8f6997f0c5427e516"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/ioc-header-page.json",
+      "sha256": "949c362c6db212576784c5afe36cc64bdfc6b54655d56b82d4654f6bb7a7758c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/map-page.json",
+      "sha256": "e9efba189579213f6a57fa7dbb8d2c3346a1816fc28142d6b415a2b29df830e0"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/metric-card-equation.json",
+      "sha256": "06460ab2ff2e71601d3be3ba159485d244612f99484729e41a94d17105718c1e"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/million-formats-page.json",
+      "sha256": "7491e65ee19d01e6148d55005a3a0eb6cf379ef83e1c501b42f2ad3e1afa6f72"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/mixed-page.json",
+      "sha256": "092d970cd15480fd7d1063037b2b71f37bef922dbceae0b8af0d939691a654e9"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/navigation-detail-page.json",
+      "sha256": "6712b2a0c896ec54aaabcc2f612fad41c85510a72dd80f23be13cfa8c9d8a9d8"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/navigation-list-page.json",
+      "sha256": "ff2aa71989e675b54dc07133a465e73ebaa08c259d6801f14e46911279003d8b"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/navigation-source-page.json",
+      "sha256": "ef99ee908817873cdcbf7762a1a2f8046cc1a48d6af32553c935ede9951ed997"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/non-dimension-bindings-page.json",
+      "sha256": "2a2d26ef31988666e12e5acb8641efeb82330412d131d2e627981d75f46a7076"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/page-visibility-inputs.json",
+      "sha256": "811157eb5e1df2281f9ae5c9eff9accbbac58b87a3fd3b7c23e5d2d4c739237c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/page-visibility-region-linkage.json",
+      "sha256": "8054a14dc091a754e9a7dee3617348dd1ad56d1235e80e29466ea34e51fd7dc8"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/page-visibility-report.json",
+      "sha256": "5be0a5d05d6d7813f37caacfdcb64c58b49b902f8a1309288d5e56c3a7e76559"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/paged-join-fixed-rank-page.json",
+      "sha256": "2cd3472e4600d7bb318f2b76d05e1c219374fa6571c11b19301b2e8775b9f2b8"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/paged-join-page.json",
+      "sha256": "e523bd97c694fdb93b5e44cecefa16169903b56c946eb11133b15b232b2642f1"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/period-filter-last12-months-page.json",
+      "sha256": "9b4ec5c36023e5ddb1de4bcc170ae4029eabd924c6d6b61e02b1a61683e9371d"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/period-filter-parameter-page.json",
+      "sha256": "7fb10798987e34ccb398af724f048886bc63ae49293e99e2683fc9a0670aa549"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/period-filter-quarter-page.json",
+      "sha256": "25b7e96c853991f423294a6f05ec93be44c16ab17312338aca85b27b0d9d2022"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/period-filter-year-page.json",
+      "sha256": "cf0485ea73b52a97fe102ac11081f240c1f7527288ea8ffe3ac50bb121b12eb5"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/query-cascade-page.json",
+      "sha256": "ca293dad8bea9c31e8686a4a6f080aeb5980ee4bbd287eb21c28be1166bf2394"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/query-dashboard.json",
+      "sha256": "af68fed54a23363ae1586bcbfe157fbee87426d602ccfd7f54e1a51d0482a26a"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/query-numeric-tolerance.json",
+      "sha256": "aa48f1389f1983c7e0b12c1035462228de5a104024cc5bdbd47f4220cea16f24"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/query-result-page-window-page.json",
+      "sha256": "814b589866bbaee07eae15e550ee91a88f95382f06b91fca1096f44b15d02aef"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/query-result-where-branches.json",
+      "sha256": "d261cbc1401fcc4a1da34b240c0f9c19051b1d1b0c384c32225b8f18e553a5a3"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/query-result-where-page.json",
+      "sha256": "9335f978d53fe371cb0aa14723207231d45fe99620842e6e9c92e697772d49bf"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-branches-page.json",
+      "sha256": "66d1e1def8d7b8576dbdbbbe47c7879d7bfe5c3494c6fa8d6fee3e77fd2aa1e0"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-conditions-page.json",
+      "sha256": "8e144b3ce54c4ed635a6cb16b776d8625525e45125260e535dd4beb40af2a27a"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-export-column-actions.json",
+      "sha256": "1942e6fa992b5949881d3b2e66da115447dbb21dabd285d0b5be630a5f3c4417"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-export-compute-branches.json",
+      "sha256": "ae36d812ba327ca8d9eb5f13fd6e91c19872301d97b9f0156a8bb1506a7ef6f2"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-export-detail-bindings.json",
+      "sha256": "ff0bd7c509e86c79438cedbb008644c3e9a268705a1209cde159fce4aa75632c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-export-detail-branches.json",
+      "sha256": "cea64a7c12b2ed25f86f378a47ced3f511771be0f6f41e15583a530753b981e6"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-text-page.json",
+      "sha256": "c017f51cdca82ab42e2b70e3d9f48e9d6da63b3095287524220c1cd292d948b2"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-variants-page.json",
+      "sha256": "f9b5674f0e3822be1f90b09ad74d052b35e04f1b701eaf0092eb3b4cbf34ca3d"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/report-date-filters-page.json",
+      "sha256": "cfd6d6af88c05f0969c843cf621b56848a44148111af3606567017d0248cf9f3"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/report-export-buttons.json",
+      "sha256": "5c83ea23141141bc0aac56a9fee75b89e637443fbb16965adc1fcb9d018a27b8"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/report-export-scale-fallback.json",
+      "sha256": "0e8b3db777b76f6d6aefc277cdc62baed53a7299063716ea65b5b0438eb2e77b"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/report-filter-text-page.json",
+      "sha256": "cf3c4f83e293cd83b876403a6401e0a25771b6dabe907509c94ae07d168b8a08"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/report-pdf-export.json",
+      "sha256": "809c91a5fffd89b905c45b115ad4144917586bcf681634619b0aa1d356f18958"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/report-png-export.json",
+      "sha256": "1bca1e8802275517a5c2d2a25ab49342ba78a1ce2a4c0c94df81ed62a98d121e"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/signed-number-family-page.json",
+      "sha256": "3df08510bb601319f71967460756609eeda5a4ce5bfc081053c44d1430c852ae"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/signed-number-page.json",
+      "sha256": "25672fe1b597be09c49afbf570701ab42da908a832bd24df179bb00dea1d70c3"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/tab-url-initialization.json",
+      "sha256": "13410348014f1c2af92d80e0fef4593463cf5658e476f118fccaf9ef529cc3a3"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/tab-url-source.json",
+      "sha256": "fa8c9b1246a3f43c82afbb7c06573326fd91b903997287aa7944f0a66d7202d4"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/table-number-range-page.json",
+      "sha256": "686380b61911e852514b6071ce15f9b7ca75ac3e74a948f9c66788186a759a48"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/table-search-options-page.json",
+      "sha256": "12417c5f6433b39d9248cb2f3a18ca92b3f614848505a33ce8c4bb68c39ad16c"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/table-toolbar-page.json",
+      "sha256": "08ec133bfcf81a6ca72a496b5cb11b81efa2ac1461dfdaa86bef1fe2bd1e5bb7"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/text-composition-page.json",
+      "sha256": "4ca8fbbb348306d7b181c5f3fdf561141d1841786d95da391069b68ff5370088"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/time-binding-branches-page.json",
+      "sha256": "4fcaef6030448098b7a315e65321af65821818d34f6a983eb183f4263e0536e8"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/time-modes-page.json",
+      "sha256": "cf93be62c5a358ad5902b35cf6d3e8eebbeac44fcbf6a4d761aa12369cba5715"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/time-params-page.json",
+      "sha256": "e017a6f0fd8154f0000784594416c935b9e86420291c00282c0a06880d4a4841"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/time-point-min-page.json",
+      "sha256": "f5312d67e9bc2c3fae4fe1eddbde2aab1ffad37082eb5efedfa885318cb36e29"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/time-point-no-future.json",
+      "sha256": "87d1b46ad6be5e5682e05c31a170e23ae77f55dc8ef76526bcfb8a0023ab37f7"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/time-presets-page.json",
+      "sha256": "1098c2abd490f776061e91b978661edf0d2f1cfe97fe9fbe75c8afb790c32348"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/unified-overflow-header.json",
+      "sha256": "e37b8a3263cf425f94321d1c9d424a6a05c11a12e86e585e16d57e3abbad7355"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/unified-year-header.json",
+      "sha256": "ef4f8b525a0c7e9de20362d9d808550b888d41b225e90364e5b25d16242c1328"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/url-navigation-page.json",
+      "sha256": "cfad62c3f6f7b36168f2c9d3ce6b2956e7c10d311a68308e5682d8cbb83015d1"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/field-bindings-and-formats.md",
+      "sha256": "a2bbc17b734c0fd6cdebdf40978e4d6288fdb3bc89aa0444e1b209ed82c885c2"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/fields.md",
+      "sha256": "ca0f4098c39eadb82526552b3264dd1d0ccf61e1e92739191c120d55d1565217"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/filters.md",
+      "sha256": "72c4b858f671da8c0330f015a40401a3a548a686e99f814eff40e5ab73f3cb19"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/index.json",
+      "sha256": "746b4a95ff747eb3229d81d429010be53e3b8a4599336a9712171b5c2285982f"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/page.md",
+      "sha256": "574d7574a8746cca208eda5c7e51be7724f3ae592f75be8b0ef0b1dadcd0ab8a"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/params-and-text-values.md",
+      "sha256": "a3162f5559b8cd8d2c1f5cd6c1aa8381d727ffc335ed020e4cb04df676387e8d"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/queries-and-bindings.md",
+      "sha256": "2a270f854581a3066b25d28b9d2604e7772e51e757c282e099a53c1c209fa356"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/schema.json",
+      "sha256": "7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/sections-and-layout.md",
+      "sha256": "c3327eb1afb933a8068d9a4605b1a804c3e141c67b82b313716afd66cc5ab0c1"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/semantic-html.md",
+      "sha256": "73fdc2fdf66afeb9947b01e6c681b27dc96210daf4a2763c0c8ef5ca55f1ad90"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/validation.md",
+      "sha256": "de904531c575460a79f49f26252d4998e91ae18378699fba12f60d8406d2038b"
+    },
+    {
+      "path": "packages/data-execution/src/candidate-validation.ts",
+      "sha256": "11ebf3f9f6824aca5edf075df8cea101f644cd788630fab38a3f10c914dd5441"
+    },
+    {
+      "path": "packages/data-execution/src/ports.ts",
+      "sha256": "cb423bcc16c39a9aaa726905bb0142194845358316bb10e6d7f674bda1d1a9f6"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "sha256": "53904186414b711b2c12ef80530a4d54131b911c4b3850947e8065a533c202ee"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/DimensionFilter.svelte",
+      "sha256": "0f60f2d250eb05f4b2a6439311f5e897aa3117bdb1bb2fe513940254e7b7a023"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "sha256": "4c6aae2d42049cc07b3e0a936d9acef8cecd4691c2a520755efcf0d389787aef"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/HierarchyFilter.svelte",
+      "sha256": "705e17c99c34f564d7efad12e60fdc9bb08bccf532f5bcce56ca3efccae0617d"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/tree.ts",
+      "sha256": "1ab5435803200c3fd50dab3946371cecd1070f8c774c56cea277bad49cdfda8c"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/report-theme-properties.ts",
+      "sha256": "bc5b22a20d00d66ce8bef2cf79980096fa9bcc040d5e21f385038d070ff5d9cd"
+    },
+    {
+      "path": "packages/engine/runtime-ui/tests/filter-tree.test.ts",
+      "sha256": "d5c3c2fe0e4d71452eb23d1724a620989872f6534ac386df89a2bad548afadcb"
+    },
+    {
+      "path": "packages/engine/runtime/src/detail-view.ts",
+      "sha256": "34366ca35e88aa73643c6633643ad31532561ad54ce2139ebfa0ff6cd919709b"
+    },
+    {
+      "path": "packages/engine/runtime/src/filter-state.ts",
+      "sha256": "931cbffb1294190a52ce1e9aa7e47a6c3561b7cbded6c236748c7dbf55577ec6"
+    },
+    {
+      "path": "packages/engine/runtime/tests/dimension-selection.test.ts",
+      "sha256": "6ca88d77f52ec9a20be3fab97e4b5ae9e0fa85a931e65546e484a9fc1e1ece6e"
+    },
+    {
+      "path": "packages/page/fixtures/contract-valid/dimension-selection-page.json",
+      "sha256": "1f5f3de02b8b499acb5f2b046511435af5ff8f3f1023ef3d2ed687f7efd2bd8f"
+    },
+    {
+      "path": "packages/page/src/filter-dependencies.ts",
+      "sha256": "d3b0fc3f4ad8aebde9d2367d485cd05e9cab4edfb94c69cc1841f1257b50fb23"
+    },
+    {
+      "path": "packages/page/src/filter.ts",
+      "sha256": "5a101732e61f3ef1e67224baffc051cdec19322c5190b34fdde77bd944e5a819"
+    },
+    {
+      "path": "packages/page/src/schema/filter.ts",
+      "sha256": "13bae9f5ee81ea471e291159c23bb3755da104d077066494c5e5e15e77457104"
+    },
+    {
+      "path": "packages/page/src/version.ts",
+      "sha256": "72dad0b9024a8eee42331305a1c1edfafce72ae9a565d569c10af9af15de7c4b"
+    },
+    {
+      "path": "packages/page/tests/dimension-selection.test.ts",
+      "sha256": "c9d9906fe902227de8c56cae11738457f4baf9de90496a76af3d5558f42eb4a7"
+    },
+    {
+      "path": "packages/page/tests/version.test.ts",
+      "sha256": "ae120c9d43578f8818bcc8a872b76aa837ece4423eb0bb56cd6612e60bf57ca7"
+    },
+    {
+      "path": "packages/ui/README.md",
+      "sha256": "3aba4277f7e1f620618c134d5a6342e83c625bd902ea81d90e9ebc3249f5b17b"
+    },
+    {
+      "path": "packages/ui/scripts/freeze-os-theme.mjs",
+      "sha256": "54654c6d56b37e987ada106397ab3a16d963a5e0f1c9bdfa209b8a09bc4892a6"
+    },
+    {
+      "path": "packages/ui/src/components/select/Select.svelte",
+      "sha256": "59e3214e46a592357e2f6a54faa408afb281cc4a0b84174235f391007fd88c65"
+    },
+    {
+      "path": "packages/ui/src/components/select/Selection.svelte",
+      "sha256": "4556d2b2b2f67e19bb842f3463edd6ad4bd21b998dc073e574eb99f7f34fb532"
+    },
+    {
+      "path": "packages/ui/src/components/select/SelectionIcon.svelte",
+      "sha256": "feb73407190b96c7289505b7ebd367b2ae48375c2fc2571a1eac3d007c685176"
+    },
+    {
+      "path": "packages/ui/src/components/select/selection.ts",
+      "sha256": "63e3d8436fb25ac8bb68b2509f87e50d401fb73cf37da6b97149e49a6a1ab886"
+    },
+    {
+      "path": "packages/ui/src/index.ts",
+      "sha256": "0d31ac370fc2d953dcf4d1ce84b6b0c5535c00679226c627f44bfca0cb2063d2"
+    },
+    {
+      "path": "packages/ui/src/shared/Theme.svelte",
+      "sha256": "c0bd339521c42e4ec08707f06392ca9f8813a7740686266ca6f7bc4fefe1d1d1"
+    },
+    {
+      "path": "packages/ui/src/types.ts",
+      "sha256": "d05091c6b0ff1de24ab78ae2541da870c9cf4e8e40fd00b97cc5dafd35d5adbd"
+    },
+    {
+      "path": "packages/ui/tests/browser/SelectionHarness.svelte",
+      "sha256": "47cbaa6336769766cc8240c8a85828fe71d71ad74524497753dc4b9b25a041b2"
+    },
+    {
+      "path": "packages/ui/tests/browser/components.spec.ts",
+      "sha256": "b4ea41fed13a29b662fe81a1c5ce7f592aa028052d7380d91b86d2b0d4d2393b"
+    },
+    {
+      "path": "packages/ui/tests/browser/main.ts",
+      "sha256": "c3c7f98af8efec5c07b17743bc44084291262934e3d0f4aa114b965315a88c49"
+    },
+    {
+      "path": "packages/ui/tests/browser/selection.spec.ts",
+      "sha256": "7dc505b7ac26510bb5f2dc90a71c3241a5b4dd9befafbe5d4caec100d74507fb"
+    },
+    {
+      "path": "packages/ui/tests/selection.test.ts",
+      "sha256": "7dac8e4272f1e520a478ba46665e1e3280bfa9d6717aa9d58cf1e595c82e7954"
+    },
+    {
+      "path": "pages/README.md",
+      "sha256": "84118057f94df189a250cadeab679958ec31e993fd7a13999b6f6fea31ebdd71"
+    },
+    {
+      "path": "pages/ioc-header-selection.json",
+      "sha256": "33aca3a3a0b3adc350ef8bedb349622fb6a8dc0063829cd1f58dcd0e70c97d38"
+    }
+  ]
+}

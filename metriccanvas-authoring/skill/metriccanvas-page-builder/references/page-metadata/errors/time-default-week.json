@@ -1,0 +1,34 @@
+{
+  "case": "time-default-week",
+  "invariant": "time-extensions",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间模式默认范围不合法",
+      "paths": [
+        "/filters/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "period",
+        "type": "timeRange",
+        "display": "modes",
+        "label": "统计期间",
+        "required": true,
+        "defaultMode": "day",
+        "modes": [
+          {
+            "…": "共2个键"
+          },
+          {
+            "…": "共2个键"
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/time-default-week.json"
+}

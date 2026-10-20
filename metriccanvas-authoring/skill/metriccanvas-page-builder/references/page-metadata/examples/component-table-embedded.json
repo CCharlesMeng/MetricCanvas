@@ -1,42 +1,23 @@
 {
-  "schemaVersion": "6.32",
-  "id": "reference-export-compute-branches",
+  "schemaVersion": "6.43",
+  "id": "tab-url-initialization",
   "layout": "report",
   "dataSources": {
-    "fill-1": {
+    "demo": {
       "fields": {
-        "time": {
+        "name": {
           "type": "string",
           "role": "dimension"
-        },
-        "amount": {
-          "type": "number",
-          "role": "measure"
         }
       },
       "source": {
         "type": "inline",
         "rows": [
           {
-            "time": "2026-01",
-            "amount": 1
+            "name": "合成数据，仅验证页签与导航"
           }
         ]
-      },
-      "compute": [
-        {
-          "op": "timeFill",
-          "timeField": "time",
-          "granularity": "month",
-          "format": "iso",
-          "range": {
-            "currentYearOffset": 0
-          },
-          "measures": [
-            "amount"
-          ]
-        }
-      ]
+      }
     }
   },
   "sections": [
@@ -44,21 +25,20 @@
       "id": "main",
       "components": [
         {
-          "id": "table-fill-1",
+          "id": "sales-tabs-detail",
           "type": "table",
           "layout": {
             "span": 12
           },
           "data": {
-            "main": "fill-1"
+            "main": "demo"
           },
           "props": {
+            "title": "销售明细：内联演示数据",
             "columns": [
               {
-                "field": "time"
-              },
-              {
-                "field": "amount"
+                "field": "name",
+                "title": "演示内容"
               }
             ],
             "variant": "embedded"

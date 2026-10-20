@@ -4,12 +4,24 @@
 
 数据槽和字段绑定声明取哪行哪列；不同variant改变摘要结构，不能把列清单当任意HTML模板。
 
+<a id="metric-card-before"></a>
+
+## 前置连接文字 6.34
+
+Dashboard 的 plain/card 内容分区可以在顶层相邻指标卡的 `layout.before` 声明 `{ "text": "+", "gap": 8 }`。text 复用文本取值，按纯文本呈现；gap 缺省 8，只接受 4/8/12/16/24（CSS px），分别表示连接文字内容盒到两侧卡片外框的间距。缺失可选文本参数时整个连接声明不参与排布。
+
+连接文字不占 span。连续连接指标卡整体占成员 span 之和，最多 12；内部先扣除文字宽度及双侧间距，再按成员 span 比例分配卡片空间。四卡各 span 3，扣除连接空间后仍等宽。文字使用固有宽度，长文字单行省略且保留完整可访问名称，不能撑宽页面。卡片空间预算不足或命中既有窄屏规则时改为单列，文字位于两卡之间，纵向双侧使用相同 gap。
+
+原文档第一张卡的 before 保留声明但不显示；其他位置的前项必须是相邻指标卡。只有原相邻两项均呈现时显示连接文字，不跨隐藏项重连，也不以查询加载或错误代替可见性判断。页面搭建移动或删除打断相邻关系时清除失效前缀，撤销会一起恢复。
+
+第一版仅支持 Dashboard、plain/card、默认 12 列的顶层指标卡；不支持 Report、columnTracks、panel、backdrop、connectPrevious、嵌套及 after。非法组合由页面校验明确拒绝。连接只表达展示关系，不执行等式计算。完整验收入口为 `pages/metric-card-equation.json`，包括 `=`、`+` 和“其中”，使用静态演示数据。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.32。结构真源为本册[schema.json](../schema.json)，SHA256 `a82a821bf9c06c65521b893a71a7b918b3a1d5cd648e0792a0d3ca9c9de63010`。字段表自动生成；可选不等于有默认值。
+页面协议 6.43。结构真源为本册[schema.json](../schema.json)，SHA256 `7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -33,6 +45,26 @@ Schema位置：`#/definitions/metricCardComponent/properties/id`。目标：[#/d
 |---|---|---|---|---|
 | 引用 #/definitions/componentId | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
 
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@metricCardComponent.visibleWhen`
+
+Schema位置：`#/definitions/metricCardComponent/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@metricCardComponent.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/metricCardComponent/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f74797065"></a>
 
 ### `@metricCardComponent.type`
@@ -51,11 +83,99 @@ Schema位置：`#/definitions/metricCardComponent/properties/type`。
 
 ### `@metricCardComponent.layout`
 
-Schema位置：`#/definitions/metricCardComponent/properties/layout`。目标：[#/definitions/componentLayout](../sections-and-layout.md#schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796f7574)。
+Schema位置：`#/definitions/metricCardComponent/properties/layout`。目标：[#/definitions/metricCardLayout](../components/metricCard.md#schema-232f646566696e6974696f6e732f6d6574726963436172644c61796f7574)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| 引用 #/definitions/componentLayout | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 受控布局声明。 |
+| 引用 #/definitions/metricCardLayout | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 受控布局声明。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d6574726963436172644c61796f7574"></a>
+
+### `@metricCardLayout`
+
+Schema位置：`#/definitions/metricCardLayout`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | required=["span"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d6574726963436172644c61796f75742f70726f706572746965732f7370616e"></a>
+
+### `@metricCardLayout.span`
+
+Schema位置：`#/definitions/metricCardLayout/properties/span`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支必填 | minimum=1; maximum=12 | Schema未设默认；装配/运行时默认见语义说明 | 占用列轨数量，不是百分比或像素。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d6574726963436172644c61796f75742f70726f706572746965732f636f6e6e65637450726576696f7573"></a>
+
+### `@metricCardLayout.connectPrevious`
+
+Schema位置：`#/definitions/metricCardLayout/properties/connectPrevious`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 与前一个内容块的连接关系，删除须考虑该依赖。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d6574726963436172644c61796f75742f70726f706572746965732f6c61796572"></a>
+
+### `@metricCardLayout.layer`
+
+Schema位置：`#/definitions/metricCardLayout/properties/layer`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | content正常内容层或backdrop铺底层。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d6574726963436172644c61796f75742f70726f706572746965732f6c617965722f616c6c4f662f30"></a>
+
+### `@metricCardLayout.layer · allOf[0]`
+
+Schema位置：`#/definitions/metricCardLayout/properties/layer/allOf/0`。目标：[#/definitions/componentLayer](../sections-and-layout.md#schema-232f646566696e6974696f6e732f636f6d706f6e656e744c61796572)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/componentLayer | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d6574726963436172644c61796f75742f70726f706572746965732f6265666f7265"></a>
+
+### `@metricCardLayout.before`
+
+Schema位置：`#/definitions/metricCardLayout/properties/before`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["text"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 与原文档前一张相邻指标卡之间的前置连接文字；仅 Dashboard 顶层默认12列的plain/card分区支持。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d6574726963436172644c61796f75742f70726f706572746965732f6265666f72652f70726f706572746965732f74657874"></a>
+
+### `@metricCardLayout.before.text`
+
+Schema位置：`#/definitions/metricCardLayout/properties/before/properties/text`。目标：[#/definitions/nonEmptyTextValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/nonEmptyTextValue | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 按纯文本呈现的连接文字，复用文本取值；缺失可选参数时整个连接缺席。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d6574726963436172644c61796f75742f70726f706572746965732f6265666f72652f70726f706572746965732f676170"></a>
+
+### `@metricCardLayout.before.gap`
+
+Schema位置：`#/definitions/metricCardLayout/properties/before/properties/gap`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 本分支可选 | enum=[4,8,12,16,24] | Schema未设默认；装配/运行时默认见语义说明 | 文字内容盒到两侧卡片的间距，单位CSS px，缺省8；不是卡片内部padding。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| 4 | 连接文字两侧各留4 CSS px。 |
+| 8 | 连接文字两侧各留8 CSS px。 |
+| 12 | 连接文字两侧各留12 CSS px。 |
+| 16 | 连接文字两侧各留16 CSS px。 |
+| 24 | 连接文字两侧各留24 CSS px。 |
 
 <a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f64617461"></a>
 
@@ -612,6 +732,7 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ac
 - `field-binding-resolves`：字段绑定引用组件已声明的数据槽与数据源中存在的字段。反例：[field-binding-undeclared-slot](../errors/field-binding-undeclared-slot.json)、[unknown-component-field](../errors/unknown-component-field.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `field-binding-role`：字段绑定的角色符合组件属性要求。反例：[field-binding-role-mismatch](../errors/field-binding-role-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `field-binding-match`：行匹配字段必须是 dimension，匹配值符合其类型。反例：[match-field-unknown](../errors/match-field-unknown.json)、[match-field-not-dimension](../errors/match-field-not-dimension.json)、[match-value-type-mismatch](../errors/match-value-type-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `metric-card-before`：6.34 Dashboard 顶层指标卡前置文字、受控间距与整组跨度。反例：[metric-before-version](../errors/metric-before-version.json)、[metric-before-report](../errors/metric-before-report.json)、[metric-before-tracks](../errors/metric-before-tracks.json)、[metric-before-span](../errors/metric-before-span.json)、[metric-before-empty](../errors/metric-before-empty.json)、[metric-before-gap](../errors/metric-before-gap.json)、[metric-before-nested](../errors/metric-before-nested.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -623,6 +744,7 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ac
 - [compactStrip](../examples/component-metricCard-compactStrip.json)：独立完整页面，保留必要语义依赖。
 - [compactStack](../examples/component-metricCard-compactStack.json)：独立完整页面，保留必要语义依赖。
 - [inline-report](../examples/inline-report.json)：完整合法页面；查询仅为静态契约证据。
+- [metric-card-equation](../examples/metric-card-equation.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-metricCard.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

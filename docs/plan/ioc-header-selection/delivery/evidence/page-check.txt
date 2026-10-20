@@ -1,0 +1,11 @@
+Scope: all 12 workspace projects
+✓ Lockfile passes supply-chain policies (verified 4d ago)
+Lockfile is up to date, resolution step is skipped
+Already up to date
+[WARN] Failed to create bin at /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/embed/node_modules/.bin/metriccanvas-execute-page. ENOENT: no such file or directory, open '/Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/data-execution/dist/program.js'
+[WARN] Failed to create bin at /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/engine/node_modules/.bin/metriccanvas-execute-page. ENOENT: no such file or directory, open '/Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/data-execution/dist/program.js'
+
+[WARN] Failed to create bin at /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/engine/node_modules/.bin/metriccanvas-execute-page. ENOENT: no such file or directory, open '/Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/engine/node_modules/@metriccanvas/data-execution/dist/program.js'
+[WARN] Failed to create bin at /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/embed/node_modules/.bin/metriccanvas-execute-page. ENOENT: no such file or directory, open '/Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/embed/node_modules/@metriccanvas/data-execution/dist/program.js'
+Done in 521ms using pnpm v11.13.0
+$ tsc --noEmit -p . && tsc --noEmit -p tsconfig.test.json

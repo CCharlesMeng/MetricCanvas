@@ -1,5 +1,7 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { Button } from '@metriccanvas/ui';
+  import { PRESENTATION_CONTEXT,type PresentationReader } from './presentation-context';
   /**
    * 组件分发:页面组件类型 → 纯渲染组件的唯一落点。
    *
@@ -11,7 +13,8 @@
    * 那几个类型:两处各列一遍时,新增一个纯容器只改了模板、判定函数就落在后面
    * (组合卡这次正是这么漏的)。
    */
-  import type { Snippet } from 'svelte';
+  import { getContext, type Snippet } from 'svelte';
+  import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
   import ReportHeaderView from './ReportHeaderView.svelte';
   import { isChartComponent, type Component, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
   import type { PageDataSnapshots } from '../../runtime/src';
@@ -51,8 +54,12 @@
   } from './component-render';
   import Self from './ComponentRenderer.svelte';
 
+  const presentation=getContext<PresentationReader|undefined>(PRESENTATION_CONTEXT);
+  const optionPaths = getContext<() => Map<string, string>>(CHART_OPTION_PATHS);
+
   interface Props {
     component: Component;
+    initialTabs?: ReadonlyMap<string, string>;
     summarySnapshot?: import('./ai-summary/session').AiSummarySnapshot;
     exportMode?: boolean;
     chartFilterValue?: (component: Component) => string | undefined;
@@ -83,6 +90,7 @@
 
   let {
     component,
+    initialTabs,
     exportMode = false, chartFilterValue, onchartfilter, headerControls, headerPeriod, summarySnapshot,
     data,
     snapshot,
@@ -99,6 +107,7 @@
   }: Props = $props();
 
   // One failed slot makes the whole component empty, including healthy comparison slots.
+  const gate=$derived(presentation?.()?.component(component.id));
   const visibleData = $derived(snapshot.status === 'error'
     ? Object.fromEntries(Object.keys(component.data ?? {}).map(slot => [slot, {
       fields: data[slot]?.fields ?? {}, snapshot: { status: 'ready' as const, rows: [] }
@@ -119,6 +128,7 @@
   {#if nested}
     <Self
       component={nestedComponent}
+      {initialTabs}
       {exportMode} {chartFilterValue} {onchartfilter} {headerControls} {headerPeriod}
       data={nested.data(nestedComponent)}
       snapshot={nested.snapshot(nestedComponent)}
@@ -136,7 +146,10 @@
 {/snippet}
 
 {#if rendersWithoutWidgetHost(component)}
-  {#if component.type === 'reportHeader'}
+  {#if component.type === 'button'}
+    <div data-button-id={component.id}><Button disabled={exportMode||gate?.enabled===false||presentation?.()?.gate(component.props.action).enabled===false}
+      onclick={()=>onchartclick?.({})}>{component.props.label}</Button></div>
+  {:else if component.type === 'reportHeader'}
     <ReportHeaderView props={component.props} period={headerPeriod?.(component)} controls={headerControls} {onback} {exportMode} />
   {:else if component.type === 'text'}
     <TextBlock props={component.props} links={textLinks} />
@@ -161,10 +174,11 @@
     </div>
   {:else if component.type === 'tabContainer'}
     <TabContainer
-      title={component.props.title}
+      title={'title' in component.props ? component.props.title : undefined}
       variant={component.props.variant}
       tabs={component.props.tabs.map((tab) => ({ id: tab.id, label: tab.label,
         contentCount: 'components' in tab ? tab.components.length : 1 }))}
+      initialTab={initialTabs?.get(component.id)}
       defaultTab={component.props.defaultTab}
     >
       {#snippet children(activeId)}
@@ -178,7 +192,7 @@
     </TabContainer>
   {:else if component.type === 'compositeCard'}
     <CompositeCard
-      title={component.props.title}
+      title={'title' in component.props ? component.props.title : undefined}
       titleIcon={component.props.titleIcon}
       variant={component.props.variant}
       spans={component.props.components.map((item) => item.layout.span)}
@@ -192,7 +206,7 @@
   {/if}
 {:else}
   {#if component.type === 'table' && table && component.props.toolbar && !exportMode && snapshot.status === 'loading'}
-    <TableToolbar toolbar={component.props.toolbar} draft={table.searchDraft} busy={table.exporting}
+    <TableToolbar toolbar={component.props.toolbar} draft={table.searchDraft} option={table.searchOption} onoption={table.onsearchoption} searchEnabled={table.toolbarEnabled?.search??true} busy={table.exporting}
       error={table.exportError} canExport={false} ondraft={table.onsearchdraft} onsearch={table.onsearch}
       onexport={table.onexport} oncancel={table.oncancelexport} />
   {/if}
@@ -201,24 +215,27 @@
       label={`${component.props.title ?? '图表'}筛选`} {exportMode}
       onchange={value => onchartfilter?.(component, value)} />
   {/if}
-  <WidgetHost {snapshot} title={component.props.title} notices={partialDataNotices(component, pageSnapshots, table?.paginationConfig?.mode === 'query')}>
+  <WidgetHost {snapshot} title={'title' in component.props ? component.props.title : undefined} notices={partialDataNotices(component, pageSnapshots, table?.paginationConfig?.mode === 'query')}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
         <MetricCard data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />
       {:else if component.type === 'barChart'}
         <BarChart
+          diagnostic={ { componentId: component.id, componentType: component.type, path: optionPaths?.().get(component.id) ?? '/props/echartsOption' } }
           data={mainData}
           props={component.props}
           onbarclick={onchartclick && (({ row }) => onchartclick?.(row))}
         />
       {:else if component.type === 'lineChart'}
         <LineChart
+          diagnostic={ { componentId: component.id, componentType: component.type, path: optionPaths?.().get(component.id) ?? '/props/echartsOption' } }
           data={mainData}
           props={component.props}
           onpointclick={onchartclick && (({ row }) => onchartclick?.(row))}
         />
       {:else if component.type === 'pieChart'}
         <PieChart
+          diagnostic={ { componentId: component.id, componentType: component.type, path: optionPaths?.().get(component.id) ?? '/props/echartsOption' } }
           data={mainData}
           props={component.props}
           onsliceclick={onchartclick && (({ row }) => onchartclick?.(row))}
@@ -250,7 +267,7 @@
           filterOptions={table.filterOptions}
           filterOptionsStatus={table.filterOptionsStatus}
           pagination={table.pagination}
-          searchDraft={table.searchDraft} exporting={table.exporting} exportError={table.exportError}
+          searchDraft={table.searchDraft} searchOption={table.searchOption} onsearchoption={table.onsearchoption} exporting={table.exporting} exportError={table.exportError}
           onsearchdraft={table.onsearchdraft} onsearch={table.onsearch} onexport={table.onexport} oncancelexport={table.oncancelexport}
           onpage={table.onpage}
           onpagesize={table.onpagesize}
@@ -258,6 +275,8 @@
           onheaderfilter={table.onheaderfilter}
           oncellselect={table.oncellselect}
           onlink={table.onlink}
+          interactionGate={table.interactionGate}
+          toolbarEnabled={table.toolbarEnabled}
           linkHref={table.linkHref}
         />
       {:else if component.type === 'mapChart'}

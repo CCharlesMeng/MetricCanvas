@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "6.43",
+  "id": "reference-conditions-page",
+  "dataSources": {},
+  "filters": [
+    {
+      "id": "f-list",
+      "type": "dimension",
+      "dimension": "kind",
+      "visible": false,
+      "visibleWhen": {
+        "not": {
+          "permission": "hidden-filter"
+        }
+      }
+    }
+  ],
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "reference-button",
+          "type": "button",
+          "layout": {
+            "span": 3
+          },
+          "visibleWhen": {
+            "any": [
+              {
+                "permission": "read"
+              },
+              {
+                "filter": "f-list",
+                "part": "values",
+                "op": "containsAny",
+                "values": [
+                  "s"
+                ]
+              }
+            ]
+          },
+          "enabledWhen": {
+            "fact": "flag",
+            "op": "eq",
+            "value": true
+          },
+          "props": {
+            "label": "静态契约按钮",
+            "action": {
+              "on": "click",
+              "writeFilter": "f-list",
+              "value": "s",
+              "visibleWhen": {
+                "permission": "read"
+              },
+              "enabledWhen": {
+                "not": {
+                  "permission": "deny"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "layout": "report"
+}

@@ -2,12 +2,14 @@ import type { RuntimeDataGateway } from '@metriccanvas/engine';
 import type { AiSummaryConfig, RuntimeViewEvent, RuntimeNavigation } from '@metriccanvas/engine/ui';
 
 export interface RuntimeInput {
+  displayInputs?: import('@metriccanvas/engine').DisplayInputs;
   document: unknown;
   execution?: import('@metriccanvas/engine').ExecutionBootstrap;
   /** 主查询执行必备;维度候选值端口可选,缺席即筛选候选值不可用。 */
   dataGateway?: RuntimeDataGateway;
   aiSummary?: AiSummaryConfig;
   /** URLSearchParams 形式，不带前导问号。 */
+  filterEditing?: { readOnly: boolean; reason?: string };
   initialSearch?: string;
   /** 可选应用能力；省略时按普通浏览器链接跳转。 */
   navigation?: RuntimeNavigation;
@@ -28,3 +30,5 @@ export interface RuntimeHandle {
   update(input: RuntimeInput): void;
   destroy(): void;
 }
+
+export type {DisplayInputsSource,DisplayInputsSnapshot,DataPeriodFact} from '@metriccanvas/page/internal';

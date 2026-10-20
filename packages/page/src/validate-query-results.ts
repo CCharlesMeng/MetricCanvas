@@ -1,3 +1,4 @@
+import {ordinaryQuery} from './time-mode';
 import { queryResultWhereErrors } from './query-result-where';
 import type { Page } from './page';
 import type { TypedError } from './errors';
@@ -15,7 +16,7 @@ export function queryResultBindingErrors(page: Page): TypedError[] {
   for (const [id, source] of Object.entries(page.dataSources)) {
     if (source.source.type !== 'query') continue;
     const query = source.source.query;
-    const item = query.body.dsl_list[0];
+    const item = ordinaryQuery(query).body.dsl_list[0];
     const filter = item.filter;
     const staticDims = filter && typeof filter === 'object' && !Array.isArray(filter) ? filter.dims : undefined;
     const targets = new Set<string>([
@@ -31,7 +32,7 @@ export function queryResultBindingErrors(page: Page): TypedError[] {
         field.role !== 'dimension' || !['string', 'number'].includes(field.type)) {
         fail(path, '结果输入必须引用查询源的原始string或number维度字段');
       } else {
-        const order = upstream.source.query.body.dsl_list[0].order;
+        const order = ordinaryQuery(upstream.source.query).body.dsl_list[0].order;
         const window = paged.has(binding.source);
         const limit = order && typeof order === 'object' && !Array.isArray(order) ? order.limit : undefined;
         if ((order && typeof order === 'object' && !Array.isArray(order) && (window ? order.offset !== 0 : 'offset' in order)) ||

@@ -1,0 +1,34 @@
+[WebServer] (node:53225) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 23 tests using 2 workers
+
+(node:53228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:53227) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 tests/browser/ioc-currency.spec.ts:7:1 › amount draft cancel, strict constraints, presets and basic-unit query (871ms)
+  ✓   1 tests/browser/ioc-header-business.spec.ts:5:1 › closed enums preserve UI codes, single choice, all-unrestricted, and boolean false (1.1s)
+  ✓   4 tests/browser/ioc-header-business.spec.ts:17:1 › explicit structure tree has own values per level; legacy tree still selects leaves (699ms)
+  ✓   3 tests/browser/ioc-currency.spec.ts:17:1 › currency clears amount in one commit, closes old draft and selects static USD data and workbook (1.0s)
+  ✓   5 tests/browser/ioc-header-business.spec.ts:24:1 › time context intersects trusted candidates; empty intersection waits explicit clear; denied and unconfigured remain gated (713ms)
+  ✓   6 tests/browser/ioc-header.spec.ts:5:1 › ordinary header consumes its real page, period anchor and queries; narrow layout (729ms)
+  ✓   7 tests/browser/ioc-header-business.spec.ts:35:1 › detail enum stays private and single month still emits compact mtime (513ms)
+  ✓   8 tests/browser/ioc-header.spec.ts:18:1 › dense measured collapse, candidate retry, recursive gate and export safety (948ms)
+  ✓   9 tests/browser/ioc-header-business.spec.ts:39:1 › required structural tree drafts a new level until one value can be committed atomically (604ms)
+  ✓  10 tests/browser/ioc-header.spec.ts:45:1 › detail single month, optional facts, legal back intent and readonly update (586ms)
+  ✓  11 tests/browser/period-filter.spec.ts:5:41 › period selection queries, restoration and readonly rolling range (date) (822ms)
+  ✓  12 tests/browser/ioc-header.spec.ts:53:1 › titleless header keeps a discrete January/March predicate (507ms)
+  ✓  14 tests/browser/ioc-header.spec.ts:57:1 › selected URL value waits for candidates; failed candidates retry current request without broadening (476ms)
+  ✓  13 tests/browser/period-filter.spec.ts:5:41 › period selection queries, restoration and readonly rolling range (month) (791ms)
+  ✓  15 tests/browser/ioc-header.spec.ts:68:1 › two embedded instances own their month anchors and destroy independently (477ms)
+  ✓  16 tests/browser/period-filter.spec.ts:44:1 › overflow panel and compact readonly consume the same period declaration (696ms)
+  ✓  17 tests/browser/table-toolbar.spec.ts:8:1 › table-local search finds a later row and downloads all matches while another table remains independent (606ms)
+  ✓  18 tests/browser/period-filter.spec.ts:67:1 › default Dashboard period picker disables future years, quarters and months (597ms)
+  ✓  19 tests/browser/table-toolbar.spec.ts:31:1 › query search forwards mapped fields and full export traverses every matching page (491ms)
+  ✓  20 tests/browser/table-toolbar.spec.ts:56:1 › unsupported query search remains clearable after failure (403ms)
+  ✓  21 tests/browser/table-toolbar.spec.ts:76:1 › variants and Tab tables retain individual search on narrow screens without titles (459ms)
+  ✓  22 tests/browser/table-toolbar.spec.ts:92:1 › cancelling a complete-data fetch prevents a late response from downloading a file (452ms)
+  ✓  23 tests/browser/table-toolbar.spec.ts:117:1 › detail tables search and export only their scoped complete result (499ms)
+
+  23 passed (9.7s)

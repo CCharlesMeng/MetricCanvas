@@ -99,3 +99,9 @@ describe('explicit stable-code parent tree',()=>{
   [{value:'a',label:'a'},{value:'a',label:'a',parentValue:'a'}]
  ])('rejects malformed complete batches',(...batch)=>{expect(()=>buildFilterTree(batch)).toThrow();});
 });
+
+
+it('retains disabled metadata on explicit and legacy candidate nodes',()=>{
+ expect(buildFilterTree([{value:'CN',label:'中国',disabled:true},{value:'SZ',label:'深圳',parentValue:'CN'}])[0]).toMatchObject({disabled:true,children:[{value:'SZ'}]});
+ expect(buildFilterTree([{value:'CN',label:'中国',disabled:true}])[0]?.disabled).toBe(true);
+});

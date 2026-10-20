@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.32",
-  "schemaSha256": "a82a821bf9c06c65521b893a71a7b918b3a1d5cd648e0792a0d3ca9c9de63010",
+  "schemaVersion": "6.43",
+  "schemaSha256": "7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -17,13 +17,23 @@
         "reference-branches-page",
         "detail-views",
         "report-date-filters-page",
-        "reference-export-detail-branches"
+        "reference-export-detail-branches",
+        "ioc-header-page",
+        "time-modes-page",
+        "time-presets-page",
+        "availability-page",
+        "calendar-window-page",
+        "unified-year-header",
+        "unified-overflow-header"
       ],
       "rules": [
         "page-layout-compatibility",
         "schema-structure",
         "schema-version-supported",
-        "detail-view-component-types"
+        "detail-view-component-types",
+        "ioc-header",
+        "time-extensions",
+        "unified-page-header"
       ]
     },
     "params-and-text-values.md": {
@@ -154,11 +164,17 @@
         "query-cascade-page",
         "query-result-where-page",
         "query-result-where-branches",
-        "query-result-page-window-page"
+        "query-result-page-window-page",
+        "time-modes-page",
+        "time-presets-page",
+        "availability-page",
+        "calendar-window-page",
+        "time-binding-branches-page"
       ],
       "rules": [
         "query-field-mapping",
-        "filter-binding"
+        "filter-binding",
+        "time-extensions"
       ]
     },
     "compute.md": {
@@ -217,6 +233,13 @@
         "dashboard-period-filter-more",
         "dashboard-period-filter-readonly",
         "chart-local-filter-page",
+        "business-filter-page",
+        "currency-selection-page",
+        "time-modes-page",
+        "time-presets-page",
+        "availability-page",
+        "calendar-window-page",
+        "unified-year-header",
         "dimension-selection-page"
       ],
       "rules": [
@@ -233,7 +256,11 @@
         "time-point-min",
         "time-point-disable-future",
         "period-filter",
-        "chart-local-filter"
+        "chart-local-filter",
+        "business-filters",
+        "currency-selection",
+        "time-extensions",
+        "unified-page-header"
       ]
     },
     "sections-and-layout.md": {
@@ -273,7 +300,8 @@
         "fieldBinding",
         "fieldReference",
         "colorRule",
-        "categoryLabels"
+        "categoryLabels",
+        "staticFieldBinding"
       ],
       "keywords": [
         "field-bindings-and-formats",
@@ -285,7 +313,8 @@
         "reference-branches-page",
         "explicit-presentation-page",
         "signed-number-page",
-        "signed-number-family-page"
+        "signed-number-family-page",
+        "currency-selection-page"
       ],
       "rules": [
         "data-slot-known-source",
@@ -296,7 +325,8 @@
         "chart-value-label-exclusive",
         "presentation-capability",
         "signed-number-format-capability",
-        "signed-number-family-capability"
+        "signed-number-family-capability",
+        "currency-selection"
       ]
     },
     "actions-and-navigation.md": {
@@ -311,7 +341,12 @@
       ],
       "examples": [
         "url-navigation-page",
-        "reference-export-detail-bindings"
+        "reference-export-detail-bindings",
+        "tab-url-source",
+        "time-modes-page",
+        "navigation-source-page",
+        "navigation-list-page",
+        "navigation-detail-page"
       ],
       "rules": [
         "url-navigation-source-contract",
@@ -455,21 +490,24 @@
     "components/metricCard.md": {
       "title": "指标卡 metricCard",
       "definitions": [
-        "metricCardComponent"
+        "metricCardComponent",
+        "metricCardLayout"
       ],
       "keywords": [
         "components/metricCard",
         "指标卡 metricCard"
       ],
       "examples": [
-        "inline-report"
+        "inline-report",
+        "metric-card-equation"
       ],
       "rules": [
         "schema-structure",
         "data-slot-known-source",
         "field-binding-resolves",
         "field-binding-role",
-        "field-binding-match"
+        "field-binding-match",
+        "metric-card-before"
       ]
     },
     "components/barChart.md": {
@@ -548,7 +586,8 @@
         "reference-export-column-actions",
         "table-toolbar-page",
         "table-number-range-page",
-        "paged-join-fixed-rank-page"
+        "paged-join-fixed-rank-page",
+        "table-search-options-page"
       ],
       "rules": [
         "table-row-key",
@@ -563,7 +602,8 @@
         "pagination-initial-rows",
         "pagination-exclusive-source",
         "table-toolbar-search",
-        "paged-join"
+        "paged-join",
+        "table-search-options"
       ]
     },
     "components/mapChart.md": {
@@ -621,10 +661,12 @@
         "Tab 容器 tabContainer"
       ],
       "examples": [
-        "composite-page"
+        "composite-page",
+        "tab-url-initialization"
       ],
       "rules": [
-        "tab-container"
+        "tab-container",
+        "tab-url-initialization"
       ]
     },
     "components/compositeCard.md": {
@@ -780,6 +822,57 @@
       "rules": [
         "ai-summary-related-data"
       ]
+    },
+    "chart-option.md": {
+      "title": "图表高级 ECharts 呈现扩展",
+      "definitions": [
+        "chartOption",
+        "chartOptionValue"
+      ],
+      "keywords": [
+        "echartsOption",
+        "ECharts",
+        "高级呈现"
+      ],
+      "examples": [
+        "chart-echarts-option-page"
+      ],
+      "rules": [
+        "chart-echarts-option"
+      ]
+    },
+    "conditions.md": {
+      "title": "条件显隐与动作资格",
+      "definitions": [
+        "condition"
+      ],
+      "keywords": [
+        "visibleWhen",
+        "enabledWhen",
+        "rowVisibleWhen",
+        "显隐",
+        "层级"
+      ],
+      "examples": [
+        "page-visibility-region-linkage",
+        "page-visibility-inputs",
+        "reference-conditions-page",
+        "page-visibility-report"
+      ]
+    },
+    "components/button.md": {
+      "title": "按钮",
+      "definitions": [
+        "buttonComponent"
+      ],
+      "keywords": [
+        "button",
+        "按钮"
+      ],
+      "examples": [
+        "page-visibility-region-linkage",
+        "reference-conditions-page"
+      ]
     }
   },
   "components": [
@@ -850,6 +943,10 @@
     {
       "type": "aiSummary",
       "file": "components/aiSummary.md"
+    },
+    {
+      "type": "button",
+      "file": "components/button.md"
     }
   ],
   "nodes": [
@@ -892,7 +989,18 @@
         "6.29",
         "6.30",
         "6.31",
-        "6.32"
+        "6.32",
+        "6.33",
+        "6.34",
+        "6.35",
+        "6.36",
+        "6.37",
+        "6.38",
+        "6.39",
+        "6.40",
+        "6.41",
+        "6.42",
+        "6.43"
       ]
     },
     {
@@ -973,6 +1081,7 @@
         "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
+        "usd-adaptive",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -1023,6 +1132,7 @@
         "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
+        "usd-adaptive",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -1172,6 +1282,261 @@
       "path": "@dashboardToolbar · anyOf[1].note",
       "required": "本分支可选",
       "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader",
+      "path": "$.iocHeader",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity",
+      "path": "$.iocHeader.identity",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/title",
+      "path": "$.iocHeader.identity.title",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/title/allOf/0",
+      "path": "$.iocHeader.identity.title · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/code",
+      "path": "$.iocHeader.identity.code",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/code/properties/label",
+      "path": "$.iocHeader.identity.code.label",
+      "required": "本分支必填",
+      "module": "page.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/code/properties/value",
+      "path": "$.iocHeader.identity.code.value",
+      "required": "本分支必填",
+      "module": "page.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/description",
+      "path": "$.iocHeader.identity.description",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/description/properties/text",
+      "path": "$.iocHeader.identity.description.text",
+      "required": "本分支必填",
+      "module": "page.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/description/properties/presentation",
+      "path": "$.iocHeader.identity.description.presentation",
+      "required": "本分支可选",
+      "module": "page.md",
+      "enum": [
+        "inline",
+        "tooltip"
+      ]
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/tags",
+      "path": "$.iocHeader.identity.tags",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/tags/items",
+      "path": "$.iocHeader.identity.tags[]",
+      "required": "每个数组项",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/tags/items/properties/id",
+      "path": "$.iocHeader.identity.tags[].id",
+      "required": "本分支必填",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/tags/items/properties/text",
+      "path": "$.iocHeader.identity.tags[].text",
+      "required": "本分支必填",
+      "module": "page.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/tags/items/properties/tone",
+      "path": "$.iocHeader.identity.tags[].tone",
+      "required": "本分支可选",
+      "module": "page.md",
+      "enum": [
+        "neutral",
+        "info",
+        "success",
+        "warning",
+        "danger"
+      ]
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/facts",
+      "path": "$.iocHeader.identity.facts",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/facts/items",
+      "path": "$.iocHeader.identity.facts[]",
+      "required": "每个数组项",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/facts/items/properties/id",
+      "path": "$.iocHeader.identity.facts[].id",
+      "required": "本分支必填",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/facts/items/properties/kind",
+      "path": "$.iocHeader.identity.facts[].kind",
+      "required": "本分支必填",
+      "module": "page.md",
+      "enum": [
+        "queryPeriod",
+        "latestDataPeriod",
+        "refreshedAt",
+        "generatedAt"
+      ]
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/facts/items/properties/label",
+      "path": "$.iocHeader.identity.facts[].label",
+      "required": "本分支必填",
+      "module": "page.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/facts/items/properties/value",
+      "path": "$.iocHeader.identity.facts[].value",
+      "required": "本分支必填",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/0",
+      "path": "$.iocHeader.identity.facts[].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/1",
+      "path": "$.iocHeader.identity.facts[].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/1/properties/fact",
+      "path": "$.iocHeader.identity.facts[].value · anyOf[1].fact",
+      "required": "本分支必填",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/1/properties/part",
+      "path": "$.iocHeader.identity.facts[].value · anyOf[1].part",
+      "required": "本分支必填",
+      "module": "page.md",
+      "enum": [
+        "latest",
+        "latestComplete",
+        "refreshedAt",
+        "generatedAt"
+      ]
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/back",
+      "path": "$.iocHeader.back",
+      "required": "本分支可选",
+      "module": "page.md",
+      "const": true
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/readOnly",
+      "path": "$.iocHeader.readOnly",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/note",
+      "path": "$.iocHeader.note",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/filterIds",
+      "path": "$.iocHeader.filterIds",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/filterIds/items",
+      "path": "$.iocHeader.filterIds[]",
+      "required": "每个数组项",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/presentation",
+      "path": "$.iocHeader.presentation",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/presentation/properties/density",
+      "path": "$.iocHeader.presentation.density",
+      "required": "本分支可选",
+      "module": "page.md",
+      "enum": [
+        "normal",
+        "compact"
+      ]
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/presentation/properties/collapse",
+      "path": "$.iocHeader.presentation.collapse",
+      "required": "本分支可选",
+      "module": "page.md",
+      "enum": [
+        "none",
+        "firstRow",
+        "overflow"
+      ]
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/presentation/properties/layout",
+      "path": "$.iocHeader.presentation.layout",
+      "required": "本分支可选",
+      "module": "page.md",
+      "enum": [
+        "stacked",
+        "inline"
+      ]
+    },
+    {
+      "pointer": "#/properties/strictURLInputs",
+      "path": "$.strictURLInputs",
+      "required": "本分支可选",
+      "module": "page.md",
+      "const": true
     },
     {
       "pointer": "#/properties/params",
@@ -1818,6 +2183,7 @@
         "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
+        "usd-adaptive",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -1852,7 +2218,10 @@
       "path": "@scalarField · oneOf[1].currency",
       "required": "本分支必填",
       "module": "fields.md",
-      "const": "CNY"
+      "enum": [
+        "CNY",
+        "USD"
+      ]
     },
     {
       "pointer": "#/definitions/scalarField/oneOf/1/properties/label",
@@ -1900,6 +2269,7 @@
         "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
+        "usd-adaptive",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -2927,6 +3297,7 @@
         "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
+        "usd-adaptive",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -2967,7 +3338,10 @@
       "path": "@queryScalarField · oneOf[1].currency",
       "required": "本分支必填",
       "module": "fields.md",
-      "const": "CNY"
+      "enum": [
+        "CNY",
+        "USD"
+      ]
     },
     {
       "pointer": "#/definitions/queryScalarField/oneOf/1/properties/label",
@@ -3015,6 +3389,7 @@
         "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
+        "usd-adaptive",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -3261,6 +3636,7 @@
         "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
+        "usd-adaptive",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -3372,6 +3748,7 @@
         "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
+        "usd-adaptive",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -3405,7 +3782,10 @@
       "path": "@groupedMeasureQueryFieldGroup{key} · oneOf[1].currency",
       "required": "本分支必填",
       "module": "fields.md",
-      "const": "CNY"
+      "enum": [
+        "CNY",
+        "USD"
+      ]
     },
     {
       "pointer": "#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/1/properties/label",
@@ -3453,6 +3833,7 @@
         "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
+        "usd-adaptive",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -3861,7 +4242,7 @@
     {
       "pointer": "#/definitions/dqeQuery/properties/body",
       "path": "@dqeQuery.body",
-      "required": "本分支必填",
+      "required": "本分支可选",
       "module": "queries-and-bindings.md"
     },
     {
@@ -4235,12 +4616,317 @@
     {
       "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5/properties/metric",
       "path": "@dqeQuery.filterBindings{key} · anyOf[5].metric",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[5].metricByFilter",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/filterId",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[5].metricByFilter.filterId",
       "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/cases",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[5].metricByFilter.cases",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/cases/additionalProperties",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[5].metricByFilter.cases{key}",
+      "required": "动态键的值",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/cases/propertyNames",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[5].metricByFilter.cases · propertyNames",
+      "required": "条件结构",
       "module": "queries-and-bindings.md"
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/filterBindings/propertyNames",
       "path": "@dqeQuery.filterBindings · propertyNames",
+      "required": "条件结构",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes",
+      "path": "@dqeQuery.timeModes",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/filterId",
+      "path": "@dqeQuery.timeModes.filterId",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases",
+      "path": "@dqeQuery.timeModes.cases",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties",
+      "path": "@dqeQuery.timeModes.cases{key}",
+      "required": "动态键的值",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/body",
+      "path": "@dqeQuery.timeModes.cases{key}.body",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/body/properties/dsl_list",
+      "path": "@dqeQuery.timeModes.cases{key}.body.dsl_list",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/body/properties/dsl_list/items",
+      "path": "@dqeQuery.timeModes.cases{key}.body.dsl_list[]",
+      "required": "每个数组项",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/body/properties/dsl_list/items/additionalProperties",
+      "path": "@dqeQuery.timeModes.cases{key}.body.dsl_list[]{key}",
+      "required": "动态键的值",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/body/properties/dsl_list/items/propertyNames",
+      "path": "@dqeQuery.timeModes.cases{key}.body.dsl_list[] · propertyNames",
+      "required": "条件结构",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key}",
+      "required": "动态键的值",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/target",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[0].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "dimension"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/queryField",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[0].queryField",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/target",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[1].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "dimension"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[1].levelQueryFields",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields/additionalProperties",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[1].levelQueryFields{key}",
+      "required": "动态键的值",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields/propertyNames",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[1].levelQueryFields · propertyNames",
+      "required": "条件结构",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/target",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "time"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/window",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].window",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/window/allOf/0",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].window · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md",
+      "ref": "#/definitions/timeWindow"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3/properties/target",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[3].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "timePoint"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3/properties/queryField",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[3].queryField",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3/properties/valueFormat",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[3].valueFormat",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "iso",
+        "compact"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[4]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/target",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[4].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "boolean"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/queryField",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[4].queryField",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/whenTrue",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[4].whenTrue",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/whenTrue/items",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[4].whenTrue[]",
+      "required": "每个数组项",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/whenFalse",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[4].whenFalse",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/whenFalse/items",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[4].whenFalse[]",
+      "required": "每个数组项",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[5]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/target",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[5].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "numberRange"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metric",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[5].metric",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/filterId",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter.filterId",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/cases",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter.cases",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/cases/additionalProperties",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter.cases{key}",
+      "required": "动态键的值",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/cases/propertyNames",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter.cases · propertyNames",
+      "required": "条件结构",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/propertyNames",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings · propertyNames",
+      "required": "条件结构",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/propertyNames",
+      "path": "@dqeQuery.timeModes.cases · propertyNames",
       "required": "条件结构",
       "module": "queries-and-bindings.md"
     },
@@ -4692,6 +5378,13 @@
       "module": "data-sources.md"
     },
     {
+      "pointer": "#/definitions/pagedJoinSource/properties/initial/properties/view/properties/search/properties/match",
+      "path": "@pagedJoinSource.initial.view.search.match",
+      "required": "本分支可选",
+      "module": "data-sources.md",
+      "const": "equals"
+    },
+    {
       "pointer": "#/properties/dataSources/propertyNames",
       "path": "$.dataSources · propertyNames",
       "required": "条件结构",
@@ -4720,6 +5413,64 @@
       "pointer": "#/definitions/dimensionFilter",
       "path": "@dimensionFilter",
       "required": "类型/分支",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/hint",
+      "path": "@dimensionFilter.hint",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/hint/allOf/0",
+      "path": "@dimensionFilter.hint · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/textValue",
+      "path": "@textValue",
+      "required": "类型/分支",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/textValue/anyOf/0",
+      "path": "@textValue · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/textValue/anyOf/1",
+      "path": "@textValue · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "ref": "#/definitions/textValueReference"
+    },
+    {
+      "pointer": "#/definitions/textValue/anyOf/2",
+      "path": "@textValue · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "ref": "#/definitions/filterTextValueReference"
+    },
+    {
+      "pointer": "#/definitions/textValue/anyOf/3",
+      "path": "@textValue · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "ref": "#/definitions/textValueComposition"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/clearOnChangeOf",
+      "path": "@dimensionFilter.clearOnChangeOf",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/clearOnChangeOf/items",
+      "path": "@dimensionFilter.clearOnChangeOf[]",
+      "required": "每个数组项",
       "module": "filters.md"
     },
     {
@@ -4806,37 +5557,606 @@
       ]
     },
     {
-      "pointer": "#/definitions/dimensionFilter/properties/selection",
-      "path": "@dimensionFilter.selection",
-      "required": "本分支可选",
-      "module": "filters.md",
-      "enum": [
-        "single",
-        "multiple"
-      ]
-    },
-    {
-      "pointer": "#/definitions/dimensionFilter/properties/searchable",
-      "path": "@dimensionFilter.searchable",
-      "required": "本分支可选",
-      "module": "filters.md"
-    },
-    {
-      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
-      "path": "@dimensionFilter.treeSelection",
-      "required": "本分支可选",
-      "module": "filters.md",
-      "enum": [
-        "descendants",
-        "independent",
-        "leaf"
-      ]
-    },
-    {
       "pointer": "#/definitions/dimensionFilter/properties/visible",
       "path": "@dimensionFilter.visible",
       "required": "本分支可选",
       "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/visibleWhen",
+      "path": "@dimensionFilter.visibleWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/visibleWhen/allOf/0",
+      "path": "@dimensionFilter.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/condition",
+      "path": "@condition",
+      "required": "类型/分支",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/0",
+      "path": "@condition · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/0/properties/all",
+      "path": "@condition · anyOf[0].all",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/0/properties/all/items",
+      "path": "@condition · anyOf[0].all[]",
+      "required": "每个数组项",
+      "module": "conditions.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/1",
+      "path": "@condition · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/1/properties/any",
+      "path": "@condition · anyOf[1].any",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/1/properties/any/items",
+      "path": "@condition · anyOf[1].any[]",
+      "required": "每个数组项",
+      "module": "conditions.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/2",
+      "path": "@condition · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/2/properties/not",
+      "path": "@condition · anyOf[2].not",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/3",
+      "path": "@condition · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/3/properties/permission",
+      "path": "@condition · anyOf[3].permission",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4",
+      "path": "@condition · anyOf[4]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/filter",
+      "path": "@condition · anyOf[4].filter",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/part",
+      "path": "@condition · anyOf[4].part",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "level",
+        "values",
+        "value",
+        "from",
+        "to"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/op",
+      "path": "@condition · anyOf[4].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "eq",
+        "ne"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/value",
+      "path": "@condition · anyOf[4].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/0",
+      "path": "@condition · anyOf[4].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/1",
+      "path": "@condition · anyOf[4].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/2",
+      "path": "@condition · anyOf[4].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5",
+      "path": "@condition · anyOf[5]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/filter",
+      "path": "@condition · anyOf[5].filter",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/part",
+      "path": "@condition · anyOf[5].part",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "level",
+        "values",
+        "value",
+        "from",
+        "to"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/op",
+      "path": "@condition · anyOf[5].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "in",
+        "notIn",
+        "containsAny",
+        "containsAll"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values",
+      "path": "@condition · anyOf[5].values",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values/items",
+      "path": "@condition · anyOf[5].values[]",
+      "required": "每个数组项",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/0",
+      "path": "@condition · anyOf[5].values[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/1",
+      "path": "@condition · anyOf[5].values[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/2",
+      "path": "@condition · anyOf[5].values[] · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6",
+      "path": "@condition · anyOf[6]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6/properties/filter",
+      "path": "@condition · anyOf[6].filter",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6/properties/part",
+      "path": "@condition · anyOf[6].part",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "level",
+        "values",
+        "value",
+        "from",
+        "to"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6/properties/op",
+      "path": "@condition · anyOf[6].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "gt",
+        "gte",
+        "lt",
+        "lte"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/6/properties/value",
+      "path": "@condition · anyOf[6].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/7",
+      "path": "@condition · anyOf[7]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/7/properties/filter",
+      "path": "@condition · anyOf[7].filter",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/7/properties/part",
+      "path": "@condition · anyOf[7].part",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "level",
+        "values",
+        "value",
+        "from",
+        "to"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/7/properties/op",
+      "path": "@condition · anyOf[7].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "isNull",
+        "isNotNull",
+        "isEmpty",
+        "isNotEmpty"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8",
+      "path": "@condition · anyOf[8]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/fact",
+      "path": "@condition · anyOf[8].fact",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/op",
+      "path": "@condition · anyOf[8].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "eq",
+        "ne"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/value",
+      "path": "@condition · anyOf[8].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/0",
+      "path": "@condition · anyOf[8].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/1",
+      "path": "@condition · anyOf[8].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/2",
+      "path": "@condition · anyOf[8].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9",
+      "path": "@condition · anyOf[9]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/fact",
+      "path": "@condition · anyOf[9].fact",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/op",
+      "path": "@condition · anyOf[9].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "in",
+        "notIn",
+        "containsAny",
+        "containsAll"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values",
+      "path": "@condition · anyOf[9].values",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values/items",
+      "path": "@condition · anyOf[9].values[]",
+      "required": "每个数组项",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/0",
+      "path": "@condition · anyOf[9].values[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/1",
+      "path": "@condition · anyOf[9].values[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/2",
+      "path": "@condition · anyOf[9].values[] · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/10",
+      "path": "@condition · anyOf[10]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/10/properties/fact",
+      "path": "@condition · anyOf[10].fact",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/10/properties/op",
+      "path": "@condition · anyOf[10].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "gt",
+        "gte",
+        "lt",
+        "lte"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/10/properties/value",
+      "path": "@condition · anyOf[10].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/11",
+      "path": "@condition · anyOf[11]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/11/properties/fact",
+      "path": "@condition · anyOf[11].fact",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/11/properties/op",
+      "path": "@condition · anyOf[11].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "isNull",
+        "isNotNull",
+        "isEmpty",
+        "isNotEmpty"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12",
+      "path": "@condition · anyOf[12]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/row",
+      "path": "@condition · anyOf[12].row",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/op",
+      "path": "@condition · anyOf[12].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "eq",
+        "ne"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/value",
+      "path": "@condition · anyOf[12].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/0",
+      "path": "@condition · anyOf[12].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/1",
+      "path": "@condition · anyOf[12].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/2",
+      "path": "@condition · anyOf[12].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13",
+      "path": "@condition · anyOf[13]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/row",
+      "path": "@condition · anyOf[13].row",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/op",
+      "path": "@condition · anyOf[13].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "in",
+        "notIn",
+        "containsAny",
+        "containsAll"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values",
+      "path": "@condition · anyOf[13].values",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values/items",
+      "path": "@condition · anyOf[13].values[]",
+      "required": "每个数组项",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/0",
+      "path": "@condition · anyOf[13].values[] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/1",
+      "path": "@condition · anyOf[13].values[] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/2",
+      "path": "@condition · anyOf[13].values[] · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/14",
+      "path": "@condition · anyOf[14]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/14/properties/row",
+      "path": "@condition · anyOf[14].row",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/14/properties/op",
+      "path": "@condition · anyOf[14].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "gt",
+        "gte",
+        "lt",
+        "lte"
+      ]
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/14/properties/value",
+      "path": "@condition · anyOf[14].value",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/15",
+      "path": "@condition · anyOf[15]",
+      "required": "独立分支（不合并required）",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/15/properties/row",
+      "path": "@condition · anyOf[15].row",
+      "required": "本分支必填",
+      "module": "conditions.md"
+    },
+    {
+      "pointer": "#/definitions/condition/anyOf/15/properties/op",
+      "path": "@condition · anyOf[15].op",
+      "required": "本分支必填",
+      "module": "conditions.md",
+      "enum": [
+        "isNull",
+        "isNotNull",
+        "isEmpty",
+        "isNotEmpty"
+      ]
     },
     {
       "pointer": "#/definitions/dimensionFilter/properties/default",
@@ -4899,6 +6219,146 @@
       "module": "filters.md"
     },
     {
+      "pointer": "#/definitions/dimensionFilter/properties/selection",
+      "path": "@dimensionFilter.selection",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/selection/properties/mode",
+      "path": "@dimensionFilter.selection.mode",
+      "required": "本分支必填",
+      "module": "filters.md",
+      "enum": [
+        "single",
+        "multiple"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/selection/properties/required",
+      "path": "@dimensionFilter.selection.required",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/selection/properties/allBehavior",
+      "path": "@dimensionFilter.selection.allBehavior",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "enum": [
+        "values",
+        "unrestricted"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/options",
+      "path": "@dimensionFilter.options",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/options/items",
+      "path": "@dimensionFilter.options[]",
+      "required": "每个数组项",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/options/items/properties/value",
+      "path": "@dimensionFilter.options[].value",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/options/items/properties/label",
+      "path": "@dimensionFilter.options[].label",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/options/items/properties/disabled",
+      "path": "@dimensionFilter.options[].disabled",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "path": "@dimensionFilter.treeSelection",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "enum": [
+        "level",
+        "descendants",
+        "independent",
+        "leaf"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/searchable",
+      "path": "@dimensionFilter.searchable",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidateWindow",
+      "path": "@dimensionFilter.candidateWindow",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidateWindow/properties/unit",
+      "path": "@dimensionFilter.candidateWindow.unit",
+      "required": "本分支必填",
+      "module": "filters.md",
+      "const": "month"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidateWindow/properties/n",
+      "path": "@dimensionFilter.candidateWindow.n",
+      "required": "本分支必填",
+      "module": "filters.md",
+      "const": 12
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidateWindow/properties/includeCurrent",
+      "path": "@dimensionFilter.candidateWindow.includeCurrent",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidateWindow/properties/anchorFact",
+      "path": "@dimensionFilter.candidateWindow.anchorFact",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidateContext",
+      "path": "@dimensionFilter.candidateContext",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidateContext/properties/filterIds",
+      "path": "@dimensionFilter.candidateContext.filterIds",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidateContext/properties/filterIds/items",
+      "path": "@dimensionFilter.candidateContext.filterIds[]",
+      "required": "每个数组项",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidateContext/properties/reconcile",
+      "path": "@dimensionFilter.candidateContext.reconcile",
+      "required": "本分支必填",
+      "module": "filters.md",
+      "enum": [
+        "clear",
+        "intersection"
+      ]
+    },
+    {
       "pointer": "#/properties/filters/items/oneOf/1",
       "path": "$.filters[] · oneOf[1]",
       "required": "独立分支（不合并required）",
@@ -4909,6 +6369,31 @@
       "pointer": "#/definitions/timeRangeFilter",
       "path": "@timeRangeFilter",
       "required": "类型/分支",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/hint",
+      "path": "@timeRangeFilter.hint",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/hint/allOf/0",
+      "path": "@timeRangeFilter.hint · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/clearOnChangeOf",
+      "path": "@timeRangeFilter.clearOnChangeOf",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/clearOnChangeOf/items",
+      "path": "@timeRangeFilter.clearOnChangeOf[]",
+      "required": "每个数组项",
       "module": "filters.md"
     },
     {
@@ -4955,97 +6440,164 @@
       "const": "timeRange"
     },
     {
+      "pointer": "#/definitions/timeRangeFilter/properties/min",
+      "path": "@timeRangeFilter.min",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/max",
+      "path": "@timeRangeFilter.max",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/blockedRanges",
+      "path": "@timeRangeFilter.blockedRanges",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/blockedRanges/items",
+      "path": "@timeRangeFilter.blockedRanges[]",
+      "required": "每个数组项",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/blockedRanges/items/properties/from",
+      "path": "@timeRangeFilter.blockedRanges[].from",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/blockedRanges/items/properties/to",
+      "path": "@timeRangeFilter.blockedRanges[].to",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/availability",
+      "path": "@timeRangeFilter.availability",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/availability/properties/fact",
+      "path": "@timeRangeFilter.availability.fact",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/availability/properties/initial",
+      "path": "@timeRangeFilter.availability.initial",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "enum": [
+        "latest",
+        "latestComplete"
+      ]
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/availability/properties/max",
+      "path": "@timeRangeFilter.availability.max",
+      "required": "本分支必填",
+      "module": "filters.md",
+      "enum": [
+        "latest",
+        "latestComplete"
+      ]
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/availability/properties/blockMissing",
+      "path": "@timeRangeFilter.availability.blockMissing",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "const": true
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/disableFuture",
+      "path": "@timeRangeFilter.disableFuture",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
       "pointer": "#/definitions/timeRangeFilter/properties/display",
       "path": "@timeRangeFilter.display",
       "required": "本分支可选",
       "module": "filters.md",
-      "const": "period"
+      "enum": [
+        "period",
+        "modes"
+      ]
     },
     {
-      "pointer": "#/definitions/timeRangeFilter/properties/initialMode",
-      "path": "@timeRangeFilter.initialMode",
+      "pointer": "#/definitions/timeRangeFilter/properties/periodModes",
+      "path": "@timeRangeFilter.periodModes",
       "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/periodModes/items",
+      "path": "@timeRangeFilter.periodModes[]",
+      "required": "每个数组项",
       "module": "filters.md",
       "enum": [
         "year",
         "quarter",
-        "month"
-      ]
-    },
-    {
-      "pointer": "#/definitions/timeRangeFilter/properties/label",
-      "path": "@timeRangeFilter.label",
-      "required": "本分支可选",
-      "module": "filters.md"
-    },
-    {
-      "pointer": "#/definitions/timeRangeFilter/properties/precision",
-      "path": "@timeRangeFilter.precision",
-      "required": "本分支可选",
-      "module": "filters.md",
-      "enum": [
         "month",
-        "date",
-        "datetime"
+        "last12Months"
       ]
     },
     {
-      "pointer": "#/definitions/timeRangeFilter/properties/initialParam",
-      "path": "@timeRangeFilter.initialParam",
+      "pointer": "#/definitions/timeRangeFilter/properties/modes",
+      "path": "@timeRangeFilter.modes",
       "required": "本分支可选",
       "module": "filters.md"
     },
     {
-      "pointer": "#/definitions/timeRangeFilter/properties/required",
-      "path": "@timeRangeFilter.required",
-      "required": "本分支可选",
+      "pointer": "#/definitions/timeRangeFilter/properties/modes/items",
+      "path": "@timeRangeFilter.modes[]",
+      "required": "每个数组项",
       "module": "filters.md"
     },
     {
-      "pointer": "#/definitions/timeRangeFilter/properties/visible",
-      "path": "@timeRangeFilter.visible",
-      "required": "本分支可选",
-      "module": "filters.md"
-    },
-    {
-      "pointer": "#/definitions/timeRangeFilter/properties/default",
-      "path": "@timeRangeFilter.default",
-      "required": "本分支可选",
-      "module": "filters.md"
-    },
-    {
-      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/0",
-      "path": "@timeRangeFilter.default · anyOf[0]",
-      "required": "独立分支（不合并required）",
+      "pointer": "#/definitions/timeRangeFilter/properties/modes/items/properties/id",
+      "path": "@timeRangeFilter.modes[].id",
+      "required": "本分支必填",
       "module": "filters.md",
       "enum": [
-        "today",
-        "last7d",
-        "last30d",
-        "last90d"
+        "day",
+        "month",
+        "isoWeek"
       ]
     },
     {
-      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/1",
-      "path": "@timeRangeFilter.default · anyOf[1]",
+      "pointer": "#/definitions/timeRangeFilter/properties/modes/items/properties/default",
+      "path": "@timeRangeFilter.modes[].default",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/modes/items/properties/default/anyOf/0",
+      "path": "@timeRangeFilter.modes[].default · anyOf[0]",
       "required": "独立分支（不合并required）",
       "module": "filters.md"
     },
     {
-      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/1/properties/from",
-      "path": "@timeRangeFilter.default · anyOf[1].from",
+      "pointer": "#/definitions/timeRangeFilter/properties/modes/items/properties/default/anyOf/0/properties/from",
+      "path": "@timeRangeFilter.modes[].default · anyOf[0].from",
       "required": "本分支必填",
       "module": "filters.md"
     },
     {
-      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/1/properties/to",
-      "path": "@timeRangeFilter.default · anyOf[1].to",
+      "pointer": "#/definitions/timeRangeFilter/properties/modes/items/properties/default/anyOf/0/properties/to",
+      "path": "@timeRangeFilter.modes[].default · anyOf[0].to",
       "required": "本分支必填",
       "module": "filters.md"
     },
     {
-      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/2",
-      "path": "@timeRangeFilter.default · anyOf[2]",
+      "pointer": "#/definitions/timeRangeFilter/properties/modes/items/properties/default/anyOf/1",
+      "path": "@timeRangeFilter.modes[].default · anyOf[1]",
       "required": "独立分支（不合并required）",
       "module": "filters.md",
       "ref": "#/definitions/relativeTimeExpression"
@@ -5133,6 +6685,150 @@
       "module": "filters.md"
     },
     {
+      "pointer": "#/definitions/timeRangeFilter/properties/defaultMode",
+      "path": "@timeRangeFilter.defaultMode",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "enum": [
+        "day",
+        "month",
+        "isoWeek"
+      ]
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/presets",
+      "path": "@timeRangeFilter.presets",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/presets/items",
+      "path": "@timeRangeFilter.presets[]",
+      "required": "每个数组项",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/presets/items/properties/id",
+      "path": "@timeRangeFilter.presets[].id",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/presets/items/properties/label",
+      "path": "@timeRangeFilter.presets[].label",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/presets/items/properties/range",
+      "path": "@timeRangeFilter.presets[].range",
+      "required": "本分支必填",
+      "module": "filters.md",
+      "ref": "#/definitions/relativeTimeExpression"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/initialMode",
+      "path": "@timeRangeFilter.initialMode",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "enum": [
+        "year",
+        "quarter",
+        "month"
+      ]
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/label",
+      "path": "@timeRangeFilter.label",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/precision",
+      "path": "@timeRangeFilter.precision",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "enum": [
+        "month",
+        "date",
+        "datetime"
+      ]
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/initialParam",
+      "path": "@timeRangeFilter.initialParam",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/required",
+      "path": "@timeRangeFilter.required",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/visible",
+      "path": "@timeRangeFilter.visible",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/visibleWhen",
+      "path": "@timeRangeFilter.visibleWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/visibleWhen/allOf/0",
+      "path": "@timeRangeFilter.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/default",
+      "path": "@timeRangeFilter.default",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/0",
+      "path": "@timeRangeFilter.default · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "enum": [
+        "today",
+        "last7d",
+        "last30d",
+        "last90d"
+      ]
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/1",
+      "path": "@timeRangeFilter.default · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/1/properties/from",
+      "path": "@timeRangeFilter.default · anyOf[1].from",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/1/properties/to",
+      "path": "@timeRangeFilter.default · anyOf[1].to",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/2",
+      "path": "@timeRangeFilter.default · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/relativeTimeExpression"
+    },
+    {
       "pointer": "#/definitions/timeRangeFilter/properties/default/anyOf/3",
       "path": "@timeRangeFilter.default · anyOf[3]",
       "required": "独立分支（不合并required）",
@@ -5195,6 +6891,31 @@
       "module": "filters.md"
     },
     {
+      "pointer": "#/definitions/timePointFilter/properties/hint",
+      "path": "@timePointFilter.hint",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/hint/allOf/0",
+      "path": "@timePointFilter.hint · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/clearOnChangeOf",
+      "path": "@timePointFilter.clearOnChangeOf",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/clearOnChangeOf/items",
+      "path": "@timePointFilter.clearOnChangeOf[]",
+      "required": "每个数组项",
+      "module": "filters.md"
+    },
+    {
       "pointer": "#/definitions/timePointFilter/properties/id",
       "path": "@timePointFilter.id",
       "required": "本分支必填",
@@ -5250,6 +6971,94 @@
       "module": "filters.md"
     },
     {
+      "pointer": "#/definitions/timePointFilter/properties/min",
+      "path": "@timePointFilter.min",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/max",
+      "path": "@timePointFilter.max",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/blockedRanges",
+      "path": "@timePointFilter.blockedRanges",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/blockedRanges/items",
+      "path": "@timePointFilter.blockedRanges[]",
+      "required": "每个数组项",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/blockedRanges/items/properties/from",
+      "path": "@timePointFilter.blockedRanges[].from",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/blockedRanges/items/properties/to",
+      "path": "@timePointFilter.blockedRanges[].to",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/availability",
+      "path": "@timePointFilter.availability",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/availability/properties/fact",
+      "path": "@timePointFilter.availability.fact",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/availability/properties/initial",
+      "path": "@timePointFilter.availability.initial",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "enum": [
+        "latest",
+        "latestComplete"
+      ]
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/availability/properties/max",
+      "path": "@timePointFilter.availability.max",
+      "required": "本分支必填",
+      "module": "filters.md",
+      "enum": [
+        "latest",
+        "latestComplete"
+      ]
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/availability/properties/blockMissing",
+      "path": "@timePointFilter.availability.blockMissing",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "const": true
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/visibleWhen",
+      "path": "@timePointFilter.visibleWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timePointFilter/properties/visibleWhen/allOf/0",
+      "path": "@timePointFilter.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/timePointFilter/properties/granularity",
       "path": "@timePointFilter.granularity",
       "required": "本分支必填",
@@ -5258,12 +7067,6 @@
         "month",
         "date"
       ]
-    },
-    {
-      "pointer": "#/definitions/timePointFilter/properties/min",
-      "path": "@timePointFilter.min",
-      "required": "本分支可选",
-      "module": "filters.md"
     },
     {
       "pointer": "#/definitions/timePointFilter/properties/disableFuture",
@@ -5300,6 +7103,31 @@
       "pointer": "#/definitions/booleanFilter",
       "path": "@booleanFilter",
       "required": "类型/分支",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/booleanFilter/properties/hint",
+      "path": "@booleanFilter.hint",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/booleanFilter/properties/hint/allOf/0",
+      "path": "@booleanFilter.hint · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/booleanFilter/properties/clearOnChangeOf",
+      "path": "@booleanFilter.clearOnChangeOf",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/booleanFilter/properties/clearOnChangeOf/items",
+      "path": "@booleanFilter.clearOnChangeOf[]",
+      "required": "每个数组项",
       "module": "filters.md"
     },
     {
@@ -5358,6 +7186,19 @@
       "module": "filters.md"
     },
     {
+      "pointer": "#/definitions/booleanFilter/properties/visibleWhen",
+      "path": "@booleanFilter.visibleWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/booleanFilter/properties/visibleWhen/allOf/0",
+      "path": "@booleanFilter.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/booleanFilter/properties/default",
       "path": "@booleanFilter.default",
       "required": "本分支可选",
@@ -5374,6 +7215,31 @@
       "pointer": "#/definitions/numberRangeFilter",
       "path": "@numberRangeFilter",
       "required": "类型/分支",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/hint",
+      "path": "@numberRangeFilter.hint",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/hint/allOf/0",
+      "path": "@numberRangeFilter.hint · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/clearOnChangeOf",
+      "path": "@numberRangeFilter.clearOnChangeOf",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/clearOnChangeOf/items",
+      "path": "@numberRangeFilter.clearOnChangeOf[]",
+      "required": "每个数组项",
       "module": "filters.md"
     },
     {
@@ -5432,6 +7298,19 @@
       "module": "filters.md"
     },
     {
+      "pointer": "#/definitions/numberRangeFilter/properties/visibleWhen",
+      "path": "@numberRangeFilter.visibleWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/visibleWhen/allOf/0",
+      "path": "@numberRangeFilter.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/numberRangeFilter/properties/default",
       "path": "@numberRangeFilter.default",
       "required": "本分支可选",
@@ -5450,6 +7329,128 @@
       "module": "filters.md"
     },
     {
+      "pointer": "#/definitions/numberRangeFilter/properties/constraints",
+      "path": "@numberRangeFilter.constraints",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/constraints/properties/min",
+      "path": "@numberRangeFilter.constraints.min",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/constraints/properties/max",
+      "path": "@numberRangeFilter.constraints.max",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/constraints/properties/bounds",
+      "path": "@numberRangeFilter.constraints.bounds",
+      "required": "本分支可选",
+      "module": "filters.md",
+      "enum": [
+        "strict",
+        "inclusive"
+      ]
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units",
+      "path": "@numberRangeFilter.units",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/filterId",
+      "path": "@numberRangeFilter.units.filterId",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases",
+      "path": "@numberRangeFilter.units.cases",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties",
+      "path": "@numberRangeFilter.units.cases{key}",
+      "required": "动态键的值",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/currency",
+      "path": "@numberRangeFilter.units.cases{key}.currency",
+      "required": "本分支必填",
+      "module": "filters.md",
+      "enum": [
+        "CNY",
+        "USD"
+      ]
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/label",
+      "path": "@numberRangeFilter.units.cases{key}.label",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/scale",
+      "path": "@numberRangeFilter.units.cases{key}.scale",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/propertyNames",
+      "path": "@numberRangeFilter.units.cases · propertyNames",
+      "required": "条件结构",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/presets",
+      "path": "@numberRangeFilter.presets",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/presets/items",
+      "path": "@numberRangeFilter.presets[]",
+      "required": "每个数组项",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/presets/items/properties/id",
+      "path": "@numberRangeFilter.presets[].id",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/presets/items/properties/label",
+      "path": "@numberRangeFilter.presets[].label",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/presets/items/properties/range",
+      "path": "@numberRangeFilter.presets[].range",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/presets/items/properties/range/properties/from",
+      "path": "@numberRangeFilter.presets[].range.from",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/presets/items/properties/range/properties/to",
+      "path": "@numberRangeFilter.presets[].range.to",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
       "pointer": "#/properties/filters/items/oneOf/5",
       "path": "$.filters[] · oneOf[5]",
       "required": "独立分支（不合并required）",
@@ -5460,6 +7461,31 @@
       "pointer": "#/definitions/searchFilter",
       "path": "@searchFilter",
       "required": "类型/分支",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/searchFilter/properties/hint",
+      "path": "@searchFilter.hint",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/searchFilter/properties/hint/allOf/0",
+      "path": "@searchFilter.hint · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/searchFilter/properties/clearOnChangeOf",
+      "path": "@searchFilter.clearOnChangeOf",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/searchFilter/properties/clearOnChangeOf/items",
+      "path": "@searchFilter.clearOnChangeOf[]",
+      "required": "每个数组项",
       "module": "filters.md"
     },
     {
@@ -5516,6 +7542,19 @@
       "path": "@searchFilter.visible",
       "required": "本分支可选",
       "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/searchFilter/properties/visibleWhen",
+      "path": "@searchFilter.visibleWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/searchFilter/properties/visibleWhen/allOf/0",
+      "path": "@searchFilter.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/searchFilter/properties/default",
@@ -5600,6 +7639,19 @@
       "path": "@componentId",
       "required": "类型/分支",
       "module": "sections-and-layout.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/visibleWhen",
+      "path": "@reportHeaderComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/reportHeader.md"
+    },
+    {
+      "pointer": "#/definitions/reportHeaderComponent/properties/visibleWhen/allOf/0",
+      "path": "@reportHeaderComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/reportHeader.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/reportHeaderComponent/properties/type",
@@ -5853,39 +7905,6 @@
       "ref": "#/definitions/textValue"
     },
     {
-      "pointer": "#/definitions/textValue",
-      "path": "@textValue",
-      "required": "类型/分支",
-      "module": "params-and-text-values.md"
-    },
-    {
-      "pointer": "#/definitions/textValue/anyOf/0",
-      "path": "@textValue · anyOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "params-and-text-values.md"
-    },
-    {
-      "pointer": "#/definitions/textValue/anyOf/1",
-      "path": "@textValue · anyOf[1]",
-      "required": "独立分支（不合并required）",
-      "module": "params-and-text-values.md",
-      "ref": "#/definitions/textValueReference"
-    },
-    {
-      "pointer": "#/definitions/textValue/anyOf/2",
-      "path": "@textValue · anyOf[2]",
-      "required": "独立分支（不合并required）",
-      "module": "params-and-text-values.md",
-      "ref": "#/definitions/filterTextValueReference"
-    },
-    {
-      "pointer": "#/definitions/textValue/anyOf/3",
-      "path": "@textValue · anyOf[3]",
-      "required": "独立分支（不合并required）",
-      "module": "params-and-text-values.md",
-      "ref": "#/definitions/textValueComposition"
-    },
-    {
       "pointer": "#/definitions/reportHeaderComponent/properties/props/properties/subtitleFormat",
       "path": "@reportHeaderComponent.props.subtitleFormat",
       "required": "本分支可选",
@@ -5986,6 +8005,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/metricCardComponent/properties/visibleWhen",
+      "path": "@metricCardComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/visibleWhen/allOf/0",
+      "path": "@metricCardComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/metricCard.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/metricCardComponent/properties/type",
       "path": "@metricCardComponent.type",
       "required": "本分支必填",
@@ -5997,7 +8029,64 @@
       "path": "@metricCardComponent.layout",
       "required": "本分支必填",
       "module": "components/metricCard.md",
-      "ref": "#/definitions/componentLayout"
+      "ref": "#/definitions/metricCardLayout"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout",
+      "path": "@metricCardLayout",
+      "required": "类型/分支",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/span",
+      "path": "@metricCardLayout.span",
+      "required": "本分支必填",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/connectPrevious",
+      "path": "@metricCardLayout.connectPrevious",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/layer",
+      "path": "@metricCardLayout.layer",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/layer/allOf/0",
+      "path": "@metricCardLayout.layer · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/metricCard.md",
+      "ref": "#/definitions/componentLayer"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/before",
+      "path": "@metricCardLayout.before",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/before/properties/text",
+      "path": "@metricCardLayout.before.text",
+      "required": "本分支必填",
+      "module": "components/metricCard.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/metricCardLayout/properties/before/properties/gap",
+      "path": "@metricCardLayout.before.gap",
+      "required": "本分支可选",
+      "module": "components/metricCard.md",
+      "enum": [
+        4,
+        8,
+        12,
+        16,
+        24
+      ]
     },
     {
       "pointer": "#/definitions/metricCardComponent/properties/data",
@@ -6125,35 +8214,48 @@
       "pointer": "#/definitions/fieldBinding/anyOf/0",
       "path": "@fieldBinding · anyOf[0]",
       "required": "独立分支（不合并required）",
+      "module": "field-bindings-and-formats.md",
+      "ref": "#/definitions/staticFieldBinding"
+    },
+    {
+      "pointer": "#/definitions/staticFieldBinding",
+      "path": "@staticFieldBinding",
+      "required": "类型/分支",
       "module": "field-bindings-and-formats.md"
     },
     {
-      "pointer": "#/definitions/fieldBinding/anyOf/1",
-      "path": "@fieldBinding · anyOf[1]",
+      "pointer": "#/definitions/staticFieldBinding/anyOf/0",
+      "path": "@staticFieldBinding · anyOf[0]",
       "required": "独立分支（不合并required）",
       "module": "field-bindings-and-formats.md"
     },
     {
-      "pointer": "#/definitions/fieldBinding/anyOf/1/properties/data",
-      "path": "@fieldBinding · anyOf[1].data",
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1",
+      "path": "@staticFieldBinding · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "field-bindings-and-formats.md"
+    },
+    {
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/data",
+      "path": "@staticFieldBinding · anyOf[1].data",
       "required": "本分支必填",
       "module": "field-bindings-and-formats.md"
     },
     {
-      "pointer": "#/definitions/fieldBinding/anyOf/1/properties/field",
-      "path": "@fieldBinding · anyOf[1].field",
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/field",
+      "path": "@staticFieldBinding · anyOf[1].field",
       "required": "本分支必填",
       "module": "field-bindings-and-formats.md"
     },
     {
-      "pointer": "#/definitions/fieldBinding/anyOf/1/properties/missingText",
-      "path": "@fieldBinding · anyOf[1].missingText",
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/missingText",
+      "path": "@staticFieldBinding · anyOf[1].missingText",
       "required": "本分支可选",
       "module": "field-bindings-and-formats.md"
     },
     {
-      "pointer": "#/definitions/fieldBinding/anyOf/1/properties/format",
-      "path": "@fieldBinding · anyOf[1].format",
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format",
+      "path": "@staticFieldBinding · anyOf[1].format",
       "required": "本分支可选",
       "module": "field-bindings-and-formats.md",
       "enum": [
@@ -6173,6 +8275,7 @@
         "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
+        "usd-adaptive",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -6183,23 +8286,60 @@
       ]
     },
     {
-      "pointer": "#/definitions/fieldBinding/anyOf/1/properties/match",
-      "path": "@fieldBinding · anyOf[1].match",
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/match",
+      "path": "@staticFieldBinding · anyOf[1].match",
       "required": "本分支可选",
       "module": "field-bindings-and-formats.md"
     },
     {
-      "pointer": "#/definitions/fieldBinding/anyOf/1/properties/match/properties/field",
-      "path": "@fieldBinding · anyOf[1].match.field",
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/match/properties/field",
+      "path": "@staticFieldBinding · anyOf[1].match.field",
       "required": "本分支必填",
       "module": "field-bindings-and-formats.md"
     },
     {
-      "pointer": "#/definitions/fieldBinding/anyOf/1/properties/match/properties/equals",
-      "path": "@fieldBinding · anyOf[1].match.equals",
+      "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/match/properties/equals",
+      "path": "@staticFieldBinding · anyOf[1].match.equals",
       "required": "本分支必填",
       "module": "field-bindings-and-formats.md",
       "ref": "#/definitions/scalar"
+    },
+    {
+      "pointer": "#/definitions/fieldBinding/anyOf/1",
+      "path": "@fieldBinding · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "field-bindings-and-formats.md"
+    },
+    {
+      "pointer": "#/definitions/fieldBinding/anyOf/1/properties/byFilter",
+      "path": "@fieldBinding · anyOf[1].byFilter",
+      "required": "本分支必填",
+      "module": "field-bindings-and-formats.md"
+    },
+    {
+      "pointer": "#/definitions/fieldBinding/anyOf/1/properties/byFilter/properties/filterId",
+      "path": "@fieldBinding · anyOf[1].byFilter.filterId",
+      "required": "本分支必填",
+      "module": "field-bindings-and-formats.md"
+    },
+    {
+      "pointer": "#/definitions/fieldBinding/anyOf/1/properties/byFilter/properties/cases",
+      "path": "@fieldBinding · anyOf[1].byFilter.cases",
+      "required": "本分支必填",
+      "module": "field-bindings-and-formats.md"
+    },
+    {
+      "pointer": "#/definitions/fieldBinding/anyOf/1/properties/byFilter/properties/cases/additionalProperties",
+      "path": "@fieldBinding · anyOf[1].byFilter.cases{key}",
+      "required": "动态键的值",
+      "module": "field-bindings-and-formats.md",
+      "ref": "#/definitions/staticFieldBinding"
+    },
+    {
+      "pointer": "#/definitions/fieldBinding/anyOf/1/properties/byFilter/properties/cases/propertyNames",
+      "path": "@fieldBinding · anyOf[1].byFilter.cases · propertyNames",
+      "required": "条件结构",
+      "module": "field-bindings-and-formats.md"
     },
     {
       "pointer": "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/link",
@@ -6555,21 +8695,53 @@
       "module": "actions-and-navigation.md"
     },
     {
-      "pointer": "#/definitions/componentAction/anyOf/0/properties/on",
-      "path": "@componentAction · anyOf[0].on",
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0",
+      "path": "@componentAction · anyOf[0] · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/on",
+      "path": "@componentAction · anyOf[0] · anyOf[0].on",
       "required": "本分支必填",
       "module": "actions-and-navigation.md",
       "const": "click"
     },
     {
-      "pointer": "#/definitions/componentAction/anyOf/0/properties/writeFilter",
-      "path": "@componentAction · anyOf[0].writeFilter",
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/visibleWhen",
+      "path": "@componentAction · anyOf[0] · anyOf[0].visibleWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/visibleWhen/allOf/0",
+      "path": "@componentAction · anyOf[0] · anyOf[0].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/enabledWhen",
+      "path": "@componentAction · anyOf[0] · anyOf[0].enabledWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/enabledWhen/allOf/0",
+      "path": "@componentAction · anyOf[0] · anyOf[0].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/writeFilter",
+      "path": "@componentAction · anyOf[0] · anyOf[0].writeFilter",
       "required": "本分支必填",
       "module": "actions-and-navigation.md"
     },
     {
-      "pointer": "#/definitions/componentAction/anyOf/0/properties/field",
-      "path": "@componentAction · anyOf[0].field",
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/field",
+      "path": "@componentAction · anyOf[0] · anyOf[0].field",
       "required": "本分支必填",
       "module": "actions-and-navigation.md",
       "ref": "#/definitions/fieldReference"
@@ -6605,6 +8777,69 @@
       "module": "field-bindings-and-formats.md"
     },
     {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/0/properties/level",
+      "path": "@componentAction · anyOf[0] · anyOf[0].level",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1",
+      "path": "@componentAction · anyOf[0] · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/on",
+      "path": "@componentAction · anyOf[0] · anyOf[1].on",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md",
+      "const": "click"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/visibleWhen",
+      "path": "@componentAction · anyOf[0] · anyOf[1].visibleWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/visibleWhen/allOf/0",
+      "path": "@componentAction · anyOf[0] · anyOf[1].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/enabledWhen",
+      "path": "@componentAction · anyOf[0] · anyOf[1].enabledWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/enabledWhen/allOf/0",
+      "path": "@componentAction · anyOf[0] · anyOf[1].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/writeFilter",
+      "path": "@componentAction · anyOf[0] · anyOf[1].writeFilter",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/value",
+      "path": "@componentAction · anyOf[0] · anyOf[1].value",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/0/anyOf/1/properties/level",
+      "path": "@componentAction · anyOf[0] · anyOf[1].level",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
       "pointer": "#/definitions/componentAction/anyOf/1",
       "path": "@componentAction · anyOf[1]",
       "required": "独立分支（不合并required）",
@@ -6618,16 +8853,75 @@
       "const": "click"
     },
     {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/visibleWhen",
+      "path": "@componentAction · anyOf[1].visibleWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/visibleWhen/allOf/0",
+      "path": "@componentAction · anyOf[1].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/enabledWhen",
+      "path": "@componentAction · anyOf[1].enabledWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/enabledWhen/allOf/0",
+      "path": "@componentAction · anyOf[1].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/componentAction/anyOf/1/properties/navigate",
       "path": "@componentAction · anyOf[1].navigate",
       "required": "本分支必填",
       "module": "actions-and-navigation.md"
     },
     {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/visibleWhen",
+      "path": "@componentAction · anyOf[1].navigate.visibleWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/visibleWhen/allOf/0",
+      "path": "@componentAction · anyOf[1].navigate.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/enabledWhen",
+      "path": "@componentAction · anyOf[1].navigate.enabledWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/enabledWhen/allOf/0",
+      "path": "@componentAction · anyOf[1].navigate.enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/href",
       "path": "@componentAction · anyOf[1].navigate.href",
       "required": "本分支必填",
       "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/validateTargetInputs",
+      "path": "@componentAction · anyOf[1].navigate.validateTargetInputs",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md",
+      "const": true
     },
     {
       "pointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/query",
@@ -6707,7 +9001,8 @@
         "value",
         "from",
         "to",
-        "level"
+        "level",
+        "mode"
       ]
     },
     {
@@ -6730,6 +9025,32 @@
       "const": "click"
     },
     {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/visibleWhen",
+      "path": "@componentAction · anyOf[2].visibleWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/visibleWhen/allOf/0",
+      "path": "@componentAction · anyOf[2].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/enabledWhen",
+      "path": "@componentAction · anyOf[2].enabledWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/enabledWhen/allOf/0",
+      "path": "@componentAction · anyOf[2].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail",
       "path": "@componentAction · anyOf[2].openDetail",
       "required": "本分支必填",
@@ -6750,6 +9071,32 @@
         "modal",
         "drawer"
       ]
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/visibleWhen",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[0].visibleWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/visibleWhen/allOf/0",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[0].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/enabledWhen",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[0].enabledWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/enabledWhen/allOf/0",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[0].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/0/properties/titleField",
@@ -6804,6 +9151,32 @@
         "modal",
         "drawer"
       ]
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/visibleWhen",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[1].visibleWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/visibleWhen/allOf/0",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[1].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/enabledWhen",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[1].enabledWhen",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/enabledWhen/allOf/0",
+      "path": "@componentAction · anyOf[2].openDetail · anyOf[1].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/anyOf/1/properties/titleField",
@@ -6902,7 +9275,8 @@
         "value",
         "from",
         "to",
-        "level"
+        "level",
+        "mode"
       ]
     },
     {
@@ -6930,6 +9304,19 @@
       "required": "本分支必填",
       "module": "components/barChart.md",
       "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/visibleWhen",
+      "path": "@barChartComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/visibleWhen/allOf/0",
+      "path": "@barChartComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/barChartComponent/properties/type",
@@ -7031,6 +9418,100 @@
       "path": "@chartFilter.options[].value",
       "required": "本分支必填",
       "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/echartsOption",
+      "path": "@barChartComponent.props.echartsOption",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/echartsOption/allOf/0",
+      "path": "@barChartComponent.props.echartsOption · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md",
+      "ref": "#/definitions/chartOption"
+    },
+    {
+      "pointer": "#/definitions/chartOption",
+      "path": "@chartOption",
+      "required": "类型/分支",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOption/additionalProperties",
+      "path": "@chartOption{key}",
+      "required": "动态键的值",
+      "module": "chart-option.md",
+      "ref": "#/definitions/chartOptionValue"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue",
+      "path": "@chartOptionValue",
+      "required": "类型/分支",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/0",
+      "path": "@chartOptionValue · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/1",
+      "path": "@chartOptionValue · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/2",
+      "path": "@chartOptionValue · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/3",
+      "path": "@chartOptionValue · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/4",
+      "path": "@chartOptionValue · anyOf[4]",
+      "required": "独立分支（不合并required）",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/4/items",
+      "path": "@chartOptionValue · anyOf[4][]",
+      "required": "每个数组项",
+      "module": "chart-option.md",
+      "ref": "#/definitions/chartOptionValue"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/5",
+      "path": "@chartOptionValue · anyOf[5]",
+      "required": "独立分支（不合并required）",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/5/additionalProperties",
+      "path": "@chartOptionValue · anyOf[5]{key}",
+      "required": "动态键的值",
+      "module": "chart-option.md",
+      "ref": "#/definitions/chartOptionValue"
+    },
+    {
+      "pointer": "#/definitions/chartOptionValue/anyOf/5/propertyNames",
+      "path": "@chartOptionValue · anyOf[5] · propertyNames",
+      "required": "条件结构",
+      "module": "chart-option.md"
+    },
+    {
+      "pointer": "#/definitions/chartOption/propertyNames",
+      "path": "@chartOption · propertyNames",
+      "required": "条件结构",
+      "module": "chart-option.md"
     },
     {
       "pointer": "#/definitions/barChartComponent/properties/props/properties/variant",
@@ -7232,6 +9713,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/lineChartComponent/properties/visibleWhen",
+      "path": "@lineChartComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/lineChartComponent/properties/visibleWhen/allOf/0",
+      "path": "@lineChartComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/lineChartComponent/properties/type",
       "path": "@lineChartComponent.type",
       "required": "本分支必填",
@@ -7283,6 +9777,19 @@
       "required": "独立分支（不合并required）",
       "module": "components/lineChart.md",
       "ref": "#/definitions/chartFilter"
+    },
+    {
+      "pointer": "#/definitions/lineChartComponent/properties/props/properties/echartsOption",
+      "path": "@lineChartComponent.props.echartsOption",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/lineChartComponent/properties/props/properties/echartsOption/allOf/0",
+      "path": "@lineChartComponent.props.echartsOption · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/lineChart.md",
+      "ref": "#/definitions/chartOption"
     },
     {
       "pointer": "#/definitions/lineChartComponent/properties/props/properties/xField",
@@ -7419,6 +9926,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/pieChartComponent/properties/visibleWhen",
+      "path": "@pieChartComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/visibleWhen/allOf/0",
+      "path": "@pieChartComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/pieChartComponent/properties/type",
       "path": "@pieChartComponent.type",
       "required": "本分支必填",
@@ -7470,6 +9990,19 @@
       "required": "独立分支（不合并required）",
       "module": "components/pieChart.md",
       "ref": "#/definitions/chartFilter"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/properties/echartsOption",
+      "path": "@pieChartComponent.props.echartsOption",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieChartComponent/properties/props/properties/echartsOption/allOf/0",
+      "path": "@pieChartComponent.props.echartsOption · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/chartOption"
     },
     {
       "pointer": "#/definitions/pieChartComponent/properties/props/properties/variant",
@@ -7538,6 +10071,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/tableComponent/properties/visibleWhen",
+      "path": "@tableComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/visibleWhen/allOf/0",
+      "path": "@tableComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tableComponent/properties/type",
       "path": "@tableComponent.type",
       "required": "本分支必填",
@@ -7583,6 +10129,19 @@
       "module": "components/table.md"
     },
     {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/rowVisibleWhen",
+      "path": "@tableComponent.props.rowVisibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/rowVisibleWhen/allOf/0",
+      "path": "@tableComponent.props.rowVisibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tableComponent/properties/props/properties/title",
       "path": "@tableComponent.props.title",
       "required": "本分支可选",
@@ -7621,35 +10180,175 @@
       "module": "components/table.md"
     },
     {
-      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/fields",
-      "path": "@tableComponent.props.toolbar.search.fields",
-      "required": "本分支必填",
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0]",
+      "required": "独立分支（不合并required）",
       "module": "components/table.md"
     },
     {
-      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/fields/items",
-      "path": "@tableComponent.props.toolbar.search.fields[]",
-      "required": "每个数组项",
-      "module": "components/table.md"
-    },
-    {
-      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/placeholder",
-      "path": "@tableComponent.props.toolbar.search.placeholder",
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/visibleWhen",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].visibleWhen",
       "required": "本分支可选",
       "module": "components/table.md"
     },
     {
-      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/placeholder/allOf/0",
-      "path": "@tableComponent.props.toolbar.search.placeholder · allOf[0]",
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/visibleWhen/allOf/0",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/enabledWhen",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/enabledWhen/allOf/0",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/fields",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].fields",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/fields/items",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].fields[]",
+      "required": "每个数组项",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/placeholder",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].placeholder",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/placeholder/allOf/0",
+      "path": "@tableComponent.props.toolbar.search · anyOf[0].placeholder · allOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/table.md",
       "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/visibleWhen",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/visibleWhen/allOf/0",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/enabledWhen",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/enabledWhen/allOf/0",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].options",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].options[]",
+      "required": "每个数组项",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/value",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].options[].value",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/label",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].options[].label",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/field",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].options[].field",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/placeholder",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].options[].placeholder",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/placeholder/allOf/0",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].options[].placeholder · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/defaultValue",
+      "path": "@tableComponent.props.toolbar.search · anyOf[1].defaultValue",
+      "required": "本分支可选",
+      "module": "components/table.md"
     },
     {
       "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export",
       "path": "@tableComponent.props.toolbar.export",
       "required": "本分支可选",
       "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/visibleWhen",
+      "path": "@tableComponent.props.toolbar.export.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/visibleWhen/allOf/0",
+      "path": "@tableComponent.props.toolbar.export.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/enabledWhen",
+      "path": "@tableComponent.props.toolbar.export.enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/enabledWhen/allOf/0",
+      "path": "@tableComponent.props.toolbar.export.enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/format",
@@ -7814,6 +10513,32 @@
       "module": "components/table.md"
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/selection/properties/visibleWhen",
+      "path": "@tableColumn.selection.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/selection/properties/visibleWhen/allOf/0",
+      "path": "@tableColumn.selection.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/selection/properties/enabledWhen",
+      "path": "@tableColumn.selection.enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/selection/properties/enabledWhen/allOf/0",
+      "path": "@tableColumn.selection.enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tableColumn/properties/selection/properties/writes",
       "path": "@tableColumn.selection.writes",
       "required": "本分支必填",
@@ -7937,6 +10662,32 @@
       ]
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/visibleWhen",
+      "path": "@tableColumn.openDetail · anyOf[0].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/visibleWhen/allOf/0",
+      "path": "@tableColumn.openDetail · anyOf[0].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/enabledWhen",
+      "path": "@tableColumn.openDetail · anyOf[0].enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/enabledWhen/allOf/0",
+      "path": "@tableColumn.openDetail · anyOf[0].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/0/properties/titleField",
       "path": "@tableColumn.openDetail · anyOf[0].titleField",
       "required": "本分支可选",
@@ -7989,6 +10740,32 @@
         "modal",
         "drawer"
       ]
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/visibleWhen",
+      "path": "@tableColumn.openDetail · anyOf[1].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/visibleWhen/allOf/0",
+      "path": "@tableColumn.openDetail · anyOf[1].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/enabledWhen",
+      "path": "@tableColumn.openDetail · anyOf[1].enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/enabledWhen/allOf/0",
+      "path": "@tableColumn.openDetail · anyOf[1].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/titleField",
@@ -8087,7 +10864,8 @@
         "value",
         "from",
         "to",
-        "level"
+        "level",
+        "mode"
       ]
     },
     {
@@ -8103,10 +10881,43 @@
       "module": "components/table.md"
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/navigate/properties/visibleWhen",
+      "path": "@tableColumn.navigate.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigate/properties/visibleWhen/allOf/0",
+      "path": "@tableColumn.navigate.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigate/properties/enabledWhen",
+      "path": "@tableColumn.navigate.enabledWhen",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigate/properties/enabledWhen/allOf/0",
+      "path": "@tableColumn.navigate.enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tableColumn/properties/navigate/properties/href",
       "path": "@tableColumn.navigate.href",
       "required": "本分支必填",
       "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/navigate/properties/validateTargetInputs",
+      "path": "@tableColumn.navigate.validateTargetInputs",
+      "required": "本分支可选",
+      "module": "components/table.md",
+      "const": true
     },
     {
       "pointer": "#/definitions/tableColumn/properties/navigate/properties/query",
@@ -8186,7 +10997,8 @@
         "value",
         "from",
         "to",
-        "level"
+        "level",
+        "mode"
       ]
     },
     {
@@ -8377,6 +11189,19 @@
       "required": "本分支必填",
       "module": "components/mapChart.md",
       "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/visibleWhen",
+      "path": "@mapChartComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/visibleWhen/allOf/0",
+      "path": "@mapChartComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/mapChartComponent/properties/type",
@@ -8752,6 +11577,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/gaugeComponent/properties/visibleWhen",
+      "path": "@gaugeComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/gauge.md"
+    },
+    {
+      "pointer": "#/definitions/gaugeComponent/properties/visibleWhen/allOf/0",
+      "path": "@gaugeComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/gauge.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/gaugeComponent/properties/type",
       "path": "@gaugeComponent.type",
       "required": "本分支必填",
@@ -8877,6 +11715,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/tabContainerComponent/properties/visibleWhen",
+      "path": "@tabContainerComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/tabContainer.md"
+    },
+    {
+      "pointer": "#/definitions/tabContainerComponent/properties/visibleWhen/allOf/0",
+      "path": "@tabContainerComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tabContainerComponent/properties/type",
       "path": "@tabContainerComponent.type",
       "required": "本分支必填",
@@ -8926,6 +11777,12 @@
       "module": "components/tabContainer.md"
     },
     {
+      "pointer": "#/definitions/tabContainerComponent/properties/props/properties/initialTabUrlParam",
+      "path": "@tabContainerComponent.props.initialTabUrlParam",
+      "required": "本分支可选",
+      "module": "components/tabContainer.md"
+    },
+    {
       "pointer": "#/definitions/tabContainerComponent/properties/props/properties/tabs",
       "path": "@tabContainerComponent.props.tabs",
       "required": "本分支必填",
@@ -8957,6 +11814,19 @@
       "module": "components/tabContainer.md"
     },
     {
+      "pointer": "#/definitions/tabItem/anyOf/0/properties/visibleWhen",
+      "path": "@tabItem · anyOf[0].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/tabContainer.md"
+    },
+    {
+      "pointer": "#/definitions/tabItem/anyOf/0/properties/visibleWhen/allOf/0",
+      "path": "@tabItem · anyOf[0].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/tabItem/anyOf/0/properties/label",
       "path": "@tabItem · anyOf[0].label",
       "required": "本分支必填",
@@ -8981,6 +11851,19 @@
       "path": "@tabItem · anyOf[1].id",
       "required": "本分支必填",
       "module": "components/tabContainer.md"
+    },
+    {
+      "pointer": "#/definitions/tabItem/anyOf/1/properties/visibleWhen",
+      "path": "@tabItem · anyOf[1].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/tabContainer.md"
+    },
+    {
+      "pointer": "#/definitions/tabItem/anyOf/1/properties/visibleWhen/allOf/0",
+      "path": "@tabItem · anyOf[1].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/tabItem/anyOf/1/properties/label",
@@ -9021,6 +11904,19 @@
       "required": "本分支必填",
       "module": "components/compositeCard.md",
       "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/compositeCardComponent/properties/visibleWhen",
+      "path": "@compositeCardComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/compositeCard.md"
+    },
+    {
+      "pointer": "#/definitions/compositeCardComponent/properties/visibleWhen/allOf/0",
+      "path": "@compositeCardComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/compositeCard.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/compositeCardComponent/properties/type",
@@ -9142,6 +12038,19 @@
       "required": "本分支必填",
       "module": "components/keyValuePanel.md",
       "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/keyValuePanelComponent/properties/visibleWhen",
+      "path": "@keyValuePanelComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/keyValuePanel.md"
+    },
+    {
+      "pointer": "#/definitions/keyValuePanelComponent/properties/visibleWhen/allOf/0",
+      "path": "@keyValuePanelComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/keyValuePanel.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/keyValuePanelComponent/properties/type",
@@ -9321,6 +12230,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/categoryBreakdownComponent/properties/visibleWhen",
+      "path": "@categoryBreakdownComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/categoryBreakdown.md"
+    },
+    {
+      "pointer": "#/definitions/categoryBreakdownComponent/properties/visibleWhen/allOf/0",
+      "path": "@categoryBreakdownComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/categoryBreakdown.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/categoryBreakdownComponent/properties/type",
       "path": "@categoryBreakdownComponent.type",
       "required": "本分支必填",
@@ -9454,6 +12376,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/rankingCardComponent/properties/visibleWhen",
+      "path": "@rankingCardComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/rankingCard.md"
+    },
+    {
+      "pointer": "#/definitions/rankingCardComponent/properties/visibleWhen/allOf/0",
+      "path": "@rankingCardComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/rankingCard.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/rankingCardComponent/properties/type",
       "path": "@rankingCardComponent.type",
       "required": "本分支必填",
@@ -9552,6 +12487,19 @@
       "required": "本分支必填",
       "module": "components/rankingDetailCard.md",
       "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/rankingDetailCardComponent/properties/visibleWhen",
+      "path": "@rankingDetailCardComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/rankingDetailCard.md"
+    },
+    {
+      "pointer": "#/definitions/rankingDetailCardComponent/properties/visibleWhen/allOf/0",
+      "path": "@rankingDetailCardComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/rankingDetailCard.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/rankingDetailCardComponent/properties/type",
@@ -9743,6 +12691,7 @@
         "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
+        "usd-adaptive",
         "percent-0",
         "percent-1",
         "percent-2",
@@ -9797,6 +12746,19 @@
       "required": "本分支必填",
       "module": "components/fieldText.md",
       "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/fieldTextComponent/properties/visibleWhen",
+      "path": "@fieldTextComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/fieldText.md"
+    },
+    {
+      "pointer": "#/definitions/fieldTextComponent/properties/visibleWhen/allOf/0",
+      "path": "@fieldTextComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/fieldText.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/fieldTextComponent/properties/type",
@@ -9880,6 +12842,19 @@
       "ref": "#/definitions/componentId"
     },
     {
+      "pointer": "#/definitions/textComponent/properties/visibleWhen",
+      "path": "@textComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/visibleWhen/allOf/0",
+      "path": "@textComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/text.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/textComponent/properties/type",
       "path": "@textComponent.type",
       "required": "本分支必填",
@@ -9926,6 +12901,44 @@
       "ref": "#/definitions/textValue"
     },
     {
+      "pointer": "#/definitions/textComponent/properties/props/properties/parts",
+      "path": "@textComponent.props.parts",
+      "required": "本分支可选",
+      "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/parts/items",
+      "path": "@textComponent.props.parts[]",
+      "required": "每个数组项",
+      "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/parts/items/properties/id",
+      "path": "@textComponent.props.parts[].id",
+      "required": "本分支必填",
+      "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/parts/items/properties/text",
+      "path": "@textComponent.props.parts[].text",
+      "required": "本分支必填",
+      "module": "components/text.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/parts/items/properties/visibleWhen",
+      "path": "@textComponent.props.parts[].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/parts/items/properties/visibleWhen/allOf/0",
+      "path": "@textComponent.props.parts[].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/text.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/textComponent/properties/props/properties/bodyFormat",
       "path": "@textComponent.props.bodyFormat",
       "required": "本分支可选",
@@ -9964,10 +12977,43 @@
       "module": "components/text.md"
     },
     {
+      "pointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/visibleWhen",
+      "path": "@textComponent.props.links[].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/visibleWhen/allOf/0",
+      "path": "@textComponent.props.links[].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/text.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/enabledWhen",
+      "path": "@textComponent.props.links[].enabledWhen",
+      "required": "本分支可选",
+      "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/enabledWhen/allOf/0",
+      "path": "@textComponent.props.links[].enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/text.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/href",
       "path": "@textComponent.props.links[].href",
       "required": "本分支必填",
       "module": "components/text.md"
+    },
+    {
+      "pointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/validateTargetInputs",
+      "path": "@textComponent.props.links[].validateTargetInputs",
+      "required": "本分支可选",
+      "module": "components/text.md",
+      "const": true
     },
     {
       "pointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/query",
@@ -10047,7 +13093,8 @@
         "value",
         "from",
         "to",
-        "level"
+        "level",
+        "mode"
       ]
     },
     {
@@ -10082,6 +13129,19 @@
       "required": "本分支必填",
       "module": "components/aiSummary.md",
       "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/visibleWhen",
+      "path": "@aiSummaryComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/visibleWhen/allOf/0",
+      "path": "@aiSummaryComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/aiSummary.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/aiSummaryComponent/properties/type",
@@ -10198,6 +13258,86 @@
       "module": "components/aiSummary.md"
     },
     {
+      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/17",
+      "path": "$.detailViews[].components[] · oneOf[17]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/buttonComponent"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent",
+      "path": "@buttonComponent",
+      "required": "类型/分支",
+      "module": "components/button.md"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/id",
+      "path": "@buttonComponent.id",
+      "required": "本分支必填",
+      "module": "components/button.md",
+      "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/type",
+      "path": "@buttonComponent.type",
+      "required": "本分支必填",
+      "module": "components/button.md",
+      "const": "button"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/layout",
+      "path": "@buttonComponent.layout",
+      "required": "本分支必填",
+      "module": "components/button.md",
+      "ref": "#/definitions/componentLayout"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/visibleWhen",
+      "path": "@buttonComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/button.md"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/visibleWhen/allOf/0",
+      "path": "@buttonComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/button.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/enabledWhen",
+      "path": "@buttonComponent.enabledWhen",
+      "required": "本分支可选",
+      "module": "components/button.md"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/enabledWhen/allOf/0",
+      "path": "@buttonComponent.enabledWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/button.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/props",
+      "path": "@buttonComponent.props",
+      "required": "本分支必填",
+      "module": "components/button.md"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/props/properties/label",
+      "path": "@buttonComponent.props.label",
+      "required": "本分支必填",
+      "module": "components/button.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/buttonComponent/properties/props/properties/action",
+      "path": "@buttonComponent.props.action",
+      "required": "本分支必填",
+      "module": "components/button.md",
+      "ref": "#/definitions/componentAction"
+    },
+    {
       "pointer": "#/properties/sectionGroups",
       "path": "$.sectionGroups",
       "required": "本分支可选",
@@ -10214,6 +13354,19 @@
       "path": "$.sectionGroups[].id",
       "required": "本分支必填",
       "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/sectionGroups/items/properties/visibleWhen",
+      "path": "$.sectionGroups[].visibleWhen",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/sectionGroups/items/properties/visibleWhen/allOf/0",
+      "path": "$.sectionGroups[].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/properties/sectionGroups/items/properties/label",
@@ -10293,6 +13446,19 @@
       "path": "@section.id",
       "required": "本分支必填",
       "module": "sections-and-layout.md"
+    },
+    {
+      "pointer": "#/definitions/section/properties/visibleWhen",
+      "path": "@section.visibleWhen",
+      "required": "本分支可选",
+      "module": "sections-and-layout.md"
+    },
+    {
+      "pointer": "#/definitions/section/properties/visibleWhen/allOf/0",
+      "path": "@section.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "sections-and-layout.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/section/properties/title",
@@ -10486,6 +13652,13 @@
       "required": "独立分支（不合并required）",
       "module": "sections-and-layout.md",
       "ref": "#/definitions/aiSummaryComponent"
+    },
+    {
+      "pointer": "#/definitions/section/properties/components/items/oneOf/17",
+      "path": "@section.components[] · oneOf[17]",
+      "required": "独立分支（不合并required）",
+      "module": "sections-and-layout.md",
+      "ref": "#/definitions/buttonComponent"
     }
   ],
   "exampleCoverage": [
@@ -10789,6 +13962,11 @@
       "variant": "reportInline",
       "file": "examples/component-aiSummary-reportInline.json",
       "pointer": "#/sections/0/components/0"
+    },
+    {
+      "type": "button",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0"
     }
   ],
   "branchCoverage": [
@@ -10807,8 +13985,8 @@
     {
       "schemaPointer": "#/definitions/nonEmptyTextValue/anyOf/2",
       "module": "params-and-text-values.md",
-      "file": "examples/report-filter-text-page.json",
-      "pointer": "#/sections/0/components/0/props/asOf/value"
+      "file": "examples/ioc-header-page.json",
+      "pointer": "#/iocHeader/identity/facts/0/value"
     },
     {
       "schemaPointer": "#/definitions/nonEmptyTextValue/anyOf/3",
@@ -10845,6 +14023,18 @@
       "module": "page.md",
       "file": "examples/component-pieChart.json",
       "pointer": "#/dashboardToolbar"
+    },
+    {
+      "schemaPointer": "#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/0",
+      "module": "page.md",
+      "file": "examples/ioc-header-page.json",
+      "pointer": "#/iocHeader/identity/facts/0/value"
+    },
+    {
+      "schemaPointer": "#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/1",
+      "module": "page.md",
+      "file": "examples/availability-page.json",
+      "pointer": "#/iocHeader/identity/facts/1/value"
     },
     {
       "schemaPointer": "#/properties/params/anyOf/0",
@@ -11005,8 +14195,8 @@
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/1",
       "module": "compute.md",
-      "file": "examples/reference-export-compute-branches.json",
-      "pointer": "#/dataSources/calc/compute/0"
+      "file": "examples/time-binding-branches-page.json",
+      "pointer": "#/dataSources/main/compute/0"
     },
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/2",
@@ -11017,8 +14207,8 @@
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/3",
       "module": "compute.md",
-      "file": "examples/component-table.json",
-      "pointer": "#/dataSources/fill-1/compute/0"
+      "file": "examples/reference-export-compute-branches.json",
+      "pointer": "#/dataSources/fill-0/compute/0"
     },
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/3/properties/range/anyOf/0",
@@ -11029,7 +14219,7 @@
     {
       "schemaPointer": "#/definitions/computeOperator/oneOf/3/properties/range/anyOf/1",
       "module": "compute.md",
-      "file": "examples/component-table.json",
+      "file": "examples/reference-export-compute-branches.json",
       "pointer": "#/dataSources/fill-1/compute/0/range"
     },
     {
@@ -11137,8 +14327,8 @@
     {
       "schemaPointer": "#/definitions/queryScalarField/oneOf/1",
       "module": "fields.md",
-      "file": "examples/paged-join-page.json",
-      "pointer": "#/dataSources/office-bidding/fields/bidding-amount"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/dataSources/opportunity-list/fields/bidding-amount"
     },
     {
       "schemaPointer": "#/definitions/queryField/anyOf/1",
@@ -11317,8 +14507,8 @@
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1",
       "module": "queries-and-bindings.md",
-      "file": "examples/hierarchy-binding-page.json",
-      "pointer": "#/dataSources/sales/source/query/filterBindings/area"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/dataSources/opportunity-list/source/query/filterBindings/region"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2",
@@ -11329,20 +14519,56 @@
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/3",
       "module": "queries-and-bindings.md",
-      "file": "examples/non-dimension-bindings-page.json",
-      "pointer": "#/dataSources/sales/source/query/filterBindings/month"
+      "file": "examples/availability-page.json",
+      "pointer": "#/dataSources/bound/source/query/filterBindings/month"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/4",
       "module": "queries-and-bindings.md",
-      "file": "examples/non-dimension-bindings-page.json",
-      "pointer": "#/dataSources/sales/source/query/filterBindings/only-key"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/dataSources/opportunity-list/source/query/filterBindings/key-office"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5",
       "module": "queries-and-bindings.md",
-      "file": "examples/non-dimension-bindings-page.json",
-      "pointer": "#/dataSources/sales/source/query/filterBindings/amount-range"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/dataSources/opportunity-list/source/query/filterBindings/bidding-amount"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0",
+      "module": "queries-and-bindings.md",
+      "file": "examples/calendar-window-page.json",
+      "pointer": "#/dataSources/bound/source/query/timeModes/cases/month/filterBindings/months"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1",
+      "module": "queries-and-bindings.md",
+      "file": "examples/time-binding-branches-page.json",
+      "pointer": "#/dataSources/main/source/query/timeModes/cases/month/filterBindings/closed"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2",
+      "module": "queries-and-bindings.md",
+      "file": "examples/time-modes-page.json",
+      "pointer": "#/dataSources/bound/source/query/timeModes/cases/day/filterBindings/period"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3",
+      "module": "queries-and-bindings.md",
+      "file": "examples/time-binding-branches-page.json",
+      "pointer": "#/dataSources/main/source/query/timeModes/cases/month/filterBindings/point"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4",
+      "module": "queries-and-bindings.md",
+      "file": "examples/time-binding-branches-page.json",
+      "pointer": "#/dataSources/main/source/query/timeModes/cases/month/filterBindings/flag"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5",
+      "module": "queries-and-bindings.md",
+      "file": "examples/time-binding-branches-page.json",
+      "pointer": "#/dataSources/main/source/query/timeModes/cases/month/filterBindings/amount"
     },
     {
       "schemaPointer": "#/definitions/dataSource/anyOf/2",
@@ -11402,34 +14628,256 @@
       "pointer": "#/filters/0"
     },
     {
+      "schemaPointer": "#/definitions/textValue/anyOf/0",
+      "module": "params-and-text-values.md",
+      "file": "examples/component-barChart.json",
+      "pointer": "#/sections/0/components/0/props/title"
+    },
+    {
+      "schemaPointer": "#/definitions/textValue/anyOf/1",
+      "module": "params-and-text-values.md",
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/sections/0/components/4/props/title"
+    },
+    {
+      "schemaPointer": "#/definitions/textValue/anyOf/2",
+      "module": "params-and-text-values.md",
+      "file": "examples/report-filter-text-page.json",
+      "pointer": "#/sections/2/components/0/props/body"
+    },
+    {
+      "schemaPointer": "#/definitions/textValue/anyOf/3",
+      "module": "params-and-text-values.md",
+      "file": "examples/text-composition-page.json",
+      "pointer": "#/sections/0/components/0/props/subtitle"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/page-visibility-region-linkage.json",
+      "pointer": "#/sectionGroups/0/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/filters/0/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/3",
+      "module": "conditions.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/filters/0/visibleWhen/not"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/4",
+      "module": "conditions.md",
+      "file": "examples/page-visibility-region-linkage.json",
+      "pointer": "#/sections/1/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/page-visibility-region-linkage.json",
+      "pointer": "#/sections/1/visibleWhen/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/4/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/4/properties/value/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/6/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/5",
+      "module": "conditions.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0/visibleWhen/any/1"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0/visibleWhen/any/1/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/5/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/7/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/6",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/8"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/7",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/9"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/8",
+      "module": "conditions.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0/enabledWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/11/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/13/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0/enabledWhen/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/9",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/12"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/12/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/14/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/9/properties/values/items/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/16/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/10",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/17"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/11",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/18"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/12",
+      "module": "conditions.md",
+      "file": "examples/page-visibility-region-linkage.json",
+      "pointer": "#/sections/3/components/0/props/columns/0/navigate/visibleWhen"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/page-visibility-region-linkage.json",
+      "pointer": "#/sections/3/components/0/props/columns/0/navigate/visibleWhen/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/22/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/12/properties/value/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/24/value"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/13",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/21"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/0",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/21/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/1",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/23/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/13/properties/values/items/anyOf/2",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/25/values/0"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/14",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/26"
+    },
+    {
+      "schemaPointer": "#/definitions/condition/anyOf/15",
+      "module": "conditions.md",
+      "file": "examples/reference-conditions-page.json",
+      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/27"
+    },
+    {
       "schemaPointer": "#/properties/filters/items/oneOf/1",
       "module": "page.md",
       "file": "examples/reference-branches-page.json",
       "pointer": "#/filters/1"
     },
     {
-      "schemaPointer": "#/definitions/timeRangeFilter/properties/default/anyOf/0",
+      "schemaPointer": "#/definitions/timeRangeFilter/properties/modes/items/properties/default/anyOf/0",
       "module": "filters.md",
-      "file": "examples/reference-branches-page.json",
-      "pointer": "#/filters/1/default"
+      "file": "examples/time-modes-page.json",
+      "pointer": "#/filters/0/modes/1/default"
     },
     {
-      "schemaPointer": "#/definitions/timeRangeFilter/properties/default/anyOf/1",
+      "schemaPointer": "#/definitions/timeRangeFilter/properties/modes/items/properties/default/anyOf/1",
       "module": "filters.md",
-      "file": "examples/text-composition-page.json",
-      "pointer": "#/filters/1/default"
-    },
-    {
-      "schemaPointer": "#/definitions/timeRangeFilter/properties/default/anyOf/2",
-      "module": "filters.md",
-      "file": "examples/reference-branches-page.json",
-      "pointer": "#/filters/2/default"
+      "file": "examples/time-modes-page.json",
+      "pointer": "#/filters/0/modes/0/default"
     },
     {
       "schemaPointer": "#/definitions/relativeTimeExpression/properties/range/oneOf/0",
       "module": "filters.md",
-      "file": "examples/filters-page.json",
-      "pointer": "#/filters/3/default/range"
+      "file": "examples/time-modes-page.json",
+      "pointer": "#/filters/0/modes/0/default/range"
     },
     {
       "schemaPointer": "#/definitions/relativeTimeExpression/properties/range/oneOf/1",
@@ -11444,15 +14892,33 @@
       "pointer": "#/filters/3/default/range"
     },
     {
+      "schemaPointer": "#/definitions/timeRangeFilter/properties/default/anyOf/0",
+      "module": "filters.md",
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/filters/1/default"
+    },
+    {
+      "schemaPointer": "#/definitions/timeRangeFilter/properties/default/anyOf/1",
+      "module": "filters.md",
+      "file": "examples/time-presets-page.json",
+      "pointer": "#/filters/0/default"
+    },
+    {
+      "schemaPointer": "#/definitions/timeRangeFilter/properties/default/anyOf/2",
+      "module": "filters.md",
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/filters/2/default"
+    },
+    {
       "schemaPointer": "#/definitions/timeRangeFilter/properties/default/anyOf/3",
       "module": "filters.md",
-      "file": "examples/dashboard-period-filter.json",
+      "file": "examples/ioc-header-page.json",
       "pointer": "#/filters/0/default"
     },
     {
       "schemaPointer": "#/definitions/periodSelection/anyOf/0",
       "module": "filters.md",
-      "file": "examples/dashboard-period-filter.json",
+      "file": "examples/ioc-header-page.json",
       "pointer": "#/filters/0/default"
     },
     {
@@ -11464,20 +14930,20 @@
     {
       "schemaPointer": "#/properties/filters/items/oneOf/2",
       "module": "page.md",
-      "file": "examples/text-composition-page.json",
+      "file": "examples/availability-page.json",
       "pointer": "#/filters/0"
     },
     {
       "schemaPointer": "#/properties/filters/items/oneOf/3",
       "module": "page.md",
-      "file": "examples/non-dimension-bindings-page.json",
+      "file": "examples/unified-overflow-header.json",
       "pointer": "#/filters/1"
     },
     {
       "schemaPointer": "#/properties/filters/items/oneOf/4",
       "module": "page.md",
-      "file": "examples/non-dimension-bindings-page.json",
-      "pointer": "#/filters/2"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/filters/9"
     },
     {
       "schemaPointer": "#/properties/filters/items/oneOf/5",
@@ -11507,30 +14973,6 @@
       "pointer": "#/sections/0/components/0/props/exportButtons/1"
     },
     {
-      "schemaPointer": "#/definitions/textValue/anyOf/0",
-      "module": "params-and-text-values.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/sections/0/components/0/props/title"
-    },
-    {
-      "schemaPointer": "#/definitions/textValue/anyOf/1",
-      "module": "params-and-text-values.md",
-      "file": "examples/reference-branches-page.json",
-      "pointer": "#/sections/0/components/4/props/title"
-    },
-    {
-      "schemaPointer": "#/definitions/textValue/anyOf/2",
-      "module": "params-and-text-values.md",
-      "file": "examples/report-filter-text-page.json",
-      "pointer": "#/sections/2/components/0/props/body"
-    },
-    {
-      "schemaPointer": "#/definitions/textValue/anyOf/3",
-      "module": "params-and-text-values.md",
-      "file": "examples/text-composition-page.json",
-      "pointer": "#/sections/0/components/0/props/subtitle"
-    },
-    {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/1",
       "module": "page.md",
       "negativeWitness": {
@@ -11542,13 +14984,25 @@
     {
       "schemaPointer": "#/definitions/fieldBinding/anyOf/0",
       "module": "field-bindings-and-formats.md",
+      "file": "examples/component-metricCard.json",
+      "pointer": "#/sections/0/components/0/props/rows/0/valueField"
+    },
+    {
+      "schemaPointer": "#/definitions/staticFieldBinding/anyOf/0",
+      "module": "field-bindings-and-formats.md",
       "file": "examples/component-barChart.json",
       "pointer": "#/sections/0/components/0/props/categoryField"
     },
     {
-      "schemaPointer": "#/definitions/fieldBinding/anyOf/1",
+      "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1",
       "module": "field-bindings-and-formats.md",
       "file": "examples/component-metricCard.json",
+      "pointer": "#/sections/0/components/0/props/rows/0/valueField"
+    },
+    {
+      "schemaPointer": "#/definitions/fieldBinding/anyOf/1",
+      "module": "field-bindings-and-formats.md",
+      "file": "examples/time-binding-branches-page.json",
       "pointer": "#/sections/0/components/0/props/rows/0/valueField"
     },
     {
@@ -11566,6 +15020,12 @@
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/0",
       "module": "actions-and-navigation.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0/props/action"
+    },
+    {
+      "schemaPointer": "#/definitions/componentAction/anyOf/0/anyOf/0",
+      "module": "actions-and-navigation.md",
       "file": "examples/reference-branches-page.json",
       "pointer": "#/sections/0/components/1/props/actions/0"
     },
@@ -11582,6 +15042,12 @@
       "pointer": "#/sections/0/components/1/props/actions/0/field"
     },
     {
+      "schemaPointer": "#/definitions/componentAction/anyOf/0/anyOf/1",
+      "module": "actions-and-navigation.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0/props/action"
+    },
+    {
       "schemaPointer": "#/definitions/componentAction/anyOf/1",
       "module": "actions-and-navigation.md",
       "file": "examples/component-compositeCard.json",
@@ -11590,8 +15056,8 @@
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/0",
       "module": "actions-and-navigation.md",
-      "file": "examples/filters-page.json",
-      "pointer": "#/sections/0/components/0/props/actions/1/navigate/query/city"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/sections/0/components/0/props/actions/0/navigate/query/page-title"
     },
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/1",
@@ -11648,6 +15114,42 @@
       "pointer": "#/detailViews/0/components/2"
     },
     {
+      "schemaPointer": "#/definitions/chartOptionValue/anyOf/0",
+      "module": "chart-option.md",
+      "file": "examples/chart-echarts-option-page.json",
+      "pointer": "#/sections/0/components/1/props/echartsOption/grid/top"
+    },
+    {
+      "schemaPointer": "#/definitions/chartOptionValue/anyOf/1",
+      "module": "chart-option.md",
+      "file": "examples/chart-echarts-option-page.json",
+      "pointer": "#/sections/0/components/1/props/echartsOption/grid/right"
+    },
+    {
+      "schemaPointer": "#/definitions/chartOptionValue/anyOf/2",
+      "module": "chart-option.md",
+      "file": "examples/chart-echarts-option-page.json",
+      "pointer": "#/sections/0/components/1/props/echartsOption/animation"
+    },
+    {
+      "schemaPointer": "#/definitions/chartOptionValue/anyOf/3",
+      "module": "chart-option.md",
+      "file": "examples/chart-echarts-option-page.json",
+      "pointer": "#/sections/0/components/3/props/echartsOption/backgroundColor"
+    },
+    {
+      "schemaPointer": "#/definitions/chartOptionValue/anyOf/4",
+      "module": "chart-option.md",
+      "file": "examples/chart-echarts-option-page.json",
+      "pointer": "#/sections/0/components/1/props/echartsOption/series"
+    },
+    {
+      "schemaPointer": "#/definitions/chartOptionValue/anyOf/5",
+      "module": "chart-option.md",
+      "file": "examples/chart-echarts-option-page.json",
+      "pointer": "#/sections/0/components/1/props/echartsOption/grid"
+    },
+    {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/3",
       "module": "page.md",
       "file": "examples/reference-export-detail-branches.json",
@@ -11664,6 +15166,18 @@
       "module": "page.md",
       "file": "examples/detail-views.json",
       "pointer": "#/detailViews/0/components/0"
+    },
+    {
+      "schemaPointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0",
+      "module": "components/table.md",
+      "file": "examples/paged-join-fixed-rank-page.json",
+      "pointer": "#/sections/0/components/1/props/toolbar/search"
+    },
+    {
+      "schemaPointer": "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1",
+      "module": "components/table.md",
+      "file": "examples/table-search-options-page.json",
+      "pointer": "#/sections/0/components/0/props/toolbar/search"
     },
     {
       "schemaPointer": "#/definitions/tableColumnNode/anyOf/0",
@@ -11716,8 +15230,8 @@
     {
       "schemaPointer": "#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/0",
       "module": "components/table.md",
-      "file": "examples/reference-export-column-actions.json",
-      "pointer": "#/sections/8/components/0/props/columns/0/navigate/query/customer"
+      "file": "examples/tab-url-source.json",
+      "pointer": "#/sections/0/components/1/props/columns/0/navigate/query/sales-tab"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/1",
@@ -11746,8 +15260,8 @@
     {
       "schemaPointer": "#/definitions/tableComponent/properties/props/properties/pagination/oneOf/1",
       "module": "components/table.md",
-      "file": "examples/component-tabContainer.json",
-      "pointer": "#/sections/0/components/0/props/tabs/1/components/0/props/pagination"
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/sections/0/components/6/props/pagination"
     },
     {
       "schemaPointer": "#/definitions/tableComponent/properties/props/properties/pagination/oneOf/2",
@@ -11800,8 +15314,8 @@
     {
       "schemaPointer": "#/definitions/tabItem/anyOf/1",
       "module": "components/tabContainer.md",
-      "file": "examples/component-tabContainer.json",
-      "pointer": "#/sections/0/components/0/props/tabs/1"
+      "file": "examples/composite-page.json",
+      "pointer": "#/sections/1/components/0/props/tabs/1"
     },
     {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/9",
@@ -11966,6 +15480,15 @@
       }
     },
     {
+      "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/17",
+      "module": "page.md",
+      "negativeWitness": {
+        "file": "errors/detail-component-reject-button.json",
+        "reason": "详情展示闭集不开放独立按钮和递归动作，只有语义拒绝见证。",
+        "rule": "detail-view-component-types"
+      }
+    },
+    {
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/0",
       "module": "sections-and-layout.md",
       "file": "examples/component-reportHeader.json",
@@ -12066,6 +15589,12 @@
       "module": "sections-and-layout.md",
       "file": "examples/component-aiSummary.json",
       "pointer": "#/sections/0/components/0"
+    },
+    {
+      "schemaPointer": "#/definitions/section/properties/components/items/oneOf/17",
+      "module": "sections-and-layout.md",
+      "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0"
     }
   ],
   "semanticGaps": {
@@ -12074,5 +15603,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "e94f5f3693e80eca107f29d0e42d89f26c2d94e11b01393a0dba1628917ce716"
+  "semanticSourceDigest": "19fa672e200355369759c2a593165e0d63583d479194362d72232308a6d1cdd2"
 }

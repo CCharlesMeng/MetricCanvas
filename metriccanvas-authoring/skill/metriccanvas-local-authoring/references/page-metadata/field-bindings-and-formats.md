@@ -64,8 +64,24 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 
 6.15 新增 `period`：用于时间输入的统一展示，单点原值显示，范围“开始 至 结束”，同端点折叠为单点。`{filter, format:"period"}` 读取已应用状态；`{param, format:"period"}` 读取打开时的参数值。没有 period-compact 或自定义连接词。
 
+<a id="field-selection"></a>
 
-页面协议 6.32。结构真源为本册[schema.json](schema.json)，SHA256 `a82a821bf9c06c65521b893a71a7b918b3a1d5cd648e0792a0d3ca9c9de63010`。字段表自动生成；可选不等于有默认值。
+## 静态货币字段选择（6.38）
+
+FieldBinding增加非递归`{byFilter:{filterId,cases:{RMB:{data:"main",field:"base-cny",format:"number-grouped"},USD:{data:"main",field:"base-usd",format:"number-grouped"}}}}`。cases叶子是原StaticFieldBinding（字符串或data/field/format/missingText/match对象），不能再次byFilter。控制筛选必须是required单选封闭枚举，cases穷尽有效选项，无默认货币兜底。FieldReference、导航行字段和compute输入仍是静态字段，不接受该分支。
+
+校验遍历每个一致选择组合，覆盖非默认case的字段、槽、role、match、表格冲突及图表同轴货币。组合数量最多4096，超过时拆分页面。字段选择仅用于静态money字段；units存在时同case货币必须一致。运行和静态导出统一按已应用/捕获的筛选投影成静态叶子；没有合法选择时相关呈现等待选择，导出拒绝，不从首case猜货币。
+
+所选字段的标签、单位和格式一起投影，覆盖对应表格列和金额消费者的旧单位文案；依赖该选择的表格清掉旧排序、表头条件、搜索和页码。XLSX在首次等待前冻结组件、筛选和所选case，保留基本单位数值与对应货币标题。图表、表格和计算仍保留两套静态字段，不将不同currency输入混加，也不用selectField制造伪CNY输出。
+
+结果字段money支持显式CNY（元）和USD（美元）；currency不执行汇率转换。`usd-adaptive`显示带千分位、两位小数和“美元”，并非汇率换算；`cny-adaptive`继续人民币元/万/亿规则。金额格式必须与静态货币一致。已有组件另显示单位时优先number-grouped等纯数字格式，避免重复单位。
+
+完整场景：[金额与币种](examples/currency-selection-page.json)。
+
+字段选择投影只替换表格字段列标题与单位；显式指标行label、系列label/name和组件业务标题保持上下文含义。money自适应格式已带货币单位时不再追加独立unit，避免双重单位。
+
+
+页面协议 6.43。结构真源为本册[schema.json](schema.json)，SHA256 `7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -123,61 +139,81 @@ Schema位置：`#/definitions/fieldBinding`。
 
 ### `@fieldBinding · anyOf[0]`
 
-Schema位置：`#/definitions/fieldBinding/anyOf/0`。
+Schema位置：`#/definitions/fieldBinding/anyOf/0`。目标：[#/definitions/staticFieldBinding](field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e67)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/staticFieldBinding | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e67"></a>
+
+### `@staticFieldBinding`
+
+Schema位置：`#/definitions/staticFieldBinding`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 类型/分支 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f30"></a>
+
+### `@staticFieldBinding · anyOf[0]`
+
+Schema位置：`#/definitions/staticFieldBinding/anyOf/0`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 独立分支（不合并required） | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f31"></a>
+<a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f31"></a>
 
-### `@fieldBinding · anyOf[1]`
+### `@staticFieldBinding · anyOf[1]`
 
-Schema位置：`#/definitions/fieldBinding/anyOf/1`。
+Schema位置：`#/definitions/staticFieldBinding/anyOf/1`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 独立分支（不合并required） | required=["data","field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f64617461"></a>
+<a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f312f70726f706572746965732f64617461"></a>
 
-### `@fieldBinding · anyOf[1].data`
+### `@staticFieldBinding · anyOf[1].data`
 
-Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/data`。
+Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/data`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 组件数据槽与页面数据源的显式关联。 |
 
-<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f6669656c64"></a>
+<a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f312f70726f706572746965732f6669656c64"></a>
 
-### `@fieldBinding · anyOf[1].field`
+### `@staticFieldBinding · anyOf[1].field`
 
-Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/field`。
+Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/field`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
 
-<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f6d697373696e6754657874"></a>
+<a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f312f70726f706572746965732f6d697373696e6754657874"></a>
 
-### `@fieldBinding · anyOf[1].missingText`
+### `@staticFieldBinding · anyOf[1].missingText`
 
-Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/missingText`。
+Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/missingText`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | minLength=1; maxLength=100 | Schema未设默认；装配/运行时默认见语义说明 | 字段缺值时的展示文字，不生成业务数值。 |
 
-<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f666f726d6174"></a>
+<a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f312f70726f706572746965732f666f726d6174"></a>
 
-### `@fieldBinding · anyOf[1].format`
+### `@staticFieldBinding · anyOf[1].format`
 
-Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/format`。
+Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 只控制当前组件中这一次字段绑定的展示格式 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 只控制当前组件中这一次字段绑定的展示格式 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -197,6 +233,7 @@ Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/format`。
 | "compact-million-2" | 按百万缩放，2位小数，附加百万后缀。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
+| "usd-adaptive" | 美元数值带千分位、两位小数和美元单位。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
@@ -205,35 +242,95 @@ Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/format`。
 | "date-month-day" | 只展示月日的日期格式。 |
 | "period" | 日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。 |
 
-<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f6d61746368"></a>
+<a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f312f70726f706572746965732f6d61746368"></a>
 
-### `@fieldBinding · anyOf[1].match`
+### `@staticFieldBinding · anyOf[1].match`
 
-Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/match`。
+Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/match`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 本分支可选 | required=["field","equals"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按声明维度等值选择行。 |
 
-<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f6d617463682f70726f706572746965732f6669656c64"></a>
+<a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f312f70726f706572746965732f6d617463682f70726f706572746965732f6669656c64"></a>
 
-### `@fieldBinding · anyOf[1].match.field`
+### `@staticFieldBinding · anyOf[1].match.field`
 
-Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/match/properties/field`。
+Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/match/properties/field`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
 
-<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f6d617463682f70726f706572746965732f657175616c73"></a>
+<a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f312f70726f706572746965732f6d617463682f70726f706572746965732f657175616c73"></a>
 
-### `@fieldBinding · anyOf[1].match.equals`
+### `@staticFieldBinding · anyOf[1].match.equals`
 
-Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/match/properties/equals`。目标：[#/definitions/scalar](fields.md#schema-232f646566696e6974696f6e732f7363616c6172)。
+Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/match/properties/equals`。目标：[#/definitions/scalar](fields.md#schema-232f646566696e6974696f6e732f7363616c6172)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/scalar | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 显式相等匹配值。 |
+
+<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f31"></a>
+
+### `@fieldBinding · anyOf[1]`
+
+Schema位置：`#/definitions/fieldBinding/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["byFilter"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f627946696c746572"></a>
+
+### `@fieldBinding · anyOf[1].byFilter`
+
+Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/byFilter`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | required=["filterId","cases"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | Schema6.38非递归字段选择；只选择已有静态money字段，所有case均校验。 |
+
+<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f627946696c7465722f70726f706572746965732f66696c7465724964"></a>
+
+### `@fieldBinding · anyOf[1].byFilter.filterId`
+
+Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/byFilter/properties/filterId`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 控制器必须为required单选封闭枚举，无未知值或首case回退。 |
+
+<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f627946696c7465722f70726f706572746965732f6361736573"></a>
+
+### `@fieldBinding · anyOf[1].byFilter.cases`
+
+Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/byFilter/properties/cases`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | propertyNames={"type":"string","minLength":1} | Schema未设默认；装配/运行时默认见语义说明 | 穷尽启用枚举项，每个case只能为静态FieldBinding，元数据与导出同已应用case。 |
+
+<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f627946696c7465722f70726f706572746965732f63617365732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@fieldBinding · anyOf[1].byFilter.cases{key}`
+
+Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/byFilter/properties/cases/additionalProperties`。目标：[#/definitions/staticFieldBinding](field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e67)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/staticFieldBinding | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6669656c6442696e64696e672f616e794f662f312f70726f706572746965732f627946696c7465722f70726f706572746965732f63617365732f70726f70657274794e616d6573"></a>
+
+### `@fieldBinding · anyOf[1].byFilter.cases · propertyNames`
+
+Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/byFilter/properties/cases/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6c6f7252756c65"></a>
 
@@ -484,6 +581,7 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - `presentation-capability`：颜色与图表标签声明由6.16引入。反例：[presentation-before-6.16](errors/presentation-before-6.16.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `signed-number-format-capability`：带符号普通数值格式由6.17引入。反例：[signed-number-binding-before-6.17](errors/signed-number-binding-before-6.17.json)、[signed-number-default-before-6.17](errors/signed-number-default-before-6.17.json)、[signed-number-param-before-6.17](errors/signed-number-param-before-6.17.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `signed-number-family-capability`：两位小数与千分位带符号数值格式由6.18引入。反例：[signed-number-two-decimal-before-6.18](errors/signed-number-two-decimal-before-6.18.json)、[signed-number-grouped-before-6.18](errors/signed-number-grouped-before-6.18.json)、[signed-number-family-param-before-6.18](errors/signed-number-family-param-before-6.18.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `currency-selection`：6.38金额范围和静态货币字段选择。反例：[currency-before-6.38](errors/currency-before-6.38.json)、[currency-case-missing](errors/currency-case-missing.json)、[currency-metric-mismatch](errors/currency-metric-mismatch.json)、[currency-negative-default](errors/currency-negative-default.json)、[currency-equal-default](errors/currency-equal-default.json)、[currency-compute-mixed](errors/currency-compute-mixed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -493,11 +591,14 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - [explicit-presentation-page](examples/explicit-presentation-page.json)：完整合法页面；查询仅为静态契约证据。
 - [signed-number-page](examples/signed-number-page.json)：完整合法页面；查询仅为静态契约证据。
 - [signed-number-family-page](examples/signed-number-family-page.json)：完整合法页面；查询仅为静态契约证据。
+- [currency-selection-page](examples/currency-selection-page.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 
-- `#/definitions/fieldBinding/anyOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/sections/0/components/0/props/categoryField`。
-- `#/definitions/fieldBinding/anyOf/1`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
+- `#/definitions/fieldBinding/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
+- `#/definitions/staticFieldBinding/anyOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/sections/0/components/0/props/categoryField`。
+- `#/definitions/staticFieldBinding/anyOf/1`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
+- `#/definitions/fieldBinding/anyOf/1`：[合法完整页面](examples/time-binding-branches-page.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
 - `#/definitions/colorRule/oneOf/0`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/colorRule`。
 - `#/definitions/colorRule/oneOf/1`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/colorRule`。
 - `#/definitions/fieldReference/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/2/props/actions/0/field`。

@@ -1,0 +1,31 @@
+{
+  "case": "table-search-options-default-missing",
+  "invariant": "table-search-options",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "默认搜索选项必须存在",
+      "paths": [
+        "/sections/0/components/0/props/toolbar/search/defaultValue"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "toolbar": {
+                "search": {
+                  "defaultValue": "missing"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -11,7 +11,8 @@ export interface PageParamState {
 
 export function resolvePageParams(
   search: string,
-  declarations: readonly PageParamDeclaration[]
+  declarations: readonly PageParamDeclaration[],
+  options:{strict?:boolean}={}
 ): PageParamState {
   const query = new URLSearchParams(stripQuestionMark(search));
   const values = new Map<string, PageParamValue>();
@@ -51,10 +52,12 @@ export function resolvePageParams(
       }
       continue;
     }
+    if(options.strict&&query.getAll(declaration.id).length>1&&!(declaration.type==='dimension'&&declaration.multiple)){missing.push(declaration.id);continue;}
     const parsed = declaration.type === 'dimension' && declaration.multiple
       ? query.has(declaration.id) ? query.getAll(declaration.id) : undefined
       : declaration.type === 'dimension' && query.getAll(declaration.id).length > 1 ? undefined
       : parseParamValue(query.get(declaration.id), declaration);
+    if(options.strict&&query.has(declaration.id)&&!matchesParamDeclaration(parsed,declaration)){missing.push(declaration.id);continue;}
     const valid = matchesParamDeclaration(parsed, declaration) ? parsed : undefined;
     const value = valid ?? declaration.default;
     if (value !== undefined) {

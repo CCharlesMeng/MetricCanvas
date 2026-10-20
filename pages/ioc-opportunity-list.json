@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "6.11",
+  "schemaVersion": "6.41",
   "id": "ioc-opportunity-list",
   "meta": {
     "title": "机会点清单",
-    "description": "IOC 作战地图机会点清单页。数据源是 inline，数据行是依据页面规格编造的合成数据，不来自任何真实系统，不得用于业务判断。页面结构按页面规格 002 §2：标准 dashboard 工具栏承载页面标题和首要筛选，密集条件筛选由工具栏的更多筛选入口完整收纳，搜索框位于工具栏与内容卡片之间，内容区为 40 列明细表格与总条数；`list` 分区不设分区标题。原「机会点总览」「按BG类型看机会点」「机会点销售预测」三张分组透视表与地区部/代表处 Tab 切换来自设计稿 `opportunity-lits.html`，该稿画的是另一个屏（聚合分析），已于 2026-08-25 经用户判定退出事实源并归档至 `参考/项目地图/设计稿/archive-not-a-source/`，故本页不呈现，也不再作为缺口登记在本页；如需聚合分析应另立页面。排序与列头筛选目前是本地能力，查询分页下的服务端下推仍受 ADR-0049 的拒绝规则约束。GraphQL 通路到位后只替换数据源的 source 段与筛选绑定，页面结构、筛选器、表格列与行点击导航全部复用。"
+    "description": "IOC 作战地图机会点清单页。查询页面数据源带有合成演示内嵌初始行；顶部筛选、更多筛选、全宽明细表格与项目详情导航构成清单场景。动态查询需对应网关，真实业务数据、查询分页及权限另行验收。"
   },
   "filters": [
     {
@@ -1093,5 +1093,27 @@
       ]
     }
   ],
-  "layout": "dashboard"
+  "layout": "dashboard",
+  "iocHeader": {
+    "identity": {
+      "title": "机会点清单"
+    },
+    "back": true,
+    "filterIds": [
+      "mtime",
+      "key-office",
+      "industry-type",
+      "region",
+      "na-type",
+      "industry-l1",
+      "industry-l2",
+      "overdue",
+      "opportunity-stage",
+      "bidding-amount"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "overflow"
+    }
+  }
 }

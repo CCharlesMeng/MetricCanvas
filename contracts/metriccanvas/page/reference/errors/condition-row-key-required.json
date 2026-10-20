@@ -1,0 +1,28 @@
+{
+  "case": "condition-row-key-required",
+  "invariant": "conditional-presentation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "条件行的选择、动作与详情需要稳定rowKey",
+      "paths": [
+        "/sections/3/components/0/props/rowKey"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      "…",
+      "…",
+      {
+        "components": [
+          {
+            "props": {}
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/condition-row-key-required.json"
+}

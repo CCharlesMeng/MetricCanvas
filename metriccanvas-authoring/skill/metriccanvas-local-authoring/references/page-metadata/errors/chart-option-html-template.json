@@ -1,0 +1,32 @@
+{
+  "case": "chart-option-html-template",
+  "invariant": "chart-echarts-option",
+  "expected": [
+    {
+      "type": "CHART_OPTION_ERROR",
+      "message": "tooltip.formatter 仅接受纯文本模板，不接受 HTML 标记；可用 richText 模式和换行",
+      "paths": [
+        "/sections/0/components/1/props/echartsOption/tooltip/formatter"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "echartsOption": {
+                "tooltip": {
+                  "formatter": "<b>{c}</b>"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

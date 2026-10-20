@@ -1,0 +1,15 @@
+$ svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json
+Loading svelte-check in workspace: /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/apps/playground
+Getting Svelte diagnostics...
+
+/Users/moon/.codex/worktrees/ioc-selection/DataDashboard/apps/playground/tests/page-catalog.test.ts:92:31
+Error: 'topic.docs' is possibly 'undefined'. 
+    for (const topic of catalogCapabilities) {
+      for (const reference of topic.docs) {
+        expect(readFileSync(new URL(`../../../docs/page-metadata/${reference}.md`, import.meta.url), 'utf8').length).toBeGreaterThan(0);
+
+====================================
+svelte-check found 1 error and 0 warnings in 1 file
+/Users/moon/.codex/worktrees/ioc-selection/DataDashboard/apps/playground:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] playground@ check: `svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json`
+Exit status 1

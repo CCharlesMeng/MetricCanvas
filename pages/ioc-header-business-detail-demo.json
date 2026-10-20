@@ -1,0 +1,237 @@
+{
+  "schemaVersion": "6.37",
+  "id": "ioc-header-business-detail-demo",
+  "layout": "report",
+  "meta": {
+    "title": "IOC B2：详情私有枚举"
+  },
+  "params": {
+    "query": {
+      "times": [
+        {
+          "id": "input-month",
+          "granularity": "month",
+          "start": "2026-09",
+          "end": "2026-09"
+        }
+      ]
+    },
+    "display": [
+      {
+        "id": "project-name",
+        "type": "string",
+        "value": "示例项目 · 独立详情单月"
+      },
+      {
+        "id": "project-code",
+        "type": "string",
+        "value": "DEMO-001"
+      },
+      {
+        "id": "optional-tag",
+        "type": "string",
+        "required": false
+      },
+      {
+        "id": "refresh-time",
+        "type": "string",
+        "required": false
+      }
+    ]
+  },
+  "iocHeader": {
+    "back": true,
+    "identity": {
+      "title": {
+        "param": "project-name"
+      },
+      "code": {
+        "label": "项目编码",
+        "value": {
+          "param": "project-code"
+        }
+      },
+      "tags": [
+        {
+          "id": "data",
+          "text": "合成数据",
+          "tone": "info"
+        },
+        {
+          "id": "optional",
+          "text": {
+            "param": "optional-tag"
+          },
+          "tone": "success"
+        }
+      ],
+      "description": {
+        "text": "月份来自参数初值，修改后不反写参数；直接打开无返回入口。",
+        "presentation": "tooltip"
+      },
+      "facts": [
+        {
+          "id": "period",
+          "kind": "queryPeriod",
+          "label": "统计月份",
+          "value": {
+            "filter": "month",
+            "format": "period"
+          }
+        },
+        {
+          "id": "refresh",
+          "kind": "refreshedAt",
+          "label": "刷新时间",
+          "value": {
+            "param": "refresh-time"
+          }
+        }
+      ]
+    },
+    "filterIds": [
+      "month",
+      "detail-kind"
+    ]
+  },
+  "filters": [
+    {
+      "id": "month",
+      "type": "timePoint",
+      "granularity": "month",
+      "initialParam": "input-month",
+      "required": true,
+      "label": "统计月份",
+      "disableFuture": true
+    },
+    {
+      "id": "detail-kind",
+      "type": "dimension",
+      "dimension": "detail_kind",
+      "label": "详情档位",
+      "selection": {
+        "mode": "single"
+      },
+      "options": [
+        {
+          "value": "L1",
+          "label": "详情一级"
+        },
+        {
+          "value": "L2",
+          "label": "详情二级"
+        }
+      ],
+      "default": [
+        "L1"
+      ],
+      "hint": "仅属于本详情页，独立于概览筛选。"
+    }
+  ],
+  "dataSources": {
+    "bound": {
+      "fields": {
+        "scope": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "ioc_header_scope"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "ioc_header_count"
+        },
+        "mtime": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "mtime",
+          "nullable": true
+        },
+        "detail_kind": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "detail_kind",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "ioc_header_scope",
+                  "mtime",
+                  "detail_kind"
+                ],
+                "output_metrics": [
+                  "ioc_header_count"
+                ],
+                "filter": {
+                  "dims": []
+                },
+                "order": {
+                  "limit": 10,
+                  "offset": 0
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "month": {
+              "target": "timePoint",
+              "queryField": "mtime",
+              "valueFormat": "compact"
+            },
+            "detail-kind": {
+              "target": "dimension",
+              "queryField": "detail_kind"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "body",
+      "container": "card",
+      "components": [
+        {
+          "id": "detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "bound"
+          },
+          "props": {
+            "title": "详情查询条件",
+            "columns": [
+              {
+                "field": "scope",
+                "title": "服务收到的条件（本地合成）"
+              },
+              {
+                "field": "count",
+                "title": "合成响应标识"
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "本地页头验收"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

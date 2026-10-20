@@ -15,3 +15,8 @@ export { default as Dropdown } from './components/dropdown/Dropdown.svelte';
 export { default as Pagination } from './components/pagination/Pagination.svelte';
 export { default as Grid } from './components/grid/Grid.svelte';
 export { default as Dialog } from './components/dialog/Dialog.svelte';
+
+export { default as MultiSelect } from './components/select/MultiSelect.svelte';
+export { default as TreeSelect } from './components/select/TreeSelect.svelte';
+export type { UiTreeNode } from './types';
+export {default as RangePicker} from './components/select/RangePicker.svelte';

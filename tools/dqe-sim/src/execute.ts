@@ -1,4 +1,6 @@
+import { iocHeaderFixture } from '../fixtures/ioc-header-query.mjs';
 import { executeChartLocalFilter } from './chart-local-filter';
+import { executeTableSearchOptions } from './table-search-options';
 import { executeMultiQueryTable } from './multi-query-table';
 import { executeNumericTolerance } from './numeric-tolerance';
 import { executeQueryResultWhere } from './query-result-where';
@@ -147,6 +149,8 @@ const customerActivityDetailDimensions = [
 ];
 
 export function executeDqeItem(item: unknown): DqeSimItemResult {
+  const iocHeader = iocHeaderFixture(item); if(iocHeader)return iocHeader;
+  const searchOptions = executeTableSearchOptions(item); if (searchOptions) return searchOptions;
   const chartFilter = executeChartLocalFilter(item); if (chartFilter) return chartFilter;
   const numericTolerance = executeNumericTolerance(item); if (numericTolerance) return numericTolerance;
   const multiQueryTable=executeMultiQueryTable(item);if(multiQueryTable)return multiQueryTable;

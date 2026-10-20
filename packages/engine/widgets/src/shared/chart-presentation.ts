@@ -36,7 +36,7 @@ export function valueLabelLayout(values: Array<number | null | undefined>, line 
 }
 
 /** Geometry only. Uses ECharts text metrics and the current drawing box, never business metadata. */
-export function cartesianFrame(option: EChartsOption, width: number, expand: boolean): { option: EChartsOption; minHeight: number | undefined } {
+export function cartesianFrame(option: EChartsOption, width: number, expand: boolean, height = 0): { option: EChartsOption; minHeight: number | undefined } {
   const grid = first(option.grid) ?? {};
   const legend = first(option.legend);
   const series = option.series ? (Array.isArray(option.series) ? option.series : [option.series]) : [];
@@ -46,7 +46,7 @@ export function cartesianFrame(option: EChartsOption, width: number, expand: boo
   const legendHeight = legend && legend.show !== false ? legendRows(legend, legendNames, width) * 24 : 0;
   const numericAxes = [...array(option.xAxis), ...array(option.yAxis)].filter(axis => axis.type !== 'category');
   const axisNameSpace = numericAxes.some(axis => axis.name) ? 20 : 0;
-  const top = Math.max(number(grid.top), legendHeight + axisNameSpace + (expand ? 24 : 8));
+  const top = Math.max(number(grid.top, height), legendHeight + axisNameSpace + (expand ? 24 : 8));
   const categories = [...array(option.xAxis), ...array(option.yAxis)].filter(axis => axis.type === 'category');
   let labelSpace = 28;
   for (const axis of categories) {
@@ -56,16 +56,16 @@ export function cartesianFrame(option: EChartsOption, width: number, expand: boo
     labelSpace = Math.max(labelSpace, Math.ceil(longest * Math.sin(rotate) + 12 * Math.cos(rotate) + (axis.axisLabel?.margin ?? 8) + 12));
   }
   const fittedGrid: GridComponentOption = { ...grid, top,
-    ...(expand ? { left: Math.max(number(grid.left), 24), right: Math.max(number(grid.right), 36,
+    ...(expand ? { left: Math.max(number(grid.left, width), 24), right: Math.max(number(grid.right, width), 36,
       ...array(option.xAxis).map(axis => axis.name ? textWidth(String(axis.name)) + 20 : 0)) } : {}) };
   return {
     option: { ...option, grid: fittedGrid },
-    minHeight: expand ? top + Math.max(220, ...array(option.yAxis).map(axis => axis.type === 'category' ? (axis.data?.length ?? 0) * 18 : 0)) + labelSpace + number(grid.bottom) : undefined
+    minHeight: expand ? top + Math.max(220, ...array(option.yAxis).map(axis => axis.type === 'category' ? (axis.data?.length ?? 0) * 18 : 0)) + labelSpace + number(grid.bottom, height) : undefined
   };
 }
 
 function textWidth(text: string) { return format.getTextRect(text, '12px sans-serif').width; }
-function number(value: unknown) { return typeof value === 'number' ? value : 0; }
+function number(value: unknown, size: number) { return typeof value === 'number' ? value : typeof value === 'string' && /^\d+(?:\.\d+)?%$/.test(value) ? parseFloat(value) * size / 100 : 0; }
 function array<T>(value: T | T[] | undefined): T[] { return value === undefined ? [] : Array.isArray(value) ? value : [value]; }
 function first<T>(value: T | T[] | undefined): T | undefined { return array(value)[0]; }
 

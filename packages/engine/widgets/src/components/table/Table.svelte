@@ -12,6 +12,7 @@
   import TableToolbar from './TableToolbar.svelte';
   import TableControlIcon from './TableControlIcon.svelte';
   import { tableFilterPopover } from './filter-popover';
+  import { tableGeometry } from './table-geometry';
   import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
   const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
   import type {
@@ -55,9 +56,11 @@
     view: TableViewState;
     /** select 模式表头筛选候选项(壳经数据网关 fetchDimensionValues 供给),key = 列 field */
     filterOptions?: Record<string, string[]>;
-    filterOptionsStatus?:Record<string,'idle'|'loading'|'ready'|'empty'|'unavailable'|'error'>;
+    filterOptionsStatus?:Record<string,'idle'|'loading'|'ready'|'empty'|'unavailable'|'error'|'denied'|'unconfigured'>;
     pagination?: TablePaginationState;
     searchDraft?: string;
+    searchOption?: string;
+    onsearchoption?: (value: string) => void;
     exporting?: boolean;
     exportError?: string;
     onsearchdraft?: (query: string) => void;
@@ -70,8 +73,10 @@
     onsort?: (sort: TableSortRule[]) => void;
     sortReset?:readonly TableSortRule[];
     onheaderfilter?: (field: string, value: TableHeaderFilterValue | null) => void;
-    oncellselect?: (context: { rowIndex: number; column: TableColumn }) => void;
-    linkHref?: (row: Row, column?: TableColumn) => string | undefined;
+    oncellselect?: (context: { rowIndex: number; column: TableColumn; row?:Row }) => void;
+    interactionGate?: (row:Row,column:TableColumn)=>{eligible:boolean;enabled:boolean};
+  toolbarEnabled?: {search:boolean;export:boolean};
+  linkHref?: (row: Row, column?: TableColumn) => string | undefined;
     onlink?: (context: { rowIndex: number; column: TableColumn; row: Row }, event: MouseEvent) => void;
   }
 
@@ -82,7 +87,7 @@
     view,
     filterOptions = {}, filterOptionsStatus = {},
     pagination,
-    searchDraft, exporting, exportError, onsearchdraft, onsearch, onexport, oncancelexport,
+    searchDraft, searchOption, onsearchoption, exporting, exportError, onsearchdraft, onsearch, onexport, oncancelexport,
     selectedCell,
     onpage,
     onpagesize,
@@ -90,7 +95,7 @@
     onheaderfilter,
     oncellselect,
     onlink,
-    linkHref
+    interactionGate, toolbarEnabled, linkHref
   }: Props = $props();
 
   const columnLayout = $derived(buildTableColumnLayout(props.columns, data.main.fields));
@@ -161,7 +166,8 @@
     props.variant === 'forecastMatrix' ? 32 : props.variant === 'reportCompact' ? 33 : 42
   );
   const headerRowHeight = $derived(
-    readPixelLength(root, '--mc-table-header-row-height') ?? variantHeaderRowHeight
+    props.variant !== 'reportCompact' ? 40 :
+      readPixelLength(root, '--mc-table-header-row-height') ?? variantHeaderRowHeight
   );
 
   function headerTop(rowIndex: number): number {
@@ -312,6 +318,8 @@
 
 <div
   bind:this={root}
+  use:tableGeometry={props.variant !== 'reportCompact' && !staticExport}
+  class:os-theme={props.variant !== 'reportCompact'}
   class:fit-container={props.fit === 'container'}
   class:wrap-headers={wrapHeaders}
   class:report-compact={props.variant === 'reportCompact'}
@@ -332,7 +340,7 @@
         <div class="subtitle"><span aria-hidden="true">*</span>{props.subtitle}</div>
       {/if}
       {#if interactive && !staticExport && props.toolbar}
-        <TableToolbar toolbar={props.toolbar} draft={searchDraft} busy={exporting} error={exportError}
+        <TableToolbar toolbar={props.toolbar} searchEnabled={toolbarEnabled?.search??true} canExport={toolbarEnabled?.export??true} option={searchOption} onoption={onsearchoption} draft={searchDraft} busy={exporting} error={exportError}
           ondraft={onsearchdraft} {onsearch} {onexport} oncancel={oncancelexport} />
       {/if}
     </div>
@@ -366,6 +374,8 @@
                   class:align-right={column.align === 'right'}
                   class:fixed={!!column.fixed}
                   data-column-field={columnField(column)}
+                  data-column-index={leaves.findIndex(leaf => columnField(leaf) === columnField(column))}
+                  class:last-column={columnField(column) === columnField(leaves[leaves.length - 1])}
                   colspan={cell.colspan}
                   rowspan={cell.rowspan}
                   style={`${cellStyle(column)} top: ${headerTop(rowIndex)}px;`}
@@ -382,10 +392,10 @@
                         {#if sortIndexOf.has(columnField(column))}
                           {@const rule = view.sort[sortIndexOf.get(columnField(column))!]}
                           <span class="sort-state" aria-label="排序:{rule.direction}">
-                            {rule.direction === 'asc' ? '↑' : '↓'}{#if view.sort.length > 1}<sup>{sortIndexOf.get(columnField(column))! + 1}</sup>{/if}
+                            {#if props.variant === 'reportCompact'}{rule.direction === 'asc' ? '↑' : '↓'}{:else}<TableControlIcon name={rule.direction === 'asc' ? 'sortAsc' : 'sortDesc'} />{/if}{#if view.sort.length > 1}<sup>{sortIndexOf.get(columnField(column))! + 1}</sup>{/if}
                           </span>
                         {:else}
-                          <span class="sort-hint" aria-hidden="true">⇅</span>
+                          <span class="sort-hint" aria-hidden="true">{#if props.variant === 'reportCompact'}⇅{:else}<TableControlIcon name="sort" />{/if}</span>
                         {/if}
                       </button>
                     {:else}
@@ -394,7 +404,7 @@
 
                     {#if interactive && column.filterable}
                       <details class="filter" use:tableFilterPopover>
-                        <summary class:active={hasActiveFilter(columnField(column))} title="表头筛选">▼</summary>
+                        <summary class:active={hasActiveFilter(columnField(column))} title="表头筛选">{#if props.variant === 'reportCompact'}▼{:else}<TableControlIcon name="filter" />{/if}</summary>
                         <div class="menu" popover="auto">
                           {#if column.filterable.mode === 'select'}
                             {#each filterOptions[columnField(column)] ?? [] as option (option)}
@@ -407,7 +417,7 @@
                                 <span>{option}</span>
                               </label>
                             {:else}
-                              <span class="hint">{filterOptionsStatus[columnField(column)]==='unavailable'?'候选值能力不可用':filterOptionsStatus[columnField(column)]==='error'?'候选项加载失败':['ready','empty'].includes(filterOptionsStatus[columnField(column)])?'没有候选项':'候选项加载中…'}</span>
+                              <span class="hint">{filterOptionsStatus[columnField(column)]==='denied'?'无权访问候选项':filterOptionsStatus[columnField(column)]==='unconfigured'?'候选能力未配置':filterOptionsStatus[columnField(column)]==='unavailable'?'候选值能力不可用':filterOptionsStatus[columnField(column)]==='error'?'候选项加载失败':['ready','empty'].includes(filterOptionsStatus[columnField(column)])?'没有候选项':'候选项加载中…'}</span>
                             {/each}
                           {:else if column.filterable.mode === 'dateRange'}
                             {@const range = dateRangeOf(columnField(column))}
@@ -462,7 +472,7 @@
       <tbody>
         {#each rows as row, i (i)}
           <tr class:subtotal-row={rowTiers[i] === 'subtotal'} class:total-row={rowTiers[i] === 'total'}>
-            {#each leaves as column (columnField(column))}
+            {#each leaves as column, columnIndex (columnField(column))}
               <!-- 合并列上被并入上方单元格的行不渲染该列 -->
               {#if columnField(column) !== mergedColumnField || rowSpans[i] !== 0}
                 {@const resolved = resolveField(column.field, data)}
@@ -483,28 +493,31 @@
                     <small class="cell-badge">{formatValue(alignedFieldValue(column.badgeField, data, row), badge.format, badge.missingText)}</small>
                   {/if}
                 {/snippet}
+                {@const actionGate=interactionGate?.(row.main,column)??{eligible:true,enabled:true}}
                 <td
                   class:align-right={column.align === 'right'}
                   class:fixed={!!column.fixed}
                   class:emphasized={column.emphasis === 'strong'}
-                  class:selectable={Boolean(column.selection && interactive)}
-                  class:linkable={Boolean(column.link && interactive && !column.selection)}
+                  class:selectable={Boolean(column.selection && interactive && actionGate.eligible)}
+                  class:linkable={Boolean(column.link && interactive && !column.selection && actionGate.eligible)}
                   class:selected={isSelected(i, column)}
                   class:danger={isDanger(column, rawValue)}
                   class:negative={semanticPresentation === undefined && color === 'red'}
                   class:positive={semanticPresentation === undefined && color === 'green'}
                   class:explicit-color={column.colorRule !== undefined}
                   data-column-field={columnField(column)}
+                  data-column-index={columnIndex}
                   rowspan={columnField(column) === mergedColumnField ? rowSpans[i] : undefined}
                   style={cellStyle(column)}
                   style:color={column.colorRule ? valueColorStyle(color) : undefined}
                 >
-                  {#if column.selection && interactive}
+                  {#if column.selection && interactive && actionGate.eligible}
                     <button
                       type="button"
                       class="selectable-cell"
                       aria-pressed={isSelected(i, column)}
-                      onclick={() => oncellselect?.({ rowIndex: i, column })}
+                      disabled={!actionGate.enabled}
+                      onclick={() => oncellselect?.({ rowIndex: i, column, row:row.main })}
                     >
                       <span class="cell-stack">
                         {#if semanticPresentation}
@@ -520,19 +533,20 @@
                         {@render supplementaryFields()}
                       </span>
                     </button>
-                  {:else if column.link && interactive && !column.selection}
+                  {:else if column.link && interactive && !column.selection && actionGate.eligible}
                     <a
-                      href={linkHref?.(row.main, column)}
+                      href={actionGate.enabled?linkHref?.(row.main, column):undefined}
+                      aria-disabled={!actionGate.enabled}
                       role={linkHref?.(row.main, column) ? undefined : 'button'}
-                      tabindex={linkHref?.(row.main, column) ? undefined : 0}
+                      tabindex={!actionGate.enabled?-1:linkHref?.(row.main,column)?undefined:0}
                       class="link-cell"
                       onkeydown={(event) => {
-                        if (!linkHref?.(row.main, column) && (event.key === 'Enter' || event.key === ' ')) {
+                        if (actionGate.enabled && !linkHref?.(row.main, column) && (event.key === 'Enter' || event.key === ' ')) {
                           event.preventDefault();
                           event.currentTarget.click();
                         }
                       }}
-                      onclick={(event) => onlink?.({ rowIndex: i, column, row: row.main }, event)}
+                      onclick={(event) => {if(actionGate.enabled)onlink?.({ rowIndex: i, column, row: row.main }, event);else event.preventDefault();}}
                     >
                       <span class="cell-stack">
                         {#if semanticPresentation}
@@ -581,7 +595,7 @@
           </tr>
         {:else}
           <tr>
-            <td class="empty-row" colspan={Math.max(leaves.length, 1)}>暂无数据</td>
+            <td class="empty-row" colspan={Math.max(leaves.length, 1)}>{#if props.variant === 'reportCompact'}暂无数据{:else}<div class="empty-state">暂无数据</div>{/if}</td>
           </tr>
         {/each}
       </tbody>
@@ -1501,9 +1515,165 @@
   .fit-container .rate-cell {
     width: 100%;
   }
+  /* TinyVue OS Grid 3.32.0. Keep this skin scoped: reportCompact retains its contract. */
+  .table-widget.os-theme {
+    --mc-table-header-row-height: 40px;
+    --mc-table-header-surface: #f5f5f5;
+    --mc-table-header-border: #f0f0f0;
+    --mc-table-row-height: 48px;
+    --mc-table-cell-border: #f0f0f0;
+    font-family: Helvetica, Arial, PingFangSC-Regular, 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, 'Microsoft JhengHei';
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .table-widget.os-theme .scroll { border: 0; }
+  .table-widget.os-theme.forecast-matrix table { height: auto; border: 0; }
+  .table-widget.os-theme thead th {
+    top: var(--table-header-top, 0px) !important;
+    height: 40px;
+    padding: 4px 16px;
+    background: #f5f5f5;
+    color: #595959;
+    font-weight: 600;
+    line-height: 21px;
+    border-right: 0;
+    border-bottom: 1px solid #f0f0f0;
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+  .table-widget.os-theme thead th:not(.last-column)::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 1px;
+    height: 16px;
+    transform: translateY(-50%);
+    background: #dbdbdb;
+    pointer-events: none;
+  }
+  .table-widget.os-theme thead th.group-header { color: #595959; }
+  .table-widget.os-theme .head, .table-widget.os-theme .sort-toggle { min-width: 0; }
+  .table-widget.os-theme .head > span:first-child, .table-widget.os-theme .sort-toggle > span:first-child {
+    min-width: 0;
+    color: inherit;
+    font-size: 14px;
+    line-height: 21px;
+    font-weight: 600;
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+  .table-widget.os-theme .sort-toggle { width: auto; }
+  .table-widget.os-theme .head { gap: 0; }
+  .table-widget.os-theme.forecast-matrix .head { justify-content: center; }
+  .table-widget.os-theme.forecast-matrix th.align-right .head { justify-content: flex-end; }
+  .table-widget.os-theme.forecast-matrix td.align-right { text-align: right; }
+  .table-widget.os-theme .sort-toggle { gap: 4px; }
+  .table-widget.os-theme .sort-state, .table-widget.os-theme .sort-hint {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    color: #808080;
+    font-size: 16px;
+    line-height: 16px;
+    opacity: 1;
+  }
+  .table-widget.os-theme .sort-state, .table-widget.os-theme .sort-toggle:hover .sort-hint { color: #191919; }
+  .table-widget.os-theme tbody td {
+    box-sizing: border-box;
+    height: 48px;
+    padding: 12px 16px;
+    border-right: 0;
+    border-bottom: 1px solid #f0f0f0;
+    line-height: 21px;
+    white-space: normal;
+    overflow-wrap: break-word;
+    overflow: visible;
+    text-overflow: clip;
+  }
+  .table-widget.os-theme tbody tr:last-child td { border-bottom: 1px solid #f0f0f0; }
+  .table-widget.os-theme tbody .cell-stack, .table-widget.os-theme tbody .cell-primary-value, .table-widget.os-theme tbody .link-cell {
+    line-height: 21px;
+    overflow-wrap: break-word;
+  }
+  .table-widget.os-theme tbody td.positive { color: var(--mc-color-positive, #52c41a); }
+  .table-widget.os-theme tbody td.negative { color: var(--mc-color-negative, #f5222d); }
+  .table-widget.os-theme .link-cell { color: #191919; text-decoration: none; }
+  .table-widget.os-theme tbody td:is(.explicit-color, .positive, .negative, .danger) .link-cell { color: inherit; }
+  .table-widget.os-theme th.fixed, .table-widget.os-theme td.fixed {
+    left: var(--table-sticky-left, auto) !important;
+    right: var(--table-sticky-right, auto) !important;
+  }
+  .table-widget.os-theme :global(.fixed-left-boundary)::after,
+  .table-widget.os-theme :global(.fixed-right-boundary)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 30px;
+    pointer-events: none;
+    transition: box-shadow .3s;
+  }
+  .table-widget.os-theme :global(.fixed-left-boundary)::after { right: -30px; }
+  .table-widget.os-theme :global(.fixed-right-boundary)::after { left: -30px; }
+  .table-widget.os-theme:global(.scrolled-left) :global(.fixed-left-boundary)::after { box-shadow: inset 10px 0 8px -8px #00000026; }
+  .table-widget.os-theme:global(.scrolled-right) :global(.fixed-right-boundary)::after { box-shadow: inset -10px 0 8px -8px #00000026; }
+  .table-widget.os-theme:global(.fixed-overflow) th.fixed,
+  .table-widget.os-theme:global(.fixed-overflow) td.fixed { left: auto !important; right: auto !important; }
+  .table-widget.os-theme:global(.fixed-overflow) :global(.fixed-left-boundary)::after,
+  .table-widget.os-theme:global(.fixed-overflow) :global(.fixed-right-boundary)::after { display: none; }
+  .table-widget.os-theme .filter summary {
+    --table-control-icon-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0 0 4px;
+    color: #999;
+    border-radius: 0;
+  }
+  .table-widget.os-theme .filter summary:hover { color: #191919; background: transparent; }
+  .table-widget.os-theme .filter summary.active { color: #191919; }
+  .table-widget.os-theme .menu {
+    box-sizing: border-box;
+    min-width: min(270px, calc(100vw - 16px));
+    padding: 4px 8px 8px;
+    border: 0;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px #0003;
+    color: #191919;
+    font-size: 14px;
+    line-height: 21px;
+  }
+  .table-widget.os-theme .option { box-sizing: border-box; min-height: 28px; padding: 0 8px; border-radius: 0; }
+  .table-widget.os-theme .option:hover { background: #f5f5f5; }
+  .table-widget.os-theme .option input {
+    appearance: none;
+    flex: none;
+    box-sizing: border-box;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    border: 1px solid #c2c2c2;
+    border-radius: 4px;
+    background: #fff;
+  }
+  .table-widget.os-theme .option input:hover { border-color: #191919; }
+  .table-widget.os-theme .option input:checked { border-color: #1476ff; background: #1476ff; position: relative; }
+  .table-widget.os-theme .option input:checked::after { content: ''; position: absolute; width: 7px; height: 4px; left: 3px; top: 3px; border-left: 1px solid #fff; border-bottom: 1px solid #fff; transform: rotate(-45deg); }
+  .table-widget.os-theme .option input:focus-visible { outline: 2px solid #191919; outline-offset: 2px; }
+  .table-widget.os-theme .range { min-width: 0; padding: 8px 0; }
+  .table-widget.os-theme .range input { box-sizing: border-box; min-width: 0; width: 0; flex: 1; height: 32px; padding: 0 8px; border: 1px solid #c2c2c2; border-radius: 6px; color: #191919; font: inherit; }
+  .table-widget.os-theme .range input:hover, .table-widget.os-theme .range input:focus { border-color: #191919; outline: none; }
+  .table-widget.os-theme .clear { color: #191919; border-top-color: #f0f0f0; }
+  .table-widget.os-theme .page-size-select { margin-left: 16px; }
+  .table-widget.os-theme .empty-row { height: auto; padding: 0; color: #191919; text-align: center; }
+  .table-widget.os-theme .empty-state { box-sizing: border-box; display: flex; min-height: 60px; padding: 60px 0; align-items: center; justify-content: center; text-align: center; }
+  .table-widget.os-theme.static-export :global(.fixed-left-boundary)::after,
+  .table-widget.os-theme.static-export :global(.fixed-right-boundary)::after { display: none; }
   .table-widget.static-export, .static-export .scroll, .static-export .content-frame { height:auto!important; min-height:0!important; max-height:none!important; overflow:visible!important; }
   .static-export table { height:auto!important; }
   .static-export th, .static-export td { position:static!important; }
+  .table-widget.os-theme.static-export th { position: relative !important; top: auto !important; left: auto !important; right: auto !important; }
   .static-export thead { display:table-header-group; }
   .static-export tr { break-inside:avoid; }
   .static-export .bottom-fade, .static-export .pager { display:none!important; }

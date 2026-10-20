@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {presentationControls} from './property-edit';
   import ToolAction from '../ToolAction.svelte';
   import {Select,Input} from '@metriccanvas/ui';
   import ReportDateProperties from './ReportDateProperties.svelte';
@@ -72,6 +73,7 @@
   <div class="inspector-content">
   {#if tab === 'page'}
     <div class="panel">
+      {#if dateDraft && onPropertyEdit}<ComponentProperties controls={presentationControls(dateDraft)} {busy} onEdit={onPropertyEdit}/>{/if}
       {#if dateDraft?.pageDocument.layout === 'dashboard' && onDateEdit}
         <ReportDateProperties draft={dateDraft} locator={null} {busy} onEdit={onDateEdit}/>
       {:else}

@@ -114,6 +114,21 @@ class PageEditingTest(unittest.TestCase):
         self.assertEqual(result["status"], "invalid_baseline")
         self.assertIsNone(result["document"])
 
+    def test_hidden_chart_options_preserve_ordinary_edits_and_drop_on_type_change(self):
+        baseline = page()
+        baseline["schemaVersion"] = "6.32"
+        options = {"series": [{"itemStyle": {"color": "#7c3aed"}}]}
+        baseline["sections"][0]["components"][1]["props"]["echartsOption"] = options
+        ordinary = edit(baseline, title(component="chart"))
+        self.assertEqual(ordinary["document"]["sections"][0]["components"][1]["props"]["echartsOption"], options)
+        same = edit(baseline, {"id": "same", "type": "change_component_type", "componentId": "chart", "componentType": "barChart"})
+        self.assertEqual(same["status"], "unchanged")
+        self.assertEqual(baseline["sections"][0]["components"][1]["props"]["echartsOption"], options)
+        switched = edit(baseline, {"id": "switch", "type": "change_component_type", "componentId": "chart", "componentType": "lineChart"})
+        self.assertNotIn("echartsOption", switched["document"]["sections"][0]["components"][1]["props"])
+        self.assertIn("props.echartsOption", switched["operations"][0]["adjustments"])
+        self.assertEqual(baseline["sections"][0]["components"][1]["props"]["echartsOption"], options)
+
     def test_safe_type_switch_reuses_shape_gate_and_preserves_manual_layout(self):
         baseline = page()
         result = edit(baseline, {"id": "type", "type": "change_component_type", "componentId": "chart", "componentType": "lineChart"})

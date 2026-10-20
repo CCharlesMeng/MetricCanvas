@@ -1,3 +1,4 @@
+import {queryFilterIds} from '@metriccanvas/page/internal';
 import type { Page } from '@metriccanvas/page';
 import { flattenPageComponents, conditionSourceIds, type Row } from '@metriccanvas/page/internal';
 import type { FilterValues } from '../../runtime/src';
@@ -27,7 +28,7 @@ export function resetFilteredTablePages(
     const queryAffected = [...sources].some(id => {
       const source = page.dataSources[id];
       return (source?.source.type === 'query' &&
-        Object.keys(source.source.query.filterBindings ?? {}).some(filter => changed.has(filter))) ||
+        queryFilterIds(source.source.query).some(filter => changed.has(filter))) ||
         (source?.compute ?? []).some(op => op.op === 'selectField' ? changed.has(op.filter)
           : op.op === 'timeFill' && 'filter' in op.range && changed.has(op.range.filter));
     });

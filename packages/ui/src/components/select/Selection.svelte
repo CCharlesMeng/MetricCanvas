@@ -8,10 +8,10 @@
   import { selectionNodes, flattenNodes, filterNodes, selectionState, toggleSelection, type SelectionNode, type TreeSelection } from './selection';
 
   let {options, value = [], label, multiple = true, tree = false, searchable = true,
-    treeSelection = 'independent', clearable = false, disabled = false, placeholder = '请选择', statusText, statusError = false, onchange}:
+    treeSelection = 'independent', clearable = false, disabled = false, placeholder = '请选择', statusText, statusError = false, required = false, onchange}:
     {options: UiTreeOption[]; value?: string[]; label: string; multiple?: boolean; tree?: boolean;
      searchable?: boolean; treeSelection?: TreeSelection; disabled?: boolean; placeholder?: string;
-     statusText?: string; statusError?: boolean; clearable?: boolean; onchange?: (value: string[]) => void} = $props();
+     statusText?: string; statusError?: boolean; clearable?: boolean; required?: boolean; onchange?: (value: string[]) => void} = $props();
 
   let trigger: HTMLButtonElement;
   let popup: HTMLDivElement;
@@ -34,6 +34,7 @@
   $effect(() => { if (!searchable) keyword = ''; });
   $effect(() => { if (disabled && open) close(false); });
   $effect(() => { if (open) return observePopover(trigger, place); });
+  $effect(()=>{if(!open||!trigger)return;const observer=new MutationObserver(()=>{if(trigger.closest('[inert]'))close(false);});for(let node:HTMLElement|null=trigger;node;node=node.parentElement)observer.observe(node,{attributes:true,attributeFilter:['inert']});return()=>observer.disconnect();});
   // Reposition after filtering/expanding, without persisting any business selection.
   $effect(() => { visible; expanded; if (open) tick().then(place); });
 
@@ -73,11 +74,12 @@
     if ((!multiple || policy === 'independent') && node.selectable === false || policy === 'leaf' && node.children?.length && !multiple) { expand(node); return; }
     const original = flat.find(candidate => candidate.value === node.value) ?? node;
     const next = toggleSelection(value, original, multiple, policy);
+    if (required && next.length !== 1) return;
     if (next.join('\0') !== value.join('\0')) onchange?.(next);
     if (!multiple) close();
   }
   function remove(candidate: string) {
-    if (disabled) return;
+    if (disabled || required) return;
     onchange?.(value.filter(item => item !== candidate));
     tick().then(() => trigger?.focus());
   }
@@ -110,7 +112,7 @@
 </script>
 
 <Theme>
-  <div class="mc-selection mc-ui-select" class:is-disabled={disabled} class:has-clear={clearable && value.length > 0} class:is-open={open} onwheel={scrollTags}>
+  <div class="mc-selection mc-ui-select" class:is-disabled={disabled} class:has-clear={clearable && !required && value.length > 0} class:is-open={open} onwheel={scrollTags}>
     <div class="mc-ui-input selection-input" class:is-disabled={disabled}>
       <button bind:this={trigger} type="button" class="mc-ui-input__inner selection-trigger" {disabled}
         aria-label={label}
@@ -120,13 +122,13 @@
       </button>
       <span class="mc-ui-input__suffix selection-arrow"><span class="mc-ui-input__suffix-inner"><Icon name="chevron-down"/></span></span>
     </div>
-    {#if clearable && value.length}<button type="button" class="selection-clear" aria-label={`清空${label}`} {disabled} onclick={() => {if (!disabled) onchange?.([]);}}><Icon name="close"/></button>{/if}
+    {#if clearable && !required && value.length}<button type="button" class="selection-clear" aria-label={`清空${label}`} {disabled} onclick={() => {if (!disabled) onchange?.([]);}}><Icon name="close"/></button>{/if}
     {#if multiple && value.length}
       <div bind:this={tagStrip} class="selection-tags mc-ui-select__tags" role="group" aria-label={`${label}已选标签`}>
         <span class="tag-track">{#each value as candidate (candidate)}<span class="tag-item">
           <span class="mc-ui-tag mc-ui-tag--light" class:is-disabled={disabled} title={labels.get(candidate)?.path ?? candidate}>
             <button type="button" class="mc-ui-tag__text tag-label" aria-label={`打开${label}：${labels.get(candidate)?.path ?? candidate}`} {disabled} onpointerdown={rememberTriggerState} onclick={toggleFromClick}>{labels.get(candidate)?.label ?? candidate}</button>
-            <button type="button" class="mc-ui-tag__close" aria-label={`移除${label}：${labels.get(candidate)?.path ?? candidate}`} {disabled} onclick={() => remove(candidate)}><Icon name="close"/></button>
+            <button type="button" class="mc-ui-tag__close" aria-label={`移除${label}：${labels.get(candidate)?.path ?? candidate}`} disabled={disabled||required} onclick={() => remove(candidate)}><Icon name="close"/></button>
           </span>
         </span>{/each}</span>
       </div>
@@ -167,7 +169,7 @@
   {@const canChoose = !node.disabled && (multiple ? state.targets.length > 0 : node.selectable !== false && (policy !== 'leaf' || !node.children?.length))}
   <div class="mc-ui-tree-node" class:is-expanded={branchOpen(node)} role="treeitem" aria-level={depth} aria-selected={state.checked} aria-checked={multiple ? state.partial ? 'mixed' : state.checked : undefined} aria-expanded={node.children?.length ? branchOpen(node) : undefined}>
     <div class="mc-ui-tree-node__content">
-      <button type="button" class="mc-ui-tree-node__expand-icon expand" class:is-leaf={!node.children?.length} tabindex="-1" aria-label={`${branchOpen(node) ? '收起' : '展开'}${node.label}`} aria-hidden={!node.children?.length} disabled={!node.children?.length || node.disabled} onclick={() => expand(node)}><Icon name={branchOpen(node) ? 'expand' : 'put-away'}/></button>
+      <button type="button" class="mc-ui-tree-node__expand-icon expand" class:is-leaf={!node.children?.length} tabindex="-1" aria-label={`${branchOpen(node) ? '收起' : '展开'}${node.label}`} aria-hidden={!node.children?.length} disabled={!node.children?.length} onclick={() => expand(node)}><Icon name={branchOpen(node) ? 'expand' : 'put-away'}/></button>
       <button type="button" class="tree-choice choice" class:is-disabled={!canChoose} data-selection-choice data-value={node.value} disabled={node.disabled} aria-label={node.label} title={`${node.path} (${node.value})`} onclick={() => choose(node)}>
         {#if multiple}{@render checkbox(state.checked, state.partial)}{/if}<span class="mc-ui-tree-node__label" class:selected={state.checked}>{node.label}</span>
       </button>

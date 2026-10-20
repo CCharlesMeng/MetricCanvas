@@ -4,46 +4,56 @@
    * 层级维度筛选器(纯渲染):层级 tabs + 维度取值控件。
    * 层级是筛选值的一部分,地图等分层视图读它,不维护自己的层级状态。
    */
-  import type { FilterHierarchyLevel } from '@metriccanvas/page/internal';
+  import type { DimensionSelectionExtension, FilterHierarchyLevel } from '@metriccanvas/page/internal';
   import type { DimensionValuesSnapshot } from '../../../runtime/src';
   import { hierarchyControlValues } from '../map-hierarchy';
   import DimensionFilter from './DimensionFilter.svelte';
 
   interface Props {
     label?: string;
+    selection?:DimensionSelectionExtension['selection'];
+    structural?:boolean;
+    searchable?:boolean;treeSelection?:import('@metriccanvas/ui').TreeSelection;
     emptyLabel?: string;
     levels: FilterHierarchyLevel[];
     level: string;
     values: string[];
     picker?: 'tabs' | 'hidden';
     display?: 'select' | 'tabs' | 'tree' | 'search';
-    selection?: 'single' | 'multiple';
-    searchable?: boolean;
-    treeSelection?: 'descendants' | 'independent' | 'leaf';
     candidates: DimensionValuesSnapshot;
+    candidateLevels?:Record<string,DimensionValuesSnapshot>;
+    onretry?:()=>void;
     onchange: (next: { level: string; values: string[] }) => void;
   }
 
   let {
-    label,
+    candidateLevels,selection,structural=false,searchable=true,treeSelection='descendants',label,
     emptyLabel,
     levels,
     level,
     values,
     picker = 'tabs',
     display = 'select',
-    candidates, selection, searchable, treeSelection,
-    onchange
+    candidates,
+    onchange,
+    onretry
   }: Props = $props();
 
+  let draftLevel=$state('');
+  $effect(()=>{draftLevel=level;});
+  const activeLevel=$derived(selection?.required?draftLevel:level);
+  const levelCandidates=$derived(candidateLevels?.[activeLevel]??candidates);
+  const activeCandidates:DimensionValuesSnapshot=$derived(structural&&levelCandidates.status==='ready'&&!levelCandidates.candidates.some(item=>item.level===activeLevel&&!item.disabled)?{status:'empty'}:levelCandidates);
+  const activeValues=$derived(activeLevel===level?values:[]);
+  function chooseLevel(next:string){if(selection?.required)draftLevel=next;else onchange({level:next,values:[]});}
   const firstLevel = $derived(levels[0]);
   const controlValues = $derived(
-    picker === 'hidden' ? hierarchyControlValues(values, candidates) : values
+    picker === 'hidden' ? hierarchyControlValues(activeValues, activeCandidates) : activeValues
   );
 </script>
 
 <div class="hierarchy">
-
+  {#if label}<span class="label">{label}</span>{/if}
   {#if picker === 'tabs'}
     <div class="tabs" role="tablist">
       {#each levels as item (item.id)}
@@ -51,32 +61,30 @@
           type="button"
           role="tab"
           class="tab"
-          class:active={item.id === level}
-          aria-selected={item.id === level}
-          onclick={() => onchange({ level: item.id, values: [] })}
+          class:active={item.id === activeLevel}
+          aria-selected={item.id === activeLevel}
+          onclick={() => chooseLevel(item.id)}
         >
           {item.label ?? item.id}
         </button>
       {/each}
     </div>
-  {:else if firstLevel && level !== firstLevel.id}
+  {:else if firstLevel && activeLevel !== firstLevel.id}
     <button
       type="button"
       class="back"
       aria-label={`返回${firstLevel.label ?? firstLevel.id}`}
-      onclick={() => onchange({ level: firstLevel.id, values: [] })}
+      onclick={() => chooseLevel(firstLevel.id)}
     >
       返回
     </button>
   {/if}
-  <DimensionFilter
-    label={label}
+  <DimensionFilter {onretry} {selection} {structural} {searchable} {treeSelection} treeLevel={activeLevel}
     {emptyLabel}
-    {selection} {searchable} {treeSelection}
-    candidates={candidates}
+    candidates={activeCandidates}
     value={controlValues}
     display={display}
-    onchange={(next) => onchange({ level, values: next })}
+    onchange={(next) => onchange({ level:activeLevel, values: next })}
   />
 </div>
 
@@ -89,6 +97,11 @@
     align-items: center;
     gap: 8px;
     font-size: var(--mc-filter-font-size, 13px);
+  }
+  .label {
+    display: var(--mc-filter-label-display, inline);
+    color: #71717a;
+    white-space: nowrap;
   }
   .tabs {
     display: flex;

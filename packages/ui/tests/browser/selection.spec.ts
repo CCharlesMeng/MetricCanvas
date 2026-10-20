@@ -88,11 +88,14 @@ test('official geometry, neutral tag colors, icons and panel rows',async({page})
  await expect(page.getByRole('option',{name:'选项 A',exact:true})).toHaveCSS('height','32px');
 });
 
-for(const shadow of [false,true]) test(`tree content inset is16px; shadow=${shadow}`,async({page})=>{
+for(const shadow of [false,true]) test(`tree inset is16px and inert ancestors close; shadow=${shadow}`,async({page})=>{
  if(shadow) await page.goto('/tests/browser/index.html?selection&shadow');
+ await page.getByRole('checkbox',{name:'禁用父节点',exact:true}).check();
  await page.getByRole('button',{name:'区域',exact:true}).click();
  const popup=page.getByRole('dialog',{name:'区域候选'});
  const treeInset=()=>popup.evaluate(el=>el.querySelector('.expand')!.getBoundingClientRect().left-el.getBoundingClientRect().left);
  expect(await treeInset()).toBe(16);
  await page.getByRole('button',{name:'展开中国地区部',exact:true}).click();expect(await treeInset()).toBe(16);
+ await expect(page.getByRole('button',{name:'中国地区部',exact:true})).toBeDisabled();await expect(page.getByRole('button',{name:'收起中国地区部',exact:true})).toBeEnabled();await expect(page.getByRole('button',{name:'深圳代表处',exact:true})).toBeEnabled();
+ await page.locator('.field').first().evaluate(el=>el.setAttribute('inert',''));await expect(popup).toHaveCount(0);
 });
