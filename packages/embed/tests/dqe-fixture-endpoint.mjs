@@ -1,3 +1,5 @@
+import {iocCurrencyFixture} from './fixtures/ioc-currency-query.mjs';
+import { iocHeaderFixture } from '../../../tools/dqe-sim/fixtures/ioc-header-query.mjs';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -34,7 +36,7 @@ function readJson(name) {
 
 export function executeFixtureItem(item) {
   if (!isRecord(item)) return unsupported('查询项必须是 JSON 对象');
-  return listResult(item) ?? candidatesResult(item) ?? unsupported('夹具未覆盖的查询');
+  return iocCurrencyFixture(item) ?? iocHeaderFixture(item) ?? listResult(item) ?? candidatesResult(item) ?? unsupported('夹具未覆盖的查询');
 }
 
 function listResult(item) {

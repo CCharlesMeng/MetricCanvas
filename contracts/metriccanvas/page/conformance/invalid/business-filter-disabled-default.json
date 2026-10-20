@@ -1,0 +1,336 @@
+{
+  "case": "business-filter-disabled-default",
+  "invariant": "business-filters",
+  "input": {
+    "schemaVersion": "6.36",
+    "id": "business-filter-page",
+    "layout": "dashboard",
+    "dashboardToolbar": "hidden",
+    "meta": {
+      "title": "IOC B2：封闭枚举与勾选语义",
+      "description": "本地DQE仿真合成验收，条件回显不是业务指标。"
+    },
+    "iocHeader": {
+      "identity": {
+        "title": "业务筛选 · 封闭枚举",
+        "description": {
+          "text": "本地合成验收 · 控件改变真实声明的查询条件"
+        },
+        "tags": [
+          {
+            "id": "demo",
+            "text": "合成数据",
+            "tone": "info"
+          }
+        ],
+        "facts": [
+          {
+            "id": "period",
+            "kind": "queryPeriod",
+            "label": "统计期间",
+            "value": {
+              "filter": "period",
+              "format": "period"
+            }
+          }
+        ]
+      },
+      "filterIds": [
+        "period",
+        "kind",
+        "breakthrough",
+        "focus"
+      ]
+    },
+    "filters": [
+      {
+        "id": "period",
+        "type": "timeRange",
+        "display": "period",
+        "precision": "month",
+        "required": true,
+        "label": "统计期间",
+        "default": {
+          "mode": "month",
+          "value": "2026-09"
+        }
+      },
+      {
+        "id": "kind",
+        "type": "dimension",
+        "dimension": "customer_kind",
+        "label": "客户分类",
+        "selection": {
+          "mode": "single",
+          "required": true
+        },
+        "options": [
+          {
+            "value": "A",
+            "label": "重点客户"
+          },
+          {
+            "value": "B",
+            "label": "一般客户"
+          },
+          {
+            "value": "X",
+            "label": "停用档位",
+            "disabled": true
+          }
+        ],
+        "default": [
+          "X"
+        ],
+        "hint": {
+          "parts": [
+            "已应用期间：",
+            {
+              "filter": "period",
+              "format": "period"
+            }
+          ]
+        }
+      },
+      {
+        "id": "breakthrough",
+        "type": "dimension",
+        "dimension": "breakthrough",
+        "label": "是否突破",
+        "selection": {
+          "mode": "multiple",
+          "allBehavior": "unrestricted"
+        },
+        "options": [
+          {
+            "value": "1",
+            "label": "是"
+          },
+          {
+            "value": "0",
+            "label": "否"
+          }
+        ],
+        "default": [
+          "1",
+          "0"
+        ],
+        "hint": "全选保留URL选择，查询不加该枚举条件。"
+      },
+      {
+        "id": "focus",
+        "type": "boolean",
+        "label": "仅看重点",
+        "default": true,
+        "hint": "未勾选显式查询否值；与是否突破的全选不限分别验证。"
+      }
+    ],
+    "dataSources": {
+      "bound": {
+        "fields": {
+          "scope": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "ioc_header_scope"
+          },
+          "count": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "ioc_header_count"
+          },
+          "customer_kind": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "customer_kind",
+            "nullable": true
+          },
+          "breakthrough": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "breakthrough",
+            "nullable": true
+          },
+          "focus_flag": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "focus_flag",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "ioc_header_scope",
+                    "customer_kind",
+                    "breakthrough",
+                    "focus_flag"
+                  ],
+                  "output_metrics": [
+                    "ioc_header_count"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": false
+                    }
+                  },
+                  "order": {
+                    "limit": 10,
+                    "offset": 0
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "period": {
+                "target": "time"
+              },
+              "kind": {
+                "target": "dimension",
+                "queryField": "customer_kind"
+              },
+              "breakthrough": {
+                "target": "dimension",
+                "queryField": "breakthrough"
+              },
+              "focus": {
+                "target": "boolean",
+                "queryField": "focus_flag",
+                "whenTrue": [
+                  "1"
+                ],
+                "whenFalse": [
+                  "0"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "unbound": {
+        "fields": {
+          "scope": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "ioc_header_scope"
+          },
+          "count": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "ioc_header_count"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "ioc_header_scope"
+                  ],
+                  "output_metrics": [
+                    "ioc_header_count"
+                  ],
+                  "filter": {
+                    "dims": []
+                  },
+                  "order": {
+                    "limit": 10,
+                    "offset": 0
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "body",
+        "container": "card",
+        "components": [
+          {
+            "id": "bound-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bound"
+            },
+            "props": {
+              "title": "已绑定条件",
+              "columns": [
+                {
+                  "field": "scope",
+                  "title": "服务收到的条件（本地合成）"
+                },
+                {
+                  "field": "count",
+                  "title": "合成响应标识"
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "本地页头验收"
+                }
+              }
+            }
+          },
+          {
+            "id": "unbound-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "unbound"
+            },
+            "props": {
+              "title": "无关查询（不随筛选刷新）",
+              "columns": [
+                {
+                  "field": "scope",
+                  "title": "服务收到的条件（本地合成）"
+                },
+                {
+                  "field": "count",
+                  "title": "合成响应标识"
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "本地页头验收"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/1/default",
+      "message": "筛选值不在可用封闭枚举中"
+    }
+  ]
+}

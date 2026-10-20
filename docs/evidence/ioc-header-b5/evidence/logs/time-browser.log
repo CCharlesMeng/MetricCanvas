@@ -1,0 +1,37 @@
+[WebServer] (node:79731) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 26 tests using 2 workers
+
+(node:79732) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:79733) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 tests/browser/ioc-navigation-lifecycle.spec.ts:3:1 › obsolete projection is aborted and cannot replace the new integrating application contract (623ms)
+  ✓   3 tests/browser/ioc-navigation-lifecycle.spec.ts:10:1 › withdrawn target-input capability never falls through to an unvalidated browser URL (454ms)
+  ✓   1 tests/browser/ioc-navigation-layout.spec.ts:4:1 › three actual navigation pages remain usable at wide and narrow viewports (2.0s)
+  ✓   4 tests/browser/ioc-navigation.spec.ts:4:1 › actual overview/list/detail pass explicit URL inputs and destination changes remain independent (1.8s)
+  ✓   5 tests/browser/ioc-time.spec.ts:8:1 › day/month/ISO week switch, URL priority, memory and workbook all use the selected static case (1.3s)
+  ✓   6 tests/browser/ioc-navigation.spec.ts:11:1 › quarter does not truncate to detail month and empty row cannot fall back to a stale href key (564ms)
+  ✓   7 tests/browser/ioc-time.spec.ts:17:184 › rejects malformed mode URL period.mode=isoWeek&period.from=2026-10-06&period.to=2026-10-12 (417ms)
+  ✓   8 tests/browser/ioc-navigation.spec.ts:14:1 › missing target capability stays non-navigable (438ms)
+  ✓   9 tests/browser/ioc-time.spec.ts:17:184 › rejects malformed mode URL period.mode=month&period.from=2026-01 (413ms)
+  ✓  10 tests/browser/ioc-navigation.spec.ts:17:181 › destination invalid input stops query project-name=X&origin=直接&month=2026-09 (403ms)
+  ✓  11 tests/browser/ioc-time.spec.ts:17:184 › rejects malformed mode URL period.mode=bad&period.from=2026-01&period.to=2026-03 (395ms)
+  ✓  12 tests/browser/ioc-navigation.spec.ts:17:181 › destination invalid input stops query project-id=P&project-name=X&origin=直接&month=bad (396ms)
+  ✓  14 tests/browser/ioc-navigation.spec.ts:17:181 › destination invalid input stops query project-id=P&project-name=X&origin=直接&month=2026-09&currency=BAD (420ms)
+  ✓  13 tests/browser/ioc-time.spec.ts:20:1 › presets use inclusive dates, explicit anchor and reject blocked interior dates without applying drafts (633ms)
+  ✓  16 tests/browser/ioc-time.spec.ts:26:1 › trusted latest/complete are separate, URL wins initial, subscriptions preserve selection and identity stops the old instance (607ms)
+  ✓  15 tests/browser/period-filter.spec.ts:5:41 › period selection queries, restoration and readonly rolling range (date) (920ms)
+  ✓  17 tests/browser/ioc-time.spec.ts:33:1 › latest initial uses complete period and missing/future choices remain unapplied (532ms)
+  ✓  19 tests/browser/ioc-time.spec.ts:38:1 › calendarWindow carries 12 months and a discrete 1/3 month selection; mode change reconciles model only after V2 (586ms)
+  ✓  18 tests/browser/period-filter.spec.ts:5:41 › period selection queries, restoration and readonly rolling range (month) (996ms)
+  ✓  21 tests/browser/period-filter.spec.ts:44:1 › overflow panel and compact readonly consume the same period declaration (736ms)
+  ✓  20 tests/browser/ioc-time.spec.ts:44:1 › readonly and responsive mode popup stay within 1440/1024/390 and close on readonly update (842ms)
+  ✓  23 tests/browser/ioc-time.spec.ts:49:1 › a legal URL overrides an unavailable dynamic initial period before default validation (442ms)
+  ✓  22 tests/browser/period-filter.spec.ts:67:1 › default Dashboard period picker disables future years, quarters and months (634ms)
+  ✓  24 tests/browser/ioc-time.spec.ts:54:1 › calendar window without V2 stays unavailable and never retries the legacy candidate port (444ms)
+  ✓  25 tests/browser/ioc-time.spec.ts:59:39 › anchor fact unavailable invalidates an in-flight candidate success (588ms)
+  ✓  26 tests/browser/ioc-time.spec.ts:59:39 › anchor fact unavailable invalidates an in-flight candidate error (581ms)
+
+  26 passed (11.1s)

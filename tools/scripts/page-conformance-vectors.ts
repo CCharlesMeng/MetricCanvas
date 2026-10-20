@@ -80,6 +80,48 @@ export const invariants: InvariantDefinition[] = [
     {case:'chart-option-wrapper-forbidden',base:'chart-echarts-option-page',expect:/不支持的 ECharts 根入口/,mutate:d=>{d.sections[0].components[1].props.echartsOption.media=[];}},
     {case:'chart-option-other-component',base:'chart-echarts-option-page',expect:/只支持/,mutate:d=>{d.sections[0].components[0].props.echartsOption={};}}
   ]},
+ {id:'navigation-target-inputs',description:'6.39 显式跨页传值意图与受控来源',valid:['navigation-source-page','navigation-list-page','navigation-detail-page'],cases:[
+ {case:'navigation-inputs-before-6.39',base:'navigation-source-page',expect:/由 6.39 引入/,mutate:d=>{d.schemaVersion='6.38';}},
+ {case:'navigation-policy-fixed-input',base:'navigation-source-page',expect:/旧数组固定参数/,mutate:d=>{d.params=[{id:'source-label',type:'string',required:true,value:'固定'}];}},
+ {case:'navigation-policy-false',base:'navigation-source-page',expect:/must be equal to constant/,mutate:d=>{d.strictURLInputs=false;}},
+ {case:'navigation-inputs-false',base:'navigation-source-page',expect:/must be equal to constant/,mutate:d=>{d.sections[0].components[0].props.links[0].validateTargetInputs=false;}},
+ {case:'navigation-inputs-unknown-filter',base:'navigation-list-page',expect:/未声明的筛选器/,mutate:d=>{d.sections[0].components[1].props.actions[0].navigate.query.month.id='unknown';}}]},
+  {id:'time-extensions',description:'6.38 显式时间模式、可信期间事实、快捷范围及V2月份窗口',valid:['time-modes-page','time-presets-page','availability-page','calendar-window-page','time-binding-branches-page'],cases:[
+    {case:'time-before-6.38',base:'time-modes-page',expect:/由 6.38 引入/,mutate:d=>{d.schemaVersion='6.37';}},
+    {case:'time-case-missing',base:'time-modes-page',expect:/穷尽/,mutate:d=>{delete d.dataSources.bound.source.query.timeModes.cases.month;}},
+    {case:'time-query-xor',base:'time-modes-page',expect:/互斥/,mutate:d=>{const q=d.dataSources.bound.source.query;q.body=q.timeModes.cases.day.body;}},
+    {case:'time-period-mismatch',base:'time-modes-page',expect:/匹配显式模式/,mutate:d=>{d.dataSources.bound.source.query.timeModes.cases.isoWeek.body.dsl_list[0].filter.time.period='month';}},
+    {case:'time-output-mismatch',base:'time-modes-page',expect:/相同字段/,mutate:d=>{d.dataSources.bound.source.query.timeModes.cases.isoWeek.body.dsl_list[0].output_metrics=['other'];}},
+    {case:'time-default-week',base:'time-modes-page',expect:/默认范围/,mutate:d=>{d.filters[0].modes[2].default.from='2026-10-06';}},
+    {case:'time-availability-default',base:'availability-page',expect:/互斥/,mutate:d=>{d.filters[0].default='2026-09';}},
+    {case:'time-fact-kind',base:'availability-page',expect:/part与kind/,mutate:d=>{d.iocHeader.identity.facts[3].value.part='latest';}},
+    {case:'time-window-static-options',base:'calendar-window-page',expect:/动态平面/,mutate:d=>{d.filters[1].options=[{value:'2026-01',label:'一月'}];}}
+  ]},
+
+  {id:'currency-selection',description:'6.37金额范围和静态货币字段选择',valid:['currency-selection-page'],cases:[
+    {case:'currency-before-6.37',base:'currency-selection-page',expect:/由 6.37 引入/,mutate:d=>{d.schemaVersion='6.36';}},
+    {case:'currency-case-missing',base:'currency-selection-page',expect:/穷尽/,mutate:d=>{delete d.sections[0].components[2].props.columns[1].field.byFilter.cases.USD;}},
+    {case:'currency-metric-mismatch',base:'currency-selection-page',expect:/匹配币种/,mutate:d=>{d.dataSources.main.source.query.filterBindings.amount.metricByFilter.cases.USD='ioc_amount_base_cny';}},
+    {case:'currency-negative-default',base:'currency-selection-page',expect:/默认范围/,mutate:d=>{d.filters[2].default={from:-1};}},
+    {case:'currency-equal-default',base:'currency-selection-page',expect:/默认范围/,mutate:d=>{d.filters[2].default={from:1,to:1};}},
+    {case:'currency-compute-mixed',base:'currency-selection-page',expect:/混合静态货币/,mutate:d=>{d.dataSources.main.compute[0].fields[1]='fee-usd';}}
+  ]},
+  {id:'business-filters',description:'6.36 封闭枚举与业务选择语义',valid:['business-filter-page'],cases:[
+    {case:'business-filter-before-6.36',base:'business-filter-page',expect:/由 6.36 引入/,mutate:d=>{d.schemaVersion='6.35';}},
+    {case:'business-filter-single-many',base:'business-filter-page',expect:/单选/,mutate:d=>{d.filters[1].default=['A','B'];}},
+    {case:'business-filter-disabled-default',base:'business-filter-page',expect:/封闭枚举/,mutate:d=>{d.filters[1].default=['X'];}},
+    {case:'business-filter-options-dependent',base:'business-filter-page',expect:/动态候选/,mutate:d=>{d.filters[1].candidateContext={filterIds:['period'],reconcile:'clear'};}},
+    {case:'business-filter-unrestricted-without-options',base:'business-filter-page',expect:/全选不限/,mutate:d=>{delete d.filters[2].options;}},
+    {case:'business-filter-cycle',base:'business-filter-page',expect:/循环/,mutate:d=>{d.filters[0].clearOnChangeOf=['focus'];d.filters[3].clearOnChangeOf=['period'];}}
+  ]},
+  {id:'ioc-header',description:'6.35 页级IOC身份与唯一筛选归属',valid:['ioc-header-page'],cases:[
+    {case:'ioc-header-before-6.35',base:'ioc-header-page',expect:/由 6.35 引入/,mutate:d=>{d.schemaVersion='6.31';}},
+    {case:'ioc-header-empty',base:'ioc-header-page',expect:/需要身份/,mutate:d=>{d.iocHeader={};}},
+    {case:'ioc-header-toolbar-conflict',base:'ioc-header-page',expect:/显式关闭/,mutate:d=>{delete d.dashboardToolbar;}},
+    {case:'ioc-header-hidden-filter',base:'ioc-header-page',expect:/静态可见/,mutate:d=>{d.filters[1].visible=false;}},
+    {case:'ioc-header-missing-filter',base:'ioc-header-page',expect:/静态可见/,mutate:d=>{d.iocHeader.filterIds.push('missing');}},
+    {case:'ioc-header-duplicate-identity',base:'ioc-header-page',expect:/重复承担/,mutate:d=>{d.sections[0].components.unshift({id:'old-header',type:'reportHeader',layout:{span:12},props:{title:'旧标题'}});}}
+  ]},
   {id:'report-header-export-buttons',description:'6.31 同一种导出按钮按格式配置名称、文件名和清晰度，直接下载',valid:['report-export-buttons','report-export-scale-fallback'],cases:[
     {case:'report-export-before-6.31',base:'report-export-buttons',expect:/由 6.31 引入/,mutate:d=>{d.schemaVersion='6.30';}},
     {case:'report-export-dashboard',base:'report-export-buttons',expect:/导出按钮只允许/,mutate:d=>{d.layout='dashboard';}},

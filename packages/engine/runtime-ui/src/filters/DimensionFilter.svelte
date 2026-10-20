@@ -1,5 +1,8 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import {Select,MultiSelect,TreeSelect} from '@metriccanvas/ui';
+  import {structuralTree} from './structural-tree';
+  import type {DimensionSelectionExtension} from '@metriccanvas/page/internal';
   /**
    * 维度筛选器(纯渲染):候选值快照与当前值由运行时传入,变更只上抛事件,不直接写筛选状态。
    * 候选值按显式状态呈现:加载中、空结果、能力不可用与加载失败各自可区分,
@@ -20,16 +23,20 @@
 
   interface Props {
     label?: string;
+    selection?:DimensionSelectionExtension['selection'];
+    structural?:boolean;
+    treeLevel?:string;
     emptyLabel?: string;
     /** 筛选候选值快照,运行时经维度候选值端口加载后传入 */
     candidates: DimensionValuesSnapshot;
     /** 当前选中值;空数组表示不筛选 */
     value: string[];
     display?: 'select' | 'tabs' | 'tree' | 'search';
+    onretry?:()=>void;
     onchange: (values: string[]) => void;
   }
 
-  let { label, emptyLabel = '全部', candidates, value, display = 'select', onchange }: Props = $props();
+  let { selection,structural=false,treeLevel='',label, emptyLabel = '全部', candidates, value, display = 'select', onchange, onretry }: Props = $props();
 
   const options = $derived(candidates.status === 'ready' ? candidates.candidates : []);
   /** 非 ready 状态的显式提示;错误态展示分类标识,消息本身已脱值(issue #51)。 */
@@ -40,6 +47,8 @@
         ? '无候选项'
         : candidates.status === 'unavailable'
           ? '候选项不可用'
+          : candidates.status === 'denied' ? '无权访问候选项'
+          : candidates.status === 'unconfigured' ? '候选能力未配置'
           : candidates.status === 'error'
             ? `候选项加载失败(${candidates.error.code})`
             : null
@@ -93,9 +102,18 @@
 <div class="filter">
   {#if label}<span class="label">{label}</span>{/if}
 
-  {#if display === 'tabs'}
+  {#if (selection && display!=='tabs') || structural}
+    {#if candidates.status!=='ready'}<span data-filter-display>{summary}</span>{@render statusHint()}
+    {:else if structural}
+      <TreeSelect label={label??'结构树'} required={selection?.required} {value} options={structuralTree(options,treeLevel)} onchange={next=>onchange(selection?.mode==='single'||selection?.required?next.slice(-1):next)}/>
+    {:else if selection?.mode==='single'||selection?.required}
+      <Select label={label??'单选筛选'} value={value[0]??''} options={[...(!selection.required?[{value:'',label:emptyLabel}]:[]),...options]} onchange={next=>onchange(next?[next]:[])}/>
+    {:else}
+      <MultiSelect label={label??'多选筛选'} {value} {options} searchable={display==='search'} required={selection?.required} {onchange}/>
+    {/if}
+  {:else if display === 'tabs'}
     <div class="tabs" role="tablist">
-      <button
+      {#if !selection?.required}<button
         type="button"
         role="tab"
         class="tab"
@@ -104,7 +122,7 @@
         onclick={() => onchange([])}
       >
         {emptyLabel}
-      </button>
+      </button>{/if}
       {#each options as option (option.value)}
         <button
           type="button"
@@ -112,6 +130,7 @@
           class="tab"
           class:active={selected.has(option.value)}
           aria-selected={selected.has(option.value)}
+          disabled={option.disabled}
           onclick={() => onchange([option.value])}
         >
           {option.label}
@@ -206,6 +225,7 @@
       data-candidates-status={candidates.status}
     >
       {statusText}
+      {#if candidates.status==='error' && onretry}<button type="button" onclick={onretry}>重试</button>{/if}
     </span>
   {/if}
 {/snippet}

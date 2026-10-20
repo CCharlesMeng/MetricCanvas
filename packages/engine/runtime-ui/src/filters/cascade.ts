@@ -1,3 +1,5 @@
+import { filterDependencies } from '@metriccanvas/page/internal';
+import { candidateContextKey } from '../../../runtime/src/filter-candidates';
 import {
   dimensionOfLevel,
   type DimensionFilterDeclaration,
@@ -27,9 +29,13 @@ export function dependentFilterIds(
   declarations: readonly FilterDeclaration[],
   parentId: string
 ): string[] {
-  return declarations
-    .filter((item) => item.type === 'dimension' && item.dependsOn === parentId)
-    .map((item) => item.id);
+  const result = new Set<string>();
+  const queue = [parentId];
+  for (const parent of queue) for (const declaration of declarations) {
+    if (!filterDependencies(declaration).includes(parent) || declaration.id === parentId || result.has(declaration.id)) continue;
+    result.add(declaration.id); queue.push(declaration.id);
+  }
+  return [...result];
 }
 
 export function clearDependentUpdates(
@@ -50,4 +56,9 @@ export function dimensionValueOf(
 
 export function filterValueOf(values: FilterValues, filterId: string): FilterValue | undefined {
   return values.get(filterId);
+}
+
+/** Identity includes the full ancestry even though the legacy port accepts direct-parent constraints only. */
+export function cascadeContext(declaration: DimensionFilterDeclaration, declarations: readonly FilterDeclaration[], values: FilterValues,context:{displayInputs?:import('@metriccanvas/page/internal').DisplayInputsSnapshot;filterRevision?:number;now?:Date}={}): string {
+  return candidateContextKey(declaration,declarations,values,context);
 }

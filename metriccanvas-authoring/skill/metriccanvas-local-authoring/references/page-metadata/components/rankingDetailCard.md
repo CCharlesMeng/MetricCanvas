@@ -9,7 +9,7 @@
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.34。结构真源为本册[schema.json](../schema.json)，SHA256 `0305d28888fcb5a48600584439d7bb512ec5643a2b8d667addbfac530b690a75`。字段表自动生成；可选不等于有默认值。
+页面协议 6.39。结构真源为本册[schema.json](../schema.json)，SHA256 `0807888a77d8710b9fd65166760bb094210dd2cbc7507ae72dd2f24d07a58cd3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -305,7 +305,7 @@ Schema位置：`#/definitions/rankingDetailCardComponent/properties/props/proper
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -325,6 +325,7 @@ Schema位置：`#/definitions/rankingDetailCardComponent/properties/props/proper
 | "compact-million-2" | 按百万缩放，2位小数，附加百万后缀。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
+| "usd-adaptive" | 美元数值带千分位、两位小数和美元单位。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |

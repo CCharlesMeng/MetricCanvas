@@ -1,0 +1,71 @@
+{
+  "schema_version": 2,
+  "rules": {
+    "R1-1-root": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        }
+      ],
+      "collect": {
+        "kind": "count"
+      }
+    },
+    "R2-1-title": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-ioc-title]"
+        }
+      ],
+      "collect": {
+        "kind": "text",
+        "single": true
+      }
+    },
+    "R3-1-padding": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "padding-top",
+          "padding-left"
+        ],
+        "single": true
+      }
+    },
+    "R3-1-title-size": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-ioc-title]"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "properties": [
+          "font-size",
+          "line-height"
+        ],
+        "single": true
+      }
+    },
+    "R6-1-overflow": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        }
+      ],
+      "collect": {
+        "kind": "overflow"
+      }
+    }
+  }
+}

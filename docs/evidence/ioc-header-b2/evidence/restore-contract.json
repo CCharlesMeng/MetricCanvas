@@ -1,0 +1,13 @@
+{
+  "baseline_sha256": "e05c154ade8cb96f8bb788b3db6ae4d00b9402fd91394c39edbeaa4cf987d627",
+  "contract_sha256": "bca20d3bdae44a4a275bfe53cdd6dea2cd9d519759025e29a5fd623773c411ee",
+  "rules": [
+    {
+      "baseline_id": "R6-21",
+      "check_mode": "overflow",
+      "id": "R6-21-overflow",
+      "subject": "B2普通与结构树页390宽无横向溢出"
+    }
+  ],
+  "schema_version": 3
+}

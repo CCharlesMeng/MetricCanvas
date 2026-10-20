@@ -1,0 +1,17 @@
+{
+  "case": "navigation-policy-false",
+  "invariant": "navigation-target-inputs",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be equal to constant",
+      "paths": [
+        "/strictURLInputs"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "strictURLInputs": false
+  },
+  "fullInput": "page/conformance/invalid/navigation-policy-false.json"
+}

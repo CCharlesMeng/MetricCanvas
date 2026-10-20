@@ -1,0 +1,67 @@
+
+Running 2 tests using 1 worker
+
+(node:24020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/browser/ioc-time.spec.ts:59:39 › anchor fact unavailable invalidates an in-flight candidate success (5.6s)
+(node:24147) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 tests/browser/ioc-time.spec.ts:59:39 › anchor fact unavailable invalidates an in-flight candidate error (5.6s)
+
+
+  1) tests/browser/ioc-time.spec.ts:59:39 › anchor fact unavailable invalidates an in-flight candidate success 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[data-filter-id="months"] [data-candidates-status="unavailable"]')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('[data-filter-id="months"] [data-candidates-status="unavailable"]')
+
+
+      61 |  await page.route('**/__fixtures/filter-candidates',async route=>{if(route.request().postDataJSON().filterId!=='months'){await route.continue();return;}calls++;if(first){first=false;seen();await pending;await route.fulfill({status:200,json:late==='success'?{kind:'values',candidates:[{value:'2026-01',label:'旧候选'}]}:{kind:'unavailable'}});}else await route.continue();});
+      62 |  await page.goto('/pages/ioc-header-calendar-window-demo');await started;const expand=page.getByRole('button',{name:'展开筛选',exact:true});if(await expand.isVisible())await expand.click();await page.getByRole('button',{name:'事实等待',exact:true}).click();const status=page.locator('[data-filter-id="months"] [data-candidates-status="unavailable"]');await expect(status).toBeVisible();
+    > 63 |  release();await page.evaluate(()=>new Promise<void>(r=>setTimeout(r,100)));await expect(status).toBeVisible();await expect(page.locator('[data-component="body/bound-table"]').getByRole('button',{name:'导出',exact:true})).toBeDisabled();await page.getByRole('button',{name:'事实恢复',exact:true}).click();await expect(table(page)).toContainText('month_code=2026-01,2026-03');expect(calls).toBeGreaterThan(1);
+         |                                                                                                  ^
+      64 | });
+      65 |
+        at /Users/moon/.codex/worktrees/ioc-header-b0-b1/DataDashboard/packages/embed/tests/browser/ioc-time.spec.ts:63:98
+
+    Error Context: test-results/ioc-time-anchor-fact-unava-423ad-in-flight-candidate-success/error-context.md
+
+  2) tests/browser/ioc-time.spec.ts:59:39 › anchor fact unavailable invalidates an in-flight candidate error 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('[data-component="body/bound-table"]')
+    Expected substring: "month_code=2026-01,2026-03"
+    Received string:    "  导出    已绑定条件 "
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toContainText" with timeout 5000ms
+      - waiting for locator('[data-component="body/bound-table"]')
+        14 × locator resolved to <article data-component-type="table" data-component="body/bound-table" class="cell svelte-19s874q table-cell">…</article>
+           - unexpected value "  导出    已绑定条件 "
+
+
+      61 |  await page.route('**/__fixtures/filter-candidates',async route=>{if(route.request().postDataJSON().filterId!=='months'){await route.continue();return;}calls++;if(first){first=false;seen();await pending;await route.fulfill({status:200,json:late==='success'?{kind:'values',candidates:[{value:'2026-01',label:'旧候选'}]}:{kind:'unavailable'}});}else await route.continue();});
+      62 |  await page.goto('/pages/ioc-header-calendar-window-demo');await started;const expand=page.getByRole('button',{name:'展开筛选',exact:true});if(await expand.isVisible())await expand.click();await page.getByRole('button',{name:'事实等待',exact:true}).click();const status=page.locator('[data-filter-id="months"] [data-candidates-status="unavailable"]');await expect(status).toBeVisible();
+    > 63 |  release();await page.evaluate(()=>new Promise<void>(r=>setTimeout(r,100)));await expect(status).toBeVisible();await expect(page.locator('[data-component="body/bound-table"]').getByRole('button',{name:'导出',exact:true})).toBeDisabled();await page.getByRole('button',{name:'事实恢复',exact:true}).click();await expect(table(page)).toContainText('month_code=2026-01,2026-03');expect(calls).toBeGreaterThan(1);
+         |                                                                                                                                                                                                                                                                                                                                      ^
+      64 | });
+      65 |
+        at /Users/moon/.codex/worktrees/ioc-header-b0-b1/DataDashboard/packages/embed/tests/browser/ioc-time.spec.ts:63:326
+
+    Error Context: test-results/ioc-time-anchor-fact-unava-7368f-n-in-flight-candidate-error/error-context.md
+
+  2 failed
+    tests/browser/ioc-time.spec.ts:59:39 › anchor fact unavailable invalidates an in-flight candidate success 
+    tests/browser/ioc-time.spec.ts:59:39 › anchor fact unavailable invalidates an in-flight candidate error 
+undefined
+/Users/moon/.codex/worktrees/ioc-header-b0-b1/DataDashboard/packages/embed:
+[ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL] Command failed with exit code 1: playwright test ioc-time.spec.ts -g 'anchor fact unavailable' '--workers=1'

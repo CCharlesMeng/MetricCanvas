@@ -1,3 +1,4 @@
+import { dimensionSelectionIssue } from '@metriccanvas/page/internal';
 import { timeFilterBoundaryError, periodSelectionFromRange } from '@metriccanvas/page/internal';
 import { validateTimePointValue, matchesParamDeclaration, materializePageParams } from '@metriccanvas/page/internal';
 import type { PageParamValue } from '@metriccanvas/page/internal';
@@ -23,6 +24,7 @@ export function seedPageParamFilters(page: import('@metriccanvas/page').Page, va
     const value = values.get(declaration.initialParam);
     if (declaration.type === 'dimension') {
       declaration.default = value === undefined ? [] : Array.isArray(value) ? [...value] : [String(value)];
+      if(dimensionSelectionIssue(declaration,declaration.default))throw new Error('筛选参数不符合已声明选择规则');
     } else if (declaration.type === 'timeRange') {
       if (value && typeof value === 'object' && !Array.isArray(value)) {
         const range = {from:value.start,to:value.end};

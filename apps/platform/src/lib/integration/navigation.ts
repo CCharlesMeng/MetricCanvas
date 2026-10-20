@@ -84,6 +84,7 @@ export function createPlatformNavigation(container:HTMLElement,routeBase:string)
   const unload=(event:BeforeUnloadEvent)=>{if([...guards.values()].some(dirty=>dirty())){event.preventDefault();event.returnValue='';}};
   container.addEventListener('click',click);window.addEventListener('popstate',pop);window.addEventListener('beforeunload',unload);
   return {base,resolve:(path:string,params?:{pageId:string})=>platformPath(base,path,params),navigate,canLeave,
+    replaceSearch(search:string){if(destroyed)return;const next=new URL(url);next.search=search;url=next;revision++;history.replaceState(state(),'',next);},
     current:()=>new URL(url),checkpoint:()=>({href:url.href,revision}),
     subscribe(listener:(url:URL)=>void){listeners.add(listener);listener(new URL(url));return()=>{listeners.delete(listener);};},
     registerGuard(guard:LeaveGuard,dirty:()=>boolean=()=>true){guards.set(guard,dirty);return()=>{guards.delete(guard);};},

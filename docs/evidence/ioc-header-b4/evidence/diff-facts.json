@@ -1,0 +1,2609 @@
+{
+  "schema_version": 1,
+  "base_ref": "952b3a273f0f4f8be5820f5af1bb76c2f5afa513",
+  "head": "952b3a273f0f4f8be5820f5af1bb76c2f5afa513",
+  "baseline_manifest": "docs/evidence/ioc-header-b4/evidence/start-manifest.json",
+  "shared_paths": [
+    "*/shared/*",
+    "*/common/*",
+    "*/components/*",
+    "*/hooks/*",
+    "*/utils/*",
+    "*/lib/*",
+    "*/api/*",
+    "*/store/*",
+    "*/styles/*"
+  ],
+  "changed_files": [
+    {
+      "path": "CONTEXT.md",
+      "status": "M"
+    },
+    {
+      "path": "PAGE-METADATA.md",
+      "status": "M"
+    },
+    {
+      "path": "PAGE-PARAMETERS.md",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/src/lib/workbench/report-date-edit.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/tests/workbench/property-edit.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/platform/tests/workbench/report-date-edit.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/playground/page-catalog.json",
+      "status": "M"
+    },
+    {
+      "path": "apps/playground/tests/customer-activity-risk-briefing.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "apps/playground/tests/flow-analysis-report.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/authoring/publication.schema.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/manifest.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/coverage.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/grouped-params.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/inline-params.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/layout-before-6.1.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/time-availability-default.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/time-before-6.35.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/time-case-missing.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/time-default-week.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/time-fact-kind.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/time-output-mismatch.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/time-period-mismatch.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/time-query-xor.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/time-window-static-options.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/version-major-unsupported.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/invalid/version-minor-ahead.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/layout-compatibility.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/param-bindings.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/parameter-extraction.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/time-param-bindings.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/valid/availability-page.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/valid/calendar-window-page.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/valid/time-binding-branches-page.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/valid/time-modes-page.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/conformance/valid/time-presets-page.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/actions-and-navigation.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/aiSummary.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/barChart.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/categoryBreakdown.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/compositeCard.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/fieldText.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/gauge.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/keyValuePanel.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/lineChart.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/mapChart.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/metricCard.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/pieChart.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/rankingCard.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/rankingDetailCard.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/reportHeader.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/tabContainer.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/table.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/components/text.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/compute.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/data-sources.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/layout-before-6.1.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/time-availability-default.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/time-before-6.35.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/time-case-missing.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/time-default-week.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/time-fact-kind.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/time-output-mismatch.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/time-period-mismatch.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/time-query-xor.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/time-window-static-options.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/version-major-unsupported.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/errors/version-minor-ahead.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/examples/availability-page.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/examples/calendar-window-page.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/examples/time-binding-branches-page.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/examples/time-modes-page.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/examples/time-presets-page.json",
+      "status": "A"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/field-bindings-and-formats.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/fields.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/filters.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/index.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/page.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/params-and-text-values.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/queries-and-bindings.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/rules.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/schema.json",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/sections-and-layout.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/semantic-html.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/reference/validation.md",
+      "status": "M"
+    },
+    {
+      "path": "contracts/metriccanvas/page/schema.json",
+      "status": "M"
+    },
+    {
+      "path": "docs/page-metadata/actions-and-navigation.md",
+      "status": "M"
+    },
+    {
+      "path": "docs/page-metadata/filters.md",
+      "status": "M"
+    },
+    {
+      "path": "docs/page-metadata/page.md",
+      "status": "M"
+    },
+    {
+      "path": "docs/page-metadata/queries-and-bindings.md",
+      "status": "M"
+    },
+    {
+      "path": "docs/page-metadata/reference-map.json",
+      "status": "M"
+    },
+    {
+      "path": "docs/plan/2026-10-16-ioc-header-feature-plan.md",
+      "status": "M"
+    },
+    {
+      "path": "docs/plan/README.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/bundle.lock.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-lock.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/authoring/publication.schema.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/manifest.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/coverage.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/grouped-params.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/inline-params.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/layout-before-6.1.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/time-availability-default.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/time-before-6.35.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/time-case-missing.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/time-default-week.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/time-fact-kind.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/time-output-mismatch.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/time-period-mismatch.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/time-query-xor.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/time-window-static-options.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/version-major-unsupported.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/invalid/version-minor-ahead.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/layout-compatibility.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/param-bindings.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/parameter-extraction.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/time-param-bindings.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/valid/availability-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/valid/calendar-window-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/valid/time-binding-branches-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/valid/time-modes-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/conformance/valid/time-presets-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/actions-and-navigation.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/aiSummary.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/barChart.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/categoryBreakdown.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/compositeCard.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/fieldText.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/gauge.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/keyValuePanel.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/lineChart.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/mapChart.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/metricCard.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/pieChart.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/rankingCard.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/rankingDetailCard.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/reportHeader.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/tabContainer.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/table.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/text.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/compute.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/data-sources.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/layout-before-6.1.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/time-availability-default.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/time-before-6.35.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/time-case-missing.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/time-default-week.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/time-fact-kind.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/time-output-mismatch.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/time-period-mismatch.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/time-query-xor.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/time-window-static-options.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/version-major-unsupported.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/errors/version-minor-ahead.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/examples/availability-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/examples/calendar-window-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/examples/time-binding-branches-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/examples/time-modes-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/examples/time-presets-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/field-bindings-and-formats.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/fields.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/filters.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/index.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/page.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/params-and-text-values.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/queries-and-bindings.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/rules.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/schema.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/sections-and-layout.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/semantic-html.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/reference/validation.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contract-snapshot/page/schema.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contracts/authored/page-edit-request.schema.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contracts/exported/build-page-conformance.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/contracts/manifest.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/scripts/page-validation-bridge.mjs",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/SKILL.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/assets/layouts/overview-map-led.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/knowledge.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/actions-and-navigation.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/aiSummary.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/barChart.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/categoryBreakdown.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/compositeCard.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/fieldText.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/gauge.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/keyValuePanel.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/lineChart.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/mapChart.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/metricCard.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/pieChart.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/rankingCard.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/rankingDetailCard.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/reportHeader.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/tabContainer.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/table.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/text.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/compute.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/data-sources.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/layout-before-6.1.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/time-availability-default.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/time-before-6.35.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/time-case-missing.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/time-default-week.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/time-fact-kind.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/time-output-mismatch.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/time-period-mismatch.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/time-query-xor.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/time-window-static-options.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/version-major-unsupported.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/errors/version-minor-ahead.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/availability-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/business-filter-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/calendar-window-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/chart-local-filter-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-aiSummary-reportInline.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-aiSummary.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-barChart-reportForecast.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-barChart.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-categoryBreakdown-compactList.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-categoryBreakdown.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-compositeCard-compact.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-compositeCard-metricGrid.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-compositeCard-projectNorms.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-compositeCard.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-fieldText-narrativeMeeting.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-fieldText-narrativeProgress.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-fieldText-narrativeRisk.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-fieldText-narrativeShort.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-fieldText-plain.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-fieldText-quote.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-fieldText.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-gauge-mini.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-gauge.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-keyValuePanel-counterStrip.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-keyValuePanel-detailNormMatrix.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-keyValuePanel-detailSummary.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-keyValuePanel.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-lineChart.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-mapChart-regionalOverview.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-mapChart.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-metricCard-activityProgress.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-metricCard-compactStack.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-metricCard-compactStrip.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-metricCard-compactSummary.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-metricCard-dualSummary.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-metricCard-summary.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-metricCard.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-pieChart-compactRing.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-pieChart.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-rankingCard.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-rankingDetailCard-report.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-rankingDetailCard.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-reportHeader-projectDetail.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-reportHeader.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-tabContainer-analysisStack.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-tabContainer-compact.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-tabContainer.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-table-embedded.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-table-forecastMatrix.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-table-reportCompact.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-table.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-text-heading.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-text-insight.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-text-plain.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-text-reportInline.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-text-riskNotice.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-text.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/composite-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/compute-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/cross-source-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/currency-selection-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/dashboard-period-filter-month.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/dashboard-period-filter-more.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/dashboard-period-filter-readonly.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/dashboard-period-filter.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/detail-views.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/dimension-params-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/explicit-presentation-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/filters-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/forecast-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/grouped-fields-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/grouped-params-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/grouped-scalar-params-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/hierarchy-binding-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/inline-report.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/ioc-header-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/map-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/million-formats-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/mixed-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/non-dimension-bindings-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/paged-join-fixed-rank-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/paged-join-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/period-filter-last12-months-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/period-filter-parameter-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/period-filter-quarter-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/period-filter-year-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/query-cascade-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/query-dashboard.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/query-numeric-tolerance.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/query-result-page-window-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/query-result-where-branches.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/query-result-where-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-branches-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-export-column-actions.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-export-compute-branches.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-export-detail-bindings.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-export-detail-branches.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-text-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/reference-variants-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/report-date-filters-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/report-export-buttons.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/report-export-scale-fallback.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/report-filter-text-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/report-pdf-export.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/report-png-export.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/signed-number-family-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/signed-number-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/table-number-range-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/table-toolbar-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/text-composition-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/time-binding-branches-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/time-modes-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/time-params-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/time-point-min-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/time-point-no-future.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/time-presets-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/url-navigation-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/field-bindings-and-formats.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/fields.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/filters.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/index.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/page.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/params-and-text-values.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/queries-and-bindings.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/rules.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/schema.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/sections-and-layout.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/semantic-html.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/validation.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/scripts/validate-page.mjs",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/SKILL.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/actions-and-navigation.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/aiSummary.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/barChart.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/categoryBreakdown.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/compositeCard.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/fieldText.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/gauge.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/keyValuePanel.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/lineChart.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/mapChart.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/metricCard.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/pieChart.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/rankingCard.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/rankingDetailCard.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/reportHeader.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/tabContainer.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/table.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/text.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/compute.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/data-sources.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/layout-before-6.1.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/time-availability-default.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/time-before-6.35.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/time-case-missing.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/time-default-week.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/time-fact-kind.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/time-output-mismatch.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/time-period-mismatch.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/time-query-xor.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/time-window-static-options.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/version-major-unsupported.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/errors/version-minor-ahead.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/availability-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/business-filter-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/calendar-window-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/chart-local-filter-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-aiSummary-reportInline.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-aiSummary.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-barChart-reportForecast.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-barChart.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-categoryBreakdown-compactList.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-categoryBreakdown.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-compositeCard-compact.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-compositeCard-metricGrid.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-compositeCard-projectNorms.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-compositeCard.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-fieldText-narrativeMeeting.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-fieldText-narrativeProgress.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-fieldText-narrativeRisk.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-fieldText-narrativeShort.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-fieldText-plain.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-fieldText-quote.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-fieldText.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-gauge-mini.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-gauge.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-keyValuePanel-counterStrip.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-keyValuePanel-detailNormMatrix.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-keyValuePanel-detailSummary.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-keyValuePanel.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-lineChart.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-mapChart-regionalOverview.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-mapChart.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-metricCard-activityProgress.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-metricCard-compactStack.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-metricCard-compactStrip.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-metricCard-compactSummary.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-metricCard-dualSummary.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-metricCard-summary.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-metricCard.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-pieChart-compactRing.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-pieChart.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-rankingCard.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-rankingDetailCard-report.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-rankingDetailCard.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-reportHeader-projectDetail.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-reportHeader.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-tabContainer-analysisStack.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-tabContainer-compact.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-tabContainer.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-table-embedded.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-table-forecastMatrix.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-table-reportCompact.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-table.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-text-heading.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-text-insight.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-text-plain.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-text-reportInline.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-text-riskNotice.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/component-text.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/composite-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/compute-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/cross-source-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/currency-selection-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/dashboard-period-filter-month.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/dashboard-period-filter-more.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/dashboard-period-filter-readonly.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/dashboard-period-filter.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/detail-views.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/dimension-params-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/explicit-presentation-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/filters-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/forecast-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/grouped-fields-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/grouped-params-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/grouped-scalar-params-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/hierarchy-binding-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/inline-report.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/ioc-header-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/map-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/million-formats-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/mixed-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/non-dimension-bindings-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/paged-join-fixed-rank-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/paged-join-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/period-filter-last12-months-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/period-filter-parameter-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/period-filter-quarter-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/period-filter-year-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/query-cascade-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/query-dashboard.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/query-numeric-tolerance.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/query-result-page-window-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/query-result-where-branches.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/query-result-where-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-branches-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-export-column-actions.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-export-compute-branches.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-export-detail-bindings.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-export-detail-branches.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-text-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/reference-variants-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/report-date-filters-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/report-export-buttons.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/report-export-scale-fallback.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/report-filter-text-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/report-pdf-export.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/report-png-export.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/signed-number-family-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/signed-number-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/table-number-range-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/table-toolbar-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/text-composition-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/time-binding-branches-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/time-modes-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/time-params-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/time-point-min-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/time-point-no-future.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/time-presets-page.json",
+      "status": "A"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/examples/url-navigation-page.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/field-bindings-and-formats.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/fields.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/filters.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/index.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/page.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/params-and-text-values.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/queries-and-bindings.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/rules.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/schema.json",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/sections-and-layout.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/semantic-html.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/validation.md",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/test-harness/tests/test_interaction_editing.py",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/interaction_editing.py",
+      "status": "M"
+    },
+    {
+      "path": "metriccanvas-authoring/tool/metriccanvas_authoring/pages/validation/page_validation.py",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/src/candidate-validation.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/src/effective-query.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/src/execute.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/src/filter-candidates.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/src/filter-values.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/src/node.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/src/paged-join/member-query.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/src/paged-join/plan.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/src/ports.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/src/source-program/range-policy.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/src/source-program/session.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/tests/business-filter-execution.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/tests/execute.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/tests/paged-join.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/tests/result-diagnostics.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/data-execution/tests/time-extensions-execution.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/embed/examples/ioc-time-inputs.mjs",
+      "status": "A"
+    },
+    {
+      "path": "packages/embed/examples/navigation.html",
+      "status": "M"
+    },
+    {
+      "path": "packages/embed/src/EmbedRoot.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/embed/src/index.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/embed/src/types.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/embed/tests/browser/ioc-time-restore.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/embed/tests/browser/ioc-time.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/embed/tests/fixtures/ioc-time-candidates.mjs",
+      "status": "A"
+    },
+    {
+      "path": "packages/embed/tests/serve.mjs",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/data-gateway/tests/query-error-classification.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/ExportView.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/RuntimeView.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/dashboard/DashboardToolbar.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/export-render-state.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filter-text.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/ModeTimeRangeFilter.svelte",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/cascade.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/filters/time-controls.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/index.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/report-view.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/table-export.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/types.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/tests/currency-presentation.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime-ui/tests/table-export.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/src/dimension-values.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/src/export-snapshots.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/src/filter-state.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/src/navigate.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/src/orchestrator.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/automatic-table-pagination.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/dimension-values.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/execution.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/filter-execution-gate.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/inline-param-initialization.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/orchestrator.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/query-result-where.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/report-export.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/engine/runtime/tests/time-coordinator.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/engine/runtime/tests/time-param-initialization.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/fixtures/contract-valid/availability-page.json",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/fixtures/contract-valid/calendar-window-page.json",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/fixtures/contract-valid/time-binding-branches-page.json",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/fixtures/contract-valid/time-modes-page.json",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/fixtures/contract-valid/time-presets-page.json",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/src/amount-filter.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/extract-page-params.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/filter.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/internal.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/migrate-param-bindings.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/navigate.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/param-bindings.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/period-facts.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/src/query-dependencies.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/query-param-references.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/query.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/report-date-filters.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/schema/data-source.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/schema/filter.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/schema/ioc-header.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/schema/navigation.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/time-extension-validation.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/src/time-filter-boundary.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/time-mode.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/src/validate-compute-dependencies.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/validate-paged-join.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/validate-query-results.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/validate.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/src/version.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/tests/grouped-params.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/page/tests/time-extensions.test.ts",
+      "status": "A"
+    },
+    {
+      "path": "packages/page/tests/version.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "status": "M"
+    },
+    {
+      "path": "packages/ui/src/components/date-picker/calendar.ts",
+      "status": "M"
+    },
+    {
+      "path": "packages/ui/tests/calendar.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "pages/README.md",
+      "status": "M"
+    },
+    {
+      "path": "pages/ioc-header-availability-demo.json",
+      "status": "A"
+    },
+    {
+      "path": "pages/ioc-header-calendar-window-demo.json",
+      "status": "A"
+    },
+    {
+      "path": "pages/ioc-header-time-modes-demo.json",
+      "status": "A"
+    },
+    {
+      "path": "pages/ioc-header-time-presets-demo.json",
+      "status": "A"
+    },
+    {
+      "path": "tests/public-api/embed.txt",
+      "status": "M"
+    },
+    {
+      "path": "tests/public-api/engine.txt",
+      "status": "M"
+    },
+    {
+      "path": "tests/public-api/page.txt",
+      "status": "M"
+    },
+    {
+      "path": "tools/dqe-sim/tests/business-sdt-cascade.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "tools/dqe-sim/tests/chart-local-filter.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "tools/dqe-sim/tests/flow-analysis-report.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "tools/dqe-sim/tests/formal-pages.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "tools/dqe-sim/tests/ioc-opportunity-list.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "tools/dqe-sim/tests/query-result-where.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "tools/dqe-sim/tests/semantic-surface-guard.test.ts",
+      "status": "M"
+    },
+    {
+      "path": "tools/scripts/page-conformance-vectors.ts",
+      "status": "M"
+    }
+  ],
+  "risk_triggers": {
+    "shared-boundary": [
+      {
+        "rule": "shared-path",
+        "evidence": "apps/platform/src/lib/workbench/report-date-edit.ts"
+      },
+      {
+        "rule": "shared-path",
+        "evidence": "packages/ui/src/components/date-picker/DatePicker.svelte"
+      },
+      {
+        "rule": "shared-path",
+        "evidence": "packages/ui/src/components/date-picker/calendar.ts"
+      }
+    ],
+    "visual": [
+      {
+        "rule": "template-file",
+        "evidence": "packages/embed/examples/navigation.html"
+      },
+      {
+        "rule": "template-file",
+        "evidence": "packages/embed/src/EmbedRoot.svelte"
+      },
+      {
+        "rule": "template-file",
+        "evidence": "packages/engine/runtime-ui/src/ExportView.svelte"
+      },
+      {
+        "rule": "template-file",
+        "evidence": "packages/engine/runtime-ui/src/RuntimeSurface.svelte"
+      },
+      {
+        "rule": "template-file",
+        "evidence": "packages/engine/runtime-ui/src/RuntimeView.svelte"
+      },
+      {
+        "rule": "template-file",
+        "evidence": "packages/engine/runtime-ui/src/dashboard/DashboardToolbar.svelte"
+      },
+      {
+        "rule": "template-file",
+        "evidence": "packages/engine/runtime-ui/src/filters/FilterBar.svelte"
+      },
+      {
+        "rule": "template-file",
+        "evidence": "packages/engine/runtime-ui/src/filters/ModeTimeRangeFilter.svelte"
+      },
+      {
+        "rule": "template-file",
+        "evidence": "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte"
+      },
+      {
+        "rule": "template-file",
+        "evidence": "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte"
+      },
+      {
+        "rule": "template-file",
+        "evidence": "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte"
+      },
+      {
+        "rule": "template-file",
+        "evidence": "packages/ui/src/components/date-picker/DatePicker.svelte"
+      }
+    ]
+  },
+  "skip_rebuttals": {
+    "C1": [
+      {
+        "rule": "added-or-renamed-file",
+        "evidence": "packages/data-execution/tests/time-extensions-execution.test.ts (A)"
+      },
+      {
+        "rule": "added-or-renamed-file",
+        "evidence": "packages/embed/examples/ioc-time-inputs.mjs (A)"
+      },
+      {
+        "rule": "added-or-renamed-file",
+        "evidence": "packages/embed/tests/browser/ioc-time-restore.spec.ts (A)"
+      },
+      {
+        "rule": "added-or-renamed-file",
+        "evidence": "packages/embed/tests/browser/ioc-time.spec.ts (A)"
+      },
+      {
+        "rule": "added-or-renamed-file",
+        "evidence": "packages/embed/tests/fixtures/ioc-time-candidates.mjs (A)"
+      },
+      {
+        "rule": "added-or-renamed-file",
+        "evidence": "packages/engine/runtime-ui/src/filters/ModeTimeRangeFilter.svelte (A)"
+      },
+      {
+        "rule": "added-or-renamed-file",
+        "evidence": "packages/engine/runtime-ui/src/filters/time-controls.ts (A)"
+      },
+      {
+        "rule": "added-or-renamed-file",
+        "evidence": "packages/engine/runtime/tests/time-coordinator.test.ts (A)"
+      },
+      {
+        "rule": "added-or-renamed-file",
+        "evidence": "packages/page/src/period-facts.ts (A)"
+      },
+      {
+        "rule": "added-or-renamed-file",
+        "evidence": "packages/page/src/time-extension-validation.ts (A)"
+      },
+      {
+        "rule": "added-or-renamed-file",
+        "evidence": "packages/page/src/time-mode.ts (A)"
+      },
+      {
+        "rule": "added-or-renamed-file",
+        "evidence": "packages/page/tests/time-extensions.test.ts (A)"
+      }
+    ],
+    "Q7": [
+      {
+        "rule": "debug-or-placeholder-residue",
+        "evidence": "metriccanvas-authoring/skill/metriccanvas-local-authoring/scripts/validate-page.mjs: Set the \\`cycles\\` parameter to \\`\"ref\"\\` to resolve cyclical schemas with defs.`)}for(let a of e.seen.entries()){let s="
+      }
+    ],
+    "C4": [
+      {
+        "rule": "request-or-cancellation",
+        "evidence": "packages/engine/runtime-ui/tests/currency-presentation.test.ts:  const result=prepareTableExport({page:frozen,component,queries:new Map([['main',{language:'dqe',body:source.source.quer"
+      }
+    ]
+  }
+}

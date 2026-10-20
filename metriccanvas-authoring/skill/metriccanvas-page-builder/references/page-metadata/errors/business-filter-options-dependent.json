@@ -1,0 +1,31 @@
+{
+  "case": "business-filter-options-dependent",
+  "invariant": "business-filters",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "封闭枚举不能同时声明动态候选或层级",
+      "paths": [
+        "/filters/1/options"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "options": [
+          {
+            "value": "A",
+            "label": "重点客户"
+          },
+          {
+            "value": "B",
+            "label": "一般客户"
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/business-filter-options-dependent.json"
+}

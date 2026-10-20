@@ -7,6 +7,10 @@ DimensionValueCandidate
 DimensionValuesGateway
 DimensionValuesRequest
 DimensionValuesResult
+FilterCandidate
+FilterCandidatesGateway
+FilterCandidatesRequest
+FilterCandidatesResult
 PageDataExecutor
 QueryDiagnosticContext
 RuntimeDataGateway
@@ -33,14 +37,17 @@ TimeRangeFilterValue
 applyComputation
 automaticQueryPageSize
 automaticQueryTableSources
+candidateContextKey
 compileSources
 composeEffectiveQuery
 computedSnapshots
+createCandidateGatewaySession
 createSourceProgram
 defaultSourceView
 evaluateTableView
 executeQuery
 executionSourceIds
+filterCandidatesRequest
 filterTableRows
 filterTableRowsByHeaders
 initialFilterValues
@@ -53,6 +60,7 @@ reusableInitialSnapshot
 searchTableRows
 sortTableRows
 timeFill
+validFilterCandidates
 visibleSourceIds
 
 ## ./dqe

@@ -1,0 +1,262 @@
+{
+  "case": "time-availability-default",
+  "invariant": "time-extensions",
+  "input": {
+    "schemaVersion": "6.38",
+    "id": "availability-page",
+    "layout": "dashboard",
+    "dashboardToolbar": "hidden",
+    "meta": {
+      "title": "IOC B4：可信最新期",
+      "description": "本地合成验收；不代表真实DQE、CloudIOC、Relay或私有周编码验收。"
+    },
+    "iocHeader": {
+      "identity": {
+        "title": "IOC B4：可信最新期",
+        "tags": [
+          {
+            "id": "demo",
+            "text": "合成验收",
+            "tone": "info"
+          }
+        ],
+        "facts": [
+          {
+            "id": "period",
+            "kind": "queryPeriod",
+            "label": "已应用期间",
+            "value": {
+              "filter": "month",
+              "format": "period"
+            }
+          },
+          {
+            "id": "latest",
+            "kind": "latestDataPeriod",
+            "label": "数据最新期",
+            "value": {
+              "fact": "sales",
+              "part": "latest"
+            }
+          },
+          {
+            "id": "complete",
+            "kind": "latestDataPeriod",
+            "label": "完成期",
+            "value": {
+              "fact": "sales",
+              "part": "latestComplete"
+            }
+          },
+          {
+            "id": "refreshed",
+            "kind": "refreshedAt",
+            "label": "服务刷新",
+            "value": {
+              "fact": "sales",
+              "part": "refreshedAt"
+            }
+          },
+          {
+            "id": "generated",
+            "kind": "generatedAt",
+            "label": "产物生成",
+            "value": {
+              "fact": "sales",
+              "part": "generatedAt"
+            }
+          }
+        ]
+      },
+      "filterIds": [
+        "month"
+      ],
+      "presentation": {
+        "collapse": "firstRow"
+      }
+    },
+    "filters": [
+      {
+        "id": "month",
+        "type": "timePoint",
+        "granularity": "month",
+        "label": "数据月份",
+        "required": true,
+        "availability": {
+          "fact": "sales",
+          "initial": "latestComplete",
+          "max": "latest",
+          "blockMissing": true
+        },
+        "min": "2025-01",
+        "default": "2026-09"
+      }
+    ],
+    "dataSources": {
+      "bound": {
+        "fields": {
+          "scope": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "ioc_header_scope"
+          },
+          "count": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "ioc_header_count"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "ioc_header_scope"
+                  ],
+                  "output_metrics": [
+                    "ioc_header_count"
+                  ],
+                  "filter": {
+                    "dims": []
+                  },
+                  "order": {
+                    "limit": 10,
+                    "offset": 0
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "month": {
+                "target": "timePoint",
+                "queryField": "sales_month",
+                "valueFormat": "iso"
+              }
+            }
+          }
+        }
+      },
+      "unbound": {
+        "fields": {
+          "scope": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "ioc_header_scope"
+          },
+          "count": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "ioc_header_count"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "ioc_header_scope"
+                  ],
+                  "output_metrics": [
+                    "ioc_header_count"
+                  ],
+                  "filter": {
+                    "dims": []
+                  },
+                  "order": {
+                    "limit": 10,
+                    "offset": 0
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "body",
+        "container": "card",
+        "components": [
+          {
+            "id": "bound-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bound"
+            },
+            "props": {
+              "title": "已绑定条件",
+              "columns": [
+                {
+                  "field": "scope",
+                  "title": "服务收到的条件（本地合成）"
+                },
+                {
+                  "field": "count",
+                  "title": "合成响应标识"
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "本地页头验收"
+                }
+              }
+            }
+          },
+          {
+            "id": "unbound-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "unbound"
+            },
+            "props": {
+              "title": "无关查询（不随筛选刷新）",
+              "columns": [
+                {
+                  "field": "scope",
+                  "title": "服务收到的条件（本地合成）"
+                },
+                {
+                  "field": "count",
+                  "title": "合成响应标识"
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "本地页头验收"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0",
+      "message": "availability.initial与default/initialParam互斥"
+    }
+  ]
+}

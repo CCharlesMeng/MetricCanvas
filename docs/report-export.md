@@ -76,3 +76,11 @@ PDF与PNG使用同一实例状态捕获、数据准备和独立文档。正式Sv
 PNG Worker只接收像素尺寸和ImageBitmap，不接收查询、凭据或DOM。每次用有界画布读取最多32行RGBA，增量过滤/压缩；已编码片段保留到最终Blob，因此文件内存仍随压缩后大小增长。浏览器和查看工具解码可能需要整图内存，流式编码不意味着任意长度都可导出。图表按3/4倍初始化，源画布仍独立检查8192最长边和16777216像素预算。单次只准备并处理一个截图块，消费后释放画布和bitmap。
 
 新增验收`packages/embed/tests/browser/report-image.spec.ts`直接消费`pages/report-png-export.json`和`pages/report-png-long-export.json`，覆盖固定名称、原生解码、3倍图表、4倍跨块长图、父文档合成水印、Worker失败及销毁。`runtime-ui/tests/report-png.test.ts`由Node zlib独立校验CRC、解压行像素、跨块连续和拒绝未完成文件。真实DQE、Relay和门户水印仍需分别验收。
+
+### IOC静态身份（6.35，B1）
+
+静态呈现Adapter读取已捕获的iocHeader身份与全部已应用认领筛选，去掉返回和折叠控件，不遗漏收起的筛选。候选待确认/失败门禁阻止相关目标表导出和整页准备；无关表仍可导出。该Adapter不启用IOC actions；IOC整页下载入口、完整数据与门户ShadowRoot/CSP等仍属后续批次。
+
+IOC业务筛选6.36的静态呈现显示封闭枚举label、hint及已应用值；稳定code保留在条件快照。候选待验证、空交集、denied/unconfigured均阻断相关导出；完整读取仍经SourceProgram核验，不因静态呈现而跳过候选合法性。
+
+6.37金额与币种验收：XLSX与静态视图按点击时捕获的FilterValues选择静态字段、标签、单位和格式。保留数值基本单位及选中货币，不把人民币值换美元标题。新范围约束和隐式币种依赖同样约束完整取数/initial复用；候选或选择校验失败不得沿用旧初始结果。`ioc-header-currency-demo`证明本地双静态货币字段及XLSX/静态呈现；IOC新增整页PDF入口仍留后续批次。

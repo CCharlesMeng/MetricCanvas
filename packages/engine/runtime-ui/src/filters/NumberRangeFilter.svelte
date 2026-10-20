@@ -3,14 +3,18 @@
   /**
    * 数值区间筛选器(纯渲染):上下界任一端可缺省,两端都空则清除。
    */
+  import {RangePicker} from '@metriccanvas/ui';
+  import {rangeInBaseUnits,type NumberRangeFilterDeclaration} from '@metriccanvas/page/internal';
   interface Props {
+    declaration?:NumberRangeFilterDeclaration;
+    unit?:{currency:'CNY'|'USD';label:string;scale:number};
     label?: string;
     from?: number;
     to?: number;
     onchange: (range: { from?: number; to?: number } | null) => void;
   }
 
-  let { label, from, to, onchange }: Props = $props();
+  let { declaration,unit,label, from, to, onchange }: Props = $props();
 
   function emit(nextFrom: string, nextTo: string) {
     const parsedFrom = nextFrom === '' ? undefined : Number(nextFrom);
@@ -25,6 +29,11 @@
   }
 </script>
 
+{#if declaration?.constraints||declaration?.units||declaration?.presets}
+<div class="filter">{#if label}<span class="label">{label}</span>{/if}<RangePicker label={label??'金额'} context={unit?.currency??''} unit={unit?.label} value={{...(from===undefined?{}:{from:from/(unit?.scale??1)}),...(to===undefined?{}:{to:to/(unit?.scale??1)})}} presets={declaration.presets}
+validate={range=>{try{rangeInBaseUnits(declaration,range,unit?.scale??1);return undefined;}catch{return '请输入合法范围；双边下限须严格小于上限，金额不能为负';}}}
+onchange={range=>{const value=rangeInBaseUnits(declaration,range,unit?.scale??1);onchange(value.from===undefined&&value.to===undefined?null:value);}}/></div>
+{:else}
 <div class="filter">
   {#if label}<span class="label">{label}</span>{/if}
   <input
@@ -45,6 +54,7 @@
   {/if}
 </div>
 
+{/if}
 <style>
   /* 控件铬与外置字段名标签的可见性经 --mc-filter-* 下发,真源在统一运行时根部。
      区间控件是并排两个输入框,不吃单值控件的 --mc-filter-control-min-width;

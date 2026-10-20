@@ -181,7 +181,7 @@ const moneyFieldZ = z
   .object({
     type: z.literal('money'),
     role: z.literal('measure'),
-    currency: z.literal('CNY'),
+    currency: z.enum(['CNY','USD']),
     label: z.string().min(1).optional(),
     unit: z.string().min(1).optional(),
     nullable: z.boolean().optional(),
@@ -313,7 +313,7 @@ export const fieldReferenceZ = z
   .meta({ id: 'fieldReference' });
 
 /** 组件字段绑定；format 只控制当前视图。 */
-export const fieldBindingZ = z
+export const staticFieldBindingZ = z
   .union([
     fieldNameZ,
     z
@@ -331,7 +331,8 @@ export const fieldBindingZ = z
       })
       .strict()
   ])
-  .meta({ id: 'fieldBinding' });
+  .meta({ id: 'staticFieldBinding' });
+export const fieldBindingZ=z.union([staticFieldBindingZ,z.object({byFilter:z.object({filterId:idZ,cases:z.record(z.string().min(1),staticFieldBindingZ)}).strict()}).strict()]).meta({id:'fieldBinding'});
 
 /**
  * 叠放层：分区内组件相对同分区其他组件的层次。缺省是普通流，唯一的

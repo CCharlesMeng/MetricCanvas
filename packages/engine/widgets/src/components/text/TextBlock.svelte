@@ -3,7 +3,7 @@
   /** 已解析的跳转链接:href 由运行时按筛选状态当前值组装(组件不感知序列化机制) */
   export interface TextBlockLink {
     label: string;
-    href: string;
+    href?: string;
     onclick?: (event: MouseEvent) => void;
   }
 </script>
@@ -76,7 +76,7 @@
   {#if links.length > 0}
     <nav class="links">
       {#each links as link, linkIndex (linkIndex)}
-        <a href={link.href} onclick={link.onclick}>{link.label} →</a>
+        <a href={link.href} role={link.href ? undefined : 'link'} aria-disabled={link.href ? undefined : true} tabindex={link.href ? undefined : 0} onkeydown={(event)=>{if(!link.href&&event.key==='Enter'){event.preventDefault();event.currentTarget.click();}}} onclick={link.onclick}>{link.label} →</a>
       {/each}
     </nav>
   {/if}

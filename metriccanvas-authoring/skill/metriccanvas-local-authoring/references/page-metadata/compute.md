@@ -19,7 +19,7 @@ groupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复
 pivot.columns可指定valueField覆盖算子默认字段。同类别可用于不同度量，重复的有效valueField与类别组合拒绝；新多度量透视的分组键与类别必须唯一。缺阶段产出null，0保持0。有限主结果仅在被结果绑定引用且声明正整数limit、无offset/查询分页时允许左关联；辅助源仍须complete，无分页窗口。导出保持此选择范围并使用本轮原始结果重建明细输入。
 
 
-页面协议 6.34。结构真源为本册[schema.json](schema.json)，SHA256 `0305d28888fcb5a48600584439d7bb512ec5643a2b8d667addbfac530b690a75`。字段表自动生成；可选不等于有默认值。
+页面协议 6.39。结构真源为本册[schema.json](schema.json)，SHA256 `0807888a77d8710b9fd65166760bb094210dd2cbc7507ae72dd2f24d07a58cd3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -389,7 +389,7 @@ Schema位置：`#/definitions/computeOperator/oneOf/3/properties/granularity`。
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "day" | 日粒度。 |
+| "day" | YYYY-MM-DD日范围及匹配静态day查询。 |
 | "month" | 月粒度；timePoint使用YYYY-MM。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f666f726d6174"></a>
@@ -1113,7 +1113,7 @@ Schema位置：`#/definitions/computeOperator/oneOf/9/properties/keyFields/items
 ## 联合分支见证（生成）
 
 - `#/definitions/computeOperator/oneOf/0`：[合法完整页面](examples/query-cascade-page.json)，JSON Pointer `#/dataSources/project-efficiency-bottom5/compute/0`。
-- `#/definitions/computeOperator/oneOf/1`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/calc/compute/0`。
+- `#/definitions/computeOperator/oneOf/1`：[合法完整页面](examples/time-binding-branches-page.json)，JSON Pointer `#/dataSources/main/compute/0`。
 - `#/definitions/computeOperator/oneOf/2`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/calc/compute/1`。
 - `#/definitions/computeOperator/oneOf/3`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/fill-0/compute/0`。
 - `#/definitions/computeOperator/oneOf/3/properties/range/anyOf/0`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/fill-0/compute/0/range`。

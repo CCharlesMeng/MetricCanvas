@@ -77,3 +77,47 @@ Dashboard 正文的 `barChart`、`lineChart`、`pieChart`、`mapChart` 可在 `p
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
+
+<a id="business-filters"></a>
+
+## 业务筛选（6.36）
+
+本增量适用于页级筛选，与根iocHeader的位置声明分开。普通看板、报表和详情独立消费，不批量改已有业务页。
+
+- dimension.selection声明mode为single/multiple；缺省保持旧多选，tabs继续单选。single至多一个值；required恰好一个值，缺失时相关查询等待选择，非法整组写入拒绝。options是创作期确认的穷尽枚举，稳定value与label分开，可显式disabled；有options不请求候选网关，不允许同时配置动态依赖或hierarchy。disabled值不参与选择或默认值。
+- allBehavior缺省values。只有multiple+显式options可用unrestricted：选中全部有效枚举后仅省略对应动态查询谓词，UI/URL保留实际值，查询体原有静态条件仍保留。禁用项不算必须选中。boolean与枚举分别处理：勾选走whenTrue，明确false走whenFalse；省略whenFalse仍为无条件。default:false仍保留旧的不加初始化条件行为；需要确定的否值谓词时，使用显式false输入或用户取消勾选，并声明whenFalse。
+- display:tree带treeSelection:level为新结构树，必须有hierarchy。候选显式提供level和parent，不从业务码拆斜杠；不同层可使用相同value。当前只有一个level，可选父节点只选择自身，切层清掉旧值并保留新层级；其他层节点只展开。旧tree不带该字段仍按父节点批量选择叶子。
+- candidateContext用filterIds列出维度/单点时间/范围时间依赖，reconcile为clear/intersection。与旧dependsOn、clearOnChangeOf合图查重、检环；旧dependsOn仍只支持单个维度上游。clear在上游变化时递归清值，等用户显式确认；intersection保留摘要，等新完整可信候选到达后取交集。空交集、未就绪、失败、拒绝和未配置不能自动查询全部。上游被阻断时，候选依赖后代同样阻断。
+- 共用hint为TextValue，可引用不可变参数或已应用筛选，缺值省略；clearOnChangeOf是明确失效关系，不伪装成候选请求约束。普通只读不清合法条件。
+
+V2 fetchFilterCandidates由宿主Adapter提供，与旧fetchDimensionValues并存。请求包含filterId/dimension/level和完整维度、时间约束；timePoint按原精度投影为同值from/to，timeRange保留已应用范围，绝不截成详情单月。新结构树或candidateContext缺V2时明确unavailable，不丢约束调用旧端口。结果保留ready/empty/unavailable/error并区分denied和unconfigured；失败重试当前依赖。首批要求完整候选，最多10000项，不接受部分列表做全选或交集。按语言组合网关存在多个不同V2 Adapter时返回unconfigured，不合并授权域。
+
+浏览器协调器与SourceProgram使用同一无框架请求投影及结构校验。SourceProgram在复用seeds/initial或查询前校验绑定筛选和祖先；同步initialSnapshots对尚未核验的新动态候选返回loading。每个运行实例复用完整候选回执，重试失效旧代次，不跨实例/可信身份复用。独立源继续执行；相关导出使用同一门禁。
+
+实际页面：ioc-header-business-options-demo（封闭单选、全选不限、boolean），ioc-header-business-tree-demo（新结构树、旧树及时间/区域交集），ioc-header-business-detail-demo（详情私有枚举与单月）。本地HTTP合成Adapter不代表真实DQE、CloudIOC、Relay或门户接线；Playground未接V2时应显示不可用。新字段不包括仍待审的Condition/displayInputs，复杂期间/latest/calendarWindow仍保留后续规划。
+
+<a id="amount-range"></a>
+
+## 金额范围（6.37）
+
+numberRange可声明constraints的min/max（基本单位）和bounds:strict（双边from必须小于to）。单边允许；普通旧范围仍允许相等。全部是无端点的显式清空，不是无限大数字；拒绝负数约束冲突、NaN/Infinity及比例溢出。
+
+units为`{filterId,cases:{RMB:{currency:"CNY",label:"万元",scale:10000},USD:{currency:"USD",label:"万美元",scale:10000}}}`，控制筛选必须为required单选options并穷尽有效枚举。scale为正安全整数。必须用clearOnChangeOf引用该币种，换币与清金额在同一事务；自动清空沿用等待用户显式确认的门禁。
+
+presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位，确定时乘一次scale。default、URL、restore、执行回执和FilterValue已经是基本单位，查询绑定不再次换算。新面板有草稿/取消/确定，预设只修改草稿；切币种、只读或页头折叠会关闭旧草稿。币种尚未选择时金额等待选择，不隐式按人民币处理。
+
+范围绑定互斥metric与metricByFilter：`{target:"numberRange",metricByFilter:{filterId:"currency",cases:{RMB:"ioc_amount_base_cny",USD:"ioc_amount_base_usd"}}}`。每个case必须指向该源显式queryField映射的money字段，并与units同case货币相符。币种是查询隐式依赖，即使没有独立currency绑定也参与重查、默认初始数据复用与执行门禁。SourceProgram在seed/initial复用前校验范围和控制币种。
+
+验收页[ioc-header-currency-demo](examples/currency-selection-page.json)使用两种独立静态货币字段、本地合成HTTP与已有XLSX出口。没有真实USD或汇率证据，不声称生产换币可用，不做前端汇率换算。
+
+## 6.38 复杂时间与候选
+
+`timeRange.display:"modes"` 声明 `required:true`、`defaultMode` 和 `modes:[{id:"day"|"month"|"isoWeek",default:TimeRangeValue|RelativeTimeExpression}]`。普通 default/precision、period、initialParam/initialMode 与 modes 互斥。日为 YYYY-MM-DD，月为 YYYY-MM，ISO周保存同周周一至周日并计算ISO所属年。模式、from、to原子提交，每个模式记忆最近合法范围；失效时尝试合法默认值，不能沿用旧查询。URL使用 `<id>.mode`、`<id>.from`、`<id>.to` 完整整组；未知/缺项/重复/错周拒绝。
+
+`timeRange.presets:[{id,label,range:RelativeTimeExpression}]` 点击才提交。近N天含锚点日、起点减N-1；月份按日历月计算，includeCurrent明确，显式anchor同时控制起止。旧period近一年仍是当前月之前12个完整月，不被预设替换。
+
+`timePoint/timeRange` 可声明 min/max、blockedRanges 和 `availability:{fact,initial?:"latest"|"latestComplete",max:"latest"|"latestComplete",blockMissing?:true}`。initial与普通default/initialParam互斥，合法URL优先；max始终独立校验。latest不是完成状态；缺complete不回退latest。完整年/季/周越界拒绝，不截短自然期。缺数默认可查询空，仅显式blockMissing才禁选。所有边界取交集，输入错误不提交。disableFuture默认沿旧行为，可显式false。
+
+动态平面 dimension 的 `candidateWindow:{unit:"month",n:12,includeCurrent:boolean,anchorFact?:string}` 通过V2候选接口传 `calendarWindow:{granularity:"month",from,to}`；anchorFact消费可信latest，省略按同次时钟。不能与options/hierarchy混用。V2缺失、事实未就绪或结果失败时阻断相关查询，不降级旧端口。真实年月值按维度集合绑定，选1/3月不补2月；仅dtime的多区间查询不在本批支持范围。candidateContext时间/模式/维度及窗口/事实上下文共同决定缓存键；intersection等待当前完整候选后才取交集。
+
+场景：time-modes-page、time-presets-page、availability-page、calendar-window-page；对应 `pages/ioc-header-*-demo.json` 可交互验收。

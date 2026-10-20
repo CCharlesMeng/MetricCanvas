@@ -39,7 +39,7 @@ it.each(['target','operationId','conditionKey','rows-error','status','extra-sour
 it('raw queryField映射、字段失败及全失败沿用既有快照错误，原文不变', () => {
   const {request,response} = scenario('execute-success');
   response.document.dataSources.gmv.fields.gmv.queryField = 'income';
-  response.document.dataSources.gmv.source.query.body.dsl_list[0].output_metrics = ['income'];
+  response.document.dataSources.gmv.source.query.body!.dsl_list[0].output_metrics = ['income'];
   response.dataSources.gmv.rowFormat = 'query'; response.dataSources.gmv.rows = [{income:42}];
   const original = JSON.stringify(response);
   expect(prepareExecution(request,response).snapshots.get('gmv')).toMatchObject({status:'ready',rows:[{gmv:42}]});
@@ -105,7 +105,7 @@ it('查询定义变化时仅重查变化的数据源，不能套用旧执行行'
   const bootstrap=prepareExecution(request,response);
   const changed=structuredClone(bootstrap.document);
   if(changed.dataSources.gmv.source.type !== 'query')throw new Error('expected query');
-  changed.dataSources.gmv.source.query.body.dsl_list[0].filter={dims:[{field:'region',op:'in',value:['EU']}]};
+  changed.dataSources.gmv.source.query.body!.dsl_list[0].filter={dims:[{field:'region',op:'in',value:['EU']}]};
   const parsed=parsePage(changed);if(!parsed.ok)throw new Error(JSON.stringify(parsed.errors));
   const gateway={fetchData:vi.fn(async()=>({rows:[{gmv:9}]}))};
   let result: any;

@@ -1,0 +1,35 @@
+{
+  "contract_sha256": "a379d60bf25a9097a37d5880070b821d18dd49afc7f56aec90e99ce2eff808fd",
+  "environment": {
+    "dpr": 1,
+    "scroll": {
+      "height": 1588,
+      "width": 390
+    },
+    "user_agent": "Codex IAB Chromium; version unavailable",
+    "viewport": {
+      "height": 850,
+      "width": 390
+    }
+  },
+  "observed": {
+    "route": "/pages/ioc-header-currency-demo?period=month%3A2026-09&currency=USD",
+    "viewport": {
+      "height": 850,
+      "width": 390
+    }
+  },
+  "page_available": true,
+  "rules": {
+    "R6-31-overflow": {
+      "actual": 0,
+      "locator_used": {
+        "selector": "[data-ioc-header]",
+        "strategy": "css"
+      },
+      "matched": 1,
+      "status": "ok"
+    }
+  },
+  "schema_version": 1
+}

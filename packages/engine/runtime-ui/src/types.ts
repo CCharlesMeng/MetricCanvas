@@ -13,7 +13,13 @@ export interface RuntimeNavigationTarget {
 }
 
 /** Canvas 等宿主在统一运行时导航接缝上的适配器。 */
+export type {NavigationInputContract} from '../../runtime/src/navigation-inputs';
 export interface RuntimeNavigation {
+  /** Integrating application may translate a logical page URL into its deployed route. */
+  resolveHref?(href:string):string;
+  /** Trusted target declaration projection; never loads authorization candidates. */
+  resolveTargetInputs?(href:string,options:{signal:AbortSignal}):import('../../runtime/src/navigation-inputs').NavigationInputContract|undefined|Promise<import('../../runtime/src/navigation-inputs').NavigationInputContract|undefined>;
+  returnContext?: { entryId: string; label?: string };
   replaceSearch?(search: string): void;
   /** 返回 true 表示宿主已接管；否则保留浏览器导航。 */
   navigate?(target: RuntimeNavigationTarget): boolean | void;
@@ -23,7 +29,9 @@ export interface RuntimeNavigation {
 
 export type RuntimeConfigurationErrorCode =
   | 'DATA_GATEWAY_REQUIRED'
-  | 'DATA_GATEWAY_INVALID';
+  | 'DATA_GATEWAY_INVALID'
+  | 'DISPLAY_INPUTS_CONTEXT_CHANGED'
+  | 'DISPLAY_INPUTS_INVALID';
 
 export interface RuntimeConfigurationError {
   code: RuntimeConfigurationErrorCode;
@@ -31,6 +39,7 @@ export interface RuntimeConfigurationError {
 }
 
 export type RuntimeViewEvent =
+  | {type:'navigation-error';href:string;code:'NAVIGATION_INPUT_INVALID'|'NAVIGATION_INPUT_UNAVAILABLE';message:string}
   | { type: 'ready'; pageId: string }
   | { type: 'invalid'; errors: TypedError[] }
   | {
@@ -47,7 +56,7 @@ export type RuntimeViewEvent =
       message: string;
     }
   | DataErrorEvent
-  | { type: 'filter-change'; search: string }
+  | { type: 'filter-change'; search: string;filterRevision?:number }
   | {
       type: 'navigate';
       href: string;
@@ -71,7 +80,8 @@ export function isDataGateway(value: unknown): value is RuntimeDataGateway {
     isRecord(value) &&
     typeof value.fetchData === 'function' &&
     (value.fetchDimensionValues === undefined ||
-      typeof value.fetchDimensionValues === 'function')
+      typeof value.fetchDimensionValues === 'function') &&
+    (value.fetchFilterCandidates === undefined || typeof value.fetchFilterCandidates === 'function')
   );
 }
 
@@ -82,9 +92,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 /** 正式渲染输入；创作行为不属于该 Interface。 */
 export interface RuntimeViewProps {
   document: unknown;
+  /** Stable trusted source; same-context snapshots update without remount. */
+  displayInputs?: import('@metriccanvas/page/internal').DisplayInputsSource;
   execution?: import('../../runtime/src').ExecutionBootstrap;
   dataGateway?: RuntimeDataGateway;
   aiSummary?: import('./ai-summary/pangu-sse').AiSummaryConfig;
+  filterEditing?: { readOnly: boolean; reason?: string };
   initialSearch?: string;
   navigation?: RuntimeNavigation;
   onevent?: (event: RuntimeViewEvent) => void;

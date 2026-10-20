@@ -1,0 +1,717 @@
+{
+  "claim_ledger": [
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "BE-41；vitest；browser",
+      "id": "AT41",
+      "note": "day/month/ISO周、ISO所属年、整组URL、每模式记忆及非法整组拒绝；旧period/单月/datetime回归"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "BE-41、BE-46；vitest；installed；static",
+      "id": "AT42",
+      "note": "静态case穷尽/同输出契约、所有叶子校验、公共执行/快照/缓存/seed/initial/导出使用同一冻结选择；本地Node HTTP验证，不代表真实Relay"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "BE-42；vitest；browser",
+      "id": "AT43",
+      "note": "同次时钟、含锚点日的N天、完整日历月、显式anchor及禁选区间内点拒绝"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "BE-43、BE-46；vitest；browser；installed",
+      "id": "AT44",
+      "note": "可信快照/订阅、latest与complete分离、合法URL优先、修订/时区/完整自然期边界、相关门禁与身份隔离"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "BE-44、BE-48；vitest；browser；installed",
+      "id": "AT45",
+      "note": "V2完整mode/time/dims及12日历月窗口、离散1/3月、模型交集、迟到/失败隔离；无V2不降legacy"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "BE-45；vitest；browser；artifacts/panel-geometry.json",
+      "id": "AT46",
+      "note": "max/min/blocked/disableFuture、只读/ShadowRoot；4页三宽度及ShadowRoot共13帧，水平溢出/重叠/裁断最大值0"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "BE-41、BE-43、BE-44、BE-46；browser；static；installed",
+      "id": "AT47",
+      "note": "4个实际pages、HTTP请求/结果/XLSX/静态一致；冻结导出；B0–B3与期间/详情/离散月份回归"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "BE-47；vitest；python；authoring；bundle；complexity；installed",
+      "id": "AT48",
+      "note": "6.35正反契约、原子创作/编辑/回滚/保存重开、Skill与Bundle、六包仓外Node/浏览器闭环"
+    }
+  ],
+  "code_fingerprint": "30b89eccacc97406d8028b0f06bd1e9dff94a00f5ca90a00a44272f28117257a",
+  "counts": {
+    "blocker": 0,
+    "claims_deferred": 0,
+    "claims_unverified": 0,
+    "decided": 0,
+    "deferred": 0,
+    "handoff": 0,
+    "manual_acceptance": 0,
+    "manual_pending": 0,
+    "norm_candidate": 0,
+    "open_question": 0,
+    "skipped": 0,
+    "suggestion": 0,
+    "unplanned_carry": 5
+  },
+  "coverage": {
+    "review-convention": [
+      {
+        "dimension": "C1",
+        "evidence_ids": [
+          "apps/playground/frontend-baselines/structure.md:L43",
+          "packages/page/src/time-mode.ts:L1",
+          "packages/page/src/period-facts.ts:L1",
+          "packages/engine/runtime-ui/src/filters/ModeTimeRangeFilter.svelte:L3",
+          "packages/embed/src/types.ts:L34"
+        ],
+        "result": "clear",
+        "scope": "复核当前代码及证据新鲜度后保留命名与跨包引用结论。新增Svelte文件、职责模块与包名导入遵守选定PATTERN-STRUCT-1/2及其命名依据；本次生命周期修复未改变相关目录或依赖边界。"
+      },
+      {
+        "dimension": "C4",
+        "evidence_ids": [
+          "apps/playground/frontend-baselines/api.md:L23",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L728",
+          "packages/engine/runtime/src/dimension-values.ts:L100",
+          "packages/engine/runtime/src/dimension-values.ts:L132",
+          "packages/data-execution/src/candidate-session.ts:L10",
+          "BE-48",
+          "vitest",
+          "check",
+          "browser",
+          "installed"
+        ],
+        "result": "clear",
+        "scope": "按PATTERN-API-1/2/3独立重判请求、错误及取消接线。事实不可用分支现调用候选加载器的统一unavailable入口，取消在途请求、推进代次、清除活动键与缓存及上下文回执，再发布不可用状态；旧成功和失败均受settle身份检查阻断，恢复可重新请求。未新增底层HTTP出口或错误字符串分支。BE-48及最终源码、安装浏览器记录覆盖两种迟到结算。"
+      },
+      {
+        "dimension": "C5",
+        "evidence_ids": [
+          "docs/evidence/ioc-header-b4/dev-baseline.md:L11",
+          "packages/engine/runtime/src/dimension-values.ts:L132",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L728",
+          "packages/page/src/time-mode.ts:L29",
+          "packages/page/src/period-facts.ts:L38",
+          "packages/engine/runtime-ui/src/filter-text.ts:L35",
+          "packages/engine/runtime-ui/src/filters/ModeTimeRangeFilter.svelte:L4",
+          "BE-47",
+          "BE-48",
+          "check"
+        ],
+        "result": "clear",
+        "scope": "按PATTERN-STRUCT-1/2、PATTERN-DATA-3/4复核共享能力。生命周期修复收回既有候选加载器，替代呈现层直接写不可用快照；共享筛选状态、查询模式纯模块、期间事实格式化与中立日期控件继续复用，未出现第二套候选状态容器或同语义实现。"
+      }
+    ],
+    "review-layout": [
+      {
+        "dimension": "L3",
+        "evidence_ids": [
+          "BE-45",
+          "packages/ui/src/components/date-picker/DatePicker.svelte:L379",
+          "packages/ui/src/components/date-picker/DatePicker.svelte:L416-L420",
+          "packages/engine/runtime-ui/src/filters/ModeTimeRangeFilter.svelte:L41",
+          "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte:L67-L79"
+        ],
+        "result": "clear",
+        "scope": "四个B4验收页分别覆盖1440×900、1024×900、390×900，另覆盖ShadowRoot中的time-modes页390×900，共13帧。复用BE-45及panel-geometry.json运行时DOM几何：各帧文档scrollWidth等于视口宽度，页头横向溢出、可见筛选控件重叠、操作裁断、弹层内部溢出和弹层裁断测量值均为0；定位均命中。源码中的宽度约束、自然换行和窄屏日历回流与这些事实一致。已核对当前822个code.files哈希、相关场景依赖哈希、fixture和runtime一致，未重跑有效场景。判断限本地合成数据及所列视口。"
+      }
+    ],
+    "review-quality": [
+      {
+        "dimension": "Q2",
+        "evidence_ids": [
+          "packages/page/src/time-mode.ts:L27-L45",
+          "packages/page/src/time-filter-boundary.ts:L19-L38",
+          "packages/engine/runtime/src/dimension-values.ts:L132-L140",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L724-L730"
+        ],
+        "result": "clear",
+        "scope": "核对当前文件哈希后保留判断，并检查新增 unavailable 接缝。模式选择、时间边界和候选失效分别收口于共用模块；未发现产生可观察差异的新重复。公共能力复用可能与规范检视重叠，本格不重复判规范违规。"
+      },
+      {
+        "dimension": "Q5",
+        "evidence_ids": [
+          "packages/engine/runtime/src/dimension-values.ts:L100-L113",
+          "packages/engine/runtime/src/dimension-values.ts:L132-L140",
+          "packages/engine/runtime/tests/dimension-values.test.ts:L240-L248",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L484-L499",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L727-L730",
+          "packages/embed/tests/browser/ioc-time.spec.ts:L59-L64",
+          "BE-48",
+          "vitest",
+          "browser",
+          "installed"
+        ],
+        "result": "clear",
+        "scope": "重新检视事实订阅及候选失效生命周期。unavailable 同步取消请求、推进 generation、移除 active key、缓存和上下文回执；成功与失败结算均受代次及请求身份保护。BE-48 的旧成功、旧 HTTP500、事实恢复两条路径均有新鲜原始证据，未发现迟到回执覆盖不可用状态或阻断恢复。"
+      },
+      {
+        "dimension": "Q6",
+        "evidence_ids": [
+          "packages/page/src/period-facts.ts:L6-L16",
+          "packages/page/src/period-facts.ts:L21-L36",
+          "packages/data-execution/src/source-program/session.ts:L121-L130",
+          "packages/engine/runtime/src/dimension-values.ts:L132-L140",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L728",
+          "BE-41",
+          "BE-43",
+          "BE-44",
+          "BE-48",
+          "browser"
+        ],
+        "result": "clear",
+        "scope": "重新检视冻结错误、等待及缺能力分支。候选窗口无法解析时由加载器发布 unavailable，同时清除旧请求生命周期；事实等待期间相关导出禁用，恢复重新请求。原模式 URL、事实过期、缺 latestComplete、V2 缺席和无关源继续执行的边界仍有当前证据。结论限本地合成契约，真实服务 NOT_RUN 保持独立。"
+      },
+      {
+        "dimension": "Q7",
+        "evidence_ids": [
+          "packages/embed/examples/ioc-time-inputs.mjs:L1-L8",
+          "packages/engine/runtime/src/dimension-values.ts:L132-L140",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L727-L730",
+          "BE-47",
+          "check",
+          "build"
+        ],
+        "result": "clear",
+        "scope": "核对当前哈希并检查新增失效实现和回归用例后保留判断。未发现新增调试输出、断点或占位实现；固定事实仍仅用于明确标注本地合成的验收宿主。"
+      },
+      {
+        "dimension": "Q8",
+        "evidence_ids": [
+          "packages/page/src/time-extension-validation.ts:L6-L10",
+          "packages/page/src/time-mode.ts:L40-L45",
+          "packages/data-execution/src/filter-candidates.ts:L23-L25",
+          "packages/engine/runtime/src/dimension-values.ts:L132-L140",
+          "BE-44",
+          "BE-45",
+          "BE-48",
+          "vitest",
+          "browser"
+        ],
+        "result": "clear",
+        "scope": "核对当前哈希后保留判断，并检查 unavailable 新增遍历。模式组合受 4096 上限约束，日历及十二个月窗口规模保持不变；缓存清理仅在事实不可用边界发生，未新增高频渲染重计算或超过参考线的列表渲染。没有量级证据支持新增性能缺陷。"
+      }
+    ],
+    "self-test": [
+      {
+        "dimension": "F3-41",
+        "evidence_ids": [
+          "BE-41",
+          "BE-46",
+          "vitest",
+          "browser"
+        ],
+        "result": "clear",
+        "scope": "新鲜依赖与本纪元全量及浏览器证据支持日/月/ISO周、跨年周与闰日、完整模式URL、非法整组拒绝、模式范围记忆及既有期间语义；原判断保留。"
+      },
+      {
+        "dimension": "F3-42",
+        "evidence_ids": [
+          "BE-41",
+          "BE-46",
+          "vitest",
+          "installed"
+        ],
+        "result": "clear",
+        "scope": "静态case穷尽和互斥、所有分支验证、模式选择、未证明seed/initial禁用、捕获查询冲突拒绝及谓词重编译证据仍新鲜；当前Node消费者和XLSX保持相同模式。"
+      },
+      {
+        "dimension": "F3-43",
+        "evidence_ids": [
+          "BE-42",
+          "BE-46",
+          "vitest",
+          "browser"
+        ],
+        "result": "clear",
+        "scope": "含锚点近N天、日历月与之前12完整月、显式anchor、冻结读取时钟、半区间和取消不提交、禁选预设保持旧应用范围的证据仍新鲜；原判断保留。"
+      },
+      {
+        "dimension": "F3-44",
+        "evidence_ids": [
+          "BE-43",
+          "BE-46",
+          "BE-48",
+          "vitest",
+          "browser",
+          "installed",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L728"
+        ],
+        "result": "clear",
+        "scope": "重新核对可信事实等待与恢复后的共享行为：候选加载器在锚点不可用时原子失效旧请求和回执；迟到成功或失败不能解除门禁，恢复后重新取得合法候选。latest/complete、URL优先、独立max、相关源阻断、无关源继续及身份隔离证据保持成立。"
+      },
+      {
+        "dimension": "F3-45",
+        "evidence_ids": [
+          "BE-44",
+          "BE-48",
+          "vitest",
+          "browser",
+          "installed",
+          "packages/engine/runtime/src/dimension-values.ts:L132",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L728",
+          "packages/embed/tests/browser/ioc-time.spec.ts:L59"
+        ],
+        "result": "clear",
+        "scope": "独立重判候选生命周期修复：unavailable取消在途请求、推进generation、移除active/cache及旧context回执，再发布不可用；旧成功和HTTP500均保持不可用，恢复后新请求成功。十二个月窗口、完整模式约束、缺V2不降级、离散1/3月及交集确认门禁继续成立。"
+      },
+      {
+        "dimension": "F3-46",
+        "evidence_ids": [
+          "BE-42",
+          "BE-43",
+          "BE-45",
+          "BE-46",
+          "vitest",
+          "browser"
+        ],
+        "result": "clear",
+        "scope": "日期边界交集、完整自然期、显式缺数策略、非法草稿保持应用值、只读关闭弹层，以及普通根和ShadowRoot操作的依赖均匹配；当前浏览器证据支持原判断。"
+      },
+      {
+        "dimension": "F3-47",
+        "evidence_ids": [
+          "BE-41",
+          "BE-43",
+          "BE-44",
+          "BE-46",
+          "BE-48",
+          "vitest",
+          "browser",
+          "static",
+          "installed"
+        ],
+        "result": "clear",
+        "scope": "修复后267文件2346项通过、5项跳过，源码37项和安装30项浏览器通过；实际页面请求、结果、XLSX与静态摘要一致，锚点等待期间导出保持禁用，候选恢复可继续执行。既有IOC、金额、单月、自然期间和离散月份路径仍有当前证据。"
+      },
+      {
+        "dimension": "F3-48",
+        "evidence_ids": [
+          "BE-47",
+          "BE-48",
+          "check",
+          "build",
+          "python",
+          "authoring",
+          "bundle",
+          "complexity",
+          "pages",
+          "installed"
+        ],
+        "result": "clear",
+        "scope": "修复后的构建、生成契约检查、2930项Bundle校验、41页校验及六包仓外消费者证据成立；安装浏览器包含两条新生命周期回归。受控编辑与Python、复杂度输入未变，复用550项Python含1项跳过及既有编辑重开证据。"
+      }
+    ]
+  },
+  "decisions": [],
+  "deferred_candidates": [],
+  "evidence_epoch": "ioc-b4-final-2",
+  "findings": [],
+  "handoff": [],
+  "judged_files": {
+    "review-convention": [
+      "packages/page/src/time-mode.ts",
+      "packages/page/src/period-facts.ts",
+      "packages/page/src/time-extension-validation.ts",
+      "packages/data-execution/src/filter-candidates.ts",
+      "packages/data-execution/src/candidate-session.ts",
+      "packages/data-execution/src/candidate-validation.ts",
+      "packages/data-execution/src/source-program/session.ts",
+      "packages/engine/runtime/src/dimension-values.ts",
+      "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "packages/engine/runtime-ui/src/filter-text.ts",
+      "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "packages/engine/runtime-ui/src/filters/ModeTimeRangeFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/time-controls.ts",
+      "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "packages/ui/src/components/date-picker/calendar.ts",
+      "packages/embed/src/types.ts"
+    ],
+    "review-layout": [
+      "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte",
+      "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "packages/engine/runtime-ui/src/filters/ModeTimeRangeFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+      "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "packages/embed/tests/browser/ioc-time.spec.ts",
+      "pages/ioc-header-time-modes-demo.json",
+      "pages/ioc-header-time-presets-demo.json",
+      "pages/ioc-header-availability-demo.json",
+      "pages/ioc-header-calendar-window-demo.json"
+    ],
+    "review-quality": [
+      "packages/page/src/time-mode.ts",
+      "packages/page/src/time-extension-validation.ts",
+      "packages/page/src/period-facts.ts",
+      "packages/page/src/time-filter-boundary.ts",
+      "packages/data-execution/src/source-program/session.ts",
+      "packages/data-execution/src/filter-candidates.ts",
+      "packages/data-execution/src/candidate-validation.ts",
+      "packages/data-execution/tests/time-extensions-execution.test.ts",
+      "packages/engine/runtime/src/filter-state.ts",
+      "packages/engine/runtime/src/orchestrator.ts",
+      "packages/engine/runtime/src/dimension-values.ts",
+      "packages/engine/runtime/tests/dimension-values.test.ts",
+      "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "packages/engine/runtime-ui/src/filters/ModeTimeRangeFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/time-controls.ts",
+      "packages/engine/runtime-ui/src/table-export.ts",
+      "packages/engine/runtime-ui/src/report-view.ts",
+      "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "packages/ui/src/components/date-picker/calendar.ts",
+      "packages/embed/examples/ioc-time-inputs.mjs",
+      "packages/embed/tests/browser/ioc-time.spec.ts"
+    ],
+    "self-test": [
+      "packages/page/src/time-mode.ts",
+      "packages/page/src/period-facts.ts",
+      "packages/page/src/time-extension-validation.ts",
+      "packages/page/tests/time-extensions.test.ts",
+      "packages/data-execution/src/candidate-session.ts",
+      "packages/data-execution/src/candidate-validation.ts",
+      "packages/data-execution/src/filter-candidates.ts",
+      "packages/data-execution/src/source-program/session.ts",
+      "packages/data-execution/src/paged-join/member-query.ts",
+      "packages/data-execution/src/node.ts",
+      "packages/data-execution/tests/time-extensions-execution.test.ts",
+      "packages/engine/runtime/src/filter-state.ts",
+      "packages/engine/runtime/src/dimension-values.ts",
+      "packages/engine/runtime/src/export-snapshots.ts",
+      "packages/engine/runtime/tests/time-coordinator.test.ts",
+      "packages/engine/runtime/tests/business-filter-coordinator.test.ts",
+      "packages/engine/runtime/tests/dimension-values.test.ts",
+      "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "packages/engine/runtime-ui/src/filters/ModeTimeRangeFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/TimeRangeFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/TimePointFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/time-controls.ts",
+      "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "packages/ui/src/components/date-picker/calendar.ts",
+      "packages/ui/tests/calendar.test.ts",
+      "packages/embed/tests/browser/ioc-time.spec.ts",
+      "packages/embed/tests/browser/ioc-time-restore.spec.ts",
+      "metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/interaction_editing.py",
+      "metriccanvas-authoring/test-harness/tests/test_interaction_editing.py"
+    ]
+  },
+  "known_gaps": {
+    "review-convention": [
+      "真实DQE、CloudIOC、Relay、DS模型、门户及私有周码仍为NOT_RUN；本结果仅使用冻结代码与本地合成契约证据，不将其升级为真实服务验收。"
+    ],
+    "review-layout": [],
+    "review-quality": [],
+    "self-test": [
+      "真实DQE、Relay服务、CloudIOC、DS模型、门户、真实业务数据、私有周编码、CI与部署未运行；本地公共Node入口和合成HTTP契约结果不能替代真实服务验收。",
+      "Python与复杂度结果依据未变化的输入复用，不声称修复后重新执行了这两组命令。",
+      "B5/B6、Condition、任意对象路径及仅dtime多区间绑定仍不在本批实现范围。",
+      "本角色仅查读当前源码、哈希和原始证据，未修改文件或重跑验证。"
+    ]
+  },
+  "manual_acceptance": [],
+  "norm_candidates": [],
+  "open_questions": [],
+  "portfolio_narrowed": [],
+  "restore_contract": {
+    "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+    "overall": "green",
+    "summary": {
+      "green": 5,
+      "red": 0,
+      "total": 5,
+      "yellow": 0
+    }
+  },
+  "roles": {
+    "review-convention": "executed",
+    "review-layout": "executed",
+    "review-quality": "executed",
+    "self-test": "executed"
+  },
+  "schema_version": 1,
+  "skipped": {
+    "review-convention": [],
+    "review-layout": [],
+    "review-quality": [],
+    "self-test": []
+  },
+  "unplanned_carry": [
+    {
+      "file": "SourceProgram/session、execute、orchestrator、RuntimeSurface及ExportView",
+      "reason": "承接已批准共享边界，合法URL先于动态默认求值；冻结同次时钟/事实/修订，阻止旧initial/seed/captured query绕过当前门禁",
+      "task": "T2"
+    },
+    {
+      "file": "旧普通query.body消费者及测试",
+      "reason": "query联合类型需显式普通叶子或静态case遍历；保留原行为，不进行业务迁移",
+      "task": "T1/T2"
+    },
+    {
+      "file": "navigate/schema/navigation与平台时间编辑接缝",
+      "reason": "mode/from/to深链必须完整；模式时间程序保持原子编辑，避免平台旧单body编辑路径破坏联合契约",
+      "task": "T1/T4"
+    },
+    {
+      "file": "DatePicker.svelte与日历辅助Module",
+      "reason": "完整自然期间限制、禁选内点、ShadowRoot及窄屏双日历实际溢出修复",
+      "task": "T3"
+    },
+    {
+      "file": "interaction_editing.py、Interface、产品生成知识与独立Skill/Bundle",
+      "reason": "时间声明与全部静态查询case一次提交，复用产品真源校验并可保存重开",
+      "task": "T4"
+    }
+  ],
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT41",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT42",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT43",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT44",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT45",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT46",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT47",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT48",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      }
+    ],
+    "facts": {
+      "cross_page": false,
+      "frozen_r": true,
+      "frozen_r5": false,
+      "frozen_r6": true,
+      "has_f3": true,
+      "has_s3_claim": true,
+      "overflow_state": false,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "story",
+      "regression",
+      "restore-final",
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "render",
+        "story",
+        "regression",
+        "restore-final",
+        "review-layout",
+        "review-convention",
+        "review-quality",
+        "self-test"
+      ],
+      "phase": "final",
+      "required_profiles": {
+        "AT41": "mock",
+        "AT42": "mock",
+        "AT43": "mock",
+        "AT44": "mock",
+        "AT45": "mock",
+        "AT46": "contract",
+        "AT47": "contract",
+        "AT48": "contract"
+      },
+      "review_roles": [
+        "review-layout",
+        "review-convention",
+        "review-quality",
+        "self-test"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C4",
+        "C5"
+      ],
+      "review-layout": [
+        "L3"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q5",
+        "Q6",
+        "Q7",
+        "Q8"
+      ],
+      "self-test": [
+        "F3-41",
+        "F3-42",
+        "F3-43",
+        "F3-44",
+        "F3-45",
+        "F3-46",
+        "F3-47",
+        "F3-48"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "risk_triggers": [
+      "async-state",
+      "interaction",
+      "performance",
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "shared-boundary"
+      ],
+      "changed_files": 615,
+      "max_changed_files": 5,
+      "restore_tasks": [
+        "T3"
+      ],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "async-state": [
+        "agent",
+        "plan"
+      ],
+      "interaction": [
+        "plan"
+      ],
+      "performance": [
+        "agent"
+      ],
+      "shared-boundary": [
+        "diff",
+        "plan"
+      ],
+      "visual": [
+        "diff",
+        "plan"
+      ]
+    }
+  }
+}

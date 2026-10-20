@@ -13,7 +13,7 @@ it('参数报告接受代表处与时间条件；未配置样本的期间返回�
     const page = initializePageParams(parsed.page,values);
     const results = Object.values(page.dataSources).map(source => {
       if (source.source.type !== 'query') throw new Error('expected query');
-      return executeDqeItem(source.source.query.body.dsl_list[0]);
+      return executeDqeItem(source.source.query.body!.dsl_list[0]);
     });
     expect(results.every(r => r.code === 'SUCCESS')).toBe(true);
     expect(results.filter(r => r.data.length > 0)).toHaveLength(nonempty);
@@ -31,7 +31,7 @@ it('时间范围趋势返回范围内已有月份，不要求与全年样本范�
   ] as const) {
     const source = page.dataSources[id].source;
     if (source.type !== 'query') throw new Error('expected query');
-    const result = executeDqeItem(source.query.body.dsl_list[0]);
+    const result = executeDqeItem(source.query.body!.dsl_list[0]);
     expect(result.code).toBe('SUCCESS');
     expect(result.data.map(row => row.month), id).toEqual(months);
   }

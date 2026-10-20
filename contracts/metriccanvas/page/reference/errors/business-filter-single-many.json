@@ -1,0 +1,25 @@
+{
+  "case": "business-filter-single-many",
+  "invariant": "business-filters",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "单选筛选器至多选择一个值",
+      "paths": [
+        "/filters/1/default"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "default": [
+          "A",
+          "B"
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/business-filter-single-many.json"
+}

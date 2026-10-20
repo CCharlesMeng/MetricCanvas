@@ -1,3 +1,4 @@
+import {fieldSelectionIds,queryFilterIds} from '@metriccanvas/page/internal';
 import type {TableRenderBinding} from './component-render';
 import {buildTableColumnLayout} from '../../widgets/src/components/table/columns';
 import type {DimensionValuesSnapshots} from '../../runtime/src/dimension-values';
@@ -78,11 +79,12 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
       changed();
     },
     reset(table: TableComponent, previous: FilterValues, next: FilterValues) {
-      if (remote(table)) return;
       const changedIds = new Set([...new Set([...previous.keys(), ...next.keys()])].filter(id => JSON.stringify(previous.get(id)) !== JSON.stringify(next.get(id))));
+      if(fieldSelectionIds(table.props).some(id=>changedIds.has(id))){headers.delete(table.id);searches.delete(table.id);if(!remote(table))local(table).resetPresentation();changed();return;}
+      if(remote(table))return;
       const affected = [...conditionSourceIds(page, table.data.main)].some(id => {
         const source = page.dataSources[id];
-        return (source?.source.type === 'query' && Object.keys(source.source.query.filterBindings ?? {}).some(id => changedIds.has(id))) ||
+        return (source?.source.type === 'query' && queryFilterIds(source.source.query).some(id => changedIds.has(id))) ||
           source?.compute?.some(op => (op.op === 'selectField' && changedIds.has(op.filter)) || (op.op === 'timeFill' && 'filter' in op.range && changedIds.has(op.range.filter)));
       }) || page.filters?.some(f => f.type === 'search' && changedIds.has(f.id));
       if (affected) local(table).resetPage(); changed();

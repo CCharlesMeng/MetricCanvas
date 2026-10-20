@@ -1,3 +1,4 @@
+import {queryFilterIds} from './amount-filter';
 import { timeFilterBoundaryError } from './time-filter-boundary';
 import { periodSelectionFromRange } from './period-filter';
 import { validateTimePointValue } from './filter';
@@ -122,7 +123,7 @@ function changedParamSourceIds(page: Page, values: ReadonlyMap<string, PageParam
     try {
       if (canonicalizeJson(initializeQueryParams(query, saved)) !== canonicalizeJson(initializeQueryParams(query, values))) changed.add(id);
     } catch { changed.add(id); }
-    for (const filterId of Object.keys(query.filterBindings ?? {})) {
+    for (const filterId of queryFilterIds(query)) {
       const filter = page.filters?.find(filter => filter.id === filterId);
       const paramId = filter && 'initialParam' in filter ? filter.initialParam : undefined;
       if (paramId && canonicalizeJson(saved.get(paramId) ?? null) !== canonicalizeJson(values.get(paramId) ?? null)) changed.add(id);

@@ -1,0 +1,286 @@
+{
+  "schemaVersion": "6.39",
+  "id": "navigation-detail-page",
+  "layout": "report",
+  "meta": {
+    "title": "IOC B5：项目详情",
+    "description": "本地合成跨页传值验收；不保存或恢复来源视图。"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": {
+        "param": "project-name"
+      },
+      "tags": [
+        {
+          "id": "synthetic",
+          "text": "合成验收",
+          "tone": "info"
+        }
+      ],
+      "code": {
+        "label": "项目编码",
+        "value": {
+          "param": "project-id"
+        }
+      },
+      "description": {
+        "text": {
+          "parts": [
+            "来源：",
+            {
+              "param": "origin"
+            }
+          ]
+        },
+        "presentation": "inline"
+      }
+    },
+    "filterIds": [
+      "month",
+      "currency",
+      "regions"
+    ]
+  },
+  "filters": [
+    {
+      "id": "month",
+      "type": "timePoint",
+      "label": "详情单月",
+      "granularity": "month",
+      "required": true,
+      "default": "2026-09",
+      "disableFuture": false
+    },
+    {
+      "id": "currency",
+      "type": "dimension",
+      "label": "币种",
+      "dimension": "currency_code",
+      "display": "select",
+      "selection": {
+        "mode": "single",
+        "required": true
+      },
+      "options": [
+        {
+          "value": "RMB",
+          "label": "人民币"
+        },
+        {
+          "value": "USD",
+          "label": "美元"
+        }
+      ],
+      "default": [
+        "RMB"
+      ]
+    },
+    {
+      "id": "regions",
+      "type": "dimension",
+      "label": "区域",
+      "dimension": "region_code",
+      "display": "select",
+      "selection": {
+        "mode": "multiple"
+      },
+      "options": [
+        {
+          "value": "north",
+          "label": "北区"
+        },
+        {
+          "value": "south",
+          "label": "南区"
+        }
+      ],
+      "default": [
+        "north",
+        "south"
+      ]
+    }
+  ],
+  "dataSources": {
+    "bound": {
+      "fields": {
+        "scope": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "ioc_header_scope"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "ioc_header_count"
+        },
+        "project_code": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "project_code"
+        },
+        "sales_month": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "sales_month"
+        },
+        "currency_code": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "currency_code"
+        },
+        "region_code": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "region_code"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "ioc_header_scope",
+                  "project_code",
+                  "sales_month",
+                  "currency_code",
+                  "region_code"
+                ],
+                "output_metrics": [
+                  "ioc_header_count"
+                ],
+                "filter": {
+                  "dims": []
+                },
+                "order": {
+                  "limit": 10,
+                  "offset": 0
+                }
+              }
+            ]
+          },
+          "paramBindings": {
+            "project-id": {
+              "target": "dimension",
+              "queryField": "project_code"
+            }
+          },
+          "filterBindings": {
+            "month": {
+              "target": "timePoint",
+              "queryField": "sales_month"
+            },
+            "currency": {
+              "target": "dimension",
+              "queryField": "currency_code"
+            },
+            "regions": {
+              "target": "dimension",
+              "queryField": "region_code"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "detail",
+      "components": [
+        {
+          "id": "applied",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "当前已应用条件",
+            "body": {
+              "parts": [
+                "月份：",
+                {
+                  "filter": "month"
+                },
+                "；币种：",
+                {
+                  "filter": "currency"
+                },
+                "；区域：",
+                {
+                  "filter": "regions"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "bound-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "bound"
+          },
+          "props": {
+            "title": "服务收到的条件（本地合成）",
+            "columns": [
+              {
+                "field": "scope",
+                "title": "服务条件"
+              },
+              {
+                "field": "count",
+                "title": "响应标识"
+              }
+            ]
+          }
+        },
+        {
+          "id": "default-list",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "重新打开清单",
+            "links": [
+              {
+                "label": "使用默认条件重新打开清单",
+                "href": "/pages/ioc-header-navigation-list-demo?origin=详情入口",
+                "validateTargetInputs": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "params": {
+    "query": {
+      "dimensions": [
+        {
+          "id": "project-id",
+          "dim_name": "project_code",
+          "required": true
+        }
+      ]
+    },
+    "display": [
+      {
+        "id": "project-name",
+        "type": "string",
+        "required": true
+      },
+      {
+        "id": "origin",
+        "type": "string",
+        "required": true
+      }
+    ]
+  },
+  "strictURLInputs": true
+}

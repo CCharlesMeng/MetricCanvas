@@ -1,5 +1,5 @@
 import {
-  fieldName,
+  fieldName, staticFieldBinding,
   type DataSnapshot,
   type FieldBinding,
   type ResolvedFieldDefinition,
@@ -46,6 +46,7 @@ export function resolveField(
   binding: FieldBinding,
   data: NamedDataSlots
 ): ResolvedField {
+  binding=staticFieldBinding(binding);
   const dataName = typeof binding === 'string' ? 'main' : binding.data;
   const field = fieldName(binding);
   const definition = data[dataName]?.fields[field];
@@ -99,6 +100,7 @@ function resolvedRow(
   data: NamedDataSlots,
   rowIndex: number
 ): Row | undefined {
+  binding=staticFieldBinding(binding);
   const resolved = resolveField(binding, data);
   const rows = data[resolved.data]?.snapshot.rows;
   const selectedIndex =
@@ -114,6 +116,7 @@ export function fieldRow(
   data: NamedDataSlots,
   rowIndex = 0
 ): Row | undefined {
+  binding=staticFieldBinding(binding);
   return resolvedRow(binding, data, rowIndex);
 }
 

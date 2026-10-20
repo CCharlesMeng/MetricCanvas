@@ -1,0 +1,10 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run --maxWorkers=4
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/ioc-header-b0-b1/DataDashboard
+
+
+ Test Files  257 passed (257)
+      Tests  2235 passed | 5 skipped (2240)
+   Start at  15:17:31
+   Duration  200.77s (transform 3.04s, setup 0ms, import 66.94s, tests 233.97s, environment 13ms)
+

@@ -88,7 +88,7 @@ describe('SourceProgram pagedJoin behavior',()=>{
  it('propagates materialized parameter invalidation through definition references into combination initial',async()=>{
   const parsed=resolvePageParams(fixture);if(!parsed.ok)throw Error('fixture');const document=parsed.document;
   document.params={query:{times:[{id:'report-month',granularity:'month',start:'2026-09',end:'2026-09'}]}};
-  for(const source of Object.values(document.dataSources))if(source.source.type==='query'){source.source.query.body.dsl_list[0].filter={time:{period:'month',param:'report-month'},dims:[],metrics:[]};delete source.source.query.filterBindings?.period;}
+  for(const source of Object.values(document.dataSources))if(source.source.type==='query'){source.source.query.body!.dsl_list[0].filter={time:{period:'month',param:'report-month'},dims:[],metrics:[]};delete source.source.query.filterBindings?.period;}
   document.filters=document.filters?.filter(f=>f.id!=='period');
   const filled=await createPageDataExecutor({gateway:officeGateway()}).execute(document);
   expect(filled.dataSources[root].source).toHaveProperty('initial');

@@ -23,10 +23,12 @@
 
 <RuntimeView
   document={input.document}
+  displayInputs={input.displayInputs}
   execution={input.execution}
   dataGateway={input.dataGateway}
   aiSummary={input.aiSummary}
   initialSearch={input.initialSearch}
   navigation={input.navigation}
+  filterEditing={input.filterEditing}
   onevent={onEvent}
 />

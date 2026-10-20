@@ -1,0 +1,37 @@
+{
+  "contract_sha256": "bca20d3bdae44a4a275bfe53cdd6dea2cd9d519759025e29a5fd623773c411ee",
+  "entries": [
+    {
+      "actual": 0,
+      "rule_id": "R6-21-overflow",
+      "status": "green"
+    }
+  ],
+  "observed": {
+    "captures": [
+      {
+        "route": "/pages/ioc-header-business-options-demo",
+        "viewport": {
+          "height": 850,
+          "width": 390
+        }
+      },
+      {
+        "route": "/pages/ioc-header-business-tree-demo?period=month%3A2026-09&region=same&region.level=department&model=A&model=B",
+        "viewport": {
+          "height": 850,
+          "width": 390
+        }
+      }
+    ]
+  },
+  "overall": "green",
+  "phase": "green",
+  "schema_version": 3,
+  "summary": {
+    "green": 1,
+    "red": 0,
+    "total": 1,
+    "yellow": 0
+  }
+}

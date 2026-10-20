@@ -1,3 +1,4 @@
+import {ordinaryQuery} from './time-mode';
 import { pageParamDeclarations, type GroupedPageParams } from './page-param';
 import { parsePage, normalizePageDocument } from './validate';
 import type { PageDocument } from './page-document';
@@ -39,7 +40,7 @@ export function migrateParamBindings(input:unknown):{ok:true;document:PageDocume
   for(const ds of Object.values(document.dataSources)) {
     if(ds.source.type==='pagedJoin'){delete ds.source.initial;continue;}
     if(ds.source.type!=='query')continue;
-    const q=ds.source.query, item=q.body.dsl_list[0];
+    const q=ds.source.query, item=ordinaryQuery(q).body.dsl_list[0];
     if(!Object.keys(q.paramBindings??{}).length)continue;
     const filter:Record<string,any>=record(item.filter)?item.filter:{};
     item.filter=filter;

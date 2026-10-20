@@ -17,7 +17,7 @@ function withParams(): PageDocument {
   page.params = { query: { times: [{ id: 'period', granularity: 'month', start: '2026-09', end: '2026-09' }] } };
   for (const id of [main, detail]) {
     const source = page.dataSources[id].source;
-    if (source.type === 'query') source.query.body.dsl_list[0].filter = {
+    if (source.type === 'query') source.query.body!.dsl_list[0].filter = {
       time: { period: 'month', param: 'period' }, dims: [], metrics: []
     };
   }
@@ -41,7 +41,7 @@ describe('complete metadata execution', () => {
     const result = await createPageDataExecutor({ gateway }).execute(input);
     expect(input).toEqual(before);
     expect(queries.map(call => call.id)).toEqual([main, detail]);
-    expect(queries[0].query.body.dsl_list[0].filter).toMatchObject({ time: { start: '2026-09', end: '2026-09' } });
+    expect(queries[0].query.body!.dsl_list[0].filter).toMatchObject({ time: { start: '2026-09', end: '2026-09' } });
     expect(queries[1].query.filterValues).toEqual([{ target: 'dimension', queryField: '商务编号', values: ['A'] }]);
     expect(result.params).toEqual(input.params);
     const source = result.dataSources[main].source;

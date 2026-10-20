@@ -1,0 +1,53 @@
+{
+  "case": "time-before-6.38",
+  "invariant": "time-extensions",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "日月ISO周模式及完整静态查询case 由 6.38 引入，文档声明的是 6.37",
+      "paths": [
+        "/filters/0",
+        "/dataSources/bound"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "period",
+        "type": "timeRange",
+        "display": "modes",
+        "label": "统计期间",
+        "required": true,
+        "defaultMode": "day",
+        "modes": [
+          {
+            "…": "共2个键"
+          },
+          {
+            "…": "共2个键"
+          }
+        ]
+      }
+    ],
+    "dataSources": {
+      "bound": {
+        "fields": {
+          "scope": {
+            "…": "共3个键"
+          },
+          "count": {
+            "…": "共3个键"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "…": "共2个键"
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/time-before-6.38.json"
+}

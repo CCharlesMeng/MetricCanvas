@@ -1,3 +1,5 @@
+import {numberRangeIssue,rangeContextIssue} from '@metriccanvas/page/internal';
+import {dimensionSelectionIssue} from '@metriccanvas/page/internal';
 import { canonicalizeJson, parsePage, type PageDocument } from '@metriccanvas/page';
 import { flattenPageComponents, hasQueryFieldMapping, isQueryErrorCode, matchesParamDeclaration, normalizeQueryRows, type DataSnapshot, type QueryDataSourceFieldDefinition } from '@metriccanvas/page/internal';
 import { createFilterState, parseFilterSearch, type FilterValue, type FilterValues } from './filter-state';
@@ -69,6 +71,8 @@ export function prepareExecution(request: ExecutionRequest, response: unknown, r
     filters.set(id, structuredClone(value) as unknown as FilterValue);
   }
   for (const declaration of page.filters ?? []) {
+    if(declaration.type==='numberRange'){const value=filters.get(declaration.id);if((value?.type==='numberRange'&&numberRangeIssue(declaration,value))||rangeContextIssue(declaration,filters))fail('金额筛选不符合声明');}
+    if(declaration.type==='dimension'){const value=filters.get(declaration.id);if(dimensionSelectionIssue(declaration,value?.type==='dimension'?value.values:[]))fail('实际筛选不符合必选、单选或封闭枚举声明');}
     if (declaration.type !== 'dimension' || !declaration.initialParam) continue;
     const actual = params.get(declaration.initialParam);
     const expected = actual === undefined ? [] : Array.isArray(actual) ? actual : [actual];

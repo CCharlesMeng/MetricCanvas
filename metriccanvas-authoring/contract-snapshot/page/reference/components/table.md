@@ -44,7 +44,7 @@ Excel 导出捕获当前已提交搜索、页面筛选、列头筛选和排序�
 两张表分别展示「序号」和「预签金额排名」。序号随当前顺序变化；固定排名是数据源投影字段，切换召开率排序后仍跟随同一代表处，第一页可显示 1、4、2，第二页显示 5、6、3。召开率下限 85 时固定排名为 1、4，搜索天津时固定排名为 8；导出保留相同业务名次。两张表使用不同组合源，互不改变排序、筛选或页码。
 
 
-页面协议 6.34。结构真源为本册[schema.json](../schema.json)，SHA256 `0305d28888fcb5a48600584439d7bb512ec5643a2b8d667addbfac530b690a75`。字段表自动生成；可选不等于有默认值。
+页面协议 6.39。结构真源为本册[schema.json](../schema.json)，SHA256 `0807888a77d8710b9fd65166760bb094210dd2cbc7507ae72dd2f24d07a58cd3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -926,7 +926,7 @@ Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/1/properti
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["value","from","to","level"] | Schema未设默认；装配/运行时默认见语义说明 | 导航取筛选值的value/from/to/level部分。 |
+| "string" | 本分支可选 | enum=["value","from","to","level","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -934,6 +934,7 @@ Schema位置：`#/definitions/tableColumn/properties/openDetail/anyOf/1/properti
 | "from" | 范围起点部分。 |
 | "to" | 范围终点部分。 |
 | "level" | 层级维度的层级部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6f70656e44657461696c2f616e794f662f312f70726f706572746965732f62696e64696e67732f70726f70657274794e616d6573"></a>
 
@@ -964,6 +965,20 @@ Schema位置：`#/definitions/tableColumn/properties/navigate/properties/href`�
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 目标URL，必须通过安全协议及结构检查。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174652f70726f706572746965732f76616c6964617465546172676574496e70757473"></a>
+
+### `@tableColumn.navigate.validateTargetInputs`
+
+Schema位置：`#/definitions/tableColumn/properties/navigate/properties/validateTargetInputs`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | const=true | Schema未设默认；装配/运行时默认见语义说明 | 显式要求集成应用提供目标输入投影后才允许跨页导航；仅传URL输入，不恢复视图。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| true | 用于选择@tableColumn.navigate.validateTargetInputs分支；同分支其它约束同时成立。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174652f70726f706572746965732f7175657279"></a>
 
@@ -1095,7 +1110,7 @@ Schema位置：`#/definitions/tableColumn/properties/navigate/properties/query/a
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["value","from","to","level"] | Schema未设默认；装配/运行时默认见语义说明 | 导航取筛选值的value/from/to/level部分。 |
+| "string" | 本分支可选 | enum=["value","from","to","level","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -1103,6 +1118,7 @@ Schema位置：`#/definitions/tableColumn/properties/navigate/properties/query/a
 | "from" | 范围起点部分。 |
 | "to" | 范围终点部分。 |
 | "level" | 层级维度的层级部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6e617669676174652f70726f706572746965732f71756572792f70726f70657274794e616d6573"></a>
 

@@ -87,7 +87,7 @@ describe('automatic query table pagination', () => {
     if (mode === 'missing-total') delete source.source.initial!.totalCount;
     if (mode === 'complete') source.source.initial!.totalCount = 20;
     if (mode === 'computed') source.compute = [{ op: 'grandTotal', measures: ['value'], rowKind: { field: 'kind', value: 'total' }, label: { field: 'name', value: '合计' } }];
-    if (mode === 'offset') source.source.query.body.dsl_list[0]!.order = { offset: 20, limit: 20 };
+    if (mode === 'offset') source.source.query.body!.dsl_list[0]!.order = { offset: 20, limit: 20 };
     const received: EffectiveQuery[] = [];
     const stream = orchestrate(page, { async fetchData(query) { received.push(query); return { rows: rows(), totalCount: 714 }; } });
     const unsubscribe = stream.subscribe(() => {});

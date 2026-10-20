@@ -3,7 +3,7 @@
   import { page } from '$app/state';
   import PageGuide from '$lib/PageGuide.svelte';
   import { documentLayoutForm, documentUsesRuntimeBackToolbar } from '@metriccanvas/page/internal';
-  import type { DataGateway } from '@metriccanvas/engine';
+  import {projectNavigationInputs,type DataGateway} from '@metriccanvas/engine';
   import {
     RuntimeView,
     type RuntimeNavigation
@@ -44,6 +44,13 @@
 
   const navigation = $derived.by<RuntimeNavigation>(() => {
     const base: RuntimeNavigation = {
+      async resolveTargetInputs(href,{signal}) {
+        const target=new URL(href,document.baseURI),match=/^\/pages\/([^/]+)$/.exec(target.pathname);
+        if(target.origin!==location.origin||!match)return undefined;
+        const documentValue=await pageRepository.load(decodeURIComponent(match[1]!));
+        if(signal.aborted)return undefined;
+        return projectNavigationInputs(documentValue);
+      },
       replaceSearch(search) {
         const url = new URL(location.href);
         url.search = search;
@@ -60,7 +67,7 @@
       }
     };
     const href = returnHref;
-    return href ? { ...base, back: () => void goto(href) } : base;
+    return href ? { ...base, returnContext: {entryId:href,label:'返回来源页'}, back: () => void goto(href) } : base;
   });
 
   $effect(() => {

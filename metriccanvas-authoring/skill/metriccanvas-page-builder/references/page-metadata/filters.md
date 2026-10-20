@@ -78,8 +78,52 @@ Dashboard 正文的 `barChart`、`lineChart`、`pieChart`、`mapChart` 可在 `p
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
+<a id="business-filters"></a>
 
-页面协议 6.34。结构真源为本册[schema.json](schema.json)，SHA256 `0305d28888fcb5a48600584439d7bb512ec5643a2b8d667addbfac530b690a75`。字段表自动生成；可选不等于有默认值。
+## 业务筛选（6.36）
+
+本增量适用于页级筛选，与根iocHeader的位置声明分开。普通看板、报表和详情独立消费，不批量改已有业务页。
+
+- dimension.selection声明mode为single/multiple；缺省保持旧多选，tabs继续单选。single至多一个值；required恰好一个值，缺失时相关查询等待选择，非法整组写入拒绝。options是创作期确认的穷尽枚举，稳定value与label分开，可显式disabled；有options不请求候选网关，不允许同时配置动态依赖或hierarchy。disabled值不参与选择或默认值。
+- allBehavior缺省values。只有multiple+显式options可用unrestricted：选中全部有效枚举后仅省略对应动态查询谓词，UI/URL保留实际值，查询体原有静态条件仍保留。禁用项不算必须选中。boolean与枚举分别处理：勾选走whenTrue，明确false走whenFalse；省略whenFalse仍为无条件。default:false仍保留旧的不加初始化条件行为；需要确定的否值谓词时，使用显式false输入或用户取消勾选，并声明whenFalse。
+- display:tree带treeSelection:level为新结构树，必须有hierarchy。候选显式提供level和parent，不从业务码拆斜杠；不同层可使用相同value。当前只有一个level，可选父节点只选择自身，切层清掉旧值并保留新层级；其他层节点只展开。旧tree不带该字段仍按父节点批量选择叶子。
+- candidateContext用filterIds列出维度/单点时间/范围时间依赖，reconcile为clear/intersection。与旧dependsOn、clearOnChangeOf合图查重、检环；旧dependsOn仍只支持单个维度上游。clear在上游变化时递归清值，等用户显式确认；intersection保留摘要，等新完整可信候选到达后取交集。空交集、未就绪、失败、拒绝和未配置不能自动查询全部。上游被阻断时，候选依赖后代同样阻断。
+- 共用hint为TextValue，可引用不可变参数或已应用筛选，缺值省略；clearOnChangeOf是明确失效关系，不伪装成候选请求约束。普通只读不清合法条件。
+
+V2 fetchFilterCandidates由宿主Adapter提供，与旧fetchDimensionValues并存。请求包含filterId/dimension/level和完整维度、时间约束；timePoint按原精度投影为同值from/to，timeRange保留已应用范围，绝不截成详情单月。新结构树或candidateContext缺V2时明确unavailable，不丢约束调用旧端口。结果保留ready/empty/unavailable/error并区分denied和unconfigured；失败重试当前依赖。首批要求完整候选，最多10000项，不接受部分列表做全选或交集。按语言组合网关存在多个不同V2 Adapter时返回unconfigured，不合并授权域。
+
+浏览器协调器与SourceProgram使用同一无框架请求投影及结构校验。SourceProgram在复用seeds/initial或查询前校验绑定筛选和祖先；同步initialSnapshots对尚未核验的新动态候选返回loading。每个运行实例复用完整候选回执，重试失效旧代次，不跨实例/可信身份复用。独立源继续执行；相关导出使用同一门禁。
+
+实际页面：ioc-header-business-options-demo（封闭单选、全选不限、boolean），ioc-header-business-tree-demo（新结构树、旧树及时间/区域交集），ioc-header-business-detail-demo（详情私有枚举与单月）。本地HTTP合成Adapter不代表真实DQE、CloudIOC、Relay或门户接线；Playground未接V2时应显示不可用。新字段不包括仍待审的Condition/displayInputs，复杂期间/latest/calendarWindow仍保留后续规划。
+
+<a id="amount-range"></a>
+
+## 金额范围（6.37）
+
+numberRange可声明constraints的min/max（基本单位）和bounds:strict（双边from必须小于to）。单边允许；普通旧范围仍允许相等。全部是无端点的显式清空，不是无限大数字；拒绝负数约束冲突、NaN/Infinity及比例溢出。
+
+units为`{filterId,cases:{RMB:{currency:"CNY",label:"万元",scale:10000},USD:{currency:"USD",label:"万美元",scale:10000}}}`，控制筛选必须为required单选options并穷尽有效枚举。scale为正安全整数。必须用clearOnChangeOf引用该币种，换币与清金额在同一事务；自动清空沿用等待用户显式确认的门禁。
+
+presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位，确定时乘一次scale。default、URL、restore、执行回执和FilterValue已经是基本单位，查询绑定不再次换算。新面板有草稿/取消/确定，预设只修改草稿；切币种、只读或页头折叠会关闭旧草稿。币种尚未选择时金额等待选择，不隐式按人民币处理。
+
+范围绑定互斥metric与metricByFilter：`{target:"numberRange",metricByFilter:{filterId:"currency",cases:{RMB:"ioc_amount_base_cny",USD:"ioc_amount_base_usd"}}}`。每个case必须指向该源显式queryField映射的money字段，并与units同case货币相符。币种是查询隐式依赖，即使没有独立currency绑定也参与重查、默认初始数据复用与执行门禁。SourceProgram在seed/initial复用前校验范围和控制币种。
+
+验收页[ioc-header-currency-demo](examples/currency-selection-page.json)使用两种独立静态货币字段、本地合成HTTP与已有XLSX出口。没有真实USD或汇率证据，不声称生产换币可用，不做前端汇率换算。
+
+## 6.38 复杂时间与候选
+
+`timeRange.display:"modes"` 声明 `required:true`、`defaultMode` 和 `modes:[{id:"day"|"month"|"isoWeek",default:TimeRangeValue|RelativeTimeExpression}]`。普通 default/precision、period、initialParam/initialMode 与 modes 互斥。日为 YYYY-MM-DD，月为 YYYY-MM，ISO周保存同周周一至周日并计算ISO所属年。模式、from、to原子提交，每个模式记忆最近合法范围；失效时尝试合法默认值，不能沿用旧查询。URL使用 `<id>.mode`、`<id>.from`、`<id>.to` 完整整组；未知/缺项/重复/错周拒绝。
+
+`timeRange.presets:[{id,label,range:RelativeTimeExpression}]` 点击才提交。近N天含锚点日、起点减N-1；月份按日历月计算，includeCurrent明确，显式anchor同时控制起止。旧period近一年仍是当前月之前12个完整月，不被预设替换。
+
+`timePoint/timeRange` 可声明 min/max、blockedRanges 和 `availability:{fact,initial?:"latest"|"latestComplete",max:"latest"|"latestComplete",blockMissing?:true}`。initial与普通default/initialParam互斥，合法URL优先；max始终独立校验。latest不是完成状态；缺complete不回退latest。完整年/季/周越界拒绝，不截短自然期。缺数默认可查询空，仅显式blockMissing才禁选。所有边界取交集，输入错误不提交。disableFuture默认沿旧行为，可显式false。
+
+动态平面 dimension 的 `candidateWindow:{unit:"month",n:12,includeCurrent:boolean,anchorFact?:string}` 通过V2候选接口传 `calendarWindow:{granularity:"month",from,to}`；anchorFact消费可信latest，省略按同次时钟。不能与options/hierarchy混用。V2缺失、事实未就绪或结果失败时阻断相关查询，不降级旧端口。真实年月值按维度集合绑定，选1/3月不补2月；仅dtime的多区间查询不在本批支持范围。candidateContext时间/模式/维度及窗口/事实上下文共同决定缓存键；intersection等待当前完整候选后才取交集。
+
+场景：time-modes-page、time-presets-page、availability-page、calendar-window-page；对应 `pages/ioc-header-*-demo.json` 可交互验收。
+
+
+页面协议 6.39。结构真源为本册[schema.json](schema.json)，SHA256 `0807888a77d8710b9fd65166760bb094210dd2cbc7507ae72dd2f24d07a58cd3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -92,6 +136,46 @@ Schema位置：`#/definitions/dimensionFilter`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 类型/分支 | required=["id","type","dimension"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f68696e74"></a>
+
+### `@dimensionFilter.hint`
+
+Schema位置：`#/definitions/dimensionFilter/properties/hint`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | TextValue筛选提示，可引用参数和已应用筛选，缺值省略。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f68696e742f616c6c4f662f30"></a>
+
+### `@dimensionFilter.hint · allOf[0]`
+
+Schema位置：`#/definitions/dimensionFilter/properties/hint/allOf/0`。目标：[#/definitions/textValue](params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f636c6561724f6e4368616e67654f66"></a>
+
+### `@dimensionFilter.clearOnChangeOf`
+
+Schema位置：`#/definitions/dimensionFilter/properties/clearOnChangeOf`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 依赖变化的原子失效清理；不添加候选端口约束。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f636c6561724f6e4368616e67654f662f6974656d73"></a>
+
+### `@dimensionFilter.clearOnChangeOf[]`
+
+Schema位置：`#/definitions/dimensionFilter/properties/clearOnChangeOf/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f6964"></a>
 
@@ -339,6 +423,223 @@ Schema位置：`#/definitions/dimensionFilter/properties/dependsOn`。
 |---|---|---|---|---|
 | "string" | 本分支可选 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 级联依赖的维度筛选器id，不能形成环。 |
 
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f73656c656374696f6e"></a>
+
+### `@dimensionFilter.selection`
+
+Schema位置：`#/definitions/dimensionFilter/properties/selection`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["mode"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 单/多选及必选基数；required恰好一个值。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f73656c656374696f6e2f70726f706572746965732f6d6f6465"></a>
+
+### `@dimensionFilter.selection.mode`
+
+Schema位置：`#/definitions/dimensionFilter/properties/selection/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["single","multiple"] | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "single" | 至多选择一个值。 |
+| "multiple" | 保留多个显式值，required仍要求恰好一个。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f73656c656374696f6e2f70726f706572746965732f7265717569726564"></a>
+
+### `@dimensionFilter.selection.required`
+
+Schema位置：`#/definitions/dimensionFilter/properties/selection/properties/required`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 参数是否必需；缺值时是否阻止初始化。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f73656c656374696f6e2f70726f706572746965732f616c6c4265686176696f72"></a>
+
+### `@dimensionFilter.selection.allBehavior`
+
+Schema位置：`#/definitions/dimensionFilter/properties/selection/properties/allBehavior`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["values","unrestricted"] | Schema未设默认；装配/运行时默认见语义说明 | 全选保留实际选择；仅穷尽封闭多选枚举可省动态谓词。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "values" | 完整传递已选值集合。 |
+| "unrestricted" | 穷尽有效封闭枚举全部选中时省略动态维度谓词。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f6f7074696f6e73"></a>
+
+### `@dimensionFilter.options`
+
+Schema位置：`#/definitions/dimensionFilter/properties/options`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1; maxItems=1000 | Schema未设默认；装配/运行时默认见语义说明 | 创作期确认的穷尽枚举；不请求候选网关，不作权限失败回退。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f6f7074696f6e732f6974656d73"></a>
+
+### `@dimensionFilter.options[]`
+
+Schema位置：`#/definitions/dimensionFilter/properties/options/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["value","label"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f6f7074696f6e732f6974656d732f70726f706572746965732f76616c7565"></a>
+
+### `@dimensionFilter.options[].value`
+
+Schema位置：`#/definitions/dimensionFilter/properties/options/items/properties/value`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f6f7074696f6e732f6974656d732f70726f706572746965732f6c6162656c"></a>
+
+### `@dimensionFilter.options[].label`
+
+Schema位置：`#/definitions/dimensionFilter/properties/options/items/properties/label`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f6f7074696f6e732f6974656d732f70726f706572746965732f64697361626c6564"></a>
+
+### `@dimensionFilter.options[].disabled`
+
+Schema位置：`#/definitions/dimensionFilter/properties/options/items/properties/disabled`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 不可选且不能作为默认值，不计入全选集合。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f7472656553656c656374696f6e"></a>
+
+### `@dimensionFilter.treeSelection`
+
+Schema位置：`#/definitions/dimensionFilter/properties/treeSelection`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | const="level" | Schema未设默认；装配/运行时默认见语义说明 | level使用显式level/parent结构，父节点只选择自身。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "level" | 层级维度的层级部分。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f63616e64696461746557696e646f77"></a>
+
+### `@dimensionFilter.candidateWindow`
+
+Schema位置：`#/definitions/dimensionFilter/properties/candidateWindow`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["unit","n","includeCurrent"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | V2候选必须携带12个日历月闭区间及完整上下文，不能降级旧维度端口。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f63616e64696461746557696e646f772f70726f706572746965732f756e6974"></a>
+
+### `@dimensionFilter.candidateWindow.unit`
+
+Schema位置：`#/definitions/dimensionFilter/properties/candidateWindow/properties/unit`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="month" | Schema未设默认；装配/运行时默认见语义说明 | 展示单位，不自动改变数值刻度。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f63616e64696461746557696e646f772f70726f706572746965732f6e"></a>
+
+### `@dimensionFilter.candidateWindow.n`
+
+Schema位置：`#/definitions/dimensionFilter/properties/candidateWindow/properties/n`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 本分支必填 | const=12 | Schema未设默认；装配/运行时默认见语义说明 | 相对时间的周期数量。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| 12 | 用于选择@dimensionFilter.candidateWindow.n分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f63616e64696461746557696e646f772f70726f706572746965732f696e636c75646543757272656e74"></a>
+
+### `@dimensionFilter.candidateWindow.includeCurrent`
+
+Schema位置：`#/definitions/dimensionFilter/properties/candidateWindow/properties/includeCurrent`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 相对时间范围是否包含当前周期。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f63616e64696461746557696e646f772f70726f706572746965732f616e63686f7246616374"></a>
+
+### `@dimensionFilter.candidateWindow.anchorFact`
+
+Schema位置：`#/definitions/dimensionFilter/properties/candidateWindow/properties/anchorFact`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 可信具名期间事实的latest作为月份锚点；省略使用同次时钟。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f63616e646964617465436f6e74657874"></a>
+
+### `@dimensionFilter.candidateContext`
+
+Schema位置：`#/definitions/dimensionFilter/properties/candidateContext`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["filterIds","reconcile"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 候选依赖与可信候选到达后的协调策略。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f63616e646964617465436f6e746578742f70726f706572746965732f66696c746572496473"></a>
+
+### `@dimensionFilter.candidateContext.filterIds`
+
+Schema位置：`#/definitions/dimensionFilter/properties/candidateContext/properties/filterIds`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 维度及已应用期间依赖，合并旧dependsOn后检环。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f63616e646964617465436f6e746578742f70726f706572746965732f66696c7465724964732f6974656d73"></a>
+
+### `@dimensionFilter.candidateContext.filterIds[]`
+
+Schema位置：`#/definitions/dimensionFilter/properties/candidateContext/properties/filterIds/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f63616e646964617465436f6e746578742f70726f706572746965732f7265636f6e63696c65"></a>
+
+### `@dimensionFilter.candidateContext.reconcile`
+
+Schema位置：`#/definitions/dimensionFilter/properties/candidateContext/properties/reconcile`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["clear","intersection"] | Schema未设默认；装配/运行时默认见语义说明 | clear递归清理；intersection等待新完整可信候选再取交集。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "clear" | 上游变化递归清值并等待显式确认。 |
+| "intersection" | 新完整可信候选就绪后保留交集；空交集保持门禁。 |
+
 <a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c746572"></a>
 
 ### `@timeRangeFilter`
@@ -348,6 +649,46 @@ Schema位置：`#/definitions/timeRangeFilter`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 类型/分支 | required=["id","type"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f68696e74"></a>
+
+### `@timeRangeFilter.hint`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/hint`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | TextValue筛选提示，可引用参数和已应用筛选，缺值省略。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f68696e742f616c6c4f662f30"></a>
+
+### `@timeRangeFilter.hint · allOf[0]`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/hint/allOf/0`。目标：[#/definitions/textValue](params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f636c6561724f6e4368616e67654f66"></a>
+
+### `@timeRangeFilter.clearOnChangeOf`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/clearOnChangeOf`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 依赖变化的原子失效清理；不添加候选端口约束。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f636c6561724f6e4368616e67654f662f6974656d73"></a>
+
+### `@timeRangeFilter.clearOnChangeOf[]`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/clearOnChangeOf/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f6964"></a>
 
@@ -423,6 +764,140 @@ Schema位置：`#/definitions/timeRangeFilter/properties/type`。
 |---|---|
 | "timeRange" | 用于选择@timeRangeFilter.type分支；同分支其它约束同时成立。 |
 
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f6d696e"></a>
+
+### `@timeRangeFilter.min`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/min`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 量表下界。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f6d6178"></a>
+
+### `@timeRangeFilter.max`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/max`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 时间上限与min/disableFuture/禁选范围取交集；完整自然期不能截短。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f626c6f636b656452616e676573"></a>
+
+### `@timeRangeFilter.blockedRanges`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/blockedRanges`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 完整范围与任一禁选区间相交即拒绝，不静默截断。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f626c6f636b656452616e6765732f6974656d73"></a>
+
+### `@timeRangeFilter.blockedRanges[]`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/blockedRanges/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["from","to"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f626c6f636b656452616e6765732f6974656d732f70726f706572746965732f66726f6d"></a>
+
+### `@timeRangeFilter.blockedRanges[].from`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/blockedRanges/items/properties/from`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 范围起点；与to的顺序和精度须匹配。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f626c6f636b656452616e6765732f6974656d732f70726f706572746965732f746f"></a>
+
+### `@timeRangeFilter.blockedRanges[].to`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/blockedRanges/items/properties/to`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 范围终点；与from的顺序和精度须匹配。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f617661696c6162696c697479"></a>
+
+### `@timeRangeFilter.availability`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/availability`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["fact","max"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 具名可信期间事实；initial与default/initialParam互斥，max独立校验。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f617661696c6162696c6974792f70726f706572746965732f66616374"></a>
+
+### `@timeRangeFilter.availability.fact`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/availability/properties/fact`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f617661696c6162696c6974792f70726f706572746965732f696e697469616c"></a>
+
+### `@timeRangeFilter.availability.initial`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/availability/properties/initial`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["latest","latestComplete"] | Schema未设默认；装配/运行时默认见语义说明 | 与声明查询条件匹配的内嵌初始行。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "latest" | 事实粒度下最新有数据期间，不隐含完成。 |
+| "latestComplete" | 事实粒度下最新完成期间；缺少时不可回退latest。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f617661696c6162696c6974792f70726f706572746965732f6d6178"></a>
+
+### `@timeRangeFilter.availability.max`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/availability/properties/max`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["latest","latestComplete"] | Schema未设默认；装配/运行时默认见语义说明 | 时间上限与min/disableFuture/禁选范围取交集；完整自然期不能截短。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "latest" | 事实粒度下最新有数据期间，不隐含完成。 |
+| "latestComplete" | 事实粒度下最新完成期间；缺少时不可回退latest。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f617661696c6162696c6974792f70726f706572746965732f626c6f636b4d697373696e67"></a>
+
+### `@timeRangeFilter.availability.blockMissing`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/availability/properties/blockMissing`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | const=true | Schema未设默认；装配/运行时默认见语义说明 | 仅显式true时禁选missingRanges；缺数默认仍可查询空结果。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| true | 用于选择@timeRangeFilter.availability.blockMissing分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f64697361626c65467574757265"></a>
+
+### `@timeRangeFilter.disableFuture`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/disableFuture`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 默认保持禁止未来期间；显式false取消该项限制，仍受min/max/可信期间及禁选范围约束。 |
+
 <a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f646973706c6179"></a>
 
 ### `@timeRangeFilter.display`
@@ -431,11 +906,304 @@ Schema位置：`#/definitions/timeRangeFilter/properties/display`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | const="period" | Schema未设默认；装配/运行时默认见语义说明 | 当前筛选器的受控输入显示方式。 |
+| "string" | 本分支可选 | enum=["period","modes"] | Schema未设默认；装配/运行时默认见语义说明 | 当前筛选器的受控输入显示方式。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "period" | 时间窗口：基准所在完整周期；offset按指定unit移动周期。 |
+| "modes" | 显式日/月/ISO周模式范围，不与period或initialParam混用。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f6d6f646573"></a>
+
+### `@timeRangeFilter.modes`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/modes`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1; maxItems=3 | Schema未设默认；装配/运行时默认见语义说明 | day/month/isoWeek有序闭集，各模式必须有合法默认范围，运行时原子保存mode/from/to。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f6d6f6465732f6974656d73"></a>
+
+### `@timeRangeFilter.modes[]`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/modes/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["id","default"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f6d6f6465732f6974656d732f70726f706572746965732f6964"></a>
+
+### `@timeRangeFilter.modes[].id`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/modes/items/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["day","month","isoWeek"] | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "day" | YYYY-MM-DD日范围及匹配静态day查询。 |
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "isoWeek" | 同一ISO周的周一至周日，ISO所属年由日历计算；未知私有周码拒绝。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f6d6f6465732f6974656d732f70726f706572746965732f64656661756c74"></a>
+
+### `@timeRangeFilter.modes[].default`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/modes/items/properties/default`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 作者声明的初始默认；不是运行时随状态变化重新应用的值。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f6d6f6465732f6974656d732f70726f706572746965732f64656661756c742f616e794f662f30"></a>
+
+### `@timeRangeFilter.modes[].default · anyOf[0]`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/modes/items/properties/default/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["from","to"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f6d6f6465732f6974656d732f70726f706572746965732f64656661756c742f616e794f662f302f70726f706572746965732f66726f6d"></a>
+
+### `@timeRangeFilter.modes[].default · anyOf[0].from`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/modes/items/properties/default/anyOf/0/properties/from`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 范围起点；与to的顺序和精度须匹配。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f6d6f6465732f6974656d732f70726f706572746965732f64656661756c742f616e794f662f302f70726f706572746965732f746f"></a>
+
+### `@timeRangeFilter.modes[].default · anyOf[0].to`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/modes/items/properties/default/anyOf/0/properties/to`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 范围终点；与from的顺序和精度须匹配。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f6d6f6465732f6974656d732f70726f706572746965732f64656661756c742f616e794f662f31"></a>
+
+### `@timeRangeFilter.modes[].default · anyOf[1]`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/modes/items/properties/default/anyOf/1`。目标：[#/definitions/relativeTimeExpression](filters.md#schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/relativeTimeExpression | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e"></a>
+
+### `@relativeTimeExpression`
+
+Schema位置：`#/definitions/relativeTimeExpression`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | required=["unit","range","includeCurrent"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f756e6974"></a>
+
+### `@relativeTimeExpression.unit`
+
+Schema位置：`#/definitions/relativeTimeExpression/properties/unit`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["day","week","month","quarter","year"] | Schema未设默认；装配/运行时默认见语义说明 | 展示单位，不自动改变数值刻度。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "day" | YYYY-MM-DD日范围及匹配静态day查询。 |
+| "week" | 周粒度。 |
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "quarter" | 季度粒度。 |
+| "year" | 年粒度。 |
+
+<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e6765"></a>
+
+### `@relativeTimeExpression.range`
+
+Schema位置：`#/definitions/relativeTimeExpression/properties/range`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| oneOf联合 | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 受控范围结构。 |
+
+<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f30"></a>
+
+### `@relativeTimeExpression.range · oneOf[0]`
+
+Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["kind","n"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f302f70726f706572746965732f6b696e64"></a>
+
+### `@relativeTimeExpression.range · oneOf[0].kind`
+
+Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/0/properties/kind`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="lastN" | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "lastN" | 含基准期的最近N期；时间参数窗口按自身日期/月精度计数。 |
+
+<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f302f70726f706572746965732f6e"></a>
+
+### `@relativeTimeExpression.range · oneOf[0].n`
+
+Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/0/properties/n`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支必填 | minimum=1; maximum=9007199254740991 | Schema未设默认；装配/运行时默认见语义说明 | 相对时间的周期数量。 |
+
+<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f31"></a>
+
+### `@relativeTimeExpression.range · oneOf[1]`
+
+Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["kind"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f312f70726f706572746965732f6b696e64"></a>
+
+### `@relativeTimeExpression.range · oneOf[1].kind`
+
+Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/1/properties/kind`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="previousComplete" | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "previousComplete" | 用于选择@relativeTimeExpression.range · oneOf[1].kind分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f32"></a>
+
+### `@relativeTimeExpression.range · oneOf[2]`
+
+Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["kind"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f322f70726f706572746965732f6b696e64"></a>
+
+### `@relativeTimeExpression.range · oneOf[2].kind`
+
+Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/2/properties/kind`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="currentToDate" | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "currentToDate" | 用于选择@relativeTimeExpression.range · oneOf[2].kind分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f696e636c75646543757272656e74"></a>
+
+### `@relativeTimeExpression.includeCurrent`
+
+Schema位置：`#/definitions/relativeTimeExpression/properties/includeCurrent`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 相对时间范围是否包含当前周期。 |
+
+<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f616e63686f72"></a>
+
+### `@relativeTimeExpression.anchor`
+
+Schema位置：`#/definitions/relativeTimeExpression/properties/anchor`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 相对时间计算所用的日历锚点。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f64656661756c744d6f6465"></a>
+
+### `@timeRangeFilter.defaultMode`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/defaultMode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["day","month","isoWeek"] | Schema未设默认；装配/运行时默认见语义说明 | 首次无URL输入时使用的已配置模式。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "day" | YYYY-MM-DD日范围及匹配静态day查询。 |
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "isoWeek" | 同一ISO周的周一至周日，ISO所属年由日历计算；未知私有周码拒绝。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f70726573657473"></a>
+
+### `@timeRangeFilter.presets`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/presets`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 快捷范围按同次时钟或显式anchor解析，不改变已应用值直至合法提交。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f707265736574732f6974656d73"></a>
+
+### `@timeRangeFilter.presets[]`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/presets/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["id","label","range"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f707265736574732f6974656d732f70726f706572746965732f6964"></a>
+
+### `@timeRangeFilter.presets[].id`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/presets/items/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f707265736574732f6974656d732f70726f706572746965732f6c6162656c"></a>
+
+### `@timeRangeFilter.presets[].label`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/presets/items/properties/label`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f707265736574732f6974656d732f70726f706572746965732f72616e6765"></a>
+
+### `@timeRangeFilter.presets[].range`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/presets/items/properties/range`。目标：[#/definitions/relativeTimeExpression](filters.md#schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/relativeTimeExpression | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 受控范围结构。 |
 
 <a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f696e697469616c4d6f6465"></a>
 
@@ -576,146 +1344,6 @@ Schema位置：`#/definitions/timeRangeFilter/properties/default/anyOf/2`。目�
 |---|---|---|---|---|
 | 引用 #/definitions/relativeTimeExpression | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e"></a>
-
-### `@relativeTimeExpression`
-
-Schema位置：`#/definitions/relativeTimeExpression`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "object" | 类型/分支 | required=["unit","range","includeCurrent"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
-
-<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f756e6974"></a>
-
-### `@relativeTimeExpression.unit`
-
-Schema位置：`#/definitions/relativeTimeExpression/properties/unit`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "string" | 本分支必填 | enum=["day","week","month","quarter","year"] | Schema未设默认；装配/运行时默认见语义说明 | 展示单位，不自动改变数值刻度。 |
-
-| 允许值 | 解释与适用条件 |
-|---|---|
-| "day" | 日粒度。 |
-| "week" | 周粒度。 |
-| "month" | 月粒度；timePoint使用YYYY-MM。 |
-| "quarter" | 季度粒度。 |
-| "year" | 年粒度。 |
-
-<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e6765"></a>
-
-### `@relativeTimeExpression.range`
-
-Schema位置：`#/definitions/relativeTimeExpression/properties/range`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| oneOf联合 | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 受控范围结构。 |
-
-<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f30"></a>
-
-### `@relativeTimeExpression.range · oneOf[0]`
-
-Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/0`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "object" | 独立分支（不合并required） | required=["kind","n"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
-
-<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f302f70726f706572746965732f6b696e64"></a>
-
-### `@relativeTimeExpression.range · oneOf[0].kind`
-
-Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/0/properties/kind`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "string" | 本分支必填 | const="lastN" | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
-
-| 允许值 | 解释与适用条件 |
-|---|---|
-| "lastN" | 含基准期的最近N期；时间参数窗口按自身日期/月精度计数。 |
-
-<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f302f70726f706572746965732f6e"></a>
-
-### `@relativeTimeExpression.range · oneOf[0].n`
-
-Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/0/properties/n`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "integer" | 本分支必填 | minimum=1; maximum=9007199254740991 | Schema未设默认；装配/运行时默认见语义说明 | 相对时间的周期数量。 |
-
-<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f31"></a>
-
-### `@relativeTimeExpression.range · oneOf[1]`
-
-Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/1`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "object" | 独立分支（不合并required） | required=["kind"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
-
-<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f312f70726f706572746965732f6b696e64"></a>
-
-### `@relativeTimeExpression.range · oneOf[1].kind`
-
-Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/1/properties/kind`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "string" | 本分支必填 | const="previousComplete" | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
-
-| 允许值 | 解释与适用条件 |
-|---|---|
-| "previousComplete" | 用于选择@relativeTimeExpression.range · oneOf[1].kind分支；同分支其它约束同时成立。 |
-
-<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f32"></a>
-
-### `@relativeTimeExpression.range · oneOf[2]`
-
-Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/2`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "object" | 独立分支（不合并required） | required=["kind"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
-
-<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f322f70726f706572746965732f6b696e64"></a>
-
-### `@relativeTimeExpression.range · oneOf[2].kind`
-
-Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/2/properties/kind`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "string" | 本分支必填 | const="currentToDate" | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
-
-| 允许值 | 解释与适用条件 |
-|---|---|
-| "currentToDate" | 用于选择@relativeTimeExpression.range · oneOf[2].kind分支；同分支其它约束同时成立。 |
-
-<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f696e636c75646543757272656e74"></a>
-
-### `@relativeTimeExpression.includeCurrent`
-
-Schema位置：`#/definitions/relativeTimeExpression/properties/includeCurrent`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "boolean" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 相对时间范围是否包含当前周期。 |
-
-<a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f616e63686f72"></a>
-
-### `@relativeTimeExpression.anchor`
-
-Schema位置：`#/definitions/relativeTimeExpression/properties/anchor`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 相对时间计算所用的日历锚点。 |
-
 <a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f64656661756c742f616e794f662f33"></a>
 
 ### `@timeRangeFilter.default · anyOf[3]`
@@ -805,6 +1433,46 @@ Schema位置：`#/definitions/timePointFilter`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 类型/分支 | required=["id","type","granularity"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f68696e74"></a>
+
+### `@timePointFilter.hint`
+
+Schema位置：`#/definitions/timePointFilter/properties/hint`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | TextValue筛选提示，可引用参数和已应用筛选，缺值省略。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f68696e742f616c6c4f662f30"></a>
+
+### `@timePointFilter.hint · allOf[0]`
+
+Schema位置：`#/definitions/timePointFilter/properties/hint/allOf/0`。目标：[#/definitions/textValue](params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f636c6561724f6e4368616e67654f66"></a>
+
+### `@timePointFilter.clearOnChangeOf`
+
+Schema位置：`#/definitions/timePointFilter/properties/clearOnChangeOf`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 依赖变化的原子失效清理；不添加候选端口约束。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f636c6561724f6e4368616e67654f662f6974656d73"></a>
+
+### `@timePointFilter.clearOnChangeOf[]`
+
+Schema位置：`#/definitions/timePointFilter/properties/clearOnChangeOf/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f6964"></a>
 
@@ -900,6 +1568,130 @@ Schema位置：`#/definitions/timePointFilter/properties/visible`。
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 显示状态声明。 |
 
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f6d696e"></a>
+
+### `@timePointFilter.min`
+
+Schema位置：`#/definitions/timePointFilter/properties/min`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 量表下界。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f6d6178"></a>
+
+### `@timePointFilter.max`
+
+Schema位置：`#/definitions/timePointFilter/properties/max`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 时间上限与min/disableFuture/禁选范围取交集；完整自然期不能截短。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f626c6f636b656452616e676573"></a>
+
+### `@timePointFilter.blockedRanges`
+
+Schema位置：`#/definitions/timePointFilter/properties/blockedRanges`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 完整范围与任一禁选区间相交即拒绝，不静默截断。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f626c6f636b656452616e6765732f6974656d73"></a>
+
+### `@timePointFilter.blockedRanges[]`
+
+Schema位置：`#/definitions/timePointFilter/properties/blockedRanges/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["from","to"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f626c6f636b656452616e6765732f6974656d732f70726f706572746965732f66726f6d"></a>
+
+### `@timePointFilter.blockedRanges[].from`
+
+Schema位置：`#/definitions/timePointFilter/properties/blockedRanges/items/properties/from`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 范围起点；与to的顺序和精度须匹配。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f626c6f636b656452616e6765732f6974656d732f70726f706572746965732f746f"></a>
+
+### `@timePointFilter.blockedRanges[].to`
+
+Schema位置：`#/definitions/timePointFilter/properties/blockedRanges/items/properties/to`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 范围终点；与from的顺序和精度须匹配。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f617661696c6162696c697479"></a>
+
+### `@timePointFilter.availability`
+
+Schema位置：`#/definitions/timePointFilter/properties/availability`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["fact","max"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 具名可信期间事实；initial与default/initialParam互斥，max独立校验。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f617661696c6162696c6974792f70726f706572746965732f66616374"></a>
+
+### `@timePointFilter.availability.fact`
+
+Schema位置：`#/definitions/timePointFilter/properties/availability/properties/fact`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f617661696c6162696c6974792f70726f706572746965732f696e697469616c"></a>
+
+### `@timePointFilter.availability.initial`
+
+Schema位置：`#/definitions/timePointFilter/properties/availability/properties/initial`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["latest","latestComplete"] | Schema未设默认；装配/运行时默认见语义说明 | 与声明查询条件匹配的内嵌初始行。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "latest" | 事实粒度下最新有数据期间，不隐含完成。 |
+| "latestComplete" | 事实粒度下最新完成期间；缺少时不可回退latest。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f617661696c6162696c6974792f70726f706572746965732f6d6178"></a>
+
+### `@timePointFilter.availability.max`
+
+Schema位置：`#/definitions/timePointFilter/properties/availability/properties/max`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["latest","latestComplete"] | Schema未设默认；装配/运行时默认见语义说明 | 时间上限与min/disableFuture/禁选范围取交集；完整自然期不能截短。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "latest" | 事实粒度下最新有数据期间，不隐含完成。 |
+| "latestComplete" | 事实粒度下最新完成期间；缺少时不可回退latest。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f617661696c6162696c6974792f70726f706572746965732f626c6f636b4d697373696e67"></a>
+
+### `@timePointFilter.availability.blockMissing`
+
+Schema位置：`#/definitions/timePointFilter/properties/availability/properties/blockMissing`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | const=true | Schema未设默认；装配/运行时默认见语义说明 | 仅显式true时禁选missingRanges；缺数默认仍可查询空结果。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| true | 用于选择@timePointFilter.availability.blockMissing分支；同分支其它约束同时成立。 |
+
 <a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f6772616e756c6172697479"></a>
 
 ### `@timePointFilter.granularity`
@@ -914,16 +1706,6 @@ Schema位置：`#/definitions/timePointFilter/properties/granularity`。
 |---|---|
 | "month" | 月粒度；timePoint使用YYYY-MM。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
-
-<a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f6d696e"></a>
-
-### `@timePointFilter.min`
-
-Schema位置：`#/definitions/timePointFilter/properties/min`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 量表下界。 |
 
 <a id="schema-232f646566696e6974696f6e732f74696d65506f696e7446696c7465722f70726f706572746965732f64697361626c65467574757265"></a>
 
@@ -974,6 +1756,46 @@ Schema位置：`#/definitions/booleanFilter`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 类型/分支 | required=["id","type"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f626f6f6c65616e46696c7465722f70726f706572746965732f68696e74"></a>
+
+### `@booleanFilter.hint`
+
+Schema位置：`#/definitions/booleanFilter/properties/hint`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | TextValue筛选提示，可引用参数和已应用筛选，缺值省略。 |
+
+<a id="schema-232f646566696e6974696f6e732f626f6f6c65616e46696c7465722f70726f706572746965732f68696e742f616c6c4f662f30"></a>
+
+### `@booleanFilter.hint · allOf[0]`
+
+Schema位置：`#/definitions/booleanFilter/properties/hint/allOf/0`。目标：[#/definitions/textValue](params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f626f6f6c65616e46696c7465722f70726f706572746965732f636c6561724f6e4368616e67654f66"></a>
+
+### `@booleanFilter.clearOnChangeOf`
+
+Schema位置：`#/definitions/booleanFilter/properties/clearOnChangeOf`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 依赖变化的原子失效清理；不添加候选端口约束。 |
+
+<a id="schema-232f646566696e6974696f6e732f626f6f6c65616e46696c7465722f70726f706572746965732f636c6561724f6e4368616e67654f662f6974656d73"></a>
+
+### `@booleanFilter.clearOnChangeOf[]`
+
+Schema位置：`#/definitions/booleanFilter/properties/clearOnChangeOf/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f626f6f6c65616e46696c7465722f70726f706572746965732f6964"></a>
 
@@ -1088,6 +1910,46 @@ Schema位置：`#/definitions/numberRangeFilter`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 类型/分支 | required=["id","type"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f68696e74"></a>
+
+### `@numberRangeFilter.hint`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/hint`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | TextValue筛选提示，可引用参数和已应用筛选，缺值省略。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f68696e742f616c6c4f662f30"></a>
+
+### `@numberRangeFilter.hint · allOf[0]`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/hint/allOf/0`。目标：[#/definitions/textValue](params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f636c6561724f6e4368616e67654f66"></a>
+
+### `@numberRangeFilter.clearOnChangeOf`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/clearOnChangeOf`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 依赖变化的原子失效清理；不添加候选端口约束。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f636c6561724f6e4368616e67654f662f6974656d73"></a>
+
+### `@numberRangeFilter.clearOnChangeOf[]`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/clearOnChangeOf/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f6964"></a>
 
@@ -1213,6 +2075,206 @@ Schema位置：`#/definitions/numberRangeFilter/properties/default/properties/to
 |---|---|---|---|---|
 | "number" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 范围终点；与from的顺序和精度须匹配。 |
 
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f636f6e73747261696e7473"></a>
+
+### `@numberRangeFilter.constraints`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/constraints`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 基本单位上下限及双边严格/允许相等规则。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f636f6e73747261696e74732f70726f706572746965732f6d696e"></a>
+
+### `@numberRangeFilter.constraints.min`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/constraints/properties/min`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 量表下界。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f636f6e73747261696e74732f70726f706572746965732f6d6178"></a>
+
+### `@numberRangeFilter.constraints.max`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/constraints/properties/max`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 时间上限与min/disableFuture/禁选范围取交集；完整自然期不能截短。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f636f6e73747261696e74732f70726f706572746965732f626f756e6473"></a>
+
+### `@numberRangeFilter.constraints.bounds`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/constraints/properties/bounds`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["strict","inclusive"] | Schema未设默认；装配/运行时默认见语义说明 | strict拒绝双边相等，inclusive允许相等；新金额units/presets缺省严格，旧范围缺省兼容。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "strict" | 双边范围必须from<to，不改变下推>=/<=语义。 |
+| "inclusive" | 双边范围允许相等，仍校验上下限。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e697473"></a>
+
+### `@numberRangeFilter.units`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["filterId","cases"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 币种required单选穷尽case；显示单位按scale换算一次，状态与URL为基本单位。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f66696c7465724964"></a>
+
+### `@numberRangeFilter.units.filterId`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/filterId`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 引用required单选封闭枚举，金额clearOnChangeOf必须包含该选择器。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f6361736573"></a>
+
+### `@numberRangeFilter.units.cases`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/cases`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | propertyNames={"type":"string","minLength":1} | Schema未设默认；装配/运行时默认见语义说明 | 穷尽启用枚举项，每项声明静态货币、显示单位与正安全整数scale；状态始终为基本单位。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f63617365732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@numberRangeFilter.units.cases{key}`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 动态键的值 | required=["currency","label","scale"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f63757272656e6379"></a>
+
+### `@numberRangeFilter.units.cases{key}.currency`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/currency`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["CNY","USD"] | Schema未设默认；装配/运行时默认见语义说明 | 货币语义声明，不负责汇率换算。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "CNY" | 静态人民币金额，基本单位元。 |
+| "USD" | 静态美元金额，基本单位美元；没有隐式汇率换算。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f6c6162656c"></a>
+
+### `@numberRangeFilter.units.cases{key}.label`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/label`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f7363616c65"></a>
+
+### `@numberRangeFilter.units.cases{key}.scale`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/scale`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支必填 | exclusiveMinimum=0; maximum=9007199254740991 | Schema未设默认；装配/运行时默认见语义说明 | ratio输出刻度；显式100转换为百分刻度。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f63617365732f70726f70657274794e616d6573"></a>
+
+### `@numberRangeFilter.units.cases · propertyNames`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/cases/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f70726573657473"></a>
+
+### `@numberRangeFilter.presets`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/presets`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 显示单位范围草稿；确定时换算，全部为空范围。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f707265736574732f6974656d73"></a>
+
+### `@numberRangeFilter.presets[]`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/presets/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["id","label","range"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f707265736574732f6974656d732f70726f706572746965732f6964"></a>
+
+### `@numberRangeFilter.presets[].id`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/presets/items/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f707265736574732f6974656d732f70726f706572746965732f6c6162656c"></a>
+
+### `@numberRangeFilter.presets[].label`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/presets/items/properties/label`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f707265736574732f6974656d732f70726f706572746965732f72616e6765"></a>
+
+### `@numberRangeFilter.presets[].range`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/presets/items/properties/range`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 受控范围结构。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f707265736574732f6974656d732f70726f706572746965732f72616e67652f70726f706572746965732f66726f6d"></a>
+
+### `@numberRangeFilter.presets[].range.from`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/presets/items/properties/range/properties/from`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 范围起点；与to的顺序和精度须匹配。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f707265736574732f6974656d732f70726f706572746965732f72616e67652f70726f706572746965732f746f"></a>
+
+### `@numberRangeFilter.presets[].range.to`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/presets/items/properties/range/properties/to`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 范围终点；与from的顺序和精度须匹配。 |
+
 <a id="schema-232f646566696e6974696f6e732f73656172636846696c746572"></a>
 
 ### `@searchFilter`
@@ -1222,6 +2284,46 @@ Schema位置：`#/definitions/searchFilter`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "object" | 类型/分支 | required=["id","type"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f73656172636846696c7465722f70726f706572746965732f68696e74"></a>
+
+### `@searchFilter.hint`
+
+Schema位置：`#/definitions/searchFilter/properties/hint`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | TextValue筛选提示，可引用参数和已应用筛选，缺值省略。 |
+
+<a id="schema-232f646566696e6974696f6e732f73656172636846696c7465722f70726f706572746965732f68696e742f616c6c4f662f30"></a>
+
+### `@searchFilter.hint · allOf[0]`
+
+Schema位置：`#/definitions/searchFilter/properties/hint/allOf/0`。目标：[#/definitions/textValue](params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f73656172636846696c7465722f70726f706572746965732f636c6561724f6e4368616e67654f66"></a>
+
+### `@searchFilter.clearOnChangeOf`
+
+Schema位置：`#/definitions/searchFilter/properties/clearOnChangeOf`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 依赖变化的原子失效清理；不添加候选端口约束。 |
+
+<a id="schema-232f646566696e6974696f6e732f73656172636846696c7465722f70726f706572746965732f636c6561724f6e4368616e67654f662f6974656d73"></a>
+
+### `@searchFilter.clearOnChangeOf[]`
+
+Schema位置：`#/definitions/searchFilter/properties/clearOnChangeOf/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f73656172636846696c7465722f70726f706572746965732f6964"></a>
 
@@ -1403,6 +2505,9 @@ Schema位置：`#/definitions/chartFilter/properties/options/items/properties/va
 - `time-point-disable-future`：6.25 时间点禁止未来月份与日期。反例：[time-point-disable-future-before-6.25](errors/time-point-disable-future-before-6.25.json)、[time-point-disable-future-default-month](errors/time-point-disable-future-default-month.json)、[time-point-disable-future-default-date](errors/time-point-disable-future-default-date.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `period-filter`：6.27 Dashboard 年季月与近一年期间筛选。反例：[period-filter-before-6.27](errors/period-filter-before-6.27.json)、[period-filter-quarter-invalid](errors/period-filter-quarter-invalid.json)、[period-filter-report](errors/period-filter-report.json)、[period-filter-datetime](errors/period-filter-datetime.json)、[period-filter-no-default](errors/period-filter-no-default.json)、[period-filter-static-time](errors/period-filter-static-time.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `chart-local-filter`：6.29 Dashboard 图表独立筛选及查询消费范围。反例：[chart-filter-before-6.29](errors/chart-filter-before-6.29.json)、[chart-filter-report](errors/chart-filter-report.json)、[chart-filter-invalid-default](errors/chart-filter-invalid-default.json)、[chart-filter-duplicate-options](errors/chart-filter-duplicate-options.json)、[chart-filter-shared-source](errors/chart-filter-shared-source.json)、[chart-filter-no-binding](errors/chart-filter-no-binding.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `business-filters`：6.36 封闭枚举与业务选择语义。反例：[business-filter-before-6.36](errors/business-filter-before-6.36.json)、[business-filter-single-many](errors/business-filter-single-many.json)、[business-filter-disabled-default](errors/business-filter-disabled-default.json)、[business-filter-options-dependent](errors/business-filter-options-dependent.json)、[business-filter-unrestricted-without-options](errors/business-filter-unrestricted-without-options.json)、[business-filter-cycle](errors/business-filter-cycle.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `currency-selection`：6.37金额范围和静态货币字段选择。反例：[currency-before-6.37](errors/currency-before-6.37.json)、[currency-case-missing](errors/currency-case-missing.json)、[currency-metric-mismatch](errors/currency-metric-mismatch.json)、[currency-negative-default](errors/currency-negative-default.json)、[currency-equal-default](errors/currency-equal-default.json)、[currency-compute-mixed](errors/currency-compute-mixed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `time-extensions`：6.38 显式时间模式、可信期间事实、快捷范围及V2月份窗口。反例：[time-before-6.38](errors/time-before-6.38.json)、[time-case-missing](errors/time-case-missing.json)、[time-query-xor](errors/time-query-xor.json)、[time-period-mismatch](errors/time-period-mismatch.json)、[time-output-mismatch](errors/time-output-mismatch.json)、[time-default-week](errors/time-default-week.json)、[time-availability-default](errors/time-availability-default.json)、[time-fact-kind](errors/time-fact-kind.json)、[time-window-static-options](errors/time-window-static-options.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -1419,6 +2524,12 @@ Schema位置：`#/definitions/chartFilter/properties/options/items/properties/va
 - [dashboard-period-filter-more](examples/dashboard-period-filter-more.json)：完整合法页面；查询仅为静态契约证据。
 - [dashboard-period-filter-readonly](examples/dashboard-period-filter-readonly.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-local-filter-page](examples/chart-local-filter-page.json)：完整合法页面；查询仅为静态契约证据。
+- [business-filter-page](examples/business-filter-page.json)：完整合法页面；查询仅为静态契约证据。
+- [currency-selection-page](examples/currency-selection-page.json)：完整合法页面；查询仅为静态契约证据。
+- [time-modes-page](examples/time-modes-page.json)：完整合法页面；查询仅为静态契约证据。
+- [time-presets-page](examples/time-presets-page.json)：完整合法页面；查询仅为静态契约证据。
+- [availability-page](examples/availability-page.json)：完整合法页面；查询仅为静态契约证据。
+- [calendar-window-page](examples/calendar-window-page.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/filter.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
@@ -1427,15 +2538,24 @@ Schema位置：`#/definitions/chartFilter/properties/options/items/properties/va
 - 源码/验证定位：`packages/page/src/chart-filter.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/chart-filter.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/time-filter-boundary.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/filter-dependencies.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/amount-filter.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/amount-validation.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/field-selection.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/time-mode.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/period-facts.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/time-extension-validation.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 
-- `#/definitions/timeRangeFilter/properties/default/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/1/default`。
-- `#/definitions/timeRangeFilter/properties/default/anyOf/1`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/filters/1/default`。
-- `#/definitions/timeRangeFilter/properties/default/anyOf/2`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/2/default`。
-- `#/definitions/relativeTimeExpression/properties/range/oneOf/0`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/filters/3/default/range`。
+- `#/definitions/timeRangeFilter/properties/modes/items/properties/default/anyOf/0`：[合法完整页面](examples/time-modes-page.json)，JSON Pointer `#/filters/0/modes/1/default`。
+- `#/definitions/timeRangeFilter/properties/modes/items/properties/default/anyOf/1`：[合法完整页面](examples/time-modes-page.json)，JSON Pointer `#/filters/0/modes/0/default`。
+- `#/definitions/relativeTimeExpression/properties/range/oneOf/0`：[合法完整页面](examples/time-modes-page.json)，JSON Pointer `#/filters/0/modes/0/default/range`。
 - `#/definitions/relativeTimeExpression/properties/range/oneOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/2/default/range`。
 - `#/definitions/relativeTimeExpression/properties/range/oneOf/2`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/3/default/range`。
-- `#/definitions/timeRangeFilter/properties/default/anyOf/3`：[合法完整页面](examples/dashboard-period-filter.json)，JSON Pointer `#/filters/0/default`。
-- `#/definitions/periodSelection/anyOf/0`：[合法完整页面](examples/dashboard-period-filter.json)，JSON Pointer `#/filters/0/default`。
+- `#/definitions/timeRangeFilter/properties/default/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/1/default`。
+- `#/definitions/timeRangeFilter/properties/default/anyOf/1`：[合法完整页面](examples/time-presets-page.json)，JSON Pointer `#/filters/0/default`。
+- `#/definitions/timeRangeFilter/properties/default/anyOf/2`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/2/default`。
+- `#/definitions/timeRangeFilter/properties/default/anyOf/3`：[合法完整页面](examples/ioc-header-page.json)，JSON Pointer `#/filters/0/default`。
+- `#/definitions/periodSelection/anyOf/0`：[合法完整页面](examples/ioc-header-page.json)，JSON Pointer `#/filters/0/default`。
 - `#/definitions/periodSelection/anyOf/1`：[合法完整页面](examples/period-filter-last12-months-page.json)，JSON Pointer `#/filters/0/default`。

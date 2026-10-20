@@ -11,7 +11,7 @@ export interface DateBindingChoice { id:string;dataSourceId:string;label:string;
 export function dateBindingChoices(draft:CanvasAuthoringDraft,granularity:'month'|'date',range:boolean,window:TimeWindow):DateBindingChoice[] {
   const parsed=parsePage(draft.pageDocument);if(!parsed.ok)return [];
   return Object.entries(parsed.page.dataSources).flatMap(([id,source])=>{
-    if(source.source.type!=='query')return [];
+    if(source.source.type!=='query'||source.source.query.timeModes||!source.source.query.body)return [];
     const choices:DateBindingChoice[]=[];
     const raw=source.source.query.body.dsl_list[0].filter;
     const time=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw.time:undefined;
@@ -29,6 +29,7 @@ export function editReportDate(draft:CanvasAuthoringDraft,locator:ComponentLocat
   if(locator && header?.type!=='reportHeader')return {ok:false,message:'请选择报告页头'};
   const existing=(document.filters??[]).find((f:FilterDeclaration)=>f.id===edit.filterId);
   if(existing&&!['timePoint','timeRange'].includes(existing.type))return {ok:false,message:'筛选器 ID 已被其他类型占用'};
+  if(Object.values(parsed.page.dataSources).some(source=>source.source.type==='query'&&source.source.query.timeModes&&(source.source.query.timeModes.filterId===edit.filterId||edit.bindings?.some(binding=>binding.dataSourceId===Object.keys(parsed.page.dataSources).find(id=>parsed.page.dataSources[id]===source)))))return {ok:false,message:'时间模式需通过原子时间程序配置同步修改全部查询case'};
   document.schemaVersion=versionPolicy.current;
   if(edit.remove) {
     document.filters=(document.filters??[]).filter((f:FilterDeclaration)=>f.id!==edit.filterId);

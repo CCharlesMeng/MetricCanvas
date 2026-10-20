@@ -1,0 +1,5 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "types": ["svelte", "vite/client"], "resolveJsonModule": true },
+  "include": ["./*.ts", "./*.svelte", "./*.json"]
+}

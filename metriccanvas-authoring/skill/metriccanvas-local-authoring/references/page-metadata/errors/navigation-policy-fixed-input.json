@@ -1,0 +1,17 @@
+{
+  "case": "navigation-policy-fixed-input",
+  "invariant": "navigation-target-inputs",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "严格URL输入不支持旧数组固定参数，请使用分组参数",
+      "paths": [
+        "/strictURLInputs"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "strictURLInputs": true
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

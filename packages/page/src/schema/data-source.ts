@@ -53,23 +53,7 @@ export const queryResultWhereZ: z.ZodType<QueryResultWhere> = z.lazy(() => z.uni
   z.object({ field: fieldNameZ, op: z.enum(['isNull', 'isNotNull']) }).strict()
 ])).meta({ id: 'queryResultWhere' });
 
-export const dqeQueryZ = z
-  .object({
-    language: z.literal('dqe'),
-    resultBindings: z.array(z.object({
-      source: idZ, field: fieldNameZ, target: z.literal('dimension'),
-      queryField: z.string().min(1), maxValues: z.int().min(1).max(MAX_QUERY_RESULT_VALUES), where: queryResultWhereZ.optional()
-    }).strict()).min(1).optional(),
-    body: z
-      .object({
-        dsl_list: z.array(dslItemZ).length(1)
-      })
-      .strict(),
-    paramBindings: z.record(idZ, z.discriminatedUnion('target', [
-      z.object({ target: z.literal('dimension'), queryField: z.string().min(1) }).strict(),
-      z.object({ target: z.literal('time'), window: timeWindowZ }).strict()
-    ])).optional(),
-    filterBindings: z
+const filterBindingsZ=z
       .record(
         idZ,
         z
@@ -104,11 +88,29 @@ export const dqeQueryZ = z
               })
               .strict(),
             z
-              .object({ target: z.literal('numberRange'), metric: z.string().min(1) })
+              .object({ target: z.literal('numberRange'), metric: z.string().min(1).optional(), metricByFilter:z.object({filterId:idZ,cases:z.record(z.string().min(1),z.string().min(1))}).strict().optional() })
               .strict()
           ])
-      )
-      .optional()
+      );
+
+export const dqeQueryZ = z
+  .object({
+    language: z.literal('dqe'),
+    resultBindings: z.array(z.object({
+      source: idZ, field: fieldNameZ, target: z.literal('dimension'),
+      queryField: z.string().min(1), maxValues: z.int().min(1).max(MAX_QUERY_RESULT_VALUES), where: queryResultWhereZ.optional()
+    }).strict()).min(1).optional(),
+    body: z
+      .object({
+        dsl_list: z.array(dslItemZ).length(1)
+      })
+      .strict().optional(),
+    paramBindings: z.record(idZ, z.discriminatedUnion('target', [
+      z.object({ target: z.literal('dimension'), queryField: z.string().min(1) }).strict(),
+      z.object({ target: z.literal('time'), window: timeWindowZ }).strict()
+    ])).optional(),
+    filterBindings: filterBindingsZ.optional(),
+    timeModes:z.object({filterId:idZ,cases:z.record(z.string().min(1),z.object({body:z.object({dsl_list:z.array(dslItemZ).length(1)}).strict(),filterBindings:filterBindingsZ}).strict())}).strict().optional()
   })
   .meta({ id: 'dqeQuery' });
 
@@ -160,7 +162,7 @@ const groupedStandardQueryFieldZ = z
 const groupedMoneyQueryFieldZ = z.object({
   queryField: z.string().min(1),
   type: z.literal('money'),
-  currency: z.literal('CNY'),
+  currency: z.enum(['CNY','USD']),
   label: z.string().min(1).optional(),
   unit: z.string().min(1).optional(),
   nullable: z.boolean().optional(),

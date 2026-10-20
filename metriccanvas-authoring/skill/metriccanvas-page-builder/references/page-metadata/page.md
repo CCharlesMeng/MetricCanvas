@@ -2,7 +2,7 @@
 
 页面元数据是统一运行时消费的声明式文档；数据上下文、会话、修订和执行身份由宿主管理。页面id、字段id、组件id分别属于自己的命名空间，组件id在整页唯一。
 
-作者版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义，当前写出6.28，公开读取接受5.0—5.4、6.5及6.11—6.28；本册 `index.json` 的 `schemaVersion` 标明导出时的作者版本。5.x在读取边界转换为6.x运行态文档。6.0使用layoutForm，6.1起允许layout。双字段同时出现即拒绝；缺布局默认report。normalizePageDocument只进行已声明的兼容规范化并保留文档原始字段，不将运行时参数替换结果保存。历史修订先核验原文hash再规范化。
+作者版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义，当前写出6.38，公开读取接受5.0—5.4、6.5及6.11—6.38；本册 `index.json` 的 `schemaVersion` 标明导出时的作者版本。5.x在读取边界转换为6.x运行态文档。6.0使用layoutForm，6.1起允许layout。双字段同时出现即拒绝；缺布局默认report。normalizePageDocument只进行已声明的兼容规范化并保留文档原始字段，不将运行时参数替换结果保存。历史修订先核验原文hash再规范化。
 
 report定宽居中，dashboard占满宿主宽度。dashboardToolbar缺省visible；hidden用于页面已有自有页头；compact对象表达紧凑工具栏，readOnly只影响呈现，不是服务权限。meta.title是页面级标题，缺席时消费方可回退页头再回退页面id。
 
@@ -16,8 +16,34 @@ report定宽居中，dashboard占满宿主宽度。dashboardToolbar缺省visible
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
+<a id="ioc-公共页头632"></a>
 
-页面协议 6.34。结构真源为本册[schema.json](schema.json)，SHA256 `0305d28888fcb5a48600584439d7bb512ec5643a2b8d667addbfac530b690a75`。字段表自动生成；可选不等于有默认值。
+## IOC 公共页头（6.35）
+
+根级 `iocHeader` 独立于 `layout`，用于 IOC 身份与页级筛选归属。普通/密集看板和详情报表共用同一个呈现 Module；meta.title仍是目录标题。普通看板须显式 `dashboardToolbar:"hidden"`，没有IOC声明的旧页面保持原布局。正文独立章节页头可保留，首个业务reportHeader或projectDetail不能重复承担页面身份。
+
+`identity`可省略；title不声明就没有标题占位，不回退meta.title。title显式参数引用缺值显示“未命名”；code、description、tags、facts缺值整体省略。编码用label/value；标签有唯一id及显式neutral/info/success/warning/danger色调，数组决定顺序。说明为纯文本，inline或键盘可达tooltip；不接受任意HTML。facts区分queryPeriod/latestDataPeriod/refreshedAt/generatedAt；value显式TextValue，不根据kind生成当前时间。统计期间应引用已应用filter。B1尚无HeaderFactReference/displayInputs，可信时间可通过已声明参数传入。
+
+`filterIds`依序认领已声明且静态可见的页级筛选。重复、不存在、隐藏、图表独立或详情私有筛选，以及与reportHeader重复认领均拒绝。已认领项从通用FilterBar排除，其余可见项保留。期间筛选原有Dashboard位置继续有效；report中的period须由IOC认领，期间语义和查询精度不变。详情单月仍用timePoint，不截断年季月来伪造单月；离散月份仍用dimension绑定，不能扩成连续区间。
+
+`presentation.density`为normal/compact；`collapse`为none/firstRow，缺省normal/none。firstRow按直接容器实际换行测量，折叠保留首行，隐藏项inert并关闭弹层；展开不改值、不查询。日期复用DatePicker/PeriodFilter；月→季→年→月保留月份锚点，近一年为当前月之前12完整月。锚点与展开是实例局部状态，不写入Page。
+
+`back:true`只表达返回意图。集成应用须同时提供非空`navigation.returnContext.entryId`与back函数才显示；直接打开无来源隐藏。B1没有完整视图快照或导航栈恢复。可选actions、有限枚举/单选、条件启用、V2候选、最新期上限和全页操作分别保留B2–B6规划，6.35不接受这些尚未交付字段。
+
+共用筛选协调对write/writeMany/控件/action/地图/URL恢复执行整组类型与边界校验；非法组整次拒绝。依赖变化一次清理所有后代，自动清空进入待确认门禁；用户显式选择或清空才解除。非空维度初值须经当前候选验证；loading/error/unavailable或不合法候选只暂停消费它的查询及下游，无关查询继续。候选重试读取当前依赖；成功和失败都检查代次，缓存按本实例、filterId、层级、完整规范化依赖隔离。只读拦截全部用户写入口，初始化/restore仍校验，静态隐藏不意味着停止查询。门禁同时约束目标表导出和整页静态准备。
+
+验收直接加载 `ioc-header-overview-demo`、`ioc-header-dense-filter-demo`、`ioc-header-detail-demo`、`ioc-header-month-set-demo`；查询使用本地DQE仿真条件回显，明确是合成验收。真实DQE、CloudIOC权限、Relay、门户和业务字段均需单独验证。
+
+## 可信期间事实输入（6.38）
+
+`RuntimeView` / JS `mount` 可传稳定的 `displayInputs:{getSnapshot,subscribe}`，订阅返回unsubscribe。snapshot为 `{contextRevision,timeZone,periods:{[fact]:DataPeriodFact}}`。ready事实含granularity(month/date)、latest，可选latestComplete、missingRanges、refreshedAt/generatedAt；其他状态为loading/empty/unavailable/error。时间戳必须带时区、按集成应用timeZone显示，不替换为浏览器当前时间。依赖筛选的事实携带filterRevision，与filter-change事件返回的修订匹配；独立数据域事实可省略。具名事实不能由Page/URL参数覆盖。
+
+同contextRevision事实更新保留已应用选择并重验相关候选/查询/导出；事实就绪时只初始化从未提供值的availability.initial，不能覆盖用户选择或合法URL。contextRevision改变立即停止旧实例、清除旧展示，集成应用必须destroy/remount。原输入源及所有订阅随实例销毁清理。此接口只接期间事实，不启用待审Condition。
+
+IOC `identity.facts[].value:{fact,part}` 只允许固定part latest/latestComplete/refreshedAt/generatedAt，并与kind匹配。状态仅影响该信息项；availability引用同一事实时才影响查询。身份标题与其他无关查询可继续显示。
+
+
+页面协议 6.39。结构真源为本册[schema.json](schema.json)，SHA256 `0807888a77d8710b9fd65166760bb094210dd2cbc7507ae72dd2f24d07a58cd3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -39,7 +65,7 @@ Schema位置：`#/properties/schemaVersion`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 |
+| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -73,6 +99,11 @@ Schema位置：`#/properties/schemaVersion`。
 | "6.32" | 柱/线/饼图隐含echartsOption呈现扩展，保护数据结构，单次降级与console诊断。 |
 | "6.33" | Tab 容器通过显式 URL 参数初始化活动页签。 |
 | "6.34" | Dashboard 指标卡前置连接文字与双侧受控间距。 |
+| "6.35" | IOC根级页头增量；保持独立详情单月与原有页面兼容。 |
+| "6.36" | 业务筛选选择规则、封闭枚举、结构树和依赖候选。 |
+| "6.37" | USD、金额范围和静态货币字段选择独立能力增量。 |
+| "6.38" | 复杂时间模式、可信期间事实及月份候选窗口。 |
+| "6.39" | 显式跨页传值与目标输入契约校验。 |
 
 <a id="schema-232f70726f706572746965732f6964"></a>
 
@@ -267,6 +298,371 @@ Schema位置：`#/definitions/dashboardToolbar/anyOf/1/properties/note`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 补充说明文本。 |
+
+<a id="schema-232f70726f706572746965732f696f63486561646572"></a>
+
+### `$.iocHeader`
+
+Schema位置：`#/properties/iocHeader`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | IOC页级身份与筛选位置声明；不承担查询编排，见page.md的IOC公共页头。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e74697479"></a>
+
+### `$.iocHeader.identity`
+
+Schema位置：`#/properties/iocHeader/properties/identity`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 可选身份行；省略不自动使用目录标题。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f7469746c65"></a>
+
+### `$.iocHeader.identity.title`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/title`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 展示标题；是否必需由此处Schema分支决定，不能推断为空时的行为。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f7469746c652f616c6c4f662f30"></a>
+
+### `$.iocHeader.identity.title · allOf[0]`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/title/allOf/0`。目标：[#/definitions/nonEmptyTextValue](params-and-text-values.md#schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/nonEmptyTextValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f636f6465"></a>
+
+### `$.iocHeader.identity.code`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/code`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["label","value"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 标签与业务编码整体显示；缺值整体省略。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f636f64652f70726f706572746965732f6c6162656c"></a>
+
+### `$.iocHeader.identity.code.label`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/code/properties/label`。目标：[#/definitions/nonEmptyTextValue](params-and-text-values.md#schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/nonEmptyTextValue | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f636f64652f70726f706572746965732f76616c7565"></a>
+
+### `$.iocHeader.identity.code.value`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/code/properties/value`。目标：[#/definitions/nonEmptyTextValue](params-and-text-values.md#schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/nonEmptyTextValue | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f6465736372697074696f6e"></a>
+
+### `$.iocHeader.identity.description`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/description`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["text"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 说明文本。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f6465736372697074696f6e2f70726f706572746965732f74657874"></a>
+
+### `$.iocHeader.identity.description.text`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/description/properties/text`。目标：[#/definitions/nonEmptyTextValue](params-and-text-values.md#schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/nonEmptyTextValue | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 纯文本说明，沿用TextValue引用。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f6465736372697074696f6e2f70726f706572746965732f70726573656e746174696f6e"></a>
+
+### `$.iocHeader.identity.description.presentation`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/description/properties/presentation`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["inline","tooltip"] | Schema未设默认；装配/运行时默认见语义说明 | 说明直接显示或通过键盘可达说明入口展开。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "inline" | 在身份区直接显示说明。 |
+| "tooltip" | 通过可聚焦说明入口展开完整文字。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f74616773"></a>
+
+### `$.iocHeader.identity.tags`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/tags`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 标签集合。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f746167732f6974656d73"></a>
+
+### `$.iocHeader.identity.tags[]`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/tags/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["id","text"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f746167732f6974656d732f70726f706572746965732f6964"></a>
+
+### `$.iocHeader.identity.tags[].id`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/tags/items/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f746167732f6974656d732f70726f706572746965732f74657874"></a>
+
+### `$.iocHeader.identity.tags[].text`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/tags/items/properties/text`。目标：[#/definitions/nonEmptyTextValue](params-and-text-values.md#schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/nonEmptyTextValue | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 业务标签文字；缺值不产生空色块。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f746167732f6974656d732f70726f706572746965732f746f6e65"></a>
+
+### `$.iocHeader.identity.tags[].tone`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/tags/items/properties/tone`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["neutral","info","success","warning","danger"] | Schema未设默认；装配/运行时默认见语义说明 | 受控内容语气/正负语义。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "neutral" | 中性标签，不推断业务含义。 |
+| "info" | 提示信息标签。 |
+| "success" | 显式成功语义标签。 |
+| "warning" | 显式提醒语义标签。 |
+| "danger" | 显式危险语义标签。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f6661637473"></a>
+
+### `$.iocHeader.identity.facts`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/facts`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 显式期间/时间事实；不根据类别自动生成当前时间。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f66616374732f6974656d73"></a>
+
+### `$.iocHeader.identity.facts[]`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/facts/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["id","kind","label","value"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f66616374732f6974656d732f70726f706572746965732f6964"></a>
+
+### `$.iocHeader.identity.facts[].id`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/facts/items/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f66616374732f6974656d732f70726f706572746965732f6b696e64"></a>
+
+### `$.iocHeader.identity.facts[].kind`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/facts/items/properties/kind`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["queryPeriod","latestDataPeriod","refreshedAt","generatedAt"] | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "queryPeriod" | 显式已应用查询期间。 |
+| "latestDataPeriod" | 由可信输入给出的最新数据期。 |
+| "refreshedAt" | 可信数据刷新时间，缺值省略。 |
+| "generatedAt" | 可信页面生成时间，缺值省略。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f66616374732f6974656d732f70726f706572746965732f6c6162656c"></a>
+
+### `$.iocHeader.identity.facts[].label`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/facts/items/properties/label`。目标：[#/definitions/nonEmptyTextValue](params-and-text-values.md#schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/nonEmptyTextValue | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f66616374732f6974656d732f70726f706572746965732f76616c7565"></a>
+
+### `$.iocHeader.identity.facts[].value`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/facts/items/properties/value`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f66616374732f6974656d732f70726f706572746965732f76616c75652f616e794f662f30"></a>
+
+### `$.iocHeader.identity.facts[].value · anyOf[0]`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/0`。目标：[#/definitions/nonEmptyTextValue](params-and-text-values.md#schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/nonEmptyTextValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f66616374732f6974656d732f70726f706572746965732f76616c75652f616e794f662f31"></a>
+
+### `$.iocHeader.identity.facts[].value · anyOf[1]`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["fact","part"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f66616374732f6974656d732f70726f706572746965732f76616c75652f616e794f662f312f70726f706572746965732f66616374"></a>
+
+### `$.iocHeader.identity.facts[].value · anyOf[1].fact`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/1/properties/fact`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6964656e746974792f70726f706572746965732f66616374732f6974656d732f70726f706572746965732f76616c75652f616e794f662f312f70726f706572746965732f70617274"></a>
+
+### `$.iocHeader.identity.facts[].value · anyOf[1].part`
+
+Schema位置：`#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/1/properties/part`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["latest","latestComplete","refreshedAt","generatedAt"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "latest" | 事实粒度下最新有数据期间，不隐含完成。 |
+| "latestComplete" | 事实粒度下最新完成期间；缺少时不可回退latest。 |
+| "refreshedAt" | 可信服务实际刷新时间，使用带时区ISO输入；不取浏览器当前时间。 |
+| "generatedAt" | 可信产物生成时间，使用带时区ISO输入；不取浏览器当前时间。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6261636b"></a>
+
+### `$.iocHeader.back`
+
+Schema位置：`#/properties/iocHeader/properties/back`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | const=true | Schema未设默认；装配/运行时默认见语义说明 | 返回意图；必须同时有合法returnContext和back处理函数。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| true | 用于选择$.iocHeader.back分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f66696c746572496473"></a>
+
+### `$.iocHeader.filterIds`
+
+Schema位置：`#/properties/iocHeader/properties/filterIds`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 按序唯一认领静态可见的页级筛选；不含图表独立或详情私有筛选。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f66696c7465724964732f6974656d73"></a>
+
+### `$.iocHeader.filterIds[]`
+
+Schema位置：`#/properties/iocHeader/properties/filterIds/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f70726573656e746174696f6e"></a>
+
+### `$.iocHeader.presentation`
+
+Schema位置：`#/properties/iocHeader/properties/presentation`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 仅改变密度和折叠，不改变筛选语义。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f70726573656e746174696f6e2f70726f706572746965732f64656e73697479"></a>
+
+### `$.iocHeader.presentation.density`
+
+Schema位置：`#/properties/iocHeader/properties/presentation/properties/density`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["normal","compact"] | Schema未设默认；装配/运行时默认见语义说明 | 普通或紧凑页头。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "normal" | 正常密度（缺省）。 |
+| "compact" | 紧凑密度，不改查询。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f70726573656e746174696f6e2f70726f706572746965732f636f6c6c61707365"></a>
+
+### `$.iocHeader.presentation.collapse`
+
+Schema位置：`#/properties/iocHeader/properties/presentation/properties/collapse`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["none","firstRow"] | Schema未设默认；装配/运行时默认见语义说明 | 保持全部筛选或按实测首行折叠；隐藏项退出焦点序列。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "none" | 全部展开（缺省）。 |
+| "firstRow" | 按实际换行收起到首行。 |
+
+<a id="schema-232f70726f706572746965732f73747269637455524c496e70757473"></a>
+
+### `$.strictURLInputs`
+
+Schema位置：`#/properties/strictURLInputs`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | const=true | Schema未设默认；装配/运行时默认见语义说明 | 显式开启目标页URL输入严格校验；省略保留兼容读取，文档规范化升版本不会自动开启。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| true | 用于选择$.strictURLInputs分支；同分支其它约束同时成立。 |
 
 <a id="schema-232f70726f706572746965732f706172616d73"></a>
 
@@ -819,6 +1215,8 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - `schema-structure`：Page Schema 结构校验（ajv allErrors 文案与顺序）。反例：[missing-schema-version](errors/missing-schema-version.json)、[unknown-top-level-field](errors/unknown-top-level-field.json)、[layout-span-out-of-range](errors/layout-span-out-of-range.json)、[field-id-pattern](errors/field-id-pattern.json)、[sections-empty](errors/sections-empty.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `schema-version-supported`：schemaVersion 必须是当前主版本内的受支持次版本。反例：[version-major-unsupported](errors/version-major-unsupported.json)、[version-minor-ahead](errors/version-minor-ahead.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `detail-view-component-types`：详情只允许说明、图表和表格；共享 Schema 其它组件分支有显式拒绝见证。反例：[detail-component-reject-reportheader](errors/detail-component-reject-reportheader.json)、[detail-component-reject-metriccard](errors/detail-component-reject-metriccard.json)、[detail-component-reject-mapchart](errors/detail-component-reject-mapchart.json)、[detail-component-reject-tabcontainer](errors/detail-component-reject-tabcontainer.json)、[detail-component-reject-compositecard](errors/detail-component-reject-compositecard.json)、[detail-component-reject-rankingcard](errors/detail-component-reject-rankingcard.json)、[detail-component-reject-rankingdetailcard](errors/detail-component-reject-rankingdetailcard.json)、[detail-component-reject-keyvaluepanel](errors/detail-component-reject-keyvaluepanel.json)、[detail-component-reject-categorybreakdown](errors/detail-component-reject-categorybreakdown.json)、[detail-component-reject-fieldtext](errors/detail-component-reject-fieldtext.json)、[detail-component-reject-aisummary](errors/detail-component-reject-aisummary.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `ioc-header`：6.35 页级IOC身份与唯一筛选归属。反例：[ioc-header-before-6.35](errors/ioc-header-before-6.35.json)、[ioc-header-empty](errors/ioc-header-empty.json)、[ioc-header-toolbar-conflict](errors/ioc-header-toolbar-conflict.json)、[ioc-header-hidden-filter](errors/ioc-header-hidden-filter.json)、[ioc-header-missing-filter](errors/ioc-header-missing-filter.json)、[ioc-header-duplicate-identity](errors/ioc-header-duplicate-identity.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `time-extensions`：6.38 显式时间模式、可信期间事实、快捷范围及V2月份窗口。反例：[time-before-6.38](errors/time-before-6.38.json)、[time-case-missing](errors/time-case-missing.json)、[time-query-xor](errors/time-query-xor.json)、[time-period-mismatch](errors/time-period-mismatch.json)、[time-output-mismatch](errors/time-output-mismatch.json)、[time-default-week](errors/time-default-week.json)、[time-availability-default](errors/time-availability-default.json)、[time-fact-kind](errors/time-fact-kind.json)、[time-window-static-options](errors/time-window-static-options.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -827,19 +1225,31 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - [detail-views](examples/detail-views.json)：完整合法页面；查询仅为静态契约证据。
 - [report-date-filters-page](examples/report-date-filters-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-export-detail-branches](examples/reference-export-detail-branches.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-page](examples/ioc-header-page.json)：完整合法页面；查询仅为静态契约证据。
+- [time-modes-page](examples/time-modes-page.json)：完整合法页面；查询仅为静态契约证据。
+- [time-presets-page](examples/time-presets-page.json)：完整合法页面；查询仅为静态契约证据。
+- [availability-page](examples/availability-page.json)：完整合法页面；查询仅为静态契约证据。
+- [calendar-window-page](examples/calendar-window-page.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/page.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/schema/ioc-header.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/ioc-header.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/time-mode.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/period-facts.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/time-extension-validation.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 
 - `#/definitions/dashboardToolbar/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/dashboardToolbar`。
 - `#/definitions/dashboardToolbar/anyOf/1`：[合法完整页面](examples/component-pieChart.json)，JSON Pointer `#/dashboardToolbar`。
+- `#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/0`：[合法完整页面](examples/ioc-header-page.json)，JSON Pointer `#/iocHeader/identity/facts/0/value`。
+- `#/properties/iocHeader/properties/identity/properties/facts/items/properties/value/anyOf/1`：[合法完整页面](examples/availability-page.json)，JSON Pointer `#/iocHeader/identity/facts/1/value`。
 - `#/properties/params/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params`。
 - `#/properties/params/anyOf/1`：[合法完整页面](examples/report-date-filters-page.json)，JSON Pointer `#/params`。
 - `#/properties/filters/items/oneOf/0`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/filters/0`。
 - `#/properties/filters/items/oneOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/1`。
-- `#/properties/filters/items/oneOf/2`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/filters/0`。
+- `#/properties/filters/items/oneOf/2`：[合法完整页面](examples/availability-page.json)，JSON Pointer `#/filters/0`。
 - `#/properties/filters/items/oneOf/3`：[合法完整页面](examples/non-dimension-bindings-page.json)，JSON Pointer `#/filters/1`。
 - `#/properties/filters/items/oneOf/4`：[合法完整页面](examples/non-dimension-bindings-page.json)，JSON Pointer `#/filters/2`。
 - `#/properties/filters/items/oneOf/5`：[合法完整页面](examples/detail-views.json)，JSON Pointer `#/filters/0`。

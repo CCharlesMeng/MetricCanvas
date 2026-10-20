@@ -2,21 +2,23 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { DatePicker } from '@metriccanvas/ui';
-  import { currentTimeValue, timeFilterBoundaryError, validateCalendarTimeRange, type TimeRangePrecision, type TimeRangeValue } from '@metriccanvas/page/internal';
+  import { calendarEndpoint,currentTimeValue, timeFilterBoundaryError, validateCalendarTimeRange, type TimeRangePrecision, type TimeRangeValue } from '@metriccanvas/page/internal';
   interface Props {
     label?: string;
     precision?: TimeRangePrecision;
     required?: boolean;
+    max?:string;min?:string;blockedRanges?:readonly {from:string;to:string}[];disableFuture?:boolean;
     readOnly?: boolean;
     value: TimeRangeValue | null;
     onchange: (range: TimeRangeValue | null) => void;
   }
-  let { label, precision = 'date', required = false, readOnly = false, value, onchange }: Props = $props();
+  let { label, min,max,blockedRanges,disableFuture=true, precision = 'date', required = false, readOnly = false, value, onchange }: Props = $props();
   let from = $state(untrack(() => value?.from ?? ''));
   let to = $state(untrack(() => value?.to ?? ''));
   let error = $state('');
   let clock = $state(new Date());
-  const maximum = $derived(currentTimeValue('datetime', clock));
+  const datetimeMax=$derived(max&&!max.includes('T')?calendarEndpoint(max,true)+'T23:59':max);
+  const maximum = $derived(datetimeMax&&(!disableFuture||datetimeMax<currentTimeValue('datetime',clock))?datetimeMax:disableFuture?currentTimeValue('datetime',clock):undefined);
   const inputType = $derived(precision === 'datetime' ? 'datetime-local' : precision);
   $effect(() => { from = value?.from ?? ''; to = value?.to ?? ''; error = ''; });
   function emit() {
@@ -24,20 +26,21 @@
     if (!from || !to) { error = '请填写完整的起止期间'; return; }
     clock = new Date();
     const issues = validateCalendarTimeRange({ from, to }, precision);
-    error = issues[0]?.message ?? timeFilterBoundaryError({id:'range',type:'timeRange',precision}, {type:'timeRange',from,to}, clock) ?? '';
+    error = issues[0]?.message ?? timeFilterBoundaryError({id:'range',type:'timeRange',precision,min,max,blockedRanges:blockedRanges?[...blockedRanges]:undefined,disableFuture}, {type:'timeRange',from,to}, clock) ?? '';
     if (!error) onchange({ from, to });
   }
   function clear() { from = ''; to = ''; error = ''; onchange(null); }
 </script>
 
 {#if precision !== 'datetime'}
-  <DatePicker {label} {required} {precision} range disabled={readOnly} {value} onchange={next => { if (!next || !validateCalendarTimeRange(next, precision).length) onchange(next); }} />
+  <DatePicker {label} {required} {precision} {min} {max} {blockedRanges} {disableFuture} range disabled={readOnly} {value} onchange={next => { if (!next || !validateCalendarTimeRange(next, precision).length) onchange(next); }} />
 {:else}
 <div class="filter">
   {#if label}<span class="label">{label}</span>{/if}
   <input
     type={inputType}
     disabled={readOnly}
+    {min}
     max={maximum}
     onfocus={() => { clock = new Date(); }}
     aria-label={`${label ?? "期间"}开始`}
@@ -49,6 +52,7 @@
   <input
     type={inputType}
     disabled={readOnly}
+    {min}
     max={maximum}
     onfocus={() => { clock = new Date(); }}
     aria-label={`${label ?? "期间"}结束`}

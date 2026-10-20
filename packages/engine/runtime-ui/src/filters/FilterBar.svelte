@@ -3,6 +3,8 @@
   import type { PeriodRange } from '@metriccanvas/page/internal';
 </script>
 <script lang="ts">
+  import {selectedCase,appliedAmountRange} from '@metriccanvas/page/internal';
+  import { candidateScopeKey } from '../../../runtime/src/dimension-values';
   /**
    * 筛选栏:页面筛选器声明 → 对应控件的唯一分发点。
    *
@@ -22,6 +24,9 @@
   } from '../../../runtime/src';
   import DimensionFilter from './DimensionFilter.svelte';
   import HierarchyFilter from './HierarchyFilter.svelte';
+  import {timeControlLimits,type TimeControlContext} from './time-controls';
+  import {resolveRelativeTime,timeAvailabilityIssue,timeFilterBoundaryError} from '@metriccanvas/page/internal';
+  import ModeTimeRangeFilter from './ModeTimeRangeFilter.svelte';
   import PeriodFilter from './PeriodFilter.svelte';
   import TimeRangeFilter from './TimeRangeFilter.svelte';
   import TimePointFilter from './TimePointFilter.svelte';
@@ -31,10 +36,17 @@
   import { dimensionValueOf } from './cascade';
   import { visibleFilterDeclarations } from './filter-bar';
 
+  function closeInactiveMenus(node:HTMLElement) {
+    const observer=new MutationObserver(()=>{ if(node.closest('[inert]')) for(const details of node.querySelectorAll('details[open]')) details.removeAttribute('open'); });
+    const ancestor=node.closest('[data-ioc-filter]');
+    if(ancestor)observer.observe(ancestor,{attributes:true,attributeFilter:['inert']});
+    return {destroy:()=>observer.disconnect()};
+  }
   type DimensionDeclaration = Extract<FilterDeclaration, { type: 'dimension' }>;
 
   interface Props {
     declarations: FilterDeclaration[];
+    timeContext?:TimeControlContext;
     values: FilterValues;
     candidates: DimensionValuesSnapshots;
     ondimension: (declaration: DimensionDeclaration, values: string[], level?: string) => void;
@@ -44,12 +56,14 @@
     onnumberrange: (filterId: string, range: NumberRangeValue | null) => void;
     onsearch: (filterId: string, query: string) => void;
     /** 保留筛选信息架构但不建立可变状态。 */
+    onretry?: (filterId:string)=>void;
     readOnly?: boolean;
     note?: string;
   }
 
   let {
     declarations,
+    timeContext={},
     values,
     candidates,
     ondimension,
@@ -58,11 +72,20 @@
     onboolean,
     onnumberrange,
     onsearch,
+    onretry,
     readOnly = false,
     note
   }: Props = $props();
 
+  const hintPrefix=$props.id();
   const visible = $derived(visibleFilterDeclarations(declarations));
+  let presetError=$state('');
+  function preset(filter:Extract<FilterDeclaration,{type:'timeRange'}>,range:import('@metriccanvas/page/internal').RelativeTimeExpression){
+    const now=new Date(),current=timeRangeValue(filter.id),precision=current?.mode==='month'||filter.precision==='month'?'month':'date';
+    const next={...resolveRelativeTime(range,now,precision),...(current?.mode?{mode:current.mode}:{})};
+    presetError=timeAvailabilityIssue(filter,{type:'timeRange',...next},timeContext.snapshot,timeContext.revision)??timeFilterBoundaryError(filter,{type:'timeRange',...next},now)??'';
+    if(!presetError)ontimerange(filter.id,next);
+  }
 
   function timeRangeValue(filterId: string): TimeRangeValue | null {
     const value = values.get(filterId);
@@ -100,15 +123,19 @@
   }
 
   function dimensionDisplay(declaration: DimensionDeclaration): string {
-    return dimensionValueOf(values, declaration.id).values[0] ?? declaration.emptyLabel ?? declaration.label ?? '全部';
+    const selected=dimensionValueOf(values,declaration.id).values;
+    return (selected.length?selected.map(value=>declaration.options?.find(option=>option.value===value)?.label??value).join('、'):undefined) ?? declaration.emptyLabel ?? declaration.label ?? '全部';
   }
 </script>
 
-<div class:read-only={readOnly} class="filter-bar">
+<div use:closeInactiveMenus class:read-only={readOnly} class="filter-bar">
   {#each visible as declaration (declaration.id)}
-    <div data-filter-control data-filter-id={declaration.id} class="filter-control">
-    {#if declaration.type === 'timeRange' && declaration.display === 'period'}
-      <PeriodFilter label={declaration.label} precision={declaration.precision === 'month' ? 'month' : 'date'} value={timeRangeValue(declaration.id) as PeriodRange | null} {readOnly} onchange={next=>ontimerange(declaration.id,next)}/>
+    {@const limits=timeControlLimits(declaration,timeContext)}
+    <div data-filter-control data-filter-id={declaration.id} class="filter-control" role="group" aria-label={declaration.label} aria-describedby={typeof declaration.hint==='string'?`${hintPrefix}-${declaration.id}`:undefined}>
+    {#if declaration.type === 'timeRange' && declaration.display === 'modes'}
+      <ModeTimeRangeFilter {declaration} value={timeRangeValue(declaration.id)} readOnly={readOnly||!!limits.reason} max={limits.max} blockedRanges={limits.blockedRanges} snapshot={timeContext.snapshot} revision={timeContext.revision} onchange={next=>ontimerange(declaration.id,next)}/>
+    {:else if declaration.type === 'timeRange' && declaration.display === 'period'}
+      <PeriodFilter min={declaration.min} max={limits.max} blockedRanges={limits.blockedRanges} label={declaration.label} precision={declaration.precision === 'month' ? 'month' : 'date'} value={timeRangeValue(declaration.id) as PeriodRange | null} readOnly={readOnly||!!limits.reason} onchange={next=>ontimerange(declaration.id,next)}/>
     {:else if readOnly && declaration.type === 'boolean'}
       <label class="readonly-boolean">
         <input type="checkbox" checked={booleanValue(declaration.id)} disabled />
@@ -127,26 +154,28 @@
       </button>
     {:else if readOnly}
       <button type="button" class="readonly-select" aria-label={declaration.label} disabled>
-        <span data-filter-display>{declaration.label ?? '筛选'}</span>
+        <span data-filter-display>{declaration.label ?? '筛选'}{#if declaration.type === 'numberRange' && (numberRangeValue(declaration.id).from !== undefined || numberRangeValue(declaration.id).to !== undefined)}：{declaration.units?appliedAmountRange(declaration,numberRangeValue(declaration.id),values):`${numberRangeValue(declaration.id)?.from??'不限'}～${numberRangeValue(declaration.id)?.to??'不限'}`}{:else if declaration.type === 'search' && searchValue(declaration.id)}：{searchValue(declaration.id)}{/if}</span>
       </button>
     {:else if declaration.type === 'dimension' && declaration.hierarchy}
       {@const current = dimensionValueOf(values, declaration.id)}
-      <HierarchyFilter
+      <HierarchyFilter selection={declaration.selection??(declaration.options?{mode:'multiple'}:undefined)} structural={declaration.treeSelection==='level'} onretry={onretry?()=>onretry(declaration.id):undefined}
         label={declaration.label}
         emptyLabel={declaration.emptyLabel}
+        candidateLevels={Object.fromEntries(declaration.hierarchy.map(item=>[item.id,dimensionValuesSnapshot(candidates,candidateScopeKey(declaration.id,item.dimension,item.id))]))}
         levels={declaration.hierarchy}
         level={current.level ?? declaration.defaultLevel ?? declaration.hierarchy[0]!.id}
         values={current.values}
         picker={declaration.hierarchyPicker ?? 'tabs'}
         display={declaration.display ?? 'select'}
-        candidates={dimensionValuesSnapshot(candidates, currentDimension(declaration))}
+        candidates={dimensionValuesSnapshot(candidates, candidates.has(candidateScopeKey(declaration.id,currentDimension(declaration),current.level ?? declaration.defaultLevel ?? declaration.hierarchy[0]?.id)) ? candidateScopeKey(declaration.id,currentDimension(declaration),current.level ?? declaration.defaultLevel ?? declaration.hierarchy[0]?.id) : currentDimension(declaration))}
         onchange={(next) => ondimension(declaration, next.values, next.level)}
       />
     {:else if declaration.type === 'dimension'}
-      <DimensionFilter
+      <DimensionFilter selection={declaration.selection??(declaration.options?{mode:'multiple'}:undefined)}
+        onretry={onretry?()=>onretry(declaration.id):undefined}
         label={declaration.label}
         emptyLabel={declaration.emptyLabel}
-        candidates={dimensionValuesSnapshot(candidates, declaration.dimension)}
+        candidates={declaration.options?{status:'ready',candidates:declaration.options}:dimensionValuesSnapshot(candidates, candidates.has(candidateScopeKey(declaration.id,declaration.dimension)) ? candidateScopeKey(declaration.id,declaration.dimension) : declaration.dimension)}
         value={dimensionValueOf(values, declaration.id).values}
         display={declaration.display ?? 'select'}
         onchange={(next) => ondimension(declaration, next)}
@@ -155,6 +184,7 @@
       <TimeRangeFilter
         label={declaration.label}
         required={declaration.required}
+        readOnly={!!limits.reason} min={declaration.min} max={limits.max} blockedRanges={limits.blockedRanges} disableFuture={declaration.disableFuture}
         precision={declaration.precision ?? 'date'}
         value={timeRangeValue(declaration.id)}
         onchange={(range) => ontimerange(declaration.id, range)}
@@ -164,7 +194,7 @@
         label={declaration.label}
         required={declaration.required}
         granularity={declaration.granularity}
-        min={declaration.min}
+        min={declaration.min} max={limits.max} blockedRanges={limits.blockedRanges} readOnly={!!limits.reason}
         disableFuture={declaration.disableFuture}
         value={timePointValue(declaration.id)}
         onchange={(value) => ontimepoint(declaration.id, declaration.granularity, value)}
@@ -175,9 +205,11 @@
         value={booleanValue(declaration.id)}
         onchange={(checked) => onboolean(declaration.id, checked)}
       />
+    {:else if declaration.type === 'numberRange'&&declaration.units&&dimensionValueOf(values,declaration.units.filterId).values.length!==1}
+      <span>等待合法币种选择</span>
     {:else if declaration.type === 'numberRange'}
       {@const range = numberRangeValue(declaration.id)}
-      <NumberRangeFilter
+      <NumberRangeFilter declaration={declaration} unit={declaration.units?selectedCase(declaration.units.cases,dimensionValueOf(values,declaration.units.filterId).values):undefined}
         label={declaration.label}
         from={range.from}
         to={range.to}
@@ -190,12 +222,18 @@
         onchange={(query) => onsearch(declaration.id, query)}
       />
     {/if}
+    {#if limits.reason}<span role="status">{limits.reason}</span>{/if}
+    {#if declaration.type==='timeRange'&&declaration.presets&&!readOnly}<div class="time-presets" role="group" aria-label="时间快捷预设">{#each declaration.presets as item}<button type="button" disabled={!!limits.reason} onclick={()=>preset(declaration,item.range)}>{item.label}</button>{/each}</div>{/if}
+    {#if typeof declaration.hint==='string'}<span class="filter-hint" id={`${hintPrefix}-${declaration.id}`} data-filter-hint>{declaration.hint}</span>{/if}
     </div>
   {/each}
+  {#if presetError}<p role="status">{presetError}</p>{/if}
   {#if note}<p class="filter-note">{note}</p>{/if}
 </div>
 
 <style>
+.time-presets{display:flex;flex-wrap:wrap;gap:4px;max-width:100%}.time-presets button{background:#fff;border:1px solid #e4e4e7;border-radius:4px;color:#52525b;padding:4px 7px;font:inherit;font-size:12px;cursor:pointer}
+.filter-hint{color:#71717a;font-size:12px;max-width:280px;overflow-wrap:anywhere}.filter-control{flex-wrap:wrap}
   .filter-bar {
     min-width:0; max-width:100%; box-sizing:border-box;
     display: flex;

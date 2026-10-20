@@ -146,6 +146,7 @@ const NUMERIC_FORMATS = new Set<ValueFormatPreset>([
   'compact-million-2',
   'compact-yi-1',
   'cny-adaptive',
+  'usd-adaptive',
   'percent-0',
   'percent-1',
   'percent-2',

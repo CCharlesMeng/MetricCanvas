@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { iocHeaderZ } from './ioc-header';
 import { supportedVersions } from '../version';
 import { idZ, nonEmptyTextValueZ, pageParamZ, groupedPageParamsZ } from './primitives';
 import { componentZ } from './component';
@@ -104,6 +105,8 @@ export const pageDocumentSchemaZ = z
     layout: pageLayoutFormZ.optional(),
     layoutForm: pageLayoutFormZ.optional(),
     dashboardToolbar: dashboardToolbarZ.optional(),
+    iocHeader: iocHeaderZ.optional(),
+    strictURLInputs: z.literal(true).optional(),
     params: z.union([z.array(pageParamZ).min(1), groupedPageParamsZ]).optional(),
     dataSources: z.record(idZ, dataSourceDocumentZ),
     filters: z.array(filterDeclarationZ).optional(),

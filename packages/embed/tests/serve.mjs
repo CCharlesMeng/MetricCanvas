@@ -1,3 +1,5 @@
+import {iocTimeCandidates} from './fixtures/ioc-time-candidates.mjs';
+import {iocBusinessCandidates} from './fixtures/ioc-header-business-candidates.mjs';
 import { createReadStream, readdirSync } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { createServer } from 'node:http';
@@ -8,7 +10,7 @@ const root = resolve(import.meta.dirname, '..');
 const pagesRoot = resolve(root, '../../pages');
 const contentTypes = new Map([
   ['.html', 'text/html; charset=utf-8'],
-  ['.js', 'text/javascript; charset=utf-8'],
+  ['.js', 'text/javascript; charset=utf-8'],['.mjs','text/javascript; charset=utf-8'],
   ['.json', 'application/json; charset=utf-8'],
   ['.svg', 'image/svg+xml']
 ]);
@@ -26,6 +28,11 @@ createServer(async (request, response) => {
       response.writeHead(200, {'content-type':'application/json; charset=utf-8'});
       createReadStream(resolve(root,'../page/fixtures/contract-valid/report-date-filters-page.json')).pipe(response);
       return;
+    }
+    if(pathname==='/__fixtures/filter-candidates' && request.method==='POST'){
+      const chunks=[];for await(const chunk of request)chunks.push(chunk);
+      const value=JSON.parse(Buffer.concat(chunks).toString('utf8'));
+      response.writeHead(200,{'content-type':'application/json'}).end(JSON.stringify(iocTimeCandidates(value)??iocBusinessCandidates(value)));return;
     }
     if (pathname === DQE_EXECUTE_PATH) {
       await respondDqe(request, response);
