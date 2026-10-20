@@ -9,6 +9,10 @@ for(const precision of ['date','month'])test(`period selection queries, restorat
     await route.fulfill({json:{retCode:'CBC.0000',results:items.map((q:any)=>({code:'SUCCESS',data:[{entry:`${q.filter.time.start}~${q.filter.time.end}`,[q.output_metrics[0]]:42}],total_count:1}))}});
   });
   const path='/pages/dashboard-period-filter'+(precision==='month'?'-month':'');
+  if (precision === 'date') {
+    const fixture=readFileSync(new URL('../../../page/fixtures/contract-valid/dashboard-period-filter.json',import.meta.url),'utf8');
+    await page.route('**/pages/dashboard-period-filter.json',route=>route.fulfill({contentType:'application/json',body:fixture}));
+  }
   if (precision === 'month') {
     const fixture = readFileSync(new URL('../../../page/fixtures/contract-valid/dashboard-period-filter-month.json', import.meta.url), 'utf8');
     await page.route('**/pages/dashboard-period-filter-month.json', route => route.fulfill({ contentType: 'application/json', body: fixture }));
@@ -70,6 +74,8 @@ test('default Dashboard period picker disables future years, quarters and months
     const items=route.request().postDataJSON().dsl_list;
     await route.fulfill({json:{retCode:'CBC.0000',results:items.map(()=>({code:'SUCCESS',data:[],total_count:0}))}});
   });
+  const fixture=readFileSync(new URL('../../../page/fixtures/contract-valid/dashboard-period-filter.json',import.meta.url),'utf8');
+  await page.route('**/pages/dashboard-period-filter.json',route=>route.fulfill({contentType:'application/json',body:fixture}));
   await page.goto('/pages/dashboard-period-filter?period-filter=quarter%3A2026-Q3');
   const period=page.locator('[data-period-filter]');await expect(period.getByRole('combobox')).toHaveValue('2026-05');
   await period.getByRole('button',{name:'季',exact:true}).click();await period.getByRole('combobox').click();

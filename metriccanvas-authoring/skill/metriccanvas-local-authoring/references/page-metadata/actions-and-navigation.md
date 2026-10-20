@@ -71,7 +71,7 @@
 6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
 
 
-页面协议 6.40。结构真源为本册[schema.json](schema.json)，SHA256 `90400cbd2aa370809afb7fa5124ef0b62c049da7e48493bfd98d4668663704df`。字段表自动生成；可选不等于有默认值。
+页面协议 6.41。结构真源为本册[schema.json](schema.json)，SHA256 `b0a5b66ced329ba98a5b36fc6b3e9da19a5c1d7eb7029eb032843ea703dd4597`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1059,7 +1059,7 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 - `#/definitions/componentAction/anyOf/0/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/1/props/actions/0`。
 - `#/definitions/componentAction/anyOf/0/anyOf/1`：[合法完整页面](examples/component-button.json)，JSON Pointer `#/sections/0/components/0/props/action`。
 - `#/definitions/componentAction/anyOf/1`：[合法完整页面](examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/0/props/actions/0`。
-- `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/0`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/1/navigate/query/city`。
+- `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/0`：[合法完整页面](examples/unified-overflow-header.json)，JSON Pointer `#/sections/0/components/0/props/actions/0/navigate/query/page-title`。
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/1`：[合法完整页面](examples/url-navigation-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/0/navigate/query/project`。
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/1/navigate/query/region`。
 - `#/definitions/componentAction/anyOf/2`：[合法完整页面](examples/detail-views.json)，JSON Pointer `#/sections/1/components/0/props/actions/0`。

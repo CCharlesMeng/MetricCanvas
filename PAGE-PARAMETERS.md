@@ -2,7 +2,7 @@
 
 <a id="页面参数维度与时间的现行方案"></a>
 
-本文是页面参数的使用专题，承接[页面元数据总规范](PAGE-METADATA.md)。当前作者协议为 **6.40**；版本与可读范围以总规范及生成契约为准。本文先说明当前分层参数、打开与保存、顶部时间筛选和共享窗口规则，再说明程序化提取，最后集中保留旧数组参数的兼容用法。字段表由Schema生成，见[参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
+本文是页面参数的使用专题，承接[页面元数据总规范](PAGE-METADATA.md)。当前作者协议为 **6.41**；版本与可读范围以总规范及生成契约为准。本文先说明当前分层参数、打开与保存、顶部时间筛选和共享窗口规则，再说明程序化提取，最后集中保留旧数组参数的兼容用法。字段表由Schema生成，见[参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
 
 ## 阅读入口
 
@@ -72,6 +72,8 @@
 参数文字用 `{param:"report-period",format:"period"}` 显示固定期间。需要文字随读者筛选变化时，用 `{filter:"report-period-filter",format:"period"}`；两者分别引用参数ID和筛选器ID。精确格式与缺值规则见[文本取值参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
 
 ## 时间参数与顶部筛选
+
+6.41 统一页头通过 `iocHeader.filterIds` 认领已声明的时间筛选。仅选年份用 `periodModes:["year"]`；参数初始化需 `initialParam` 与 `initialMode:"year"`，不再声明 default，参数恰好覆盖精度匹配的完整自然年。声明和限制见[筛选模块](docs/page-metadata/filters.md)。
 
 时间点可在6.24起使用 `min` 指定包含式下限，格式须与 granularity 一致。例：`{"id":"report-month","type":"timePoint","granularity":"month","required":true,"default":"2026-10","min":"2020-06"}`。越界输入不能更新已应用月份；参数初值越界则拒绝初始化。该限制不裁剪近N期窗口；详细行为见[筛选声明](docs/page-metadata/filters.md#时间点下限624)，完整场景见[商务SDT单月报告](pages/business-sdt-report-monthly.json)。
 

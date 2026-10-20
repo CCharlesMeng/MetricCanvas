@@ -1,6 +1,22 @@
 {
   "invariants": [
     {
+      "id": "unified-page-header",
+      "description": "6.41 唯一页头及自然年选择",
+      "valid": [
+        "unified-year-header",
+        "unified-overflow-header"
+      ],
+      "invalid": [
+        "unified-header-version",
+        "unified-header-conflict",
+        "period-modes-empty",
+        "period-modes-duplicate",
+        "period-modes-default",
+        "period-modes-plain-range"
+      ]
+    },
+    {
       "id": "conditional-presentation",
       "description": "6.35共用展示条件、稳定目标和本地行边界",
       "valid": [

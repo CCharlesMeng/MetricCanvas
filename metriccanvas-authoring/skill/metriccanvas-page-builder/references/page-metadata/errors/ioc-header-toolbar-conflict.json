@@ -4,12 +4,31 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "IOC 看板必须显式关闭通用工具栏",
+      "message": "唯一页头实现及行内布局、更多筛选和只读说明 由 6.41 引入，文档声明的是 6.36",
       "paths": [
-        "/dashboardToolbar"
+        "/iocHeader"
       ]
     }
   ],
-  "inputExcerpt": {},
+  "inputExcerpt": {
+    "iocHeader": {
+      "identity": {
+        "title": "项目概览",
+        "description": {
+          "…": "共1个键"
+        },
+        "tags": [
+          "…（共1项）"
+        ],
+        "facts": [
+          "…（共1项）"
+        ]
+      },
+      "filterIds": [
+        "period",
+        "region"
+      ]
+    }
+  },
   "fullInput": "page/conformance/invalid/ioc-header-toolbar-conflict.json"
 }

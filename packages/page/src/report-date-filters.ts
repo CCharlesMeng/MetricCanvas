@@ -48,8 +48,13 @@ export function reportDateFilterErrors(page: Page): TypedError[] {
         if (!filter.initialParam && !isPeriodSelection(filter.default)) error(`${path}/default`, '期间筛选需要期间默认选择或参数初值');
         if (filter.initialParam && !filter.initialMode) error(`${path}/initialMode`, '参数初始化期间筛选必须显式声明模式');
         if (filter.initialMode && !filter.initialParam) error(`${path}/initialMode`, 'initialMode 只用于参数初始化');
+        if (filter.periodModes) {
+          if (new Set(filter.periodModes).size !== filter.periodModes.length) error(`${path}/periodModes`, '期间模式不能重复');
+          if (isPeriodSelection(filter.default) && !filter.periodModes.includes(filter.default.mode)) error(`${path}/default/mode`, '默认期间模式必须在 periodModes 中');
+          if (filter.initialMode && !filter.periodModes.includes(filter.initialMode)) error(`${path}/initialMode`, '参数初始化期间模式必须在 periodModes 中');
+        }
         if (isPeriodSelection(filter.default)) { try { resolvePeriodSelection(filter.default,new Date(2026,0,1),filter.precision === 'month' ? 'month' : 'date'); } catch { error(`${path}/default`,'期间默认选择不合法'); } }
-      } else if (isPeriodSelection(filter.default) || filter.initialMode) error(path,'期间选择只能用于 display=period');
+      } else if (isPeriodSelection(filter.default) || filter.initialMode || filter.periodModes) error(path,'期间选择只能用于 display=period');
     }
     if (filter.required && filter.default === undefined && !filter.initialParam && !filter.availability?.initial && !(filter.type==='timeRange'&&filter.display==='modes')) error(`/filters/${index}`, '必需日期筛选器需要 default 或 initialParam 初值');
     if (filter.type === 'timeRange' && filter.display !== 'period' && filter.precision === 'month' && filter.default !== undefined &&

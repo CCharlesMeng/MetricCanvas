@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.40",
-  "schemaSha256": "90400cbd2aa370809afb7fa5124ef0b62c049da7e48493bfd98d4668663704df",
+  "schemaVersion": "6.41",
+  "schemaSha256": "b0a5b66ced329ba98a5b36fc6b3e9da19a5c1d7eb7029eb032843ea703dd4597",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -68,7 +68,7 @@
     },
     {
       "file": "packages/page/src/ioc-header.ts",
-      "sha256": "f01ae162f2d5c8fee142bded984bba9e6ea4e4882429e2c4fa201d15c336b5a0"
+      "sha256": "53fceb1cc9a33831adbff2201000d9bb40c20a1a502005acb1f5a6196235d73a"
     },
     {
       "file": "packages/page/src/metric-before.ts",
@@ -104,7 +104,7 @@
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
-      "sha256": "144437178c4da9a371bf558fd4b3895a4ee642fe9030f35eef3672777f0998d9"
+      "sha256": "2dec9e76a7140a1a1c4b590385d054539b9f35afccd67908fc8f26afeb7c8b8c"
     },
     {
       "file": "packages/page/src/report-export.ts",
@@ -196,11 +196,11 @@
     },
     {
       "file": "packages/page/src/schema/filter.ts",
-      "sha256": "2deab4351d250d8d7c722ee6e2a39deb0f7a2ee47a78812ba8ae0c23bb6c198d"
+      "sha256": "6807a701658186b728070dc316a736746db1a036d3e06a727b5daf400918aa17"
     },
     {
       "file": "packages/page/src/schema/ioc-header.ts",
-      "sha256": "e0bcde66e59c5696bae978451c7b88887b0acd8cbf803b52249a1b8f87804905"
+      "sha256": "ef9d20c558423c60151f31453ea35e02acb379c5992651c81c2ae632be66e8a2"
     },
     {
       "file": "packages/page/src/schema/navigation.ts",
@@ -208,7 +208,7 @@
     },
     {
       "file": "packages/page/src/schema/page.ts",
-      "sha256": "780af22770cd0a973f33cbea5635df50bf3a2513ccf3c08f85ea4dd0cc04777c"
+      "sha256": "219d5e31436b875577f698b4d3815e273c298562fccfb4249bb4af4ee8fdee7d"
     },
     {
       "file": "packages/page/src/schema/presentation.ts",
@@ -228,7 +228,7 @@
     },
     {
       "file": "packages/page/src/time-filter-boundary.ts",
-      "sha256": "2f5e235a84946297e586cc0aafa1ffaac407dd8ffc263654404a37edb2dfd438"
+      "sha256": "9da5a32596a8b0ea6da3ab9c9e7d859f04086c45f9193ba69820abf0c5a13ef5"
     },
     {
       "file": "packages/page/src/time-mode.ts",
@@ -252,7 +252,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "ab9744fc93b3f44706343f8b18c2882985881d4b7b405c5241ecdfbb834cc74d"
+      "sha256": "b4649cddcea374ecd86474884a17e3a732d8f84d03c325e7fc585c61c08225d4"
     }
   ],
   "modules": {
@@ -276,7 +276,9 @@
         "time-modes-page",
         "time-presets-page",
         "availability-page",
-        "calendar-window-page"
+        "calendar-window-page",
+        "unified-year-header",
+        "unified-overflow-header"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -294,7 +296,8 @@
         "schema-version-supported",
         "detail-view-component-types",
         "ioc-header",
-        "time-extensions"
+        "time-extensions",
+        "unified-page-header"
       ]
     },
     "params-and-text-values.md": {
@@ -533,7 +536,8 @@
         "time-modes-page",
         "time-presets-page",
         "availability-page",
-        "calendar-window-page"
+        "calendar-window-page",
+        "unified-year-header"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -569,7 +573,8 @@
         "chart-local-filter",
         "business-filters",
         "currency-selection",
-        "time-extensions"
+        "time-extensions",
+        "unified-page-header"
       ]
     },
     "sections-and-layout.md": {
@@ -1426,7 +1431,8 @@
         "6.37",
         "6.38",
         "6.39",
-        "6.40"
+        "6.40",
+        "6.41"
       ]
     },
     {
@@ -1897,6 +1903,18 @@
       "const": true
     },
     {
+      "pointer": "#/properties/iocHeader/properties/readOnly",
+      "path": "$.iocHeader.readOnly",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/note",
+      "path": "$.iocHeader.note",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
       "pointer": "#/properties/iocHeader/properties/filterIds",
       "path": "$.iocHeader.filterIds",
       "required": "本分支可选",
@@ -1931,7 +1949,18 @@
       "module": "page.md",
       "enum": [
         "none",
-        "firstRow"
+        "firstRow",
+        "overflow"
+      ]
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/presentation/properties/layout",
+      "path": "$.iocHeader.presentation.layout",
+      "required": "本分支可选",
+      "module": "page.md",
+      "enum": [
+        "stacked",
+        "inline"
       ]
     },
     {
@@ -6913,6 +6942,24 @@
       "enum": [
         "period",
         "modes"
+      ]
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/periodModes",
+      "path": "@timeRangeFilter.periodModes",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/periodModes/items",
+      "path": "@timeRangeFilter.periodModes[]",
+      "required": "每个数组项",
+      "module": "filters.md",
+      "enum": [
+        "year",
+        "quarter",
+        "month",
+        "last12Months"
       ]
     },
     {
@@ -14660,8 +14707,8 @@
     {
       "schemaPointer": "#/definitions/queryScalarField/oneOf/1",
       "module": "fields.md",
-      "file": "examples/paged-join-page.json",
-      "pointer": "#/dataSources/office-bidding/fields/bidding-amount"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/dataSources/opportunity-list/fields/bidding-amount"
     },
     {
       "schemaPointer": "#/definitions/queryField/anyOf/1",
@@ -14840,8 +14887,8 @@
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1",
       "module": "queries-and-bindings.md",
-      "file": "examples/hierarchy-binding-page.json",
-      "pointer": "#/dataSources/sales/source/query/filterBindings/area"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/dataSources/opportunity-list/source/query/filterBindings/region"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2",
@@ -14858,14 +14905,14 @@
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/4",
       "module": "queries-and-bindings.md",
-      "file": "examples/non-dimension-bindings-page.json",
-      "pointer": "#/dataSources/sales/source/query/filterBindings/only-key"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/dataSources/opportunity-list/source/query/filterBindings/key-office"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5",
       "module": "queries-and-bindings.md",
-      "file": "examples/non-dimension-bindings-page.json",
-      "pointer": "#/dataSources/sales/source/query/filterBindings/amount-range"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/dataSources/opportunity-list/source/query/filterBindings/bidding-amount"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0",
@@ -15274,14 +15321,14 @@
     {
       "schemaPointer": "#/properties/filters/items/oneOf/3",
       "module": "page.md",
-      "file": "examples/non-dimension-bindings-page.json",
+      "file": "examples/unified-overflow-header.json",
       "pointer": "#/filters/1"
     },
     {
       "schemaPointer": "#/properties/filters/items/oneOf/4",
       "module": "page.md",
-      "file": "examples/non-dimension-bindings-page.json",
-      "pointer": "#/filters/2"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/filters/9"
     },
     {
       "schemaPointer": "#/properties/filters/items/oneOf/5",
@@ -15396,8 +15443,8 @@
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/0",
       "module": "actions-and-navigation.md",
-      "file": "examples/filters-page.json",
-      "pointer": "#/sections/0/components/0/props/actions/1/navigate/query/city"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/sections/0/components/0/props/actions/0/navigate/query/page-title"
     },
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/1",

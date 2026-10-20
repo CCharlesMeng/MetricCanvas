@@ -1,0 +1,32 @@
+{
+  "case": "period-modes-plain-range",
+  "invariant": "unified-page-header",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "期间选择只能用于 display=period",
+      "paths": [
+        "/filters/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "period-filter",
+        "type": "timeRange",
+        "precision": "date",
+        "label": "统计年份",
+        "required": true,
+        "default": {
+          "from": "2025-01-01",
+          "to": "2025-12-31"
+        },
+        "periodModes": [
+          "year"
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

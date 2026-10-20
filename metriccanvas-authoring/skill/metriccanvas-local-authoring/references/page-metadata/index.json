@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.40",
-  "schemaSha256": "90400cbd2aa370809afb7fa5124ef0b62c049da7e48493bfd98d4668663704df",
+  "schemaVersion": "6.41",
+  "schemaSha256": "b0a5b66ced329ba98a5b36fc6b3e9da19a5c1d7eb7029eb032843ea703dd4597",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -22,7 +22,9 @@
         "time-modes-page",
         "time-presets-page",
         "availability-page",
-        "calendar-window-page"
+        "calendar-window-page",
+        "unified-year-header",
+        "unified-overflow-header"
       ],
       "rules": [
         "page-layout-compatibility",
@@ -30,7 +32,8 @@
         "schema-version-supported",
         "detail-view-component-types",
         "ioc-header",
-        "time-extensions"
+        "time-extensions",
+        "unified-page-header"
       ]
     },
     "params-and-text-values.md": {
@@ -235,7 +238,8 @@
         "time-modes-page",
         "time-presets-page",
         "availability-page",
-        "calendar-window-page"
+        "calendar-window-page",
+        "unified-year-header"
       ],
       "rules": [
         "filter-id-unique",
@@ -254,7 +258,8 @@
         "chart-local-filter",
         "business-filters",
         "currency-selection",
-        "time-extensions"
+        "time-extensions",
+        "unified-page-header"
       ]
     },
     "sections-and-layout.md": {
@@ -989,7 +994,8 @@
         "6.37",
         "6.38",
         "6.39",
-        "6.40"
+        "6.40",
+        "6.41"
       ]
     },
     {
@@ -1460,6 +1466,18 @@
       "const": true
     },
     {
+      "pointer": "#/properties/iocHeader/properties/readOnly",
+      "path": "$.iocHeader.readOnly",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/note",
+      "path": "$.iocHeader.note",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
       "pointer": "#/properties/iocHeader/properties/filterIds",
       "path": "$.iocHeader.filterIds",
       "required": "本分支可选",
@@ -1494,7 +1512,18 @@
       "module": "page.md",
       "enum": [
         "none",
-        "firstRow"
+        "firstRow",
+        "overflow"
+      ]
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/presentation/properties/layout",
+      "path": "$.iocHeader.presentation.layout",
+      "required": "本分支可选",
+      "module": "page.md",
+      "enum": [
+        "stacked",
+        "inline"
       ]
     },
     {
@@ -6476,6 +6505,24 @@
       "enum": [
         "period",
         "modes"
+      ]
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/periodModes",
+      "path": "@timeRangeFilter.periodModes",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/timeRangeFilter/properties/periodModes/items",
+      "path": "@timeRangeFilter.periodModes[]",
+      "required": "每个数组项",
+      "module": "filters.md",
+      "enum": [
+        "year",
+        "quarter",
+        "month",
+        "last12Months"
       ]
     },
     {
@@ -14169,8 +14216,8 @@
     {
       "schemaPointer": "#/definitions/queryScalarField/oneOf/1",
       "module": "fields.md",
-      "file": "examples/paged-join-page.json",
-      "pointer": "#/dataSources/office-bidding/fields/bidding-amount"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/dataSources/opportunity-list/fields/bidding-amount"
     },
     {
       "schemaPointer": "#/definitions/queryField/anyOf/1",
@@ -14349,8 +14396,8 @@
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1",
       "module": "queries-and-bindings.md",
-      "file": "examples/hierarchy-binding-page.json",
-      "pointer": "#/dataSources/sales/source/query/filterBindings/area"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/dataSources/opportunity-list/source/query/filterBindings/region"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2",
@@ -14367,14 +14414,14 @@
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/4",
       "module": "queries-and-bindings.md",
-      "file": "examples/non-dimension-bindings-page.json",
-      "pointer": "#/dataSources/sales/source/query/filterBindings/only-key"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/dataSources/opportunity-list/source/query/filterBindings/key-office"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5",
       "module": "queries-and-bindings.md",
-      "file": "examples/non-dimension-bindings-page.json",
-      "pointer": "#/dataSources/sales/source/query/filterBindings/amount-range"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/dataSources/opportunity-list/source/query/filterBindings/bidding-amount"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0",
@@ -14778,14 +14825,14 @@
     {
       "schemaPointer": "#/properties/filters/items/oneOf/3",
       "module": "page.md",
-      "file": "examples/non-dimension-bindings-page.json",
+      "file": "examples/unified-overflow-header.json",
       "pointer": "#/filters/1"
     },
     {
       "schemaPointer": "#/properties/filters/items/oneOf/4",
       "module": "page.md",
-      "file": "examples/non-dimension-bindings-page.json",
-      "pointer": "#/filters/2"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/filters/9"
     },
     {
       "schemaPointer": "#/properties/filters/items/oneOf/5",
@@ -14898,8 +14945,8 @@
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/0",
       "module": "actions-and-navigation.md",
-      "file": "examples/filters-page.json",
-      "pointer": "#/sections/0/components/0/props/actions/1/navigate/query/city"
+      "file": "examples/unified-overflow-header.json",
+      "pointer": "#/sections/0/components/0/props/actions/0/navigate/query/page-title"
     },
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/1",
@@ -15433,5 +15480,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "7f62c88cb7e4f12002fa4f893ba5b4f54b341e8529e889bc778b96d30e1ff4fe"
+  "semanticSourceDigest": "1b3be18cf13ef2eda5c4ad613bd37988182bdf68d66e34b3a8e867924f19d899"
 }

@@ -39,7 +39,6 @@
     fieldName,
     filterURLKeys,
     isChartComponent,
-    pageListEntry,
     resolveDataSourceFields,
     flattenPageComponents,
     type ChartComponent,
@@ -107,16 +106,14 @@
   } from './map-hierarchy';
   import { collectDataErrors } from './data-error-events';
   import { runtimeVersionError } from './version-error';
-  import { contentFilterDeclarations, headerPeriod } from './report-date-header';
+  import { headerPeriod } from './report-date-header';
   import { collectFilterTextValueReferences, formatPeriod, resolveParamTextValues } from '@metriccanvas/page/internal';
   import {projectFieldSelections} from '@metriccanvas/page/internal';
   import {periodFactPage, filterTextPage } from './filter-text';
   import { validateCalendarTimeRange } from '@metriccanvas/page/internal';
   import FilterBar from './filters/FilterBar.svelte';
   import IocHeader from './ioc-header/IocHeader.svelte';
-  import { resolvedIocHeader } from './ioc-header/model';
-  import DashboardToolbar from './dashboard/DashboardToolbar.svelte';
-  import { dashboardFilterGroups } from './dashboard/filter-groups';
+  import {resolvePageHeader,pageFiltersReadOnly} from './ioc-header/page-header';
   import {
     cascadeConstraints,
     cascadeContext,
@@ -473,7 +470,7 @@
     try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(f=>!fromURL.has(f.id)),candidateClock,displaySnapshot,0);}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间默认值或可信初始期间不符合声明精度和边界'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
     let state:ReturnType<typeof createFilterState>;
     try {
-      state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || (typeof loaded.dashboardToolbar === 'object' && loaded.dashboardToolbar.readOnly === true) });
+      state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
     } catch {
       pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'筛选初始化值不符合声明或日期边界'}]};
       emit?.({type:'invalid',errors:pageState.errors});return;
@@ -1299,17 +1296,12 @@
     {/if}
   {:else}
     {@const readyPage = pageState.page}
-    {@const contentFilters = contentFilterDeclarations(readyPage, presentation?.filters??declarations).filter(filter=>!readyPage.iocHeader?.filterIds?.includes(filter.id))}
+    {@const header = resolvePageHeader(readyPage,presentation?.filters??declarations)}
+    {@const pageReadOnly = filterEditing?.readOnly || header.readOnly}
     {@const layoutForm = readyPage.layout ?? 'report'}
     {@const firstComponent = readyPage.sections[0]?.components[0]}
     {@const leadingDateToolbar = layoutForm === 'report' && !readyPage.sections[0]?.title && firstComponent?.type === 'reportHeader' && firstComponent.layout.span === 12 && (!!firstComponent.props.filterIds?.length || !!firstComponent.props.exportButtons?.length || !!firstComponent.props.pdfExport || !!firstComponent.props.pngExport)}
-    {@const dashboardToolbar = readyPage.dashboardToolbar ?? 'visible'}
-    {@const dashboardToolbarConfig =
-      typeof dashboardToolbar === 'object' ? dashboardToolbar : undefined}
-    {@const groupedDashboardFilters = dashboardFilterGroups(
-      contentFilters,
-      dashboardToolbarConfig?.variant
-    )}
+    {@const dashboardToolbar = readyPage.iocHeader ? 'hidden' : readyPage.dashboardToolbar ?? 'visible'}
     <div
       class:layout-dashboard={layoutForm === 'dashboard'}
       class:with-report-date-toolbar={leadingDateToolbar}
@@ -1322,63 +1314,22 @@
         ? dashboardToolbar
         : dashboardToolbar.variant}
     >
-    {#if readyPage.iocHeader}
-      <IocHeader model={resolvedIocHeader(readyPage.iocHeader)} filterIds={readyPage.iocHeader.filterIds ?? []}
-        returnContext={navigation?.returnContext} onback={navigation?.back} controls={iocControls}
-        readOnly={filterEditing?.readOnly} note={blockedFilters.length ? `等待筛选确认或可信候选：${blockedFilters.map(id=>declarations.find(f=>f.id===id)?.label ?? id).join('、')}` : filterEditing?.readOnly ? filterEditing.reason ?? '筛选只读' : undefined}/>
+    {#if header.model}
+      <IocHeader model={header.model} filterIds={header.primary.map(filter=>filter.id)} overflowIds={header.overflow.map(filter=>filter.id)}
+        returnContext={navigation?.returnContext} onback={navigation?.back} controls={headerControls}
+        readOnly={pageReadOnly} note={blockedFilters.length ? `等待筛选确认或可信候选：${blockedFilters.map(id=>declarations.find(f=>f.id===id)?.label ?? id).join('、')}` : pageReadOnly ? filterEditing?.reason ?? header.note ?? '筛选只读' : header.note}/>
     {/if}
-    {#snippet iocControls(id: string, readOnly: boolean)}
-      <FilterBar {timeContext} onretry={retryCandidates} declarations={declarations.filter(f=>f.id===id)} values={filterValues} candidates={dimensionCandidates}
+    {#snippet headerControls(id: string, readOnly: boolean)}
+      <FilterBar {timeContext} onretry={retryCandidates} declarations={(presentation?.filters??declarations).filter(filter=>filter.id===id)} values={filterValues} candidates={dimensionCandidates}
         {readOnly} ondimension={writeDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
         onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
     {/snippet}
-    {#if layoutForm === 'dashboard' && dashboardToolbar !== 'hidden'}
-      <DashboardToolbar {timeContext}
-        title={pageListEntry(readyPage).title}
-        declarations={contentFilters}
-        values={filterValues}
-        candidates={dimensionCandidates}
-        ondimension={writeDimension}
-        ontimerange={writeTimeRange}
-        ontimepoint={writeTimePoint}
-        onboolean={writeBoolean}
-        onnumberrange={writeNumberRange}
-        onsearch={writeSearch}
-        variant={dashboardToolbarConfig?.variant}
-        readOnly={filterEditing?.readOnly || dashboardToolbarConfig?.readOnly}
-        note={dashboardToolbarConfig?.note}
-        onback={navigation?.back}
-      />
-    {:else if pageState.capabilities.filters && hasVisibleFilters(contentFilters)}
-      <FilterBar {timeContext} onretry={retryCandidates}
-        declarations={contentFilters}
-        readOnly={filterEditing?.readOnly}
-        values={filterValues}
-        candidates={dimensionCandidates}
-        ondimension={writeDimension}
-        ontimerange={writeTimeRange}
-        ontimepoint={writeTimePoint}
-        onboolean={writeBoolean}
-        onnumberrange={writeNumberRange}
-        onsearch={writeSearch}
-      />
-    {/if}
-
-    {#if layoutForm === 'dashboard' &&
-      dashboardToolbar !== 'hidden' &&
-      groupedDashboardFilters.content.length > 0}
-      <div data-dashboard-content-filters class="dashboard-content-filters">
-        <FilterBar {timeContext} onretry={retryCandidates} readOnly={filterEditing?.readOnly}
-          declarations={groupedDashboardFilters.content}
-          values={filterValues}
-          candidates={dimensionCandidates}
-          ondimension={writeDimension}
-          ontimerange={writeTimeRange}
-          ontimepoint={writeTimePoint}
-          onboolean={writeBoolean}
-          onnumberrange={writeNumberRange}
-          onsearch={writeSearch}
-        />
+    {#if pageState.capabilities.filters && hasVisibleFilters(header.content)}
+      <div data-dashboard-content-filters={layoutForm==='dashboard'?true:undefined} class:dashboard-content-filters={layoutForm==='dashboard'}>
+        <FilterBar {timeContext} onretry={retryCandidates} readOnly={pageReadOnly}
+          declarations={header.content} values={filterValues} candidates={dimensionCandidates}
+          ondimension={writeDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
+          onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
       </div>
     {/if}
 

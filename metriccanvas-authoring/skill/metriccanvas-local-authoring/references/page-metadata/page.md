@@ -4,7 +4,7 @@
 
 作者版本以本册 [index.json](index.json) 的 schemaVersion 为准，可读版本以 [schema.json](schema.json) 的 schemaVersion 分支为准。能力下限由独立校验脚本检查。历史页面先校验，再按明确需求修改；不得只改版本号假装完成迁移。5.x在读取边界转换为6.x运行态文档。6.0使用layoutForm，6.1起允许layout。双字段同时出现即拒绝；缺布局默认report。normalizePageDocument只进行已声明的兼容规范化并保留文档原始字段，不将运行时参数替换结果保存。历史修订先核验原文hash再规范化。
 
-report定宽居中，dashboard占满宿主宽度。dashboardToolbar缺省visible；hidden用于页面已有自有页头；compact对象表达紧凑工具栏，readOnly只影响呈现，不是服务权限。meta.title是页面级标题，缺席时消费方可回退页头再回退页面id。
+report定宽居中，dashboard占满宿主宽度。页面页头统一由 IocHeader 呈现。dashboardToolbar 仅兼容读取：缺省／visible 自动适配行内页头，hidden 不生成默认页头，compact 对象适配紧凑呈现及只读说明；不保留旧工具栏实现。新页面使用 iocHeader。meta.title是页面级标题，缺席时消费方可回退页头再回退页面id。
 
 ## 创作时显式选择布局形态
 
@@ -20,7 +20,7 @@ report定宽居中，dashboard占满宿主宽度。dashboardToolbar缺省visible
 
 ## IOC 公共页头（6.36）
 
-根级 `iocHeader` 独立于 `layout`，用于 IOC 身份与页级筛选归属。普通/密集看板和详情报表共用同一个呈现 Module；meta.title仍是目录标题。普通看板须显式 `dashboardToolbar:"hidden"`，没有IOC声明的旧页面保持原布局。正文独立章节页头可保留，首个业务reportHeader或projectDetail不能重复承担页面身份。
+根级 `iocHeader` 独立于 `layout`，用于 IOC 身份与页级筛选归属。普通/密集看板和详情报表共用同一个呈现 Module；meta.title仍是目录标题。6.41 新页面声明 iocHeader 时无需同时写 dashboardToolbar；显式声明 visible/compact 与 iocHeader 仍为冲突。旧版本的显式 hidden 继续读取，没有 IOC 声明的旧页面通过同一呈现 Module 保持原布局。正文独立章节页头可保留，首个业务reportHeader或projectDetail不能重复承担页面身份。
 
 `identity`可省略；title不声明就没有标题占位，不回退meta.title。title显式参数引用缺值显示“未命名”；code、description、tags、facts缺值整体省略。编码用label/value；标签有唯一id及显式neutral/info/success/warning/danger色调，数组决定顺序。说明为纯文本，inline或键盘可达tooltip；不接受任意HTML。facts区分queryPeriod/latestDataPeriod/refreshedAt/generatedAt；value显式TextValue，不根据kind生成当前时间。统计期间应引用已应用filter。B1尚无HeaderFactReference/displayInputs，可信时间可通过已声明参数传入。
 
@@ -44,8 +44,18 @@ IOC `identity.facts[].value:{fact,part}` 只允许固定part latest/latestComple
 
 期间事实沿统一`displayInputs`提供：`DisplaySnapshot`保留`permissionRevision/permissions/values`，扩展可选`timeZone/periods`具名分支；期间事实不直接当作标量Condition输入。单一订阅同步更新，两种事实共用身份撤销边界；同身份只改变展示values不触发时间查询。组合场景见`ioc-header-availability-demo`的期间说明开关。
 
+## 唯一页头（6.41）
 
-页面协议 6.40。结构真源为本册[schema.json](schema.json)，SHA256 `90400cbd2aa370809afb7fa5124ef0b62c049da7e48493bfd98d4668663704df`。字段表自动生成；可选不等于有默认值。
+新页面统一声明根级 `iocHeader`，布局形态不决定业务身份。`presentation.layout` 为 `stacked`（缺省）或 `inline`；前者保留身份与筛选上下排，后者承接旧 Dashboard 标题与筛选同行。`presentation.collapse` 为 `none`、按实际首行测量的 `firstRow` 或按数量收纳的 `overflow`：不超过五项全部常驻，密集时搜索回正文，其余前四项常驻、剩余进“更多筛选”。`density:"compact"` 不执行数量收纳；搭配 inline 时为 56px 紧凑吸顶行；窄容器内筛选行自行横向滚动，说明换行，不撑开页面。
+
+`readOnly:true` 统一限制用户筛选写入，包括更多面板与组件动作；初始化与合法恢复保持原有机制。`note` 是页头纯文本说明。只读不阻止合法返回；显式 `back:true` 仍要求集成应用提供合法 returnContext 和 back。未声明 back 的新页头不接管返回，避免隐藏集成应用的返回入口。
+
+所有筛选通过同一 FilterBar 接收候选重试、只读和时间事实；没有 IOC 专属筛选状态。未认领的筛选留在内容区，已被 reportHeader 或图表认领的筛选不会再次进入页头。静态呈现复用 IocHeader，移除交互而保留身份与已应用条件。B6 的主题、全屏和附加操作仍未启用。
+
+实际页面复用既有 `ioc-project-overview`、`ioc-opportunity-list`、`ioc-opportunity-analysis`：分别验证普通、更多筛选及紧凑呈现。`dashboard-period-filter` 使用同一页头且仅保留一个年份入口。旧文档回归使用完整兼容夹具，不再新增演示入口。筛选声明见[筛选模块](filters.md)。
+
+
+页面协议 6.41。结构真源为本册[schema.json](schema.json)，SHA256 `b0a5b66ced329ba98a5b36fc6b3e9da19a5c1d7eb7029eb032843ea703dd4597`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -67,7 +77,7 @@ Schema位置：`#/properties/schemaVersion`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39","6.40"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 |
+| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39","6.40","6.41"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -107,6 +117,7 @@ Schema位置：`#/properties/schemaVersion`。
 | "6.38" | USD、金额范围和静态货币字段选择独立能力增量。 |
 | "6.39" | 复杂时间模式、可信期间事实及月份候选窗口。 |
 | "6.40" | 显式跨页传值与目标输入契约校验。 |
+| "6.41" | 统一页头呈现与自然期间可选模式；旧工具栏兼容读取。 |
 
 <a id="schema-232f70726f706572746965732f6964"></a>
 
@@ -221,7 +232,7 @@ Schema位置：`#/properties/dashboardToolbar`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 看板统一工具栏的显示或compact分支。 |
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 旧文档兼容读取字段；渲染统一适配至 IocHeader，新页面使用 iocHeader。 |
 
 <a id="schema-232f70726f706572746965732f64617368626f617264546f6f6c6261722f616c6c4f662f30"></a>
 
@@ -241,7 +252,7 @@ Schema位置：`#/definitions/dashboardToolbar`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| anyOf联合 | 类型/分支 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | dashboard 页面统一工具栏显隐或紧凑只读呈现；缺省 visible |
+| anyOf联合 | 类型/分支 | deprecated=true | Schema未设默认；装配/运行时默认见语义说明 | 旧页面兼容字段；统一由 IocHeader 呈现，新页面配置 iocHeader |
 
 <a id="schema-232f646566696e6974696f6e732f64617368626f617264546f6f6c6261722f616e794f662f30"></a>
 
@@ -593,6 +604,26 @@ Schema位置：`#/properties/iocHeader/properties/back`。
 |---|---|
 | true | 用于选择$.iocHeader.back分支；同分支其它约束同时成立。 |
 
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f726561644f6e6c79"></a>
+
+### `$.iocHeader.readOnly`
+
+Schema位置：`#/properties/iocHeader/properties/readOnly`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 6.41：页内筛选只读，所有用户筛选写入共用只读门禁；不是服务权限。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f6e6f7465"></a>
+
+### `$.iocHeader.note`
+
+Schema位置：`#/properties/iocHeader/properties/note`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 页头说明；可用于只读原因，纯文本。 |
+
 <a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f66696c746572496473"></a>
 
 ### `$.iocHeader.filterIds`
@@ -646,12 +677,28 @@ Schema位置：`#/properties/iocHeader/properties/presentation/properties/collap
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["none","firstRow"] | Schema未设默认；装配/运行时默认见语义说明 | 保持全部筛选或按实测首行折叠；隐藏项退出焦点序列。 |
+| "string" | 本分支可选 | enum=["none","firstRow","overflow"] | Schema未设默认；装配/运行时默认见语义说明 | 保持全部筛选或按实测首行折叠；隐藏项退出焦点序列。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "none" | 全部展开（缺省）。 |
 | "firstRow" | 按实际换行收起到首行。 |
+| "overflow" | 按数量组织筛选；密集时前四项常驻，其余进入更多筛选，搜索放回内容区。compact 不收纳。 |
+
+<a id="schema-232f70726f706572746965732f696f634865616465722f70726f706572746965732f70726573656e746174696f6e2f70726f706572746965732f6c61796f7574"></a>
+
+### `$.iocHeader.presentation.layout`
+
+Schema位置：`#/properties/iocHeader/properties/presentation/properties/layout`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["stacked","inline"] | Schema未设默认；装配/运行时默认见语义说明 | 6.41：stacked 身份与筛选上下排，inline 身份与筛选行内排布；按宿主容器响应。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "stacked" | 身份区与筛选区上下排布；缺省。 |
+| "inline" | 标题与筛选行内排布；窄容器换行。 |
 
 <a id="schema-232f70726f706572746965732f73747269637455524c496e70757473"></a>
 
@@ -1250,6 +1297,7 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - `detail-view-component-types`：详情只允许说明、图表和表格；共享 Schema 其它组件分支有显式拒绝见证。反例：[detail-component-reject-reportheader](errors/detail-component-reject-reportheader.json)、[detail-component-reject-metriccard](errors/detail-component-reject-metriccard.json)、[detail-component-reject-mapchart](errors/detail-component-reject-mapchart.json)、[detail-component-reject-tabcontainer](errors/detail-component-reject-tabcontainer.json)、[detail-component-reject-compositecard](errors/detail-component-reject-compositecard.json)、[detail-component-reject-rankingcard](errors/detail-component-reject-rankingcard.json)、[detail-component-reject-rankingdetailcard](errors/detail-component-reject-rankingdetailcard.json)、[detail-component-reject-keyvaluepanel](errors/detail-component-reject-keyvaluepanel.json)、[detail-component-reject-categorybreakdown](errors/detail-component-reject-categorybreakdown.json)、[detail-component-reject-fieldtext](errors/detail-component-reject-fieldtext.json)、[detail-component-reject-aisummary](errors/detail-component-reject-aisummary.json)、[detail-component-reject-button](errors/detail-component-reject-button.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `ioc-header`：6.36 页级IOC身份与唯一筛选归属。反例：[ioc-header-before-6.36](errors/ioc-header-before-6.36.json)、[ioc-header-empty](errors/ioc-header-empty.json)、[ioc-header-toolbar-conflict](errors/ioc-header-toolbar-conflict.json)、[ioc-header-hidden-filter](errors/ioc-header-hidden-filter.json)、[ioc-header-missing-filter](errors/ioc-header-missing-filter.json)、[ioc-header-duplicate-identity](errors/ioc-header-duplicate-identity.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `time-extensions`：6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口。反例：[time-before-6.39](errors/time-before-6.39.json)、[time-case-missing](errors/time-case-missing.json)、[time-query-xor](errors/time-query-xor.json)、[time-period-mismatch](errors/time-period-mismatch.json)、[time-output-mismatch](errors/time-output-mismatch.json)、[time-default-week](errors/time-default-week.json)、[time-availability-default](errors/time-availability-default.json)、[time-fact-kind](errors/time-fact-kind.json)、[time-window-static-options](errors/time-window-static-options.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `unified-page-header`：6.41 唯一页头及自然年选择。反例：[unified-header-version](errors/unified-header-version.json)、[unified-header-conflict](errors/unified-header-conflict.json)、[period-modes-empty](errors/period-modes-empty.json)、[period-modes-duplicate](errors/period-modes-duplicate.json)、[period-modes-default](errors/period-modes-default.json)、[period-modes-plain-range](errors/period-modes-plain-range.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -1263,6 +1311,8 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - [time-presets-page](examples/time-presets-page.json)：完整合法页面；查询仅为静态契约证据。
 - [availability-page](examples/availability-page.json)：完整合法页面；查询仅为静态契约证据。
 - [calendar-window-page](examples/calendar-window-page.json)：完整合法页面；查询仅为静态契约证据。
+- [unified-year-header](examples/unified-year-header.json)：完整合法页面；查询仅为静态契约证据。
+- [unified-overflow-header](examples/unified-overflow-header.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 
@@ -1275,8 +1325,8 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - `#/properties/filters/items/oneOf/0`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/filters/0`。
 - `#/properties/filters/items/oneOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/1`。
 - `#/properties/filters/items/oneOf/2`：[合法完整页面](examples/availability-page.json)，JSON Pointer `#/filters/0`。
-- `#/properties/filters/items/oneOf/3`：[合法完整页面](examples/non-dimension-bindings-page.json)，JSON Pointer `#/filters/1`。
-- `#/properties/filters/items/oneOf/4`：[合法完整页面](examples/non-dimension-bindings-page.json)，JSON Pointer `#/filters/2`。
+- `#/properties/filters/items/oneOf/3`：[合法完整页面](examples/unified-overflow-header.json)，JSON Pointer `#/filters/1`。
+- `#/properties/filters/items/oneOf/4`：[合法完整页面](examples/unified-overflow-header.json)，JSON Pointer `#/filters/9`。
 - `#/properties/filters/items/oneOf/5`：[合法完整页面](examples/detail-views.json)，JSON Pointer `#/filters/0`。
 - `#/properties/detailViews/items/properties/components/items/oneOf/0`：[语义拒绝反例](errors/detail-component-reject-reportheader.json)：详情的展示闭集拒绝 reportHeader；共享组件 Schema 分支只存在语义反例。（规则 `detail-view-component-types`）。此项不计入合法示例覆盖。
 - `#/properties/detailViews/items/properties/components/items/oneOf/1`：[语义拒绝反例](errors/detail-component-reject-metriccard.json)：详情的展示闭集拒绝 metricCard；共享组件 Schema 分支只存在语义反例。（规则 `detail-view-component-types`）。此项不计入合法示例覆盖。

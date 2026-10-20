@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.11",
+  "schemaVersion": "6.41",
   "id": "ioc-project-overview",
   "layout": "dashboard",
   "meta": {
@@ -2268,5 +2268,22 @@
         }
       ]
     }
-  ]
+  ],
+  "iocHeader": {
+    "identity": {
+      "title": "全球/区域作战地图"
+    },
+    "back": true,
+    "filterIds": [
+      "key-office",
+      "as-of-date",
+      "region",
+      "project-level",
+      "industry-type"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "overflow"
+    }
+  }
 }

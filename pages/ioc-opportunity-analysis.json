@@ -1,15 +1,11 @@
 {
-  "schemaVersion": "6.11",
+  "schemaVersion": "6.41",
   "id": "ioc-opportunity-analysis",
   "meta": {
     "title": "机会点数",
     "description": "合成演示数据，非生产口径；首版筛选尚未接入查询。"
   },
   "layout": "dashboard",
-  "dashboardToolbar": {
-    "variant": "compact",
-    "note": "合成演示数据，非生产口径；七个筛选位均已下推到查询"
-  },
   "filters": [
     {
       "id": "key-office",
@@ -2169,5 +2165,26 @@
         }
       ]
     }
-  ]
+  ],
+  "iocHeader": {
+    "identity": {
+      "title": "机会点数"
+    },
+    "back": true,
+    "filterIds": [
+      "key-office",
+      "as-of-date",
+      "industry",
+      "region",
+      "customer-category",
+      "trade",
+      "pre-sign-amount"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "overflow",
+      "density": "compact"
+    },
+    "note": "合成演示数据，非生产口径；七个筛选位均已下推到查询"
+  }
 }

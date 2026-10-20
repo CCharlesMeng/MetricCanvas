@@ -22,3 +22,22 @@ it('publishes mode-only changes and rejects inconsistent external ranges atomica
   state.write('period',{type:'timeRange',from:'2025-01-02',to:'2025-12-31',selection:{mode:'year',value:'2025'}});expect(count).toBe(3);
   state.write('period',null);expect(count).toBe(3);
 });
+
+it('year-only state rejects other modes from URL and external writes, preserving the applied year',()=>{
+  vi.useFakeTimers();vi.setSystemTime(new Date(2026,9,15));
+  const years:FilterDeclaration[]=[{id:'year',type:'timeRange',display:'period',periodModes:['year'],precision:'date',required:true,default:{mode:'year'}}];
+  const state=createFilterState(initialFilterValues(years),years);let count=0;let value:unknown;
+  state.subscribe(values=>{count++;value=values.get('year');});
+  expect(value).toMatchObject({from:'2026-01-01',to:'2026-12-31'});
+  for(const selection of [{mode:'month',value:'2025-01'},{mode:'quarter',value:'2025-Q1'},{mode:'last12Months'},{mode:'year',value:'2027'}] as const){
+    state.write('year',{type:'timeRange',...resolvePeriodSelection(selection,new Date())});
+  }
+  expect(count).toBe(1);
+  for(const raw of ['month:2025-01','quarter:2025-Q1','last12Months','year:2027']){
+    expect(parseFilterSearch(`year=${raw}`,years).size).toBe(0);state.fromURL(`year=${raw}`,years);
+  }
+  expect(value).toMatchObject({selection:{mode:'year',value:'2026'}});
+  state.fromURL('year=year:2024',years);
+  expect(value).toMatchObject({from:'2024-01-01',to:'2024-12-31',selection:{mode:'year',value:'2024'}});
+  expect(state.toURL()).toBe('year=year%3A2024');
+});

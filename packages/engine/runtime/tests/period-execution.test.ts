@@ -7,7 +7,7 @@ import { createFilterState } from '../src/filter-state';
 import { orchestrate } from '../src/orchestrator';
 import { prepareExportSnapshots } from '../src/export-snapshots';
 import type { DataGateway } from '../src/ports';
-function page(){const parsed=parsePage(JSON.parse(readFileSync(new URL('../../../../pages/dashboard-period-filter.json',import.meta.url),'utf8')));if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));return parsed.page;}
+function page(){const parsed=parsePage(JSON.parse(readFileSync(new URL('../../../page/fixtures/contract-valid/dashboard-period-filter.json',import.meta.url),'utf8')));if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));return parsed.page;}
 function gateway(){return {fetchData:vi.fn<DataGateway['fetchData']>(async()=>({rows:[{entry:'fixture',amount:42}],totalCount:1}))};}
 afterEach(()=>vi.useRealTimers());
 it('mode-only changes update state without refetching the same window or the unbound query',async()=>{

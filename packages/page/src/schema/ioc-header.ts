@@ -11,7 +11,9 @@ export const iocHeaderZ = z.object({
     facts: z.array(z.object({ id: idZ, kind: z.enum(['queryPeriod', 'latestDataPeriod', 'refreshedAt', 'generatedAt']), label: nonEmptyTextValueZ, value: z.union([nonEmptyTextValueZ,z.object({fact:idZ,part:z.enum(['latest','latestComplete','refreshedAt','generatedAt'])}).strict()]) }).strict()).min(1).optional()
   }).strict().optional(),
   back: z.literal(true).optional(),
+  readOnly: z.boolean().optional(),
+  note: z.string().min(1).optional(),
   filterIds: z.array(idZ).min(1).meta({ uniqueItems: true }).optional(),
-  presentation: z.object({ density: z.enum(['normal', 'compact']).optional(), collapse: z.enum(['none', 'firstRow']).optional() }).strict().optional()
+  presentation: z.object({ density: z.enum(['normal', 'compact']).optional(), collapse: z.enum(['none', 'firstRow', 'overflow']).optional(), layout: z.enum(['stacked', 'inline']).optional() }).strict().optional()
 }).strict();
 export type IocHeaderDeclaration = z.infer<typeof iocHeaderZ>;

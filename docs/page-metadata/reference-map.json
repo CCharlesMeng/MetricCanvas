@@ -20,7 +20,9 @@
         "time-modes-page",
         "time-presets-page",
         "availability-page",
-        "calendar-window-page"
+        "calendar-window-page",
+        "unified-year-header",
+        "unified-overflow-header"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -38,7 +40,8 @@
         "schema-version-supported",
         "detail-view-component-types",
         "ioc-header",
-        "time-extensions"
+        "time-extensions",
+        "unified-page-header"
       ]
     },
     "params-and-text-values.md": {
@@ -277,7 +280,8 @@
         "time-modes-page",
         "time-presets-page",
         "availability-page",
-        "calendar-window-page"
+        "calendar-window-page",
+        "unified-year-header"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -313,7 +317,8 @@
         "chart-local-filter",
         "business-filters",
         "currency-selection",
-        "time-extensions"
+        "time-extensions",
+        "unified-page-header"
       ]
     },
     "sections-and-layout.md": {
@@ -1101,7 +1106,7 @@
     "context": "上下文说明字段或结构。",
     "currency": "货币语义声明，不负责汇率换算。",
     "dangerValues": "应使用异常语义的有限取值集合。",
-    "dashboardToolbar": "看板统一工具栏的显示或compact分支。",
+    "dashboardToolbar": "旧文档兼容读取字段；渲染统一适配至 IocHeader，新页面使用 iocHeader。",
     "dataSources": "命名页面数据源集合，键为源id。",
     "decoration": "受控装饰呈现，不是任意CSS。",
     "defaultExpanded": "初始展开状态，后续交互由运行态维护。",
@@ -1366,7 +1371,7 @@
     "not": "对已就绪且合法的子条件取反，未知输入不会变成允许。",
     "permission": "集成应用已有布尔权限结果的稳定键。",
     "filter": "页面已声明筛选器ID；part决定读取值或层级。",
-    "fact": "集成应用提供的有限只读业务事实键，不支持属性路径。",
+    "fact": "只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。",
     "row": "当前行内已声明的标量字段ID，只能在合法行上下文使用。",
     "values": "集合比较的同类型字面量，不能与单值value混用。",
     "action": "沿用既有受控click动作，独立按钮无行上下文。",
@@ -1429,14 +1434,17 @@
     "blockedRanges": "完整范围与任一禁选区间相交即拒绝，不静默截断。",
     "candidateWindow": "V2候选必须携带12个日历月闭区间及完整上下文，不能降级旧维度端口。",
     "anchorFact": "可信具名期间事实的latest作为月份锚点；省略使用同次时钟。",
-    "fact": "只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。",
     "presets": "快捷范围按同次时钟或显式anchor解析，不改变已应用值直至合法提交。",
     "filterId": "显式引用当前页面已声明筛选器；timeModes要求modes范围，metricByFilter要求required单选枚举。",
     "cases": "完整穷尽已声明模式或封闭枚举的静态case，没有隐式首项回退。",
     "metricByFilter": "按required单选币种选择静态基本单位metric，各case与units货币一致。",
     "disableFuture": "默认保持禁止未来期间；显式false取消该项限制，仍受min/max/可信期间及禁选范围约束。",
     "validateTargetInputs": "显式要求集成应用提供目标输入投影后才允许跨页导航；仅传URL输入，不恢复视图。",
-    "strictURLInputs": "显式开启目标页URL输入严格校验；省略保留兼容读取，文档规范化升版本不会自动开启。"
+    "strictURLInputs": "显式开启目标页URL输入严格校验；省略保留兼容读取，文档规范化升版本不会自动开启。",
+    "#/properties/iocHeader/properties/readOnly": "6.41：页内筛选只读，所有用户筛选写入共用只读门禁；不是服务权限。",
+    "#/properties/iocHeader/properties/note": "页头说明；可用于只读原因，纯文本。",
+    "#/properties/iocHeader/properties/presentation/properties/layout": "6.41：stacked 身份与筛选上下排，inline 身份与筛选行内排布；按宿主容器响应。",
+    "#/definitions/timeRangeFilter/properties/periodModes": "6.41：自然期间可选模式，非空且不重复；默认和参数初始模式须在列表内；单模式隐藏切换栏。与 display=modes 的日/月/ISO周列表无关。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1682,7 +1690,12 @@
     "refreshedAt": "可信服务实际刷新时间，使用带时区ISO输入；不取浏览器当前时间。",
     "generatedAt": "可信产物生成时间，使用带时区ISO输入；不取浏览器当前时间。",
     "mode": "导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。",
-    "6.40": "显式跨页传值与目标输入契约校验。"
+    "6.40": "显式跨页传值与目标输入契约校验。",
+    "6.41": "统一页头呈现与自然期间可选模式；旧工具栏兼容读取。",
+    "#/properties/iocHeader/properties/presentation/properties/layout=\"inline\"": "标题与筛选行内排布；窄容器换行。",
+    "#/properties/iocHeader/properties/presentation/properties/layout=\"stacked\"": "身份区与筛选区上下排布；缺省。",
+    "#/properties/iocHeader/properties/presentation/properties/collapse=\"overflow\"": "按数量组织筛选；密集时前四项常驻，其余进入更多筛选，搜索放回内容区。compact 不收纳。",
+    "#/definitions/timeRangeFilter/properties/periodModes/items=\"last12Months\"": "当前月之前十二个完整月份，显示只读范围。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

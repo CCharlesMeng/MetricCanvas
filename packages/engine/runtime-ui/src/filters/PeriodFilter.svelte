@@ -3,11 +3,12 @@
   import { untrack } from 'svelte';
   import { DatePicker } from '@metriccanvas/ui';
   import { timeAvailabilityIssue,resolvePeriodSelection, periodRangeLabel, type PeriodMode, type PeriodRange, type AppliedPeriodSelection } from '@metriccanvas/page/internal';
-  let {label,precision='date',value,readOnly=false,min,max,blockedRanges=[],onchange}:{label?:string;precision?:'month'|'date';value:PeriodRange|null;readOnly?:boolean;min?:string;max?:string;blockedRanges?:readonly {from:string;to:string}[];onchange:(value:PeriodRange)=>void}=$props();
+  let {label,precision='date',value,readOnly=false,periodModes,min,max,blockedRanges=[],onchange}:{label?:string;precision?:'month'|'date';value:PeriodRange|null;readOnly?:boolean;periodModes?:PeriodMode[];min?:string;max?:string;blockedRanges?:readonly {from:string;to:string}[];onchange:(value:PeriodRange)=>void}=$props();
   let error=$state('');
   function commit(range:PeriodRange){error=timeAvailabilityIssue({id:'period',type:'timeRange',min,max,blockedRanges:[...blockedRanges]},{type:'timeRange',...range})??'';if(!error)onchange(range);}
-  const modes=[{id:'year',label:'年'},{id:'quarter',label:'季'},{id:'month',label:'月'},{id:'last12Months',label:'近一年'}] as const;
-  const mode=$derived(value?.selection.mode ?? 'month');
+  const allModes=[{id:'year',label:'年'},{id:'quarter',label:'季'},{id:'month',label:'月'},{id:'last12Months',label:'近一年'}] as const;
+  const modes=$derived(periodModes ? periodModes.map(id=>allModes.find(item=>item.id===id)!) : allModes);
+  const mode=$derived(value?.selection.mode ?? periodModes?.[0] ?? 'month');
   let anchor=$state(untrack(()=>anchorOf(value?.selection)));
   function anchorOf(selection?:AppliedPeriodSelection):string {
     if (!selection || selection.mode==='last12Months') {const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;}
@@ -39,9 +40,11 @@
   {#if readOnly}
     <span data-filter-display>{text}{mode!=='last12Months' && value?`（${value.from} 至 ${value.to}）`:''}</span>
   {:else}
+    {#if modes.length>1}
     <div class="segments" role="group" aria-label={label??'时间粒度'}>
       {#each modes as item}<button type="button" aria-pressed={mode===item.id} onclick={()=>select(item.id)}>{item.label}</button>{/each}
     </div>
+    {/if}
     {#if mode==='last12Months'}
       <span class="range" data-period-range>{value?periodRangeLabel(value):'—'}</span>
     {:else}

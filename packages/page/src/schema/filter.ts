@@ -75,6 +75,7 @@ const timeRangeFilterZ = z
     type: z.literal('timeRange'),
     ...calendarExtras,disableFuture:z.boolean().optional(),
     display: z.enum(['period','modes']).optional(),
+    periodModes:z.array(z.enum(['year','quarter','month','last12Months'])).min(1).optional(),
     modes:z.array(z.object({id:z.enum(['day','month','isoWeek']),default:z.union([timeRangeValueZ,relativeTimeExpressionZ])}).strict()).min(1).max(3).optional(),
     defaultMode:z.enum(['day','month','isoWeek']).optional(),
     presets:z.array(z.object({id:idZ,label:z.string().min(1),range:relativeTimeExpressionZ}).strict()).min(1).optional(),

@@ -1,0 +1,11 @@
+{
+  "status": "pass",
+  "base": "http://127.0.0.1:5196",
+  "checks": [
+    "single canonical header; 4 primary + 6 overflow; failed candidate retries; 1440/1024/390 layout",
+    "same header renders compact 7-filter page and note at wide and narrow widths",
+    "single year input in unified header; full natural-year query; unbound query unchanged; typed year and URL restoration; disallowed/future URLs preserve default; narrow picker"
+  ],
+  "errors": [],
+  "data": "synthetic DQE responses and IOC fixture data"
+}

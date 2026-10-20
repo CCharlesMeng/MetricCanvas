@@ -37,7 +37,7 @@ class PageContractIssue:
 def _is_period_filter(node):
     if node.get('type') != 'timeRange':
         return False
-    if 'display' in node or 'initialMode' in node:
+    if 'display' in node or 'initialMode' in node or 'periodModes' in node:
         return True
     default = node.get('default')
     return isinstance(default, dict) and 'mode' in default

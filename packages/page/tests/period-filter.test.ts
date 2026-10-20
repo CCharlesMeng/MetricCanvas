@@ -4,7 +4,7 @@ import { resolvePeriodSelection, periodSelectionFromRange, periodRangeLabel } fr
 import { parsePage } from '../src/validate';
 import { extractPageParams } from '../src/extract-page-params';
 const now=new Date(2026,9,15);
-const document=()=>JSON.parse(readFileSync(new URL('../../../pages/dashboard-period-filter.json',import.meta.url),'utf8'));
+const document=()=>JSON.parse(readFileSync(new URL('../fixtures/contract-valid/dashboard-period-filter.json',import.meta.url),'utf8'));
 describe('period contract and calendar semantics',()=>{
   it.each([
     [{mode:'year',value:'2024'},'2024-01-01','2024-12-31'],
@@ -44,4 +44,16 @@ describe('period contract and calendar semantics',()=>{
     const result=extractPageParams(document(),{baseline:'period-fixture'});expect(result.ok).toBe(true);
     if(result.ok)expect(result.candidates.some(c=>c.locations.some(l=>l.filterId==='period-filter'))).toBe(false);
   });
+});
+
+it('limits period defaults and parameter initialization to the declared modes',()=>{
+  const page=document();page.schemaVersion='6.41';page.filters[0].periodModes=['year'];page.filters[0].default={mode:'year'};
+  expect(parsePage(page).ok).toBe(true);
+  page.filters[0].periodModes=['year','month'];expect(parsePage(page).ok).toBe(true);
+  page.filters[0].periodModes=['year'];page.filters[0].default={mode:'month'};expect(parsePage(page).ok).toBe(false);
+  const parameter=JSON.parse(readFileSync(new URL('../fixtures/contract-valid/period-filter-parameter-page.json',import.meta.url),'utf8'));
+  parameter.schemaVersion='6.41';parameter.filters[0].periodModes=[parameter.filters[0].initialMode];expect(parsePage(parameter).ok).toBe(true);
+  parameter.filters[0].periodModes=['year'];parameter.filters[0].initialMode='quarter';
+  const invalid=parsePage(parameter);expect(invalid.ok).toBe(false);
+  if(!invalid.ok)expect(invalid.errors).toEqual(expect.arrayContaining([expect.objectContaining({path:'/filters/0/initialMode'})]));
 });

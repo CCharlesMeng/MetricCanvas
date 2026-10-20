@@ -58,7 +58,9 @@ valid container or backdrop must not become an invented authoring conflict.
         '页面宽度采用集成应用全部可用宽度。' if target == 'dashboard' else '页面宽度采用报告定宽居中，在较窄集成应用内收缩。',
         '标题归属、分区容器、组件占位及业务设置保持；视觉间距与主题由目标形态呈现。',
         '响应式仍由集成应用容器宽度驱动：窄于既有断点时组件转为单列，声明的 span 不变。']
-    if page.get('dashboardToolbar') != 'hidden':
+    if page.get('iocHeader'):
+        impacts.append('统一页头及其筛选归属跨布局保留，不另生成看板工具栏。')
+    elif page.get('dashboardToolbar') != 'hidden':
         impacts.append('看板工具栏随形态显示，已声明筛选保持。' if target == 'dashboard' else '看板工具栏在报告形态不呈现，原工具栏配置保留。')
     for index, section in enumerate(page['sections']):
         prefix = f'/sections/{index}'

@@ -228,8 +228,8 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/dashboardToolbar",
-      "message": "IOC 看板必须显式关闭通用工具栏"
+      "path": "/iocHeader",
+      "message": "唯一页头实现及行内布局、更多筛选和只读说明 由 6.41 引入，文档声明的是 6.36"
     }
   ]
 }

@@ -1,7 +1,7 @@
 import type { FilterDeclaration } from '@metriccanvas/page/internal';
 import { visibleFilterDeclarations } from '../filters/filter-bar';
 
-export interface DashboardFilterGroups {
+export interface HeaderFilterGroups {
   primary: FilterDeclaration[];
   overflow: FilterDeclaration[];
   content: FilterDeclaration[];
@@ -17,10 +17,10 @@ const STANDARD_PRIMARY_COUNT = 4;
  * 剩余条件交给工具栏披露层。compact 是只读单行呈现，保持全部可见声明，
  * 不复用标准工具栏策略。
  */
-export function dashboardFilterGroups(
+export function headerFilterGroups(
   declarations: readonly FilterDeclaration[],
   variant?: 'compact'
-): DashboardFilterGroups {
+): HeaderFilterGroups {
   const visible = visibleFilterDeclarations(declarations);
   if (variant === 'compact' || visible.length <= STANDARD_INLINE_LIMIT) {
     return { primary: visible, overflow: [], content: [] };

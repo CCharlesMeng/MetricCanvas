@@ -1,0 +1,24 @@
+{
+  "case": "period-modes-duplicate",
+  "invariant": "unified-page-header",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "期间模式不能重复",
+      "paths": [
+        "/filters/0/periodModes"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "periodModes": [
+          "year",
+          "year"
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/period-modes-duplicate.json"
+}

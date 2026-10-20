@@ -33,6 +33,10 @@ export function editReportDate(draft:CanvasAuthoringDraft,locator:ComponentLocat
   document.schemaVersion=versionPolicy.current;
   if(edit.remove) {
     document.filters=(document.filters??[]).filter((f:FilterDeclaration)=>f.id!==edit.filterId);
+    if(document.iocHeader?.filterIds){
+      const ids=document.iocHeader.filterIds.filter((id:string)=>id!==edit.filterId);
+      if(ids.length)document.iocHeader.filterIds=ids;else delete document.iocHeader.filterIds;
+    }
     for(const component of flattenPageComponents(parsed.page)) if(component.type==='reportHeader') {
       const target=document.sections.flatMap((s:any)=>s.components).find((c:any)=>c.id===component.id);
       const ids=(target.props.filterIds??[]).filter((id:string)=>id!==edit.filterId);
@@ -44,7 +48,10 @@ export function editReportDate(draft:CanvasAuthoringDraft,locator:ComponentLocat
     const declaration={...edit.declaration,id:edit.filterId};
     document.filters=[...(document.filters??[]).filter((f:FilterDeclaration)=>f.id!==edit.filterId),declaration];
     for(const section of document.sections)for(const other of section.components)if(other.type==='reportHeader'&&other!==header){const ids=(other.props.filterIds??[]).filter((id:string)=>id!==edit.filterId);if(ids.length)other.props.filterIds=ids;else delete other.props.filterIds;}
-    if(header)header.props.filterIds=[...new Set([...(header.props.filterIds??[]),edit.filterId])];
+    if(header) {
+      header.props.filterIds=[...new Set([...(header.props.filterIds??[]),edit.filterId])];
+      if(document.iocHeader?.filterIds){const ids=document.iocHeader.filterIds.filter((id:string)=>id!==edit.filterId);if(ids.length)document.iocHeader.filterIds=ids;else delete document.iocHeader.filterIds;}
+    } else if(document.iocHeader)document.iocHeader.filterIds=[...new Set([...(document.iocHeader.filterIds??[]),edit.filterId])];
   }
   for(const [id,source] of Object.entries(document.dataSources) as [string,any][]) {
     if(source.source.type!=='query')continue;

@@ -3,10 +3,18 @@
   "kind": "structural-pattern",
   "source": {
     "pageId": "ioc-opportunity-analysis",
-    "sha256": "728289694173ad4b51299321f437d17c20011117806bb1d82f541c2c0e29bfc0"
+    "sha256": "cf2bb971d64429da7118efae29802c512495f2cc6f54b38529e1c3d5f54279d3"
   },
   "layout": "dashboard",
-  "dashboardToolbar": "compact",
+  "iocHeader": {
+    "hasIdentity": true,
+    "filterCount": 7,
+    "presentation": {
+      "layout": "inline",
+      "collapse": "overflow",
+      "density": "compact"
+    }
+  },
   "filters": [
     {
       "type": "boolean"

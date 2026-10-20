@@ -1,0 +1,24 @@
+import {execFileSync} from 'node:child_process';
+import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,cpSync,realpathSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {copyConsumerFixtures} from '../../../tools/package-build/consumer-fixtures.mjs';
+const root=fileURLToPath(new URL('../../../',import.meta.url));
+const output=mkdtempSync(join(tmpdir(),'metriccanvas-unified-header-consumer-'));
+const consumer=join(output,'consumer');mkdirSync(consumer);
+const run=(cmd,args,cwd=root,env={})=>execFileSync(cmd,args,{cwd,stdio:'inherit',env:{...process.env,...env}});
+const packages=['page','ui','data-execution','engine','metric-canvas','embed'];
+const dependencies={svelte:'5.56.6','@playwright/test':'1.62.0'};
+for(const name of packages){const archive=join(output,`${name}.tgz`);run('pnpm',['pack','--out',archive],join(root,'packages',name));dependencies[`@metriccanvas/${name}`]=`file:${archive}`;}
+writeFileSync(join(consumer,'package.json'),JSON.stringify({private:true,type:'module',dependencies,overrides:Object.fromEntries(packages.map(name=>[`@metriccanvas/${name}`,`$@metriccanvas/${name}`]))},null,2));
+run('npm',['install','--ignore-scripts','--no-audit','--no-fund','--strict-peer-deps'],consumer);
+const consumerRealPath=realpathSync(consumer);
+for(const name of packages)if(!realpathSync(join(consumer,'node_modules/@metriccanvas',name)).startsWith(consumerRealPath+'/'))throw Error('Consumer links into the workspace');
+copyConsumerFixtures(root,consumer);
+cpSync(join(root,'packages/embed/playwright.config.ts'),join(consumer,'packages/embed/playwright.config.ts'));
+cpSync(join(consumer,'node_modules/@metriccanvas/embed/dist'),join(consumer,'packages/embed/dist'),{recursive:true});
+run('node',['--input-type=module','-e',`import{readFileSync}from'node:fs';import{parsePage,versionPolicy}from'@metriccanvas/page';if(versionPolicy.current!=='6.41')throw Error('stale protocol');for(const name of ['ioc-project-overview','ioc-opportunity-analysis','ioc-opportunity-list','dashboard-period-filter']){const parsed=parsePage(JSON.parse(readFileSync('pages/'+name+'.json','utf8')));if(!parsed.ok)throw Error(JSON.stringify(parsed));if(!parsed.page.iocHeader)throw Error('missing canonical header');}console.log('Installed Page ESM: four canonical pages accepted');`],consumer);
+run('npm',['exec','--','playwright','test','tests/browser/unified-header.spec.ts','tests/browser/period-filter.spec.ts','tests/browser/ioc-header.spec.ts','tests/browser/embed.spec.ts','--workers=2','--reporter=line'],join(consumer,'packages/embed'),{MC_EMBED_EXAMPLE_PORT:'4246'});
+writeFileSync(join(root,'docs/evidence/unified-page-header/installed-result.json'),JSON.stringify({status:'pass',source:root,output,consumer,packages,protocol:'6.41',browser:'Chrome',scope:'six real tarballs; Node ESM protocol; unified, legacy, readonly, layout and period browser cases'},null,2)+'\n');
+console.log(JSON.stringify({status:'pass',output}));

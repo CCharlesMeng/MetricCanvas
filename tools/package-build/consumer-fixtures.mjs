@@ -22,6 +22,8 @@ export const consumerFixturePaths = [
   "packages/page/fixtures/contract-valid/query-result-where-page.json",
   "packages/page/fixtures/contract-valid/table-toolbar-page.json",
   "packages/page/fixtures/contract-valid/time-point-min-page.json",
+  "packages/page/fixtures/contract-valid/dashboard-period-filter.json",
+  "packages/page/fixtures/contract-valid/unified-overflow-header.json",
   "packages/page/fixtures/contract-valid/dashboard-period-filter-month.json",
   "packages/page/fixtures/contract-valid/dashboard-period-filter-more.json",
   "packages/page/fixtures/contract-valid/dashboard-period-filter-readonly.json",

@@ -9,7 +9,7 @@ export function iocHeaderErrors(page: Page): TypedError[] {
   const errors: TypedError[] = [];
   const issue = (path: string, message: string) => errors.push({type:'SCHEMA_ERROR', path, message});
   const identity = header.identity;
-  if (page.layout === 'dashboard' && page.dashboardToolbar !== 'hidden') issue('/dashboardToolbar', 'IOC 看板必须显式关闭通用工具栏');
+  if (page.layout === 'dashboard' && page.dashboardToolbar !== undefined && page.dashboardToolbar !== 'hidden') issue('/dashboardToolbar', 'IOC 看板必须显式关闭通用工具栏');
   for (const key of ['tags', 'facts'] as const) {
     const ids = new Set<string>();
     identity?.[key]?.forEach((item, index) => {

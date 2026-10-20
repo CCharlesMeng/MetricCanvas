@@ -33,10 +33,10 @@ function instantiate(page: Page): Page {
 }
 
 describe('ioc-project-overview 骨架', () => {
-  it('声明 5.4，能力下限覆盖唯一指标值入口', () => {
+  it('统一页头按当前能力下限声明，保留唯一指标值入口', () => {
     const page = loadPage();
     expect(page.schemaVersion).toBe(versionPolicy.current);
-    expect(requiredMinorVersion(document)).toBe(11);
+    expect(requiredMinorVersion(document)).toBe(41);
   });
 
   it('五个可见筛选按设计顺序声明，跨页 mtime 仍以 month 隐藏保留', () => {

@@ -132,7 +132,7 @@
 | 页面 | 入口 | 覆盖能力 |
 |---|---|---|
 | [Report 时间选择与联动](report-date-filter-example.json) | `/pages/report-date-filter-example` | 单月、月份范围、标题及正文联动、清空、参数初值、禁止未来月份及日期 |
-| [Dashboard 期间选择与查询](dashboard-period-filter.json) | `/pages/dashboard-period-filter` | 顶部统一筛选中的年／季／月／近一年，以及查询范围与未绑定查询对照 |
+| [Dashboard 期间选择与查询](dashboard-period-filter.json) | `/pages/dashboard-period-filter` | 统一页头中的单年份筛选，以及完整自然年查询与未绑定查询对照 |
 
 Report 页面按三节组织，控件相互独立：
 
@@ -144,12 +144,12 @@ Report 页面按三节组织，控件相互独立：
 
 ### Dashboard 期间筛选
 
-- 统一入口 `dashboard-period-filter` 使用日期精度，声明两个查询表格：sales 绑定顶部期间，fixed 不绑定。
+- 统一入口 `dashboard-period-filter` 使用 iocHeader 与日期精度，只有一个年份框：sales 绑定完整自然年，fixed 不绑定。
 - 月份精度、进入“更多筛选”、compact 只读三种变体仅保留于 `packages/page/fixtures/contract-valid/dashboard-period-filter-{month,more,readonly}.json`，不在演示目录重复展示。浏览器直接加载完整夹具，不临时拼装配置；安装包兼容性验收同步携带这些夹具。
 - 人工配置入口：运行 `pnpm --filter platform exec vite --config tests/browser/report-date.vite.config.ts` 后，打开 `http://127.0.0.1:5187/tests/browser/report-date-editor.html?dashboard`；复用正式属性面板，使用本地合成数据。
 - 数据环境：浏览器自动验收通过合成网关响应回显实际请求起止范围；人工使用时需要 DQE 网关提供匹配字段，页面本身不包含已验证真实业务数据。
-- 操作：切年／季／月并选期间；季度使用 Q1—Q4；检查未来年／季／月不可选，当前自然期间仍使用完整查询范围；先选历史月份再选近一年；改变 URL value 编码；跨月重新选择近一年；缩窄容器。
-- 预期：一次选择更新一个筛选状态，sales 范围改变而 fixed 不重新请求；近一年无输入框，按当前月之前 12 个完整月份显示范围。切回月保留历史月份。协议／日历／状态与请求断言见对应 period-filter 测试。
+- 操作：在统一页头选择年份；检查当前年可选、未来年不可选；改变 URL 年份并缩窄容器。完整年／季／月／近一年切换由期间契约夹具回归。
+- 预期：一次选择只更新一个筛选状态，sales 查询完整自然年而 fixed 不重取。不允许的模式或未来年份 URL 保留合法默认年；协议／日历／状态与请求断言见对应 period-filter 测试。
 - 证据边界：浏览器测试为合成数据，真实 DQE／Relay／Java 及部署未由此证明。
 
 ### Dashboard 图表独立筛选
@@ -313,3 +313,15 @@ Report 页面按三节组织，控件相互独立：
 异常：概览缺目标能力链接提示不可用；清单切季度或点击缺编码行拒绝；详情将month改为quarter:2026-Q3/bad，或删project-id、改未知区域，显示输入错误且不发业务查询。
 
 内联清单为导航边界样例，不是实际筛选结果。详情合成HTTP不代表真实DQE/CloudIOC/Relay验收。无viewstate、历史存储或恢复，B6挂起。
+
+## 唯一页头与年份筛选（6.41）
+
+复用现有页面，不增加目录入口。启动 `pnpm --filter playground exec vite dev --port 5196`。业务页数据为合成演示，动态交互需匹配的 DQE 网关；自动浏览器验收使用本地仿真服务和合成响应，不证明真实业务数据。
+
+- `/pages/ioc-opportunity-list`：明确声明 iocHeader，前四项常驻，“更多筛选”收纳其余六项，只有一个页头、一个标题。展开候选失败项可重试；将 iocHeader.readOnly 设为 true 并重开后，主区域和更多面板都显示只读，写入不会触发查询。
+- `/pages/ioc-project-overview`：同一页头呈现普通布局，五项可见筛选全部常驻。
+- `/pages/ioc-opportunity-analysis`：同一页头以 inline + compact 呈现七个筛选和既有说明，保留原查询绑定。
+- `/pages/dashboard-period-filter`：单个年份框，无年季月切换栏；默认当前年。选择 2024 后绑定表回显 `2024-01-01~2024-12-31`，未绑定表不重取。`?period-filter=year%3A2025` 恢复年份；月、季度、近一年、未来或非法年份 URL 不覆盖合法默认年。
+- 1440/1024/390 宿主宽度下检查更多面板及年份面板不导致页面横向溢出。历史 compact/readOnly、无显式页头和 hidden 文档由完整夹具回归，运行时只有 IocHeader 实现。
+
+非法声明夹具包括 unified-header-version、unified-header-conflict、period-modes-empty、period-modes-duplicate、period-modes-default、period-modes-plain-range。参数模式冲突、只读写入与候选重试由契约和浏览器测试补充。真实 DQE／Relay／CloudIOC／门户／模型未由这些场景验收。

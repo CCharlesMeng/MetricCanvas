@@ -1037,13 +1037,15 @@
     {
       "id": "dashboard-period-filter",
       "group": "features",
-      "summary": "切换期间只刷新已绑定的查询，未绑定的对照表保持不变。",
+      "summary": "统一页头仅选年份，绑定查询使用完整自然年，未绑定对照表保持不变。",
       "tags": [
         "时间选择",
         "期间筛选",
-        "Dashboard"
+        "Dashboard",
+        "统一页头",
+        "年份筛选"
       ],
-      "displayTitle": "Dashboard 年、季、月与近一年筛选",
+      "displayTitle": "统一页头 · 仅选年份",
       "capabilities": [
         "filters",
         "queries"
@@ -1055,14 +1057,15 @@
       },
       "guide": {
         "steps": [
-          "启动本地 DQE Sim，切换年、季、月并选择期间。",
-          "观察经营明细的生效查询范围；选择近一年，再比较未绑定查询。"
+          "启动本地 DQE Sim 或注入合成验收网关，打开年份框选择历史年份。",
+          "观察经营明细使用完整自然年，未绑定查询保持不变；尝试 URL 恢复和未来年份。"
         ],
         "configPaths": [
+          "iocHeader",
           "filters",
           "dataSources.*.source.query.filterBindings"
         ],
-        "boundary": "近一年表示当前月之前 12 个完整月份；本页只展示日期精度，其他变体由专用夹具覆盖。",
+        "boundary": "只显示一个年份框；完整年季月切换保留于契约夹具，页面不重复放两套时间条件。",
         "related": [
           "report-date-filter-example",
           "chart-local-filter-page"

@@ -1,4 +1,4 @@
-import type { PeriodSelection } from './period-filter';
+import type { PeriodMode, PeriodSelection } from './period-filter';
 import type { TextValue } from './page-param';
 
 /** Shared declaration metadata; no expression or permission inputs. */
@@ -84,6 +84,8 @@ export interface TimeRangeFilterDeclaration extends FilterInteractionExtension {
   type: 'timeRange';
   /** Period picker; omitted preserves the ordinary range editor. */
   display?: 'period'|'modes';
+  /** 自然期间可选模式；单模式隐藏切换栏。 */
+  periodModes?: PeriodMode[];
   modes?:Array<{id:import('./time-mode').TimeMode;default:TimeRangeValue|RelativeTimeExpression}>;
   defaultMode?:import('./time-mode').TimeMode;
   presets?:Array<{id:string;label:string;range:RelativeTimeExpression}>;

@@ -10,11 +10,13 @@ Dashboard 的年、季、月按所选自然期间判断：当前年／当前季�
 
 时间点省略 `disableFuture` 按 true 处理；已有显式 `disableFuture: false` 保持放开上限的含义，min 仍有效。普通范围和 Dashboard 期间选择统一采用默认上限，不新增页面字段或协议版本。静态校验继续检查结构、公历及已有显式规则，运行时按执行环境当前时间检查所有选择值。
 
-页面试验场统一入口：`report-date-filter-example` 覆盖单月、月份范围、日期、日期范围和精确时间范围；`dashboard-period-filter` 覆盖年／季／月／近一年。合成数据与控件验收不证明真实 DQE 接入。
+页面试验场统一入口：`report-date-filter-example` 覆盖单月、月份范围、日期、日期范围和精确时间范围；`dashboard-period-filter` 展示统一页头仅选年份；完整年／季／月／近一年保留于期间契约夹具。合成数据与控件验收不证明真实 DQE 接入。
 
 ## Dashboard 期间选择（6.27）
 
 `timeRange` 可声明 `display: "period"`，在 Dashboard 通用顶部 FilterBar 中作为一个筛选器显示「年／季／月／近一年」。省略 display 仍为原有范围编辑器。`precision` 只允许 month/date，分别决定实际范围编码，不改变查询的 period/is_aggregate。季度输入显示「2026 年 Q4」，四个面板选项为 Q1—Q4。
+
+6.41 可声明 `periodModes:["year"]`，搭配 `default:{"mode":"year"}` 只显示年份选择框。`periodModes` 是 year／quarter／month／last12Months 的非空不重复列表，省略保持四种模式；单模式隐藏切换栏，默认与参数初始化模式必须在列表内。URL、初值、程序写入共用模式限制，不允许的模式保留已应用值。自然年仍为完整 01-01 至 12-31，当前年可选、未来年禁止。它属于共享期间筛选，不属于某个页头；不要与 `display:"modes"` 的日/月/ISO周对象列表混用。完整页面复用 `dashboard-period-filter`，不新增年份演示页。
 
 默认选择使用 `default: {mode:"month"}`（当前月），也可写 `{mode:"year",value:"2026"}`、`{mode:"quarter",value:"2026-Q4"}`、`{mode:"month",value:"2026-10"}` 或 `{mode:"last12Months"}`。年季月省略 value 时按本次初始化的当前日期选择完整自然期间。近一年固定取当前月之前十二个完整月份；2026-10 显示 `25年10月~26年9月`，date 查询为 2025-10-01 至 2026-09-30，month 查询为 2025-10 至 2026-09；右侧只有只读文本，不提供截止月份输入。
 
@@ -124,7 +126,7 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
 
 
-页面协议 6.40。结构真源为本册[schema.json](schema.json)，SHA256 `90400cbd2aa370809afb7fa5124ef0b62c049da7e48493bfd98d4668663704df`。字段表自动生成；可选不等于有默认值。
+页面协议 6.41。结构真源为本册[schema.json](schema.json)，SHA256 `b0a5b66ced329ba98a5b36fc6b3e9da19a5c1d7eb7029eb032843ea703dd4597`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -933,6 +935,33 @@ Schema位置：`#/definitions/timeRangeFilter/properties/display`。
 |---|---|
 | "period" | 时间窗口：基准所在完整周期；offset按指定unit移动周期。 |
 | "modes" | 显式日/月/ISO周模式范围，不与period或initialParam混用。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f706572696f644d6f646573"></a>
+
+### `@timeRangeFilter.periodModes`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/periodModes`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 6.41：自然期间可选模式，非空且不重复；默认和参数初始模式须在列表内；单模式隐藏切换栏。与 display=modes 的日/月/ISO周列表无关。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f706572696f644d6f6465732f6974656d73"></a>
+
+### `@timeRangeFilter.periodModes[]`
+
+Schema位置：`#/definitions/timeRangeFilter/properties/periodModes/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | enum=["year","quarter","month","last12Months"] | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "year" | 年粒度。 |
+| "quarter" | 季度粒度。 |
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "last12Months" | 当前月之前十二个完整月份，显示只读范围。 |
 
 <a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f6d6f646573"></a>
 
@@ -2629,6 +2658,7 @@ Schema位置：`#/definitions/chartFilter/properties/options/items/properties/va
 - `business-filters`：6.37 封闭枚举与业务选择语义。反例：[business-filter-before-6.37](errors/business-filter-before-6.37.json)、[business-filter-single-many](errors/business-filter-single-many.json)、[business-filter-disabled-default](errors/business-filter-disabled-default.json)、[business-filter-options-dependent](errors/business-filter-options-dependent.json)、[business-filter-unrestricted-without-options](errors/business-filter-unrestricted-without-options.json)、[business-filter-cycle](errors/business-filter-cycle.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `currency-selection`：6.38金额范围和静态货币字段选择。反例：[currency-before-6.38](errors/currency-before-6.38.json)、[currency-case-missing](errors/currency-case-missing.json)、[currency-metric-mismatch](errors/currency-metric-mismatch.json)、[currency-negative-default](errors/currency-negative-default.json)、[currency-equal-default](errors/currency-equal-default.json)、[currency-compute-mixed](errors/currency-compute-mixed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `time-extensions`：6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口。反例：[time-before-6.39](errors/time-before-6.39.json)、[time-case-missing](errors/time-case-missing.json)、[time-query-xor](errors/time-query-xor.json)、[time-period-mismatch](errors/time-period-mismatch.json)、[time-output-mismatch](errors/time-output-mismatch.json)、[time-default-week](errors/time-default-week.json)、[time-availability-default](errors/time-availability-default.json)、[time-fact-kind](errors/time-fact-kind.json)、[time-window-static-options](errors/time-window-static-options.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `unified-page-header`：6.41 唯一页头及自然年选择。反例：[unified-header-version](errors/unified-header-version.json)、[unified-header-conflict](errors/unified-header-conflict.json)、[period-modes-empty](errors/period-modes-empty.json)、[period-modes-duplicate](errors/period-modes-duplicate.json)、[period-modes-default](errors/period-modes-default.json)、[period-modes-plain-range](errors/period-modes-plain-range.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -2651,6 +2681,7 @@ Schema位置：`#/definitions/chartFilter/properties/options/items/properties/va
 - [time-presets-page](examples/time-presets-page.json)：完整合法页面；查询仅为静态契约证据。
 - [availability-page](examples/availability-page.json)：完整合法页面；查询仅为静态契约证据。
 - [calendar-window-page](examples/calendar-window-page.json)：完整合法页面；查询仅为静态契约证据。
+- [unified-year-header](examples/unified-year-header.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

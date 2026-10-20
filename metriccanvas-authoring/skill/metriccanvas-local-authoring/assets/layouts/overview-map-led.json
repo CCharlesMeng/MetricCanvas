@@ -1,11 +1,18 @@
 {
-  "schemaVersion": "6.40",
+  "schemaVersion": "6.41",
   "id": "overview-map-led",
   "layout": "dashboard",
   "meta": {
     "title": "市场概览（布局演示）"
   },
-  "dashboardToolbar": "visible",
+  "iocHeader": {
+    "identity": {
+      "title": "市场概览（布局演示）"
+    },
+    "presentation": {
+      "layout": "inline"
+    }
+  },
   "dataSources": {
     "totals": {
       "fields": {

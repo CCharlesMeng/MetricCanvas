@@ -28,6 +28,7 @@ export function timeFilterBoundaryError(declaration: FilterDeclaration, value: T
   if(declaration.display==='modes'){const maximum=currentTimeValue(value.mode==='month'?'month':'date',now);return value.to>maximum?'日期不得晚于当前期间':undefined;}
   if (declaration.display === 'period' && value.selection) {
     const selected = value.selection;
+    if(declaration.periodModes && !declaration.periodModes.includes(selected.mode))return '期间模式不在允许的 periodModes 中';
     if (selected.mode === 'last12Months') return undefined;
     const month = currentTimeValue('month', now);
     const maximum = selected.mode === 'year' ? month.slice(0, 4)

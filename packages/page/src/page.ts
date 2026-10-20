@@ -215,6 +215,7 @@ export interface Page {
   /** 页面布局形态；缺省等价于 `report`。 */
   layout?: PageLayoutForm;
   /** dashboard 统一工具栏；缺省显示，页面有自有页头时可显式关闭。 */
+  /** @deprecated 新页面使用 iocHeader；旧声明由唯一页头兼容呈现。 */
   dashboardToolbar?: DashboardToolbar;
   iocHeader?: import('./schema/ioc-header').IocHeaderDeclaration;
   strictURLInputs?:true;
@@ -253,7 +254,7 @@ export function documentLayoutForm(document: unknown): PageLayoutForm {
  */
 export function documentUsesRuntimeBackToolbar(document: unknown): boolean {
   const ioc = (document as { iocHeader?: { back?: unknown } } | null)?.iocHeader;
-  if (ioc?.back === true) return true;
+  if (ioc) return ioc.back === true;
   if (documentLayoutForm(document) !== 'dashboard') return false;
   if (typeof document !== 'object' || document === null || Array.isArray(document)) return false;
   const toolbar = (document as { dashboardToolbar?: unknown }).dashboardToolbar;

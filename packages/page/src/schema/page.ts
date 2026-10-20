@@ -85,7 +85,8 @@ export const dashboardToolbarZ = z
   ])
   .meta({
     id: 'dashboardToolbar',
-    description: 'dashboard 页面统一工具栏显隐或紧凑只读呈现；缺省 visible'
+    description: '旧页面兼容字段；统一由 IocHeader 呈现，新页面配置 iocHeader',
+    deprecated:true
   });
 
 /**

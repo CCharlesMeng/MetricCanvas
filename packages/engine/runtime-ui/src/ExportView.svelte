@@ -29,7 +29,7 @@
 </script>
 <div class="export-view" data-export-view style:width={`${width}px`} style:padding={padding} style:gap={gap}>
   {#if state.page.iocHeader}
-    <IocHeader model={resolvedIocHeader(state.page.iocHeader)} filterIds={state.page.iocHeader.filterIds??[]} controls={iocStaticControls} staticView/>
+    <IocHeader model={resolvedIocHeader(state.page.iocHeader)} filterIds={state.page.iocHeader.filterIds??[]} controls={iocStaticControls} note={state.page.iocHeader.note} staticView/>
   {/if}
   {#snippet iocStaticControls(id:string,readOnly:boolean)}
     <FilterBar timeContext={{snapshot:state.displaySnapshot,revision:state.filterRevision}} declarations={(state.page.filters??[]).filter(f=>f.id===id)} values={state.filters} candidates={new Map()} {readOnly}

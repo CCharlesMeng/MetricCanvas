@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.11",
+  "schemaVersion": "6.41",
   "id": "ioc-opportunity-list",
   "meta": {
     "title": "机会点清单",
@@ -1093,5 +1093,27 @@
       ]
     }
   ],
-  "layout": "dashboard"
+  "layout": "dashboard",
+  "iocHeader": {
+    "identity": {
+      "title": "机会点清单"
+    },
+    "back": true,
+    "filterIds": [
+      "mtime",
+      "key-office",
+      "industry-type",
+      "region",
+      "na-type",
+      "industry-l1",
+      "industry-l2",
+      "overdue",
+      "opportunity-stage",
+      "bidding-amount"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "overflow"
+    }
+  }
 }

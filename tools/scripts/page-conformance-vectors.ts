@@ -54,6 +54,14 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'unified-page-header',description:'6.41 唯一页头及自然年选择',valid:['unified-year-header','unified-overflow-header'],cases:[
+    {case:'unified-header-version',base:'unified-year-header',expect:/由 6.41 引入/,mutate:d=>{d.schemaVersion='6.40';}},
+    {case:'unified-header-conflict',base:'unified-year-header',expect:/显式关闭/,mutate:d=>{d.dashboardToolbar='visible';}},
+    {case:'period-modes-empty',base:'unified-year-header',expect:/./,mutate:d=>{d.filters[0].periodModes=[];}},
+    {case:'period-modes-duplicate',base:'unified-year-header',expect:/不能重复/,mutate:d=>{d.filters[0].periodModes=['year','year'];}},
+    {case:'period-modes-default',base:'unified-year-header',expect:/默认期间模式必须/,mutate:d=>{d.filters[0].default={mode:'month'};}},
+    {case:'period-modes-plain-range',base:'unified-year-header',expect:/display=period/,mutate:d=>{delete d.filters[0].display;d.filters[0].default={from:'2025-01-01',to:'2025-12-31'};}}
+  ]},
   {id:'conditional-presentation',description:'6.35共用展示条件、稳定目标和本地行边界',valid:['page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','reference-conditions-page'],cases:[
     {case:'condition-before-6.35',base:'page-visibility-region-linkage',expect:/由 6.35 引入/,mutate:d=>{d.schemaVersion='6.34';}},
     {case:'condition-row-outside-table',base:'page-visibility-region-linkage',expect:/缺少行上下文/,mutate:d=>{d.sections[1].visibleWhen={row:'kind',op:'eq',value:'department'};}},
@@ -127,7 +135,7 @@ export const invariants: InvariantDefinition[] = [
   {id:'ioc-header',description:'6.36 页级IOC身份与唯一筛选归属',valid:['ioc-header-page'],cases:[
     {case:'ioc-header-before-6.36',base:'ioc-header-page',expect:/由 6.36 引入/,mutate:d=>{d.schemaVersion='6.31';}},
     {case:'ioc-header-empty',base:'ioc-header-page',expect:/需要身份/,mutate:d=>{d.iocHeader={};}},
-    {case:'ioc-header-toolbar-conflict',base:'ioc-header-page',expect:/显式关闭/,mutate:d=>{delete d.dashboardToolbar;}},
+    {case:'ioc-header-toolbar-conflict',base:'ioc-header-page',expect:/由 6.41 引入/,mutate:d=>{delete d.dashboardToolbar;}},
     {case:'ioc-header-hidden-filter',base:'ioc-header-page',expect:/静态可见/,mutate:d=>{d.filters[1].visible=false;}},
     {case:'ioc-header-missing-filter',base:'ioc-header-page',expect:/静态可见/,mutate:d=>{d.iocHeader.filterIds.push('missing');}},
     {case:'ioc-header-duplicate-identity',base:'ioc-header-page',expect:/重复承担/,mutate:d=>{d.sections[0].components.unshift({id:'old-header',type:'reportHeader',layout:{span:12},props:{title:'旧标题'}});}}
