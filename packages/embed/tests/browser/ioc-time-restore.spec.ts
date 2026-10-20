@@ -1,11 +1,12 @@
 import {test,expect} from '@playwright/test';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {resolve} from 'node:path';
-const root=resolve(import.meta.dirname,'../../../..'),out=resolve(root,'docs/evidence/ioc-header-b4/evidence');
-const contract=JSON.parse(readFileSync(resolve(out,'restore-contract.json'),'utf8')),adapter=JSON.parse(readFileSync(resolve(out,'restore-adapter.json'),'utf8'));
-const collector=readFileSync('/Users/moon/Documents/Code/moon-skills/skills/sdd-dev-frontend/scripts/collect_restore_facts.js','utf8');
+const inputs=resolve(import.meta.dirname,'../fixtures/ioc-time-restore');
+const contract=JSON.parse(readFileSync(resolve(inputs,'restore-contract.json'),'utf8')),adapter=JSON.parse(readFileSync(resolve(inputs,'restore-adapter.json'),'utf8'));
+const collector=readFileSync(resolve(inputs,'collect-restore-facts.js'),'utf8');
 test.use({timezoneId:'Asia/Shanghai'});
-test('collect frozen B4 restore rules at all three widths and open ShadowRoot',async({page})=>{
+test('collect frozen B4 restore rules at all three widths and open ShadowRoot',async({page},testInfo)=>{
+ const out=testInfo.outputPath('b4-restore');
  test.setTimeout(60_000);page.on('pageerror',error=>{throw error;});await page.clock.install({time:new Date('2026-10-19T12:00:00+08:00')});mkdirSync(resolve(out,'artifacts'),{recursive:true});const geometry:unknown[]=[];
  async function collect(name:string){await page.evaluate(input=>(window as any).__SDD_RESTORE_INPUT__=input,{contract,adapter});const result=await page.evaluate(collector);if(!result||typeof result!=='object'||Array.isArray(result))throw Error('采集结果必须为对象');writeFileSync(resolve(out,`render-${name}.json`),JSON.stringify(result,null,2)+'\n');geometry.push({name,...result});}
  for(const name of ['time-modes','time-presets','availability','calendar-window'])for(const width of [1440,1024,390]){

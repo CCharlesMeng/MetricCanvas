@@ -1,0 +1,46 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run tests/consumer-fixture-closure.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/ioc-header-delivery/DataDashboard
+
+ ❯ tests/consumer-fixture-closure.test.ts (1 test | 1 failed) 74ms
+   × the actual isolated content service starts and serves IOC time candidates without workspace files 73ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/consumer-fixture-closure.test.ts > the actual isolated content service starts and serves IOC time candidates without workspace files
+Error: Content service exited 1: node:internal/modules/esm/resolve:274
+    throw new ERR_MODULE_NOT_FOUND(
+          ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-consumer-closure-AlMwZo/consumer/packages/embed/tests/fixtures/ioc-time-candidates.mjs' imported from /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-consumer-closure-AlMwZo/consumer/packages/embed/tests/serve.mjs
+    at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+    at moduleResolve (node:internal/modules/esm/resolve:864:10)
+    at defaultResolve (node:internal/modules/esm/resolve:990:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+    at #link (node:internal/modules/esm/module_job:208:49) {
+  code: 'ERR_MODULE_NOT_FOUND',
+  url: 'file:///private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-consumer-closure-AlMwZo/consumer/packages/embed/tests/fixtures/ioc-time-candidates.mjs'
+}
+
+Node.js v24.11.1
+
+ ❯ failed tests/consumer-fixture-closure.test.ts:22:66
+     20|   await new Promise<void>((resolve,reject)=>{
+     21|    const deadline=setTimeout(()=>reject(Error('Content service did not…
+     22|    const failed=(message:string)=>{clearTimeout(deadline);reject(Error…
+       |                                                                  ^
+     23|    processUnderTest!.once('error',error=>failed(error.message));proces…
+     24|    processUnderTest!.stderr?.on('data',chunk=>output+=chunk);
+ ❯ ChildProcess.<anonymous> tests/consumer-fixture-closure.test.ts:23:101
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  10:18:52
+   Duration  144ms (transform 11ms, setup 0ms, import 16ms, tests 74ms, environment 0ms)
+
+[ELIFECYCLE] Test failed. See above for more details.

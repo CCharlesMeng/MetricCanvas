@@ -51,6 +51,9 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       if (source?.source.type !== 'inline') tables.set(id, createTableSession(defaultSourceView(page, id, compiled.limits.get(id)), () => refetch(new Set([id]))));
     }
     const matched = new Set<string>();
+    // Initial candidate loading may hide an otherwise valid initial snapshot.
+    // Keep it only until the first release; later invalidation must fetch fresh data.
+    const pendingInitial = new Map<string,DataSnapshot>();
     const initialSnapshots=execution?new Map<string,DataSnapshot>():program.initialSnapshots({roots:[...ids],conditions:values,views:views()});
     for (const id of ids) {
       const source = page.dataSources[id];
@@ -60,7 +63,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       if(source.source.type==='inline'&&!initial)initial={status:source.source.rows.length?'ready':'empty',...(source.source.rows.length?{rows:source.source.rows}:{})} as DataSnapshot;
       const protectedSource=[...conditionSourceIds(page,id)].some(key=>{const s=page.dataSources[key];return s?.source.type==='query'&&(hasTimeConstraints(s.source.query,page.filters));});
       if (!protectedSource && receipt && same(values, execution!.filters) && execution!.sourceKeys.get(id) === executionSourceKey(source)) { initial = receipt; matched.add(id); }
-      if (gated(id)) { initial = undefined; matched.delete(id); }
+      if (gated(id)) { if(initial)pendingInitial.set(id,initial);initial = undefined; }
       raw.set(id, initial ?? { status: 'loading' });
       if (compiled.automatic.has(id) && source.source.type === 'query') {
         const size = automaticQueryPageSize(source as QueryDataSource, initial);
@@ -75,9 +78,10 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       snapshots = computedSnapshots(new Map([...compiled.sources].filter(([id]) => ids.has(id))), raw, context());
       for (const run of subscribers) notify(run, snapshots);
     }
-    function refetch(changed: Set<string>, firstRead = false) {
+    function refetch(changed: Set<string>, firstRead = false, releaseInitial = false) {
       if (disposed || !changed.size) return;
       const targets = new Set([...(firstRead ? changed : affectedSourceIds(page.dataSources, changed, false))].filter(id => ids.has(id)));
+      if(!firstRead&&!releaseInitial)for(const id of targets)pendingInitial.delete(id);
       for (const id of targets) tokens.set(id, (tokens.get(id) ?? 0) + 1);
       for (const id of targets) {
         if (!changed.has(id)) tables.get(id)?.resetPage();
@@ -90,6 +94,8 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       for (const root of targets) {
         requests.get(root)?.abort();
         if (gated(root)) { raw.set(root,{status:'loading'}); publish(); continue; }
+        const receipt=pendingInitial.get(root);
+        if(receipt){pendingInitial.delete(root);raw.set(root,receipt);publish();continue;}
         const controller = new AbortController(); requests.set(root,controller);
         void (async () => {
           try {
@@ -111,7 +117,8 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     const unsubscribe = filters?.subscribe(next => {
       if (!primed) { primed = true; return; }
       const changed = new Set([...new Set([...values.keys(), ...next.keys()])].filter(id => queryCondition(values.get(id)) !== queryCondition(next.get(id))));
-      const nextKey=JSON.stringify(timeContext.displayInputs?.());if(nextKey!==factKey){factKey=nextKey;for(const f of page.filters??[])if((f.type==='timeRange'||f.type==='timePoint')&&f.availability||f.type==='dimension'&&f.candidateWindow)changed.add(f.id);}
+      if(changed.size)pendingInitial.clear();
+      const nextKey=JSON.stringify(timeContext.displayInputs?.());if(nextKey!==factKey){pendingInitial.clear();factKey=nextKey;for(const f of page.filters??[])if((f.type==='timeRange'||f.type==='timePoint')&&f.availability||f.type==='dimension'&&f.candidateWindow)changed.add(f.id);}
       const nextBlocked = new Set(filterBlockedIds(filters));
       for (const id of new Set([...blocked,...nextBlocked])) if (blocked.has(id) !== nextBlocked.has(id)) changed.add(id);
       blocked = nextBlocked;
@@ -122,7 +129,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       })));
       for(const component of flattenPageComponents(page))if(component.type==='table'&&fieldSelectionIds(component.props).some(id=>changed.has(id))){tables.get(component.data.main)?.resetPresentation();targets.add(component.data.main);}
       for (const id of targets) tables.get(id)?.resetPage();
-      if (targets.size) refetch(targets); else if (changed.size) publish();
+      if (targets.size) refetch(targets,false,true); else if (changed.size) publish();
     });
     refetch(new Set([...ids].filter(id => !matched.has(id) && raw.get(id)?.status === 'loading')), true);
     return {

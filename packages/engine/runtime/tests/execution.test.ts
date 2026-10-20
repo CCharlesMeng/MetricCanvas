@@ -126,3 +126,34 @@ it('当前分层参数回执必须匹配明确输入，不能以历史或默认�
   response.appliedInputs={region:['中国区'],'report-period':{start:'2026-01',end:'2026-06'}};
   expect(()=>prepareExecution(request,response)).toThrow('回执未使用本次明确输入');
 });
+
+it.each(['execution','document'])('candidate loading hides a valid %s initial snapshot, then releases it without a redundant query', async kind => {
+  const document = dimensionDocument();
+  const request: ExecutionRequest = {target:{kind:'draft',ref:{pageId:document.id,revisionId:'r1',resourceId:'metadata'}},operationId:'execute',explicitInputs:{}};
+  const response = {status:'success',target:request.target,operationId:'execute',executionId:'execution',conditionKey:'allowed',document,appliedInputs:{regions:['NA'],heading:'Actual'},filterValues:{'region-filter':{type:'dimension',dimension:'region',values:['NA']}},dataSources:Object.fromEntries(Object.keys(document.dataSources).map(id=>[id,{status:'success',rows:[{region:'NA',gmv:100}],totalCount:1,conditionKey:'allowed'}]))};
+  const bootstrap=prepareExecution(request,response);
+  const parsed=parsePage(document,{textValues:{values:bootstrap.params}});if(!parsed.ok)throw Error('invalid fixture');
+  const page=initializePageParams(parsed.page,bootstrap.params);
+  if(kind==='document')for(const source of Object.values(page.dataSources))if(source.source.type==='query')source.source.initial={capturedAt:new Date().toISOString(),rows:[{region:'NA',gmv:100}],totalCount:1};
+  const state=createFilterState(bootstrap.filters,page.filters,new Map(),{candidates:true});
+  const gateway={fetchData:vi.fn(async()=>({rows:[{region:'fresh',gmv:1}],totalCount:1}))};
+  let latest:any;const stop=orchestrate(page,gateway,state,undefined,kind==='execution'?bootstrap:undefined).subscribe(value=>latest=value);
+  await flush();expect(latest.get('sales').status).toBe('loading');expect(gateway.fetchData).not.toHaveBeenCalled();
+  state.candidate('region-filter','ready',['NA','APAC']);await flush();
+  expect(latest.get('sales')).toMatchObject({status:'ready',rows:[{region:'NA',gmv:100}]});expect(gateway.fetchData).not.toHaveBeenCalled();
+  state.candidate('region-filter','error');await flush();expect(latest.get('sales').status).toBe('loading');
+  state.candidate('region-filter','ready',['NA','APAC']);await flush();
+  expect(gateway.fetchData).toHaveBeenCalledTimes(1);expect(latest.get('sales').rows[0].region).toBe('fresh');stop();
+});
+
+it.each(['condition','view'])('changing a gated execution %s discards the pending receipt',async kind=>{
+ const document=dimensionDocument();const request:ExecutionRequest={target:{kind:'draft',ref:{pageId:document.id,revisionId:'r1',resourceId:'metadata'}},operationId:'execute',explicitInputs:{}};
+ const response={status:'success',target:request.target,operationId:'execute',executionId:'execution',conditionKey:'allowed',document,appliedInputs:{regions:['NA'],heading:'Actual'},filterValues:{'region-filter':{type:'dimension',dimension:'region',values:['NA']}},dataSources:Object.fromEntries(Object.keys(document.dataSources).map(id=>[id,{status:'success',rows:[{region:'stale',gmv:100}],totalCount:1,conditionKey:'allowed'}]))};
+ const bootstrap=prepareExecution(request,response);const parsed=parsePage(document,{textValues:{values:bootstrap.params}});if(!parsed.ok)throw Error('invalid');const page=initializePageParams(parsed.page,bootstrap.params);
+ const state=createFilterState(bootstrap.filters,page.filters,new Map(),{candidates:true}),gateway={fetchData:vi.fn(async()=>({rows:[{region:'fresh',gmv:1}],totalCount:1}))};
+ const stream=orchestrate(page,gateway,state,undefined,bootstrap);
+ let latest:any;const stop=stream.subscribe(value=>latest=value);
+ if(kind==='view')stream.setQuerySort('sales',[{field:'gmv',direction:'desc'}]);
+ else {state.write('region-filter',{type:'dimension',dimension:'region',values:['APAC']});state.write('region-filter',{type:'dimension',dimension:'region',values:['NA']});}
+ state.candidate('region-filter','ready',['NA','APAC']);await flush();expect(gateway.fetchData).toHaveBeenCalledTimes(1);expect(latest.get('sales').rows[0].region).toBe('fresh');stop();
+});

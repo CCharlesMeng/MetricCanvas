@@ -1,3 +1,4 @@
+import { dimensionSelectionIssue } from '../src/filter-dependencies';
 import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {parsePage} from '../src/validate';
@@ -28,4 +29,11 @@ describe('B2 shared business filter declarations',()=>{
   it('registers new capabilities independently of iocHeader',()=>{
     const page=apply({options:[{value:'1',label:'是'}]});page.schemaVersion='6.36';expect(parsePage(page).ok).toBe(false);
   });
+});
+
+it('preserves legacy tabs initialParam arrays while explicit single selection remains strict',()=>{
+ const legacy={id:'region',type:'dimension' as const,dimension:'region',display:'tabs' as const,initialParam:'regions'};
+ expect(dimensionSelectionIssue(legacy,['EU','NA'])).toBeUndefined();
+ expect(dimensionSelectionIssue({...legacy,selection:{mode:'single'}},['EU','NA'])).toBeDefined();
+ expect(dimensionSelectionIssue({...legacy,initialParam:undefined},['EU','NA'])).toBeDefined();
 });

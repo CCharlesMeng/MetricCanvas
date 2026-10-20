@@ -9,7 +9,10 @@ export function filterDependencies(filter: FilterDeclaration): string[] {
   return [...candidateDependencies(filter), ...(filter.clearOnChangeOf ?? [])];
 }
 export function dimensionSelectionIssue(filter: DimensionFilterDeclaration, values: readonly string[]): string | undefined {
-  if ((filter.selection?.mode === 'single' || filter.display === 'tabs') && values.length > 1) return '单选筛选器至多选择一个值';
+  // Legacy initialParam arrays may seed tabs with several applied values; the next tab click is single.
+  // An explicit selection contract always takes precedence over this compatibility case.
+  const single = filter.selection?.mode === 'single' || filter.display === 'tabs' && !filter.initialParam;
+  if (single && values.length > 1) return '单选筛选器至多选择一个值';
   if (filter.selection?.required && values.length !== 1) return '必选筛选器必须恰好选择一个值';
   if (filter.options && values.some(value => !filter.options!.some(option => option.value === value && !option.disabled))) return '筛选值不在可用封闭枚举中';
   if (filter.selection && new Set(values).size !== values.length) return '筛选值不能重复';

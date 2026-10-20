@@ -19,3 +19,5 @@
 历史失败和重试明确保留：初次main集成修复目录数组迁移、协议版本占用、ECharts不透明byFilter边界；并行main更新后重新合入统一呈现。阶段性的原测试报告不替代最终全量全绿结果，不放宽测试超时，不移除失败用例，不覆盖main功能。
 
 原始命令与日志见evidence/verification.json。所有产物与快照都以source-manifest.json的代码指纹关联；代码和生成物在最终验证期间未再改变。
+
+首次远端兼容性未通过后的收口与最终准确提交回归，见[补充记录](ci-closure.md)及evidence/ci-closure.json；原输入指纹保留，发布输入另见release-source-manifest.json。

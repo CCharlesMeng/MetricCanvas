@@ -458,8 +458,6 @@
     try{fromURL = new Map(capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined)
       ? parseFilterSearch(search,declarations,candidateClock)
       : new Map());}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间模式URL必须为合法完整mode/from/to'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
-    let fromDeclarations:Map<string,FilterValue>;
-    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(f=>!fromURL.has(f.id)),candidateClock,displaySnapshot,0);}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间默认值或可信初始期间不符合声明精度和边界'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
     const localOptions = chartFilterOptions(loaded);
     for (const [id, options] of localOptions) {
       const value = fromURL.get(id);
@@ -471,6 +469,8 @@
         return;
       }
     }
+    let fromDeclarations:Map<string,FilterValue>;
+    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(f=>!fromURL.has(f.id)),candidateClock,displaySnapshot,0);}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间默认值或可信初始期间不符合声明精度和边界'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
     let state:ReturnType<typeof createFilterState>;
     try {
       state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || (typeof loaded.dashboardToolbar === 'object' && loaded.dashboardToolbar.readOnly === true) });
@@ -512,7 +512,7 @@
         if(candidatesLoader)loadTableCandidates(presentation);
         declarations = presentation.filters ?? [];
         pageState = { phase: 'ready', page: presentation, capabilities };
-        if (primed && capabilities.filters) {
+        if (primed && capabilities.filters && changedFilters(previous,values).size > 0) {
           const nextSearch = mergedSearch(state, search);
           navigationAdapter?.replaceSearch?.(nextSearch);
           emit?.({ type: 'filter-change', search: nextSearch,filterRevision:state.revision });
