@@ -117,9 +117,51 @@
       "command": "pnpm authoring:contracts:check",
       "log": "header-height-contracts.txt",
       "exit_code": 0
+    },
+    {
+      "command": "pnpm --filter @metriccanvas/ui exec playwright test --project=chrome",
+      "log": "scrolled-ui.txt",
+      "exit_code": 0,
+      "passed": 35
+    },
+    {
+      "command": "pnpm --filter @metriccanvas/ui check",
+      "log": "scrolled-check.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm --filter @metriccanvas/ui build",
+      "log": "scrolled-ui-build.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm --filter @metriccanvas/embed build",
+      "log": "scrolled-embed-build.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "node node_modules/@playwright/test/cli.js test",
+      "cwd": "/tmp/ioc-ui-short",
+      "input": "UI-only production consumer, fresh ui-scroll-fixed-final.tgz, fixture from tools/package-build/fixtures/ui-only + components.spec.ts",
+      "log": "scrolled-consumer.txt",
+      "exit_code": 0,
+      "passed": 28
+    },
+    {
+      "command": "MC_EMBED_EXAMPLE_PORT=4197 pnpm --filter @metriccanvas/embed exec playwright test embed.spec.ts ioc-header.spec.ts ioc-header-business.spec.ts navigation.spec.ts --workers=1 --timeout=15000",
+      "log": "scrolled-embed.txt",
+      "exit_code": 0,
+      "passed": 59
+    },
+    {
+      "command": "node apps/playground/tests/ioc-header-selection-browser.mjs",
+      "log": "scrolled-page.txt",
+      "exit_code": 0,
+      "passed": 5
     }
   ],
   "full_suite_note": "Full suite2534 passed/5 pre-existing skipped. Browser and installed UI rerun after final focus and required-control guards; previous1417 result remains historical.",
   "data": "local synthetic, no real DQE/Relay/CloudIOC",
-  "height_fix_note": "2026-10-21: retain official inline-block, align top to remove baseline gap. Original embedded height test red82/80, unchanged59-case regression green. Local Edge not installed; use exact fixup CI for Edge."
+  "height_fix_note": "2026-10-21: retain official inline-block, align top to remove baseline gap. Original embedded height test red82/80, unchanged59-case regression green. Local Edge not installed; use exact fixup CI for Edge.",
+  "scroll_fix_note": "Scoped popover selector beats official absolute rule and preserves intended fixed geometry. New scroll regressions failed fixed/absolute before fix and pass afterward. End-to-end page script closes panel before switching viewport to avoid waiting on an automatically closed popup."
 }

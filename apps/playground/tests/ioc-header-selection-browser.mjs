@@ -41,7 +41,7 @@ try {
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
  await page.screenshot({path:new URL('page-narrow.png',out).pathname,fullPage:true});
  results.push({id:'PAGE-4',profile:'contract',passed:true,steps:'390px page has no horizontal overflow; popup inside viewport; repeated labels preserve two ancestor paths'});
- await page.setViewportSize({width:1440,height:1000});await page.getByRole('dialog').press('Escape');await page.getByRole('button',{name:'区域',exact:true}).click();if(await page.getByRole('button',{name:'展开中国地区部'}).isVisible()) await page.getByRole('button',{name:'展开中国地区部'}).click();
+ await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).toHaveCount(0);await page.setViewportSize({width:1440,height:1000});await page.getByRole('button',{name:'区域',exact:true}).click();if(await page.getByRole('button',{name:'展开中国地区部'}).isVisible()) await page.getByRole('button',{name:'展开中国地区部'}).click();
  await page.screenshot({path:new URL('page-tree-single.png',out).pathname,fullPage:true});expect(errors).toEqual([]);
  writeFileSync(new URL('page-browser.json',out),JSON.stringify({url,fixture:'pages/ioc-header-selection.json',results,pageErrors:errors},null,2));
  console.log(`${results.length} page scenarios passed; ${errors.length} page errors`);

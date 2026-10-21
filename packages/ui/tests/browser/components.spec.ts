@@ -23,4 +23,15 @@ for(const shadow of [false,true]){test.describe(`root ${shadow}`,()=>{
  test(`year and quarter select and preserve keyboard semantics; shadow=${shadow}`,async({page})=>{await page.getByLabel('日期形态').selectOption('year');const input=page.locator('[data-date] input');await input.click();await page.getByRole('button',{name:'2024',exact:true}).click();await expect(input).toHaveValue('2024 年');await page.getByLabel('日期形态').selectOption('quarter');await input.fill('2026-Q4');await input.press('Enter');await expect(input).toHaveValue('2026 年 Q4');await input.click();await page.getByRole('button',{name:'2026-Q4',exact:true}).press('ArrowLeft');await page.keyboard.press('Enter');await expect(input).toHaveValue('2026 年 Q3');await input.click();await page.getByRole('button',{name:'2026 年',exact:true}).click();await page.getByRole('button',{name:'2025',exact:true}).click();await expect(page.getByRole('button',{name:'2025-Q1',exact:true})).toBeVisible();});
  for(const mode of ['date','month','daterange','monthrange'])test(`date ${mode} valid manual input, narrow panel and no page errors; shadow=${shadow}`,async({page})=>{const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.setViewportSize({width:390,height:700});await page.getByLabel('日期形态').selectOption(mode);const inputs=page.locator('[data-date] input');const from=mode.startsWith('month')?'2026-02':'2026-02-28';await inputs.first().fill(from);if(mode.endsWith('range'))await inputs.nth(1).fill(mode.startsWith('month')?'2026-03':'2026-03-01');await inputs.last().press('Enter');await expect(page.getByLabel('日期结果')).toContainText(from);expect(errors).toEqual([]);});
  test(`short viewport popovers stay visible and release focus; shadow=${shadow}`,async({page})=>{await page.setViewportSize({width:390,height:360});const trigger=page.getByRole('button',{name:'选择',exact:true});await trigger.click();await expect.poll(async()=>{const r=await page.getByRole('listbox').boundingBox();return !!r&&r.x>=7&&r.x+r.width<=383&&r.y>=7&&r.y+r.height<=353;}).toBe(true);const bounds=await page.getByRole('listbox').boundingBox();expect(bounds).not.toBeNull();expect(bounds!.x).toBeGreaterThanOrEqual(7);expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(383);expect(bounds!.y).toBeGreaterThanOrEqual(7);expect(bounds!.y+bounds!.height).toBeLessThanOrEqual(353);await page.keyboard.press('Escape');await expect(trigger).toBeFocused();});
+ test(`scrolled host keeps the select popover in viewport; shadow=${shadow}`,async({page})=>{
+  await page.setViewportSize({width:390,height:360});
+  await page.locator('main').evaluate(el=>{el.style.paddingTop='120px';});
+  const trigger=page.getByRole('button',{name:'选择',exact:true});
+  await trigger.click();
+  await expect.poll(()=>page.evaluate(()=>window.scrollY)).toBeGreaterThan(0);
+  const popup=page.getByRole('dialog',{name:'选择候选'});
+  await expect(popup).toHaveCSS('position','fixed');
+  await expect.poll(async()=>{const r=await popup.boundingBox();return !!r&&r.x>=7&&r.x+r.width<=383&&r.y>=7&&r.y+r.height<=353;}).toBe(true);
+  await page.keyboard.press('Escape');await expect(trigger).toBeFocused();
+ });
 });}
