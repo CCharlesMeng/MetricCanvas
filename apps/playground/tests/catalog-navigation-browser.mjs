@@ -34,47 +34,64 @@ async function openCard(id) {
 
 try {
   await page.goto(base);
+  await expect(page.getByRole('navigation', { name: '按能力查找' })).toBeVisible();
+  const capabilityCount = await page.getByRole('navigation', { name: '按能力查找' }).getByRole('button').count();
   await page.getByRole('button', { name: /^表格与明细/ }).click();
   await page.getByRole('button', { name: /^Dashboard/ }).click();
   await page.getByLabel('运行条件', { exact: true }).selectOption('none');
   await page.getByRole('button', { name: /^功能演示/ }).click();
-  await page.getByRole('searchbox', { name: '搜索页面', exact: true }).fill('详情弹窗');
-  await expectFilters('详情弹窗');
+  await page.getByRole('searchbox', { name: '搜索页面', exact: true }).fill('table-detail-overlay');
+  await expectFilters('table-detail-overlay');
   const firstY = await openCard('table-detail-overlay');
   expect(firstY).toBeGreaterThan(0);
   await page.reload();
   await page.getByRole('link', { name: '← 页面目录' }).click();
-  await expectFilters('详情弹窗');
+  await expectFilters('table-detail-overlay');
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeCloseTo(firstY, 0);
   facts.directoryLinkAfterDetailReload = true;
   facts.scrollRestored = true;
   await page.screenshot({ path: path.join(output, 'restored-catalog.png') });
 
+  await page.getByRole('searchbox', { name: '搜索页面', exact: true }).fill('');
   await page.getByRole('button', { name: /^Report/ }).click();
-  await page.getByRole('searchbox', { name: '搜索页面', exact: true }).fill('Excel');
-  await expectFilters('Excel', 'Report');
+  await page.getByRole('searchbox', { name: '搜索页面', exact: true }).fill('table-toolbar-demo');
+  await expectFilters('table-toolbar-demo', 'Report');
   const secondY = await openCard('table-toolbar-demo');
   await page.goBack();
-  await expectFilters('Excel', 'Report');
+  await expectFilters('table-toolbar-demo', 'Report');
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeCloseTo(secondY, 0);
   await page.goBack();
   await expect(page).toHaveURL(`${base}/pages/table-detail-overlay`);
   await page.goBack();
-  await expectFilters('详情弹窗');
+  await expectFilters('table-detail-overlay');
   await page.goForward();
   await expect(page).toHaveURL(`${base}/pages/table-detail-overlay`);
   await page.goForward();
-  await expectFilters('Excel', 'Report');
+  await expectFilters('table-toolbar-demo', 'Report');
   facts.historyEntriesIndependent = true;
 
   await page.reload();
-  await expectFilters('Excel', 'Report');
+  await expectFilters('table-toolbar-demo', 'Report');
   await page.getByRole('searchbox', { name: '搜索页面', exact: true }).fill('不存在的目录结果');
   await expect(page.getByRole('heading', { name: '没有找到匹配页面' })).toBeVisible();
   await page.reload();
   await expect(page.getByRole('searchbox', { name: '搜索页面', exact: true })).toHaveValue('不存在的目录结果');
   await expect(page.getByRole('heading', { name: '没有找到匹配页面' })).toBeVisible();
   facts.reloadAndEmptyResults = true;
+
+  // 空结果时保留当前条件和各组“全部”入口，其余零匹配选项隐藏。
+  for (const [nav, selected] of [['按能力查找', /^表格与明细 0/], ['布局形态', /^Report · 报表 0/], ['页面分类', /^功能演示 0/]]) {
+    const navigation = page.getByRole('navigation', { name: nav });
+    await expect(navigation.getByRole('button')).toHaveCount(2);
+    await expect(navigation.getByRole('button', { name: selected })).toHaveAttribute('aria-pressed', 'true');
+    await expect(navigation.getByRole('button', { name: /^全部/ })).toBeVisible();
+  }
+  await expect(page.getByLabel('运行条件', { exact: true })).toHaveValue('none');
+  await expect(page.getByLabel('运行条件', { exact: true }).locator('option')).toHaveCount(2);
+  await page.getByRole('searchbox', { name: '搜索页面', exact: true }).fill('table-toolbar-demo');
+  await expectFilters('table-toolbar-demo', 'Report');
+  await page.getByRole('searchbox', { name: '搜索页面', exact: true }).fill('不存在的目录结果');
+  facts.zeroOptionsHiddenAndSelectionRetained = true;
 
   await page.locator('.empty').getByRole('button', { name: '重置筛选' }).click();
   const total = await page.locator('.page-card').count();
@@ -89,6 +106,8 @@ try {
   await expect(page.getByRole('searchbox', { name: '搜索页面', exact: true })).toHaveValue('');
   await expect(page.locator('.page-card')).toHaveCount(total);
   await expect(page.getByLabel('运行条件', { exact: true })).toHaveValue('all');
+  await expect(page.getByRole('navigation', { name: '布局形态' }).getByRole('button')).toHaveCount(3);
+  await expect(page.getByRole('navigation', { name: '按能力查找' }).getByRole('button')).toHaveCount(capabilityCount);
   facts.resetAndRelatedNavigation = true;
 
   await page.getByRole('searchbox', { name: '搜索页面', exact: true }).fill('table-detail-overlay');

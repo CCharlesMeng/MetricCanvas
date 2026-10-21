@@ -76,6 +76,7 @@
   {:then groups}
     {@const total = groups.reduce((count, group) => count + group.pages.length, 0)}
     {@const layoutGroups = filterPageCatalog(groups, query, 'all', layoutForm, capability, runtime)}
+    {@const allLayouts = filterPageCatalog(groups, query, category, 'all', capability, runtime)}
     {@const visible = filterPageCatalog(groups, query, category, layoutForm, capability, runtime)}
     {@const matched = visible.reduce((count, group) => count + group.pages.length, 0)}
     <nav class="capability-selector" aria-label="按能力查找">
@@ -83,18 +84,22 @@
       <div class="capability-list">
         {#each catalogCapabilities as item (item.id)}
           {@const count = filterPageCatalog(groups, query, category, layoutForm, item.id, runtime).reduce((sum, group) => sum + group.pages.length, 0)}
-          <button type="button" class:active={capability === item.id} aria-pressed={capability === item.id} onclick={() => capability = item.id}>
-            <strong>{item.title} <span>{count}</span></strong><small>{item.question}</small>
-          </button>
+          {#if count > 0 || capability === item.id}
+            <button type="button" class:active={capability === item.id} aria-pressed={capability === item.id} onclick={() => capability = item.id}>
+              <strong>{item.title} <span>{count}</span></strong><small>{item.question}</small>
+            </button>
+          {/if}
         {/each}
       </div>
     </nav>
     <nav class="layout-selector" aria-label="布局形态">
       <span class="layout-label">布局形态</span>
-      <button type="button" class:active={layoutForm === 'all'} aria-pressed={layoutForm === 'all'} onclick={() => layoutForm = 'all'}>全部形态 <span>{total}</span></button>
+      <button type="button" class:active={layoutForm === 'all'} aria-pressed={layoutForm === 'all'} onclick={() => layoutForm = 'all'}>全部形态 <span>{allLayouts.reduce((sum, group) => sum + group.pages.length, 0)}</span></button>
       {#each catalogLayouts as layout (layout.id)}
-        {@const count = groups.flatMap((group) => group.pages).filter((entry) => entry.layoutForm === layout.id).length}
-        <button type="button" class:active={layoutForm === layout.id} aria-pressed={layoutForm === layout.id} onclick={() => layoutForm = layout.id}>{layout.title} <span>{count}</span></button>
+        {@const count = allLayouts.flatMap((group) => group.pages).filter((entry) => entry.layoutForm === layout.id).length}
+        {#if count > 0 || layoutForm === layout.id}
+          <button type="button" class:active={layoutForm === layout.id} aria-pressed={layoutForm === layout.id} onclick={() => layoutForm = layout.id}>{layout.title} <span>{count}</span></button>
+        {/if}
       {/each}
     </nav>
     <div class="catalog-tools">
@@ -105,7 +110,10 @@
       <label class="runtime-filter">运行条件
         <select bind:value={runtime} aria-label="运行条件">
           <option value="all">全部运行条件</option>
-          {#each catalogRuntimes as item}<option value={item.id}>{item.title}</option>{/each}
+          {#each catalogRuntimes as item (item.id)}
+            {@const count = filterPageCatalog(groups, query, category, layoutForm, capability, item.id).reduce((sum, group) => sum + group.pages.length, 0)}
+            {#if count > 0 || runtime === item.id}<option value={item.id}>{item.title}</option>{/if}
+          {/each}
         </select>
       </label>
       <nav class="categories" aria-label="页面分类">
