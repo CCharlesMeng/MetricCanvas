@@ -1,0 +1,264 @@
+{
+  "measurement": "deterministic reference retrieval only; not observed Agent requests",
+  "baselineCommit": "13a651791cfbe05ed8f6053afce02dbfe4e9999d",
+  "currentCommit": "13a651791cfbe05ed8f6053afce02dbfe4e9999d",
+  "skillEntrySha256": "8272d120bf1018aae8e0cea4a52d0ab9cb8b993c6755f13be13d4ceb438b6fee",
+  "readerSha256": "4ff47161aea7a8ecfe624ed675d5bdaf3e7caa0948cd9afb9c4f6072e660ef15",
+  "knowledgeSha256": "2a58d100573edac2087065c10acc8a921f21dab165e2b33af103ea23c75d4ada",
+  "fixturePageSha256": "e997a507908e922909ab8e2fd2b594789aec594156db8a71214ac799cc0a0dbb",
+  "fixtureMdSha256": "f1481bba6f7ef64a7662f7c393e582bc3867e0ea4e3c772b1954b19b8367383f",
+  "units": "UTF-8 bytes",
+  "cases": [
+    {
+      "task": "标题修改",
+      "baselineFiles": [
+        "SKILL.md",
+        "references/local-workflow.md",
+        "references/page-metadata/README.md",
+        "references/page-metadata/data-sources.md",
+        "references/page-metadata/fields.md",
+        "references/page-metadata/queries-and-bindings.md",
+        "references/page-metadata/components/metricCard.md"
+      ],
+      "topics": [
+        "metricCard.title"
+      ],
+      "baselineBytes": 375636,
+      "proposedRouteBytes": 11398,
+      "reduction": 0.9696567954083208
+    },
+    {
+      "task": "列宽修改",
+      "baselineFiles": [
+        "SKILL.md",
+        "references/local-workflow.md",
+        "references/page-metadata/README.md",
+        "references/page-metadata/data-sources.md",
+        "references/page-metadata/fields.md",
+        "references/page-metadata/queries-and-bindings.md",
+        "references/page-metadata/components/table.md"
+      ],
+      "topics": [
+        "table.width"
+      ],
+      "baselineBytes": 498913,
+      "proposedRouteBytes": 13682,
+      "reduction": 0.972576381052408
+    },
+    {
+      "task": "金额与百分格式",
+      "baselineFiles": [
+        "SKILL.md",
+        "references/local-workflow.md",
+        "references/page-metadata/README.md",
+        "references/page-metadata/data-sources.md",
+        "references/page-metadata/fields.md",
+        "references/page-metadata/queries-and-bindings.md",
+        "references/page-metadata/field-bindings-and-formats.md"
+      ],
+      "topics": [
+        "fields.format"
+      ],
+      "baselineBytes": 361802,
+      "proposedRouteBytes": 11065,
+      "reduction": 0.9694169739249645
+    },
+    {
+      "task": "列绑定修复",
+      "baselineFiles": [
+        "SKILL.md",
+        "references/local-workflow.md",
+        "references/page-metadata/README.md",
+        "references/page-metadata/data-sources.md",
+        "references/page-metadata/fields.md",
+        "references/page-metadata/queries-and-bindings.md",
+        "references/page-metadata/components/table.md",
+        "references/page-metadata/field-bindings-and-formats.md"
+      ],
+      "topics": [
+        "table.columns",
+        "fields.format"
+      ],
+      "baselineBytes": 540110,
+      "proposedRouteBytes": 18241,
+      "reduction": 0.9662272500046287
+    },
+    {
+      "task": "未知属性修复",
+      "baselineFiles": [
+        "SKILL.md",
+        "references/local-workflow.md",
+        "references/page-metadata/README.md",
+        "references/page-metadata/data-sources.md",
+        "references/page-metadata/fields.md",
+        "references/page-metadata/queries-and-bindings.md",
+        "references/page-metadata/components/table.md",
+        "references/page-metadata/validation.md"
+      ],
+      "topics": [
+        "table.width"
+      ],
+      "baselineBytes": 531432,
+      "proposedRouteBytes": 13682,
+      "reduction": 0.9742544671754806
+    },
+    {
+      "task": "inline 看板",
+      "baselineFiles": [
+        "SKILL.md",
+        "references/local-workflow.md",
+        "references/page-metadata/README.md",
+        "references/page-metadata/data-sources.md",
+        "references/page-metadata/fields.md",
+        "references/page-metadata/queries-and-bindings.md",
+        "references/page-metadata/page.md",
+        "references/page-metadata/sections-and-layout.md",
+        "references/page-metadata/components/metricCard.md"
+      ],
+      "topics": [
+        "page.core",
+        "layout.core",
+        "data.inline",
+        "metricCard.core"
+      ],
+      "baselineBytes": 504973,
+      "proposedRouteBytes": 24387,
+      "reduction": 0.9517063288532258
+    },
+    {
+      "task": "已确认 Report",
+      "baselineFiles": [
+        "SKILL.md",
+        "references/local-workflow.md",
+        "references/page-metadata/README.md",
+        "references/page-metadata/data-sources.md",
+        "references/page-metadata/fields.md",
+        "references/page-metadata/queries-and-bindings.md",
+        "references/page-metadata/page.md",
+        "references/page-metadata/sections-and-layout.md",
+        "references/page-metadata/components/text.md"
+      ],
+      "topics": [
+        "page.core",
+        "layout.core",
+        "data.inline",
+        "text.core"
+      ],
+      "baselineBytes": 486229,
+      "proposedRouteBytes": 24572,
+      "reduction": 0.9494641413819415
+    },
+    {
+      "task": "未确认形态",
+      "baselineFiles": [
+        "SKILL.md",
+        "references/page-form.md"
+      ],
+      "topics": [],
+      "baselineBytes": 18339,
+      "proposedRouteBytes": 11792,
+      "reduction": 0.35699874584219426
+    },
+    {
+      "task": "表格搜索",
+      "baselineFiles": [
+        "SKILL.md",
+        "references/local-workflow.md",
+        "references/page-metadata/README.md",
+        "references/page-metadata/data-sources.md",
+        "references/page-metadata/fields.md",
+        "references/page-metadata/queries-and-bindings.md",
+        "references/page-metadata/components/table.md"
+      ],
+      "topics": [
+        "table.search",
+        "query.core"
+      ],
+      "baselineBytes": 498913,
+      "proposedRouteBytes": 24301,
+      "reduction": 0.951292109045064
+    },
+    {
+      "task": "期间筛选",
+      "baselineFiles": [
+        "SKILL.md",
+        "references/local-workflow.md",
+        "references/page-metadata/README.md",
+        "references/page-metadata/data-sources.md",
+        "references/page-metadata/fields.md",
+        "references/page-metadata/queries-and-bindings.md",
+        "references/page-metadata/filters.md"
+      ],
+      "topics": [
+        "filters.time",
+        "filters.period",
+        "query.core"
+      ],
+      "baselineBytes": 488272,
+      "proposedRouteBytes": 25942,
+      "reduction": 0.9468697775010649
+    },
+    {
+      "task": "报告导出",
+      "baselineFiles": [
+        "SKILL.md",
+        "references/local-workflow.md",
+        "references/page-metadata/README.md",
+        "references/page-metadata/data-sources.md",
+        "references/page-metadata/fields.md",
+        "references/page-metadata/queries-and-bindings.md",
+        "references/page-metadata/components/reportHeader.md"
+      ],
+      "topics": [
+        "reportHeader.export"
+      ],
+      "baselineBytes": 368219,
+      "proposedRouteBytes": 16650,
+      "reduction": 0.9547823442027706
+    },
+    {
+      "task": "组合源",
+      "baselineFiles": [
+        "SKILL.md",
+        "references/local-workflow.md",
+        "references/page-metadata/README.md",
+        "references/page-metadata/data-sources.md",
+        "references/page-metadata/fields.md",
+        "references/page-metadata/queries-and-bindings.md",
+        "references/page-metadata/components/table.md"
+      ],
+      "topics": [
+        "data.pagedJoin",
+        "table.pagination"
+      ],
+      "baselineBytes": 498913,
+      "proposedRouteBytes": 25268,
+      "reduction": 0.9493538953685312
+    },
+    {
+      "task": "指标匹配与查询条件",
+      "baselineFiles": [
+        "SKILL.md",
+        "references/local-workflow.md",
+        "references/page-metadata/README.md",
+        "references/page-metadata/data-sources.md",
+        "references/page-metadata/fields.md",
+        "references/page-metadata/queries-and-bindings.md",
+        "references/page-metadata/components/metricCard.md"
+      ],
+      "topics": [
+        "data.query",
+        "fields.core",
+        "query.core"
+      ],
+      "baselineBytes": 375636,
+      "proposedRouteBytes": 19863,
+      "reduction": 0.947121681627959
+    }
+  ],
+  "actualAgentComparison": "not-run",
+  "inputTokens": "unavailable",
+  "cachedTokens": "unavailable",
+  "outputTokens": "unavailable",
+  "note": "当前结果未计入未知模型的后续指针深查/修复轮次，不能据此推算总input或费用节省。"
+}

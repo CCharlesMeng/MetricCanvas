@@ -10,6 +10,8 @@
 | 独立本地创作 Skill | `skill/metriccanvas-local-authoring/SKILL.md`、作者维护的 `references/*.md`、`scripts/snapshot-attempt.mjs` | 整目录独立安装；`.agents/skills/metriccanvas-local-authoring` 为本仓发现入口 | 只在上述作者文件维护流程；安装后的知识链接必须在目录内闭合 |
 | 本地创作知识与校验器 | 产品页面参考；`tools/scripts/local-authoring-projection.ts`、`local-authoring-validator.ts`，后者复用产品 `parsePage` 与文件名校验 | 本地 Skill 的 `references/page-metadata/`、`references/knowledge.json`、`scripts/validate-page.mjs` 与第三方许可证 | 同一导出命令生成；剔除在线工具路由与仓外溯源路径，不改变字段语义；知识清单锁定作者版本、产品契约版本和各生成文件哈希 |
 | 成型页面范式 | `tools/scripts/local-authoring-patterns.ts` 与其选定的 `pages/` 页面 | 本地 Skill `references/page-patterns/*.json` | 只投影布局、嵌套组件树与来源哈希；纳入知识清单；阅读目的与误判提示由作者范式卡维护 |
+| 精确创作知识 | 产品 Schema/参考语义、reference-map 的 authoringTopics、local-authoring-knowledge 与 knowledge-core | 本地 Skill references/authoring-knowledge/、scripts/read-knowledge.mjs | 同一导出器生成；语义保留原文，结构局部读取并标出未展开引用；不手写第二份规则 |
+| 用数扫描和数据分析 | local-authoring-data-analysis.ts、local-authoring-data-cli.ts、产品组件树遍历/校验 | 本地 Skill scripts/analyze-data.mjs | 打包为独立脚本，清单锁定；用户 MD/报告只在用户工作目录，不进入分发 |
 | 概览布局样例与地图地名 | `tools/scripts/local-authoring-overview-example.ts`；产品 `page/map-regions.json` | 本地 Skill `assets/layouts/overview-map-led.json`、`references/map-regions.json` | 导出时验证布局样例，地名保留底图哈希而移除仓库路径；均纳入知识清单 |
 | Bundle 版本、入口与分发规则 | `bundle.json` | `bundle.lock.json`、运行时 bundle-info、安装包 | 修改声明后导出；不手改 hash |
 | 产品快照来源锁 | 根仓产品契约 manifest | `contract-lock.json` 与 `contract-snapshot/manifest.json` | 同一导出器生成 |

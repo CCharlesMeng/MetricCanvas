@@ -1,5 +1,7 @@
 # 页面元数据模块参考
 
+独立本地创作支持 read-knowledge.mjs 按主题和精确 Schema Pointer 查阅；常用主题如 table.width、fields.format、data.query、query.core。输出保留当前节点、父级分支条件和未展开引用，子节点可继续按指针读取；它是局部参考，最终仍须完整页面校验。页面 JSON 与指标说明的识别不等于真实 DQE 验真。
+
 按任务或JSON路径查阅；作者协议版本、可读范围与能力下限以[页面、版本与布局](page.md)及本册[index.json](../../contracts/metriccanvas/page/reference/index.json)、[schema.json](../../contracts/metriccanvas/page/reference/schema.json)为准。结构来自Schema，语义来自模块作者。页面协议可表达、确定性工具可装配、外部服务已接通是三份独立证据。
 
 ## 按使用场景查阅

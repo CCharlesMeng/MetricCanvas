@@ -132,7 +132,7 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
     } finally { writeFileSync(file,original); }
   }, scenarioTimeout);
 
-  it.each(['references/page-metadata/schema.json', 'references/knowledge.json', 'references/page-patterns/dashboard-detail.json', 'scripts/validate-page.mjs'])('拒绝独立本地 Skill 生成内容漂移：%s', file => {
+  it.each(['references/page-metadata/schema.json', 'references/knowledge.json', 'references/page-patterns/dashboard-detail.json', 'scripts/validate-page.mjs', 'references/authoring-knowledge/model.json', 'scripts/read-knowledge.mjs', 'scripts/analyze-data.mjs'])('拒绝独立本地 Skill 生成内容漂移：%s', file => {
     const relative = `metriccanvas-authoring/skill/metriccanvas-local-authoring/${file}`;
     withChangedFile(relative, readFileSync(path.join(isolated,relative),'utf8') + '\nchanged generated content\n', () => {
       const result = runExport();
@@ -152,14 +152,19 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
       writeFileSync(localAuthored, localOriginal + '\nLocal authored extension\n');
       const stale = path.join(folder, 'metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/stale.md');
       writeFileSync(stale, '# Stale projection\n');
+      const staleTopic = path.join(folder, 'metriccanvas-authoring/skill/metriccanvas-local-authoring/references/authoring-knowledge/stale.json');
+      writeFileSync(staleTopic, '{}\n');
       const result = runExport([], folder);
       expect(result.status, result.stderr).toBe(0);
       expect(readFileSync(authored, 'utf8')).toBe('# Authored extension\n');
       expect(readFileSync(localAuthored, 'utf8')).toBe(localOriginal + '\nLocal authored extension\n');
       expect(existsSync(stale)).toBe(false);
+      expect(existsSync(staleTopic)).toBe(false);
       expect(runExport(['--check'], folder).status).toBe(0);
     } finally { rmSync(folder, {recursive:true, force:true}); }
-  }, scenarioTimeout);
+    // A fresh copy plus generation and a separate check need two scenario budgets;
+    // each subprocess still has its own unchanged 30s ceiling.
+  }, scenarioTimeout * 2);
 
   it('拒绝重复 Skill 入口', () => {
     const relative = 'metriccanvas-authoring/bundle.json';

@@ -8,7 +8,7 @@
 
 ## 自然语言与设计源
 
-先完成入口的[形态识别与确认](page-form.md)，再按已确认形态读取[Dashboard 范式](dashboard-patterns.md)或[Report 范式](report-patterns.md)。未确认时本轮停在识别摘要；章节与组件映射在确认后进行。范式摘要只提供结构，不能作为完整页面或业务数据输入。
+新建、整页重组或切换形态时，先完成入口的[形态识别与确认](page-form.md)，再按已确认形态读取[Dashboard 范式](dashboard-patterns.md)或[Report 范式](report-patterns.md)。未确认时本轮停在识别摘要；章节与组件映射在确认后进行。范式摘要只提供结构，不能作为完整页面或业务数据输入。
 
 自然语言创作先将需求对应到章节、组件、字段与交互；完整页面保留必要的口径和数据范围说明。仅在需求明确要求时配置动态 AI 总结；已有文字说明可使用 text 或 fieldText。
 
@@ -18,7 +18,7 @@
 
 ## 数据配置
 
-先读[数据源](page-metadata/data-sources.md)、[字段](page-metadata/fields.md)和[查询绑定](page-metadata/queries-and-bindings.md)。
+仅新增/修改数据声明或核对已有绑定时，按需查阅数据源、字段与查询主题；局部呈现修改保留原声明，不无条件连读三个模块。页面与指标说明的匹配流程见[数据识别与接数](data-analysis.md)。
 
 - inline 行使用稳定页面字段 id；query 初始行保留实际查询响应字段，按 queryField 映射到页面字段。
 - 组件引用数据槽与稳定页面字段 id；筛选器 dimension、页面字段 id、DQE 字段属于不同空间，显式配置绑定。

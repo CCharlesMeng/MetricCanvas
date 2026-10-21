@@ -1874,5 +1874,396 @@
       "reason": "独立固定筛选按钮组首批仅用于Dashboard正文或组合卡；共享组件Schema的详情分支由语义校验拒绝。",
       "source": "packages/page/src/filter-group.ts"
     }
+  },
+  "authoringTopics": {
+    "page.core": {
+      "module": "page",
+      "title": "页面版本与布局",
+      "roots": [
+        "#/definitions/pageLayoutForm",
+        "#/definitions/dashboardToolbar"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "layout.core": {
+      "module": "sections-and-layout",
+      "title": "分区和布局",
+      "roots": [
+        "#/definitions/section",
+        "#/definitions/componentLayout"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "data.inline": {
+      "module": "data-sources",
+      "title": "内联数据源",
+      "roots": [
+        "#/definitions/inlineDataSource",
+        "#/definitions/inlineSource"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "data.query": {
+      "module": "data-sources",
+      "title": "查询数据源",
+      "roots": [
+        "#/definitions/queryDataSource",
+        "#/definitions/querySource"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "data.pagedJoin": {
+      "module": "data-sources",
+      "title": "多查询组合源",
+      "roots": [
+        "#/definitions/pagedJoinSource"
+      ],
+      "headings": [
+        "多查询组合源 pagedJoin（6.22）"
+      ],
+      "dependencies": []
+    },
+    "fields.core": {
+      "module": "fields",
+      "title": "结果字段契约",
+      "roots": [
+        "#/definitions/scalarField",
+        "#/definitions/queryScalarField"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "fields.format": {
+      "module": "field-bindings-and-formats",
+      "title": "字段引用和格式",
+      "roots": [
+        "#/definitions/fieldBinding",
+        "#/definitions/staticFieldBinding"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "query.core": {
+      "module": "queries-and-bindings",
+      "title": "查询与显式绑定",
+      "roots": [
+        "#/definitions/pageQuery",
+        "#/definitions/dqeQuery"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "table.columns": {
+      "module": "table",
+      "title": "表格列与列组",
+      "roots": [
+        "#/definitions/tableColumnNode",
+        "#/definitions/tableColumn",
+        "#/definitions/tableColumnGroup"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "table.width": {
+      "module": "table",
+      "title": "表格列宽",
+      "roots": [
+        "#/definitions/tableColumn/properties/width",
+        "#/definitions/tableColumn/properties/fixed"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "table.search": {
+      "module": "table",
+      "title": "表格搜索",
+      "roots": [
+        "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search"
+      ],
+      "headings": [
+        "右上角搜索与 Excel 导出（6.21）",
+        "静态搜索选项（6.42）"
+      ],
+      "dependencies": []
+    },
+    "table.pagination": {
+      "module": "table",
+      "title": "表格分页",
+      "roots": [
+        "#/definitions/tableComponent/properties/props/properties/pagination"
+      ],
+      "headings": [
+        "数值范围和组合表（6.22）"
+      ],
+      "dependencies": []
+    },
+    "table.export": {
+      "module": "table",
+      "title": "表格导出",
+      "roots": [
+        "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export"
+      ],
+      "headings": [
+        "右上角搜索与 Excel 导出（6.21）",
+        "静态搜索选项（6.42）"
+      ],
+      "dependencies": []
+    },
+    "metricCard.core": {
+      "module": "metricCard",
+      "title": "指标卡",
+      "roots": [
+        "#/definitions/metricCardComponent"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "metricCard.title": {
+      "module": "metricCard",
+      "title": "指标卡标题",
+      "roots": [
+        "#/definitions/metricCardComponent/properties/props/properties/title"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "text.core": {
+      "module": "text",
+      "title": "文本",
+      "roots": [
+        "#/definitions/textComponent"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "filters.time": {
+      "module": "filters",
+      "title": "时间筛选",
+      "roots": [
+        "#/definitions/timeRangeFilter",
+        "#/definitions/timePointFilter"
+      ],
+      "headings": [
+        "时间选择的默认上限"
+      ],
+      "dependencies": []
+    },
+    "reportHeader.export": {
+      "module": "reportHeader",
+      "title": "报告导出",
+      "roots": [
+        "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons"
+      ],
+      "headings": [
+        "导出按钮（6.31）"
+      ],
+      "dependencies": []
+    },
+    "filters.period": {
+      "module": "filters",
+      "title": "Dashboard 期间选择（6.27）",
+      "roots": [
+        "#/definitions/timeRangeFilter",
+        "#/definitions/timePointFilter"
+      ],
+      "headings": [
+        "Dashboard 期间选择（6.27）"
+      ],
+      "dependencies": []
+    },
+    "filters.timePoint": {
+      "module": "filters",
+      "title": "时间点下限（6.24）",
+      "roots": [
+        "#/definitions/timeRangeFilter",
+        "#/definitions/timePointFilter"
+      ],
+      "headings": [
+        "时间点下限（6.24）"
+      ],
+      "dependencies": []
+    },
+    "filters.futureTime": {
+      "module": "filters",
+      "title": "禁止未来时间（6.25）",
+      "roots": [
+        "#/definitions/timeRangeFilter",
+        "#/definitions/timePointFilter"
+      ],
+      "headings": [
+        "禁止未来时间（6.25）"
+      ],
+      "dependencies": []
+    },
+    "filters.timeModes": {
+      "module": "filters",
+      "title": "6.39 复杂时间与候选",
+      "roots": [
+        "#/definitions/timeRangeFilter",
+        "#/definitions/timePointFilter"
+      ],
+      "headings": [
+        "6.39 复杂时间与候选"
+      ],
+      "dependencies": []
+    },
+    "filterGroup.core": {
+      "module": "filterGroup",
+      "title": "独立固定筛选按钮组",
+      "roots": [
+        "#/definitions/filterGroupComponent"
+      ],
+      "headings": [],
+      "dependencies": []
+    }
+  },
+  "authoringSemanticHeadings": {
+    "page.md": [
+      "创作时显式选择布局形态",
+      "查阅方式",
+      "IOC 公共页头（6.36）",
+      "可信期间事实输入（6.39）",
+      "唯一页头（6.41）"
+    ],
+    "params-and-text-values.md": [
+      "查阅方式",
+      "确定性时间参数",
+      "分层参数与查询侧时间窗口",
+      "筛选文本取值（6.15）",
+      "文本片段组合（6.23）"
+    ],
+    "data-sources.md": [
+      "查询异常与结果总数",
+      "查阅方式",
+      "多查询组合源 pagedJoin（6.22）"
+    ],
+    "fields.md": [
+      "查询数值度量的容错",
+      "查阅方式"
+    ],
+    "queries-and-bindings.md": [
+      "查阅方式",
+      "查询结果绑定 6.14",
+      "查询输入行过滤 6.19",
+      "排序与查询分页驱动结果绑定 6.20",
+      "配置解读：首轮查询、任意列排序与分页级联",
+      "6.39 静态时间查询模式"
+    ],
+    "compute.md": [
+      "查阅方式",
+      "汇总的全空结果（6.12）",
+      "多度量透视与有限主集合左关联 6.14"
+    ],
+    "filters.md": [
+      "时间选择的默认上限",
+      "Dashboard 期间选择（6.27）",
+      "时间点下限（6.24）",
+      "禁止未来时间（6.25）",
+      "独立筛选按钮组",
+      "查阅方式",
+      "业务筛选（6.37）",
+      "金额范围（6.38）",
+      "6.39 复杂时间与候选",
+      "下拉搜索与普通树（6.43）"
+    ],
+    "sections-and-layout.md": [
+      "Report 与 Dashboard 标题",
+      "指标卡连接排布 6.34",
+      "页面搭建中的移动与删除",
+      "查阅方式"
+    ],
+    "field-bindings-and-formats.md": [
+      "带符号普通数值（6.17起）",
+      "按百万呈现",
+      "显式数字颜色与图表标签（6.16）",
+      "查阅方式",
+      "静态货币字段选择（6.38）"
+    ],
+    "actions-and-navigation.md": [
+      "查阅方式",
+      "当前内容工具边界",
+      "链接传参与目标页签",
+      "6.40 显式跨页传值"
+    ],
+    "semantic-html.md": [
+      "查阅方式"
+    ],
+    "validation.md": [
+      "查阅方式"
+    ],
+    "components/reportHeader.md": [
+      "导出按钮（6.31）",
+      "单张高清 PNG",
+      "查阅方式"
+    ],
+    "components/metricCard.md": [
+      "前置连接文字 6.34",
+      "查阅方式"
+    ],
+    "components/barChart.md": [
+      "查阅方式"
+    ],
+    "components/lineChart.md": [
+      "查阅方式"
+    ],
+    "components/pieChart.md": [
+      "查阅方式"
+    ],
+    "components/table.md": [
+      "单元格点击与筛选联动",
+      "渲染外观与变体",
+      "右上角搜索与 Excel 导出（6.21）",
+      "静态搜索选项（6.42）",
+      "查阅方式",
+      "数值范围和组合表（6.22）",
+      "行内子表格（6.44）",
+      "列筛选候选值"
+    ],
+    "components/mapChart.md": [
+      "查阅方式"
+    ],
+    "components/gauge.md": [
+      "查阅方式"
+    ],
+    "components/tabContainer.md": [
+      "查阅方式",
+      "URL 初始化页签（6.33）"
+    ],
+    "components/compositeCard.md": [
+      "查阅方式"
+    ],
+    "components/rankingCard.md": [
+      "查阅方式"
+    ],
+    "components/rankingDetailCard.md": [
+      "查阅方式"
+    ],
+    "components/keyValuePanel.md": [
+      "查阅方式"
+    ],
+    "components/categoryBreakdown.md": [
+      "查阅方式"
+    ],
+    "components/fieldText.md": [
+      "查阅方式"
+    ],
+    "components/text.md": [
+      "查阅方式"
+    ],
+    "components/aiSummary.md": [
+      "查阅方式"
+    ],
+    "chart-option.md": [
+      "声明与合并",
+      "允许入口与保护",
+      "失败、降级和诊断"
+    ],
+    "conditions.md": [],
+    "components/button.md": [],
+    "components/filterGroup.md": []
   }
 }

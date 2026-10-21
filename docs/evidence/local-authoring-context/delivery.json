@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-22",
+  "baseline": "082eabbfa1872326bcf460d9fbe7cb0a56720547",
+  "schemaVersion": "6.45",
+  "scope": "context retrieval and datasource analysis; includes filterGroup knowledge/scan integration; no engine/page/ui/data-execution source change relative to baseline",
+  "tests": {
+    "files": 5,
+    "passed": 81,
+    "failed": 0,
+    "durationSeconds": 136.93,
+    "command": "pnpm test tests/local-authoring-tools.test.ts tests/local-authoring-skill.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts apps/playground/tests/page-catalog.test.ts"
+  },
+  "typechecks": "passed: tests and new CLI/reader/benchmark entrypoints",
+  "playgroundCheck": "passed: 0 errors, 0 warnings",
+  "playgroundProductionBuild": "passed",
+  "contractDriftCheck": "passed: 973 product, 4 authoring, 1 interface files",
+  "bundleCheck": "passed: 3399 digest checks",
+  "browser": "passed: 1280 and 390 widths, horizontal scroll, catalog discovery; PNG files identical to previously inspected screenshots",
+  "browserReceipt": "delivery-browser/browser.json",
+  "sha256": {
+    "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/authoring-knowledge/model.json": "c1a755b3ac87e5125deeeed31736432e04cbb23d2c5177b018ea18fa52a8ae72",
+    "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/schema.json": "23830b5ce5063c01351c5ddc96f736dd0d80aaf80e7f094dec8a47eb23b8d190",
+    "metriccanvas-authoring/skill/metriccanvas-local-authoring/scripts/analyze-data.mjs": "1b967ffd1b1d6104487376100fdedc99fdc307ec91a78bbb855322b3324e4314",
+    "metriccanvas-authoring/skill/metriccanvas-local-authoring/scripts/read-knowledge.mjs": "4ff47161aea7a8ecfe624ed675d5bdaf3e7caa0948cd9afb9c4f6072e660ef15",
+    "pnpm-lock.yaml": "63f17f9b6cf5abb75bdcb9217e01bdba3d12ef2578403e256beb4316376d72a0"
+  },
+  "ci": "skip requested by user; [skip ci]; bypassed, not success",
+  "fullRepeatedAgentMatrix": "not-run",
+  "realServiceExecution": "not-run"
+}

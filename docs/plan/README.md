@@ -6,6 +6,7 @@
 
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
+| local-authoring 上下文与数据识别 | 本仓实现及本地验收收口；真实业务/重复模型统计待验 | [实施主入口](2026-10-21-local-authoring-context-optimization.md)、[验收记录](../evidence/local-authoring-context/result.md)：精确知识读取、页面与指标MD匹配、查询候选及独立分发；与并行filterGroup分开承接 |
 | 表格列候选值与 DQE 对接 | 本仓引擎及本地验收完成；真实 DQE/Relay 编码与权限待核 | [主计划](2026-10-21-table-column-candidates.md)、[实施证据](../evidence/table-column-candidates/result.md)、[DQE 简要说明](table-column-candidates/dqe-handoff.md)：统一候选语义、保留 NO_PERMISSION、共享执行及独立 Skill 验证 |
 | 图表 ECharts 隐含透传 | P0–P6 本地验收完成，已授权交付 main | [唯一主计划](2026-10-19-chart-echarts-option.md)、[ADR-0110](../adr/0110-hidden-echarts-presentation-options.md)、[验收证据](../evidence/chart-echarts-option/result.md)：Schema 6.32，首批柱/线/饼图、保护数据结构、单次回退、console-only、导出终止及安装消费闭合 |
 | IOC公共页头 | B0–B5本地实施；B5仅传值、B6挂起，真实服务另验 | [唯一主计划](2026-10-16-ioc-header-feature-plan.md)：6.40含显式跨页输入、6.39时间模式/可信期间事实/候选窗口；[B5证据](../evidence/ioc-header-b5/result.md)。未迁移现有IOC业务页，真实DQE/CloudIOC/Relay另验 |

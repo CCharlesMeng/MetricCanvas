@@ -1,0 +1,652 @@
+{
+  "formatVersion": 1,
+  "pageSha256": "e997a507908e922909ab8e2fd2b594789aec594156db8a71214ac799cc0a0dbb",
+  "mdSha256": "f1481bba6f7ef64a7662f7c393e582bc3867e0ea4e3c772b1954b19b8367383f",
+  "schemaSha256": "2fc1d89c06bf40eb26bd3cfbc7ac250831708099a881ff7b8e8374d9d02ddf83",
+  "entries": [
+    {
+      "use": {
+        "componentId": "amount-card",
+        "componentType": "metricCard",
+        "label": "签约金额",
+        "path": "/sections/0/components/0/props/rows/0/valueField",
+        "kind": "field",
+        "slot": "main",
+        "field": "amount",
+        "source": "business-summary"
+      },
+      "fieldContract": {
+        "type": "money",
+        "role": "measure",
+        "currency": "CNY",
+        "unit": "元",
+        "label": "签约金额"
+      },
+      "matching": "ambiguous",
+      "execution": "not-run",
+      "evidence": [
+        {
+          "from": 5,
+          "to": 10,
+          "quote": "业务名：签约金额；别名：合同金额。\nDQE 指标：contract_amount；物理字段：ads_contract.amount_cny。\n单位：元，币种 CNY；按组织可求和，按月份求和。\n时间维度：签约月份；查询维度：region_name。\n业务口径：统计期内已签约且未撤销合同，按合同编号去重。\n说明：页面尚未指定使用当期还是累计，不能仅按名称自动匹配。"
+        },
+        {
+          "from": 14,
+          "to": 17,
+          "quote": "业务名：签约金额；别名：累计合同额。\nDQE 指标：contract_amount_ytd。\n业务口径：当年年初至所选月累计，按组织求和，跨月不得再次求和。\n单位：元，币种 CNY；可用维度：region_name。"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "b1525a1ce345cb46",
+          "heading": "当期签约金额",
+          "from": 3,
+          "to": 11
+        },
+        {
+          "id": "b637bc3ece99e572",
+          "heading": "累计签约金额",
+          "from": 12,
+          "to": 18
+        }
+      ],
+      "omittedMatches": 0,
+      "conditions": {
+        "currentSource": {
+          "type": "inline",
+          "nature": "合成演示数据，非真实查询结果",
+          "pagePath": "/dataSources/business-summary/source"
+        },
+        "time": {
+          "status": "unknown",
+          "gap": "time-scope"
+        },
+        "scope": {
+          "status": "unknown",
+          "gap": "organization-scope"
+        },
+        "bindings": {
+          "status": "page-fact",
+          "filters": [],
+          "params": [],
+          "note": "页面未声明筛选器/参数；不能臆造 filterBindings/paramBindings。"
+        },
+        "completeness": {
+          "status": "unknown",
+          "gap": "query-completeness"
+        },
+        "alternatives": [
+          {
+            "status": "document-fact",
+            "metric": "contract_amount",
+            "unit": "元",
+            "currency": "CNY",
+            "dimensions": [
+              "region_name"
+            ],
+            "timeDimension": "签约月份",
+            "aggregation": "组织/月可求和",
+            "fixedBusinessDefinition": "统计期内已签约且未撤销合同，按合同编号去重",
+            "evidence": [
+              {
+                "from": 6,
+                "to": 9,
+                "quote": "DQE 指标：contract_amount；物理字段：ads_contract.amount_cny。\n单位：元，币种 CNY；按组织可求和，按月份求和。\n时间维度：签约月份；查询维度：region_name。\n业务口径：统计期内已签约且未撤销合同，按合同编号去重。"
+              }
+            ]
+          },
+          {
+            "status": "document-fact",
+            "metric": "contract_amount_ytd",
+            "unit": "元",
+            "currency": "CNY",
+            "dimensions": [
+              "region_name"
+            ],
+            "timeWindow": "当年年初至所选月",
+            "aggregation": "组织可求和，跨月不得再次求和",
+            "evidence": [
+              {
+                "from": 15,
+                "to": 17,
+                "quote": "DQE 指标：contract_amount_ytd。\n业务口径：当年年初至所选月累计，按组织求和，跨月不得再次求和。\n单位：元，币种 CNY；可用维度：region_name。"
+              }
+            ]
+          }
+        ],
+        "mapping": {
+          "pageField": "amount",
+          "queryField": null,
+          "status": "blocked-on-amount-basis"
+        },
+        "presentation": {
+          "status": "page-fact",
+          "format": "compact-wan-1",
+          "sourceUnit": "元",
+          "note": "展示缩放不能将查询源单位改为万元。"
+        }
+      },
+      "missing": [
+        "time-scope",
+        "organization-scope",
+        "grain-and-consumers",
+        "query-completeness",
+        "amount-basis"
+      ],
+      "metricName": "签约金额（当期 / 累计待选）",
+      "reason": "页面标签、元/CNY 与两种指标均相符；页面未给期间口径，说明明确禁止仅按名称选择。"
+    },
+    {
+      "use": {
+        "componentId": "rate-card",
+        "componentType": "metricCard",
+        "label": "达成率",
+        "path": "/sections/0/components/1/props/rows/0/valueField",
+        "kind": "field",
+        "slot": "main",
+        "field": "rate",
+        "source": "business-summary"
+      },
+      "fieldContract": {
+        "type": "number",
+        "role": "measure",
+        "unit": "%",
+        "label": "达成率"
+      },
+      "matching": "matched",
+      "execution": "not-run",
+      "evidence": [
+        {
+          "from": 21,
+          "to": 24,
+          "quote": "业务名：达成率；别名：目标完成率。\n物理字段：ads_contract.achievement_percent。\n返回百分数刻度 0..100，42 表示 42%，不可平均已有比率。\n缺少目标金额口径、零分母规则和 DQE 查询标识；需补充。"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "911145b1ce2bdce5",
+          "heading": "达成率",
+          "from": 19,
+          "to": 25
+        }
+      ],
+      "omittedMatches": 0,
+      "conditions": {
+        "currentSource": {
+          "type": "inline",
+          "nature": "合成演示数据，非真实查询结果",
+          "pagePath": "/dataSources/business-summary/source"
+        },
+        "time": {
+          "status": "unknown",
+          "gap": "time-scope"
+        },
+        "scope": {
+          "status": "unknown",
+          "gap": "organization-scope"
+        },
+        "bindings": {
+          "status": "page-fact",
+          "filters": [],
+          "params": [],
+          "note": "页面未声明筛选器/参数；不能臆造 filterBindings/paramBindings。"
+        },
+        "completeness": {
+          "status": "unknown",
+          "gap": "query-completeness"
+        },
+        "mapping": {
+          "pageField": "rate",
+          "queryField": null,
+          "physicalField": "ads_contract.achievement_percent",
+          "status": "unknown-dqe-identifier",
+          "note": "物理字段不可替代 DQE 查询标识。"
+        },
+        "percentage": {
+          "status": "document-fact",
+          "scale": "0..100",
+          "example": "42 表示 42%",
+          "aggregation": "不可平均已有比率",
+          "evidence": [
+            {
+              "from": 23,
+              "to": 24,
+              "quote": "返回百分数刻度 0..100，42 表示 42%，不可平均已有比率。\n缺少目标金额口径、零分母规则和 DQE 查询标识；需补充。"
+            }
+          ]
+        },
+        "presentation": {
+          "status": "page-fact-and-skill-semantics",
+          "format": "percent-1",
+          "compatible": true,
+          "note": "percent-*直接给原数值加百分号；不需再乘100。"
+        }
+      },
+      "missing": [
+        "time-scope",
+        "organization-scope",
+        "grain-and-consumers",
+        "query-completeness",
+        "rate-contract"
+      ],
+      "metricName": "达成率",
+      "reason": "页面名称、百分单位与说明一致；仅确认业务指标身份，不代表 DQE 查询可用。"
+    },
+    {
+      "use": {
+        "componentId": "summary-table",
+        "componentType": "table",
+        "label": "区域",
+        "path": "/sections/0/components/2/props/columns/0/field",
+        "kind": "field",
+        "slot": "main",
+        "field": "region",
+        "source": "business-summary"
+      },
+      "fieldContract": {
+        "type": "string",
+        "role": "dimension",
+        "label": "区域"
+      },
+      "matching": "matched",
+      "execution": "not-run",
+      "evidence": [
+        {
+          "from": 28,
+          "to": 29,
+          "quote": "业务名：区域；DQE 维度：region_name；物理字段：ads_contract.region_name。\n区域代码与显示名的映射未提供；不能猜测固定过滤值。"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "8ba358600e287dfe",
+          "heading": "区域",
+          "from": 26,
+          "to": 30
+        },
+        {
+          "id": "b1525a1ce345cb46",
+          "heading": "当期签约金额",
+          "from": 3,
+          "to": 11
+        },
+        {
+          "id": "b637bc3ece99e572",
+          "heading": "累计签约金额",
+          "from": 12,
+          "to": 18
+        }
+      ],
+      "omittedMatches": 0,
+      "conditions": {
+        "currentSource": {
+          "type": "inline",
+          "nature": "合成演示数据，非真实查询结果",
+          "pagePath": "/dataSources/business-summary/source"
+        },
+        "time": {
+          "status": "unknown",
+          "gap": "time-scope"
+        },
+        "scope": {
+          "status": "unknown",
+          "gap": "organization-scope"
+        },
+        "bindings": {
+          "status": "page-fact",
+          "filters": [],
+          "params": [],
+          "note": "页面未声明筛选器/参数；不能臆造 filterBindings/paramBindings。"
+        },
+        "completeness": {
+          "status": "unknown",
+          "gap": "query-completeness"
+        },
+        "mapping": {
+          "status": "document-fact",
+          "pageField": "region",
+          "queryField": "region_name",
+          "physicalField": "ads_contract.region_name",
+          "evidence": [
+            {
+              "from": 28,
+              "to": 28,
+              "quote": "业务名：区域；DQE 维度：region_name；物理字段：ads_contract.region_name。"
+            }
+          ]
+        },
+        "grouping": {
+          "status": "suggestion",
+          "dimension": "region_name",
+          "note": "表格按区域分组可作为候选，最终行粒度需确认。"
+        }
+      },
+      "missing": [
+        "time-scope",
+        "organization-scope",
+        "grain-and-consumers",
+        "query-completeness"
+      ],
+      "metricName": "区域（维度）",
+      "reason": "页面 region 是字符串维度，标签区域与说明明确的 DQE 维度 region_name 一致。"
+    },
+    {
+      "use": {
+        "componentId": "summary-table",
+        "componentType": "table",
+        "label": "签约金额",
+        "path": "/sections/0/components/2/props/columns/1/field",
+        "kind": "field",
+        "slot": "main",
+        "field": "amount",
+        "source": "business-summary"
+      },
+      "fieldContract": {
+        "type": "money",
+        "role": "measure",
+        "currency": "CNY",
+        "unit": "元",
+        "label": "签约金额"
+      },
+      "matching": "ambiguous",
+      "execution": "not-run",
+      "evidence": [
+        {
+          "from": 5,
+          "to": 10,
+          "quote": "业务名：签约金额；别名：合同金额。\nDQE 指标：contract_amount；物理字段：ads_contract.amount_cny。\n单位：元，币种 CNY；按组织可求和，按月份求和。\n时间维度：签约月份；查询维度：region_name。\n业务口径：统计期内已签约且未撤销合同，按合同编号去重。\n说明：页面尚未指定使用当期还是累计，不能仅按名称自动匹配。"
+        },
+        {
+          "from": 14,
+          "to": 17,
+          "quote": "业务名：签约金额；别名：累计合同额。\nDQE 指标：contract_amount_ytd。\n业务口径：当年年初至所选月累计，按组织求和，跨月不得再次求和。\n单位：元，币种 CNY；可用维度：region_name。"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "b1525a1ce345cb46",
+          "heading": "当期签约金额",
+          "from": 3,
+          "to": 11
+        },
+        {
+          "id": "b637bc3ece99e572",
+          "heading": "累计签约金额",
+          "from": 12,
+          "to": 18
+        }
+      ],
+      "omittedMatches": 0,
+      "conditions": {
+        "currentSource": {
+          "type": "inline",
+          "nature": "合成演示数据，非真实查询结果",
+          "pagePath": "/dataSources/business-summary/source"
+        },
+        "time": {
+          "status": "unknown",
+          "gap": "time-scope"
+        },
+        "scope": {
+          "status": "unknown",
+          "gap": "organization-scope"
+        },
+        "bindings": {
+          "status": "page-fact",
+          "filters": [],
+          "params": [],
+          "note": "页面未声明筛选器/参数；不能臆造 filterBindings/paramBindings。"
+        },
+        "completeness": {
+          "status": "unknown",
+          "gap": "query-completeness"
+        },
+        "alternatives": [
+          {
+            "status": "document-fact",
+            "metric": "contract_amount",
+            "unit": "元",
+            "currency": "CNY",
+            "dimensions": [
+              "region_name"
+            ],
+            "timeDimension": "签约月份",
+            "aggregation": "组织/月可求和",
+            "fixedBusinessDefinition": "统计期内已签约且未撤销合同，按合同编号去重",
+            "evidence": [
+              {
+                "from": 6,
+                "to": 9,
+                "quote": "DQE 指标：contract_amount；物理字段：ads_contract.amount_cny。\n单位：元，币种 CNY；按组织可求和，按月份求和。\n时间维度：签约月份；查询维度：region_name。\n业务口径：统计期内已签约且未撤销合同，按合同编号去重。"
+              }
+            ]
+          },
+          {
+            "status": "document-fact",
+            "metric": "contract_amount_ytd",
+            "unit": "元",
+            "currency": "CNY",
+            "dimensions": [
+              "region_name"
+            ],
+            "timeWindow": "当年年初至所选月",
+            "aggregation": "组织可求和，跨月不得再次求和",
+            "evidence": [
+              {
+                "from": 15,
+                "to": 17,
+                "quote": "DQE 指标：contract_amount_ytd。\n业务口径：当年年初至所选月累计，按组织求和，跨月不得再次求和。\n单位：元，币种 CNY；可用维度：region_name。"
+              }
+            ]
+          }
+        ],
+        "mapping": {
+          "pageField": "amount",
+          "queryField": null,
+          "status": "blocked-on-amount-basis"
+        },
+        "presentation": {
+          "status": "page-fact",
+          "format": "compact-wan-1",
+          "sourceUnit": "元",
+          "note": "展示缩放不能将查询源单位改为万元。"
+        }
+      },
+      "missing": [
+        "time-scope",
+        "organization-scope",
+        "grain-and-consumers",
+        "query-completeness",
+        "amount-basis"
+      ],
+      "metricName": "签约金额（当期 / 累计待选）",
+      "reason": "页面标签、元/CNY 与两种指标均相符；页面未给期间口径，说明明确禁止仅按名称选择。"
+    },
+    {
+      "use": {
+        "componentId": "summary-table",
+        "componentType": "table",
+        "label": "达成率",
+        "path": "/sections/0/components/2/props/columns/2/field",
+        "kind": "field",
+        "slot": "main",
+        "field": "rate",
+        "source": "business-summary"
+      },
+      "fieldContract": {
+        "type": "number",
+        "role": "measure",
+        "unit": "%",
+        "label": "达成率"
+      },
+      "matching": "matched",
+      "execution": "not-run",
+      "evidence": [
+        {
+          "from": 21,
+          "to": 24,
+          "quote": "业务名：达成率；别名：目标完成率。\n物理字段：ads_contract.achievement_percent。\n返回百分数刻度 0..100，42 表示 42%，不可平均已有比率。\n缺少目标金额口径、零分母规则和 DQE 查询标识；需补充。"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "911145b1ce2bdce5",
+          "heading": "达成率",
+          "from": 19,
+          "to": 25
+        }
+      ],
+      "omittedMatches": 0,
+      "conditions": {
+        "currentSource": {
+          "type": "inline",
+          "nature": "合成演示数据，非真实查询结果",
+          "pagePath": "/dataSources/business-summary/source"
+        },
+        "time": {
+          "status": "unknown",
+          "gap": "time-scope"
+        },
+        "scope": {
+          "status": "unknown",
+          "gap": "organization-scope"
+        },
+        "bindings": {
+          "status": "page-fact",
+          "filters": [],
+          "params": [],
+          "note": "页面未声明筛选器/参数；不能臆造 filterBindings/paramBindings。"
+        },
+        "completeness": {
+          "status": "unknown",
+          "gap": "query-completeness"
+        },
+        "mapping": {
+          "pageField": "rate",
+          "queryField": null,
+          "physicalField": "ads_contract.achievement_percent",
+          "status": "unknown-dqe-identifier",
+          "note": "物理字段不可替代 DQE 查询标识。"
+        },
+        "percentage": {
+          "status": "document-fact",
+          "scale": "0..100",
+          "example": "42 表示 42%",
+          "aggregation": "不可平均已有比率",
+          "evidence": [
+            {
+              "from": 23,
+              "to": 24,
+              "quote": "返回百分数刻度 0..100，42 表示 42%，不可平均已有比率。\n缺少目标金额口径、零分母规则和 DQE 查询标识；需补充。"
+            }
+          ]
+        },
+        "presentation": {
+          "status": "page-fact-and-skill-semantics",
+          "format": "percent-1",
+          "compatible": true,
+          "note": "percent-*直接给原数值加百分号；不需再乘100。"
+        }
+      },
+      "missing": [
+        "time-scope",
+        "organization-scope",
+        "grain-and-consumers",
+        "query-completeness",
+        "rate-contract"
+      ],
+      "metricName": "达成率",
+      "reason": "页面名称、百分单位与说明一致；仅确认业务指标身份，不代表 DQE 查询可用。"
+    }
+  ],
+  "gaps": [
+    {
+      "id": "time-scope",
+      "blocks": "query",
+      "question": "全页需要哪个统计年/月或起止范围？使用何种时间粒度，达成率是否与签约金额同期间？",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/valueField",
+        "/sections/0/components/1/props/rows/0/valueField",
+        "/sections/0/components/2/props/columns/0/field",
+        "/sections/0/components/2/props/columns/1/field",
+        "/sections/0/components/2/props/columns/2/field"
+      ]
+    },
+    {
+      "id": "organization-scope",
+      "blocks": "query",
+      "question": "全页组织/区域范围是什么？如有固定过滤，需提供区域代码与显示名映射及合法过滤值；华东示范区仅为合成演示值。",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/valueField",
+        "/sections/0/components/1/props/rows/0/valueField",
+        "/sections/0/components/2/props/columns/0/field",
+        "/sections/0/components/2/props/columns/1/field",
+        "/sections/0/components/2/props/columns/2/field"
+      ]
+    },
+    {
+      "id": "grain-and-consumers",
+      "blocks": "query",
+      "question": "表格是否每区域一行？两张指标卡要显示全范围汇总还是指定区域？多区域时需明确选择/汇总策略及与表格共享查询的可行性。",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/valueField",
+        "/sections/0/components/1/props/rows/0/valueField",
+        "/sections/0/components/2/props/columns/0/field",
+        "/sections/0/components/2/props/columns/1/field",
+        "/sections/0/components/2/props/columns/2/field"
+      ]
+    },
+    {
+      "id": "amount-basis",
+      "blocks": "matching",
+      "question": "签约金额选择当期 contract_amount 还是年初至所选月累计 contract_amount_ytd？两处共享 amount，需统一确认；累计不可跨月再次求和。",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/valueField",
+        "/sections/0/components/2/props/columns/1/field"
+      ]
+    },
+    {
+      "id": "rate-contract",
+      "blocks": "query",
+      "question": "提供达成率的 DQE 查询标识、目标金额口径、分子分母及零分母规则；区域/期间维度兼容性和跨区域汇总方法也须确认，不能平均已有比率。",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/valueField",
+        "/sections/0/components/2/props/columns/2/field"
+      ]
+    },
+    {
+      "id": "query-completeness",
+      "blocks": "query",
+      "question": "确认查询输出完整性、服务限制和排序/分页策略；页面表格 pagination.mode=none，未声明排序，不能据此假定结果未被截断。",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/valueField",
+        "/sections/0/components/1/props/rows/0/valueField",
+        "/sections/0/components/2/props/columns/0/field",
+        "/sections/0/components/2/props/columns/1/field",
+        "/sections/0/components/2/props/columns/2/field"
+      ]
+    }
+  ],
+  "diagnostics": [],
+  "context": {
+    "filters": [],
+    "params": []
+  },
+  "coverage": {
+    "dataUses": 5,
+    "indexedBlocks": 5
+  },
+  "note": "名称检索仅给候选；语义提取与匹配由模型核对原文。无真实查询执行证据，不修改页面。",
+  "inputs": {
+    "page": "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-local-authoring-forward-nnwp2lvp/input-page.json",
+    "md": "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-local-authoring-forward-nnwp2lvp/input-metrics.md"
+  },
+  "summary": {
+    "fieldUses": 5,
+    "ambiguous": 2,
+    "matched": 3,
+    "execution": "not-run",
+    "originalPageChanged": false,
+    "note": "matched 表示业务身份明确，仍可能有查询缺口；完整 MD 已读，未调用服务。"
+  }
+}

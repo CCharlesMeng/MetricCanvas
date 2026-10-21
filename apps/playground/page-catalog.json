@@ -2257,6 +2257,39 @@
           "table-detail-overlay"
         ]
       }
+    },
+    {
+      "id": "local-authoring-knowledge-demo",
+      "group": "verification",
+      "displayTitle": "本地创作：指标匹配与字段呈现",
+      "summary": "用页面和指标说明核对用数位置，并观察金额、百分数和表格列宽。",
+      "tags": [
+        "本地创作",
+        "指标匹配",
+        "字段格式"
+      ],
+      "capabilities": [
+        "tables",
+        "layout"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "内联合成数据，无需外部服务"
+      },
+      "guide": {
+        "steps": [
+          "核对签约金额为4,200.0万、达成率为42.0%。",
+          "核对明细表单位和列宽；该页面未接真实查询。"
+        ],
+        "configPaths": [
+          "dataSources.business-summary.fields",
+          "sections[].components[].props.rows",
+          "sections[].components[].props.columns"
+        ],
+        "boundary": "指标说明有同名不同口径和缺失查询映射，名称命中不等于真实执行。",
+        "related": []
+      }
     }
   ],
   "capabilities": [

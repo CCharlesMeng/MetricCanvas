@@ -19,6 +19,12 @@
 | 目录封闭、参考净化与校验器打包 | tools/scripts/local-authoring-projection.ts、local-authoring-validator.ts |
 | 实际地图地名 | 产品底图，经导出器投影；保留源摘要，移除仓库路径 |
 | 注册与分发 | metriccanvas-authoring/bundle.json、scripts/check_bundle.py |
+| 精确知识主题与结构 | `reference-map.json` 的 `authoringTopics`、`local-authoring-knowledge.ts` 与纯读取核心；语义从产品参考原文分块，不另写摘要 |
+| 页面用数、MD 索引与报告/候选检查 | `local-authoring-data-analysis.ts`、`local-authoring-data-cli.ts`；组件字段位置沿产品 Schema 和组件树遍历发现 |
+
+精确知识的生成树为 `references/authoring-knowledge/`；新增 `scripts/read-knowledge.mjs`、`scripts/analyze-data.mjs`，均接入清单、漂移检查和仓外测试。模型按任务读取 JSON 输出，不读取机器知识包或脚本全文。精确主题失效/过大时修复真源，不截断约束。语义章节保持单一原文，显式主题的标题选择器在更名时生成失败；全部章节自动成为可发现主题，新语义不静默丢弃。
+
+对比统计分别报告脚本输出 UTF-8 字节、实际工具读取、请求 input/cached/output 与修复轮次；确定性路由字节对比不能冒充实际 Agent token/费用节省。没有相同模型/编码器的逐请求证据时，实际收益保留未验收。默认只运行 local-authoring 相关检查，不追加其他 Skill 或真实 DS 专项验收。
 
 生成范围由导出器管理：references/page-metadata/、references/page-patterns/、references/map-regions.json、references/knowledge.json、assets/layouts/overview-map-led.json、scripts/validate-page.mjs、scripts/THIRD-PARTY-LICENSES.md。其他文件归作者维护，重新生成必须保留。真源映射总表见[真源与派生链](../../metriccanvas-authoring/SOURCES.md)。
 

@@ -10,6 +10,10 @@
       "sha256": "07ea8c85a72437246d8aa201f09230a8f204ba7d8cfa8db3b4a24bfca4bfde4b"
     },
     {
+      "file": "references/authoring-knowledge/model.json",
+      "sha256": "c1a755b3ac87e5125deeeed31736432e04cbb23d2c5177b018ea18fa52a8ae72"
+    },
+    {
       "file": "references/map-regions.json",
       "sha256": "2bde9d54bffc58411689250e4a250ae224f70611fcad040d8221f37f16f13a51"
     },
@@ -111,7 +115,7 @@
     },
     {
       "file": "references/page-metadata/data-sources.md",
-      "sha256": "01bacaa0319cfbfd26fb515ec663e5bbb007df525e99f94887390b9fe4047298"
+      "sha256": "f2842a77f78b340eadd1d79dd6ccdd22e52e834bf0250c087d238f9992ee5f35"
     },
     {
       "file": "references/page-metadata/errors/actual-after-captured-month.json",
@@ -2075,7 +2079,7 @@
     },
     {
       "file": "references/page-metadata/README.md",
-      "sha256": "724e5ac142ce6d23543c2aaf6dff65b046d85917948614958a2fabe33b0df2c9"
+      "sha256": "a5968ba0610b2b1dcac6ce694c572d98e6202dd6332596a3e9774bdb469c51d5"
     },
     {
       "file": "references/page-metadata/rules.json",
@@ -2120,6 +2124,14 @@
     {
       "file": "references/page-patterns/report-monthly.json",
       "sha256": "e1dcf21cdd208b95452d3bac781f4d4cd9aff1333cd741b330045ac3e036cc7a"
+    },
+    {
+      "file": "scripts/analyze-data.mjs",
+      "sha256": "1b967ffd1b1d6104487376100fdedc99fdc307ec91a78bbb855322b3324e4314"
+    },
+    {
+      "file": "scripts/read-knowledge.mjs",
+      "sha256": "4ff47161aea7a8ecfe624ed675d5bdaf3e7caa0948cd9afb9c4f6072e660ef15"
     },
     {
       "file": "scripts/THIRD-PARTY-LICENSES.md",
