@@ -279,7 +279,9 @@
       ],
       "examples": [
         "composite-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "dashboard-title-styles",
+        "report-title-styles"
       ],
       "rules": [
         "section-id-unique",
@@ -802,7 +804,9 @@
       "examples": [
         "reference-text-page",
         "url-navigation-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "dashboard-title-styles",
+        "report-title-styles"
       ],
       "rules": [
         "schema-structure",
@@ -15981,5 +15985,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "0cc861e93c8f44f45e20823e5930a9b97a92111f394fd11c0600e4b9c01a2c4b"
+  "semanticSourceDigest": "36389182f7f2d22f8f05531df3b022c7523ccb83f2a3842d0b02c317b4eb4670"
 }

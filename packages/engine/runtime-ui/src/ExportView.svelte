@@ -27,7 +27,7 @@
   }
   const nested:NestedComponentRender={map:c=>exportComponentMap(state,c),data:c=>exportComponentData(state,c),snapshot:c=>exportComponentSnapshot(state,c),table,onchartclick:()=>undefined,onmetriclink:()=>undefined,metricHref:()=>()=>undefined};
 </script>
-<div class="export-view" data-export-view style:width={`${width}px`} style:padding={padding} style:gap={gap}>
+<div class="export-view" data-page-layout-form={state.page.layout ?? 'report'} data-export-view style:width={`${width}px`} style:padding={padding} style:gap={gap}>
   {#if state.page.iocHeader}
     <IocHeader model={resolvedIocHeader(state.page.iocHeader)} filterIds={state.page.iocHeader.filterIds??[]} controls={iocStaticControls} note={state.page.iocHeader.note} staticView/>
   {/if}

@@ -1464,6 +1464,10 @@
       "sha256": "b76642f1571d051ac5b3faa99247ee9565ca8f9a4cd529f39755c9c6b6bde312"
     },
     {
+      "file": "page/conformance/valid/dashboard-title-styles.json",
+      "sha256": "71b01ef4e363049d1769d50e96ca37a0333e1b33d0f99df280e6f920bb9d7f3a"
+    },
+    {
       "file": "page/conformance/valid/detail-views.json",
       "sha256": "7cdb3c9449b3bcb27db58cad64f12fb83175459eef3d40d123e966f98408016c"
     },
@@ -1688,6 +1692,10 @@
       "sha256": "cae10f3a7a5ad570feeef76099298de9450e4db239043f2f54fdf04e90c66c9f"
     },
     {
+      "file": "page/conformance/valid/report-title-styles.json",
+      "sha256": "5a69e82dac55f11110b323b56c760eaa7ab2576adc0202410234eac3a3e01e36"
+    },
+    {
       "file": "page/conformance/valid/signed-number-family-page.json",
       "sha256": "bec46a6db73cff50d8f1f0e2bb99cb31315a78e8ff7240d962d367f1382d9599"
     },
@@ -1829,7 +1837,7 @@
     },
     {
       "file": "page/reference/components/metricCard.md",
-      "sha256": "4da10085eef07cd1bf1dc711b836b4706ccc425c562b79d5c4307125e07ceb3f"
+      "sha256": "01e2b86e18983f89e371d7a11e36b4a7d9d767725531984bd503930da6761500"
     },
     {
       "file": "page/reference/components/pieChart.md",
@@ -1861,7 +1869,7 @@
     },
     {
       "file": "page/reference/components/text.md",
-      "sha256": "bded8861ade4ce2f2faa93aceb1332edbd21d330abb25dd2a6686c09ddbbc8e7"
+      "sha256": "02a3548c58d66ef9d71b50036d9f80963616f21dbaf162d696757ad5d9a2d44f"
     },
     {
       "file": "page/reference/compute.md",
@@ -3445,23 +3453,23 @@
     },
     {
       "file": "page/reference/examples/component-text-heading.json",
-      "sha256": "0318f65e2e375418073469bb92db2dd43709463669f4ded93d16cb1a3bc5d0c2"
+      "sha256": "421794b13653416ad688c1868722494358025987cb1940f8d0ee806ef79c140a"
     },
     {
       "file": "page/reference/examples/component-text-insight.json",
-      "sha256": "ef1ca1ccc3a3d1bf263084a8ed84343ddf9734fd116a7c3a01d817a3d9f0a523"
+      "sha256": "d06d16dff6fec7236bd2c211862086c12928cde6731e5ab6e6ba95db5f15d2dc"
     },
     {
       "file": "page/reference/examples/component-text-plain.json",
-      "sha256": "74be31faba8d63253b6ccf1de0ab06f0cad6f5a74563390aabd488709b8bfd38"
+      "sha256": "4606cabcac749ee821b623f9b2aba2b342922300e1096f36dd518627cb75ec4a"
     },
     {
       "file": "page/reference/examples/component-text-reportInline.json",
-      "sha256": "2bef5558be1d62a728ba1c40352a9b18da7748a1ef357cd847d080545b885fcf"
+      "sha256": "e24082e4019aaa1716df70b27abafb39c37766bbad5bbafd78a26b1af3c3d454"
     },
     {
       "file": "page/reference/examples/component-text-riskNotice.json",
-      "sha256": "df4c6d61b41dbfc65cd6b3262279ae8a538e5bdcb785f7e40d72ba72faf596c2"
+      "sha256": "0d03c6494e7135112341d939a5ad82278ea1c0b2bc9d3c897df65c5bd9f0f6f8"
     },
     {
       "file": "page/reference/examples/component-text.json",
@@ -3498,6 +3506,10 @@
     {
       "file": "page/reference/examples/dashboard-period-filter.json",
       "sha256": "b76642f1571d051ac5b3faa99247ee9565ca8f9a4cd529f39755c9c6b6bde312"
+    },
+    {
+      "file": "page/reference/examples/dashboard-title-styles.json",
+      "sha256": "71b01ef4e363049d1769d50e96ca37a0333e1b33d0f99df280e6f920bb9d7f3a"
     },
     {
       "file": "page/reference/examples/detail-views.json",
@@ -3700,6 +3712,10 @@
       "sha256": "cae10f3a7a5ad570feeef76099298de9450e4db239043f2f54fdf04e90c66c9f"
     },
     {
+      "file": "page/reference/examples/report-title-styles.json",
+      "sha256": "5a69e82dac55f11110b323b56c760eaa7ab2576adc0202410234eac3a3e01e36"
+    },
+    {
       "file": "page/reference/examples/signed-number-family-page.json",
       "sha256": "bec46a6db73cff50d8f1f0e2bb99cb31315a78e8ff7240d962d367f1382d9599"
     },
@@ -3797,7 +3813,7 @@
     },
     {
       "file": "page/reference/index.json",
-      "sha256": "274f52f950abecdc42662e78625d3ef912ee6f0e4c50af18bc687de0a6ccc9c5"
+      "sha256": "7b0e1d69f1bf7145956b020b036b6e4b2f28963f4642e2a9ae57ebfc88d48d0f"
     },
     {
       "file": "page/reference/page.md",
@@ -3825,7 +3841,7 @@
     },
     {
       "file": "page/reference/sections-and-layout.md",
-      "sha256": "bf35327c932d9e06023ad20914f047be405b72d016bc24fbf2f04d6a73fec9ef"
+      "sha256": "be8059841788273a97d3a0134be41d1cb7168d748b29b3c430d4705a1cd44c1b"
     },
     {
       "file": "page/reference/semantic-html.md",

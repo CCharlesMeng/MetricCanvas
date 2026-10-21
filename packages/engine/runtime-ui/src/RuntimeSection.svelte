@@ -150,6 +150,7 @@
         class:chart-cell={isChartComponent(component)}
         class:header-cell={component.type === 'reportHeader'}
         class:metric-cell={component.type === 'metricCard' || component.type === 'gauge'}
+        class:metric-connection-cell={gridColumn !== undefined}
         class:table-cell={component.type === 'table' || component.type === 'tabContainer'}
         class:ranking-detail-cell={component.type === 'rankingDetailCard'}
         class:ai-summary-cell={component.type === 'aiSummary'}
@@ -228,14 +229,14 @@
     background: var(--mc-section-default-surface, var(--mc-color-surface));
     box-shadow: var(--mc-section-default-shadow, 0 8px 24px rgb(68 85 147 / 0.06));
   }
-  .section-title {
+  :global([data-page-layout-form='report']) .section-title {
     margin: 0 0 18px;
     color: var(--mc-color-primary);
     font-size: 20px;
     font-weight: 700;
     text-align: left;
   }
-  .section-title::before {
+  :global([data-page-layout-form='report']) .section-title::before {
     display: inline-block;
     width: 9px;
     height: 9px;
@@ -384,6 +385,17 @@
     border-radius: 0;
     box-shadow: none;
   }
+  /* 连接组保留每张指标卡的独立卡面；连接间距量到该单元格的真实外框。 */
+  .cell.metric-connection-cell {
+    --mc-metric-panel-surface: #fff;
+    --mc-metric-panel-border-width: 0;
+    --mc-metric-panel-radius: 12px;
+
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+  }
   .container-plain .cell.connect-previous,
   .container-panel .cell.connect-previous,
   .container-card .cell.connect-previous {
@@ -430,7 +442,7 @@
     border-radius: var(--mc-section-panel-radius, var(--mc-radius-section));
     box-shadow: none;
   }
-  .container-panel > .section-title {
+  :global([data-page-layout-form='report']) .container-panel > .section-title {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -442,10 +454,10 @@
     line-height: var(--mc-section-title-line-height);
     text-align: center;
   }
-  .container-panel > .section-title::before {
+  :global([data-page-layout-form='report']) .container-panel > .section-title::before {
     display: none;
   }
-  .container-panel > .section-title img {
+  :global([data-page-layout-form='report']) .container-panel > .section-title img {
     width: var(--mc-section-title-icon-size);
     height: var(--mc-section-title-icon-size);
     flex: none;
@@ -479,7 +491,7 @@
     border-radius: var(--mc-radius-section);
     box-shadow: none;
   }
-  .container-card > .section-title {
+  :global([data-page-layout-form='report']) .container-card > .section-title {
     margin: var(--mc-section-card-title-margin, 0 0 10px 9px);
     color: var(--mc-section-card-title-color, var(--mc-color-report-heading));
     font-size: var(
@@ -490,7 +502,7 @@
     line-height: var(--mc-section-card-title-line-height, 30px);
     text-align: left;
   }
-  .container-card > .section-title::before {
+  :global([data-page-layout-form='report']) .container-card > .section-title::before {
     display: none;
   }
   .container-card > .section-grid {
@@ -498,6 +510,21 @@
 
     gap: var(--mc-section-card-grid-gap, 10px)
       var(--mc-section-card-grid-column-gap, 25px);
+  }
+
+  /* 标题由页面布局形态选择；容器只拥有外壳，不提供跨形态标题回退。 */
+  :global([data-page-layout-form='dashboard']) .section-title {
+    margin: var(--mc-section-card-title-margin, 0 0 12px);
+    color: var(--mc-section-card-title-color, #191919);
+    font-size: var(--mc-section-card-title-font-size, 16px);
+    font-weight: var(--mc-section-card-title-font-weight, 500);
+    line-height: var(--mc-section-card-title-line-height, 24px);
+    text-align: left;
+  }
+  :global([data-page-layout-form='dashboard']) .section-title::before,
+  :global([data-page-layout-form='dashboard']) .section-title img {
+    display: none;
+    content: none;
   }
 
   /* ==== 响应式 ==== */

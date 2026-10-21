@@ -1,6 +1,6 @@
 {
   "schemaVersion": "6.44",
-  "id": "page-visibility-inputs",
+  "id": "report-title-styles",
   "layout": "report",
   "dataSources": {},
   "sections": [
@@ -8,14 +8,14 @@
       "id": "main",
       "components": [
         {
-          "id": "fact-text",
+          "id": "card-heading",
           "type": "text",
           "layout": {
             "span": 12
           },
           "props": {
-            "body": "业务事实已就绪。",
-            "variant": "insight"
+            "variant": "insight",
+            "title": "内容章节标题"
           }
         }
       ]

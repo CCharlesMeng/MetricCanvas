@@ -4,11 +4,17 @@ sections组织有序内容分区，每个分区至少一个组件。默认12列�
 
 plain去掉分区容器，由组件自带外观；panel为章节面板；card为小节卡片。容器样式只由section.container声明。layer区分content与backdrop；铺底层不占正常内容流，不能伪造一套绝对坐标画布。
 
+## Report 与 Dashboard 标题
+
+标题按页面 `layout` 分别呈现，不存在 `plain` 沿用的共用标题。Dashboard 的默认、plain、panel、card 分区标题统一使用黑色16px、500字重、24px行高、左对齐且无装饰；容器只改变外壳。Report 保留自己的分区层级：默认/plain 为20px蓝色方块标题，panel为32px居中图标标题，card为20px小节标题。`text.props.variant: heading` 在Dashboard使用16px黑色左对齐标题，在Report使用32px居中图标标题。未声明layout仍按Report处理，导出视图保留来源页面的布局形态。
+
+对照入口：`/pages/dashboard-title-styles` 与 `/pages/report-title-styles`；指标卡示例`/pages/metric-card-equation`也使用Dashboard标题，无蓝色方块。
+
 Tab和组合卡是受控容器组件，子项允许类型由各自Schema分支决定；不能据顶层组件目录推断任意嵌套都合法。
 
 ## 指标卡连接排布 6.34
 
-`metricCard.layout.before` 由统一运行时派生内部连接排布盒，页面文档仍由内容分区直接包含组件。外层默认 12 列保持；整组占成员 span 之和，内部从文字与双侧间距之外的剩余宽度按 span 分配。无 before 的页面继续采用原栅格规则。声明、限制与场景见[指标卡](components/metricCard.md#metric-card-before)。
+`metricCard.layout.before` 由统一运行时派生内部连接排布盒，页面文档仍由内容分区直接包含组件。外层默认 12 列保持；整组占成员 span 之和，内部从文字与双侧间距之外的剩余宽度按 span 分配。连接整组铺满其 span 对应的宽度，并统一包裹在灰色 1px 边框、16px 圆角、白底的区域内；每张小卡保留独立白底灰边，连接文字两侧gap固定，卡片按span比例吸收剩余宽度；宽度预算扣除边框和内边距。无 before 的页面继续采用原栅格规则。声明、限制与场景见[指标卡](components/metricCard.md#metric-card-before)。
 
 ## 页面搭建中的移动与删除
 

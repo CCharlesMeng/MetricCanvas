@@ -179,7 +179,7 @@
     line-height: var(--mc-text-heading-line-height, normal);
     text-align: var(--mc-text-heading-text-align, start);
   }
-  /* 居中图标标题的数值真源在统一运行时根部的 --mc-section-title-* 变量。 */
+  /* Report 居中图标标题；Dashboard 使用下方独立标题档。 */
   .page-heading {
     display: flex;
     align-items: center;
@@ -197,6 +197,21 @@
     font-weight: var(--mc-section-title-font-weight, 600);
     line-height: var(--mc-section-title-line-height, 50px);
     text-align: center;
+  }
+  :global([data-page-layout-form='dashboard']) .page-heading {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  :global([data-page-layout-form='dashboard']) .page-heading img {
+    display: none;
+  }
+  :global([data-page-layout-form='dashboard']) .page-heading-title {
+    color: var(--mc-card-title-color, #191919);
+    font-size: var(--mc-card-title-font-size, 16px);
+    font-weight: var(--mc-card-title-font-weight, 500);
+    line-height: var(--mc-card-title-line-height, 24px);
+    text-align: left;
   }
   .body {
     margin: 0;

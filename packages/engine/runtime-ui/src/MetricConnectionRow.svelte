@@ -30,7 +30,8 @@
         2 * gaps[index], 0);
       const minimumSpan = Math.min(...members.map(member => member.component.layout.span));
       // 144px 是连接行的最小卡片空间预算；内容自身的响应仍归指标卡。
-      stacked = (target.getBoundingClientRect().width - reserved) * minimumSpan / item.span < 144;
+      // 使用外框内的实际内容宽度，边框和内边距不计入卡片空间预算。
+      stacked = (content.getBoundingClientRect().width - reserved) * minimumSpan / item.span < 144;
     };
     const observer = new ResizeObserver(measure);
     observer.observe(target);
@@ -62,7 +63,16 @@
 </div>
 
 <style>
-  .connection-row { min-width:0; width:100%; container:mc-connection-row / inline-size; }
+  .connection-row {
+    box-sizing:border-box;
+    min-width:0;
+    width:100%;
+    padding:20px;
+    border:1px solid rgba(0, 0, 0, 0.1);
+    border-radius:16px;
+    background:rgba(255, 255, 255, 1);
+    container:mc-connection-row / inline-size;
+  }
   .connection-grid { display:grid; grid-template-columns:var(--connection-columns); align-items:stretch; gap:0; min-width:0; }
   .connector { display:block; align-self:center; justify-self:center; box-sizing:border-box; max-inline-size:min(12em, 20cqi); margin:0 var(--connector-gap); padding:0; border:0; background:transparent; color:var(--mc-color-text,#191919); font:inherit; font-size:16px; font-weight:500; line-height:24px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   button.connector { cursor:pointer; }

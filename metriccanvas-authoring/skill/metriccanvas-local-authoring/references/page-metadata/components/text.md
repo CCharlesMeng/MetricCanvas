@@ -10,6 +10,8 @@
 
 6.35条件呈现及相关限制见[条件显隐](../conditions.md)；子项全部隐藏不自动收起父容器。
 
+`variant: heading` 的标题按页面layout分别呈现：Dashboard为黑色16px、500字重、左对齐、无装饰图标；Report为32px居中图标标题。两种形态不通过plain容器回退到共用标题。完整对照页为dashboard-title-styles与report-title-styles。
+
 
 页面协议 6.44。结构真源为本册[schema.json](../schema.json)，SHA256 `1ec83a088142ec5460ffe180d16488a563277c9ac27e943bafe055d76ac298a3`。字段表自动生成；可选不等于有默认值。
 
@@ -494,6 +496,8 @@ Schema位置：`#/definitions/textComponent/properties/props/properties/links/it
 - [reference-text-page](../examples/reference-text-page.json)：完整合法页面；查询仅为静态契约证据。
 - [url-navigation-page](../examples/url-navigation-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](../examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
+- [dashboard-title-styles](../examples/dashboard-title-styles.json)：完整合法页面；查询仅为静态契约证据。
+- [report-title-styles](../examples/report-title-styles.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-text.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

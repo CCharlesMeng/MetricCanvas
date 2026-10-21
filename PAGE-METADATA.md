@@ -252,7 +252,7 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 7.4 `metricCard` → [模块参考](contracts/metriccanvas/page/reference/components/metricCard.md)。
 
-6.34 支持 Dashboard 顶层指标卡 `layout.before` 连接文字，双侧间距缺省 8px，保留外层 12 列；完整场景见 [指标卡连接排布](pages/metric-card-equation.json)。
+6.34 支持 Dashboard 顶层指标卡 `layout.before` 连接文字，双侧间距缺省 8px，保留外层 12 列；整组自动拉宽至所占列宽，以 1px 灰边、16px 圆角白底区域包裹，每张小卡保留独立白底灰边，文字双侧 gap 固定；完整场景见 [指标卡连接排布](pages/metric-card-equation.json)。
 
 <a id="75-图表组件"></a>
 
@@ -425,3 +425,5 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 6.43：维度下拉默认支持本地搜索，`searchable:false` 关闭；普通树可声明 `treeSelection:descendants|independent|leaf`。`selection` 继续使用6.37的对象协议，`level`结构树不变。见[筛选声明](docs/page-metadata/filters.md)与IOC选择控件场景。
 
 6.44新增一层行内子表格，声明与限制见[表格：行内子表格](docs/page-metadata/components/table.md#row-expansion)。默认仅内容和分页，父行嵌套明细与按父行查询分页显式分支；模板取数与状态按展开实例隔离，导出范围待确认。
+
+标题按页面layout分别呈现：Dashboard分区标题与text.heading使用黑色16px左对齐无装饰标题；Report保留独立标题层级。plain只表示分区无外壳，不表示共用标题。参见[分区与布局](docs/page-metadata/sections-and-layout.md)及[看板标题验收](pages/dashboard-title-styles.json)、[报表标题验收](pages/report-title-styles.json)。

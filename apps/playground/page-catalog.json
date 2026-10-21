@@ -485,6 +485,76 @@
       }
     },
     {
+      "id": "dashboard-title-styles",
+      "group": "features",
+      "displayTitle": "看板标题｜布局形态独立样式",
+      "summary": "对照默认、plain、panel、card分区与text.heading，验证报表与看板标题分别呈现。",
+      "tags": [
+        "标题",
+        "布局形态"
+      ],
+      "capabilities": [
+        "layout"
+      ],
+      "environment": {
+        "data": "静态内容",
+        "runtime": "none",
+        "scope": "可直接预览"
+      },
+      "guide": {
+        "steps": [
+          "查看四类分区标题与内容章节标题。",
+          "打开另一布局形态的对照页，核对字号、颜色、对齐和装饰。"
+        ],
+        "configPaths": [
+          "layout",
+          "sections[].container",
+          "sections[].title",
+          "sections[].components[].props.variant"
+        ],
+        "boundary": "只验证标题呈现，无数据查询；不将plain作为共用标题的回退入口。",
+        "related": [
+          "report-title-styles",
+          "metric-card-equation"
+        ]
+      }
+    },
+    {
+      "id": "report-title-styles",
+      "group": "features",
+      "displayTitle": "报表标题｜布局形态独立样式",
+      "summary": "对照默认、plain、panel、card分区与text.heading，验证报表与看板标题分别呈现。",
+      "tags": [
+        "标题",
+        "布局形态"
+      ],
+      "capabilities": [
+        "layout"
+      ],
+      "environment": {
+        "data": "静态内容",
+        "runtime": "none",
+        "scope": "可直接预览"
+      },
+      "guide": {
+        "steps": [
+          "查看四类分区标题与内容章节标题。",
+          "打开另一布局形态的对照页，核对字号、颜色、对齐和装饰。"
+        ],
+        "configPaths": [
+          "layout",
+          "sections[].container",
+          "sections[].title",
+          "sections[].components[].props.variant"
+        ],
+        "boundary": "只验证标题呈现，无数据查询；不将plain作为共用标题的回退入口。",
+        "related": [
+          "dashboard-title-styles",
+          "metric-card-equation"
+        ]
+      }
+    },
+    {
       "id": "demo",
       "group": "features",
       "summary": "点击区域或渠道图表，体验页内筛选；再跳转销售明细并恢复条件。",

@@ -116,7 +116,7 @@ async function buildProductOutputs(): Promise<OutputMap> {
   }
 
   // Feature pages are the single source for both browser acceptance and exported examples.
-  for(const name of ['page-visibility-region-linkage','page-visibility-inputs','page-visibility-report']) {
+  for(const name of ['page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','dashboard-title-styles','report-title-styles']) {
     const content=await readFile(path.join(repoRoot,'pages',`${name}.json`),'utf8');
     const document=JSON.parse(content);const errors=validate(document);
     if(errors.length)throw Error(JSON.stringify(errors));

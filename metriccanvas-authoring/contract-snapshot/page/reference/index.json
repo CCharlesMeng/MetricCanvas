@@ -7,8 +7,16 @@
       "sha256": "07f01423d8a9bede12d2d9d070ba694fc9fa9a82430f5c174a895ca02b069119"
     },
     {
+      "file": "packages/embed/tests/browser/layout-titles.spec.ts",
+      "sha256": "5c0e171b0909a4a5c33671e327e67ae4f5f5e30907a25a7f8711571371e010e3"
+    },
+    {
       "file": "packages/embed/tests/browser/report-image.spec.ts",
       "sha256": "ea8a67adf6a00be95ca9afb307dc98b903cc5777c48491d1a15ba2cda07d95cb"
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSection.svelte",
+      "sha256": "c1b0739fe3936b4d7a4bf4da702fecdff9b1209bddaf22497fd12f1ea2c112d9"
     },
     {
       "file": "packages/engine/runtime-ui/src/initial-tabs.ts",
@@ -29,6 +37,10 @@
     {
       "file": "packages/engine/widgets/src/components/gauge/gauge.ts",
       "sha256": "388576f53d641478917f3e2891f10f2b73a8894d05502fd42ac3fce1aceeabe8"
+    },
+    {
+      "file": "packages/engine/widgets/src/components/text/TextBlock.svelte",
+      "sha256": "a0a76c2d36a863858f43cc1064159a72f3a150cede3a3e14d7e3bc76dc4f6744"
     },
     {
       "file": "packages/engine/widgets/src/shared/semantic-html.ts",
@@ -602,12 +614,16 @@
       ],
       "examples": [
         "composite-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "dashboard-title-styles",
+        "report-title-styles"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/page.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/embed/tests/browser/layout-titles.spec.ts",
+        "packages/engine/runtime-ui/src/RuntimeSection.svelte"
       ],
       "rules": [
         "section-id-unique",
@@ -1228,11 +1244,15 @@
       "examples": [
         "reference-text-page",
         "url-navigation-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "dashboard-title-styles",
+        "report-title-styles"
       ],
       "sources": [
         "packages/page/src/schema/components/text.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/embed/tests/browser/layout-titles.spec.ts",
+        "packages/engine/widgets/src/components/text/TextBlock.svelte"
       ],
       "rules": [
         "schema-structure",
@@ -14750,35 +14770,35 @@
       "variant": "plain",
       "file": "examples/component-text-plain.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/page-visibility-inputs.json"
+      "source": "page/conformance/valid/report-title-styles.json"
     },
     {
       "type": "text",
       "variant": "heading",
       "file": "examples/component-text-heading.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/page-visibility-inputs.json"
+      "source": "page/conformance/valid/report-title-styles.json"
     },
     {
       "type": "text",
       "variant": "insight",
       "file": "examples/component-text-insight.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/page-visibility-inputs.json"
+      "source": "page/conformance/valid/report-title-styles.json"
     },
     {
       "type": "text",
       "variant": "reportInline",
       "file": "examples/component-text-reportInline.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/page-visibility-inputs.json"
+      "source": "page/conformance/valid/report-title-styles.json"
     },
     {
       "type": "text",
       "variant": "riskNotice",
       "file": "examples/component-text-riskNotice.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/page-visibility-inputs.json"
+      "source": "page/conformance/valid/report-title-styles.json"
     },
     {
       "type": "aiSummary",

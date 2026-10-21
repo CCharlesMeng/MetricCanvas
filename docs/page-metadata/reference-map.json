@@ -338,12 +338,16 @@
       ],
       "examples": [
         "composite-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "dashboard-title-styles",
+        "report-title-styles"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/page.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/embed/tests/browser/layout-titles.spec.ts",
+        "packages/engine/runtime-ui/src/RuntimeSection.svelte"
       ],
       "rules": [
         "section-id-unique",
@@ -964,11 +968,15 @@
       "examples": [
         "reference-text-page",
         "url-navigation-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "dashboard-title-styles",
+        "report-title-styles"
       ],
       "sources": [
         "packages/page/src/schema/components/text.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/embed/tests/browser/layout-titles.spec.ts",
+        "packages/engine/widgets/src/components/text/TextBlock.svelte"
       ],
       "rules": [
         "schema-structure",

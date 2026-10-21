@@ -1542,7 +1542,7 @@
     --mc-page-sections-margin-top: 16px;
     --mc-section-card-padding: 16px 20px 20px;
     --mc-section-card-title-margin: 0 0 12px;
-    --mc-section-card-title-color: var(--mc-color-report-text);
+    --mc-section-card-title-color: #191919;
     --mc-section-card-title-font-size: 16px;
     --mc-section-card-title-font-weight: 500;
     --mc-section-card-title-line-height: 24px;
@@ -1586,12 +1586,12 @@
     --mc-card-title-font-size: 16px;
     --mc-card-title-font-weight: 500;
     --mc-card-title-line-height: 24px;
-    --mc-card-title-color: var(--mc-color-report-text);
+    --mc-card-title-color: #191919;
 
     /* 页面标题(字号两档同为 24px,不设量) */
     --mc-page-title-font-weight: 500;
     --mc-page-title-line-height: 36px;
-    --mc-page-title-color: var(--mc-color-report-text);
+    --mc-page-title-color: #191919;
 
     /* 指标行:标签、大数字、数值单位 */
     --mc-metric-label-font-size: 14px;
