@@ -36,6 +36,14 @@
 
 ## 能力索引
 
+### 表格单元格点击与筛选联动
+
+- 页面：[table-cell-selection.json](table-cell-selection.json)，入口 `/pages/table-cell-selection`；无必填 URL 参数。启动 `pnpm sim:dqe` 与 `pnpm dev:playground`，使用 DQE Sim 合成数据。
+- 点击上表带下划线的“华南地区部”，下表仅显示“深圳代表处”；点击“华东地区部”切换为“杭州代表处”。上表不订阅筛选，因此保留全部选择入口；重复点击同值保持选中。代表处链接列也显示下划线。
+- `selection.writes.region` 写入页面筛选器，下游查询通过 `filterBindings.region` 显式订阅。内联入口可写入具有可观察结果的筛选；未订阅的查询与内联数据不会自动过滤。维度值通过页面显式枚举确认。
+- 浏览器回归：`pnpm --filter @metriccanvas/embed exec playwright test table-cell-selection.spec.ts`（先执行该包 `build`）。覆盖正常选择、键盘选择、重复点击、缺少下游绑定、纯内联入口和四种表格变体下划线。仅证明本地运行时与合成数据链路，不代表真实 DQE、Relay 或模型验收。
+
+
 ### TinyVue OS 表格外观
 
 - 页面：[table-tiny-os.json](table-tiny-os.json)，直接打开 [TinyVue OS 表格样式验收](http://localhost:5173/pages/table-tiny-os)。启动 `pnpm dev:playground`，无需 DQE。

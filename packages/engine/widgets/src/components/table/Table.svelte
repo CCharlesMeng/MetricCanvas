@@ -879,7 +879,6 @@
   }
   .embedded > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) .link-cell {
     color: #191919;
-    text-decoration: none;
   }
   .embedded > :where(.scroll,.content-frame) > table > thead > tr > th .sort-hint,
   .embedded > :where(.scroll,.content-frame) > table > thead > tr > th .sort-state {
@@ -904,14 +903,6 @@
   }
   tbody td.danger {
     color: #f23030;
-  }
-  tbody td.selectable {
-    background: rgb(33 111 240 / 0.05);
-  }
-  tbody td.selected {
-    color: #1476ff;
-    background: rgb(33 111 240 / 0.05);
-    box-shadow: inset 0 0 0 1px #1476ff;
   }
   tbody td.emphasized {
     font-weight: 600;
@@ -938,7 +929,7 @@
   .selectable-cell {
     width: 100%;
     padding: 2px 6px;
-    color: #191919;
+    color: inherit;
     background: transparent;
     border: 1px solid transparent;
     border-radius: 6px;
@@ -953,9 +944,14 @@
     font-weight: 650;
   }
   .selectable-cell:focus-visible {
-    color: #1476ff;
-    border-color: #1476ff;
-    outline: none;
+    outline: 2px solid currentColor;
+    outline-offset: 1px;
+  }
+  .selectable-cell,
+  .selectable-cell .cell-primary-value,
+  .link-cell .cell-primary-value {
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
   .link-cell {
     width: 100%;
@@ -1640,7 +1636,7 @@
   }
   .table-widget.os-theme tbody td.positive { color: var(--mc-color-positive, #52c41a); }
   .table-widget.os-theme tbody td.negative { color: var(--mc-color-negative, #f5222d); }
-  .table-widget.os-theme .link-cell { color: #191919; text-decoration: none; }
+  .table-widget.os-theme .link-cell { color: #191919; }
   .table-widget.os-theme tbody td:is(.explicit-color, .positive, .negative, .danger) .link-cell { color: inherit; }
   .table-widget.os-theme th.fixed, .table-widget.os-theme td.fixed {
     left: var(--table-sticky-left, auto) !important;

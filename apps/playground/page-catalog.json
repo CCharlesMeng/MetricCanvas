@@ -2113,6 +2113,41 @@
           "table-toolbar-demo"
         ]
       }
+    },
+    {
+      "id": "table-cell-selection",
+      "group": "features",
+      "displayTitle": "表格区域点击与筛选联动",
+      "summary": "点击带下划线的区域写入筛选，下表只显示该区域代表处；对照链接列与选择列。",
+      "tags": [
+        "单元格选择",
+        "下划线",
+        "筛选联动"
+      ],
+      "capabilities": [
+        "tables",
+        "filters"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "service",
+        "scope": "需启动 DQE Sim"
+      },
+      "guide": {
+        "steps": [
+          "点击华南地区部，下表仅保留深圳代表处。",
+          "点击华东地区部，下表切换为杭州代表处；上表仍保留全部选择入口。"
+        ],
+        "configPaths": [
+          "sections[].components[].props.columns[].selection.writes",
+          "dataSources.details.source.query.filterBindings"
+        ],
+        "boundary": "合成数据经 DQE Sim 查询；不代表真实 DQE 验收。selection 只写筛选，查询通过显式 filterBindings 订阅。",
+        "related": [
+          "table-toolbar-demo",
+          "table-detail-overlay"
+        ]
+      }
     }
   ],
   "capabilities": [

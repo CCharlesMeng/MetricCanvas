@@ -1,0 +1,307 @@
+{
+  "schemaVersion": "6.37",
+  "id": "table-cell-selection",
+  "layout": "dashboard",
+  "meta": {
+    "title": "表格区域点击与筛选联动",
+    "description": "DQE Sim 合成数据：点击区域写入筛选，观察下游查询明细变化。"
+  },
+  "filters": [
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "region_dept_name",
+      "label": "区域",
+      "selection": {
+        "mode": "single"
+      },
+      "options": [
+        {
+          "value": "中国地区部",
+          "label": "中国地区部"
+        },
+        {
+          "value": "华南地区部",
+          "label": "华南地区部"
+        },
+        {
+          "value": "华东地区部",
+          "label": "华东地区部"
+        },
+        {
+          "value": "西部地区部",
+          "label": "西部地区部"
+        },
+        {
+          "value": "亚太地区部",
+          "label": "亚太地区部"
+        },
+        {
+          "value": "华北地区部",
+          "label": "华北地区部"
+        }
+      ]
+    }
+  ],
+  "dataSources": {
+    "regions": {
+      "fields": {
+        "office": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "rep_office_name"
+        },
+        "office-code": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "rep_office_code"
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "region_dept_name"
+        },
+        "bidding_amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "bidding_amount"
+        },
+        "support_rate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "support_rate"
+        },
+        "project_initiation_rate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "project_initiation_rate"
+        },
+        "rank": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "rank"
+        },
+        "analysis_meeting_rate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "analysis_meeting_rate"
+        },
+        "current_month_new_signed_amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "current_month_new_signed_amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "rep_office_name",
+                  "rep_office_code",
+                  "region_dept_name"
+                ],
+                "output_metrics": [
+                  "bidding_amount",
+                  "support_rate",
+                  "project_initiation_rate",
+                  "rank",
+                  "analysis_meeting_rate",
+                  "current_month_new_signed_amount"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "details": {
+      "fields": {
+        "office": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "rep_office_name"
+        },
+        "office-code": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "rep_office_code"
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "region_dept_name"
+        },
+        "bidding_amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "bidding_amount"
+        },
+        "support_rate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "support_rate"
+        },
+        "project_initiation_rate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "project_initiation_rate"
+        },
+        "rank": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "rank"
+        },
+        "analysis_meeting_rate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "analysis_meeting_rate"
+        },
+        "current_month_new_signed_amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "current_month_new_signed_amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "rep_office_name",
+                  "rep_office_code",
+                  "region_dept_name"
+                ],
+                "output_metrics": [
+                  "bidding_amount",
+                  "support_rate",
+                  "project_initiation_rate",
+                  "rank",
+                  "analysis_meeting_rate",
+                  "current_month_new_signed_amount"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "queryField": "region_dept_name"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "help",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成数据演示：点击上表带下划线的区域，下表只显示该区域的代表处；再次点击同值保持选中。区域列写入筛选，代表处列演示链接。"
+          }
+        },
+        {
+          "id": "regions",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "regions"
+          },
+          "props": {
+            "title": "区域选择入口（不绑定筛选）",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "region-dept-name",
+                "title": "区域",
+                "width": 150,
+                "fixed": "left",
+                "selection": {
+                  "writes": {
+                    "region": {
+                      "field": "region-dept-name"
+                    }
+                  }
+                }
+              },
+              {
+                "field": "office",
+                "title": "代表处",
+                "link": true,
+                "navigate": {
+                  "href": "/pages/table-cell-selection",
+                  "query": {
+                    "region": {
+                      "source": "row",
+                      "field": "region-dept-name"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "details",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "details"
+          },
+          "props": {
+            "title": "联动代表处明细",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "region-dept-name",
+                "title": "区域"
+              },
+              {
+                "field": "office",
+                "title": "代表处"
+              },
+              {
+                "field": "bidding_amount",
+                "title": "投标金额",
+                "align": "right"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -4,6 +4,30 @@
 
 columns区分普通字段列和kind:group递归列，分组列children保持层级。query分页使用服务总条数，排序/表头筛选能力不能绕过现有查询分页限制。selection优先于link；主/次/徽标字段各自声明，不靠字符串拼接。派生行样式按rowKindField解释，不靠单元格文案识别合计。
 
+## 单元格点击与筛选联动
+
+交互态的 `selection` 选择列和 `link: true` 链接列均以下划线提示可点击，覆盖普通、`forecastMatrix`、`embedded` 和 `reportCompact` 变体；普通数据列不加下划线。选择列不额外添加蓝色背景，选中后保持普通文字颜色，不加蓝色边框；显式业务颜色照常生效，键盘焦点框跟随文字颜色。静态导出不呈现点击控件。
+
+选择列的 `selection.writes` 以**页面筛选器 id** 为键，以当前行的**页面字段 id** 或固定值为输入。例如：
+
+```json
+{
+  "field": "region-dept-name",
+  "title": "区域",
+  "width": 150,
+  "fixed": "left",
+  "selection": {
+    "writes": { "region": { "field": "region-dept-name" } }
+  }
+}
+```
+
+页面须声明 `id: "region"`、`type: "dimension"` 的筛选器；点击将当前行原始取值转为字符串写入其单选状态，不使用格式化文案。空值不写入，多目标写入一次完成。再次点击同一取值保持选中，不自动清空；`fixed` 和 `width` 只影响呈现，不影响写入。
+
+选择动作沿用组件动作资格；当前协议允许 `inline` 入口写入会产生可观察结果的筛选，例如联动下游查询。维度筛选值还须通过显式 `options` 或可信动态候选确认，候选未就绪时相关查询等待。选择列写入筛选状态，不直接筛选其他表格；下游查询必须显式声明 `source.query.filterBindings.region: { "target": "dimension", "queryField": "region_dept_name" }`。这里 `region_dept_name` 是真实 DQE 字段，不能从页面字段 id 猜测。不订阅该筛选的查询不重跑，`inline` 行也不会因此自动过滤。
+
+可观察示例：`table-cell-selection` 使用 DQE Sim 合成数据，点击“华南地区部”后，下表仅显示“深圳代表处”；上表不订阅该筛选，保留全部入口。浏览器回归同时覆盖四种变体下划线、键盘选择、重复点击、未绑定下游及内联入口联动查询的行为，不代表真实 DQE 验收。
+
 ## 渲染外观与变体
 
 普通 Table、`variant: "forecastMatrix"` 与 `variant: "embedded"` 的网格采用 TinyVue OS 浅色样式：默认单层表头 40px、14px 字号与 21px 文字行高、灰色表头和短列分隔线；表体基础高度 48px、上下 12px 与左右 16px 内边距，长内容可撑高。多级粘性表头与固定列按实际渲染尺寸定位。固定列总宽超过表内可视宽度时，临时取消横向固定，所有列通过表内滚动访问；空间恢复后自动恢复固定。排序、筛选、搜索、分页和导出范围沿用已有契约。

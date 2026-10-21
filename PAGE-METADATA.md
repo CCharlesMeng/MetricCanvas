@@ -22,6 +22,8 @@
 
 ## 文档结构与维护分工
 
+表格 `selection.writes` 通过声明的维度筛选器联动下游查询；选择列与链接列均显示下划线。完整声明、查询订阅与内联入口边界见[单元格点击与筛选联动](docs/page-metadata/components/table.md#单元格点击与筛选联动)，可观察示例为 [table-cell-selection](pages/table-cell-selection.json)。
+
 表格的普通、预测矩阵与内嵌变体采用 TinyVue OS 网格外观，`reportCompact` 保持既有紧凑外观；范围及可观察示例见[表格渲染外观与变体](docs/page-metadata/components/table.md#渲染外观与变体)。此调整不新增协议字段。
 
 本文件维护页面协议概览、版本边界与阅读导航。使用步骤与跨字段示例由专题文档维护，字段语义由模块维护，精确结构表从Schema生成；同一规则在所属文档维护后由其他入口引用。
