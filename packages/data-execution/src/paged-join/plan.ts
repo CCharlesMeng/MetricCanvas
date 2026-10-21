@@ -35,7 +35,7 @@ export function compilePagedJoin(page: Page, sourceId: string, conditions: Filte
         const field = definition.fields[source.source.projection[p.field].field];
         return hasQueryFieldMapping(field) ? field.queryField : '';
       }));
-      if (query.filterValues.some(v => v.target === 'dimension' ? controlled.has(v.queryField) : v.target === 'metricRange' ? controlled.has(v.metric) : false) ||
+      if ([...query.filterValues, ...(query.tableFilters ?? [])].some(v => v.target === 'dimension' ? controlled.has(v.queryField) : v.target === 'metricRange' ? controlled.has(v.metric) : false) ||
         filter?.dims?.some(v => controlled.has(v.dim_name ?? '')) || filter?.metrics?.some(v => controlled.has(v.metric_name ?? ''))) {selection = undefined;reason='predicate-target-conflict';}
     }
   }

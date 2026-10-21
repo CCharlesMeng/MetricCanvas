@@ -12,6 +12,7 @@ export type PageDataSnapshots = ReadonlyMap<string, DataSnapshot>;
 export interface Subscribable<T> { subscribe(run: (value: T) => void): () => void; }
 export type { QueryHeaderFilters } from '@metriccanvas/data-execution/runtime';
 export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
+  captureRawSnapshots(): ReadonlyMap<string, DataSnapshot>;
   captureQueries(): ReadonlyMap<string, EffectiveQuery>;
   captureViews(): ReadonlyMap<string, TableQueryView>;
   captureComputeYear(): number;
@@ -136,6 +137,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     return {
       refresh: (id: string) => refetch(new Set([id])),
       program, tables, views, year, current: () => snapshots,
+      raw: () => new Map(raw),
       queries: () => program.captureQueries(values, views(), raw),
       mutable(id: string) { return tables.has(id) && (compiled.limits.has(id) || compiled.automatic.has(id) || ![...ids].some(key => queryResultDependencies(page.dataSources[key]).includes(id))); },
       pageSize(id: string) { return compiled.limits.has(id) ? tables.get(id)?.snapshot().pageSize : undefined; },
@@ -144,6 +146,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
   }
   return {
     subscribe(run) { subscribers.add(run); active ??= start(); notify(run, active.current()); return () => { subscribers.delete(run); if (!subscribers.size) { active?.dispose(); active = undefined; } }; },
+    captureRawSnapshots: () => active?.raw() ?? new Map(),
     captureQueries: () => active?.queries() ?? new Map(), captureViews: () => active?.views() ?? new Map(),
     captureComputeYear: () => active?.year ?? new Date().getFullYear(), getSourceProgram: () => active?.program,
     getQueryView: id => active?.tables.get(id)?.snapshot(), getQueryPageSize: id => active?.pageSize(id),

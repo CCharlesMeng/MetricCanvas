@@ -17,7 +17,7 @@ export type TableSortRule = z.infer<typeof tableSortZ>;
 export type TablePredicate = z.infer<typeof tablePredicateZ>;
 export type TableQueryView = z.infer<typeof tableQueryViewZ>;
 export type TableHeaderFilters = Readonly<Record<string,
-  { mode: 'select'; values: readonly string[] } |
+  { mode: 'select'; values: readonly (string | number)[] } |
   { mode: 'dateRange'; from: string; to: string } |
   { mode: 'numberRange'; from?: number; to?: number }>>;
 
@@ -32,7 +32,7 @@ export function tablePredicates(filters: TableHeaderFilters): TablePredicate[] {
 export function tableHeaders(predicates: readonly TablePredicate[]): TableHeaderFilters {
   const result: Record<string, TableHeaderFilters[string]> = {};
   for (const p of predicates) {
-    if (p.op === 'in') result[p.field] = { mode: 'select', values: p.values.map(String) };
+    if (p.op === 'in') result[p.field] = { mode: 'select', values: [...p.values] };
     else if (p.op === 'dateRange') result[p.field] = { mode: 'dateRange', from: p.from ?? '', to: p.to ?? '' };
     else {
       const old = result[p.field];

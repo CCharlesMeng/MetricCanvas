@@ -1,5 +1,6 @@
 ---
 status: accepted
+revised-by: 0114
 date: 2026-09-21
 note: 解除 ADR-0049 查询分页与排序/表头筛选的互斥；排序编码待真实环境复验
 ---

@@ -1,9 +1,7 @@
-import {fieldSelectionIds,queryFilterIds} from '@metriccanvas/page/internal';
+import {fieldSelectionIds, queryFilterIds, canonicalizeJson, conditionSourceIds, tableHeaders, tableSearchOption, tableSearchValue, type Page, type TableHeaderFilters, type TableQueryView, type TableComponent} from '@metriccanvas/page/internal';
+import { createColumnCandidatesSession } from '../../runtime/src/column-candidates';
 import type {TableRenderBinding} from './component-render';
-import {buildTableColumnLayout} from '../../widgets/src/components/table/columns';
-import type {DimensionValuesSnapshots} from '../../runtime/src/dimension-values';
-import { conditionSourceIds, hasQueryFieldMapping, fieldName, tableHeaders, tableSearchOption, tableSearchValue, type Page, type TableHeaderFilters, type TableQueryView, type TableComponent } from '@metriccanvas/page/internal';
-import { evaluateTableView, defaultSourceView } from '@metriccanvas/data-execution/runtime';
+import { evaluateTableView, defaultSourceView, type ColumnCandidatesRead } from '@metriccanvas/data-execution/runtime';
 import { createTableSession, type TableSession } from '../../runtime/src/table-session';
 import { remoteTableSearch } from './table-search';
 import type { PageSnapshotStream, FilterValues } from '../../runtime/src';
@@ -21,8 +19,9 @@ function renderHeaders(headers: TableHeaderFilters): Record<string, TableHeaderF
     : value.mode === 'select' ? { ...value, values: [...value.values] } : value]));
 }
 /** Draft ownership and event adaptation; committed values live exclusively in TableSession. */
-export function createTableController(page: Page, stream: () => PageSnapshotStream | null, changed: () => void) {
+export function createTableController(page: Page, stream: () => PageSnapshotStream | null, changed: () => void, conditions: () => FilterValues = () => new Map(), candidateContext: () => Pick<ColumnCandidatesRead, 'now' | 'displayInputs' | 'filterRevision'> = () => ({})) {
   const sessions = new Map<string, TableSession>();
+  const candidates = new Map<string, ReturnType<typeof createColumnCandidatesSession>>();
   const headers = new Map<string, Record<string, TableHeaderFilterValue>>();
   const searches = new Map<string, string>();
   const searchOptions = new Map<string, string>();
@@ -34,17 +33,40 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
     return session;
   }
   function view(table: TableComponent): TableQueryView { return remote(table) ? stream()?.getQueryView(table.data.main) ?? defaultSourceView(page, table.data.main) : local(table).snapshot(); }
+  function candidateSession(table: TableComponent) {
+    let session = candidates.get(table.id);
+    if (!session) {
+      session = createColumnCandidatesSession(async (field, search, offset, signal) => {
+        const current = stream(), program = current?.getSourceProgram();
+        if (!current || !program) return { kind: 'unavailable' };
+        return program.readColumnCandidates({ ...candidateContext(), sourceId: table.data.main, field, conditions: conditions(), view: view(table),
+          views: current.captureViews(), seeds: current.captureRawSnapshots(), candidateSearch: search, offset, pageSize: 50, currentYear: current.captureComputeYear(), signal });
+      }, field => {
+        const current = view(table), ids = conditionSourceIds(page, table.data.main), raw = stream()?.captureRawSnapshots();
+        const filterIds = new Set([...ids].flatMap(id => {
+          const source = page.dataSources[id];
+          return [...(source?.source.type === 'query' ? queryFilterIds(source.source.query) : []),
+            ...(source?.compute ?? []).flatMap(op => op.op === 'selectField' ? [op.filter] : op.op === 'timeFill' && 'filter' in op.range ? [op.range.filter] : [])];
+        }));
+        const inputs = [...conditions()].filter(([id, value]) => filterIds.has(id) || value.type === 'search')
+          .map(([id, value]) => [id, value.type === 'timeRange' ? { type: value.type, from: value.from, to: value.to } : value]);
+        return canonicalizeJson({ context: candidateContext(), conditions: inputs, predicates: current.predicates.filter(p => p.field !== field), search: current.search,
+          dependencies: [...ids].filter(id => id !== table.data.main).map(id => [id, raw?.get(id)]) });
+      }, changed);
+      candidates.set(table.id, session);
+    }
+    return session;
+  }
   const controller = {
     view,
-    candidateDimensions(table:TableComponent):Record<string,string> {
-      const source=page.dataSources[table.data.main];
-      return Object.fromEntries(buildTableColumnLayout(table.props.columns).leaves.filter(c=>c.filterable?.mode==='select').flatMap(c=>{
-        const field=fieldName(c.field),projection=source?.source.type==='pagedJoin'?source.source.projection[field]:undefined;
-        const definition=projection&&source.source.type==='pagedJoin'?page.dataSources[source.source.members[projection.member].source]?.fields[projection.field]:source?.fields[field];
-        return definition&&hasQueryFieldMapping(definition)?[[field,definition.queryField]]:[];
-      }));
+    syncCandidates() { for (const session of candidates.values()) session.sync(); },
+    candidateBinding(table: TableComponent) {
+      const session = candidateSession(table);
+      return { columnCandidates: session.snapshots(),
+        oncandidateopen: (field: string, open: boolean) => open ? session.open(field) : session.close(field),
+        oncandidatesearch: (field: string, query: string) => session.search(field, query),
+        oncandidatemore: (field: string) => session.more(field), oncandidateretry: (field: string) => session.retry(field) };
     },
-    candidateStates(table:TableComponent,states:DimensionValuesSnapshots){return Object.fromEntries(Object.entries(controller.candidateDimensions(table)).map(([field,dimension])=>[field,states.get(dimension)?.status??'idle']));},
     binding(table:TableComponent,presentation:Omit<TableRenderBinding,'view'|'searchDraft'|'searchOption'|'onsearchoption'|'onsearchdraft'|'onsearch'|'onpage'|'onpagesize'|'onsort'|'onheaderfilter'>):TableRenderBinding {
       const source=page.dataSources[table.data.main];
       return {...presentation,sortReset:source?.source.type==='pagedJoin'?source.source.ordering.default:undefined,view:controller.render(table),searchDraft:controller.searchDraft(table),searchOption:controller.searchOption(table),
@@ -99,7 +121,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
       }) || page.filters?.some(f => f.type === 'search' && changedIds.has(f.id));
       if (affected) local(table).resetPage(); changed();
     },
-    dispose() { for (const session of sessions.values()) session.dispose(); sessions.clear(); headers.clear(); searches.clear(); searchOptions.clear(); }
+    dispose() { for (const session of candidates.values()) session.dispose(); candidates.clear(); for (const session of sessions.values()) session.dispose(); sessions.clear(); headers.clear(); searches.clear(); searchOptions.clear(); }
   };
   return controller;
 }

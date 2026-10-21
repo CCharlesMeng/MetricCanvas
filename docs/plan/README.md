@@ -6,6 +6,7 @@
 
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
+| 表格列候选值与 DQE 对接 | 本仓引擎及本地验收完成；真实 DQE/Relay 编码与权限待核 | [主计划](2026-10-21-table-column-candidates.md)、[实施证据](../evidence/table-column-candidates/result.md)、[DQE 简要说明](table-column-candidates/dqe-handoff.md)：统一候选语义、保留 NO_PERMISSION、共享执行及独立 Skill 验证 |
 | 图表 ECharts 隐含透传 | P0–P6 本地验收完成，已授权交付 main | [唯一主计划](2026-10-19-chart-echarts-option.md)、[ADR-0110](../adr/0110-hidden-echarts-presentation-options.md)、[验收证据](../evidence/chart-echarts-option/result.md)：Schema 6.32，首批柱/线/饼图、保护数据结构、单次回退、console-only、导出终止及安装消费闭合 |
 | IOC公共页头 | B0–B5本地实施；B5仅传值、B6挂起，真实服务另验 | [唯一主计划](2026-10-16-ioc-header-feature-plan.md)：6.40含显式跨页输入、6.39时间模式/可信期间事实/候选窗口；[B5证据](../evidence/ioc-header-b5/result.md)。未迁移现有IOC业务页，真实DQE/CloudIOC/Relay另验 |
 | Report 高清 PNG 导出 | 本仓实现与Chrome安装验收完成，真实门户/Edge待验 | [导出主方案](2026-10-16-report-png-export.md)、[验收记录](../evidence/report-png-export/result.md)、[按钮简化验收](../evidence/report-png-export/export-buttons.md)：6.31统一exportButtons、按配置直接下载PDF/单张PNG、独立文档与流式编码，页面/文档/Skill/属性编辑/分发及PDF回归完成；真实门户/DQE/Relay、Edge与部署另验 |

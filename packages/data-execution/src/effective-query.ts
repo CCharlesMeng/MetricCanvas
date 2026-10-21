@@ -92,17 +92,18 @@ export function composeEffectiveQuery(
   }
   // 表头筛选按列字段落到维度谓词上(ADR-0086)。字段没有 queryField 映射
   // 说明它不是上游取来的列,整条跳过而不是拿字段 id 冒充查询字段。
+  const tableFilters: EffectiveQuery['filterValues'] = [];
   for (const [fieldId, filter] of Object.entries(headerFilters)) {
     const queryField = mappedQueryField(dataSource, fieldId);
     if (queryField === undefined) continue;
     if (filter.mode === 'select') {
       if (filter.values.length > 0) {
-        filterValues.push({ target: 'dimension', queryField, values: [...filter.values] });
+        tableFilters.push({ target: 'dimension', queryField, values: [...filter.values] });
       }
     } else if (filter.mode === 'numberRange') {
-      if (filter.from !== undefined || filter.to !== undefined) filterValues.push({ target: 'metricRange', metric: queryField, ...(filter.from === undefined ? {} : { from: filter.from }), ...(filter.to === undefined ? {} : { to: filter.to }) });
+      if (filter.from !== undefined || filter.to !== undefined) tableFilters.push({ target: 'metricRange', metric: queryField, ...(filter.from === undefined ? {} : { from: filter.from }), ...(filter.to === undefined ? {} : { to: filter.to }) });
     } else if (filter.from.length > 0 || filter.to.length > 0) {
-      filterValues.push({
+      tableFilters.push({
         target: 'dimensionRange',
         queryField,
         ...(filter.from.length > 0 ? { from: filter.from } : {}),
@@ -134,7 +135,8 @@ export function composeEffectiveQuery(
           }
         }
       : {}),
-    filterValues
+    ...(tableFilters.length ? { tableFilters, bindingValues: filterValues } : {}),
+    filterValues: [...filterValues, ...tableFilters]
   };
 }
 
@@ -153,4 +155,13 @@ export async function executeQuery(
   } catch (cause) {
     return { status: 'error', error: preservedQueryError(cause) };
   }
+}
+
+
+/** Keep complete legacy predicates and provenance synchronized when resolving result bindings. */
+export function bindQueryResultValues(query: EffectiveQuery, values: EffectiveQuery['filterValues']): void {
+  const targets = new Set(values.flatMap(value => value.target === 'dimension' ? [value.queryField] : []));
+  const bind = (current: EffectiveQuery['filterValues']) => [...current.filter(value => value.target !== 'dimension' || !targets.has(value.queryField)), ...values];
+  query.filterValues = bind(query.filterValues);
+  if (query.bindingValues) query.bindingValues = bind(query.bindingValues);
 }

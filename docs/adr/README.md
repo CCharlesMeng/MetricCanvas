@@ -14,7 +14,7 @@
 
 <!-- adr-index:start 由 tools/scripts/adr-index.py 生成，不要手改 -->
 
-共 112 份 ADR（0001–0113）：现行 105、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
+共 113 份 ADR（0001–0114）：现行 106、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
 
 | 编号 | 标题 | 现状 |
 |---|---|---|
@@ -68,7 +68,7 @@
 | [0048](./0048-navigation-intent-and-host-routing.md) | 跨页下钻由宿主路由，统一运行时只上抛导航意图 | 现行；部分由 [0067](./0067-url-navigation-with-explicit-parameter-bindings.md)、[0068](./0068-plain-url-navigation-protocol.md) 修订；导航目标与强制宿主接管已完成 #109 迁移；导航栈与回跳所有权仍有效 |
 | [0049](./0049-table-server-side-and-presentation-capabilities.md) | 表格的服务端能力按数据源模式整体下推，呈现能力只识别不计算 | 现行；部分由 [0086](./0086-server-side-sorting-and-header-filters-under-query-pagination.md) 修订；呈现已落地；查询分页与排序/表头筛选的互斥已由 0086 解除，改由上游执行 |
 | [0050](./0050-filter-type-closure-and-hierarchical-dimensions.md) | 筛选器类型闭集扩展，层级维度成为地图下钻的声明式来源 | 现行；部分由 [0084](./0084-hierarchical-filter-bindings-declare-a-query-field-per-level.md)、[0085](./0085-query-binding-targets-for-the-non-dimension-filter-types.md) 修订；闭集与层级本身成立；六类筛选器在查询侧的绑定形状由 0084/0085 补齐，层级筛选器不再允许恒定 queryField |
-| [0051](./0051-additive-minor-versions-for-page-schema.md) | 页面协议改为增量次版本演进，主版本递增须论证无法增量表达 | 现行；2026-08-25 补了“零使用开放面可按次版本收紧”的例外 |
+| [0051](./0051-additive-minor-versions-for-page-schema.md) | 页面协议改为增量次版本演进，主版本递增须论证无法增量表达 | 现行；部分由 [0114](./0114-table-column-candidates-use-matching-results.md) 修订；2026-08-25 补了“零使用开放面可按次版本收紧”的例外 |
 | [0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md) | 看板形态的满幅布局、铺底层与安全区通道 | 现行；协议与运行时安全区通道已实现 |
 | [0053](./0053-composite-card-component-level-grouping-container.md) | 组件级分组容器「组合卡」,与分区容器按层次分工 | 现行；协议、widget 与统一运行时已实现；同批附带叶子组件「分类明细」 |
 | [0054](./0054-section-weighted-column-tracks.md) | 内容分区可声明受控权重列轨 | 现行；部分由 [0111](./0111-metric-card-before-connection-layout.md) 修订；Schema 5.3，部分修订 0038 的恒定等权列前提 |
@@ -103,7 +103,7 @@
 | [0083](./0083-platform-evidence-work-and-internal-draft-save.md) | 平台创作先取证据，维护单份工作稿并在内容工具内保存草稿 | 现行；部分替代 0064/0079 的平台不保存与候选选择；单份工作稿加工具内保存草稿 |
 | [0084](./0084-hierarchical-filter-bindings-declare-a-query-field-per-level.md) | 层级维度筛选绑定逐级声明谓词字段 | 现行；补齐 ADR-0050 层级维度筛选器在查询侧的绑定形状；6.7 新增分支，6.8 按 ADR-0051 例外收紧 |
 | [0085](./0085-query-binding-targets-for-the-non-dimension-filter-types.md) | timePoint / boolean / numberRange 各有自己的查询绑定目标 | 现行；补齐 ADR-0050 闭集里三类筛选器在查询侧的绑定目标；交付页面协议 6.9 |
-| [0086](./0086-server-side-sorting-and-header-filters-under-query-pagination.md) | 查询分页下由上游执行排序与表头筛选 | 现行；解除 ADR-0049 查询分页与排序/表头筛选的互斥；排序编码待真实环境复验 |
+| [0086](./0086-server-side-sorting-and-header-filters-under-query-pagination.md) | 查询分页下由上游执行排序与表头筛选 | 现行；部分由 [0114](./0114-table-column-candidates-use-matching-results.md) 修订；解除 ADR-0049 查询分页与排序/表头筛选的互斥；排序编码待真实环境复验 |
 | [0087](./0087-in-page-detail-overlay-as-a-third-component-action.md) | 页内详情浮层作为第三支组件动作 | 现行；组件动作闭集从两支扩到三支；交付页面协议 6.10 |
 | [0088](./0088-orthogonal-page-parameters-window-on-the-reference-and-layers-by-purpose.md) | 页面参数正交化：窗口挂在引用上，参数按消费位置分层 | 现行；就地改写 6.6 的 params 形状——window 挪到查询侧时间引用，params 按消费位置分层；不另开次版本 |
 | [0089](./0089-page-parameters-can-seed-time-point-and-hierarchical-filters.md) | 页面参数可以给时间点与层级维度筛选器做初值 | 现行；initialParam 从平面维度筛选器扩到时间点与层级维度筛选器；6.11 新增可选字段与放宽既有约束 |
@@ -130,6 +130,7 @@
 | [0111](./0111-metric-card-before-connection-layout.md) | 指标卡前置连接文字由父级统一排布 | 现行；Schema 6.34，受控修订 0038/0054 的间距开放边界 |
 | [0112](./0112-unified-presentation-conditions.md) | 展示条件就地声明并由统一运行时集中求值 | 现行；用户确认就地条件、集中求值和父级单向约束，并授权实施；6.35增量，真实CloudIOC联调单列 |
 | [0113](./0113-isolated-expanded-row-tables.md) | 行内子表格复用Table，以父行拥有独立查询作用域 | 现行；用户确认单层白底、默认干净、独立查询分页及实时offset语义；导出范围仍待确认 |
+| [0114](./0114-table-column-candidates-use-matching-results.md) | 表格列候选值统一取本表匹配结果，已有表格同步升级 | 现行；用户选择现有表格统一升级，并确认失配值保留、稳定值原始类型及保留NO_PERMISSION；本仓引擎实现及本地验收完成；真实DQE/Relay待验 |
 
 <!-- adr-index:end -->
 
@@ -145,7 +146,7 @@
 | [技术栈与建设策略](./topics/tech-stack-and-strategy.md) | 为什么自研封闭领域 DSL 与 Svelte 运行时，而不是 A2UI 或开源 BI；严格声明式的边界在哪。 | 0001 0002 0003 0005 0035 0046 0110 |
 | [领域建模、包边界与部署形态](./topics/domain-modeling-and-package-boundaries.md) | 聚合根只有「页面」；包按 DDD 分层命名；从 Node 平台迁到静态 Svelte + Java 页面资产 + Relay/Python 的目标形态。 | 0004 0006 0007 0009 0023 0024 0025 0029 0060 0061 0062 0063 0064 0065 0066 0067 0069 0070 0071 0072 0073 0074 0075 0076 0077 0090 0093 0094 0102 0105 0108 |
 | [页面文档结构与书写原则](./topics/page-document-structure.md) | 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。 | 0013 0017 0018 0021 0026 0028 0035 0036 0038 0042 0047 0048 0049 0050 0052 0053 0054 0057 0059 0086 0097 0099 0100 0101 0103 0109 0110 0111 0112 0113 |
-| [数据获取与查询模型](./topics/data-fetching-and-query-model.md) | 演进链条最长、最容易读错现状的一组：从预定义指标到内嵌 DQE 查询定义，当前实际生效模型与版本策略。 | 0008 0010 0011 0012 0014 0015 0016 0017 0019 0020 0022 0026 0028 0030 0031 0032 0033 0034 0038 0044 0045 0046 0050 0051 0053 0054 0068 0081 0084 0085 0091 0092 0095 0099 0105 0106 0107 0108 0112 |
+| [数据获取与查询模型](./topics/data-fetching-and-query-model.md) | 演进链条最长、最容易读错现状的一组：从预定义指标到内嵌 DQE 查询定义，当前实际生效模型与版本策略。 | 0008 0010 0011 0012 0014 0015 0016 0017 0019 0020 0022 0026 0028 0030 0031 0032 0033 0034 0038 0044 0045 0046 0050 0051 0053 0054 0068 0081 0084 0085 0091 0092 0095 0099 0105 0106 0107 0108 0112 0114 |
 | [产品形态谱系与两速生命周期](./topics/product-forms-and-lifecycle.md) | 问数、探索、报告、Data App 共用一份页面文档；临时页面态与资产态的两速生命周期，以及分析会话的归属。 | 0009 0020 0021 0022 0030 0035 0036 0058 0060 0064 0079 0083 0090 |
 | [问数编排与口径治理](./topics/ask-orchestration-and-scope-governance.md) | 创作期编排的固定顺序、临时指标的非阻塞边界、口径组与业务章节如何决定分区、盘古接入的第一版边界。 | 0030 0031 0032 0035 0036 0037 0039 0040 0041 0043 0055 0057 0077 0082 0098 |
 | [页面生命周期与发布治理](./topics/page-lifecycle-and-publish-governance.md) | 资产态的保存与发布：当前 Java 接入按单次保存与回执确认，哪些治理能力明确不作为本期前置。 | 0008 0010 0078 0079 0080 |

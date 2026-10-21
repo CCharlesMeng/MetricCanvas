@@ -16,7 +16,7 @@ export function sortTableRows(rows: readonly Row[], rules: readonly TableSortRul
 export function filterTableRows(rows: readonly Row[], predicates: readonly TablePredicate[]): Row[] {
   return rows.filter(row => predicates.every(p => {
     const value = row[p.field];
-    if (p.op === 'in') return p.values.some(v => String(v) === String(value ?? ''));
+    if (p.op === 'in') return p.values.some(v => v === value);
     if (value == null) return false;
     if (p.op === 'dateRange') return (!p.from || String(value) >= p.from) && (!p.to || String(value) <= p.to);
     return typeof value === 'number' && Number.isFinite(value) && (p.op === 'gte' ? value >= p.value : value <= p.value);

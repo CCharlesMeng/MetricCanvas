@@ -27,6 +27,8 @@ export interface QueryDiagnosticContext {
  * DimensionValuesGateway,数据网关可以选择性实现(issue #54)。
  */
 export interface DataGateway {
+  /** Optional verified projection of the original query result; never a dimension dictionary. */
+  fetchColumnCandidates?(request: ColumnCandidatesQuery, diagnosticContext?: QueryDiagnosticContext, signal?: AbortSignal): Promise<ColumnCandidatesPage>;
   /**
    * 执行失败时,拒绝原因应携带稳定查询错误分类:错误对象的 `code`
    * 属性取 @metriccanvas/page 的 QueryErrorCode 封闭集(issue #51)。
@@ -114,4 +116,18 @@ export type FilterCandidatesResult =
   | {kind:'unavailable'|'denied'|'unconfigured'};
 export interface FilterCandidatesGateway {
   fetchFilterCandidates(request:FilterCandidatesRequest,options:{signal:AbortSignal}):Promise<FilterCandidatesResult>;
+}
+
+/** Table result candidates preserve stable scalar types; page dimension dictionaries stay separate. */
+export interface ColumnCandidate { value: string | number; label: string; }
+export type ColumnCandidatesPage =
+  | { kind: 'values'; candidates: ColumnCandidate[]; totalCount: number }
+  | { kind: 'unavailable' };
+export interface ColumnCandidatesQuery {
+  query: EffectiveQuery;
+  field: string;
+  queryField: string;
+  search: string;
+  offset: number;
+  limit: number;
 }

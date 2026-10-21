@@ -3,7 +3,7 @@ import type { TableSortRule } from '@metriccanvas/page/internal';
 
 /** 表头筛选当前值:日期范围允许单端草稿,由壳决定何时写入查询通道。 */
 export type TableHeaderFilterValue =
-  | { mode: 'select'; values: string[] }
+  | { mode: 'select'; values: (string | number)[] }
   | { mode: 'dateRange'; from: string; to: string }
   | { mode: 'numberRange'; from: string; to: string };
 
@@ -52,3 +52,10 @@ export function shouldShowTablePaginationControls(
 
 export interface TablePaginationState { pageSize:number; totalCount:number; }
 export interface TableSelectedCell { rowIndex:number; columnField:string; }
+
+export interface TableColumnCandidates {
+  status: 'idle' | 'loading' | 'ready' | 'empty' | 'unavailable' | 'error';
+  candidates: { value: string | number; label: string }[];
+  search: string;
+  totalCount?: number;
+}

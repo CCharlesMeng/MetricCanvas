@@ -82,7 +82,8 @@ export function isDataGateway(value: unknown): value is RuntimeDataGateway {
     typeof value.fetchData === 'function' &&
     (value.fetchDimensionValues === undefined ||
       typeof value.fetchDimensionValues === 'function') &&
-    (value.fetchFilterCandidates === undefined || typeof value.fetchFilterCandidates === 'function')
+    (value.fetchFilterCandidates === undefined || typeof value.fetchFilterCandidates === 'function') &&
+    (value.fetchColumnCandidates === undefined || typeof value.fetchColumnCandidates === 'function')
   );
 }
 

@@ -52,6 +52,10 @@ export function createDataGateway(
       if(capable.length!==1)return {kind:'unconfigured'};
       return capable[0]!.fetchFilterCandidates!(request,options);
     },
+    async fetchColumnCandidates(request, context, signal) {
+      if (!isQueryLanguage(request.query.language)) throw new DqeGatewayError('DQE_CONFIG_ERROR', '候选查询语言不可用');
+      return adapters[request.query.language].fetchColumnCandidates?.(request, context, signal) ?? { kind: 'unavailable' };
+    },
     async fetchDimensionValues(dimension, options) {
       // 维度候选值端口不携带 language:按协议闭集声明顺序询问声明了候选值
       // 能力的适配器并合并去重;没有适配器声明能力,或声明方全部回答不可用

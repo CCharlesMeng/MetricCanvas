@@ -1,5 +1,6 @@
 ---
 status: accepted
+revised-by: 0114
 note: 2026-08-25 补了“零使用开放面可按次版本收紧”的例外
 ---
 

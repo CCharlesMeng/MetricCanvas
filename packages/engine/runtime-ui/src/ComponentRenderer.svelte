@@ -267,6 +267,11 @@
           view={table.view}
           selectedCell={table.selectedCell}
           sortReset={table.sortReset}
+          columnCandidates={table.columnCandidates}
+          oncandidateopen={table.oncandidateopen}
+          oncandidatesearch={table.oncandidatesearch}
+          oncandidatemore={table.oncandidatemore}
+          oncandidateretry={table.oncandidateretry}
           filterOptions={table.filterOptions}
           filterOptionsStatus={table.filterOptionsStatus}
           pagination={table.pagination}

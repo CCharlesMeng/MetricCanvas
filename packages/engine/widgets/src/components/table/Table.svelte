@@ -4,6 +4,8 @@
 </script>
 
 <script lang="ts">
+  import ColumnCandidateOptions from './ColumnCandidateOptions.svelte';
+  import type { TableColumnCandidates } from './view-state';
   import type {TablePaginationState,TableSelectedCell} from './view-state';
   import { getContext, type Snippet } from 'svelte';
   import { currentTimeValue } from '@metriccanvas/page/internal';
@@ -57,7 +59,12 @@
     interactive?: boolean;
     /** 当前视图状态(页码/排序/表头筛选),由壳持有 */
     view: TableViewState;
-    /** select 模式表头筛选候选项(壳经数据网关 fetchDimensionValues 供给),key = 列 field */
+    /** select 模式表头筛选候选项（兼容静态输入；运行时候选由列候选会话供给）,key = 列 field */
+    columnCandidates?: Record<string, TableColumnCandidates>;
+    oncandidateopen?: (field: string, open: boolean) => void;
+    oncandidatesearch?: (field: string, query: string) => void;
+    oncandidatemore?: (field: string) => void;
+    oncandidateretry?: (field: string) => void;
     filterOptions?: Record<string, string[]>;
     filterOptionsStatus?:Record<string,'idle'|'loading'|'ready'|'empty'|'unavailable'|'error'|'denied'|'unconfigured'>;
     pagination?: TablePaginationState;
@@ -89,6 +96,7 @@
     nested = false, expansion, expandedRow,
     interactive = true,
     view,
+    columnCandidates, oncandidateopen, oncandidatesearch, oncandidatemore, oncandidateretry,
     filterOptions = {}, filterOptionsStatus = {},
     pagination,
     searchDraft, searchOption, onsearchoption, exporting, exportError, onsearchdraft, onsearch, onexport, oncancelexport,
@@ -209,12 +217,12 @@
     }
   }
 
-  function selectedValues(field: string): string[] {
+  function selectedValues(field: string): (string | number)[] {
     const value = view.headerFilters[field];
     return value?.mode === 'select' ? value.values : [];
   }
 
-  function toggleFilterValue(field: string, option: string) {
+  function toggleFilterValue(field: string, option: string | number) {
     const current = selectedValues(field);
     const next = current.includes(option)
       ? current.filter((value) => value !== option)
@@ -417,10 +425,15 @@
                     {/if}
 
                     {#if interactive && column.filterable}
-                      <details class="filter" use:tableFilterPopover>
+                      <details class="filter" use:tableFilterPopover ontoggle={event => { if (column.filterable?.mode === 'select') oncandidateopen?.(columnField(column), event.currentTarget.open); }}>
                         <summary class:active={hasActiveFilter(columnField(column))} title="表头筛选">{#if props.variant === 'reportCompact'}▼{:else}<TableControlIcon name="filter" />{/if}</summary>
                         <div class="menu" popover="auto">
                           {#if column.filterable.mode === 'select'}
+                            {#if columnCandidates}
+                              <ColumnCandidateOptions field={columnField(column)} snapshot={columnCandidates[columnField(column)]}
+                                selected={selectedValues(columnField(column))} onchange={value => toggleFilterValue(columnField(column), value)}
+                                onsearch={oncandidatesearch} onmore={oncandidatemore} onretry={oncandidateretry} />
+                            {:else}
                             {#each filterOptions[columnField(column)] ?? [] as option (option)}
                               <label class="option">
                                 <input
@@ -433,6 +446,7 @@
                             {:else}
                               <span class="hint">{filterOptionsStatus[columnField(column)]==='denied'?'无权访问候选项':filterOptionsStatus[columnField(column)]==='unconfigured'?'候选能力未配置':filterOptionsStatus[columnField(column)]==='unavailable'?'候选值能力不可用':filterOptionsStatus[columnField(column)]==='error'?'候选项加载失败':['ready','empty'].includes(filterOptionsStatus[columnField(column)])?'没有候选项':'候选项加载中…'}</span>
                             {/each}
+                            {/if}
                           {:else if column.filterable.mode === 'dateRange'}
                             {@const range = dateRangeOf(columnField(column))}
                             <div class="range">
@@ -1672,9 +1686,9 @@
     font-size: 14px;
     line-height: 21px;
   }
-  .table-widget.os-theme .option { box-sizing: border-box; min-height: 28px; padding: 0 8px; border-radius: 0; }
-  .table-widget.os-theme .option:hover { background: #f5f5f5; }
-  .table-widget.os-theme .option input {
+  .table-widget.os-theme .option , .table-widget.os-theme :global(.candidate-option) { box-sizing: border-box; min-height: 28px; padding: 0 8px; border-radius: 0; }
+  .table-widget.os-theme .option:hover , .table-widget.os-theme :global(.candidate-option:hover) { background: #f5f5f5; }
+  .table-widget.os-theme .option input , .table-widget.os-theme :global(.candidate-option input) {
     appearance: none;
     flex: none;
     box-sizing: border-box;
@@ -1685,10 +1699,10 @@
     border-radius: 4px;
     background: #fff;
   }
-  .table-widget.os-theme .option input:hover { border-color: #191919; }
-  .table-widget.os-theme .option input:checked { border-color: #1476ff; background: #1476ff; position: relative; }
-  .table-widget.os-theme .option input:checked::after { content: ''; position: absolute; width: 7px; height: 4px; left: 3px; top: 3px; border-left: 1px solid #fff; border-bottom: 1px solid #fff; transform: rotate(-45deg); }
-  .table-widget.os-theme .option input:focus-visible { outline: 2px solid #191919; outline-offset: 2px; }
+  .table-widget.os-theme .option input:hover , .table-widget.os-theme :global(.candidate-option input:hover) { border-color: #191919; }
+  .table-widget.os-theme .option input:checked , .table-widget.os-theme :global(.candidate-option input:checked) { border-color: #1476ff; background: #1476ff; position: relative; }
+  .table-widget.os-theme .option input:checked::after , .table-widget.os-theme :global(.candidate-option input:checked::after) { content: ''; position: absolute; width: 7px; height: 4px; left: 3px; top: 3px; border-left: 1px solid #fff; border-bottom: 1px solid #fff; transform: rotate(-45deg); }
+  .table-widget.os-theme .option input:focus-visible , .table-widget.os-theme :global(.candidate-option input:focus-visible) { outline: 2px solid #191919; outline-offset: 2px; }
   .table-widget.os-theme .range { min-width: 0; padding: 8px 0; }
   .table-widget.os-theme .range input { box-sizing: border-box; min-width: 0; width: 0; flex: 1; height: 32px; padding: 0 8px; border: 1px solid #c2c2c2; border-radius: 6px; color: #191919; font: inherit; }
   .table-widget.os-theme .range input:hover, .table-widget.os-theme .range input:focus { border-color: #191919; outline: none; }

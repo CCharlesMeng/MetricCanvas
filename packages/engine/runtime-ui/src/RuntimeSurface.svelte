@@ -507,7 +507,6 @@
           receiveCandidates(dimensionCandidates);
         }
         const presentation = periodFactPage(filterTextPage(loaded, textBindings, values),displaySnapshot,state.revision);
-        if(candidatesLoader)loadTableCandidates(presentation);
         declarations = presentation.filters ?? [];
         pageState = { phase: 'ready', page: presentation, capabilities };
         if (primed && capabilities.filters && changedFilters(previous,values).size > 0) {
@@ -522,7 +521,7 @@
       })
     );
 
-    tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded));
+    tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded),()=>filterValues,candidateTimeContext);
     syncTableState(loaded);
     pageState = { phase: 'ready', page: periodFactPage(filterTextPage(loaded, textBindings, filterValues),displaySnapshot,state.revision), capabilities };
 
@@ -562,7 +561,7 @@
     };
     disposers.push(()=>{refreshPeriodFacts=undefined;});
 
-    if (!capabilities.filters && !pageComponents(pageState.phase==='ready'?pageState.page:loaded).some(component=>component.type==='table'&&buildTableColumnLayout(component.props.columns).leaves.some(column=>column.filterable?.mode==='select'))) return;
+    if (!capabilities.filters) return;
 
     // 筛选候选值:显式状态经加载器发布,dispose 时取消在途请求,
     // 过期结果不会覆盖新会话的筛选状态(issue #54)。
@@ -585,28 +584,7 @@
       loadDimensionCandidates(loader, declaration, filterValues);
     }
 
-    loadTableCandidates(pageState.phase==='ready'?pageState.page:loaded);
-    function loadTableCandidates(presentation:Page){
-    const filterableFields = new Set<string>();
-    for (const component of pageComponents(presentation)) {
-      if (component.type !== 'table' || !capabilities.components[component.id]?.live) {
-        continue;
-      }
-      if (resolvedTablePagination(component)?.mode === 'query') { Object.values(tableCandidateDimensions(component)).forEach(field=>filterableFields.add(field)); continue; }
-      const source = loaded.dataSources[component.data.main];
-      for (const column of buildTableColumnLayout(
-        component.props.columns,
-        source ? resolveDataSourceFields(source) : undefined
-      ).leaves) {
-        if (column.filterable?.mode === 'select') {
-          filterableFields.add(fieldName(column.field));
-        }
-      }
-    }
-    for (const field of filterableFields) {
-      candidatesLoader?.load(field);
-    }
-    }
+
   }
 
   function configurationIssue(
@@ -641,6 +619,7 @@
 
   function syncTableState(loaded: Page) {
     if (!tableController) return;
+    tableController.syncCandidates();
     const tables=flattenPageComponents({sections:loaded.sections}).filter((c): c is TableComponent => c.type==='table');
     tableViews=Object.fromEntries(tables.map(c=>[c.id,tableController!.render(c)]));
     appliedTableHeaderFilters=Object.fromEntries(tables.map(c=>[c.id,tableController!.headers(c)]));
@@ -1098,36 +1077,6 @@
     return tableController?.present(component,rows,true).rows??rows;
   }
 
-  /** 表头筛选候选项:只投影 ready 快照的真实候选值;其余状态不给表头假候选。 */
-  function remoteHeaderOptions(): Record<string, string[]> {
-    const options: Record<string, string[]> = {};
-    for (const [dimension, snapshot] of dimensionCandidates) {
-      if (snapshot.status === 'ready') {
-        options[dimension] = snapshot.candidates.map((candidate) => candidate.value);
-      }
-    }
-    return options;
-  }
-
-  function tableCandidateDimensions(component: TableComponent): Record<string,string> {return tableController?.candidateDimensions(component)??{};}
-  function tableFilterOptions(component: TableComponent): Record<string, string[]> {
-    if (resolvedTablePagination(component)?.mode === 'query') {
-      return Object.fromEntries(Object.entries(tableCandidateDimensions(component)).flatMap(([field,dimension])=>{const snapshot=dimensionCandidates.get(dimension);return snapshot?.status==='ready'?[[field,snapshot.candidates.map(c=>c.value)]]:[];}));
-    }
-    const snapshot = componentSnapshots(component).get('main');
-    if (snapshot?.status !== 'ready') return remoteHeaderOptions();
-    const fields = buildTableColumnLayout(component.props.columns).leaves
-      .filter((column) => column.filterable?.mode === 'select')
-      .map((column) => fieldName(column.field));
-    const local = Object.fromEntries(
-      fields.map((field) => [
-        field,
-        [...new Set(snapshot.rows.map((row) => row[field]).filter((value) => value != null).map(String))]
-      ])
-    );
-    return { ...local, ...remoteHeaderOptions() };
-  }
-
   function resolvedTablePagination(component: TableComponent, snapshot = componentSnapshots(component).get('main')) {
     return tablePagination(component, snapshot, stream?.getQueryPageSize(component.data.main));
   }
@@ -1194,8 +1143,8 @@
       exporting: tableExportStates[component.id]?.busy,
       exportError: tableExportStates[component.id]?.error,
       selectedCell: tableSelectedCell(component),
-      filterOptions: tableFilterOptions(component),
-      filterOptionsStatus: tableController?.candidateStates(component,dimensionCandidates),
+      filterOptions: {},
+      ...tableController.candidateBinding(component),
       pagination: tablePaginationState(loaded, component, slots),
       paginationConfig: resolvedTablePagination(component, slots.get('main')),
       interactionGate:(row,column)=>tableInteractionGate(component,row,column),

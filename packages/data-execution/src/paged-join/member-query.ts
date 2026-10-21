@@ -1,5 +1,5 @@
 import { tableHeaders, type EffectiveQuery, type TablePredicate } from '@metriccanvas/page/internal';
-import { composeEffectiveQuery } from '../effective-query';
+import { composeEffectiveQuery, bindQueryResultValues } from '../effective-query';
 import type { PagedJoinPlan } from './plan';
 
 export function memberQuery(plan: PagedJoinPlan, id: string, pageIndex?: number): EffectiveQuery {
@@ -20,7 +20,6 @@ export function restrictKeys(query: EffectiveQuery, queryField: string, keys: re
     if (values.length) allowed = allowed.filter(key => values.includes(key));
   }
   for (const value of query.filterValues) if (value.target === 'dimension' && value.queryField === queryField && value.values.length) allowed = allowed.filter(key => value.values.includes(key));
-  query.filterValues = query.filterValues.filter(value => value.target !== 'dimension' || value.queryField !== queryField);
-  if (allowed.length) query.filterValues.push({ target: 'dimension', queryField, values: allowed });
+  if (allowed.length) bindQueryResultValues(query, [{ target: 'dimension', queryField, values: allowed }]);
   return allowed;
 }

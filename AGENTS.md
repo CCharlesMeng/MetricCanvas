@@ -24,6 +24,10 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 
 改动只要需要对着**外部设计源**(设计稿、规格、旧系统截图)还原视觉或结构,就走 `sdd-dev-frontend`;纯逻辑改动、重构、修 bug、加测试不走。判据是改动对着什么,不是改动多大。理由是"像不像"没有客观标准,SDD 的机器判据正是为这类问题准备的;"对不对"这类问题 `pnpm test` 已经够了。
 
+### Playground 示例
+
+新增 `pages/` 示例显式使用 `layout: "dashboard"`，复用现有 Dashboard 页头与组件；仅用户明确要求或验收 Report 专属能力时使用 `report`。
+
 ### Git 交付
 
 提交、push 或跨分支交付使用 [scoped-main-delivery](.agents/skills/scoped-main-delivery/SKILL.md)，以本仓入口为准。

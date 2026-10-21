@@ -258,3 +258,14 @@ it('isolates consumer identities and discards both success and error from a canc
  expect(dimensionValuesSnapshot(snapshots,'region','second')).toEqual({status:'ready',candidates:[{value:'b',label:'b'}]});
  loader.dispose();
 });
+it('reload ignores an older response even when its adapter ignores cancellation', async () => {
+  const { gateway, calls } = deferredGateway();
+  const loader = createDimensionValuesLoader(gateway);
+  const snapshotOf = track(loader);
+  loader.load('区域'); loader.reload('区域', { 上游: ['新范围'] });
+  calls[0].deferred.resolve({ kind: 'values', candidates: [{ value: 'old', label: '旧范围' }] });
+  await settled(); expect(snapshotOf('区域').status).toBe('loading');
+  calls[1].deferred.resolve({ kind: 'values', candidates: [{ value: 'new', label: '新范围' }] });
+  await settled(); expect(snapshotOf('区域')).toMatchObject({ status: 'ready', candidates: [{ value: 'new', label: '新范围' }] });
+  loader.dispose();
+});

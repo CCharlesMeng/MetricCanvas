@@ -2078,6 +2078,41 @@
           "table-toolbar-demo"
         ]
       }
+    },
+    {
+      "id": "table-column-candidates",
+      "group": "features",
+      "summary": "全表列候选、排除自身、多列联动、失配已选值与候选分页；内联合成数据。",
+      "tags": [
+        "表格",
+        "候选值",
+        "筛选",
+        "联动"
+      ],
+      "displayTitle": "表格列候选筛选与多列联动",
+      "capabilities": [
+        "tables"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接体验"
+      },
+      "guide": {
+        "steps": [
+          "打开代表处筛选，加载更多取得64项；搜索办事处64并勾选。",
+          "将金额下限设为650000，确认已选代表处保留并提示无匹配，第二张表保持独立。"
+        ],
+        "configPaths": [
+          "sections[].components[].props.columns",
+          "sections[].components[].props.pagination"
+        ],
+        "boundary": "64行内联合成数据。普通远程查询须接入已核验的列候选编码器；不代表真实 DQE 或权限链路验收。",
+        "related": [
+          "table-tiny-os",
+          "table-toolbar-demo"
+        ]
+      }
     }
   ],
   "capabilities": [

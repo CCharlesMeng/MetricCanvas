@@ -2,6 +2,7 @@ import {hasTimeConstraints,requiresTimeValidation} from '@metriccanvas/page/inte
 import {type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import {queryFilterIds} from '@metriccanvas/page/internal';
 import { createCandidateValidator } from '../candidate-validation';
+import { createColumnCandidatesReader, type ColumnCandidatesRead } from './column-candidates';
 import { initialFilterValues } from '../filter-values';
 import { compilePagedJoin } from '../paged-join/plan';
 import { executePagedJoin } from '../paged-join/execute';
@@ -11,7 +12,7 @@ import { cascadeSourceIds, conditionSourceIds, canonicalizeJson, isBoundedResult
 import { createQueryRunner } from '../query-runner';
 import type { RuntimeDataGateway, QueryDiagnosticContext } from '../ports';
 import type { FilterValues } from '../filter-values';
-import { composeEffectiveQuery } from '../effective-query';
+import { composeEffectiveQuery, bindQueryResultValues } from '../effective-query';
 import { resolveQueryResultInputs } from '../query-result-inputs';
 import { rawSnapshot } from '../snapshots';
 import { queryRowsFromPageRows } from '../query-rows';
@@ -59,7 +60,8 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
     return [...filters].every(id=>{ const filter=page.filters?.find(f=>f.id===id);if(reuse&&filter&&(filter.type==='timeRange'||filter.type==='timePoint')&&requiresTimeValidation(filter))return false; if(filter?.type==='timeRange' && filter.display==='period' && filter.default && typeof filter.default==='object' && 'mode' in filter.default && (filter.default.mode==='last12Months' || !('value' in filter.default)||!filter.default.value))return false; return canonicalizeJson(values.get(id)??null)===canonicalizeJson(defaults.get(id)??null); });
   }
   let batch = 0,contextScope='session';
-  return {
+  const program = {
+    readColumnCandidates(request: ColumnCandidatesRead) { return createColumnCandidatesReader(page, runner, value => program.read(value), compiled.limits, config)(request); },
     initialSnapshots(request:Pick<SourceRead,'roots'|'conditions'|'views'>):Map<string,DataSnapshot>{
       const snapshots=new Map<string,DataSnapshot>();
       for(const id of executionSourceIds(page,request.roots)){
@@ -78,7 +80,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         const view = views.get(id) ?? defaultSourceView(page, id);
         const query = composeEffectiveQuery({ now,filters:page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, conditions, cascaded.has(id) ? view.pageIndex : 0, view.sort, tableHeaders(view.predicates), view.search);
         const inputs = resolveQueryResultInputs(source, raw, compiled.sources, limits);
-        if (inputs.status === 'ready') query.filterValues.push(...inputs.values);
+        if (inputs.status === 'ready') bindQueryResultValues(query, inputs.values);
         queries.set(id, structuredClone(query));
       }
       return queries;
@@ -158,10 +160,8 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           const fresh=()=>composeEffectiveQuery({now:request.now,filters:page.filters,dataSource:source as QueryDataSource,...(limits.has(id)?{pagination:{limit:view.pageSize}}:{})},request.conditions,view.pageIndex,view.sort,tableHeaders(view.predicates),view.search);
           const protectedConditions=hasTimeConstraints(source.source.query,page.filters);
           // Captured views may be reused; their old predicates cannot authorize a different range.
-          let query = captured ? {...structuredClone(captured),...(protectedConditions?{filterValues:fresh().filterValues,fieldMappings:source.fields}:{})} : fresh();
-          const bindingTargets = new Set((source.source.query.resultBindings ?? []).map(b => b.queryField));
-          query.filterValues = query.filterValues.filter(v => v.target !== 'dimension' || !bindingTargets.has(v.queryField));
-          query.filterValues.push(...input.values);
+          let query = captured ? {...structuredClone(captured),...(protectedConditions?{filterValues:fresh().filterValues,bindingValues:fresh().bindingValues,tableFilters:fresh().tableFilters,fieldMappings:source.fields}:{})} : fresh();
+          bindQueryResultValues(query, input.values);
           queries.set(id, query);
           const diagnostics = { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] };
           const preserveWindow = isBusinessSelection(source,compiled.limits.has(id)||compiled.automatic.has(id)) || (cascaded.has(id) && (!request.completeSources?.includes(id) || isBoundedResultSource(page.dataSources, id)));
@@ -220,5 +220,6 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
     },
     dispose() { runner.dispose(); }
   };
+  return program;
 }
 export type SourceProgram = ReturnType<typeof createSourceProgram>;

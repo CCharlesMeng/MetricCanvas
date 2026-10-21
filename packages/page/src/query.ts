@@ -198,6 +198,10 @@ export interface DqeEffectiveQuery {
    * 生效查询携带的是**已解析的谓词**,不是绑定声明:timePoint 与 boolean
    * 在编排层就化成维度谓词,因此这里只比页面协议多一支数值区间。
    */
+  /** Business predicates before table-local narrowing; filterValues remains the complete legacy view. */
+  bindingValues?: DqeEffectiveQuery['filterValues'];
+  /** Additional table predicates narrow the already-bound business query. */
+  tableFilters?: DqeEffectiveQuery['filterValues'];
   filterValues: Array<
     | {
         target: 'dimension';

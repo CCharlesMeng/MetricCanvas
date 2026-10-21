@@ -21,6 +21,11 @@ export interface TableRenderBinding {
   view: TableViewState;
   sortReset?:readonly TableSortRule[];
   selectedCell?: TableSelectedCell;
+  columnCandidates?: Record<string, import('../../runtime/src/column-candidates').ColumnCandidatesSnapshot>;
+  oncandidateopen?: (field: string, open: boolean) => void;
+  oncandidatesearch?: (field: string, query: string) => void;
+  oncandidatemore?: (field: string) => void;
+  oncandidateretry?: (field: string) => void;
   filterOptions: Record<string, string[]>;
   filterOptionsStatus?:Record<string,import('../../runtime/src/dimension-values').DimensionValuesSnapshot['status']>;
   pagination?: TablePaginationState;
