@@ -31,12 +31,15 @@
 | `pnpm test --maxWorkers=4` | 302 个文件通过；2609 通过，5 个既有跳过 |
 | `pnpm authoring:contracts:check` | 973 产品、4 创作、1 接口文件一致 |
 | `python3 metriccanvas-authoring/scripts/check_bundle.py` | Bundle 0.3.1，3394 项摘要检查通过 |
+| Python 创作接入与能力目录 | CI 相同的 deployment 13 项、能力目录 6 项通过；新组件明确登记为不参与数据单元自动组装、无数据编辑槽位 |
 | local-authoring 仓外安装与导出隔离 | 完整 Vitest 套件包含复制 Skill 至仓外、链接闭合、全部正反例与校验结果等价验证 |
 | `pnpm adr:index:check`、`git diff --check` | 通过 |
 | 嵌入浏览器三套件 | 33/33 通过；包括四类迁移图表、控件状态、只读、URL、异常与迟到响应，以及 Report/Dashboard、四种容器、宽窄屏的组件呈现矩阵 |
 | 实际 Playground 浏览器 | 1440/390 两项通过；切换一控多、隐藏恢复、查询范围、URL 与卡内独立组 |
 
 本地并发回归中，一项未修改的 authoring-language 测试曾在固定 10ms 等待后读到中间状态；该文件单独重跑 55 项通过。保留原测试与产品逻辑，降低测试并发后重跑完整套件；最终结果以上表为准。
+
+首次 CI 暴露了 Python 创作接入能力表遗漏，已补齐 `filterGroup` 声明并重新生成 Bundle 摘要。另一个失败是契约向量测试的外层 5 秒预算短于其独立进程 20 秒预算；保留全部向量与断言，批量读取输入，并将外层预算调整为 30 秒。修复后 local-authoring 20 项通过。远端最终结果以修复提交的 CI 为准。
 
 ## 可观察结果与视觉复核
 
