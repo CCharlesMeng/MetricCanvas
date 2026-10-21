@@ -79,8 +79,47 @@
       "log": "ci-gates.txt",
       "exit_code": 0,
       "passed": 24
+    },
+    {
+      "command": "pnpm --filter @metriccanvas/ui build",
+      "log": "header-height-ui-package.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm --filter @metriccanvas/embed build",
+      "log": "header-height-embed-build.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm --filter @metriccanvas/ui check",
+      "log": "header-height-check.txt",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm --filter @metriccanvas/ui exec playwright test --project=chrome",
+      "log": "header-height-ui.txt",
+      "exit_code": 0,
+      "passed": 33
+    },
+    {
+      "command": "MC_EMBED_EXAMPLE_PORT=4197 pnpm --filter @metriccanvas/embed exec playwright test embed.spec.ts ioc-header.spec.ts ioc-header-business.spec.ts navigation.spec.ts --workers=1 --timeout=15000",
+      "log": "header-height-embed.txt",
+      "exit_code": 0,
+      "passed": 59
+    },
+    {
+      "command": "node apps/playground/tests/ioc-header-selection-browser.mjs",
+      "log": "header-height-page.txt",
+      "exit_code": 0,
+      "passed": 5
+    },
+    {
+      "command": "pnpm authoring:contracts:check",
+      "log": "header-height-contracts.txt",
+      "exit_code": 0
     }
   ],
   "full_suite_note": "Full suite2534 passed/5 pre-existing skipped. Browser and installed UI rerun after final focus and required-control guards; previous1417 result remains historical.",
-  "data": "local synthetic, no real DQE/Relay/CloudIOC"
+  "data": "local synthetic, no real DQE/Relay/CloudIOC",
+  "height_fix_note": "2026-10-21: retain official inline-block, align top to remove baseline gap. Original embedded height test red82/80, unchanged59-case regression green. Local Edge not installed; use exact fixup CI for Edge."
 }

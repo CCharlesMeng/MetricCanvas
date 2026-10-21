@@ -1,0 +1,37 @@
+[WebServer] (node:5288) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:5289) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/browser/embed.spec.ts:232:1 › 机会点清单使用单一标准页头并把密集筛选收纳到更多筛选 (557ms)
+
+
+  1) tests/browser/embed.spec.ts:232:1 › 机会点清单使用单一标准页头并把密集筛选收纳到更多筛选 ────────────────────────────────
+
+    Error: expect(received).toBeCloseTo(expected, precision)
+
+    Expected: 80
+    Received: 82
+
+    Expected precision:    0
+    Expected difference: < 0.5
+    Received difference:   2
+
+      271 |     if (viewport.width === 1980) {
+      272 |       expect(await toolbar.evaluate((element) => element.getBoundingClientRect().height))
+    > 273 |         .toBeCloseTo(80, 0);
+          |          ^
+      274 |     }
+      275 |
+      276 |     await overflow.locator(':scope > summary').click();
+        at /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/embed/tests/browser/embed.spec.ts:273:10
+
+    Error Context: test-results/embed-机会点清单使用单一标准页头并把密集筛选收纳到更多筛选/error-context.md
+
+  1 failed
+    tests/browser/embed.spec.ts:232:1 › 机会点清单使用单一标准页头并把密集筛选收纳到更多筛选 ─────────────────────────────────
+undefined
+/Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/embed:
+[ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL] Command failed with exit code 1: playwright test tests/browser/embed.spec.ts -g '机会点清单使用单一标准页头' '--workers=1'

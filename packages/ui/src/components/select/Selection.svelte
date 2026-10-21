@@ -182,7 +182,7 @@
 {/snippet}
 
 <style>
-  .mc-selection{position:relative;width:100%;min-width:0;height:var(--tv-Select-height,32px)}
+  .mc-selection{vertical-align:top;position:relative;width:100%;min-width:0;height:var(--tv-Select-height,32px)}
   .mc-selection .selection-input{display:flex;align-items:center;height:var(--tv-Select-height,32px)}
   .selection-trigger{width:100%;text-align:left;padding-right:var(--tv-size-height-md,32px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .selection-trigger span{overflow:hidden;text-overflow:ellipsis;display:block}.placeholder{color:var(--tv-color-text-placeholder,#808080)}
