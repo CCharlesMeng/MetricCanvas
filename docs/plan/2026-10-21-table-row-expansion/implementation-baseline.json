@@ -1,0 +1,12 @@
+{
+  "baseCommit": "952b3a27",
+  "inheritedPresentation": {
+    "packages/engine/widgets/src/components/table/Table.svelte": "9b8435f1f2f2cded6e8db10210f87ccd1a74d448b74696c8fc9a8ab9a3d81159",
+    "packages/engine/widgets/src/components/table/TableControlIcon.svelte": "7872c5cde177108ede04aaa6e3c6dcf30f7e3a32589f6700ad8f71a8c2c364bd",
+    "packages/engine/widgets/src/components/table/table-geometry.ts": "2a4551c9b3c8011f07f5f06bcfa53087f7fc4e33b6ed569128141393c6a8d170"
+  },
+  "note": "Existing TinyVue OS presentation prerequisites copied by explicit path; remaining dirty workspace excluded. No SDD: current user workspace AGENTS.md takes precedence over historic checkout instructions.",
+  "deliveryBaseCommit": "431f2e91",
+  "deliverySchemaVersion": "6.44",
+  "deliveryNote": "Rebased onto published TinyVue OS, IOC and presentation updates; original mixed workspace retained."
+}

@@ -1,0 +1,467 @@
+{
+  "case": "row-expansion-missing-parent-key",
+  "invariant": "table-row-expansion",
+  "input": {
+    "schemaVersion": "6.44",
+    "id": "table-row-expansion-inline",
+    "layout": "dashboard",
+    "meta": {
+      "title": "父行自带子表格",
+      "description": "合成内联数据；展开北辰和远山，默认白底仅内容与现有表格分页；翻父页后查看空明细。无需DQE。"
+    },
+    "dataSources": {
+      "customers": {
+        "fields": {
+          "customer-id": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "customer-name": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "unit": "元"
+          },
+          "orders": {
+            "type": "recordList",
+            "role": "detail",
+            "items": {
+              "fields": {
+                "order-id": {
+                  "type": "string",
+                  "role": "dimension"
+                },
+                "product": {
+                  "type": "string",
+                  "role": "dimension"
+                },
+                "amount": {
+                  "type": "number",
+                  "role": "measure",
+                  "unit": "元"
+                }
+              }
+            }
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "customer-id": "C01",
+              "customer-name": "北辰科技",
+              "amount": 30000,
+              "orders": [
+                {
+                  "order-id": "C01-001",
+                  "product": "订阅服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-002",
+                  "product": "实施服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-003",
+                  "product": "数据治理",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-004",
+                  "product": "订阅服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-005",
+                  "product": "实施服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-006",
+                  "product": "数据治理",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-007",
+                  "product": "订阅服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-008",
+                  "product": "实施服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-009",
+                  "product": "数据治理",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-010",
+                  "product": "订阅服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-011",
+                  "product": "实施服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-012",
+                  "product": "数据治理",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-013",
+                  "product": "订阅服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-014",
+                  "product": "实施服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-015",
+                  "product": "数据治理",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-016",
+                  "product": "订阅服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-017",
+                  "product": "实施服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-018",
+                  "product": "数据治理",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-019",
+                  "product": "订阅服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-020",
+                  "product": "实施服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-021",
+                  "product": "数据治理",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-022",
+                  "product": "订阅服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-023",
+                  "product": "实施服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-024",
+                  "product": "数据治理",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C01-025",
+                  "product": "订阅服务",
+                  "amount": 1200
+                }
+              ]
+            },
+            {
+              "customer-id": "C02",
+              "customer-name": "远山制造",
+              "amount": 21600,
+              "orders": [
+                {
+                  "order-id": "C02-001",
+                  "product": "订阅服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-002",
+                  "product": "实施服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-003",
+                  "product": "数据治理",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-004",
+                  "product": "订阅服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-005",
+                  "product": "实施服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-006",
+                  "product": "数据治理",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-007",
+                  "product": "订阅服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-008",
+                  "product": "实施服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-009",
+                  "product": "数据治理",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-010",
+                  "product": "订阅服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-011",
+                  "product": "实施服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-012",
+                  "product": "数据治理",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-013",
+                  "product": "订阅服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-014",
+                  "product": "实施服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-015",
+                  "product": "数据治理",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-016",
+                  "product": "订阅服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-017",
+                  "product": "实施服务",
+                  "amount": 1200
+                },
+                {
+                  "order-id": "C02-018",
+                  "product": "数据治理",
+                  "amount": 1200
+                }
+              ]
+            },
+            {
+              "customer-id": "C03",
+              "customer-name": "海川能源",
+              "amount": 0,
+              "orders": []
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "customers",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "customers"
+            },
+            "props": {
+              "title": "父行自带明细 · 默认干净呈现",
+              "columns": [
+                {
+                  "field": "customer-name",
+                  "title": "客户",
+                  "fixed": "left",
+                  "width": 260
+                },
+                {
+                  "field": {
+                    "field": "amount",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "title": "金额（元）",
+                  "align": "right"
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 2,
+                "numbered": true
+              },
+              "rowExpansion": {
+                "mode": "multiple",
+                "data": {
+                  "type": "recordList",
+                  "field": "orders"
+                },
+                "table": {
+                  "rowKey": "order-id",
+                  "columns": [
+                    {
+                      "field": "order-id",
+                      "title": "订单号",
+                      "width": 120
+                    },
+                    {
+                      "field": "product",
+                      "title": "产品 / 服务",
+                      "width": 160
+                    },
+                    {
+                      "field": {
+                        "field": "amount",
+                        "format": "number-grouped",
+                        "data": "main"
+                      },
+                      "title": "金额（元）",
+                      "align": "right",
+                      "width": 140
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "local",
+                    "pageSize": 10,
+                    "numbered": true
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "optional",
+        "components": [
+          {
+            "id": "customers-optional",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "customers"
+            },
+            "props": {
+              "title": "按需搜索、标题与列排序",
+              "rowKey": "customer-id",
+              "columns": [
+                {
+                  "field": "customer-name",
+                  "title": "客户",
+                  "fixed": "left",
+                  "width": 260
+                },
+                {
+                  "field": {
+                    "field": "amount",
+                    "format": "number-grouped",
+                    "data": "main"
+                  },
+                  "title": "金额（元）",
+                  "align": "right"
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 2,
+                "numbered": true
+              },
+              "rowExpansion": {
+                "mode": "single",
+                "data": {
+                  "type": "recordList",
+                  "field": "orders"
+                },
+                "table": {
+                  "rowKey": "order-id",
+                  "columns": [
+                    {
+                      "field": "order-id",
+                      "title": "订单号",
+                      "width": 120
+                    },
+                    {
+                      "field": "product",
+                      "title": "产品 / 服务",
+                      "sortable": true,
+                      "width": 160
+                    },
+                    {
+                      "field": {
+                        "field": "amount",
+                        "format": "number-grouped",
+                        "data": "main"
+                      },
+                      "title": "金额（元）",
+                      "align": "right",
+                      "width": 140
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "local",
+                    "pageSize": 10,
+                    "numbered": true
+                  },
+                  "title": "订单明细",
+                  "toolbar": {
+                    "search": {
+                      "fields": [
+                        "order-id",
+                        "product"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowKey",
+      "message": "子表格父表要求稳定的 string/number 维度行键"
+    }
+  ]
+}

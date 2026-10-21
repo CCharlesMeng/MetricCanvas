@@ -834,9 +834,10 @@
             "6.40",
             "6.41",
             "6.42",
-            "6.43"
+            "6.43",
+            "6.44"
           ],
-          "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43"
+          "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44"
         },
         "id": {
           "type": "string",
@@ -8134,6 +8135,13 @@
                     }
                   ]
                 },
+                "rowExpansion": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/Page/definitions/tableRowExpansion"
+                    }
+                  ]
+                },
                 "actions": {
                   "allOf": [
                     {
@@ -8663,6 +8671,272 @@
             "id",
             "title",
             "children"
+          ],
+          "additionalProperties": false
+        },
+        "tableRowExpansion": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "multiple",
+                "single"
+              ]
+            },
+            "data": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "recordList"
+                    },
+                    "field": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "field"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "query"
+                    },
+                    "source": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    },
+                    "filters": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "uniqueItems": true
+                    },
+                    "bindings": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9-]*$"
+                      },
+                      "additionalProperties": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "source": {
+                                "type": "string",
+                                "const": "row"
+                              },
+                              "field": {
+                                "type": "string",
+                                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                              }
+                            },
+                            "required": [
+                              "source",
+                              "field"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "source": {
+                                "type": "string",
+                                "const": "param"
+                              },
+                              "id": {
+                                "type": "string",
+                                "pattern": "^[a-z0-9][a-z0-9-]*$"
+                              }
+                            },
+                            "required": [
+                              "source",
+                              "id"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "source": {
+                                "type": "string",
+                                "const": "filter"
+                              },
+                              "id": {
+                                "type": "string",
+                                "pattern": "^[a-z0-9][a-z0-9-]*$"
+                              },
+                              "part": {
+                                "type": "string",
+                                "enum": [
+                                  "value",
+                                  "from",
+                                  "to",
+                                  "level",
+                                  "mode"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "source",
+                              "id"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      },
+                      "minProperties": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "source",
+                    "filters",
+                    "bindings"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "table": {
+              "$ref": "#/$defs/Page/definitions/rowExpansionTable"
+            }
+          },
+          "required": [
+            "data",
+            "table"
+          ],
+          "additionalProperties": false
+        },
+        "rowExpansionTable": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/Page/definitions/textValue"
+                }
+              ]
+            },
+            "rowKey": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "columns": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Page/definitions/tableColumnNode"
+              }
+            },
+            "fit": {
+              "type": "string",
+              "enum": [
+                "content",
+                "container"
+              ]
+            },
+            "pagination": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "none"
+                    }
+                  },
+                  "required": [
+                    "mode"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "local"
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "numbered": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "mode",
+                    "pageSize"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "query"
+                    }
+                  },
+                  "required": [
+                    "mode"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "toolbar": {
+              "type": "object",
+              "properties": {
+                "search": {
+                  "type": "object",
+                  "properties": {
+                    "fields": {
+                      "minItems": 1,
+                      "maxItems": 64,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                      },
+                      "uniqueItems": true
+                    },
+                    "placeholder": {
+                      "allOf": [
+                        {
+                          "$ref": "#/$defs/Page/definitions/textValue"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "fields"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "rowKey",
+            "columns"
           ],
           "additionalProperties": false
         },

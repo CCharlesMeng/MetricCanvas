@@ -5,7 +5,7 @@
 
 <script lang="ts">
   import type {TablePaginationState,TableSelectedCell} from './view-state';
-  import { getContext } from 'svelte';
+  import { getContext, type Snippet } from 'svelte';
   import { currentTimeValue } from '@metriccanvas/page/internal';
   let dateMaximum = $state(currentTimeValue('date'));
   let dateError = $state('');
@@ -48,6 +48,9 @@
    */
   interface Props {
     /** 已解析的 main 数据槽；rows 为空时表格仍呈现表头。 */
+    nested?: boolean;
+    expansion?: { key(row: Row): string | undefined; expanded(row: Row): boolean; toggle(row: Row): void; id: string };
+    expandedRow?: Snippet<[Row]>;
     data: NamedDataSlots & { main: NonNullable<NamedDataSlots['main']> };
     props: TableComponentProps;
     /** 是否呈现排序、表头筛选和分页交互;缺省 true 保持存量行为 */
@@ -83,6 +86,7 @@
   let {
     data,
     props,
+    nested = false, expansion, expandedRow,
     interactive = true,
     view,
     filterOptions = {}, filterOptionsStatus = {},
@@ -97,6 +101,13 @@
     onlink,
     interactionGate, toolbarEnabled, linkHref
   }: Props = $props();
+
+  const expandable = $derived(Boolean(expansion && interactive && !staticExport));
+  const validExpansionKeys = $derived.by(() => {
+    const counts = new Map<string, number>();
+    for (const row of data.main.snapshot.rows) { const key = expansion?.key(row); if (key !== undefined) counts.set(key, (counts.get(key) ?? 0) + 1); }
+    return new Set([...counts].filter(([, count]) => count === 1).map(([key]) => key));
+  });
 
   const columnLayout = $derived(buildTableColumnLayout(props.columns, data.main.fields));
   const leaves = $derived(columnLayout.leaves);
@@ -124,7 +135,7 @@
   const FALLBACK_FIXED_WIDTH = 120;
   const stickyOffsets = $derived.by(() => {
     const offsets = new Map<string, number>();
-    let left = 0;
+    let left = expandable ? 40 : 0;
     for (const column of leaves) {
       if (column.fixed !== 'left') continue;
       offsets.set(columnField(column), left);
@@ -321,6 +332,7 @@
   use:tableGeometry={props.variant !== 'reportCompact' && !staticExport}
   class:os-theme={props.variant !== 'reportCompact'}
   class:fit-container={props.fit === 'container'}
+  class:row-content={nested}
   class:wrap-headers={wrapHeaders}
   class:report-compact={props.variant === 'reportCompact'}
   class:embedded={props.variant === 'embedded'}
@@ -351,6 +363,7 @@
   >
     <table>
       <colgroup>
+        {#if expandable}<col style="width:40px;min-width:40px" />{/if}
         {#each leaves as column (columnField(column))}
           <col style={columnStyle(column)} />
         {/each}
@@ -358,6 +371,7 @@
       <thead>
         {#each columnLayout.headerRows as headerRow, rowIndex (rowIndex)}
           <tr>
+            {#if expandable && rowIndex === 0}<th class="expand-column fixed" data-column-index="0" rowspan={columnLayout.headerRows.length} style="left:0;top:0" aria-label="展开子表格"></th>{/if}
             {#each headerRow as cell (cell.key)}
               {#if cell.kind === 'group'}
                 <th
@@ -374,7 +388,7 @@
                   class:align-right={column.align === 'right'}
                   class:fixed={!!column.fixed}
                   data-column-field={columnField(column)}
-                  data-column-index={leaves.findIndex(leaf => columnField(leaf) === columnField(column))}
+                  data-column-index={leaves.findIndex(leaf => columnField(leaf) === columnField(column)) + (expandable ? 1 : 0)}
                   class:last-column={columnField(column) === columnField(leaves[leaves.length - 1])}
                   colspan={cell.colspan}
                   rowspan={cell.rowspan}
@@ -470,8 +484,17 @@
         {/each}
       </thead>
       <tbody>
-        {#each rows as row, i (i)}
+        {#each rows as row, i (expandable && validExpansionKeys.has(expansion?.key(row.main) ?? '') ? expansion!.key(row.main)! : i)}
           <tr class:subtotal-row={rowTiers[i] === 'subtotal'} class:total-row={rowTiers[i] === 'total'}>
+            {#if expandable}
+              <td class="expand-column fixed" data-column-index="0" style="left:0">
+                {#if rowTiers[i] !== 'subtotal' && rowTiers[i] !== 'total' && validExpansionKeys.has(expansion!.key(row.main) ?? '')}
+                  <button class="row-expand-button" type="button" aria-label={expansion!.expanded(row.main) ? '收起子表格' : '展开子表格'}
+                    aria-expanded={expansion!.expanded(row.main)} aria-controls={`${expansion!.id}-${encodeURIComponent(expansion!.key(row.main)!)}`}
+                    onclick={() => expansion!.toggle(row.main)}><TableControlIcon name={expansion!.expanded(row.main) ? 'down' : 'right'} /></button>
+                {/if}
+              </td>
+            {/if}
             {#each leaves as column, columnIndex (columnField(column))}
               <!-- 合并列上被并入上方单元格的行不渲染该列 -->
               {#if columnField(column) !== mergedColumnField || rowSpans[i] !== 0}
@@ -506,7 +529,7 @@
                   class:positive={semanticPresentation === undefined && color === 'green'}
                   class:explicit-color={column.colorRule !== undefined}
                   data-column-field={columnField(column)}
-                  data-column-index={columnIndex}
+                  data-column-index={columnIndex + (expandable ? 1 : 0)}
                   rowspan={columnField(column) === mergedColumnField ? rowSpans[i] : undefined}
                   style={cellStyle(column)}
                   style:color={column.colorRule ? valueColorStyle(color) : undefined}
@@ -593,9 +616,14 @@
               {/if}
             {/each}
           </tr>
+          {#if expandable && expandedRow && validExpansionKeys.has(expansion!.key(row.main) ?? '') && expansion!.expanded(row.main)}
+            <tr class="row-expansion-row"><td class="row-expansion-cell" colspan={leaves.length + 1}>
+              <div id={`${expansion!.id}-${encodeURIComponent(expansion!.key(row.main)!)}`} role="region" aria-label="子表格" class="row-expansion-content">{@render expandedRow(row.main)}</div>
+            </td></tr>
+          {/if}
         {:else}
           <tr>
-            <td class="empty-row" colspan={Math.max(leaves.length, 1)}>{#if props.variant === 'reportCompact'}暂无数据{:else}<div class="empty-state">暂无数据</div>{/if}</td>
+            <td class="empty-row" colspan={Math.max(leaves.length + (expandable ? 1 : 0), 1)}>{#if props.variant === 'reportCompact'}暂无数据{:else}<div class="empty-state">暂无数据</div>{/if}</td>
           </tr>
         {/each}
       </tbody>
@@ -707,7 +735,7 @@
     border-radius: 0;
     font-size: 14px;
   }
-  .embedded .scroll {
+  .embedded > .scroll {
     box-sizing: border-box;
     width: 100%;
     height: 448px;
@@ -800,7 +828,7 @@
     color: #191919;
     white-space: nowrap;
   }
-  .embedded tbody td {
+  .embedded > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) {
     box-sizing: border-box;
     height: 48px;
     padding: 0 6px;
@@ -810,23 +838,23 @@
     overflow-wrap: anywhere;
     white-space: normal;
   }
-  .embedded thead th {
+  .embedded > :where(.scroll,.content-frame) > table > thead th {
     box-sizing: border-box;
     height: 64px;
     padding: 0 6px;
     line-height: 20px;
   }
-  .embedded thead th:last-child {
+  .embedded > :where(.scroll,.content-frame) > table > thead th:last-child {
     border-right: 0;
   }
-  .embedded .head > span:first-child,
-  .embedded .sort-toggle > span:first-child {
+  .embedded > :where(.scroll,.content-frame) > table > thead > tr > th .head > span:first-child,
+  .embedded > :where(.scroll,.content-frame) > table > thead > tr > th .sort-toggle > span:first-child {
     overflow-wrap: normal;
     white-space: pre-line;
   }
-  .embedded .cell-stack,
-  .embedded .cell-primary-value,
-  .embedded .link-cell {
+  .embedded > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) .cell-stack,
+  .embedded > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) .cell-primary-value,
+  .embedded > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) .link-cell {
     display: block;
     min-width: 0;
     max-width: 100%;
@@ -835,12 +863,12 @@
     overflow-wrap: anywhere;
     white-space: normal;
   }
-  .embedded .link-cell {
+  .embedded > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) .link-cell {
     color: #191919;
     text-decoration: none;
   }
-  .embedded .sort-hint,
-  .embedded .sort-state {
+  .embedded > :where(.scroll,.content-frame) > table > thead > tr > th .sort-hint,
+  .embedded > :where(.scroll,.content-frame) > table > thead > tr > th .sort-state {
     opacity: 0;
   }
   .embedded th:hover .sort-hint,
@@ -1230,7 +1258,7 @@
     border-radius: 0;
     font-size: 14px;
   }
-  .report-compact .table-heading {
+  .report-compact > .table-heading {
     min-height: 30px;
     margin-bottom: 8px;
   }
@@ -1239,27 +1267,27 @@
     font-weight: 400;
     line-height: 30px;
   }
-  .report-compact .content-frame {
+  .report-compact > .content-frame {
     box-sizing: border-box;
     padding: 0;
     overflow: visible;
     background: var(--mc-color-report-content-surface, #fcfcff);
     border-radius: var(--mc-radius-report-content, 12px);
   }
-  .report-compact .content-frame table {
+  .report-compact > .content-frame table {
     border-radius: 0;
   }
-  .report-compact thead th {
+  .report-compact > :where(.scroll,.content-frame) > table > thead th {
     padding: 5px 8px;
     border-right: 1px solid #d8deeb;
     border-bottom: 1px solid #d8deeb;
     font-size: 14px;
     line-height: 22px;
   }
-  .report-compact thead th:last-child {
+  .report-compact > :where(.scroll,.content-frame) > table > thead th:last-child {
     border-right: 0;
   }
-  .report-compact tbody td {
+  .report-compact > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) {
     height: 42px;
     padding: 7px 8px;
     border-right: 0;
@@ -1366,14 +1394,14 @@
   }
   .page-jump input:hover, .page-jump input:focus { border-color: #191919; }
   .jump-suffix { padding-left: 4px; margin-right: 8px; }
-  .fit-container .scroll {
+  .fit-container > .scroll {
     overflow-x: auto;
   }
-  .fit-container table {
+  .fit-container > :where(.scroll,.content-frame) > table {
     table-layout: fixed;
     min-width: var(--table-fit-min-width);
   }
-  .fit-container thead th {
+  .fit-container > :where(.scroll,.content-frame) > table > thead th {
     min-width: 0;
     overflow-wrap: normal;
     white-space: nowrap;
@@ -1400,12 +1428,12 @@
   .wrap-headers .sort-hint {
     flex: none;
   }
-  .fit-container tbody td {
+  .fit-container > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) {
     min-width: 0;
     overflow-wrap: anywhere;
     white-space: normal;
   }
-  .fit-container.embedded tbody td {
+  .fit-container.embedded > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1425,12 +1453,12 @@
     border-radius: 16px;
     font-size: 14px;
   }
-  .forecast-matrix .table-heading {
+  .forecast-matrix > .table-heading {
     min-height: 24px;
     flex: 0 0 24px;
     margin: 0;
   }
-  .forecast-matrix .table-heading h3 {
+  .forecast-matrix > .table-heading h3 {
     color: #191919;
     font-size: 16px;
     font-weight: 500;
@@ -1449,7 +1477,7 @@
     border: 0;
     border-radius: 0;
   }
-  .forecast-matrix table {
+  .forecast-matrix > :where(.scroll,.content-frame) > table {
     box-sizing: border-box;
     width: 100%;
     min-width: var(--table-content-min-width);
@@ -1458,8 +1486,8 @@
     border-top: 1px solid rgb(0 0 0 / 0.15);
     border-left: 1px solid rgb(0 0 0 / 0.15);
   }
-  .forecast-matrix thead th,
-  .forecast-matrix thead th.group-header {
+  .forecast-matrix > :where(.scroll,.content-frame) > table > thead th,
+  .forecast-matrix > :where(.scroll,.content-frame) > table > thead th.group-header {
     box-sizing: border-box;
     height: 32px;
     padding: 0 4px;
@@ -1473,8 +1501,8 @@
     text-align: center;
     white-space: nowrap;
   }
-  .forecast-matrix tbody td,
-  .forecast-matrix.fit-container tbody td {
+  .forecast-matrix > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)),
+  .forecast-matrix.fit-container > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) {
     box-sizing: border-box;
     height: 58px;
     padding: 0 4px;
@@ -1490,15 +1518,15 @@
     overflow-wrap: anywhere;
     white-space: normal;
   }
-  .forecast-matrix tbody tr.subtotal-row td,
-  .forecast-matrix tbody tr.total-row td,
-  .forecast-matrix tbody tr.subtotal-row td.fixed,
-  .forecast-matrix tbody tr.total-row td.fixed {
+  .forecast-matrix > :where(.scroll,.content-frame) > table > tbody > tr.subtotal-row > td:not(:where(.row-expansion-cell)),
+  .forecast-matrix > :where(.scroll,.content-frame) > table > tbody > tr.total-row > td:not(:where(.row-expansion-cell)),
+  .forecast-matrix > :where(.scroll,.content-frame) > table > tbody > tr.subtotal-row > td:not(:where(.row-expansion-cell)).fixed,
+  .forecast-matrix > :where(.scroll,.content-frame) > table > tbody > tr.total-row > td:not(:where(.row-expansion-cell)).fixed {
     background: rgb(20 118 255 / 0.05);
     font-weight: 500;
   }
-  .forecast-matrix tbody .cell-stack,
-  .forecast-matrix tbody .cell-primary-value {
+  .forecast-matrix > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) .cell-stack,
+  .forecast-matrix > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) .cell-primary-value {
     display: block;
     min-width: 0;
     max-width: 100%;
@@ -1507,12 +1535,12 @@
     overflow-wrap: anywhere;
     white-space: normal;
   }
-  .fit-container .cell-stack,
-  .fit-container .rate-cell {
+  .fit-container > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) .cell-stack,
+  .fit-container > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) .rate-cell {
     min-width: 0;
     max-width: 100%;
   }
-  .fit-container .rate-cell {
+  .fit-container > :where(.scroll,.content-frame) > table > tbody > tr > td:not(:where(.row-expansion-cell)) .rate-cell {
     width: 100%;
   }
   /* TinyVue OS Grid 3.32.0. Keep this skin scoped: reportCompact retains its contract. */
@@ -1527,7 +1555,7 @@
     line-height: 1.5;
   }
   .table-widget.os-theme .scroll { border: 0; }
-  .table-widget.os-theme.forecast-matrix table { height: auto; border: 0; }
+  .table-widget.os-theme.forecast-matrix > :where(.scroll,.content-frame) > table { height: auto; border: 0; }
   .table-widget.os-theme thead th {
     top: var(--table-header-top, 0px) !important;
     height: 40px;
@@ -1565,9 +1593,9 @@
   }
   .table-widget.os-theme .sort-toggle { width: auto; }
   .table-widget.os-theme .head { gap: 0; }
-  .table-widget.os-theme.forecast-matrix .head { justify-content: center; }
-  .table-widget.os-theme.forecast-matrix th.align-right .head { justify-content: flex-end; }
-  .table-widget.os-theme.forecast-matrix td.align-right { text-align: right; }
+  .table-widget.os-theme.forecast-matrix > :where(.scroll,.content-frame) > table > thead > tr > th .head { justify-content: center; }
+  .table-widget.os-theme.forecast-matrix > :where(.scroll,.content-frame) > table > thead > tr > th.align-right .head { justify-content: flex-end; }
+  .table-widget.os-theme.forecast-matrix > :where(.scroll,.content-frame) > table > tbody > tr > td.align-right { text-align: right; }
   .table-widget.os-theme .sort-toggle { gap: 4px; }
   .table-widget.os-theme .sort-state, .table-widget.os-theme .sort-hint {
     display: inline-flex;
@@ -1604,8 +1632,8 @@
     left: var(--table-sticky-left, auto) !important;
     right: var(--table-sticky-right, auto) !important;
   }
-  .table-widget.os-theme :global(.fixed-left-boundary)::after,
-  .table-widget.os-theme :global(.fixed-right-boundary)::after {
+  .table-widget.os-theme > :where(.scroll,.content-frame) > table > :is(thead,tbody) > tr > :global(.fixed-left-boundary)::after,
+  .table-widget.os-theme > :where(.scroll,.content-frame) > table > :is(thead,tbody) > tr > :global(.fixed-right-boundary)::after {
     content: '';
     position: absolute;
     top: 0;
@@ -1614,14 +1642,14 @@
     pointer-events: none;
     transition: box-shadow .3s;
   }
-  .table-widget.os-theme :global(.fixed-left-boundary)::after { right: -30px; }
-  .table-widget.os-theme :global(.fixed-right-boundary)::after { left: -30px; }
-  .table-widget.os-theme:global(.scrolled-left) :global(.fixed-left-boundary)::after { box-shadow: inset 10px 0 8px -8px #00000026; }
-  .table-widget.os-theme:global(.scrolled-right) :global(.fixed-right-boundary)::after { box-shadow: inset -10px 0 8px -8px #00000026; }
-  .table-widget.os-theme:global(.fixed-overflow) th.fixed,
-  .table-widget.os-theme:global(.fixed-overflow) td.fixed { left: auto !important; right: auto !important; }
-  .table-widget.os-theme:global(.fixed-overflow) :global(.fixed-left-boundary)::after,
-  .table-widget.os-theme:global(.fixed-overflow) :global(.fixed-right-boundary)::after { display: none; }
+  .table-widget.os-theme > :where(.scroll,.content-frame) > table > :is(thead,tbody) > tr > :global(.fixed-left-boundary)::after { right: -30px; }
+  .table-widget.os-theme > :where(.scroll,.content-frame) > table > :is(thead,tbody) > tr > :global(.fixed-right-boundary)::after { left: -30px; }
+  .table-widget.os-theme:global(.scrolled-left) > :where(.scroll,.content-frame) > table > :is(thead,tbody) > tr > :global(.fixed-left-boundary)::after { box-shadow: inset 10px 0 8px -8px #00000026; }
+  .table-widget.os-theme:global(.scrolled-right) > :where(.scroll,.content-frame) > table > :is(thead,tbody) > tr > :global(.fixed-right-boundary)::after { box-shadow: inset -10px 0 8px -8px #00000026; }
+  .table-widget.os-theme:global(.fixed-overflow) > :where(.scroll,.content-frame) > table > thead > tr > th.fixed,
+  .table-widget.os-theme:global(.fixed-overflow) > :where(.scroll,.content-frame) > table > tbody > tr > td.fixed { left: auto !important; right: auto !important; }
+  .table-widget.os-theme:global(.fixed-overflow) > :where(.scroll,.content-frame) > table > :is(thead,tbody) > tr > :global(.fixed-left-boundary)::after,
+  .table-widget.os-theme:global(.fixed-overflow) > :where(.scroll,.content-frame) > table > :is(thead,tbody) > tr > :global(.fixed-right-boundary)::after { display: none; }
   .table-widget.os-theme .filter summary {
     --table-control-icon-size: 14px;
     display: flex;
@@ -1677,4 +1705,13 @@
   .static-export thead { display:table-header-group; }
   .static-export tr { break-inside:avoid; }
   .static-export .bottom-fade, .static-export .pager { display:none!important; }
+
+  .row-content { padding:0; border-radius:0; background:#fff; flex:none; height:auto; }
+  .row-content > .scroll { height:auto; flex:none; border:0; }
+  .row-content .table-heading { margin:0 0 12px; }
+  .table-widget.os-theme > :where(.scroll,.content-frame) > table > :is(thead,tbody) > tr > .expand-column { width:40px; min-width:40px; padding:0; text-align:center; }
+  .row-expand-button { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border:0; background:transparent; color:inherit; cursor:pointer; }
+  .row-expand-button:focus-visible { outline:2px solid #1476ff; outline-offset:-2px; }
+  .table-widget.os-theme > :where(.scroll,.content-frame) > table > tbody > .row-expansion-row > .row-expansion-cell { padding:16px 16px 16px 40px; background:#fff; }
+  .row-expansion-content { width:100%; max-width:max(0px,calc(var(--table-viewport-width,100000px) - 56px)); min-width:0; container-type:inline-size; background:#fff; }
 </style>

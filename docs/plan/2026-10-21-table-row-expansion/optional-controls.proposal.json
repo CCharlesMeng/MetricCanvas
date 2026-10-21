@@ -1,0 +1,51 @@
+{
+  "status": "proposal-not-a-valid-page",
+  "description": "按需启用的子表呈现示例；默认片段不含这些选项。仅在实际需求明确要求标题、搜索或排序时添加对应字段，三项彼此独立。此table片段对应query.proposal.json中的rowExpansion.table。",
+  "table": {
+    "rowKey": "order-id",
+    "columns": [
+      {
+        "field": "order-id",
+        "title": "订单号"
+      },
+      {
+        "field": "product",
+        "title": "产品 / 服务",
+        "sortable": true
+      },
+      {
+        "field": {
+          "field": "amount",
+          "format": "number-grouped"
+        },
+        "title": "金额（元）"
+      }
+    ],
+    "pagination": {
+      "mode": "query"
+    },
+    "title": "订单明细",
+    "toolbar": {
+      "search": {
+        "fields": [
+          "order-id",
+          "product"
+        ],
+        "placeholder": "搜索订单或产品"
+      }
+    }
+  },
+  "requirementsWhenSearchIsEnabled": {
+    "requiresGatewaySearchEncoder": true,
+    "requiresQueryFieldMapping": [
+      "order-id",
+      "product"
+    ]
+  },
+  "requirementsWhenSortingIsEnabled": {
+    "requiresQueryFieldMapping": [
+      "product"
+    ],
+    "stableUniqueRowKey": "order-id"
+  }
+}

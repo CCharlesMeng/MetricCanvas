@@ -257,7 +257,7 @@ describe('组合卡的卡内表面压平', () => {
       'style:--table-content-min-width={`${columnWidthTotal}px`}'
     );
     expect(table).toMatch(
-      /\.forecast-matrix table\s*\{[^}]*width:\s*100%;[^}]*min-width:\s*var\(--table-content-min-width\);/s
+      /\.forecast-matrix > :where\(\.scroll,\.content-frame\) > table\s*\{[^}]*width:\s*100%;[^}]*min-width:\s*var\(--table-content-min-width\);/s
     );
     expect(table).not.toContain('1584px');
     expect(narrative).not.toContain('(max-width: 1678px)');

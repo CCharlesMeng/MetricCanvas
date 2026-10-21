@@ -168,6 +168,20 @@
       ]
     },
     {
+      "id": "table-row-expansion",
+      "description": "6.44单层子表格的作用域、只读及查询分页约束",
+      "valid": [
+        "table-row-expansion-inline",
+        "table-row-expansion-query"
+      ],
+      "invalid": [
+        "row-expansion-before-6.44",
+        "row-expansion-missing-parent-key",
+        "row-expansion-query-local-page",
+        "row-expansion-unbound-parent"
+      ]
+    },
+    {
       "id": "report-header-export-buttons",
       "description": "6.31 同一种导出按钮按格式配置名称、文件名和清晰度，直接下载",
       "valid": [

@@ -77,8 +77,31 @@ Excel 导出捕获当前已提交搜索、页面筛选、列头筛选和排序�
 
 6.35条件呈现及相关限制见[条件显隐](../conditions.md)；子项全部隐藏不自动收起父容器。
 
+<a id="row-expansion"></a>
 
-页面协议 6.43。结构真源为本册[schema.json](../schema.json)，SHA256 `7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271`。字段表自动生成；可选不等于有默认值。
+## 行内子表格（6.44）
+
+`props.rowExpansion` 声明父行下方的一层独立表格；与同列树形表格及弹窗/抽屉详情不同。父表单一main数据槽，显式稳定唯一的string/number维度`rowKey`，不能与`mergeBy`同用；小计与合计不可展开。`mode`为multiple（默认）或single，默认全部收起。只点击首列展开按钮，不覆盖父表既有单元格交互。
+
+子表`table`就地声明独立`rowKey`、`columns`和分页；字段绑定、格式、多级表头、分页控件、每页条数及跳页全部复用现有Table。默认白底、无额外卡片，只含表头、数据、分页；不默认继承或生成标题、期间标签、工具栏、搜索和排序入口。仅声明`title`才显示标题；仅声明`toolbar.search`才显示搜索；仅对应列`sortable:true`才显示排序。内部稳定行键排序不会产生可见排序控件。
+
+- `data:{type:"recordList",field:"orders"}`直接绑定父行嵌套明细字段。子表字段从该字段的`items.fields`解析；复用一层、每行最多100项的既有契约。可用none/local分页，缺省为10条本地编号分页。null或不合法明细显示不可用，不伪装为无明细。
+- `data:{type:"query",source:"orders",filters:["detail-customer"],bindings:{"detail-customer":{source:"row",field:"customer-id"}}}`引用专属查询定义。子表必须`pagination:{mode:"query"}`，查询不声明complete，不使用compute、结果绑定或pagedJoin。初始页大小沿用DQE`order.limit`（正整数），offset为0；响应必须提供同一父行与条件下的totalCount。不得在子表另设第二个初始pageSize。
+
+query输入引用隐藏、非层级dimension/timePoint/timeRange声明，必须全部显式绑定、被本查询消费，且至少一个输入来自父行维度；row/filter/param语法复用既有受控绑定。输入只写入该展开实例的条件副本，不写全页FilterState，不允许其他查询、正文动作或子表读取。缺值、非法日期等不发请求，不能降为全量查询。
+
+模板查询源只能属于一个展开模板，不能与正文、详情或其它查询共享可变结果。主页面首屏不执行这些源。每个父行拥有独立查询程序、数据快照、搜索、排序、页码、页大小、取消信号及代次；并发请求每张父表最多4个。子表翻页不改变父表和其它子表。
+
+查询默认排序若存在须使用`order.by`中field/type的有序数组（type为asc/desc，显式priority须匹配数组顺序）；用户排序后仍追加映射到queryField的唯一子行键作为最终优先级。开启查询搜索时必须配置并验收数据网关encodeSearch，搜索作用于全部匹配结果，不筛当前窗口。排序、搜索或每页条数改变回到该子表第一页。数据是实时offset分页，稳定排序不保证两次查询间数据增删时跨页不重复/遗漏。
+
+折叠、父表翻页或改变父表搜索/列条件、父行消失、页面筛选/文档变化及销毁均释放相关展开实例，丢弃迟到响应。重新展开从第一页重新查询，不恢复旧搜索、排序、页码或跨折叠缓存。同页纯排序保留仍可见且内容未变的父行实例。翻页失败保留目标页码并允许重试，不把旧页内容放在新页码下。
+
+首期子表只读，拒绝导航、详情、写筛选、列筛选、递归子表及任意组件插槽。导出范围由用户挂起：子表不开放导出字段；声明rowExpansion的父表及包含子表的页面暂不启用相应导出，在校验期给出明确待确认提示，不隐式选择导出范围。
+
+完整样例：`table-row-expansion-inline`（无需DQE，第二张表按需启用搜索/标题/排序与单行展开）、`table-row-expansion-query`（本地DQE Sim，默认与可选列排序、单行展开）。真实DQE搜索编码、性能与身份权限仍需真实接入验收。
+
+
+页面协议 6.44。结构真源为本册[schema.json](../schema.json)，SHA256 `1ec83a088142ec5460ffe180d16488a563277c9ac27e943bafe055d76ac298a3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1835,6 +1858,546 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/paginat
 |---|---|
 | "query" | 详情显式独立参数和查询，打开时执行。 |
 
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f77457870616e73696f6e"></a>
+
+### `@tableComponent.props.rowExpansion`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/rowExpansion`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 按父行显式声明一级独立子表格，省略时没有展开入口。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f77457870616e73696f6e2f616c6c4f662f30"></a>
+
+### `@tableComponent.props.rowExpansion · allOf[0]`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/rowExpansion/allOf/0`。目标：[#/definitions/tableRowExpansion](../components/table.md#schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/tableRowExpansion | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e"></a>
+
+### `@tableRowExpansion`
+
+Schema位置：`#/definitions/tableRowExpansion`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | required=["data","table"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f6d6f6465"></a>
+
+### `@tableRowExpansion.mode`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["multiple","single"] | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "multiple" | 允许同时展开多行，缺省模式。 |
+| "single" | 同一父表最多展开一行。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f64617461"></a>
+
+### `@tableRowExpansion.data`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| oneOf联合 | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 组件数据槽与页面数据源的显式关联。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f30"></a>
+
+### `@tableRowExpansion.data · oneOf[0]`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["type","field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f302f70726f706572746965732f74797065"></a>
+
+### `@tableRowExpansion.data · oneOf[0].type`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/0/properties/type`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="recordList" | Schema未设默认；装配/运行时默认见语义说明 | 选择所属结构的类型分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "recordList" | 用于选择@tableRowExpansion.data · oneOf[0].type分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f302f70726f706572746965732f6669656c64"></a>
+
+### `@tableRowExpansion.data · oneOf[0].field`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/0/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f31"></a>
+
+### `@tableRowExpansion.data · oneOf[1]`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["type","source","filters","bindings"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f74797065"></a>
+
+### `@tableRowExpansion.data · oneOf[1].type`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/type`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="query" | Schema未设默认；装配/运行时默认见语义说明 | 选择所属结构的类型分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "query" | 详情显式独立参数和查询，打开时执行。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f736f75726365"></a>
+
+### `@tableRowExpansion.data · oneOf[1].source`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/source`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f66696c74657273"></a>
+
+### `@tableRowExpansion.data · oneOf[1].filters`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/filters`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 页面筛选器声明集合。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f66696c746572732f6974656d73"></a>
+
+### `@tableRowExpansion.data · oneOf[1].filters[]`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/filters/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f62696e64696e6773"></a>
+
+### `@tableRowExpansion.data · oneOf[1].bindings`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | propertyNames={"type":"string","pattern":"^[a-z0-9][a-z0-9-]*$"}; minProperties=1 | Schema未设默认；装配/运行时默认见语义说明 | 私有查询输入与父行、页面参数或页面筛选器的显式映射。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f62696e64696e67732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@tableRowExpansion.data · oneOf[1].bindings{key}`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| oneOf联合 | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f62696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f30"></a>
+
+### `@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[0]`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["source","field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f62696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f302f70726f706572746965732f736f75726365"></a>
+
+### `@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[0].source`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/0/properties/source`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="row" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "row" | 用于选择@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[0].source分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f62696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f302f70726f706572746965732f6669656c64"></a>
+
+### `@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[0].field`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/0/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f62696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f31"></a>
+
+### `@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[1]`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["source","id"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f62696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f312f70726f706572746965732f736f75726365"></a>
+
+### `@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[1].source`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/1/properties/source`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="param" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "param" | 用于选择@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[1].source分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f62696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f312f70726f706572746965732f6964"></a>
+
+### `@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[1].id`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/1/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f62696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f32"></a>
+
+### `@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[2]`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["source","id"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f62696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f322f70726f706572746965732f736f75726365"></a>
+
+### `@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[2].source`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/2/properties/source`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="filter" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "filter" | 用于选择@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[2].source分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f62696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f322f70726f706572746965732f6964"></a>
+
+### `@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[2].id`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/2/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f62696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f322f70726f706572746965732f70617274"></a>
+
+### `@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[2].part`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/2/properties/part`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["value","from","to","level","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "value" | 普通单值/多值输入部分。 |
+| "from" | 范围起点部分。 |
+| "to" | 范围终点部分。 |
+| "level" | 层级维度的层级部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f646174612f6f6e654f662f312f70726f706572746965732f62696e64696e67732f70726f70657274794e616d6573"></a>
+
+### `@tableRowExpansion.data · oneOf[1].bindings · propertyNames`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65526f77457870616e73696f6e2f70726f706572746965732f7461626c65"></a>
+
+### `@tableRowExpansion.table`
+
+Schema位置：`#/definitions/tableRowExpansion/properties/table`。目标：[#/definitions/rowExpansionTable](../components/table.md#schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c65)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/rowExpansionTable | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 独立列定义的只读子表格；默认仅内容与分页。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c65"></a>
+
+### `@rowExpansionTable`
+
+Schema位置：`#/definitions/rowExpansionTable`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | required=["rowKey","columns"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f7469746c65"></a>
+
+### `@rowExpansionTable.title`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/title`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 展示标题；是否必需由此处Schema分支决定，不能推断为空时的行为。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f7469746c652f616c6c4f662f30"></a>
+
+### `@rowExpansionTable.title · allOf[0]`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/title/allOf/0`。目标：[#/definitions/textValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f726f774b6579"></a>
+
+### `@rowExpansionTable.rowKey`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/rowKey`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 多数据槽对齐的维度键，各槽字段类型须一致。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f636f6c756d6e73"></a>
+
+### `@rowExpansionTable.columns`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/columns`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 列或透视输出列的有序声明，按所属分支解释。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f636f6c756d6e732f6974656d73"></a>
+
+### `@rowExpansionTable.columns[]`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/columns/items`。目标：[#/definitions/tableColumnNode](../components/table.md#schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e4e6f6465)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/tableColumnNode | 每个数组项 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f666974"></a>
+
+### `@rowExpansionTable.fit`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/fit`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["content","container"] | Schema未设默认；装配/运行时默认见语义说明 | 受控适配方式。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "content" | 正常内容层。 |
+| "container" | 当前容器作为交互/呈现作用域。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f706167696e6174696f6e"></a>
+
+### `@rowExpansionTable.pagination`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/pagination`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| oneOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 分页来源与大小配置；query与local条件不同。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f706167696e6174696f6e2f6f6e654f662f30"></a>
+
+### `@rowExpansionTable.pagination · oneOf[0]`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/pagination/oneOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["mode"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f706167696e6174696f6e2f6f6e654f662f302f70726f706572746965732f6d6f6465"></a>
+
+### `@rowExpansionTable.pagination · oneOf[0].mode`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/pagination/oneOf/0/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="none" | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "none" | 用于选择@rowExpansionTable.pagination · oneOf[0].mode分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f706167696e6174696f6e2f6f6e654f662f31"></a>
+
+### `@rowExpansionTable.pagination · oneOf[1]`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/pagination/oneOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["mode","pageSize"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f706167696e6174696f6e2f6f6e654f662f312f70726f706572746965732f6d6f6465"></a>
+
+### `@rowExpansionTable.pagination · oneOf[1].mode`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/pagination/oneOf/1/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="local" | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "local" | 用于选择@rowExpansionTable.pagination · oneOf[1].mode分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f706167696e6174696f6e2f6f6e654f662f312f70726f706572746965732f7061676553697a65"></a>
+
+### `@rowExpansionTable.pagination · oneOf[1].pageSize`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/pagination/oneOf/1/properties/pageSize`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支必填 | minimum=1; maximum=9007199254740991 | Schema未设默认；装配/运行时默认见语义说明 | 分页每页条数。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f706167696e6174696f6e2f6f6e654f662f312f70726f706572746965732f6e756d6265726564"></a>
+
+### `@rowExpansionTable.pagination · oneOf[1].numbered`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/pagination/oneOf/1/properties/numbered`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 是否显示序号。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f706167696e6174696f6e2f6f6e654f662f32"></a>
+
+### `@rowExpansionTable.pagination · oneOf[2]`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/pagination/oneOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["mode"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f706167696e6174696f6e2f6f6e654f662f322f70726f706572746965732f6d6f6465"></a>
+
+### `@rowExpansionTable.pagination · oneOf[2].mode`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/pagination/oneOf/2/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="query" | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "query" | 详情显式独立参数和查询，打开时执行。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f746f6f6c626172"></a>
+
+### `@rowExpansionTable.toolbar`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/toolbar`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按需启用子表格实例搜索，省略时不显示工具区。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f746f6f6c6261722f70726f706572746965732f736561726368"></a>
+
+### `@rowExpansionTable.toolbar.search`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/toolbar/properties/search`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["fields"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按需声明实例内搜索；查询搜索需要网关编码能力。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f70726f706572746965732f6669656c6473"></a>
+
+### `@rowExpansionTable.toolbar.search.fields`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/toolbar/properties/search/properties/fields`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1; maxItems=64; uniqueItems=true | Schema未设默认；装配/运行时默认见语义说明 | 结果字段契约；对象键就是页面字段id。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f70726f706572746965732f6669656c64732f6974656d73"></a>
+
+### `@rowExpansionTable.toolbar.search.fields[]`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/toolbar/properties/search/properties/fields/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f70726f706572746965732f706c616365686f6c646572"></a>
+
+### `@rowExpansionTable.toolbar.search.placeholder`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/toolbar/properties/search/properties/placeholder`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 子表格搜索提示文本，省略时沿用现有表格默认提示。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f746f6f6c6261722f70726f706572746965732f7365617263682f70726f706572746965732f706c616365686f6c6465722f616c6c4f662f30"></a>
+
+### `@rowExpansionTable.toolbar.search.placeholder · allOf[0]`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/toolbar/properties/search/properties/placeholder/allOf/0`。目标：[#/definitions/textValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f616374696f6e73"></a>
 
 ### `@tableComponent.props.actions`
@@ -1871,6 +2434,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `table-toolbar-search`：表格工具区由6.21引入，搜索显式引用文本标量字段。反例：[table-toolbar-before-6.21](../errors/table-toolbar-before-6.21.json)、[table-search-nontext-field](../errors/table-search-nontext-field.json)、[table-search-duplicate-field](../errors/table-search-duplicate-field.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `paged-join`：6.22 组合表全局视图与普通查询定义引用。反例：[table-number-range-before-6.22](../errors/table-number-range-before-6.22.json)、[paged-join-initial-predicate-in](../errors/paged-join-initial-predicate-in.json)、[paged-join-initial-predicate-numeric](../errors/paged-join-initial-predicate-numeric.json)、[paged-join-initial-predicate-date](../errors/paged-join-initial-predicate-date.json)、[paged-join-before-6.22](../errors/paged-join-before-6.22.json)、[paged-join-unknown-member](../errors/paged-join-unknown-member.json)、[paged-join-invalid-key](../errors/paged-join-invalid-key.json)、[paged-join-invalid-projection](../errors/paged-join-invalid-projection.json)、[paged-join-member-topn](../errors/paged-join-member-topn.json)、[paged-join-shared-root](../errors/paged-join-shared-root.json)、[paged-join-invalid-initial](../errors/paged-join-invalid-initial.json)、[table-number-range-non-numeric](../errors/table-number-range-non-numeric.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-search-options`：6.42 静态搜索选项唯一、默认项有效且每项引用文本字段。反例：[table-search-options-before-6.42](../errors/table-search-options-before-6.42.json)、[table-search-options-duplicate](../errors/table-search-options-duplicate.json)、[table-search-options-default-missing](../errors/table-search-options-default-missing.json)、[table-search-options-nontext](../errors/table-search-options-nontext.json)、[table-search-options-unmapped](../errors/table-search-options-unmapped.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `table-row-expansion`：6.44单层子表格的作用域、只读及查询分页约束。反例：[row-expansion-before-6.44](../errors/row-expansion-before-6.44.json)、[row-expansion-missing-parent-key](../errors/row-expansion-missing-parent-key.json)、[row-expansion-query-local-page](../errors/row-expansion-query-local-page.json)、[row-expansion-unbound-parent](../errors/row-expansion-unbound-parent.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -1885,6 +2449,10 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [table-number-range-page](../examples/table-number-range-page.json)：完整合法页面；查询仅为静态契约证据。
 - [paged-join-fixed-rank-page](../examples/paged-join-fixed-rank-page.json)：完整合法页面；查询仅为静态契约证据。
 - [table-search-options-page](../examples/table-search-options-page.json)：完整合法页面；查询仅为静态契约证据。
+- [table-row-expansion-inline](../examples/table-row-expansion-inline.json)：完整合法页面；查询仅为静态契约证据。
+- [table-row-expansion-query](../examples/table-row-expansion-query.json)：完整合法页面；查询仅为静态契约证据。
+- [table-row-expansion-inputs](../examples/table-row-expansion-inputs.json)：完整合法页面；查询仅为静态契约证据。
+- [table-row-expansion-none](../examples/table-row-expansion-none.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-table.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 
@@ -1912,6 +2480,8 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 
 - 源码/验证定位：`packages/page/src/schema/components/table.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/embed/tests/browser/embed.spec.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/row-expansion.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/validate-row-expansion.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 
@@ -1932,3 +2502,11 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/0`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/5/props/pagination`。
 - `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/1`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/6/props/pagination`。
 - `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/2`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/1/props/pagination`。
+- `#/definitions/tableRowExpansion/properties/data/oneOf/0`：[合法完整页面](../examples/table-row-expansion-inline.json)，JSON Pointer `#/sections/0/components/0/props/rowExpansion/data`。
+- `#/definitions/tableRowExpansion/properties/data/oneOf/1`：[合法完整页面](../examples/table-row-expansion-query.json)，JSON Pointer `#/sections/0/components/0/props/rowExpansion/data`。
+- `#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/0`：[合法完整页面](../examples/table-row-expansion-query.json)，JSON Pointer `#/sections/0/components/0/props/rowExpansion/data/bindings/customer-default`。
+- `#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/1`：[合法完整页面](../examples/table-row-expansion-inputs.json)，JSON Pointer `#/sections/0/components/0/props/rowExpansion/data/bindings/segment-0`。
+- `#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/2`：[合法完整页面](../examples/table-row-expansion-inputs.json)，JSON Pointer `#/sections/1/components/0/props/rowExpansion/data/bindings/segment-1`。
+- `#/definitions/rowExpansionTable/properties/pagination/oneOf/0`：[合法完整页面](../examples/table-row-expansion-none.json)，JSON Pointer `#/sections/0/components/0/props/rowExpansion/table/pagination`。
+- `#/definitions/rowExpansionTable/properties/pagination/oneOf/1`：[合法完整页面](../examples/table-row-expansion-inline.json)，JSON Pointer `#/sections/0/components/0/props/rowExpansion/table/pagination`。
+- `#/definitions/rowExpansionTable/properties/pagination/oneOf/2`：[合法完整页面](../examples/table-row-expansion-query.json)，JSON Pointer `#/sections/0/components/0/props/rowExpansion/table/pagination`。

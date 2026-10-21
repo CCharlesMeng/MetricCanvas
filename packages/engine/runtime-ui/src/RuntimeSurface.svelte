@@ -22,6 +22,7 @@
   import { downloadTableWorkbook } from './table-workbook';
   import { tablePagination } from './table-pagination';
   import { tick, untrack, setContext, onDestroy } from 'svelte';
+  const rowScopeInstanceId = $props.id();
   import { initialSectionGroup, selectedSectionGroup, sectionGroupFor, visibleSections } from './section-navigation';
   import {
     parsePage,
@@ -1187,6 +1188,7 @@
     if (component.type !== 'table') return undefined;
     void tableRevision;
     return tableController?.binding(component,{
+      expansion: component.props.rowExpansion ? { page: loaded, gateway: activeGateway, filters: filterValues, params: pageParams, instanceId: rowScopeInstanceId } : undefined,
       onexport: () => { void exportTable(component); },
       oncancelexport: () => exportController.cancel(component.id),
       exporting: tableExportStates[component.id]?.busy,

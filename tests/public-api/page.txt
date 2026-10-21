@@ -223,6 +223,7 @@ ResolvedFieldDefinition
 Row
 RowContractIssue
 RowContractValidationResult
+RowExpansion
 RowKind
 RowKindMark
 ScalarFieldDefinition
@@ -326,6 +327,7 @@ documentUsesRuntimeBackToolbar
 enumSelector
 evaluateCondition
 exhaustiveCases
+expansionRowKey
 fieldBindingLeaves
 fieldContractViolations
 fieldName
@@ -421,11 +423,15 @@ resolveRelativeTime
 resolveTextValues
 resolveTimeWindow
 resultSourceIds
+rowExpansionColumns
+rowExpansionPage
+rowExpansionQuerySources
 rowKinds
 runPageParameterProgram
 sectionBackdrop
 selectTimeQuery
 selectedCase
+stableRowQuery
 staticFieldBinding
 supportedVersions
 tableHeaders

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.43",
-  "schemaSha256": "7736eefc8a376593d808fc434664ea360bdac857a5370b4b5f22cecafc676271",
+  "schemaVersion": "6.44",
+  "schemaSha256": "1ec83a088142ec5460ffe180d16488a563277c9ac27e943bafe055d76ac298a3",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -111,6 +111,10 @@
       "sha256": "f62cc3d424562ae3f74c2821b74400b47ad3052a03766e1fa3f4548d35e5eb84"
     },
     {
+      "file": "packages/page/src/row-expansion.ts",
+      "sha256": "958a529d4d3184c5b73e6d7c248e9d4687807514d74359bdf83ab9fb7f3c560e"
+    },
+    {
       "file": "packages/page/src/schema/actions.ts",
       "sha256": "f942fcb73f35c8a87f8581622112b5a43727a661af293ccf0e9df6eef833bf2a"
     },
@@ -176,7 +180,7 @@
     },
     {
       "file": "packages/page/src/schema/components/table.ts",
-      "sha256": "28d23801f80de44e52e270e56b30351764b3cb504c3b801341827cfad0782e41"
+      "sha256": "915e3a8d138743730a0f3a75d84987de2a5658d77680e515345eafccb7525a16"
     },
     {
       "file": "packages/page/src/schema/components/text.ts",
@@ -247,12 +251,16 @@
       "sha256": "67319d1b7e1a7ef39b0cf16ca2316e846a8d105f323b7f22036e3d148e82d9b0"
     },
     {
+      "file": "packages/page/src/validate-row-expansion.ts",
+      "sha256": "e8324404da70f33282b9696da6506471a3e365f3b45b7f0f02c23f5f664213aa"
+    },
+    {
       "file": "packages/page/src/validate.ts",
-      "sha256": "f490136b512dfbe380654dec185816d54f2bd97f09497ee266f1c32b9b3b29b2"
+      "sha256": "7e0bc1a61570bdd0d42fdd0802e660f0cfdef7bf8fdb06f8c1200e189d1d493a"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "7848933c93ee8b769e486c01422f134a2e580a7fae0a717b161a67ff8dc1a981"
+      "sha256": "e2ea3594a4c9d5359256ba0a041b2fd5b01f2e2652e674ea6578ca6215400132"
     }
   ],
   "modules": {
@@ -946,7 +954,9 @@
         "tableComponent",
         "tableColumnNode",
         "tableColumn",
-        "tableColumnGroup"
+        "tableColumnGroup",
+        "rowExpansionTable",
+        "tableRowExpansion"
       ],
       "keywords": [
         "components/table",
@@ -959,11 +969,17 @@
         "table-toolbar-page",
         "table-number-range-page",
         "paged-join-fixed-rank-page",
-        "table-search-options-page"
+        "table-search-options-page",
+        "table-row-expansion-inline",
+        "table-row-expansion-query",
+        "table-row-expansion-inputs",
+        "table-row-expansion-none"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/page/src/row-expansion.ts",
+        "packages/page/src/validate-row-expansion.ts"
       ],
       "rules": [
         "table-row-key",
@@ -979,7 +995,8 @@
         "pagination-exclusive-source",
         "table-toolbar-search",
         "paged-join",
-        "table-search-options"
+        "table-search-options",
+        "table-row-expansion"
       ]
     },
     "components/mapChart.md": {
@@ -1437,7 +1454,8 @@
         "6.40",
         "6.41",
         "6.42",
-        "6.43"
+        "6.43",
+        "6.44"
       ]
     },
     {
@@ -11595,6 +11613,328 @@
       "const": "query"
     },
     {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/rowExpansion",
+      "path": "@tableComponent.props.rowExpansion",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/rowExpansion/allOf/0",
+      "path": "@tableComponent.props.rowExpansion · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/tableRowExpansion"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion",
+      "path": "@tableRowExpansion",
+      "required": "类型/分支",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/mode",
+      "path": "@tableRowExpansion.mode",
+      "required": "本分支可选",
+      "module": "components/table.md",
+      "enum": [
+        "multiple",
+        "single"
+      ]
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data",
+      "path": "@tableRowExpansion.data",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/0",
+      "path": "@tableRowExpansion.data · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/0/properties/type",
+      "path": "@tableRowExpansion.data · oneOf[0].type",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "recordList"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/0/properties/field",
+      "path": "@tableRowExpansion.data · oneOf[0].field",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1",
+      "path": "@tableRowExpansion.data · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/type",
+      "path": "@tableRowExpansion.data · oneOf[1].type",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "query"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/source",
+      "path": "@tableRowExpansion.data · oneOf[1].source",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/filters",
+      "path": "@tableRowExpansion.data · oneOf[1].filters",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/filters/items",
+      "path": "@tableRowExpansion.data · oneOf[1].filters[]",
+      "required": "每个数组项",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings",
+      "path": "@tableRowExpansion.data · oneOf[1].bindings",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties",
+      "path": "@tableRowExpansion.data · oneOf[1].bindings{key}",
+      "required": "动态键的值",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/0",
+      "path": "@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/0/properties/source",
+      "path": "@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[0].source",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "row"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/0/properties/field",
+      "path": "@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[0].field",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/1",
+      "path": "@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/1/properties/source",
+      "path": "@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[1].source",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "param"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/1/properties/id",
+      "path": "@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[1].id",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/2",
+      "path": "@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/2/properties/source",
+      "path": "@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[2].source",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "filter"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/2/properties/id",
+      "path": "@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[2].id",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/2/properties/part",
+      "path": "@tableRowExpansion.data · oneOf[1].bindings{key} · oneOf[2].part",
+      "required": "本分支可选",
+      "module": "components/table.md",
+      "enum": [
+        "value",
+        "from",
+        "to",
+        "level",
+        "mode"
+      ]
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/propertyNames",
+      "path": "@tableRowExpansion.data · oneOf[1].bindings · propertyNames",
+      "required": "条件结构",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableRowExpansion/properties/table",
+      "path": "@tableRowExpansion.table",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "ref": "#/definitions/rowExpansionTable"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable",
+      "path": "@rowExpansionTable",
+      "required": "类型/分支",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/title",
+      "path": "@rowExpansionTable.title",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/title/allOf/0",
+      "path": "@rowExpansionTable.title · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/rowKey",
+      "path": "@rowExpansionTable.rowKey",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/columns",
+      "path": "@rowExpansionTable.columns",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/columns/items",
+      "path": "@rowExpansionTable.columns[]",
+      "required": "每个数组项",
+      "module": "components/table.md",
+      "ref": "#/definitions/tableColumnNode"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/fit",
+      "path": "@rowExpansionTable.fit",
+      "required": "本分支可选",
+      "module": "components/table.md",
+      "enum": [
+        "content",
+        "container"
+      ]
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/pagination",
+      "path": "@rowExpansionTable.pagination",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/pagination/oneOf/0",
+      "path": "@rowExpansionTable.pagination · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/pagination/oneOf/0/properties/mode",
+      "path": "@rowExpansionTable.pagination · oneOf[0].mode",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "none"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/pagination/oneOf/1",
+      "path": "@rowExpansionTable.pagination · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/pagination/oneOf/1/properties/mode",
+      "path": "@rowExpansionTable.pagination · oneOf[1].mode",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "local"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/pagination/oneOf/1/properties/pageSize",
+      "path": "@rowExpansionTable.pagination · oneOf[1].pageSize",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/pagination/oneOf/1/properties/numbered",
+      "path": "@rowExpansionTable.pagination · oneOf[1].numbered",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/pagination/oneOf/2",
+      "path": "@rowExpansionTable.pagination · oneOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/pagination/oneOf/2/properties/mode",
+      "path": "@rowExpansionTable.pagination · oneOf[2].mode",
+      "required": "本分支必填",
+      "module": "components/table.md",
+      "const": "query"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/toolbar",
+      "path": "@rowExpansionTable.toolbar",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/toolbar/properties/search",
+      "path": "@rowExpansionTable.toolbar.search",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/toolbar/properties/search/properties/fields",
+      "path": "@rowExpansionTable.toolbar.search.fields",
+      "required": "本分支必填",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/toolbar/properties/search/properties/fields/items",
+      "path": "@rowExpansionTable.toolbar.search.fields[]",
+      "required": "每个数组项",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/toolbar/properties/search/properties/placeholder",
+      "path": "@rowExpansionTable.toolbar.search.placeholder",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/toolbar/properties/search/properties/placeholder/allOf/0",
+      "path": "@rowExpansionTable.toolbar.search.placeholder · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
       "pointer": "#/definitions/tableComponent/properties/props/properties/actions",
       "path": "@tableComponent.props.actions",
       "required": "本分支可选",
@@ -15766,6 +16106,54 @@
       "module": "components/table.md",
       "file": "examples/reference-branches-page.json",
       "pointer": "#/sections/0/components/1/props/pagination"
+    },
+    {
+      "schemaPointer": "#/definitions/tableRowExpansion/properties/data/oneOf/0",
+      "module": "components/table.md",
+      "file": "examples/table-row-expansion-inline.json",
+      "pointer": "#/sections/0/components/0/props/rowExpansion/data"
+    },
+    {
+      "schemaPointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1",
+      "module": "components/table.md",
+      "file": "examples/table-row-expansion-query.json",
+      "pointer": "#/sections/0/components/0/props/rowExpansion/data"
+    },
+    {
+      "schemaPointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/0",
+      "module": "components/table.md",
+      "file": "examples/table-row-expansion-query.json",
+      "pointer": "#/sections/0/components/0/props/rowExpansion/data/bindings/customer-default"
+    },
+    {
+      "schemaPointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/1",
+      "module": "components/table.md",
+      "file": "examples/table-row-expansion-inputs.json",
+      "pointer": "#/sections/0/components/0/props/rowExpansion/data/bindings/segment-0"
+    },
+    {
+      "schemaPointer": "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings/additionalProperties/oneOf/2",
+      "module": "components/table.md",
+      "file": "examples/table-row-expansion-inputs.json",
+      "pointer": "#/sections/1/components/0/props/rowExpansion/data/bindings/segment-1"
+    },
+    {
+      "schemaPointer": "#/definitions/rowExpansionTable/properties/pagination/oneOf/0",
+      "module": "components/table.md",
+      "file": "examples/table-row-expansion-none.json",
+      "pointer": "#/sections/0/components/0/props/rowExpansion/table/pagination"
+    },
+    {
+      "schemaPointer": "#/definitions/rowExpansionTable/properties/pagination/oneOf/1",
+      "module": "components/table.md",
+      "file": "examples/table-row-expansion-inline.json",
+      "pointer": "#/sections/0/components/0/props/rowExpansion/table/pagination"
+    },
+    {
+      "schemaPointer": "#/definitions/rowExpansionTable/properties/pagination/oneOf/2",
+      "module": "components/table.md",
+      "file": "examples/table-row-expansion-query.json",
+      "pointer": "#/sections/0/components/0/props/rowExpansion/table/pagination"
     },
     {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/6",

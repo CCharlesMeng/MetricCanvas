@@ -1,5 +1,6 @@
 import { filterHasObservableConsumer, presentationPolicyErrors } from './presentation-policy';
 import { chartOptionErrors, withoutChartOptions } from './chart-option';
+import { rowExpansionErrors } from './validate-row-expansion';
 import { chartFilterErrors } from './chart-filter';
 import { metricBeforeErrors } from './metric-before';
 import {ordinaryQuery} from './time-mode';
@@ -414,6 +415,7 @@ function invariantErrors(page: Page): TypedError[] {
   });
   errors.push(...hiddenHierarchyPickerErrors(page));
   errors.push(...queryPaginationErrors(page));
+  errors.push(...rowExpansionErrors(page, invariantErrors));
 
   return errors;
 }

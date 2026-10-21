@@ -419,3 +419,5 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 表格静态搜索选项（6.42）：`props.toolbar.search.options` 声明静态枚举、每项单文本字段与 placeholder，`defaultValue` 可选。切换保留关键词并立即精确搜索；清空保留选项；与既有条件 AND，导出沿用已提交状态。旧 `fields/placeholder` 继续包含匹配。声明与限制见[明细表](docs/page-metadata/components/table.md#静态搜索选项642)，可观察页面见[字段切换示例](pages/table-search-options-demo.json)。
 
 6.43：维度下拉默认支持本地搜索，`searchable:false` 关闭；普通树可声明 `treeSelection:descendants|independent|leaf`。`selection` 继续使用6.37的对象协议，`level`结构树不变。见[筛选声明](docs/page-metadata/filters.md)与IOC选择控件场景。
+
+6.44新增一层行内子表格，声明与限制见[表格：行内子表格](docs/page-metadata/components/table.md#row-expansion)。默认仅内容和分页，父行嵌套明细与按父行查询分页显式分支；模板取数与状态按展开实例隔离，导出范围待确认。

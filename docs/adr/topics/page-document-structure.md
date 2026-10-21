@@ -18,7 +18,7 @@
 
 内容分区的外观自 Schema 5.0 起由可选的 `section.container` 单一声明(封闭三档:`plain`/`panel`/`card`,缺省为通用看板外观);`section.variant` 与 `section.layout` 已删除。内容分区缺省是 12 列等权 Grid；Schema 5.3 起，真实结构无法表达时可声明最多 12 条受控正整数权重轨，不开放 CSS、坐标或像素宽高([ADR-0054](../0054-section-weighted-column-tracks.md))。统一运行时不得按组件组合或子组件 `props.variant` 推断分区外观。同一视觉行内同类型、同 `props.variant` 且具备行对齐能力的组件由统一运行时自动对齐行轨高度,这是运行时不变量而非页面声明;对齐通过显式契约协作,统一运行时不出现组件内部选择器。新增 `container` 档位必须证明"结构上不可区分且视觉上必须不同"。
 
-**指标卡前置连接文字（[ADR-0111](../0111-metric-card-before-connection-layout.md)）：** 6.34 在指标卡 `layout.before` 声明短连接文字和双侧间距档位，由统一运行时派生内部排布盒；整组占成员 span 之和，内部扣除文字和间距后按 span 比例分配。仅支持 Dashboard、plain/card、默认 12 列顶层指标卡。原相邻两卡都呈现才显示连接，不跨隐藏项重连。该能力只为连接关系放开受控 gap，修订 ADR-0038/0054 的全面拒绝；页面树、直接组件尺寸盒和无配置页面保持原有语义。
+**指标卡前置连接文字（[ADR-0113](../0111-metric-card-before-connection-layout.md)）：** 6.34 在指标卡 `layout.before` 声明短连接文字和双侧间距档位，由统一运行时派生内部排布盒；整组占成员 span 之和，内部扣除文字和间距后按 span 比例分配。仅支持 Dashboard、plain/card、默认 12 列顶层指标卡。原相邻两卡都呈现才显示连接，不跨隐藏项重连。该能力只为连接关系放开受控 gap，修订 ADR-0038/0054 的全面拒绝；页面树、直接组件尺寸盒和无配置页面保持原有语义。
 
 **响应式宽度所有权([ADR-0059](../0059-direct-component-box-responsive-ownership.md)):** `RuntimeView` 的 `mc-runtime` 只负责页面级与跨组件排布；`RuntimeSection` 顶层单元、组合卡 slot 与 Tab 活动面板以 `mc-component-box` 给直接 Page Component 提供可用 inline-size；组件内部只使用最近的直接布局盒或匿名 self container。旧 viewport 数值不得机械迁移为容器阈值，优先用流式 CSS；组件根填满直接盒，固有内容尺寸必须有收缩或内部 overflow owner。该边界不进入 Page Metadata，不新增响应字段或生产态断点注册表。
 
@@ -43,3 +43,4 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 2026-10-19修订：6.31使用reportHeader.props.exportButtons数组统一PDF/PNG按钮，每项配置format、label、filename及scale。直接点击下载，取消格式菜单、清晰度弹窗和二次保存；旧字段只在读取接缝兼容。PDF支持2/3/4倍，PNG支持3/4倍，超限明确失败。见[ADR-0097最新修订](../0097-report-date-filter-and-instance-export-view.md)。
 
 条件呈现按 [ADR-0112](../0112-unified-presentation-conditions.md) 就地声明 visibleWhen/enabledWhen，共用封闭条件语法、类型校验与纯求值。分区、组件、Tab、筛选器和受控入口只受自身与祖先约束；子项全隐藏不反推父级，不建设空容器检测与完整性策略。条件资格与导航选择、数据空态分开，展示投影不改变页面查询定义。6.35能力与创作契约、独立校验器同批交付，真实集成单列验收。
+**行内子表格（[ADR-0113](../0113-isolated-expanded-row-tables.md)）：** 6.44在父表就地声明一层独立Table，recordList与query来源显式分支。默认仅白底内容及现有分页，搜索/标题/排序按需声明；每个父行独立拥有查询与会话，折叠或条件失效即销毁。它不扩展详情浮层或引入递归页面；导出范围仍待确认。

@@ -18,7 +18,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 43;
+const CURRENT_MINOR = 44;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -42,6 +42,10 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'table-row-expansion': {
+    minor: 44, legacyReadable: false, description: '单层行内子表格与按父行隔离的查询分页',
+    usedAt: document => componentPaths(document, component => component.type === 'table' && has(props(component), 'rowExpansion'))
+  },
   'dimension-search-tree-policy': {minor:43,description:'维度下拉可选搜索与普通树父子策略',usedAt:document=>filterPaths(document,f=>f.type==='dimension'&&(has(f,'searchable')||['descendants','independent','leaf'].includes(String(f.treeSelection))))},
   'table-search-options': {
     minor: 42, legacyReadable: false, description: '表格静态搜索选项与单文本字段等值匹配',

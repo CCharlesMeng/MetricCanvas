@@ -18,6 +18,7 @@ export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
   getQueryView(dataSourceId: string): TableQueryView | undefined;
   getQueryPageSize(dataSourceId: string): number | undefined;
   getSourceProgram(): ReturnType<typeof createSourceProgram> | undefined;
+  refreshQuery(dataSourceId: string): void;
   setQueryPage(dataSourceId: string, pageIndex: number): void;
   setQueryPageSize(dataSourceId: string, pageSize: number): void;
   setQuerySort(dataSourceId: string, sort: ReadonlyArray<{ field: string; direction: 'asc' | 'desc' }>): void;
@@ -133,6 +134,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     });
     refetch(new Set([...ids].filter(id => !matched.has(id) && raw.get(id)?.status === 'loading')), true);
     return {
+      refresh: (id: string) => refetch(new Set([id])),
       program, tables, views, year, current: () => snapshots,
       queries: () => program.captureQueries(values, views(), raw),
       mutable(id: string) { return tables.has(id) && (compiled.limits.has(id) || compiled.automatic.has(id) || ![...ids].some(key => queryResultDependencies(page.dataSources[key]).includes(id))); },
@@ -145,6 +147,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     captureQueries: () => active?.queries() ?? new Map(), captureViews: () => active?.views() ?? new Map(),
     captureComputeYear: () => active?.year ?? new Date().getFullYear(), getSourceProgram: () => active?.program,
     getQueryView: id => active?.tables.get(id)?.snapshot(), getQueryPageSize: id => active?.pageSize(id),
+    refreshQuery(id) { if (active?.tables.has(id)) active.refresh(id); },
     setQueryPage(id, value) { if (active?.pageSize(id)) active.tables.get(id)?.setPage(value); },
     setQueryPageSize(id, value) { if(page.dataSources[id]?.source.type==='pagedJoin'&&value>1000)return; if (active?.pageSize(id)) active.tables.get(id)?.setPageSize(value); },
     setQuerySort(id, value) { const source=page.dataSources[id];const sortable=source?.source.type==='pagedJoin'?source.source.ordering.sortableFields:undefined;if(sortable&&value.some(rule=>!sortable.includes(rule.field)))return; if (active?.mutable(id)) active.tables.get(id)?.setSort((source?.source.type==='pagedJoin'&&!value.length?source.source.ordering.default:value).map(v => ({ ...v }))); },

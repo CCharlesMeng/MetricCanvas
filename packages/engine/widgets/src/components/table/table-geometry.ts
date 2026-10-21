@@ -15,14 +15,15 @@ export function tableGeometry(root: HTMLElement, enabled: boolean) {
 
     function measure() {
       frame = 0;
+      root.style.setProperty('--table-viewport-width', `${scroll.clientWidth}px`);
       let top = 0;
-      const rows = table.querySelectorAll<HTMLTableRowElement>('thead tr');
+      const rows = table.querySelectorAll<HTMLTableRowElement>(':scope > thead > tr');
       for (const row of rows) {
         row.style.setProperty('--table-header-top', `${top}px`);
         top += row.getBoundingClientRect().height;
       }
-      const widths = Array.from(table.querySelectorAll('col'), col => col.getBoundingClientRect().width);
-      const headers = Array.from(table.querySelectorAll<HTMLElement>('th.fixed'));
+      const widths = Array.from(table.querySelectorAll(':scope > colgroup > col'), col => col.getBoundingClientRect().width);
+      const headers = Array.from(table.querySelectorAll<HTMLElement>(':scope > thead > tr > th.fixed'));
       const offsets = new Map<number, { side: 'left' | 'right'; offset: number; boundary: boolean }>();
       for (const side of ['left', 'right'] as const) {
         const indexes = headers.filter(cell => cell.style[side] !== '')
@@ -34,7 +35,7 @@ export function tableGeometry(root: HTMLElement, enabled: boolean) {
           offset += widths[index] ?? 0;
         }
       }
-      for (const cell of table.querySelectorAll<HTMLElement>('.fixed[data-column-index]')) {
+      for (const cell of table.querySelectorAll<HTMLElement>(':scope > :is(thead,tbody) > tr > .fixed[data-column-index]')) {
         const fixed = offsets.get(Number(cell.dataset.columnIndex));
         if (!fixed) continue;
         cell.style.setProperty(`--table-sticky-${fixed.side}`, `${fixed.offset}px`);
@@ -47,7 +48,7 @@ export function tableGeometry(root: HTMLElement, enabled: boolean) {
       root.classList.toggle('fixed-overflow', pinnedWidth >= scroll.clientWidth && pinnedWidth > 0);
       root.classList.toggle('scrolled-left', scroll.scrollLeft > 1);
       root.classList.toggle('scrolled-right', scroll.scrollLeft + scroll.clientWidth < scroll.scrollWidth - 1);
-      const targets = new Set<Element>([root, table, ...rows, ...table.querySelectorAll('thead th')]);
+      const targets = new Set<Element>([root, table, ...rows, ...table.querySelectorAll(':scope > thead > tr > th')]);
       for (const element of observed) if (!targets.has(element)) { resize.unobserve(element); observed.delete(element); }
       for (const element of targets) if (!observed.has(element)) { resize.observe(element); observed.add(element); }
     }
@@ -62,7 +63,8 @@ export function tableGeometry(root: HTMLElement, enabled: boolean) {
       scroll.removeEventListener('scroll', schedule);
       if (frame) win.cancelAnimationFrame(frame);
       root.classList.remove('scrolled-left', 'scrolled-right', 'fixed-overflow');
-      for (const cell of table.querySelectorAll<HTMLElement>('.fixed[data-column-index]')) {
+      root.style.removeProperty('--table-viewport-width');
+      for (const cell of table.querySelectorAll<HTMLElement>(':scope > :is(thead,tbody) > tr > .fixed[data-column-index]')) {
         cell.style.removeProperty('--table-sticky-left');
         cell.style.removeProperty('--table-sticky-right');
         cell.classList.remove('fixed-left-boundary', 'fixed-right-boundary');
@@ -75,5 +77,5 @@ export function tableGeometry(root: HTMLElement, enabled: boolean) {
 }
 
 function rowsOf(table: Element) {
-  return table.querySelectorAll<HTMLElement>('thead tr');
+  return table.querySelectorAll<HTMLElement>(':scope > thead > tr');
 }

@@ -13,7 +13,7 @@ import {
   textValueZ
 } from '../primitives';
 import { actionsZ, openDetailActionZ } from '../actions';
-import { navigationTargetZ, type NavigationTarget } from '../navigation';
+import { navigationBindingZ, navigationTargetZ, type NavigationTarget } from '../navigation';
 import { componentCatalogRegistry } from '../registry';
 import { colorRuleZ, type ColorRule } from '../presentation';
 
@@ -129,6 +129,30 @@ const paginationZ = z.discriminatedUnion('mode', [
   z.object({ mode: z.literal('query') }).strict()
 ]);
 
+const rowTableZ = z.object({
+  title: textValueZ.optional(),
+  rowKey: fieldNameZ,
+  columns: z.array(tableColumnNodeZ).min(1),
+  fit: z.enum(['content', 'container']).optional(),
+  pagination: paginationZ.optional(),
+  toolbar: z.object({ search: z.object({
+    fields: z.array(fieldNameZ).min(1).max(64).meta({ uniqueItems: true }),
+    placeholder: textValueZ.optional()
+  }).strict().optional() }).strict().optional()
+}).strict().meta({ id: 'rowExpansionTable' });
+
+const rowExpansionZ = z.object({
+  mode: z.enum(['multiple', 'single']).optional(),
+  data: z.discriminatedUnion('type', [
+    z.object({ type: z.literal('recordList'), field: fieldNameZ }).strict(),
+    z.object({ type: z.literal('query'), source: idZ,
+      filters: z.array(idZ).min(1).meta({ uniqueItems: true }),
+      bindings: z.record(idZ, navigationBindingZ).meta({ minProperties: 1 })
+    }).strict()
+  ]),
+  table: rowTableZ
+}).strict().meta({ id: 'tableRowExpansion' });
+
 export const tableComponentZ = z
   .object({
     id: componentIdZ,
@@ -180,6 +204,7 @@ export const tableComponentZ = z
         fit: z.enum(['content', 'container']).optional(),
         columns: z.array(tableColumnNodeZ).min(1),
         pagination: paginationZ.optional(),
+        rowExpansion: rowExpansionZ.optional(),
         actions: actionsZ.optional()
       })
       .strict()

@@ -2007,6 +2007,77 @@
         "related": []
       },
       "externalInputs": "selection"
+    },
+    {
+      "id": "table-row-expansion-inline",
+      "group": "features",
+      "summary": "合成内联数据；展开北辰和远山，默认白底仅内容与现有表格分页；翻父页后查看空明细。无需DQE。",
+      "tags": [
+        "表格",
+        "子表格",
+        "内联数据"
+      ],
+      "displayTitle": "行内子表格与独立本地分页",
+      "capabilities": [
+        "tables"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接体验"
+      },
+      "guide": {
+        "steps": [
+          "展开北辰和远山，将北辰翻到第2页，确认远山保持第1页。",
+          "折叠重开回第1页；父表切到第2页展开海川，查看空结果。",
+          "第二张表体验按需标题、排序及single单行展开。"
+        ],
+        "configPaths": [
+          "sections[].components[].props.rowExpansion",
+          "dataSources.*.source"
+        ],
+        "boundary": "导出范围待确认。内联合成明细；第二张表按需启用本地搜索。",
+        "related": [
+          "table-row-expansion-query",
+          "table-toolbar-demo"
+        ]
+      }
+    },
+    {
+      "id": "table-row-expansion-query",
+      "group": "features",
+      "summary": "合成数据及本地DQE Sim；展开后按父行查询，复用现有页码/每页条数/跳页控件。第二张父表演示按需标题、列排序与单行展开。",
+      "tags": [
+        "表格",
+        "子表格",
+        "查询分页"
+      ],
+      "displayTitle": "按父行查询的子表格与独立分页",
+      "capabilities": [
+        "tables",
+        "queries"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "展开取数需本地仿真"
+      },
+      "guide": {
+        "steps": [
+          "展开北辰和远山，将北辰翻到第2页，确认远山保持第1页。",
+          "折叠重开回第1页；父表切到第2页展开海川，查看空结果。",
+          "第二张表体验按需标题、排序及single单行展开。"
+        ],
+        "configPaths": [
+          "sections[].components[].props.rowExpansion",
+          "dataSources.*.source"
+        ],
+        "boundary": "导出范围待确认。需本地DQE Sim；不代表真实DQE/Relay验收，查询搜索需网关编码。",
+        "related": [
+          "table-row-expansion-inline",
+          "table-toolbar-demo"
+        ]
+      }
     }
   ],
   "capabilities": [

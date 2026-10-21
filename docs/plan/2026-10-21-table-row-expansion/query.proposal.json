@@ -1,0 +1,94 @@
+{
+  "status": "proposal-not-a-valid-page",
+  "description": "候选查询分页组件片段，不含 DQE 请求体。customer-orders 必须另行声明并验真，采用现有 filterBindings 绑定父行参数；order.limit声明初始每页条数；每次响应提供该父行约束下匹配结果的totalCount。导出待确认。 默认仅表头、数据和分页；标题、搜索、排序需显式配置，见 optional-controls.proposal.json。",
+  "sourceRequirements": {
+    "customer-orders": {
+      "sourceType": "query",
+      "dedicatedToExpansion": true,
+      "requiredFields": [
+        "order-id",
+        "product",
+        "amount"
+      ],
+      "requiredFilterBindings": [
+        "detail-customer"
+      ],
+      "mustNotDeclareResultScopeComplete": true,
+      "requiredInitialWindow": {
+        "offset": 0,
+        "limit": 20
+      },
+      "requiresTotalCount": true,
+      "requiredStableUniqueRowKey": "order-id",
+      "requiresQueryFieldMapping": [
+        "order-id"
+      ]
+    }
+  },
+  "pageFilterDeclarations": [
+    {
+      "id": "detail-customer",
+      "type": "dimension",
+      "dimension": "customer-id",
+      "label": "客户"
+    }
+  ],
+  "component": {
+    "id": "customer-summary",
+    "type": "table",
+    "layout": {
+      "span": 12
+    },
+    "data": {
+      "main": "customer-summary"
+    },
+    "props": {
+      "rowKey": "customer-id",
+      "columns": [
+        {
+          "field": "customer-name",
+          "title": "客户"
+        }
+      ],
+      "rowExpansion": {
+        "mode": "multiple",
+        "data": {
+          "type": "query",
+          "source": "customer-orders",
+          "filters": [
+            "detail-customer"
+          ],
+          "bindings": {
+            "detail-customer": {
+              "source": "row",
+              "field": "customer-id"
+            }
+          }
+        },
+        "table": {
+          "rowKey": "order-id",
+          "columns": [
+            {
+              "field": "order-id",
+              "title": "订单号"
+            },
+            {
+              "field": "product",
+              "title": "产品 / 服务"
+            },
+            {
+              "field": {
+                "field": "amount",
+                "format": "number-grouped"
+              },
+              "title": "金额（元）"
+            }
+          ],
+          "pagination": {
+            "mode": "query"
+          }
+        }
+      }
+    }
+  }
+}

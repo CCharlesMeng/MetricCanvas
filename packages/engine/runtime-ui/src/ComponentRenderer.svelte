@@ -15,6 +15,7 @@
    */
   import { getContext, type Snippet } from 'svelte';
   import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
+  import ExpandableTable from './ExpandableTable.svelte';
   import ReportHeaderView from './ReportHeaderView.svelte';
   import { isChartComponent, type Component, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
   import type { PageDataSnapshots } from '../../runtime/src';
@@ -204,6 +205,8 @@
       {/snippet}
     </CompositeCard>
   {/if}
+{:else if component.type === 'table' && table?.expansion && !exportMode}
+  <ExpandableTable {component} data={tableData} binding={table} {snapshot} />
 {:else}
   {#if component.type === 'table' && table && component.props.toolbar && !exportMode && snapshot.status === 'loading'}
     <TableToolbar toolbar={component.props.toolbar} draft={table.searchDraft} option={table.searchOption} onoption={table.onsearchoption} searchEnabled={table.toolbarEnabled?.search??true} busy={table.exporting}
