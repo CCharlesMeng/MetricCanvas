@@ -254,8 +254,7 @@
         "booleanFilter",
         "numberRangeFilter",
         "searchFilter",
-        "periodSelection",
-        "chartFilter"
+        "periodSelection"
       ],
       "keywords": [
         "filters",
@@ -290,8 +289,8 @@
         "tools/scripts/page-conformance-vectors.ts",
         "packages/page/src/period-filter.ts",
         "packages/page/src/report-date-filters.ts",
-        "packages/page/src/chart-filter.ts",
-        "packages/page/src/schema/chart-filter.ts",
+        "packages/page/src/filter-group.ts",
+        "packages/page/src/schema/components/filter-group.ts",
         "packages/page/src/time-filter-boundary.ts",
         "packages/page/src/filter-dependencies.ts",
         "packages/page/src/amount-filter.ts",
@@ -315,7 +314,7 @@
         "time-point-min",
         "time-point-disable-future",
         "period-filter",
-        "chart-local-filter",
+        "filter-group",
         "business-filters",
         "currency-selection",
         "time-extensions",
@@ -1071,6 +1070,30 @@
       "sources": [
         "packages/page/src/schema/components/button.ts"
       ]
+    },
+    "components/filterGroup.md": {
+      "title": "筛选按钮组 filterGroup",
+      "definitions": [
+        "filterGroupComponent"
+      ],
+      "keywords": [
+        "filterGroup",
+        "独立筛选",
+        "单选按钮组"
+      ],
+      "examples": [
+        "filter-group-page",
+        "chart-local-filter-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/filter-group.ts",
+        "packages/page/src/filter-group.ts",
+        "packages/engine/runtime/src/presentation.ts",
+        "packages/engine/runtime-ui/src/dashboard/FilterGroup.svelte"
+      ],
+      "rules": [
+        "filter-group"
+      ]
     }
   },
   "fieldNotes": {
@@ -1373,8 +1396,8 @@
     "#/definitions/lineChartComponent/properties/props/properties/filter": "图表左上角的独立筛选配置，显式引用页面维度筛选器及固定选项。",
     "#/definitions/pieChartComponent/properties/props/properties/filter": "图表左上角的独立筛选配置，显式引用页面维度筛选器及固定选项。",
     "#/definitions/mapChartComponent/properties/props/properties/filter": "图表左上角的独立筛选配置，显式引用页面维度筛选器及固定选项。",
-    "#/definitions/chartFilter/properties/filterId": "引用本页独立的维度筛选器id，由该筛选器声明初值和查询绑定。",
-    "#/definitions/chartFilter/properties/options": "选择器固定候选项；每项显式声明展示标签和实际维度值。",
+    "#/definitions/filterGroupComponent/properties/props/properties/filterId": "引用页面独立普通维度筛选器；初值由该筛选器 default 声明，查询范围仅由 filterBindings 声明。",
+    "#/definitions/filterGroupComponent/properties/props/properties/options": "固定单选候选列表，label 用于展示，value 进入查询与 URL，各 value 唯一。",
     "#/definitions/reportHeaderComponent/properties/props/properties/pngExport": "6.30兼容读取；新页面使用exportButtons，旧配置转换为直接下载PNG按钮。",
     "#/definitions/reportHeaderComponent/properties/props/properties/pngExport/properties/filename": "可选非空文本取值；生成时捕获，默认页头标题，清理非法字符并规范为.png。",
     "#/definitions/reportHeaderComponent/properties/props/properties/pngExport/properties/scale": "有效数值PDF为2/3/4，PNG为3/4；其他值按未配置处理，读取时移除scale，分别使用默认2/3倍。字符串不转换为数值。",
@@ -1733,7 +1756,8 @@
     "#/definitions/dimensionFilter/properties/treeSelection=\"leaf\"": "普通树只选择叶子；多选父节点批量作用于叶子。",
     "#/definitions/tableRowExpansion/properties/mode=\"multiple\"": "允许同时展开多行，缺省模式。",
     "#/definitions/tableRowExpansion/properties/mode=\"single\"": "同一父表最多展开一行。",
-    "#/properties/schemaVersion=\"6.44\"": "增加行内子表格及私有查询分页。"
+    "#/properties/schemaVersion=\"6.44\"": "增加行内子表格及私有查询分页。",
+    "6.45": "Dashboard 独立固定单选筛选按钮组、一控多及统一显隐；旧图表筛选声明按明确批准的受控迁移例外移除。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -1843,6 +1867,12 @@
       "rule": "detail-view-component-types",
       "reason": "详情展示闭集不开放独立按钮和递归动作，只有语义拒绝见证。",
       "source": "packages/page/src/validate.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/18": {
+      "case": "filter-group-detail",
+      "rule": "filter-group",
+      "reason": "独立固定筛选按钮组首批仅用于Dashboard正文或组合卡；共享组件Schema的详情分支由语义校验拒绝。",
+      "source": "packages/page/src/filter-group.ts"
     }
   }
 }

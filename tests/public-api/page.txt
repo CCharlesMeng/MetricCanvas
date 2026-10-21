@@ -102,6 +102,7 @@ FieldTextProps
 FieldType
 FieldValue
 FilterDeclaration
+FilterGroupComponent
 FilterHierarchyLevel
 FilterInteractionExtension
 FilterTextValueReference
@@ -294,7 +295,6 @@ candidateDependencies
 canonicalizeJson
 capabilityFloorErrors
 cascadeSourceIds
-chartFilterOptions
 chartOptionErrors
 chartOptionErrorsFor
 chartOptionPaths
@@ -336,6 +336,7 @@ fieldSelectionIds
 fieldSelectionVariants
 fileNameErrors
 filterDependencies
+filterGroupOptions
 filterHasObservableConsumer
 filterHasPresentationConsumer
 filterQueryResultRows

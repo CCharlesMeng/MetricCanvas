@@ -1,7 +1,7 @@
 import { filterHasObservableConsumer, presentationPolicyErrors } from './presentation-policy';
 import { chartOptionErrors, withoutChartOptions } from './chart-option';
 import { rowExpansionErrors } from './validate-row-expansion';
-import { chartFilterErrors } from './chart-filter';
+import { filterGroupErrors, obsoleteChartFilterErrors } from './filter-group';
 import { metricBeforeErrors } from './metric-before';
 import {ordinaryQuery} from './time-mode';
 import {timeExtensionErrors} from './time-extension-validation';
@@ -102,6 +102,8 @@ export function parsePage(
   document: unknown,
   options: PageParseOptions = {}
 ): PageParseResult {
+  const removed = obsoleteChartFilterErrors(document);
+  if (removed.length) return {ok:false,errors:removed};
   const optionErrors = chartOptionErrors(document);
   if (optionErrors.length) {
     const other = parsePage(withoutChartOptions(document), options);
@@ -159,7 +161,7 @@ export function parsePage(
   const page = canonicalLayoutDocument(materialized.document as Page);
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
   const selectionErrors=[...timeExtensionErrors(page),...fieldSelectionErrors(page),...[...timeQueryVariants(page)].flatMap(variant=>[...amountErrors(variant),...moneyComputeErrors(variant)])];if(selectionErrors.length)return {ok:false,errors:selectionErrors};
-  const errors:TypedError[]=[...presentationPolicyErrors(page)];try{for(const fields of fieldSelectionVariants(page))for(const variant of timeQueryVariants(fields))errors.push(...invariantErrors(variant), ...chartFilterErrors(variant, compatibleDocument), ...navigationErrors(variant), ...urlInputErrors(variant));}catch(cause){return {ok:false,errors:[schemaError('/sections',String(cause))]};}
+  const errors:TypedError[]=[...presentationPolicyErrors(page)];try{for(const fields of fieldSelectionVariants(page))for(const variant of timeQueryVariants(fields))errors.push(...invariantErrors(variant), ...filterGroupErrors(variant), ...navigationErrors(variant), ...urlInputErrors(variant));}catch(cause){return {ok:false,errors:[schemaError('/sections',String(cause))]};}
   return errors.length === 0
     ? { ok: true, page, errors: [] }
     : { ok: false, errors };
@@ -172,6 +174,8 @@ export function parsePage(
 export function normalizePageDocument(document: unknown):
   | { ok: true; document: PageDocument; errors: [] }
   | { ok: false; errors: TypedError[] } {
+  const removed = obsoleteChartFilterErrors(document);
+  if (removed.length) return {ok:false,errors:removed};
   const optionErrors = chartOptionErrors(document);
   if (optionErrors.length) return { ok: false, errors: parsePage(document).errors };
   const compatibleDocument = normalizeReportExportScales(adaptLegacyPageDocument(document));

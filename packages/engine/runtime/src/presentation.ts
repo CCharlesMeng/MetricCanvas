@@ -24,7 +24,11 @@ export function compilePresentation(page:Page) {
       const groups=new Map((page.sectionGroups??[]).map(group=>[group.id,policyGate(group,context)]));
       function component(node:Component,parent:PresentationGate):Component|undefined {
         const own=policyGate(node,context,parent);
-        const gate=node.type==='button'?interactionGate(node.props.action,context,own):own;
+        let gate=node.type==='button'?interactionGate(node.props.action,context,own):own;
+        if(node.type==='filterGroup'){
+          const filter=page.filters?.find(filter=>filter.id===node.props.filterId);
+          gate=!filter || filter.visible===false?{eligible:false,enabled:false}:policyGate(filter,context,own);
+        }
         components.set(node.id,gate);
         if(!gate.eligible)return undefined;
         if(node.type==='tabContainer')return {...node,props:{...node.props,tabs:node.props.tabs.flatMap(tab=>{

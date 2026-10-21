@@ -141,7 +141,7 @@ inline 和已声明完整且未截断的 query 从完整行集枚举；计算产
 可观察示例：table-column-candidates（pages/table-column-candidates.json），在 Playground 的 /pages/table-column-candidates 打开。使用64行内联合成数据，演示跨页候选、继续加载、搜索、多列联动、数字编码与两表隔离。远程编码通过合成网关契约测试；真实 DQE/Relay 尚待外部服务核验。产品决策与兼容例外见 ADR-0114。
 
 
-页面协议 6.44。结构真源为本册[schema.json](../schema.json)，SHA256 `1ec83a088142ec5460ffe180d16488a563277c9ac27e943bafe055d76ac298a3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.45。结构真源为本册[schema.json](../schema.json)，SHA256 `23830b5ce5063c01351c5ddc96f736dd0d80aaf80e7f094dec8a47eb23b8d190`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

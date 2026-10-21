@@ -18,7 +18,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 44;
+const CURRENT_MINOR = 45;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -42,6 +42,16 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'filter-group': {
+    minor: 45, legacyReadable: false,
+    description: 'Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐',
+    usedAt: document => componentPaths(document, component => {
+      if (component.type === 'filterGroup') return true;
+      const children = props(component)?.components;
+      return component.type === 'compositeCard' && Array.isArray(children) &&
+        children.some(child => ['barChart', 'lineChart', 'mapChart'].includes(String(record(child)?.type)));
+    })
+  },
   'table-row-expansion': {
     minor: 44, legacyReadable: false, description: '单层行内子表格与按父行隔离的查询分页',
     usedAt: document => componentPaths(document, component => component.type === 'table' && has(props(component), 'rowExpansion'))

@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { validate } from '../../packages/page/src/validate';
+import { conditionSourceIds } from '../../packages/page/src/data-source-references';
 
 type Schema = Record<string, any>;
 export interface ReferenceMap {
@@ -134,8 +135,23 @@ function components(value: unknown): any[] {
   const own = typeof item.type === 'string' && item.layout && item.props ? [item] : [];
   return [...own, ...Object.values(item).flatMap(components)];
 }
+/** Keep fixed controls needed by the selected component's query graph. */
+function requiredFilterGroups(document: any, component: any): any[] {
+  const selected = components(component);
+  const ids = new Set(selected.map(child => child.id));
+  const filters = new Set<string>();
+  for (const child of selected) for (const sourceId of Object.values(child.data ?? {})) {
+    for (const dependency of conditionSourceIds(document, String(sourceId))) {
+      const source = document.dataSources[dependency]?.source;
+      if (source?.type === 'query') for (const id of Object.keys(source.query.filterBindings ?? {})) filters.add(id);
+    }
+  }
+  return components(document.sections).filter(child => child.type === 'filterGroup' &&
+    filters.has(child.props.filterId) && !ids.has(child.id));
+}
 function minimalExample(document: any, component: any): any | undefined {
-  const candidate = structuredClone({...document, meta:undefined, sections:[{id:'main',components:[component]}]});
+  const controls = requiredFilterGroups(document, component);
+  const candidate = structuredClone({...document, meta:undefined, sections:[{id:'main',components:[...controls,component]}]});
   const params = new Set<string>();
   function references(value: any) {
     if (!value || typeof value !== 'object') return;

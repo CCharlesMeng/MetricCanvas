@@ -9,7 +9,7 @@
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.44。结构真源为本册[schema.json](../schema.json)，SHA256 `1ec83a088142ec5460ffe180d16488a563277c9ac27e943bafe055d76ac298a3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.45。结构真源为本册[schema.json](../schema.json)，SHA256 `23830b5ce5063c01351c5ddc96f736dd0d80aaf80e7f094dec8a47eb23b8d190`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -362,4 +362,4 @@ Schema位置：`#/definitions/keyValueItem/properties/icon`。
 - `#/definitions/keyValuePanelComponent/properties/props/properties/columns/anyOf/1`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/7/props/columns`。
 - `#/definitions/keyValuePanelComponent/properties/props/properties/columns/anyOf/2`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/8/props/columns`。
 - `#/definitions/keyValuePanelComponent/properties/props/properties/columns/anyOf/3`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/9/props/columns`。
-- `#/definitions/keyValuePanelComponent/properties/props/properties/columns/anyOf/4`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/3/props/columns`。
+- `#/definitions/keyValuePanelComponent/properties/props/properties/columns/anyOf/4`：[合法完整页面](../examples/component-categoryBreakdown.json)，JSON Pointer `#/sections/0/components/0/props/components/3/props/columns`。

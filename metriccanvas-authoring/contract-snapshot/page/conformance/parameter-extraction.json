@@ -546,7 +546,7 @@
     "report-period"
   ],
   "template": {
-    "schemaVersion": "6.44",
+    "schemaVersion": "6.45",
     "id": "tokens-report",
     "layout": "report",
     "dataSources": {
@@ -1016,7 +1016,7 @@
     }
   },
   "filled": {
-    "schemaVersion": "6.44",
+    "schemaVersion": "6.45",
     "id": "tokens-report",
     "layout": "report",
     "dataSources": {
@@ -1482,7 +1482,7 @@
     ]
   },
   "execution": {
-    "schemaVersion": "6.44",
+    "schemaVersion": "6.45",
     "id": "tokens-report",
     "layout": "report",
     "sections": [

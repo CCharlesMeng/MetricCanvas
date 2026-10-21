@@ -27,7 +27,7 @@ for (const width of [1440, 390]) for (const layout of ['report', 'dashboard'] as
       const failures: string[] = [];
       const fixtures = presentationFixtures();
       expect(fixtures).toHaveLength(54);
-      for (const fixture of fixtures) {
+      for (const fixture of fixtures) await test.step(fixture.name, async () => {
         const document = { ...fixture.document, layout, sections: fixture.document.sections.map(section => ({ ...section, container })) };
         await show(page, document);
         for (const section of document.sections) for (const component of section.components) {
@@ -50,7 +50,7 @@ for (const width of [1440, 390]) for (const layout of ['report', 'dashboard'] as
         if (hiddenCharts.length) failures.push(`${fixture.name}: collapsed canvas ${JSON.stringify(hiddenCharts)}`);
         const hiddenTables = await page.locator('.table-widget .scroll').evaluateAll(tables => tables.filter(table => table.getBoundingClientRect().height < 20).length);
         if (hiddenTables) failures.push(`${fixture.name}: collapsed table body`);
-      }
+      });
       expect(errors).toEqual([]);
       expect(failures).toEqual([]);
     });

@@ -22,6 +22,10 @@ const componentsDir = path.join(here, '../src/components');
 
 /** 白名单成员 → 它的纯渲染组件文件。新准入一种就必须在这里给出文件。 */
 const WIDGET_FILES: Record<string, string> = {
+  filterGroup: '../../../runtime-ui/src/dashboard/FilterGroup.svelte',
+  barChart: 'bar-chart/BarChart.svelte',
+  lineChart: 'line-chart/LineChart.svelte',
+  mapChart: 'map-chart/MapChart.svelte',
   metricCard: 'metric-card/MetricCard.svelte',
   pieChart: 'pie-chart/PieChart.svelte',
   gauge: 'gauge/Gauge.svelte',

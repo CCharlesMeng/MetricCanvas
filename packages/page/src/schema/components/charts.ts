@@ -1,5 +1,4 @@
 import { visibilityShape } from '../condition';
-import { chartFilterZ } from '../chart-filter';
 import { z } from 'zod';
 import type { JsonValue } from '../../query';
 import {
@@ -48,7 +47,6 @@ export const barChartComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
-        filter: chartFilterZ.optional(),
         echartsOption: chartOptionZ.optional(),
         variant: z.literal('reportForecast').optional(),
         categoryField: fieldBindingZ,
@@ -93,7 +91,6 @@ export const lineChartComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
-        filter: chartFilterZ.optional(),
         echartsOption: chartOptionZ.optional(),
         xField: fieldBindingZ,
         series: z.array(chartSeriesZ).min(1),
@@ -137,7 +134,6 @@ export const pieChartComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
-        filter: chartFilterZ.optional(),
         echartsOption: chartOptionZ.optional(),
         variant: z.literal('compactRing').optional(),
         categoryField: fieldBindingZ,

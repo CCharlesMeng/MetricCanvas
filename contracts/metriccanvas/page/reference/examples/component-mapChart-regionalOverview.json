@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.29",
+  "schemaVersion": "6.45",
   "id": "chart-local-filter-page",
   "layout": "dashboard",
   "filters": [
@@ -63,29 +63,36 @@
       "id": "main",
       "components": [
         {
+          "id": "map-filter",
+          "type": "filterGroup",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "filterId": "map-region",
+            "options": [
+              {
+                "label": "中国区",
+                "value": "CN"
+              },
+              {
+                "label": "海外",
+                "value": "OVERSEAS"
+              }
+            ]
+          }
+        },
+        {
           "id": "map",
           "type": "mapChart",
           "layout": {
-            "span": 6
+            "span": 12
           },
           "data": {
             "main": "map-data"
           },
           "props": {
             "title": "区域分布",
-            "filter": {
-              "filterId": "map-region",
-              "options": [
-                {
-                  "label": "中国区",
-                  "value": "CN"
-                },
-                {
-                  "label": "海外",
-                  "value": "OVERSEAS"
-                }
-              ]
-            },
             "nameField": "category",
             "valueField": "value",
             "map": "world",

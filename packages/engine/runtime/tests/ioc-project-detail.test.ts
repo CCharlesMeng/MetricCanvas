@@ -108,7 +108,7 @@ describe('ioc-project-detail 骨架', () => {
     expect(
       norms?.type === 'compositeCard'
         ? norms.props.components.map((component) => [
-            component.id, component.type, component.layout.span, component.props.title
+            component.id, component.type, component.layout.span, ('title' in component.props ? component.props.title : undefined)
           ])
         : undefined
     ).toEqual([

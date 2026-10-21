@@ -10,8 +10,10 @@ metricGrid、compactSummary、analysisStack等变体决定卡内结构；子组�
 
 6.35条件呈现及相关限制见[条件显隐](../conditions.md)；子项全部隐藏不自动收起父容器。
 
+组合卡允许独立 filterGroup 及柱、线、饼、地图四类图表作为叶子组件，用于筛选与内容的显式组合；仍禁止组合卡递归和任意子组件。筛选作用范围由查询绑定决定，卡内位置不自动限定数据范围。
 
-页面协议 6.44。结构真源为本册[schema.json](../schema.json)，SHA256 `1ec83a088142ec5460ffe180d16488a563277c9ac27e943bafe055d76ac298a3`。字段表自动生成；可选不等于有默认值。
+
+页面协议 6.45。结构真源为本册[schema.json](../schema.json)，SHA256 `23830b5ce5063c01351c5ddc96f736dd0d80aaf80e7f094dec8a47eb23b8d190`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -185,47 +187,87 @@ Schema位置：`#/definitions/compositeCardChild`。
 
 ### `@compositeCardChild · oneOf[0]`
 
-Schema位置：`#/definitions/compositeCardChild/oneOf/0`。目标：[#/definitions/metricCardComponent](../components/metricCard.md#schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e74)。
+Schema位置：`#/definitions/compositeCardChild/oneOf/0`。目标：[#/definitions/filterGroupComponent](../components/filterGroup.md#schema-232f646566696e6974696f6e732f66696c74657247726f7570436f6d706f6e656e74)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| 引用 #/definitions/metricCardComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| 引用 #/definitions/filterGroupComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f31"></a>
 
 ### `@compositeCardChild · oneOf[1]`
 
-Schema位置：`#/definitions/compositeCardChild/oneOf/1`。目标：[#/definitions/pieChartComponent](../components/pieChart.md#schema-232f646566696e6974696f6e732f7069654368617274436f6d706f6e656e74)。
+Schema位置：`#/definitions/compositeCardChild/oneOf/1`。目标：[#/definitions/barChartComponent](../components/barChart.md#schema-232f646566696e6974696f6e732f6261724368617274436f6d706f6e656e74)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| 引用 #/definitions/pieChartComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| 引用 #/definitions/barChartComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f32"></a>
 
 ### `@compositeCardChild · oneOf[2]`
 
-Schema位置：`#/definitions/compositeCardChild/oneOf/2`。目标：[#/definitions/gaugeComponent](../components/gauge.md#schema-232f646566696e6974696f6e732f6761756765436f6d706f6e656e74)。
+Schema位置：`#/definitions/compositeCardChild/oneOf/2`。目标：[#/definitions/lineChartComponent](../components/lineChart.md#schema-232f646566696e6974696f6e732f6c696e654368617274436f6d706f6e656e74)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| 引用 #/definitions/gaugeComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| 引用 #/definitions/lineChartComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f33"></a>
 
 ### `@compositeCardChild · oneOf[3]`
 
-Schema位置：`#/definitions/compositeCardChild/oneOf/3`。目标：[#/definitions/keyValuePanelComponent](../components/keyValuePanel.md#schema-232f646566696e6974696f6e732f6b657956616c756550616e656c436f6d706f6e656e74)。
+Schema位置：`#/definitions/compositeCardChild/oneOf/3`。目标：[#/definitions/mapChartComponent](../components/mapChart.md#schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e74)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| 引用 #/definitions/keyValuePanelComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| 引用 #/definitions/mapChartComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f34"></a>
 
 ### `@compositeCardChild · oneOf[4]`
 
-Schema位置：`#/definitions/compositeCardChild/oneOf/4`。目标：[#/definitions/categoryBreakdownComponent](../components/categoryBreakdown.md#schema-232f646566696e6974696f6e732f63617465676f7279427265616b646f776e436f6d706f6e656e74)。
+Schema位置：`#/definitions/compositeCardChild/oneOf/4`。目标：[#/definitions/metricCardComponent](../components/metricCard.md#schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e74)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/metricCardComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f35"></a>
+
+### `@compositeCardChild · oneOf[5]`
+
+Schema位置：`#/definitions/compositeCardChild/oneOf/5`。目标：[#/definitions/pieChartComponent](../components/pieChart.md#schema-232f646566696e6974696f6e732f7069654368617274436f6d706f6e656e74)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/pieChartComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f36"></a>
+
+### `@compositeCardChild · oneOf[6]`
+
+Schema位置：`#/definitions/compositeCardChild/oneOf/6`。目标：[#/definitions/gaugeComponent](../components/gauge.md#schema-232f646566696e6974696f6e732f6761756765436f6d706f6e656e74)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/gaugeComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f37"></a>
+
+### `@compositeCardChild · oneOf[7]`
+
+Schema位置：`#/definitions/compositeCardChild/oneOf/7`。目标：[#/definitions/keyValuePanelComponent](../components/keyValuePanel.md#schema-232f646566696e6974696f6e732f6b657956616c756550616e656c436f6d706f6e656e74)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/keyValuePanelComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f38"></a>
+
+### `@compositeCardChild · oneOf[8]`
+
+Schema位置：`#/definitions/compositeCardChild/oneOf/8`。目标：[#/definitions/categoryBreakdownComponent](../components/categoryBreakdown.md#schema-232f646566696e6974696f6e732f63617465676f7279427265616b646f776e436f6d706f6e656e74)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
@@ -247,129 +289,51 @@ Schema位置：`#/definitions/compositeCardChild/oneOf/4`。目标：[#/definiti
 
 ```json
 {
-  "id": "card",
+  "id": "share-group",
   "type": "compositeCard",
   "layout": {
-    "span": 2
+    "span": 6
   },
   "props": {
-    "title": "渠道概览",
-    "titleIcon": "opportunity",
     "variant": "metricGrid",
     "components": [
       {
-        "id": "amount-card",
-        "type": "metricCard",
+        "id": "share-filter",
+        "type": "filterGroup",
         "layout": {
-          "span": 6
-        },
-        "data": {
-          "main": "summary"
+          "span": 12
         },
         "props": {
-          "rows": [
+          "filterId": "share-region",
+          "options": [
             {
-              "label": "线上金额",
-              "context": "近60天",
-              "valueField": {
-                "data": "main",
-                "field": "amount",
-                "match": {
-                  "field": "channel",
-                  "equals": "线上"
-                }
-              },
-              "link": true
-            }
-          ],
-          "secondaryRows": [
-            {
-              "label": "评分",
-              "valueField": "score"
-            }
-          ],
-          "actions": [
-            {
-              "on": "click",
-              "navigate": {
-                "href": "/pages/inline-report"
-              }
-            }
-          ]
-        }
-      },
-      {
-        "id": "share-pie",
-        "type": "pieChart",
-        "layout": {
-          "span": 6
-        },
-        "data": {
-          "main": "summary"
-        },
-        "props": {
-          "categoryField": "channel",
-          "valueField": "share"
-        }
-      },
-      {
-        "id": "score-gauge",
-        "type": "gauge",
-        "layout": {
-          "span": 6
-        },
-        "data": {
-          "main": "summary"
-        },
-        "props": {
-          "valueField": "score",
-          "max": 100
-        }
-      },
-      {
-        "id": "owner-panel",
-        "type": "keyValuePanel",
-        "layout": {
-          "span": 6
-        },
-        "data": {
-          "main": "summary"
-        },
-        "props": {
-          "titleIcon": "reward",
-          "columns": 6,
-          "items": [
-            {
-              "label": "负责人",
-              "field": "owner",
-              "icon": "goldMedal"
+              "label": "国内",
+              "value": "CN"
             },
             {
-              "label": "金额",
-              "field": "amount",
-              "unit": "万元"
+              "label": "亚太",
+              "value": "APAC"
+            },
+            {
+              "label": "欧洲（空结果）",
+              "value": "EU"
             }
           ]
         }
       },
       {
-        "id": "channel-breakdown",
-        "type": "categoryBreakdown",
+        "id": "share",
+        "type": "pieChart",
         "layout": {
           "span": 12
         },
         "data": {
-          "main": "summary"
+          "main": "share-data"
         },
         "props": {
-          "categoryField": "channel",
-          "columns": [
-            {
-              "label": "金额",
-              "field": "amount"
-            }
-          ],
-          "swatches": true
+          "title": "渠道占比",
+          "categoryField": "category",
+          "valueField": "value"
         }
       }
     ]
@@ -383,7 +347,11 @@ Schema位置：`#/definitions/compositeCardChild/oneOf/4`。目标：[#/definiti
 ## 联合分支见证（生成）
 
 - `#/definitions/compositeCardChild/oneOf/0`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
-- `#/definitions/compositeCardChild/oneOf/1`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/1`。
-- `#/definitions/compositeCardChild/oneOf/2`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/2`。
-- `#/definitions/compositeCardChild/oneOf/3`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/3`。
-- `#/definitions/compositeCardChild/oneOf/4`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/4`。
+- `#/definitions/compositeCardChild/oneOf/1`：[合法完整页面](../examples/chart-local-filter-page.json)，JSON Pointer `#/sections/0/components/0/props/components/1`。
+- `#/definitions/compositeCardChild/oneOf/2`：[合法完整页面](../examples/chart-local-filter-page.json)，JSON Pointer `#/sections/0/components/1/props/components/1`。
+- `#/definitions/compositeCardChild/oneOf/3`：[合法完整页面](../examples/chart-local-filter-page.json)，JSON Pointer `#/sections/0/components/3/props/components/1`。
+- `#/definitions/compositeCardChild/oneOf/4`：[合法完整页面](../examples/component-categoryBreakdown.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
+- `#/definitions/compositeCardChild/oneOf/5`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/1`。
+- `#/definitions/compositeCardChild/oneOf/6`：[合法完整页面](../examples/component-categoryBreakdown.json)，JSON Pointer `#/sections/0/components/0/props/components/2`。
+- `#/definitions/compositeCardChild/oneOf/7`：[合法完整页面](../examples/component-categoryBreakdown.json)，JSON Pointer `#/sections/0/components/0/props/components/3`。
+- `#/definitions/compositeCardChild/oneOf/8`：[合法完整页面](../examples/component-categoryBreakdown.json)，JSON Pointer `#/sections/0/components/0/props/components/4`。

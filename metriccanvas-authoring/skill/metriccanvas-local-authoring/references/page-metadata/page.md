@@ -55,7 +55,7 @@ IOC `identity.facts[].value:{fact,part}` 只允许固定part latest/latestComple
 实际页面复用既有 `ioc-project-overview`、`ioc-opportunity-list`、`ioc-opportunity-analysis`：分别验证普通、更多筛选及紧凑呈现。`dashboard-period-filter` 使用同一页头且仅保留一个年份入口。旧文档回归使用完整兼容夹具，不再新增演示入口。筛选声明见[筛选模块](filters.md)。
 
 
-页面协议 6.44。结构真源为本册[schema.json](schema.json)，SHA256 `1ec83a088142ec5460ffe180d16488a563277c9ac27e943bafe055d76ac298a3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.45。结构真源为本册[schema.json](schema.json)，SHA256 `23830b5ce5063c01351c5ddc96f736dd0d80aaf80e7f094dec8a47eb23b8d190`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -77,7 +77,7 @@ Schema位置：`#/properties/schemaVersion`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39","6.40","6.41","6.42","6.43","6.44"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 |
+| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39","6.40","6.41","6.42","6.43","6.44","6.45"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -121,6 +121,7 @@ Schema位置：`#/properties/schemaVersion`。
 | "6.42" | 表格静态搜索选项：每项单文本字段精确匹配、placeholder切换、切换即搜索。 |
 | "6.43" | 维度下拉默认搜索、可关闭，普通树显式父子策略。 |
 | "6.44" | 增加行内子表格及私有查询分页。 |
+| "6.45" | Dashboard 独立固定单选筛选按钮组、一控多及统一显隐；旧图表筛选声明按明确批准的受控迁移例外移除。 |
 
 <a id="schema-232f70726f706572746965732f6964"></a>
 
@@ -1132,6 +1133,16 @@ Schema位置：`#/properties/detailViews/items/properties/components/items/oneOf
 |---|---|---|---|---|
 | 引用 #/definitions/buttonComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f70726f706572746965732f64657461696c56696577732f6974656d732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f3138"></a>
+
+### `$.detailViews[].components[] · oneOf[18]`
+
+Schema位置：`#/properties/detailViews/items/properties/components/items/oneOf/18`。目标：[#/definitions/filterGroupComponent](components/filterGroup.md#schema-232f646566696e6974696f6e732f66696c74657247726f7570436f6d706f6e656e74)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/filterGroupComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f70726f706572746965732f73656374696f6e47726f757073"></a>
 
 ### `$.sectionGroups`
@@ -1349,3 +1360,4 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - `#/properties/detailViews/items/properties/components/items/oneOf/15`：[合法完整页面](examples/reference-export-detail-branches.json)，JSON Pointer `#/detailViews/0/components/0`。
 - `#/properties/detailViews/items/properties/components/items/oneOf/16`：[语义拒绝反例](errors/detail-component-reject-aisummary.json)：详情的展示闭集拒绝 aiSummary；共享组件 Schema 分支只存在语义反例。（规则 `detail-view-component-types`）。此项不计入合法示例覆盖。
 - `#/properties/detailViews/items/properties/components/items/oneOf/17`：[语义拒绝反例](errors/detail-component-reject-button.json)：详情展示闭集不开放独立按钮和递归动作，只有语义拒绝见证。（规则 `detail-view-component-types`）。此项不计入合法示例覆盖。
+- `#/properties/detailViews/items/properties/components/items/oneOf/18`：[语义拒绝反例](errors/filter-group-detail.json)：独立固定筛选按钮组首批仅用于Dashboard正文或组合卡；共享组件Schema的详情分支由语义校验拒绝。（规则 `filter-group`）。此项不计入合法示例覆盖。

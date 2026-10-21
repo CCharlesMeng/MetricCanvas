@@ -1,54 +1,60 @@
 {
-  "schemaVersion": "6.44",
-  "id": "composite-page",
+  "schemaVersion": "6.45",
+  "id": "chart-local-filter-page",
   "layout": "dashboard",
-  "dashboardToolbar": {
-    "variant": "compact",
-    "readOnly": true,
-    "note": "只读"
-  },
+  "filters": [
+    {
+      "id": "share-region",
+      "type": "dimension",
+      "dimension": "chart_demo_region",
+      "label": "渠道占比区域",
+      "default": [
+        "APAC"
+      ]
+    }
+  ],
   "dataSources": {
-    "summary": {
+    "share-data": {
       "fields": {
-        "channel": {
+        "category": {
           "type": "string",
-          "role": "dimension"
+          "role": "dimension",
+          "queryField": "chart_demo_category"
         },
-        "amount": {
+        "value": {
           "type": "number",
-          "role": "measure"
-        },
-        "share": {
-          "type": "number",
-          "role": "measure"
-        },
-        "score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "owner": {
-          "type": "string",
-          "role": "dimension"
+          "role": "measure",
+          "queryField": "chart_demo_share"
         }
       },
       "source": {
-        "type": "inline",
-        "rows": [
-          {
-            "channel": "线上",
-            "amount": 60,
-            "share": 60,
-            "score": 88,
-            "owner": "张三"
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "filterBindings": {
+            "share-region": {
+              "target": "dimension",
+              "queryField": "chart_demo_region"
+            }
           },
-          {
-            "channel": "线下",
-            "amount": 40,
-            "share": 40,
-            "score": 70,
-            "owner": "李四"
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "chart_demo_category"
+                ],
+                "output_metrics": [
+                  "chart_demo_share"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
           }
-        ]
+        }
       }
     }
   },
@@ -57,129 +63,51 @@
       "id": "main",
       "components": [
         {
-          "id": "card",
+          "id": "share-group",
           "type": "compositeCard",
           "layout": {
-            "span": 2
+            "span": 6
           },
           "props": {
-            "title": "渠道概览",
-            "titleIcon": "opportunity",
             "variant": "projectNorms",
             "components": [
               {
-                "id": "amount-card",
-                "type": "metricCard",
+                "id": "share-filter",
+                "type": "filterGroup",
                 "layout": {
-                  "span": 6
-                },
-                "data": {
-                  "main": "summary"
+                  "span": 12
                 },
                 "props": {
-                  "rows": [
+                  "filterId": "share-region",
+                  "options": [
                     {
-                      "label": "线上金额",
-                      "context": "近60天",
-                      "valueField": {
-                        "data": "main",
-                        "field": "amount",
-                        "match": {
-                          "field": "channel",
-                          "equals": "线上"
-                        }
-                      },
-                      "link": true
-                    }
-                  ],
-                  "secondaryRows": [
-                    {
-                      "label": "评分",
-                      "valueField": "score"
-                    }
-                  ],
-                  "actions": [
-                    {
-                      "on": "click",
-                      "navigate": {
-                        "href": "/pages/inline-report"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "share-pie",
-                "type": "pieChart",
-                "layout": {
-                  "span": 6
-                },
-                "data": {
-                  "main": "summary"
-                },
-                "props": {
-                  "categoryField": "channel",
-                  "valueField": "share"
-                }
-              },
-              {
-                "id": "score-gauge",
-                "type": "gauge",
-                "layout": {
-                  "span": 6
-                },
-                "data": {
-                  "main": "summary"
-                },
-                "props": {
-                  "valueField": "score",
-                  "max": 100
-                }
-              },
-              {
-                "id": "owner-panel",
-                "type": "keyValuePanel",
-                "layout": {
-                  "span": 6
-                },
-                "data": {
-                  "main": "summary"
-                },
-                "props": {
-                  "titleIcon": "reward",
-                  "columns": 6,
-                  "items": [
-                    {
-                      "label": "负责人",
-                      "field": "owner",
-                      "icon": "goldMedal"
+                      "label": "国内",
+                      "value": "CN"
                     },
                     {
-                      "label": "金额",
-                      "field": "amount",
-                      "unit": "万元"
+                      "label": "亚太",
+                      "value": "APAC"
+                    },
+                    {
+                      "label": "欧洲（空结果）",
+                      "value": "EU"
                     }
                   ]
                 }
               },
               {
-                "id": "channel-breakdown",
-                "type": "categoryBreakdown",
+                "id": "share",
+                "type": "pieChart",
                 "layout": {
                   "span": 12
                 },
                 "data": {
-                  "main": "summary"
+                  "main": "share-data"
                 },
                 "props": {
-                  "categoryField": "channel",
-                  "columns": [
-                    {
-                      "label": "金额",
-                      "field": "amount"
-                    }
-                  ],
-                  "swatches": true
+                  "title": "渠道占比",
+                  "categoryField": "category",
+                  "valueField": "value"
                 }
               }
             ]

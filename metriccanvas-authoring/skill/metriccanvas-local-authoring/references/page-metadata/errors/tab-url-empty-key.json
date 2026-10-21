@@ -22,6 +22,7 @@
         "/sections/0/components/0/type",
         "/sections/0/components/0/type",
         "/sections/0/components/0/type",
+        "/sections/0/components/0/type",
         "/sections/0/components/0/type"
       ]
     },
@@ -29,6 +30,7 @@
       "type": "SCHEMA_ERROR",
       "message": "存在未定义字段 initialTabUrlParam(拼写错误?)",
       "paths": [
+        "/sections/0/components/0/props/initialTabUrlParam",
         "/sections/0/components/0/props/initialTabUrlParam",
         "/sections/0/components/0/props/initialTabUrlParam",
         "/sections/0/components/0/props/initialTabUrlParam",
@@ -68,6 +70,7 @@
         "/sections/0/components/0/props/tabs",
         "/sections/0/components/0/props/tabs",
         "/sections/0/components/0/props/tabs",
+        "/sections/0/components/0/props/tabs",
         "/sections/0/components/0/props/tabs"
       ]
     },
@@ -75,6 +78,7 @@
       "type": "SCHEMA_ERROR",
       "message": "存在未定义字段 defaultTab(拼写错误?)",
       "paths": [
+        "/sections/0/components/0/props/defaultTab",
         "/sections/0/components/0/props/defaultTab",
         "/sections/0/components/0/props/defaultTab",
         "/sections/0/components/0/props/defaultTab",
@@ -238,7 +242,22 @@
       "type": "SCHEMA_ERROR",
       "message": "存在未定义字段 title(拼写错误?)",
       "paths": [
+        "/sections/0/components/0/props/title",
         "/sections/0/components/0/props/title"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 filterId",
+      "paths": [
+        "/sections/0/components/0/props/filterId"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 options",
+      "paths": [
+        "/sections/0/components/0/props/options"
       ]
     },
     {

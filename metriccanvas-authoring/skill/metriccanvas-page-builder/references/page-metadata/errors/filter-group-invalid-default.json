@@ -1,0 +1,27 @@
+{
+  "case": "filter-group-invalid-default",
+  "invariant": "filter-group",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "筛选按钮组 default 必须是候选项中的一个值",
+      "paths": [
+        "/sections/0/components/0/props/filterId"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "filterId": "channel"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/filter-group-invalid-default.json"
+}

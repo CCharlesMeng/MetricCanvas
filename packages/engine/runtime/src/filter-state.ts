@@ -65,7 +65,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     if (declarations.length && (!declaration || !matchesDeclaration(value,declaration))) throw new Error(`筛选器 ${id} 初值不符合声明`);
     const valid = normalize(value, declaration,editing.now?.());
     if (valid === undefined || timed && !valid) throw new Error(`筛选器 ${id} 初值不符合时间边界`);
-    if (!accepted(id, valid)) throw new Error(`图表筛选器 ${id} 初值不在候选项中`);
+    if (!accepted(id, valid)) throw new Error(`筛选按钮组器 ${id} 初值不在候选项中`);
     if (valid) current.set(id, valid);
   }
   for(const declaration of declarations)if(declaration.type==='numberRange'&&current.has(declaration.id)&&rangeContextIssue(declaration,current))throw new Error('金额币种初值未通过校验');

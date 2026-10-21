@@ -72,7 +72,7 @@
 6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
 
 
-页面协议 6.44。结构真源为本册[schema.json](schema.json)，SHA256 `1ec83a088142ec5460ffe180d16488a563277c9ac27e943bafe055d76ac298a3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.45。结构真源为本册[schema.json](schema.json)，SHA256 `23830b5ce5063c01351c5ddc96f736dd0d80aaf80e7f094dec8a47eb23b8d190`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1066,7 +1066,7 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 - `#/definitions/componentAction/anyOf/0`：[合法完整页面](examples/component-button.json)，JSON Pointer `#/sections/0/components/0/props/action`。
 - `#/definitions/componentAction/anyOf/0/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/1/props/actions/0`。
 - `#/definitions/componentAction/anyOf/0/anyOf/1`：[合法完整页面](examples/component-button.json)，JSON Pointer `#/sections/0/components/0/props/action`。
-- `#/definitions/componentAction/anyOf/1`：[合法完整页面](examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/0/props/actions/0`。
+- `#/definitions/componentAction/anyOf/1`：[合法完整页面](examples/component-categoryBreakdown.json)，JSON Pointer `#/sections/0/components/0/props/components/0/props/actions/0`。
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/0`：[合法完整页面](examples/unified-overflow-header.json)，JSON Pointer `#/sections/0/components/0/props/actions/0/navigate/query/page-title`。
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/1`：[合法完整页面](examples/url-navigation-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/0/navigate/query/project`。
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/1/navigate/query/region`。

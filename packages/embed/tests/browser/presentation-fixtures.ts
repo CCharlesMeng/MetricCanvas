@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { normalizePageDocument, versionPolicy } from '@metriccanvas/page';
-import { chartFilterOptions, isChartComponent, walkPageComponents, type Component } from '@metriccanvas/page/internal';
+import { filterGroupOptions, type Component } from '@metriccanvas/page/internal';
 import type { PageDocument } from '@metriccanvas/page';
 import { responsiveFixtures } from '../../../engine/widgets/tests/responsive-fixtures';
 
@@ -8,21 +8,22 @@ const examples = new URL('../../../../contracts/metriccanvas/page/reference/exam
 
 /** Public contract examples supply all schema branches; no business attachment is checked in. */
 export function presentationFixtures(): Array<{ name: string; document: PageDocument }> {
-  return Object.entries(responsiveFixtures).flatMap(([type, { variants }]) => variants.map(variant => {
+  return Object.entries(responsiveFixtures).filter(([type])=>type!=='filterGroup').flatMap(([type, { variants }]) => variants.map(variant => {
     const name = `${type}${variant === 'default' ? '' : `-${variant}`}`;
     const document = JSON.parse(readFileSync(new URL(`component-${name}.json`, examples), 'utf8'));
     // This matrix exercises chart presentation in both layouts. Dashboard-only controls
     // keep their own full-page acceptance tests instead of entering the Report projection.
-    const chartFilters = chartFilterOptions(document);
-    walkPageComponents<Component>(document, component => {
-      if (isChartComponent(component)) delete component.props.filter;
-    });
-    if (chartFilters.size) {
-      document.filters = document.filters?.filter((filter: {id: string}) => !chartFilters.has(filter.id));
+    const placedFilters = filterGroupOptions(document);
+    for (const section of document.sections) {
+      section.components = section.components.filter((component:Component)=>component.type!=='filterGroup');
+      for (const component of section.components) if(component.type==='compositeCard') component.props.components=component.props.components.filter((child:Component)=>child.type!=='filterGroup');
+    }
+    if (placedFilters.size) {
+      document.filters = document.filters?.filter((filter: {id: string}) => !placedFilters.has(filter.id));
       if (!document.filters?.length) delete document.filters;
       for (const source of Object.values(document.dataSources) as Array<any>) {
         if (source.source.type !== 'query') continue;
-        for (const id of chartFilters.keys()) delete source.source.query.filterBindings?.[id];
+        for (const id of placedFilters.keys()) delete source.source.query.filterBindings?.[id];
       }
     }
     for (const source of Object.values(document.dataSources) as Array<any>) {

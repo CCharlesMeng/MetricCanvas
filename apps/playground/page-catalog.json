@@ -1150,12 +1150,12 @@
     {
       "id": "chart-local-filter-page",
       "group": "verification",
-      "summary": "切换订单图区域只刷新该图，其他图保持不变；选择写入 URL，重新打开可恢复。",
+      "summary": "四类图表均迁移为 filterGroup 组件；每组只刷新绑定的查询，保留原筛选值与独立作用范围。",
       "tags": [
         "图表筛选",
         "Dashboard"
       ],
-      "displayTitle": "图表独立筛选与 URL 恢复",
+      "displayTitle": "独立筛选组件：四类图表与 URL 恢复",
       "capabilities": [
         "filters",
         "queries",
@@ -1173,13 +1173,52 @@
         ],
         "configPaths": [
           "filters",
-          "sections[].components[].props.filter",
+          "sections[].components[].props.components",
           "dataSources.*.source.query.filterBindings"
         ],
         "boundary": "每张图使用独立筛选及查询；导出状态投影由行为测试覆盖，本页没有下载按钮。",
         "related": [
           "dashboard-period-filter",
           "report-png-export"
+        ]
+      }
+    },
+    {
+      "id": "filter-group-page",
+      "group": "verification",
+      "summary": "固定按钮组控制多个查询和带符号指标卡；页头条件控制筛选组件与内容各自显隐。",
+      "tags": [
+        "独立筛选",
+        "指标卡",
+        "条件显隐",
+        "Dashboard"
+      ],
+      "displayTitle": "独立筛选：指标卡、一控多与条件显隐",
+      "capabilities": [
+        "filters",
+        "queries",
+        "export"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "交互取数需本地仿真"
+      },
+      "guide": {
+        "steps": [
+          "切换直营/加盟，观察两张带符号指标卡和趋势同步更新，对照图不变。",
+          "业务范围切到海外，按钮组与趋势隐藏，指标卡保留已选口径；切回国内恢复原选择。",
+          "切换组合卡内区域，确认只改变卡内指标。"
+        ],
+        "configPaths": [
+          "filters",
+          "sections[].components[].visibleWhen",
+          "sections[].components[].props.filterId",
+          "dataSources.*.source.query.filterBindings"
+        ],
+        "related": [
+          "chart-local-filter-page",
+          "page-visibility-region-linkage"
         ]
       }
     },

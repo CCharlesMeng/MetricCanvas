@@ -54,27 +54,11 @@ urlParams仅映射该类允许的value/from/to/level键，不能与本页其它�
 
 <a id="chart-local-filter"></a>
 
-## 图表独立筛选（6.29）
+## 独立筛选按钮组
 
-Dashboard 正文的 `barChart`、`lineChart`、`pieChart`、`mapChart` 可在 `props.filter` 声明一个左上角紧凑圆角单选按钮组。`filterId` 引用页面的普通维度筛选器；`options` 是创作时配置的非空 `{label,value}` 数组。label 是显示名称，value 是实际查询值，各 value 唯一。该筛选器的 `default` 必须包含候选项中的恰好一个值，不使用 initialParam、层级、级联或隐藏声明。每张图分别声明 filterId，即使筛选同一业务维度也彼此独立。未配置的图表保留原有呈现。
+固定按钮组选项由独立 `filterGroup` 组件声明，筛选状态仍归页面 filters，查询范围仍归 filterBindings。一个控件可以控制多个查询及其组件消费者，并复用统一 visibleWhen 策略。完整声明、显隐与状态语义、限制、旧图表声明迁移和验收场景见[筛选按钮组](components/filterGroup.md)。
 
-```json
-{
-  "filterId": "orders-region",
-  "options": [
-    {"label": "中国区", "value": "CN"},
-    {"label": "海外", "value": "OVERSEAS"}
-  ]
-}
-```
-
-例子中的页面筛选声明为 `{"id":"orders-region","type":"dimension","dimension":"region","default":["CN"]}`，本图普通查询以 `filterBindings.orders-region={"target":"dimension","queryField":"region"}` 绑定。所有候选项直接显示为圆角按钮，选中项黑底白字，其他项浅灰底深字，窄容器自然换行。控件只负责位置与选项，查询条件仍由筛选绑定管理；不在页面工具栏重复呈现，也不请求维度候选值。
-
-校验检查整个查询依赖图：绑定只能位于本图的查询依赖中，筛选影响的结果不能被另一组件（包括 AI 总结）消费，也不能驱动其他筛选器级联。需要独立图表时，分别声明查询数据源；共享完整结果、组合查询源、inline 图表、报表及详情视图不在本能力范围。切换只更新本图依赖的查询，页面公共筛选仍可与其共同作用。
-
-当前值进入同一筛选状态和 URL。非法或多值 URL 输入忽略，使用声明的默认项；运行中的清空、多选或域外写入被拒绝，保留已应用选择。执行快照含非法图表筛选值时拒绝打开。加载、空结果及查询失败保留筛选控件，允许继续切换。静态导出捕获当前选择和对应查询，并以所选 label 替代交互控件。
-
-验收页面 `chart-local-filter-page` 与同名协议夹具覆盖四种图表、独立默认项、自定义名称/值、空结果和未筛选对照图；浏览器验收直接消费此页面。数据是本地 Sim 的合成数据，不能证明真实 DQE、Relay 或线上部署结果。
+原图表 `props.filter` 已移除；原锚点保留为本文档跳转入口，不代表旧协议继续可读。
 
 ## 查阅方式
 
@@ -137,7 +121,7 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 验收场景：[ioc-header-selection](examples/dimension-selection-page.json)，仅本地合成候选与表格查询；不代表真实服务验收。
 
 
-页面协议 6.44。结构真源为本册[schema.json](schema.json)，SHA256 `1ec83a088142ec5460ffe180d16488a563277c9ac27e943bafe055d76ac298a3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.45。结构真源为本册[schema.json](schema.json)，SHA256 `23830b5ce5063c01351c5ddc96f736dd0d80aaf80e7f094dec8a47eb23b8d190`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -2603,66 +2587,6 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 |---|---|---|---|---|
 | "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 作者声明的初始默认；不是运行时随状态变化重新应用的值。 |
 
-<a id="schema-232f646566696e6974696f6e732f636861727446696c746572"></a>
-
-### `@chartFilter`
-
-Schema位置：`#/definitions/chartFilter`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "object" | 类型/分支 | required=["filterId","options"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
-
-<a id="schema-232f646566696e6974696f6e732f636861727446696c7465722f70726f706572746965732f66696c7465724964"></a>
-
-### `@chartFilter.filterId`
-
-Schema位置：`#/definitions/chartFilter/properties/filterId`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 引用本页独立的维度筛选器id，由该筛选器声明初值和查询绑定。 |
-
-<a id="schema-232f646566696e6974696f6e732f636861727446696c7465722f70726f706572746965732f6f7074696f6e73"></a>
-
-### `@chartFilter.options`
-
-Schema位置：`#/definitions/chartFilter/properties/options`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "array" | 本分支必填 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 选择器固定候选项；每项显式声明展示标签和实际维度值。 |
-
-<a id="schema-232f646566696e6974696f6e732f636861727446696c7465722f70726f706572746965732f6f7074696f6e732f6974656d73"></a>
-
-### `@chartFilter.options[]`
-
-Schema位置：`#/definitions/chartFilter/properties/options/items`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "object" | 每个数组项 | required=["label","value"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
-
-<a id="schema-232f646566696e6974696f6e732f636861727446696c7465722f70726f706572746965732f6f7074696f6e732f6974656d732f70726f706572746965732f6c6162656c"></a>
-
-### `@chartFilter.options[].label`
-
-Schema位置：`#/definitions/chartFilter/properties/options/items/properties/label`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "string" | 本分支必填 | minLength=1; pattern="\\S" | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
-
-<a id="schema-232f646566696e6974696f6e732f636861727446696c7465722f70726f706572746965732f6f7074696f6e732f6974656d732f70726f706572746965732f76616c7565"></a>
-
-### `@chartFilter.options[].value`
-
-Schema位置：`#/definitions/chartFilter/properties/options/items/properties/value`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
-
 ## 语义规则与反例（生成）
 
 - `filter-id-unique`：筛选器 id 唯一。反例：[duplicate-filter-id](errors/duplicate-filter-id.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -2678,7 +2602,7 @@ Schema位置：`#/definitions/chartFilter/properties/options/items/properties/va
 - `time-point-min`：6.24 时间点下限与默认值日历语义。反例：[time-point-min-before-6.24](errors/time-point-min-before-6.24.json)、[time-point-min-invalid-month](errors/time-point-min-invalid-month.json)、[time-point-min-wrong-precision](errors/time-point-min-wrong-precision.json)、[time-point-min-default-before](errors/time-point-min-default-before.json)、[time-point-min-invalid-date](errors/time-point-min-invalid-date.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `time-point-disable-future`：6.25 时间点禁止未来月份与日期。反例：[time-point-disable-future-before-6.25](errors/time-point-disable-future-before-6.25.json)、[time-point-disable-future-default-month](errors/time-point-disable-future-default-month.json)、[time-point-disable-future-default-date](errors/time-point-disable-future-default-date.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `period-filter`：6.27 Dashboard 年季月与近一年期间筛选。反例：[period-filter-before-6.27](errors/period-filter-before-6.27.json)、[period-filter-quarter-invalid](errors/period-filter-quarter-invalid.json)、[period-filter-report](errors/period-filter-report.json)、[period-filter-datetime](errors/period-filter-datetime.json)、[period-filter-no-default](errors/period-filter-no-default.json)、[period-filter-static-time](errors/period-filter-static-time.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `chart-local-filter`：6.29 Dashboard 图表独立筛选及查询消费范围。反例：[chart-filter-before-6.29](errors/chart-filter-before-6.29.json)、[chart-filter-report](errors/chart-filter-report.json)、[chart-filter-invalid-default](errors/chart-filter-invalid-default.json)、[chart-filter-duplicate-options](errors/chart-filter-duplicate-options.json)、[chart-filter-shared-source](errors/chart-filter-shared-source.json)、[chart-filter-no-binding](errors/chart-filter-no-binding.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `filter-group`：6.45 Dashboard 独立固定单选筛选按钮组、多查询与统一显隐。反例：[filter-group-version](errors/filter-group-version.json)、[filter-group-report](errors/filter-group-report.json)、[filter-group-detail](errors/filter-group-detail.json)、[filter-group-invalid-default](errors/filter-group-invalid-default.json)、[filter-group-duplicate-options](errors/filter-group-duplicate-options.json)、[filter-group-duplicate-control](errors/filter-group-duplicate-control.json)、[filter-group-no-binding](errors/filter-group-no-binding.json)、[filter-group-removed-chart-filter](errors/filter-group-removed-chart-filter.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `business-filters`：6.37 封闭枚举与业务选择语义。反例：[business-filter-before-6.37](errors/business-filter-before-6.37.json)、[business-filter-single-many](errors/business-filter-single-many.json)、[business-filter-disabled-default](errors/business-filter-disabled-default.json)、[business-filter-options-dependent](errors/business-filter-options-dependent.json)、[business-filter-unrestricted-without-options](errors/business-filter-unrestricted-without-options.json)、[business-filter-cycle](errors/business-filter-cycle.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `currency-selection`：6.38金额范围和静态货币字段选择。反例：[currency-before-6.38](errors/currency-before-6.38.json)、[currency-case-missing](errors/currency-case-missing.json)、[currency-metric-mismatch](errors/currency-metric-mismatch.json)、[currency-negative-default](errors/currency-negative-default.json)、[currency-equal-default](errors/currency-equal-default.json)、[currency-compute-mixed](errors/currency-compute-mixed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `time-extensions`：6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口。反例：[time-before-6.39](errors/time-before-6.39.json)、[time-case-missing](errors/time-case-missing.json)、[time-query-xor](errors/time-query-xor.json)、[time-period-mismatch](errors/time-period-mismatch.json)、[time-output-mismatch](errors/time-output-mismatch.json)、[time-default-week](errors/time-default-week.json)、[time-availability-default](errors/time-availability-default.json)、[time-fact-kind](errors/time-fact-kind.json)、[time-window-static-options](errors/time-window-static-options.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -2712,8 +2636,8 @@ Schema位置：`#/definitions/chartFilter/properties/options/items/properties/va
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/period-filter.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/report-date-filters.ts`（仓库路径，非分发依赖）。
-- 源码/验证定位：`packages/page/src/chart-filter.ts`（仓库路径，非分发依赖）。
-- 源码/验证定位：`packages/page/src/schema/chart-filter.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/filter-group.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/schema/components/filter-group.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/time-filter-boundary.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/filter-dependencies.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/amount-filter.ts`（仓库路径，非分发依赖）。

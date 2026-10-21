@@ -133,3 +133,10 @@ describe('页面参考手册生成与分发', () => {
     }
   });
 });
+
+it('standalone component examples retain the fixed controls required by their query graph',()=>{
+ const map=JSON.parse(reference.get('examples/component-mapChart.json')!);
+ const controls=map.sections.flatMap((section:any)=>section.components).filter((component:any)=>component.type==='filterGroup');
+ expect(controls.map((component:any)=>component.props.filterId)).toEqual(['map-region']);
+ expect(validate(map)).toEqual([]);
+});

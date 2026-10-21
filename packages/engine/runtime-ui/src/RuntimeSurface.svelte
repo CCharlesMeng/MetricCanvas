@@ -33,7 +33,7 @@
   import {
     declaredNavigationTargets,
     type NavigationTarget,
-    chartFilterOptions,
+    filterGroupOptions,
     conditionSourceIds,
     dataSourceMode,
     derivePageCapabilities,
@@ -456,13 +456,13 @@
     try{fromURL = new Map(capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined)
       ? parseFilterSearch(search,declarations,candidateClock)
       : new Map());}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间模式URL必须为合法完整mode/from/to'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
-    const localOptions = chartFilterOptions(loaded);
+    const localOptions = filterGroupOptions(loaded);
     for (const [id, options] of localOptions) {
       const value = fromURL.get(id);
       if (value && (value.type !== 'dimension' || value.values.length !== 1 || !options.includes(value.values[0]!))) {if(loaded.strictURLInputs===true){pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters/'+id,message:'目标筛选取值不在可用候选中'}]};emit?.({type:'invalid',errors:pageState.errors});return;}fromURL.delete(id);}
       const supplied = bootstrap?.filters.get(id);
       if (bootstrap && (!supplied || supplied.type !== 'dimension' || supplied.values.length !== 1 || !options.includes(supplied.values[0]!))) {
-        pageState = { phase: 'invalid', errors: [{type:'SCHEMA_ERROR',path:'/filters',message:'执行快照中的图表筛选值不在候选项中'}] };
+        pageState = { phase: 'invalid', errors: [{type:'SCHEMA_ERROR',path:'/filters',message:'执行快照中的筛选按钮组值不在候选项中'}] };
         emit?.({type:'invalid',errors:pageState.errors});
         return;
       }
@@ -1309,15 +1309,17 @@
         <ComponentRenderer
           {component}
           {initialTabs}
+          filterGroupReadOnly={pageReadOnly}
           {headerControls}
-          chartFilterValue={component => {
-            if (!isChartComponent(component) || !component.props.filter) return undefined;
-            const value = filterValues.get(component.props.filter.filterId);
+          filterGroupValue={component => {
+            if (component.type !== 'filterGroup') return undefined;
+            const value = filterValues.get(component.props.filterId);
             return value?.type === 'dimension' ? value.values[0] : undefined;
           }}
-          onchartfilter={(component, value) => {
-            if (!isChartComponent(component) || !component.props.filter) return;
-            const declaration = declarations.find(item => item.id === component.props.filter!.filterId);
+          onfiltergroup={(component, value) => {
+            if (component.type !== 'filterGroup') return;
+            if (presentation?.component(component.id).enabled !== true) return;
+            const declaration = declarations.find(item => item.id === component.props.filterId);
             if (declaration?.type === 'dimension') writeDimension(declaration, [value]);
           }}
           headerPeriod={(header)=>headerPeriod(header.props,declarations,filterValues,readyPage.schemaVersion)}

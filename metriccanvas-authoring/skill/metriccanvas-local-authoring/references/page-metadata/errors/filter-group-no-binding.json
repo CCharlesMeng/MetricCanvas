@@ -1,0 +1,35 @@
+{
+  "case": "filter-group-no-binding",
+  "invariant": "filter-group",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "筛选按钮组需要至少一个查询通过 filterBindings 消费",
+      "paths": [
+        "/sections/0/components/0/props"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "filterId": "channel",
+              "options": [
+                {
+                  "…": "共2个键"
+                },
+                {
+                  "…": "共2个键"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

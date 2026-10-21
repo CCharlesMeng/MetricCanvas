@@ -149,6 +149,7 @@
       <article
         class:chart-cell={isChartComponent(component)}
         class:header-cell={component.type === 'reportHeader'}
+        class:filter-group-cell={component.type === 'filterGroup'}
         class:metric-cell={component.type === 'metricCard' || component.type === 'gauge'}
         class:metric-connection-cell={gridColumn !== undefined}
         class:table-cell={component.type === 'table' || component.type === 'tabContainer'}
@@ -287,7 +288,8 @@
 
     min-height: 0;
   }
-  .header-cell {
+  .header-cell,
+  .filter-group-cell {
     min-height: 0;
     padding: 0;
     overflow: visible;

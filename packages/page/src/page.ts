@@ -5,6 +5,7 @@ import type { FilterDeclaration } from './filter';
 import type { PageParamDeclaration } from './page-param';
 import type { VersionPolicy } from './version';
 import {
+  filterGroupComponentZ,
   buttonComponentZ,
   reportHeaderComponentZ,
   metricCardComponentZ,
@@ -151,9 +152,12 @@ export type AiSummaryRelatedDataDefinition = AiSummaryProps['relatedData'][strin
 export type AiSummaryRelatedField = AiSummaryRelatedDataDefinition['fields'][number];
 export type AiSummaryComponent = z.infer<typeof aiSummaryComponentZ> & { data?: never };
 
+export type FilterGroupComponent = z.infer<typeof filterGroupComponentZ> & { data?: never; props: z.infer<typeof filterGroupComponentZ>['props'] & {title?:never} };
+
 export type ButtonComponent = z.infer<typeof buttonComponentZ> & { data?: never; props: z.infer<typeof buttonComponentZ>['props'] & {title?:never} };
 
 export type Component =
+  | FilterGroupComponent
   | ButtonComponent
   | ReportHeaderComponent
   | MetricCardComponent
@@ -176,6 +180,7 @@ export type Component =
 export type DataComponent = Exclude<
   Component,
   | ReportHeaderComponent
+  | FilterGroupComponent
   | ButtonComponent
   | TextComponent
   | AiSummaryComponent
@@ -274,6 +279,7 @@ export function sectionBackdrop(section: PageSection): Component | undefined {
 
 export function isDataComponent(component: Component): component is DataComponent {
   return (
+    component.type !== 'filterGroup' &&
     component.type !== 'button' &&
     component.type !== 'reportHeader' &&
     component.type !== 'text' &&

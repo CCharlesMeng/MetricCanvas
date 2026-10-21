@@ -56,8 +56,8 @@ describe('B2 complete execution boundary',()=>{
     const program=createSourceProgram(page,{gateway:{fetchData,fetchDimensionValues}});for await(const _ of program.read({roots:['bound'],conditions:initialFilterValues(page.filters??[])})){}
     expect(fetchDimensionValues).toHaveBeenCalledOnce();expect(fetchData).toHaveBeenCalledTimes(value==='real'?1:0);program.dispose();
   });
-  it('a B2 page enum and a chart-local closed filter share a query without requiring a candidate port',async()=>{
-    const doc=JSON.parse(readFileSync('pages/chart-local-filter-page.json','utf8'));doc.schemaVersion='6.37';doc.filters.push({id:'kind',type:'dimension',dimension:'kind',selection:{mode:'single'},options:[{value:'A',label:'A'}],default:['A']});
+  it('a B2 page enum and an independent closed filter group share a query without requiring a candidate port',async()=>{
+    const doc=JSON.parse(readFileSync('pages/chart-local-filter-page.json','utf8'));doc.filters.push({id:'kind',type:'dimension',dimension:'kind',selection:{mode:'single'},options:[{value:'A',label:'A'}],default:['A']});
     doc.dataSources['orders-data'].source.query.filterBindings.kind={target:'dimension',queryField:'kind_code'};
     const parsed=parsePage(doc);if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));
     const fetchData=vi.fn(async()=>({rows:[]}));const program=createSourceProgram(parsed.page,{gateway:{fetchData}}),updates=[];

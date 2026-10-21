@@ -1,12 +1,12 @@
 import {requiresTimeValidation,timeAvailabilityIssue,timeFilterBoundaryError,type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
-import { queryFilterIds,numberRangeIssue,rangeContextIssue,chartFilterOptions, candidateDependencies, filterDependencies, dimensionSelectionIssue, conditionSourceIds, canonicalizeJson, type Page, type FilterDeclaration } from '@metriccanvas/page/internal';
+import { queryFilterIds,numberRangeIssue,rangeContextIssue,filterGroupOptions, candidateDependencies, filterDependencies, dimensionSelectionIssue, conditionSourceIds, canonicalizeJson, type Page, type FilterDeclaration } from '@metriccanvas/page/internal';
 import type {RuntimeDataGateway,FilterCandidate} from './ports';
 import type {FilterValues} from './filter-values';
 import {candidateContextKey,filterCandidatesRequest,validFilterCandidates} from './filter-candidates';
 
 /** Execution consumers share this fail-closed boundary, including seeded/initial receipts. */
 export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,context:{displayInputs?:()=>DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date}={}) {
-  const localOptions=chartFilterOptions(page);
+  const localOptions=filterGroupOptions(page);
   const declarations=page.filters??[],byId=new Map(declarations.map(filter=>[filter.id,filter]));
   function filterIds(sourceId:string):string[] {
     const ids=new Set<string>();

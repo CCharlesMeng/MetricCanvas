@@ -44,9 +44,10 @@
         "6.41",
         "6.42",
         "6.43",
-        "6.44"
+        "6.44",
+        "6.45"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45"
     },
     "id": {
       "type": "string",
@@ -421,6 +422,9 @@
                 },
                 {
                   "$ref": "#/definitions/buttonComponent"
+                },
+                {
+                  "$ref": "#/definitions/filterGroupComponent"
                 }
               ]
             }
@@ -6606,13 +6610,6 @@
                 }
               ]
             },
-            "filter": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/chartFilter"
-                }
-              ]
-            },
             "echartsOption": {
               "allOf": [
                 {
@@ -6696,43 +6693,6 @@
       },
       "required": [
         "main"
-      ],
-      "additionalProperties": false
-    },
-    "chartFilter": {
-      "type": "object",
-      "properties": {
-        "filterId": {
-          "type": "string",
-          "pattern": "^[a-z0-9][a-z0-9-]*$"
-        },
-        "options": {
-          "minItems": 1,
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "label": {
-                "type": "string",
-                "minLength": 1,
-                "pattern": "\\S"
-              },
-              "value": {
-                "type": "string",
-                "minLength": 1
-              }
-            },
-            "required": [
-              "label",
-              "value"
-            ],
-            "additionalProperties": false
-          }
-        }
-      },
-      "required": [
-        "filterId",
-        "options"
       ],
       "additionalProperties": false
     },
@@ -6876,13 +6836,6 @@
                 }
               ]
             },
-            "filter": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/chartFilter"
-                }
-              ]
-            },
             "echartsOption": {
               "allOf": [
                 {
@@ -7001,13 +6954,6 @@
               "allOf": [
                 {
                   "$ref": "#/definitions/textValue"
-                }
-              ]
-            },
-            "filter": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/chartFilter"
                 }
               ]
             },
@@ -8182,13 +8128,6 @@
                 }
               ]
             },
-            "filter": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/chartFilter"
-                }
-              ]
-            },
             "variant": {
               "type": "string",
               "const": "regionalOverview"
@@ -8686,6 +8625,18 @@
     "compositeCardChild": {
       "oneOf": [
         {
+          "$ref": "#/definitions/filterGroupComponent"
+        },
+        {
+          "$ref": "#/definitions/barChartComponent"
+        },
+        {
+          "$ref": "#/definitions/lineChartComponent"
+        },
+        {
+          "$ref": "#/definitions/mapChartComponent"
+        },
+        {
           "$ref": "#/definitions/metricCardComponent"
         },
         {
@@ -8701,6 +8652,72 @@
           "$ref": "#/definitions/categoryBreakdownComponent"
         }
       ]
+    },
+    "filterGroupComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "filterGroup"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "visibleWhen": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/condition"
+            }
+          ]
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "filterId": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "options": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "\\S"
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "label",
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "filterId",
+            "options"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "props"
+      ],
+      "additionalProperties": false
     },
     "keyValuePanelComponent": {
       "type": "object",
@@ -9689,6 +9706,9 @@
               },
               {
                 "$ref": "#/definitions/buttonComponent"
+              },
+              {
+                "$ref": "#/definitions/filterGroupComponent"
               }
             ]
           }
@@ -9721,5 +9741,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.44"
+  "$id": "https://metriccanvas/page/v6.45"
 }

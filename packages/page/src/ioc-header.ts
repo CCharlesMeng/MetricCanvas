@@ -23,7 +23,7 @@ export function iocHeaderErrors(page: Page): TypedError[] {
     if (!filter || filter.visible === false) issue(`/iocHeader/filterIds/${index}`, 'IOC 页头只能认领静态可见的页级筛选');
   });
   walkPageComponents(page, (component, path) => {
-    if ('filter' in component.props && component.props.filter && placed.has(component.props.filter.filterId)) issue('/iocHeader/filterIds', '图表独立筛选不能被 IOC 页头认领');
+    if (component.type === 'filterGroup' && placed.has(component.props.filterId)) issue('/iocHeader/filterIds', '筛选按钮组不能被 IOC 页头重复认领');
     if (component.type !== 'reportHeader') return;
     if (component.props.variant === 'projectDetail' || path === '/sections/0/components/0') issue(path, 'IOC 页头不能与首个业务 reportHeader 重复承担页面身份');
     if (component.props.filterIds?.some(id => placed.has(id))) issue(`${path}/props/filterIds`, '筛选不能被多个页头认领');

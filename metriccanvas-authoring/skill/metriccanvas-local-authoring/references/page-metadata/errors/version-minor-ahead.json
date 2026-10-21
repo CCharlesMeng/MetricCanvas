@@ -4,14 +4,14 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "文档格式版本 6.45 高于运行时当前次版本 6.44",
+      "message": "文档格式版本 6.46 高于运行时当前次版本 6.45",
       "paths": [
         "/schemaVersion"
       ]
     }
   ],
   "inputExcerpt": {
-    "schemaVersion": "6.45"
+    "schemaVersion": "6.46"
   },
   "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
 }

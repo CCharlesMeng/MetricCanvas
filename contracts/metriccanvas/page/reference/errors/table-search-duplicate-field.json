@@ -11,6 +11,7 @@
         "/sections/0/components/0/data",
         "/sections/0/components/0/data",
         "/sections/0/components/0/data",
+        "/sections/0/components/0/data",
         "/sections/0/components/0/data"
       ]
     },
@@ -39,6 +40,7 @@
         "/sections/0/components/0/type",
         "/sections/0/components/0/type",
         "/sections/0/components/0/type",
+        "/sections/0/components/0/type",
         "/sections/0/components/0/type"
       ]
     },
@@ -46,6 +48,7 @@
       "type": "SCHEMA_ERROR",
       "message": "存在未定义字段 toolbar(拼写错误?)",
       "paths": [
+        "/sections/0/components/0/props/toolbar",
         "/sections/0/components/0/props/toolbar",
         "/sections/0/components/0/props/toolbar",
         "/sections/0/components/0/props/toolbar",
@@ -85,6 +88,7 @@
         "/sections/0/components/0/props/pagination",
         "/sections/0/components/0/props/pagination",
         "/sections/0/components/0/props/pagination",
+        "/sections/0/components/0/props/pagination",
         "/sections/0/components/0/props/pagination"
       ]
     },
@@ -92,6 +96,7 @@
       "type": "SCHEMA_ERROR",
       "message": "存在未定义字段 columns(拼写错误?)",
       "paths": [
+        "/sections/0/components/0/props/columns",
         "/sections/0/components/0/props/columns",
         "/sections/0/components/0/props/columns",
         "/sections/0/components/0/props/columns",
@@ -162,7 +167,8 @@
       "type": "SCHEMA_ERROR",
       "message": "缺少必填字段 options",
       "paths": [
-        "/sections/0/components/0/props/toolbar/search/options"
+        "/sections/0/components/0/props/toolbar/search/options",
+        "/sections/0/components/0/props/options"
       ]
     },
     {
@@ -284,7 +290,15 @@
       "type": "SCHEMA_ERROR",
       "message": "存在未定义字段 title(拼写错误?)",
       "paths": [
+        "/sections/0/components/0/props/title",
         "/sections/0/components/0/props/title"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 filterId",
+      "paths": [
+        "/sections/0/components/0/props/filterId"
       ]
     },
     {

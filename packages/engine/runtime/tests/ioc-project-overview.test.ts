@@ -126,7 +126,7 @@ describe('ioc-project-overview 骨架', () => {
         ['metricCard', 'pieChart', 'categoryBreakdown', 'metricCard'],
         ['metricCard', 'keyValuePanel']
       ]);
-    expect(composites.map((component) => component.props.components.map((child) => child.props.variant)))
+    expect(composites.map((component) => component.props.components.map((child) => ('variant' in child.props ? child.props.variant : undefined))))
       .toEqual([
         ['compactStrip', 'compactRing', 'compactList', 'mini'],
         ['compactStack', 'compactRing', 'compactList', 'compactStrip'],

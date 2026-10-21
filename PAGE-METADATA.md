@@ -403,7 +403,7 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 `timePoint.disableFuture: true` 从6.25起禁止未来月份／日期，当前期间可选；上限随本地当前日期推进，控件、手工输入、URL与参数初始化共同约束。见[禁止未来时间](docs/page-metadata/filters.md#禁止未来时间625)及[交互验收页](pages/report-date-filter-example.json)。
 
 6.27 增量：Dashboard 顶部 timeRange 的年／季／月／近一年选择形态，声明、状态及查询规则见[期间筛选](docs/page-metadata/filters.md#dashboard-期间选择627)。
-6.29 增加 Dashboard 正文图表左上角独立筛选 `props.filter`，支持自定义显示名称、查询值和单选默认项；查询依赖校验保证只影响所属图表。完整声明、限制与验收页面见[图表独立筛选](docs/page-metadata/filters.md#图表独立筛选629)。
+6.29 曾引入图表 `props.filter`；该旧声明现已统一迁移为独立 `filterGroup`。固定按钮组可控制多个查询消费者，详见[独立筛选按钮组](docs/page-metadata/components/filterGroup.md)。
 
 6.37 新增[业务筛选](docs/page-metadata/filters.md#business-filters)：单多选、封闭枚举、结构树、候选依赖与hint；共用执行入口先核验当前候选再复用初始结果或查询，不在页头内另建规则解释器。
 
@@ -427,3 +427,5 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 6.44新增一层行内子表格，声明与限制见[表格：行内子表格](docs/page-metadata/components/table.md#row-expansion)。默认仅内容和分页，父行嵌套明细与按父行查询分页显式分支；模板取数与状态按展开实例隔离，导出范围待确认。
 
 标题按页面layout分别呈现：Dashboard分区标题与text.heading使用黑色16px左对齐无装饰标题；Report保留独立标题层级。plain只表示分区无外壳，不表示共用标题。参见[分区与布局](docs/page-metadata/sections-and-layout.md)及[看板标题验收](pages/dashboard-title-styles.json)、[报表标题验收](pages/report-title-styles.json)。
+
+6.45 独立 `filterGroup` 将固定单选按钮组从图表属性提升为可布局组件，支持 Dashboard 正文、组合卡、多个查询消费者和统一显隐。旧 `chart.props.filter` 统一迁移，不保留兼容入口。声明、边界与验收见[筛选按钮组](docs/page-metadata/components/filterGroup.md)。

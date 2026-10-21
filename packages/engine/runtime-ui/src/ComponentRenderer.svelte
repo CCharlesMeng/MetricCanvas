@@ -45,7 +45,7 @@
   import type { AiSummaryConfig } from './ai-summary/pangu-sse';
   import { fieldRow } from '../../widgets/src/shared/component-data';
   import WidgetHost from './WidgetHost.svelte';
-  import ChartFilter from './dashboard/ChartFilter.svelte';
+  import FilterGroup from './dashboard/FilterGroup.svelte';
   import TableToolbar from '../../widgets/src/components/table/TableToolbar.svelte';
   import { partialDataNotices } from './widget-host-state';
   import {
@@ -63,8 +63,9 @@
     initialTabs?: ReadonlyMap<string, string>;
     summarySnapshot?: import('./ai-summary/session').AiSummarySnapshot;
     exportMode?: boolean;
-    chartFilterValue?: (component: Component) => string | undefined;
-    onchartfilter?: (component: Component, value: string) => void;
+    filterGroupReadOnly?: boolean;
+    filterGroupValue?: (component: Component) => string | undefined;
+    onfiltergroup?: (component: Component, value: string) => void;
     headerControls?: Snippet<[string[]]>;
     headerPeriod?: (component: Extract<Component,{type:"reportHeader"}>) => string | undefined;
     /** 已投影的数据槽:表格的 main 槽已按当前视图状态裁剪。 */
@@ -92,7 +93,7 @@
   let {
     component,
     initialTabs,
-    exportMode = false, chartFilterValue, onchartfilter, headerControls, headerPeriod, summarySnapshot,
+    exportMode = false, filterGroupReadOnly = false, filterGroupValue, onfiltergroup, headerControls, headerPeriod, summarySnapshot,
     data,
     snapshot,
     pageSnapshots,
@@ -130,7 +131,7 @@
     <Self
       component={nestedComponent}
       {initialTabs}
-      {exportMode} {chartFilterValue} {onchartfilter} {headerControls} {headerPeriod}
+      {exportMode} {filterGroupReadOnly} {filterGroupValue} {onfiltergroup} {headerControls} {headerPeriod}
       data={nested.data(nestedComponent)}
       snapshot={nested.snapshot(nestedComponent)}
       {pageSnapshots}
@@ -147,7 +148,12 @@
 {/snippet}
 
 {#if rendersWithoutWidgetHost(component)}
-  {#if component.type === 'button'}
+  {#if component.type === 'filterGroup'}
+    <FilterGroup control={component.props} value={filterGroupValue?.(component)}
+      label={presentation?.()?.context.declarations.find(filter=>filter.id===component.props.filterId)?.label ?? '筛选'} {exportMode}
+      disabled={filterGroupReadOnly || gate?.enabled===false}
+      onchange={value => onfiltergroup?.(component, value)} />
+  {:else if component.type === 'button'}
     <div data-button-id={component.id}><Button disabled={exportMode||gate?.enabled===false||presentation?.()?.gate(component.props.action).enabled===false}
       onclick={()=>onchartclick?.({})}>{component.props.label}</Button></div>
   {:else if component.type === 'reportHeader'}
@@ -197,6 +203,7 @@
       titleIcon={component.props.titleIcon}
       variant={component.props.variant}
       spans={component.props.components.map((item) => item.layout.span)}
+      minHeights={component.props.components.map(item => isChartComponent(item) && !(item.type==='pieChart' && item.props.variant==='compactRing') ? 320 : 0)}
       dividers={component.props.dividers}
     >
       {#snippet children(index)}
@@ -212,11 +219,6 @@
     <TableToolbar toolbar={component.props.toolbar} draft={table.searchDraft} option={table.searchOption} onoption={table.onsearchoption} searchEnabled={table.toolbarEnabled?.search??true} busy={table.exporting}
       error={table.exportError} canExport={false} ondraft={table.onsearchdraft} onsearch={table.onsearch}
       onexport={table.onexport} oncancel={table.oncancelexport} />
-  {/if}
-  {#if isChartComponent(component) && component.props.filter}
-    <ChartFilter control={component.props.filter} value={chartFilterValue?.(component)}
-      label={`${component.props.title ?? '图表'}筛选`} {exportMode}
-      onchange={value => onchartfilter?.(component, value)} />
   {/if}
   <WidgetHost {snapshot} title={'title' in component.props ? component.props.title : undefined} notices={partialDataNotices(component, pageSnapshots, table?.paginationConfig?.mode === 'query')}>
     {#snippet ready(_readySnapshot)}

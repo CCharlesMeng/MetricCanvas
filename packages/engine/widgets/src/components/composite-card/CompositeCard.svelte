@@ -26,21 +26,25 @@
     variant?: 'compact' | 'projectNorms' | 'metricGrid';
     /** 子组件声明的 `layout.span`,数组顺序即自动流顺序。 */
     spans: readonly number[];
+    /** Layout-owned drawing space; absent entries retain intrinsic sizing. */
+    minHeights?: readonly number[];
     /** 相邻子组件之间是否分隔;位置由自动流落位派生,不由声明给出。 */
     dividers?: boolean;
     /** 按落位渲染第 index 个子组件。 */
     children: Snippet<[number]>;
   }
 
-  let { title, titleIcon, variant, spans, dividers, children }: Props = $props();
+  let { title, titleIcon, variant, spans, minHeights, dividers, children }: Props = $props();
 
   const slots = $derived(compositeCardFlow(spans));
+  const hasMinHeights = $derived(minHeights?.some(height => height > 0) ?? false);
 </script>
 
 <div
   class:compact={variant === 'compact'}
   class:project-norms={variant === 'projectNorms'}
   class:metric-grid={variant === 'metricGrid'}
+  class:with-min-heights={hasMinHeights}
   class:static-export={staticExport}
   class="composite-card"
 >
@@ -56,6 +60,7 @@
         class:bleed-start={slot.precededInRow}
         class:bleed-end={slot.followedInRow}
         class="composite-slot"
+        style:min-height={minHeights?.[index] ? `${minHeights[index]}px` : undefined}
         style={`grid-column: span ${slot.span};`}
       >
         {@render children(index)}
@@ -196,6 +201,8 @@
     grid-auto-rows: minmax(60px, auto);
     gap: var(--composite-card-gap);
   }
+  .with-min-heights { height: auto; }
+  .with-min-heights > .composite-grid { grid-auto-rows: auto; }
   .composite-slot {
     position: relative;
     display: flex;

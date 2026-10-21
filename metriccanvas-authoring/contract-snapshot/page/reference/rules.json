@@ -234,18 +234,21 @@
       ]
     },
     {
-      "id": "chart-local-filter",
-      "description": "6.29 Dashboard 图表独立筛选及查询消费范围",
+      "id": "filter-group",
+      "description": "6.45 Dashboard 独立固定单选筛选按钮组、多查询与统一显隐",
       "valid": [
-        "chart-local-filter-page"
+        "chart-local-filter-page",
+        "filter-group-page"
       ],
       "invalid": [
-        "chart-filter-before-6.29",
-        "chart-filter-report",
-        "chart-filter-invalid-default",
-        "chart-filter-duplicate-options",
-        "chart-filter-shared-source",
-        "chart-filter-no-binding"
+        "filter-group-version",
+        "filter-group-report",
+        "filter-group-detail",
+        "filter-group-invalid-default",
+        "filter-group-duplicate-options",
+        "filter-group-duplicate-control",
+        "filter-group-no-binding",
+        "filter-group-removed-chart-filter"
       ]
     },
     {

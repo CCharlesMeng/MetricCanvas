@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.44",
-  "schemaSha256": "1ec83a088142ec5460ffe180d16488a563277c9ac27e943bafe055d76ac298a3",
+  "schemaVersion": "6.45",
+  "schemaSha256": "23830b5ce5063c01351c5ddc96f736dd0d80aaf80e7f094dec8a47eb23b8d190",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -16,7 +16,11 @@
     },
     {
       "file": "packages/engine/runtime-ui/src/RuntimeSection.svelte",
-      "sha256": "c1b0739fe3936b4d7a4bf4da702fecdff9b1209bddaf22497fd12f1ea2c112d9"
+      "sha256": "d50cf444b7943fda0b2c3e8143f049165c4acf88c670c3cf64b376a10cccba39"
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/dashboard/FilterGroup.svelte",
+      "sha256": "641f0165790368a24b1877a5eadfac7204981a5fe3c10bf84deeb096a25c01be"
     },
     {
       "file": "packages/engine/runtime-ui/src/initial-tabs.ts",
@@ -29,6 +33,10 @@
     {
       "file": "packages/engine/runtime/src/navigation-inputs.ts",
       "sha256": "23fbbb96ed2879d6d88295bb89c28965cad9b1c592346cda49654a4dd382191e"
+    },
+    {
+      "file": "packages/engine/runtime/src/presentation.ts",
+      "sha256": "16cfd71501a2b691fbd475feb6a14148fef13889013dc353ae26bfad35ba4425"
     },
     {
       "file": "packages/engine/widgets/src/components/gauge/Gauge.svelte",
@@ -55,10 +63,6 @@
       "sha256": "b0a1a1c6d3dd5fc12f279cd0901474984480e63bc74f41fc822c109332339e44"
     },
     {
-      "file": "packages/page/src/chart-filter.ts",
-      "sha256": "2f859985c6d27f62c17cf0c37a4fb9f05083a18d706ada6848e8bd72ba76efa3"
-    },
-    {
       "file": "packages/page/src/chart-option.ts",
       "sha256": "a8886733d5fe8f4ab57c59506e55bb41ed8bd8f10b580725f2300a5702853c46"
     },
@@ -75,12 +79,16 @@
       "sha256": "d3b0fc3f4ad8aebde9d2367d485cd05e9cab4edfb94c69cc1841f1257b50fb23"
     },
     {
+      "file": "packages/page/src/filter-group.ts",
+      "sha256": "420542c311669068a3df59ffa23007046fda81b554a88726e1c6b37b35126f6a"
+    },
+    {
       "file": "packages/page/src/filter-text-value.ts",
       "sha256": "0677ae512e8447a5dbc3a347bef5b970ed598d3e12ec855487bebbe4d822768a"
     },
     {
       "file": "packages/page/src/ioc-header.ts",
-      "sha256": "53fceb1cc9a33831adbff2201000d9bb40c20a1a502005acb1f5a6196235d73a"
+      "sha256": "a969b84ca2c8c6f0e047603cd8e94829c3f3cb3ba093ff096d7b8091e5b2bbf6"
     },
     {
       "file": "packages/page/src/metric-before.ts",
@@ -131,10 +139,6 @@
       "sha256": "f942fcb73f35c8a87f8581622112b5a43727a661af293ccf0e9df6eef833bf2a"
     },
     {
-      "file": "packages/page/src/schema/chart-filter.ts",
-      "sha256": "720a73baaffbf908777b6ba143f3c4656bf9720630bb9c3ab2c1944d00ef80f0"
-    },
-    {
       "file": "packages/page/src/schema/components/ai-summary.ts",
       "sha256": "97e923f27b189c3af6b794749417d48a3046898019578497eba6c6f44a0c393d"
     },
@@ -148,15 +152,19 @@
     },
     {
       "file": "packages/page/src/schema/components/charts.ts",
-      "sha256": "01b72f4eeb79c49232d20c47d963f4532ef80b889d40ad3c9a757a18b4c6d309"
+      "sha256": "302b0433b1ec472d578747e7709b871f6ceefdcf340eb4a22d922a36653ec6eb"
     },
     {
       "file": "packages/page/src/schema/components/composite-card.ts",
-      "sha256": "7e4c9ec54fd1bee4e47a19cf1d49ae2b6140920d4d22b875485a0e7afc08793f"
+      "sha256": "43f4ac2b2c01512c25d610192d7aebae3460260ec3d10d2c1a2337ad83a49a2a"
     },
     {
       "file": "packages/page/src/schema/components/field-text.ts",
       "sha256": "a13b298db5274bcceb61a661e56f5079119af6e080558c86a3ee689c1b335766"
+    },
+    {
+      "file": "packages/page/src/schema/components/filter-group.ts",
+      "sha256": "7e3d2eaca827c73e54167fec29dd158e55878bef4bee863e0e605c10b5b8a406"
     },
     {
       "file": "packages/page/src/schema/components/gauge.ts",
@@ -168,7 +176,7 @@
     },
     {
       "file": "packages/page/src/schema/components/map-chart.ts",
-      "sha256": "afb2b3bccfe29a085a590dd65544ae3741ea8343756078ca15980811bf9ff62f"
+      "sha256": "b6fe73ea24c70ccb32cfdf095483d760080cc624801c89fbac38fa54a972234b"
     },
     {
       "file": "packages/page/src/schema/components/metric-card.ts",
@@ -268,11 +276,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "7e0bc1a61570bdd0d42fdd0802e660f0cfdef7bf8fdb06f8c1200e189d1d493a"
+      "sha256": "717ca228ed641feb3545fe3eabf79f695925cd832fe1741f1d22087e77b6c2a4"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "e2ea3594a4c9d5359256ba0a041b2fd5b01f2e2652e674ea6578ca6215400132"
+      "sha256": "b1f23b5b07de6b9f7f909f761f2cb6dad982a67bb33529d3fde6fae73afa100a"
     }
   ],
   "modules": {
@@ -530,8 +538,7 @@
         "booleanFilter",
         "numberRangeFilter",
         "searchFilter",
-        "periodSelection",
-        "chartFilter"
+        "periodSelection"
       ],
       "keywords": [
         "filters",
@@ -566,8 +573,8 @@
         "tools/scripts/page-conformance-vectors.ts",
         "packages/page/src/period-filter.ts",
         "packages/page/src/report-date-filters.ts",
-        "packages/page/src/chart-filter.ts",
-        "packages/page/src/schema/chart-filter.ts",
+        "packages/page/src/filter-group.ts",
+        "packages/page/src/schema/components/filter-group.ts",
         "packages/page/src/time-filter-boundary.ts",
         "packages/page/src/filter-dependencies.ts",
         "packages/page/src/amount-filter.ts",
@@ -591,7 +598,7 @@
         "time-point-min",
         "time-point-disable-future",
         "period-filter",
-        "chart-local-filter",
+        "filter-group",
         "business-filters",
         "currency-selection",
         "time-extensions",
@@ -1347,6 +1354,30 @@
       "sources": [
         "packages/page/src/schema/components/button.ts"
       ]
+    },
+    "components/filterGroup.md": {
+      "title": "筛选按钮组 filterGroup",
+      "definitions": [
+        "filterGroupComponent"
+      ],
+      "keywords": [
+        "filterGroup",
+        "独立筛选",
+        "单选按钮组"
+      ],
+      "examples": [
+        "filter-group-page",
+        "chart-local-filter-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/filter-group.ts",
+        "packages/page/src/filter-group.ts",
+        "packages/engine/runtime/src/presentation.ts",
+        "packages/engine/runtime-ui/src/dashboard/FilterGroup.svelte"
+      ],
+      "rules": [
+        "filter-group"
+      ]
     }
   },
   "components": [
@@ -1421,6 +1452,10 @@
     {
       "type": "button",
       "file": "components/button.md"
+    },
+    {
+      "type": "filterGroup",
+      "file": "components/filterGroup.md"
     }
   ],
   "nodes": [
@@ -1475,7 +1510,8 @@
         "6.41",
         "6.42",
         "6.43",
-        "6.44"
+        "6.44",
+        "6.45"
       ]
     },
     {
@@ -9846,55 +9882,6 @@
       "ref": "#/definitions/textValue"
     },
     {
-      "pointer": "#/definitions/barChartComponent/properties/props/properties/filter",
-      "path": "@barChartComponent.props.filter",
-      "required": "本分支可选",
-      "module": "components/barChart.md"
-    },
-    {
-      "pointer": "#/definitions/barChartComponent/properties/props/properties/filter/allOf/0",
-      "path": "@barChartComponent.props.filter · allOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "components/barChart.md",
-      "ref": "#/definitions/chartFilter"
-    },
-    {
-      "pointer": "#/definitions/chartFilter",
-      "path": "@chartFilter",
-      "required": "类型/分支",
-      "module": "filters.md"
-    },
-    {
-      "pointer": "#/definitions/chartFilter/properties/filterId",
-      "path": "@chartFilter.filterId",
-      "required": "本分支必填",
-      "module": "filters.md"
-    },
-    {
-      "pointer": "#/definitions/chartFilter/properties/options",
-      "path": "@chartFilter.options",
-      "required": "本分支必填",
-      "module": "filters.md"
-    },
-    {
-      "pointer": "#/definitions/chartFilter/properties/options/items",
-      "path": "@chartFilter.options[]",
-      "required": "每个数组项",
-      "module": "filters.md"
-    },
-    {
-      "pointer": "#/definitions/chartFilter/properties/options/items/properties/label",
-      "path": "@chartFilter.options[].label",
-      "required": "本分支必填",
-      "module": "filters.md"
-    },
-    {
-      "pointer": "#/definitions/chartFilter/properties/options/items/properties/value",
-      "path": "@chartFilter.options[].value",
-      "required": "本分支必填",
-      "module": "filters.md"
-    },
-    {
       "pointer": "#/definitions/barChartComponent/properties/props/properties/echartsOption",
       "path": "@barChartComponent.props.echartsOption",
       "required": "本分支可选",
@@ -10241,19 +10228,6 @@
       "ref": "#/definitions/textValue"
     },
     {
-      "pointer": "#/definitions/lineChartComponent/properties/props/properties/filter",
-      "path": "@lineChartComponent.props.filter",
-      "required": "本分支可选",
-      "module": "components/lineChart.md"
-    },
-    {
-      "pointer": "#/definitions/lineChartComponent/properties/props/properties/filter/allOf/0",
-      "path": "@lineChartComponent.props.filter · allOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "components/lineChart.md",
-      "ref": "#/definitions/chartFilter"
-    },
-    {
       "pointer": "#/definitions/lineChartComponent/properties/props/properties/echartsOption",
       "path": "@lineChartComponent.props.echartsOption",
       "required": "本分支可选",
@@ -10452,19 +10426,6 @@
       "required": "独立分支（不合并required）",
       "module": "components/pieChart.md",
       "ref": "#/definitions/textValue"
-    },
-    {
-      "pointer": "#/definitions/pieChartComponent/properties/props/properties/filter",
-      "path": "@pieChartComponent.props.filter",
-      "required": "本分支可选",
-      "module": "components/pieChart.md"
-    },
-    {
-      "pointer": "#/definitions/pieChartComponent/properties/props/properties/filter/allOf/0",
-      "path": "@pieChartComponent.props.filter · allOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "components/pieChart.md",
-      "ref": "#/definitions/chartFilter"
     },
     {
       "pointer": "#/definitions/pieChartComponent/properties/props/properties/echartsOption",
@@ -12041,19 +12002,6 @@
       "ref": "#/definitions/textValue"
     },
     {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/filter",
-      "path": "@mapChartComponent.props.filter",
-      "required": "本分支可选",
-      "module": "components/mapChart.md"
-    },
-    {
-      "pointer": "#/definitions/mapChartComponent/properties/props/properties/filter/allOf/0",
-      "path": "@mapChartComponent.props.filter · allOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "components/mapChart.md",
-      "ref": "#/definitions/chartFilter"
-    },
-    {
       "pointer": "#/definitions/mapChartComponent/properties/props/properties/variant",
       "path": "@mapChartComponent.props.variant",
       "required": "本分支可选",
@@ -12800,25 +12748,129 @@
       "path": "@compositeCardChild · oneOf[0]",
       "required": "独立分支（不合并required）",
       "module": "components/compositeCard.md",
-      "ref": "#/definitions/metricCardComponent"
+      "ref": "#/definitions/filterGroupComponent"
+    },
+    {
+      "pointer": "#/definitions/filterGroupComponent",
+      "path": "@filterGroupComponent",
+      "required": "类型/分支",
+      "module": "components/filterGroup.md"
+    },
+    {
+      "pointer": "#/definitions/filterGroupComponent/properties/id",
+      "path": "@filterGroupComponent.id",
+      "required": "本分支必填",
+      "module": "components/filterGroup.md",
+      "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/filterGroupComponent/properties/type",
+      "path": "@filterGroupComponent.type",
+      "required": "本分支必填",
+      "module": "components/filterGroup.md",
+      "const": "filterGroup"
+    },
+    {
+      "pointer": "#/definitions/filterGroupComponent/properties/layout",
+      "path": "@filterGroupComponent.layout",
+      "required": "本分支必填",
+      "module": "components/filterGroup.md",
+      "ref": "#/definitions/componentLayout"
+    },
+    {
+      "pointer": "#/definitions/filterGroupComponent/properties/visibleWhen",
+      "path": "@filterGroupComponent.visibleWhen",
+      "required": "本分支可选",
+      "module": "components/filterGroup.md"
+    },
+    {
+      "pointer": "#/definitions/filterGroupComponent/properties/visibleWhen/allOf/0",
+      "path": "@filterGroupComponent.visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/filterGroup.md",
+      "ref": "#/definitions/condition"
+    },
+    {
+      "pointer": "#/definitions/filterGroupComponent/properties/props",
+      "path": "@filterGroupComponent.props",
+      "required": "本分支必填",
+      "module": "components/filterGroup.md"
+    },
+    {
+      "pointer": "#/definitions/filterGroupComponent/properties/props/properties/filterId",
+      "path": "@filterGroupComponent.props.filterId",
+      "required": "本分支必填",
+      "module": "components/filterGroup.md"
+    },
+    {
+      "pointer": "#/definitions/filterGroupComponent/properties/props/properties/options",
+      "path": "@filterGroupComponent.props.options",
+      "required": "本分支必填",
+      "module": "components/filterGroup.md"
+    },
+    {
+      "pointer": "#/definitions/filterGroupComponent/properties/props/properties/options/items",
+      "path": "@filterGroupComponent.props.options[]",
+      "required": "每个数组项",
+      "module": "components/filterGroup.md"
+    },
+    {
+      "pointer": "#/definitions/filterGroupComponent/properties/props/properties/options/items/properties/label",
+      "path": "@filterGroupComponent.props.options[].label",
+      "required": "本分支必填",
+      "module": "components/filterGroup.md"
+    },
+    {
+      "pointer": "#/definitions/filterGroupComponent/properties/props/properties/options/items/properties/value",
+      "path": "@filterGroupComponent.props.options[].value",
+      "required": "本分支必填",
+      "module": "components/filterGroup.md"
     },
     {
       "pointer": "#/definitions/compositeCardChild/oneOf/1",
       "path": "@compositeCardChild · oneOf[1]",
       "required": "独立分支（不合并required）",
       "module": "components/compositeCard.md",
-      "ref": "#/definitions/pieChartComponent"
+      "ref": "#/definitions/barChartComponent"
     },
     {
       "pointer": "#/definitions/compositeCardChild/oneOf/2",
       "path": "@compositeCardChild · oneOf[2]",
       "required": "独立分支（不合并required）",
       "module": "components/compositeCard.md",
-      "ref": "#/definitions/gaugeComponent"
+      "ref": "#/definitions/lineChartComponent"
     },
     {
       "pointer": "#/definitions/compositeCardChild/oneOf/3",
       "path": "@compositeCardChild · oneOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "components/compositeCard.md",
+      "ref": "#/definitions/mapChartComponent"
+    },
+    {
+      "pointer": "#/definitions/compositeCardChild/oneOf/4",
+      "path": "@compositeCardChild · oneOf[4]",
+      "required": "独立分支（不合并required）",
+      "module": "components/compositeCard.md",
+      "ref": "#/definitions/metricCardComponent"
+    },
+    {
+      "pointer": "#/definitions/compositeCardChild/oneOf/5",
+      "path": "@compositeCardChild · oneOf[5]",
+      "required": "独立分支（不合并required）",
+      "module": "components/compositeCard.md",
+      "ref": "#/definitions/pieChartComponent"
+    },
+    {
+      "pointer": "#/definitions/compositeCardChild/oneOf/6",
+      "path": "@compositeCardChild · oneOf[6]",
+      "required": "独立分支（不合并required）",
+      "module": "components/compositeCard.md",
+      "ref": "#/definitions/gaugeComponent"
+    },
+    {
+      "pointer": "#/definitions/compositeCardChild/oneOf/7",
+      "path": "@compositeCardChild · oneOf[7]",
       "required": "独立分支（不合并required）",
       "module": "components/compositeCard.md",
       "ref": "#/definitions/keyValuePanelComponent"
@@ -13007,8 +13059,8 @@
       ]
     },
     {
-      "pointer": "#/definitions/compositeCardChild/oneOf/4",
-      "path": "@compositeCardChild · oneOf[4]",
+      "pointer": "#/definitions/compositeCardChild/oneOf/8",
+      "path": "@compositeCardChild · oneOf[8]",
       "required": "独立分支（不合并required）",
       "module": "components/compositeCard.md",
       "ref": "#/definitions/categoryBreakdownComponent"
@@ -14135,6 +14187,13 @@
       "ref": "#/definitions/componentAction"
     },
     {
+      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/18",
+      "path": "$.detailViews[].components[] · oneOf[18]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/filterGroupComponent"
+    },
+    {
       "pointer": "#/properties/sectionGroups",
       "path": "$.sectionGroups",
       "required": "本分支可选",
@@ -14456,6 +14515,13 @@
       "required": "独立分支（不合并required）",
       "module": "sections-and-layout.md",
       "ref": "#/definitions/buttonComponent"
+    },
+    {
+      "pointer": "#/definitions/section/properties/components/items/oneOf/18",
+      "path": "@section.components[] · oneOf[18]",
+      "required": "独立分支（不合并required）",
+      "module": "sections-and-layout.md",
+      "ref": "#/definitions/filterGroupComponent"
     }
   ],
   "exampleCoverage": [
@@ -14524,14 +14590,14 @@
       "type": "barChart",
       "file": "examples/component-barChart.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/chart-local-filter-page.json"
+      "source": "page/conformance/valid/filter-group-page.json"
     },
     {
       "type": "barChart",
       "variant": "reportForecast",
       "file": "examples/component-barChart-reportForecast.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/chart-local-filter-page.json"
+      "source": "page/conformance/valid/filter-group-page.json"
     },
     {
       "type": "lineChart",
@@ -14582,14 +14648,14 @@
     {
       "type": "mapChart",
       "file": "examples/component-mapChart.json",
-      "pointer": "#/sections/0/components/0",
+      "pointer": "#/sections/0/components/1",
       "source": "page/conformance/valid/chart-local-filter-page.json"
     },
     {
       "type": "mapChart",
       "variant": "regionalOverview",
       "file": "examples/component-mapChart-regionalOverview.json",
-      "pointer": "#/sections/0/components/0",
+      "pointer": "#/sections/0/components/1",
       "source": "page/conformance/valid/chart-local-filter-page.json"
     },
     {
@@ -14629,28 +14695,28 @@
       "type": "compositeCard",
       "file": "examples/component-compositeCard.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/composite-page.json"
+      "source": "page/conformance/valid/chart-local-filter-page.json"
     },
     {
       "type": "compositeCard",
       "variant": "compact",
       "file": "examples/component-compositeCard-compact.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/composite-page.json"
+      "source": "page/conformance/valid/chart-local-filter-page.json"
     },
     {
       "type": "compositeCard",
       "variant": "projectNorms",
       "file": "examples/component-compositeCard-projectNorms.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/composite-page.json"
+      "source": "page/conformance/valid/chart-local-filter-page.json"
     },
     {
       "type": "compositeCard",
       "variant": "metricGrid",
       "file": "examples/component-compositeCard-metricGrid.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/composite-page.json"
+      "source": "page/conformance/valid/chart-local-filter-page.json"
     },
     {
       "type": "rankingCard",
@@ -14818,6 +14884,12 @@
       "file": "examples/component-button.json",
       "pointer": "#/sections/0/components/0",
       "source": "page/conformance/valid/reference-conditions-page.json"
+    },
+    {
+      "type": "filterGroup",
+      "file": "examples/component-filterGroup.json",
+      "pointer": "#/sections/0/components/0",
+      "source": "page/conformance/valid/chart-local-filter-page.json"
     }
   ],
   "branchCoverage": [
@@ -15908,7 +15980,7 @@
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/1",
       "module": "actions-and-navigation.md",
-      "file": "examples/component-compositeCard.json",
+      "file": "examples/component-categoryBreakdown.json",
       "pointer": "#/sections/0/components/0/props/components/0/props/actions/0"
     },
     {
@@ -16244,19 +16316,43 @@
     {
       "schemaPointer": "#/definitions/compositeCardChild/oneOf/1",
       "module": "components/compositeCard.md",
-      "file": "examples/component-compositeCard.json",
+      "file": "examples/chart-local-filter-page.json",
       "pointer": "#/sections/0/components/0/props/components/1"
     },
     {
       "schemaPointer": "#/definitions/compositeCardChild/oneOf/2",
       "module": "components/compositeCard.md",
-      "file": "examples/component-compositeCard.json",
-      "pointer": "#/sections/0/components/0/props/components/2"
+      "file": "examples/chart-local-filter-page.json",
+      "pointer": "#/sections/0/components/1/props/components/1"
     },
     {
       "schemaPointer": "#/definitions/compositeCardChild/oneOf/3",
       "module": "components/compositeCard.md",
+      "file": "examples/chart-local-filter-page.json",
+      "pointer": "#/sections/0/components/3/props/components/1"
+    },
+    {
+      "schemaPointer": "#/definitions/compositeCardChild/oneOf/4",
+      "module": "components/compositeCard.md",
+      "file": "examples/component-categoryBreakdown.json",
+      "pointer": "#/sections/0/components/0/props/components/0"
+    },
+    {
+      "schemaPointer": "#/definitions/compositeCardChild/oneOf/5",
+      "module": "components/compositeCard.md",
       "file": "examples/component-compositeCard.json",
+      "pointer": "#/sections/0/components/0/props/components/1"
+    },
+    {
+      "schemaPointer": "#/definitions/compositeCardChild/oneOf/6",
+      "module": "components/compositeCard.md",
+      "file": "examples/component-categoryBreakdown.json",
+      "pointer": "#/sections/0/components/0/props/components/2"
+    },
+    {
+      "schemaPointer": "#/definitions/compositeCardChild/oneOf/7",
+      "module": "components/compositeCard.md",
+      "file": "examples/component-categoryBreakdown.json",
       "pointer": "#/sections/0/components/0/props/components/3"
     },
     {
@@ -16286,13 +16382,13 @@
     {
       "schemaPointer": "#/definitions/keyValuePanelComponent/properties/props/properties/columns/anyOf/4",
       "module": "components/keyValuePanel.md",
-      "file": "examples/component-compositeCard.json",
+      "file": "examples/component-categoryBreakdown.json",
       "pointer": "#/sections/0/components/0/props/components/3/props/columns"
     },
     {
-      "schemaPointer": "#/definitions/compositeCardChild/oneOf/4",
+      "schemaPointer": "#/definitions/compositeCardChild/oneOf/8",
       "module": "components/compositeCard.md",
-      "file": "examples/component-compositeCard.json",
+      "file": "examples/component-categoryBreakdown.json",
       "pointer": "#/sections/0/components/0/props/components/4"
     },
     {
@@ -16406,6 +16502,16 @@
       }
     },
     {
+      "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/18",
+      "module": "page.md",
+      "negativeWitness": {
+        "file": "errors/filter-group-detail.json",
+        "reason": "独立固定筛选按钮组首批仅用于Dashboard正文或组合卡；共享组件Schema的详情分支由语义校验拒绝。",
+        "rule": "filter-group",
+        "source": "packages/page/src/filter-group.ts"
+      }
+    },
+    {
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/0",
       "module": "sections-and-layout.md",
       "file": "examples/component-reportHeader.json",
@@ -16445,7 +16551,7 @@
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/6",
       "module": "sections-and-layout.md",
       "file": "examples/component-mapChart.json",
-      "pointer": "#/sections/0/components/0"
+      "pointer": "#/sections/0/components/1"
     },
     {
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/7",
@@ -16511,6 +16617,12 @@
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/17",
       "module": "sections-and-layout.md",
       "file": "examples/component-button.json",
+      "pointer": "#/sections/0/components/0"
+    },
+    {
+      "schemaPointer": "#/definitions/section/properties/components/items/oneOf/18",
+      "module": "sections-and-layout.md",
+      "file": "examples/component-mapChart.json",
       "pointer": "#/sections/0/components/0"
     }
   ],

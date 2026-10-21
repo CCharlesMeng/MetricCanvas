@@ -1,5 +1,4 @@
 import { visibilityShape } from '../condition';
-import { chartFilterZ } from '../chart-filter';
 import { z } from 'zod';
 import {
   componentIdZ,
@@ -63,7 +62,6 @@ export const mapChartComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
-        filter: chartFilterZ.optional(),
         variant: z.literal('regionalOverview').optional(),
         nameField: fieldBindingZ,
         valueField: fieldBindingZ,
