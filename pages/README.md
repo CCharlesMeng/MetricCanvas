@@ -256,12 +256,15 @@ Report 页面按三节组织，控件相互独立：
 
 ### Windows gray 开发环境
 
-这是页面试验场的开发服务器配置，不新增页面能力或协议字段，页面文档与本地创作 Skill 沿用当前版本。配置与 hosts/HTTPS 步骤见[试验场说明](../apps/playground/README.md#windows-本地连接-gray-cloudioc)。
+这是页面试验场与平台的开发服务器配置，不新增页面能力或协议字段，页面文档与本地创作 Skill 沿用当前版本。配置与 hosts/HTTPS 步骤见[试验场说明](../apps/playground/README.md#windows-本地连接-gray-cloudioc)与[平台说明](../apps/platform/README.md)。
 
 - 复用已在目录注册的完整业务页面 [business-sdt-report-monthly.json](business-sdt-report-monthly.json)，入口 `https://local.cloudioc.huawei.com/pages/business-sdt-report-monthly`；它包含业务查询，不承诺 gray 环境具备对应数据集和权限。
 - Windows 填入有效 cftk 并打开开关后，运行 `pnpm dev:playground`，加载页面并提交报告月份。动态查询经本地 DQE 路径代理到 gray 的同路径；浏览器和上游请求均带配置中的 cftk，可在 Network 的 Request Headers 查看。请求体及页面绑定沿用原规则；静态构建不注入 cftk。仅该开发代理设置 `secure: false`。
 - Windows 启用但 cftk 为空或包含无效换行时启动失败；关闭开关恢复原有仿真代理。macOS/Linux 即使打开开关也保持 HTTP 5173 和仿真代理。灰度服务的查询拒绝或鉴权失败沿现有错误处理呈现，不回退到仿真数据。
-- 配置边界由 `tests/dev-server-contract.test.ts` 覆盖；本批次按用户要求不启动服务器、不做浏览器或真实 Windows/gray 联调，不能据此声称业务取数成功。
+- 可选 `PLAYGROUND_CLOUDIOC_COOKIE` 将完整 Cookie 请求头由 Vite 代理发往 gray；留空保留浏览器 Cookie，配置后覆盖整个上游 Cookie 头。Cookie 不注入浏览器，更新后须重启；非法 HTTP 头字符导致启动失败且错误不回显凭据。
+- 平台使用 `PLATFORM_CLOUDIOC`、`PLATFORM_CLOUDIOC_CFTK`、`PLATFORM_CLOUDIOC_COOKIE`，在同一域名与 443 下将完整服务前缀（含页面资产与 DQE）转发至 gray；从 `/manage` 进入目录与页面搭建工作台，观察请求与错误状态。平台关闭开关恢复 IOC 代理。两端 gray 模式须择一启动，AI 总结仍使用本地 Sim。
+- 配置边界由 `tests/dev-server-contract.test.ts` 覆盖，`tests/dev-server-proxy.test.ts` 用本地上游替身验证两端 CFTK、Cookie 覆盖/透传与路径/参数/请求体保持。替身与浏览器证据不能证明真实 Windows/gray 的证书、鉴权或业务取数成功。
+- 浏览器回归：仓根运行 `node --import tsx tests/dev-server-proxy-browser.mjs`。真实 Chrome 打开上述月报与平台 `/manage`，消费本地合成服务响应，验证上游 CFTK/Cookie 与 401 原样返回。脚本在 macOS 上求值 Windows 配置后将监听改成回环 HTTP 随机端口，不验证真实 Windows/443/HTTPS；截图和机器报告写入 `.scratch/cloudioc-proxy/evidence/`。
 
 ## 图表高级呈现扩展（6.32）
 

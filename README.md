@@ -86,6 +86,8 @@ Platform 本地调试时，将 `/rest/cdi/cdinl2databuilderservice/` 前缀下�
 页面试验场的 DQE 请求仍代理到本机 DQE Sim；`DQE_SIM_PORT` 可修改仿真端口，
 页面试验场启动时也需设置相同的值。Platform 的 `/api/ai/conversations/` 请求仍使用本机 DQE Sim。
 
+Windows 连接 gray 时，两个应用均可在各自 `.env.local` 配置开关、CFTK 和可选 Cookie；Cookie 仅由 Vite 代理发往上游。配置与操作见 [Playground](apps/playground/README.md#windows-本地连接-gray-cloudioc) 和 [Platform](apps/platform/README.md)。两端 gray 模式均占用 443，须择一启动。
+
 ## 常用命令
 
 ```bash

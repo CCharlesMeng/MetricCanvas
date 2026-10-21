@@ -1,12 +1,11 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import basicSsl from '@vitejs/plugin-basic-ssl';
-import { defineConfig, loadEnv, type Plugin } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import { fileURLToPath } from 'node:url';
-import { createDqeDevProxy } from '../../tools/dev-server';
+import { CLOUDIOC_DEV_DOMAIN, createCloudIocDevProxy, createDqeDevProxy, readCloudIocDevConfig } from '../../tools/dev-server';
 
 const pagesDir = fileURLToPath(new URL('../../pages', import.meta.url));
 const appRoot = fileURLToPath(new URL('.', import.meta.url));
-const cloudIocDomain = 'local.cloudioc.huawei.com';
 const dqePath = '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute';
 
 /**
@@ -30,28 +29,15 @@ function watchPageAssets(directory: string): Plugin {
   };
 }
 
-export default defineConfig(({ command, mode, isPreview }) => {
-  // 仅 Windows 开发模式读取凭据；构建不注入此值。
-  const env = command === 'serve' && !isPreview && process.platform === 'win32'
-    ? loadEnv(mode, appRoot, 'PLAYGROUND_')
-    : {};
-  const cloudIoc = env.PLAYGROUND_CLOUDIOC === 'true';
-  const cftk = env.PLAYGROUND_CLOUDIOC_CFTK?.trim();
+export default defineConfig((config) => {
+  const cloudIoc = readCloudIocDevConfig(config, appRoot, 'playground');
   const proxy = createDqeDevProxy();
   if (cloudIoc) {
-    if (!cftk || /[\r\n]/.test(cftk)) {
-      throw new Error('请在 apps/playground/.env.local 中填写有效的 PLAYGROUND_CLOUDIOC_CFTK，再启动页面试验场');
-    }
-    proxy[dqePath] = {
-      target: 'https://gray.cloudioc.huawei.com',
-      changeOrigin: true,
-      secure: false,
-      headers: { cftk }
-    };
+    proxy[dqePath] = createCloudIocDevProxy(cloudIoc);
   }
   return {
-    ...(cloudIoc ? {define: {'import.meta.env.PLAYGROUND_CLOUDIOC_CFTK': JSON.stringify(cftk)}} : {}),
-    plugins: [sveltekit(), watchPageAssets(pagesDir), ...(cloudIoc ? [basicSsl({ domains: [cloudIocDomain] })] : [])],
+    ...(cloudIoc ? {define: {'import.meta.env.PLAYGROUND_CLOUDIOC_CFTK': JSON.stringify(cloudIoc.cftk)}} : {}),
+    plugins: [sveltekit(), watchPageAssets(pagesDir), ...(cloudIoc ? [basicSsl({ domains: [CLOUDIOC_DEV_DOMAIN] })] : [])],
     resolve: {
       alias: {
         // 页面资产目录固定别名,避免源码内的多级相对路径
@@ -59,7 +45,7 @@ export default defineConfig(({ command, mode, isPreview }) => {
       }
     },
     server: {
-      host: cloudIoc ? cloudIocDomain : '0.0.0.0',
+      host: cloudIoc ? CLOUDIOC_DEV_DOMAIN : '0.0.0.0',
       port: cloudIoc ? 443 : 5173,
       strictPort: true,
       proxy,

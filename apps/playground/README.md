@@ -19,9 +19,12 @@ pnpm build:playground # 独立静态构建，输出 apps/playground/build
 ```dotenv
 PLAYGROUND_CLOUDIOC=true
 PLAYGROUND_CLOUDIOC_CFTK="粘贴 gray 站点 localStorage 中 cftk 的原始值"
+PLAYGROUND_CLOUDIOC_COOKIE=""
 ```
 
 先在同一浏览器中登录 `https://gray.cloudioc.huawei.com`，从开发者工具的 Application → Local Storage 中复制 `cftk` 的值，替换上面的占位内容。配置值不包含示例占位文字；不要提交真实凭据。更新或重新登录后，重新复制并重启页面试验场。缺少 cftk 时开启此模式会明确拒绝启动。
+
+gray 需要登录 Cookie 时，在开发者工具 Network 中找到一次成功的服务请求，将 Request Headers 中完整的 `Cookie` 值复制到 `PLAYGROUND_CLOUDIOC_COOKIE`，例如 `"session=example; route=example"`（不含 `Cookie:` 前缀）。该项可选：留空时保留浏览器原有 Cookie；填写时覆盖该代理请求的整个 Cookie 头，不与本地域 Cookie 拼接。Cookie 只由 Vite 代理发往 gray，浏览器 Network 中看到的是发给本地服务的请求，不能据此检查上游配置 Cookie；它不注入浏览器脚本或静态构建。配置包含换行或非法 HTTP 头字符时拒绝启动，错误只显示配置键。
 
 Windows 首次使用还需：
 
@@ -31,9 +34,9 @@ Windows 首次使用还需：
 
 浏览器仍请求本地 `/rest/cdi/cdinl2databuilderservice/v1/dsl/execute`，开发代理将请求转发到 `https://gray.cloudioc.huawei.com` 的相同路径。Windows 开发模式将配置的 cftk 注入页面试验场的请求实现，浏览器 Network 的 Request Headers 可以看到 `cftk`；代理同时设置该请求头，以上游收到的配置值为准。该值在本地开发前端可见，静态构建不注入。浏览器请求域名仍是 local；AI 总结仍沿用现有仿真代理。
 
-此开关只在 **Windows 的开发服务器** 生效。关闭开关恢复原有 5173 / DQE Sim；macOS、Linux、静态构建与 `vite preview` 忽略该配置。Platform 不受影响。443 端口已占用时直接失败，不自动换端口。
+此开关只在 **Windows 的开发服务器** 生效。关闭开关恢复原有 5173 / DQE Sim；macOS、Linux、静态构建与 `vite preview` 忽略该配置。Platform 使用[自己的同类配置](../platform/README.md)，两个应用不互读凭据；它们的 gray 模式使用同一域名和 443 端口，须择一启动。443 端口已占用时直接失败，不自动换端口。
 
-这仅配置开发传输，不建立登录或换取身份的流程；现有运行配置中的 `X-Auth-Token`、`X-Operator-Id`、`X-Workspace-Id` 保持原接线，不能把默认仿真身份视为 gray 的有效用户身份。gray 若需要其他有效凭据，仍须由集成应用提供；新增 cftk 本身不证明真实鉴权成功。仅 Windows gray 开发代理设置 `secure: false`，以连接使用公司内部证书的服务；其他代理保持原配置。
+这仅配置开发传输，不建立登录或换取身份的流程；现有运行配置中的 `X-Auth-Token`、`X-Operator-Id`、`X-Workspace-Id` 保持原接线，不能把默认仿真身份视为 gray 的有效用户身份。gray 若需要其他有效凭据，仍须由集成应用提供；配置 cftk 与 Cookie 本身不证明真实鉴权成功。仅 Windows gray 开发代理设置 `secure: false`，以连接使用公司内部证书的服务；其他代理保持原配置。
 
 页面场景与证据边界见 [Windows gray 开发环境](../../pages/README.md#windows-gray-开发环境)。该配置不进入页面文档，不改变页面协议或本地创作 Skill 的声明规则。
 

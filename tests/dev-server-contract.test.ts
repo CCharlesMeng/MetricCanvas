@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import playgroundViteConfig from '../apps/playground/vite.config';
 import platformViteConfig from '../apps/platform/vite.config';
-import { createDqeDevProxy } from '../tools/dev-server';
+import { createDqeDevProxy, readCloudIocDevConfig } from '../tools/dev-server';
 import { DEFAULT_DQE_SIM_HOST } from '../tools/dqe-sim/src/server';
 
 const rootPackage = JSON.parse(
@@ -123,5 +123,81 @@ describe('本地开发服务端口契约', () => {
       'pnpm --parallel --filter platform --filter @metriccanvas/dqe-sim dev'
     );
     expect(rootPackage.scripts['dev:offline']).toBeUndefined();
+  });
+});
+
+describe.each([
+  {app: 'playground' as const, prefix: 'PLAYGROUND_CLOUDIOC', viteConfig: playgroundViteConfig,
+    path: '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute'},
+  {app: 'platform' as const, prefix: 'PLATFORM_CLOUDIOC', viteConfig: platformViteConfig,
+    path: '/rest/cdi/cdinl2databuilderservice/'}
+])('$app gray 本地凭据', ({app, prefix, viteConfig, path}) => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    Object.defineProperty(process, 'platform', platformDescriptor);
+  });
+
+  it('仅 gray 代理携带完整 Cookie 和 cftk，Cookie 不注入浏览器', () => {
+    Object.defineProperty(process, 'platform', {value: 'win32'});
+    vi.stubEnv(prefix, 'true');
+    vi.stubEnv(`${prefix}_CFTK`, ' test-cftk ');
+    vi.stubEnv(`${prefix}_COOKIE`, ' session=test-session; route=test-route== ');
+    const config = typeof viteConfig === 'function'
+      ? viteConfig({command: 'serve', mode: 'development'}) : viteConfig;
+    expect(config).toMatchObject({server: {
+      host: 'local.cloudioc.huawei.com', port: 443, strictPort: true,
+      proxy: {[path]: {target: 'https://gray.cloudioc.huawei.com', changeOrigin: true, secure: false,
+        headers: {cftk: 'test-cftk', cookie: 'session=test-session; route=test-route=='}}}
+    }});
+    expect(JSON.stringify(config.define)).not.toContain('test-session');
+    expect(config.server?.proxy?.['/api/ai/conversations/']).not.toHaveProperty('headers');
+    expect(config.plugins).toEqual(expect.arrayContaining([expect.objectContaining({name: 'vite:basic-ssl'})]));
+    if (app === 'platform') {
+      expect(config.server?.proxy?.['/rest/cdi/cdinl2databuilderservice/v1/dsl/execute']).toBeUndefined();
+    }
+  });
+
+  it.each(['', '   '])('Cookie 可选且留空不覆盖浏览器 Cookie：%j', (cookie) => {
+    Object.defineProperty(process, 'platform', {value: 'win32'});
+    vi.stubEnv(prefix, 'true');
+    vi.stubEnv(`${prefix}_CFTK`, 'test-cftk');
+    vi.stubEnv(`${prefix}_COOKIE`, cookie);
+    const config = typeof viteConfig === 'function'
+      ? viteConfig({command: 'serve', mode: 'development'}) : viteConfig;
+    expect(config.server?.proxy?.[path]).toHaveProperty('headers', {cftk: 'test-cftk'});
+  });
+
+  it.each([
+    {suffix: 'CFTK', value: ''},
+    {suffix: 'CFTK', value: 'secret\r\nheader'},
+    {suffix: 'COOKIE', value: 'session=secret\n'},
+    {suffix: 'COOKIE', value: 'session=secret\u0001'},
+    {suffix: 'COOKIE', value: 'session=请替换'}
+  ])('非法 $suffix 在启动时拒绝且错误只列配置键', ({suffix, value}) => {
+    Object.defineProperty(process, 'platform', {value: 'win32'});
+    vi.stubEnv(prefix, 'true');
+    vi.stubEnv(`${prefix}_CFTK`, 'test-cftk');
+    vi.stubEnv(`${prefix}_COOKIE`, 'session=valid');
+    vi.stubEnv(`${prefix}_${suffix}`, value);
+    expect(() => readCloudIocDevConfig({command: 'serve', mode: 'development'}, resolve(`apps/${app}`), app))
+      .toThrow(new Error(`请在 apps/${app}/.env.local 中填写有效的 ${prefix}_${suffix}，再启动开发服务器`));
+  });
+
+  it.each([
+    {platform: 'darwin', command: 'serve' as const, enabled: 'true', isPreview: false},
+    {platform: 'linux', command: 'serve' as const, enabled: 'true', isPreview: false},
+    {platform: 'win32', command: 'serve' as const, enabled: 'false', isPreview: false},
+    {platform: 'win32', command: 'build' as const, enabled: 'true', isPreview: false},
+    {platform: 'win32', command: 'serve' as const, enabled: 'true', isPreview: true}
+  ])('忽略非目标环境中的无效凭据：$platform / $command / $enabled / $isPreview', ({platform, command, enabled, isPreview}) => {
+    Object.defineProperty(process, 'platform', {value: platform});
+    vi.stubEnv(prefix, enabled);
+    vi.stubEnv(`${prefix}_CFTK`, '');
+    vi.stubEnv(`${prefix}_COOKIE`, 'secret\r\n');
+    const config = typeof viteConfig === 'function'
+      ? viteConfig({command, mode: 'development', isPreview}) : viteConfig;
+    expect(config.server?.proxy?.[path]).not.toHaveProperty('headers');
+    expect(JSON.stringify(config.define ?? {})).not.toMatch(/CLOUDIOC|secret/);
+    if (app === 'platform') expect(config.server?.proxy?.[path]).toHaveProperty('target', 'https://ioc.cloudbu.huawei.com');
   });
 });
