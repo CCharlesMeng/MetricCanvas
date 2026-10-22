@@ -12,13 +12,16 @@
     variant?: 'compact' | 'analysisStack';
     tabs: readonly (TabLabel & { contentCount?: number })[];
     defaultTab?: string;
+    activeTab?: string;
+    onselect?: (id: string) => void;
     children: Snippet<[string]>;
   }
 
-  let { title, variant, tabs, defaultTab, children }: Props = $props();
+  let { title, variant, tabs, defaultTab, activeTab, onselect, children }: Props = $props();
   let selected = $state<string | undefined>(undefined);
-  const activeId = $derived(resolveActiveTab(tabs, selected, defaultTab));
-  const multipleContent = $derived((tabs.find(tab => tab.id === activeId)?.contentCount ?? 1) > 1);
+  const activeId = $derived(resolveActiveTab(tabs, activeTab ?? selected, defaultTab));
+  let visited = $state<Record<string, boolean>>({});
+  $effect(() => { if (activeId && !visited[activeId]) visited[activeId] = true; });
 </script>
 
 <div
@@ -34,20 +37,24 @@
         role="tab"
         aria-selected={tab.id === activeId}
         class:active={tab.id === activeId}
-        onclick={() => (selected = tab.id)}
+        onclick={() => { selected = tab.id; onselect?.(tab.id); }}
       >
         {tab.label}
       </button>
     {/each}
   </div>
-  {#if activeId}
-    <div class:multiple-content={multipleContent} class="tab-panel" role="tabpanel">
-      {@render children(activeId)}
-    </div>
-  {/if}
+  {#each tabs as tab (tab.id)}
+    {#if tab.id === activeId || visited[tab.id]}
+      <div hidden={tab.id !== activeId} data-tab-panel={tab.id}
+        class:multiple-content={(tab.contentCount ?? 1) > 1} class="tab-panel" role="tabpanel">
+        {@render children(tab.id)}
+      </div>
+    {/if}
+  {/each}
 </div>
 
 <style>
+  .tab-panel[hidden] { display: none !important; }
   .tab-container {
     box-sizing: border-box;
     display: flex;
@@ -144,6 +151,11 @@
     background: var(--mc-tab-indicator, transparent);
   }
   .tab-panel {
+    --mc-metric-card-border: var(--mc-white-card-border, 0);
+    --mc-metric-card-padding: var(--mc-white-card-padding, 0);
+    --mc-metric-card-radius: var(--mc-white-card-radius, 0);
+    --mc-metric-panel-border-width: var(--mc-white-metric-panel-border-width, 1px);
+    --mc-metric-panel-border-color: var(--mc-white-card-border-color, var(--mc-color-report-content-frame, #d4d5ff));
     box-sizing: border-box;
     display: flex;
     width: 100%;

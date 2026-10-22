@@ -100,14 +100,18 @@ export type MapChartComponent = z.infer<typeof mapChartComponentZ>;
 export type GaugeProps = z.infer<typeof gaugeComponentZ>['props'];
 export type GaugeComponent = z.infer<typeof gaugeComponentZ>;
 
+export type TabContentComponent = TableComponent | MetricCardComponent | BarChartComponent |
+  LineChartComponent | PieChartComponent | MapChartComponent | GaugeComponent |
+  CompositeCardComponent | CategoryBreakdownComponent | RankingCardComponent |
+  RankingDetailCardComponent | KeyValuePanelComponent | TextComponent | FieldTextComponent | AiSummaryComponent;
 export type TabContainerProps = z.infer<typeof tabContainerComponentZ>['props'];
 type InferredTabItem = TabContainerProps['tabs'][number];
 export type TabItem =
   | (Omit<Extract<InferredTabItem, { component: unknown }>, 'component'> & {
-      component: TableComponent;
+      component: TabContentComponent;
     })
   | (Omit<Extract<InferredTabItem, { components: unknown }>, 'components'> & {
-      components: TableComponent[];
+      components: TabContentComponent[];
     });
 export type TabContainerComponent = Omit<
   z.infer<typeof tabContainerComponentZ>,

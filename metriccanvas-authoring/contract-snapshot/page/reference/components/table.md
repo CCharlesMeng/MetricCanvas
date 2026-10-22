@@ -44,7 +44,7 @@ Excel 导出捕获当前已提交搜索、页面筛选、列头筛选和排序�
 两张表分别展示「序号」和「预签金额排名」。序号随当前顺序变化；固定排名是数据源投影字段，切换召开率排序后仍跟随同一代表处，第一页可显示 1、4、2，第二页显示 5、6、3。召开率下限 85 时固定排名为 1、4，搜索天津时固定排名为 8；导出保留相同业务名次。两张表使用不同组合源，互不改变排序、筛选或页码。
 
 
-页面协议 6.31。结构真源为本册[schema.json](../schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.32。结构真源为本册[schema.json](../schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1457,5 +1457,5 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/10/components/0/props/columns/0/navigate/query/customer`。
 - `#/definitions/tableColumnNode/anyOf/1`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/5/props/columns/0`。
 - `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/0`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/5/props/pagination`。
-- `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/1`：[合法完整页面](../examples/component-tabContainer.json)，JSON Pointer `#/sections/0/components/0/props/tabs/1/components/0/props/pagination`。
+- `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/1`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/6/props/pagination`。
 - `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/2`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/1/props/pagination`。

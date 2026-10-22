@@ -4,6 +4,10 @@
 
 metricGrid、compactSummary、analysisStack等变体决定卡内结构；子组件仅使用各变体允许的类型与布局。组合卡拥有完整子树，删除时依赖清理由创作工具负责。
 
+Dashboard中放入白底Tab或白底分区时，组合卡复用指标卡的1px黑色10%透明度实线外框，内部指标保持无框；无需新增页面字段。示例：[`tab-mixed-content`](../examples/tab-mixed-content.json)。
+
+纯指标内容使用现有 `variant: "metricGrid"`，按内容自适应高度；默认组合卡仍保留280px最小高度，`compact` / `projectNorms` 沿用各自高度约束。示例中的指标组合使用 `metricGrid`，避免撑高同一行的普通指标卡。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。

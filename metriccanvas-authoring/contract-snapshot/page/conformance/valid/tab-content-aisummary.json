@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "6.32",
+  "layout": "report",
+  "id": "tab-content-aisummary",
+  "dataSources": {
+    "current": {
+      "fields": {
+        "gmv": {
+          "type": "number",
+          "role": "measure"
+        },
+        "yoy": {
+          "type": "number",
+          "role": "measure"
+        },
+        "done": {
+          "type": "number",
+          "role": "measure"
+        },
+        "key": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "gmv": 100,
+            "yoy": 0.2,
+            "done": 80,
+            "key": "gmv"
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "body",
+      "components": [
+        {
+          "id": "content-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "contentLayout": "grid",
+            "tabs": [
+              {
+                "id": "one",
+                "label": "内容",
+                "component": {
+                  "id": "summary",
+                  "type": "aiSummary",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "promptTemplate": "总结 GMV 表现",
+                    "relatedData": {
+                      "kpi": {
+                        "source": "current",
+                        "description": "当期指标",
+                        "fields": [
+                          {
+                            "field": "gmv",
+                            "term": "成交额"
+                          },
+                          {
+                            "field": "yoy",
+                            "term": "同比"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

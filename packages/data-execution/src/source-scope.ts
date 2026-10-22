@@ -1,3 +1,4 @@
+import { activePageComponents } from '@metriccanvas/page/internal';
 import type { Page } from '@metriccanvas/page';
 import { computeDependencies, definitionSourceIds, flattenPageComponents, queryResultDependencies } from '@metriccanvas/page/internal';
 
@@ -28,10 +29,12 @@ export function initialQuerySourceIds(page: Page): string[] {
     sections: page.sections,
     detailViews: page.detailViews?.filter(view => view.mode === 'snapshot')
   }));
+  const allLive = new Set(live);
+  const active = dependencies(page, new Set(activePageComponents(page).flatMap(component => [...Object.values(component.data ?? {}), ...(component.type === 'aiSummary' ? Object.values(component.props.relatedData).map(data => data.source) : [])])));
   const delayed = dependencies(page, referencedSources({
     sections: [], detailViews: page.detailViews?.filter(view => view.mode === 'query')
   }));
   const members = new Set(Object.values(page.dataSources).flatMap(definitionSourceIds));
   return Object.entries(page.dataSources).flatMap(([id, source]) =>
-    source.source.type !== 'inline' && (!delayed.has(id) || live.has(id)) && (!members.has(id) || live.has(id)) ? [id] : []);
+    source.source.type !== 'inline' && (!allLive.has(id) || active.has(id)) && (!delayed.has(id) || live.has(id)) && (!members.has(id) || live.has(id)) ? [id] : []);
 }

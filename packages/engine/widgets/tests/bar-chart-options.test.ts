@@ -355,3 +355,18 @@ it('IOC F6 显式柱线共享横轴、正确分轴与单位、缺点不连成0',
     series: [{ type: 'bar', yAxisIndex: 0, data: [100, 200] }, { type: 'line', yAxisIndex: 1, connectNulls: false, data: [10, null] }]
   });
 });
+
+
+describe('barOption 默认柱宽', () => {
+  it.each([false, true])('普通柱图（horizontal=%s）固定16px', horizontal => {
+    const option = barOption(data, { ...props, variant: undefined, horizontal }) as unknown as TestedBarOption;
+    expect(option.series.every(series => series.barWidth === 16)).toBe(true);
+  });
+  it('组合图只给柱系列设置16px', () => {
+    const option = barOption(data, { ...props, variant: undefined, series: [
+      { ...props.series[0], kind: 'bar' }, { ...props.series[1], kind: 'line' }
+    ] }) as unknown as TestedBarOption;
+    expect(option.series[0]?.barWidth).toBe(16);
+    expect(option.series[1]?.barWidth).toBeUndefined();
+  });
+});

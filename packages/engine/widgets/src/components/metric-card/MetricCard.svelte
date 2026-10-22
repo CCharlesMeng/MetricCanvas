@@ -179,6 +179,11 @@
     gap: 0.45rem;
     height: 100%;
   }
+  .metric-card:not(.compact-summary):not(.dual-summary):not(.compact-strip):not(.compact-stack) {
+    padding: var(--mc-metric-card-padding, 0);
+    border: var(--mc-metric-card-border, 0);
+    border-radius: var(--mc-metric-card-radius, 0);
+  }
   .metric-content {
     display: flex;
     min-width: 0;
@@ -240,10 +245,10 @@
     padding: var(--mc-metric-panel-padding, 10px 12px);
     overflow: visible;
     background: var(--mc-metric-panel-surface, var(--mc-color-surface, #fff));
-    /* 两档形态取值不同的只有宽度(看板形态无边框),色两档同为报表内容区描边色,
-       因此色不设量;只把色改透明达不到「无边框」,会留下 1px 的占位。 */
+    /* 灰底看板由画布区分卡面，白底容器下发浅灰描边；Report保留内容区描边色。
+       无边框时宽度必须为0，避免透明边框仍占位。 */
     border: var(--mc-metric-panel-border-width, 1px) solid
-      var(--mc-color-report-content-frame, #d4d5ff);
+      var(--mc-metric-panel-border-color, var(--mc-color-report-content-frame, #d4d5ff));
     border-radius: var(--mc-metric-panel-radius, var(--mc-radius-report-content, 12px));
   }
   .metric-panel h3 {

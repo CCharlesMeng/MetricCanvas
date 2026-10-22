@@ -31,9 +31,10 @@
         "6.28",
         "6.29",
         "6.30",
-        "6.31"
+        "6.31",
+        "6.32"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32"
     },
     "id": {
       "type": "string",
@@ -6182,6 +6183,10 @@
                 }
               ]
             },
+            "contentLayout": {
+              "type": "string",
+              "const": "grid"
+            },
             "variant": {
               "type": "string",
               "enum": [
@@ -6228,7 +6233,7 @@
               "$ref": "#/definitions/nonEmptyTextValue"
             },
             "component": {
-              "$ref": "#/definitions/tableComponent"
+              "$ref": "#/definitions/tabContent"
             }
           },
           "required": [
@@ -6252,7 +6257,7 @@
               "minItems": 1,
               "type": "array",
               "items": {
-                "$ref": "#/definitions/tableComponent"
+                "$ref": "#/definitions/tabContent"
               }
             }
           },
@@ -6262,6 +6267,55 @@
             "components"
           ],
           "additionalProperties": false
+        }
+      ]
+    },
+    "tabContent": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/tableComponent"
+        },
+        {
+          "$ref": "#/definitions/metricCardComponent"
+        },
+        {
+          "$ref": "#/definitions/barChartComponent"
+        },
+        {
+          "$ref": "#/definitions/lineChartComponent"
+        },
+        {
+          "$ref": "#/definitions/pieChartComponent"
+        },
+        {
+          "$ref": "#/definitions/mapChartComponent"
+        },
+        {
+          "$ref": "#/definitions/gaugeComponent"
+        },
+        {
+          "$ref": "#/definitions/compositeCardComponent"
+        },
+        {
+          "$ref": "#/definitions/categoryBreakdownComponent"
+        },
+        {
+          "$ref": "#/definitions/rankingCardComponent"
+        },
+        {
+          "$ref": "#/definitions/rankingDetailCardComponent"
+        },
+        {
+          "$ref": "#/definitions/keyValuePanelComponent"
+        },
+        {
+          "$ref": "#/definitions/textComponent"
+        },
+        {
+          "$ref": "#/definitions/fieldTextComponent"
+        },
+        {
+          "$ref": "#/definitions/aiSummaryComponent"
         }
       ]
     },
@@ -6776,62 +6830,6 @@
       ],
       "additionalProperties": false
     },
-    "fieldTextComponent": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/definitions/componentId"
-        },
-        "type": {
-          "type": "string",
-          "const": "fieldText"
-        },
-        "layout": {
-          "$ref": "#/definitions/componentLayout"
-        },
-        "data": {
-          "$ref": "#/definitions/mainData"
-        },
-        "props": {
-          "type": "object",
-          "properties": {
-            "title": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/textValue"
-                }
-              ]
-            },
-            "field": {
-              "$ref": "#/definitions/fieldBinding"
-            },
-            "variant": {
-              "type": "string",
-              "enum": [
-                "plain",
-                "quote",
-                "narrativeShort",
-                "narrativeMeeting",
-                "narrativeRisk",
-                "narrativeProgress"
-              ]
-            }
-          },
-          "required": [
-            "field"
-          ],
-          "additionalProperties": false
-        }
-      },
-      "required": [
-        "id",
-        "type",
-        "layout",
-        "data",
-        "props"
-      ],
-      "additionalProperties": false
-    },
     "textComponent": {
       "type": "object",
       "properties": {
@@ -6983,6 +6981,62 @@
         "id",
         "type",
         "layout",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "fieldTextComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "fieldText"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "data": {
+          "$ref": "#/definitions/mainData"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "field": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "variant": {
+              "type": "string",
+              "enum": [
+                "plain",
+                "quote",
+                "narrativeShort",
+                "narrativeMeeting",
+                "narrativeRisk",
+                "narrativeProgress"
+              ]
+            }
+          },
+          "required": [
+            "field"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "data",
         "props"
       ],
       "additionalProperties": false
@@ -7207,5 +7261,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.31"
+  "$id": "https://metriccanvas/page/v6.32"
 }

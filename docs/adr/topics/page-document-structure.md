@@ -39,3 +39,5 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 **显式筛选文本与期间格式（[ADR-0100](../0100-explicit-filter-text-values-and-period-format.md)）：** 6.15 文本取值可显式引用参数或当前已应用筛选状态；6.23 按 [ADR-0109](../0109-explicit-text-value-composition.md) 扩展为显式 parts 组合，所有既有文本位置共用，组件最终仍接收字符串。filterIds 只负责控件位置，不自动创建或覆盖 asOf；日期单点、范围统一使用 period 格式，不引入专用连接词或模板插值。运行时投影文字，导出捕获静态结果；6.13/6.14 保留旧页头派生兼容。
 
 2026-10-19修订：6.31使用reportHeader.props.exportButtons数组统一PDF/PNG按钮，每项配置format、label、filename及scale。直接点击下载，取消格式菜单、清晰度弹窗和二次保存；旧字段只在读取接缝兼容。PDF支持2/3/4倍，PNG支持3/4倍，超限明确失败。见[ADR-0097最新修订](../0097-report-date-filter-and-instance-export-view.md)。
+
+**Tab 混合内容（[ADR-0115](../0115-tab-mixed-content-and-activation.md)）：** Tab 接受普通内容和组合卡，禁止页头与嵌套 Tab；显式 grid 布局复用12列栅格，缺省兼容纵向全宽。活动页签同步 URL，按需查询并保留已访问面板。公共/局部筛选取交集，Report 全展开导出且不补生成 AI 文本。

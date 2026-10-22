@@ -1,0 +1,37 @@
+{
+  "case": "tab-content-version-floor",
+  "invariant": "tab-content-boundary",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "Tab 混合内容、显式栅格与按需呈现 由 6.32 引入，文档声明的是 6.31",
+      "paths": [
+        "/sections/0/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "analysis",
+            "type": "tabContainer",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "经营分析",
+              "contentLayout": "grid",
+              "defaultTab": "overview",
+              "tabs": [
+                "…（共2项）"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/tab-content-version-floor.json"
+}

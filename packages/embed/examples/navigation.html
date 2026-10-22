@@ -24,7 +24,7 @@
       initialSearch: location.search,
       onEvent(event) {
         window.queryEvents.push(event);
-        if (event.type === 'filter-change') {
+        if (event.type === 'filter-change' || event.type === 'tab-change') {
           const current = new URL(location.href);
           current.search = event.search;
           history.replaceState(null, '', current);

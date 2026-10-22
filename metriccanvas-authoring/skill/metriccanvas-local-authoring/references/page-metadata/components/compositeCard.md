@@ -4,12 +4,16 @@
 
 metricGrid、compactSummary、analysisStack等变体决定卡内结构；子组件仅使用各变体允许的类型与布局。组合卡拥有完整子树，删除时依赖清理由创作工具负责。
 
+Dashboard中放入白底Tab或白底分区时，组合卡复用指标卡的1px黑色10%透明度实线外框，内部指标保持无框；无需新增页面字段。示例：[`tab-mixed-content`](../examples/tab-mixed-content.json)。
+
+纯指标内容使用现有 `variant: "metricGrid"`，按内容自适应高度；默认组合卡仍保留280px最小高度，`compact` / `projectNorms` 沿用各自高度约束。示例中的指标组合使用 `metricGrid`，避免撑高同一行的普通指标卡。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.31。结构真源为本册[schema.json](../schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.32。结构真源为本册[schema.json](../schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -225,129 +229,31 @@ Schema位置：`#/definitions/compositeCardChild/oneOf/4`。目标：[#/definiti
 
 ```json
 {
-  "id": "card",
+  "id": "grouped",
   "type": "compositeCard",
   "layout": {
-    "span": 2
+    "span": 6
   },
   "props": {
-    "title": "渠道概览",
-    "titleIcon": "opportunity",
-    "variant": "metricGrid",
+    "title": "组合卡",
     "components": [
       {
-        "id": "amount-card",
+        "id": "grouped-total",
         "type": "metricCard",
-        "layout": {
-          "span": 6
-        },
-        "data": {
-          "main": "summary"
-        },
-        "props": {
-          "rows": [
-            {
-              "label": "线上金额",
-              "context": "近60天",
-              "valueField": {
-                "data": "main",
-                "field": "amount",
-                "match": {
-                  "field": "channel",
-                  "equals": "线上"
-                }
-              },
-              "link": true
-            }
-          ],
-          "secondaryRows": [
-            {
-              "label": "评分",
-              "valueField": "score"
-            }
-          ],
-          "actions": [
-            {
-              "on": "click",
-              "navigate": {
-                "href": "/pages/inline-report"
-              }
-            }
-          ]
-        }
-      },
-      {
-        "id": "share-pie",
-        "type": "pieChart",
-        "layout": {
-          "span": 6
-        },
-        "data": {
-          "main": "summary"
-        },
-        "props": {
-          "categoryField": "channel",
-          "valueField": "share"
-        }
-      },
-      {
-        "id": "score-gauge",
-        "type": "gauge",
-        "layout": {
-          "span": 6
-        },
-        "data": {
-          "main": "summary"
-        },
-        "props": {
-          "valueField": "score",
-          "max": 100
-        }
-      },
-      {
-        "id": "owner-panel",
-        "type": "keyValuePanel",
-        "layout": {
-          "span": 6
-        },
-        "data": {
-          "main": "summary"
-        },
-        "props": {
-          "titleIcon": "reward",
-          "columns": 6,
-          "items": [
-            {
-              "label": "负责人",
-              "field": "owner",
-              "icon": "goldMedal"
-            },
-            {
-              "label": "金额",
-              "field": "amount",
-              "unit": "万元"
-            }
-          ]
-        }
-      },
-      {
-        "id": "channel-breakdown",
-        "type": "categoryBreakdown",
         "layout": {
           "span": 12
         },
         "data": {
-          "main": "summary"
+          "main": "metrics"
         },
         "props": {
-          "categoryField": "channel",
-          "columns": [
+          "title": "合成总额",
+          "rows": [
             {
-              "label": "金额",
-              "field": "amount"
+              "label": "总额",
+              "valueField": "amount"
             }
-          ],
-          "swatches": true
+          ]
         }
       }
     ]
@@ -359,7 +265,7 @@ Schema位置：`#/definitions/compositeCardChild/oneOf/4`。目标：[#/definiti
 ## 联合分支见证（生成）
 
 - `#/definitions/compositeCardChild/oneOf/0`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
-- `#/definitions/compositeCardChild/oneOf/1`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/1`。
-- `#/definitions/compositeCardChild/oneOf/2`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/2`。
-- `#/definitions/compositeCardChild/oneOf/3`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/3`。
-- `#/definitions/compositeCardChild/oneOf/4`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/4`。
+- `#/definitions/compositeCardChild/oneOf/1`：[合法完整页面](../examples/composite-page.json)，JSON Pointer `#/sections/0/components/1/props/components/1`。
+- `#/definitions/compositeCardChild/oneOf/2`：[合法完整页面](../examples/composite-page.json)，JSON Pointer `#/sections/0/components/1/props/components/2`。
+- `#/definitions/compositeCardChild/oneOf/3`：[合法完整页面](../examples/composite-page.json)，JSON Pointer `#/sections/0/components/1/props/components/3`。
+- `#/definitions/compositeCardChild/oneOf/4`：[合法完整页面](../examples/composite-page.json)，JSON Pointer `#/sections/0/components/1/props/components/4`。

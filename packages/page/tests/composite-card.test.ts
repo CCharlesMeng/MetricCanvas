@@ -137,7 +137,7 @@ describe('组合卡', () => {
       const page = cardPage();
       children(page)[0] = { id: 'inner-container', type, layout: { span: 12 }, props: {} };
       expect(messagesAt(page, '/sections/0/components/0/props/components/0')).toEqual([
-        `组合卡内不得再嵌套容器组件:${type}；页面树最深到「分区 → 组合卡 → 组件」三层`
+        `组合卡内不得再嵌套容器组件:${type}；组合卡内只接受其白名单中的普通子组件`
       ]);
     }
   });

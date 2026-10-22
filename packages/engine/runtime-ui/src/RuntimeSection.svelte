@@ -27,9 +27,9 @@
    */
   /* IOC 参考视口的 [29,29,22] 三轨在通用 gap 下产出 580px / 580px / 440px；
      数字是验收事实，运行时仍只消费页面声明的权重。 */
-  let { section, hidden = false, componentContent, cellAttachment, cellOverlay, emptyContent }: RuntimeSectionProps = $props();
+  let { section, contentOnly = false, hidden = false, componentContent, cellAttachment, cellOverlay, emptyContent }: RuntimeSectionProps = $props();
   let sectionGrid = $state<HTMLElement | null>(null);
-  const container = $derived(section.container);
+  const container = $derived(contentOnly ? 'plain' : section.container);
   const backdropId = $derived(sectionBackdrop(section)?.id);
   const backdropOnly = $derived(
     backdropId !== undefined && section.components.every((component) => component.id === backdropId)
@@ -144,12 +144,13 @@
 
 <section
   {hidden}
+  class:content-only={contentOnly}
   class:container-plain={container === 'plain'}
   class:container-panel={container === 'panel'}
   class:container-card={container === 'card'}
   class:static-export={staticExport}
   class="page-section"
-  data-section-id={section.id}
+  data-section-id={contentOnly ? undefined : section.id}
   data-section-container={container}
 >
   {#if section.title}
@@ -393,6 +394,16 @@
     min-height: 320px;
   }
 
+  /* 白底由容器声明，避免读取计算样式推断卡片外观。plain 继承所在容器。 */
+  .container-card > .section-grid,
+  .container-panel > .section-grid {
+    --mc-metric-card-border: var(--mc-white-card-border, 0);
+    --mc-metric-card-padding: var(--mc-white-card-padding, 0);
+    --mc-metric-card-radius: var(--mc-white-card-radius, 0);
+    --mc-metric-panel-border-width: var(--mc-white-metric-panel-border-width, 1px);
+    --mc-metric-panel-border-color: var(--mc-white-card-border-color, var(--mc-color-report-content-frame, #d4d5ff));
+  }
+
   /* plain:无容器,组件完全自带外观 */
   .page-section.container-plain {
     padding: 0;
@@ -529,6 +540,9 @@
       grid-column: 1 / -1 !important;
       inset: auto;
     }
+  }
+  @container mc-component-box (max-width: 760px) {
+    .content-only > .section-grid > .cell { grid-column: 1 / -1 !important; }
   }
   .page-section.static-export { break-inside:auto; }
   .static-export .section-grid, .static-export .cell { height:auto!important; max-height:none!important; overflow:visible!important; }

@@ -4,7 +4,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "组合卡内不得再嵌套容器组件:tabContainer；页面树最深到「分区 → 组合卡 → 组件」三层",
+      "message": "组合卡内不得再嵌套容器组件:tabContainer；组合卡内只接受其白名单中的普通子组件",
       "paths": [
         "/sections/0/components/1/props/components/5"
       ]

@@ -1,6 +1,6 @@
-import { createSourceProgram, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize } from '@metriccanvas/data-execution/runtime';
+import { createSourceProgram, composeEffectiveQuery, intersectQueryFilters, activeSourceIds, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize } from '@metriccanvas/data-execution/runtime';
 import type { QueryHeaderFilters } from '@metriccanvas/data-execution/runtime';
-import { affectedSourceIds, conditionSourceIds, queryResultDependencies, type Page, type DataSnapshot, type EffectiveQuery, type QueryDataSource, type TableQueryView } from '@metriccanvas/page/internal';
+import { affectedSourceIds, conditionSourceIds, queryResultDependencies, type Page, type DataSnapshot, type EffectiveQuery, type QueryDataSource, type TabSelections, type TableQueryView } from '@metriccanvas/page/internal';
 import { executionSourceKey } from './execution';
 import { initialFilterValues, type FilterState, type FilterValues } from './filter-state';
 import type { DataGateway, QueryDiagnosticContext } from './ports';
@@ -10,6 +10,7 @@ export type PageDataSnapshots = ReadonlyMap<string, DataSnapshot>;
 export interface Subscribable<T> { subscribe(run: (value: T) => void): () => void; }
 export type { QueryHeaderFilters } from '@metriccanvas/data-execution/runtime';
 export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
+  setActiveTabs(selections: TabSelections): void;
   captureQueries(): ReadonlyMap<string, EffectiveQuery>;
   captureViews(): ReadonlyMap<string, TableQueryView>;
   captureComputeYear(): number;
@@ -24,7 +25,9 @@ export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
 }
 export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterState,
   diagnostics?: Pick<QueryDiagnosticContext, 'pageRevisionId'>,
-  execution?: Pick<import('./execution').ExecutionBootstrap, 'filters' | 'snapshots' | 'sourceKeys'>): PageSnapshotStream {
+  execution?: Pick<import('./execution').ExecutionBootstrap, 'filters' | 'snapshots' | 'sourceKeys'>, initialTabs: TabSelections = {}): PageSnapshotStream {
+  let selections = initialTabs;
+  const demand = () => activeSourceIds(page, selections);
   const ids = visibleSourceIds(page), compiled = compileSources(page), defaults = initialFilterValues(page.filters ?? []);
   const subscribers = new Set<(value: PageDataSnapshots) => void>();
   let active: ReturnType<typeof start> | undefined;
@@ -52,6 +55,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       if(initial?.status==='loading')initial=undefined;
       if(source.source.type==='inline'&&!initial)initial={status:source.source.rows.length?'ready':'empty',...(source.source.rows.length?{rows:source.source.rows}:{})} as DataSnapshot;
       if (receipt && same(values, execution!.filters) && execution!.sourceKeys.get(id) === executionSourceKey(source)) { initial = receipt; matched.add(id); }
+      if (source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ dataSource: source as QueryDataSource }, values, 0, [], {}))) initial = { status: 'empty', totalCount: 0 };
       raw.set(id, initial ?? { status: 'loading' });
       if (compiled.automatic.has(id) && source.source.type === 'query') {
         const size = automaticQueryPageSize(source as QueryDataSource, initial);
@@ -68,7 +72,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     }
     function refetch(changed: Set<string>, firstRead = false) {
       if (disposed || !changed.size) return;
-      const targets = new Set([...(firstRead ? changed : affectedSourceIds(page.dataSources, changed, false))].filter(id => ids.has(id)));
+      const targets = new Set([...(firstRead ? changed : affectedSourceIds(page.dataSources, changed, false))].filter(id => ids.has(id) && demand().has(id)));
       for (const id of targets) tokens.set(id, (tokens.get(id) ?? 0) + 1);
       for (const id of targets) {
         if (!changed.has(id)) tables.get(id)?.resetPage();
@@ -105,11 +109,19 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
         const source = page.dataSources[key];
         return source?.source.type === 'query' && Object.keys(source.source.query.filterBindings ?? {}).some(id => changed.has(id));
       })));
-      for (const id of targets) tables.get(id)?.resetPage();
-      if (targets.size) refetch(targets); else if (changed.size) publish();
+      for (const id of affectedSourceIds(page.dataSources, targets, false)) {
+        tables.get(id)?.resetPage();
+        if (!ids.has(id) || page.dataSources[id]?.source.type === 'inline') continue;
+        tokens.set(id, (tokens.get(id) ?? 0) + 1);
+        requests.get(id)?.abort();
+        raw.set(id, { status: 'loading' });
+      }
+      if (targets.size) refetch(targets);
+      if (changed.size) publish();
     });
-    refetch(new Set([...ids].filter(id => !matched.has(id) && raw.get(id)?.status === 'loading')), true);
+    refetch(new Set([...demand()].filter(id => !matched.has(id) && raw.get(id)?.status === 'loading')), true);
     return {
+      activate() { refetch(new Set([...demand()].filter(id => raw.get(id)?.status === 'loading')), true); },
       program, tables, views, year, current: () => snapshots,
       queries: () => program.captureQueries(values, views(), raw),
       mutable(id: string) { return tables.has(id) && (compiled.limits.has(id) || compiled.automatic.has(id) || ![...ids].some(key => queryResultDependencies(page.dataSources[key]).includes(id))); },
@@ -118,6 +130,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     };
   }
   return {
+    setActiveTabs(next) { selections = next; active?.activate(); },
     subscribe(run) { subscribers.add(run); active ??= start(); notify(run, active.current()); return () => { subscribers.delete(run); if (!subscribers.size) { active?.dispose(); active = undefined; } }; },
     captureQueries: () => active?.queries() ?? new Map(), captureViews: () => active?.views() ?? new Map(),
     captureComputeYear: () => active?.year ?? new Date().getFullYear(), getSourceProgram: () => active?.program,

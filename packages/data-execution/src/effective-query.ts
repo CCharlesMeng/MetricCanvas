@@ -1,3 +1,4 @@
+import { intersectQueryFilters } from './intersect-filters';
 import { bindingQueryField, hasQueryFieldMapping, timePointPredicateValue, resolveTimeWindow, type QueryDataSource, type EffectiveQuery, type DataSnapshot } from '@metriccanvas/page/internal';
 import type { FilterValues } from './filter-values';
 import type { DataGateway, QueryDiagnosticContext } from './ports';
@@ -131,7 +132,9 @@ export async function executeQuery(
   signal?: AbortSignal
 ): Promise<DataSnapshot> {
   try {
-    const result = await gateway.fetchData(query, diagnosticContext, signal);
+    const combined = intersectQueryFilters(query);
+    if (!combined) return { status: 'empty', totalCount: 0 };
+    const result = await gateway.fetchData(combined, diagnosticContext, signal);
     if (query.pagination && result.totalCount === undefined) {
       throw Object.assign(new Error('查询分页结果缺少 totalCount'), { code:'DQE_ROW_CONTRACT_ERROR' });
     }

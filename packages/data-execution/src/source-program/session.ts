@@ -1,3 +1,4 @@
+import { intersectQueryFilters } from '../intersect-filters';
 import { initialFilterValues } from '../filter-values';
 import { compilePagedJoin } from '../paged-join/plan';
 import { executePagedJoin } from '../paged-join/execute';
@@ -55,7 +56,8 @@ export function createSourceProgram(page: Page, config: { gateway: DataGateway; 
       for(const id of executionSourceIds(page,request.roots)){
         const source=compiled.sources.get(id);if(!source)continue;
         const view=request.views?.get(id)??defaultSourceView(page,id,compiled.limits.get(id));
-        const initial=defaultConditions(id,request.conditions)?reusableInitialSnapshot(source,view,compiled.limits.has(id)):source.source.type==='inline'?rawSnapshot(source.source.rows):undefined;
+        const contradictory = source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ dataSource: source as QueryDataSource }, request.conditions, 0, [], {}));
+        const initial = contradictory ? { status: 'empty' as const, totalCount: 0 } : defaultConditions(id,request.conditions)?reusableInitialSnapshot(source,view,compiled.limits.has(id)):source.source.type==='inline'?rawSnapshot(source.source.rows):undefined;
         snapshots.set(id,initial ? checkOrdinaryRange(source, initial, undefined, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] }) : {status:'loading'});
       }return snapshots;
     },
@@ -108,6 +110,7 @@ export function createSourceProgram(page: Page, config: { gateway: DataGateway; 
         if (!source) throw new Error('页面数据源不存在');
         if (raw.has(id)) return;
         const view = views.get(id) ?? defaultSourceView(page, id, limits.get(id));
+        if (source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ dataSource: source as QueryDataSource }, request.conditions, 0, [], {}))) { raw.set(id, { status: 'empty', totalCount: 0 }); return; }
         const initial = request.useInitial && defaultConditions(id,request.conditions) ? reusableInitialSnapshot(source,view,limits.has(id)) : undefined;
         if (initial) { raw.set(id, checkOrdinaryRange(source, initial, undefined, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] })); return; }
         if (source.source.type === 'inline') { raw.set(id, rawSnapshot(source.source.rows)); return; }

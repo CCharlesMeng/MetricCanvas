@@ -134,7 +134,7 @@ Embed 在 Shadow DOM 中渲染页面，以隔离集成应用样式。
 
 ## 事件
 
-`RuntimeEvent` 是 `@metriccanvas/engine/ui` 的 `RuntimeViewEvent` 的别名，事件形状以该类型定义为唯一真源。当前事件类型：`ready`、`invalid`、`version-error`、`configuration-error`、`data-error`、`filter-change`、`navigate`。
+`RuntimeEvent` 是 `@metriccanvas/engine/ui` 的 `RuntimeViewEvent` 的别名，事件形状以该类型定义为唯一真源。当前事件类型：`ready`、`invalid`、`version-error`、`configuration-error`、`data-error`、`filter-change`、`tab-change`、`navigate`。
 
 ```js
 const runtime = MetricCanvas.mount('#dashboard', {
@@ -250,3 +250,5 @@ ESM 同名导出也可用。初始实际参数/筛选及逐源快照来自执行
 ### Report 导出按钮（6.31）
 
 在报表顶层页头统一配置`exportButtons: [{format, label?, filename?, scale?}]`，每项一个直接下载按钮；PNG默认3倍、支持3/4倍，PDF默认2倍、支持2/3/4倍；结果始终为一张完整PNG。单张长图由独立文档和Worker行流式编码生成，不提供多文件或其他图片格式回退。既有PDF独立保留；完整声明及运行限制见[报告页头](../../docs/page-metadata/components/reportHeader.md#导出按钮631)和[报告导出](../../docs/report-export.md)。[HTML例子](examples/report-image-download.html)直接消费`pages/report-png-export.json`，不需集成应用安装截图/编码依赖。正常父文档水印被隔离，主动向frame注入的门户脚本仍需真实接入验收。
+
+Tab混合内容的活动项使用 `tab.<组件id>` 查询参数。`navigation.replaceSearch` 接收筛选与页签更新；仅使用事件同步URL的集成应用同时处理 `filter-change` 与 `tab-change`，替换当前历史记录且不立即回灌 update。既有对事件联合做穷尽switch的消费者需要补充tab-change分支。组件局部筛选沿用既有筛选URL；表格分页、排序、搜索草稿和滚动不新增URL编码。

@@ -1,168 +1,39 @@
 {
-  "schemaVersion": "6.5",
-  "id": "composite-page",
-  "layout": "dashboard",
-  "dashboardToolbar": {
-    "variant": "compact",
-    "readOnly": true,
-    "note": "只读"
-  },
-  "dataSources": {
-    "summary": {
-      "fields": {
-        "channel": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "amount": {
-          "type": "number",
-          "role": "measure"
-        },
-        "share": {
-          "type": "number",
-          "role": "measure"
-        },
-        "score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "owner": {
-          "type": "string",
-          "role": "dimension"
-        }
-      },
-      "source": {
-        "type": "inline",
-        "rows": [
-          {
-            "channel": "线上",
-            "amount": 60,
-            "share": 60,
-            "score": 88,
-            "owner": "张三"
-          },
-          {
-            "channel": "线下",
-            "amount": 40,
-            "share": 40,
-            "score": 70,
-            "owner": "李四"
-          }
-        ]
-      }
-    },
-    "top": {
-      "fields": {
-        "name": {
-          "queryField": "name",
-          "type": "string",
-          "role": "dimension"
-        },
-        "value": {
-          "queryField": "value",
-          "type": "number",
-          "role": "measure"
-        }
-      },
-      "source": {
-        "type": "query",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "name"
-                ],
-                "output_metrics": [
-                  "value"
-                ],
-                "filter": {
-                  "dims": [],
-                  "metrics": []
-                },
-                "order": {
-                  "offset": 0,
-                  "limit": 10
-                }
-              }
-            ]
-          }
-        }
-      }
-    }
-  },
+  "schemaVersion": "6.32",
+  "layout": "report",
+  "id": "tab-content-text",
+  "dataSources": {},
   "sections": [
     {
       "id": "main",
       "components": [
         {
-          "id": "tab-container",
+          "id": "content-tabs",
           "type": "tabContainer",
           "layout": {
             "span": 12
           },
           "props": {
-            "variant": "analysisStack",
-            "defaultTab": "top",
+            "contentLayout": "grid",
             "tabs": [
               {
-                "id": "top",
-                "label": "TOP",
+                "id": "one",
+                "label": "内容",
                 "component": {
-                  "id": "top-table",
-                  "type": "table",
+                  "id": "explanation",
+                  "type": "text",
                   "layout": {
                     "span": 12
                   },
-                  "data": {
-                    "main": "top"
-                  },
                   "props": {
-                    "variant": "embedded",
-                    "bottomFade": true,
-                    "columns": [
-                      {
-                        "field": "name"
-                      },
-                      {
-                        "field": "value"
-                      }
-                    ]
+                    "title": "章节说明",
+                    "body": "这是页面中的静态说明正文。",
+                    "variant": "plain"
                   }
                 }
-              },
-              {
-                "id": "all",
-                "label": "全部",
-                "components": [
-                  {
-                    "id": "all-table",
-                    "type": "table",
-                    "layout": {
-                      "span": 12
-                    },
-                    "data": {
-                      "main": "summary"
-                    },
-                    "props": {
-                      "columns": [
-                        {
-                          "field": "channel"
-                        },
-                        {
-                          "field": "amount"
-                        }
-                      ],
-                      "pagination": {
-                        "mode": "local",
-                        "pageSize": 10
-                      }
-                    }
-                  }
-                ]
               }
-            ]
+            ],
+            "variant": "analysisStack"
           }
         }
       ]

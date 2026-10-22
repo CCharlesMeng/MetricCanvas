@@ -11,7 +11,7 @@
 categoryLabel缺省使用字段label，字符串覆盖列头，false明确隐藏列头。swatches按类别取值从共享配色取色，需要同页饼图绑定相同类别字段；不是按行序猜颜色。带色点的完整例子保留这一依赖。
 
 
-页面协议 6.31。结构真源为本册[schema.json](../schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.32。结构真源为本册[schema.json](../schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -228,7 +228,7 @@ Schema位置：`#/definitions/categoryBreakdownComponent/properties/props/proper
 - [composite-page](../examples/composite-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](../examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 
-局部片段提取自[完整页面](../examples/component-categoryBreakdown.json)的`#/sections/0/components/0/props/components/4`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
+局部片段提取自[完整页面](../examples/component-categoryBreakdown.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 
 ```json
 {
@@ -247,8 +247,7 @@ Schema位置：`#/definitions/categoryBreakdownComponent/properties/props/proper
         "label": "金额",
         "field": "amount"
       }
-    ],
-    "swatches": true
+    ]
   }
 }
 ```

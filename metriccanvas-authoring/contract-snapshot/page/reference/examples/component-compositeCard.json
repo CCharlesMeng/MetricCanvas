@@ -1,52 +1,20 @@
 {
-  "schemaVersion": "6.5",
-  "id": "composite-page",
+  "schemaVersion": "6.32",
+  "id": "tab-mixed-content",
   "layout": "dashboard",
-  "dashboardToolbar": {
-    "variant": "compact",
-    "readOnly": true,
-    "note": "只读"
-  },
   "dataSources": {
-    "summary": {
+    "metrics": {
       "fields": {
-        "channel": {
-          "type": "string",
-          "role": "dimension"
-        },
         "amount": {
           "type": "number",
           "role": "measure"
-        },
-        "share": {
-          "type": "number",
-          "role": "measure"
-        },
-        "score": {
-          "type": "number",
-          "role": "measure"
-        },
-        "owner": {
-          "type": "string",
-          "role": "dimension"
         }
       },
       "source": {
         "type": "inline",
         "rows": [
           {
-            "channel": "线上",
-            "amount": 60,
-            "share": 60,
-            "score": 88,
-            "owner": "张三"
-          },
-          {
-            "channel": "线下",
-            "amount": 40,
-            "share": 40,
-            "score": 70,
-            "owner": "李四"
+            "amount": 1280
           }
         ]
       }
@@ -57,129 +25,31 @@
       "id": "main",
       "components": [
         {
-          "id": "card",
+          "id": "grouped",
           "type": "compositeCard",
           "layout": {
-            "span": 2
+            "span": 6
           },
           "props": {
-            "title": "渠道概览",
-            "titleIcon": "opportunity",
-            "variant": "metricGrid",
+            "title": "组合卡",
             "components": [
               {
-                "id": "amount-card",
+                "id": "grouped-total",
                 "type": "metricCard",
-                "layout": {
-                  "span": 6
-                },
-                "data": {
-                  "main": "summary"
-                },
-                "props": {
-                  "rows": [
-                    {
-                      "label": "线上金额",
-                      "context": "近60天",
-                      "valueField": {
-                        "data": "main",
-                        "field": "amount",
-                        "match": {
-                          "field": "channel",
-                          "equals": "线上"
-                        }
-                      },
-                      "link": true
-                    }
-                  ],
-                  "secondaryRows": [
-                    {
-                      "label": "评分",
-                      "valueField": "score"
-                    }
-                  ],
-                  "actions": [
-                    {
-                      "on": "click",
-                      "navigate": {
-                        "href": "/pages/inline-report"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "share-pie",
-                "type": "pieChart",
-                "layout": {
-                  "span": 6
-                },
-                "data": {
-                  "main": "summary"
-                },
-                "props": {
-                  "categoryField": "channel",
-                  "valueField": "share"
-                }
-              },
-              {
-                "id": "score-gauge",
-                "type": "gauge",
-                "layout": {
-                  "span": 6
-                },
-                "data": {
-                  "main": "summary"
-                },
-                "props": {
-                  "valueField": "score",
-                  "max": 100
-                }
-              },
-              {
-                "id": "owner-panel",
-                "type": "keyValuePanel",
-                "layout": {
-                  "span": 6
-                },
-                "data": {
-                  "main": "summary"
-                },
-                "props": {
-                  "titleIcon": "reward",
-                  "columns": 6,
-                  "items": [
-                    {
-                      "label": "负责人",
-                      "field": "owner",
-                      "icon": "goldMedal"
-                    },
-                    {
-                      "label": "金额",
-                      "field": "amount",
-                      "unit": "万元"
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "channel-breakdown",
-                "type": "categoryBreakdown",
                 "layout": {
                   "span": 12
                 },
                 "data": {
-                  "main": "summary"
+                  "main": "metrics"
                 },
                 "props": {
-                  "categoryField": "channel",
-                  "columns": [
+                  "title": "合成总额",
+                  "rows": [
                     {
-                      "label": "金额",
-                      "field": "amount"
+                      "label": "总额",
+                      "valueField": "amount"
                     }
-                  ],
-                  "swatches": true
+                  ]
                 }
               }
             ]

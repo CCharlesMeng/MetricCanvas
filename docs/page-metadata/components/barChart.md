@@ -4,6 +4,8 @@
 
 每个series显式绑定measure并声明适用角色，维度轴来自dimension字段。forecast/actual等角色与色彩语义应与真实业务口径一致。
 
+普通柱状图默认柱宽16px（横向为柱条厚度），组合图中的柱系列沿用该默认值；`reportForecast` 变体保留40px。无需为默认宽度增加页面字段。可观察入口：[`tab-mixed-content`](../examples/tab-mixed-content.json)。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。

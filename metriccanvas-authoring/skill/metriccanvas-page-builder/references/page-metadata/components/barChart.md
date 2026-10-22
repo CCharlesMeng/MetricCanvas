@@ -4,6 +4,8 @@
 
 每个series显式绑定measure并声明适用角色，维度轴来自dimension字段。forecast/actual等角色与色彩语义应与真实业务口径一致。
 
+普通柱状图默认柱宽16px（横向为柱条厚度），组合图中的柱系列沿用该默认值；`reportForecast` 变体保留40px。无需为默认宽度增加页面字段。可观察入口：[`tab-mixed-content`](../examples/tab-mixed-content.json)。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
@@ -11,7 +13,7 @@
 Dashboard 正文可通过 `props.filter` 在左上角配置独立单选筛选。选项名称和值分离，default 与查询绑定显式声明；见[图表独立筛选](../filters.md#chart-local-filter)和 `chart-local-filter-page` 完整页面。
 
 
-页面协议 6.31。结构真源为本册[schema.json](../schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.32。结构真源为本册[schema.json](../schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

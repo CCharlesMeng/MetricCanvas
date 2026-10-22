@@ -16,7 +16,7 @@
 
 
 
-页面协议 6.31。结构真源为本册[schema.json](schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.32。结构真源为本册[schema.json](schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -626,7 +626,7 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 ## 联合分支见证（生成）
 
 - `#/definitions/componentAction/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/1/props/actions/0`。
-- `#/definitions/componentAction/anyOf/1`：[合法完整页面](examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/0/props/actions/0`。
+- `#/definitions/componentAction/anyOf/1`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/1`。
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/0`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/1/navigate/query/city`。
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/1`：[合法完整页面](examples/url-navigation-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/0/navigate/query/project`。
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/1/navigate/query/region`。

@@ -1,0 +1,37 @@
+{
+  "case": "tab-content-backdrop",
+  "invariant": "tab-content-boundary",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "layout.layer 只能声明在内容分区的顶层组件上",
+      "paths": [
+        "/sections/0/components/0/props/tabs/0/components/0/layout/layer"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "tabs": [
+                {
+                  "components": [
+                    {
+                      "layout": {
+                        "layer": "backdrop"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

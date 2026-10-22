@@ -15,7 +15,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 31;
+const CURRENT_MINOR = 32;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -37,6 +37,18 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'tab-mixed-content': {
+    minor: 32, description: 'Tab 混合内容、显式栅格与按需呈现',
+    usedAt: document => componentPaths(document, component => {
+      if (component.type !== 'tabContainer') return false;
+      const config = props(component);
+      return has(config, 'contentLayout') || (Array.isArray(config?.tabs) && config.tabs.some((item: unknown) => {
+        const tab = record(item);
+        const children = tab?.component ? [tab.component] : tab?.components;
+        return Array.isArray(children) && children.some(child => record(child)?.type !== 'table');
+      }));
+    })
+  },
   'period-filter': {minor:27,description:'Dashboard 年季月与近一年期间筛选',usedAt:document => filterPaths(document, filter => filter.type === 'timeRange' && (has(filter,'display') || has(filter,'initialMode') || !!(record(filter.default) && has(record(filter.default),'mode'))))},
   'chart-local-filter': {
     minor: 29, description: 'Dashboard 图表左上角独立筛选与自定义选项',

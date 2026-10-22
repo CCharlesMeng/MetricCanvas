@@ -1061,6 +1061,19 @@
       ]
     },
     {
+      "id": "tab-content-boundary",
+      "description": "Tab混合内容禁止页头、嵌套Tab及子内容铺底，能力下限6.32",
+      "valid": [
+        "tab-mixed-content"
+      ],
+      "invalid": [
+        "tab-content-header",
+        "tab-content-nested-tab",
+        "tab-content-backdrop",
+        "tab-content-version-floor"
+      ]
+    },
+    {
       "id": "tab-container",
       "description": "Tab id 唯一且 defaultTab 已声明",
       "valid": [

@@ -48,6 +48,7 @@ export type RuntimeViewEvent =
     }
   | DataErrorEvent
   | { type: 'filter-change'; search: string }
+  | { type: 'tab-change'; search: string }
   | {
       type: 'navigate';
       href: string;

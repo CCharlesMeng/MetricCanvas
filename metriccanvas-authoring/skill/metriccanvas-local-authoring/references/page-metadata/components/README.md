@@ -8,7 +8,7 @@
 - [明细表 table](table.md)：展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录；一个或多个 dimension/metric 字段组成的多行记录。
 - [地图 mapChart](mapChart.md)：展示国家或省级地域分布，可按层级维度筛选器做三级下钻；地域名称 dimension 字段 + 一个 metric 数值字段。
 - [仪表 gauge](gauge.md)：用环形刻度突出一个比率或完成度类 KPI；单行记录；一个 measure 数值字段。
-- [Tab 容器 tabContainer](tabContainer.md)：在同一卡位切换多张表格,不占用额外栅格行；不绑定页面数据源；每个 Tab 内的表格自己声明数据槽。
+- [Tab 容器 tabContainer](tabContainer.md)：在同一区域切换普通内容与组合卡；显式grid复用12列布局，首次进入按需取数，切换保活并同步URL。
 - [组合卡 compositeCard](compositeCard.md)：把若干组件框进一张卡,并让这张卡作为一个组件进 12 列栅格横向并排；不绑定页面数据源；每个子组件自己声明数据槽与字段绑定。
 - [排行卡 rankingCard](rankingCard.md)：突出 Top N 或按指标排序的类别；名称 dimension 字段 + 一个 metric 数值字段，查询应声明排序和限制。
 - [详细排行卡 rankingDetailCard](rankingDetailCard.md)：按查询结果顺序展示对象、指标、变化、徽标与原因说明；名称 dimension + 数值 measure，可选变化 measure、最多两个徽标 dimension、普通说明 dimension、语义 HTML 说明 semanticHtml/detail，以及可展开 recordList/detail。

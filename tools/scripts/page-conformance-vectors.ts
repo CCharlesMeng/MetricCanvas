@@ -1918,6 +1918,21 @@ export const invariants: InvariantDefinition[] = [
     ]
   },
   {
+    id: 'tab-content-boundary',
+    description: 'Tab混合内容禁止页头、嵌套Tab及子内容铺底，能力下限6.32',
+    valid: ['tab-mixed-content'],
+    cases: [
+      { case: 'tab-content-header', base: 'tab-mixed-content', expect: /Tab 内容不得包含 reportHeader/,
+        mutate: document => { firstComponent(document).props.tabs[0].components[0] = {id:'invalid-header',type:'reportHeader',layout:{span:12},props:{title:'非法页头'}}; } },
+      { case: 'tab-content-nested-tab', base: 'tab-mixed-content', expect: /Tab 内容不得包含 tabContainer/,
+        mutate: document => { firstComponent(document).props.tabs[0].components[0] = {id:'invalid-tabs',type:'tabContainer',layout:{span:12},props:{tabs:[{id:'nested',label:'非法嵌套',component:{id:'nested-text',type:'text',layout:{span:12},props:{body:'内容'}}}]}}; } },
+      { case: 'tab-content-backdrop', base: 'tab-mixed-content', expect: /layout.layer 只能声明在内容分区的顶层组件上/,
+        mutate: document => { firstComponent(document).props.tabs[0].components[0].layout.layer='backdrop'; } },
+      { case: 'tab-content-version-floor', base: 'tab-mixed-content', expect: /6.32/,
+        mutate: document => { document.schemaVersion='6.31'; } }
+    ]
+  },
+  {
     id: 'tab-container',
     description: 'Tab id 唯一且 defaultTab 已声明',
     valid: ['composite-page'],

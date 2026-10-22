@@ -93,7 +93,7 @@ export function parsePage(
   const compatibleDocument = normalizeReportExportScales(adaptLegacyPageDocument(document));
   if (!validateStructure(compatibleDocument)) {
     const structural = (validateStructure.errors ?? []).map(toTypedError);
-    const guided = [...versionErrors(compatibleDocument), ...compositeCardStructureErrors(compatibleDocument)];
+    const guided = [...versionErrors(compatibleDocument), ...compositeCardStructureErrors(compatibleDocument), ...tabContainerStructureErrors(compatibleDocument)];
     if (guided.length > 0) {
       return { ok: false, errors: [...guided, ...withoutGuidedPaths(structural, guided)] };
     }
@@ -172,6 +172,24 @@ function withoutGuidedPaths(
   );
 }
 
+function tabContainerStructureErrors(document: unknown): TypedError[] {
+  const errors: TypedError[] = [];
+  walkDocumentComponents(document, (component, path) => {
+    if (component.type !== 'tabContainer') return;
+    const tabs = (component.props as { tabs?: Array<{ component?: {type?: string}; components?: Array<{type?: string}> }> } | undefined)?.tabs;
+    if (!Array.isArray(tabs)) return;
+    tabs.forEach((tab, index) => {
+      const children = tab?.component ? [tab.component] : Array.isArray(tab?.components) ? tab.components : [];
+      children.forEach((child, childIndex) => {
+        if (child?.type !== 'reportHeader' && child?.type !== 'tabContainer') return;
+        const location = tab.component ? 'component' : `components/${childIndex}`;
+        errors.push(schemaError(`${path}/props/tabs/${index}/${location}`, `Tab 内容不得包含 ${child.type}，只接受普通内容组件与组合卡`));
+      });
+    });
+  });
+  return errors;
+}
+
 /**
  * 组合卡的四条结构不变量(ADR-0053)。它们都在结构校验的接缝上判定,读的是
  * **原始文档**:白名单由判别联合表达,失配后 ajv 只会说某个分支不匹配,说不出
@@ -214,7 +232,7 @@ function compositeCardStructureErrors(document: unknown): TypedError[] {
         errors.push(
           schemaError(
             `${path}/props/components/${index}`,
-            `组合卡内不得再嵌套容器组件:${childType}；页面树最深到「分区 → 组合卡 → 组件」三层`
+            `组合卡内不得再嵌套容器组件:${childType}；组合卡内只接受其白名单中的普通子组件`
           )
         );
         return;

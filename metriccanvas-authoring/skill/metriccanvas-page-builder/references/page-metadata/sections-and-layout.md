@@ -23,7 +23,7 @@ Tab和组合卡是受控容器组件，子项允许类型由各自Schema分支�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.31。结构真源为本册[schema.json](schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.32。结构真源为本册[schema.json](schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -440,7 +440,7 @@ Schema位置：`#/definitions/section/properties/components/items/oneOf/16`。�
 - `#/definitions/section/properties/components/items/oneOf/10`：[合法完整页面](examples/component-rankingCard.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/11`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/12`：[合法完整页面](examples/component-keyValuePanel.json)，JSON Pointer `#/sections/0/components/0`。
-- `#/definitions/section/properties/components/items/oneOf/13`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/10`。
+- `#/definitions/section/properties/components/items/oneOf/13`：[合法完整页面](examples/component-categoryBreakdown.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/14`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/15`：[合法完整页面](examples/component-text.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/16`：[合法完整页面](examples/component-aiSummary.json)，JSON Pointer `#/sections/0/components/0`。

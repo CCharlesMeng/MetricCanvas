@@ -7,6 +7,7 @@ import { CHART_PALETTE, GRID, categoryWindow, dualOrSingleAxis, formattedValueAx
 import { serialColor, type ColorList } from '../../shared/chart-palette';
 import { categoryLabelOption, pointValueLabel, valueLabelLayout } from '../../shared/chart-presentation';
 
+const DEFAULT_BAR_WIDTH = 16;
 const REPORT_COLORS = ['#1476ff', '#0cb8b2'] as const;
 const REPORT_FORECAST_COLORS = [
   'rgba(20, 118, 255, 0.2)',
@@ -158,7 +159,7 @@ export function barOption(
         name: series.label ?? field.definition?.label ?? field.field,
         type: 'bar' as const,
         ...(props.stacked ? { stack: 'total' } : {}),
-        ...(reportForecast ? { barWidth: 40 } : {}),
+        barWidth: reportForecast ? 40 : DEFAULT_BAR_WIDTH,
         ...(props.dualAxis && originalIndex > 0 ? { yAxisIndex: 1 } : {}),
         ...(Object.keys(itemStyle).length > 0 ? { itemStyle } : {}),
         ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText), labelLayout: valueLabelLayout(values, false, props.horizontal) } : {}),
@@ -296,7 +297,7 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
       return {
         type: series.kind ?? 'bar', name: series.label ?? field.definition?.label ?? field.field,
         yAxisIndex: series.axis === 'secondary' ? 1 : 0,
-        ...(series.kind === 'line' ? { connectNulls: false } : {}),
+        ...(series.kind === 'line' ? { connectNulls: false } : { barWidth: DEFAULT_BAR_WIDTH }),
         ...(props.showValueLabels ? {
           label: pointValueLabel(field.format, field.missingText), labelLayout: valueLabelLayout(rows.map(row => finiteNumber(row[field.field])), series.kind === 'line'),
           ...(series.kind === 'line' ? { showAllSymbol: true } : {})

@@ -11,7 +11,11 @@
    * 那几个类型:两处各列一遍时,新增一个纯容器只改了模板、判定函数就落在后面
    * (组合卡这次正是这么漏的)。
    */
-  import type { Snippet } from 'svelte';
+  import { getContext, type Snippet } from 'svelte';
+  import RuntimeSection from './RuntimeSection.svelte';
+  import { TAB_SELECTION_CONTEXT, type TabSelectionContext } from './tab-selection';
+  import { selectedTab, tabChildren, type TabContainerComponent } from '@metriccanvas/page/internal';
+  const tabSelection = getContext<TabSelectionContext | undefined>(TAB_SELECTION_CONTEXT);
   import ReportHeaderView from './ReportHeaderView.svelte';
   import { isChartComponent, type Component, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
   import type { PageDataSnapshots } from '../../runtime/src';
@@ -130,8 +134,18 @@
       onmetriclink={nested.onmetriclink(nestedComponent)}
       metricHref={nested.metricHref(nestedComponent)}
       map={nested.map?.(nestedComponent)}
+      textLinks={nested.textLinks?.(nestedComponent)}
+      summarySnapshot={nested.summarySnapshot?.(nestedComponent)}
       {nested}
     />
+  {/if}
+{/snippet}
+
+{#snippet tabContent(container: TabContainerComponent, tab: TabContainerComponent['props']['tabs'][number])}
+  {#if container.props.contentLayout === 'grid'}
+    <RuntimeSection contentOnly section={{ id: `${container.id}-${tab.id}`, components: tabChildren(tab) }} componentContent={child} />
+  {:else}
+    {#each tabChildren(tab) as tabChild (tabChild.id)}{@render child(tabChild)}{/each}
   {/if}
 {/snippet}
 
@@ -153,9 +167,7 @@
     <div data-export-tabs>
       {#each component.props.tabs as tab (tab.id)}
         <section data-export-tab={tab.id}><h3>{tab.label}</h3>
-          {#each 'components' in tab ? tab.components : [tab.component] as tabChild (tabChild.id)}
-            {@render child(tabChild)}
-          {/each}
+          {@render tabContent(component, tab)}
         </section>
       {/each}
     </div>
@@ -166,13 +178,13 @@
       tabs={component.props.tabs.map((tab) => ({ id: tab.id, label: tab.label,
         contentCount: 'components' in tab ? tab.components.length : 1 }))}
       defaultTab={component.props.defaultTab}
+      activeTab={tabSelection ? selectedTab(component, tabSelection.selections()) : undefined}
+      onselect={id => tabSelection?.select(component.id, id)}
     >
       {#snippet children(activeId)}
         {@const tab = component.props.tabs.find((candidate) => candidate.id === activeId)}
         {#if tab}
-          {#each 'components' in tab ? tab.components : [tab.component] as tabChild (tabChild.id)}
-            {@render child(tabChild)}
-          {/each}
+          {@render tabContent(component, tab)}
         {/if}
       {/snippet}
     </TabContainer>

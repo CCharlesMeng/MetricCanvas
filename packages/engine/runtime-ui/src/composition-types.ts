@@ -18,6 +18,8 @@ export interface RuntimeSurfaceProps extends RuntimeViewProps {
  * attachment 必须返回清理函数以撤销所安装的行为；布局几何仍归 RuntimeSection。
  */
 export interface RuntimeSectionProps {
+  /** Internal content grid: no extra section shell or page anchor identity. */
+  contentOnly?: boolean;
   section: PageSection;
   hidden?: boolean;
   componentContent: ComponentContent;

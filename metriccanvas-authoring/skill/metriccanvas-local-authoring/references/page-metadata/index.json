@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.31",
-  "schemaSha256": "c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d",
+  "schemaVersion": "6.32",
+  "schemaSha256": "27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -613,17 +613,35 @@
       "title": "Tab 容器 tabContainer",
       "definitions": [
         "tabContainerComponent",
-        "tabItem"
+        "tabItem",
+        "tabContent"
       ],
       "keywords": [
         "components/tabContainer",
         "Tab 容器 tabContainer"
       ],
       "examples": [
-        "composite-page"
+        "composite-page",
+        "tab-mixed-content",
+        "tab-content-aisummary",
+        "tab-content-barchart",
+        "tab-content-categorybreakdown",
+        "tab-content-compositecard",
+        "tab-content-fieldtext",
+        "tab-content-gauge",
+        "tab-content-keyvaluepanel",
+        "tab-content-linechart",
+        "tab-content-mapchart",
+        "tab-content-metriccard",
+        "tab-content-piechart",
+        "tab-content-rankingcard",
+        "tab-content-rankingdetailcard",
+        "tab-content-table",
+        "tab-content-text"
       ],
       "rules": [
-        "tab-container"
+        "tab-container",
+        "tab-content-boundary"
       ]
     },
     "components/compositeCard.md": {
@@ -890,7 +908,8 @@
         "6.28",
         "6.29",
         "6.30",
-        "6.31"
+        "6.31",
+        "6.32"
       ]
     },
     {
@@ -8881,6 +8900,13 @@
       "ref": "#/definitions/textValue"
     },
     {
+      "pointer": "#/definitions/tabContainerComponent/properties/props/properties/contentLayout",
+      "path": "@tabContainerComponent.props.contentLayout",
+      "required": "本分支可选",
+      "module": "components/tabContainer.md",
+      "const": "grid"
+    },
+    {
       "pointer": "#/definitions/tabContainerComponent/properties/props/properties/variant",
       "path": "@tabContainerComponent.props.variant",
       "required": "本分支可选",
@@ -8939,45 +8965,68 @@
       "path": "@tabItem · anyOf[0].component",
       "required": "本分支必填",
       "module": "components/tabContainer.md",
-      "ref": "#/definitions/tableComponent"
+      "ref": "#/definitions/tabContent"
     },
     {
-      "pointer": "#/definitions/tabItem/anyOf/1",
-      "path": "@tabItem · anyOf[1]",
+      "pointer": "#/definitions/tabContent",
+      "path": "@tabContent",
+      "required": "类型/分支",
+      "module": "components/tabContainer.md"
+    },
+    {
+      "pointer": "#/definitions/tabContent/oneOf/0",
+      "path": "@tabContent · oneOf[0]",
       "required": "独立分支（不合并required）",
-      "module": "components/tabContainer.md"
-    },
-    {
-      "pointer": "#/definitions/tabItem/anyOf/1/properties/id",
-      "path": "@tabItem · anyOf[1].id",
-      "required": "本分支必填",
-      "module": "components/tabContainer.md"
-    },
-    {
-      "pointer": "#/definitions/tabItem/anyOf/1/properties/label",
-      "path": "@tabItem · anyOf[1].label",
-      "required": "本分支必填",
-      "module": "components/tabContainer.md",
-      "ref": "#/definitions/nonEmptyTextValue"
-    },
-    {
-      "pointer": "#/definitions/tabItem/anyOf/1/properties/components",
-      "path": "@tabItem · anyOf[1].components",
-      "required": "本分支必填",
-      "module": "components/tabContainer.md"
-    },
-    {
-      "pointer": "#/definitions/tabItem/anyOf/1/properties/components/items",
-      "path": "@tabItem · anyOf[1].components[]",
-      "required": "每个数组项",
       "module": "components/tabContainer.md",
       "ref": "#/definitions/tableComponent"
     },
     {
-      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/9",
-      "path": "$.detailViews[].components[] · oneOf[9]",
+      "pointer": "#/definitions/tabContent/oneOf/1",
+      "path": "@tabContent · oneOf[1]",
       "required": "独立分支（不合并required）",
-      "module": "page.md",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/metricCardComponent"
+    },
+    {
+      "pointer": "#/definitions/tabContent/oneOf/2",
+      "path": "@tabContent · oneOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/barChartComponent"
+    },
+    {
+      "pointer": "#/definitions/tabContent/oneOf/3",
+      "path": "@tabContent · oneOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/lineChartComponent"
+    },
+    {
+      "pointer": "#/definitions/tabContent/oneOf/4",
+      "path": "@tabContent · oneOf[4]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/pieChartComponent"
+    },
+    {
+      "pointer": "#/definitions/tabContent/oneOf/5",
+      "path": "@tabContent · oneOf[5]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/mapChartComponent"
+    },
+    {
+      "pointer": "#/definitions/tabContent/oneOf/6",
+      "path": "@tabContent · oneOf[6]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/gaugeComponent"
+    },
+    {
+      "pointer": "#/definitions/tabContent/oneOf/7",
+      "path": "@tabContent · oneOf[7]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md",
       "ref": "#/definitions/compositeCardComponent"
     },
     {
@@ -9405,10 +9454,17 @@
       "module": "components/categoryBreakdown.md"
     },
     {
-      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/10",
-      "path": "$.detailViews[].components[] · oneOf[10]",
+      "pointer": "#/definitions/tabContent/oneOf/8",
+      "path": "@tabContent · oneOf[8]",
       "required": "独立分支（不合并required）",
-      "module": "page.md",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/categoryBreakdownComponent"
+    },
+    {
+      "pointer": "#/definitions/tabContent/oneOf/9",
+      "path": "@tabContent · oneOf[9]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md",
       "ref": "#/definitions/rankingCardComponent"
     },
     {
@@ -9505,10 +9561,10 @@
       "ref": "#/definitions/actions"
     },
     {
-      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/11",
-      "path": "$.detailViews[].components[] · oneOf[11]",
+      "pointer": "#/definitions/tabContent/oneOf/10",
+      "path": "@tabContent · oneOf[10]",
       "required": "独立分支（不合并required）",
-      "module": "page.md",
+      "module": "components/tabContainer.md",
       "ref": "#/definitions/rankingDetailCardComponent"
     },
     {
@@ -9736,105 +9792,17 @@
       "module": "components/rankingDetailCard.md"
     },
     {
-      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/12",
-      "path": "$.detailViews[].components[] · oneOf[12]",
+      "pointer": "#/definitions/tabContent/oneOf/11",
+      "path": "@tabContent · oneOf[11]",
       "required": "独立分支（不合并required）",
-      "module": "page.md",
+      "module": "components/tabContainer.md",
       "ref": "#/definitions/keyValuePanelComponent"
     },
     {
-      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/13",
-      "path": "$.detailViews[].components[] · oneOf[13]",
+      "pointer": "#/definitions/tabContent/oneOf/12",
+      "path": "@tabContent · oneOf[12]",
       "required": "独立分支（不合并required）",
-      "module": "page.md",
-      "ref": "#/definitions/categoryBreakdownComponent"
-    },
-    {
-      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/14",
-      "path": "$.detailViews[].components[] · oneOf[14]",
-      "required": "独立分支（不合并required）",
-      "module": "page.md",
-      "ref": "#/definitions/fieldTextComponent"
-    },
-    {
-      "pointer": "#/definitions/fieldTextComponent",
-      "path": "@fieldTextComponent",
-      "required": "类型/分支",
-      "module": "components/fieldText.md"
-    },
-    {
-      "pointer": "#/definitions/fieldTextComponent/properties/id",
-      "path": "@fieldTextComponent.id",
-      "required": "本分支必填",
-      "module": "components/fieldText.md",
-      "ref": "#/definitions/componentId"
-    },
-    {
-      "pointer": "#/definitions/fieldTextComponent/properties/type",
-      "path": "@fieldTextComponent.type",
-      "required": "本分支必填",
-      "module": "components/fieldText.md",
-      "const": "fieldText"
-    },
-    {
-      "pointer": "#/definitions/fieldTextComponent/properties/layout",
-      "path": "@fieldTextComponent.layout",
-      "required": "本分支必填",
-      "module": "components/fieldText.md",
-      "ref": "#/definitions/componentLayout"
-    },
-    {
-      "pointer": "#/definitions/fieldTextComponent/properties/data",
-      "path": "@fieldTextComponent.data",
-      "required": "本分支必填",
-      "module": "components/fieldText.md",
-      "ref": "#/definitions/mainData"
-    },
-    {
-      "pointer": "#/definitions/fieldTextComponent/properties/props",
-      "path": "@fieldTextComponent.props",
-      "required": "本分支必填",
-      "module": "components/fieldText.md"
-    },
-    {
-      "pointer": "#/definitions/fieldTextComponent/properties/props/properties/title",
-      "path": "@fieldTextComponent.props.title",
-      "required": "本分支可选",
-      "module": "components/fieldText.md"
-    },
-    {
-      "pointer": "#/definitions/fieldTextComponent/properties/props/properties/title/allOf/0",
-      "path": "@fieldTextComponent.props.title · allOf[0]",
-      "required": "独立分支（不合并required）",
-      "module": "components/fieldText.md",
-      "ref": "#/definitions/textValue"
-    },
-    {
-      "pointer": "#/definitions/fieldTextComponent/properties/props/properties/field",
-      "path": "@fieldTextComponent.props.field",
-      "required": "本分支必填",
-      "module": "components/fieldText.md",
-      "ref": "#/definitions/fieldBinding"
-    },
-    {
-      "pointer": "#/definitions/fieldTextComponent/properties/props/properties/variant",
-      "path": "@fieldTextComponent.props.variant",
-      "required": "本分支可选",
-      "module": "components/fieldText.md",
-      "enum": [
-        "plain",
-        "quote",
-        "narrativeShort",
-        "narrativeMeeting",
-        "narrativeRisk",
-        "narrativeProgress"
-      ]
-    },
-    {
-      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/15",
-      "path": "$.detailViews[].components[] · oneOf[15]",
-      "required": "独立分支（不合并required）",
-      "module": "page.md",
+      "module": "components/tabContainer.md",
       "ref": "#/definitions/textComponent"
     },
     {
@@ -10035,10 +10003,91 @@
       "ref": "#/definitions/nonEmptyTextValue"
     },
     {
-      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/16",
-      "path": "$.detailViews[].components[] · oneOf[16]",
+      "pointer": "#/definitions/tabContent/oneOf/13",
+      "path": "@tabContent · oneOf[13]",
       "required": "独立分支（不合并required）",
-      "module": "page.md",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/fieldTextComponent"
+    },
+    {
+      "pointer": "#/definitions/fieldTextComponent",
+      "path": "@fieldTextComponent",
+      "required": "类型/分支",
+      "module": "components/fieldText.md"
+    },
+    {
+      "pointer": "#/definitions/fieldTextComponent/properties/id",
+      "path": "@fieldTextComponent.id",
+      "required": "本分支必填",
+      "module": "components/fieldText.md",
+      "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/fieldTextComponent/properties/type",
+      "path": "@fieldTextComponent.type",
+      "required": "本分支必填",
+      "module": "components/fieldText.md",
+      "const": "fieldText"
+    },
+    {
+      "pointer": "#/definitions/fieldTextComponent/properties/layout",
+      "path": "@fieldTextComponent.layout",
+      "required": "本分支必填",
+      "module": "components/fieldText.md",
+      "ref": "#/definitions/componentLayout"
+    },
+    {
+      "pointer": "#/definitions/fieldTextComponent/properties/data",
+      "path": "@fieldTextComponent.data",
+      "required": "本分支必填",
+      "module": "components/fieldText.md",
+      "ref": "#/definitions/mainData"
+    },
+    {
+      "pointer": "#/definitions/fieldTextComponent/properties/props",
+      "path": "@fieldTextComponent.props",
+      "required": "本分支必填",
+      "module": "components/fieldText.md"
+    },
+    {
+      "pointer": "#/definitions/fieldTextComponent/properties/props/properties/title",
+      "path": "@fieldTextComponent.props.title",
+      "required": "本分支可选",
+      "module": "components/fieldText.md"
+    },
+    {
+      "pointer": "#/definitions/fieldTextComponent/properties/props/properties/title/allOf/0",
+      "path": "@fieldTextComponent.props.title · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/fieldText.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/fieldTextComponent/properties/props/properties/field",
+      "path": "@fieldTextComponent.props.field",
+      "required": "本分支必填",
+      "module": "components/fieldText.md",
+      "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/fieldTextComponent/properties/props/properties/variant",
+      "path": "@fieldTextComponent.props.variant",
+      "required": "本分支可选",
+      "module": "components/fieldText.md",
+      "enum": [
+        "plain",
+        "quote",
+        "narrativeShort",
+        "narrativeMeeting",
+        "narrativeRisk",
+        "narrativeProgress"
+      ]
+    },
+    {
+      "pointer": "#/definitions/tabContent/oneOf/14",
+      "path": "@tabContent · oneOf[14]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md",
       "ref": "#/definitions/aiSummaryComponent"
     },
     {
@@ -10167,6 +10216,94 @@
       "path": "@aiSummaryComponent.props.relatedData · propertyNames",
       "required": "条件结构",
       "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/tabItem/anyOf/1",
+      "path": "@tabItem · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/tabContainer.md"
+    },
+    {
+      "pointer": "#/definitions/tabItem/anyOf/1/properties/id",
+      "path": "@tabItem · anyOf[1].id",
+      "required": "本分支必填",
+      "module": "components/tabContainer.md"
+    },
+    {
+      "pointer": "#/definitions/tabItem/anyOf/1/properties/label",
+      "path": "@tabItem · anyOf[1].label",
+      "required": "本分支必填",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/tabItem/anyOf/1/properties/components",
+      "path": "@tabItem · anyOf[1].components",
+      "required": "本分支必填",
+      "module": "components/tabContainer.md"
+    },
+    {
+      "pointer": "#/definitions/tabItem/anyOf/1/properties/components/items",
+      "path": "@tabItem · anyOf[1].components[]",
+      "required": "每个数组项",
+      "module": "components/tabContainer.md",
+      "ref": "#/definitions/tabContent"
+    },
+    {
+      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/9",
+      "path": "$.detailViews[].components[] · oneOf[9]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/compositeCardComponent"
+    },
+    {
+      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/10",
+      "path": "$.detailViews[].components[] · oneOf[10]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/rankingCardComponent"
+    },
+    {
+      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/11",
+      "path": "$.detailViews[].components[] · oneOf[11]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/rankingDetailCardComponent"
+    },
+    {
+      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/12",
+      "path": "$.detailViews[].components[] · oneOf[12]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/keyValuePanelComponent"
+    },
+    {
+      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/13",
+      "path": "$.detailViews[].components[] · oneOf[13]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/categoryBreakdownComponent"
+    },
+    {
+      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/14",
+      "path": "$.detailViews[].components[] · oneOf[14]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/fieldTextComponent"
+    },
+    {
+      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/15",
+      "path": "$.detailViews[].components[] · oneOf[15]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/textComponent"
+    },
+    {
+      "pointer": "#/properties/detailViews/items/properties/components/items/oneOf/16",
+      "path": "$.detailViews[].components[] · oneOf[16]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/aiSummaryComponent"
     },
     {
       "pointer": "#/properties/sectionGroups",
@@ -10666,13 +10803,13 @@
     {
       "type": "categoryBreakdown",
       "file": "examples/component-categoryBreakdown.json",
-      "pointer": "#/sections/0/components/0/props/components/4"
+      "pointer": "#/sections/0/components/0"
     },
     {
       "type": "categoryBreakdown",
       "variant": "compactList",
       "file": "examples/component-categoryBreakdown-compactList.json",
-      "pointer": "#/sections/0/components/0/props/components/4"
+      "pointer": "#/sections/0/components/0"
     },
     {
       "type": "fieldText",
@@ -10935,19 +11072,19 @@
       "schemaPointer": "#/definitions/dataSource/anyOf/0",
       "module": "data-sources.md",
       "file": "examples/component-metricCard.json",
-      "pointer": "#/dataSources/fixed-target"
+      "pointer": "#/dataSources/metrics"
     },
     {
       "schemaPointer": "#/definitions/field/anyOf/0",
       "module": "fields.md",
       "file": "examples/component-metricCard.json",
-      "pointer": "#/dataSources/fixed-target/fields/target"
+      "pointer": "#/dataSources/metrics/fields/amount"
     },
     {
       "schemaPointer": "#/definitions/scalarField/oneOf/0",
       "module": "fields.md",
       "file": "examples/component-metricCard.json",
-      "pointer": "#/dataSources/fixed-target/fields/target"
+      "pointer": "#/dataSources/metrics/fields/amount"
     },
     {
       "schemaPointer": "#/definitions/scalarField/oneOf/1",
@@ -11049,7 +11186,7 @@
       "schemaPointer": "#/definitions/fieldValue/anyOf/0",
       "module": "fields.md",
       "file": "examples/component-metricCard.json",
-      "pointer": "#/dataSources/fixed-target/source/rows/0/target"
+      "pointer": "#/dataSources/metrics/source/rows/0/amount"
     },
     {
       "schemaPointer": "#/definitions/scalar/anyOf/0",
@@ -11061,7 +11198,7 @@
       "schemaPointer": "#/definitions/scalar/anyOf/1",
       "module": "fields.md",
       "file": "examples/component-metricCard.json",
-      "pointer": "#/dataSources/fixed-target/source/rows/0/target"
+      "pointer": "#/dataSources/metrics/source/rows/0/amount"
     },
     {
       "schemaPointer": "#/definitions/scalar/anyOf/2",
@@ -11480,7 +11617,7 @@
     {
       "schemaPointer": "#/definitions/textValue/anyOf/0",
       "module": "params-and-text-values.md",
-      "file": "examples/component-barChart.json",
+      "file": "examples/component-metricCard.json",
       "pointer": "#/sections/0/components/0/props/title"
     },
     {
@@ -11513,14 +11650,14 @@
     {
       "schemaPointer": "#/definitions/fieldBinding/anyOf/0",
       "module": "field-bindings-and-formats.md",
-      "file": "examples/component-barChart.json",
-      "pointer": "#/sections/0/components/0/props/categoryField"
+      "file": "examples/component-metricCard.json",
+      "pointer": "#/sections/0/components/0/props/rows/0/valueField"
     },
     {
       "schemaPointer": "#/definitions/fieldBinding/anyOf/1",
       "module": "field-bindings-and-formats.md",
-      "file": "examples/component-metricCard.json",
-      "pointer": "#/sections/0/components/0/props/rows/0/valueField"
+      "file": "examples/component-lineChart.json",
+      "pointer": "#/sections/0/components/0/props/xField"
     },
     {
       "schemaPointer": "#/definitions/colorRule/oneOf/0",
@@ -11555,8 +11692,8 @@
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/1",
       "module": "actions-and-navigation.md",
-      "file": "examples/component-compositeCard.json",
-      "pointer": "#/sections/0/components/0/props/components/0/props/actions/0"
+      "file": "examples/filters-page.json",
+      "pointer": "#/sections/0/components/0/props/actions/1"
     },
     {
       "schemaPointer": "#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/0",
@@ -11717,8 +11854,8 @@
     {
       "schemaPointer": "#/definitions/tableComponent/properties/props/properties/pagination/oneOf/1",
       "module": "components/table.md",
-      "file": "examples/component-tabContainer.json",
-      "pointer": "#/sections/0/components/0/props/tabs/1/components/0/props/pagination"
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/sections/0/components/6/props/pagination"
     },
     {
       "schemaPointer": "#/definitions/tableComponent/properties/props/properties/pagination/oneOf/2",
@@ -11769,19 +11906,52 @@
       "pointer": "#/sections/0/components/0/props/tabs/0"
     },
     {
-      "schemaPointer": "#/definitions/tabItem/anyOf/1",
+      "schemaPointer": "#/definitions/tabContent/oneOf/0",
       "module": "components/tabContainer.md",
-      "file": "examples/component-tabContainer.json",
-      "pointer": "#/sections/0/components/0/props/tabs/1"
+      "file": "examples/composite-page.json",
+      "pointer": "#/sections/1/components/0/props/tabs/0/component"
     },
     {
-      "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/9",
-      "module": "page.md",
-      "negativeWitness": {
-        "file": "errors/detail-component-reject-compositecard.json",
-        "reason": "详情的展示闭集拒绝 compositeCard；共享组件 Schema 分支只存在语义反例。",
-        "rule": "detail-view-component-types"
-      }
+      "schemaPointer": "#/definitions/tabContent/oneOf/1",
+      "module": "components/tabContainer.md",
+      "file": "examples/tab-mixed-content.json",
+      "pointer": "#/sections/0/components/0/props/tabs/0/components/0"
+    },
+    {
+      "schemaPointer": "#/definitions/tabContent/oneOf/2",
+      "module": "components/tabContainer.md",
+      "file": "examples/tab-mixed-content.json",
+      "pointer": "#/sections/0/components/0/props/tabs/0/components/3"
+    },
+    {
+      "schemaPointer": "#/definitions/tabContent/oneOf/3",
+      "module": "components/tabContainer.md",
+      "file": "examples/tab-mixed-content.json",
+      "pointer": "#/sections/0/components/0/props/tabs/1/components/0"
+    },
+    {
+      "schemaPointer": "#/definitions/tabContent/oneOf/4",
+      "module": "components/tabContainer.md",
+      "file": "examples/tab-content-piechart.json",
+      "pointer": "#/sections/0/components/0/props/tabs/0/component"
+    },
+    {
+      "schemaPointer": "#/definitions/tabContent/oneOf/5",
+      "module": "components/tabContainer.md",
+      "file": "examples/tab-content-mapchart.json",
+      "pointer": "#/sections/0/components/0/props/tabs/0/component"
+    },
+    {
+      "schemaPointer": "#/definitions/tabContent/oneOf/6",
+      "module": "components/tabContainer.md",
+      "file": "examples/tab-content-gauge.json",
+      "pointer": "#/sections/0/components/0/props/tabs/0/component"
+    },
+    {
+      "schemaPointer": "#/definitions/tabContent/oneOf/7",
+      "module": "components/tabContainer.md",
+      "file": "examples/tab-mixed-content.json",
+      "pointer": "#/sections/0/components/0/props/tabs/0/components/1"
     },
     {
       "schemaPointer": "#/definitions/compositeCardChild/oneOf/0",
@@ -11792,20 +11962,20 @@
     {
       "schemaPointer": "#/definitions/compositeCardChild/oneOf/1",
       "module": "components/compositeCard.md",
-      "file": "examples/component-compositeCard.json",
-      "pointer": "#/sections/0/components/0/props/components/1"
+      "file": "examples/composite-page.json",
+      "pointer": "#/sections/0/components/1/props/components/1"
     },
     {
       "schemaPointer": "#/definitions/compositeCardChild/oneOf/2",
       "module": "components/compositeCard.md",
-      "file": "examples/component-compositeCard.json",
-      "pointer": "#/sections/0/components/0/props/components/2"
+      "file": "examples/composite-page.json",
+      "pointer": "#/sections/0/components/1/props/components/2"
     },
     {
       "schemaPointer": "#/definitions/compositeCardChild/oneOf/3",
       "module": "components/compositeCard.md",
-      "file": "examples/component-compositeCard.json",
-      "pointer": "#/sections/0/components/0/props/components/3"
+      "file": "examples/composite-page.json",
+      "pointer": "#/sections/0/components/1/props/components/3"
     },
     {
       "schemaPointer": "#/definitions/keyValuePanelComponent/properties/props/properties/columns/anyOf/0",
@@ -11834,14 +12004,14 @@
     {
       "schemaPointer": "#/definitions/keyValuePanelComponent/properties/props/properties/columns/anyOf/4",
       "module": "components/keyValuePanel.md",
-      "file": "examples/component-compositeCard.json",
-      "pointer": "#/sections/0/components/0/props/components/3/props/columns"
+      "file": "examples/composite-page.json",
+      "pointer": "#/sections/0/components/1/props/components/3/props/columns"
     },
     {
       "schemaPointer": "#/definitions/compositeCardChild/oneOf/4",
       "module": "components/compositeCard.md",
-      "file": "examples/component-compositeCard.json",
-      "pointer": "#/sections/0/components/0/props/components/4"
+      "file": "examples/composite-page.json",
+      "pointer": "#/sections/0/components/1/props/components/4"
     },
     {
       "schemaPointer": "#/definitions/categoryBreakdownComponent/properties/props/properties/categoryLabel/anyOf/0",
@@ -11854,6 +12024,84 @@
       "module": "components/categoryBreakdown.md",
       "file": "examples/reference-branches-page.json",
       "pointer": "#/sections/0/components/11/props/categoryLabel"
+    },
+    {
+      "schemaPointer": "#/definitions/tabContent/oneOf/8",
+      "module": "components/tabContainer.md",
+      "file": "examples/tab-content-categorybreakdown.json",
+      "pointer": "#/sections/0/components/0/props/tabs/0/component"
+    },
+    {
+      "schemaPointer": "#/definitions/tabContent/oneOf/9",
+      "module": "components/tabContainer.md",
+      "file": "examples/tab-content-rankingcard.json",
+      "pointer": "#/sections/0/components/0/props/tabs/0/component"
+    },
+    {
+      "schemaPointer": "#/definitions/tabContent/oneOf/10",
+      "module": "components/tabContainer.md",
+      "file": "examples/tab-content-rankingdetailcard.json",
+      "pointer": "#/sections/0/components/0/props/tabs/0/component"
+    },
+    {
+      "schemaPointer": "#/definitions/tabContent/oneOf/11",
+      "module": "components/tabContainer.md",
+      "file": "examples/tab-content-keyvaluepanel.json",
+      "pointer": "#/sections/0/components/0/props/tabs/0/component"
+    },
+    {
+      "schemaPointer": "#/definitions/tabContent/oneOf/12",
+      "module": "components/tabContainer.md",
+      "file": "examples/component-tabContainer.json",
+      "pointer": "#/sections/0/components/0/props/tabs/0/component"
+    },
+    {
+      "schemaPointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0",
+      "module": "components/text.md",
+      "negativeWitness": {
+        "file": "errors/navigation-text-row-source.json",
+        "reason": "text不绑定行数据；结构共享的row来源分支被页面导航语义明确拒绝，只有反例，没有合法页面见证。",
+        "rule": "url-navigation-source-contract"
+      }
+    },
+    {
+      "schemaPointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/1",
+      "module": "components/text.md",
+      "file": "examples/url-navigation-page.json",
+      "pointer": "#/sections/0/components/1/props/links/0/query/project"
+    },
+    {
+      "schemaPointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/2",
+      "module": "components/text.md",
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/sections/0/components/4/props/links/0/query/region"
+    },
+    {
+      "schemaPointer": "#/definitions/tabContent/oneOf/13",
+      "module": "components/tabContainer.md",
+      "file": "examples/tab-content-fieldtext.json",
+      "pointer": "#/sections/0/components/0/props/tabs/0/component"
+    },
+    {
+      "schemaPointer": "#/definitions/tabContent/oneOf/14",
+      "module": "components/tabContainer.md",
+      "file": "examples/tab-mixed-content.json",
+      "pointer": "#/sections/0/components/0/props/tabs/1/components/2"
+    },
+    {
+      "schemaPointer": "#/definitions/tabItem/anyOf/1",
+      "module": "components/tabContainer.md",
+      "file": "examples/composite-page.json",
+      "pointer": "#/sections/1/components/0/props/tabs/1"
+    },
+    {
+      "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/9",
+      "module": "page.md",
+      "negativeWitness": {
+        "file": "errors/detail-component-reject-compositecard.json",
+        "reason": "详情的展示闭集拒绝 compositeCard；共享组件 Schema 分支只存在语义反例。",
+        "rule": "detail-view-component-types"
+      }
     },
     {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/10",
@@ -11905,27 +12153,6 @@
       "module": "page.md",
       "file": "examples/reference-export-detail-branches.json",
       "pointer": "#/detailViews/0/components/0"
-    },
-    {
-      "schemaPointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0",
-      "module": "components/text.md",
-      "negativeWitness": {
-        "file": "errors/navigation-text-row-source.json",
-        "reason": "text不绑定行数据；结构共享的row来源分支被页面导航语义明确拒绝，只有反例，没有合法页面见证。",
-        "rule": "url-navigation-source-contract"
-      }
-    },
-    {
-      "schemaPointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/1",
-      "module": "components/text.md",
-      "file": "examples/url-navigation-page.json",
-      "pointer": "#/sections/0/components/1/props/links/0/query/project"
-    },
-    {
-      "schemaPointer": "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/2",
-      "module": "components/text.md",
-      "file": "examples/reference-branches-page.json",
-      "pointer": "#/sections/0/components/4/props/links/0/query/region"
     },
     {
       "schemaPointer": "#/properties/detailViews/items/properties/components/items/oneOf/16",
@@ -12017,8 +12244,8 @@
     {
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/13",
       "module": "sections-and-layout.md",
-      "file": "examples/reference-branches-page.json",
-      "pointer": "#/sections/0/components/10"
+      "file": "examples/component-categoryBreakdown.json",
+      "pointer": "#/sections/0/components/0"
     },
     {
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/14",
@@ -12045,5 +12272,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "a7315a2bca353aa97c0050e75b9e5941d9e5fa63293780e032a21e232b99fcda"
+  "semanticSourceDigest": "7b1bbbd6c06417ae16c49c59fccc3c67213e59fb921281d40394cd10c441d408"
 }

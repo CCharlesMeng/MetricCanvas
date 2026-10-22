@@ -83,7 +83,7 @@ test('variants and Tab tables retain individual search on narrow screens without
   await page.evaluate(document => { window.runtime.destroy(); window.runtime = MetricCanvas.mount('#dashboard', { document }); }, document);
   await page.getByRole('searchbox').fill('客户25'); await page.getByRole('searchbox').press('Enter');
   await expect(page.getByRole('cell', { name: '客户25' })).toBeVisible();
-  await page.getByRole('tab', { name: '第二表' }).click(); await expect(page.locator('tbody tr')).toHaveCount(10);
+  await page.getByRole('tab', { name: '第二表' }).click(); await expect(page.getByRole('tabpanel').locator('tbody tr')).toHaveCount(10);
   await page.getByRole('tab', { name: '第一表' }).click(); await expect(page.getByRole('searchbox')).toHaveValue('客户25');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath('narrow-tab-search.png'), fullPage: true });

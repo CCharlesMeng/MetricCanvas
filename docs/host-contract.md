@@ -154,11 +154,11 @@ HTTP 与响应信封成功后，`results` 中 `code: "SUCCESS"` 的查询项按�
 
 ## 筛选与 URL 的可选同步
 
-运行时通过 `filter-change` 事件输出编码后的 `search`，集成应用自行选择是否同步 URL。参考方式替换当前 URL，避免每次筛选新增一条浏览历史；**不要把这次 URL 写入立即原样回灌 `update`**。实际切页或浏览器前进/后退恢复时，再传完整输入与初始查询串。查询串未编码的分页、排序与滚动位置不在恢复承诺内。
+运行时通过 `filter-change`（筛选）与 `tab-change`（活动页签）事件输出编码后的 `search`，集成应用自行选择是否同步 URL。参考方式替换当前 URL，避免每次筛选新增一条浏览历史；**不要把这次 URL 写入立即原样回灌 `update`**。实际切页或浏览器前进/后退恢复时，再传完整输入与初始查询串。查询串未编码的分页、排序与滚动位置不在恢复承诺内。
 
 ```js
 function onEvent(event) {
-  if (event.type !== 'filter-change') return;
+  if (event.type !== 'filter-change' && event.type !== 'tab-change') return;
   const url = new URL(window.location.href);
   url.search = event.search; // 独立单页示例：集成应用自身的参数需由应用保留/合并。
   window.history.replaceState(window.history.state, '', url);

@@ -1,5 +1,7 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { initialTabSelections, tabSearch } from '@metriccanvas/page/internal';
+  import { TAB_SELECTION_CONTEXT, type TabSelectionContext } from './tab-selection';
   import { createTableController } from './table-controller';
   import { createExportController } from './export-controller';
   import { type TableHeaderFilters, type TableQueryView, hasQueryFieldMapping } from '@metriccanvas/page/internal';
@@ -144,6 +146,17 @@
     execution
   }: RuntimeSurfaceProps = $props();
 
+  let tabSelections = $state<Record<string, string>>({});
+  let syncTabSearch: (selections: Record<string, string>) => void = () => {};
+  setContext<TabSelectionContext>(TAB_SELECTION_CONTEXT, {
+    selections: () => tabSelections,
+    select(id, value) {
+      if (tabSelections[id] === value) return;
+      tabSelections = { ...tabSelections, [id]: value };
+      stream?.setActiveTabs(tabSelections);
+      syncTabSearch(tabSelections);
+    }
+  });
   const summaryCapture:SummaryCapture=new Map();
   setContext(SUMMARY_EXPORT_CAPTURE,summaryCapture);
   let tableExportStates = $state<Record<string, { busy: boolean; error?: string }>>({});
@@ -340,6 +353,12 @@
       emit?.({type:'invalid',errors:pageState.errors});
       return;
     }
+    tabSelections = initialTabSelections(loaded, search);
+    syncTabSearch = selections => {
+      search = tabSearch(search, selections);
+      navigationAdapter?.replaceSearch?.(search);
+      emit?.({ type: 'tab-change', search });
+    };
     const mode = dataSourceMode(loaded.dataSources);
     const configIssue = configurationIssue(mode, gatewayOverride);
     if (configIssue) {
@@ -382,7 +401,8 @@
         declarations = presentation.filters ?? [];
         pageState = { phase: 'ready', page: presentation, capabilities };
         if (primed && capabilities.filters) {
-          const nextSearch = mergedSearch(state, search);
+          const nextSearch = tabSearch(mergedSearch(state, search), tabSelections);
+          search = nextSearch;
           navigationAdapter?.replaceSearch?.(nextSearch);
           emit?.({ type: 'filter-change', search: nextSearch });
           try { bootstrap?.recordFilters?.(values); } catch { /* 记录失败不能回滚当前筛选或中止查询 */ }
@@ -402,7 +422,8 @@
       activeGateway,
       capabilities.filters ? state : undefined,
       revisionId !== undefined ? { pageRevisionId: revisionId } : undefined,
-      bootstrap
+      bootstrap,
+      tabSelections
     );
     stream = pageStream;
     const emittedDataErrors = new Map<string, string>();
@@ -1058,7 +1079,8 @@
       onchartclick: chartClickHandler,
       onmetriclink: metricLinkHandler,
       metricHref: (child) => (row) => componentHref(child, row),
-      map: mapOverride
+      map: mapOverride,
+      textLinks: child => child.type === 'text' ? (child.props.links ?? []).map(textLink) : []
     };
   }
 </script>
@@ -1429,6 +1451,12 @@
      消费点跨包时(色板、卡片标题、筛选控件铬)名字仍以这里为真源,
      不允许任一消费方改自己的缺省字面量来「就地调档」。 */
   .page-content.layout-dashboard {
+    /* 白色内容容器里的指标卡，复用指标文字连接卡的外框。 */
+    --mc-white-card-border: 1px solid rgb(0 0 0 / 0.1);
+    --mc-white-card-padding: 20px;
+    --mc-white-card-radius: 16px;
+    --mc-white-card-border-color: rgb(0 0 0 / 0.1);
+    --mc-white-metric-panel-border-width: 1px;
     --mc-page-content-padding-block-start: 0;
     --mc-page-content-padding-inline: 0;
     --mc-page-sections-margin-top: 16px;

@@ -41,7 +41,7 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 `paged-join-fixed-rank-page` 完整示例使用这一配置。运行场景的两张表独占不同组合源，共用普通查询定义：召开率降序第一页相同，但当前序号为 1、2、3，预签金额排名为 1、4、2。Sim 在完整月份行域按金额降序、编码升序生成名次，表格筛选与搜索保留它；这只是示范查询契约，不证明真实 DQE 已支持排名算子。
 
 
-页面协议 6.31。结构真源为本册[schema.json](schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.32。结构真源为本册[schema.json](schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1159,7 +1159,7 @@ Schema位置：`#/definitions/pagedJoinSource/properties/initial/properties/view
 
 ## 联合分支见证（生成）
 
-- `#/definitions/dataSource/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/dataSources/fixed-target`。
+- `#/definitions/dataSource/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/dataSources/metrics`。
 - `#/definitions/dataSource/anyOf/1`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/control-data`。
 - `#/definitions/queryDataSource/properties/fields/anyOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/control-data/fields`。
 - `#/definitions/queryDataSource/properties/fields/anyOf/1`：[合法完整页面](examples/grouped-fields-page.json)，JSON Pointer `#/dataSources/grouped/fields`。

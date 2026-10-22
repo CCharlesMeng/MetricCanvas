@@ -65,7 +65,7 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 6.15 新增 `period`：用于时间输入的统一展示，单点原值显示，范围“开始 至 结束”，同端点折叠为单点。`{filter, format:"period"}` 读取已应用状态；`{param, format:"period"}` 读取打开时的参数值。没有 period-compact 或自定义连接词。
 
 
-页面协议 6.31。结构真源为本册[schema.json](schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.32。结构真源为本册[schema.json](schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -500,8 +500,8 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 
 ## 联合分支见证（生成）
 
-- `#/definitions/fieldBinding/anyOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/sections/0/components/0/props/categoryField`。
-- `#/definitions/fieldBinding/anyOf/1`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
+- `#/definitions/fieldBinding/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
+- `#/definitions/fieldBinding/anyOf/1`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/sections/0/components/0/props/xField`。
 - `#/definitions/colorRule/oneOf/0`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/colorRule`。
 - `#/definitions/colorRule/oneOf/1`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/colorRule`。
 - `#/definitions/fieldReference/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/2/props/actions/0/field`。

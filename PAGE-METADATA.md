@@ -388,3 +388,9 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 6.27 增量：Dashboard 顶部 timeRange 的年／季／月／近一年选择形态，声明、状态及查询规则见[期间筛选](docs/page-metadata/filters.md#dashboard-期间选择627)。
 6.29 增加 Dashboard 正文图表左上角独立筛选 `props.filter`，支持自定义显示名称、查询值和单选默认项；查询依赖校验保证只影响所属图表。完整声明、限制与验收页面见[图表独立筛选](docs/page-metadata/filters.md#图表独立筛选629)。
+
+Tab 6.32 支持普通内容与组合卡，显式 `props.contentLayout: "grid"` 复用12列栅格，旧纵向布局兼容；首次进入取数、切换保活、活动项URL恢复及Report全展开规则见[Tab容器](docs/page-metadata/components/tabContainer.md)。可观察场景：[tab-mixed-content](pages/tab-mixed-content.json)。
+
+Dashboard白底容器中的指标卡自动补充统一边框，组合卡只保留外框；声明与呈现边界见[指标卡](docs/page-metadata/components/metricCard.md)。
+
+普通柱图及组合图的柱系列默认16px，`reportForecast` 保留40px，见[柱状图](docs/page-metadata/components/barChart.md)。纯指标组合采用现有 `metricGrid` 自适应高度。

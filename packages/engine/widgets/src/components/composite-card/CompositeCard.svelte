@@ -80,6 +80,7 @@
     gap: var(--composite-card-gap);
     padding: 13px 20px 16px 16px;
     background: var(--mc-color-surface, #fff);
+    border: var(--mc-metric-card-border, 0);
     border-radius: var(--mc-radius-section, 16px);
 
     /* 卡里不套卡:指标面板、仪表与信息面板各自是「白底 + 圆角 + 自己的内边距」,
@@ -177,6 +178,9 @@
     flex: none;
   }
   .composite-grid {
+    --mc-metric-card-border: 0;
+    --mc-metric-card-padding: 0;
+    --mc-metric-card-radius: 0;
     /* 满宽 compactSummary 的指标组按设计横排；窄卡由 MetricCard 自己的
        容器查询退回纵排。量只在组合卡作用域下发，不影响报表顶层指标卡。 */
     --mc-compact-summary-flow: column;

@@ -72,14 +72,14 @@ function surfaceTokensRead(css: string): string[] {
 /** 组合卡卡内作用域**写**下的量,即压平清单。 */
 function flattenedInCardScope(): Map<string, string> {
   const css = source('composite-card/CompositeCard.svelte');
-  const scope = /\.composite-card\s*\{([^}]*)\}/.exec(css);
-  expect(scope, '组合卡的卡内作用域 .composite-card 必须存在').not.toBeNull();
-  return new Map(
-    [...scope![1]!.matchAll(/(--mc-[a-z0-9-]+)\s*:\s*([^;]+);/g)].map((match) => [
-      match[1]!,
-      match[2]!.trim()
-    ])
-  );
+  // 卡壳自己消费外框，子内容网格再压平指标外框；两处都是所有子组件的祖先。
+  const scopes = [...css.matchAll(/^  \.(?:composite-card|composite-grid)\s*\{([^}]*)\}/gm)];
+  expect(scopes, '组合卡卡壳与内容网格作用域必须存在').toHaveLength(2);
+  return new Map(scopes.flatMap(scope =>
+    [...scope[1]!.matchAll(/(--mc-[a-z0-9-]+)\s*:\s*([^;]+);/g)]
+      .filter(match => isSurfaceToken(match[1]!))
+      .map(match => [match[1]!, match[2]!.trim()] as const)
+  ));
 }
 
 describe('组合卡的卡内表面压平', () => {

@@ -1,11 +1,11 @@
 {
-  "schemaVersion": "6.5",
-  "layout": "report",
-  "id": "mixed-page",
+  "schemaVersion": "6.32",
+  "id": "tab-mixed-content",
+  "layout": "dashboard",
   "dataSources": {
-    "fixed-target": {
+    "metrics": {
       "fields": {
-        "target": {
+        "amount": {
           "type": "number",
           "role": "measure"
         }
@@ -14,7 +14,7 @@
         "type": "inline",
         "rows": [
           {
-            "target": 1000000
+            "amount": 1280
           }
         ]
       }
@@ -25,23 +25,20 @@
       "id": "main",
       "components": [
         {
-          "id": "target-card",
+          "id": "total",
           "type": "metricCard",
           "layout": {
-            "span": 4
+            "span": 6
           },
           "data": {
-            "main": "fixed-target"
+            "main": "metrics"
           },
           "props": {
+            "title": "合成总额",
             "rows": [
               {
-                "label": "目标",
-                "valueField": {
-                  "data": "main",
-                  "field": "target",
-                  "format": "number-grouped"
-                }
+                "label": "总额",
+                "valueField": "amount"
               }
             ],
             "variant": "compactSummary"

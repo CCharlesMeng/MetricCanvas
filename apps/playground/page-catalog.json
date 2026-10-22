@@ -309,6 +309,29 @@
         "页面搭建",
         "静态演示"
       ]
+    },
+    {
+      "id": "tab-mixed-content",
+      "group": "features",
+      "summary": "指标卡、组合卡、图表、文本和表格共用Tab，按需加载、状态保留与URL恢复；合成数据。",
+      "tags": [
+        "Tab",
+        "混合内容",
+        "按需加载",
+        "局部筛选"
+      ]
+    },
+    {
+      "id": "tab-mixed-content-report",
+      "group": "verification",
+      "summary": "Report展开全部混合内容Tab导出PDF/PNG，未访问的AI总结不补生成；合成数据。",
+      "tags": [
+        "Tab",
+        "Report",
+        "导出",
+        "PDF",
+        "PNG"
+      ]
     }
   ]
 }

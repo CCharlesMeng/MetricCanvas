@@ -71,7 +71,7 @@ filter 读取当前已应用筛选状态，初次从 default/initialParam/URL �
 时间选择统一使用验收页面 `report-date-filter-example`：单月与范围文字联动分区覆盖月份主标题、独立范围、同起止、清空、多筛选组合和参数文字；范围明细分区保留 DQE 仿真查询联动，禁止未来时间分区覆盖月份／日期边界。文字和受限时间控件不驱动明细查询。日期型、非法输入、可选参数、版本和导出捕获另由行为测试覆盖；仿真不代表真实 DQE 集成。
 
 
-页面协议 6.31。结构真源为本册[schema.json](schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.32。结构真源为本册[schema.json](schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1382,7 +1382,7 @@ Schema位置：`#/definitions/textValue/anyOf/3`。目标：[#/definitions/textV
 - `#/definitions/timeWindow/oneOf/2`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/to-date/source/query/paramBindings/report-month/window`。
 - `#/definitions/timeWindow/oneOf/3`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/month-to-date/source/query/paramBindings/report-month/window`。
 - `#/definitions/timeWindow/oneOf/4`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/legacy-to-date/source/query/paramBindings/report-month/window`。
-- `#/definitions/textValue/anyOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/sections/0/components/0/props/title`。
+- `#/definitions/textValue/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/title`。
 - `#/definitions/textValue/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/4/props/title`。
 - `#/definitions/textValue/anyOf/2`：[合法完整页面](examples/report-filter-text-page.json)，JSON Pointer `#/sections/2/components/0/props/body`。
 - `#/definitions/textValue/anyOf/3`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/sections/0/components/0/props/subtitle`。

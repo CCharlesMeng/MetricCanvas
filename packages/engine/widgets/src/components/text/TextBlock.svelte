@@ -1,14 +1,10 @@
 <svelte:options css="injected" />
 <script lang="ts" module>
-  /** 已解析的跳转链接:href 由运行时按筛选状态当前值组装(组件不感知序列化机制) */
-  export interface TextBlockLink {
-    label: string;
-    href: string;
-    onclick?: (event: MouseEvent) => void;
-  }
+  export type { TextBlockLink } from './links';
 </script>
 
 <script lang="ts">
+  import type { TextBlockLink } from './links';
   import type { TextProps } from '@metriccanvas/page/internal';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
   import aiSummaryIconUrl from '../../assets/ai-summary-icon.svg?inline';

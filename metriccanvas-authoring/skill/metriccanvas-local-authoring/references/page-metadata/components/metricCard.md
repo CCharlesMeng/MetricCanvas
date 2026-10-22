@@ -4,12 +4,14 @@
 
 数据槽和字段绑定声明取哪行哪列；不同variant改变摘要结构，不能把列清单当任意HTML模板。
 
+Dashboard 白底内容容器（Tab、`container: "card"` / `"panel"` 分区）中的指标卡自动使用 1px、黑色10%透明度的实线边框和16px圆角，与带连接文字的指标卡外框一致；无需新增页面字段。灰底画布保持既有呈现，Report保留原有边框。普通卡的外框包住完整内容，紧凑型卡的每个指标面板分别带框；组合卡只绘制外层边框，内部指标不重复套框。可观察场景：[`tab-mixed-content`](../examples/tab-mixed-content.json)。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.31。结构真源为本册[schema.json](../schema.json)，SHA256 `c6b7dc437f909c7a1e41cb9502b573d49637e14b6dfaf19a0176e3be4995aa1d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.32。结构真源为本册[schema.json](../schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -628,23 +630,20 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ac
 
 ```json
 {
-  "id": "target-card",
+  "id": "total",
   "type": "metricCard",
   "layout": {
-    "span": 4
+    "span": 6
   },
   "data": {
-    "main": "fixed-target"
+    "main": "metrics"
   },
   "props": {
+    "title": "合成总额",
     "rows": [
       {
-        "label": "目标",
-        "valueField": {
-          "data": "main",
-          "field": "target",
-          "format": "number-grouped"
-        }
+        "label": "总额",
+        "valueField": "amount"
       }
     ]
   }
