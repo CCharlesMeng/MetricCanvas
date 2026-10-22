@@ -1,7 +1,21 @@
+<script module lang="ts">
+ import {selectTimeQuery} from '@metriccanvas/page/internal';
+</script>
 <svelte:options css="injected" />
 <script lang="ts">
   import { initialTabSelections, tabSearch } from '@metriccanvas/page/internal';
   import { TAB_SELECTION_CONTEXT, type TabSelectionContext } from './tab-selection';
+  import { compilePresentation, resolvePresentationRow } from '../../runtime/src/presentation';
+  import type { DisplaySnapshot } from '../../runtime/src/display-inputs';
+  import { PRESENTATION_CONTEXT } from './presentation-context';
+  import { chartOptionPaths, isChartOptionError } from '@metriccanvas/page/internal';
+  import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
+  import {queryFilterIds} from '@metriccanvas/page/internal';
+  import {createCandidateGatewaySession} from '@metriccanvas/data-execution/runtime';
+  let candidateSession:ReturnType<typeof createCandidateGatewaySession>|undefined;
+  import {filterInputIssue} from '../../runtime/src/navigation-inputs';
+  import { filterCandidatesRequest } from '../../runtime/src/filter-candidates';
+  import { candidateScopeKey } from '../../runtime/src/dimension-values';
   import { createTableController } from './table-controller';
   import { createExportController } from './export-controller';
   import { type TableHeaderFilters, type TableQueryView, hasQueryFieldMapping } from '@metriccanvas/page/internal';
@@ -10,6 +24,7 @@
   import { downloadTableWorkbook } from './table-workbook';
   import { tablePagination } from './table-pagination';
   import { tick, untrack, setContext, onDestroy } from 'svelte';
+  const rowScopeInstanceId = $props.id();
   import { initialSectionGroup, selectedSectionGroup, sectionGroupFor, visibleSections } from './section-navigation';
   import {
     parsePage,
@@ -18,13 +33,15 @@
     type TypedError
   } from '@metriccanvas/page';
   import {
-    chartFilterOptions,
+    declaredNavigationTargets,
+    type NavigationTarget,
+    filterGroupOptions,
+    conditionSourceIds,
     dataSourceMode,
     derivePageCapabilities,
     fieldName,
     filterURLKeys,
     isChartComponent,
-    pageListEntry,
     resolveDataSourceFields,
     flattenPageComponents,
     type ChartComponent,
@@ -45,7 +62,8 @@
   import {
     createDimensionValuesLoader,
     createFilterState,
-    navigationHref,
+    resolveNavigationTarget,
+    type NavigationInputContract,
     parseFilterSearch,
     type PageParamValues,
     initialFilterValues,
@@ -79,6 +97,7 @@
   import { SUMMARY_EXPORT_CAPTURE, type SummaryCapture } from './export-render-state';
   import { ExportViewError } from '../../runtime/src/export-snapshots';
   import ComponentRenderer from './ComponentRenderer.svelte';
+  import { initialTabsFromSearch } from './initial-tabs';
   import DetailContent from './DetailContent.svelte';
   import { detailViewInput } from '../../runtime/src/detail-view';
   import type { NestedComponentRender, TableRenderBinding } from './component-render';
@@ -90,15 +109,17 @@
   } from './map-hierarchy';
   import { collectDataErrors } from './data-error-events';
   import { runtimeVersionError } from './version-error';
-  import { contentFilterDeclarations, headerPeriod } from './report-date-header';
+  import { headerPeriod } from './report-date-header';
   import { collectFilterTextValueReferences, formatPeriod, resolveParamTextValues } from '@metriccanvas/page/internal';
-  import { filterTextPage } from './filter-text';
+  import {projectFieldSelections} from '@metriccanvas/page/internal';
+  import {periodFactPage, filterTextPage } from './filter-text';
   import { validateCalendarTimeRange } from '@metriccanvas/page/internal';
   import FilterBar from './filters/FilterBar.svelte';
-  import DashboardToolbar from './dashboard/DashboardToolbar.svelte';
-  import { dashboardFilterGroups } from './dashboard/filter-groups';
+  import IocHeader from './ioc-header/IocHeader.svelte';
+  import {resolvePageHeader,pageFiltersReadOnly} from './ioc-header/page-header';
   import {
     cascadeConstraints,
+    cascadeContext,
     clearDependentUpdates,
     dimensionValueOf
   } from './filters/cascade';
@@ -123,6 +144,7 @@
     | { phase: 'invalid'; errors: TypedError[] }
     | { phase: 'version-error'; error: Extract<RuntimeViewEvent, { type: 'version-error' }> }
     | { phase: 'configuration-error'; error: RuntimeConfigurationError }
+    | {phase:'input-invalid';message:string}
     /** 必需页面参数缺失:页面输入不完整,与查询错误分类区分开(ADR-0047)。 */
     | { phase: 'params-incomplete'; missing: PageParamDeclaration[] }
     | { phase: 'ready'; page: Page; capabilities: PageCapabilities };
@@ -136,11 +158,13 @@
 
   let {
     document,
+    displayInputs,
     sectionsContent,
     dataGateway,
     aiSummary,
     initialSearch = '',
     navigation,
+    filterEditing,
     onevent,
     pageRevisionId,
     execution
@@ -148,6 +172,7 @@
 
   let tabSelections = $state<Record<string, string>>({});
   let syncTabSearch: (selections: Record<string, string>) => void = () => {};
+  let syncedTabSearch: (value: string) => string = value => value;
   setContext<TabSelectionContext>(TAB_SELECTION_CONTEXT, {
     selections: () => tabSelections,
     select(id, value) {
@@ -197,7 +222,7 @@
       } catch (cause) {
         if (generation !== reportExportGeneration) return;
         if (!(cause instanceof ExportViewError && cause.code === 'EXPORT_CANCELLED')) {
-          reportExportError = cause instanceof Error ? cause.message : '导出失败';
+          if (!(cause instanceof ExportViewError && cause.code === 'EXPORT_CHART_FAILED')) reportExportError = cause instanceof Error ? cause.message : '导出失败';
           console.error('[MetricCanvas][REPORT_EXPORT_FAILED] 报告导出失败', cause);
         }
       } finally {
@@ -213,25 +238,87 @@
   async function prepareReport<T>(consume:(view:{target:HTMLElement;signal:AbortSignal})=>Promise<T>,scale=2):Promise<T> {
     if(pageState.phase!=='ready'||!stream||!surfaceRoot)throw new ExportViewError('EXPORT_NOT_READY','页面实例尚未就绪');
     // Capture every runtime value before the first await; later interactions stay independent.
+    if(declarationPage)projectFieldSelections({...declarationPage,detailViews:undefined},filterValues);
     const page=JSON.parse(JSON.stringify(pageState.page)) as Page;
     const summaries=Object.fromEntries([...summaryCapture].map(([id,get])=>{
       const value=get();
       return [id,value.status==='ready'||value.status==='streaming'?{status:'ready' as const,text:value.text}:{status:'empty' as const}];
     }));
-    const state={page,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
+    if (Object.keys(page.dataSources).some(id=>sourceBlocked(page,id))) throw new ExportViewError('EXPORT_NOT_READY','筛选待确认或候选未就绪，暂不能导出页面');
+    const state={page,now:new Date(),displaySnapshot:structuredClone(displaySnapshot),filterRevision,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
     const queries=stream.captureQueries();
     const program=stream.getSourceProgram();
     return exportController.run(pageExportTask, controller => withReportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program,scale},consume));
   }
+  let declarationPage:Page|undefined;
   let pageState = $state<PageState>({ phase: 'loading' });
+  setContext(CHART_OPTION_PATHS, () => pageState.phase === 'ready' ? chartOptionPaths(pageState.page) : new Map<string, string>());
+  function visibleValidationErrors(errors: TypedError[]): TypedError[] {
+    for (const error of errors) if (isChartOptionError(error)) console.error('[MetricCanvas][CHART_OPTION_INVALID]', error);
+    return errors.filter(error => !isChartOptionError(error));
+  }
+  let navigationMessage=$state('');
+  let targetInputs=$state(new Map<string,NavigationInputContract>());
+  const targetInputKey=$derived(pageState.phase==='ready'?JSON.stringify([...new Set(declaredNavigationTargets(pageState.page).filter(t=>t.validateTargetInputs).map(t=>t.href))].sort()):'[]');
+  $effect(()=>{
+    const hrefs=JSON.parse(targetInputKey) as string[],provider=navigation?.resolveTargetInputs;
+    const controller=new AbortController();targetInputs=new Map();
+    if(provider)for(const href of hrefs)void Promise.resolve().then(()=>provider(href,{signal:controller.signal})).then(contract=>{
+      if(!controller.signal.aborted&&contract)targetInputs=new Map(targetInputs).set(href,structuredClone(contract));
+    }).catch(()=>{/* Unavailable target contracts keep guarded links closed. */});
+    return()=>controller.abort();
+  });
+
   let snapshots = $state<PageDataSnapshots>(new Map());
+  let blockedFilters = $state<string[]>([]);
   let filterValues = $state<FilterValues>(new Map());
   let pageParams = $state<PageParamValues>(new Map());
+  let displaySnapshot=$state.raw<DisplaySnapshot|undefined>();
+  let filterRevision=$state(0);
+  const presentationProgram=$derived(pageState.phase==='ready'?compilePresentation(pageState.page):null);
+  const presentation=$derived(presentationProgram?.evaluate({filters:filterValues,filterRevision,displaySnapshot})??null);
+  setContext(PRESENTATION_CONTEXT,()=>presentation);
+  let refreshPeriodFacts:((snapshot:DisplaySnapshot|undefined)=>void)|undefined;
+  function clearDisplaySnapshot(){displaySnapshot=undefined;untrack(()=>refreshPeriodFacts?.(undefined));}
+  let permissionRevision:string|undefined;
+  let permissionInvalidated=false;
+  $effect(()=>{
+    const source=displayInputs;
+    if(!source){clearDisplaySnapshot();return;}
+    let stopped=false;
+    const update=(snapshot:DisplaySnapshot)=>{
+      if(stopped||permissionInvalidated)return;
+      if(!snapshot||typeof snapshot.permissionRevision!=='string'||!snapshot.permissionRevision){clearDisplaySnapshot();return;}
+      if(permissionRevision!==undefined&&permissionRevision!==snapshot.permissionRevision){
+        stopped=true;permissionInvalidated=true;dispose();snapshots=new Map();displaySnapshot=undefined;
+        const error={code:'DISPLAY_PERMISSION_CHANGED' as const,message:'权限会话已变化，请以当前身份重新初始化页面'};
+        pageState={phase:'configuration-error',error};onevent?.({type:'configuration-error',...error});return;
+      }
+      permissionRevision=snapshot.permissionRevision;displaySnapshot=snapshot;untrack(()=>refreshPeriodFacts?.(snapshot));
+    };
+    let unsubscribe=()=>{};
+    try {
+      unsubscribe=source.subscribe(update);
+      update(source.getSnapshot());
+    } catch {
+      clearDisplaySnapshot();
+    }
+    return ()=>{stopped=true;unsubscribe();};
+  });
+
+  let initialTabs = $state<ReadonlyMap<string, string>>(new Map());
   /** 筛选候选值快照(维度名 → 显式状态):筛选控件与表头筛选共用。 */
   let dimensionCandidates = $state<DimensionValuesSnapshots>(new Map());
   let tableViews = $state<Record<string, TableViewState>>({});
   let selectedGroup = $state<string | undefined>();
   let surfaceRoot: HTMLDivElement;
+  $effect(()=>{
+    if(pageState.phase!=='ready'||!pageState.page.sectionGroups)return;
+    const groups=pageState.page.sectionGroups.filter(group=>presentation?.groups.get(group.id)?.eligible!==false);
+    const next=selectedSectionGroup({...pageState.page,sectionGroups:groups},selectedGroup);
+    if(next!==selectedGroup)selectedGroup=next;
+  });
+
 
   async function locateSection(page: Page, sectionId: string) {
     const currentSession = session;
@@ -253,6 +340,9 @@
   let activeGateway: RuntimeDataGateway = inlineGateway;
 
   let declarations = $state<FilterDeclaration[]>([]);
+  let candidateClock=$state.raw(new Date());
+  const timeContext=$derived({snapshot:displaySnapshot,revision:filterRevision});
+  const candidateTimeContext=()=>({displayInputs:displaySnapshot,filterRevision,now:candidateClock});
   let filterState: FilterState | null = null;
   let candidatesLoader: ReturnType<typeof createDimensionValuesLoader> | null = null;
   let stream: PageSnapshotStream | null = null;
@@ -286,9 +376,11 @@
     revisionId: string | undefined,
     bootstrap: import('../../runtime/src').ExecutionBootstrap | undefined
   ) {
+    if(permissionInvalidated)return;
     exportController.reset(); tableController?.dispose(); tableController=undefined;
     const mySession = ++session;
-    pageState = { phase: 'loading' };
+    filterRevision=0;
+    pageState = { phase: 'loading' };navigationMessage='';
     snapshots = new Map();
     filterValues = new Map();
     dimensionCandidates = new Map();
@@ -300,7 +392,8 @@
 
     // 保持异步初始化接缝，避免外层 effect 把初始化中的状态读取纳入依赖。
     await Promise.resolve();
-    if (session !== mySession) return;
+    if (session !== mySession || permissionInvalidated) return;
+    candidateClock=new Date();
 
     if (bootstrap && canonicalizeJson(raw) !== canonicalizeJson(bootstrap.document)) {
       pageState = {phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/',message:'执行快照与页面文档不匹配'}]};
@@ -318,12 +411,13 @@
     // 整值替换掉。首次解析只为读到 params 声明,替换后的文档才是渲染依据。
     const declared = parsePage(raw);
     if (!declared.ok) {
-      pageState = { phase: 'invalid', errors: declared.errors };
+      pageState = { phase: 'invalid', errors: visibleValidationErrors(declared.errors) };
       emit?.({ type: 'invalid', errors: declared.errors });
       return;
     }
     const paramDeclarations = declared.page.params ?? [];
-    const params = bootstrap ? {values:bootstrap.params,missing:[]} : resolvePageParams(search, paramDeclarations);
+    initialTabs = initialTabsFromSearch(declared.page, search);
+    const params = bootstrap ? {values:bootstrap.params,missing:[]} : resolvePageParams(search, paramDeclarations,{strict:declared.page.strictURLInputs===true});
     pageParams = params.values;
     if (params.missing.length > 0) {
       pageState = {
@@ -339,7 +433,7 @@
         ? declared
         : parsePage(raw, { textValues: { values: params.values, format: (value, format) => Array.isArray(value) ? value.join('、') : typeof value === 'object' ? formatPeriod(value) : formatValue(value, format) } });
     if (!parsed.ok) {
-      pageState = { phase: 'invalid', errors: parsed.errors };
+      pageState = { phase: 'invalid', errors: visibleValidationErrors(parsed.errors) };
       emit?.({ type: 'invalid', errors: parsed.errors });
       return;
     }
@@ -354,8 +448,11 @@
       return;
     }
     tabSelections = initialTabSelections(loaded, search);
+    syncedTabSearch = value => tabSearch(value, tabSelections, loaded);
     syncTabSearch = selections => {
-      search = tabSearch(search, selections);
+      const nextSearch = tabSearch(search, selections, loaded);
+      if (nextSearch === search.replace(/^\?/, '')) return;
+      search = nextSearch;
       navigationAdapter?.replaceSearch?.(search);
       emit?.({ type: 'tab-change', search });
     };
@@ -367,44 +464,79 @@
       return;
     }
 
-    activeGateway = gatewayOverride ?? inlineGateway;
+    const nextCandidateSession=createCandidateGatewaySession(gatewayOverride??inlineGateway);
+    candidateSession=nextCandidateSession;activeGateway=nextCandidateSession.gateway;
+    disposers.push(()=>{nextCandidateSession.dispose();if(candidateSession===nextCandidateSession)candidateSession=undefined;});
 
+    declarationPage=loaded;
     const capabilities = derivePageCapabilities(loaded);
     const textBindings = collectFilterTextValueReferences(resolveParamTextValues(raw, { values: params.values }));
     declarations = loaded.filters ?? [];
 
-    const fromDeclarations = initialFilterValues(loaded.filters ?? []);
+    if(loaded.strictURLInputs===true){const privateIds=new Set((loaded.detailViews??[]).flatMap(view=>view.filters??[])),query=new URLSearchParams(search);const privateInput=declarations.some(f=>privateIds.has(f.id)&&Object.values(filterURLKeys(f)).some(key=>query.has(key)));const message=privateInput?'详情私有筛选不能由页面URL写入':filterInputIssue(search,declarations,candidateClock);if(message){pageState={phase:'input-invalid',message};emit?.({type:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message}]});return;}}
     // 旧数组参数的显式 value 固定本次输入；分组参数仍允许 URL 参数与独立筛选初始化。
-    const fromURL = new Map(capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined)
-      ? parseFilterURL(search, declarations)
-      : new Map());
-    const localOptions = chartFilterOptions(loaded);
+    let fromURL:Map<string,FilterValue>;
+    try{fromURL = new Map(capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined)
+      ? parseFilterSearch(search,declarations,candidateClock)
+      : new Map());}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间模式URL必须为合法完整mode/from/to'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
+    const localOptions = filterGroupOptions(loaded);
     for (const [id, options] of localOptions) {
       const value = fromURL.get(id);
-      if (value && (value.type !== 'dimension' || value.values.length !== 1 || !options.includes(value.values[0]!))) fromURL.delete(id);
+      if (value && (value.type !== 'dimension' || value.values.length !== 1 || !options.includes(value.values[0]!))) {if(loaded.strictURLInputs===true){pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters/'+id,message:'目标筛选取值不在可用候选中'}]};emit?.({type:'invalid',errors:pageState.errors});return;}fromURL.delete(id);}
       const supplied = bootstrap?.filters.get(id);
       if (bootstrap && (!supplied || supplied.type !== 'dimension' || supplied.values.length !== 1 || !options.includes(supplied.values[0]!))) {
-        pageState = { phase: 'invalid', errors: [{type:'SCHEMA_ERROR',path:'/filters',message:'执行快照中的图表筛选值不在候选项中'}] };
+        pageState = { phase: 'invalid', errors: [{type:'SCHEMA_ERROR',path:'/filters',message:'执行快照中的筛选按钮组值不在候选项中'}] };
         emit?.({type:'invalid',errors:pageState.errors});
         return;
       }
     }
-    const state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions);
+    let fromDeclarations:Map<string,FilterValue>;
+    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(f=>!fromURL.has(f.id)),candidateClock,displaySnapshot,0);}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间默认值或可信初始期间不符合声明精度和边界'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
+    let state:ReturnType<typeof createFilterState>;
+    try {
+      state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
+    } catch {
+      pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'筛选初始化值不符合声明或日期边界'}]};
+      emit?.({type:'invalid',errors:pageState.errors});return;
+    }
     filterState = state;
+
+    function receiveCandidates(next:DimensionValuesSnapshots) {
+        for (const declaration of declarations) {
+          if (declaration.type !== 'dimension' || localOptions.has(declaration.id) || declaration.options) continue;
+          const value = filterValues.get(declaration.id);
+          const level = value?.type === 'dimension' ? value.level : declaration.defaultLevel ?? declaration.hierarchy?.[0]?.id;
+          const dimension = declaration.hierarchy?.find(item => item.id === level)?.dimension ?? declaration.dimension;
+          const receipt = next.get(candidateScopeKey(declaration.id,dimension,level,cascadeContext(declaration,declarations,filterValues,candidateTimeContext())));
+          if(receipt&&receipt.status!=='idle'){
+            const allowed=receipt.status==='ready'?receipt.candidates.filter(item=>!item.disabled&&(declaration.treeSelection!=='level'||item.level===level)).map(item=>item.value):undefined;
+            state.candidate(declaration.id,receipt.status==='ready'&&!allowed?.length?'empty':receipt.status,allowed);
+          }
+        }
+    }
 
     let primed = false;
     disposers.push(
       state.subscribe((values) => {
         const previous = filterValues;
-        filterValues = values;
-        const presentation = filterTextPage(loaded, textBindings, values);
+        filterValues = values;filterRevision=state.revision;candidateClock=state.clock();
+        blockedFilters = [...state.blocked()];
+        if (blockedFilters.length) {
+          for (const component of flattenPageComponents(loaded)) if (component.type==='table' && sourceBlocked(loaded,component.data.main)) exportController.cancel(component.id);
+          if (Object.keys(loaded.dataSources).some(id=>sourceBlocked(loaded,id))) exportController.cancel(pageExportTask);
+        }
+        if (candidatesLoader && changedFilters(previous,values).size) {
+          for (const declaration of declarations) if (declaration.type === 'dimension' && !localOptions.has(declaration.id) && !declaration.options) loadDimensionCandidates(candidatesLoader,declaration,values);
+          receiveCandidates(dimensionCandidates);
+        }
+        const presentation = periodFactPage(filterTextPage(loaded, textBindings, values),displaySnapshot,state.revision);
         declarations = presentation.filters ?? [];
         pageState = { phase: 'ready', page: presentation, capabilities };
-        if (primed && capabilities.filters) {
-          const nextSearch = tabSearch(mergedSearch(state, search), tabSelections);
+        if (primed && capabilities.filters && changedFilters(previous,values).size > 0) {
+          const nextSearch = syncedTabSearch(mergedSearch(state, search));
           search = nextSearch;
           navigationAdapter?.replaceSearch?.(nextSearch);
-          emit?.({ type: 'filter-change', search: nextSearch });
+          emit?.({ type: 'filter-change', search: nextSearch,filterRevision:state.revision });
           try { bootstrap?.recordFilters?.(values); } catch { /* 记录失败不能回滚当前筛选或中止查询 */ }
           if (changedFilters(previous, values).size > 0) closeDetail(false);
           for (const component of flattenPageComponents({sections:loaded.sections})) if(component.type==='table') tableController?.reset(component,previous,values);
@@ -413,17 +545,16 @@
       })
     );
 
-    tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded));
+    tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded),()=>filterValues,candidateTimeContext);
     syncTableState(loaded);
-    pageState = { phase: 'ready', page: filterTextPage(loaded, textBindings, filterValues), capabilities };
+    pageState = { phase: 'ready', page: periodFactPage(filterTextPage(loaded, textBindings, filterValues),displaySnapshot,state.revision), capabilities };
 
     const pageStream = orchestrate(
       loaded,
       activeGateway,
       capabilities.filters ? state : undefined,
       revisionId !== undefined ? { pageRevisionId: revisionId } : undefined,
-      bootstrap,
-      tabSelections
+      bootstrap,{displayInputs:()=>displaySnapshot,filterRevision:()=>state.revision,clock:()=>state.clock()}, tabSelections
     );
     stream = pageStream;
     const emittedDataErrors = new Map<string, string>();
@@ -438,8 +569,23 @@
       })
     );
     emit?.({ type: 'ready', pageId: loaded.id });
+    const pendingInitial=new Set(declarations.filter(f=>(f.type==='timePoint'||f.type==='timeRange')&&f.availability?.initial&&!filterValues.has(f.id)&&!fromURL.has(f.id)).map(f=>f.id));
+    let periodKey=canonicalizeJson([displaySnapshot?.periods??{},displaySnapshot?.timeZone??null]);
+    refreshPeriodFacts=next=>{
+      if(session!==mySession)return;
+      const key=canonicalizeJson([next?.periods??{},next?.timeZone??null]);if(key===periodKey)return;periodKey=key;
+      // Invalidate authorizing receipts before publishing a new fact context.
+      for(const declaration of declarations)if(declaration.type==='dimension'&&declaration.candidateWindow)state.candidate(declaration.id,'loading');
+      let defaults:Map<string,FilterValue>;try{defaults=initialFilterValues(declarations,new Date(),displaySnapshot,state.revision);}catch{defaults=new Map();}
+      const seeded=new Map(filterValues);
+      for(const id of pendingInitial){if(filterValues.has(id)){pendingInitial.delete(id);continue;}const value=defaults.get(id);if(value){seeded.set(id,value);pendingInitial.delete(id);}}
+      if(seeded.size!==filterValues.size)state.commit({type:'initialize',values:seeded});
+      state.refreshContext();
+      if(candidatesLoader)for(const declaration of declarations)if(declaration.type==='dimension'&&declaration.candidateWindow)loadDimensionCandidates(candidatesLoader,declaration,filterValues);
+    };
+    disposers.push(()=>{refreshPeriodFacts=undefined;});
 
-    if (!capabilities.filters && !pageComponents(loaded).some(component=>component.type==='table'&&buildTableColumnLayout(component.props.columns).leaves.some(column=>column.filterable?.mode==='select'))) return;
+    if (!capabilities.filters) return;
 
     // 筛选候选值:显式状态经加载器发布,dispose 时取消在途请求,
     // 过期结果不会覆盖新会话的筛选状态(issue #54)。
@@ -453,33 +599,16 @@
       loader.subscribe((next) => {
         if (session !== mySession) return;
         dimensionCandidates = next;
+        receiveCandidates(next);
       })
     );
 
     for (const declaration of declarations) {
-      if (declaration.type !== 'dimension' || localOptions.has(declaration.id)) continue;
+      if (declaration.type !== 'dimension' || localOptions.has(declaration.id) || declaration.options) continue;
       loadDimensionCandidates(loader, declaration, filterValues);
     }
 
-    const filterableFields = new Set<string>();
-    for (const component of pageComponents(loaded)) {
-      if (component.type !== 'table' || !capabilities.components[component.id]?.live) {
-        continue;
-      }
-      if (resolvedTablePagination(component)?.mode === 'query') { Object.values(tableCandidateDimensions(component)).forEach(field=>filterableFields.add(field)); continue; }
-      const source = loaded.dataSources[component.data.main];
-      for (const column of buildTableColumnLayout(
-        component.props.columns,
-        source ? resolveDataSourceFields(source) : undefined
-      ).leaves) {
-        if (column.filterable?.mode === 'select') {
-          filterableFields.add(fieldName(column.field));
-        }
-      }
-    }
-    for (const field of filterableFields) {
-      candidatesLoader.load(field);
-    }
+
   }
 
   function configurationIssue(
@@ -514,19 +643,27 @@
 
   function syncTableState(loaded: Page) {
     if (!tableController) return;
+    tableController.syncCandidates();
     const tables=flattenPageComponents({sections:loaded.sections}).filter((c): c is TableComponent => c.type==='table');
     tableViews=Object.fromEntries(tables.map(c=>[c.id,tableController!.render(c)]));
     appliedTableHeaderFilters=Object.fromEntries(tables.map(c=>[c.id,tableController!.headers(c)]));
     tablePageSizes=Object.fromEntries(tables.map(c=>[c.id,tableController!.view(c).pageSize]));
     tableRevision+=1;
   }
+  function sourceBlocked(page: Page, sourceId: string): boolean {
+    return [...conditionSourceIds(page,sourceId)].some(id => {
+      const source=page.dataSources[id];
+      return source?.source.type==='query' && queryFilterIds(source.source.query).some(id=>blockedFilters.includes(id));
+    });
+  }
   async function exportTable(component: TableComponent) {
-    if(pageState.phase!=='ready'||!stream||!component.props.toolbar?.export)return;
+    if(pageState.phase!=='ready'||!stream||!component.props.toolbar?.export||!actionAllowed(component,component.props.toolbar.export))return;
     const frozen=JSON.parse(JSON.stringify(component)) as TableComponent;
     const input={page:pageState.page,component:frozen,queries:stream.captureQueries(),gateway:activeGateway,
       program:stream.getSourceProgram(),views:stream.captureViews(),
-      state:{currentYear:stream.captureComputeYear(),filters:filterValues,tables:tableViews,headerFilters:appliedTableHeaderFilters}};
+      state:{now:new Date(),displaySnapshot:structuredClone(displaySnapshot),filterRevision,currentYear:stream.captureComputeYear(),filters:filterValues,tables:tableViews,headerFilters:appliedTableHeaderFilters}};
     try { await exportController.run(component.id,async controller=>{
+      if (sourceBlocked(input.page,component.data.main)) throw new ExportViewError('EXPORT_NOT_READY','筛选待确认或候选未就绪，暂不能导出该表');
       const data=await prepareTableExport({...input,controller}); controller.signal.throwIfAborted();
       await downloadTableWorkbook(frozen,data,controller.signal);
     }); } catch { /* Task feedback is projected by exportController. */ }
@@ -561,11 +698,13 @@
   function handleTableCellSelect(
     component: TableComponent,
     rowIndex: number,
-    column: TableColumn
+    column: TableColumn,
+    clickedRow?:Row
   ) {
     if (!column.selection || !componentCapability(component)?.actions) return;
-    const row = visibleTableRows(component)[rowIndex];
-    if (!row) return;
+    const currentRows=visibleTableRows(component);
+    const row=clickedRow?resolvePresentationRow(component,currentRows,clickedRow):currentRows[rowIndex];
+    if (!row || !actionAllowed(component,column.selection,row)) return;
 
     const updates: Array<readonly [string, FilterValue | null]> = [];
     for (const [filterId, write] of Object.entries(column.selection.writes)) {
@@ -608,27 +747,13 @@
         ? (declaration.hierarchy.find((item) => item.id === level)?.dimension ??
           declaration.dimension)
         : declaration.dimension;
-    filterState?.writeMany([
-      [
-        declaration.id,
-        values.length > 0
-          ? {
-              type: 'dimension',
-              dimension,
-              values,
-              ...(level ? { level } : {})
-            }
-          : null
-      ],
-      ...clearDependentUpdates(declarations, declaration.id)
-    ]);
-    reloadDependentCandidates(declaration.id);
+    filterState?.write(declaration.id, values.length || declaration.treeSelection==='level' || declaration.hierarchy&&level ? {type:'dimension',dimension,values,...(level ? {level} : {})} : null);
   }
 
   function writeTimeRange(filterId: string, range: TimeRangeValue | null) {
     if (pageState.phase !== 'ready' || !pageState.capabilities.filters) return;
     const declaration = declarations.find(f=>f.id===filterId);
-    if (declaration?.type !== 'timeRange' || (!range && declaration.required) || (range && validateCalendarTimeRange(range,declaration.precision ?? 'date').length)) return;
+    if (declaration?.type !== 'timeRange' || (!range && declaration.required) || (range && validateCalendarTimeRange(range,range.mode==='month'?'month':declaration.precision ?? 'date').length)) return;
     filterState?.write(filterId, range ? { type: 'timeRange', ...range } : null);
   }
 
@@ -661,53 +786,58 @@
   function loadDimensionCandidates(
     loader: NonNullable<typeof candidatesLoader>,
     declaration: Extract<FilterDeclaration, { type: 'dimension' }>,
-    values: FilterValues
+    values: FilterValues,
+    force=false
   ) {
-    const constraints = cascadeConstraints(declaration, declarations, values);
-    if (declaration.hierarchy) {
-      for (const level of declaration.hierarchy) {
-        loader.load(level.dimension, constraints);
+    if(declaration.options)return;
+    const context=cascadeContext(declaration,declarations,values,candidateTimeContext());
+    const levels=declaration.hierarchy?.map(level=>level.id)??[undefined];
+    for(const level of levels){
+      if(declaration.candidateContext||declaration.treeSelection==='level'||declaration.candidateWindow){
+        let request:ReturnType<typeof filterCandidatesRequest>;try{request=filterCandidatesRequest(declaration,declarations,values,level,candidateTimeContext());}catch{const dimension=declaration.hierarchy?.find(item=>item.id===level)?.dimension??declaration.dimension;loader.unavailable(dimension,{filterId:declaration.id,level,context});continue;}
+        if(force)candidateSession?.invalidate(request);
+        loader.loadFilter(request,context,declaration.treeSelection==='level'?declaration.hierarchy?.map(item=>item.id):undefined,force);
+      }else{
+        const dimension=declaration.hierarchy?.find(item=>item.id===level)?.dimension??declaration.dimension;
+        const scope={filterId:declaration.id,level,context};
+        if(force)loader.reload(dimension,cascadeConstraints(declaration,declarations,values),scope);
+        else loader.load(dimension,cascadeConstraints(declaration,declarations,values),scope);
       }
-      return;
-    }
-    loader.load(declaration.dimension, constraints);
-  }
-
-  function reloadDependentCandidates(parentId: string) {
-    if (!candidatesLoader) return;
-    for (const declaration of declarations) {
-      if (declaration.type !== 'dimension' || declaration.dependsOn !== parentId) continue;
-      const constraints = cascadeConstraints(declaration, declarations, filterValues);
-      const current = dimensionValueOf(filterValues, declaration.id);
-      const dimension = declaration.hierarchy
-        ? (declaration.hierarchy.find((item) => item.id === current.level)?.dimension ??
-          declaration.hierarchy[0]!.dimension)
-        : declaration.dimension;
-      candidatesLoader.reload(dimension, constraints);
     }
   }
 
+  function retryCandidates(id:string) {
+    const declaration=declarations.find(item=>item.id===id);
+    if(candidatesLoader && declaration?.type==='dimension')loadDimensionCandidates(candidatesLoader,declaration,filterValues,true);
+  }
+
+  function actionAllowed(component:Component,action:import('@metriccanvas/page/internal').PolicyNode,row?:Row):boolean {
+    return presentation?.gate(action,row,presentation.component(component.id)).enabled===true;
+  }
   function componentHref(component: Component, row: Row): string | undefined {
     if (!componentCapability(component)?.actions || !('actions' in component.props)) return undefined;
-    const action = component.props.actions?.find(a => 'navigate' in a);
-    return action && 'navigate' in action ? navigationHref(action.navigate, filterValues, pageParams, row) : undefined;
+    const action = component.props.actions?.find(a => 'navigate' in a && actionAllowed(component,a,row) && actionAllowed(component,a.navigate,row));
+    return action && 'navigate' in action ? targetHref(action.navigate,row) : undefined;
   }
 
   function handleTableLink(component: TableComponent, row: Row, event: MouseEvent, column?: TableColumn) {
-    if (column?.navigate) {
-      navigate(navigationHref(column.navigate, filterValues, pageParams, row), event);
+    if(component.props.rowKey){
+      const current=resolvePresentationRow(component,visibleTableRows(component),row);
+      if(!current){event.preventDefault();return;}
+      row=current;
+    }
+    if(column&&!tableInteractionGate(component,row,column).enabled){event.preventDefault();return;}
+    if (column?.navigate && actionAllowed(component,column.navigate,row)) {
+      navigateTarget(column.navigate,row,event);
       return;
     }
-    if (column?.openDetail) {
+    if (column?.openDetail && actionAllowed(component,column.openDetail,row)) {
       event.preventDefault();
       openDetailFor(component, { on: 'click', openDetail: column.openDetail }, row, event.currentTarget as HTMLElement);
       return;
     }
-    const href = componentHref(component, row);
-    if (href) {
-      navigate(href, event);
-      return;
-    }
+    const action = 'actions' in component.props ? component.props.actions?.find(a=>'navigate' in a) : undefined;
+    if(action&&'navigate' in action){navigateTarget(action.navigate,row,event);return;}
     // 没有 navigate 的链接列：点击进入页内详情（ADR-0087），不跳走。
     const detail = componentOpenDetail(component);
     if (detail) {
@@ -717,8 +847,8 @@
   }
 
   function handleMetricLink(component: Component, row: Row, event: MouseEvent) {
-    const href = componentHref(component, row);
-    if (href) navigate(href, event);
+    const action = 'actions' in component.props ? component.props.actions?.find(a=>'navigate' in a) : undefined;
+    if(action&&'navigate' in action)navigateTarget(action.navigate,row,event);
     else {
       const detail = componentOpenDetail(component);
       if (detail) { event.preventDefault(); openDetailFor(component, detail, row, event.currentTarget as HTMLElement); }
@@ -750,6 +880,16 @@
     | undefined
   >(undefined);
   let detailSnapshots = $state<PageDataSnapshots>(new Map());
+  let detailFilters=$state<FilterValues>(new Map());
+  let detailOrigin=$state.raw<{component:Component;row:Row;action:OpenDetailAction}|undefined>();
+  $effect(()=>{
+    const origin=detailOrigin;
+    if(!origin||!openDetail||!presentation)return;
+    if(!actionAllowed(origin.component,origin.action,origin.row)||!actionAllowed(origin.component,origin.action.openDetail,origin.row)) {closeDetail(false);return;}
+    if(origin.component.type==='table'&&origin.component.props.rowKey){
+      if(!resolvePresentationRow(origin.component,visibleTableRows(origin.component),origin.row))closeDetail(false);
+    }
+  });
   let detailGeneration = $state(0);
   let detailDispose: (() => void) | undefined;
   let detailTrigger: HTMLElement | undefined;
@@ -759,6 +899,7 @@
     detailDispose?.();
     detailDispose = undefined;
     openDetail = undefined;
+    detailOrigin=undefined;
     detailSnapshots = new Map();
     if (restoreFocus && detailTrigger?.isConnected) detailTrigger.focus();
     detailTrigger = undefined;
@@ -769,7 +910,9 @@
   }
 
   function openDetailFor(component: Component, action: OpenDetailAction, row: Row, trigger?: HTMLElement) {
+    if(!actionAllowed(component,action,row)||!actionAllowed(component,action.openDetail,row))return;
     untrack(() => closeDetail(false));
+    detailOrigin={component,row,action};
     const root = surfaceRoot.getRootNode() as Document | ShadowRoot;
     const sourceCell = Array.from(surfaceRoot.querySelectorAll<HTMLElement>('[data-component]'))
       .find(element => element.dataset.component?.split('/').at(-1) === component.id);
@@ -787,11 +930,12 @@
       })) : undefined
     };
     if ('view' in detail && pageState.phase === 'ready') {
-      const page = pageState.page;
+      const page = declarationPage??pageState.page;
       const view = page.detailViews?.find(candidate => candidate.id === detail.view);
       try {
         const input = detailViewInput(page, action, row, filterValues, pageParams);
-        openDetail = { ...openDetail, view, page: input.page };
+        openDetail = { ...openDetail, view:view?{...view,components:input.page.sections[0]!.components}:undefined, page: input.page };
+        detailFilters=input.filters;
         if (view?.mode === 'query') {
           const generation = detailGeneration;
           detailDispose = orchestrate(input.page, activeGateway, createFilterState(input.filters, input.page.filters ?? [])).subscribe(value => {
@@ -810,8 +954,8 @@
     return typeof title === 'string' ? title : undefined;
   }
 
-  function handleChartClick(component: ChartComponent | Extract<Component, { type: 'gauge' | 'rankingCard' }>, row: Row) {
-    if (!componentCapability(component)?.actions) return;
+  function handleChartClick(component: Component, row: Row) {
+    if (!componentCapability(component)?.actions || presentation?.component(component.id).enabled===false) return;
     if (component.type === 'mapChart' && component.props.hierarchyFilter) {
       const declaration = declarations.find(
         (item) => item.id === component.props.hierarchyFilter
@@ -830,32 +974,47 @@
         }
       }
     }
-    for (const action of component.props.actions ?? []) {
+    const actions=component.type==='button'?[component.props.action]:('actions' in component.props?component.props.actions??[]:[]);
+    for (const action of actions) {
+      if(!actionAllowed(component,action,row))continue;
       if ('navigate' in action) {
-        navigate(navigationHref(action.navigate, filterValues, pageParams, row));
+        if(!actionAllowed(component,action.navigate,row))continue;
+        navigateTarget(action.navigate,row);
         return;
       }
       if ('openDetail' in action) {
+        if(!actionAllowed(component,action.openDetail,row))continue;
         openDetailFor(component, action, row);
         return;
       }
-      const code = fieldName(action.field);
-      const clicked = row[code];
+      const clicked = 'field' in action ? row[fieldName(action.field)] : action.value;
       const target = declarations.find((declaration) => declaration.id === action.writeFilter);
       if (clicked == null || target?.type !== 'dimension') continue;
       filterState?.write(action.writeFilter, {
         type: 'dimension',
         dimension: target.dimension,
+        ...(target.hierarchy?{level:action.level??dimensionValueOf(filterValues,target.id).level??target.defaultLevel??target.hierarchy[0]?.id}:{}),
         values: [String(clicked)]
       });
     }
   }
 
   function textLink(link: TextLink) {
-    const href = navigationHref(link, filterValues, pageParams);
-    return { label: link.label, href, onclick: (event: MouseEvent) => navigate(href, event) };
+    return { label: link.label, href:targetHref(link), onclick: (event: MouseEvent) => navigateTarget(link,{},event) };
   }
 
+  function targetResult(target:NavigationTarget,row:Row={}) {
+    if(target.validateTargetInputs&&Object.values(target.query??{}).some(b=>b.source==='filter'&&blockedFilters.includes(b.id)))return {ok:false as const,code:'NAVIGATION_INPUT_INVALID' as const,message:'来源筛选尚未通过当前候选确认'};
+    const result=resolveNavigationTarget(target,filterValues,pageParams,row,targetInputs.get(target.href),candidateClock);
+    if(!result.ok)return result;
+    try{return {ok:true as const,href:navigation?.resolveHref?.(result.href)??result.href};}catch{return {ok:false as const,code:'NAVIGATION_INPUT_UNAVAILABLE' as const,message:'目标页面路由不可用'};}
+  }
+  function targetHref(target:NavigationTarget,row:Row={}) {const result=targetResult(target,row);return result.ok?result.href:undefined;}
+  function navigateTarget(target:NavigationTarget,row:Row={},event?:MouseEvent){
+    const result=targetResult(target,row);
+    if(!result.ok){event?.preventDefault();navigationMessage=result.message;onevent?.({type:'navigation-error',href:target.href,code:result.code,message:result.message});return;}
+    navigationMessage='';navigate(result.href,event);
+  }
   function navigate(href: string, event?: MouseEvent) {
     if (event && (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
     const sourcePageId = pageState.phase === 'ready' ? pageState.page.id : undefined;
@@ -931,44 +1090,15 @@
     if (resolvedTablePagination(component)?.mode === 'query') return snapshot;
     const pagination = resolvedTablePagination(component,snapshot);
     const source=pageState.phase==='ready'?pageState.page.dataSources[component.data.main]:undefined;
-    const rows=applySearchFilters(snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
+    if (remoteTableSearch(source)) return { ...snapshot, rows: presentation?.rows(component,snapshot.rows) ?? snapshot.rows };
+    const rows=applySearchFilters(presentation?.rows(component,snapshot.rows)??snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
     return {status:'ready',rows:tableController?.present(component,rows,pagination?.mode!=='local').rows??rows};
   }
   function filteredTableRows(component: TableComponent,snapshot: Extract<DataSnapshot,{status:'ready'}>):Row[] {
     void tableRevision;
     const source=pageState.phase==='ready'?pageState.page.dataSources[component.data.main]:undefined;
-    const rows=applySearchFilters(snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
+    const rows=applySearchFilters(presentation?.rows(component,snapshot.rows)??snapshot.rows,filterValues,source?resolveDataSourceFields(source):{});
     return tableController?.present(component,rows,true).rows??rows;
-  }
-
-  /** 表头筛选候选项:只投影 ready 快照的真实候选值;其余状态不给表头假候选。 */
-  function remoteHeaderOptions(): Record<string, string[]> {
-    const options: Record<string, string[]> = {};
-    for (const [dimension, snapshot] of dimensionCandidates) {
-      if (snapshot.status === 'ready') {
-        options[dimension] = snapshot.candidates.map((candidate) => candidate.value);
-      }
-    }
-    return options;
-  }
-
-  function tableCandidateDimensions(component: TableComponent): Record<string,string> {return tableController?.candidateDimensions(component)??{};}
-  function tableFilterOptions(component: TableComponent): Record<string, string[]> {
-    if (resolvedTablePagination(component)?.mode === 'query') {
-      return Object.fromEntries(Object.entries(tableCandidateDimensions(component)).flatMap(([field,dimension])=>{const snapshot=dimensionCandidates.get(dimension);return snapshot?.status==='ready'?[[field,snapshot.candidates.map(c=>c.value)]]:[];}));
-    }
-    const snapshot = componentSnapshots(component).get('main');
-    if (snapshot?.status !== 'ready') return remoteHeaderOptions();
-    const fields = buildTableColumnLayout(component.props.columns).leaves
-      .filter((column) => column.filterable?.mode === 'select')
-      .map((column) => fieldName(column.field));
-    const local = Object.fromEntries(
-      fields.map((field) => [
-        field,
-        [...new Set(snapshot.rows.map((row) => row[field]).filter((value) => value != null).map(String))]
-      ])
-    );
-    return { ...local, ...remoteHeaderOptions() };
   }
 
   function resolvedTablePagination(component: TableComponent, snapshot = componentSnapshots(component).get('main')) {
@@ -1002,7 +1132,7 @@
     const source = loaded.dataSources[component.data.main];
     if (source?.source.type === 'pagedJoin') return source.source.pagination.pageSize;
     if (source?.source.type !== 'query') return undefined;
-    const order = source.source.query.body.dsl_list[0].order;
+    const order = selectTimeQuery(source.source.query,filterValues).body.dsl_list[0].order;
     if (typeof order !== 'object' || order === null || Array.isArray(order)) return undefined;
     return typeof order.limit === 'number' && Number.isInteger(order.limit) && order.limit > 0
       ? order.limit
@@ -1016,6 +1146,13 @@
     return tablePageSizes[component.id] ?? stream?.getQueryPageSize(component.data.main) ?? queryPageSize(loaded, component);
   }
 
+  function tableInteractionGate(component:TableComponent,row:Row,column:TableColumn){
+    const node=column.selection??column.navigate??column.openDetail;
+    if(node)return presentation?.gate(node,row,presentation.component(component.id))??{eligible:true,enabled:true};
+    const actions=component.props.actions??[];
+    const gates=actions.map(action=>presentation?.gate(action,row,presentation.component(component.id))??{eligible:true,enabled:true});
+    return {eligible:gates.some(g=>g.eligible),enabled:gates.some(g=>g.enabled)};
+  }
   function tableBinding(
     loaded: Page,
     component: Component,
@@ -1024,18 +1161,21 @@
     if (component.type !== 'table') return undefined;
     void tableRevision;
     return tableController?.binding(component,{
+      expansion: component.props.rowExpansion ? { page: loaded, gateway: activeGateway, filters: filterValues, params: pageParams, instanceId: rowScopeInstanceId } : undefined,
       onexport: () => { void exportTable(component); },
       oncancelexport: () => exportController.cancel(component.id),
       exporting: tableExportStates[component.id]?.busy,
       exportError: tableExportStates[component.id]?.error,
       selectedCell: tableSelectedCell(component),
-      filterOptions: tableFilterOptions(component),
-      filterOptionsStatus: tableController?.candidateStates(component,dimensionCandidates),
+      filterOptions: {},
+      ...tableController.candidateBinding(component),
       pagination: tablePaginationState(loaded, component, slots),
       paginationConfig: resolvedTablePagination(component, slots.get('main')),
-      oncellselect: ({ rowIndex, column }) =>
-        handleTableCellSelect(component, rowIndex, column),
-      linkHref: (row, column) => column?.navigate ? navigationHref(column.navigate, filterValues, pageParams, row)
+      interactionGate:(row,column)=>tableInteractionGate(component,row,column),
+      toolbarEnabled:{search:component.props.toolbar?.search?actionAllowed(component,component.props.toolbar.search):true,export:component.props.toolbar?.export?actionAllowed(component,component.props.toolbar.export):true},
+      oncellselect: ({ rowIndex, column, row }) =>
+        handleTableCellSelect(component, rowIndex, column,row),
+      linkHref: (row, column) => column?.navigate && actionAllowed(component,column.navigate,row) ? targetHref(column.navigate,row)
         : column?.openDetail ? undefined : componentHref(component, row),
       onlink: ({ row, column }, event) => handleTableLink(component, row, event, column)
     });
@@ -1043,7 +1183,7 @@
 
   function chartClickHandler(component: Component): ((row: Row) => void) | undefined {
     if (!componentCapability(component)?.actions ||
-      !(isChartComponent(component) || component.type === 'gauge' || component.type === 'rankingCard')) {
+      !(isChartComponent(component) || component.type === 'gauge' || component.type === 'rankingCard' || component.type==='button')) {
       return undefined;
     }
     return (row: Row) => handleChartClick(component, row);
@@ -1086,6 +1226,7 @@
 </script>
 
 <div class="runtime-view" bind:this={surfaceRoot}>
+  {#if navigationMessage}<p role="alert" data-navigation-error>{navigationMessage}</p>{/if}
   {#if pageState.phase === 'loading'}
     <p class="muted">加载页面…</p>
   {:else if pageState.phase === 'version-error'}
@@ -1112,7 +1253,10 @@
         {/each}
       </ul>
     </div>
+  {:else if pageState.phase === 'input-invalid'}
+    <div class="error-page"><h1>页面输入不完整或无效</h1><p>{pageState.message}</p><p>请检查链接中的筛选值、日期粒度及必需输入。</p></div>
   {:else if pageState.phase === 'invalid'}
+    {#if pageState.errors.length > 0}
     <div class="error-page">
       <h1>页面文档未通过校验</h1>
       <p class="muted">修复以下错误后保存，页面会自动刷新。</p>
@@ -1126,19 +1270,15 @@
         {/each}
       </ul>
     </div>
+    {/if}
   {:else}
     {@const readyPage = pageState.page}
-    {@const contentFilters = contentFilterDeclarations(readyPage, declarations)}
+    {@const header = resolvePageHeader(readyPage,presentation?.filters??declarations)}
+    {@const pageReadOnly = filterEditing?.readOnly || header.readOnly}
     {@const layoutForm = readyPage.layout ?? 'report'}
     {@const firstComponent = readyPage.sections[0]?.components[0]}
     {@const leadingDateToolbar = layoutForm === 'report' && !readyPage.sections[0]?.title && firstComponent?.type === 'reportHeader' && firstComponent.layout.span === 12 && (!!firstComponent.props.filterIds?.length || !!firstComponent.props.exportButtons?.length || !!firstComponent.props.pdfExport || !!firstComponent.props.pngExport)}
-    {@const dashboardToolbar = readyPage.dashboardToolbar ?? 'visible'}
-    {@const dashboardToolbarConfig =
-      typeof dashboardToolbar === 'object' ? dashboardToolbar : undefined}
-    {@const groupedDashboardFilters = dashboardFilterGroups(
-      contentFilters,
-      dashboardToolbarConfig?.variant
-    )}
+    {@const dashboardToolbar = readyPage.iocHeader ? 'hidden' : readyPage.dashboardToolbar ?? 'visible'}
     <div
       class:layout-dashboard={layoutForm === 'dashboard'}
       class:with-report-date-toolbar={leadingDateToolbar}
@@ -1151,63 +1291,33 @@
         ? dashboardToolbar
         : dashboardToolbar.variant}
     >
-    {#if layoutForm === 'dashboard' && dashboardToolbar !== 'hidden'}
-      <DashboardToolbar
-        title={pageListEntry(readyPage).title}
-        declarations={contentFilters}
-        values={filterValues}
-        candidates={dimensionCandidates}
-        ondimension={writeDimension}
-        ontimerange={writeTimeRange}
-        ontimepoint={writeTimePoint}
-        onboolean={writeBoolean}
-        onnumberrange={writeNumberRange}
-        onsearch={writeSearch}
-        variant={dashboardToolbarConfig?.variant}
-        readOnly={dashboardToolbarConfig?.readOnly}
-        note={dashboardToolbarConfig?.note}
-        onback={navigation?.back}
-      />
-    {:else if pageState.capabilities.filters && hasVisibleFilters(contentFilters)}
-      <FilterBar
-        declarations={contentFilters}
-        values={filterValues}
-        candidates={dimensionCandidates}
-        ondimension={writeDimension}
-        ontimerange={writeTimeRange}
-        ontimepoint={writeTimePoint}
-        onboolean={writeBoolean}
-        onnumberrange={writeNumberRange}
-        onsearch={writeSearch}
-      />
+    {#if header.model}
+      <IocHeader model={header.model} filterIds={header.primary.map(filter=>filter.id)} overflowIds={header.overflow.map(filter=>filter.id)}
+        returnContext={navigation?.returnContext} onback={navigation?.back} controls={iocHeaderControls}
+        readOnly={pageReadOnly} note={blockedFilters.length ? `等待筛选确认或可信候选：${blockedFilters.map(id=>declarations.find(f=>f.id===id)?.label ?? id).join('、')}` : pageReadOnly ? filterEditing?.reason ?? header.note ?? '筛选只读' : header.note}/>
     {/if}
-
-    {#if layoutForm === 'dashboard' &&
-      dashboardToolbar !== 'hidden' &&
-      groupedDashboardFilters.content.length > 0}
-      <div data-dashboard-content-filters class="dashboard-content-filters">
-        <FilterBar
-          declarations={groupedDashboardFilters.content}
-          values={filterValues}
-          candidates={dimensionCandidates}
-          ondimension={writeDimension}
-          ontimerange={writeTimeRange}
-          ontimepoint={writeTimePoint}
-          onboolean={writeBoolean}
-          onnumberrange={writeNumberRange}
-          onsearch={writeSearch}
-        />
+    {#snippet iocHeaderControls(id: string, readOnly: boolean)}
+      <FilterBar {timeContext} onretry={retryCandidates} declarations={(presentation?.filters??declarations).filter(filter=>filter.id===id)} values={filterValues} candidates={dimensionCandidates}
+        {readOnly} ondimension={writeDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
+        onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
+    {/snippet}
+    {#if pageState.capabilities.filters && hasVisibleFilters(header.content)}
+      <div data-dashboard-content-filters={layoutForm==='dashboard'?true:undefined} class:dashboard-content-filters={layoutForm==='dashboard'}>
+        <FilterBar {timeContext} onretry={retryCandidates} readOnly={pageReadOnly}
+          declarations={header.content} values={filterValues} candidates={dimensionCandidates}
+          ondimension={writeDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
+          onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
       </div>
     {/if}
 
     {#if readyPage.sectionGroups || readyPage.sectionAnchors}
       <nav class="section-navigation" aria-label="内容导航">
-        {#each readyPage.sectionGroups ?? [] as group (group.id)}
+        {#each (readyPage.sectionGroups ?? []).filter(group=>presentation?.groups.get(group.id)?.eligible!==false) as group (group.id)}
           <button type="button" data-section-group={group.id}
             aria-pressed={selectedSectionGroup(readyPage, selectedGroup) === group.id}
             onclick={() => (selectedGroup = group.id)}>{group.label}</button>
         {/each}
-        {#each readyPage.sectionAnchors ?? [] as anchor (anchor.sectionId)}
+        {#each (readyPage.sectionAnchors ?? []).filter(anchor=>presentation?.sectionGates.get(anchor.sectionId)?.eligible!==false) as anchor (anchor.sectionId)}
           <button type="button" data-section-anchor={anchor.sectionId}
             onclick={() => locateSection(readyPage, anchor.sectionId)}>{anchor.label}</button>
         {/each}
@@ -1215,7 +1325,7 @@
     {/if}
     <div class="page-sections">
       {#snippet headerControls(ids: string[])}
-        <FilterBar declarations={ids.flatMap(id=>declarations.find(f=>f.id===id)??[])} values={filterValues}
+        <FilterBar {timeContext} onretry={retryCandidates} readOnly={filterEditing?.readOnly} declarations={ids.flatMap(id=>presentation?.filters.find(f=>f.id===id)??[])} values={filterValues}
           candidates={dimensionCandidates} ondimension={writeDimension} ontimerange={writeTimeRange}
           ontimepoint={writeTimePoint} onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
       {/snippet}
@@ -1223,15 +1333,18 @@
         {@const slots = componentSnapshots(component)}
         <ComponentRenderer
           {component}
+          {initialTabs}
+          filterGroupReadOnly={pageReadOnly}
           {headerControls}
-          chartFilterValue={component => {
-            if (!isChartComponent(component) || !component.props.filter) return undefined;
-            const value = filterValues.get(component.props.filter.filterId);
+          filterGroupValue={component => {
+            if (component.type !== 'filterGroup') return undefined;
+            const value = filterValues.get(component.props.filterId);
             return value?.type === 'dimension' ? value.values[0] : undefined;
           }}
-          onchartfilter={(component, value) => {
-            if (!isChartComponent(component) || !component.props.filter) return;
-            const declaration = declarations.find(item => item.id === component.props.filter!.filterId);
+          onfiltergroup={(component, value) => {
+            if (component.type !== 'filterGroup') return;
+            if (presentation?.component(component.id).enabled !== true) return;
+            const declaration = declarations.find(item => item.id === component.props.filterId);
             if (declaration?.type === 'dimension') writeDimension(declaration, [value]);
           }}
           headerPeriod={(header)=>headerPeriod(header.props,declarations,filterValues,readyPage.schemaVersion)}
@@ -1240,7 +1353,7 @@
           pageSnapshots={snapshots}
           {aiSummary}
           textLinks={component.type === 'text'
-            ? (component.props.links ?? []).map(textLink)
+            ? (component.props.links ?? []).filter(link=>presentation?.gate(link).eligible!==false).map(link=>({...textLink(link),disabled:presentation?.gate(link).enabled===false}))
             : []}
           onchartclick={chartClickHandler(component)}
           onmetriclink={metricLinkHandler(component)}
@@ -1252,11 +1365,11 @@
         />
       {/snippet}
       {#if sectionsContent}
-        {@render sectionsContent(visibleSections(readyPage, selectedGroup), componentContent)}
+        {@render sectionsContent(visibleSections({...readyPage,sections:presentation?.sections??readyPage.sections,sectionGroups:readyPage.sectionGroups?.filter(group=>presentation?.groups.get(group.id)?.eligible!==false)}, selectedGroup), componentContent)}
       {:else}
-        {#each readyPage.sections as section (section.id)}
+        {#each presentation?.sections ?? readyPage.sections as section (section.id)}
           <RuntimeSection {section} {componentContent}
-            hidden={!visibleSections(readyPage, selectedGroup).includes(section)} />
+            hidden={!visibleSections({...readyPage,sections:presentation?.sections??readyPage.sections,sectionGroups:readyPage.sectionGroups?.filter(group=>presentation?.groups.get(group.id)?.eligible!==false)}, selectedGroup).some(item=>item.id===section.id)} />
         {/each}
       {/if}
     </div>
@@ -1289,7 +1402,7 @@
           <p role="alert">{openDetail.error}</p>
         {:else if openDetail.view && openDetail.page}
           {#key detailGeneration}
-            <DetailContent page={openDetail.page} components={openDetail.view.components} snapshots={detailSnapshots} />
+            <DetailContent page={openDetail.page} components={openDetail.view.components} snapshots={detailSnapshots} filters={detailFilters} {displaySnapshot} {filterRevision} />
           {/key}
         {:else}
         <dl>
@@ -1462,7 +1575,7 @@
     --mc-page-sections-margin-top: 16px;
     --mc-section-card-padding: 16px 20px 20px;
     --mc-section-card-title-margin: 0 0 12px;
-    --mc-section-card-title-color: var(--mc-color-report-text);
+    --mc-section-card-title-color: #191919;
     --mc-section-card-title-font-size: 16px;
     --mc-section-card-title-font-weight: 500;
     --mc-section-card-title-line-height: 24px;
@@ -1506,12 +1619,12 @@
     --mc-card-title-font-size: 16px;
     --mc-card-title-font-weight: 500;
     --mc-card-title-line-height: 24px;
-    --mc-card-title-color: var(--mc-color-report-text);
+    --mc-card-title-color: #191919;
 
     /* 页面标题(字号两档同为 24px,不设量) */
     --mc-page-title-font-weight: 500;
     --mc-page-title-line-height: 36px;
-    --mc-page-title-color: var(--mc-color-report-text);
+    --mc-page-title-color: #191919;
 
     /* 指标行:标签、大数字、数值单位 */
     --mc-metric-label-font-size: 14px;

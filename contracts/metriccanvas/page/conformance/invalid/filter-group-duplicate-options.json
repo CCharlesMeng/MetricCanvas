@@ -1,0 +1,431 @@
+{
+  "case": "filter-group-duplicate-options",
+  "invariant": "filter-group",
+  "input": {
+    "schemaVersion": "6.45",
+    "id": "filter-group-state-page",
+    "meta": {
+      "title": "独立筛选按钮组（合成演示）"
+    },
+    "layout": "dashboard",
+    "filters": [
+      {
+        "id": "scope",
+        "type": "dimension",
+        "dimension": "scope",
+        "label": "业务范围",
+        "options": [
+          {
+            "label": "国内业务",
+            "value": "DOMESTIC"
+          },
+          {
+            "label": "海外业务",
+            "value": "OVERSEAS"
+          }
+        ],
+        "selection": {
+          "mode": "single",
+          "required": true
+        },
+        "default": [
+          "DOMESTIC"
+        ]
+      },
+      {
+        "id": "channel",
+        "type": "dimension",
+        "dimension": "chart_demo_region",
+        "label": "经营渠道",
+        "default": [
+          "CN"
+        ]
+      },
+      {
+        "id": "card-region",
+        "type": "dimension",
+        "dimension": "chart_demo_region",
+        "label": "卡内区域",
+        "default": [
+          "CN"
+        ]
+      }
+    ],
+    "dataSources": {
+      "orders-data": {
+        "fields": {
+          "category": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "chart_demo_category"
+          },
+          "value": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "chart_demo_orders"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "filterBindings": {
+              "channel": {
+                "target": "dimension",
+                "queryField": "chart_demo_region"
+              }
+            },
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "chart_demo_category"
+                  ],
+                  "output_metrics": [
+                    "chart_demo_orders"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "revenue-data": {
+        "fields": {
+          "category": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "chart_demo_category"
+          },
+          "value": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "chart_demo_revenue"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "filterBindings": {
+              "channel": {
+                "target": "dimension",
+                "queryField": "chart_demo_region"
+              }
+            },
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "chart_demo_category"
+                  ],
+                  "output_metrics": [
+                    "chart_demo_revenue"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "control-data": {
+        "fields": {
+          "category": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "chart_demo_category"
+          },
+          "value": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "chart_demo_orders"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "chart_demo_category"
+                  ],
+                  "output_metrics": [
+                    "chart_demo_orders"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "card-data": {
+        "fields": {
+          "category": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "chart_demo_category"
+          },
+          "value": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "chart_demo_orders"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "filterBindings": {
+              "card-region": {
+                "target": "dimension",
+                "queryField": "chart_demo_region"
+              }
+            },
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "chart_demo_category"
+                  ],
+                  "output_metrics": [
+                    "chart_demo_orders"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "controls",
+        "components": [
+          {
+            "id": "channel-filter",
+            "type": "filterGroup",
+            "layout": {
+              "span": 12
+            },
+            "visibleWhen": {
+              "filter": "scope",
+              "part": "values",
+              "op": "containsAny",
+              "values": [
+                "DOMESTIC"
+              ]
+            },
+            "props": {
+              "filterId": "channel",
+              "options": [
+                {
+                  "label": "直营",
+                  "value": "CN"
+                },
+                {
+                  "label": "加盟",
+                  "value": "CN"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "metrics",
+        "title": "经营指标（筛选器隐藏后仍保留当前口径）",
+        "components": [
+          {
+            "id": "orders-metric",
+            "type": "metricCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "orders-data"
+            },
+            "props": {
+              "title": "订单指标",
+              "rows": [
+                {
+                  "label": "订单指标",
+                  "valueField": {
+                    "data": "main",
+                    "field": "value",
+                    "format": "number-signed"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "revenue-metric",
+            "type": "metricCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "revenue-data"
+            },
+            "props": {
+              "title": "收入指标",
+              "rows": [
+                {
+                  "label": "收入指标",
+                  "valueField": {
+                    "data": "main",
+                    "field": "value",
+                    "format": "number-signed"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "views",
+        "components": [
+          {
+            "id": "trend",
+            "type": "lineChart",
+            "layout": {
+              "span": 6
+            },
+            "visibleWhen": {
+              "filter": "scope",
+              "part": "values",
+              "op": "containsAny",
+              "values": [
+                "DOMESTIC"
+              ]
+            },
+            "data": {
+              "main": "revenue-data"
+            },
+            "props": {
+              "title": "国内业务趋势（内容单独声明显隐）",
+              "xField": "category",
+              "series": [
+                {
+                  "field": "value",
+                  "label": "收入"
+                }
+              ]
+            }
+          },
+          {
+            "id": "control",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "control-data"
+            },
+            "props": {
+              "title": "全区域对照（保持不变）",
+              "categoryField": "category",
+              "series": [
+                {
+                  "field": "value",
+                  "label": "订单对比"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "nested",
+        "components": [
+          {
+            "id": "nested-card",
+            "type": "compositeCard",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "variant": "metricGrid",
+              "title": "组合卡内独立筛选",
+              "components": [
+                {
+                  "id": "card-filter",
+                  "type": "filterGroup",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "filterId": "card-region",
+                    "options": [
+                      {
+                        "label": "中国区",
+                        "value": "CN"
+                      },
+                      {
+                        "label": "海外",
+                        "value": "OVERSEAS"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "card-metric",
+                  "type": "metricCard",
+                  "layout": {
+                    "span": 6
+                  },
+                  "data": {
+                    "main": "card-data"
+                  },
+                  "props": {
+                    "title": "卡内指标",
+                    "rows": [
+                      {
+                        "label": "卡内指标",
+                        "valueField": {
+                          "data": "main",
+                          "field": "value",
+                          "format": "number-signed"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/options",
+      "message": "筛选按钮组选项的 value 不得重复"
+    }
+  ]
+}

@@ -12,6 +12,10 @@ const bundle = JSON.parse(await readFile('metriccanvas-authoring/bundle.json','u
 const skills: Array<{id:string;entrypoint:string;referenceProjection?:string}> = bundle.skills ?? [{id:'metriccanvas-page-builder',entrypoint:bundle.skill.entrypoint}];
 const authorMap = JSON.parse(await readFile('docs/page-metadata/reference-map.json', 'utf8')) as ReferenceMap;
 const inputs = new Map<string,string>();
+for(const example of new Set(Object.values(authorMap.modules).flatMap(module=>module.examples))){
+  if(['page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','dashboard-title-styles','report-title-styles'].includes(example))inputs.set(`page/conformance/valid/${example}.json`,await readFile(`pages/${example}.json`,'utf8'));
+}
+
 for (const file of await readdir('packages/page/fixtures/contract-valid')) if (file.endsWith('.json')) inputs.set(`page/conformance/valid/${file}`, await readFile(`packages/page/fixtures/contract-valid/${file}`, 'utf8'));
 inputs.set('page/conformance/coverage.json',await readFile('contracts/metriccanvas/page/conformance/coverage.json','utf8'));
 for(const file of await readdir('contracts/metriccanvas/page/conformance/invalid')) inputs.set(`page/conformance/invalid/${file}`,await readFile(`contracts/metriccanvas/page/conformance/invalid/${file}`,'utf8'));
@@ -128,4 +132,11 @@ describe('页面参考手册生成与分发', () => {
       }
     }
   });
+});
+
+it('standalone component examples retain the fixed controls required by their query graph',()=>{
+ const map=JSON.parse(reference.get('examples/component-mapChart.json')!);
+ const controls=map.sections.flatMap((section:any)=>section.components).filter((component:any)=>component.type==='filterGroup');
+ expect(controls.map((component:any)=>component.props.filterId)).toEqual(['map-region']);
+ expect(validate(map)).toEqual([]);
 });

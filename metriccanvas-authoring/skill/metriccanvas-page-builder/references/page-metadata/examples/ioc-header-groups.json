@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "6.49",
+  "id": "ioc-header-groups",
+  "layout": "dashboard",
+  "meta": {
+    "title": "IOC页头 · 协同小组权限输入"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "协同小组权限输入",
+      "tags": [
+        {
+          "text": "合成候选与查询",
+          "id": "tag-0"
+        }
+      ]
+    },
+    "back": true,
+    "filterIds": [
+      "group"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "filters": [
+    {
+      "id": "group",
+      "type": "dimension",
+      "dimension": "group",
+      "label": "协同小组",
+      "urlParams": {
+        "value": "group"
+      },
+      "default": [
+        "GROUP-A"
+      ],
+      "selection": {
+        "mode": "multiple",
+        "required": true
+      },
+      "candidateContext": {
+        "filterIds": [],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "协同小组"
+    }
+  ],
+  "dataSources": {
+    "request": {
+      "fields": {
+        "item": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "item"
+        },
+        "state": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "state"
+        },
+        "selection_count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "selection_count"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "item",
+                  "state"
+                ],
+                "output_metrics": [
+                  "selection_count"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "group": {
+              "target": "dimension",
+              "queryField": "demo_group"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成验收：从明确完整的组织权限对象加工协同小组，permissionValue为稳定值，permissionName为标签，无独立HTTP。无权限、空集合、未配置和不完整输入均不回退静态全量小组。真实门户payload仍待接；此页不证明生产权限。"
+          }
+        },
+        {
+          "id": "request-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "request"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "item",
+                "title": "筛选项 / 观察项"
+              },
+              {
+                "field": "state",
+                "title": "实际生效值（合成回显）"
+              },
+              {
+                "field": "selection_count",
+                "title": "数量"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "dashboardToolbar": "hidden"
+}

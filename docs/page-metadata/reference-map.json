@@ -15,18 +15,44 @@
         "reference-branches-page",
         "detail-views",
         "report-date-filters-page",
-        "reference-export-detail-branches"
+        "reference-export-detail-branches",
+        "ioc-header-page",
+        "time-modes-page",
+        "time-presets-page",
+        "availability-page",
+        "calendar-window-page",
+        "unified-year-header",
+        "unified-overflow-header",
+        "ioc-header-business",
+        "ioc-header-currency",
+        "ioc-header-groups",
+        "ioc-header-incentives",
+        "ioc-header-models",
+        "ioc-header-months",
+        "ioc-header-unconfigured",
+        "tab-mixed-content"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/page.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/page/src/schema/ioc-header.ts",
+        "packages/page/src/ioc-header.ts",
+        "packages/page/src/time-mode.ts",
+        "packages/page/src/period-facts.ts",
+        "packages/page/src/time-extension-validation.ts"
       ],
       "rules": [
         "page-layout-compatibility",
         "schema-structure",
         "schema-version-supported",
-        "detail-view-component-types"
+        "detail-view-component-types",
+        "ioc-header",
+        "time-extensions",
+        "unified-page-header",
+        "required-multiple-selection",
+        "independent-filter-candidates",
+        "currency-range-presets"
       ]
     },
     "params-and-text-values.md": {
@@ -176,18 +202,27 @@
         "query-cascade-page",
         "query-result-where-page",
         "query-result-where-branches",
-        "query-result-page-window-page"
+        "query-result-page-window-page",
+        "time-modes-page",
+        "time-presets-page",
+        "availability-page",
+        "calendar-window-page",
+        "time-binding-branches-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/query.ts",
         "tools/scripts/page-conformance-vectors.ts",
         "packages/page/src/query-result-where.ts",
-        "packages/page/src/validate-query-results.ts"
+        "packages/page/src/validate-query-results.ts",
+        "packages/page/src/time-mode.ts",
+        "packages/page/src/period-facts.ts",
+        "packages/page/src/time-extension-validation.ts"
       ],
       "rules": [
         "query-field-mapping",
-        "filter-binding"
+        "filter-binding",
+        "time-extensions"
       ]
     },
     "compute.md": {
@@ -230,8 +265,7 @@
         "booleanFilter",
         "numberRangeFilter",
         "searchFilter",
-        "periodSelection",
-        "chartFilter"
+        "periodSelection"
       ],
       "keywords": [
         "filters",
@@ -250,7 +284,22 @@
         "period-filter-parameter-page",
         "dashboard-period-filter-more",
         "dashboard-period-filter-readonly",
-        "chart-local-filter-page"
+        "chart-local-filter-page",
+        "business-filter-page",
+        "currency-selection-page",
+        "time-modes-page",
+        "time-presets-page",
+        "availability-page",
+        "calendar-window-page",
+        "unified-year-header",
+        "dimension-selection-page",
+        "ioc-header-business",
+        "ioc-header-currency",
+        "ioc-header-groups",
+        "ioc-header-incentives",
+        "ioc-header-models",
+        "ioc-header-months",
+        "ioc-header-unconfigured"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -258,9 +307,16 @@
         "tools/scripts/page-conformance-vectors.ts",
         "packages/page/src/period-filter.ts",
         "packages/page/src/report-date-filters.ts",
-        "packages/page/src/chart-filter.ts",
-        "packages/page/src/schema/chart-filter.ts",
-        "packages/page/src/time-filter-boundary.ts"
+        "packages/page/src/filter-group.ts",
+        "packages/page/src/schema/components/filter-group.ts",
+        "packages/page/src/time-filter-boundary.ts",
+        "packages/page/src/filter-dependencies.ts",
+        "packages/page/src/amount-filter.ts",
+        "packages/page/src/amount-validation.ts",
+        "packages/page/src/field-selection.ts",
+        "packages/page/src/time-mode.ts",
+        "packages/page/src/period-facts.ts",
+        "packages/page/src/time-extension-validation.ts"
       ],
       "rules": [
         "filter-id-unique",
@@ -276,7 +332,14 @@
         "time-point-min",
         "time-point-disable-future",
         "period-filter",
-        "chart-local-filter"
+        "filter-group",
+        "business-filters",
+        "currency-selection",
+        "time-extensions",
+        "unified-page-header",
+        "required-multiple-selection",
+        "independent-filter-candidates",
+        "currency-range-presets"
       ]
     },
     "sections-and-layout.md": {
@@ -295,12 +358,16 @@
       ],
       "examples": [
         "composite-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "dashboard-title-styles",
+        "report-title-styles"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/page.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/embed/tests/browser/layout-titles.spec.ts",
+        "packages/engine/runtime-ui/src/RuntimeSection.svelte"
       ],
       "rules": [
         "section-id-unique",
@@ -321,7 +388,8 @@
         "fieldBinding",
         "fieldReference",
         "colorRule",
-        "categoryLabels"
+        "categoryLabels",
+        "staticFieldBinding"
       ],
       "keywords": [
         "field-bindings-and-formats",
@@ -333,13 +401,17 @@
         "reference-branches-page",
         "explicit-presentation-page",
         "signed-number-page",
-        "signed-number-family-page"
+        "signed-number-family-page",
+        "currency-selection-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/primitives.ts",
         "tools/scripts/page-conformance-vectors.ts",
-        "packages/page/src/schema/presentation.ts"
+        "packages/page/src/schema/presentation.ts",
+        "packages/page/src/amount-filter.ts",
+        "packages/page/src/amount-validation.ts",
+        "packages/page/src/field-selection.ts"
       ],
       "rules": [
         "data-slot-known-source",
@@ -350,7 +422,8 @@
         "chart-value-label-exclusive",
         "presentation-capability",
         "signed-number-format-capability",
-        "signed-number-family-capability"
+        "signed-number-family-capability",
+        "currency-selection"
       ]
     },
     "actions-and-navigation.md": {
@@ -365,12 +438,21 @@
       ],
       "examples": [
         "url-navigation-page",
-        "reference-export-detail-bindings"
+        "reference-export-detail-bindings",
+        "tab-url-source",
+        "time-modes-page",
+        "navigation-source-page",
+        "navigation-list-page",
+        "navigation-detail-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/actions.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/page/src/schema/navigation.ts",
+        "packages/engine/runtime/src/navigate.ts",
+        "packages/page/src/navigate.ts",
+        "packages/engine/runtime/src/navigation-inputs.ts"
       ],
       "rules": [
         "url-navigation-source-contract",
@@ -531,25 +613,29 @@
     "components/metricCard.md": {
       "title": "指标卡 metricCard",
       "definitions": [
-        "metricCardComponent"
+        "metricCardComponent",
+        "metricCardLayout"
       ],
       "keywords": [
         "components/metricCard",
         "指标卡 metricCard"
       ],
       "examples": [
-        "inline-report"
+        "inline-report",
+        "metric-card-equation"
       ],
       "sources": [
         "packages/page/src/schema/components/metric-card.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/page/src/metric-before.ts"
       ],
       "rules": [
         "schema-structure",
         "data-slot-known-source",
         "field-binding-resolves",
         "field-binding-role",
-        "field-binding-match"
+        "field-binding-match",
+        "metric-card-before"
       ]
     },
     "components/barChart.md": {
@@ -628,7 +714,9 @@
         "tableComponent",
         "tableColumnNode",
         "tableColumn",
-        "tableColumnGroup"
+        "tableColumnGroup",
+        "rowExpansionTable",
+        "tableRowExpansion"
       ],
       "keywords": [
         "components/table",
@@ -640,11 +728,19 @@
         "reference-export-column-actions",
         "table-toolbar-page",
         "table-number-range-page",
-        "paged-join-fixed-rank-page"
+        "paged-join-fixed-rank-page",
+        "table-search-options-page",
+        "table-row-expansion-inline",
+        "table-row-expansion-query",
+        "table-row-expansion-inputs",
+        "table-row-expansion-none",
+        "table-row-number-page"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/page/src/row-expansion.ts",
+        "packages/page/src/validate-row-expansion.ts"
       ],
       "rules": [
         "table-row-key",
@@ -659,7 +755,9 @@
         "pagination-initial-rows",
         "pagination-exclusive-source",
         "table-toolbar-search",
-        "paged-join"
+        "paged-join",
+        "table-search-options",
+        "table-row-expansion"
       ]
     },
     "components/mapChart.md": {
@@ -729,6 +827,7 @@
       ],
       "examples": [
         "composite-page",
+        "tab-url-initialization",
         "tab-mixed-content",
         "tab-content-aisummary",
         "tab-content-barchart",
@@ -744,14 +843,19 @@
         "tab-content-rankingcard",
         "tab-content-rankingdetailcard",
         "tab-content-table",
-        "tab-content-text"
+        "tab-content-text",
+        "tab-content-filtergroup",
+        "tab-content-button"
       ],
       "sources": [
         "packages/page/src/schema/components/tab-container.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/engine/runtime-ui/src/initial-tabs.ts",
+        "packages/page/src/navigate.ts"
       ],
       "rules": [
         "tab-container",
+        "tab-url-initialization",
         "tab-content-boundary"
       ]
     },
@@ -905,11 +1009,15 @@
       "examples": [
         "reference-text-page",
         "url-navigation-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "dashboard-title-styles",
+        "report-title-styles"
       ],
       "sources": [
         "packages/page/src/schema/components/text.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/embed/tests/browser/layout-titles.spec.ts",
+        "packages/engine/widgets/src/components/text/TextBlock.svelte"
       ],
       "rules": [
         "schema-structure",
@@ -939,6 +1047,98 @@
       ],
       "rules": [
         "ai-summary-related-data"
+      ]
+    },
+    "chart-option.md": {
+      "title": "图表高级 ECharts 呈现扩展",
+      "definitions": [
+        "chartOption",
+        "chartOptionValue"
+      ],
+      "keywords": [
+        "echartsOption",
+        "ECharts",
+        "高级呈现"
+      ],
+      "examples": [
+        "chart-echarts-option-page"
+      ],
+      "sources": [
+        "packages/page/src/chart-option.ts",
+        "packages/page/src/schema/components/charts.ts",
+        "tools/scripts/page-conformance-vectors.ts"
+      ],
+      "rules": [
+        "chart-echarts-option"
+      ]
+    },
+    "conditions.md": {
+      "title": "条件显隐与动作资格",
+      "definitions": [
+        "condition"
+      ],
+      "keywords": [
+        "visibleWhen",
+        "enabledWhen",
+        "rowVisibleWhen",
+        "显隐",
+        "层级"
+      ],
+      "examples": [
+        "page-visibility-region-linkage",
+        "page-visibility-inputs",
+        "reference-conditions-page",
+        "page-visibility-report"
+      ],
+      "sources": [
+        "packages/page/src/schema/condition.ts",
+        "packages/page/src/condition.ts",
+        "packages/page/src/presentation-policy.ts"
+      ]
+    },
+    "components/button.md": {
+      "title": "按钮",
+      "definitions": [
+        "buttonComponent"
+      ],
+      "keywords": [
+        "button",
+        "按钮"
+      ],
+      "examples": [
+        "page-visibility-region-linkage",
+        "reference-conditions-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/button.ts"
+      ]
+    },
+    "components/filterGroup.md": {
+      "title": "独立筛选 filterGroup",
+      "definitions": [
+        "filterGroupComponent"
+      ],
+      "keywords": [
+        "filterGroup",
+        "独立筛选",
+        "单选按钮组",
+        "下拉",
+        "对齐"
+      ],
+      "examples": [
+        "filter-group-page",
+        "filter-group-state-page",
+        "chart-local-filter-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/filter-group.ts",
+        "packages/page/src/filter-group.ts",
+        "packages/engine/runtime/src/presentation.ts",
+        "packages/engine/runtime-ui/src/dashboard/FilterGroup.svelte"
+      ],
+      "rules": [
+        "filter-group",
+        "filter-group-presentation"
       ]
     }
   },
@@ -995,7 +1195,7 @@
     "context": "上下文说明字段或结构。",
     "currency": "货币语义声明，不负责汇率换算。",
     "dangerValues": "应使用异常语义的有限取值集合。",
-    "dashboardToolbar": "看板统一工具栏的显示或compact分支。",
+    "dashboardToolbar": "旧文档兼容读取字段；渲染统一适配至 IocHeader，新页面使用 iocHeader。",
     "dataSources": "命名页面数据源集合，键为源id。",
     "decoration": "受控装饰呈现，不是任意CSS。",
     "defaultExpanded": "初始展开状态，后续交互由运行态维护。",
@@ -1054,7 +1254,7 @@
     "match": "按声明维度等值选择行。",
     "matchField": "用于匹配地域/行的字段。",
     "matchValue": "与matchField类型一致的匹配值。",
-    "max": "量表上界；Schema数值约束与运行时范围规则同时适用。",
+    "max": "时间上限与min/disableFuture/禁选范围取交集；完整自然期不能截短。",
     "maxWidth": "受控最大宽度数值，不接受任意CSS。",
     "measures": "度量字段集合或分组。",
     "mergeBy": "表格合并分组字段，必须是已声明列。",
@@ -1080,7 +1280,7 @@
     "param": "已声明页面参数id，整值替换，不插值拼接。",
     "params": "一次初始化的不可变页面参数声明。",
     "parentField": "父地域/父级字段绑定。",
-    "part": "导航取筛选值的value/from/to/level部分。",
+    "part": "引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。",
     "pinnedSummary": "地图固定地域摘要，须符合regionalOverview分支。",
     "precision": "显示精度，不改原始数据。",
     "progress": "进度呈现相关结构。",
@@ -1209,8 +1409,6 @@
     "#/definitions/queryResultWhere/anyOf/3/properties/values": "非空同类型字面量集合，最多1000项；不强制类型转换。",
     "#/definitions/tableComponent/properties/props/properties/toolbar": "每张表独立配置右上角工具区；省略时不显示搜索和导出。",
     "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search": "显式文本搜索声明；提交的关键词属于表格实例，省略时关闭入口。",
-    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/fields": "main数据槽中的1至64个文本标量字段；不得重复，查询搜索要求有效queryField映射。",
-    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/properties/placeholder": "搜索输入提示；省略时显示搜索表格，支持文本取值引用。",
     "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export": "完整匹配结果的Excel导出声明；省略时关闭入口。",
     "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/format": "首版固定xlsx，导出工作簿而非当前分页截图。",
     "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/filename": "文件名基础文本；省略采用已解析表格标题或表格数据，自动附加.xlsx并清理非法文件名字符。",
@@ -1244,15 +1442,114 @@
     "#/definitions/lineChartComponent/properties/props/properties/filter": "图表左上角的独立筛选配置，显式引用页面维度筛选器及固定选项。",
     "#/definitions/pieChartComponent/properties/props/properties/filter": "图表左上角的独立筛选配置，显式引用页面维度筛选器及固定选项。",
     "#/definitions/mapChartComponent/properties/props/properties/filter": "图表左上角的独立筛选配置，显式引用页面维度筛选器及固定选项。",
-    "#/definitions/chartFilter/properties/filterId": "引用本页独立的维度筛选器id，由该筛选器声明初值和查询绑定。",
-    "#/definitions/chartFilter/properties/options": "选择器固定候选项；每项显式声明展示标签和实际维度值。",
+    "#/definitions/filterGroupComponent/properties/props/properties/filterId": "引用页面独立普通维度筛选器；初值由该筛选器 default 声明，查询范围仅由 filterBindings 声明。",
+    "#/definitions/filterGroupComponent/properties/props/properties/options": "固定单选候选列表，label 用于展示，value 进入查询与 URL，各 value 唯一。",
     "#/definitions/reportHeaderComponent/properties/props/properties/pngExport": "6.30兼容读取；新页面使用exportButtons，旧配置转换为直接下载PNG按钮。",
     "#/definitions/reportHeaderComponent/properties/props/properties/pngExport/properties/filename": "可选非空文本取值；生成时捕获，默认页头标题，清理非法字符并规范为.png。",
     "#/definitions/reportHeaderComponent/properties/props/properties/pngExport/properties/scale": "有效数值PDF为2/3/4，PNG为3/4；其他值按未配置处理，读取时移除scale，分别使用默认2/3倍。字符串不转换为数值。",
     "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons": "6.31统一导出按钮数组，1至2项，每种格式最多一项，顺序即显示顺序；不能混用旧导出字段。每项声明format、可选label/filename/scale，点击直接下载。",
     "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/0/properties/filename": "可选非空文本取值，支持参数、已应用筛选和parts；点击时捕获，默认页头标题，清理非法字符后规范为对应格式的单一扩展名。",
     "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons/items/oneOf/1/properties/filename": "可选非空文本取值，支持参数、已应用筛选和parts；点击时捕获，默认页头标题，清理非法字符后规范为对应格式的单一扩展名。",
-    "#/definitions/tabContainerComponent/properties/props/properties/contentLayout": "6.32：显式grid复用12列栅格；缺省保留旧纵向全宽。普通内容与组合卡可入Tab，页头与嵌套Tab禁止。"
+    "echartsOption": "6.32 高级呈现 JSON；仅显式需求时使用，保护数据、结构与交互，异常单次回退且诊断仅console。",
+    "initialTabUrlParam": "6.33 起显式声明初始化 Tab 的 URL 参数名；值匹配 Tab id，缺失、空值、重复或未知值回退 defaultTab / 首个 Tab。与本页其他 URL 输入名称互斥。",
+    "visibleWhen": "节点展示条件；只受自身与祖先约束，子项不反推父级。",
+    "enabledWhen": "可见入口的执行条件；执行时重新判定。",
+    "rowVisibleWhen": "完整本地表格的私有行展示条件，位于本地视图操作之前。",
+    "not": "对已就绪且合法的子条件取反，未知输入不会变成允许。",
+    "permission": "集成应用已有布尔权限结果的稳定键。",
+    "filter": "页面已声明筛选器ID；part决定读取值或层级。",
+    "fact": "只用于IOC facts.value及availability；从可信displayInputs源读取，不从URL或Page数据推断。",
+    "row": "当前行内已声明的标量字段ID，只能在合法行上下文使用。",
+    "values": "集合比较的同类型字面量，不能与单值value混用。",
+    "action": "沿用既有受控click动作，独立按钮无行上下文。",
+    "text": "当前正文片段的文本取值；标点属于片段本身。",
+    "#/definitions/textComponent/properties/props/properties/parts": "text专用条件正文片段：id、text和可选visibleWhen；与body/bodyFormat互斥，不改变全局Text Value组合语义。",
+    "#/definitions/metricCardLayout/properties/before": "与原文档前一张相邻指标卡之间的前置连接文字；仅 Dashboard 顶层默认12列的plain/card分区支持。",
+    "#/definitions/metricCardLayout/properties/before/properties/text": "按纯文本呈现的连接文字，复用文本取值；缺失可选参数时整个连接缺席。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap": "文字内容盒到两侧卡片的间距，单位CSS px，缺省8；不是卡片内部padding。",
+    "#/properties/iocHeader": "IOC页级身份与筛选位置声明；不承担查询编排，见page.md的IOC公共页头。",
+    "#/properties/iocHeader/properties/identity": "可选身份行；省略不自动使用目录标题。",
+    "#/properties/iocHeader/properties/identity/properties/code": "标签与业务编码整体显示；缺值整体省略。",
+    "#/properties/iocHeader/properties/identity/properties/description/properties/text": "纯文本说明，沿用TextValue引用。",
+    "#/properties/iocHeader/properties/identity/properties/description/properties/presentation": "说明直接显示或通过键盘可达说明入口展开。",
+    "#/properties/iocHeader/properties/identity/properties/tags/items/properties/text": "业务标签文字；缺值不产生空色块。",
+    "#/properties/iocHeader/properties/identity/properties/facts": "显式期间/时间事实；不根据类别自动生成当前时间。",
+    "#/properties/iocHeader/properties/back": "返回意图；必须同时有合法returnContext和back处理函数。",
+    "#/properties/iocHeader/properties/filterIds": "按序唯一认领静态可见的页级筛选；不含图表独立或详情私有筛选。",
+    "#/properties/iocHeader/properties/presentation": "仅改变密度和折叠，不改变筛选语义。",
+    "#/properties/iocHeader/properties/presentation/properties/density": "普通或紧凑页头。",
+    "#/properties/iocHeader/properties/presentation/properties/collapse": "保持全部筛选或按实测首行折叠；隐藏项退出焦点序列。",
+    "#/properties/filters/items/properties/selection": "6.37：单/多选及必选基数；见filters.md业务筛选。",
+    "#/definitions/dimensionFilter/properties/selection": "单/多选及必选基数；required恰好一个值。",
+    "#/definitions/dimensionFilter/properties/selection/properties/allBehavior": "全选保留实际选择；仅穷尽封闭多选枚举可省动态谓词。",
+    "#/definitions/dimensionFilter/properties/options": "创作期确认的穷尽枚举；不请求候选网关，不作权限失败回退。",
+    "#/definitions/dimensionFilter/properties/options/items/properties/disabled": "不可选且不能作为默认值，不计入全选集合。",
+    "#/definitions/dimensionFilter/properties/treeSelection": "level保留6.37层级树；6.43普通树支持descendants、independent、leaf。",
+    "#/definitions/dimensionFilter/properties/candidateContext": "候选依赖与可信候选到达后的协调策略。",
+    "#/definitions/dimensionFilter/properties/candidateContext/properties/filterIds": "维度及已应用期间依赖，合并旧dependsOn后检环。",
+    "#/definitions/dimensionFilter/properties/candidateContext/properties/reconcile": "clear递归清理；intersection等待新完整可信候选再取交集。",
+    "#/definitions/dimensionFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
+    "#/definitions/dimensionFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
+    "#/definitions/timeRangeFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
+    "#/definitions/timeRangeFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
+    "#/definitions/timePointFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
+    "#/definitions/timePointFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
+    "#/definitions/booleanFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
+    "#/definitions/booleanFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
+    "#/definitions/numberRangeFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
+    "#/definitions/numberRangeFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
+    "#/definitions/searchFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
+    "#/definitions/searchFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
+    "#/definitions/staticFieldBinding/anyOf/1/properties/missingText": "字段缺值时的展示文字，不生成业务数值。",
+    "#/definitions/numberRangeFilter/properties/constraints": "基本单位上下限及双边严格/允许相等规则。",
+    "#/definitions/numberRangeFilter/properties/units": "币种required单选穷尽case；显示单位按scale换算一次，状态与URL为基本单位。",
+    "#/definitions/numberRangeFilter/properties/presets": "显示单位范围草稿；确定时换算，全部为空范围。",
+    "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter": "金额度量由required单选封闭枚举选择，cases必须穷尽并匹配静态money币种；选择器为隐式查询依赖。",
+    "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/filterId": "引用金额units使用的required单选封闭枚举筛选。",
+    "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/cases": "每个启用枚举值必须且只能映射一个已声明同币种money queryField。",
+    "#/definitions/numberRangeFilter/properties/constraints/properties/bounds": "strict拒绝双边相等，inclusive允许相等；新金额units/presets缺省严格，旧范围缺省兼容。",
+    "#/definitions/numberRangeFilter/properties/units/properties/filterId": "引用required单选封闭枚举，金额clearOnChangeOf必须包含该选择器。",
+    "#/definitions/numberRangeFilter/properties/units/properties/cases": "穷尽启用枚举项，每项声明静态货币、显示单位与正安全整数scale；状态始终为基本单位。",
+    "#/definitions/fieldBinding/anyOf/1/properties/byFilter": "Schema6.38非递归字段选择；只选择已有静态money字段，所有case均校验。",
+    "#/definitions/fieldBinding/anyOf/1/properties/byFilter/properties/filterId": "控制器必须为required单选封闭枚举，无未知值或首case回退。",
+    "#/definitions/fieldBinding/anyOf/1/properties/byFilter/properties/cases": "穷尽启用枚举项，每个case只能为静态FieldBinding，元数据与导出同已应用case。",
+    "timeModes": "与普通body/filterBindings互斥；filterId引用modes筛选，cases完整声明每一模式的静态查询体及绑定。",
+    "modes": "day/month/isoWeek有序闭集，各模式必须有合法默认范围，运行时原子保存mode/from/to。",
+    "defaultMode": "首次无URL输入时使用的已配置模式。",
+    "availability": "具名可信期间事实；initial与default/initialParam互斥，max独立校验。",
+    "blockMissing": "仅显式true时禁选missingRanges；缺数默认仍可查询空结果。",
+    "blockedRanges": "完整范围与任一禁选区间相交即拒绝，不静默截断。",
+    "candidateWindow": "V2候选必须携带12个日历月闭区间及完整上下文，不能降级旧维度端口。",
+    "anchorFact": "可信具名期间事实的latest作为月份锚点；省略使用同次时钟。",
+    "presets": "快捷范围按同次时钟或显式anchor解析，不改变已应用值直至合法提交。",
+    "filterId": "显式引用当前页面已声明筛选器；timeModes要求modes范围，metricByFilter要求required单选枚举。",
+    "cases": "完整穷尽已声明模式或封闭枚举的静态case，没有隐式首项回退。",
+    "metricByFilter": "按required单选币种选择静态基本单位metric，各case与units货币一致。",
+    "disableFuture": "默认保持禁止未来期间；显式false取消该项限制，仍受min/max/可信期间及禁选范围约束。",
+    "validateTargetInputs": "显式要求集成应用提供目标输入投影后才允许跨页导航；仅传URL输入，不恢复视图。",
+    "strictURLInputs": "显式开启目标页URL输入严格校验；省略保留兼容读取，文档规范化升版本不会自动开启。",
+    "#/properties/iocHeader/properties/readOnly": "6.41：页内筛选只读，所有用户筛选写入共用只读门禁；不是服务权限。",
+    "#/properties/iocHeader/properties/note": "页头说明；可用于只读原因，纯文本。",
+    "#/properties/iocHeader/properties/presentation/properties/layout": "6.41：stacked 身份与筛选上下排，inline 身份与筛选行内排布；按宿主容器响应。",
+    "#/definitions/timeRangeFilter/properties/periodModes": "6.41：自然期间可选模式，非空且不重复；默认和参数初始模式须在列表内；单模式隐藏切换栏。与 display=modes 的日/月/ISO周列表无关。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/fields": "main数据槽中的1至64个文本标量字段；不得重复，查询搜索要求有效queryField映射。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0/properties/placeholder": "搜索输入提示；省略时显示搜索表格，支持文本取值引用。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options": "页面内静态枚举；1至64项，value唯一，每项声明label、一个main槽文本field及可选placeholder；只做单字段精确匹配，与旧fields分支互斥。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/options/items/properties/placeholder": "当前选项的搜索输入提示；切换时同步替换，缺省显示搜索表格。",
+    "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1/properties/defaultValue": "初始选项value，显式配置必须命中options；省略选第一项。清空关键词不重置选中项。",
+    "#/definitions/dimensionFilter/properties/searchable": "6.43本地搜索开关，默认true；不提交筛选。",
+    "#/definitions/tableComponent/properties/props/properties/rowExpansion": "按父行显式声明一级独立子表格，省略时没有展开入口。",
+    "#/definitions/tableRowExpansion/properties/data/oneOf/1/properties/bindings": "私有查询输入与父行、页面参数或页面筛选器的显式映射。",
+    "#/definitions/tableRowExpansion/properties/table": "独立列定义的只读子表格；默认仅内容与分页。",
+    "#/definitions/rowExpansionTable/properties/toolbar": "按需启用子表格实例搜索，省略时不显示工具区。",
+    "#/definitions/rowExpansionTable/properties/toolbar/properties/search": "按需声明实例内搜索；查询搜索需要网关编码能力。",
+    "#/definitions/rowExpansionTable/properties/toolbar/properties/search/properties/placeholder": "子表格搜索提示文本，省略时沿用现有表格默认提示。",
+    "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets": "6.46按该币种显示单位定义预设；全部case必须声明，不能与公共presets混用。",
+    "#/definitions/filterGroupComponent/properties/props/properties/display": "6.47固定单选呈现：buttons（默认）或select；共用筛选状态、固定候选和查询绑定。",
+    "#/definitions/filterGroupComponent/properties/props/properties/align": "6.47控件在所占栅格内左/右对齐，默认left；不改变筛选范围。",
+    "#/definitions/tableComponent/properties/props/properties/rowNumber": "6.48呈现序号列；默认标题序号、宽度64px，可左固定；按排序筛选后的当前行集跨页连续编号，不绑定数据字段。",
+    "#/definitions/rowExpansionTable/properties/rowNumber": "6.48子表格独立序号列，复用普通表格声明和编号规则。",
+    "#/definitions/tabContainerComponent/properties/props/properties/contentLayout": "6.49：显式grid复用12列栅格；缺省保留旧纵向全宽。普通内容与组合卡可入Tab，页头与嵌套Tab禁止。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1295,7 +1592,7 @@
     "zero": "零/缺分母时输出0。",
     "subtotal": "分组小计行标记。",
     "total": "全局合计行标记。",
-    "day": "日粒度。",
+    "day": "YYYY-MM-DD日范围及匹配静态day查询。",
     "week": "周粒度。",
     "month": "月粒度；timePoint使用YYYY-MM。",
     "quarter": "季度粒度。",
@@ -1446,7 +1743,79 @@
     "6.29": "Dashboard图表独立筛选：黑色圆角单选按钮组及自定义候选项。",
     "6.30": "Report导出图片：独立文档、3/4倍高清、始终一张完整PNG。",
     "6.31": "Report统一exportButtons，按按钮配置PDF/PNG格式、名称、文件名与渲染倍数，点击直接下载。",
-    "6.32": "Tab混合内容、显式12列布局、按需读取与保活、活动页签URL恢复。"
+    "6.32": "柱/线/饼图隐含echartsOption呈现扩展，保护数据结构，单次降级与console诊断。",
+    "6.33": "Tab 容器通过显式 URL 参数初始化活动页签。",
+    "values": "维度多选值集合。",
+    "containsAny": "来源集合至少包含一个给定值。",
+    "containsAll": "来源集合包含全部给定值。",
+    "isEmpty": "字符串或集合为空；未知输入不同于空值。",
+    "isNotEmpty": "字符串或集合非空。",
+    "6.35": "统一条件显隐、行投影、按钮及条件正文片段；父级约束后代，子项不反推父级。",
+    "6.34": "Dashboard 指标卡前置连接文字与双侧受控间距。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=4": "连接文字两侧各留4 CSS px。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=8": "连接文字两侧各留8 CSS px。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=12": "连接文字两侧各留12 CSS px。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=16": "连接文字两侧各留16 CSS px。",
+    "#/definitions/metricCardLayout/properties/before/properties/gap=24": "连接文字两侧各留24 CSS px。",
+    "#/properties/iocHeader/properties/identity/properties/description/properties/presentation=\"inline\"": "在身份区直接显示说明。",
+    "#/properties/iocHeader/properties/identity/properties/description/properties/presentation=\"tooltip\"": "通过可聚焦说明入口展开完整文字。",
+    "#/properties/iocHeader/properties/identity/properties/tags/items/properties/tone=\"neutral\"": "中性标签，不推断业务含义。",
+    "#/properties/iocHeader/properties/identity/properties/tags/items/properties/tone=\"info\"": "提示信息标签。",
+    "#/properties/iocHeader/properties/identity/properties/tags/items/properties/tone=\"success\"": "显式成功语义标签。",
+    "#/properties/iocHeader/properties/identity/properties/tags/items/properties/tone=\"warning\"": "显式提醒语义标签。",
+    "#/properties/iocHeader/properties/identity/properties/tags/items/properties/tone=\"danger\"": "显式危险语义标签。",
+    "#/properties/iocHeader/properties/identity/properties/facts/items/properties/kind=\"queryPeriod\"": "显式已应用查询期间。",
+    "#/properties/iocHeader/properties/identity/properties/facts/items/properties/kind=\"latestDataPeriod\"": "由可信输入给出的最新数据期。",
+    "#/properties/iocHeader/properties/identity/properties/facts/items/properties/kind=\"refreshedAt\"": "可信数据刷新时间，缺值省略。",
+    "#/properties/iocHeader/properties/identity/properties/facts/items/properties/kind=\"generatedAt\"": "可信页面生成时间，缺值省略。",
+    "#/properties/iocHeader/properties/presentation/properties/density=\"normal\"": "正常密度（缺省）。",
+    "#/properties/iocHeader/properties/presentation/properties/density=\"compact\"": "紧凑密度，不改查询。",
+    "#/properties/iocHeader/properties/presentation/properties/collapse=\"none\"": "全部展开（缺省）。",
+    "#/properties/iocHeader/properties/presentation/properties/collapse=\"firstRow\"": "按实际换行收起到首行。",
+    "6.36": "IOC根级页头增量；保持独立详情单月与原有页面兼容。",
+    "#/definitions/dimensionFilter/properties/selection/properties/mode=\"single\"": "至多选择一个值。",
+    "#/definitions/dimensionFilter/properties/selection/properties/mode=\"multiple\"": "保留多个显式值，required仍要求恰好一个。",
+    "#/definitions/dimensionFilter/properties/selection/properties/allBehavior=\"values\"": "完整传递已选值集合。",
+    "#/definitions/dimensionFilter/properties/selection/properties/allBehavior=\"unrestricted\"": "穷尽有效封闭枚举全部选中时省略动态维度谓词。",
+    "#/definitions/dimensionFilter/properties/candidateContext/properties/reconcile=\"clear\"": "上游变化递归清值并等待显式确认。",
+    "#/definitions/dimensionFilter/properties/candidateContext/properties/reconcile=\"intersection\"": "新完整可信候选就绪后保留交集；空交集保持门禁。",
+    "#/properties/schemaVersion=\"6.37\"": "业务筛选选择规则、封闭枚举、结构树和依赖候选。",
+    "#/definitions/staticFieldBinding/anyOf/1/properties/format=\"period\"": "日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。",
+    "CNY": "静态人民币金额，基本单位元。",
+    "USD": "静态美元金额，基本单位美元；没有隐式汇率换算。",
+    "usd-adaptive": "美元数值带千分位、两位小数和美元单位。",
+    "strict": "双边范围必须from<to，不改变下推>=/<=语义。",
+    "inclusive": "双边范围允许相等，仍校验上下限。",
+    "#/properties/schemaVersion=\"6.38\"": "USD、金额范围和静态货币字段选择独立能力增量。",
+    "modes": "显式日/月/ISO周模式范围，不与period或initialParam混用。",
+    "isoWeek": "同一ISO周的周一至周日，ISO所属年由日历计算；未知私有周码拒绝。",
+    "latest": "事实粒度下最新有数据期间，不隐含完成。",
+    "latestComplete": "事实粒度下最新完成期间；缺少时不可回退latest。",
+    "6.39": "复杂时间模式、可信期间事实及月份候选窗口。",
+    "refreshedAt": "可信服务实际刷新时间，使用带时区ISO输入；不取浏览器当前时间。",
+    "generatedAt": "可信产物生成时间，使用带时区ISO输入；不取浏览器当前时间。",
+    "mode": "导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。",
+    "6.40": "显式跨页传值与目标输入契约校验。",
+    "6.41": "统一页头呈现与自然期间可选模式；旧工具栏兼容读取。",
+    "#/properties/iocHeader/properties/presentation/properties/layout=\"inline\"": "标题与筛选行内排布；窄容器换行。",
+    "#/properties/iocHeader/properties/presentation/properties/layout=\"stacked\"": "身份区与筛选区上下排布；缺省。",
+    "#/properties/iocHeader/properties/presentation/properties/collapse=\"overflow\"": "按数量组织筛选；密集时前四项常驻，其余进入更多筛选，搜索放回内容区。compact 不收纳。",
+    "#/definitions/timeRangeFilter/properties/periodModes/items=\"last12Months\"": "当前月之前十二个完整月份，显示只读范围。",
+    "6.42": "表格静态搜索选项：每项单文本字段精确匹配、placeholder切换、切换即搜索。",
+    "6.43": "维度下拉默认搜索、可关闭，普通树显式父子策略。",
+    "#/definitions/dimensionFilter/properties/treeSelection=\"descendants\"": "普通树父节点选择自身及可选后代；保留旧路径树默认行为。",
+    "#/definitions/dimensionFilter/properties/treeSelection=\"independent\"": "普通树父子分别选择，单选替换一个稳定值。",
+    "#/definitions/dimensionFilter/properties/treeSelection=\"leaf\"": "普通树只选择叶子；多选父节点批量作用于叶子。",
+    "#/definitions/tableRowExpansion/properties/mode=\"multiple\"": "允许同时展开多行，缺省模式。",
+    "#/definitions/tableRowExpansion/properties/mode=\"single\"": "同一父表最多展开一行。",
+    "#/properties/schemaVersion=\"6.44\"": "增加行内子表格及私有查询分页。",
+    "6.45": "Dashboard 独立固定单选筛选按钮组、一控多及统一显隐；旧图表筛选声明按明确批准的受控迁移例外移除。",
+    "6.46": "必选多选、显式无依赖候选和单位case中的币种档位。",
+    "#/properties/schemaVersion=\"6.47\"": "独立固定单选筛选支持下拉呈现和左右对齐。",
+    "#/definitions/filterGroupComponent/properties/props/properties/display=\"buttons\"": "固定单选按钮，省略display时保持此呈现。",
+    "#/definitions/filterGroupComponent/properties/props/properties/display=\"select\"": "复用维度下拉，固定候选且必选单选。",
+    "#/properties/schemaVersion=\"6.48\"": "普通表格和子表格支持独立的自动序号列。",
+    "6.49": "Tab 混合普通内容与组合卡、显式12列栅格、按需取数及保活恢复。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -1550,6 +1919,427 @@
       "rule": "paged-join",
       "reason": "视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。",
       "source": "packages/page/src/validate-paged-join.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/17": {
+      "case": "detail-component-reject-button",
+      "rule": "detail-view-component-types",
+      "reason": "详情展示闭集不开放独立按钮和递归动作，只有语义拒绝见证。",
+      "source": "packages/page/src/validate.ts"
+    },
+    "#/properties/detailViews/items/properties/components/items/oneOf/18": {
+      "case": "filter-group-detail",
+      "rule": "filter-group",
+      "reason": "独立固定筛选按钮组首批仅用于Dashboard正文或组合卡；共享组件Schema的详情分支由语义校验拒绝。",
+      "source": "packages/page/src/filter-group.ts"
     }
+  },
+  "authoringTopics": {
+    "page.core": {
+      "module": "page",
+      "title": "页面版本与布局",
+      "roots": [
+        "#/definitions/pageLayoutForm",
+        "#/definitions/dashboardToolbar"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "layout.core": {
+      "module": "sections-and-layout",
+      "title": "分区和布局",
+      "roots": [
+        "#/definitions/section",
+        "#/definitions/componentLayout"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "data.inline": {
+      "module": "data-sources",
+      "title": "内联数据源",
+      "roots": [
+        "#/definitions/inlineDataSource",
+        "#/definitions/inlineSource"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "data.query": {
+      "module": "data-sources",
+      "title": "查询数据源",
+      "roots": [
+        "#/definitions/queryDataSource",
+        "#/definitions/querySource"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "data.pagedJoin": {
+      "module": "data-sources",
+      "title": "多查询组合源",
+      "roots": [
+        "#/definitions/pagedJoinSource"
+      ],
+      "headings": [
+        "多查询组合源 pagedJoin（6.22）"
+      ],
+      "dependencies": []
+    },
+    "fields.core": {
+      "module": "fields",
+      "title": "结果字段契约",
+      "roots": [
+        "#/definitions/scalarField",
+        "#/definitions/queryScalarField"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "fields.format": {
+      "module": "field-bindings-and-formats",
+      "title": "字段引用和格式",
+      "roots": [
+        "#/definitions/fieldBinding",
+        "#/definitions/staticFieldBinding"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "query.core": {
+      "module": "queries-and-bindings",
+      "title": "查询与显式绑定",
+      "roots": [
+        "#/definitions/pageQuery",
+        "#/definitions/dqeQuery"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "table.columns": {
+      "module": "table",
+      "title": "表格列与列组",
+      "roots": [
+        "#/definitions/tableColumnNode",
+        "#/definitions/tableColumn",
+        "#/definitions/tableColumnGroup"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "table.width": {
+      "module": "table",
+      "title": "表格列宽",
+      "roots": [
+        "#/definitions/tableColumn/properties/width",
+        "#/definitions/tableColumn/properties/fixed"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "table.search": {
+      "module": "table",
+      "title": "表格搜索",
+      "roots": [
+        "#/definitions/tableComponent/properties/props/properties/toolbar/properties/search"
+      ],
+      "headings": [
+        "右上角搜索与 Excel 导出（6.21）",
+        "静态搜索选项（6.42）"
+      ],
+      "dependencies": []
+    },
+    "table.pagination": {
+      "module": "table",
+      "title": "表格分页",
+      "roots": [
+        "#/definitions/tableComponent/properties/props/properties/pagination"
+      ],
+      "headings": [
+        "数值范围和组合表（6.22）"
+      ],
+      "dependencies": []
+    },
+    "table.export": {
+      "module": "table",
+      "title": "表格导出",
+      "roots": [
+        "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export"
+      ],
+      "headings": [
+        "右上角搜索与 Excel 导出（6.21）",
+        "静态搜索选项（6.42）"
+      ],
+      "dependencies": []
+    },
+    "metricCard.core": {
+      "module": "metricCard",
+      "title": "指标卡",
+      "roots": [
+        "#/definitions/metricCardComponent"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "metricCard.title": {
+      "module": "metricCard",
+      "title": "指标卡标题",
+      "roots": [
+        "#/definitions/metricCardComponent/properties/props/properties/title"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "text.core": {
+      "module": "text",
+      "title": "文本",
+      "roots": [
+        "#/definitions/textComponent"
+      ],
+      "headings": [],
+      "dependencies": []
+    },
+    "filters.time": {
+      "module": "filters",
+      "title": "时间筛选",
+      "roots": [
+        "#/definitions/timeRangeFilter",
+        "#/definitions/timePointFilter"
+      ],
+      "headings": [
+        "时间选择的默认上限"
+      ],
+      "dependencies": []
+    },
+    "reportHeader.export": {
+      "module": "reportHeader",
+      "title": "报告导出",
+      "roots": [
+        "#/definitions/reportHeaderComponent/properties/props/properties/exportButtons"
+      ],
+      "headings": [
+        "导出按钮（6.31）"
+      ],
+      "dependencies": []
+    },
+    "filters.period": {
+      "module": "filters",
+      "title": "Dashboard 期间选择（6.27）",
+      "roots": [
+        "#/definitions/timeRangeFilter",
+        "#/definitions/timePointFilter"
+      ],
+      "headings": [
+        "Dashboard 期间选择（6.27）"
+      ],
+      "dependencies": []
+    },
+    "filters.timePoint": {
+      "module": "filters",
+      "title": "时间点下限（6.24）",
+      "roots": [
+        "#/definitions/timeRangeFilter",
+        "#/definitions/timePointFilter"
+      ],
+      "headings": [
+        "时间点下限（6.24）"
+      ],
+      "dependencies": []
+    },
+    "filters.futureTime": {
+      "module": "filters",
+      "title": "禁止未来时间（6.25）",
+      "roots": [
+        "#/definitions/timeRangeFilter",
+        "#/definitions/timePointFilter"
+      ],
+      "headings": [
+        "禁止未来时间（6.25）"
+      ],
+      "dependencies": []
+    },
+    "filters.timeModes": {
+      "module": "filters",
+      "title": "6.39 复杂时间与候选",
+      "roots": [
+        "#/definitions/timeRangeFilter",
+        "#/definitions/timePointFilter"
+      ],
+      "headings": [
+        "6.39 复杂时间与候选"
+      ],
+      "dependencies": []
+    },
+    "filterGroup.core": {
+      "module": "filterGroup",
+      "title": "独立固定筛选按钮组",
+      "roots": [
+        "#/definitions/filterGroupComponent"
+      ],
+      "headings": [
+        "固定单选下拉与对齐（6.47）"
+      ],
+      "dependencies": []
+    },
+    "table.row-number": {
+      "module": "table",
+      "title": "表格自动序号列",
+      "roots": [
+        "#/definitions/tableComponent/properties/props/properties/rowNumber",
+        "#/definitions/rowExpansionTable/properties/rowNumber"
+      ],
+      "headings": [
+        "自动序号列（6.48）"
+      ],
+      "dependencies": []
+    }
+  },
+  "authoringSemanticHeadings": {
+    "page.md": [
+      "创作时显式选择布局形态",
+      "查阅方式",
+      "IOC 公共页头（6.36）",
+      "可信期间事实输入（6.39）",
+      "唯一页头（6.41）"
+    ],
+    "params-and-text-values.md": [
+      "查阅方式",
+      "确定性时间参数",
+      "分层参数与查询侧时间窗口",
+      "筛选文本取值（6.15）",
+      "文本片段组合（6.23）"
+    ],
+    "data-sources.md": [
+      "查询异常与结果总数",
+      "查阅方式",
+      "多查询组合源 pagedJoin（6.22）"
+    ],
+    "fields.md": [
+      "查询数值度量的容错",
+      "查阅方式"
+    ],
+    "queries-and-bindings.md": [
+      "查阅方式",
+      "查询结果绑定 6.14",
+      "查询输入行过滤 6.19",
+      "排序与查询分页驱动结果绑定 6.20",
+      "配置解读：首轮查询、任意列排序与分页级联",
+      "6.39 静态时间查询模式"
+    ],
+    "compute.md": [
+      "查阅方式",
+      "汇总的全空结果（6.12）",
+      "多度量透视与有限主集合左关联 6.14"
+    ],
+    "filters.md": [
+      "时间选择的默认上限",
+      "Dashboard 期间选择（6.27）",
+      "时间点下限（6.24）",
+      "禁止未来时间（6.25）",
+      "独立筛选按钮组",
+      "查阅方式",
+      "业务筛选（6.37）",
+      "金额范围（6.38）",
+      "6.39 复杂时间与候选",
+      "下拉搜索与普通树（6.43）",
+      "IOC 业务批量场景与必选多选（6.46）"
+    ],
+    "sections-and-layout.md": [
+      "Report 与 Dashboard 标题",
+      "指标卡连接排布 6.34",
+      "页面搭建中的移动与删除",
+      "查阅方式"
+    ],
+    "field-bindings-and-formats.md": [
+      "带符号普通数值（6.17起）",
+      "按百万呈现",
+      "显式数字颜色与图表标签（6.16）",
+      "查阅方式",
+      "静态货币字段选择（6.38）"
+    ],
+    "actions-and-navigation.md": [
+      "查阅方式",
+      "当前内容工具边界",
+      "链接传参与目标页签",
+      "6.40 显式跨页传值"
+    ],
+    "semantic-html.md": [
+      "查阅方式"
+    ],
+    "validation.md": [
+      "查阅方式"
+    ],
+    "components/reportHeader.md": [
+      "导出按钮（6.31）",
+      "单张高清 PNG",
+      "查阅方式"
+    ],
+    "components/metricCard.md": [
+      "前置连接文字 6.34",
+      "查阅方式"
+    ],
+    "components/barChart.md": [
+      "查阅方式"
+    ],
+    "components/lineChart.md": [
+      "查阅方式"
+    ],
+    "components/pieChart.md": [
+      "查阅方式"
+    ],
+    "components/table.md": [
+      "单元格点击与筛选联动",
+      "渲染外观与变体",
+      "右上角搜索与 Excel 导出（6.21）",
+      "静态搜索选项（6.42）",
+      "查阅方式",
+      "数值范围和组合表（6.22）",
+      "行内子表格（6.44）",
+      "列筛选候选值",
+      "自动序号列（6.48）"
+    ],
+    "components/mapChart.md": [
+      "查阅方式"
+    ],
+    "components/gauge.md": [
+      "查阅方式"
+    ],
+    "components/tabContainer.md": [
+      "查阅方式",
+      "URL 初始化页签（6.33）"
+    ],
+    "components/compositeCard.md": [
+      "查阅方式"
+    ],
+    "components/rankingCard.md": [
+      "查阅方式"
+    ],
+    "components/rankingDetailCard.md": [
+      "查阅方式"
+    ],
+    "components/keyValuePanel.md": [
+      "查阅方式"
+    ],
+    "components/categoryBreakdown.md": [
+      "查阅方式"
+    ],
+    "components/fieldText.md": [
+      "查阅方式"
+    ],
+    "components/text.md": [
+      "查阅方式"
+    ],
+    "components/aiSummary.md": [
+      "查阅方式"
+    ],
+    "chart-option.md": [
+      "声明与合并",
+      "允许入口与保护",
+      "失败、降级和诊断"
+    ],
+    "conditions.md": [],
+    "components/button.md": [],
+    "components/filterGroup.md": [
+      "固定单选下拉与对齐（6.47）"
+    ]
   }
 }

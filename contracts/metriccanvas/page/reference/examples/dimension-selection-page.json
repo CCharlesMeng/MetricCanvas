@@ -1,0 +1,253 @@
+{
+  "schemaVersion": "6.43",
+  "id": "dimension-selection-page",
+  "layout": "dashboard",
+  "meta": {
+    "description": "IOC 页头选择能力：树单选、树多选、单行标签、可选搜索；本地合成数据。",
+    "title": "IOC 页头选择控件"
+  },
+  "filters": [
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "demo_region",
+      "label": "区域",
+      "display": "tree",
+      "selection": {
+        "mode": "single"
+      },
+      "searchable": true,
+      "default": [
+        "CN-SZ"
+      ],
+      "treeSelection": "independent"
+    },
+    {
+      "id": "industry",
+      "type": "dimension",
+      "dimension": "demo_industry",
+      "label": "行业",
+      "display": "tree",
+      "selection": {
+        "mode": "multiple"
+      },
+      "searchable": true,
+      "default": [
+        "AUTO-EV"
+      ],
+      "treeSelection": "independent"
+    },
+    {
+      "id": "business",
+      "type": "dimension",
+      "dimension": "demo_business",
+      "label": "业务类型",
+      "display": "tree",
+      "selection": {
+        "mode": "multiple"
+      },
+      "searchable": true,
+      "default": [],
+      "treeSelection": "leaf"
+    },
+    {
+      "id": "category",
+      "type": "dimension",
+      "dimension": "demo_category",
+      "label": "客户分类",
+      "display": "select",
+      "selection": {
+        "mode": "multiple"
+      },
+      "searchable": true,
+      "default": [
+        "NA1",
+        "NA2",
+        "NA3",
+        "SMB"
+      ]
+    },
+    {
+      "id": "model",
+      "type": "dimension",
+      "dimension": "demo_model",
+      "label": "模型",
+      "display": "select",
+      "selection": {
+        "mode": "single"
+      },
+      "searchable": false,
+      "default": []
+    },
+    {
+      "id": "legacy",
+      "type": "dimension",
+      "dimension": "demo_legacy",
+      "label": "存量路径树",
+      "display": "tree",
+      "selection": {
+        "mode": "multiple"
+      },
+      "searchable": true,
+      "default": [],
+      "treeSelection": "descendants"
+    }
+  ],
+  "dataSources": {
+    "projects": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "name"
+        },
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "region"
+        },
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "category"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "name",
+                  "region",
+                  "category"
+                ],
+                "output_metrics": [
+                  "amount"
+                ],
+                "filter": {
+                  "dims": []
+                },
+                "order": {
+                  "limit": 100,
+                  "offset": 0
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "queryField": "demo_region"
+            },
+            "industry": {
+              "target": "dimension",
+              "queryField": "demo_industry"
+            },
+            "business": {
+              "target": "dimension",
+              "queryField": "demo_business"
+            },
+            "category": {
+              "target": "dimension",
+              "queryField": "demo_category"
+            },
+            "model": {
+              "target": "dimension",
+              "queryField": "demo_model"
+            },
+            "legacy": {
+              "target": "dimension",
+              "queryField": "demo_legacy"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "title",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "IOC 项目经营概览 · 选择控件"
+          }
+        },
+        {
+          "id": "notice",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "本地合成数据。区域单选；行业父子独立；业务仅选叶子；模型演示关闭搜索；存量路径树保留父选后代。搜索与展开不会触发查询。"
+          }
+        },
+        {
+          "id": "applied",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "parts": [
+                "当前区域：",
+                {
+                  "filter": "region"
+                },
+                "；客户分类：",
+                {
+                  "filter": "category"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "projects-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "name",
+                "title": "项目名称"
+              },
+              {
+                "field": "region",
+                "title": "区域"
+              },
+              {
+                "field": "category",
+                "title": "客户分类"
+              },
+              {
+                "field": "amount",
+                "title": "金额"
+              }
+            ]
+          },
+          "data": {
+            "main": "projects"
+          }
+        }
+      ]
+    }
+  ]
+}

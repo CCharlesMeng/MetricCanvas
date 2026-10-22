@@ -1,5 +1,6 @@
 ---
 status: accepted
+revised-by: [0111]
 note: Schema 5.3，部分修订 0038 的恒定等权列前提
 ---
 

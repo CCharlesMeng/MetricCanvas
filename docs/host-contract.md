@@ -237,3 +237,10 @@ const runtime = MetricCanvas.mount('#dashboard', {
 ## 报告完整导出
 
 Report页头通过`pdfExport: {label?, filename?}`启用引擎内置PDF下载，与日期控件共用工具带；集成应用无需安装编码库，旧`withExportView`入口已移除。编码由内嵌Dedicated Worker执行，主线程分批准备DOM；宿主浏览器支持Worker、ImageBitmap、OffscreenCanvas，并允许`worker-src blob:`。引擎重取捕获查询作用域内的完整数据、展开正文、移除日期输入、固定资源并在任务结束后清理。见 [内置下载与完整性边界](report-export.md)。
+
+
+## 表格列候选值网关注入
+
+表格列候选与页面维度取值域分开。DataGateway 可实现 fetchColumnCandidates(request, diagnosticContext?, signal?)；request 包含保留原查询定义及业务条件的生效查询、目标页面字段和查询字段、独立候选 search/offset/limit。返回 unavailable 或 candidates/totalCount；totalCount 必须是当前候选搜索范围的去重数量，单页长度与总数须一致，稳定值保留 string/number 类型，label 独立。
+
+createDqeGateway 的 encodeColumnCandidates 是可信部署配置函数，输入上述受控请求，返回 query、valueField 及可选 labelField。query 必须由部署方按真实 DQE 契约编码，保留原业务查询粒度、权限链路及固定窗口，并映射候选字段；不得仅改输出维度就宣称已实现聚合后去重。未配置不发候选 HTTP 请求，显示能力不可用；不把函数放入页面 JSON。经该路径的响应沿用既有 NO_PERMISSION 非空数据消费规则，完整性另验。具体对接问题见[DQE 说明](plan/table-column-candidates/dqe-handoff.md)。

@@ -4,7 +4,17 @@ sections组织有序内容分区，每个分区至少一个组件。默认12列�
 
 plain去掉分区容器，由组件自带外观；panel为章节面板；card为小节卡片。容器样式只由section.container声明。layer区分content与backdrop；铺底层不占正常内容流，不能伪造一套绝对坐标画布。
 
+## Report 与 Dashboard 标题
+
+标题按页面 `layout` 分别呈现，不存在 `plain` 沿用的共用标题。Dashboard 的默认、plain、panel、card 分区标题统一使用黑色16px、500字重、24px行高、左对齐且无装饰；容器只改变外壳。Report 保留自己的分区层级：默认/plain 为20px蓝色方块标题，panel为32px居中图标标题，card为20px小节标题。`text.props.variant: heading` 在Dashboard使用16px黑色左对齐标题，在Report使用32px居中图标标题。未声明layout仍按Report处理，导出视图保留来源页面的布局形态。
+
+对照入口：`/pages/dashboard-title-styles` 与 `/pages/report-title-styles`；指标卡示例`/pages/metric-card-equation`也使用Dashboard标题，无蓝色方块。
+
 Tab和组合卡是受控容器组件，子项允许类型由各自Schema分支决定；不能据顶层组件目录推断任意嵌套都合法。
+
+## 指标卡连接排布 6.34
+
+`metricCard.layout.before` 由统一运行时派生内部连接排布盒，页面文档仍由内容分区直接包含组件。外层默认 12 列保持；整组占成员 span 之和，内部从文字与双侧间距之外的剩余宽度按 span 分配。连接整组铺满其 span 对应的宽度，并统一包裹在灰色 1px 边框、16px 圆角、白底的区域内；每张小卡保留独立白底灰边，连接文字两侧gap固定，卡片按span比例吸收剩余宽度；宽度预算扣除边框和内边距。无 before 的页面继续采用原栅格规则。声明、限制与场景见[指标卡](components/metricCard.md#metric-card-before)。
 
 ## 页面搭建中的移动与删除
 
@@ -22,8 +32,10 @@ Tab和组合卡是受控容器组件，子项允许类型由各自Schema分支�
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
+6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
 
-页面协议 6.32。结构真源为本册[schema.json](schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
+
+页面协议 6.49。结构真源为本册[schema.json](schema.json)，SHA256 `f7595ffbdcf2fe8b269b74567933759d72d6ed3067022eb2cc8fc84196ac0f34`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -120,6 +132,26 @@ Schema位置：`#/definitions/section/properties/id`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f73656374696f6e2f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@section.visibleWhen`
+
+Schema位置：`#/definitions/section/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f73656374696f6e2f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@section.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/section/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f73656374696f6e2f70726f706572746965732f7469746c65"></a>
 
@@ -407,6 +439,26 @@ Schema位置：`#/definitions/section/properties/components/items/oneOf/16`。�
 |---|---|---|---|---|
 | 引用 #/definitions/aiSummaryComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f73656374696f6e2f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f3137"></a>
+
+### `@section.components[] · oneOf[17]`
+
+Schema位置：`#/definitions/section/properties/components/items/oneOf/17`。目标：[#/definitions/buttonComponent](components/button.md#schema-232f646566696e6974696f6e732f627574746f6e436f6d706f6e656e74)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/buttonComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f73656374696f6e2f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f3138"></a>
+
+### `@section.components[] · oneOf[18]`
+
+Schema位置：`#/definitions/section/properties/components/items/oneOf/18`。目标：[#/definitions/filterGroupComponent](components/filterGroup.md#schema-232f646566696e6974696f6e732f66696c74657247726f7570436f6d706f6e656e74)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/filterGroupComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 ## 语义规则与反例（生成）
 
 - `section-id-unique`：内容分区 id 唯一。反例：[duplicate-section-id](errors/duplicate-section-id.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -421,6 +473,8 @@ Schema位置：`#/definitions/section/properties/components/items/oneOf/16`。�
 
 - [composite-page](examples/composite-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
+- [dashboard-title-styles](examples/dashboard-title-styles.json)：完整合法页面；查询仅为静态契约证据。
+- [report-title-styles](examples/report-title-styles.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 
@@ -430,7 +484,7 @@ Schema位置：`#/definitions/section/properties/components/items/oneOf/16`。�
 - `#/definitions/section/properties/components/items/oneOf/3`：[合法完整页面](examples/component-lineChart.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/4`：[合法完整页面](examples/component-pieChart.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/5`：[合法完整页面](examples/component-table.json)，JSON Pointer `#/sections/0/components/0`。
-- `#/definitions/section/properties/components/items/oneOf/6`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/0`。
+- `#/definitions/section/properties/components/items/oneOf/6`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/1`。
 - `#/definitions/section/properties/components/items/oneOf/7`：[合法完整页面](examples/component-gauge.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/8`：[合法完整页面](examples/component-tabContainer.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/9`：[合法完整页面](examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0`。
@@ -441,3 +495,5 @@ Schema位置：`#/definitions/section/properties/components/items/oneOf/16`。�
 - `#/definitions/section/properties/components/items/oneOf/14`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/15`：[合法完整页面](examples/component-text.json)，JSON Pointer `#/sections/0/components/0`。
 - `#/definitions/section/properties/components/items/oneOf/16`：[合法完整页面](examples/component-aiSummary.json)，JSON Pointer `#/sections/0/components/0`。
+- `#/definitions/section/properties/components/items/oneOf/17`：[合法完整页面](examples/component-button.json)，JSON Pointer `#/sections/0/components/0`。
+- `#/definitions/section/properties/components/items/oneOf/18`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/0`。

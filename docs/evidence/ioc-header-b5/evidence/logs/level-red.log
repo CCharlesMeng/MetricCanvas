@@ -1,0 +1,32 @@
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/ioc-header-b0-b1/DataDashboard
+
+ ❯ packages/engine/runtime/tests/navigation-inputs.test.ts (10 tests | 1 failed | 9 skipped) 11ms
+   × hierarchical filter values cannot silently change to a different target default level 10ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/engine/runtime/tests/navigation-inputs.test.ts > hierarchical filter values cannot silently change to a different target default level
+AssertionError: expected { ok: true, href: '/tree?region=X' } to match object { ok: false, …(1) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "code": "NAVIGATION_INPUT_INVALID",
+-   "ok": false,
++   "ok": true,
+  }
+
+ ❯ packages/engine/runtime/tests/navigation-inputs.test.ts:16:695
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 skipped (10)
+   Start at  22:26:54
+   Duration  1.24s (transform 594ms, setup 0ms, import 1.11s, tests 11ms, environment 0ms)
+

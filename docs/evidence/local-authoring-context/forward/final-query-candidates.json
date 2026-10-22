@@ -1,0 +1,213 @@
+{
+  "formatVersion": 1,
+  "pageSha256": "e997a507908e922909ab8e2fd2b594789aec594156db8a71214ac799cc0a0dbb",
+  "mdSha256": "f1481bba6f7ef64a7662f7c393e582bc3867e0ea4e3c772b1954b19b8367383f",
+  "execution": "not-run",
+  "status": "blocked-by-information-gaps",
+  "runnableCandidates": [],
+  "reason": "签约金额未选口径；达成率缺 DQE 标识和计算规则；时间、范围和共享行粒度未知，未形成完整页面数据源声明。",
+  "conditionNotes": [
+    {
+      "field": "amount",
+      "uses": [
+        "/sections/0/components/0/props/rows/0/valueField",
+        "/sections/0/components/2/props/columns/1/field"
+      ],
+      "conditions": {
+        "currentSource": {
+          "type": "inline",
+          "basis": "input-page.json /dataSources/business-summary/source",
+          "nature": "合成数据，不是查询结果"
+        },
+        "time": {
+          "status": "unknown",
+          "gap": "G-time"
+        },
+        "scope": {
+          "status": "unknown",
+          "gap": "G-scope"
+        },
+        "grouping": {
+          "status": "suggestion",
+          "value": "明细表可考虑按 region_name 分组，卡片的汇总或选行规则待确认",
+          "gap": "G-grain"
+        },
+        "bindings": {
+          "status": "page-fact",
+          "filters": [],
+          "params": [],
+          "note": "输入页面没有筛选器、参数或查询绑定"
+        },
+        "sorting": {
+          "status": "page-fact",
+          "value": "未显式配置排序"
+        },
+        "pagination": {
+          "status": "page-fact",
+          "value": "summary-table pagination.mode=none"
+        },
+        "completeness": {
+          "status": "unknown",
+          "note": "无分页不证明真实结果完整；合成一行不能证明目标数据仅一行"
+        },
+        "metricAlternatives": [
+          {
+            "metricName": "当期签约金额",
+            "queryIdentifier": "contract_amount",
+            "evidence": {
+              "from": 6,
+              "to": 9,
+              "quote": "DQE 指标：contract_amount；物理字段：ads_contract.amount_cny。\n单位：元，币种 CNY；按组织可求和，按月份求和。\n时间维度：签约月份；查询维度：region_name。\n业务口径：统计期内已签约且未撤销合同，按合同编号去重。"
+            },
+            "time": "签约月份，实际起止待定",
+            "aggregation": "按组织、月份可求和",
+            "fixedBusinessRule": "已签约且未撤销，按合同编号去重；该规则是指标口径，是否需要另加查询谓词未知"
+          },
+          {
+            "metricName": "累计签约金额",
+            "queryIdentifier": "contract_amount_ytd",
+            "evidence": {
+              "from": 15,
+              "to": 17,
+              "quote": "DQE 指标：contract_amount_ytd。\n业务口径：当年年初至所选月累计，按组织求和，跨月不得再次求和。\n单位：元，币种 CNY；可用维度：region_name。"
+            },
+            "time": "当年年初至所选月，所选月待定",
+            "aggregation": "按组织可求和；跨月不得再次求和"
+          }
+        ],
+        "presentation": {
+          "status": "page-fact",
+          "currency": "CNY",
+          "unit": "元",
+          "format": "compact-wan-1",
+          "note": "格式以万元展示，不改变原始元单位的指标口径"
+        }
+      }
+    },
+    {
+      "field": "rate",
+      "uses": [
+        "/sections/0/components/1/props/rows/0/valueField",
+        "/sections/0/components/2/props/columns/2/field"
+      ],
+      "conditions": {
+        "currentSource": {
+          "type": "inline",
+          "basis": "input-page.json /dataSources/business-summary/source",
+          "nature": "合成数据，不是查询结果"
+        },
+        "time": {
+          "status": "unknown",
+          "gap": "G-time"
+        },
+        "scope": {
+          "status": "unknown",
+          "gap": "G-scope"
+        },
+        "grouping": {
+          "status": "suggestion",
+          "value": "明细表可考虑按 region_name 分组，卡片的汇总或选行规则待确认",
+          "gap": "G-grain"
+        },
+        "bindings": {
+          "status": "page-fact",
+          "filters": [],
+          "params": [],
+          "note": "输入页面没有筛选器、参数或查询绑定"
+        },
+        "sorting": {
+          "status": "page-fact",
+          "value": "未显式配置排序"
+        },
+        "pagination": {
+          "status": "page-fact",
+          "value": "summary-table pagination.mode=none"
+        },
+        "completeness": {
+          "status": "unknown",
+          "note": "无分页不证明真实结果完整；合成一行不能证明目标数据仅一行"
+        },
+        "queryIdentifier": {
+          "status": "unknown",
+          "physicalField": "ads_contract.achievement_percent",
+          "note": "物理字段不是已知 DQE 查询标识"
+        },
+        "presentation": {
+          "status": "supported",
+          "scale": "0..100",
+          "format": "percent-1",
+          "example": "42 -> 42.0%",
+          "note": "无需乘以100；不得平均已有比率；分子分母和零分母规则未知",
+          "evidence": {
+            "from": 23,
+            "to": 24,
+            "quote": "返回百分数刻度 0..100，42 表示 42%，不可平均已有比率。\n缺少目标金额口径、零分母规则和 DQE 查询标识；需补充。"
+          }
+        }
+      }
+    },
+    {
+      "field": "region",
+      "uses": [
+        "/sections/0/components/2/props/columns/0/field"
+      ],
+      "conditions": {
+        "currentSource": {
+          "type": "inline",
+          "basis": "input-page.json /dataSources/business-summary/source",
+          "nature": "合成数据，不是查询结果"
+        },
+        "time": {
+          "status": "unknown",
+          "gap": "G-time"
+        },
+        "scope": {
+          "status": "unknown",
+          "gap": "G-scope"
+        },
+        "grouping": {
+          "status": "suggestion",
+          "value": "明细表可考虑按 region_name 分组，卡片的汇总或选行规则待确认",
+          "gap": "G-grain"
+        },
+        "bindings": {
+          "status": "page-fact",
+          "filters": [],
+          "params": [],
+          "note": "输入页面没有筛选器、参数或查询绑定"
+        },
+        "sorting": {
+          "status": "page-fact",
+          "value": "未显式配置排序"
+        },
+        "pagination": {
+          "status": "page-fact",
+          "value": "summary-table pagination.mode=none"
+        },
+        "completeness": {
+          "status": "unknown",
+          "note": "无分页不证明真实结果完整；合成一行不能证明目标数据仅一行"
+        },
+        "queryFieldCandidate": {
+          "status": "documented-candidate",
+          "value": "region_name",
+          "physicalField": "ads_contract.region_name",
+          "evidence": {
+            "from": 28,
+            "to": 29,
+            "quote": "业务名：区域；DQE 维度：region_name；物理字段：ads_contract.region_name。\n区域代码与显示名的映射未提供；不能猜测固定过滤值。"
+          },
+          "note": "仅记录将来 region -> region_name 的映射候选；不写回页面"
+        }
+      }
+    }
+  ],
+  "blockingGapIds": [
+    "G-time",
+    "G-scope",
+    "G-grain",
+    "G-amount-mode",
+    "G-rate-contract",
+    "G-query-context"
+  ]
+}

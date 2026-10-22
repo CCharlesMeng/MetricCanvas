@@ -1,0 +1,25 @@
+import { readFileSync } from 'node:fs';
+import { expect,it } from 'vitest';
+import { parsePage } from '@metriccanvas/page';
+import type { EffectiveQuery } from '@metriccanvas/page/internal';
+import { createFilterState,initialFilterValues,type FilterValues } from '../src/filter-state';
+import { orchestrate,type PageDataSnapshots } from '../src/orchestrator';
+const flush=()=>new Promise(resolve=>setTimeout(resolve,0));
+it('the acceptance page gates selected candidates and downstream sources, leaving unrelated requests live',async()=>{
+  const parsed=parsePage(JSON.parse(readFileSync(new URL('../../../../pages/ioc-header-overview-demo.json',import.meta.url),'utf8')));expect(parsed.ok).toBe(true);if(!parsed.ok)return;
+  const page=parsed.page;
+  const downstream=structuredClone(page.dataSources.bound);
+  if(downstream.source.type!=='query')throw Error('query fixture required');
+  delete downstream.source.query.filterBindings;
+  downstream.source.query.resultBindings=[{source:'bound',field:'scope',target:'dimension',queryField:'input_scope',maxValues:100}];
+  page.dataSources.downstream=downstream;
+  const hiddenTable=structuredClone(page.sections[0].components[0]);hiddenTable.id='hidden-table';hiddenTable.data={main:'downstream'};
+  page.sections.push({id:'hidden-body',components:[hiddenTable]});page.sectionGroups=[{id:'main',label:'主内容',sectionIds:['body']},{id:'other',label:'非当前内容',sectionIds:['hidden-body']}];page.defaultSectionGroup='main';
+  const values=new Map(initialFilterValues(page.filters??[]));values.set('region',{type:'dimension',dimension:'geo-pc-code',values:['R99']});
+  const state=createFilterState(values,page.filters,new Map(),{candidates:true});
+  const calls:EffectiveQuery[]=[];const stream=orchestrate(page,{async fetchData(query){calls.push(query);return {rows:[],totalCount:0};}},state);let snapshots:PageDataSnapshots=new Map();const stop=stream.subscribe(next=>snapshots=next);
+  await flush();expect(calls).toHaveLength(1);expect(snapshots.get('bound')?.status).toBe('loading');expect(snapshots.get('downstream')?.status).toBe('loading');expect(snapshots.get('unbound')?.status).toBe('empty');
+  state.candidate('region','ready',['R99']);await flush();expect(snapshots.get('bound')?.status).toBe('empty');expect(snapshots.get('downstream')?.status).toBe('empty');
+  const before=calls.length;state.candidate('region','error');await flush();expect(calls).toHaveLength(before);expect(snapshots.get('bound')?.status).toBe('loading');expect(snapshots.get('downstream')?.status).toBe('loading');
+  state.commit({type:'restore',values:new Map([...values].filter(([id])=>id!=='region')) as FilterValues});await flush();expect(snapshots.get('bound')?.status).toBe('empty');expect(calls.filter(query=>!(query.body!.dsl_list[0].filter as any)?.time)).toHaveLength(1);stop();
+});

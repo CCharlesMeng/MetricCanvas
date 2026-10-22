@@ -3,7 +3,7 @@
   import { tick, untrack } from 'svelte';
   import type { DateRangeValue } from '../../types';
   import DatePickerIcon from './DatePickerIcon.svelte';
-  import { calendarDays, calendarMonths, calendarQuarters, calendarDisplayValue, calendarInputValue, calendarView, calendarValue, shiftCalendar, moveCalendarValue, calendarDraft, type CalendarPrecision, type CalendarCell } from './calendar';
+  import { calendarBound,calendarSpan,calendarExclusion, calendarDays, calendarMonths, calendarQuarters, calendarDisplayValue, calendarInputValue, calendarView, calendarValue, shiftCalendar, moveCalendarValue, calendarDraft, type CalendarPrecision, type CalendarCell } from './calendar';
 
   interface Props {
     label?: string;
@@ -11,12 +11,14 @@
     range?: boolean;
     required?: boolean;
     min?: string;
+    max?: string;
+    blockedRanges?: readonly DateRangeValue[];
     disableFuture?: boolean;
     disabled?: boolean;
     value: DateRangeValue | null;
     onchange: (value: DateRangeValue | null) => void;
   }
-  let { label, precision, min, disableFuture = true, range = false, required = false, disabled = false, value, onchange }: Props = $props();
+  let { label, precision, min, max:maximum, blockedRanges=[], disableFuture = true, range = false, required = false, disabled = false, value, onchange }: Props = $props();
   const id = $props.id();
   let anchor: HTMLDivElement;
   let panel = $state<HTMLDivElement>();
@@ -34,13 +36,15 @@
   let top = $state(0);
   let clock = $state(new Date());
   const today = $derived(calendarValue(clock, precision));
-  const max = $derived(disableFuture ? today : undefined);
+  const cap=$derived(maximum?calendarBound(maximum,precision,true):undefined);
+  const floor=$derived(min?calendarBound(min,precision):undefined);
+  const max = $derived(cap&&(!disableFuture||cap<today)?cap:disableFuture?today:undefined);
   const boards = $derived(range ? [view, precision === 'month' ? { year: view.year + 1, month: 1 } : shiftCalendar(view, 1)] : [view]);
   const selectedFrom = $derived(start ? (hover && hover < start ? hover : start) : value?.from ?? '');
   const selectedTo = $derived(start ? (hover && hover > start ? hover : start) : value?.to ?? '');
 
   function resetDraft() { from = value?.from ?? ''; to = value?.to ?? ''; start = ''; hover = ''; error = ''; }
-  $effect(() => { value; precision; range; min; disableFuture; untrack(() => { resetDraft(); open = false; }); });
+  $effect(() => { value; precision; range; min; maximum; blockedRanges; disableFuture; untrack(() => { resetDraft(); open = false; }); });
   $effect(() => { if (disabled) open = false; });
 
   function position() {
@@ -77,6 +81,8 @@
     win.addEventListener('resize', position);
     win.visualViewport?.addEventListener('resize', position);
     win.visualViewport?.addEventListener('scroll', position);
+    const inertObserver=new MutationObserver(()=>{if(anchor.closest('[inert]'))open=false;});
+    for(let node:HTMLElement|null=anchor;node;node=node.parentElement) inertObserver.observe(node,{attributes:true,attributeFilter:['inert']});
     const observer = new ResizeObserver(position);
     observer.observe(anchor);
     return () => {
@@ -88,7 +94,7 @@
       win.removeEventListener('resize', position);
       win.visualViewport?.removeEventListener('resize', position);
       win.visualViewport?.removeEventListener('scroll', position);
-      observer.disconnect();
+      observer.disconnect(); inertObserver.disconnect();
     };
   });
 
@@ -98,7 +104,7 @@
     clock = new Date();
     resetDraft(); level = precision;
     const initial = value?.from ?? today;
-    active = min && initial < min ? min : initial;
+    active = floor && initial < floor ? floor : initial;
     if (max && active > max) active = max;
     view = calendarView(active); open = true;
   }
@@ -107,9 +113,9 @@
     if (disabled) return;
     if (range && (precision === 'year' || precision === 'quarter')) { error = '年季选择仅支持单个期间'; return; }
     clock = new Date();
-    const result = calendarDraft(calendarInputValue(from,precision).trim(), calendarInputValue(to,precision).trim(), precision, range, required, min, max);
-    error = result.ok ? '' : result.error;
-    if (result.ok) {
+    const result = calendarDraft(calendarInputValue(from,precision).trim(), calendarInputValue(to,precision).trim(), precision, range, required, floor, max);
+    error = result.ok&&result.value&&min&&calendarSpan(result.value.from,precision).from<calendarBound(min,'date')?'所选完整期间早于日期下限':result.ok&&result.value&&maximum&&calendarSpan(result.value.to,precision).to>calendarBound(maximum,'date',true)?'所选完整期间超过日期上限':result.ok ? result.value&&calendarExclusion(result.value,precision,blockedRanges)?'所选期间包含禁选区间':'' : result.error;
+    if (result.ok&&!error) {
       // Enter commits without blurring. A later native change event for the
       // same applied value must not close a newly opened calendar.
       if (event?.type === 'change' && result.value?.from === value?.from && result.value?.to === value?.to) return;
@@ -125,18 +131,21 @@
       if ((level === 'month' || level === 'quarter') && next.year > Number(max.slice(0, 4))) return false;
       if (level === 'date' && `${String(next.year).padStart(4, '0')}-${String(next.month).padStart(2, '0')}` > max.slice(0, 7)) return false;
     }
-    if (!min) return true;
-    if (level === 'year') return Math.floor(next.year / 10) * 10 + 9 >= Number(min.slice(0, 4));
-    if (level === 'month' || level === 'quarter') return next.year + (range ? 1 : 0) >= Number(min.slice(0, 4));
+    if (!floor) return true;
+    if (level === 'year') return Math.floor(next.year / 10) * 10 + 9 >= Number(floor!.slice(0, 4));
+    if (level === 'month' || level === 'quarter') return next.year + (range ? 1 : 0) >= Number(floor!.slice(0, 4));
     const last = range ? shiftCalendar(next, 1) : next;
-    return `${String(last.year).padStart(4, '0')}-${String(last.month).padStart(2, '0')}` >= min.slice(0, 7);
+    return `${String(last.year).padStart(4, '0')}-${String(last.month).padStart(2, '0')}` >= floor!.slice(0, 7);
   }
   function navigate(months: number) { if (canNavigate(months)) view = shiftCalendar(view, months); }
   function cellDisabled(cell: CalendarCell) {
+    if(level===precision&&min&&calendarSpan(cell.value,precision).from<calendarBound(min,'date'))return true;
+    if(level===precision&&maximum&&calendarSpan(cell.value,precision).to>calendarBound(maximum,'date',true))return true;
+    if(level===precision&&calendarExclusion({from:cell.value,to:cell.value},precision,blockedRanges))return true;
     if (max && (level === 'year' ? cell.label > Number(max.slice(0, 4)) : cell.value > max.slice(0, level === 'month' ? 7 : 10))) return true;
-    if (!min) return false;
-    if (level === 'year') return cell.label < Number(min.slice(0, 4));
-    return cell.value < min.slice(0, level === 'month' ? 7 : 10);
+    if (!floor) return false;
+    if (level === 'year') return cell.label < Number(floor!.slice(0, 4));
+    return cell.value < floor!.slice(0, level === 'month' ? 7 : 10);
   }
   function years() {
     const first = Math.floor(view.year / 10) * 10;
@@ -182,10 +191,10 @@
     const amount = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -columns, ArrowDown: columns }[event.key];
     if (amount !== undefined) {
       event.preventDefault();
-      if (level === 'year') { const year = cell.label + amount; if (year < 1 || year > 9998 || (min && year < Number(min.slice(0, 4))) || (max && year > Number(max.slice(0, 4)))) return; active = String(year).padStart(4,'0'); view = { ...view, year }; }
+      if (level === 'year') { const year = cell.label + amount; if (year < 1 || year > 9998 || (floor && year < Number(floor!.slice(0, 4))) || (max && year > Number(max.slice(0, 4)))) return; active = String(year).padStart(4,'0'); view = { ...view, year }; }
       else {
         const next = moveCalendarValue(cell.value, level, amount);
-        if (min && next < min.slice(0, level === 'month' ? 7 : 10)) return;
+        if (floor && next < floor!.slice(0, level === 'month' ? 7 : 10)) return;
         if (max && next > max.slice(0, level === 'month' ? 7 : 10)) return;
         active = next; view = calendarView(active);
       }
@@ -195,7 +204,7 @@
       event.preventDefault();
       navigate((event.key === 'PageUp' ? -1 : 1) * (level === 'year' ? 120 : level === 'month' || level === 'quarter' || event.shiftKey ? 12 : 1));
       active = level === 'quarter' ? `${view.year}-Q${Math.ceil(view.month/3)}` : level === 'year' ? String(view.year).padStart(4,'0') : `${String(view.year).padStart(4, '0')}-${String(view.month).padStart(2, '0')}${level === 'date' ? '-01' : ''}`;
-      if (min && level !== 'year' && active < min.slice(0, level === 'month' ? 7 : 10)) active = min.slice(0, level === 'month' ? 7 : 10);
+      if (floor && level !== 'year' && active < floor!.slice(0, level === 'month' ? 7 : 10)) active = floor!.slice(0, level === 'month' ? 7 : 10);
       if (max && level !== 'year' && active > max.slice(0, level === 'month' ? 7 : 10)) active = max.slice(0, level === 'month' ? 7 : 10);
       await focusCell(active);
     } else if (event.key === 'Home' || event.key === 'End') {
@@ -367,7 +376,7 @@
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr.end-date.end-date div),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.end-date.end-date div),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr.start-date.end-date div),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.start-date.end-date div) { border-radius:0 999px 999px 0;padding-right:0 }
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr.end-date .cell),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.end-date .cell),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr.start-date .cell),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.start-date .cell) { color:#ffffff;background-color:#1476ff }
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr:not(.in-range) .cell),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td:not(.in-range) .cell) { box-sizing:border-box;width:100%;border-radius:999px }
-  :global(.mc-date-picker .tiny-date-range-picker.tiny-picker-panel) { width:558px }
+  :global(.mc-date-picker .tiny-date-range-picker.tiny-picker-panel) { width:558px;max-width:calc(100vw - 16px) }
   :global(.mc-date-picker .tiny-date-range-picker table) { table-layout:fixed;width:100% }
   :global(.mc-date-picker .tiny-date-range-picker__header) { position:relative;text-align:center;padding:0 16px 12px 16px;line-height:1.5;border-bottom:1px solid #f0f0f0;margin-bottom:12px }
   :global(.mc-date-picker .tiny-date-range-picker__header [class*=arrow-left]) { float:left }
@@ -404,5 +413,11 @@
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table, .tiny-date-table) td button:disabled),
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table, .tiny-date-table) td button:disabled:hover) { color:#c2c2c2; background:transparent; cursor:not-allowed; }
   :global(.mc-date-picker .tiny-picker-panel__icon-btn:disabled .tiny-svg) { fill:#c2c2c2; }
+  @media (max-width:574px) {
+    :global(.mc-date-picker .tiny-date-range-picker__content) {float:none;width:100%;}
+    :global(.mc-date-picker .tiny-date-range-picker__content.is-left),
+    :global(.mc-date-picker .tiny-date-range-picker__content.is-right) {margin:0;padding:0;}
+    :global(.mc-date-picker .tiny-date-range-picker__table) {padding:0 16px;}
+  }
   @media print { .mc-date-picker { display:none; } }
 </style>

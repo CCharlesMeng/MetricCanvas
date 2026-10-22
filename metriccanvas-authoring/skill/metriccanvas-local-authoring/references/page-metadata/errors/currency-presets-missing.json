@@ -1,0 +1,32 @@
+{
+  "case": "currency-presets-missing",
+  "invariant": "currency-range-presets",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "按币种预设必须覆盖全部单位case，且不能与公共presets混用",
+      "paths": [
+        "/filters/1/units"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "units": {
+          "filterId": "currency",
+          "cases": {
+            "RMB": {
+              "…": "共4个键"
+            },
+            "USD": {
+              "…": "共3个键"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

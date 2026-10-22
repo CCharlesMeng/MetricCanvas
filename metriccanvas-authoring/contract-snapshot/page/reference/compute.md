@@ -19,7 +19,7 @@ groupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复
 pivot.columns可指定valueField覆盖算子默认字段。同类别可用于不同度量，重复的有效valueField与类别组合拒绝；新多度量透视的分组键与类别必须唯一。缺阶段产出null，0保持0。有限主结果仅在被结果绑定引用且声明正整数limit、无offset/查询分页时允许左关联；辅助源仍须complete，无分页窗口。导出保持此选择范围并使用本轮原始结果重建明细输入。
 
 
-页面协议 6.32。结构真源为本册[schema.json](schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.49。结构真源为本册[schema.json](schema.json)，SHA256 `f7595ffbdcf2fe8b269b74567933759d72d6ed3067022eb2cc8fc84196ac0f34`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -389,7 +389,7 @@ Schema位置：`#/definitions/computeOperator/oneOf/3/properties/granularity`。
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "day" | 日粒度。 |
+| "day" | YYYY-MM-DD日范围及匹配静态day查询。 |
 | "month" | 月粒度；timePoint使用YYYY-MM。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d707574654f70657261746f722f6f6e654f662f332f70726f706572746965732f666f726d6174"></a>
@@ -1116,11 +1116,11 @@ Schema位置：`#/definitions/computeOperator/oneOf/9/properties/keyFields/items
 ## 联合分支见证（生成）
 
 - `#/definitions/computeOperator/oneOf/0`：[合法完整页面](examples/query-cascade-page.json)，JSON Pointer `#/dataSources/project-efficiency-bottom5/compute/0`。
-- `#/definitions/computeOperator/oneOf/1`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/calc/compute/0`。
+- `#/definitions/computeOperator/oneOf/1`：[合法完整页面](examples/time-binding-branches-page.json)，JSON Pointer `#/dataSources/main/compute/0`。
 - `#/definitions/computeOperator/oneOf/2`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/calc/compute/1`。
-- `#/definitions/computeOperator/oneOf/3`：[合法完整页面](examples/component-table.json)，JSON Pointer `#/dataSources/fill-1/compute/0`。
+- `#/definitions/computeOperator/oneOf/3`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/fill-0/compute/0`。
 - `#/definitions/computeOperator/oneOf/3/properties/range/anyOf/0`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/fill-0/compute/0/range`。
-- `#/definitions/computeOperator/oneOf/3/properties/range/anyOf/1`：[合法完整页面](examples/component-table.json)，JSON Pointer `#/dataSources/fill-1/compute/0/range`。
+- `#/definitions/computeOperator/oneOf/3/properties/range/anyOf/1`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/fill-1/compute/0/range`。
 - `#/definitions/computeOperator/oneOf/3/properties/range/anyOf/2`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/fill-2/compute/0/range`。
 - `#/definitions/computeOperator/oneOf/4`：[合法完整页面](examples/reference-export-compute-branches.json)，JSON Pointer `#/dataSources/calc/compute/2`。
 - `#/definitions/computeOperator/oneOf/5`：[合法完整页面](examples/query-numeric-tolerance.json)，JSON Pointer `#/dataSources/samples/compute/0`。

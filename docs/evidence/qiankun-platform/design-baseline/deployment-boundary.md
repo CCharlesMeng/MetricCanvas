@@ -83,3 +83,9 @@ GitHub 不构建、上传或代管私有 Adapter。组合工具可由内网流�
 现有开发入口中门户专属模拟用户、SDK 地址、证书/域名启动脚本已从活动源码移出，通用开发服务器使用 loopback。既有历史文档和 Git 历史不在本次追溯清理范围，不把本次变更声明为全仓历史脱敏。
 
 本轮代码、类型、产物和浏览器证据见 [独立部署验证](../deployment-boundary.md)。
+
+## 通用页头输入端口（2026-10-22）
+
+部署连接可选传入引擎 `displayInputs` 与 `filterCandidates`（实现 `fetchFilterCandidates(request,{signal})` 的可信对象）。平台组合校验端口并将其合入统一 dataGateway，阅读、精确修订和搭建预览沿既有服务共享；不接受页面 JSON 或 URL 定义程序对象，不内置组织全局变量、GraphQL或生产代码转换。候选请求合并调用方与平台会话取消信号，请求前后核对身份/服务作用域；旧身份的迟到结果拒绝。
+
+组织权限 payload 到完整候选、私有字典与逐源业务语义由外部 Adapter 负责；可用、空、拒绝、未配置不能互相伪装。displayInputs.permissionRevision 改变仍遵守引擎销毁重挂契约，平台不恢复旧上下文选择。此次只完成通用接缝及合成会话取消测试，真实门户/IOC/DQE/Relay尚未验收。

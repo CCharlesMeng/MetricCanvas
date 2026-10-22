@@ -1,5 +1,5 @@
 import type { Page } from '@metriccanvas/page';
-import { validateCalendarTimeRange, validateTimePointValue, type OpenDetailAction, type Row } from '@metriccanvas/page/internal';
+import { dimensionSelectionIssue, projectFieldSelections, validateCalendarTimeRange, validateTimePointValue, type NavigationBinding, type OpenDetailAction, type Row } from '@metriccanvas/page/internal';
 import type { FilterValues, FilterValue } from './filter-state';
 import type { PageParamValues } from './page-params';
 
@@ -9,10 +9,21 @@ export function detailViewInput(page: Page, action: OpenDetailAction, row: Row, 
   const detail = action.openDetail;
   const view = page.detailViews?.find(candidate => candidate.id === detail.view);
   if (!view) throw new Error('详情视图不存在');
+  const scoped = scopedFilterValues(page, view.filters ?? [], detail.bindings ?? {}, row, filters, params);
+  const dataSources = Object.fromEntries(Object.entries(page.dataSources).map(([id, source]) => [id,
+    view.mode === 'query' && source.source.type === 'query'
+      ? { ...source, source: { ...source.source, initial: undefined } } : source]));
+  return { page: projectFieldSelections({ ...page, dataSources, detailViews: undefined, sectionGroups: undefined,
+    defaultSectionGroup: undefined, sectionGroupParam: undefined, sectionAnchors: undefined,
+    sections: [{ id: view.id, components: view.components }] }, scoped), filters: scoped };
+}
+
+/** Shared, fail-closed inputs for controlled row scopes. Never writes global state. */
+export function scopedFilterValues(page: Page, ids: readonly string[], bindings: Record<string, NavigationBinding>, row: Row, filters: FilterValues, params: PageParamValues): FilterValues {
   const scoped = new Map(filters);
-  for (const id of view.filters ?? []) {
+  for (const id of ids) {
     const declaration = page.filters?.find(filter => filter.id === id);
-    const binding = detail.bindings?.[id];
+    const binding = bindings[id];
     if (!binding || !declaration) throw new Error('详情参数不完整');
     let value: unknown;
     if (binding.source === 'row') value = row[binding.field];
@@ -33,6 +44,7 @@ export function detailViewInput(page: Page, action: OpenDetailAction, row: Row, 
     if (declaration.type === 'dimension') {
       const values = Array.isArray(value) ? value : [value];
       if (!values.length || values.some(item => !((typeof item === 'string' && item.length > 0) || (typeof item === 'number' && Number.isFinite(item))))) throw new Error('详情维度参数缺失');
+      if(dimensionSelectionIssue(declaration,values.map(String)))throw new Error('详情维度参数不符合选择规则');
       next = { type: 'dimension', dimension: declaration.dimension, values: values.map(String) };
     } else if (declaration.type === 'timePoint') {
       if (typeof value !== 'string' || validateTimePointValue(value, declaration.granularity)) throw new Error('详情日期参数无效');
@@ -44,10 +56,5 @@ export function detailViewInput(page: Page, action: OpenDetailAction, row: Row, 
     } else throw new Error('详情参数类型不支持');
     scoped.set(id, next);
   }
-  const dataSources = Object.fromEntries(Object.entries(page.dataSources).map(([id, source]) => [id,
-    view.mode === 'query' && source.source.type === 'query'
-      ? { ...source, source: { ...source.source, initial: undefined } } : source]));
-  return { page: { ...page, dataSources, detailViews: undefined, sectionGroups: undefined,
-    defaultSectionGroup: undefined, sectionGroupParam: undefined, sectionAnchors: undefined,
-    sections: [{ id: view.id, components: view.components }] }, filters: scoped };
+  return scoped;
 }

@@ -1,0 +1,259 @@
+{
+  "schemaVersion": "6.39",
+  "id": "time-presets-page",
+  "layout": "dashboard",
+  "dashboardToolbar": "hidden",
+  "meta": {
+    "title": "IOC B4：日期快捷范围",
+    "description": "本地合成验收；不代表真实DQE、CloudIOC、Relay或私有周编码验收。"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "IOC B4：日期快捷范围",
+      "tags": [
+        {
+          "id": "demo",
+          "text": "合成验收",
+          "tone": "info"
+        }
+      ],
+      "facts": [
+        {
+          "id": "period",
+          "kind": "queryPeriod",
+          "label": "已应用期间",
+          "value": {
+            "filter": "period",
+            "format": "period"
+          }
+        }
+      ]
+    },
+    "filterIds": [
+      "period"
+    ],
+    "presentation": {
+      "collapse": "firstRow"
+    }
+  },
+  "filters": [
+    {
+      "id": "period",
+      "type": "timeRange",
+      "precision": "date",
+      "label": "日期范围",
+      "required": true,
+      "default": {
+        "from": "2026-10-01",
+        "to": "2026-10-07"
+      },
+      "min": "2025-01-01",
+      "max": "2026-10-19",
+      "blockedRanges": [
+        {
+          "from": "2026-09-15",
+          "to": "2026-09-16"
+        }
+      ],
+      "presets": [
+        {
+          "id": "last7",
+          "label": "近7天（含今天）",
+          "range": {
+            "unit": "day",
+            "range": {
+              "kind": "lastN",
+              "n": 7
+            },
+            "includeCurrent": true
+          }
+        },
+        {
+          "id": "complete",
+          "label": "上个完整月",
+          "range": {
+            "unit": "month",
+            "range": {
+              "kind": "previousComplete"
+            },
+            "includeCurrent": false
+          }
+        },
+        {
+          "id": "anchored",
+          "label": "锚点近3天",
+          "range": {
+            "unit": "day",
+            "range": {
+              "kind": "lastN",
+              "n": 3
+            },
+            "includeCurrent": true,
+            "anchor": "2026-10-07"
+          }
+        }
+      ]
+    }
+  ],
+  "dataSources": {
+    "bound": {
+      "fields": {
+        "scope": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "ioc_header_scope"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "ioc_header_count"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "ioc_header_scope"
+                ],
+                "output_metrics": [
+                  "ioc_header_count"
+                ],
+                "filter": {
+                  "dims": [],
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {
+                  "limit": 10,
+                  "offset": 0
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "unbound": {
+      "fields": {
+        "scope": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "ioc_header_scope"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "ioc_header_count"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "ioc_header_scope"
+                ],
+                "output_metrics": [
+                  "ioc_header_count"
+                ],
+                "filter": {
+                  "dims": []
+                },
+                "order": {
+                  "limit": 10,
+                  "offset": 0
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "body",
+      "container": "card",
+      "components": [
+        {
+          "id": "bound-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "bound"
+          },
+          "props": {
+            "title": "已绑定条件",
+            "columns": [
+              {
+                "field": "scope",
+                "title": "服务收到的条件（本地合成）"
+              },
+              {
+                "field": "count",
+                "title": "合成响应标识"
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "本地页头验收"
+              }
+            }
+          }
+        },
+        {
+          "id": "unbound-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "unbound"
+          },
+          "props": {
+            "title": "无关查询（不随筛选刷新）",
+            "columns": [
+              {
+                "field": "scope",
+                "title": "服务收到的条件（本地合成）"
+              },
+              {
+                "field": "count",
+                "title": "合成响应标识"
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "本地页头验收"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

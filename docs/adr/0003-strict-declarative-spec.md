@@ -1,6 +1,6 @@
 ---
 status: accepted
-revised-by: [0014]
+revised-by: [0014, 0110]
 ---
 
 # 页面规格采用严格声明式,禁止表达式与脚本

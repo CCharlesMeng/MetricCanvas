@@ -45,7 +45,7 @@ it('月份与代表处进入12个数据源，等价查询复用；跨年、空�
       ]) {
         const source = loaded.dataSources[id].source;
         if (source.type !== 'query') throw new Error('expected query');
-        expect(source.query.body.dsl_list[0].filter).toMatchObject({time: {start, end}});
+        expect(source.query.body!.dsl_list[0].filter).toMatchObject({time: {start, end}});
         expect(times).toContainEqual(expect.objectContaining({start, end}));
       }
       for (const item of items) expect(item.filter).toMatchObject({dims:[{dim_name:'代表处',dim_value_list:['上海代表处']}]});

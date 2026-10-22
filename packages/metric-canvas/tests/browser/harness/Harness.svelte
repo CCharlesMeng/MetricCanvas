@@ -2,12 +2,13 @@
   import { RuntimeView } from '@metriccanvas/engine/ui';
   import { MetricCanvas, normalizeAuthoringDropTarget, type AuthoringComponentLocator, type AuthoringDraftSection, type AuthoringIntent } from '@metriccanvas/metric-canvas';
   import { document, gateway, validDocument } from './document';
+  import metricExample from '../../../../../pages/metric-card-equation.json';
 
   const params = new URLSearchParams(location.search);
   const layout = params.get('layout') === 'dashboard' ? 'dashboard' : 'report';
   const { layout: _defaultLayout, ...baseContent } = document;
   const content = { ...baseContent, sections: baseContent.sections.map(section => ({ ...section, container: params.get('container') === 'panel' ? 'panel' : section.container })) };
-  const initial = params.get('schemaVersion') === '6.0'
+  const initial = params.get('scenario') === 'metric-before' ? metricExample : params.get('schemaVersion') === '6.0'
     ? { ...content, schemaVersion: '6.5', layoutForm: layout }
     : { ...content, schemaVersion: '6.5', layout };
   let current = $state.raw(validDocument(initial));

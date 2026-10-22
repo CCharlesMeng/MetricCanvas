@@ -1,20 +1,27 @@
+import { filterGroupComponentZ } from './filter-group';
+import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import { componentIdZ, componentLayoutZ, textValueZ } from '../primitives';
 import { componentCatalogRegistry } from '../registry';
 import { metricCardComponentZ } from './metric-card';
-import { pieChartComponentZ } from './charts';
+import { barChartComponentZ, lineChartComponentZ, pieChartComponentZ } from './charts';
+import { mapChartComponentZ } from './map-chart';
 import { gaugeComponentZ } from './gauge';
 import { keyValuePanelComponentZ } from './key-value-panel';
 import { categoryBreakdownComponentZ } from './category-breakdown';
 
 /**
- * 组合卡准入的子组件白名单(ADR-0053)。首批五种,不多给一种:两个设计源
- * 里的卡内构成用它们就能表达。加成员是闭集新增成员、属纯增量;从「任意
+ * 组合卡准入的子组件白名单(ADR-0053)。独立筛选迁移补充 filterGroup 与
+ * 柱、线、地图，使既有筛选和图表仍可成组放置。加成员是闭集新增成员；从「任意
  * 叶子」收回白名单则是破坏性变更,所以起点是白名单而不是「任意叶子」。
  *
  * 这个数组是白名单的唯一真源:判别联合与校验器的可读报错都从它派生。
  */
 const compositeCardChildSchemas = [
+  filterGroupComponentZ,
+  barChartComponentZ,
+  lineChartComponentZ,
+  mapChartComponentZ,
   metricCardComponentZ,
   pieChartComponentZ,
   gaugeComponentZ,
@@ -47,6 +54,7 @@ export const compositeCardChildZ = z
 export const compositeCardComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('compositeCard'),
     layout: componentLayoutZ,
     props: z

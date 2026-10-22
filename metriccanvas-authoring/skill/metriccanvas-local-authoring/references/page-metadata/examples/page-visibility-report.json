@@ -1,0 +1,336 @@
+{
+  "schemaVersion": "6.49",
+  "id": "page-visibility-report",
+  "layout": "report",
+  "meta": {
+    "title": "条件显隐导出验收"
+  },
+  "filters": [
+    {
+      "id": "organization",
+      "type": "dimension",
+      "dimension": "world",
+      "label": "组织层级",
+      "hierarchy": [
+        {
+          "id": "global",
+          "dimension": "world",
+          "label": "全球"
+        },
+        {
+          "id": "department",
+          "dimension": "department",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "office",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "global"
+    }
+  ],
+  "dataSources": {
+    "rows": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "kind": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "id": "d",
+            "name": "地区部规范",
+            "kind": "department",
+            "amount": 100
+          },
+          {
+            "id": "a",
+            "name": "代表处 A",
+            "kind": "office",
+            "amount": 60
+          },
+          {
+            "id": "b",
+            "name": "代表处 B",
+            "kind": "office",
+            "amount": 40
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "report-header",
+      "components": [
+        {
+          "id": "export-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "条件显隐导出验收",
+            "exportButtons": [
+              {
+                "format": "pdf",
+                "label": "下载条件PDF",
+                "filename": "条件显隐报告",
+                "scale": 2
+              },
+              {
+                "format": "png",
+                "label": "下载条件PNG",
+                "filename": "条件显隐报告",
+                "scale": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "department-norms",
+      "title": "地区部行权规范情况",
+      "container": "card",
+      "visibleWhen": {
+        "filter": "organization",
+        "part": "level",
+        "op": "ne",
+        "value": "department"
+      },
+      "components": [
+        {
+          "id": "department-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rows"
+          },
+          "props": {
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "name",
+                "title": "名称"
+              },
+              {
+                "field": "amount",
+                "title": "金额"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "retained-container",
+      "title": "保留的父容器",
+      "container": "card",
+      "components": [
+        {
+          "id": "conditional-child",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "此子项只在非地区部层级显示。"
+          },
+          "visibleWhen": {
+            "filter": "organization",
+            "part": "level",
+            "op": "ne",
+            "value": "department"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rows-and-tabs",
+      "container": "card",
+      "title": "行投影、Tab 与文字",
+      "components": [
+        {
+          "id": "projected-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rows"
+          },
+          "props": {
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "name",
+                "title": "名称"
+              },
+              {
+                "field": "amount",
+                "title": "金额"
+              }
+            ],
+            "rowVisibleWhen": {
+              "any": [
+                {
+                  "row": "kind",
+                  "op": "ne",
+                  "value": "department"
+                },
+                {
+                  "filter": "organization",
+                  "part": "level",
+                  "op": "ne",
+                  "value": "department"
+                }
+              ]
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "条件行结果"
+              }
+            }
+          }
+        },
+        {
+          "id": "conditional-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "parts": [
+              {
+                "id": "base",
+                "text": "当前展示："
+              },
+              {
+                "id": "dept",
+                "text": "地区部，",
+                "visibleWhen": {
+                  "filter": "organization",
+                  "part": "level",
+                  "op": "eq",
+                  "value": "department"
+                }
+              },
+              {
+                "id": "other",
+                "text": "其他层级，",
+                "visibleWhen": {
+                  "filter": "organization",
+                  "part": "level",
+                  "op": "ne",
+                  "value": "department"
+                }
+              },
+              {
+                "id": "end",
+                "text": "文字使用同一条件求值。"
+              }
+            ]
+          }
+        },
+        {
+          "id": "tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "defaultTab": "department",
+            "initialTabUrlParam": "view",
+            "tabs": [
+              {
+                "id": "department",
+                "label": "地区部",
+                "visibleWhen": {
+                  "filter": "organization",
+                  "part": "level",
+                  "op": "ne",
+                  "value": "department"
+                },
+                "component": {
+                  "id": "tab-department",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "rows"
+                  },
+                  "props": {
+                    "rowKey": "id",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "title": "名称"
+                      },
+                      {
+                        "field": "amount",
+                        "title": "金额"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "office",
+                "label": "代表处",
+                "component": {
+                  "id": "tab-office",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "rows"
+                  },
+                  "props": {
+                    "rowKey": "id",
+                    "columns": [
+                      {
+                        "field": "name",
+                        "title": "名称"
+                      },
+                      {
+                        "field": "amount",
+                        "title": "金额"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

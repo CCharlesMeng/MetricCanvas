@@ -1,3 +1,4 @@
+import {ordinaryQuery,timeQueryLeaves} from './time-mode';
 import type { TypedError } from './errors';
 import { isQueryInputDeclaration, pageParamDeclarations, type GroupedPageParams, type PageParamDeclaration, type PageParamValue } from './page-param';
 import { bindingQueryFields, type PageQuery } from './query';
@@ -19,11 +20,12 @@ export function queryParamReferenceErrors(document: unknown): TypedError[] {
   const errors: TypedError[] = [];
   const error = (path: string, message: string) => errors.push({type: 'SCHEMA_ERROR', path, message});
   for (const [sourceId, source] of Object.entries(page.dataSources)) {
-    const query = source.source.query;
-    if (source.source.type !== 'query' || !query) continue;
+    const definition = source.source.query;
+    if (source.source.type !== 'query' || !definition) continue;
+    for(const query of timeQueryLeaves(definition)){
     const root = `/dataSources/${pointer(sourceId)}/source/query/body`;
     const allowed = new Set<string>();
-    const filter = record(query.body.dsl_list[0].filter);
+    const filter = record(ordinaryQuery(query).body.dsl_list[0].filter);
     const filterPath = `${root}/dsl_list/0/filter`;
     const dims = Array.isArray(filter?.dims) ? filter.dims : [];
     dims.forEach((raw, index) => {
@@ -72,11 +74,13 @@ export function queryParamReferenceErrors(document: unknown): TypedError[] {
     if (allowed.size && Object.keys(query.paramBindings ?? {}).length) error(root, '同一查询不得混用原位引用和paramBindings');
     if (allowed.size && (!page.params || Array.isArray(page.params))) error(root, '原位引用需要 6.6 分组参数声明');
   }
+  }
   return errors;
 }
 
 export function hasQueryParamReferences(query: PageQuery): boolean {
-  const filter = record(query.body.dsl_list[0].filter);
+  if(query.timeModes)return timeQueryLeaves(query).some(hasQueryParamReferences);
+  const filter = record(ordinaryQuery(query).body.dsl_list[0].filter);
   return typeof record(filter?.time)?.param === 'string' ||
     (Array.isArray(filter?.dims) && filter.dims.some(d => !!record(record(d)?.dim_value_list)?.param));
 }
@@ -88,7 +92,8 @@ function isRange(value: unknown): value is { start: string; end: string } {
 
 /** 调用前须通过页面校验；只改查询副本，查询粒度、聚合设置和指标保持原样。 */
 export function resolveQueryParamReferences(query: PageQuery, values: ReadonlyMap<string, PageParamValue>): void {
-  const filter = record(query.body.dsl_list[0].filter);
+  if(query.timeModes){for(const leaf of timeQueryLeaves(query))resolveQueryParamReferences(leaf,values);return;}
+  const filter = record(ordinaryQuery(query).body.dsl_list[0].filter);
   if (!filter) return;
   if (Array.isArray(filter.dims)) for (const raw of filter.dims) {
     const dim = record(raw), ref = record(dim?.dim_value_list);

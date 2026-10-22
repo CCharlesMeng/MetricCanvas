@@ -12,7 +12,7 @@ export function initialSectionGroup(page: Page, params: PageParamValues): string
 export function selectedSectionGroup(page: Page, selected?: string): string | undefined {
   const groups = page.sectionGroups ?? [];
   return groups.find(group => group.id === selected)?.id
-    ?? page.defaultSectionGroup ?? groups[0]?.id;
+    ?? groups.find(group=>group.id===page.defaultSectionGroup)?.id ?? groups[0]?.id;
 }
 
 export function sectionGroupFor(page: Page, sectionId: string): string | undefined {

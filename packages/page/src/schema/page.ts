@@ -1,4 +1,6 @@
+import { visibilityShape } from './condition';
 import { z } from 'zod';
+import { iocHeaderZ } from './ioc-header';
 import { supportedVersions } from '../version';
 import { idZ, nonEmptyTextValueZ, pageParamZ, groupedPageParamsZ } from './primitives';
 import { componentZ } from './component';
@@ -43,6 +45,7 @@ export const sectionColumnTracksZ = z
 export const sectionZ = z
   .object({
     id: idZ,
+    ...visibilityShape,
     title: nonEmptyTextValueZ.optional(),
     container: sectionContainerZ.optional(),
     columnTracks: sectionColumnTracksZ.optional(),
@@ -82,7 +85,8 @@ export const dashboardToolbarZ = z
   ])
   .meta({
     id: 'dashboardToolbar',
-    description: 'dashboard 页面统一工具栏显隐或紧凑只读呈现；缺省 visible'
+    description: '旧页面兼容字段；统一由 IocHeader 呈现，新页面配置 iocHeader',
+    deprecated:true
   });
 
 /**
@@ -104,6 +108,8 @@ export const pageDocumentSchemaZ = z
     layout: pageLayoutFormZ.optional(),
     layoutForm: pageLayoutFormZ.optional(),
     dashboardToolbar: dashboardToolbarZ.optional(),
+    iocHeader: iocHeaderZ.optional(),
+    strictURLInputs: z.literal(true).optional(),
     params: z.union([z.array(pageParamZ).min(1), groupedPageParamsZ]).optional(),
     dataSources: z.record(idZ, dataSourceDocumentZ),
     filters: z.array(filterDeclarationZ).optional(),
@@ -113,7 +119,7 @@ export const pageDocumentSchemaZ = z
       filters: z.array(idZ).min(1).meta({ uniqueItems: true }).optional(),
       components: z.array(componentZ).min(1)
     }).strict()).min(1).optional(),
-    sectionGroups: z.array(z.object({ id: idZ, label: z.string().min(1), sectionIds: z.array(idZ).min(1).meta({ uniqueItems: true }) }).strict()).min(1).optional(),
+    sectionGroups: z.array(z.object({ id: idZ, ...visibilityShape, label: z.string().min(1), sectionIds: z.array(idZ).min(1).meta({ uniqueItems: true }) }).strict()).min(1).optional(),
     defaultSectionGroup: idZ.optional(),
     sectionGroupParam: idZ.optional(),
     sectionAnchors: z.array(z.object({ sectionId: idZ, label: z.string().min(1) }).strict()).min(1).optional(),

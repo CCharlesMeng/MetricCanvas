@@ -1,0 +1,75 @@
+[WebServer] (node:13767) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:13768) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:13774) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chrome] › tests/browser/components.spec.ts:26:2 › root false › scrolled host keeps the select popover in viewport; shadow=false (5.6s)
+(node:13841) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [chrome] › tests/browser/components.spec.ts:26:2 › root true › scrolled host keeps the select popover in viewport; shadow=true (5.6s)
+
+
+  1) [chrome] › tests/browser/components.spec.ts:26:2 › root false › scrolled host keeps the select popover in viewport; shadow=false 
+
+    Error: expect(locator).toHaveCSS(expected) failed
+
+    Locator:  getByRole('dialog', { name: '选择候选' })
+    Expected: "fixed"
+    Received: "absolute"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCSS" with timeout 5000ms
+      - waiting for getByRole('dialog', { name: '选择候选' })
+        14 × locator resolved to <div role="dialog" tabindex="-1" popover="auto" aria-label="选择候选" class="mc-ui-select-dropdown selection-popup svelte-bsmqej">…</div>
+           - unexpected value "absolute"
+
+
+      31 |   await expect.poll(()=>page.evaluate(()=>window.scrollY)).toBeGreaterThan(0);
+      32 |   const popup=page.getByRole('dialog',{name:'选择候选'});
+    > 33 |   await expect(popup).toHaveCSS('position','fixed');
+         |                       ^
+      34 |   await expect.poll(async()=>{const r=await popup.boundingBox();return !!r&&r.x>=7&&r.x+r.width<=383&&r.y>=7&&r.y+r.height<=353;}).toBe(true);
+      35 |   await page.keyboard.press('Escape');await expect(trigger).toBeFocused();
+      36 |  });
+        at /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/ui/tests/browser/components.spec.ts:33:23
+
+    Error Context: test-results/components-root-false-scro-386ef-er-in-viewport-shadow-false-chrome/error-context.md
+
+  2) [chrome] › tests/browser/components.spec.ts:26:2 › root true › scrolled host keeps the select popover in viewport; shadow=true 
+
+    Error: expect(locator).toHaveCSS(expected) failed
+
+    Locator:  getByRole('dialog', { name: '选择候选' })
+    Expected: "fixed"
+    Received: "absolute"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCSS" with timeout 5000ms
+      - waiting for getByRole('dialog', { name: '选择候选' })
+        14 × locator resolved to <div role="dialog" tabindex="-1" popover="auto" aria-label="选择候选" class="mc-ui-select-dropdown selection-popup svelte-bsmqej">…</div>
+           - unexpected value "absolute"
+
+
+      31 |   await expect.poll(()=>page.evaluate(()=>window.scrollY)).toBeGreaterThan(0);
+      32 |   const popup=page.getByRole('dialog',{name:'选择候选'});
+    > 33 |   await expect(popup).toHaveCSS('position','fixed');
+         |                       ^
+      34 |   await expect.poll(async()=>{const r=await popup.boundingBox();return !!r&&r.x>=7&&r.x+r.width<=383&&r.y>=7&&r.y+r.height<=353;}).toBe(true);
+      35 |   await page.keyboard.press('Escape');await expect(trigger).toBeFocused();
+      36 |  });
+        at /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/ui/tests/browser/components.spec.ts:33:23
+
+    Error Context: test-results/components-root-true-scrol-2fa77-ver-in-viewport-shadow-true-chrome/error-context.md
+
+  2 failed
+    [chrome] › tests/browser/components.spec.ts:26:2 › root false › scrolled host keeps the select popover in viewport; shadow=false 
+    [chrome] › tests/browser/components.spec.ts:26:2 › root true › scrolled host keeps the select popover in viewport; shadow=true 
+undefined
+/Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/ui:
+[ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL] Command failed with exit code 1: playwright test '--project=chrome' -g 'scrolled host'

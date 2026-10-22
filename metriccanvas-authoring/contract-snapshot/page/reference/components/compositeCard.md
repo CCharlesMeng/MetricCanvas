@@ -12,8 +12,12 @@ Dashboard中放入白底Tab或白底分区时，组合卡复用指标卡的1px�
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
+6.35条件呈现及相关限制见[条件显隐](../conditions.md)；子项全部隐藏不自动收起父容器。
 
-页面协议 6.32。结构真源为本册[schema.json](../schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
+组合卡允许独立 filterGroup 及柱、线、饼、地图四类图表作为叶子组件，用于筛选与内容的显式组合；仍禁止组合卡递归和任意子组件。筛选作用范围由查询绑定决定，卡内位置不自动限定数据范围。
+
+
+页面协议 6.49。结构真源为本册[schema.json](../schema.json)，SHA256 `f7595ffbdcf2fe8b269b74567933759d72d6ed3067022eb2cc8fc84196ac0f34`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -36,6 +40,26 @@ Schema位置：`#/definitions/compositeCardComponent/properties/id`。目标：[
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/componentId | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f7369746543617264436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@compositeCardComponent.visibleWhen`
+
+Schema位置：`#/definitions/compositeCardComponent/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f7369746543617264436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@compositeCardComponent.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/compositeCardComponent/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d706f7369746543617264436f6d706f6e656e742f70726f706572746965732f74797065"></a>
 
@@ -167,47 +191,87 @@ Schema位置：`#/definitions/compositeCardChild`。
 
 ### `@compositeCardChild · oneOf[0]`
 
-Schema位置：`#/definitions/compositeCardChild/oneOf/0`。目标：[#/definitions/metricCardComponent](../components/metricCard.md#schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e74)。
+Schema位置：`#/definitions/compositeCardChild/oneOf/0`。目标：[#/definitions/filterGroupComponent](../components/filterGroup.md#schema-232f646566696e6974696f6e732f66696c74657247726f7570436f6d706f6e656e74)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| 引用 #/definitions/metricCardComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| 引用 #/definitions/filterGroupComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f31"></a>
 
 ### `@compositeCardChild · oneOf[1]`
 
-Schema位置：`#/definitions/compositeCardChild/oneOf/1`。目标：[#/definitions/pieChartComponent](../components/pieChart.md#schema-232f646566696e6974696f6e732f7069654368617274436f6d706f6e656e74)。
+Schema位置：`#/definitions/compositeCardChild/oneOf/1`。目标：[#/definitions/barChartComponent](../components/barChart.md#schema-232f646566696e6974696f6e732f6261724368617274436f6d706f6e656e74)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| 引用 #/definitions/pieChartComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| 引用 #/definitions/barChartComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f32"></a>
 
 ### `@compositeCardChild · oneOf[2]`
 
-Schema位置：`#/definitions/compositeCardChild/oneOf/2`。目标：[#/definitions/gaugeComponent](../components/gauge.md#schema-232f646566696e6974696f6e732f6761756765436f6d706f6e656e74)。
+Schema位置：`#/definitions/compositeCardChild/oneOf/2`。目标：[#/definitions/lineChartComponent](../components/lineChart.md#schema-232f646566696e6974696f6e732f6c696e654368617274436f6d706f6e656e74)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| 引用 #/definitions/gaugeComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| 引用 #/definitions/lineChartComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f33"></a>
 
 ### `@compositeCardChild · oneOf[3]`
 
-Schema位置：`#/definitions/compositeCardChild/oneOf/3`。目标：[#/definitions/keyValuePanelComponent](../components/keyValuePanel.md#schema-232f646566696e6974696f6e732f6b657956616c756550616e656c436f6d706f6e656e74)。
+Schema位置：`#/definitions/compositeCardChild/oneOf/3`。目标：[#/definitions/mapChartComponent](../components/mapChart.md#schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e74)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| 引用 #/definitions/keyValuePanelComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| 引用 #/definitions/mapChartComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f34"></a>
 
 ### `@compositeCardChild · oneOf[4]`
 
-Schema位置：`#/definitions/compositeCardChild/oneOf/4`。目标：[#/definitions/categoryBreakdownComponent](../components/categoryBreakdown.md#schema-232f646566696e6974696f6e732f63617465676f7279427265616b646f776e436f6d706f6e656e74)。
+Schema位置：`#/definitions/compositeCardChild/oneOf/4`。目标：[#/definitions/metricCardComponent](../components/metricCard.md#schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e74)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/metricCardComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f35"></a>
+
+### `@compositeCardChild · oneOf[5]`
+
+Schema位置：`#/definitions/compositeCardChild/oneOf/5`。目标：[#/definitions/pieChartComponent](../components/pieChart.md#schema-232f646566696e6974696f6e732f7069654368617274436f6d706f6e656e74)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/pieChartComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f36"></a>
+
+### `@compositeCardChild · oneOf[6]`
+
+Schema位置：`#/definitions/compositeCardChild/oneOf/6`。目标：[#/definitions/gaugeComponent](../components/gauge.md#schema-232f646566696e6974696f6e732f6761756765436f6d706f6e656e74)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/gaugeComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f37"></a>
+
+### `@compositeCardChild · oneOf[7]`
+
+Schema位置：`#/definitions/compositeCardChild/oneOf/7`。目标：[#/definitions/keyValuePanelComponent](../components/keyValuePanel.md#schema-232f646566696e6974696f6e732f6b657956616c756550616e656c436f6d706f6e656e74)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/keyValuePanelComponent | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f73697465436172644368696c642f6f6e654f662f38"></a>
+
+### `@compositeCardChild · oneOf[8]`
+
+Schema位置：`#/definitions/compositeCardChild/oneOf/8`。目标：[#/definitions/categoryBreakdownComponent](../components/categoryBreakdown.md#schema-232f646566696e6974696f6e732f63617465676f7279427265616b646f776e436f6d706f6e656e74)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
@@ -266,8 +330,12 @@ Schema位置：`#/definitions/compositeCardChild/oneOf/4`。目标：[#/definiti
 
 ## 联合分支见证（生成）
 
-- `#/definitions/compositeCardChild/oneOf/0`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
-- `#/definitions/compositeCardChild/oneOf/1`：[合法完整页面](../examples/composite-page.json)，JSON Pointer `#/sections/0/components/1/props/components/1`。
-- `#/definitions/compositeCardChild/oneOf/2`：[合法完整页面](../examples/composite-page.json)，JSON Pointer `#/sections/0/components/1/props/components/2`。
-- `#/definitions/compositeCardChild/oneOf/3`：[合法完整页面](../examples/composite-page.json)，JSON Pointer `#/sections/0/components/1/props/components/3`。
-- `#/definitions/compositeCardChild/oneOf/4`：[合法完整页面](../examples/composite-page.json)，JSON Pointer `#/sections/0/components/1/props/components/4`。
+- `#/definitions/compositeCardChild/oneOf/0`：[合法完整页面](../examples/chart-local-filter-page.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
+- `#/definitions/compositeCardChild/oneOf/1`：[合法完整页面](../examples/chart-local-filter-page.json)，JSON Pointer `#/sections/0/components/0/props/components/1`。
+- `#/definitions/compositeCardChild/oneOf/2`：[合法完整页面](../examples/chart-local-filter-page.json)，JSON Pointer `#/sections/0/components/1/props/components/1`。
+- `#/definitions/compositeCardChild/oneOf/3`：[合法完整页面](../examples/chart-local-filter-page.json)，JSON Pointer `#/sections/0/components/3/props/components/1`。
+- `#/definitions/compositeCardChild/oneOf/4`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
+- `#/definitions/compositeCardChild/oneOf/5`：[合法完整页面](../examples/chart-local-filter-page.json)，JSON Pointer `#/sections/0/components/2/props/components/1`。
+- `#/definitions/compositeCardChild/oneOf/6`：[合法完整页面](../examples/composite-page.json)，JSON Pointer `#/sections/0/components/1/props/components/2`。
+- `#/definitions/compositeCardChild/oneOf/7`：[合法完整页面](../examples/composite-page.json)，JSON Pointer `#/sections/0/components/1/props/components/3`。
+- `#/definitions/compositeCardChild/oneOf/8`：[合法完整页面](../examples/composite-page.json)，JSON Pointer `#/sections/0/components/1/props/components/4`。

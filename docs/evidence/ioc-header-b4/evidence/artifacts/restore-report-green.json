@@ -1,0 +1,147 @@
+{
+  "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+  "entries": [
+    {
+      "actual": 0,
+      "rule_id": "R6-41-header-overflow",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R6-41-controls-overlap",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R6-41-controls-clip",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R6-41-popup-overflow",
+      "status": "green"
+    },
+    {
+      "actual": 0,
+      "rule_id": "R6-41-popup-clip",
+      "status": "green"
+    }
+  ],
+  "observed": {
+    "matrix": [
+      {
+        "name": "time-modes-1440",
+        "route": "/pages/ioc-header-time-modes-demo",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        }
+      },
+      {
+        "name": "time-modes-1024",
+        "route": "/pages/ioc-header-time-modes-demo",
+        "viewport": {
+          "height": 900,
+          "width": 1024
+        }
+      },
+      {
+        "name": "time-modes-390",
+        "route": "/pages/ioc-header-time-modes-demo",
+        "viewport": {
+          "height": 900,
+          "width": 390
+        }
+      },
+      {
+        "name": "time-presets-1440",
+        "route": "/pages/ioc-header-time-presets-demo",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        }
+      },
+      {
+        "name": "time-presets-1024",
+        "route": "/pages/ioc-header-time-presets-demo",
+        "viewport": {
+          "height": 900,
+          "width": 1024
+        }
+      },
+      {
+        "name": "time-presets-390",
+        "route": "/pages/ioc-header-time-presets-demo",
+        "viewport": {
+          "height": 900,
+          "width": 390
+        }
+      },
+      {
+        "name": "availability-1440",
+        "route": "/pages/ioc-header-availability-demo",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        }
+      },
+      {
+        "name": "availability-1024",
+        "route": "/pages/ioc-header-availability-demo",
+        "viewport": {
+          "height": 900,
+          "width": 1024
+        }
+      },
+      {
+        "name": "availability-390",
+        "route": "/pages/ioc-header-availability-demo",
+        "viewport": {
+          "height": 900,
+          "width": 390
+        }
+      },
+      {
+        "name": "calendar-window-1440",
+        "route": "/pages/ioc-header-calendar-window-demo?period.mode=month&period.from=2026-01&period.to=2026-03&months=2026-01&months=2026-03&model=A&model=B",
+        "viewport": {
+          "height": 900,
+          "width": 1440
+        }
+      },
+      {
+        "name": "calendar-window-1024",
+        "route": "/pages/ioc-header-calendar-window-demo?period.mode=month&period.from=2026-01&period.to=2026-03&months=2026-01&months=2026-03&model=A&model=B",
+        "viewport": {
+          "height": 900,
+          "width": 1024
+        }
+      },
+      {
+        "name": "calendar-window-390",
+        "route": "/pages/ioc-header-calendar-window-demo?period.mode=month&period.from=2026-01&period.to=2026-03&months=2026-01&months=2026-03&model=A&model=B",
+        "viewport": {
+          "height": 900,
+          "width": 390
+        }
+      },
+      {
+        "name": "shadow-390",
+        "route": "/pages/ioc-header-time-modes-demo",
+        "viewport": {
+          "height": 900,
+          "width": 390
+        }
+      }
+    ]
+  },
+  "overall": "green",
+  "phase": "green",
+  "schema_version": 3,
+  "summary": {
+    "green": 5,
+    "red": 0,
+    "total": 5,
+    "yellow": 0
+  }
+}

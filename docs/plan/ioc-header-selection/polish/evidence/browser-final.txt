@@ -1,0 +1,40 @@
+[WebServer] (node:41632) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:41633) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 29 tests using 1 worker
+
+(node:41639) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chrome] › tests/browser/components.spec.ts:4:2 › root false › controlled forms commit the last input without blur; shadow=false (349ms)
+  ✓   2 [chrome] › tests/browser/components.spec.ts:5:2 › root false › select and menu keyboard, disabled item and original root; shadow=false (280ms)
+  ✓   3 [chrome] › tests/browser/components.spec.ts:6:2 › root false › controlled grid does not sort or slice rows; shadow=false (237ms)
+  ✓   4 [chrome] › tests/browser/components.spec.ts:7:2 › root false › styles follow the mount root and keyboard focus is visible; shadow=false (150ms)
+  ✓   5 [chrome] › tests/browser/components.spec.ts:8:2 › root false › dialog Escape restores focus; shadow=false (217ms)
+  ✓   6 [chrome] › tests/browser/components.spec.ts:9:2 › root false › dialog mouse close remains inside the desktop dialog; shadow=false (254ms)
+  ✓   7 [chrome] › tests/browser/components.spec.ts:10:2 › root false › year and quarter select and preserve keyboard semantics; shadow=false (366ms)
+  ✓   8 [chrome] › tests/browser/components.spec.ts:11:62 › root false › date date valid manual input, narrow panel and no page errors; shadow=false (175ms)
+  ✓   9 [chrome] › tests/browser/components.spec.ts:11:62 › root false › date month valid manual input, narrow panel and no page errors; shadow=false (192ms)
+  ✓  10 [chrome] › tests/browser/components.spec.ts:11:62 › root false › date daterange valid manual input, narrow panel and no page errors; shadow=false (192ms)
+  ✓  11 [chrome] › tests/browser/components.spec.ts:11:62 › root false › date monthrange valid manual input, narrow panel and no page errors; shadow=false (178ms)
+  ✓  12 [chrome] › tests/browser/components.spec.ts:12:2 › root false › short viewport popovers stay visible and release focus; shadow=false (594ms)
+  ✓  13 [chrome] › tests/browser/components.spec.ts:4:2 › root true › controlled forms commit the last input without blur; shadow=true (222ms)
+  ✓  14 [chrome] › tests/browser/components.spec.ts:5:2 › root true › select and menu keyboard, disabled item and original root; shadow=true (281ms)
+  ✓  15 [chrome] › tests/browser/components.spec.ts:6:2 › root true › controlled grid does not sort or slice rows; shadow=true (222ms)
+  ✓  16 [chrome] › tests/browser/components.spec.ts:7:2 › root true › styles follow the mount root and keyboard focus is visible; shadow=true (158ms)
+  ✓  17 [chrome] › tests/browser/components.spec.ts:8:2 › root true › dialog Escape restores focus; shadow=true (195ms)
+  ✓  18 [chrome] › tests/browser/components.spec.ts:9:2 › root true › dialog mouse close remains inside the desktop dialog; shadow=true (259ms)
+  ✓  19 [chrome] › tests/browser/components.spec.ts:10:2 › root true › year and quarter select and preserve keyboard semantics; shadow=true (369ms)
+  ✓  20 [chrome] › tests/browser/components.spec.ts:11:62 › root true › date date valid manual input, narrow panel and no page errors; shadow=true (179ms)
+  ✓  21 [chrome] › tests/browser/components.spec.ts:11:62 › root true › date month valid manual input, narrow panel and no page errors; shadow=true (206ms)
+  ✓  22 [chrome] › tests/browser/components.spec.ts:11:62 › root true › date daterange valid manual input, narrow panel and no page errors; shadow=true (204ms)
+  ✓  23 [chrome] › tests/browser/components.spec.ts:11:62 › root true › date monthrange valid manual input, narrow panel and no page errors; shadow=true (194ms)
+  ✓  24 [chrome] › tests/browser/components.spec.ts:12:2 › root true › short viewport popovers stay visible and release focus; shadow=true (597ms)
+  ✓  25 [chrome] › tests/browser/selection.spec.ts:3:1 › tree single, local search, geometry and keyboard (377ms)
+  ✓  26 [chrome] › tests/browser/selection.spec.ts:27:1 › tags keep height, scroll and delete exactly one; disabled and states (472ms)
+  ✓  27 [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=false (504ms)
+  ✓  28 [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=true (517ms)
+  ✓  29 [chrome] › tests/browser/selection.spec.ts:74:1 › official geometry, neutral tag colors, icons and panel rows (304ms)
+
+  29 passed (9.5s)

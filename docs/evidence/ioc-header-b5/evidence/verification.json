@@ -1,0 +1,165 @@
+{
+  "batch": "B5 explicit cross-page inputs only",
+  "schemaVersion": "6.36",
+  "code_fingerprint": "c6886cbcb47c8c806c231c9e31003ae3845b9ff69ec702f8f4857e275bd4ce82",
+  "base_ref": "952b3a273f0f4f8be5820f5af1bb76c2f5afa513",
+  "checks": [
+    {
+      "id": "check",
+      "command": "pnpm check",
+      "result": "PASS; all TypeScript and Svelte checks",
+      "log": "logs/check.log"
+    },
+    {
+      "id": "build",
+      "command": "pnpm build",
+      "result": "PASS; existing large-chunk warnings",
+      "log": "logs/build.log"
+    },
+    {
+      "id": "vitest-full",
+      "command": "pnpm test",
+      "result": "268 files pass; 3 timeout failures in authoring-export-isolation; 2358 passed, 4 skipped",
+      "log": "logs/vitest-full.log"
+    },
+    {
+      "id": "vitest-isolation-retry",
+      "command": "pnpm exec vitest run tests/authoring-export-isolation.test.ts",
+      "result": "PASS 20/20; same timeouts, no threshold adjustment; supersedes the full run affected file",
+      "log": "logs/vitest-isolation-retry.log"
+    },
+    {
+      "id": "authoring",
+      "command": "pnpm authoring:test",
+      "result": "PASS 552 tests, 1 skipped; scripted tests do not use a real model",
+      "log": "logs/authoring.log"
+    },
+    {
+      "id": "contracts",
+      "command": "pnpm authoring:contracts:check",
+      "result": "PASS 837 product + 4 authoring + 1 interface files",
+      "log": "logs/contracts.log"
+    },
+    {
+      "id": "bundle",
+      "command": "python3 metriccanvas-authoring/scripts/check_bundle.py",
+      "result": "PASS 2978 digest checks",
+      "log": "logs/bundle.log"
+    },
+    {
+      "id": "complexity",
+      "command": "uv run --with radon==6.0.1 --no-project python tools/scripts/check-authoring-complexity.py",
+      "result": "PASS 15 files, 366 functions, max15, 0 over limit",
+      "log": "logs/complexity.log"
+    },
+    {
+      "id": "pages",
+      "command": "pnpm validate pages",
+      "result": "PASS 44/44 actual pages",
+      "log": "logs/pages.log"
+    },
+    {
+      "id": "embed-browser-initial",
+      "command": "MC_EMBED_EXAMPLE_PORT=4212 pnpm --filter @metriccanvas/embed exec playwright test ioc-navigation.spec.ts ioc-navigation-lifecycle.spec.ts ioc-navigation-layout.spec.ts navigation.spec.ts ioc-header.spec.ts ioc-header-business.spec.ts ioc-time.spec.ts ioc-currency.spec.ts period-filter.spec.ts table-toolbar.spec.ts --workers=2",
+      "result": "56 pass, 1 fail: existing navigation test hardcoded port4175; corrected to current URL origin",
+      "log": "logs/embed-browser-initial.log"
+    },
+    {
+      "id": "embed-browser",
+      "command": "MC_EMBED_EXAMPLE_PORT=4212 pnpm --filter @metriccanvas/embed exec playwright test ioc-navigation.spec.ts ioc-navigation-lifecycle.spec.ts ioc-navigation-layout.spec.ts navigation.spec.ts ioc-header.spec.ts ioc-header-business.spec.ts ioc-time.spec.ts ioc-currency.spec.ts period-filter.spec.ts table-toolbar.spec.ts --workers=2",
+      "result": "PASS 57/57 after port-only test repair",
+      "log": "logs/embed-browser.log"
+    },
+    {
+      "id": "playground-browser",
+      "command": "pnpm --filter @metriccanvas/embed exec playwright test --config playwright.ioc-navigation-playground.config.ts --workers=1",
+      "result": "PASS 6/6; actual Playground4208 and local DQE Sim4210",
+      "log": "logs/playground-browser.log"
+    },
+    {
+      "id": "time-browser",
+      "command": "MC_EMBED_EXAMPLE_PORT=4212 pnpm --filter @metriccanvas/embed exec playwright test ioc-navigation.spec.ts ioc-navigation-lifecycle.spec.ts ioc-navigation-layout.spec.ts ioc-time.spec.ts period-filter.spec.ts --workers=2",
+      "result": "PASS 26/26; includes 9 responsive frames",
+      "log": "logs/time-browser.log"
+    },
+    {
+      "id": "installed",
+      "command": "node /tmp/ioc-b5-installed-consumer.mjs",
+      "result": "PASS six packed packages; Node ESM15pages + HTTP execution regression; installed browser38/38",
+      "log": "logs/installed.log",
+      "reproduction": "reproduction/installed-consumer.mjs (adjust root path when replaying elsewhere)"
+    },
+    {
+      "id": "standalone-skill",
+      "command": "python3 /tmp/ioc-b5-skill-copy.py",
+      "result": "PASS copied standalone Skill6.36; 3 actual B5 pages; 0 external symlinks",
+      "log": "logs/standalone-skill.log",
+      "reproduction": "reproduction/skill-copy.py"
+    },
+    {
+      "id": "required-input-red",
+      "command": "pnpm exec vitest run packages/engine/runtime/tests/navigation-inputs.test.ts",
+      "result": "EXPECTED RED: mapped required missing value must not use destination default",
+      "log": "logs/required-input-red.log"
+    },
+    {
+      "id": "required-input-green",
+      "command": "pnpm exec vitest run packages/engine/runtime/tests/navigation-inputs.test.ts",
+      "result": "PASS after fix",
+      "log": "logs/required-input-green.log"
+    },
+    {
+      "id": "level-red",
+      "command": "pnpm exec vitest run packages/engine/runtime/tests/navigation-inputs.test.ts",
+      "result": "EXPECTED RED: mapped dimension level must not silently change",
+      "log": "logs/level-red.log"
+    },
+    {
+      "id": "level-green",
+      "command": "pnpm exec vitest run packages/engine/runtime/tests/navigation-inputs.test.ts",
+      "result": "PASS after fix; final legacy fixed-param case also covered by full suite",
+      "log": "logs/level-green.log"
+    },
+    {
+      "id": "contracts-close",
+      "command": "pnpm authoring:contracts:check",
+      "result": "PASS after final master-plan and evidence documentation edits; generated sources still current",
+      "log": "logs/contracts-close.log"
+    }
+  ],
+  "aggregate_vitest": {
+    "method": "full run plus complete isolated retry of failed file; not a single green full run",
+    "unique_passed": 2361,
+    "skipped": 4,
+    "files": 269
+  },
+  "real_services": {
+    "DQE": "NOT_RUN",
+    "Relay": "NOT_RUN",
+    "CloudIOC": "NOT_RUN",
+    "portal_SDK": "NOT_RUN",
+    "DS_model": "NOT_RUN",
+    "CI": "NOT_RUN",
+    "deployment": "NOT_RUN"
+  },
+  "review": {
+    "SDD": "NOT_APPLICABLE: pure logic using existing UI, no external design reconstruction",
+    "independent_agent_review": "NOT_RUN: no new delegation authorized"
+  },
+  "browser": {
+    "preview": "http://127.0.0.1:4208/pages/ioc-header-navigation-source-demo",
+    "data": "local synthetic HTTP DQE Sim4210",
+    "manual": "catalog discovery -> source -> list -> detail; list USD choice is visible in detail URL and synthetic HTTP echo",
+    "screenshots": "artifacts/",
+    "geometry_frames": 9,
+    "root_overflow_pixels": 0
+  },
+  "scope": {
+    "restore": "NOT_SELECTED",
+    "B6": "SUSPENDED",
+    "business_migration": false,
+    "commit": false,
+    "push": false
+  },
+  "working_directory": "/Users/moon/.codex/worktrees/ioc-header-b0-b1/DataDashboard"
+}

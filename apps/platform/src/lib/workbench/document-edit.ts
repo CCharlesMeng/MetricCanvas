@@ -5,7 +5,7 @@ import {
 } from './component-building';
 import { recommendComponents, type ComponentCandidate } from './component-selection';
 import { validate, normalizePageDocument } from '@metriccanvas/page';
-import type { QueryFieldDefinition } from '@metriccanvas/page/internal';
+import { isChartOptionError, type QueryFieldDefinition } from '@metriccanvas/page/internal';
 import {
   normalizeAuthoringDropTarget,
   type AuthoringDraftSection,
@@ -131,6 +131,7 @@ export function changeComponentType(
   const next = jsonClone(draft.canvasDocument);
   const component = findComponent(next, locator);
   if (!component) return { ok: false, message: '选中的组件不在当前文档里' };
+  if (component.type === newType) return projectCanvasDraft(next);
   const dataSourceId =
     typeof recordOf(component.data)?.main === 'string'
       ? (recordOf(component.data)!.main as string)
@@ -146,6 +147,7 @@ export function changeComponentType(
 
   const built = constructComponent(unit, newType);
   if (!built.ok) return built;
+  if (recordOf(component.props)?.echartsOption !== undefined) console.warn('[MetricCanvas][CHART_OPTION_DROPPED]', { componentId: component.id, from: component.type, to: newType, path: 'props.echartsOption' });
   component.type = built.component.type;
   component.props = built.component.props;
   return projectCanvasDraft(next);
@@ -181,6 +183,7 @@ export function moveComponent(
 
   const [moved] = (fromSection.components as unknown[]).splice(fromIndex, 1);
   destinationComponents.splice(normalized.destination.index, 0, moved);
+  clearBrokenMetricConnections(draft.canvasDocument, next);
   return projectCanvasDraft(next);
 }
 
@@ -198,6 +201,7 @@ export function deleteComponent(
     return { ok: false, message: '页面至少需要一个组件，无法删除最后一个组件' };
   }
   (section.components as unknown[]).splice(index, 1);
+  clearBrokenMetricConnections(draft.canvasDocument, next);
   const result = projectCanvasDraft(next);
   return result.ok ? result : { ok: false, message: `无法删除该组件：${result.message}` };
 }
@@ -315,7 +319,8 @@ function authoringSectionsOf(
 function invalidResult(
   errors: ReturnType<typeof validate>
 ): Extract<DocumentEditResult, { ok: false }> {
-  return { ok: false, message: errors.map((error) => error.message).join('、') };
+  for (const error of errors) if (isChartOptionError(error)) console.error('[MetricCanvas][CHART_OPTION_INVALID]', error);
+  return { ok: false, message: errors.filter(error => !isChartOptionError(error)).map((error) => error.message).join('、') };
 }
 
 interface MutableComponent extends Record<string, unknown> {
@@ -368,4 +373,28 @@ function recordOf(value: unknown): Record<string, unknown> | null {
  */
 function jsonClone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
+}
+
+/** 相邻关系变更时清除旧连接；编辑意图与断边清理共用一次历史投影。 */
+function clearBrokenMetricConnections(previous: Record<string, unknown>, next: Record<string, unknown>): void {
+  const neighbors = (document: Record<string, unknown>) => {
+    const result = new Map<string, string>();
+    for (const value of Array.isArray(document.sections) ? document.sections : []) {
+      const section = recordOf(value);
+      const components = Array.isArray(section?.components) ? section.components.map(recordOf) : [];
+      components.forEach((component, index) => {
+        if (typeof component?.id === 'string') result.set(component.id, JSON.stringify([section?.id, components[index - 1]?.id]));
+      });
+    }
+    return result;
+  };
+  const oldNeighbors = neighbors(previous), newNeighbors = neighbors(next);
+  for (const value of Array.isArray(next.sections) ? next.sections : []) {
+    const section = recordOf(value);
+    for (const value of Array.isArray(section?.components) ? section.components : []) {
+      const component = recordOf(value), layout = recordOf(component?.layout);
+      if (component?.type === 'metricCard' && layout?.before !== undefined &&
+          oldNeighbors.get(String(component.id)) !== newNeighbors.get(String(component.id))) delete layout.before;
+    }
+  }
 }

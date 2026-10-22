@@ -1,6 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
-  import type { Snippet } from 'svelte';
+  import {untrack,type Snippet} from 'svelte';
   import { resolveActiveTab, type TabLabel } from './tabs';
 
   /**
@@ -12,13 +12,14 @@
     variant?: 'compact' | 'analysisStack';
     tabs: readonly (TabLabel & { contentCount?: number })[];
     defaultTab?: string;
+    initialTab?: string;
     activeTab?: string;
     onselect?: (id: string) => void;
     children: Snippet<[string]>;
   }
 
-  let { title, variant, tabs, defaultTab, activeTab, onselect, children }: Props = $props();
-  let selected = $state<string | undefined>(undefined);
+  let { title, variant, tabs, defaultTab, initialTab, activeTab, onselect, children }: Props = $props();
+  let selected = $state<string | undefined>(untrack(()=>initialTab));
   const activeId = $derived(resolveActiveTab(tabs, activeTab ?? selected, defaultTab));
   let visited = $state<Record<string, boolean>>({});
   $effect(() => { if (activeId && !visited[activeId]) visited[activeId] = true; });

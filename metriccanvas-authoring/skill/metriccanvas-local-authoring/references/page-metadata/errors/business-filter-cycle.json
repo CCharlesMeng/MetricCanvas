@@ -1,0 +1,46 @@
+{
+  "case": "business-filter-cycle",
+  "invariant": "business-filters",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "合并筛选依赖存在循环",
+      "paths": [
+        "/filters/0",
+        "/filters/3"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "period",
+        "type": "timeRange",
+        "display": "period",
+        "precision": "month",
+        "required": true,
+        "label": "统计期间",
+        "default": {
+          "mode": "month",
+          "value": "2026-09"
+        },
+        "clearOnChangeOf": [
+          "focus"
+        ]
+      },
+      "…",
+      "…",
+      {
+        "id": "focus",
+        "type": "boolean",
+        "label": "仅看重点",
+        "default": true,
+        "hint": "未勾选显式查询否值；与是否突破的全选不限分别验证。",
+        "clearOnChangeOf": [
+          "period"
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

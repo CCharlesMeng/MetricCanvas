@@ -1,6 +1,7 @@
 /** 页面校验错误闭集；同时作为跨语言契约导出的运行时真源。 */
 export const ERROR_TYPES = [
   'SCHEMA_ERROR',
+  'CHART_OPTION_ERROR',
   'FIELD_CONTRACT_ERROR',
   'QUERY_MAPPING_ERROR',
   'FILTER_BINDING_ERROR',

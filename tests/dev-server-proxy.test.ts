@@ -17,10 +17,18 @@ afterEach(async () => {
   Object.defineProperty(process, 'platform', platformDescriptor);
 });
 
-it('Windows gray 代理的真实上游请求收到配置的 cftk', async () => {
-  const received: Array<string | string[] | undefined> = [];
-  const upstream = createHttpServer((request, response) => {
-    received.push(request.headers.cftk);
+it.each([
+  {app: 'playground', cookie: 'session=configured; route=gray=='},
+  {app: 'playground', cookie: ''},
+  {app: 'platform', cookie: 'session=configured; route=gray=='},
+  {app: 'platform', cookie: ''}
+])('$app gray 代理实际转发 cftk 与 Cookie（配置 %j）', async ({app, cookie}) => {
+  const received: Array<{cftk: unknown; cookie: unknown; url: unknown; method: unknown; body: string}> = [];
+  const upstream = createHttpServer(async (request, response) => {
+    let body = '';
+    for await (const chunk of request) body += chunk;
+    received.push({cftk: request.headers.cftk, cookie: request.headers.cookie,
+      url: request.url, method: request.method, body});
     response.end('{}');
   });
   upstream.listen(0, '127.0.0.1');
@@ -29,27 +37,39 @@ it('Windows gray 代理的真实上游请求收到配置的 cftk', async () => {
     upstream.close((error) => error ? reject(error) : resolve());
   }));
   Object.defineProperty(process, 'platform', {value: 'win32'});
-  vi.stubEnv('PLAYGROUND_CLOUDIOC', 'true');
-  vi.stubEnv('PLAYGROUND_CLOUDIOC_CFTK', 'test-config-cftk');
-  const playground = (await import('../apps/playground/vite.config')).default;
-  const config = typeof playground === 'function'
-    ? await playground({command: 'serve', mode: 'development'}) : await playground;
+  const prefix = `${app.toUpperCase()}_CLOUDIOC`;
+  vi.stubEnv(prefix, 'true');
+  vi.stubEnv(`${prefix}_CFTK`, 'test-config-cftk');
+  vi.stubEnv(`${prefix}_COOKIE`, cookie);
+  const viteConfig = app === 'playground'
+    ? (await import('../apps/playground/vite.config')).default
+    : (await import('../apps/platform/vite.config')).default;
+  const config = typeof viteConfig === 'function'
+    ? await viteConfig({command: 'serve', mode: 'development'}) : await viteConfig;
   Object.defineProperty(process, 'platform', platformDescriptor);
-  const dqeProxy = config.server?.proxy?.[DQE_EXECUTE_PATH];
+  const path = app === 'playground' ? DQE_EXECUTE_PATH : '/rest/cdi/cdinl2databuilderservice/';
+  const dqeProxy = config.server?.proxy?.[path];
   if (!dqeProxy || typeof dqeProxy === 'string') throw new Error('Missing DQE proxy');
   const frontend = await createServer({
     configFile: false,
     server: {host: '127.0.0.1', port: 0, strictPort: false, proxy: {
-      [DQE_EXECUTE_PATH]: {...dqeProxy, target: `http://127.0.0.1:${(upstream.address() as AddressInfo).port}`}
+      [path]: {...dqeProxy, target: `http://127.0.0.1:${(upstream.address() as AddressInfo).port}`}
     }},
     logLevel: 'silent'
   });
   cleanup.push(() => frontend.close());
   await frontend.listen();
   const origin = `http://127.0.0.1:${(frontend.httpServer!.address() as AddressInfo).port}`;
-  const response = await fetch(origin + DQE_EXECUTE_PATH, {method: 'POST', body: '{}'});
-  expect(response.status).toBe(200);
-  expect(received).toEqual(['test-config-cftk']);
+  const paths = [DQE_EXECUTE_PATH + '?debug=1', ...(app === 'platform'
+    ? ['/rest/cdi/cdinl2databuilderservice/v1/user-page-metadata?page=1'] : [])];
+  for (const requestPath of paths) {
+    const response = await fetch(origin + requestPath, {
+      method: 'POST', body: '{}', headers: {cookie: 'session=browser', cftk: 'browser-cftk'}
+    });
+    expect(response.status).toBe(200);
+  }
+  expect(received).toEqual(paths.map(url => ({url, method: 'POST', body: '{}',
+    cftk: 'test-config-cftk', cookie: cookie || 'session=browser'})));
 });
 
 it('两个前端通过同源路径代理 DQE 和 SSE，平台远端目标使用本地服务替身', async () => {
@@ -63,6 +83,7 @@ it('两个前端通过同源路径代理 DQE 和 SSE，平台远端目标使用�
   }));
   vi.stubEnv('DQE_SIM_PORT', String((upstream.address() as AddressInfo).port));
   vi.stubEnv('PLAYGROUND_CLOUDIOC', 'false');
+  vi.stubEnv('PLATFORM_CLOUDIOC', 'false');
 
   const playground = (await import('../apps/playground/vite.config')).default;
   const platform = (await import('../apps/platform/vite.config')).default;

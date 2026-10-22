@@ -1,0 +1,405 @@
+{
+  "schemaVersion": "6.49",
+  "id": "table-row-expansion-inputs",
+  "layout": "dashboard",
+  "meta": {
+    "title": "按父行查询子表格",
+    "description": "合成数据及本地DQE Sim；展开后按父行查询，复用现有页码/每页条数/跳页控件。第二张表演示可选标题、列排序与单行展开。"
+  },
+  "dataSources": {
+    "customers": {
+      "fields": {
+        "customer-id": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "customer-name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "unit": "元"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "customer-id": "C01",
+            "customer-name": "北辰科技",
+            "amount": 30000
+          },
+          {
+            "customer-id": "C02",
+            "customer-name": "远山制造",
+            "amount": 21600
+          },
+          {
+            "customer-id": "C03",
+            "customer-name": "海川能源",
+            "amount": 0
+          }
+        ]
+      }
+    },
+    "orders-default": {
+      "fields": {
+        "customer-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "row_customer"
+        },
+        "order-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "row_order_id"
+        },
+        "product": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "row_product"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "unit": "元",
+          "queryField": "row_amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "row_customer",
+                  "row_order_id",
+                  "row_product"
+                ],
+                "output_metrics": [
+                  "row_amount"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 10
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "customer-default": {
+              "target": "dimension",
+              "queryField": "row_customer"
+            },
+            "segment-0": {
+              "target": "dimension",
+              "queryField": "row_segment"
+            }
+          }
+        }
+      }
+    },
+    "orders-optional": {
+      "fields": {
+        "customer-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "row_customer"
+        },
+        "order-id": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "row_order_id"
+        },
+        "product": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "row_product"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "unit": "元",
+          "queryField": "row_amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "row_customer",
+                  "row_order_id",
+                  "row_product"
+                ],
+                "output_metrics": [
+                  "row_amount"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 10
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "customer-optional": {
+              "target": "dimension",
+              "queryField": "row_customer"
+            },
+            "segment-1": {
+              "target": "dimension",
+              "queryField": "row_segment"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "default",
+      "components": [
+        {
+          "id": "customers-default",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "customers"
+          },
+          "props": {
+            "title": "展开后查询 · 默认干净呈现",
+            "rowKey": "customer-id",
+            "columns": [
+              {
+                "field": "customer-name",
+                "title": "客户",
+                "fixed": "left",
+                "width": 260
+              },
+              {
+                "field": {
+                  "field": "amount",
+                  "format": "number-grouped",
+                  "data": "main"
+                },
+                "title": "金额（元）",
+                "align": "right"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2,
+              "numbered": true
+            },
+            "rowExpansion": {
+              "mode": "multiple",
+              "data": {
+                "type": "query",
+                "source": "orders-default",
+                "filters": [
+                  "customer-default",
+                  "segment-0"
+                ],
+                "bindings": {
+                  "customer-default": {
+                    "source": "row",
+                    "field": "customer-id"
+                  },
+                  "segment-0": {
+                    "source": "param",
+                    "id": "segment"
+                  }
+                }
+              },
+              "table": {
+                "rowKey": "order-id",
+                "columns": [
+                  {
+                    "field": "order-id",
+                    "title": "订单号",
+                    "width": 120
+                  },
+                  {
+                    "field": "product",
+                    "title": "产品 / 服务",
+                    "width": 160
+                  },
+                  {
+                    "field": {
+                      "field": "amount",
+                      "format": "number-grouped",
+                      "data": "main"
+                    },
+                    "title": "金额（元）",
+                    "align": "right",
+                    "width": 140
+                  }
+                ],
+                "pagination": {
+                  "mode": "query"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "optional",
+      "components": [
+        {
+          "id": "customers-optional",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "customers"
+          },
+          "props": {
+            "title": "按需标题、列排序与单行展开",
+            "rowKey": "customer-id",
+            "columns": [
+              {
+                "field": "customer-name",
+                "title": "客户",
+                "fixed": "left",
+                "width": 260
+              },
+              {
+                "field": {
+                  "field": "amount",
+                  "format": "number-grouped",
+                  "data": "main"
+                },
+                "title": "金额（元）",
+                "align": "right"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2,
+              "numbered": true
+            },
+            "rowExpansion": {
+              "mode": "single",
+              "data": {
+                "type": "query",
+                "source": "orders-optional",
+                "filters": [
+                  "customer-optional",
+                  "segment-1"
+                ],
+                "bindings": {
+                  "customer-optional": {
+                    "source": "row",
+                    "field": "customer-id"
+                  },
+                  "segment-1": {
+                    "source": "filter",
+                    "id": "segment-page"
+                  }
+                }
+              },
+              "table": {
+                "rowKey": "order-id",
+                "columns": [
+                  {
+                    "field": "order-id",
+                    "title": "订单号",
+                    "width": 120
+                  },
+                  {
+                    "field": "product",
+                    "title": "产品 / 服务",
+                    "sortable": true,
+                    "width": 160
+                  },
+                  {
+                    "field": {
+                      "field": "amount",
+                      "format": "number-grouped",
+                      "data": "main"
+                    },
+                    "title": "金额（元）",
+                    "align": "right",
+                    "width": 140
+                  }
+                ],
+                "pagination": {
+                  "mode": "query"
+                },
+                "title": "订单明细"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "filters": [
+    {
+      "id": "customer-default",
+      "type": "dimension",
+      "dimension": "row_customer",
+      "label": "子表客户输入",
+      "visible": false
+    },
+    {
+      "id": "customer-optional",
+      "type": "dimension",
+      "dimension": "row_customer",
+      "label": "子表客户输入",
+      "visible": false
+    },
+    {
+      "id": "segment-page",
+      "type": "dimension",
+      "dimension": "row_segment",
+      "label": "分组",
+      "default": [
+        "A"
+      ]
+    },
+    {
+      "id": "segment-0",
+      "type": "dimension",
+      "dimension": "row_segment",
+      "label": "私有分组",
+      "visible": false
+    },
+    {
+      "id": "segment-1",
+      "type": "dimension",
+      "dimension": "row_segment",
+      "label": "私有分组",
+      "visible": false
+    }
+  ],
+  "params": [
+    {
+      "id": "segment",
+      "type": "string",
+      "required": true,
+      "default": "A"
+    }
+  ]
+}

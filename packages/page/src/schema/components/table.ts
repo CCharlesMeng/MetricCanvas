@@ -1,3 +1,4 @@
+import { conditionZ, interactionShape, visibilityShape } from '../condition';
 import { z } from 'zod';
 import type { FieldBinding, FieldReference } from '../../field';
 import {
@@ -12,7 +13,7 @@ import {
   textValueZ
 } from '../primitives';
 import { actionsZ, openDetailActionZ } from '../actions';
-import { navigationTargetZ, type NavigationTarget } from '../navigation';
+import { navigationBindingZ, navigationTargetZ, type NavigationTarget } from '../navigation';
 import { componentCatalogRegistry } from '../registry';
 import { colorRuleZ, type ColorRule } from '../presentation';
 
@@ -25,6 +26,8 @@ import { colorRuleZ, type ColorRule } from '../presentation';
 export type TableSelectionWrite = { field: FieldReference } | { value: string };
 
 export interface TableCellSelection {
+  visibleWhen?: import('../condition').Condition;
+  enabledWhen?: import('../condition').Condition;
   writes: Record<string, TableSelectionWrite>;
 }
 
@@ -69,6 +72,7 @@ const tableCellSelectionWriteZ: z.ZodType<TableSelectionWrite> = z.union([
 
 const tableCellSelectionZ: z.ZodType<TableCellSelection> = z
   .object({
+    ...interactionShape,
     writes: z.record(idZ, tableCellSelectionWriteZ).meta({ minProperties: 1 })
   })
   .strict();
@@ -125,22 +129,66 @@ const paginationZ = z.discriminatedUnion('mode', [
   z.object({ mode: z.literal('query') }).strict()
 ]);
 
+const rowNumberZ = z.object({
+  title: textValueZ.optional(),
+  width: z.int().min(1).optional(),
+  fixed: z.literal('left').optional()
+}).strict();
+
+const rowTableZ = z.object({
+  title: textValueZ.optional(),
+  rowNumber: rowNumberZ.optional(),
+  rowKey: fieldNameZ,
+  columns: z.array(tableColumnNodeZ).min(1),
+  fit: z.enum(['content', 'container']).optional(),
+  pagination: paginationZ.optional(),
+  toolbar: z.object({ search: z.object({
+    fields: z.array(fieldNameZ).min(1).max(64).meta({ uniqueItems: true }),
+    placeholder: textValueZ.optional()
+  }).strict().optional() }).strict().optional()
+}).strict().meta({ id: 'rowExpansionTable' });
+
+const rowExpansionZ = z.object({
+  mode: z.enum(['multiple', 'single']).optional(),
+  data: z.discriminatedUnion('type', [
+    z.object({ type: z.literal('recordList'), field: fieldNameZ }).strict(),
+    z.object({ type: z.literal('query'), source: idZ,
+      filters: z.array(idZ).min(1).meta({ uniqueItems: true }),
+      bindings: z.record(idZ, navigationBindingZ).meta({ minProperties: 1 })
+    }).strict()
+  ]),
+  table: rowTableZ
+}).strict().meta({ id: 'tableRowExpansion' });
+
 export const tableComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('table'),
     layout: componentLayoutZ,
     data: tableDataZ,
     props: z
       .object({
+        rowVisibleWhen: conditionZ.optional(),
         title: textValueZ.optional(),
         subtitle: textValueZ.optional(),
         toolbar: z.object({
-          search: z.object({
+          search: z.union([z.object({
+            ...interactionShape,
             fields: z.array(fieldNameZ).min(1).max(64).meta({ uniqueItems: true }),
             placeholder: textValueZ.optional()
-          }).strict().optional(),
+          }).strict(), z.object({
+            ...interactionShape,
+            options: z.array(z.object({
+              value: idZ,
+              label: nonEmptyTextValueZ,
+              field: fieldNameZ,
+              placeholder: textValueZ.optional()
+            }).strict()).min(1).max(64),
+            defaultValue: idZ.optional()
+          }).strict()]).optional(),
           export: z.object({
+            ...interactionShape,
             format: z.literal('xlsx'),
             filename: textValueZ.optional()
           }).strict().optional()
@@ -149,6 +197,8 @@ export const tableComponentZ = z
         /** 容器底部的渐隐提示；只表示有更多纵向内容，不改变数据。 */
         bottomFade: z.boolean().optional(),
         compoundCellLayout: z.literal('inline').optional(),
+        /** 呈现列：不占用页面字段；按当前行集顺序从 1 开始，分页连续。 */
+        rowNumber: rowNumberZ.optional(),
         rowKey: fieldNameZ.optional(),
         /**
          * 行类别字段（ADR-0049）：取值来自计算阶段折叠算子写入的闭集，
@@ -163,6 +213,7 @@ export const tableComponentZ = z
         fit: z.enum(['content', 'container']).optional(),
         columns: z.array(tableColumnNodeZ).min(1),
         pagination: paginationZ.optional(),
+        rowExpansion: rowExpansionZ.optional(),
         actions: actionsZ.optional()
       })
       .strict()

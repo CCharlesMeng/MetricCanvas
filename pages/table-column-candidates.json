@@ -1,0 +1,568 @@
+{
+  "schemaVersion": "6.22",
+  "id": "table-column-candidates",
+  "layout": "dashboard",
+  "dataSources": {
+    "records": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处"
+        },
+        "grade": {
+          "type": "number",
+          "role": "dimension",
+          "label": "级别编码"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "unit": "元"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "华北",
+            "office": "办事处01",
+            "grade": 0,
+            "amount": 10000
+          },
+          {
+            "region": "华南",
+            "office": "办事处02",
+            "grade": 1,
+            "amount": 20000
+          },
+          {
+            "region": "华北",
+            "office": "办事处03",
+            "grade": 2,
+            "amount": 30000
+          },
+          {
+            "region": "华南",
+            "office": "办事处04",
+            "grade": 0,
+            "amount": 40000
+          },
+          {
+            "region": "华北",
+            "office": "办事处05",
+            "grade": 1,
+            "amount": 50000
+          },
+          {
+            "region": "华南",
+            "office": "办事处06",
+            "grade": 2,
+            "amount": 60000
+          },
+          {
+            "region": "华北",
+            "office": "办事处07",
+            "grade": 0,
+            "amount": 70000
+          },
+          {
+            "region": "华南",
+            "office": "办事处08",
+            "grade": 1,
+            "amount": 80000
+          },
+          {
+            "region": "华北",
+            "office": "办事处09",
+            "grade": 2,
+            "amount": 90000
+          },
+          {
+            "region": "华南",
+            "office": "办事处10",
+            "grade": 0,
+            "amount": 100000
+          },
+          {
+            "region": "华北",
+            "office": "办事处11",
+            "grade": 1,
+            "amount": 110000
+          },
+          {
+            "region": "华南",
+            "office": "办事处12",
+            "grade": 2,
+            "amount": 120000
+          },
+          {
+            "region": "华北",
+            "office": "办事处13",
+            "grade": 0,
+            "amount": 130000
+          },
+          {
+            "region": "华南",
+            "office": "办事处14",
+            "grade": 1,
+            "amount": 140000
+          },
+          {
+            "region": "华北",
+            "office": "办事处15",
+            "grade": 2,
+            "amount": 150000
+          },
+          {
+            "region": "华南",
+            "office": "办事处16",
+            "grade": 0,
+            "amount": 160000
+          },
+          {
+            "region": "华北",
+            "office": "办事处17",
+            "grade": 1,
+            "amount": 170000
+          },
+          {
+            "region": "华南",
+            "office": "办事处18",
+            "grade": 2,
+            "amount": 180000
+          },
+          {
+            "region": "华北",
+            "office": "办事处19",
+            "grade": 0,
+            "amount": 190000
+          },
+          {
+            "region": "华南",
+            "office": "办事处20",
+            "grade": 1,
+            "amount": 200000
+          },
+          {
+            "region": "华北",
+            "office": "办事处21",
+            "grade": 2,
+            "amount": 210000
+          },
+          {
+            "region": "华南",
+            "office": "办事处22",
+            "grade": 0,
+            "amount": 220000
+          },
+          {
+            "region": "华北",
+            "office": "办事处23",
+            "grade": 1,
+            "amount": 230000
+          },
+          {
+            "region": "华南",
+            "office": "办事处24",
+            "grade": 2,
+            "amount": 240000
+          },
+          {
+            "region": "华北",
+            "office": "办事处25",
+            "grade": 0,
+            "amount": 250000
+          },
+          {
+            "region": "华南",
+            "office": "办事处26",
+            "grade": 1,
+            "amount": 260000
+          },
+          {
+            "region": "华北",
+            "office": "办事处27",
+            "grade": 2,
+            "amount": 270000
+          },
+          {
+            "region": "华南",
+            "office": "办事处28",
+            "grade": 0,
+            "amount": 280000
+          },
+          {
+            "region": "华北",
+            "office": "办事处29",
+            "grade": 1,
+            "amount": 290000
+          },
+          {
+            "region": "华南",
+            "office": "办事处30",
+            "grade": 2,
+            "amount": 300000
+          },
+          {
+            "region": "华北",
+            "office": "办事处31",
+            "grade": 0,
+            "amount": 310000
+          },
+          {
+            "region": "华南",
+            "office": "办事处32",
+            "grade": 1,
+            "amount": 320000
+          },
+          {
+            "region": "华北",
+            "office": "办事处33",
+            "grade": 2,
+            "amount": 330000
+          },
+          {
+            "region": "华南",
+            "office": "办事处34",
+            "grade": 0,
+            "amount": 340000
+          },
+          {
+            "region": "华北",
+            "office": "办事处35",
+            "grade": 1,
+            "amount": 350000
+          },
+          {
+            "region": "华南",
+            "office": "办事处36",
+            "grade": 2,
+            "amount": 360000
+          },
+          {
+            "region": "华北",
+            "office": "办事处37",
+            "grade": 0,
+            "amount": 370000
+          },
+          {
+            "region": "华南",
+            "office": "办事处38",
+            "grade": 1,
+            "amount": 380000
+          },
+          {
+            "region": "华北",
+            "office": "办事处39",
+            "grade": 2,
+            "amount": 390000
+          },
+          {
+            "region": "华南",
+            "office": "办事处40",
+            "grade": 0,
+            "amount": 400000
+          },
+          {
+            "region": "华北",
+            "office": "办事处41",
+            "grade": 1,
+            "amount": 410000
+          },
+          {
+            "region": "华南",
+            "office": "办事处42",
+            "grade": 2,
+            "amount": 420000
+          },
+          {
+            "region": "华北",
+            "office": "办事处43",
+            "grade": 0,
+            "amount": 430000
+          },
+          {
+            "region": "华南",
+            "office": "办事处44",
+            "grade": 1,
+            "amount": 440000
+          },
+          {
+            "region": "华北",
+            "office": "办事处45",
+            "grade": 2,
+            "amount": 450000
+          },
+          {
+            "region": "华南",
+            "office": "办事处46",
+            "grade": 0,
+            "amount": 460000
+          },
+          {
+            "region": "华北",
+            "office": "办事处47",
+            "grade": 1,
+            "amount": 470000
+          },
+          {
+            "region": "华南",
+            "office": "办事处48",
+            "grade": 2,
+            "amount": 480000
+          },
+          {
+            "region": "华北",
+            "office": "办事处49",
+            "grade": 0,
+            "amount": 490000
+          },
+          {
+            "region": "华南",
+            "office": "办事处50",
+            "grade": 1,
+            "amount": 500000
+          },
+          {
+            "region": "华北",
+            "office": "办事处51",
+            "grade": 2,
+            "amount": 510000
+          },
+          {
+            "region": "华南",
+            "office": "办事处52",
+            "grade": 0,
+            "amount": 520000
+          },
+          {
+            "region": "华北",
+            "office": "办事处53",
+            "grade": 1,
+            "amount": 530000
+          },
+          {
+            "region": "华南",
+            "office": "办事处54",
+            "grade": 2,
+            "amount": 540000
+          },
+          {
+            "region": "华北",
+            "office": "办事处55",
+            "grade": 0,
+            "amount": 550000
+          },
+          {
+            "region": "华南",
+            "office": "办事处56",
+            "grade": 1,
+            "amount": 560000
+          },
+          {
+            "region": "华北",
+            "office": "办事处57",
+            "grade": 2,
+            "amount": 570000
+          },
+          {
+            "region": "华南",
+            "office": "办事处58",
+            "grade": 0,
+            "amount": 580000
+          },
+          {
+            "region": "华北",
+            "office": "办事处59",
+            "grade": 1,
+            "amount": 590000
+          },
+          {
+            "region": "华南",
+            "office": "办事处60",
+            "grade": 2,
+            "amount": 600000
+          },
+          {
+            "region": "华北",
+            "office": "办事处61",
+            "grade": 0,
+            "amount": 610000
+          },
+          {
+            "region": "华南",
+            "office": "办事处62",
+            "grade": 1,
+            "amount": 620000
+          },
+          {
+            "region": "华北",
+            "office": "办事处63",
+            "grade": 2,
+            "amount": 630000
+          },
+          {
+            "region": "华南",
+            "office": "办事处64",
+            "grade": 0,
+            "amount": 640000
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "header-title",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "64 行合成数据 · 两张表独立筛选。\n打开「代表处」可搜索选项或加载更多；先选择代表处，再将金额下限设为 650000，可查看已选项在无匹配时的保留状态。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "candidate-table-section",
+      "container": "card",
+      "components": [
+        {
+          "id": "candidate-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "多列联动与候选搜索",
+            "pagination": {
+              "mode": "local",
+              "pageSize": 5,
+              "numbered": true
+            },
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "office"
+                ],
+                "placeholder": "搜索表格代表处"
+              }
+            },
+            "columns": [
+              {
+                "field": "region",
+                "filterable": {
+                  "mode": "select"
+                },
+                "sortable": true
+              },
+              {
+                "field": "office",
+                "filterable": {
+                  "mode": "select"
+                },
+                "sortable": true
+              },
+              {
+                "field": "grade",
+                "filterable": {
+                  "mode": "select"
+                },
+                "sortable": true
+              },
+              {
+                "field": "amount",
+                "filterable": {
+                  "mode": "numberRange"
+                },
+                "sortable": true
+              }
+            ],
+            "fit": "container"
+          }
+        }
+      ]
+    },
+    {
+      "id": "independent-table-section",
+      "container": "card",
+      "components": [
+        {
+          "id": "independent-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "同一数据源，独立表格条件",
+            "pagination": {
+              "mode": "local",
+              "pageSize": 5,
+              "numbered": true
+            },
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "office"
+                ],
+                "placeholder": "搜索表格代表处"
+              }
+            },
+            "columns": [
+              {
+                "field": "region",
+                "filterable": {
+                  "mode": "select"
+                },
+                "sortable": true
+              },
+              {
+                "field": "office",
+                "filterable": {
+                  "mode": "select"
+                },
+                "sortable": true
+              },
+              {
+                "field": "grade",
+                "filterable": {
+                  "mode": "select"
+                },
+                "sortable": true
+              },
+              {
+                "field": "amount",
+                "filterable": {
+                  "mode": "numberRange"
+                },
+                "sortable": true
+              }
+            ],
+            "fit": "container"
+          }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "title": "表格列筛选候选值"
+  }
+}

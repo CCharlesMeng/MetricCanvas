@@ -1,5 +1,6 @@
 import { intersectQueryFilters } from './intersect-filters';
-import { bindingQueryField, hasQueryFieldMapping, timePointPredicateValue, resolveTimeWindow, type QueryDataSource, type EffectiveQuery, type DataSnapshot } from '@metriccanvas/page/internal';
+import {selectTimeQuery,requiresTimeValidation,timeFilterBoundaryError} from '@metriccanvas/page/internal';
+import { numberRangeIssue,rangeContextIssue,selectedCase, dimensionSelectionIssue, bindingQueryField, hasQueryFieldMapping, timePointPredicateValue, resolveTimeWindow, type FilterDeclaration, type QueryDataSource, type EffectiveQuery, type DataSnapshot } from '@metriccanvas/page/internal';
 import type { FilterValues } from './filter-values';
 import type { DataGateway, QueryDiagnosticContext } from './ports';
 import { preservedQueryError } from './query-error';
@@ -7,7 +8,7 @@ import { rawSnapshot } from './snapshots';
 
 export type QueryHeaderFilters = import('@metriccanvas/page/internal').TableHeaderFilters;
 
-export interface QueryBinding { dataSource: QueryDataSource; pagination?: { limit: number }; }
+export interface QueryBinding { now?:Date; filters?: readonly FilterDeclaration[]; dataSource: QueryDataSource; pagination?: { limit: number }; }
 
 function mappedQueryField(
   dataSource: QueryDataSource,
@@ -23,13 +24,26 @@ export function composeEffectiveQuery(
   pageIndex: number,
   sortRules: ReadonlyArray<{ field: string; direction: 'asc' | 'desc' }>,
   headerFilters: QueryHeaderFilters,
-  search?: { fields: readonly string[]; query: string }
+  search?: { fields: readonly string[]; query: string; match?: 'equals' }
 ): EffectiveQuery {
+  const bindingFilters=binding.filters,now=binding.now;
   const dataSource = binding.dataSource;
-  const query = dataSource.source.query;
+  const query = selectTimeQuery(dataSource.source.query,values);
   const filterValues: EffectiveQuery['filterValues'] = [];
   for (const [filterId, binding] of Object.entries(query.filterBindings ?? {})) {
     const value = values.get(filterId);
+    const declaration = bindingFilters?.find(filter => filter.id === filterId);
+    if(declaration&&(declaration.type==='timeRange'||declaration.type==='timePoint')&&requiresTimeValidation(declaration)&&value&&(value.type==='timeRange'||value.type==='timePoint')&&timeFilterBoundaryError(declaration,value,now))throw Object.assign(new Error('日期或时间模式不符合声明'),{code:'DQE_QUERY_REJECTED'});
+    if(declaration?.type==='timeRange'&&declaration.display==='modes'&&value?.type!=='timeRange')throw Object.assign(new Error('模式范围必须选择'),{code:'DQE_QUERY_REJECTED'});
+    if(declaration?.type==='dimension' && dimensionSelectionIssue(declaration,value?.type==='dimension'?value.values:[]))throw Object.assign(new Error('筛选值不符合已声明选择规则'),{code:'DQE_QUERY_REJECTED'});
+    if(declaration?.type==='numberRange'&&((value?.type==='numberRange'&&numberRangeIssue(declaration,value))||rangeContextIssue(declaration,values)))throw Object.assign(new Error('金额范围或币种不符合声明'),{code:'DQE_QUERY_REJECTED'});
+    if(value?.type==='dimension'&&!value.values.length)continue;
+    if (value?.type === 'dimension' && declaration?.type === 'dimension' && declaration.selection?.mode === 'multiple' && declaration.selection.allBehavior === 'unrestricted' && declaration.options) {
+      const enabled=declaration.options.filter(option=>!option.disabled);
+      if(enabled.length && enabled.length===value.values.length && enabled.every(option=>value.values.includes(option.value)))continue;
+    }
+    const metric=binding.target==='numberRange'?(binding.metricByFilter?selectedCase(binding.metricByFilter.cases,values.get(binding.metricByFilter.filterId)?.type==='dimension'?(values.get(binding.metricByFilter.filterId) as {values:string[]}).values:undefined):binding.metric):undefined;
+    if(binding.target==='numberRange'&&!metric)throw Object.assign(new Error('金额metric未配置'),{code:'DQE_CONFIG_ERROR'});
     if (binding.target === 'dimension' && value?.type === 'dimension') {
       // 层级维度取当前层级的谓词字段(ADR-0084);缺级时整条不下推,
       // 不拿别的层级字段去接收本层取值。
@@ -70,7 +84,7 @@ export function composeEffectiveQuery(
       if (value.from !== undefined || value.to !== undefined) {
         filterValues.push({
           target: 'metricRange',
-          metric: binding.metric,
+          metric: metric!,
           ...(value.from !== undefined ? { from: value.from } : {}),
           ...(value.to !== undefined ? { to: value.to } : {})
         });
@@ -79,17 +93,18 @@ export function composeEffectiveQuery(
   }
   // 表头筛选按列字段落到维度谓词上(ADR-0086)。字段没有 queryField 映射
   // 说明它不是上游取来的列,整条跳过而不是拿字段 id 冒充查询字段。
+  const tableFilters: EffectiveQuery['filterValues'] = [];
   for (const [fieldId, filter] of Object.entries(headerFilters)) {
     const queryField = mappedQueryField(dataSource, fieldId);
     if (queryField === undefined) continue;
     if (filter.mode === 'select') {
       if (filter.values.length > 0) {
-        filterValues.push({ target: 'dimension', queryField, values: [...filter.values] });
+        tableFilters.push({ target: 'dimension', queryField, values: [...filter.values] });
       }
     } else if (filter.mode === 'numberRange') {
-      if (filter.from !== undefined || filter.to !== undefined) filterValues.push({ target: 'metricRange', metric: queryField, ...(filter.from === undefined ? {} : { from: filter.from }), ...(filter.to === undefined ? {} : { to: filter.to }) });
+      if (filter.from !== undefined || filter.to !== undefined) tableFilters.push({ target: 'metricRange', metric: queryField, ...(filter.from === undefined ? {} : { from: filter.from }), ...(filter.to === undefined ? {} : { to: filter.to }) });
     } else if (filter.from.length > 0 || filter.to.length > 0) {
-      filterValues.push({
+      tableFilters.push({
         target: 'dimensionRange',
         queryField,
         ...(filter.from.length > 0 ? { from: filter.from } : {}),
@@ -111,7 +126,7 @@ export function composeEffectiveQuery(
     language: query.language,
     body: query.body,
     fieldMappings: dataSource.fields,
-    ...(term && queryFields ? { search: { queryFields: queryFields as string[], query: term } } : {}),
+    ...(term && queryFields ? { search: { queryFields: queryFields as string[], query: term, ...(search?.match ? { match: search.match } : {}) } } : {}),
     ...(sort.length > 0 ? { sort } : {}),
     ...(binding.pagination
       ? {
@@ -121,7 +136,8 @@ export function composeEffectiveQuery(
           }
         }
       : {}),
-    filterValues
+    ...(tableFilters.length ? { tableFilters, bindingValues: filterValues } : {}),
+    filterValues: [...filterValues, ...tableFilters]
   };
 }
 
@@ -142,4 +158,13 @@ export async function executeQuery(
   } catch (cause) {
     return { status: 'error', error: preservedQueryError(cause) };
   }
+}
+
+
+/** Keep complete legacy predicates and provenance synchronized when resolving result bindings. */
+export function bindQueryResultValues(query: EffectiveQuery, values: EffectiveQuery['filterValues']): void {
+  const targets = new Set(values.flatMap(value => value.target === 'dimension' ? [value.queryField] : []));
+  const bind = (current: EffectiveQuery['filterValues']) => [...current.filter(value => value.target !== 'dimension' || !targets.has(value.queryField)), ...values];
+  query.filterValues = bind(query.filterValues);
+  if (query.bindingValues) query.bindingValues = bind(query.bindingValues);
 }

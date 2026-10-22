@@ -17,7 +17,7 @@ it.each([fixture, october])('HTTP accepts ISO and compact $month identically for
   const endpoint=`http://127.0.0.1:${(server.address() as AddressInfo).port}${DQE_EXECUTE_PATH}`;
   try {
     for(const suffix of ['', '-stages']) {
-      const item=structuredClone(document.dataSources[`project-efficiency-bottom5${suffix}`].source.query.body.dsl_list[0]);
+      const item=structuredClone(document.dataSources[`project-efficiency-bottom5${suffix}`].source.query.body!.dsl_list[0]);
       if(suffix)item.filter.dims=[{dim_name:'商务编号',dim_value_list:dataset.projects.slice(0,5).map(row=>row['商务编号'])}];
       const results=[];
       for(const month of [dataset.month,`${dataset.month.slice(0,4)}-${dataset.month.slice(4)}`]) {
@@ -40,7 +40,7 @@ it.each([fixture, october])('HTTP accepts ISO and compact $month identically for
 it.each([fixture,october])('real local HTTP: $month uses its own identifiers in both Top5 tables and export', async dataset => {
   const document=JSON.parse(readFileSync(new URL('../../../pages/business-sdt-cascade-example.json',import.meta.url),'utf8'));
   for (const rank of ['bottom5','top5']) for (const suffix of ['','-stages']) {
-    const time=document.dataSources[`project-efficiency-${rank}${suffix}`].source.query.body.dsl_list[0].filter.time;
+    const time=document.dataSources[`project-efficiency-${rank}${suffix}`].source.query.body!.dsl_list[0].filter.time;
     time.start=dataset.month;time.end=dataset.month;
   }
   const parsed=parsePage(document);

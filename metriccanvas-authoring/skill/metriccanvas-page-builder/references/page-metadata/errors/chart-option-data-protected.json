@@ -1,0 +1,36 @@
+{
+  "case": "chart-option-data-protected",
+  "invariant": "chart-echarts-option",
+  "expected": [
+    {
+      "type": "CHART_OPTION_ERROR",
+      "message": "禁止覆盖引擎数据、结构、交互或资源路径：data",
+      "paths": [
+        "/sections/0/components/1/props/echartsOption/series/0/data"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "echartsOption": {
+                "series": [
+                  {
+                    "data": [
+                      99
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/chart-option-data-protected.json"
+}

@@ -1,3 +1,6 @@
+import {ordinaryQuery} from './time-mode';
+import {queryFilterIds} from './amount-filter';
+import {fieldName} from './field';
 import type { Page } from './page';
 import type { TypedError } from './errors';
 import { walkPageComponents } from './component-walk';
@@ -23,13 +26,13 @@ export function pagedJoinErrors(page: Page): TypedError[] {
     const params=new Set<string>();
     for (const member of Object.values(source.members)) {
       const ref = page.dataSources[member.source];
-      if (ref?.source.type === 'query') { Object.keys(ref.source.query.filterBindings ?? {}).forEach(id => bindings.add(id));queryParams(ref.source.query).forEach(id=>params.add(id)); }
+      if (ref?.source.type === 'query') { queryFilterIds(ref.source.query).forEach(id => bindings.add(id));queryParams(ref.source.query).forEach(id=>params.add(id)); }
     }
     for (const [name, member] of Object.entries(source.members)) {
       const mp = `${path}/source/members/${ptr(name)}`;
       const ref = page.dataSources[member.source];
       if (!ref || ref.source.type !== 'query') { error(`${mp}/source`, '成员必须引用普通查询源'); continue; }
-      const order = ref.source.query.body.dsl_list[0]?.order;
+      const order = ordinaryQuery(ref.source.query).body.dsl_list[0]?.order;
       if (ref.compute?.length || ref.source.query.resultBindings?.length || ref.source.resultScope !== 'complete' ||
         (order && typeof order === 'object' && ('limit' in order || 'offset' in order))) error(`${mp}/source`, '成员必须无计算、无结果绑定、无业务窗口且声明完整');
       const field = ref.fields[member.key.field];
@@ -70,7 +73,7 @@ export function pagedJoinErrors(page: Page): TypedError[] {
         if (component.props.rowKey !== source.rowKey) error(`${cp}/props/rowKey`, '表格行键必须使用组合业务行键');
         const visit = (columns: typeof component.props.columns) => columns.forEach(col => {
           if (col.kind === 'group') return visit(col.children);
-          const field = typeof col.field === 'string' ? col.field : col.field.field;
+          const field = fieldName(col.field);
           if (col.sortable && !source.ordering.sortableFields.includes(field)) error(`${cp}/props/columns`, '交互排序字段必须在组合排序声明中');
         });
         visit(component.props.columns);
@@ -79,6 +82,7 @@ export function pagedJoinErrors(page: Page): TypedError[] {
     if (consumers !== 1) error(path, '组合源必须由一张查询分页表独占');
     const initial = source.initial;
     if (initial) {
+      if (initial.view.search?.match === 'equals' && initial.view.search.fields.length !== 1) error(`${path}/source/initial/view/search`, '等值搜索只允许一个字段');
       if (initial.view.pageIndex !== 0 || initial.view.pageSize !== source.pagination.pageSize || JSON.stringify(initial.view.sort) !== JSON.stringify(source.ordering.default) || initial.view.predicates.length || initial.view.search?.query.trim()) error(`${path}/source/initial/view`, '组合初始行必须匹配默认视图');
       const fields = Object.fromEntries(Object.entries(data.fields).map(([id, field]) => [id, queryResultFieldContract(field)]));
       if (initial.rows.length !== Math.min(initial.totalCount, source.pagination.pageSize) || !validateContractRows(initial.rows, fields).ok) error(`${path}/source/initial/rows`, '组合初始行必须符合最终字段契约及完整第一页');

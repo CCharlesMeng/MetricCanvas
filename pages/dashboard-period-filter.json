@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.27",
+  "schemaVersion": "6.41",
   "id": "dashboard-period-filter",
   "layout": "dashboard",
   "filters": [
@@ -8,11 +8,14 @@
       "type": "timeRange",
       "display": "period",
       "precision": "date",
-      "label": "统计期间",
+      "label": "统计年份",
       "required": true,
       "default": {
-        "mode": "month"
-      }
+        "mode": "year"
+      },
+      "periodModes": [
+        "year"
+      ]
     }
   ],
   "dataSources": {
@@ -175,6 +178,17 @@
   ],
   "meta": {
     "title": "Dashboard 期间选择与查询",
-    "description": "合成验收数据；通过网关请求中的实际时间范围验证联动。"
+    "description": "合成验收数据；统一页头仅选年份，查询完整自然年，未绑定查询保持不变。"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "Dashboard 期间选择与查询"
+    },
+    "filterIds": [
+      "period-filter"
+    ],
+    "presentation": {
+      "layout": "inline"
+    }
   }
 }

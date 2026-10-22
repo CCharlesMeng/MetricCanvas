@@ -1,3 +1,4 @@
+import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import {
   componentIdZ,
@@ -32,6 +33,7 @@ const categoryBreakdownColumnZ = z
 export const categoryBreakdownComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('categoryBreakdown'),
     layout: componentLayoutZ,
     data: mainDataZ,

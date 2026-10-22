@@ -1,0 +1,73 @@
+{
+  "code_fingerprint": "f9fe044b653e76a63732f6211b74c6a6dc2b2d8eb633d08775c3c19c4f08c80f",
+  "files": [
+    {
+      "path": "ci-closure.json",
+      "sha256": "f1cc50162858423b73bcd88151de64ced08ea7a892edff47c0652fd4a71a63b2"
+    },
+    {
+      "path": "first-ci-result.json",
+      "sha256": "cdabec3a341ca974193b3d4e455e675a1fbde51a07cf9f0d84edb960be8bc302"
+    },
+    {
+      "path": "logs/ci-closure/build.log",
+      "sha256": "180bca20313b52aef3b0792a6763422a3bcf543fdbb11b604fcf9e8286e0ea1e"
+    },
+    {
+      "path": "logs/ci-closure/consumer-green.log",
+      "sha256": "302d6ffec3e50671736e2196e5fb4aadb08ddd2eddfe147288dbfa2c9062f034"
+    },
+    {
+      "path": "logs/ci-closure/consumer-red.log",
+      "sha256": "5739d6616099d63f2bf773941778b14487cc10cbc8d6fcf7a7d3378e7a8791ae"
+    },
+    {
+      "path": "logs/ci-closure/contracts.log",
+      "sha256": "891e26c29c537d78b0b3637735d2526f3a11062dc39e34389016093d8b81758e"
+    },
+    {
+      "path": "logs/ci-closure/execution-red.log",
+      "sha256": "8bc4c9cc72e9f583d7478c17be3476f3d870e84b64c27a5b698bc9b1c5e2702e"
+    },
+    {
+      "path": "logs/ci-closure/first-ci.log",
+      "sha256": "299816f44ec7abe6923cc7f8d599fd99a83bba70ef141a18ab8381876c98e9cc"
+    },
+    {
+      "path": "logs/ci-closure/first-full-installed.log",
+      "sha256": "7b3d34b7aedc02e214482c88bd3b199523a107fcd3e86884552e993d889e8086"
+    },
+    {
+      "path": "logs/ci-closure/focused.log",
+      "sha256": "fc8fa3880f85f1ca5a3071d05645ffab1d52623957358e077fcdfe05d673e887"
+    },
+    {
+      "path": "logs/ci-closure/installed.log",
+      "sha256": "ad44adb7ae0134f87467387fc6af3adb08873765713005f802135169711dd91f"
+    },
+    {
+      "path": "logs/ci-closure/playground.log",
+      "sha256": "4c6f2187b69e38805f71652f1a4cb52d1fb45945313a7819a674b97234f1c452"
+    },
+    {
+      "path": "logs/ci-closure/second-full-installed.log",
+      "sha256": "2209855210e540c286afb9e14945935d4d54460e4074a18467bea5e5204f4cf4"
+    },
+    {
+      "path": "logs/ci-closure/standalone-skill.log",
+      "sha256": "ea1441483c4f2c215095aa50835f6bf2cf0a952333b6599e88712b02874931e0"
+    },
+    {
+      "path": "logs/ci-closure/types.log",
+      "sha256": "b9559a795792e9939aa8b1f27a6ecb41742f96518ed213f120d9b370f2d9a3d0"
+    },
+    {
+      "path": "logs/ci-closure/unit.log",
+      "sha256": "aa862776c0d38607572475f6100a543244eeca5a60964d34d988d62a2267ac78"
+    },
+    {
+      "path": "reproduction/complete-installed-embed.mjs",
+      "sha256": "fccb97ffb18094a827742275f30e8492853a2da6b481fa8f6f793b07cf9395f8"
+    }
+  ]
+}

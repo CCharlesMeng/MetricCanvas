@@ -1,0 +1,34 @@
+{
+  "case": "chart-option-series-overflow",
+  "invariant": "chart-echarts-option",
+  "expected": [
+    {
+      "type": "CHART_OPTION_ERROR",
+      "message": "series 补丁越界：最多 2 项，不允许新增系列或轴",
+      "paths": [
+        "/sections/0/components/1/props/echartsOption/series/2"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "echartsOption": {
+                "series": [
+                  "…",
+                  "…",
+                  {}
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/chart-option-series-overflow.json"
+}

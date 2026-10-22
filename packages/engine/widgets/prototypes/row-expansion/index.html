@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>子表格 · 交互原型</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f6f8;color:#191919;font:14px/1.5 Helvetica,Arial,"PingFang SC",sans-serif}main{max-width:1320px;margin:32px auto;padding:0 24px}h1{font-size:26px;margin:8px 0}h2{font-size:17px;margin:0}p{color:#666;margin:8px 0}.tag{color:#1476ff;font-size:12px;background:#eaf2ff;padding:3px 9px;border-radius:4px}.intro{margin-bottom:22px}.panel{background:white;border:1px solid #e5e6e8;border-radius:8px;margin-bottom:18px;padding:20px}.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}input{font:inherit;border:1px solid #c2c2c2;border-radius:5px;padding:6px 10px;min-width:180px}button,select{font:inherit;border:1px solid #c2c2c2;border-radius:5px;background:white;color:#191919;padding:6px 14px;cursor:pointer}button:hover{color:#1476ff;border-color:#1476ff}button:focus-visible,select:focus-visible{outline:2px solid #1476ff;outline-offset:2px}button[disabled]{opacity:.45;cursor:default}.primary,button[aria-selected=true]{background:#1476ff;color:white;border-color:#1476ff}.toolbar{display:flex;justify-content:space-between;align-items:center;margin:20px 0 14px}.table-wrap{overflow:auto}table{width:100%;min-width:760px;border-collapse:collapse;table-layout:fixed}th{height:40px;background:#f5f5f5;font-weight:600;color:#595959;text-align:left;position:relative}th:not(:last-child):after{content:"";position:absolute;right:0;top:12px;height:16px;border-right:1px solid #ddd}td,th{padding:12px 16px}td{height:48px;border-bottom:1px solid #f0f0f0;vertical-align:top}tr.parent:hover td{background:#fafafa}.num{text-align:right;font-variant-numeric:tabular-nums}.expand{border:0;width:28px;height:28px;padding:0;background:transparent;display:inline-grid;place-items:center}.chevron{border-right:1.5px solid currentColor;border-top:1.5px solid currentColor;width:7px;height:7px;transform:rotate(45deg);display:block}.expand[aria-expanded=true] .chevron{transform:rotate(135deg)}.detail-cell{padding:16px 20px 22px 56px;background:#fff}.child{overflow:auto;background:#fff;border:0;border-radius:0;padding:0}.child-head{display:flex;justify-content:space-between;margin-bottom:12px;align-items:center}.child h3{margin:0;font-size:14px}.child table{min-width:580px}.child th{height:36px}.child td{height:42px;padding-top:10px;padding-bottom:10px}.pagination{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:12px;color:#666;font-size:12px}.pagination button{font-size:12px;padding:3px 10px}.message{padding:28px;text-align:center;color:#666}.message.error{color:#c7000b;background:#fff}.status{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}.status>div{background:#f7f8fa;padding:12px;border-radius:4px}.status strong{display:block;font-size:18px;margin-top:5px}.subtle{font-size:12px;color:#777}.bottom{display:grid;grid-template-columns:1fr 1fr;gap:18px}.state{white-space:pre-wrap;font:12px/1.6 ui-monospace,monospace;background:#f8f9fb;padding:12px;max-height:220px;overflow:auto}.guide{margin:14px 0}.guide button{margin:4px 5px 4px 0}#notice{color:#1476ff;min-height:21px}.foot{padding:12px 0 32px;color:#777}.controls input[type=checkbox]{min-width:0;accent-color:#1476ff}.column-sort{font:inherit;font-weight:600;border:0;background:transparent;padding:0;color:inherit}.tabs{display:flex;gap:8px;flex-wrap:wrap}@media(max-width:800px){.bottom{grid-template-columns:1fr}.status{grid-template-columns:1fr 1fr}main{padding:0 12px}}
+</style>
+<main>
+ <div class="intro"><span class="tag">PROTOTYPE · 合成数据 · 待确认</span><h1>订单汇总中的行内子表格</h1><p>验证：保留父表上下文的同时，展开不同列结构的订单明细；多行数据与分页是否独立？筛选变化后，旧响应会不会回到页面？</p><p class="subtle">参考 TinyVue OS 展开行。此文件演示拟议交互和状态模型，尚未接入 MetricCanvas 页面协议或 DQE。</p></div>
+ <section class="panel"><div class="controls">
+ <label>明细来源 <select id="source"><option value="query">展开后查询</option><option value="recordList">父行自带明细</option></select></label>
+ <label>展开方式 <select id="mode"><option value="multiple">多行同时展开</option><option value="single">每次只展开一行</option></select></label>
+<label for="period">期间</label><select id="period" aria-label="期间"><option>2026-09</option><option>2026-10</option></select>
+ <button data-action="collapse">全部收起</button><button data-action="reset">重置演示</button>
+ </div><div class="controls" style="margin-top:12px"><span class="subtle">按需添加（原型配置）：</span><label><input type="checkbox" id="extra-title"> 子表标题</label><label><input type="checkbox" id="extra-search"> 搜索</label><label><input type="checkbox" id="extra-sort"> 列排序</label></div><div class="status" id="status" aria-live="polite"></div></section>
+ <section class="panel"><div class="toolbar"><div><h2>客户订单汇总</h2><p class="subtle">点击首列箭头查看该客户的订单明细。子表列与父表独立。</p></div><button data-action="sort">本页客户排序 ↕</button></div>
+ <div class="table-wrap"><table aria-label="客户订单汇总"><thead><tr><th style="width:50px"><span class="subtle">展开</span></th><th>客户</th><th style="width:100px">区域</th><th class="num" style="width:110px">订单数</th><th class="num" style="width:170px">订单金额（元）</th><th style="width:160px">明细场景</th></tr></thead><tbody id="body"></tbody></table></div>
+ <div class="pagination"><span id="parent-page"></span><button data-action="parent-page">切换父表页</button></div></section>
+ <section class="panel"><h2>按场景走一遍</h2><p class="subtle">查询由你手动返回，便于观察加载、取消和迟到响应；这些按钮只属于原型。</p><div class="tabs" role="tablist" aria-label="演示场景">
+ <button role="tab" data-scenario="normal">多行与独立分页</button><button role="tab" data-scenario="empty">空结果与失败重试</button><button role="tab" data-scenario="late">取消与迟到响应</button></div><div id="guide" class="guide"></div><div id="notice" role="status"></div></section>
+ <div class="bottom"><section class="panel"><h2>当前会话</h2><p class="subtle">每次动作后更新。行键、期间、页码、搜索、排序与请求代次共同隔离结果。</p><div id="instances" class="state"></div></section><section class="panel"><h2>最近事件</h2><p class="subtle">已确认：折叠即销毁，重新展开从第一页查询；同页纯排序保留展开。</p><div id="events" class="state"></div></section></div>
+ <div class="foot">已确认：单层白底子表 · 默认多行展开 · 查询来源按页请求 · 父行明细本地分页 · 默认仅内容与分页 · 导出范围待确认。</div>
+</main>
+<script>
+// Throwaway state model: no persistence, no network, no production imports.
+const parents=[{id:'C01',name:'北辰科技',area:'华东',count:5,amount:486000,kind:'正常 · 5条'}, {id:'C02',name:'远山制造',area:'华南',count:4,amount:382000,kind:'正常 · 4条'}, {id:'C03',name:'海川能源',area:'华北',count:0,amount:0,kind:'空结果'}, {id:'C04',name:'青禾零售',area:'华东',count:3,amount:165000,kind:'首次查询失败'}];
+const products=['云平台订阅','实施服务','数据治理','运维支持','扩容服务'];
+function dataFor(id,period){const p=parents.find(p=>p.id===id);return Array.from({length:p.count},(_,i)=>({id:`${period}-${id}-${i+1}`,product:products[i],amount:Math.round(p.amount/p.count)+(period==='2026-10'?1000:0),status:i%2?'待交付':'已交付'}));}
+function initial(){return {source:'query',mode:'multiple',period:'2026-09',page:0,reverse:false,serial:0,instances:{},requests:[],attempts:{},events:[],notice:'',scenario:'normal',extras:{title:false,search:false,sort:false}};}
+function visible(s){const list=parents.slice(s.page*2,s.page*2+2);return s.reverse?list.reverse():list;}
+function matching(id,period,search,sort){let rows=dataFor(id,period).filter(r=>!search||[r.id,r.product,r.status].some(v=>v.includes(search)));if(sort)rows.sort((a,b)=>(a.product.localeCompare(b.product,'zh-CN')*(sort==='asc'?1:-1))||a.id.localeCompare(b.id));return rows;}
+function reduce(s,a){s=structuredClone(s);const note=t=>{s.notice=t;s.events.unshift(t);s.events=s.events.slice(0,12);};
+ const clear=why=>{s.instances={};note(why);};
+ const request=id=>{const i=s.instances[id];i.token=++s.serial;i.status='loading';i.rows=[];s.attempts[id]=(s.attempts[id]||0)+1;s.requests.push({id,token:i.token,period:i.period,page:i.page,size:2,search:i.search,sort:i.sort,fail:id==='C04'&&s.attempts[id]===1,delivered:false});note(`${id} 查询 #${i.token}：offset=${i.page*2}, limit=2；搜索“${i.search||'全部'}”`);};
+ if(a.type==='reset')return initial();
+ if(a.type==='configure'){s[a.key]=a.value;clear('条件改变：所有展开实例与结果已销毁');}
+ if(a.type==='extras'){
+   s.extras[a.key]=a.value;note('附加呈现配置已更新：只在显式启用时显示');
+   if(!a.value&&['search','sort'].includes(a.key))for(const [id,i] of Object.entries(s.instances)){if(!i[a.key])continue;i[a.key]='';i.page=0;i.total=undefined;if(s.source==='query')request(id);else {i.rows=matching(id,i.period,i.search,i.sort);i.total=i.rows.length;}}
+ }
+ if(a.type==='collapse')clear('所有子表已折叠；未完成响应不再接收');
+ if(a.type==='parent-page'){s.page=1-s.page;clear('父表翻页：旧页展开实例已销毁');}
+ if(a.type==='sort'){s.reverse=!s.reverse;const ids=visible(s).map(p=>p.id);for(const id in s.instances)if(!ids.includes(id))delete s.instances[id];note('按稳定客户行键保留仍在当前页的展开实例');}
+ if(a.type==='toggle'){
+   if(s.instances[a.id]){delete s.instances[a.id];note(`${a.id} 已折叠，当前实例销毁`);}
+   else {if(s.mode==='single')s.instances={};s.instances[a.id]={token:0,status:'ready',page:0,rows:s.source==='query'?[]:dataFor(a.id,s.period),total:s.source==='query'?undefined:dataFor(a.id,s.period).length,period:s.period,search:'',sort:''};if(s.source==='query')request(a.id);else note(`${a.id} 展开：直接读取父行明细，未发请求`);}
+ }
+ if(a.type==='respond'||a.type==='respond-error'){
+   const targets=s.requests.filter(r=>!r.delivered&&(!a.id||r.id===a.id));
+   for(const req of targets){req.delivered=true;const i=s.instances[req.id];
+    if(!i||i.token!==req.token||i.period!==req.period){note(`丢弃迟到响应 ${req.id} #${req.token}`);continue;}
+    const failed=req.fail||a.type==='respond-error';i.status=failed?'error':'ready';
+    if(failed){i.rows=[];note(`${req.id} 第${req.page+1}页失败，仅影响本行，可重试`);continue;}
+    const all=matching(req.id,req.period,req.search,req.sort);i.rows=all.slice(req.page*req.size,(req.page+1)*req.size);i.total=all.length;
+    note(`${req.id} #${req.token} 返回本页 ${i.rows.length} 条 / 匹配共 ${i.total} 条`);
+   }if(!targets.length)note('没有待返回的请求');
+ }
+ if(a.type==='retry'&&s.instances[a.id])request(a.id);
+ if(a.type==='child-page'&&s.instances[a.id]){const i=s.instances[a.id];if(i.total===undefined||!i.total){note('请先返回明细第一页');return s;}const page=i.page+(a.direction||1);if(page<0||page>=Math.ceil(i.total/2))return s;i.page=page;if(s.source==='query')request(a.id);else note(`${a.id} 本地子表翻页，没有新增请求`);}
+ if((a.type==='child-search'||a.type==='child-sort')&&s.instances[a.id]){const i=s.instances[a.id];if(a.type==='child-search')i.search=a.value.trim();else i.sort=i.sort==='asc'?'desc':'asc';i.page=0;i.total=undefined;if(s.source==='query')request(a.id);else {i.rows=matching(a.id,i.period,i.search,i.sort);i.total=i.rows.length;note(`${a.id} 本地搜索/排序，回到第一页`);}}
+ if(a.type==='scenario'){s=initial();s.scenario=a.id;if(a.id==='empty')s.page=1;}
+ return s;
+}
+let state=initial();
+const money=n=>n.toLocaleString('zh-CN');
+const escapeText=s=>s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+function child(p,i){let content='';const remote=state.source==='query';
+ if(i.status==='loading')content=`<div class="message">正在查询 ${p.name} · 第 ${i.page+1} 页… <button data-action="respond" data-id="${p.id}">模拟返回本行</button> <button data-action="respond-error" data-id="${p.id}">模拟本页失败</button></div>`;
+ else if(i.status==='error')content=`<div class="message error">第 ${i.page+1} 页暂时无法加载 <button data-action="retry" data-id="${p.id}">重试本页</button></div>`;
+ else if(!i.rows.length)content='<div class="message">当前条件暂无订单明细</div>';
+ else {const rows=remote?i.rows:i.rows.slice(i.page*2,i.page*2+2);content=`<table aria-label="${p.name}的订单明细"><thead><tr><th>订单号</th><th>${state.extras.sort?`<button class="column-sort" data-action="child-sort" data-id="${p.id}" aria-label="按产品排序${p.name}明细">产品 / 服务 ${i.sort==='asc'?'↑':i.sort==='desc'?'↓':'↕'}</button>`:'产品 / 服务'}</th><th class="num">金额（元）</th><th>交付状态</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.id}</td><td>${r.product}</td><td class="num">${money(r.amount)}</td><td>${r.status}</td></tr>`).join('')}</tbody></table>`;}
+ const pages=i.total===undefined?'?':Math.max(1,Math.ceil(i.total/2));
+ const footer=i.total===undefined?'':`<div class="pagination"><span>匹配共 ${i.total} 条 · 第 ${i.page+1} / ${pages} 页</span><button data-action="child-page" data-direction="-1" data-id="${p.id}" ${i.page===0?'disabled':''}>上一页明细</button><button data-action="child-page" data-id="${p.id}" ${i.page+1>=pages?'disabled':''}>下一页明细</button></div>`;
+ const title=state.extras.title?`<div class="child-head"><h3>${p.name} · 订单明细</h3></div>`:'';
+ const search=state.extras.search?`<div class="controls" style="margin-bottom:12px"><input id="search-${p.id}" aria-label="搜索${p.name}订单" placeholder="搜索订单、产品或状态" value="${escapeText(i.search)}"><button data-action="child-search" data-id="${p.id}">搜索明细</button></div>`:'';
+ return `<tr><td colspan="6" class="detail-cell"><div class="child">${title}${search}${content}${footer}</div></td></tr>`;
+}
+function render(){for(const key of ['source','mode','period'])document.getElementById(key).value=state[key];for(const key of ['title','search','sort'])document.getElementById('extra-'+key).checked=state.extras[key];
+ document.getElementById('body').innerHTML=visible(state).map(p=>{const i=state.instances[p.id];return `<tr class="parent"><td><button class="expand" aria-expanded="${!!i}" aria-label="${i?'收起':'展开'}${p.name}" data-action="toggle" data-id="${p.id}"><span class="chevron"></span></button></td><td>${p.name}</td><td>${p.area}</td><td class="num">${p.count}</td><td class="num">${money(p.amount+(state.period==='2026-10'?p.count*1000:0))}</td><td class="subtle">${p.kind}</td></tr>${i?child(p,i):''}`;}).join('');
+ document.getElementById('parent-page').textContent=`父表第 ${state.page+1} / 2 页`;
+ const pending=state.requests.filter(r=>!r.delivered).length;const active=Object.values(state.instances);
+ document.getElementById('status').innerHTML=[['当前期间',state.period],['展开客户',active.length],['累计查询',state.requests.length],['待模拟返回',pending]].map(([k,v])=>`<div><span class="subtle">${k}</span><strong>${v}</strong></div>`).join('');
+ document.getElementById('instances').textContent=active.length?Object.entries(state.instances).map(([id,i])=>`${id} · ${i.period} · 请求 #${i.token}\n${{loading:'加载中',ready:'已完成',error:'失败'}[i.status]} · 已载入${i.rows.length}条 / 匹配共${i.total??'?'}条 · 子表第${i.page+1}页\noffset=${i.page*2}, limit=2 · 搜索=${i.search||'全部'} · 排序=${i.sort||'行键默认'}`).join('\n\n'):'没有展开实例';
+ document.getElementById('events').textContent=state.events.join('\n')||'尚无事件';document.getElementById('notice').textContent=state.notice;
+ document.querySelectorAll('[data-scenario]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.scenario===state.scenario)));
+ const guides={normal:['同时展开两个客户，返回第一页。北辰翻页后需再次返回；只有北辰请求下一窗口，远山保持原页。',[['展开北辰科技','toggle','C01'],['展开远山制造','toggle','C02'],['返回所有请求','respond'],['北辰明细下一页','child-page','C01'],['返回下一页','respond','C01']]],empty:['海川无订单；青禾首次失败，重试后可正常返回。',[['展开海川能源','toggle','C03'],['展开青禾零售','toggle','C04'],['返回所有请求','respond'],['重试青禾','retry','C04'],['再次返回','respond']]],late:['查询未完成就收起；重新展开后返回旧请求，旧代次结果须丢弃。也可翻页后连续发起下一页，观察窗口代次隔离。',[['展开北辰科技','toggle','C01'],['收起北辰科技','toggle','C01'],['重新展开','toggle','C01'],['返回全部含迟到请求','respond']]]};
+ const [desc,buttons]=guides[state.scenario];document.getElementById('guide').innerHTML=`<p>${desc}</p>`+buttons.map(([label,type,id])=>`<button data-action="${type}" ${id?`data-id="${id}"`:''}>${label}</button>`).join('');}
+ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;if(b.dataset.scenario)state=reduce(state,{type:'scenario',id:b.dataset.scenario});else if(b.dataset.action)state=reduce(state,{type:b.dataset.action,id:b.dataset.id,direction:Number(b.dataset.direction)||1,value:b.dataset.action==='child-search'?document.getElementById('search-'+b.dataset.id).value:''});render();});
+ for(const key of ['title','search','sort'])document.getElementById('extra-'+key).addEventListener('change',e=>{state=reduce(state,{type:'extras',key,value:e.target.checked});render();});
+ for(const key of ['source','mode','period'])document.getElementById(key).addEventListener('change',e=>{state=reduce(state,{type:'configure',key,value:e.target.value});render();});render();
+</script>
+</html>

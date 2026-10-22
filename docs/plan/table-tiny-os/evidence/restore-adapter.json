@@ -1,0 +1,494 @@
+{
+  "schema_version": 2,
+  "rules": {
+    "R3-1-ordinary-font": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"ordinary/ordinary-table\"] .table-widget tbody td:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "font-size",
+          "line-height",
+          "color",
+          "font-family"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-2-ordinary-header": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"ordinary/ordinary-table\"] .table-widget thead th:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "height",
+          "padding",
+          "background-color",
+          "color",
+          "font-weight"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-3-ordinary-divider": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"ordinary/ordinary-table\"] .table-widget thead th:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "width",
+          "height",
+          "background-color"
+        ],
+        "pseudo": "::before"
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-3-ordinary-borders": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"ordinary/ordinary-table\"] .table-widget tbody td:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "border-right-width",
+          "border-bottom"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-4-ordinary-body": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"ordinary/ordinary-table\"] .table-widget tbody td:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "height",
+          "padding"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-5-ordinary-sort": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"ordinary/ordinary-table\"] .table-widget .sort-hint svg"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "width",
+          "fill"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-1-forecast-font": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"forecast/forecast-table\"] .table-widget tbody td:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "font-size",
+          "line-height",
+          "color",
+          "font-family"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-2-forecast-header": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"forecast/forecast-table\"] .table-widget thead th:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "height",
+          "padding",
+          "background-color",
+          "color",
+          "font-weight"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-3-forecast-divider": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"forecast/forecast-table\"] .table-widget thead th:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "width",
+          "height",
+          "background-color"
+        ],
+        "pseudo": "::before"
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-3-forecast-borders": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"forecast/forecast-table\"] .table-widget tbody td:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "border-right-width",
+          "border-bottom"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-4-forecast-body": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"forecast/forecast-table\"] .table-widget tbody td:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "height",
+          "padding"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-5-forecast-sort": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"forecast/forecast-table\"] .table-widget .sort-hint svg"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "width",
+          "fill"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-1-embedded-font": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"embedded/embedded-table\"] .table-widget tbody td:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "font-size",
+          "line-height",
+          "color",
+          "font-family"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-2-embedded-header": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"embedded/embedded-table\"] .table-widget thead th:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "height",
+          "padding",
+          "background-color",
+          "color",
+          "font-weight"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-3-embedded-divider": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"embedded/embedded-table\"] .table-widget thead th:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "width",
+          "height",
+          "background-color"
+        ],
+        "pseudo": "::before"
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-3-embedded-borders": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"embedded/embedded-table\"] .table-widget tbody td:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "border-right-width",
+          "border-bottom"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-4-embedded-body": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"embedded/embedded-table\"] .table-widget tbody td:first-child"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "height",
+          "padding"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-5-embedded-sort": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-component=\"embedded/embedded-table\"] .table-widget .sort-hint svg"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "width",
+          "fill"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-5-active-sort": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".sort-state svg"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "width",
+          "fill"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R3-5-official-paths": {
+      "source_files": [
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte"
+      ]
+    },
+    "R4-1-panel": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".menu"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "min-width",
+          "box-shadow"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R4-1-open-icon": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".filter summary svg"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "width",
+          "fill"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R4-2-left-shadow": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "th.fixed-left-boundary"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "width",
+          "box-shadow"
+        ],
+        "pseudo": "::after"
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R5-1-empty": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": ".empty-state"
+        }
+      ],
+      "collect": {
+        "kind": "style",
+        "single": true,
+        "properties": [
+          "display",
+          "min-height",
+          "padding",
+          "align-items",
+          "justify-content"
+        ]
+      },
+      "source_files": [
+        "packages/engine/widgets/src/components/table/Table.svelte"
+      ]
+    },
+    "R6-1-page-overflow": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "html"
+        }
+      ],
+      "collect": {
+        "kind": "overflow"
+      }
+    },
+    "R6-1-fixed-banks-overlap": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "tbody tr:first-child td"
+        }
+      ],
+      "collect": {
+        "kind": "overlap"
+      }
+    }
+  }
+}

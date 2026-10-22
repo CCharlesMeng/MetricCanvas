@@ -1,0 +1,107 @@
+{
+  "base_ref": "9afcf63726dde69d3674ea311ef88b1e91a05f90",
+  "source": "Latest origin/main plus scoped table rendering patch; original source worktree preserved",
+  "files": [
+    {
+      "path": "packages/engine/widgets/src/components/table/Table.svelte",
+      "sha256": "9a5284b546740ce37d292c6e9273bf8505f61897c3c29d463690d4487293ebfc"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+      "sha256": "7872c5cde177108ede04aaa6e3c6dcf30f7e3a32589f6700ad8f71a8c2c364bd"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/table/table-geometry.ts",
+      "sha256": "2a4551c9b3c8011f07f5f06bcfa53087f7fc4e33b6ed569128141393c6a8d170"
+    },
+    {
+      "path": "packages/engine/widgets/src/components/table/TableToolbar.svelte",
+      "sha256": "8f33f1ab60a00e14eba90964d23ff2a82b3137d38626808fe90751d4d7758a3c"
+    },
+    {
+      "path": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "sha256": "556ecde55a1f873db032a41de7caf0f6879671d986a3f724a7090fda3fe51a18"
+    },
+    {
+      "path": "packages/embed/tests/browser/table-tiny-os.spec.ts",
+      "sha256": "1e5d739f2116a1bb6408fae0f756dd8036de6dbbfba114aca01cd6dec48d3ec9"
+    },
+    {
+      "path": "packages/embed/tests/browser/table-toolbar.spec.ts",
+      "sha256": "3269e8dae72a68865f3eea06342af0bde7b563c914dfd471768ae18025f096a4"
+    },
+    {
+      "path": "packages/embed/tests/browser/table-search-options.spec.ts",
+      "sha256": "e6ec9dbd09cdb0521c074b879e3801c17977436575dfea94e770ca1e49928e8a"
+    },
+    {
+      "path": "packages/embed/tests/fixtures/tiny-os-grid-reference.json",
+      "sha256": "2ab09a5b2fdfbf31ae4f6938c4a308062ae0630fb2023cfd987d77f2691dc043"
+    },
+    {
+      "path": "packages/embed/tests/fixtures/tiny-os-grid.css",
+      "sha256": "0a28d81088961dfc5972eaf3e29af1e637ca0e777e1e677045b2d008f87ac21b"
+    },
+    {
+      "path": "pages/table-tiny-os.json",
+      "sha256": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+    },
+    {
+      "path": "apps/playground/page-catalog.json",
+      "sha256": "7934986062e67f31502e842b842427989361a89c166a5ca80e32ba3beb5b4de3"
+    },
+    {
+      "path": "docs/page-metadata/components/table.md",
+      "sha256": "0ea853254e38d0e2289e0b562a5842b94549910f2789556d9ca64738c86ef7f2"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "63f17f9b6cf5abb75bdcb9217e01bdba3d12ef2578403e256beb4316376d72a0"
+    }
+  ],
+  "commands": [
+    {
+      "command": "pnpm check",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm validate",
+      "exit_code": 0,
+      "pages": 54
+    },
+    {
+      "command": "pnpm authoring:contracts:check",
+      "exit_code": 0,
+      "product_files": 943,
+      "authoring_files": 4,
+      "interface_files": 1
+    },
+    {
+      "command": "python3 metriccanvas-authoring/scripts/check_bundle.py",
+      "exit_code": 0,
+      "digest_checks": 3302
+    },
+    {
+      "command": "pnpm --filter @metriccanvas/embed build",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm test packages/engine/widgets/tests/table-columns.test.ts packages/engine/widgets/tests/table-presentation.test.ts packages/engine/widgets/tests/table-rows.test.ts packages/engine/widgets/tests/table-view-state.test.ts packages/engine/widgets/tests/composite-card-surface.test.ts apps/playground/tests/page-catalog.test.ts",
+      "exit_code": 0,
+      "tests": 44
+    },
+    {
+      "command": "MC_EMBED_EXAMPLE_PORT=4185 pnpm --filter @metriccanvas/embed exec playwright test table-tiny-os.spec.ts table-toolbar.spec.ts table-search-options.spec.ts --workers=2 --reporter=json",
+      "exit_code": 0,
+      "stats": {
+        "startTime": "2026-10-20T09:42:17.800Z",
+        "duration": 8811.478,
+        "expected": 17,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    }
+  ],
+  "known_limit": "Full date calendar/enumeration/hover/focus/disabled pixel coverage remains unverified, as recorded in AT-01."
+}

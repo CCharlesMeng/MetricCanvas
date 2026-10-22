@@ -13,6 +13,8 @@
 | references/map-regions.json、assets/layouts/overview-map-led.json | 从实际底图和通用布局维护源生成；完整样例生成时必须校验 |
 | scripts/validate-page.mjs、scripts/THIRD-PARTY-LICENSES.md | 从产品校验器及锁定依赖生成，运行只依赖 Node 内建模块 |
 | references/knowledge.json | 锁定生成文件的版本与SHA256；不包含作者说明文件的哈希 |
+| references/authoring-knowledge/、scripts/read-knowledge.mjs | 从同一协议/语义生成；按主题或 Schema Pointer 返回局部知识，失败时深查完整参考 |
+| scripts/analyze-data.mjs | 从维护源打包；扫描页面、分块/检索用户MD、检查匹配报告和未执行查询候选；只读用户输入 |
 
 安装副本消费生成知识。维护者在产品维护仓库修改真源并生成整套文件，再交付完整目录；生成文件的直接修改会在下次更新被覆盖。流程改动不能改变协议字段语义，业务页面示例不能成为通用业务口径。
 

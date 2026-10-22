@@ -11,10 +11,12 @@ import type {
 } from './types';
 
 export { createDqeGateway };
+export {projectNavigationInputs} from '@metriccanvas/engine';
 export { prepareExecution, loadExecution, createLastFilterRecorder, ExecutionError } from '@metriccanvas/engine';
 export type { ExecutionBootstrap, ExecutionRequest, ExecutionTarget, ExecutionPort, LastFilterContext, LastFilterRequest, LastFilterPort, LastFilterStatus } from '@metriccanvas/engine';
 export type { DqeGatewayConfig } from '@metriccanvas/engine/dqe';
 export type {
+  DataPeriodFact,DisplayInputsSource,DisplayInputsSnapshot,
   MountOptions,
   RuntimeEvent,
   RuntimeHandle,
@@ -26,7 +28,7 @@ export type {
   DimensionValuesGateway,
   RuntimeDataGateway
 } from '@metriccanvas/engine';
-export type { AiSummaryConfig, RuntimeNavigation, RuntimeNavigationTarget } from '@metriccanvas/engine/ui';
+export type { AiSummaryConfig, NavigationInputContract, RuntimeNavigation, RuntimeNavigationTarget } from '@metriccanvas/engine/ui';
 
 interface EmbedRootExports {
   update(input: RuntimeInput): void;
@@ -88,7 +90,9 @@ export function mount(
 function runtimeInput(input: RuntimeInput): RuntimeInput {
   return {
     document: input.document,
+    ...(input.displayInputs!==undefined?{displayInputs:input.displayInputs}:{}),
     ...(input.execution !== undefined ? {execution:input.execution} : {}),
+    ...(input.filterEditing !== undefined ? { filterEditing: input.filterEditing } : {}),
     ...(input.navigation !== undefined ? { navigation: input.navigation } : {}),
     ...(input.dataGateway !== undefined
       ? { dataGateway: input.dataGateway }

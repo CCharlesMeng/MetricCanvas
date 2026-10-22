@@ -7,7 +7,7 @@ import type { DialogueAdapter } from '../../src/lib/dialogue/port';
 // The service factory only reads base; navigation itself is outside this SDK boundary.
 function navigation(): PlatformNavigation {
   return {
-    base: '/metrics', resolve: path => `/metrics${path}`,
+    base: '/metrics', replaceSearch:()=>{}, resolve: path => `/metrics${path}`,
     navigate: async () => false, canLeave: () => true,
     current: () => new URL('https://platform.test/metrics'),
     checkpoint: () => ({ href: 'https://platform.test/metrics', revision: 0 }),
@@ -63,4 +63,16 @@ describe('platform dialogue assembly', () => {
     await expect(platform.dialogueAdapter.mount({} as HTMLElement)).rejects.toThrow('未配置盘古静态资源地址和版本号');
     platform.session.destroy();
   });
+});
+
+
+it('shares the trusted candidate port with reading and workbench preview gateways',async()=>{
+  vi.stubGlobal('location',{origin:'https://platform.test'});
+  const session=createPlatformSession({readConfig:()=>({operatorId:'actor',workspaceId:'workspace',dqeEndpoint:'https://platform.test/dqe',pageMetadataBaseUrl:'https://platform.test/pages',authToken:'token'})});
+  const fetchFilterCandidates=vi.fn(async()=>({kind:'unconfigured' as const}));
+  const services=createPlatformServices(session,navigation(),{embedded:true,filterCandidates:{fetchFilterCandidates}});
+  const request={filterId:'model',dimension:'model',constraints:{dimensions:{},times:{}}},signal=new AbortController().signal;
+  await services.dataGateway.fetchFilterCandidates!(request,{signal});
+  await services.workbenchGateway.fetchFilterCandidates!(request,{signal});
+  expect(fetchFilterCandidates).toHaveBeenCalledTimes(2);session.destroy();
 });

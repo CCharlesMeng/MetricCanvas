@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.32",
+  "schemaVersion": "6.49",
   "id": "tab-mixed-content-report",
   "meta": {
     "title": "Tab混合内容Report导出（合成演示）"
@@ -21,7 +21,17 @@
       "default": [
         "CN"
       ],
-      "visible": false
+      "visible": false,
+      "options": [
+        {
+          "label": "国内",
+          "value": "CN"
+        },
+        {
+          "label": "海外",
+          "value": "OVERSEAS"
+        }
+      ]
     },
     {
       "id": "revenue-region",
@@ -31,7 +41,17 @@
       "default": [
         "OVERSEAS"
       ],
-      "visible": false
+      "visible": false,
+      "options": [
+        {
+          "label": "国内",
+          "value": "CN"
+        },
+        {
+          "label": "海外",
+          "value": "OVERSEAS"
+        }
+      ]
     }
   ],
   "dataSources": {

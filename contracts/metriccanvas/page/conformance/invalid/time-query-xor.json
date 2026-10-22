@@ -1,0 +1,376 @@
+{
+  "case": "time-query-xor",
+  "invariant": "time-extensions",
+  "input": {
+    "schemaVersion": "6.39",
+    "id": "time-modes-page",
+    "layout": "dashboard",
+    "dashboardToolbar": "hidden",
+    "meta": {
+      "title": "IOC B4：日 / 月 / ISO周",
+      "description": "本地合成验收；不代表真实DQE、CloudIOC、Relay或私有周编码验收。"
+    },
+    "iocHeader": {
+      "identity": {
+        "title": "IOC B4：日 / 月 / ISO周",
+        "tags": [
+          {
+            "id": "demo",
+            "text": "合成验收",
+            "tone": "info"
+          }
+        ],
+        "facts": [
+          {
+            "id": "period",
+            "kind": "queryPeriod",
+            "label": "已应用期间",
+            "value": {
+              "filter": "period",
+              "format": "period"
+            }
+          }
+        ]
+      },
+      "filterIds": [
+        "period"
+      ],
+      "presentation": {
+        "collapse": "firstRow"
+      }
+    },
+    "filters": [
+      {
+        "id": "period",
+        "type": "timeRange",
+        "display": "modes",
+        "label": "统计期间",
+        "required": true,
+        "defaultMode": "day",
+        "modes": [
+          {
+            "id": "day",
+            "default": {
+              "unit": "day",
+              "range": {
+                "kind": "lastN",
+                "n": 7
+              },
+              "includeCurrent": true,
+              "anchor": "2026-10-07"
+            }
+          },
+          {
+            "id": "month",
+            "default": {
+              "from": "2026-08",
+              "to": "2026-09"
+            }
+          },
+          {
+            "id": "isoWeek",
+            "default": {
+              "from": "2026-10-05",
+              "to": "2026-10-11"
+            }
+          }
+        ]
+      }
+    ],
+    "dataSources": {
+      "bound": {
+        "fields": {
+          "scope": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "ioc_header_scope"
+          },
+          "count": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "ioc_header_count"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "timeModes": {
+              "filterId": "period",
+              "cases": {
+                "day": {
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "ioc_header_scope"
+                        ],
+                        "output_metrics": [
+                          "ioc_header_count"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "time": {
+                            "period": "day",
+                            "is_aggregate": false
+                          }
+                        },
+                        "order": {
+                          "limit": 10,
+                          "offset": 0
+                        }
+                      }
+                    ]
+                  },
+                  "filterBindings": {
+                    "period": {
+                      "target": "time"
+                    }
+                  }
+                },
+                "month": {
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "ioc_header_scope"
+                        ],
+                        "output_metrics": [
+                          "ioc_header_count"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "time": {
+                            "period": "month",
+                            "is_aggregate": false
+                          }
+                        },
+                        "order": {
+                          "limit": 10,
+                          "offset": 0
+                        }
+                      }
+                    ]
+                  },
+                  "filterBindings": {
+                    "period": {
+                      "target": "time"
+                    }
+                  }
+                },
+                "isoWeek": {
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "ioc_header_scope"
+                        ],
+                        "output_metrics": [
+                          "ioc_header_count"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "time": {
+                            "period": "week",
+                            "is_aggregate": false
+                          }
+                        },
+                        "order": {
+                          "limit": 10,
+                          "offset": 0
+                        }
+                      }
+                    ]
+                  },
+                  "filterBindings": {
+                    "period": {
+                      "target": "time"
+                    }
+                  }
+                }
+              }
+            },
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "ioc_header_scope"
+                  ],
+                  "output_metrics": [
+                    "ioc_header_count"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "time": {
+                      "period": "day",
+                      "is_aggregate": false
+                    }
+                  },
+                  "order": {
+                    "limit": 10,
+                    "offset": 0
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "unbound": {
+        "fields": {
+          "scope": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "ioc_header_scope"
+          },
+          "count": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "ioc_header_count"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "ioc_header_scope"
+                  ],
+                  "output_metrics": [
+                    "ioc_header_count"
+                  ],
+                  "filter": {
+                    "dims": []
+                  },
+                  "order": {
+                    "limit": 10,
+                    "offset": 0
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "body",
+        "container": "card",
+        "components": [
+          {
+            "id": "bound-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "bound"
+            },
+            "props": {
+              "title": "已绑定条件",
+              "columns": [
+                {
+                  "field": "scope",
+                  "title": "服务收到的条件（本地合成）"
+                },
+                {
+                  "field": "count",
+                  "title": "合成响应标识"
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "本地页头验收"
+                }
+              }
+            }
+          },
+          {
+            "id": "unbound-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "unbound"
+            },
+            "props": {
+              "title": "无关查询（不随筛选刷新）",
+              "columns": [
+                {
+                  "field": "scope",
+                  "title": "服务收到的条件（本地合成）"
+                },
+                {
+                  "field": "count",
+                  "title": "合成响应标识"
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "本地页头验收"
+                }
+              }
+            }
+          },
+          {
+            "id": "mode-link",
+            "type": "text",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "links": [
+                {
+                  "label": "在新页面恢复当前时间模式",
+                  "href": "/pages/ioc-header-time-modes-demo",
+                  "query": {
+                    "period.mode": {
+                      "source": "filter",
+                      "id": "period",
+                      "part": "mode"
+                    },
+                    "period.from": {
+                      "source": "filter",
+                      "id": "period",
+                      "part": "from"
+                    },
+                    "period.to": {
+                      "source": "filter",
+                      "id": "period",
+                      "part": "to"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/bound/source/query",
+      "message": "查询必须互斥声明普通body或timeModes"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/bound/source/query",
+      "message": "模式查询与普通body/filterBindings/paramBindings互斥"
+    }
+  ]
+}

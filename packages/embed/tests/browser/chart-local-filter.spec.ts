@@ -11,12 +11,12 @@ for (const width of [1440, 390]) test(`${width}: chart filters refresh only thei
   });
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await page.goto('/pages/chart-local-filter-page');
-  await expect(page.locator('[data-chart-filter][role=group]')).toHaveCount(4);
-  const orders = page.getByRole('group', {name:'订单对比筛选',exact:true});
-  const revenue = page.getByRole('group', {name:'收入趋势筛选',exact:true});
-  const share = page.getByRole('group', {name:'渠道占比筛选',exact:true});
-  const map = page.getByRole('group', {name:'区域分布筛选',exact:true});
-  const orderCell = page.locator('[data-component="charts/orders"]');
+  await expect(page.locator('[data-filter-group][role=group]')).toHaveCount(4);
+  const orders = page.getByRole('group', {name:'订单对比区域',exact:true});
+  const revenue = page.getByRole('group', {name:'收入趋势区域',exact:true});
+  const share = page.getByRole('group', {name:'渠道占比区域',exact:true});
+  const map = page.getByRole('group', {name:'区域分布区域',exact:true});
+  const orderCell = page.locator('[data-component="charts/orders-group"]');
   await expectSelected(orders, 'CN'); await expectSelected(revenue, 'OVERSEAS');
   await expectSelected(share, 'APAC'); await expectSelected(map, 'CN');
   await expect(orders.getByRole('button', {pressed:true})).toHaveCSS('background-color', 'rgb(25, 25, 25)');
@@ -24,20 +24,26 @@ for (const width of [1440, 390]) test(`${width}: chart filters refresh only thei
   await expect(orders.getByRole('button', {pressed:true})).toHaveCSS('border-top-left-radius', '6px');
   await expect(orders.getByRole('button', {pressed:true})).toHaveCSS('height', '28px');
   await expect(orders.getByRole('button', {pressed:false})).toHaveCSS('background-color', 'rgb(245, 245, 245)');
-  await expect(page.locator('[data-chart-filter] select')).toHaveCount(0);
+  await expect(page.locator('[data-filter-group] select')).toHaveCount(0);
   for (const group of [orders, revenue, share, map]) await expect(group.getByRole('button', {pressed:true})).toHaveCount(1);
   await expect(orderCell.locator('.chart-semantics')).toContainText('国内一组');
   await expect.poll(() => requests.length).toBe(5);
+  // Query text alone does not prove that the moved charts have drawing space.
+  for (const id of ['orders-group','revenue-group','share-group','map-group','control']) {
+    const canvas = page.locator(`[data-component="charts/${id}"] .echart canvas`);
+    await expect(canvas).toHaveCount(1);
+    expect(await canvas.evaluate(element => element.getBoundingClientRect().height)).toBeGreaterThan(200);
+  }
   // Configured options do not fetch candidate values or appear in the page toolbar.
   expect(requests.every(item => item.output_metrics.length === 1)).toBe(true);
-  const renderFacts = await page.locator('[data-chart-filter][role=group]').evaluateAll(groups => groups.map(group => {
+  const renderFacts = await page.locator('[data-filter-group][role=group]').evaluateAll(groups => groups.map(group => {
     const cell = group.closest('article')!.getBoundingClientRect();
     const groupRect = group.getBoundingClientRect();
     const buttons = [...group.querySelectorAll('button')].map(button => {
       const r = button.getBoundingClientRect(), style = getComputedStyle(button);
       return {label:button.textContent?.trim(),pressed:button.getAttribute('aria-pressed'),x:r.x,y:r.y,width:r.width,height:r.height,fontSize:style.fontSize,paddingLeft:style.paddingLeft,paddingRight:style.paddingRight,radius:style.borderRadius,background:style.backgroundColor,color:style.color,overflow:button.scrollWidth > button.clientWidth+1};
     });
-    return {id:group.getAttribute('data-chart-filter'),inside:groupRect.left>=cell.left && groupRect.right<=cell.right,buttons};
+    return {id:group.getAttribute('data-filter-group'),inside:groupRect.left>=cell.left && groupRect.right<=cell.right,buttons};
   }));
   for (const group of renderFacts) {
     expect(group.inside).toBe(true);
@@ -64,7 +70,7 @@ for (const width of [1440, 390]) test(`${width}: chart filters refresh only thei
   await choose(share, 'EU');
   await expect.poll(() => requests.length).toBe(7);
   await expectSelected(share, 'EU');
-  await expect(page.locator('[data-component="charts/share"]')).toContainText('渠道占比');
+  await expect(page.locator('[data-component="charts/share-group"]')).toContainText('渠道占比');
   await choose(revenue, 'CN'); await choose(map, 'OVERSEAS');
   await expect.poll(() => requests.length).toBe(9);
   const geometry = await orders.evaluate(select => {
@@ -83,8 +89,8 @@ for (const width of [1440, 390]) test(`${width}: chart filters refresh only thei
 });
 
 test('loading and failure retain controls; a late response cannot overwrite a newer selection', async ({page}) => {
-  const orders = page.getByRole('group', {name:'订单对比筛选',exact:true});
-  const cell = page.locator('[data-component="charts/orders"]');
+  const orders = page.getByRole('group', {name:'订单对比区域',exact:true});
+  const cell = page.locator('[data-component="charts/orders-group"]');
   let mode: 'normal' | 'delay' | 'fail' = 'normal';
   let release: () => void = () => {};
   let started = false;

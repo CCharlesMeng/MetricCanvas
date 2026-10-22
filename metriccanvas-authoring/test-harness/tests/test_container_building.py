@@ -36,6 +36,23 @@ class ContainerBuildingTest(unittest.TestCase):
         removed=run(result['document'],*({'id':id,'type':'remove_component','componentId':id} for id in ['composite','tabs','summary']))
         self.assertEqual(removed['document'],original)
 
+    def test_tab_url_input_add_edit_conflict_and_preserve(self):
+        result=run(content_page(),tabs(initialTabUrlParam='sales-tab'))
+        self.assertEqual(result['status'],'changed',result)
+        document=result['document']
+        self.assertEqual(document['sections'][0]['components'][-1]['props']['initialTabUrlParam'],'sales-tab')
+        self.assertEqual(validate_page_document(document),[])
+        changed=run(document,{'id':'change','type':'set_properties','componentId':'tabs','properties':{'initialTabUrlParam':'other-tab'}})
+        self.assertEqual(changed['status'],'changed',changed)
+        self.assertEqual(changed['document']['sections'][0]['components'][-1]['props']['initialTabUrlParam'],'other-tab')
+        renamed=run(document,{'id':'rename','type':'set_title','componentId':'tabs','title':'New title'})
+        self.assertEqual(renamed['document']['sections'][0]['components'][-1]['props']['initialTabUrlParam'],'sales-tab')
+        invalid=deepcopy(document)
+        invalid['filters']=[{'id':'sales-tab','type':'search'}]
+        self.assertTrue(any('URL 参数名重复:sales-tab' in issue.message for issue in validate_page_document(invalid)))
+        invalid=deepcopy(document);invalid['schemaVersion']='6.32'
+        self.assertTrue(any('6.33' in issue.message for issue in validate_page_document(invalid)))
+
     def test_all_five_composite_child_types_use_existing_gated_builders(self):
         recipes=[child(k,'child-'+str(i),'total' if k in {'metricCard','gauge','keyValuePanel'} else 'sales') for i,k in enumerate(['metricCard','gauge','keyValuePanel','pieChart','categoryBreakdown'])]
         result=run(content_page(),composite(children=recipes))

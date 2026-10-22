@@ -12,10 +12,10 @@ nameMap 的方向是数据地名 → 底图区域名，例如 {"中国":"China"}
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
-Dashboard 正文可通过 `props.filter` 在左上角配置独立单选筛选。选项名称和值分离，default 与查询绑定显式声明；见[图表独立筛选](../filters.md#chart-local-filter)和 `chart-local-filter-page` 完整页面。
+Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按钮组；需要同组放置时使用组合卡。图表本身不再声明 `props.filter`。迁移后的完整页面见 `chart-local-filter-page`。
 
 
-页面协议 6.32。结构真源为本册[schema.json](../schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.49。结构真源为本册[schema.json](../schema.json)，SHA256 `f7595ffbdcf2fe8b269b74567933759d72d6ed3067022eb2cc8fc84196ac0f34`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -38,6 +38,26 @@ Schema位置：`#/definitions/mapChartComponent/properties/id`。目标：[#/def
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/componentId | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@mapChartComponent.visibleWhen`
+
+Schema位置：`#/definitions/mapChartComponent/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@mapChartComponent.visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/mapChartComponent/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f74797065"></a>
 
@@ -102,26 +122,6 @@ Schema位置：`#/definitions/mapChartComponent/properties/props/properties/titl
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
-
-<a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f66696c746572"></a>
-
-### `@mapChartComponent.props.filter`
-
-Schema位置：`#/definitions/mapChartComponent/properties/props/properties/filter`。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 图表左上角的独立筛选配置，显式引用页面维度筛选器及固定选项。 |
-
-<a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f66696c7465722f616c6c4f662f30"></a>
-
-### `@mapChartComponent.props.filter · allOf[0]`
-
-Schema位置：`#/definitions/mapChartComponent/properties/props/properties/filter/allOf/0`。目标：[#/definitions/chartFilter](../filters.md#schema-232f646566696e6974696f6e732f636861727446696c746572)。
-
-| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
-|---|---|---|---|---|
-| 引用 #/definitions/chartFilter | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f76617269616e74"></a>
 
@@ -605,7 +605,7 @@ Schema位置：`#/definitions/mapChartComponent/properties/props/properties/acti
 - [map-page](../examples/map-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](../examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 
-局部片段提取自[完整页面](../examples/component-mapChart.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
+局部片段提取自[完整页面](../examples/component-mapChart.json)的`#/sections/0/components/1`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 
 ```json
 {
@@ -619,19 +619,6 @@ Schema位置：`#/definitions/mapChartComponent/properties/props/properties/acti
   },
   "props": {
     "title": "区域分布",
-    "filter": {
-      "filterId": "map-region",
-      "options": [
-        {
-          "label": "中国区",
-          "value": "CN"
-        },
-        {
-          "label": "海外",
-          "value": "OVERSEAS"
-        }
-      ]
-    },
     "nameField": "category",
     "valueField": "value",
     "map": "world",

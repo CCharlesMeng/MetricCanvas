@@ -1,0 +1,38 @@
+{
+  "case": "time-fact-kind",
+  "invariant": "time-extensions",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "期间事实part与kind不匹配",
+      "paths": [
+        "/iocHeader/identity/facts"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "iocHeader": {
+      "identity": {
+        "facts": [
+          {
+            "id": "period",
+            "kind": "queryPeriod",
+            "label": "已应用期间",
+            "value": {
+              "…": "共2个键"
+            }
+          },
+          {
+            "id": "latest",
+            "kind": "latestDataPeriod",
+            "label": "数据最新期",
+            "value": {
+              "…": "共2个键"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/time-fact-kind.json"
+}

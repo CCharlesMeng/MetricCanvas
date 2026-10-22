@@ -122,6 +122,98 @@
           }
         ]
       }
+    },
+    "header-demo-records": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "revenueTarget": {
+          "type": "number",
+          "role": "measure",
+          "label": "收入目标",
+          "unit": "万元"
+        },
+        "revenueActual": {
+          "type": "number",
+          "role": "measure",
+          "label": "收入实际",
+          "unit": "万元"
+        },
+        "profitTarget": {
+          "type": "number",
+          "role": "measure",
+          "label": "利润目标",
+          "unit": "万元"
+        },
+        "profitActual": {
+          "type": "number",
+          "role": "measure",
+          "label": "利润实际",
+          "unit": "万元"
+        },
+        "customers": {
+          "type": "number",
+          "role": "measure",
+          "label": "客户数",
+          "unit": "家"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "华东",
+            "revenueTarget": 1200,
+            "revenueActual": 1320,
+            "profitTarget": 240,
+            "profitActual": 278,
+            "customers": 86
+          },
+          {
+            "region": "华南",
+            "revenueTarget": 1000,
+            "revenueActual": 960,
+            "profitTarget": 200,
+            "profitActual": 182,
+            "customers": 72
+          },
+          {
+            "region": "华北",
+            "revenueTarget": 900,
+            "revenueActual": 990,
+            "profitTarget": 180,
+            "profitActual": 208,
+            "customers": 65
+          },
+          {
+            "region": "西南",
+            "revenueTarget": 700,
+            "revenueActual": 735,
+            "profitTarget": 140,
+            "profitActual": 147,
+            "customers": 48
+          },
+          {
+            "region": "华中",
+            "revenueTarget": 600,
+            "revenueActual": 570,
+            "profitTarget": 120,
+            "profitActual": 108,
+            "customers": 41
+          },
+          {
+            "region": "西北",
+            "revenueTarget": 400,
+            "revenueActual": 420,
+            "profitTarget": 80,
+            "profitActual": 84,
+            "customers": 29
+          }
+        ]
+      }
     }
   },
   "sections": [
@@ -137,7 +229,108 @@
           },
           "props": {
             "title": "表格搜索与导出示例",
-            "subtitle": "25条演示记录。试着搜索“客户25”，或搜索“客户2”后导出 Excel；两张表的搜索互不影响。"
+            "subtitle": "顶部展示三层表头及跨行、跨列合并；下方25条客户演示记录支持独立搜索和完整匹配结果 Excel 导出。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "three-level-headers",
+      "components": [
+        {
+          "id": "three-level-header-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "header-demo-records"
+          },
+          "props": {
+            "title": "三层表头示例",
+            "subtitle": "静态演示数据。经营指标 → 收入／利润 → 目标／实际；区域跨三行、客户数跨两行。点击数值列可排序。",
+            "fit": "container",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域",
+                "fixed": "left"
+              },
+              {
+                "kind": "group",
+                "id": "operations",
+                "title": "经营指标",
+                "children": [
+                  {
+                    "kind": "group",
+                    "id": "revenue",
+                    "title": "收入（万元）",
+                    "children": [
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "revenueTarget",
+                          "format": "number-grouped"
+                        },
+                        "title": "目标",
+                        "align": "right",
+                        "sortable": true
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "revenueActual",
+                          "format": "number-grouped"
+                        },
+                        "title": "实际",
+                        "align": "right",
+                        "sortable": true
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "group",
+                    "id": "profit",
+                    "title": "利润（万元）",
+                    "children": [
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "profitTarget",
+                          "format": "number-grouped"
+                        },
+                        "title": "目标",
+                        "align": "right",
+                        "sortable": true
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "profitActual",
+                          "format": "number-grouped"
+                        },
+                        "title": "实际",
+                        "align": "right",
+                        "sortable": true
+                      }
+                    ]
+                  },
+                  {
+                    "field": {
+                      "data": "main",
+                      "field": "customers",
+                      "format": "number-grouped"
+                    },
+                    "title": "客户数（家）",
+                    "align": "right",
+                    "sortable": true
+                  }
+                ]
+              }
+            ]
           }
         }
       ]
@@ -242,6 +435,6 @@
   ],
   "meta": {
     "title": "表格搜索与导出示例",
-    "description": "25条匿名演示记录，展示每张表独立搜索和完整匹配结果Excel导出。"
+    "description": "三层表头与跨行、跨列合并；每张客户表独立搜索和完整匹配结果 Excel 导出。全部使用静态演示数据。"
   }
 }

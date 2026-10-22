@@ -48,8 +48,11 @@ def add_tab_container(page, op):
     for tab in op['tabs']:
         tabs.append({'id':tab['id'],'label':tab['label'],'components':_children(page,tab['children'],{'table'})})
     props={'tabs':tabs}
-    for key in ('variant','defaultTab'):
+    for key in ('variant','defaultTab','initialTabUrlParam'):
         if key in op: props[key]=op[key]
+    if 'initialTabUrlParam' in op:
+        from metriccanvas_authoring.bundle_info import load_bundle_info
+        page['schemaVersion'] = load_bundle_info()['pageSchemaVersion']
     section['components'].append(_component(op,'tabContainer',props))
     return []
 

@@ -128,7 +128,7 @@ describe('组合卡', () => {
       props: { columns: [{ field: 'tier' }] }
     };
     expect(messagesAt(page, '/sections/0/components/0/props/components/0')).toEqual([
-      '组合卡子组件不在白名单内:table；当前只准入 metricCard / pieChart / gauge / keyValuePanel / categoryBreakdown'
+      '组合卡子组件不在白名单内:table；当前只准入 filterGroup / barChart / lineChart / mapChart / metricCard / pieChart / gauge / keyValuePanel / categoryBreakdown'
     ]);
   });
 

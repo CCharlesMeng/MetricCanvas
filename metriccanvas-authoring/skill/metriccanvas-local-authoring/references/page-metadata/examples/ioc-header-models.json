@@ -1,0 +1,236 @@
+{
+  "schemaVersion": "6.49",
+  "id": "ioc-header-models",
+  "layout": "dashboard",
+  "meta": {
+    "title": "IOC页头 · 模型与时间范围"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "模型与时间范围",
+      "tags": [
+        {
+          "text": "合成候选与查询",
+          "id": "tag-0"
+        }
+      ]
+    },
+    "back": true,
+    "filterIds": [
+      "range",
+      "model",
+      "region",
+      "customer-type",
+      "key"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "filters": [
+    {
+      "id": "range",
+      "type": "timeRange",
+      "label": "统计范围",
+      "precision": "date",
+      "required": true,
+      "default": {
+        "from": "2026-09-01",
+        "to": "2026-09-30"
+      }
+    },
+    {
+      "id": "model",
+      "type": "dimension",
+      "dimension": "model",
+      "label": "模型",
+      "urlParams": {
+        "value": "model"
+      },
+      "default": [
+        "MODEL-2026-09-30"
+      ],
+      "selection": {
+        "mode": "multiple",
+        "required": true
+      },
+      "candidateContext": {
+        "filterIds": [
+          "range"
+        ],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "模型"
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "demo_department",
+      "label": "区域样例",
+      "urlParams": {
+        "value": "region"
+      },
+      "selection": {
+        "mode": "single"
+      },
+      "display": "tree",
+      "treeSelection": "level",
+      "hierarchy": [
+        {
+          "id": "department",
+          "dimension": "demo_department",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "demo_office",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "department",
+      "emptyLabel": "区域样例"
+    },
+    {
+      "id": "customer-type",
+      "type": "dimension",
+      "dimension": "customer-type",
+      "label": "客户分类样例",
+      "urlParams": {
+        "value": "customer-type"
+      },
+      "options": [
+        {
+          "value": "demo-na",
+          "label": "示例NA"
+        }
+      ],
+      "selection": {
+        "mode": "multiple"
+      },
+      "emptyLabel": "客户分类样例"
+    },
+    {
+      "id": "key",
+      "type": "boolean",
+      "label": "重点样例",
+      "default": false
+    }
+  ],
+  "dataSources": {
+    "request": {
+      "fields": {
+        "item": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "item"
+        },
+        "state": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "state"
+        },
+        "selection_count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "selection_count"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "item",
+                  "state"
+                ],
+                "output_metrics": [
+                  "selection_count"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "range": {
+              "target": "time"
+            },
+            "model": {
+              "target": "dimension",
+              "queryField": "demo_model"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "department": "demo_department",
+                "office": "demo_office"
+              }
+            },
+            "customer-type": {
+              "target": "dimension",
+              "queryField": "demo_customerType"
+            },
+            "key": {
+              "target": "boolean",
+              "queryField": "demo_key",
+              "whenTrue": [
+                "1"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成验收：模型候选只依赖统计日期范围。区域、重点、客户分类变化不重取模型候选；表格展示实际候选请求次数。改日期范围后清除旧模型并暂停相关查询，选择当前候选后恢复。slow可观察连续改期的迟到隔离。真实PRODUCT_MAP_TOKENS_DAILY请求、响应完整性及逐源绑定仍待接。"
+          }
+        },
+        {
+          "id": "request-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "request"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "item",
+                "title": "筛选项 / 观察项"
+              },
+              {
+                "field": "state",
+                "title": "实际生效值（合成回显）"
+              },
+              {
+                "field": "selection_count",
+                "title": "数量"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "dashboardToolbar": "hidden"
+}

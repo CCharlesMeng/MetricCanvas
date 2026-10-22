@@ -22,8 +22,10 @@ recordList使用显式items.fields约束每条嵌套记录，限制在已支持�
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
+嵌套明细字段可通过6.32的`table.props.rowExpansion.data:{type:"recordList",field:"..."}`被显式消费为子表格；字段契约仍为一层、每父行最多100项，子表列直接引用items.fields中的页面字段id。
 
-页面协议 6.32。结构真源为本册[schema.json](schema.json)，SHA256 `27bfdd2acfe5234d356fe47db5c2e85e69426c15accc5652a96f18ef30987d9f`。字段表自动生成；可选不等于有默认值。
+
+页面协议 6.49。结构真源为本册[schema.json](schema.json)，SHA256 `f7595ffbdcf2fe8b269b74567933759d72d6ed3067022eb2cc8fc84196ac0f34`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -168,7 +170,7 @@ Schema位置：`#/definitions/scalarField/oneOf/0/properties/defaultFormat`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -188,6 +190,7 @@ Schema位置：`#/definitions/scalarField/oneOf/0/properties/defaultFormat`。
 | "compact-million-2" | 按百万缩放，2位小数，附加百万后缀。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
+| "usd-adaptive" | 美元数值带千分位、两位小数和美元单位。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
@@ -242,11 +245,12 @@ Schema位置：`#/definitions/scalarField/oneOf/1/properties/currency`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | const="CNY" | Schema未设默认；装配/运行时默认见语义说明 | 货币语义声明，不负责汇率换算。 |
+| "string" | 本分支必填 | enum=["CNY","USD"] | Schema未设默认；装配/运行时默认见语义说明 | 货币语义声明，不负责汇率换算。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "CNY" | 用于选择@scalarField · oneOf[1].currency分支；同分支其它约束同时成立。 |
+| "CNY" | 静态人民币金额，基本单位元。 |
+| "USD" | 静态美元金额，基本单位美元；没有隐式汇率换算。 |
 
 <a id="schema-232f646566696e6974696f6e732f7363616c61724669656c642f6f6e654f662f312f70726f706572746965732f6c6162656c"></a>
 
@@ -296,7 +300,7 @@ Schema位置：`#/definitions/scalarField/oneOf/1/properties/defaultFormat`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -316,6 +320,7 @@ Schema位置：`#/definitions/scalarField/oneOf/1/properties/defaultFormat`。
 | "compact-million-2" | 按百万缩放，2位小数，附加百万后缀。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
+| "usd-adaptive" | 美元数值带千分位、两位小数和美元单位。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
@@ -723,7 +728,7 @@ Schema位置：`#/definitions/queryScalarField/oneOf/0/properties/defaultFormat`
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -743,6 +748,7 @@ Schema位置：`#/definitions/queryScalarField/oneOf/0/properties/defaultFormat`
 | "compact-million-2" | 按百万缩放，2位小数，附加百万后缀。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
+| "usd-adaptive" | 美元数值带千分位、两位小数和美元单位。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
@@ -807,11 +813,12 @@ Schema位置：`#/definitions/queryScalarField/oneOf/1/properties/currency`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | const="CNY" | Schema未设默认；装配/运行时默认见语义说明 | 货币语义声明，不负责汇率换算。 |
+| "string" | 本分支必填 | enum=["CNY","USD"] | Schema未设默认；装配/运行时默认见语义说明 | 货币语义声明，不负责汇率换算。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "CNY" | 用于选择@queryScalarField · oneOf[1].currency分支；同分支其它约束同时成立。 |
+| "CNY" | 静态人民币金额，基本单位元。 |
+| "USD" | 静态美元金额，基本单位美元；没有隐式汇率换算。 |
 
 <a id="schema-232f646566696e6974696f6e732f71756572795363616c61724669656c642f6f6e654f662f312f70726f706572746965732f6c6162656c"></a>
 
@@ -861,7 +868,7 @@ Schema位置：`#/definitions/queryScalarField/oneOf/1/properties/defaultFormat`
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -881,6 +888,7 @@ Schema位置：`#/definitions/queryScalarField/oneOf/1/properties/defaultFormat`
 | "compact-million-2" | 按百万缩放，2位小数，附加百万后缀。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
+| "usd-adaptive" | 美元数值带千分位、两位小数和美元单位。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
@@ -1173,7 +1181,7 @@ Schema位置：`#/definitions/groupedDimensionQueryFieldGroup/additionalProperti
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -1193,6 +1201,7 @@ Schema位置：`#/definitions/groupedDimensionQueryFieldGroup/additionalProperti
 | "compact-million-2" | 按百万缩放，2位小数，附加百万后缀。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
+| "usd-adaptive" | 美元数值带千分位、两位小数和美元单位。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
@@ -1337,7 +1346,7 @@ Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -1357,6 +1366,7 @@ Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties
 | "compact-million-2" | 按百万缩放，2位小数，附加百万后缀。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
+| "usd-adaptive" | 美元数值带千分位、两位小数和美元单位。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
@@ -1407,11 +1417,12 @@ Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | const="CNY" | Schema未设默认；装配/运行时默认见语义说明 | 货币语义声明，不负责汇率换算。 |
+| "string" | 本分支必填 | enum=["CNY","USD"] | Schema未设默认；装配/运行时默认见语义说明 | 货币语义声明，不负责汇率换算。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "CNY" | 用于选择@groupedMeasureQueryFieldGroup{key} · oneOf[1].currency分支；同分支其它约束同时成立。 |
+| "CNY" | 静态人民币金额，基本单位元。 |
+| "USD" | 静态美元金额，基本单位美元；没有隐式汇率换算。 |
 
 <a id="schema-232f646566696e6974696f6e732f67726f757065644d65617375726551756572794669656c6447726f75702f6164646974696f6e616c50726f706572746965732f6f6e654f662f312f70726f706572746965732f6c6162656c"></a>
 
@@ -1461,7 +1472,7 @@ Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-grouped-signed","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -1481,6 +1492,7 @@ Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties
 | "compact-million-2" | 按百万缩放，2位小数，附加百万后缀。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
+| "usd-adaptive" | 美元数值带千分位、两位小数和美元单位。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
@@ -1550,7 +1562,7 @@ Schema位置：`#/definitions/groupedQueryFields/anyOf/1`。
 - `#/definitions/fieldValue/anyOf/1`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/source/rows/0/items`。
 - `#/definitions/queryField/anyOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/control-data/fields/category`。
 - `#/definitions/queryScalarField/oneOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/control-data/fields/category`。
-- `#/definitions/queryScalarField/oneOf/1`：[合法完整页面](examples/paged-join-page.json)，JSON Pointer `#/dataSources/office-bidding/fields/bidding-amount`。
+- `#/definitions/queryScalarField/oneOf/1`：[合法完整页面](examples/unified-overflow-header.json)，JSON Pointer `#/dataSources/opportunity-list/fields/bidding-amount`。
 - `#/definitions/queryField/anyOf/1`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/events`。
 - `#/definitions/queryField/anyOf/2`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/reason`。
 - `#/definitions/queryField/anyOf/3`：[合法完整页面](examples/query-numeric-tolerance.json)，JSON Pointer `#/dataSources/samples/fields/rate`。

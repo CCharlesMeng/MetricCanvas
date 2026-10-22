@@ -22,3 +22,7 @@ export { reusableInitialSnapshot, SourceRangeError, EXPORT_MAX_ROWS, EXPORT_PREP
 export { automaticQueryPageSize, automaticQueryTableSources } from './source-program/table-pagination';
 
 export { intersectQueryFilters } from './intersect-filters';
+export { candidateContextKey, filterCandidatesRequest, validFilterCandidates } from './filter-candidates';
+export { createCandidateGatewaySession } from './candidate-session';
+export { candidateView, candidateKey, localColumnCandidates } from './column-candidates';
+export type { ColumnCandidatesRead } from './source-program/column-candidates';

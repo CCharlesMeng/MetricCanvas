@@ -1,0 +1,161 @@
+{
+  "case": "row-number-before-6.48",
+  "invariant": "table-row-number",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表格独立序号列，排序筛选后重编号且跨页连续 由 6.48 引入，文档声明的是 6.47",
+      "paths": [
+        "/sections/0/components/0",
+        "/sections/1/components/0",
+        "/sections/2/components/0",
+        "/sections/3/components/0",
+        "/sections/4/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "records-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "客户明细 · 连续编号",
+              "toolbar": {
+                "…": "共2个键"
+              },
+              "pagination": {
+                "…": "共3个键"
+              },
+              "columns": [
+                "…（共2项）"
+              ],
+              "rowNumber": {
+                "…": "共1个键"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "embedded-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "title": "内嵌表格",
+              "pagination": {
+                "…": "共1个键"
+              },
+              "columns": [
+                "…（共2项）"
+              ],
+              "rowNumber": {
+                "…": "共2个键"
+              },
+              "variant": "embedded"
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "forecast-matrix-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "title": "预测矩阵表格",
+              "pagination": {
+                "…": "共1个键"
+              },
+              "columns": [
+                "…（共2项）"
+              ],
+              "rowNumber": {
+                "…": "共2个键"
+              },
+              "variant": "forecastMatrix"
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "report-compact-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "title": "紧凑报表表格",
+              "pagination": {
+                "…": "共1个键"
+              },
+              "columns": [
+                "…（共2项）"
+              ],
+              "rowNumber": {
+                "…": "共2个键"
+              },
+              "variant": "reportCompact"
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "empty-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "empty"
+            },
+            "props": {
+              "title": "空结果保留序号表头",
+              "toolbar": {
+                "…": "共2个键"
+              },
+              "pagination": {
+                "…": "共3个键"
+              },
+              "columns": [
+                "…（共2项）"
+              ],
+              "rowNumber": {
+                "…": "共1个键"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

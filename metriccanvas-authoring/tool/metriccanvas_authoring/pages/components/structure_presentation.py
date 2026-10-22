@@ -1,3 +1,4 @@
+from metriccanvas_authoring.pages.components.field_bindings import binding_keys
 """Shared, bounded presentation compilation for both creation and revision."""
 from copy import deepcopy
 
@@ -42,16 +43,18 @@ def apply_presentation(block, source, component):
                 toolbar['search']['fields']=[field_id(source['fields'], field) for field in toolbar['search']['fields']]
             props['toolbar']=toolbar
         overrides={}
-        displayed={c['field'] for c in props['columns']}
+        displayed={field for column in props['columns'] for slot,field in binding_keys(column['field']) if slot=='main'}
         for column in p.get('columns',[]):
             key=field_id(source['fields'],column['field'])
             if key not in displayed or key in overrides:
                 raise StructureError('STRUCTURE_COLUMN_REFERENCE_INVALID','/presentation/columns')
             overrides[key]={k:v for k,v in column.items() if k!='field'}
         for column in props['columns']:
-            field=source['fields'][column['field']]
-            if field['role']=='measure': column['align']='right'
-            column.update(overrides.get(column['field'],{}))
+            keys=[field for slot,field in binding_keys(column['field']) if slot=='main']
+            if all(source['fields'][field]['role']=='measure' for field in keys): column['align']='right'
+            changes=[overrides[field] for field in keys if field in overrides]
+            if changes and any(change!=changes[0] for change in changes): raise StructureError('STRUCTURE_COLUMN_REFERENCE_INVALID','/presentation/columns')
+            if changes: column.update(changes[0])
     return component
 
 

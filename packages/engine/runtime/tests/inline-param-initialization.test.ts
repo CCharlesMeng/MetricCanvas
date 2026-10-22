@@ -19,7 +19,7 @@ it('6.5 documents with legacy bindings inject each unfiltered predicate exactly 
   const params=resolvePageParams('',parsed.page.params??[]);
   const initialized=initializePageParams(parsed.page,params.values);
   const query=(initialized.dataSources.shared.source as any).query;
-  expect(query.body.dsl_list[0].filter.dims).toEqual([{dim_name:'region',dim_value_list:['APAC']}]);
+  expect(query.body!.dsl_list[0].filter.dims).toEqual([{dim_name:'region',dim_value_list:['APAC']}]);
 });
 it('rejects a query target owned by both an inline parameter and a filter',()=>{
   const raw=structuredClone(fixture) as any;

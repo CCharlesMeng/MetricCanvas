@@ -1,0 +1,413 @@
+{
+  "schemaVersion": "6.46",
+  "id": "ioc-header-business",
+  "layout": "dashboard",
+  "meta": {
+    "title": "IOC页头 · 业务筛选整体组合"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "业务筛选整体组合",
+      "tags": [
+        {
+          "text": "合成候选与查询",
+          "id": "tag-0"
+        }
+      ]
+    },
+    "back": true,
+    "filterIds": [
+      "sector",
+      "industry",
+      "business-type",
+      "customer-type",
+      "customer-sort",
+      "project-level",
+      "contact-days",
+      "execution-band",
+      "margin-band",
+      "breakthrough",
+      "growth",
+      "top100",
+      "overseas"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "filters": [
+    {
+      "id": "sector",
+      "type": "dimension",
+      "dimension": "sector",
+      "label": "产业",
+      "urlParams": {
+        "value": "sector"
+      },
+      "selection": {
+        "mode": "multiple"
+      },
+      "candidateContext": {
+        "filterIds": [],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "产业"
+    },
+    {
+      "id": "industry",
+      "type": "dimension",
+      "dimension": "industry",
+      "label": "行业",
+      "urlParams": {
+        "value": "industry"
+      },
+      "selection": {
+        "mode": "multiple"
+      },
+      "display": "tree",
+      "treeSelection": "independent",
+      "candidateContext": {
+        "filterIds": [],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "行业"
+    },
+    {
+      "id": "business-type",
+      "type": "dimension",
+      "dimension": "business-type",
+      "label": "业务类型",
+      "urlParams": {
+        "value": "business-type"
+      },
+      "selection": {
+        "mode": "multiple"
+      },
+      "display": "tree",
+      "treeSelection": "independent",
+      "candidateContext": {
+        "filterIds": [],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "业务类型"
+    },
+    {
+      "id": "customer-type",
+      "type": "dimension",
+      "dimension": "customer-type",
+      "label": "客户分类",
+      "urlParams": {
+        "value": "customer-type"
+      },
+      "selection": {
+        "mode": "multiple"
+      },
+      "candidateContext": {
+        "filterIds": [],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "客户分类"
+    },
+    {
+      "id": "customer-sort",
+      "type": "dimension",
+      "dimension": "customer-sort",
+      "label": "客户排序",
+      "urlParams": {
+        "value": "customer-sort"
+      },
+      "selection": {
+        "mode": "multiple"
+      },
+      "candidateContext": {
+        "filterIds": [],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "客户排序"
+    },
+    {
+      "id": "project-level",
+      "type": "dimension",
+      "dimension": "project-level",
+      "label": "项目级别",
+      "urlParams": {
+        "value": "project-level"
+      },
+      "selection": {
+        "mode": "multiple"
+      },
+      "candidateContext": {
+        "filterIds": [],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "项目级别"
+    },
+    {
+      "id": "contact-days",
+      "type": "dimension",
+      "dimension": "contact-days",
+      "label": "无接触天数",
+      "urlParams": {
+        "value": "contact-days"
+      },
+      "selection": {
+        "mode": "multiple"
+      },
+      "candidateContext": {
+        "filterIds": [],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "无接触天数"
+    },
+    {
+      "id": "execution-band",
+      "type": "dimension",
+      "dimension": "execution-band",
+      "label": "框架执行率档位",
+      "urlParams": {
+        "value": "execution-band"
+      },
+      "selection": {
+        "mode": "multiple"
+      },
+      "candidateContext": {
+        "filterIds": [],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "框架执行率档位"
+    },
+    {
+      "id": "margin-band",
+      "type": "dimension",
+      "dimension": "margin-band",
+      "label": "销毛率偏差档位",
+      "urlParams": {
+        "value": "margin-band"
+      },
+      "selection": {
+        "mode": "multiple"
+      },
+      "candidateContext": {
+        "filterIds": [],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "销毛率偏差档位"
+    },
+    {
+      "id": "breakthrough",
+      "type": "dimension",
+      "dimension": "breakthrough",
+      "label": "是否突破",
+      "urlParams": {
+        "value": "breakthrough"
+      },
+      "default": [
+        "1",
+        "0"
+      ],
+      "options": [
+        {
+          "value": "1",
+          "label": "是"
+        },
+        {
+          "value": "0",
+          "label": "否"
+        }
+      ],
+      "selection": {
+        "mode": "multiple"
+      },
+      "emptyLabel": "是否突破"
+    },
+    {
+      "id": "growth",
+      "type": "dimension",
+      "dimension": "growth",
+      "label": "是否上量",
+      "urlParams": {
+        "value": "growth"
+      },
+      "default": [
+        "1",
+        "0"
+      ],
+      "options": [
+        {
+          "value": "1",
+          "label": "是"
+        },
+        {
+          "value": "0",
+          "label": "否"
+        }
+      ],
+      "selection": {
+        "mode": "multiple"
+      },
+      "emptyLabel": "是否上量"
+    },
+    {
+      "id": "top100",
+      "type": "boolean",
+      "label": "仅看Top100",
+      "default": false
+    },
+    {
+      "id": "overseas",
+      "type": "boolean",
+      "label": "仅看中资出海",
+      "default": false
+    }
+  ],
+  "dataSources": {
+    "request": {
+      "fields": {
+        "item": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "item"
+        },
+        "state": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "state"
+        },
+        "selection_count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "selection_count"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "item",
+                  "state"
+                ],
+                "output_metrics": [
+                  "selection_count"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "sector": {
+              "target": "dimension",
+              "queryField": "demo_sector"
+            },
+            "industry": {
+              "target": "dimension",
+              "queryField": "demo_industry"
+            },
+            "business-type": {
+              "target": "dimension",
+              "queryField": "demo_businessType"
+            },
+            "customer-type": {
+              "target": "dimension",
+              "queryField": "demo_customerType"
+            },
+            "customer-sort": {
+              "target": "dimension",
+              "queryField": "demo_customerSort"
+            },
+            "project-level": {
+              "target": "dimension",
+              "queryField": "demo_projectLevel"
+            },
+            "contact-days": {
+              "target": "dimension",
+              "queryField": "demo_contactDays"
+            },
+            "execution-band": {
+              "target": "dimension",
+              "queryField": "demo_executionBand"
+            },
+            "margin-band": {
+              "target": "dimension",
+              "queryField": "demo_marginBand"
+            },
+            "breakthrough": {
+              "target": "dimension",
+              "queryField": "demo_breakthrough"
+            },
+            "growth": {
+              "target": "dimension",
+              "queryField": "demo_growth"
+            },
+            "top100": {
+              "target": "boolean",
+              "queryField": "demo_top100",
+              "whenTrue": [
+                "1"
+              ]
+            },
+            "overseas": {
+              "target": "boolean",
+              "queryField": "demo_overseas",
+              "whenTrue": [
+                "1"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成验收：产业、行业树、业务类型树、客户分类、排序、项目级别、无接触和档位均为示例候选。原始字典未完整取得，demo码不能用于生产查询。突破/上量保留字符串1/0；复选框勾选增加条件，取消移除条件。下表仅回显选择，不证明原系统无接触多字段、档位刻度和逐源消费者已接通。"
+          }
+        },
+        {
+          "id": "request-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "request"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "item",
+                "title": "筛选项 / 观察项"
+              },
+              {
+                "field": "state",
+                "title": "实际生效值（合成回显）"
+              },
+              {
+                "field": "selection_count",
+                "title": "数量"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "dashboardToolbar": "hidden"
+}

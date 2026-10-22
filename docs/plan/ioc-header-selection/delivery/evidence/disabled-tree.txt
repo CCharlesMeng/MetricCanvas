@@ -1,0 +1,9 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/engine/runtime-ui/tests/filter-tree.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/ioc-selection/DataDashboard
+
+
+ Test Files  1 passed (1)
+      Tests  17 passed (17)
+   Start at  21:10:49
+   Duration  87ms (transform 13ms, setup 0ms, import 19ms, tests 3ms, environment 0ms)

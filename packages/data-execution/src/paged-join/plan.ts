@@ -2,10 +2,10 @@ import { hasQueryFieldMapping, type Page, type PagedJoinDataSource, type QueryDa
 import type { FilterValues } from '../filter-values';
 import { composeEffectiveQuery } from '../effective-query';
 
-export type PagedJoinPlan = { page: Page; sourceId: string; source: PagedJoinDataSource; conditions: FilterValues;
+export type PagedJoinPlan = { page: Page; sourceId: string; source: PagedJoinDataSource; conditions: FilterValues;now?:Date;
   view: TableQueryView; strategy:'selectPageThenFill'|'completeJoin'; reason:'single-owner'|'multiple-owners'|'capability-or-field-contract'|'search'|'predicate-target-conflict'; selection?: string; members: Map<string, QueryDataSource> };
 /** Dynamic execution order stays private; resultBindings are never rewritten. */
-export function compilePagedJoin(page: Page, sourceId: string, conditions: FilterValues, input: TableQueryView): PagedJoinPlan {
+export function compilePagedJoin(page: Page, sourceId: string, conditions: FilterValues, input: TableQueryView,now?:Date): PagedJoinPlan {
   const source = page.dataSources[sourceId] as PagedJoinDataSource;
   const view = structuredClone(input);
   if (!view.sort.length) view.sort = structuredClone(source.source.ordering.default);
@@ -27,19 +27,19 @@ export function compilePagedJoin(page: Page, sourceId: string, conditions: Filte
       return projection?.member !== selection || !raw || !hasQueryFieldMapping(raw) || (view.sort.some(r => r.field === field) && raw.nullable !== false);
     })) { selection = undefined; reason=planSearchReason(view); }
     else {
-      const query = composeEffectiveQuery({ dataSource: definition }, conditions, 0, [], {});
-      const item = definition.source.query.body.dsl_list[0];
+      const query = composeEffectiveQuery({ now,filters:page.filters, dataSource: definition }, conditions, 0, [], {});
+      const item = query.body.dsl_list[0];
       // Existing predicates cannot be replaced by table-local predicates.
       const filter = item.filter as { dims?: Array<{ dim_name?: string }>; metrics?: Array<{ metric_name?: string }> } | undefined;
       const controlled = new Set(view.predicates.map(p => {
         const field = definition.fields[source.source.projection[p.field].field];
         return hasQueryFieldMapping(field) ? field.queryField : '';
       }));
-      if (query.filterValues.some(v => v.target === 'dimension' ? controlled.has(v.queryField) : v.target === 'metricRange' ? controlled.has(v.metric) : false) ||
+      if ([...query.filterValues, ...(query.tableFilters ?? [])].some(v => v.target === 'dimension' ? controlled.has(v.queryField) : v.target === 'metricRange' ? controlled.has(v.metric) : false) ||
         filter?.dims?.some(v => controlled.has(v.dim_name ?? '')) || filter?.metrics?.some(v => controlled.has(v.metric_name ?? ''))) {selection = undefined;reason='predicate-target-conflict';}
     }
   }
-  return { page, sourceId, source, conditions, view, selection, members, strategy:selection?'selectPageThenFill':'completeJoin',reason };
+  return { now,page, sourceId, source, conditions, view, selection, members, strategy:selection?'selectPageThenFill':'completeJoin',reason };
 }
 
 function planSearchReason(view:TableQueryView):PagedJoinPlan['reason'] {return view.search?.query.trim()?'search':'capability-or-field-contract';}

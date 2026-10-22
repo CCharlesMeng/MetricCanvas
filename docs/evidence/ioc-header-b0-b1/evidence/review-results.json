@@ -1,0 +1,578 @@
+{
+  "claim_ledger": [
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "quality_gate；candidate-context-green.log；filter-coordinator.test.ts",
+      "id": "AT01",
+      "note": "整组拒绝、递归清理、共享写入口；三层writeMany和restore不接收旧上下文回执"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "BE-1、BE-2、BE-5；filter-execution-gate.test.ts",
+      "id": "AT02",
+      "note": "候选迟到成功/失败、URL选值重试、相关及下游门禁；无关查询继续"
+    },
+    {
+      "actual_profile": "mock",
+      "claim_status": "PROVEN",
+      "evidence": "quality_gate；packages/page/tests/ioc-header.test.ts",
+      "id": "AT03",
+      "note": "版本下限、排重、TextValue与非法根结构"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "BE-1、BE-2、BE-3；restore-report-green.json",
+      "id": "AT04",
+      "note": "五项文字规格测量；390展开候选层不越界，隐藏控件inert"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "BE-1、BE-3、BE-4、BE-6",
+      "id": "AT05",
+      "note": "年季月锚点、近一年、详情单月、离散月份、多实例及合法来源返回"
+    },
+    {
+      "actual_profile": "contract",
+      "claim_status": "PROVEN",
+      "evidence": "quality_gate；BE-1..4；static-header.html、static-applied.html",
+      "id": "AT06",
+      "note": "四页创建/编辑/重开、独立安装包和Skill、静态身份与已应用范围/搜索值"
+    }
+  ],
+  "code_fingerprint": "59d46f9fd22af7b0c55ba6d6ceb67d0be9bf74e2e06284c4cd68c1d1946b683e",
+  "counts": {
+    "blocker": 0,
+    "claims_deferred": 0,
+    "claims_unverified": 0,
+    "decided": 0,
+    "deferred": 0,
+    "handoff": 0,
+    "manual_acceptance": 0,
+    "manual_pending": 0,
+    "norm_candidate": 0,
+    "open_question": 0,
+    "skipped": 0,
+    "suggestion": 0,
+    "unplanned_carry": 6
+  },
+  "coverage": {
+    "review-convention": [
+      {
+        "dimension": "C5",
+        "evidence_ids": [
+          "PATTERN-DATA-4",
+          "packages/engine/runtime/src/filter-state.ts:L133-L141",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L454-L463",
+          "packages/engine/runtime-ui/src/ExportView.svelte:L23-L31",
+          "packages/engine/runtime-ui/src/filters/FilterBar.svelte:L136-L164",
+          "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte:L50-L61"
+        ],
+        "result": "clear",
+        "scope": "按已采用PATTERN-DATA-4独立复核B0共用筛选写入口和B1公共呈现复用。context候选收据仍由共享loader提供，旧write/writeMany仍委托统一commit；IOC静态数值区间和搜索值在既有FilterBar中呈现，没有新增第二套筛选组件或写状态入口。"
+      },
+      {
+        "dimension": "C1",
+        "evidence_ids": [
+          "docs/evidence/ioc-header-b0-b1/dev-baseline.md:L13-L15"
+        ],
+        "result": "unrun",
+        "scope": "diff明确涉及新增文件和跨目录导入；工程依据未采用命名或跨包导入对应的PATTERN，无法作规范性结论。"
+      },
+      {
+        "dimension": "C4",
+        "evidence_ids": [
+          "docs/evidence/ioc-header-b0-b1/dev-baseline.md:L13-L15"
+        ],
+        "result": "unrun",
+        "scope": "diff明确涉及候选请求、错误与取消；工程依据未采用请求出口和异步取消对应的PATTERN，无法作规范性结论。"
+      }
+    ],
+    "review-layout": [
+      {
+        "dimension": "L3",
+        "evidence_ids": [
+          "BE-1",
+          "BE-2",
+          "BE-3",
+          "packages/embed/tests/browser/ioc-header.spec.ts:L35-L43",
+          "docs/evidence/ioc-header-b0-b1/evidence/browser-final.log:L12-L17",
+          "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte:L14-L27",
+          "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte:L50-L81"
+        ],
+        "result": "clear",
+        "scope": "冻结390宽视口下普通、密集和详情页头自然回流；密集页收起、展开及区域候选层打开状态。当前源码哈希与证据一致；390宽展开页头左右边界在视口内、scrollWidth等于clientWidth、inert数量为0，候选层打开后整页无横向滚动；截图显示候选层完整且未被页头裁切。普通页1440/1024作为补充观察。"
+      }
+    ],
+    "review-quality": [
+      {
+        "dimension": "Q2",
+        "evidence_ids": [
+          "packages/engine/runtime/src/filter-state.ts:L88-L141",
+          "packages/engine/runtime-ui/src/ExportView.svelte:L23-L30",
+          "packages/engine/runtime-ui/src/ioc-header/model.ts:L9-L20"
+        ],
+        "result": "clear",
+        "scope": "新增页头、共享协调、候选加载和静态适配；同一已应用状态由coordinator拥有，呈现复用既有FilterBar，未发现两套独立生产候选规则"
+      },
+      {
+        "dimension": "Q5",
+        "evidence_ids": [
+          "packages/engine/runtime/src/dimension-values.ts:L67-L102",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L454-L465",
+          "packages/engine/runtime/src/filter-state.ts:L108-L120",
+          "packages/engine/runtime/tests/dimension-values.test.ts:L206-L237",
+          "candidate-context-regression",
+          "BE-5",
+          "BE-6"
+        ],
+        "result": "clear",
+        "scope": "请求代次、完整依赖回执、订阅重入、restore失效、取消和实例/观察器销毁；旧Q5-1已关闭：快照增加context键，运行时仅接收当前context，三层writeMany及restore回归保持C门禁至新候选就绪"
+      },
+      {
+        "dimension": "Q6",
+        "evidence_ids": [
+          "packages/engine/runtime-ui/src/filters/FilterBar.svelte:L137-L140",
+          "packages/engine/runtime-ui/src/ExportView.svelte:L23-L30",
+          "static",
+          "BE-2",
+          "BE-3",
+          "BE-5"
+        ],
+        "result": "clear",
+        "scope": "冻结F3-1至F3-4的非法输入、只读、候选错误/空态、执行门禁及静态条件；旧Q6-1已关闭：只读范围和搜索投影实际值，SSR以10至20及非空检索文本验证"
+      },
+      {
+        "dimension": "Q7",
+        "evidence_ids": [
+          "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte:L1-L82",
+          "packages/engine/runtime-ui/src/ioc-header/model.ts:L1-L21",
+          "tools/dqe-sim/fixtures/ioc-header-query.mjs:L1-L18"
+        ],
+        "result": "clear",
+        "scope": "新增生产协议、页头、共享状态和本地查询fixture；未发现调试输出、断点或占位业务取数，fixture显式限定本地合成条件回显"
+      }
+    ],
+    "self-test": [
+      {
+        "dimension": "F3-1",
+        "evidence_ids": [
+          "BE-2",
+          "packages/engine/runtime/tests/filter-coordinator.test.ts:L1-L31",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L600",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L842",
+          "vitest",
+          "browser",
+          "installed",
+          "check",
+          "static",
+          "candidate-context-regression"
+        ],
+        "result": "clear",
+        "scope": "S1组件证据覆盖非法组零通知、畸形值拒绝、递归清理与显式确认；用户入口共用受控写入。当前候选上下文修复后的三个相关文件15项回归通过；最终全量257个文件、2235项测试通过、5项跳过，耗时200.77秒。"
+      },
+      {
+        "dimension": "F3-2",
+        "evidence_ids": [
+          "BE-1",
+          "BE-2",
+          "BE-5",
+          "packages/engine/runtime/tests/dimension-values.test.ts:L1-L238",
+          "packages/engine/runtime/tests/filter-execution-gate.test.ts:L1-L25",
+          "vitest",
+          "browser",
+          "installed",
+          "check",
+          "static",
+          "candidate-context-regression",
+          "packages/engine/runtime-ui/src/filters/cascade.ts:L1-L66"
+        ],
+        "result": "clear",
+        "scope": "候选按filterId、level、规范化约束及完整祖先上下文隔离；旧成功与旧失败拒绝。新增回归先复现旧ready孙级短暂复活，再证明批量写入与restore持续门禁，直至当前上下文候选返回；相关查询、下游及导出受门禁，无关查询继续。"
+      },
+      {
+        "dimension": "F3-3",
+        "evidence_ids": [
+          "BE-1",
+          "BE-3",
+          "BE-4",
+          "BE-6",
+          "packages/engine/runtime-ui/src/RuntimeSurface.svelte:L322",
+          "vitest",
+          "browser",
+          "installed",
+          "check",
+          "static"
+        ],
+        "result": "clear",
+        "scope": "当前15项源浏览器记录覆盖年季月锚点、之前12完整月、详情独立单月、合法来源返回、只读关闭日历、多实例隔离与离散月份集合；参数仅初始化赋值，筛选写入不修改参数。"
+      },
+      {
+        "dimension": "F3-4",
+        "evidence_ids": [
+          "BE-1",
+          "BE-2",
+          "BE-3",
+          "BE-4",
+          "packages/page/tests/ioc-header.test.ts:L1-L32",
+          "metriccanvas-authoring/test-harness/tests/test_interaction_editing.py:L1-L240",
+          "static",
+          "build",
+          "installed",
+          "vitest",
+          "browser",
+          "check",
+          "packages/engine/runtime-ui/src/filters/FilterBar.svelte:L1-L269"
+        ],
+        "result": "clear",
+        "scope": "四个页面直接消费同源协议；authoring创建、编辑、重开及非法回滚已有有效证据。当前静态呈现保留身份、八个既有筛选，并保留已应用数值范围10～20与搜索文本；独立安装记录证明协议及依赖闭包，无默认页头可选动作。"
+      }
+    ]
+  },
+  "decisions": [],
+  "deferred_candidates": [],
+  "evidence_epoch": "ioc-b0-b1-final-2",
+  "findings": [],
+  "handoff": [],
+  "judged_files": {
+    "review-convention": [
+      "packages/engine/runtime/src/filter-state.ts",
+      "packages/engine/runtime/src/dimension-values.ts",
+      "packages/engine/runtime/src/orchestrator.ts",
+      "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "packages/engine/runtime-ui/src/ExportView.svelte",
+      "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/cascade.ts",
+      "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte",
+      "packages/engine/runtime-ui/src/ioc-header/model.ts",
+      "packages/embed/src/EmbedRoot.svelte",
+      "packages/embed/src/index.ts"
+    ],
+    "review-layout": [
+      "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte",
+      "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte",
+      "packages/embed/tests/browser/ioc-header.spec.ts",
+      "pages/ioc-header-overview-demo.json",
+      "pages/ioc-header-dense-filter-demo.json",
+      "pages/ioc-header-detail-demo.json"
+    ],
+    "review-quality": [
+      "packages/engine/runtime/src/dimension-values.ts",
+      "packages/engine/runtime/src/filter-state.ts",
+      "packages/engine/runtime/src/orchestrator.ts",
+      "packages/engine/runtime/tests/dimension-values.test.ts",
+      "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "packages/engine/runtime-ui/src/ExportView.svelte",
+      "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "packages/engine/runtime-ui/src/filters/DimensionFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/HierarchyFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/PeriodFilter.svelte",
+      "packages/engine/runtime-ui/src/filters/cascade.ts",
+      "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte",
+      "packages/engine/runtime-ui/src/ioc-header/model.ts",
+      "packages/ui/src/components/date-picker/DatePicker.svelte",
+      "packages/page/src/ioc-header.ts",
+      "packages/page/src/text-value.ts",
+      "packages/page/src/validate.ts",
+      "packages/embed/tests/browser/ioc-header.spec.ts",
+      "tools/dqe-sim/fixtures/ioc-header-query.mjs",
+      "docs/plan/2026-10-16-ioc-header-feature-plan.md"
+    ],
+    "self-test": [
+      "packages/engine/runtime/src/filter-state.ts",
+      "packages/engine/runtime/src/dimension-values.ts",
+      "packages/engine/runtime/tests/filter-coordinator.test.ts",
+      "packages/engine/runtime/tests/filter-execution-gate.test.ts",
+      "packages/engine/runtime/tests/dimension-values.test.ts",
+      "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "packages/engine/runtime-ui/src/ExportView.svelte",
+      "packages/engine/runtime-ui/src/ioc-header/IocHeader.svelte",
+      "packages/embed/tests/browser/ioc-header.spec.ts",
+      "packages/page/tests/ioc-header.test.ts",
+      "metriccanvas-authoring/test-harness/tests/test_interaction_editing.py",
+      "tools/package-build/compatibility.mjs",
+      "packages/engine/runtime-ui/src/filters/FilterBar.svelte",
+      "packages/engine/runtime-ui/src/filters/cascade.ts"
+    ]
+  },
+  "known_gaps": {
+    "review-convention": [
+      "C1：新增文件及跨目录导入已触碰该维度，但冻结工程依据未采用对应命名或导入PATTERN；缺少规范性基准，记unrun，不补造规范、不修改diff事实。",
+      "C4：请求及取消改动已触碰该维度，但冻结工程依据未采用对应请求或异步取消PATTERN；缺少规范性基准，记unrun，不升级为功能缺陷。",
+      "以上仅为规范检视范围限制；功能、质量与响应式由独立证据覆盖，无须用户决策。"
+    ],
+    "review-layout": [],
+    "review-quality": [
+      "按只读契约复用实际日志和浏览器证据，未重跑质量命令；已核对最终全量Vitest为257个文件通过、2235项通过、5项跳过（200.77秒），15项浏览器通过、10项仓外安装浏览器通过，以及静态非空条件输出和check日志；这些结果只证明当前本地代码状态。",
+      "真实DQE、CloudIOC、Relay、DS模型、门户集成与部署未验证；本地合成服务与安装消费者不能替代真实服务验收。",
+      "编辑前未完整采集起点质量，不声明历史无回归。"
+    ],
+    "self-test": [
+      "编辑前未完整采集可比质量起点，因此只确认当前验证结果，不宣称历史无回归。",
+      "浏览器证据为本地合成HTTP契约环境；真实DQE、CloudIOC和Relay未执行验证，属于本批本地实施范围之外。"
+    ]
+  },
+  "manual_acceptance": [],
+  "norm_candidates": [],
+  "open_questions": [],
+  "portfolio_narrowed": [],
+  "restore_contract": {
+    "contract_sha256": "0cd0d838a4208635e79dd89d120e0766aa8b777f19f233c221edb7a7f8f37708",
+    "overall": "green",
+    "summary": {
+      "green": 5,
+      "red": 0,
+      "total": 5,
+      "yellow": 0
+    }
+  },
+  "roles": {
+    "review-convention": "executed",
+    "review-layout": "executed",
+    "review-quality": "executed",
+    "self-test": "executed"
+  },
+  "schema_version": 1,
+  "skipped": {
+    "review-convention": [],
+    "review-layout": [],
+    "review-quality": [],
+    "self-test": []
+  },
+  "unplanned_carry": [
+    {
+      "file": "page/src/version.ts、schema/page.ts、page.ts、text-value.ts、public-api/page.txt",
+      "reason": "能力下限、根结构、身份缺失投影和类型公开面快照",
+      "task": "T3"
+    },
+    {
+      "file": "runtime-ui/src/ExportView.svelte、embed入口",
+      "reason": "静态身份及已应用条件、只读输入闭包",
+      "task": "T4"
+    },
+    {
+      "file": "ui/src/components/date-picker/DatePicker.svelte",
+      "reason": "折叠或只读转换为inert时关闭已开日期浮层，保持中立UI职责",
+      "task": "T4"
+    },
+    {
+      "file": "runtime-ui/src/filters/FilterBar.svelte",
+      "reason": "静态数值范围与搜索已应用值、折叠关闭原生details",
+      "task": "T4"
+    },
+    {
+      "file": "platform/tests/workbench/property-edit.test.ts、playground/page-catalog.json",
+      "reason": "当前版本回归断言及追加验收目录，保护原目录排序",
+      "task": "T5"
+    },
+    {
+      "file": "authoring生成物、Python交互编辑、文档、测试及compatibility.mjs",
+      "reason": "受控set_ioc_header、产品真源生成和独立安装分发闭包",
+      "task": "T5"
+    }
+  ],
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT01",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT02",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT03",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      },
+      {
+        "id": "AT04",
+        "modules": [
+          "causal",
+          "render"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "",
+        "verification_method": "restore_contract",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT05",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT06",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      }
+    ],
+    "facts": {
+      "cross_page": false,
+      "frozen_r": true,
+      "frozen_r5": false,
+      "frozen_r6": true,
+      "has_f3": true,
+      "has_s3_claim": true,
+      "overflow_state": false,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "story",
+      "regression",
+      "restore-final",
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "render",
+        "story",
+        "regression",
+        "review-convention",
+        "review-quality",
+        "self-test"
+      ],
+      "phase": "final",
+      "required_profiles": {
+        "AT01": "mock",
+        "AT02": "mock",
+        "AT03": "mock",
+        "AT04": "mock",
+        "AT05": "contract",
+        "AT06": "contract"
+      },
+      "review_roles": [
+        "review-convention",
+        "review-quality",
+        "self-test"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C4",
+        "C5"
+      ],
+      "review-layout": [
+        "L3"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q5",
+        "Q6",
+        "Q7"
+      ],
+      "self-test": [
+        "F3-1",
+        "F3-2",
+        "F3-3",
+        "F3-4"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "risk_triggers": [
+      "async-state",
+      "interaction",
+      "navigation",
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "navigation",
+        "shared-boundary"
+      ],
+      "changed_files": 502,
+      "max_changed_files": 5,
+      "restore_tasks": [
+        "T3"
+      ],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "async-state": [
+        "agent",
+        "plan"
+      ],
+      "interaction": [
+        "plan"
+      ],
+      "navigation": [
+        "diff",
+        "plan"
+      ],
+      "shared-boundary": [
+        "diff",
+        "plan"
+      ],
+      "visual": [
+        "diff",
+        "plan"
+      ]
+    }
+  }
+}

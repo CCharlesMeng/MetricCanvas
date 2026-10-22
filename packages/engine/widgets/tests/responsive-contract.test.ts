@@ -19,11 +19,11 @@ function componentSources(): Array<{ file: string; source: string }> {
 }
 
 describe('Page Component 响应式架构契约', () => {
-  it('测试侧目录覆盖 schema 的全部 17 种组件与 53 个 variant 分支', () => {
+  it('测试侧目录覆盖 schema 的全部 19 种组件与 55 个 variant 分支', () => {
     expect(Object.keys(responsiveFixtures).sort()).toEqual(
       componentCatalog.map(({ type }) => type).sort()
     );
-    expect(Object.values(responsiveFixtures).flatMap(({ variants }) => variants)).toHaveLength(53);
+    expect(Object.values(responsiveFixtures).flatMap(({ variants }) => variants)).toHaveLength(55);
   });
 
   it('纯渲染组件不读取 viewport 或页面身份', () => {

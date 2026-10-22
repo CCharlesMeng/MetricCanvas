@@ -1,3 +1,4 @@
+import { chartOptionScopes } from './chart-option';
 import type { TypedError } from './errors';
 import type { FilterDeclaration } from './filter';
 import { isValueFormatPreset } from './field';
@@ -52,10 +53,12 @@ export function isFilterTextValueReference(value: unknown): value is FilterTextV
 
 /** 仅扫描声明文本，不能把不透明 DQE 请求或业务数据当作引用。 */
 export function collectFilterTextValueReferences(document: unknown): FilterTextValueUsage[] {
+  const opaque = chartOptionScopes(document);
   const usages: FilterTextValueUsage[] = [];
   visit(textValueScope(document), '');
   return usages;
   function visit(value: unknown, path: string, composition?: FilterTextValueUsage['composition']): void {
+    if (value && typeof value === 'object' && opaque.has(value)) return;
     if (isFilterTextValueReference(value)) {
       usages.push({ path, reference: value, ...(composition ? { composition } : {}) });
     } else if (isTextValueComposition(value)) {

@@ -1,0 +1,214 @@
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/ioc-selection/DataDashboard
+
+ ❯ packages/page/tests/version.test.ts (3 tests | 1 failed) 6ms
+     × 当前主版本全部原有能力从 0 起算 4ms
+ ❯ packages/engine/runtime-ui/tests/report-pdf-png.test.ts (4 tests | 1 failed) 206ms
+     × keeps the version-locked Worker and screenshot adapter reproducible 132ms
+ ❯ packages/page/tests/inline-param-contract.test.ts (18 tests | 4 failed) 57ms
+   × shared inline contract: 'unfilled-template' 38ms
+   × shared inline contract: 'filled-range' 5ms
+   × shared inline contract: 'old-version' 1ms
+   × shared inline contract: 'anchor-window' 2ms
+ ❯ packages/page/tests/canonical-writers.test.ts (2 tests | 1 failed) 282ms
+   × 黄金矩阵保留原始旧输入，包括缺省和双字段 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/page/tests/canonical-writers.test.ts > 黄金矩阵保留原始旧输入，包括缺省和双字段
+AssertionError: expected { ok: true, document: { …(6) }, …(1) } to deeply equal { ok: true, document: { …(6) }, …(1) }
+
+- Expected
++ Received
+
+@@ -23,11 +23,11 @@
+      "id": "inline-report",
+      "layout": "report",
+      "meta": {
+        "description": "内联报告契约样例",
+      },
+-     "schemaVersion": "6.31",
++     "schemaVersion": "6.32",
+      "sections": [
+        {
+          "components": [
+            {
+              "id": "report-header",
+
+ ❯ packages/page/tests/canonical-writers.test.ts:31:78
+     29|   const matrix = JSON.parse(readFileSync('contracts/metriccanvas/page/…
+     30|   expect(matrix.cases).toHaveLength(80);
+     31|   for (const item of matrix.cases) expect(normalizePageDocument(item.i…
+       |                                                                              ^
+     32|   const legacy = matrix.cases.filter((item: {input:{schemaVersion:stri…
+     33|   expect(legacy).toHaveLength(8);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  packages/page/tests/inline-param-contract.test.ts > shared inline contract: 'unfilled-template'
+AssertionError: expected { ok: true, document: { …(6) }, …(1) } to deeply equal { ok: true, document: { …(6) }, …(1) }
+
+- Expected
++ Received
+
+@@ -58,11 +58,11 @@
+              "id": "report-period",
+            },
+          ],
+        },
+      },
+-     "schemaVersion": "6.31",
++     "schemaVersion": "6.32",
+      "sections": [
+        {
+          "components": [
+            {
+              "id": "region-text",
+
+ ❯ packages/page/tests/inline-param-contract.test.ts:7:47
+      5|
+      6| it.each(vectors.cases)('shared inline contract: $name',vector=>{
+      7|   expect(normalizePageDocument(vector.input)).toEqual(vector.expected);
+       |                                               ^
+      8|   expect(validate(vector.input).length===0).toBe(['unfilled-template',…
+      9| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  packages/page/tests/inline-param-contract.test.ts > shared inline contract: 'filled-range'
+AssertionError: expected { ok: true, document: { …(6) }, …(1) } to deeply equal { ok: true, document: { …(6) }, …(1) }
+
+- Expected
++ Received
+
+@@ -63,11 +63,11 @@
+              "start": "2026-01",
+            },
+          ],
+        },
+      },
+-     "schemaVersion": "6.31",
++     "schemaVersion": "6.32",
+      "sections": [
+        {
+          "components": [
+            {
+              "id": "region-text",
+
+ ❯ packages/page/tests/inline-param-contract.test.ts:7:47
+      5|
+      6| it.each(vectors.cases)('shared inline contract: $name',vector=>{
+      7|   expect(normalizePageDocument(vector.input)).toEqual(vector.expected);
+       |                                               ^
+      8|   expect(validate(vector.input).length===0).toBe(['unfilled-template',…
+      9| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  packages/page/tests/inline-param-contract.test.ts > shared inline contract: 'old-version'
+AssertionError: expected { ok: false, errors: [ { …(3) } ] } to deeply equal { ok: false, errors: [ { …(3) } ] }
+
+- Expected
++ Received
+
+@@ -1,9 +1,9 @@
+  {
+    "errors": [
+      {
+-       "message": "不支持的文档格式版本 6.4:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移",
++       "message": "不支持的文档格式版本 6.4:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移",
+        "path": "/schemaVersion",
+        "type": "SCHEMA_ERROR",
+      },
+    ],
+    "ok": false,
+
+ ❯ packages/page/tests/inline-param-contract.test.ts:7:47
+      5|
+      6| it.each(vectors.cases)('shared inline contract: $name',vector=>{
+      7|   expect(normalizePageDocument(vector.input)).toEqual(vector.expected);
+       |                                               ^
+      8|   expect(validate(vector.input).length===0).toBe(['unfilled-template',…
+      9| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  packages/page/tests/inline-param-contract.test.ts > shared inline contract: 'anchor-window'
+AssertionError: expected { ok: true, document: { …(6) }, …(1) } to deeply equal { ok: true, document: { …(6) }, …(1) }
+
+- Expected
++ Received
+
+@@ -65,11 +65,11 @@
+              "start": "2026-03",
+            },
+          ],
+        },
+      },
+-     "schemaVersion": "6.31",
++     "schemaVersion": "6.32",
+      "sections": [
+        {
+          "components": [
+            {
+              "id": "region-text",
+
+ ❯ packages/page/tests/inline-param-contract.test.ts:7:47
+      5|
+      6| it.each(vectors.cases)('shared inline contract: $name',vector=>{
+      7|   expect(normalizePageDocument(vector.input)).toEqual(vector.expected);
+       |                                               ^
+      8|   expect(validate(vector.input).length===0).toBe(['unfilled-template',…
+      9| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  packages/page/tests/version.test.ts > 5.x 的兼容读取与 6.x 版本边界 > 当前主版本全部原有能力从 0 起算
+AssertionError: expected [ '5.0', '5.1', '5.2', '5.3', …(24) ] to deeply equal [ '5.0', '5.1', '5.2', '5.3', …(23) ]
+
+- Expected
++ Received
+
+@@ -24,6 +24,7 @@
+    "6.27",
+    "6.28",
+    "6.29",
+    "6.30",
+    "6.31",
++   "6.32",
+  ]
+
+ ❯ packages/page/tests/version.test.ts:6:33
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  packages/engine/runtime-ui/tests/report-pdf-png.test.ts > native RGB PNG embedding > keeps the version-locked Worker and screenshot adapter reproducible
+Error: Command failed: /usr/local/bin/node tools/scripts/build-report-pdf.mjs --check
+file:///Users/moon/.codex/worktrees/ioc-selection/DataDashboard/tools/scripts/build-report-pdf.mjs:13
+  if (check) { if (await readFile(path,'utf8') !== value) throw Error(`${name} 已漂移，请运行 pnpm report-pdf:build`); }
+                                                                ^
+
+Error: report-theme-properties.ts 已漂移，请运行 pnpm report-pdf:build
+    at output (file:///Users/moon/.codex/worktrees/ioc-selection/DataDashboard/tools/scripts/build-report-pdf.mjs:13:65)
+    at async file:///Users/moon/.codex/worktrees/ioc-selection/DataDashboard/tools/scripts/build-report-pdf.mjs:28:1
+
+Node.js v24.11.1
+
+ ❯ output tools/scripts/build-report-pdf.mjs:13:65
+ ❯ tools/scripts/build-report-pdf.mjs:28:1
+ ❯ packages/engine/runtime-ui/tests/report-pdf-png.test.ts:47:5
+     45|   });
+     46|   it('keeps the version-locked Worker and screenshot adapter reproduci…
+     47|     execFileSync(process.execPath,['tools/scripts/build-report-pdf.mjs…
+       |     ^
+     48|   });
+     49| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  4 failed | 142 passed (146)
+      Tests  7 failed | 1088 passed (1095)
+   Start at  19:55:08
+   Duration  8.18s (transform 6.99s, setup 0ms, import 62.65s, tests 11.23s, environment 7ms)

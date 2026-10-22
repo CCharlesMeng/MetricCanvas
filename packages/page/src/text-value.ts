@@ -1,3 +1,4 @@
+import { chartOptionScopes } from './chart-option';
 import type { ValueFormatPreset } from './field';
 import { isFilterTextValueReference } from './filter-text-value';
 import {
@@ -55,13 +56,32 @@ function resolveTexts(document: unknown, resolution: TextValueResolution, preser
   if (typeof document !== 'object' || document === null || Array.isArray(document)) {
     return document;
   }
+  const opaque = chartOptionScopes(document);
   const source = document as Record<string, unknown>;
   const resolved = visit(textValueScope(source)) as Record<string, unknown>;
+  if (resolved.iocHeader && typeof resolved.iocHeader === 'object') {
+    const header = resolved.iocHeader as Record<string, unknown>;
+    const identity = header.identity as Record<string, unknown> | undefined;
+    const original = (source.iocHeader as {identity?:{title?:unknown}} | undefined)?.identity;
+    if (identity) {
+      if (original?.title !== undefined && !identity.title) identity.title = '未命名';
+      const code = identity.code as {label?:unknown;value?:unknown}|undefined;
+      if (code && (!code.value || !code.label)) delete identity.code;
+      const description=identity.description as {text?:unknown}|undefined;
+      if(description && !description.text) delete identity.description;
+      for (const key of ['tags','facts']) {
+        const items=identity[key] as Array<Record<string,unknown>>|undefined;
+        if(items) {const filtered=items.filter(item=>key==='tags'?item.text:item.value && item.label);if(filtered.length)identity[key]=filtered;else delete identity[key];}
+      }
+    }
+  }
+
   return Object.hasOwn(source, 'dataSources')
     ? { ...resolved, dataSources: source.dataSources }
     : resolved;
 
   function visit(value: unknown): unknown | typeof ABSENT {
+    if (value && typeof value === 'object' && opaque.has(value)) return value;
     if (Array.isArray(value)) {
       return value.map(visit).filter((item) => item !== ABSENT);
     }

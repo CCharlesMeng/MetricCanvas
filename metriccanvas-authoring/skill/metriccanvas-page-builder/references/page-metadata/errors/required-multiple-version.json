@@ -1,0 +1,44 @@
+{
+  "case": "required-multiple-version",
+  "invariant": "required-multiple-selection",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "必选多选保留非空离散集合 由 6.46 引入，文档声明的是 6.45",
+      "paths": [
+        "/filters/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "months",
+        "type": "dimension",
+        "dimension": "month-code",
+        "label": "最近月份",
+        "emptyLabel": "请选择月份",
+        "options": [
+          {
+            "…": "共2个键"
+          },
+          {
+            "…": "共2个键"
+          }
+        ],
+        "default": [
+          "202610",
+          "202608"
+        ],
+        "urlParams": {
+          "value": "months"
+        },
+        "selection": {
+          "mode": "multiple",
+          "required": true
+        }
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/required-multiple-version.json"
+}

@@ -82,3 +82,23 @@ function calendarValueError(value: string, precision: CalendarPrecision, field: 
   if (year < 1 || month < 1 || month > 12 || day < 1 || day > days) return `时间范围 ${field} 不是有效的公历日期`;
   return undefined;
 }
+
+/** Whole natural periods are checked, including blocked dates inside a range. */
+export function calendarSpan(value:string,precision:CalendarPrecision):{from:string;to:string} {
+ const year=Number(value.slice(0,4));
+ if(precision==='date')return {from:value,to:value};
+ const first=precision==='year'?1:precision==='quarter'?(Number(value.slice(-1))-1)*3+1:Number(value.slice(5,7));
+ const last=precision==='year'?12:precision==='quarter'?first+2:first;
+ const days=last===2?(year%4===0&&(year%100!==0||year%400===0)?29:28):[4,6,9,11].includes(last)?30:31;
+ return {from:`${value.slice(0,4)}-${pad(first)}-01`,to:`${value.slice(0,4)}-${pad(last)}-${days}`};
+}
+export function calendarExclusion(value:{from:string;to:string},precision:CalendarPrecision,blocked:readonly {from:string;to:string}[]):boolean {
+ const from=calendarSpan(value.from,precision).from,to=calendarSpan(value.to,precision).to;
+ return blocked.some(range=>from<=calendarSpan(range.to,range.to.length===7?'month':'date').to&&to>=calendarSpan(range.from,range.from.length===7?'month':'date').from);
+}
+
+export function calendarBound(value:string,precision:CalendarPrecision,end=false):string {
+ const source:CalendarPrecision=value.length===4?'year':value.includes('-Q')?'quarter':value.length===7?'month':'date';
+ const span=calendarSpan(value,source),day=end?span.to:span.from;
+ return precision==='date'?day:precision==='month'?day.slice(0,7):precision==='year'?day.slice(0,4):`${day.slice(0,4)}-Q${Math.ceil(Number(day.slice(5,7))/3)}`;
+}

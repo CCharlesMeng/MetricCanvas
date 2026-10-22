@@ -5,6 +5,7 @@ import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {copyConsumerFixtures} from './consumer-fixtures.mjs';
 import { sourceCheckCommands } from './compatibility-profile.mjs';
 
 const root = realpathSync(fileURLToPath(new URL('../..', import.meta.url)));
@@ -126,9 +127,7 @@ for (const version of versions) {
   assert.equal(json(engineRequire.resolve('svelte/package.json')).version, version);
   for (const name of names) assert(realpathSync(join(consumer, 'node_modules/@metriccanvas', name)).startsWith(consumer + '/'), 'Installed package points back into workspace');
 
-  for (const path of ['packages/metric-canvas/tests/browser', 'packages/embed/tests/browser', 'packages/embed/examples', 'packages/embed/tests/serve.mjs', 'packages/embed/tests/dqe-fixture-endpoint.mjs', 'tools/dqe-sim/fixtures/ioc-opportunity-list.json', 'tools/dqe-sim/fixtures/ioc-dimension-values.json', 'tools/dqe-sim/fixtures/ioc-page-datasets.json', 'tools/dqe-sim/fixtures/chart-local-filter.json', 'packages/engine/widgets/tests/responsive-fixtures.ts', 'contracts/metriccanvas/page/reference/examples', 'packages/page/fixtures/contract-valid/report-png-export.json', 'packages/page/fixtures/contract-valid/report-export-buttons.json', 'packages/page/fixtures/contract-valid/report-export-scale-fallback.json', 'packages/page/fixtures/contract-valid/query-cascade-page.json', 'packages/page/fixtures/contract-valid/query-result-where-page.json', 'packages/page/fixtures/contract-valid/table-toolbar-page.json', 'packages/page/fixtures/contract-valid/time-point-min-page.json', 'packages/page/fixtures/contract-valid/dashboard-period-filter-month.json', 'packages/page/fixtures/contract-valid/dashboard-period-filter-more.json', 'packages/page/fixtures/contract-valid/dashboard-period-filter-readonly.json', 'packages/data-execution/tests/fixtures/offices.json', 'packages/page/fixtures/contract-valid/detail-views.json', 'packages/page/fixtures/contract-valid/url-navigation-page.json', 'packages/page/fixtures/contract-valid/dimension-params-page.json', 'packages/page/fixtures/parameter-extraction/tokens-parameter-source.json', 'pages']) {
-    cpSync(join(source, path), join(consumer, path), { recursive: true });
-  }
+  copyConsumerFixtures(source, consumer);
   // 既有浏览器用例与断言不变；类型导入改为已安装包，不能读取本仓 src。
   for (const file of ['embed.spec.ts', 'version-error.spec.ts', 'execution.spec.ts', 'globals.d.ts']) {
     const path = join(consumer, 'packages/embed/tests/browser', file);

@@ -1,4 +1,15 @@
-import { chartFilterErrors } from './chart-filter';
+import { filterHasObservableConsumer, presentationPolicyErrors } from './presentation-policy';
+import { chartOptionErrors, withoutChartOptions } from './chart-option';
+import { rowExpansionErrors } from './validate-row-expansion';
+import { filterGroupErrors, obsoleteChartFilterErrors } from './filter-group';
+import { metricBeforeErrors } from './metric-before';
+import {ordinaryQuery} from './time-mode';
+import {timeExtensionErrors} from './time-extension-validation';
+import {timeQueryVariants} from './time-mode';
+import {amountErrors,moneyComputeErrors} from './amount-validation';
+import {fieldSelectionErrors,fieldSelectionVariants} from './field-selection';
+import { filterExtensionErrors,filterScopeErrors } from './filter-dependencies';
+import { iocHeaderErrors } from './ioc-header';
 import { pagedJoinErrors } from './validate-paged-join';
 import { queryResultBindingErrors } from './validate-query-results';
 import { reportDateFilterErrors } from './report-date-filters';
@@ -23,6 +34,7 @@ import {
 } from './compute';
 import type { TypedError } from './errors';
 import {
+  staticFieldBinding,
   fieldName as fieldNameOf,
   hasQueryFieldMapping,
   type FieldBinding,
@@ -90,6 +102,13 @@ export function parsePage(
   document: unknown,
   options: PageParseOptions = {}
 ): PageParseResult {
+  const removed = obsoleteChartFilterErrors(document);
+  if (removed.length) return {ok:false,errors:removed};
+  const optionErrors = chartOptionErrors(document);
+  if (optionErrors.length) {
+    const other = parsePage(withoutChartOptions(document), options);
+    return { ok: false, errors: [...optionErrors, ...(other.ok ? [] : other.errors)] };
+  }
   const compatibleDocument = normalizeReportExportScales(adaptLegacyPageDocument(document));
   if (!validateStructure(compatibleDocument)) {
     const structural = (validateStructure.errors ?? []).map(toTypedError);
@@ -100,12 +119,19 @@ export function parsePage(
     return { ok: false, errors: structural };
   }
 
+  const timeContractErrors=timeExtensionErrors(compatibleDocument as Page);if(timeContractErrors.length)return {ok:false,errors:timeContractErrors};
   // 能力下限与页面参数判定都必须跑在文本取值替换之前:替换会把引用消解掉,
   // 拿解析产物去判会漏掉「声明 5.0 却引用了页面参数」这类文档。
   const declarations = pageParamDeclarations(compatibleDocument);
+  const inputHeader = (compatibleDocument as Page).iocHeader;
+  const inputIdentity = inputHeader?.identity;
+  const emptyHeader = inputHeader && !inputIdentity?.title && !inputIdentity?.code && !inputIdentity?.description && !inputIdentity?.tags?.length && !inputIdentity?.facts?.length && !inputHeader.filterIds?.length && !inputHeader.back;
   const documentErrors = [
+    ...metricBeforeErrors(compatibleDocument),
+    ...((compatibleDocument as Page).strictURLInputs&&declarations.some(p=>!p.path&&(p.value!==undefined||p.type==='timeRange'))?[schemaError('/strictURLInputs','严格URL输入不支持旧数组固定参数，请使用分组参数')]:[]),
+    ...(emptyHeader ? [schemaError('/iocHeader','IOC 页头需要身份、筛选或返回意图')] : []),
     ...(typeof (compatibleDocument as PageDocument).params === 'object' && !Array.isArray((compatibleDocument as PageDocument).params) && declarations.length === 0 ? [schemaError('/params', '分组参数至少声明一个参数')] : []),
-    ...capabilityFloorErrors(compatibleDocument),
+    ...capabilityFloorErrors(compatibleDocument).map(error => error.path.endsWith('/props/echartsOption') ? { ...error, type: 'CHART_OPTION_ERROR' as const } : error),
     ...layoutCompatibilityErrors(compatibleDocument),
     ...paramBindingErrors(compatibleDocument),
     ...queryParamReferenceErrors(compatibleDocument),
@@ -134,7 +160,8 @@ export function parsePage(
 
   const page = canonicalLayoutDocument(materialized.document as Page);
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
-  const errors = [...invariantErrors(page), ...chartFilterErrors(page, compatibleDocument), ...navigationErrors(page), ...urlInputErrors(page)];
+  const selectionErrors=[...timeExtensionErrors(page),...fieldSelectionErrors(page),...[...timeQueryVariants(page)].flatMap(variant=>[...amountErrors(variant),...moneyComputeErrors(variant)])];if(selectionErrors.length)return {ok:false,errors:selectionErrors};
+  const errors:TypedError[]=[...presentationPolicyErrors(page)];try{for(const fields of fieldSelectionVariants(page))for(const variant of timeQueryVariants(fields))errors.push(...invariantErrors(variant), ...filterGroupErrors(variant), ...navigationErrors(variant), ...urlInputErrors(variant));}catch(cause){return {ok:false,errors:[schemaError('/sections',String(cause))]};}
   return errors.length === 0
     ? { ok: true, page, errors: [] }
     : { ok: false, errors };
@@ -147,6 +174,10 @@ export function parsePage(
 export function normalizePageDocument(document: unknown):
   | { ok: true; document: PageDocument; errors: [] }
   | { ok: false; errors: TypedError[] } {
+  const removed = obsoleteChartFilterErrors(document);
+  if (removed.length) return {ok:false,errors:removed};
+  const optionErrors = chartOptionErrors(document);
+  if (optionErrors.length) return { ok: false, errors: parsePage(document).errors };
   const compatibleDocument = normalizeReportExportScales(adaptLegacyPageDocument(document));
   const parsed = parsePage(compatibleDocument);
   if (!parsed.ok) return parsed;
@@ -290,7 +321,8 @@ function invariantErrors(page: Page): TypedError[] {
     filtersById.set(filter.id, filter);
     errors.push(...filterDeclarationErrors(filter, index, `/filters/${index}`));
   });
-  errors.push(...filterDependsOnErrors(filters));
+  errors.push(...filterDependsOnErrors(filters), ...filterExtensionErrors(filters),...filterScopeErrors(page));
+  errors.push(...iocHeaderErrors(page));
   errors.push(...reportDateFilterErrors(page));
   errors.push(...crossSourceComputeErrors(page));
   errors.push(...queryResultBindingErrors(page));
@@ -376,7 +408,7 @@ function invariantErrors(page: Page): TypedError[] {
         if (unsupported(component.props.columns)) errors.push(schemaError(componentPath, '详情表格只支持展示、排序与本地分页'));
         const source = page.dataSources[component.data.main];
         if (source?.source.type === 'query') {
-          const order = source.source.query.body.dsl_list[0]?.order;
+          const order = ordinaryQuery(source.source.query).body.dsl_list[0]?.order;
           if (source.source.resultScope !== 'complete' || (order && typeof order === 'object' && ('limit' in order || 'offset' in order))) errors.push(schemaError(componentPath, '详情表格要求完整结果，不能本地处理查询窗口'));
         }
       }
@@ -405,6 +437,7 @@ function invariantErrors(page: Page): TypedError[] {
   });
   errors.push(...hiddenHierarchyPickerErrors(page));
   errors.push(...queryPaginationErrors(page));
+  errors.push(...rowExpansionErrors(page, invariantErrors));
 
   return errors;
 }
@@ -719,7 +752,7 @@ function queryContractErrors(
 ): TypedError[] {
   const errors: TypedError[] = [];
   const query = dataSource.source.query;
-  const item = query.body.dsl_list[0];
+  const item = ordinaryQuery(query).body.dsl_list[0];
   const rawDimensions = stringArray(item.output_dims);
   const filter = item.filter;
   const time = typeof filter === 'object' && filter !== null && 'time' in filter
@@ -1218,6 +1251,7 @@ function componentErrors(
   const errors: TypedError[] = [];
   const checkColor = (binding: FieldBinding, path: string, legacy: boolean) => {
     if (legacy) errors.push(schemaError(`${path}/colorRule`, 'colorRule 不得与旧染色声明同时使用'));
+    binding=staticFieldBinding(binding);
     const resolved = resolveBinding(page, component, binding);
     if (!('error' in resolved) && !['number', 'money'].includes(resolved.field.type)) {
       errors.push(schemaError(`${path}/colorRule`, 'colorRule 只支持 number 或 money 字段'));
@@ -1240,6 +1274,7 @@ function componentErrors(
     expectedRole?: FieldDefinition['role'],
     allowedDetailType?: FieldDefinition['type']
   ) => {
+    binding=staticFieldBinding(binding);
     const resolved = resolveBinding(page, component, binding);
     if ('error' in resolved) {
       errors.push(schemaError(path, resolved.error));
@@ -1493,11 +1528,19 @@ function componentErrors(
       if (search) {
         const source = page.dataSources[component.data.main];
         const fields = source ? resolveDataSourceFields(source) : {};
-        if (new Set(search.fields).size !== search.fields.length) errors.push(schemaError(`${componentPath}/props/toolbar/search/fields`, '搜索字段不得重复'));
-        search.fields.forEach((id, index) => {
+        const base = `${componentPath}/props/toolbar/search`;
+        const targets = 'fields' in search
+          ? search.fields.map((id, index) => ({ id, path: `${base}/fields/${index}` }))
+          : search.options.map((option, index) => ({ id: option.field, path: `${base}/options/${index}/field` }));
+        if ('fields' in search && new Set(search.fields).size !== search.fields.length) errors.push(schemaError(`${base}/fields`, '搜索字段不得重复'));
+        if ('options' in search) {
+          if (new Set(search.options.map(option => option.value)).size !== search.options.length) errors.push(schemaError(`${base}/options`, '搜索选项值不得重复'));
+          if (search.defaultValue !== undefined && !search.options.some(option => option.value === search.defaultValue)) errors.push(schemaError(`${base}/defaultValue`, '默认搜索选项必须存在'));
+        }
+        targets.forEach(({ id, path }) => {
           const field = fields[id];
-          if (!field || field.type !== 'string') errors.push(schemaError(`${componentPath}/props/toolbar/search/fields/${index}`, '搜索必须引用 main 数据槽中的文本标量字段'));
-          if (source?.source.type === 'query' && source.source.resultScope !== 'complete' && (!source.fields[id] || !hasQueryFieldMapping(source.fields[id]))) errors.push(schemaError(`${componentPath}/props/toolbar/search/fields/${index}`, '查询搜索字段必须具有 queryField 映射'));
+          if (!field || field.type !== 'string') errors.push(schemaError(path, '搜索必须引用 main 数据槽中的文本标量字段'));
+          if (source?.source.type === 'query' && source.source.resultScope !== 'complete' && (!source.fields[id] || !hasQueryFieldMapping(source.fields[id]))) errors.push(schemaError(path, '查询搜索字段必须具有 queryField 映射'));
         });
       }
       errors.push(...tableDataErrors(page, component, componentPath));
@@ -1822,7 +1865,7 @@ function queryPaginationErrors(page: Page): TypedError[] {
       const pagination = component.props.pagination;
       const sourceId = component.data.main;
       const source = page.dataSources[sourceId];
-      const localOrder = source?.source.type === 'query' ? source.source.query.body.dsl_list[0]?.order : undefined;
+      const localOrder = source?.source.type === 'query' ? ordinaryQuery(source.source.query).body.dsl_list[0]?.order : undefined;
       const completeQuery = source?.source.type === 'query' && source.source.resultScope === 'complete' &&
         !(localOrder && typeof localOrder === 'object' && ('limit' in localOrder || 'offset' in localOrder));
       if (pagination?.mode === 'local' && source?.source.type !== 'inline' && !completeQuery) {
@@ -1846,7 +1889,7 @@ function queryPaginationErrors(page: Page): TypedError[] {
         return;
       }
       queryTables.push({ sourceId, componentPath });
-      const item = source.source.query.body.dsl_list[0];
+      const item = ordinaryQuery(source.source.query).body.dsl_list[0];
       const order = jsonRecord(item.order);
       if (!order || order.offset !== 0) {
         errors.push(
@@ -2003,8 +2046,10 @@ function categoryDomainKey(
   component: Component,
   binding: FieldBinding
 ): string | undefined {
+  binding=staticFieldBinding(binding);
   const resolved = resolveBinding(page, component, binding);
   if ('error' in resolved) return undefined;
+  binding=staticFieldBinding(binding);
   const slot = typeof binding === 'string' ? 'main' : binding.data;
   const sourceId = (component.data as ComponentData | undefined)?.[slot];
   return sourceId === undefined ? undefined : `${sourceId}.${resolved.fieldName}`;
@@ -2161,7 +2206,7 @@ function actionErrors(
   if (!actions) return [];
   const errors: TypedError[] = [];
   if (!deriveComponentCapabilities(page, component).live) {
-    const hasWriteFilter = actions.some((action) => 'writeFilter' in action);
+    const hasWriteFilter = actions.some((action) => 'writeFilter' in action && !(Number(page.schemaVersion.split('.')[1])>=34&&filterHasObservableConsumer(page,action.writeFilter)));
     if (hasWriteFilter) {
       errors.push(
         schemaError(
@@ -2184,7 +2229,7 @@ function actionErrors(
           schemaError(`${path}/writeFilter`, `回写目标必须是 dimension 筛选器:${action.writeFilter}`)
         );
       }
-      check(action.field, `${path}/field`, 'dimension');
+      if ('field' in action) check(action.field, `${path}/field`, 'dimension');
       return;
     }
     if ('openDetail' in action) {
@@ -2222,6 +2267,7 @@ function resolveBinding(
 ):
   | { field: FieldDefinition; fieldName: string }
   | { error: string } {
+  binding=staticFieldBinding(binding);
   const slot = typeof binding === 'string' ? 'main' : binding.data;
   const fieldName = fieldNameOf(binding);
   const sourceId = (component.data as ComponentData | undefined)?.[slot];
@@ -2236,10 +2282,12 @@ function resolveBinding(
   if (field === undefined) {
     return { error: `字段 ${fieldName} 不在数据槽 ${slot} 的数据源 ${sourceId} 中` };
   }
+  if(field.type==='money'&&typeof binding!=='string'&&((binding.format==='cny-adaptive'&&field.currency!=='CNY')||(binding.format==='usd-adaptive'&&field.currency!=='USD')))return {error:'金额格式与静态货币不匹配'};
   return { field, fieldName };
 }
 
 function bindingKey(binding: FieldBinding): string {
+  binding=staticFieldBinding(binding);
   return typeof binding === 'string' ? `main:${binding}` : `${binding.data}:${binding.field}`;
 }
 

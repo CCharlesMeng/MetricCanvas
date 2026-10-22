@@ -1,0 +1,21 @@
+{
+  "case": "required-multiple-empty",
+  "invariant": "required-multiple-selection",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "必选筛选器必须至少选择一个值",
+      "paths": [
+        "/filters/0/default"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "default": []
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/required-multiple-empty.json"
+}

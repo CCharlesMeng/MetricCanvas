@@ -2,7 +2,8 @@ import { expect, it, vi } from 'vitest';
 import { normalizePageDocument } from '@metriccanvas/page';
 import { createAuthoringCoordinator, confirmedPageAssetCapabilities, type AuthoringPort } from '../../src/lib/workbench/authoring-coordinator';
 import { createAuthoringSync, type DurableAuthoringState, type StableSavePort } from '../../src/lib/workbench/authoring-sync';
-import { createCanvasAuthoringDraft } from '../../src/lib/workbench/document-edit';
+import typeFixture from './fixtures/document-edit.json';
+import { createCanvasAuthoringDraft, changeComponentType } from '../../src/lib/workbench/document-edit';
 import { validateAuthoringRecord } from '../../src/lib/workbench/authoring-recovery';
 import { validateHistoryPage } from '../../src/lib/workbench/authoring-history';
 import type { AuthoringStorage } from '../../src/lib/workbench/authoring-storage';
@@ -85,4 +86,22 @@ it('identity changes during a paginated history read discard the returned page',
   const coordinator = createAuthoringCoordinator({ port, identity: () => ({ actorId, workspaceId: 'w' }) }); coordinator.enableAutoSync({ storage: f.storage, port: f.port }); await coordinator.load('p');
   const reading = coordinator.listHistory(); actorId = 'bob'; resolve({ snapshot: ref, revisions: [{ ref }], nextCursor: null });
   await expect(reading).rejects.toThrow(/范围已变化/); coordinator.dispose();
+});
+
+it('undo of a chart type switch restores the exact hidden option tree', async () => {
+  const f = setup();
+  const document = structuredClone(typeFixture);
+  document.id = 'p'; document.schemaVersion = '6.32';
+  Object.assign(document.sections[0]!.components[0]!.props, { echartsOption: { color: ['#7c3aed'] } });
+  const created = createCanvasAuthoringDraft(document);
+  if (!created.ok) throw Error(created.message);
+  const initial = { ...f.stored().value, draft: created.draft };
+  const sync = createAuthoringSync({ initial, restoredVersion: 1, storage: f.storage, port: f.port, identity: () => scope, online: false });
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  const changed = changeComponentType(created.draft, { sectionId: 'main', componentId: 'region-tokens-bar-chart' }, 'lineChart');
+  if (!changed.ok) throw Error(changed.message);
+  await sync.enqueue(changed.draft, 'change chart', false);
+  const restored = await sync.undo(false);
+  expect(restored).toEqual(created.draft);
+  warn.mockRestore(); sync.dispose();
 });

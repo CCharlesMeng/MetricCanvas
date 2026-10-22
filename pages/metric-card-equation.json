@@ -1,0 +1,290 @@
+{
+  "schemaVersion": "6.34",
+  "id": "metric-card-equation",
+  "layout": "dashboard",
+  "meta": {
+    "title": "收入构成看板"
+  },
+  "dataSources": {
+    "demo-metrics": {
+      "fields": {
+        "total": {
+          "type": "number",
+          "role": "measure"
+        },
+        "product": {
+          "type": "number",
+          "role": "measure"
+        },
+        "service": {
+          "type": "number",
+          "role": "measure"
+        },
+        "other": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "total": 1200,
+            "product": 680,
+            "service": 360,
+            "other": 160
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "intro",
+      "container": "plain",
+      "components": [
+        {
+          "id": "intro-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "plain",
+            "body": "收入概览 · 单位：万元 · 演示数据 · 独立白色小卡 · 文字双侧8px · 灰边圆角区域包裹"
+          }
+        }
+      ]
+    },
+    {
+      "id": "equation",
+      "title": "收入构成",
+      "container": "plain",
+      "components": [
+        {
+          "id": "total-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "demo-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "总收入",
+                "valueField": {
+                  "data": "main",
+                  "field": "total",
+                  "format": "number-grouped"
+                },
+                "unit": "万元"
+              }
+            ]
+          }
+        },
+        {
+          "id": "product-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3,
+            "before": {
+              "text": "=",
+              "gap": 8
+            }
+          },
+          "data": {
+            "main": "demo-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "产品收入",
+                "valueField": {
+                  "data": "main",
+                  "field": "product",
+                  "format": "number-grouped"
+                },
+                "unit": "万元"
+              }
+            ]
+          }
+        },
+        {
+          "id": "service-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3,
+            "before": {
+              "text": "+",
+              "gap": 8
+            }
+          },
+          "data": {
+            "main": "demo-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "服务收入",
+                "valueField": {
+                  "data": "main",
+                  "field": "service",
+                  "format": "number-grouped"
+                },
+                "unit": "万元"
+              }
+            ]
+          }
+        },
+        {
+          "id": "other-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 3,
+            "before": {
+              "text": "+",
+              "gap": 8
+            }
+          },
+          "data": {
+            "main": "demo-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "其他收入",
+                "valueField": {
+                  "data": "main",
+                  "field": "other",
+                  "format": "number-grouped"
+                },
+                "unit": "万元"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "word-connection",
+      "title": "业务拆分",
+      "container": "plain",
+      "components": [
+        {
+          "id": "word-total",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "demo-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "总收入",
+                "valueField": {
+                  "data": "main",
+                  "field": "total",
+                  "format": "number-grouped"
+                },
+                "unit": "万元"
+              }
+            ]
+          }
+        },
+        {
+          "id": "word-product",
+          "type": "metricCard",
+          "layout": {
+            "span": 3,
+            "before": {
+              "text": "其中",
+              "gap": 8
+            }
+          },
+          "data": {
+            "main": "demo-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "产品收入",
+                "valueField": {
+                  "data": "main",
+                  "field": "product",
+                  "format": "number-grouped"
+                },
+                "unit": "万元"
+              }
+            ]
+          }
+        },
+        {
+          "id": "word-service",
+          "type": "metricCard",
+          "layout": {
+            "span": 3,
+            "before": {
+              "text": "+",
+              "gap": 8
+            }
+          },
+          "data": {
+            "main": "demo-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "服务收入",
+                "valueField": {
+                  "data": "main",
+                  "field": "service",
+                  "format": "number-grouped"
+                },
+                "unit": "万元"
+              }
+            ]
+          }
+        },
+        {
+          "id": "word-other",
+          "type": "metricCard",
+          "layout": {
+            "span": 3,
+            "before": {
+              "text": "+",
+              "gap": 8
+            }
+          },
+          "data": {
+            "main": "demo-metrics"
+          },
+          "props": {
+            "variant": "compactStack",
+            "rows": [
+              {
+                "label": "其他收入",
+                "valueField": {
+                  "data": "main",
+                  "field": "other",
+                  "format": "number-grouped"
+                },
+                "unit": "万元"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

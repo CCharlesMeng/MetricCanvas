@@ -1,0 +1,92 @@
+{
+  "evidenceKind": "real-model-local-http-main-flow",
+  "model": "deepseek-v4-flash",
+  "toleranceProbe": false,
+  "metadataPartialProbe": false,
+  "evidenceProbe": null,
+  "elapsedSeconds": 50.705,
+  "modelCalls": 19,
+  "tokens": 553468,
+  "tokenBudget": 600000,
+  "requestReserve": "utf8-bytes/2 + 8192 + max_tokens",
+  "requestedCases": [
+    "edit-report",
+    "edit-dashboard",
+    "edit-add-data"
+  ],
+  "executedCases": [
+    "create-report",
+    "create-dashboard",
+    "edit-report",
+    "edit-dashboard",
+    "edit-add-data"
+  ],
+  "cases": [
+    {
+      "id": "create-report",
+      "workflow": "create",
+      "passed": true,
+      "status": "pass",
+      "issues": [],
+      "toolCalls": 5,
+      "final": "已完成 2026 年 8 月区域运营报告（report 布局）的创建与预览交接。\n\n**执行结果**\n- 上下文：新建空基线，workVersion 0 → 1。\n- 数据证据：按已确认计划查询「Tokens请求量」按「区域」分组，时间 2026-08（月粒度）。结果完整（returnedCount=2，totalCount=2，truncated=false），字段：区域（维度）、Tokens请求量（度量，单位「次」，defaultFormat=number）。\n  - 华东 18 次，华南 12 次。\n- 页面结构：单业务章节「各区域 Tokens 请求量」（panel），含\n  - 条形图「各区域 Tokens 请求量（2026年8月，次）」（half，comparison）— applied\n  - 明细表「区域 Tokens 请求量明细（2026年8月）」（half，reconciliation）— applied\n- 保存：saveStatus=saved，draftId=resource-main-flow-report，revisionId=r1，artifactRef=artifact-2960d847…c9ef4。\n- 预览交接：ready（Adapter 已接收该产物，不代表你已在界面上看到页面）。\n\n**需要说明的边界**\n- 查询以 relaxed 校验模式执行，并返回 DATA_CONTEXT_GOVERNANCE_UNKNOWN 警告：该指标的 additivity（可加性）与 timeAggregation（时间聚合）治理信息未知。因此本页只做区域间对比与明细核对，未做跨区域合计、占比或跨期汇总。\n- 结果仅含华东、华南两个区域，未做全量排名声明；若实际区域更多，说明数据源覆盖范围有限。\n- 未做渲染验收，实际视觉呈现需在集成应用中确认。\n\n{{RESPONSE_START}}\n{{PAGE_METADATA_PREVIEW_JSON}}\n{{RESPONSE_END}}",
+      "ref": {
+        "pageId": "main-flow-report",
+        "revisionId": "r1",
+        "resourceId": "resource-main-flow-report"
+      }
+    },
+    {
+      "id": "create-dashboard",
+      "workflow": "create",
+      "passed": true,
+      "status": "pass",
+      "issues": [],
+      "toolCalls": 5,
+      "final": "已完成「2026年8月区域运营概览」dashboard 草稿并交付预览。\n\n**执行结果**\n- 上下文：新建空基线（workVersion 0），已核对 pageId `main-flow-dashboard`。\n- 指标发现：`运营分析` 域中 `Tokens请求量`（定义：统计期内的模型调用请求次数；单位：次；维度：区域、模型）。\n- 取数：按已确认计划查询 2026-08 各区域 Tokens 请求量，结果完整（returnedCount=2，totalCount=2，未截断）。\n  - 华东 18 次、华南 12 次。\n- 页面结构（layout=dashboard）：\n  - 章节「各区域 Tokens 请求量」（card 容器）：条形图「各区域 Tokens 请求量（2026年8月）」+ 表格「区域明细（2026年8月）」，均绑定同一数据源，未重复取数。\n- 保存：saveStatus=saved，draftId `resource-main-flow-dashboard`，revisionId `r1`，artifactRef `artifact-683c1e47511d1b13e5f246e06533f3262f87b29ee459bfa2577b8f6e03c24db0`。\n- 预览交接：ready（Adapter 已接收精确产物，不代表你已在界面上看到页面）。\n\n**需要说明的缺口**\n- 查询以 relaxed 校验模式执行，治理元数据对 `Tokens请求量` 的 additivity（可加性）与 timeAggregation（时间聚合口径）为 unknown，因此本页只做区域间对比与明细核对，未在正文中给出合计或占比结论。\n- 结果仅含华东、华南两个区域，未做全量排名声明；若实际区域更多，说明数据源覆盖范围有限。\n- 数值格式沿用字段默认 `number`（单位「次」），未做缩放。\n\n{{RESPONSE_START}}\n{{PAGE_METADATA_PREVIEW_JSON}}\n{{RESPONSE_END}}",
+      "ref": {
+        "pageId": "main-flow-dashboard",
+        "revisionId": "r1",
+        "resourceId": "resource-main-flow-dashboard"
+      }
+    },
+    {
+      "id": "edit-report",
+      "workflow": "edit",
+      "passed": true,
+      "status": "pass",
+      "issues": [],
+      "toolCalls": 3,
+      "final": "已完成。\n\n**操作结果**\n- `set-header-title`（set_title，目标 `page-header`）：**applied** — 页头标题由“2026年8月区域运营报告”改为“2026年8月区域运营复盘”。\n- 其他内容未改动：`region-tokens` 分区的柱状图与明细表保持原样（本次为纯配置修改，未调用数据发现或查询）。\n\n**保存与交接**\n- saveStatus：**saved**，workVersion 0 → 1，revisionId r1 → r2，draftId `resource-main-flow-report`。\n- 预览交接：**ready**（artifactRef 与保存产物一致）。ready 表示交接适配器已接收产物，不代表你已在界面上看到页面。\n\n{{RESPONSE_START}}\n{{PAGE_METADATA_PREVIEW_JSON}}\n{{RESPONSE_END}}",
+      "ref": {
+        "pageId": "main-flow-report",
+        "revisionId": "r2",
+        "resourceId": "resource-main-flow-report"
+      }
+    },
+    {
+      "id": "edit-dashboard",
+      "workflow": "edit",
+      "passed": false,
+      "status": "error",
+      "reason": "Connection closed",
+      "errorType": "McpError"
+    },
+    {
+      "id": "edit-add-data",
+      "workflow": "edit",
+      "passed": false,
+      "status": "blocked",
+      "reason": "TOKEN_BUDGET_EXHAUSTED",
+      "errorType": "RuntimeError"
+    }
+  ],
+  "notRun": [
+    "create-complex-report"
+  ],
+  "limitations": [
+    "Local Java, DQE and Relay substitutes",
+    "No production integration evidence"
+  ],
+  "passed": false
+}

@@ -9,7 +9,7 @@ for (const variant of ['compact', 'analysisStack']) test(`legacy ${variant}: ful
   await expect(page.getByRole('tab', { name: '概览' })).toBeVisible();
   const legacy = structuredClone(fixture);
   legacy.schemaVersion = '6.31';
-  const table = legacy.sections[0].components[0].props.tabs[1].components[1];
+  const table = legacy.sections[0].components[0].props.tabs[1].components.find((item: any) => item.type === 'table');
   legacy.sections[0].components[0].props = { variant, tabs: ['a', 'b'].map(id => ({ id, label: `旧表${id}`, component: { ...table, id: `legacy-${id}`, layout: { span: 6 } } })) };
   // Remove unused chart controls from this table-only legacy page.
   legacy.filters = [];
@@ -66,7 +66,7 @@ for (const width of [1440, 390]) test(`${width}: mixed Tabs load on demand, keep
   await expect.poll(() => requests.length).toBe(4);
   await page.getByRole('tab', { name: '明细', exact: true }).click();
   // The retained overseas local choice conflicts with the public domestic condition.
-  await expect(page.getByRole('group', { name: '收入趋势筛选' }).locator('[aria-pressed=true]')).toContainText('海外');
+  await expect(page.locator('[data-tab-panel=details] .filter-group [aria-pressed=true]')).toContainText('海外');
   await expect(page.locator('[data-tab-panel=details]')).toContainText('收入趋势');
   expect(requests.filter(item => item.output_metrics.includes('chart_demo_revenue'))).toHaveLength(1);
   await page.reload();

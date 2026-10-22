@@ -1,0 +1,2623 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/ui/tests packages/page/tests packages/engine/runtime/tests packages/engine/runtime-ui/tests packages/data-execution/tests tests/local-authoring-skill.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts apps/playground/tests/page-catalog.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/ioc-selection/DataDashboard
+
+ ❯ apps/playground/tests/page-catalog.test.ts (9 tests | 1 failed) 449ms
+     × 说明中的配置、关联页面、主题和文档在当前仓库真实存在 31ms
+ ❯ packages/page/tests/canonical-writers.test.ts (2 tests | 1 failed) 516ms
+   × 黄金矩阵保留原始旧输入，包括缺省和双字段 6ms
+ ❯ tests/page-reference.test.ts (0 test)
+ ❯ packages/page/tests/inline-param-contract.test.ts (18 tests | 4 failed) 47ms
+   × shared inline contract: 'unfilled-template' 22ms
+   × shared inline contract: 'filled-range' 3ms
+   × shared inline contract: 'old-version' 1ms
+   × shared inline contract: 'anchor-window' 4ms
+ ❯ packages/engine/runtime/tests/dimension-selection.test.ts (5 tests | 2 failed) 49ms
+     × ignores multivalue URL while preserving valid applied value; absent URL clears 2ms
+   × parameter arrays and detail row arrays cannot bypass single cardinality 45ms
+ ❯ tests/local-authoring-skill.test.ts (20 tests | 2 failed) 8670ms
+     × 整目录复制后知识链接与机器索引闭合，所有生成内容有一致的版本和哈希 7ms
+     × 独立打包校验器与当前产品对所有契约向量给出相同结果 1955ms
+ ❯ tests/authoring-export-isolation.test.ts (20 tests | 20 failed) 50760ms
+     × 无旧链时可运行 6177ms
+     × 本地模型评估产物不影响交付锁 3243ms
+     × 拒绝冻结历史向量篡改 2093ms
+     × 拒绝参考手册作者漂移 2073ms
+     × 拒绝产品页面 Schema 漂移 2065ms
+     × 拒绝产品版本漂移：contracts/metriccanvas/manifest.json 2080ms
+     × 拒绝产品版本漂移：metriccanvas-authoring/contract-snapshot/manifest.json 2072ms
+     × 拒绝产品版本漂移：metriccanvas-authoring/contract-lock.json 2096ms
+     × 拒绝共享 Skill 作者漂移：tools.md 2082ms
+     × 拒绝共享 Skill 作者漂移：layouts/report.md 2067ms
+     × 拒绝共享 Skill 作者漂移：layouts/dashboard.md 2085ms
+     × 拒绝缺少独立 Skill 投影 2063ms
+     × 拒绝独立本地 Skill 生成内容漂移：references/page-metadata/schema.json 2145ms
+     × 拒绝独立本地 Skill 生成内容漂移：references/knowledge.json 2078ms
+     × 拒绝独立本地 Skill 生成内容漂移：references/page-patterns/dashboard-detail.json 2077ms
+     × 拒绝独立本地 Skill 生成内容漂移：scripts/validate-page.mjs 2076ms
+     × 生成器保留作者参考且只清理生成子树 2812ms
+     × 拒绝重复 Skill 入口 2079ms
+     × 旧单入口配置仍可导出且不改旧 Skill 主文 2731ms
+     × 包版本变更后拒绝旧导出并可重新生成 2730ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/page-reference.test.ts [ tests/page-reference.test.ts ]
+Error: Incomplete page reference: {
+  "fields": [],
+  "enums": [
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "descendants"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "independent"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "leaf"
+    }
+  ],
+  "examples": [],
+  "branches": []
+}
+
+ ❯ buildPageReference tools/scripts/page-reference.ts:336:66
+
+ ❯ tests/page-reference.test.ts:22:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/31]⎯
+
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 30 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 无旧链时可运行
+AssertionError: /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
+  if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
+                                                                 ^
+
+Error: Incomplete page reference: {
+  "fields": [],
+  "enums": [
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "descendants"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "independent"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "leaf"
+    }
+  ],
+  "examples": [],
+  "branches": []
+}
+
+    at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
+    at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
+    at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
+
+Node.js v24.11.1
+: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to be '' // Object.is equality
+
+- Expected
++ Received
+
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ buildPageReference ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66
+ ❯ buildProductOutputs ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21
+ ❯ <anonymous> ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24
+ ❯ tests/authoring-export-isolation.test.ts:64:40
+     62|     }
+     63|     const clean = runExport();
+     64|     expect(clean.stderr, clean.stderr).toBe('');
+       |                                        ^
+     65|     expect(clean.status).toBe(0);
+     66|     expect(clean.stdout).toContain('authoring contract export current'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 本地模型评估产物不影响交付锁
+AssertionError: /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
+  if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
+                                                                 ^
+
+Error: Incomplete page reference: {
+  "fields": [],
+  "enums": [
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "descendants"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "independent"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "leaf"
+    }
+  ],
+  "examples": [],
+  "branches": []
+}
+
+    at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
+    at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
+    at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
+
+Node.js v24.11.1
+: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ buildPageReference ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66
+ ❯ buildProductOutputs ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21
+ ❯ <anonymous> ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24
+ ❯ tests/authoring-export-isolation.test.ts:75:46
+     73|       writeFileSync(path.join(localRun, 'report.json'), '{"local":true…
+     74|       const checked = runExport();
+     75|       expect(checked.status, checked.stderr).toBe(0);
+       |                                              ^
+     76|     } finally { rmSync(localRun, { recursive: true, force: true }); }
+     77|   }, scenarioTimeout);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝冻结历史向量篡改
+AssertionError: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to contain 'Frozen legacy vector changed'
+
+- Expected
++ Received
+
+- Frozen legacy vector changed
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ tests/authoring-export-isolation.test.ts:83:29
+     81|       const result = runExport();
+     82|       expect(result.status).not.toBe(0);
+     83|       expect(result.stderr).toContain('Frozen legacy vector changed');
+       |                             ^
+     84|     });
+     85|   }, scenarioTimeout);
+ ❯ withChangedFile tests/authoring-export-isolation.test.ts:30:5
+ ❯ tests/authoring-export-isolation.test.ts:80:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝参考手册作者漂移
+AssertionError: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to contain 'page/reference/components/gauge.md'
+
+- Expected
++ Received
+
+- page/reference/components/gauge.md
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ tests/authoring-export-isolation.test.ts:91:29
+     89|       const result = runExport();
+     90|       expect(result.status).not.toBe(0);
+     91|       expect(result.stderr).toContain('page/reference/components/gauge…
+       |                             ^
+     92|     });
+     93|   }, scenarioTimeout);
+ ❯ withChangedFile tests/authoring-export-isolation.test.ts:30:5
+ ❯ tests/authoring-export-isolation.test.ts:88:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝产品页面 Schema 漂移
+AssertionError: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to contain 'contracts/metriccanvas/page/schema.js…'
+
+- Expected
++ Received
+
+- contracts/metriccanvas/page/schema.json
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ tests/authoring-export-isolation.test.ts:99:29
+     97|       const result = runExport();
+     98|       expect(result.status).not.toBe(0);
+     99|       expect(result.stderr).toContain('contracts/metriccanvas/page/sch…
+       |                             ^
+    100|     });
+    101|   }, scenarioTimeout);
+ ❯ withChangedFile tests/authoring-export-isolation.test.ts:30:5
+ ❯ tests/authoring-export-isolation.test.ts:96:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝产品版本漂移：contracts/metriccanvas/manifest.json
+AssertionError: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to contain 'contracts/metriccanvas/manifest.json:…'
+
+- Expected
++ Received
+
+- contracts/metriccanvas/manifest.json: productContractVersion=9.9.9; @metriccanvas/page version=1.0.0-rc.4
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ tests/authoring-export-isolation.test.ts:109:29
+    107|       const result = runExport();
+    108|       expect(result.status).not.toBe(0);
+    109|       expect(result.stderr).toContain(`${file}: productContractVersion…
+       |                             ^
+    110|     });
+    111|   }, scenarioTimeout);
+ ❯ withChangedFile tests/authoring-export-isolation.test.ts:30:5
+ ❯ tests/authoring-export-isolation.test.ts:106:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝产品版本漂移：metriccanvas-authoring/contract-snapshot/manifest.json
+AssertionError: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to contain 'metriccanvas-authoring/contract-snaps…'
+
+- Expected
++ Received
+
+- metriccanvas-authoring/contract-snapshot/manifest.json: productContractVersion=9.9.9; @metriccanvas/page version=1.0.0-rc.4
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ tests/authoring-export-isolation.test.ts:109:29
+    107|       const result = runExport();
+    108|       expect(result.status).not.toBe(0);
+    109|       expect(result.stderr).toContain(`${file}: productContractVersion…
+       |                             ^
+    110|     });
+    111|   }, scenarioTimeout);
+ ❯ withChangedFile tests/authoring-export-isolation.test.ts:30:5
+ ❯ tests/authoring-export-isolation.test.ts:106:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝产品版本漂移：metriccanvas-authoring/contract-lock.json
+AssertionError: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to contain 'metriccanvas-authoring/contract-lock.…'
+
+- Expected
++ Received
+
+- metriccanvas-authoring/contract-lock.json: productContractVersion=9.9.9; @metriccanvas/page version=1.0.0-rc.4
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ tests/authoring-export-isolation.test.ts:109:29
+    107|       const result = runExport();
+    108|       expect(result.status).not.toBe(0);
+    109|       expect(result.stderr).toContain(`${file}: productContractVersion…
+       |                             ^
+    110|     });
+    111|   }, scenarioTimeout);
+ ❯ withChangedFile tests/authoring-export-isolation.test.ts:30:5
+ ❯ tests/authoring-export-isolation.test.ts:106:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝共享 Skill 作者漂移：tools.md
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝共享 Skill 作者漂移：layouts/report.md
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝共享 Skill 作者漂移：layouts/dashboard.md
+AssertionError: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to contain 'bundle.lock.json: stale'
+
+- Expected
++ Received
+
+- bundle.lock.json: stale
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ tests/authoring-export-isolation.test.ts:118:29
+    116|       const result = runExport();
+    117|       expect(result.status).not.toBe(0);
+    118|       expect(result.stderr).toContain('bundle.lock.json: stale');
+       |                             ^
+    119|     });
+    120|   }, scenarioTimeout);
+ ❯ withChangedFile tests/authoring-export-isolation.test.ts:30:5
+ ❯ tests/authoring-export-isolation.test.ts:115:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝缺少独立 Skill 投影
+AssertionError: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to contain 'bundle.lock.json: stale'
+
+- Expected
++ Received
+
+- bundle.lock.json: stale
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ tests/authoring-export-isolation.test.ts:131:29
+    129|       expect(result.status).not.toBe(0);
+    130|       // The target workflow no longer directly links this retained pr…
+    131|       expect(result.stderr).toContain('bundle.lock.json: stale');
+       |                             ^
+    132|     } finally { writeFileSync(file,original); }
+    133|   }, scenarioTimeout);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝独立本地 Skill 生成内容漂移：references/page-metadata/schema.json
+AssertionError: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to contain 'skill/metriccanvas-local-authoring/re…'
+
+- Expected
++ Received
+
+- skill/metriccanvas-local-authoring/references/page-metadata/schema.json
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ tests/authoring-export-isolation.test.ts:140:29
+    138|       const result = runExport();
+    139|       expect(result.status).not.toBe(0);
+    140|       expect(result.stderr).toContain(`skill/metriccanvas-local-author…
+       |                             ^
+    141|     });
+    142|   }, scenarioTimeout);
+ ❯ withChangedFile tests/authoring-export-isolation.test.ts:30:5
+ ❯ tests/authoring-export-isolation.test.ts:137:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝独立本地 Skill 生成内容漂移：references/knowledge.json
+AssertionError: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to contain 'skill/metriccanvas-local-authoring/re…'
+
+- Expected
++ Received
+
+- skill/metriccanvas-local-authoring/references/knowledge.json
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ tests/authoring-export-isolation.test.ts:140:29
+    138|       const result = runExport();
+    139|       expect(result.status).not.toBe(0);
+    140|       expect(result.stderr).toContain(`skill/metriccanvas-local-author…
+       |                             ^
+    141|     });
+    142|   }, scenarioTimeout);
+ ❯ withChangedFile tests/authoring-export-isolation.test.ts:30:5
+ ❯ tests/authoring-export-isolation.test.ts:137:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝独立本地 Skill 生成内容漂移：references/page-patterns/dashboard-detail.json
+AssertionError: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to contain 'skill/metriccanvas-local-authoring/re…'
+
+- Expected
++ Received
+
+- skill/metriccanvas-local-authoring/references/page-patterns/dashboard-detail.json
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ tests/authoring-export-isolation.test.ts:140:29
+    138|       const result = runExport();
+    139|       expect(result.status).not.toBe(0);
+    140|       expect(result.stderr).toContain(`skill/metriccanvas-local-author…
+       |                             ^
+    141|     });
+    142|   }, scenarioTimeout);
+ ❯ withChangedFile tests/authoring-export-isolation.test.ts:30:5
+ ❯ tests/authoring-export-isolation.test.ts:137:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝独立本地 Skill 生成内容漂移：scripts/validate-page.mjs
+AssertionError: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to contain 'skill/metriccanvas-local-authoring/sc…'
+
+- Expected
++ Received
+
+- skill/metriccanvas-local-authoring/scripts/validate-page.mjs
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ tests/authoring-export-isolation.test.ts:140:29
+    138|       const result = runExport();
+    139|       expect(result.status).not.toBe(0);
+    140|       expect(result.stderr).toContain(`skill/metriccanvas-local-author…
+       |                             ^
+    141|     });
+    142|   }, scenarioTimeout);
+ ❯ withChangedFile tests/authoring-export-isolation.test.ts:30:5
+ ❯ tests/authoring-export-isolation.test.ts:137:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 生成器保留作者参考且只清理生成子树
+AssertionError: /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-ownership-QkmSuc/tools/scripts/page-reference.ts:336
+  if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
+                                                                 ^
+
+Error: Incomplete page reference: {
+  "fields": [],
+  "enums": [
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "descendants"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "independent"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "leaf"
+    }
+  ],
+  "examples": [],
+  "branches": []
+}
+
+    at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-ownership-QkmSuc/tools/scripts/page-reference.ts:336:66)
+    at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-ownership-QkmSuc/tools/scripts/export-authoring-contracts.ts:279:21)
+    at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-ownership-QkmSuc/tools/scripts/export-authoring-contracts.ts:826:24)
+
+Node.js v24.11.1
+: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ buildPageReference ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-ownership-QkmSuc/tools/scripts/page-reference.ts:336:66
+ ❯ buildProductOutputs ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-ownership-QkmSuc/tools/scripts/export-authoring-contracts.ts:279:21
+ ❯ <anonymous> ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-ownership-QkmSuc/tools/scripts/export-authoring-contracts.ts:826:24
+ ❯ tests/authoring-export-isolation.test.ts:156:44
+    154|       writeFileSync(stale, '# Stale projection\n');
+    155|       const result = runExport([], folder);
+    156|       expect(result.status, result.stderr).toBe(0);
+       |                                            ^
+    157|       expect(readFileSync(authored, 'utf8')).toBe('# Authored extensio…
+    158|       expect(readFileSync(localAuthored, 'utf8')).toBe(localOriginal +…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 拒绝重复 Skill 入口
+AssertionError: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to contain 'Invalid or duplicate Skill entry'
+
+- Expected
++ Received
+
+- Invalid or duplicate Skill entry
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-export-qIz4Ab/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ tests/authoring-export-isolation.test.ts:171:29
+    169|       const result = runExport();
+    170|       expect(result.status).not.toBe(0);
+    171|       expect(result.stderr).toContain('Invalid or duplicate Skill entr…
+       |                             ^
+    172|     });
+    173|   }, scenarioTimeout);
+ ❯ withChangedFile tests/authoring-export-isolation.test.ts:30:5
+ ❯ tests/authoring-export-isolation.test.ts:168:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 旧单入口配置仍可导出且不改旧 Skill 主文
+AssertionError: /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-legacy-skill-0U7uMK/tools/scripts/page-reference.ts:336
+  if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
+                                                                 ^
+
+Error: Incomplete page reference: {
+  "fields": [],
+  "enums": [
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "descendants"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "independent"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
+      "value": "leaf"
+    }
+  ],
+  "examples": [],
+  "branches": []
+}
+
+    at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-legacy-skill-0U7uMK/tools/scripts/page-reference.ts:336:66)
+    at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-legacy-skill-0U7uMK/tools/scripts/export-authoring-contracts.ts:279:21)
+    at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-legacy-skill-0U7uMK/tools/scripts/export-authoring-contracts.ts:826:24)
+
+Node.js v24.11.1
+: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ buildPageReference ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-legacy-skill-0U7uMK/tools/scripts/page-reference.ts:336:66
+ ❯ buildProductOutputs ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-legacy-skill-0U7uMK/tools/scripts/export-authoring-contracts.ts:279:21
+ ❯ <anonymous> ../../../../../../private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-legacy-skill-0U7uMK/tools/scripts/export-authoring-contracts.ts:826:24
+ ❯ tests/authoring-export-isolation.test.ts:186:49
+    184|       const original = readFileSync(entrypoint,'utf8');
+    185|       const generated = runExport([],legacyRoot);
+    186|       expect(generated.status,generated.stderr).toBe(0);
+       |                                                 ^
+    187|       const checked = runExport(['--check'],legacyRoot);
+    188|       expect(checked.status,checked.stderr).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/31]⎯
+
+ FAIL  tests/authoring-export-isolation.test.ts > 当前契约检查无需旧服务源码 > 包版本变更后拒绝旧导出并可重新生成
+AssertionError: expected '/private/var/folders/_7/p5v7g8bs6kb8j…' to contain 'productContractVersion=1.0.0-rc.4; @m…'
+
+- Expected
++ Received
+
+- productContractVersion=1.0.0-rc.4; @metriccanvas/page version=9.9.9
++ /private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-regeneration-VBNlLV/tools/scripts/page-reference.ts:336
++   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
++                                                                  ^
++
++ Error: Incomplete page reference: {
++   "fields": [],
++   "enums": [
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "descendants"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "independent"
++     },
++     {
++       "pointer": "#/definitions/dimensionFilter/properties/treeSelection",
++       "value": "leaf"
++     }
++   ],
++   "examples": [],
++   "branches": []
++ }
++
++     at buildPageReference (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-regeneration-VBNlLV/tools/scripts/page-reference.ts:336:66)
++     at async buildProductOutputs (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-regeneration-VBNlLV/tools/scripts/export-authoring-contracts.ts:279:21)
++     at async <anonymous> (/private/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/metriccanvas-contract-regeneration-VBNlLV/tools/scripts/export-authoring-contracts.ts:826:24)
++
++ Node.js v24.11.1
++
+
+ ❯ tests/authoring-export-isolation.test.ts:205:30
+    203|         const stale = runExport(['--check'], regenerationRoot);
+    204|         expect(stale.status).not.toBe(0);
+    205|         expect(stale.stderr).toContain(`productContractVersion=${pageM…
+       |                              ^
+    206|         const regenerated = runExport([], regenerationRoot);
+    207|         expect(regenerated.stderr, regenerated.stderr).toBe('');
+ ❯ withChangedFile tests/authoring-export-isolation.test.ts:30:5
+ ❯ tests/authoring-export-isolation.test.ts:202:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/31]⎯
+
+ FAIL  tests/local-authoring-skill.test.ts > 独立本地创作 Skill > 整目录复制后知识链接与机器索引闭合，所有生成内容有一致的版本和哈希
+AssertionError: expected '6.42' to be '6.43' // Object.is equality
+
+Expected: "6.43"
+Received: "6.42"
+
+ ❯ tests/local-authoring-skill.test.ts:134:36
+    132|     validateReferenceLinks(files);
+    133|     const manifest = JSON.parse(files.get('references/knowledge.json')…
+    134|     expect(manifest.schemaVersion).toBe(versionPolicy.current);
+       |                                    ^
+    135|     for (const entry of manifest.files) {
+    136|       expect(files.has(entry.file), entry.file).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/31]⎯
+
+ FAIL  tests/local-authoring-skill.test.ts > 独立本地创作 Skill > 独立打包校验器与当前产品对所有契约向量给出相同结果
+AssertionError: expected [ Array(421) ] to deeply equal [ Array(421) ]
+
+- Expected
++ Received
+
+@@ -58,11 +58,1337 @@
+    {
+      "errors": [],
+      "name": "dimension-params-page.json",
+    },
+    {
+-     "errors": [],
++     "errors": [
++       {
++         "message": "文档格式版本 6.43 高于运行时当前次版本 6.42",
++         "path": "/schemaVersion",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/0/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/0/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/0/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/0/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/0/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/0/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/0/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "取值不在允许范围:[\"period\",\"modes\"]",
++         "path": "/filters/0/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/0/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "取值不在允许范围:[\"today\",\"last7d\",\"last30d\",\"last90d\"]",
++         "path": "/filters/0/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/0/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/0/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/0/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/0/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match a schema in anyOf",
++         "path": "/filters/0/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match a schema in anyOf",
++         "path": "/filters/0/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "缺少必填字段 granularity",
++         "path": "/filters/0/granularity",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/0/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/0/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/0/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/0/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/0/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/0/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/0/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/0/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/0/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/0/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/0/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/0/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/0/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be boolean",
++         "path": "/filters/0/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/0/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/0/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/0/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/0/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/0/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/0/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/0/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/0/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/0/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/0/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/0/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/0/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/0/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/0/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match exactly one schema in oneOf",
++         "path": "/filters/0",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/1/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/1/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/1/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/1/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/1/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/1/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/1/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "取值不在允许范围:[\"period\",\"modes\"]",
++         "path": "/filters/1/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/1/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "取值不在允许范围:[\"today\",\"last7d\",\"last30d\",\"last90d\"]",
++         "path": "/filters/1/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/1/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/1/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/1/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/1/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match a schema in anyOf",
++         "path": "/filters/1/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match a schema in anyOf",
++         "path": "/filters/1/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "缺少必填字段 granularity",
++         "path": "/filters/1/granularity",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/1/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/1/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/1/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/1/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/1/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/1/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/1/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/1/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/1/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/1/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/1/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/1/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/1/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be boolean",
++         "path": "/filters/1/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/1/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/1/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/1/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/1/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/1/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/1/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/1/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/1/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/1/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/1/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/1/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/1/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/1/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/1/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match exactly one schema in oneOf",
++         "path": "/filters/1",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/2/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/2/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/2/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/2/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/2/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/2/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/2/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "取值不在允许范围:[\"period\",\"modes\"]",
++         "path": "/filters/2/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/2/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "取值不在允许范围:[\"today\",\"last7d\",\"last30d\",\"last90d\"]",
++         "path": "/filters/2/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/2/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/2/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/2/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/2/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match a schema in anyOf",
++         "path": "/filters/2/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match a schema in anyOf",
++         "path": "/filters/2/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "缺少必填字段 granularity",
++         "path": "/filters/2/granularity",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/2/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/2/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/2/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/2/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/2/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/2/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/2/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/2/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/2/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/2/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/2/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/2/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/2/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be boolean",
++         "path": "/filters/2/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/2/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/2/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/2/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/2/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/2/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/2/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/2/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/2/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/2/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/2/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/2/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/2/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/2/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/2/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match exactly one schema in oneOf",
++         "path": "/filters/2",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/3/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/3/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/3/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/3/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/3/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "取值不在允许范围:[\"period\",\"modes\"]",
++         "path": "/filters/3/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/3/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "取值不在允许范围:[\"today\",\"last7d\",\"last30d\",\"last90d\"]",
++         "path": "/filters/3/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/3/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/3/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/3/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/3/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match a schema in anyOf",
++         "path": "/filters/3/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match a schema in anyOf",
++         "path": "/filters/3/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "缺少必填字段 granularity",
++         "path": "/filters/3/granularity",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/3/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/3/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/3/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/3/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/3/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/3/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/3/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/3/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/3/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/3/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/3/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be boolean",
++         "path": "/filters/3/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/3/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/3/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/3/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/3/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/3/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/3/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/3/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/3/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/3/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/3/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/3/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/3/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match exactly one schema in oneOf",
++         "path": "/filters/3",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/4/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/4/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/4/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/4/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/4/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "取值不在允许范围:[\"period\",\"modes\"]",
++         "path": "/filters/4/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/4/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "取值不在允许范围:[\"today\",\"last7d\",\"last30d\",\"last90d\"]",
++         "path": "/filters/4/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/4/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/4/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/4/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/4/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match a schema in anyOf",
++         "path": "/filters/4/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match a schema in anyOf",
++         "path": "/filters/4/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "缺少必填字段 granularity",
++         "path": "/filters/4/granularity",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/4/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/4/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/4/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/4/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/4/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/4/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/4/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/4/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/4/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/4/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/4/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be boolean",
++         "path": "/filters/4/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/4/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/4/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/4/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/4/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/4/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/4/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/4/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/4/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/4/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/4/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/4/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/4/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match exactly one schema in oneOf",
++         "path": "/filters/4",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/5/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/5/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/5/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/5/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/5/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/5/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/5/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "取值不在允许范围:[\"period\",\"modes\"]",
++         "path": "/filters/5/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/5/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "取值不在允许范围:[\"today\",\"last7d\",\"last30d\",\"last90d\"]",
++         "path": "/filters/5/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/5/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/5/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/5/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/5/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match a schema in anyOf",
++         "path": "/filters/5/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match a schema in anyOf",
++         "path": "/filters/5/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "缺少必填字段 granularity",
++         "path": "/filters/5/granularity",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/5/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/5/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/5/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/5/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/5/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/5/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/5/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/5/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/5/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/5/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/5/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/5/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/5/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be boolean",
++         "path": "/filters/5/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/5/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/5/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/5/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/5/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/5/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/5/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be object",
++         "path": "/filters/5/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 dimension(拼写错误?)",
++         "path": "/filters/5/dimension",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 display(拼写错误?)",
++         "path": "/filters/5/display",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 selection(拼写错误?)",
++         "path": "/filters/5/selection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 searchable(拼写错误?)",
++         "path": "/filters/5/searchable",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "存在未定义字段 treeSelection(拼写错误?)",
++         "path": "/filters/5/treeSelection",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be equal to constant",
++         "path": "/filters/5/type",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must be string",
++         "path": "/filters/5/default",
++         "type": "SCHEMA_ERROR",
++       },
++       {
++         "message": "must match exactly one schema in oneOf",
++         "path": "/filters/5",
++         "type": "SCHEMA_ERROR",
++       },
++     ],
+      "name": "dimension-selection-page.json",
+    },
+    {
+      "errors": [],
+      "name": "explicit-presentation-page.json",
+@@ -5469,11 +6795,11 @@
+      "name": "layer-inside-composite-card.json",
+    },
+    {
+      "errors": [
+        {
+-         "message": "不支持的文档格式版本 6.0:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移",
++         "message": "不支持的文档格式版本 6.0:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移",
+          "path": "/schemaVersion",
+          "type": "SCHEMA_ERROR",
+        },
+      ],
+      "name": "layout-before-6.1.json",
+@@ -20684,19 +22010,25 @@
+      "name": "value-label-line-conflict.json",
+    },
+    {
+      "errors": [
+        {
+-         "message": "不支持的文档格式版本 4.0:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移",
++         "message": "不支持的文档格式版本 4.0:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移",
+          "path": "/schemaVersion",
+          "type": "SCHEMA_ERROR",
+        },
+      ],
+      "name": "version-major-unsupported.json",
+    },
++   {
++     "errors": [
+        {
+-     "errors": [],
++         "message": "文档格式版本 6.43 高于运行时当前次版本 6.42",
++         "path": "/schemaVersion",
++         "type": "SCHEMA_ERROR",
++       },
++     ],
+      "name": "version-minor-ahead.json",
+    },
+    {
+      "errors": [
+        {
+
+ ❯ tests/local-authoring-skill.test.ts:240:39
+    238|     const result = spawnSync(process.execPath, [runner], {cwd: isolate…
+    239|     expect(result.status, result.stderr).toBe(0);
+    240|     expect(JSON.parse(result.stdout)).toEqual(vectors.map(v=>({name:v.…
+       |                                       ^
+    241|     expect(vectors.length).toBeGreaterThan(100);
+    242|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/31]⎯
+
+ FAIL  apps/playground/tests/page-catalog.test.ts > 页面试验场目录 > 说明中的配置、关联页面、主题和文档在当前仓库真实存在
+AssertionError: ioc-header-selection: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ apps/playground/tests/page-catalog.test.ts:83:101
+     81|       expect(entry.displayTitle.trim(), entry.id).not.toBe('');
+     82|       expect(entry.guide.steps.length, entry.id).toBeGreaterThan(0);
+     83|       expect(catalogRuntimes.some((runtime) => runtime.id === entry.en…
+       |                                                                                                     ^
+     84|       expect(entry.capabilities.length, entry.id).toBeGreaterThan(0);
+     85|       for (const id of entry.capabilities) expect(catalogCapabilities.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/31]⎯
+
+ FAIL  packages/page/tests/canonical-writers.test.ts > 黄金矩阵保留原始旧输入，包括缺省和双字段
+AssertionError: expected { ok: true, document: { …(6) }, …(1) } to deeply equal { ok: true, document: { …(6) }, …(1) }
+
+- Expected
++ Received
+
+@@ -23,11 +23,11 @@
+      "id": "inline-report",
+      "layout": "report",
+      "meta": {
+        "description": "内联报告契约样例",
+      },
+-     "schemaVersion": "6.42",
++     "schemaVersion": "6.43",
+      "sections": [
+        {
+          "components": [
+            {
+              "id": "report-header",
+
+ ❯ packages/page/tests/canonical-writers.test.ts:31:78
+     29|   const matrix = JSON.parse(readFileSync('contracts/metriccanvas/page/…
+     30|   expect(matrix.cases).toHaveLength(80);
+     31|   for (const item of matrix.cases) expect(normalizePageDocument(item.i…
+       |                                                                              ^
+     32|   const legacy = matrix.cases.filter((item: {input:{schemaVersion:stri…
+     33|   expect(legacy).toHaveLength(8);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/31]⎯
+
+ FAIL  packages/page/tests/inline-param-contract.test.ts > shared inline contract: 'unfilled-template'
+AssertionError: expected { ok: true, document: { …(6) }, …(1) } to deeply equal { ok: true, document: { …(6) }, …(1) }
+
+- Expected
++ Received
+
+@@ -58,11 +58,11 @@
+              "id": "report-period",
+            },
+          ],
+        },
+      },
+-     "schemaVersion": "6.42",
++     "schemaVersion": "6.43",
+      "sections": [
+        {
+          "components": [
+            {
+              "id": "region-text",
+
+ ❯ packages/page/tests/inline-param-contract.test.ts:7:47
+      5|
+      6| it.each(vectors.cases)('shared inline contract: $name',vector=>{
+      7|   expect(normalizePageDocument(vector.input)).toEqual(vector.expected);
+       |                                               ^
+      8|   expect(validate(vector.input).length===0).toBe(['unfilled-template',…
+      9| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/31]⎯
+
+ FAIL  packages/page/tests/inline-param-contract.test.ts > shared inline contract: 'filled-range'
+AssertionError: expected { ok: true, document: { …(6) }, …(1) } to deeply equal { ok: true, document: { …(6) }, …(1) }
+
+- Expected
++ Received
+
+@@ -63,11 +63,11 @@
+              "start": "2026-01",
+            },
+          ],
+        },
+      },
+-     "schemaVersion": "6.42",
++     "schemaVersion": "6.43",
+      "sections": [
+        {
+          "components": [
+            {
+              "id": "region-text",
+
+ ❯ packages/page/tests/inline-param-contract.test.ts:7:47
+      5|
+      6| it.each(vectors.cases)('shared inline contract: $name',vector=>{
+      7|   expect(normalizePageDocument(vector.input)).toEqual(vector.expected);
+       |                                               ^
+      8|   expect(validate(vector.input).length===0).toBe(['unfilled-template',…
+      9| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/31]⎯
+
+ FAIL  packages/page/tests/inline-param-contract.test.ts > shared inline contract: 'old-version'
+AssertionError: expected { ok: false, errors: [ { …(3) } ] } to deeply equal { ok: false, errors: [ { …(3) } ] }
+
+- Expected
++ Received
+
+@@ -1,9 +1,9 @@
+  {
+    "errors": [
+      {
+-       "message": "不支持的文档格式版本 6.4:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移",
++       "message": "不支持的文档格式版本 6.4:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移",
+        "path": "/schemaVersion",
+        "type": "SCHEMA_ERROR",
+      },
+    ],
+    "ok": false,
+
+ ❯ packages/page/tests/inline-param-contract.test.ts:7:47
+      5|
+      6| it.each(vectors.cases)('shared inline contract: $name',vector=>{
+      7|   expect(normalizePageDocument(vector.input)).toEqual(vector.expected);
+       |                                               ^
+      8|   expect(validate(vector.input).length===0).toBe(['unfilled-template',…
+      9| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/31]⎯
+
+ FAIL  packages/page/tests/inline-param-contract.test.ts > shared inline contract: 'anchor-window'
+AssertionError: expected { ok: true, document: { …(6) }, …(1) } to deeply equal { ok: true, document: { …(6) }, …(1) }
+
+- Expected
++ Received
+
+@@ -65,11 +65,11 @@
+              "start": "2026-03",
+            },
+          ],
+        },
+      },
+-     "schemaVersion": "6.42",
++     "schemaVersion": "6.43",
+      "sections": [
+        {
+          "components": [
+            {
+              "id": "region-text",
+
+ ❯ packages/page/tests/inline-param-contract.test.ts:7:47
+      5|
+      6| it.each(vectors.cases)('shared inline contract: $name',vector=>{
+      7|   expect(normalizePageDocument(vector.input)).toEqual(vector.expected);
+       |                                               ^
+      8|   expect(validate(vector.input).length===0).toBe(['unfilled-template',…
+      9| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/31]⎯
+
+ FAIL  packages/engine/runtime/tests/dimension-selection.test.ts > single cardinality across state entry points > ignores multivalue URL while preserving valid applied value; absent URL clears
+AssertionError: expected '' to contain 'SZ'
+
+- Expected
++ Received
+
+- SZ
+
+ ❯ packages/engine/runtime/tests/dimension-selection.test.ts:20:153
+     18|  it('ignores multivalue URL while preserving valid applied value; abse…
+     19|   expect(parseFilterSearch('region=SZ&region=BJ',declarations).size).t…
+     20|   const state=createFilterState(initialFilterValues(declarations),decl…
+       |                                                                                                                                                         ^
+     21|   state.fromURL('',declarations);expect(state.toURL()).toBe('');
+     22|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/31]⎯
+
+ FAIL  packages/engine/runtime/tests/dimension-selection.test.ts > parameter arrays and detail row arrays cannot bypass single cardinality
+AssertionError: expected [Function] to throw an error
+ ❯ packages/engine/runtime/tests/dimension-selection.test.ts:37:86
+     35|  const view={...page,detailViews:[{id:'detail',mode:'query' as const,f…
+     36|  const action:OpenDetailAction={on:'click',openDetail:{surface:'modal'…
+     37|  expect(()=>detailViewInput(view,action,{},new Map([['upstream',multi]…
+       |                                                                                      ^
+     38| });
+     39|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/31]⎯
+
+
+ Test Files  7 failed | 170 passed (177)
+      Tests  30 failed | 1381 passed (1411)
+   Start at  21:02:42
+   Duration  51.14s (transform 8.49s, setup 0ms, import 79.87s, tests 77.67s, environment 8ms)
+
+[ELIFECYCLE] Test failed. See above for more details.

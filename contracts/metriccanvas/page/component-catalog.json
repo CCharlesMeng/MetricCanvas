@@ -266,7 +266,6 @@
       "components[].id",
       "components[].type",
       "components[].layout",
-      "components[].data",
       "components[].props"
     ],
     "title": "optional",
@@ -447,6 +446,45 @@
       "relatedData"
     ],
     "title": "optional",
+    "defaultSpan": 12
+  },
+  {
+    "type": "button",
+    "label": "按钮",
+    "aliases": [],
+    "purpose": "执行受控导航、详情或筛选动作",
+    "chooseWhen": [
+      "独立操作入口"
+    ],
+    "dataShape": "不绑定数据源",
+    "authoringShape": {
+      "bindsData": false
+    },
+    "requiredProps": [
+      "label",
+      "action"
+    ],
+    "title": "unsupported",
+    "defaultSpan": 3
+  },
+  {
+    "type": "filterGroup",
+    "label": "独立筛选",
+    "aliases": [],
+    "purpose": "用固定单选按钮或下拉控制一个或多个查询消费者",
+    "chooseWhen": [
+      "Dashboard 正文独立筛选，或组合卡内多个指标共用筛选"
+    ],
+    "dataShape": "不绑定数据源；通过 filterId 写入筛选状态，查询通过 filterBindings 消费",
+    "authoringShape": {
+      "bindsData": false
+    },
+    "requiredProps": [
+      "filterId",
+      "options[].label",
+      "options[].value"
+    ],
+    "title": "unsupported",
     "defaultSpan": 12
   }
 ]

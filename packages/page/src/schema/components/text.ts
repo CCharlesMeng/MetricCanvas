@@ -1,7 +1,9 @@
+import { conditionZ, visibilityShape } from '../condition';
 import { navigationTargetZ } from '../navigation';
 import { z } from 'zod';
 import {
   componentIdZ,
+  idZ,
   componentLayoutZ,
   nonEmptyTextValueZ,
   textValueZ
@@ -13,12 +15,14 @@ const textLinkZ = navigationTargetZ.extend({ label: nonEmptyTextValueZ });
 export const textComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('text'),
     layout: componentLayoutZ,
     props: z
       .object({
         title: textValueZ.optional(),
         body: textValueZ.optional(),
+        parts: z.array(z.object({ id: idZ, text: textValueZ, visibleWhen: conditionZ.optional() }).strict()).min(1).max(64).optional(),
         bodyFormat: z.literal('semanticHtml').optional(),
         variant: z
           .enum(['plain', 'heading', 'insight', 'reportInline', 'riskNotice'])

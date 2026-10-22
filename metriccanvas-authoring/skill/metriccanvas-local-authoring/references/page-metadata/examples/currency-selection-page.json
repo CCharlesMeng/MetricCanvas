@@ -1,0 +1,496 @@
+{
+  "schemaVersion": "6.49",
+  "id": "currency-selection-page",
+  "layout": "dashboard",
+  "dashboardToolbar": "hidden",
+  "meta": {
+    "title": "IOC B3：金额与币种",
+    "description": "本地合成双货币字段，不代表真实USD业务数据；没有前端汇率换算。"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "金额与币种",
+      "description": {
+        "text": "独立静态人民币/美元字段 · 输入以万元/万美元，查询保留基本单位"
+      },
+      "tags": [
+        {
+          "id": "demo",
+          "text": "合成数据",
+          "tone": "info"
+        }
+      ],
+      "facts": [
+        {
+          "id": "period",
+          "kind": "queryPeriod",
+          "label": "统计期间",
+          "value": {
+            "filter": "period",
+            "format": "period"
+          }
+        }
+      ]
+    },
+    "filterIds": [
+      "period",
+      "currency",
+      "amount"
+    ]
+  },
+  "filters": [
+    {
+      "id": "period",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "month",
+      "required": true,
+      "label": "统计期间",
+      "default": {
+        "mode": "month",
+        "value": "2026-09"
+      }
+    },
+    {
+      "id": "currency",
+      "type": "dimension",
+      "dimension": "currency_code",
+      "label": "币种",
+      "selection": {
+        "mode": "single",
+        "required": true
+      },
+      "options": [
+        {
+          "value": "RMB",
+          "label": "人民币"
+        },
+        {
+          "value": "USD",
+          "label": "美元"
+        }
+      ],
+      "default": [
+        "RMB"
+      ]
+    },
+    {
+      "id": "amount",
+      "type": "numberRange",
+      "label": "预签金额",
+      "constraints": {
+        "min": 0,
+        "bounds": "strict"
+      },
+      "units": {
+        "filterId": "currency",
+        "cases": {
+          "RMB": {
+            "currency": "CNY",
+            "label": "万元",
+            "scale": 10000
+          },
+          "USD": {
+            "currency": "USD",
+            "label": "万美元",
+            "scale": 10000
+          }
+        }
+      },
+      "presets": [
+        {
+          "id": "all",
+          "label": "全部",
+          "range": {}
+        },
+        {
+          "id": "large",
+          "label": "100万及以上",
+          "range": {
+            "from": 100
+          }
+        },
+        {
+          "id": "small",
+          "label": "0至50万",
+          "range": {
+            "from": 0,
+            "to": 50
+          }
+        }
+      ],
+      "clearOnChangeOf": [
+        "currency"
+      ],
+      "hint": "金额以基本单位保存；切币种清金额后需明确确认范围。"
+    }
+  ],
+  "dataSources": {
+    "main": {
+      "fields": {
+        "project": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "ioc_amount_project"
+        },
+        "scope": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "ioc_amount_scope"
+        },
+        "base-cny": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "unit": "元",
+          "label": "预签金额",
+          "defaultFormat": "number-grouped",
+          "nullable": true,
+          "queryField": "ioc_amount_base_cny"
+        },
+        "fee-cny": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "unit": "元",
+          "label": "费用",
+          "defaultFormat": "number-grouped",
+          "nullable": true,
+          "queryField": "ioc_amount_fee_cny"
+        },
+        "total-cny": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "unit": "元",
+          "label": "含费用金额",
+          "defaultFormat": "number-grouped",
+          "nullable": true
+        },
+        "base-usd": {
+          "type": "money",
+          "role": "measure",
+          "currency": "USD",
+          "unit": "美元",
+          "label": "预签金额",
+          "defaultFormat": "number-grouped",
+          "nullable": true,
+          "queryField": "ioc_amount_base_usd"
+        },
+        "fee-usd": {
+          "type": "money",
+          "role": "measure",
+          "currency": "USD",
+          "unit": "美元",
+          "label": "费用",
+          "defaultFormat": "number-grouped",
+          "nullable": true,
+          "queryField": "ioc_amount_fee_usd"
+        },
+        "total-usd": {
+          "type": "money",
+          "role": "measure",
+          "currency": "USD",
+          "unit": "美元",
+          "label": "含费用金额",
+          "defaultFormat": "number-grouped",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "ioc_amount_project",
+                  "ioc_amount_scope"
+                ],
+                "output_metrics": [
+                  "ioc_amount_base_cny",
+                  "ioc_amount_fee_cny",
+                  "ioc_amount_base_usd",
+                  "ioc_amount_fee_usd"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month"
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            },
+            "amount": {
+              "target": "numberRange",
+              "metricByFilter": {
+                "filterId": "currency",
+                "cases": {
+                  "RMB": "ioc_amount_base_cny",
+                  "USD": "ioc_amount_base_usd"
+                }
+              }
+            }
+          }
+        }
+      },
+      "compute": [
+        {
+          "op": "sumFields",
+          "fields": [
+            "base-cny",
+            "fee-cny"
+          ],
+          "output": "total-cny",
+          "onMissing": "null"
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "base-usd",
+            "fee-usd"
+          ],
+          "output": "total-usd",
+          "onMissing": "null"
+        }
+      ]
+    },
+    "unbound": {
+      "fields": {
+        "scope": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "ioc_header_scope"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "ioc_header_count"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "ioc_header_scope"
+                ],
+                "output_metrics": [
+                  "ioc_header_count"
+                ],
+                "filter": {
+                  "dims": []
+                },
+                "order": {
+                  "limit": 10,
+                  "offset": 0
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "body",
+      "components": [
+        {
+          "id": "amount-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "main"
+          },
+          "props": {
+            "title": "首条项目（两个静态计算结果）",
+            "rows": [
+              {
+                "label": "含费用金额",
+                "valueField": {
+                  "byFilter": {
+                    "filterId": "currency",
+                    "cases": {
+                      "RMB": {
+                        "data": "main",
+                        "field": "total-cny",
+                        "format": "number-grouped"
+                      },
+                      "USD": {
+                        "data": "main",
+                        "field": "total-usd",
+                        "format": "number-grouped"
+                      }
+                    }
+                  }
+                },
+                "unit": "元"
+              }
+            ]
+          }
+        },
+        {
+          "id": "amount-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 8
+          },
+          "data": {
+            "main": "main"
+          },
+          "props": {
+            "title": "各项目含费用金额",
+            "categoryField": "project",
+            "series": [
+              {
+                "field": {
+                  "byFilter": {
+                    "filterId": "currency",
+                    "cases": {
+                      "RMB": {
+                        "data": "main",
+                        "field": "total-cny",
+                        "format": "number-grouped"
+                      },
+                      "USD": {
+                        "data": "main",
+                        "field": "total-usd",
+                        "format": "number-grouped"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "amount-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "main"
+          },
+          "props": {
+            "title": "金额明细（查询后分别计算两种静态货币）",
+            "rowKey": "project",
+            "columns": [
+              {
+                "field": "project",
+                "title": "项目",
+                "sortable": true
+              },
+              {
+                "field": {
+                  "byFilter": {
+                    "filterId": "currency",
+                    "cases": {
+                      "RMB": {
+                        "data": "main",
+                        "field": "base-cny",
+                        "format": "number-grouped"
+                      },
+                      "USD": {
+                        "data": "main",
+                        "field": "base-usd",
+                        "format": "number-grouped"
+                      }
+                    }
+                  }
+                },
+                "title": "预签金额",
+                "sortable": true,
+                "filterable": {
+                  "mode": "numberRange"
+                }
+              },
+              {
+                "field": {
+                  "byFilter": {
+                    "filterId": "currency",
+                    "cases": {
+                      "RMB": {
+                        "data": "main",
+                        "field": "total-cny",
+                        "format": "number-grouped"
+                      },
+                      "USD": {
+                        "data": "main",
+                        "field": "total-usd",
+                        "format": "number-grouped"
+                      }
+                    }
+                  }
+                },
+                "title": "含费用金额"
+              },
+              {
+                "field": "scope",
+                "title": "服务收到的条件"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 20
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "金额验收"
+              }
+            }
+          }
+        },
+        {
+          "id": "unbound-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "unbound"
+          },
+          "props": {
+            "title": "无关查询（不随筛选刷新）",
+            "columns": [
+              {
+                "field": "scope",
+                "title": "服务收到的条件（本地合成）"
+              },
+              {
+                "field": "count",
+                "title": "合成响应标识"
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            },
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "本地页头验收"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

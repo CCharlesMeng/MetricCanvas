@@ -1,0 +1,73 @@
+{
+  "base_ref": "eae372c48e02bf8eff60bb89c7a790da7ed5fe8e",
+  "failed_run": "https://github.com/CCharlesMeng/MetricCanvas/actions/runs/39402808372",
+  "failure_count": 8,
+  "failures_per_browser": [
+    "embedded long text clipping",
+    "long PNG preset exceeds pixel limit",
+    "flow versus fixed reference compositing AA",
+    "native drag target outside fixture viewport"
+  ],
+  "local_browser_results": {
+    "embed": {
+      "startTime": "2026-10-20T10:07:39.005Z",
+      "duration": 30291.862,
+      "expected": 23,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "canvas": {
+      "startTime": "2026-10-20T10:07:39.005Z",
+      "duration": 14457.534,
+      "expected": 15,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    }
+  },
+  "focused_wrapping_test": "passed: embedded and forecast cells wrap long configured values instead of clipping them",
+  "other_checks": {
+    "engine_embed_canvas_types": "0 errors,0 warnings",
+    "pages": {
+      "passed": 54,
+      "failed": 0
+    },
+    "authoring_contracts": "943 product,4 authoring,1 interface",
+    "bundle_digest_checks": 3302
+  },
+  "files": [
+    {
+      "path": "packages/engine/widgets/src/components/table/Table.svelte",
+      "sha256": "1aac0d0e6dca9737ae4511e031c5820fbba4ae927d8fbd1d0aabd5dca976f433"
+    },
+    {
+      "path": "packages/embed/tests/browser/table-tiny-os.spec.ts",
+      "sha256": "9e026a0b8b38ffc80df39fdd50780314458c74f01be2273cf112d50e57198941"
+    },
+    {
+      "path": "packages/embed/tests/browser/report-image.spec.ts",
+      "sha256": "ea8a67adf6a00be95ca9afb307dc98b903cc5777c48491d1a15ba2cda07d95cb"
+    },
+    {
+      "path": "packages/metric-canvas/tests/browser/metric-canvas.spec.ts",
+      "sha256": "2ffe4c9fd68b48979bb3439be1ca0fa85b97be6a33061a762e1fd407013cfdde"
+    },
+    {
+      "path": "pages/report-png-long-export.json",
+      "sha256": "727d9c53f7a0b831883b63fdc0ebcad5c09fe73ad2a950a5190af6345f5b5ffb"
+    },
+    {
+      "path": "docs/page-metadata/components/table.md",
+      "sha256": "9d89c5cc3cba30d9bc8c3fa6d977abdffc578ee0d683184dd8bfab5fb12c2a20"
+    },
+    {
+      "path": "docs/page-metadata/components/reportHeader.md",
+      "sha256": "69fab1f9a03c931d7ca1c3b2bd4562dcb24a04aa4575952184e1e4266250dc61"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "63f17f9b6cf5abb75bdcb9217e01bdba3d12ef2578403e256beb4316376d72a0"
+    }
+  ]
+}

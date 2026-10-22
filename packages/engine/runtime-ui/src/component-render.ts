@@ -7,7 +7,11 @@ import type {TableHeaderFilterValue,TablePaginationState,TableSelectedCell,Table
  * 抽成显式契约,使 `ComponentRenderer` 不需要认识运行时的表格状态实现。
  */
 export interface TableRenderBinding {
+  expansion?: { page: import('@metriccanvas/page').Page; gateway: import('../../runtime/src').RuntimeDataGateway;
+    filters: import('../../runtime/src').FilterValues; params: import('../../runtime/src').PageParamValues; instanceId: string };
   searchDraft?: string;
+  searchOption?: string;
+  onsearchoption?: (value: string) => void;
   exporting?: boolean;
   exportError?: string;
   onsearchdraft?: (query: string) => void;
@@ -17,6 +21,11 @@ export interface TableRenderBinding {
   view: TableViewState;
   sortReset?:readonly TableSortRule[];
   selectedCell?: TableSelectedCell;
+  columnCandidates?: Record<string, import('../../runtime/src/column-candidates').ColumnCandidatesSnapshot>;
+  oncandidateopen?: (field: string, open: boolean) => void;
+  oncandidatesearch?: (field: string, query: string) => void;
+  oncandidatemore?: (field: string) => void;
+  oncandidateretry?: (field: string) => void;
   filterOptions: Record<string, string[]>;
   filterOptionsStatus?:Record<string,import('../../runtime/src/dimension-values').DimensionValuesSnapshot['status']>;
   pagination?: TablePaginationState;
@@ -25,7 +34,9 @@ export interface TableRenderBinding {
   onpagesize: (pageSize: number) => void;
   onsort: (sort: TableSortRule[]) => void;
   onheaderfilter: (field: string, value: TableHeaderFilterValue | null) => void;
-  oncellselect: (context: { rowIndex: number; column: TableColumn }) => void;
+  oncellselect: (context: { rowIndex: number; column: TableColumn; row?:Row }) => void;
+  interactionGate?: (row:Row,column:TableColumn)=>{eligible:boolean;enabled:boolean};
+  toolbarEnabled?: {search:boolean;export:boolean};
   linkHref?: (row: Row, column?: TableColumn) => string | undefined;
   onlink?: (context: { rowIndex: number; column: TableColumn; row: Row }, event: MouseEvent) => void;
 }

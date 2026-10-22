@@ -13,7 +13,7 @@ from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 ROOT=Path(__file__).resolve().parents[2]
 
 class ContentContainersTest(unittest.IsolatedAsyncioTestCase):
-    async def test_public_stdio_all_17_types_and_complete_subtree_creation(self):
+    async def test_public_stdio_all_types_and_complete_subtree_creation(self):
         # Real ephemeral local listener represents deployment-owned configuration.
         # Authoring must never call the runtime summary service.
         calls=[]
@@ -41,9 +41,14 @@ class ContentContainersTest(unittest.IsolatedAsyncioTestCase):
                     output=result.structured_content['artifactEnvelope']['artifact']['document']
                     self.assertEqual(validate_page_document(output),[])
                     seen.update(c['type'] for c in walk_components(output))
+                result=await client.call_tool('edit_page',{'baseline_token':'trusted-content-source','request':{'operations':[{'id':'button','type':'add_button','sectionId':'main','componentId':'navigate-button','label':'查看明细','action':{'on':'click','navigate':{'href':'/details'}}}]}})
+                self.assertEqual(result.structured_content['modelSummary']['status'],'changed',result.structured_content)
+                output=result.structured_content['artifactEnvelope']['artifact']['document']
+                self.assertEqual(validate_page_document(output),[])
+                seen.update(c['type'] for c in walk_components(output))
                 catalog=json.loads((ROOT/'contract-snapshot/page/component-catalog.json').read_text())
                 self.assertEqual(seen,{c['type'] for c in catalog})
-                self.assertEqual(len(seen),17)
+                self.assertEqual(len(seen),18)
                 text=' '.join(c.text for c in response.content if c.type=='text')
                 for secret in ['dataSources','上海市',endpoint,'relatedData','promptTemplate']:
                     self.assertNotIn(secret,text)

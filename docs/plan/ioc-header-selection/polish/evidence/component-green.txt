@@ -1,0 +1,187 @@
+[WebServer] (node:37267) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:37268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 5 tests using 1 worker
+
+(node:37284) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chrome] › tests/browser/selection.spec.ts:3:1 › tree single, local search, geometry and keyboard (597ms)
+  ✘  2 [chrome] › tests/browser/selection.spec.ts:27:1 › tags keep height, scroll and delete exactly one; disabled and states (30.0s)
+(node:37899) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=false (30.0s)
+(node:38483) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  4 [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=true (30.0s)
+(node:39097) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  5 [chrome] › tests/browser/selection.spec.ts:74:1 › official geometry, neutral tag colors, icons and panel rows (5.3s)
+
+
+  1) [chrome] › tests/browser/selection.spec.ts:27:1 › tags keep height, scroll and delete exactly one; disabled and states
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.hover: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('group', { name: '区域已选标签' })
+        - locator resolved to <div role="group" aria-label="区域已选标签" class="selection-tags mc-ui-select__tags svelte-bsmqej">…</div>
+      - attempting hover action
+        2 × waiting for element to be visible and stable
+          - element is visible and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <button type="button" aria-label="区域" aria-haspopup="tree" aria-expanded="false" class="mc-ui-input__inner selection-trigger svelte-bsmqej">…</button> from <div class="mc-ui-input selection-input svelte-bsmqej">…</div> subtree intercepts pointer events
+        - retrying hover action
+        - waiting 20ms
+        2 × waiting for element to be visible and stable
+          - element is visible and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <button type="button" aria-label="区域" aria-haspopup="tree" aria-expanded="false" class="mc-ui-input__inner selection-trigger svelte-bsmqej">…</button> from <div class="mc-ui-input selection-input svelte-bsmqej">…</div> subtree intercepts pointer events
+        - retrying hover action
+          - waiting 100ms
+        57 × waiting for element to be visible and stable
+           - element is visible and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <button type="button" aria-label="区域" aria-haspopup="tree" aria-expanded="false" class="mc-ui-input__inner selection-trigger svelte-bsmqej">…</button> from <div class="mc-ui-input selection-input svelte-bsmqej">…</div> subtree intercepts pointer events
+         - retrying hover action
+           - waiting 500ms
+
+
+      40 |  expect((await control.boundingBox())?.height).toBe(before?.height);
+      41 |  expect(await tags.evaluate(el=>el.scrollWidth>el.clientWidth)).toBe(true);
+    > 42 |  await tags.hover();await page.mouse.wheel(0,1000);await expect.poll(()=>tags.evaluate(el=>el.scrollLeft)).toBeGreaterThan(0);
+         |             ^
+      43 |  await page.getByRole('button',{name:'移除区域：UNKNOWN-LONG-CODE',exact:true}).click();
+      44 |  await expect(page.getByLabel('值',{exact:true})).toHaveText('["SZ","BJ","DE"]');
+      45 |  await page.getByRole('checkbox',{name:'禁用',exact:true}).check();await expect(page.getByRole('button',{name:'区域',exact:true})).toBeDisabled();
+        at /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/ui/tests/browser/selection.spec.ts:42:13
+
+    Error Context: test-results/selection-tags-keep-height-4e984-tly-one-disabled-and-states-chrome/error-context.md
+
+  2) [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=false
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: '区域', exact: true })
+        - locator resolved to <button type="button" aria-label="区域" aria-haspopup="tree" aria-expanded="false" class="mc-ui-input__inner selection-trigger svelte-bsmqej">…</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <path fill="currentColor" d="M3.16,5.36c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07L8,9.32l3.96-3.96  c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07c0.22,0.22,0.24,0.55,0.07,0.79l-0.07,0.09l-4.4,4.4c-0.22,0.22-0.55,0.24-0.79,0.07  l-0.09-0.07l-4.4-4.4C2.92,6,2.92,5.6,3.16,5.36z"></path> from <span class="mc-ui-input__suffix selection-arrow svelte-bsmqej">…</span> subtree intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <path fill="currentColor" d="M3.16,5.36c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07L8,9.32l3.96-3.96  c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07c0.22,0.22,0.24,0.55,0.07,0.79l-0.07,0.09l-4.4,4.4c-0.22,0.22-0.55,0.24-0.79,0.07  l-0.09-0.07l-4.4-4.4C2.92,6,2.92,5.6,3.16,5.36z"></path> from <span class="mc-ui-input__suffix selection-arrow svelte-bsmqej">…</span> subtree intercepts pointer events
+        - retrying click action
+          - waiting 100ms
+        57 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <path fill="currentColor" d="M3.16,5.36c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07L8,9.32l3.96-3.96  c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07c0.22,0.22,0.24,0.55,0.07,0.79l-0.07,0.09l-4.4,4.4c-0.22,0.22-0.55,0.24-0.79,0.07  l-0.09-0.07l-4.4-4.4C2.92,6,2.92,5.6,3.16,5.36z"></path> from <span class="mc-ui-input__suffix selection-arrow svelte-bsmqej">…</span> subtree intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+
+
+      66 |  await tag.hover();await page.getByRole('button',{name:'清空区域',exact:true}).click();await expect(popup).toHaveCount(0);
+      67 |  await expect(page.getByLabel('值',{exact:true})).toHaveText('[]');
+    > 68 |  await trigger.click({position:{x:220,y:16}});await expect(popup).toBeVisible();await popup.press('Escape');
+         |                ^
+      69 |  await page.getByRole('button',{name:'装载多标签'}).click();await page.getByRole('checkbox',{name:'禁用',exact:true}).check();
+      70 |  await expect(page.getByRole('button',{name:/^打开区域：/}).first()).toBeDisabled();
+      71 |  await expect(popup).toHaveCount(0);
+        at /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/ui/tests/browser/selection.spec.ts:68:16
+
+    Error Context: test-results/selection-mouse-tag-blank--3e841-nd-empty-arrow-shadow-false-chrome/error-context.md
+
+  3) [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=true
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: '区域', exact: true })
+        - locator resolved to <button type="button" aria-label="区域" aria-haspopup="tree" aria-expanded="false" class="mc-ui-input__inner selection-trigger svelte-bsmqej">…</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <path fill="currentColor" d="M3.16,5.36c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07L8,9.32l3.96-3.96  c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07c0.22,0.22,0.24,0.55,0.07,0.79l-0.07,0.09l-4.4,4.4c-0.22,0.22-0.55,0.24-0.79,0.07  l-0.09-0.07l-4.4-4.4C2.92,6,2.92,5.6,3.16,5.36z"></path> from <span class="mc-ui-input__suffix selection-arrow svelte-bsmqej">…</span> subtree intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <path fill="currentColor" d="M3.16,5.36c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07L8,9.32l3.96-3.96  c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07c0.22,0.22,0.24,0.55,0.07,0.79l-0.07,0.09l-4.4,4.4c-0.22,0.22-0.55,0.24-0.79,0.07  l-0.09-0.07l-4.4-4.4C2.92,6,2.92,5.6,3.16,5.36z"></path> from <span class="mc-ui-input__suffix selection-arrow svelte-bsmqej">…</span> subtree intercepts pointer events
+        - retrying click action
+          - waiting 100ms
+        57 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <path fill="currentColor" d="M3.16,5.36c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07L8,9.32l3.96-3.96  c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07c0.22,0.22,0.24,0.55,0.07,0.79l-0.07,0.09l-4.4,4.4c-0.22,0.22-0.55,0.24-0.79,0.07  l-0.09-0.07l-4.4-4.4C2.92,6,2.92,5.6,3.16,5.36z"></path> from <span class="mc-ui-input__suffix selection-arrow svelte-bsmqej">…</span> subtree intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+
+
+      66 |  await tag.hover();await page.getByRole('button',{name:'清空区域',exact:true}).click();await expect(popup).toHaveCount(0);
+      67 |  await expect(page.getByLabel('值',{exact:true})).toHaveText('[]');
+    > 68 |  await trigger.click({position:{x:220,y:16}});await expect(popup).toBeVisible();await popup.press('Escape');
+         |                ^
+      69 |  await page.getByRole('button',{name:'装载多标签'}).click();await page.getByRole('checkbox',{name:'禁用',exact:true}).check();
+      70 |  await expect(page.getByRole('button',{name:/^打开区域：/}).first()).toBeDisabled();
+      71 |  await expect(popup).toHaveCount(0);
+        at /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/ui/tests/browser/selection.spec.ts:68:16
+
+    Error Context: test-results/selection-mouse-tag-blank--8ed0a-and-empty-arrow-shadow-true-chrome/error-context.md
+
+  4) [chrome] › tests/browser/selection.spec.ts:74:1 › official geometry, neutral tag colors, icons and panel rows
+
+    Error: expect(locator).toHaveCSS(expected) failed
+
+    Locator:  locator('.mc-selection').first().locator('.selection-arrow svg')
+    Expected: "rgb(128, 128, 128)"
+    Received: "rgb(194, 194, 194)"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCSS" with timeout 5000ms
+      - waiting for locator('.mc-selection').first().locator('.selection-arrow svg')
+        14 × locator resolved to <svg focusable="false" aria-hidden="true" viewBox="0 0 16 16" fill-rule="evenodd" class="mc-ui-svg svelte-1hur10k">…</svg>
+           - unexpected value "rgb(194, 194, 194)"
+
+
+      76 |  const arrow=control.locator('.selection-arrow svg');
+      77 |  await page.getByRole('heading').hover();await expect(arrow).toBeVisible();await expect(arrow).toHaveCSS('width','16px');await expect(arrow).toHaveCSS('height','16px');
+    > 78 |  await expect(arrow).toHaveCSS('color','rgb(128, 128, 128)');
+         |                      ^
+      79 |  expect(await control.locator('.selection-input').evaluate(el=>el.getBoundingClientRect().height)).toBe(32);
+      80 |  const boxes=await control.evaluate(el=>{const a=el.querySelector('.selection-arrow svg')!.getBoundingClientRect(),r=el.getBoundingClientRect();return {icon:a.y+a.height/2,input:r.y+r.height/2};});expect(boxes.icon).toBe(boxes.input);
+      81 |  await expect(trigger).toHaveCSS('border-radius','6px');
+        at /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/ui/tests/browser/selection.spec.ts:78:22
+
+    Error Context: test-results/selection-official-geometr-feab2-colors-icons-and-panel-rows-chrome/error-context.md
+
+  4 failed
+    [chrome] › tests/browser/selection.spec.ts:27:1 › tags keep height, scroll and delete exactly one; disabled and states
+    [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=false
+    [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=true
+    [chrome] › tests/browser/selection.spec.ts:74:1 › official geometry, neutral tag colors, icons and panel rows
+  1 passed (1.7m)
+undefined
+/Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/ui:
+[ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL] Command failed with exit code 1: playwright test selection.spec.ts '--project=chrome'

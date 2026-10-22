@@ -1,0 +1,101 @@
+{
+  "skill": "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-local-authoring-forward-nnwp2lvp/baseline/metriccanvas-authoring/skill/metriccanvas-local-authoring",
+  "input": "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-local-authoring-forward-nnwp2lvp/input-page.json",
+  "input_size_bytes": 3243,
+  "input_sha256": "e997a507908e922909ab8e2fd2b594789aec594156db8a71214ac799cc0a0dbb",
+  "output": "/tmp/mc-forward-old-skill-efji8I/local-authoring-knowledge-demo.json",
+  "output_size_bytes": 3243,
+  "output_sha256": "5f68a84dc922e4397a9745dc0ef83c19def8e8e538bfbe8cd72cc66a196804ac",
+  "semantic_changes": [
+    {
+      "path": "/sections/0/components/2/props/columns/0/width",
+      "before": 180,
+      "after": 220
+    }
+  ],
+  "byte_preservation": "Replacing the single width 220 back to 180 reproduces original bytes exactly.",
+  "layout": "dashboard retained from existing page; no new layout confirmation or --expected-layout inferred",
+  "skill_files_read": [
+    {
+      "path": "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-local-authoring-forward-nnwp2lvp/baseline/metriccanvas-authoring/skill/metriccanvas-local-authoring/SKILL.md",
+      "size_bytes": 12005,
+      "scope": "full",
+      "focused_bytes": null
+    },
+    {
+      "path": "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-local-authoring-forward-nnwp2lvp/baseline/metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/README.md",
+      "size_bytes": 4252,
+      "scope": "full",
+      "focused_bytes": null
+    },
+    {
+      "path": "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-local-authoring-forward-nnwp2lvp/baseline/metriccanvas-authoring/skill/metriccanvas-local-authoring/references/local-workflow.md",
+      "size_bytes": 7880,
+      "scope": "full",
+      "focused_bytes": null
+    },
+    {
+      "path": "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-local-authoring-forward-nnwp2lvp/baseline/metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/table.md",
+      "size_bytes": 178308,
+      "scope": "full requested; tool output truncated; focused range reread",
+      "focused_bytes": [
+        72676,
+        73117
+      ]
+    },
+    {
+      "path": "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-local-authoring-forward-nnwp2lvp/baseline/metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/examples/component-table.json",
+      "size_bytes": 929,
+      "scope": "full",
+      "focused_bytes": null
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "node",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "v24.11.1\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "node",
+        "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-local-authoring-forward-nnwp2lvp/baseline/metriccanvas-authoring/skill/metriccanvas-local-authoring/scripts/snapshot-attempt.mjs",
+        "/tmp/mc-forward-old-skill-efji8I/working/local-authoring-knowledge-demo.json",
+        "/tmp/mc-forward-old-skill-efji8I/attempt-1"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"ok\":true,\"folder\":\"/tmp/mc-forward-old-skill-efji8I/attempt-1\",\"file\":\"/tmp/mc-forward-old-skill-efji8I/attempt-1/local-authoring-knowledge-demo.json\",\"sha256\":\"5f68a84dc922e4397a9745dc0ef83c19def8e8e538bfbe8cd72cc66a196804ac\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "node",
+        "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-local-authoring-forward-nnwp2lvp/baseline/metriccanvas-authoring/skill/metriccanvas-local-authoring/scripts/validate-page.mjs",
+        "/tmp/mc-forward-old-skill-efji8I/attempt-1/local-authoring-knowledge-demo.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"file\":\"/tmp/mc-forward-old-skill-efji8I/attempt-1/local-authoring-knowledge-demo.json\",\"ok\":true,\"errors\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "node",
+        "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-local-authoring-forward-nnwp2lvp/baseline/metriccanvas-authoring/skill/metriccanvas-local-authoring/scripts/snapshot-attempt.mjs",
+        "--check",
+        "/tmp/mc-forward-old-skill-efji8I/attempt-1"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"ok\":true,\"folder\":\"/tmp/mc-forward-old-skill-efji8I/attempt-1\",\"file\":\"local-authoring-knowledge-demo.json\",\"sha256\":\"5f68a84dc922e4397a9745dc0ef83c19def8e8e538bfbe8cd72cc66a196804ac\"}\n",
+      "stderr": ""
+    }
+  ],
+  "limitations": [
+    "Static validation only; no runtime/browser/service calls permitted by evaluation.",
+    "Existing inline synthetic data retained; no real data verification performed.",
+    "No token usage figure available or estimated."
+  ]
+}

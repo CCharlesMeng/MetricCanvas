@@ -1,0 +1,77 @@
+{
+  "status": "pass-chrome-only",
+  "sourceCommit": "0c6464bf065ede9552940a9fffbb7af1f453b95d",
+  "sourceTree": "43b96e832c13f40d74d2ff06b3aa8ba8aa293d42",
+  "runtimeSourceUnchangedAfterFreeze": true,
+  "sourceTests": {
+    "status": "pass",
+    "files": 263,
+    "passed": 2295,
+    "skipped": 4
+  },
+  "sourceTypes": "pass",
+  "sourceBuild": "pass",
+  "strictPeerInstall": "pass",
+  "pageOnlyNode": "pass",
+  "uiOnlyInstallTypesBuild": "pass",
+  "uiBrowser": {
+    "status": "pass",
+    "passed": 24
+  },
+  "consumerTypesBuild": "pass",
+  "consumerBrowser": {
+    "status": "pass",
+    "browsers": {
+      "chrome": "155.0.8059.82"
+    },
+    "stats": {
+      "startTime": "2026-10-19T15:22:17.506Z",
+      "duration": 115361.82999999999,
+      "expected": 156,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    }
+  },
+  "canvasPort": 63453,
+  "defaultRequiredBrowsers": [
+    "chrome",
+    "msedge"
+  ],
+  "completeBrowserMatrix": false,
+  "notRun": {
+    "msedge": "Microsoft Edge is not installed",
+    "production": "CloudIOC, Java, DQE, Relay not configured"
+  },
+  "priorAttempts": [
+    {
+      "status": "blocked",
+      "reason": "port 4176 used by another worktree",
+      "source": "compatibility-original.json"
+    },
+    {
+      "status": "fail",
+      "reason": "presentation matrix still expected 53 branches after button introduced the 54th; explicit fixture facts added",
+      "stats": {
+        "startTime": "2026-10-19T15:18:03.591Z",
+        "duration": 121871.52,
+        "expected": 138,
+        "skipped": 0,
+        "unexpected": 16,
+        "flaky": 0
+      }
+    }
+  ],
+  "harnessUpdates": [
+    "tools/package-build/fixtures/consumer-playwright.config.ts",
+    "packages/embed/tests/browser/presentation.spec.ts",
+    "packages/embed/tests/browser/conditional-presentation.spec.ts"
+  ],
+  "output": "/private/tmp/visibility-compatibility-complete",
+  "harnessCommit": "5ad909f0c1aac8a55b9a4b7492bda72380f8baee",
+  "harnessFileHashes": {
+    "tools/package-build/fixtures/consumer-playwright.config.ts": "af91da2eae8ed6c8f01fb63cdebadd9a90fab0a3fbf7e5408b69fb0b06afb578",
+    "packages/embed/tests/browser/presentation.spec.ts": "7bd23f3b1d68064f9b3c093f15d21a85f20ec443e54bfa53ca8d571918886209",
+    "packages/embed/tests/browser/conditional-presentation.spec.ts": "f369f7e8e2075b91ca1872d80d84c7e06a5802baa520045b3b90d94b5c1fd067"
+  }
+}

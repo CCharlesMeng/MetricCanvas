@@ -1,0 +1,16 @@
+[WebServer] (node:46077) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:46078) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 5 tests using 1 worker
+
+(node:46104) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 selection.spec.ts:3:1 › tree single, local search, geometry and keyboard (605ms)
+  ✓  2 selection.spec.ts:27:1 › tags keep height, scroll and delete exactly one; disabled and states (502ms)
+  ✓  3 selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=false (527ms)
+  ✓  4 selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=true (535ms)
+  ✓  5 selection.spec.ts:74:1 › official geometry, neutral tag colors, icons and panel rows (302ms)
+
+  5 passed (5.2s)

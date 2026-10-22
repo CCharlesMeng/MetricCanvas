@@ -1,13 +1,13 @@
 <script lang="ts">
   import { canonicalizeJson, normalizePageDocument } from '@metriccanvas/page';
   import type { ExecutionBootstrap } from '@metriccanvas/engine';
-  import { RuntimeView } from '@metriccanvas/engine/ui';
+  import { RuntimeView,type RuntimeNavigation } from '@metriccanvas/engine/ui';
   import type { PageRevision } from './page-assets/contract';
   import {usePlatformServices} from './integration/services';
-  const {pageAssets, dataGateway} = usePlatformServices();
+  const {pageAssets, dataGateway,displayInputs} = usePlatformServices();
 
-  let { pageId, revisionId, readRevision = pageAssets.getRevision, executeRevision }: {
-    pageId: string; revisionId: string;
+  let { pageId, revisionId, readRevision = pageAssets.getRevision, executeRevision, navigation, initialSearch }: {
+    pageId: string; revisionId: string;navigation?:RuntimeNavigation;initialSearch?:string;
     readRevision?: (pageId: string, revisionId: string, signal?: AbortSignal) => Promise<PageRevision>;
     executeRevision?: (revision: PageRevision, signal: AbortSignal) => Promise<ExecutionBootstrap>;
   } = $props();
@@ -61,7 +61,7 @@
   {#if error}
     <div role="alert"><p>{error}</p><button onclick={() => retry += 1}>重试</button></div>
   {:else if revision}
-    <RuntimeView document={renderedDocument ?? revision.document} {execution} {dataGateway} pageRevisionId={revision.revisionId} />
+    <RuntimeView {displayInputs} {navigation} {initialSearch} document={renderedDocument ?? revision.document} {execution} {dataGateway} pageRevisionId={revision.revisionId} />
   {:else}
     <p role="status">加载精确修订…</p>
   {/if}

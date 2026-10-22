@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "6.46",
+  "id": "ioc-header-detail",
+  "layout": "dashboard",
+  "meta": {
+    "title": "IOC页头组件 · 详情"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": {
+        "param": "project-name"
+      },
+      "tags": [
+        {
+          "text": "进行中",
+          "tone": "neutral",
+          "id": "tag-0"
+        }
+      ]
+    },
+    "back": true,
+    "filterIds": [
+      "month"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "filters": [
+    {
+      "id": "month",
+      "type": "timePoint",
+      "granularity": "month",
+      "label": "统计月份",
+      "default": "2026-09",
+      "min": "2020-01",
+      "max": "2026-09",
+      "required": true
+    }
+  ],
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "intro",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成演示数据。此页验证正式页头组件和筛选状态；未接真实IOC服务。"
+          }
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "id": "project-name",
+      "type": "string",
+      "required": false,
+      "default": "项目详情"
+    }
+  ],
+  "dashboardToolbar": "hidden"
+}

@@ -7,6 +7,7 @@
 export interface FilterTreeNode {
   /** 当前层级段文案 */
   label: string;
+  disabled?:boolean;
   /** 完整路径;仅当它本身是候选值时非空 */
   value: string | null;
   path: string;
@@ -16,8 +17,13 @@ export interface FilterTreeNode {
 }
 
 export function buildFilterTree(
-  options: readonly (string | DimensionValueCandidate)[]
+  options: readonly (string | (DimensionValueCandidate & {disabled?:boolean}))[]
 ): FilterTreeNode[] {
+  const codes = options.map(option => typeof option === 'string' ? option : option.value);
+  if (new Set(codes).size !== codes.length) throw new Error('DUPLICATE_CANDIDATE');
+  if (options.some(option => typeof option !== 'string' && option.parentValue !== undefined)) {
+    return buildExplicitTree(options.map(option => typeof option === 'string' ? {value:option,label:option} : option));
+  }
   const roots: FilterTreeNode[] = [];
   const byPath = new Map<string, FilterTreeNode>();
   for (const rawOption of options) {
@@ -47,7 +53,7 @@ export function buildFilterTree(
       node.leaves.push(option.value);
       siblings = node.children;
     }
-    node!.value = option.value;
+    node!.value = option.value;node!.disabled=option.disabled;
   }
   return roots;
 }
@@ -74,3 +80,38 @@ export function toggleNodeValues(
   return [...new Set([...value, ...node.leaves])];
 }
 import type { DimensionValueCandidate } from '../../../runtime/src';
+
+/** Explicit parent links never infer business codes from labels. Reject malformed complete batches. */
+function buildExplicitTree(options: readonly (DimensionValueCandidate & {disabled?:boolean})[]): FilterTreeNode[] {
+  const nodes = new Map<string, FilterTreeNode>();
+  const parents = new Map<string, string | undefined>();
+  for (const option of options) {
+    if (nodes.has(option.value)) throw new Error('DUPLICATE_CANDIDATE');
+    nodes.set(option.value, {value: option.value, label: option.label, disabled:option.disabled, path: option.value, children: [], leaves: []});
+    parents.set(option.value, option.parentValue);
+  }
+  const complete = new Set<string>();
+  function check(value: string, visiting: Set<string>) {
+    if (complete.has(value)) return;
+    if (visiting.has(value)) throw new Error('CYCLIC_CANDIDATE');
+    visiting.add(value);
+    const parent = parents.get(value);
+    if (parent !== undefined) {
+      if (!nodes.has(parent)) throw new Error('UNKNOWN_CANDIDATE_PARENT');
+      check(parent, visiting);
+    }
+    visiting.delete(value); complete.add(value);
+  }
+  for (const value of nodes.keys()) check(value, new Set());
+  const roots: FilterTreeNode[] = [];
+  for (const [value, node] of nodes) {
+    const parent = parents.get(value);
+    if (parent === undefined) roots.push(node); else nodes.get(parent)!.children.push(node);
+  }
+  function collect(node: FilterTreeNode): string[] {
+    node.leaves = [node.value!, ...node.children.flatMap(collect)];
+    return node.leaves;
+  }
+  roots.forEach(collect);
+  return roots;
+}

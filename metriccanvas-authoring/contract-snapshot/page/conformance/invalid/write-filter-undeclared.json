@@ -104,6 +104,16 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/0/props/actions/0/writeFilter",
+      "message": "动作必须写入已声明维度筛选器"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0",
+      "message": "筛选写入必须有查询绑定或显隐消费方"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/actions/0/writeFilter",
       "message": "回写了未声明的筛选器:nope"
     }
   ]

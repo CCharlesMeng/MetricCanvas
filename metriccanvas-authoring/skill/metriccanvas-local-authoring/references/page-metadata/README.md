@@ -1,5 +1,7 @@
 # 页面元数据模块参考
 
+独立本地创作支持 read-knowledge.mjs 按主题和精确 Schema Pointer 查阅；常用主题如 table.width、fields.format、data.query、query.core。输出保留当前节点、父级分支条件和未展开引用，子节点可继续按指针读取；它是局部参考，最终仍须完整页面校验。页面 JSON 与指标说明的识别不等于真实 DQE 验真。
+
 按任务或JSON路径查阅；作者协议版本、可读范围与能力下限以[页面、版本与布局](page.md)及本册[index.json](index.json)、[schema.json](schema.json)为准。结构来自Schema，语义来自模块作者。页面协议可表达、确定性工具可装配、外部服务已接通是三份独立证据。
 
 ## 按使用场景查阅
@@ -13,6 +15,8 @@
 | 多个普通查询组成可全局排序、过滤、分页的表格 | [组合查询源](data-sources.md)的 `pagedJoin` → [表格](components/table.md)的查询分页、数值范围与工具区 | [多查询组合表](examples/paged-join-page.json) |
 | 固定指标排名跟随业务行，切换表格排序后保留名次 | [数据源](data-sources.md)的普通查询排名字段 → `projection`；当前序号另用 `ordinalField` | [固定业务排名](examples/paged-join-fixed-rank-page.json) |
 
+IOC 业务批量场景见 [筛选声明](filters.md#ioc-业务批量场景与必选多选646)：模型、协同小组、策略、币种档位、离散月份和缺配置共用主线输入契约。
+
 ## 按模块查阅
 
 - [页面、版本与布局](page.md)：page
@@ -23,6 +27,7 @@
 - [具名算子](compute.md)：compute
 - [筛选声明与运行状态](filters.md)：filters
 - [内容分区与布局](sections-and-layout.md)：sections-and-layout
+- [图表高级 ECharts 呈现扩展](chart-option.md)：chart-option（仅明确高级需求时查阅）
 - [数据槽、字段绑定与格式](field-bindings-and-formats.md)：field-bindings-and-formats
 - [交互与导航](actions-and-navigation.md)：actions-and-navigation
 - [受控语义HTML](semantic-html.md)：semantic-html
@@ -46,3 +51,5 @@
 - [AI 总结 aiSummary](components/aiSummary.md)：components/aiSummary
 
 机器检索使用[index.json](index.json)定位Schema位置与所属模块，类型和结构约束查[schema.json](schema.json)或对应模块的结构表。作者仓库中的结构表在导出时生成；独立Bundle/Skill直接阅读生成Markdown。
+
+- [条件显隐与动作资格](conditions.md)：节点条件、容器单向约束、层级空选、表格行与导出。

@@ -41,6 +41,7 @@ export const valueFormatPresets = [
   'compact-million-2',
   'compact-yi-1',
   'cny-adaptive',
+  'usd-adaptive',
   'percent-0',
   'percent-1',
   'percent-2',
@@ -81,7 +82,7 @@ export interface StandardScalarFieldDefinition extends FieldMetadata {
 export interface MoneyFieldDefinition extends FieldMetadata {
   type: 'money';
   role: 'measure';
-  currency: 'CNY';
+  currency: 'CNY' | 'USD';
 }
 
 export type ScalarFieldDefinition =
@@ -164,7 +165,7 @@ export type ResolvedFieldDefinition = FieldDefinition;
 export type FieldReference = string | { data: string; field: string };
 
 /** 组件字段绑定；format 只控制当前视图。 */
-export type FieldBinding =
+export type StaticFieldBinding =
   | string
   | {
       data: string;
@@ -174,6 +175,13 @@ export type FieldBinding =
       match?: { field: string; equals: ScalarFieldValue };
     };
 
+export type FieldBinding = StaticFieldBinding | {byFilter:{filterId:string;cases:Record<string,StaticFieldBinding>}};
+export function staticFieldBinding(binding:FieldBinding):StaticFieldBinding {
+  if(typeof binding==='object'&&'byFilter' in binding)throw new Error('字段选择必须先按已应用筛选投影');
+  return binding;
+}
+export function fieldBindingLeaves(binding:FieldBinding):StaticFieldBinding[]{return typeof binding==='object'&&'byFilter' in binding?Object.values(binding.byFilter.cases):[binding];}
+
 export type DataRow = Record<string, FieldValue>;
 
 /**
@@ -181,5 +189,6 @@ export type DataRow = Record<string, FieldValue>;
  * 这是字段绑定契约的唯一解包实现,消费方不得自写同义函数。
  */
 export function fieldName(binding: FieldBinding | FieldReference): string {
-  return typeof binding === 'string' ? binding : binding.field;
+  const resolved=staticFieldBinding(binding);
+  return typeof resolved === 'string' ? resolved : resolved.field;
 }

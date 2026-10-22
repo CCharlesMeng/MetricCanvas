@@ -1,0 +1,36 @@
+{
+  "case": "table-search-options-nontext",
+  "invariant": "table-search-options",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "搜索必须引用 main 数据槽中的文本标量字段",
+      "paths": [
+        "/sections/0/components/0/props/toolbar/search/options/1/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "toolbar": {
+                "search": {
+                  "options": [
+                    "…",
+                    {
+                      "field": "amount"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-search-options-nontext.json"
+}

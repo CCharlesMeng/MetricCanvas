@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "phase": "final",
+  "tier": {
+    "value": "standard",
+    "restore_tasks": [],
+    "blocking_triggers": [
+      "shared-boundary"
+    ],
+    "changed_files": 2,
+    "max_changed_files": 5
+  },
+  "risk_triggers": [
+    "shared-boundary",
+    "visual"
+  ],
+  "trigger_sources": {
+    "visual": [
+      "diff",
+      "plan"
+    ],
+    "shared-boundary": [
+      "diff",
+      "plan"
+    ]
+  },
+  "portfolio_narrowed": [],
+  "facts": {
+    "cross_page": false,
+    "shared_style": false,
+    "overflow_state": false,
+    "frozen_r": false,
+    "frozen_r5": false,
+    "frozen_r6": false,
+    "has_f3": true,
+    "has_s3_claim": false
+  },
+  "modules": [
+    "causal",
+    "targeted-quality",
+    "render",
+    "regression",
+    "review-convention",
+    "review-quality"
+  ],
+  "review_roles": [
+    "review-convention",
+    "review-quality"
+  ],
+  "review_dimensions": {
+    "review-convention": [
+      "C5"
+    ],
+    "review-quality": [
+      "Q2",
+      "Q6"
+    ]
+  },
+  "claims": [
+    {
+      "id": "AT1",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "test_case",
+      "task": "树首层加减号左边距面板16px，展开后不变，普通根和ShadowRoot一致",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "previous": {
+    "phase": "final",
+    "tier": "standard",
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "review-convention",
+      "review-quality"
+    ],
+    "review_roles": [
+      "review-convention",
+      "review-quality"
+    ],
+    "required_profiles": {}
+  }
+}

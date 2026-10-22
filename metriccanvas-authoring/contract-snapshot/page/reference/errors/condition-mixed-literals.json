@@ -1,0 +1,30 @@
+{
+  "case": "condition-mixed-literals",
+  "invariant": "conditional-presentation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "条件操作或字面量与来源类型不匹配",
+      "paths": [
+        "/sections/1/visibleWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "visibleWhen": {
+          "filter": "organization",
+          "part": "values",
+          "op": "containsAny",
+          "values": [
+            "department",
+            1
+          ]
+        }
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/condition-mixed-literals.json"
+}

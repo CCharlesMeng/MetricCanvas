@@ -1,3 +1,6 @@
+import { applyTableFilters, EmptyTableQuery, TableFilterConflict } from './table-filters';
+import { validateCandidatePage } from '../column-candidates';
+import type { ColumnCandidatesQuery } from '../ports';
 import {
   assertNoQueryParamReferences,
   normalizeQueryRows,
@@ -90,6 +93,9 @@ export function createInMemoryDqeDiagnostics(limit = 100): InMemoryDqeDiagnostic
 }
 
 export interface DqeGatewayConfig {
+  /** Trusted, deployment-verified original-result DISTINCT encoding; absent means unavailable. */
+  encodeColumnCandidates?: (request: ColumnCandidatesQuery) => { query: EffectiveQuery; valueField: string; labelField?: string };
+
   /** Encode a verified upstream search predicate; absent capability fails explicitly. */
   encodeSearch?: (item: JsonObject, search: NonNullable<EffectiveQuery['search']>) => JsonObject;
   endpoint?: string;
@@ -244,7 +250,7 @@ export function createDqeGateway(
       status: 'error',
       ...(batchId !== undefined ? { batchId } : {}),
       ...(requestId !== undefined ? { requestId } : {}),
-      errorCode: cause instanceof DqeGatewayError ? cause.code : 'UNKNOWN'
+      errorCode: cause instanceof DqeGatewayError || cause instanceof TableFilterConflict ? cause.code : 'UNKNOWN'
     });
     call.reject(cause);
   }
@@ -417,7 +423,7 @@ export function createDqeGateway(
     if (calls.length > 0) void executeBatch(calls);
   }
 
-  return {
+  const gateway: DataGateway & DimensionValuesGateway = {
     fetchData(query, diagnosticContext, signal) {
       const execution = {
         executionId: `dqe-exec-${++sequence}`,
@@ -428,7 +434,7 @@ export function createDqeGateway(
       const failEarly = (cause: unknown) => {
         recordDiagnostic(execution, {
           status: 'error',
-          errorCode: cause instanceof DqeGatewayError ? cause.code : 'UNKNOWN'
+          errorCode: cause instanceof DqeGatewayError || cause instanceof TableFilterConflict ? cause.code : 'UNKNOWN'
         });
         return Promise.reject(cause);
       };
@@ -452,6 +458,10 @@ export function createDqeGateway(
       try {
         item = encodedDqeItem(query, config.encodeSearch);
       } catch (cause) {
+        if (cause instanceof EmptyTableQuery) {
+          recordDiagnostic(execution, { status: 'success', rowCount: 0, totalCount: 0 });
+          return Promise.resolve({ rows: [], totalCount: 0 });
+        }
         return failEarly(cause);
       }
       devDetail?.record(execution.executionId, item);
@@ -480,10 +490,30 @@ export function createDqeGateway(
         }
       });
     },
+    async fetchColumnCandidates(request, context, signal) {
+      if (signal?.aborted) throw new DqeGatewayError('DQE_CANCELLED', '候选值请求已被取消');
+      if (!config.encodeColumnCandidates) return { kind: 'unavailable' };
+      const encoded = config.encodeColumnCandidates(structuredClone(request));
+      let result: DataGatewayResult;
+      try { result = await gateway.fetchData(encoded.query, context, signal); }
+      catch (cause) {
+        if (cause instanceof DqeGatewayError && cause.code === 'DQE_QUERY_REJECTED') return { kind: 'unavailable' };
+        throw cause;
+      }
+      if (result.totalCount === undefined) throw new DqeGatewayError('DQE_ROW_CONTRACT_ERROR', '候选值查询缺少去重总数');
+      const candidates = result.rows.map(row => {
+        const value = row[encoded.valueField];
+        const label = encoded.labelField ? row[encoded.labelField] : String(value);
+        if ((typeof value !== 'string' && typeof value !== 'number') || typeof label !== 'string') throw new DqeGatewayError('DQE_ROW_CONTRACT_ERROR', '候选值字段契约不匹配');
+        return { value, label };
+      });
+      return validateCandidatePage({ kind: 'values', candidates, totalCount: result.totalCount }, request.offset, request.limit);
+    },
     fetchDimensionValues(dimension, options) {
       return fetchDimensionValuesOnce(dimension, options?.signal, options?.constraints);
     }
   };
+  return gateway;
 }
 
 /**
@@ -615,7 +645,7 @@ export function effectiveDqeItem(query: EffectiveQuery): JsonObject { return enc
 function encodedDqeItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfig['encodeSearch']): JsonObject {
   assertNoQueryParamReferences(query.body);
   const item = cloneJson(query.body.dsl_list[0]);
-  for (const filter of query.filterValues) {
+  for (const filter of query.bindingValues ?? query.filterValues) {
     if (filter.target === 'dimension') {
       setDimensionFilter(item, filter.queryField, filter.values);
     } else if (filter.target === 'metricRange') {
@@ -626,6 +656,7 @@ function encodedDqeItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfig['
       setTimeFilter(item, filter.value.from, filter.value.to);
     }
   }
+  if (!applyTableFilters(item, query.tableFilters)) throw new EmptyTableQuery();
   if (query.pagination || query.sort) {
     const order = isRecord(item.order) ? { ...item.order } : {};
     if (query.pagination) {
@@ -644,9 +675,23 @@ function encodedDqeItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfig['
     item.order = order;
   }
   if (query.search) {
-    if (!encodeSearch) throw new DqeGatewayError('DQE_CONFIG_ERROR', '数据网关未配置全表文本搜索能力');
-    return encodeSearch(item, structuredClone(query.search));
+    return encodeTableSearch(item, query.search, encodeSearch);
   }
+  return item;
+}
+
+function encodeTableSearch(item: JsonObject, search: NonNullable<EffectiveQuery['search']>, encodeSearch?: DqeGatewayConfig['encodeSearch']): JsonObject {
+  if (search.match !== 'equals') {
+    if (!encodeSearch) throw new DqeGatewayError('DQE_CONFIG_ERROR', '数据网关未配置全表文本搜索能力');
+    return encodeSearch(item, structuredClone(search));
+  }
+  if (search.queryFields.length !== 1) throw new DqeGatewayError('DQE_CONFIG_ERROR', '等值搜索只允许一个查询字段');
+  if (item.filter !== undefined && !isRecord(item.filter)) throw new DqeGatewayError('DQE_CONFIG_ERROR', '等值搜索要求结构化 filter');
+  const filter = ensureRecord(item, 'filter');
+  if (filter.dims !== undefined && !Array.isArray(filter.dims)) throw new DqeGatewayError('DQE_CONFIG_ERROR', '等值搜索要求 filter.dims 数组');
+  const existing = Array.isArray(filter.dims) ? filter.dims : [];
+  // Add a conjunct; replacing a same-field page/header constraint would broaden its scope.
+  filter.dims = [...existing, { dim_name: search.queryFields[0], dim_value_list: [search.query] }];
   return item;
 }
 

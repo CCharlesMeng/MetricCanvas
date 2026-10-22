@@ -1,0 +1,73 @@
+{
+  "case": "row-expansion-before-6.44",
+  "invariant": "table-row-expansion",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "单层行内子表格与按父行隔离的查询分页 由 6.44 引入，文档声明的是 6.43",
+      "paths": [
+        "/sections/0/components/0",
+        "/sections/1/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "customers",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "customers"
+            },
+            "props": {
+              "title": "父行自带明细 · 默认干净呈现",
+              "rowKey": "customer-id",
+              "columns": [
+                "…（共2项）"
+              ],
+              "pagination": {
+                "…": "共3个键"
+              },
+              "rowExpansion": {
+                "…": "共3个键"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "customers-optional",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "customers"
+            },
+            "props": {
+              "title": "按需搜索、标题与列排序",
+              "rowKey": "customer-id",
+              "columns": [
+                "…（共2项）"
+              ],
+              "pagination": {
+                "…": "共3个键"
+              },
+              "rowExpansion": {
+                "…": "共3个键"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/row-expansion-before-6.44.json"
+}

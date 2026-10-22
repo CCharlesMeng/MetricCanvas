@@ -38,3 +38,7 @@
 7. saveStatus=saved 且含 ref/draftId/artifactRef 后，按主 Skill 准备精确预览并交付。保存未知由程序核对原冻结提交；预览失败只修交付，不再次保存。
 
 完成条件：用户授权项有逐项结果，保存与预览状态分别有回执。页面有效不代表布局、业务关系与可见结论都正确；按[执行检查点](../references/execution.md)核对最终表达。
+
+## IOC公共页头（6.32）
+
+`set_ioc_header`以完整`header`替换根级声明（null删除）；沿用Page的身份TextValue、filterIds、presentation与back规则。看板首次配置须在同一操作显式传`dashboardToolbar:"hidden"`，或基线已经hidden；不自动删除旧业务reportHeader，不移动或改写filters/query/params。冲突由产品整页校验拒绝并回滚该操作；局部修改先读取精确基线，保留未要求修改的身份项和筛选顺序。创建页面可先按既有装配产生合法基线，再使用本操作配置已声明的页级筛选。

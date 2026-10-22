@@ -49,7 +49,7 @@ jobs:
       - name: 检查创作 Bundle 中立契约
         run: pnpm authoring:contracts:check
 
-      - name: 验证创作 Bundle
+      - name: 验证 local-authoring Skill
         run: pnpm authoring:check
 
       - name: 验证创作接入与单向同步契约

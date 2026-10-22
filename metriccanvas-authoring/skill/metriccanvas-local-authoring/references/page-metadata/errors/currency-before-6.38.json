@@ -1,0 +1,171 @@
+{
+  "case": "currency-before-6.38",
+  "invariant": "currency-selection",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "显式美元金额及格式 由 6.38 引入，文档声明的是 6.37",
+      "paths": [
+        "/dataSources/main",
+        "/filters/2"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "金额范围约束单位预设和metric选择 由 6.38 引入，文档声明的是 6.37",
+      "paths": [
+        "/filters/2"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "静态货币字段选择 由 6.38 引入，文档声明的是 6.37",
+      "paths": [
+        "/sections/0/components/0",
+        "/sections/0/components/1",
+        "/sections/0/components/2"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "main": {
+        "fields": {
+          "project": {
+            "…": "共3个键"
+          },
+          "scope": {
+            "…": "共3个键"
+          },
+          "base-cny": {
+            "…": "共8个键"
+          },
+          "fee-cny": {
+            "…": "共8个键"
+          },
+          "total-cny": {
+            "…": "共7个键"
+          },
+          "base-usd": {
+            "…": "共8个键"
+          },
+          "fee-usd": {
+            "…": "共8个键"
+          },
+          "total-usd": {
+            "…": "共7个键"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "…": "共3个键"
+          }
+        },
+        "compute": [
+          {
+            "…": "共4个键"
+          },
+          {
+            "…": "共4个键"
+          }
+        ]
+      }
+    },
+    "filters": [
+      "…",
+      "…",
+      {
+        "id": "amount",
+        "type": "numberRange",
+        "label": "预签金额",
+        "constraints": {
+          "min": 0,
+          "bounds": "strict"
+        },
+        "units": {
+          "filterId": "currency",
+          "cases": {
+            "…": "共2个键"
+          }
+        },
+        "presets": [
+          {
+            "…": "共3个键"
+          },
+          {
+            "…": "共3个键"
+          }
+        ],
+        "clearOnChangeOf": [
+          "currency"
+        ],
+        "hint": "金额以基本单位保存；切币种清金额后需明确确认范围。"
+      }
+    ],
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "amount-card",
+            "type": "metricCard",
+            "layout": {
+              "span": 4
+            },
+            "data": {
+              "main": "main"
+            },
+            "props": {
+              "title": "首条项目（两个静态计算结果）",
+              "rows": [
+                "…（共1项）"
+              ]
+            }
+          },
+          {
+            "id": "amount-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 8
+            },
+            "data": {
+              "main": "main"
+            },
+            "props": {
+              "title": "各项目含费用金额",
+              "categoryField": "project",
+              "series": [
+                "…（共1项）"
+              ]
+            }
+          },
+          {
+            "id": "amount-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "main"
+            },
+            "props": {
+              "title": "金额明细（查询后分别计算两种静态货币）",
+              "rowKey": "project",
+              "columns": [
+                "…（共4项）"
+              ],
+              "pagination": {
+                "…": "共2个键"
+              },
+              "toolbar": {
+                "…": "共1个键"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

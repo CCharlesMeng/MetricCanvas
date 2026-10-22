@@ -1,70 +1,57 @@
 ---
 name: metriccanvas-local-authoring
-description: 在本地 Coding Agent 中，根据自然语言、设计稿或旧页面创建和修改 MetricCanvas 页面 JSON，使用随 Skill 提供的页面协议、示例与独立校验器。用于本地看板、报表和 IOC 页面创作；线上工作台工具编排不属于此入口。
+description: 在本地创建或修改 MetricCanvas 页面 JSON；也可用页面 JSON 和指标说明 MD 识别用数、匹配指标、整理查询条件与缺口。附协议知识和独立校验器；用于看板、报表和 IOC，线上工具编排不属于此入口。
 ---
 
 # 本地页面创作
 
-交付统一运行时可消费的页面 JSON。直接编辑用户指定的文件；知识和辅助脚本只读取本 Skill 目录，不依赖其他 Skill、仓库源码、在线 MCP 或仓库中的文档路径。用户提供的页面、设计源、数据契约是工作输入，可以位于项目目录。
+直接编辑用户指定文件。知识与脚本只用本 Skill 目录；用户页面、设计源、指标说明和数据契约可在项目内。无需其他 Skill、仓库源码、在线 MCP 或 npm 安装，脚本需要 Node.js 22+。
 
-## 先识别并确认布局形态
+## 选择任务路径
 
-新建、整页重组或切换布局形态时，先读[形态识别与确认](references/page-form.md)，根据本次需求或设计源给出推荐的 Dashboard（看板）／Report（报表）、具体依据与冲突，取得用户对形态的明确确认后再生成页面。未确认时只交付识别摘要和确认问题，等待回复；不写页面 JSON、模板或章节骨架。自动识别是建议，不是用户确认。
+| 本次任务 | 读取与动作 |
+|---|---|
+| 局部呈现修改 | 定位原页面相关对象，保留原形态、数据与查询；只查受影响属性。大页面用脚本提取结构，不打印全部数据行。 |
+| 数据源生成、指标匹配、查询或交互修改 | 读[数据识别与接数](references/data-analysis.md)，先交付有来源的匹配、取数条件和缺口；只查所涉协议主题。 |
+| 新建、整页重组、切换形态 | 读[形态识别与确认](references/page-form.md)，确认本目标页 Dashboard/Report 后，只选[看板](references/dashboard-patterns.md)或[报表](references/report-patterns.md)的一张范式卡与摘要。 |
+| 校验修复 | 按 type/path/message 定位最上游声明，查相关主题；跨引用核对两端，修复后完整校验。 |
 
-确认摘要包含推荐形态、内容分组与阅读／操作顺序、主要交互位置、候选范式，以及冲突／未知项。用户本轮已明确指定形态，或本任务已有仍然有效的明确确认，且没有未解决冲突时，直接引用选择并简述组织方向后继续，不重复询问。用户指定与设计源或已有页面发生实质冲突时，列出冲突和适配选项，取得针对冲突的明确确认后再生成；已有形态选择不自动解决后来发现的冲突。已有页面的局部修改沿用原形态。确认绑定本次目标页面，修改业务口径不自动撤销确认。
+用户已明确指定形态或已有有效确认且无冲突时引用选择后继续；实质冲突按形态说明针对性确认。未确认时只交识别摘要和问题，不生成 JSON、模板或章节骨架。局部修改沿用原形态；新页面显式写 layout，省略会默认 report。
 
-确认后按形态分流：Dashboard 读[看板范式](references/dashboard-patterns.md)，Report 读[报表范式](references/report-patterns.md)，选最接近的一张范式卡，再读其结构摘要与对应协议模块。范式帮助组织内容，不替代用户设计和数据契约。新页面显式写 `layout: "dashboard"` 或 `layout: "report"`；生成与最终交付均核对它与已确认形态一致。省略布局会默认 report，不能作为识别结论。
+## 精确查阅
 
-## 确定需求与数据依据
+普通使用直接运行脚本、读取 JSON 回执；接口疑问先用 --help 和目录内说明。压缩 .mjs 是执行产物，仅排查脚本自身故障时读取。
 
-确认新建或修改、目标文件、业务口径、布局形态及必要交互。修改已有页面先查看原文与文件差异，保留未要求修改的显式设置。以用户确认的需求为准，不从示例推断 IOC 业务事实。
-
-数据来自已有页面、用户提供的结果字段契约和已验证查询，或明确允许的演示数据。新增或改变 query 口径需要实际数据上下文与执行依据；缺少依据时说明缺口，可继续完成不依赖它的结构与呈现。不要把示例查询、模型生成行或用户确认当成真实 DQE 执行证据。演示数据使用 inline，并在交付说明中明确其性质。
-
-## 按任务读取目录内知识
-
-先读[页面协议索引](references/page-metadata/README.md)和[本地创作与验收](references/local-workflow.md)。按本次涉及的能力读取对应模块与完整示例，不要求加载全部参考：
-
-- 页面版本与已确认形态的布局：[页面](references/page-metadata/page.md)、[分区与布局](references/page-metadata/sections-and-layout.md)。
-- 概览页先读[常见布局](references/overview-layouts.md)和[常用合法写法](references/component-recipes.md)；涉及地图再读[地图绑定](references/map-bindings.md)。按信息关系选择布局，示例数据不作为业务事实。
-- 组件选型与属性：[组件索引](references/page-metadata/components/README.md)；先用已有组件，缺少表达能力时记录具体缺口。
-- 数据与字段：[数据源](references/page-metadata/data-sources.md)、[结果字段契约](references/page-metadata/fields.md)、[字段绑定与格式](references/page-metadata/field-bindings-and-formats.md)。
-- 多查询表格：连读[数据源](references/page-metadata/data-sources.md)的 `pagedJoin` 与[表格](references/page-metadata/components/table.md)的数值范围、查询分页、搜索及完整导出；使用册内完整示例核对成员引用与投影，按模块中的验收预期检查结果隔离。
-  固定指标排名使用普通查询返回的独立字段并投影；`ordinalField` 仅为当前结果序号。先明确排名行域、并列规则和筛选后是否保留名次，缺少上游能力依据时只交付明确标识的仿真场景。
-- 用户要求Report下载PDF、修改下载按钮名称或文件名时，读取[报告页头](references/page-metadata/components/reportHeader.md)的pdfExport声明和完整示例；在页面JSON中配置label和filename，不向集成应用生成截图或编码代码。
-- 用户要求Report导出PDF、图片或高清长图时，读取[报告页头](references/page-metadata/components/reportHeader.md)的exportButtons声明和完整示例；每项是一个直接下载按钮，配置format、可选label/filename/scale。PDF支持2/3/4倍，PNG支持3/4倍且只输出一张PNG；不支持的scale按未配置处理，PDF默认2倍、PNG默认3倍，不因此拒绝页面；不生成格式菜单、清晰度弹窗、多图或ZIP；新页面不写旧pdfExport/pngExport字段。
-- Dashboard 需要年／季／月／近一年切换时，读取[筛选](references/page-metadata/filters.md)的期间选择与完整示例；声明一个 timeRange 及其查询绑定，先确定查询使用月份还是日期范围。
-- 参数、日期和筛选：[参数与文字](references/page-metadata/params-and-text-values.md)、[筛选](references/page-metadata/filters.md)、[查询绑定](references/page-metadata/queries-and-bindings.md)。
-- 计算、导航或自定义组件：从协议索引进入对应模块。
-
-新页面使用[知识版本清单](references/knowledge.json)的 schemaVersion；精确约束以目录内 schema.json、模块结构表和校验回执为准。示例是结构参考，不证明业务口径、数据权限或视觉等价。目标运行时版本不兼容时说明差异，不通过降版本号绕过能力下限。
-
-## 形成页面并验证
-
-先总结独立输入的页面特征和可检查的覆盖关系，再形成章节、组件、数据源与交互之间的对应关系，最后生成完整 JSON。禁止用旧产物反推需求的测试，只读取被允许的设计源与数据。简单修改直接定位最小对象；整页生成或重组要核对原需求覆盖情况。按[本地创作与验收](references/local-workflow.md)落实自然语言创作或设计源还原，以及数据字段、筛选、导航和格式的配置。
-
-使用 Node.js 22 或以上运行目录内[独立页面校验器](scripts/validate-page.mjs)，将 `<skill-dir>` 替换为本 Skill 的实际安装路径，将 `<page-file-or-directory>` 替换为用户目标：
+从版本命令取 schemaVersion，不读取完整哈希清单。将 skill-dir 替换为实际安装目录：
 
 ```sh
-node "<skill-dir>/scripts/validate-page.mjs" "<page-file-or-directory>"
+node "<skill-dir>/scripts/validate-page.mjs" --version
+node "<skill-dir>/scripts/read-knowledge.mjs" list --module table
+node "<skill-dir>/scripts/read-knowledge.mjs" show --topic table.width
 ```
 
-已有明确形态确认时，加 `--expected-layout dashboard` 或 `--expected-layout report` 对照有效布局，例如 `node "<skill-dir>/scripts/validate-page.mjs" --expected-layout dashboard "<page-file-or-directory>"`。该参数来自本次用户确认，不从待验文件反推；它检查结果与选择一致，不证明已取得用户确认。
+已知主题直接 show，可重复 --topic 合并查阅。常用入口：page.core、layout.core、data.inline/query/pagedJoin、fields.core/format、query.core、table.columns/width/search/pagination/export、metricCard.core/title、text.core、filters.time、reportHeader.export。斜杠表示分别独立的主题，如 data.query。
 
-校验器包含产品的结构和文档内语义校验，另检查文件名与页面 id 一致；返回 JSON 行，保留 type、path、message。退出码 0 为通过，1 为文档错误，2 为调用或目标目录错误。目录模式只读取该层的 .json 文件；不要对混有其他 JSON 的目录直接执行。每次完整生成后、校验前，按[尝试快照](references/local-workflow.md)冻结原始字节；修复只改工作文件，下一轮使用新目录，不覆盖或重建失败样本。按[校验与错误](references/page-metadata/validation.md)修复原文并重跑，不放宽规则或删除合法配置来掩盖问题。
+脚本返回语义原文、局部约束、未展开引用和完整参考路径；需要引用类型时继续检索所属模块。其他能力从[专题查阅](references/protocol-routing.md)或[协议索引](references/page-metadata/README.md)定位。完整示例按实际变体读取；概览需要时读[布局](references/overview-layouts.md)和[短写法](references/component-recipes.md)，涉及地图再读[地图绑定](references/map-bindings.md)。主题不存在/工具失败时深查完整参考，说明精确读取未执行，不能当成没有约束。运行时不兼容时说明差异，不降版本绕过能力下限。
 
-脚本无需 npm 安装、仓库依赖或网络。Node 不可用时报告“自动校验未执行”，仍可据参考生成文件；不能把人工核对说成脚本通过。
+## 数据与验证
 
-有适配版本的页面试验场或集成应用时，用统一运行时预览精确文件并验证涉及的视觉与交互。运行环境由用户项目提供；Skill 不内含渲染引擎、数据服务或发布入口。环境缺失时交付 JSON 与静态结果，明确预览或真实取数未验收。
+原页面、指标说明可支持需求分析和查询候选；新增/修改真实查询还需可信数据上下文与实际执行依据。页面字段 id、筛选器 dimension、DQE 字段显式映射。名称匹配、静态通过、用户确认或演示行不证明真实取数。演示用 inline 并说明性质；未知时间、口径、单位、比率分母或连接关系列为缺口。
 
-## 交付
+局部任务改最小对象；整页生成先总结原始需求覆盖，再组织章节、组件、数据源与交互。验收期望来自原始输入，不从生成结果反推。明确要求运行时 SSE 才用 aiSummary。业务数值、百分刻度、完整性、initial、日期与交互按[本地创作与验收](references/local-workflow.md)命中的章节核对。
 
-报告文件位置、已确认的布局形态及确认依据、采用的范式、需求覆盖、实际校验结果和剩余缺口；设计源还原须附实际截图对照，查询变化须另列真实执行证据。静态校验、视觉/交互验收和真实数据验真分别报告。本地文件完成不等于线上保存或发布成功。
+每次完整生成后、校验前按本地流程运行[快照脚本](scripts/snapshot-attempt.mjs)，用新 attempt-N 冻结原始字节；修复只改工作文件，不覆盖或重建失败样本。运行：
 
-## 安装与知识更新
+```sh
+node "<skill-dir>/scripts/validate-page.mjs" --expected-layout dashboard "<page-file>"
+```
 
-安装时复制整个 metriccanvas-local-authoring 目录，包括 references、assets 和 scripts；不要只复制 SKILL.md，也不要创建指向安装目录外知识的软链接。目录可放入 Coding Agent 支持的 Skill 安装位置。
+expected-layout 来自有效用户确认，不从产物反推；Report 使用 report。无新增形态确认的局部修复可只传文件。退出码 0/1/2 为通过/文档错误/调用错误；保留 type/path/message，修复后重跑。目录模式只读该层 .json，避免混合目录。不得放宽规则或删合法配置掩盖错误。Node 不可用时可按参考生成，说明自动校验未执行。
 
-流程正文、概览布局与短写法、地图绑定说明及快照脚本由作者维护。page-metadata、地图地名清单、完整布局样例、knowledge.json、校验器与第三方许可证由维护仓库从同一产品契约生成，安装副本只消费。升级时整体替换目录并重新校验目标页面，保持知识与校验器版本一致；不要手改生成文件。可用脚本的 --version 核对它与 knowledge.json 的 schemaVersion。
+有目标运行时则预览精确文件和所涉交互；设计还原附截图对照，查询变动保留真实请求/响应证据。缺环境时继续完成可验证部分，静态、浏览器、真实取数分别报告。
 
-维护流程、知识归属、升级与回退见[知识维护](references/maintenance.md)。仅维护或升级Skill时读取。
+## 交付与分发
+
+报告文件位置、形态及确认依据、整页所用范式/需求覆盖、校验结果和缺口。纯数据识别只交匹配/条件/问题报告，不必先生成页面；候选或本地文件不等于真实查询、线上保存或发布。
+
+安装与回退复制完整目录，含 references、assets、scripts，知识与校验器同版替换。流程由作者维护，知识及脚本从产品真源生成，安装副本只消费。仅维护/升级时读[知识维护](references/maintenance.md)。

@@ -1,3 +1,4 @@
+import {staticFieldBinding} from './field';
 import { resolveDataSourceFields } from './data-source';
 import { walkPageComponents } from './component-walk';
 import type { Page, TableColumnNode } from './page';
@@ -30,6 +31,8 @@ export function navigationErrors(page: Page): TypedError[] {
     }
     if (component.type === 'text') {
       (component.props.links ?? []).forEach((link, i) => targets.push([link, `${path}/props/links/${i}`]));
+    } else if (component.type==='button' && 'navigate' in component.props.action) {
+      targets.push([component.props.action.navigate,`${path}/props/action/navigate`]);
     } else if ('actions' in component.props) {
       component.props.actions?.forEach((a, i) => {
         if ('navigate' in a) targets.push([a.navigate, `${path}/props/actions/${i}/navigate`]);
@@ -46,7 +49,7 @@ export function navigationErrors(page: Page): TypedError[] {
           if (!filter) { fail(`${p}/id`, `未声明的筛选器:${binding.id}`); continue; }
           const part = binding.part ?? 'value';
           const range = filter.type === 'timeRange' || filter.type === 'numberRange';
-          if (range ? !['from','to',...(filter.type==='timeRange'&&filter.display==='period'?['value']:[])].includes(part) : part !== 'value' && !(part === 'level' && filter.type === 'dimension' && filter.hierarchy)) {
+          if (range ? !['from','to',...(filter.type==='timeRange'&&filter.display==='period'?['value']:[]),...(filter.type==='timeRange'&&filter.display==='modes'?['mode']:[])].includes(part) : part !== 'value' && !(part === 'level' && filter.type === 'dimension' && filter.hierarchy)) {
             fail(`${p}/part`, `筛选器 ${binding.id} 不支持分量 ${part}`);
           }
         } else {
@@ -54,7 +57,7 @@ export function navigationErrors(page: Page): TypedError[] {
             ? [...component.props.rows, ...(component.props.secondaryRows ?? [])].filter(row => row.link)
             : [];
           const slots = linkedRows.length
-            ? linkedRows.map(row => typeof row.valueField === 'string' ? 'main' : row.valueField.data)
+            ? linkedRows.map(row => {const binding=staticFieldBinding(row.valueField);return typeof binding==='string'?'main':binding.data;})
             : ['main'];
           const dataSlots: Readonly<Record<string, string | undefined>> = component.data ?? {};
           const invalid = slots.some(slot => {
@@ -75,6 +78,7 @@ export function navigationErrors(page: Page): TypedError[] {
 export function filterURLKeys(filter: NonNullable<Page['filters']>[number]): Record<string, string> {
   const names = filter.urlParams ?? {};
   if (filter.type === 'timeRange' && filter.display === 'period') return {value:names.value ?? filter.id,from:names.from ?? `${filter.id}.from`,to:names.to ?? `${filter.id}.to`};
+  if(filter.type==='timeRange'&&filter.display==='modes')return {mode:`${filter.id}.mode`,from:names.from??`${filter.id}.from`,to:names.to??`${filter.id}.to`};
   if (filter.type === 'timeRange' || filter.type === 'numberRange') return { from: names.from ?? `${filter.id}.from`, to: names.to ?? `${filter.id}.to` };
   return { value: names.value ?? filter.id, ...(filter.type === 'dimension' && filter.hierarchy ? { level: names.level ?? `${filter.id}.level` } : {}) };
 }
@@ -91,5 +95,23 @@ export function urlInputErrors(page: Page): TypedError[] {
       used.add(key);
     }
   });
+  walkPageComponents(page, (component, path) => {
+    if (component.type !== 'tabContainer' || component.props.initialTabUrlParam === undefined) return;
+    const key = component.props.initialTabUrlParam;
+    if (used.has(key)) errors.push({ type:'SCHEMA_ERROR', path:`${path}/props/initialTabUrlParam`, message:`URL 参数名重复:${key}` });
+    used.add(key);
+  });
   return errors;
+}
+
+/** Only protocol-owned navigation positions, never opaque source rows or custom payloads. */
+export function declaredNavigationTargets(page: Page): NavigationTarget[] {
+  const result: NavigationTarget[]=[];
+  walkPageComponents(page,component=>{
+    if(component.type==='text')result.push(...(Array.isArray(component.props?.links)?component.props.links:[]));
+    else if(component.props&&'actions' in component.props)for(const action of Array.isArray(component.props.actions)?component.props.actions:[])if('navigate' in action)result.push(action.navigate);
+    if(component.type==='table')visit(component.props?.columns??[]);
+  });
+  return result;
+  function visit(columns:TableColumnNode[]){if(!Array.isArray(columns))return;for(const column of columns)if(column?.kind==='group')visit(column.children??[]);else if(column?.navigate)result.push(column.navigate);}
 }

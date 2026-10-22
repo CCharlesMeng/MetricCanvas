@@ -1,0 +1,10 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/ioc-header-delivery/DataDashboard
+
+ ❯ apps/playground/tests/page-catalog.test.ts (9 tests | 2 failed) 553ms
+     × 现有样例都明确归类且仅出现一次，目录只展示存在页面 5ms
+     × 说明中的配置、关联页面、主题和文档在当前仓库真实存在 4ms
+ ❯ tests/local-authoring-skill.test.ts (20 tests | 1 failed) 14716ms
+     × 独立打包校验器与当前产品对所有契约向量给出相同结果 5257ms
+[ELIFECYCLE] Test failed. See above for more details.

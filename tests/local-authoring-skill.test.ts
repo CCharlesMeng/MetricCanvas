@@ -84,7 +84,12 @@ describe('独立本地创作 Skill', () => {
       expect(types).toEqual(flattenPageComponents(parsed.page).map(component => component.type));
     }
     const detail = JSON.parse(files.get('references/page-patterns/dashboard-detail.json')!);
-    expect(detail.dashboardToolbar).toBe('hidden');
+    expect(detail.legacyHeader).toBe('content');
+    for(const id of ['dashboard-map','dashboard-analysis','dashboard-list']) {
+      const example=JSON.parse(files.get(`references/page-patterns/${id}.json`)!);
+      expect(example.iocHeader).toMatchObject({hasIdentity:true,presentation:{layout:'inline',collapse:'overflow'}});
+      expect(example.dashboardToolbar).toBeUndefined();
+    }
     expect(detail.sections[0].components[0]).toMatchObject({type: 'reportHeader', variant: 'projectDetail'});
     expect(detail.layout).toBe('dashboard');
   });
@@ -217,14 +222,16 @@ describe('独立本地创作 Skill', () => {
 
   it('独立打包校验器与当前产品对所有契约向量给出相同结果', async () => {
     const vectors: Array<{name:string;fileName:string;document:unknown;expected:unknown}> = [];
-    for (const prefix of ['contracts/metriccanvas/page/conformance/valid', 'contracts/metriccanvas/page/conformance/invalid']) {
-      for (const name of await readdir(prefix)) if (name.endsWith('.json')) {
-        const value = JSON.parse(await readFile(path.join(prefix,name),'utf8'));
-        const document = prefix.endsWith('/invalid') ? value.input : value;
-        const fileName = `${document.id ?? 'invalid'}.json`;
-        const parsed = parsePage(document);
-        vectors.push({name, fileName, document, expected: parsed.ok ? fileNameErrors(fileName, parsed.page) : parsed.errors});
-      }
+    const folders = ['contracts/metriccanvas/page/conformance/valid', 'contracts/metriccanvas/page/conformance/invalid'];
+    const batches = await Promise.all(folders.map(async prefix => {
+      const names = (await readdir(prefix)).filter(name => name.endsWith('.json'));
+      return Promise.all(names.map(async name => ({prefix, name, value: JSON.parse(await readFile(path.join(prefix,name),'utf8'))})));
+    }));
+    for (const {prefix, name, value} of batches.flat()) {
+      const document = prefix.endsWith('/invalid') ? value.input : value;
+      const fileName = `${document.id ?? 'invalid'}.json`;
+      const parsed = parsePage(document);
+      vectors.push({name, fileName, document, expected: parsed.ok ? fileNameErrors(fileName, parsed.page) : parsed.errors});
     }
     const data = path.join(isolated, 'vectors.json');
     await writeFile(data, JSON.stringify(vectors));
@@ -234,5 +241,6 @@ describe('独立本地创作 Skill', () => {
     expect(result.status, result.stderr).toBe(0);
     expect(JSON.parse(result.stdout)).toEqual(vectors.map(v=>({name:v.name,errors:v.expected})));
     expect(vectors.length).toBeGreaterThan(100);
-  });
+    // The isolated process retains its 20s deadline; include collection/serialization in the host budget.
+  }, 30_000);
 });

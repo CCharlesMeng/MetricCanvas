@@ -1,0 +1,181 @@
+{
+  "claim_ledger": [],
+  "code_fingerprint": "bd19670d4376b6e5570da3526a91f85102184638eccb9ac907a441ee7ba7a783",
+  "counts": {
+    "blocker": 0,
+    "claims_deferred": 0,
+    "claims_unverified": 0,
+    "decided": 0,
+    "deferred": 0,
+    "handoff": 0,
+    "manual_acceptance": 0,
+    "manual_pending": 0,
+    "norm_candidate": 0,
+    "open_question": 0,
+    "skipped": 0,
+    "suggestion": 0,
+    "unplanned_carry": 0
+  },
+  "coverage": {
+    "review-convention": [
+      {
+        "dimension": "C5",
+        "evidence_ids": [
+          "PATTERN-COMP-1",
+          "packages/ui/src/components/select/Selection.svelte:L206-L206",
+          "packages/ui/tests/browser/selection.spec.ts:L91-L98"
+        ],
+        "result": "clear",
+        "scope": "本轮两文件：既有组件局部选择器与参数化几何断言，无新增语义等价公共能力"
+      }
+    ],
+    "review-quality": [
+      {
+        "dimension": "Q2",
+        "evidence_ids": [
+          "packages/ui/src/components/select/Selection.svelte:L206-L211",
+          "packages/ui/tests/browser/selection.spec.ts:L91-L98"
+        ],
+        "result": "clear",
+        "scope": "仅增强既有padding选择器，未新增独立重复实现；参数循环复用两种根测试"
+      },
+      {
+        "dimension": "Q6",
+        "evidence_ids": [
+          "packages/ui/src/components/select/Selection.svelte:L206-L211",
+          "packages/ui/tests/browser/selection.spec.ts:L91-L98",
+          "BE-1",
+          "selection-browser",
+          "ui-check"
+        ],
+        "result": "clear",
+        "scope": "F3-1两种根展开前后16px，内部缩进未改；哈希一致，7项浏览器与UI检查完成"
+      }
+    ]
+  },
+  "decisions": [],
+  "deferred_candidates": [],
+  "evidence_epoch": "ioc-inset-1",
+  "findings": [],
+  "handoff": [],
+  "judged_files": {
+    "review-convention": [
+      "packages/ui/src/components/select/Selection.svelte",
+      "packages/ui/tests/browser/selection.spec.ts"
+    ],
+    "review-quality": [
+      "packages/ui/src/components/select/Selection.svelte",
+      "packages/ui/tests/browser/selection.spec.ts",
+      "packages/ui/src/shared/Theme.svelte"
+    ]
+  },
+  "known_gaps": {
+    "review-convention": [],
+    "review-quality": []
+  },
+  "manual_acceptance": [],
+  "norm_candidates": [],
+  "open_questions": [],
+  "portfolio_narrowed": [],
+  "restore_contract": null,
+  "roles": {
+    "review-convention": "executed",
+    "review-quality": "executed"
+  },
+  "schema_version": 1,
+  "skipped": {
+    "review-convention": [],
+    "review-quality": []
+  },
+  "unplanned_carry": [],
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT1",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "树首层加减号左边距面板16px，展开后不变，普通根和ShadowRoot一致",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      }
+    ],
+    "facts": {
+      "cross_page": false,
+      "frozen_r": false,
+      "frozen_r5": false,
+      "frozen_r6": false,
+      "has_f3": true,
+      "has_s3_claim": false,
+      "overflow_state": false,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "review-convention",
+      "review-quality"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "render",
+        "regression",
+        "review-convention",
+        "review-quality"
+      ],
+      "phase": "final",
+      "required_profiles": {},
+      "review_roles": [
+        "review-convention",
+        "review-quality"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C5"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q6"
+      ]
+    },
+    "review_roles": [
+      "review-convention",
+      "review-quality"
+    ],
+    "risk_triggers": [
+      "shared-boundary",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "shared-boundary"
+      ],
+      "changed_files": 2,
+      "max_changed_files": 5,
+      "restore_tasks": [],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "shared-boundary": [
+        "diff",
+        "plan"
+      ],
+      "visual": [
+        "diff",
+        "plan"
+      ]
+    }
+  }
+}

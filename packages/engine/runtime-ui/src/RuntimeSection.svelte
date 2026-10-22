@@ -17,6 +17,8 @@
   } from './backdrop-safe-area';
   import type { RuntimeSectionProps } from './composition-types';
   import { sectionGridTemplate } from './section-grid';
+  import MetricConnectionRow from './MetricConnectionRow.svelte';
+  import { metricConnectionItems } from './metric-connections';
 
   /**
    * 内容分区 Module:Page Metadata 仍是 Section → Component 直接包含；这里为每个
@@ -27,9 +29,10 @@
    */
   /* IOC 参考视口的 [29,29,22] 三轨在通用 gap 下产出 580px / 580px / 440px；
      数字是验收事实，运行时仍只消费页面声明的权重。 */
-  let { section, contentOnly = false, hidden = false, componentContent, cellAttachment, cellOverlay, emptyContent }: RuntimeSectionProps = $props();
+  let { section, contentOnly = false, hidden = false, componentContent, cellAttachment, cellOverlay, emptyContent, onbeforeselect }: RuntimeSectionProps = $props();
   let sectionGrid = $state<HTMLElement | null>(null);
   const container = $derived(contentOnly ? 'plain' : section.container);
+  const layoutItems = $derived(metricConnectionItems(section.components));
   const backdropId = $derived(sectionBackdrop(section)?.id);
   const backdropOnly = $derived(
     backdropId !== undefined && section.components.every((component) => component.id === backdropId)
@@ -142,6 +145,37 @@
 
 </script>
 
+{#snippet cell(component: Component, componentIndex: number, gridColumn?: string)}
+      <article
+        class:chart-cell={isChartComponent(component)}
+        class:header-cell={component.type === 'reportHeader'}
+        class:filter-group-cell={component.type === 'filterGroup'}
+        class:metric-cell={component.type === 'metricCard' || component.type === 'gauge'}
+        class:metric-connection-cell={gridColumn !== undefined}
+        class:table-cell={component.type === 'table' || component.type === 'tabContainer'}
+        class:ranking-detail-cell={component.type === 'rankingDetailCard'}
+        class:ai-summary-cell={component.type === 'aiSummary'}
+        class:composite-cell={component.type === 'compositeCard'}
+        class:connect-next={section.components[componentIndex + 1]?.layout
+          .connectPrevious === true}
+        class:connect-previous={componentIndex > 0 &&
+          component.layout.connectPrevious === true}
+        class:backdrop-cell={component.id === backdropId}
+        class="cell"
+        data-component={`${section.id}/${component.id}`}
+        data-component-type={component.type}
+        data-component-variant={componentVariant(component)}
+        data-backdrop-safe={component.id === backdropId ? safeAreaAnchor : undefined}
+        style={`grid-column: ${gridColumn ?? `span ${component.layout.span}`};${
+          component.id === backdropId ? safeAreaStyle : ''
+        }`}
+        {@attach cellAttachment?.(component, componentIndex)}
+      >
+        {@render cellOverlay?.(component, componentIndex)}
+        {@render componentContent(component)}
+      </article>
+{/snippet}
+
 <section
   {hidden}
   class:content-only={contentOnly}
@@ -174,33 +208,12 @@
     {#if section.components.length === 0}
       {@render emptyContent?.()}
     {/if}
-    {#each section.components as component, componentIndex (component.id)}
-      <article
-        class:chart-cell={isChartComponent(component)}
-        class:header-cell={component.type === 'reportHeader'}
-        class:metric-cell={component.type === 'metricCard' || component.type === 'gauge'}
-        class:table-cell={component.type === 'table' || component.type === 'tabContainer'}
-        class:ranking-detail-cell={component.type === 'rankingDetailCard'}
-        class:ai-summary-cell={component.type === 'aiSummary'}
-        class:composite-cell={component.type === 'compositeCard'}
-        class:connect-next={section.components[componentIndex + 1]?.layout
-          .connectPrevious === true}
-        class:connect-previous={componentIndex > 0 &&
-          component.layout.connectPrevious === true}
-        class:backdrop-cell={component.id === backdropId}
-        class="cell"
-        data-component={`${section.id}/${component.id}`}
-        data-component-type={component.type}
-        data-component-variant={componentVariant(component)}
-        data-backdrop-safe={component.id === backdropId ? safeAreaAnchor : undefined}
-        style={`grid-column: span ${component.layout.span};${
-          component.id === backdropId ? safeAreaStyle : ''
-        }`}
-        {@attach cellAttachment?.(component, componentIndex)}
-      >
-        {@render cellOverlay?.(component, componentIndex)}
-        {@render componentContent(component)}
-      </article>
+    {#each layoutItems as item (item.id)}
+      {#if item.members.length > 1}
+        <MetricConnectionRow {item} {cell} {onbeforeselect} />
+      {:else}
+        {@render cell(item.members[0].component, item.members[0].index)}
+      {/if}
     {/each}
   </div>
 </section>
@@ -218,14 +231,14 @@
     background: var(--mc-section-default-surface, var(--mc-color-surface));
     box-shadow: var(--mc-section-default-shadow, 0 8px 24px rgb(68 85 147 / 0.06));
   }
-  .section-title {
+  :global([data-page-layout-form='report']) .section-title {
     margin: 0 0 18px;
     color: var(--mc-color-primary);
     font-size: 20px;
     font-weight: 700;
     text-align: left;
   }
-  .section-title::before {
+  :global([data-page-layout-form='report']) .section-title::before {
     display: inline-block;
     width: 9px;
     height: 9px;
@@ -276,7 +289,8 @@
 
     min-height: 0;
   }
-  .header-cell {
+  .header-cell,
+  .filter-group-cell {
     min-height: 0;
     padding: 0;
     overflow: visible;
@@ -374,6 +388,17 @@
     border-radius: 0;
     box-shadow: none;
   }
+  /* 连接组保留每张指标卡的独立卡面；连接间距量到该单元格的真实外框。 */
+  .cell.metric-connection-cell {
+    --mc-metric-panel-surface: #fff;
+    --mc-metric-panel-border-width: 0;
+    --mc-metric-panel-radius: 12px;
+
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+  }
   .container-plain .cell.connect-previous,
   .container-panel .cell.connect-previous,
   .container-card .cell.connect-previous {
@@ -430,7 +455,7 @@
     border-radius: var(--mc-section-panel-radius, var(--mc-radius-section));
     box-shadow: none;
   }
-  .container-panel > .section-title {
+  :global([data-page-layout-form='report']) .container-panel > .section-title {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -442,10 +467,10 @@
     line-height: var(--mc-section-title-line-height);
     text-align: center;
   }
-  .container-panel > .section-title::before {
+  :global([data-page-layout-form='report']) .container-panel > .section-title::before {
     display: none;
   }
-  .container-panel > .section-title img {
+  :global([data-page-layout-form='report']) .container-panel > .section-title img {
     width: var(--mc-section-title-icon-size);
     height: var(--mc-section-title-icon-size);
     flex: none;
@@ -479,7 +504,7 @@
     border-radius: var(--mc-radius-section);
     box-shadow: none;
   }
-  .container-card > .section-title {
+  :global([data-page-layout-form='report']) .container-card > .section-title {
     margin: var(--mc-section-card-title-margin, 0 0 10px 9px);
     color: var(--mc-section-card-title-color, var(--mc-color-report-heading));
     font-size: var(
@@ -490,7 +515,7 @@
     line-height: var(--mc-section-card-title-line-height, 30px);
     text-align: left;
   }
-  .container-card > .section-title::before {
+  :global([data-page-layout-form='report']) .container-card > .section-title::before {
     display: none;
   }
   .container-card > .section-grid {
@@ -498,6 +523,21 @@
 
     gap: var(--mc-section-card-grid-gap, 10px)
       var(--mc-section-card-grid-column-gap, 25px);
+  }
+
+  /* 标题由页面布局形态选择；容器只拥有外壳，不提供跨形态标题回退。 */
+  :global([data-page-layout-form='dashboard']) .section-title {
+    margin: var(--mc-section-card-title-margin, 0 0 12px);
+    color: var(--mc-section-card-title-color, #191919);
+    font-size: var(--mc-section-card-title-font-size, 16px);
+    font-weight: var(--mc-section-card-title-font-weight, 500);
+    line-height: var(--mc-section-card-title-line-height, 24px);
+    text-align: left;
+  }
+  :global([data-page-layout-form='dashboard']) .section-title::before,
+  :global([data-page-layout-form='dashboard']) .section-title img {
+    display: none;
+    content: none;
   }
 
   /* ==== 响应式 ==== */

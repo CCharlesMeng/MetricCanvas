@@ -1,0 +1,181 @@
+{
+  "schemaVersion": "6.46",
+  "id": "ioc-header-time",
+  "layout": "dashboard",
+  "meta": {
+    "title": "IOC页头组件 · 日期与快捷期间"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "项目趋势"
+    },
+    "back": true,
+    "filterIds": [
+      "day",
+      "days",
+      "months",
+      "period"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "filters": [
+    {
+      "id": "day",
+      "type": "timePoint",
+      "granularity": "date",
+      "label": "单日",
+      "default": "2026-09-30",
+      "min": "2026-01-01",
+      "max": "2026-09-30"
+    },
+    {
+      "id": "days",
+      "type": "timeRange",
+      "precision": "date",
+      "label": "日范围",
+      "default": {
+        "from": "2026-09-24",
+        "to": "2026-09-30"
+      },
+      "presets": [
+        {
+          "id": "preset-0",
+          "label": "近1天",
+          "range": {
+            "unit": "day",
+            "range": {
+              "kind": "lastN",
+              "n": 1
+            },
+            "includeCurrent": true,
+            "anchor": "2026-09-30"
+          }
+        },
+        {
+          "id": "preset-1",
+          "label": "近7天",
+          "range": {
+            "unit": "day",
+            "range": {
+              "kind": "lastN",
+              "n": 7
+            },
+            "includeCurrent": true,
+            "anchor": "2026-09-30"
+          }
+        },
+        {
+          "id": "preset-2",
+          "label": "近30天",
+          "range": {
+            "unit": "day",
+            "range": {
+              "kind": "lastN",
+              "n": 30
+            },
+            "includeCurrent": true,
+            "anchor": "2026-09-30"
+          }
+        },
+        {
+          "id": "preset-3",
+          "label": "近90天",
+          "range": {
+            "unit": "day",
+            "range": {
+              "kind": "lastN",
+              "n": 90
+            },
+            "includeCurrent": true,
+            "anchor": "2026-09-30"
+          }
+        }
+      ]
+    },
+    {
+      "id": "months",
+      "type": "timeRange",
+      "precision": "month",
+      "label": "月范围",
+      "default": {
+        "from": "2026-07",
+        "to": "2026-09"
+      },
+      "presets": [
+        {
+          "id": "preset-0",
+          "label": "近1月",
+          "range": {
+            "unit": "month",
+            "range": {
+              "kind": "lastN",
+              "n": 1
+            },
+            "includeCurrent": true,
+            "anchor": "2026-09-30"
+          }
+        },
+        {
+          "id": "preset-1",
+          "label": "近3月",
+          "range": {
+            "unit": "month",
+            "range": {
+              "kind": "lastN",
+              "n": 3
+            },
+            "includeCurrent": true,
+            "anchor": "2026-09-30"
+          }
+        },
+        {
+          "id": "preset-2",
+          "label": "近6月",
+          "range": {
+            "unit": "month",
+            "range": {
+              "kind": "lastN",
+              "n": 6
+            },
+            "includeCurrent": true,
+            "anchor": "2026-09-30"
+          }
+        }
+      ]
+    },
+    {
+      "id": "period",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "date",
+      "required": true,
+      "label": "自然期间",
+      "default": {
+        "mode": "month",
+        "value": "2026-09"
+      }
+    }
+  ],
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "intro",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成演示数据。此页验证正式页头组件和筛选状态；未接真实IOC服务。"
+          }
+        }
+      ]
+    }
+  ],
+  "dashboardToolbar": "hidden"
+}

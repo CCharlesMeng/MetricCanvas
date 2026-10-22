@@ -1,0 +1,35 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/page/tests/dimension-selection.test.ts packages/page/tests/version.test.ts packages/page/tests/canonical-writers.test.ts packages/engine/runtime/tests/dimension-selection.test.ts apps/playground/tests/page-catalog.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/ioc-selection/DataDashboard
+
+ ❯ apps/playground/tests/page-catalog.test.ts (9 tests | 1 failed) 318ms
+     × 说明中的配置、关联页面、主题和文档在当前仓库真实存在 10ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/playground/tests/page-catalog.test.ts > 页面试验场目录 > 说明中的配置、关联页面、主题和文档在当前仓库真实存在
+AssertionError: ioc-header-selection: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ apps/playground/tests/page-catalog.test.ts:83:101
+     81|       expect(entry.displayTitle.trim(), entry.id).not.toBe('');
+     82|       expect(entry.guide.steps.length, entry.id).toBeGreaterThan(0);
+     83|       expect(catalogRuntimes.some((runtime) => runtime.id === entry.en…
+       |                                                                                                     ^
+     84|       expect(entry.capabilities.length, entry.id).toBeGreaterThan(0);
+     85|       for (const id of entry.capabilities) expect(catalogCapabilities.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  1 failed | 24 passed (25)
+   Start at  21:03:40
+   Duration  923ms (transform 1.11s, setup 0ms, import 2.11s, tests 739ms, environment 0ms)
+
+[ELIFECYCLE] Test failed. See above for more details.

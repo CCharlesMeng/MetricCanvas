@@ -50,18 +50,10 @@ export function barOption(
     : horizontalValueLabels(valueAxis);
   const reportForecast = props.variant === 'reportForecast';
   const roleIndexes = { actual: 0, forecast: 0 };
-  const seriesEntries = props.series
-    .map((series, originalIndex) => ({
-      series,
-      originalIndex,
-      roleIndex: series.role === undefined ? undefined : roleIndexes[series.role]++
-    }))
-    .sort((left, right) => {
-      const orderDifference =
-        (left.series.stackOrder ?? left.originalIndex) -
-        (right.series.stackOrder ?? right.originalIndex);
-      return orderDifference || left.originalIndex - right.originalIndex;
-    });
+  const declaredEntries = props.series.map((series, originalIndex) => ({
+    series, originalIndex, roleIndex: series.role === undefined ? undefined : roleIndexes[series.role]++
+  }));
+  const seriesEntries = barSeriesOrder(props).map(index => declaredEntries[index]!);
   const topEntryByGroup = new Map<string, (typeof seriesEntries)[number]>();
   for (const entry of seriesEntries) {
     topEntryByGroup.set(entry.series.role ?? 'default', entry);
@@ -274,6 +266,13 @@ function reportValueAxis(
 /** 圆角只加在堆叠整体的"生长端"；底层色块保持直角以便连接边缘齐平。 */
 function roundedCorners(props: BarChartProps): number[] {
   return props.horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0];
+}
+
+/** Indices refer to the original declaration, even when stackOrder changes drawing order. */
+export function barSeriesOrder(props: BarChartProps): number[] {
+  const indices = props.series.map((_, index) => index);
+  if (props.series.some(series => series.kind !== undefined || series.axis !== undefined)) return indices;
+  return indices.sort((left, right) => (props.series[left]!.stackOrder ?? left) - (props.series[right]!.stackOrder ?? right) || left - right);
 }
 
 /** 显式系列只翻译封闭角色和轴声明；不接受外部 ECharts option。 */

@@ -1,0 +1,60 @@
+{
+  "schema_version": 2,
+  "rules": {
+    "R6-41-header-overflow": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        }
+      ],
+      "collect": {
+        "kind": "overflow"
+      }
+    },
+    "R6-41-controls-overlap": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-ioc-filter]:not([inert])"
+        }
+      ],
+      "collect": {
+        "kind": "overlap"
+      }
+    },
+    "R6-41-controls-clip": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[data-ioc-header] :is(input,.modes button,.toggle):not([inert] *)"
+        }
+      ],
+      "collect": {
+        "kind": "clip"
+      }
+    },
+    "R6-41-popup-overflow": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        }
+      ],
+      "collect": {
+        "kind": "overflow"
+      }
+    },
+    "R6-41-popup-clip": {
+      "locators": [
+        {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        }
+      ],
+      "collect": {
+        "kind": "clip"
+      }
+    }
+  }
+}

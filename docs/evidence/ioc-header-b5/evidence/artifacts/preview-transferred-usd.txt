@@ -1,0 +1,50 @@
+Browser tab: 5, Title: "页面试验场 · MetricCanvas", URL: "http://127.0.0.1:4208/pages/ioc-header-navigation-detail-demo?project-id=P%26%E4%B8%AD%E6%96%87%2F001&project-name=%E7%A4%BA%E4%BE%8B%E9%A1%B9%E7%9B%AE%E7%94%B2&origin=%E8%AF%A6%E6%83%85%E5%85%A5%E5%8F%A3&month=2026-09&currency=USD&regions=north&regions=south".
+1 AXWebArea 页面试验场 · MetricCanvas, URL: 127.0.0.1:4208/pages/ioc-header-navigation-detail-demo?project-id=P%26%E4%B8%AD%E6%96%87%2F001&project-name=%E7%A4%BA%E4%BE%8B%E9%A1%B9%E7%9B%AE%E7%94%B2&origin=%E8%AF%A6%E6%83%85%E5%85%A5%E5%8F%A3&month=2026-09&currency=USD&regions=north&regions=south
+	2 container
+		3 container 试验场导航
+			4 link Description: ← 页面目录, Value: 127.0.0.1:4208/
+			5 link Description: JSON 即时预览, Value: 127.0.0.1:4208/preview
+		6 container 页面回退
+			7 link Description: 返回, Value: 127.0.0.1:4208/pages/ioc-header-navigation-list-demo?origin=%E8%AF%A6%E6%83%85%E5%85%A5%E5%8F%A3&period=month%3A2026-09&currency=USD&regions=north&regions=south
+		56 heading 示例项目甲, Value: 1
+			57 text 示例项目甲
+		58 text 合成验收 项目编码： P&中文/001
+		59 text 来源：详情入口
+		60 container c11
+			61 container 详情单月
+				62 text 详情单月
+				63 container
+					64 combo box (collapsed, settable) Description: 详情单月, Value: 2026-09, Secondary Actions: Expand
+					65 button 打开日期选择器
+			66 container 币种
+				67 text 币种
+				68 pop up button (collapsed) Description: 币种, Secondary Actions: Expand
+			69 container 区域
+				70 text 区域
+				71 button (collapsed) Description: 区域, Help: 北区、南区, Secondary Actions: Expand
+					72 text 北区、南区
+		73 container
+			74 heading 当前已应用条件, Value: 3
+				75 text 当前已应用条件
+			76 text 月份：2026-09；币种：USD；区域：north、south
+		77 container
+			78 heading 服务收到的条件（本地合成）, Value: 3
+				79 text 服务收到的条件（本地合成）
+			80 table
+				81 row
+					82 cell
+						83 text 服务条件
+					84 cell
+						85 text 响应标识
+				86 row
+					87 cell
+						88 text 合成 · project_code=P&中文/001；sales_month=2026-09；currency_code=USD；region_code=north,south
+					89 cell
+						90 text 1
+		91 container
+			92 heading 重新打开清单, Value: 3
+				93 text 重新打开清单
+			94 link Description: 使用默认条件重新打开清单 →, Value: 127.0.0.1:4208/pages/ioc-header-navigation-list-demo?origin=%E8%AF%A6%E6%83%85%E5%85%A5%E5%8F%A3
+		55 text 页面试验场 · MetricCanvas
+
+The focused UI element is 1 AXWebArea 页面试验场 · MetricCanvas, URL: 127.0.0.1:4208/pages/ioc-header-navigation-detail-demo?project-id=P%26%E4%B8%AD%E6%96%87%2F001&project-name=%E7%A4%BA%E4%BE%8B%E9%A1%B9%E7%9B%AE%E7%94%B2&origin=%E8%AF%A6%E6%83%85%E5%85%A5%E5%8F%A3&month=2026-09&currency=USD&regions=north&regions=south

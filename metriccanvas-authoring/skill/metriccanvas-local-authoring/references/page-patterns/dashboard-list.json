@@ -3,10 +3,17 @@
   "kind": "structural-pattern",
   "source": {
     "pageId": "ioc-opportunity-list",
-    "sha256": "7f1e91132aa2388e7e9877a82d9ccab6612e4279aa3b3cc8a1a3cb8e7aeab1b6"
+    "sha256": "464cc00d99a228d49a160013746f34d9332e4a2734989f1144d948883be5449d"
   },
   "layout": "dashboard",
-  "dashboardToolbar": "visible",
+  "iocHeader": {
+    "hasIdentity": true,
+    "filterCount": 10,
+    "presentation": {
+      "layout": "inline",
+      "collapse": "overflow"
+    }
+  },
   "filters": [
     {
       "type": "timePoint"

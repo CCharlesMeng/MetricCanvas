@@ -372,7 +372,7 @@ describe('页面数据源快照编排', () => {
     const document = page();
     const sales = document.dataSources.sales;
     if (sales.source.type !== 'query') throw new Error('测试数据源必须为 query');
-    sales.source.query.body.dsl_list[0].order = { offset: 0, limit: 10 };
+    sales.source.query.body!.dsl_list[0].order = { offset: 0, limit: 10 };
     sales.source.initial = {
       capturedAt: '2026-08-04T00:00:00+08:00',
       rows: Array.from({ length: 10 }, (_, index) => ({

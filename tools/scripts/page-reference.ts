@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { validate } from '../../packages/page/src/validate';
+import { conditionSourceIds } from '../../packages/page/src/data-source-references';
 
 type Schema = Record<string, any>;
 export interface ReferenceMap {
@@ -134,8 +135,23 @@ function components(value: unknown): any[] {
   const own = typeof item.type === 'string' && item.layout && item.props ? [item] : [];
   return [...own, ...Object.values(item).flatMap(components)];
 }
+/** Keep fixed controls needed by the selected component's query graph. */
+function requiredFilterGroups(document: any, component: any): any[] {
+  const selected = components(component);
+  const ids = new Set(selected.map(child => child.id));
+  const filters = new Set<string>();
+  for (const child of selected) for (const sourceId of Object.values(child.data ?? {})) {
+    for (const dependency of conditionSourceIds(document, String(sourceId))) {
+      const source = document.dataSources[dependency]?.source;
+      if (source?.type === 'query') for (const id of Object.keys(source.query.filterBindings ?? {})) filters.add(id);
+    }
+  }
+  return components(document.sections).filter(child => child.type === 'filterGroup' &&
+    filters.has(child.props.filterId) && !ids.has(child.id));
+}
 function minimalExample(document: any, component: any): any | undefined {
-  const candidate = structuredClone({...document, meta:undefined, sections:[{id:'main',components:[component]}]});
+  const controls = requiredFilterGroups(document, component);
+  const candidate = structuredClone({...document, meta:undefined, sections:[{id:'main',components:[...controls,component]}]});
   const params = new Set<string>();
   function references(value: any) {
     if (!value || typeof value !== 'object') return;
@@ -185,19 +201,26 @@ function componentPointer(value: any, type: string, pointer = '#'): string | und
   return undefined;
 }
 
-/** 在完整合法页面上记录实际命中的联合分支；不把结构目录计作示例命中。 */
-export function branchWitnesses(schema: Schema, examples: Map<string,string>, nodes: ReferenceNode[]) {
+const branchMatchers = new WeakMap<Schema, (pointer:string,value:unknown)=>boolean>();
+/** All witnesses in one export share the same immutable schema and compiled checks. */
+function branchMatcher(schema:Schema) {
+  const cached=branchMatchers.get(schema);if(cached)return cached;
   const { Ajv } = createRequire(new URL('../../packages/page/package.json',import.meta.url))('ajv');
   const ajv = new Ajv({strict:false,allErrors:false,validateSchema:false});
   const id='https://metriccanvas/reference/coverage';
   ajv.addSchema({...schema,$id:id});
   const validators = new Map<string,(value:unknown)=>boolean>();
-  const evidence = new Map<string,{file:string;pointer:string}>();
-  const branches=nodes.filter(n=>/\/(?:anyOf|oneOf)\/\d+$/.test(n.pointer));
   function matches(pointer:string,value:unknown) {
     let check=validators.get(pointer);if(!check){check=ajv.compile({$ref:id+pointer});validators.set(pointer,check!);}
     return check!(value);
   }
+  branchMatchers.set(schema,matches);return matches;
+}
+/** 在完整合法页面上记录实际命中的联合分支；不把结构目录计作示例命中。 */
+export function branchWitnesses(schema: Schema, examples: Map<string,string>, nodes: ReferenceNode[]) {
+  const matches=branchMatcher(schema);
+  const evidence = new Map<string,{file:string;pointer:string}>();
+  const branches=nodes.filter(n=>/\/(?:anyOf|oneOf)\/\d+$/.test(n.pointer));
   for(const [file,content] of examples) {
     const visited=new Set<string>();
     function visit(pointer:string,value:any,location:string) {
@@ -322,7 +345,7 @@ export async function buildPageReference(root: string, schema: Schema, catalog: 
       else if (branch.negativeWitness) body += `[语义拒绝反例](${prefix}${branch.negativeWitness.file})：${branch.negativeWitness.reason}（规则 \`${branch.negativeWitness.rule}\`）。此项不计入合法示例覆盖。\n`;
       else body += '缺少见证。\n';
     }
-    output.set(file,body);
+    output.set(file,body.trimEnd()+'\n');
   }
   const missingFields = nodes.filter(n => /\/properties\/[^/]+$/.test(n.pointer) && !map.fieldNotes[n.pointer] && !n.schema.description && !map.fieldNotes[n.path.split('.').at(-1)!]).map(n => n.pointer);
   const semanticGaps = {fields:missingFields,enums:missingEnums,examples:exampleCoverage.filter(e=>!e.file),branches:documentedBranches.filter(b=>!b.file&&!b.negativeWitness)};

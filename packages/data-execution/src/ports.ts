@@ -27,6 +27,8 @@ export interface QueryDiagnosticContext {
  * DimensionValuesGateway,数据网关可以选择性实现(issue #54)。
  */
 export interface DataGateway {
+  /** Optional verified projection of the original query result; never a dimension dictionary. */
+  fetchColumnCandidates?(request: ColumnCandidatesQuery, diagnosticContext?: QueryDiagnosticContext, signal?: AbortSignal): Promise<ColumnCandidatesPage>;
   /**
    * 执行失败时,拒绝原因应携带稳定查询错误分类:错误对象的 `code`
    * 属性取 @metriccanvas/page 的 QueryErrorCode 封闭集(issue #51)。
@@ -50,6 +52,8 @@ export interface DataGateway {
 export interface DimensionValueCandidate {
   value: string;
   label: string;
+  /** Optional explicit parent code in this complete candidate batch; never a display path. */
+  parentValue?: string;
 }
 
 /**
@@ -88,4 +92,42 @@ export interface DimensionValuesGateway {
 /**
  * 应用壳注入统一运行时的数据网关形状:主查询执行必备,候选值能力可选。
  */
-export type RuntimeDataGateway = DataGateway & Partial<DimensionValuesGateway>;
+export type RuntimeDataGateway = DataGateway & Partial<DimensionValuesGateway & FilterCandidatesGateway>;
+
+/** Optional complete filter candidates, owned by the injected Adapter. No HTTP or identity secrets. */
+export interface FilterCandidate extends DimensionValueCandidate {
+  disabled?: boolean;
+  level?: string;
+  parent?: {level:string;value:string};
+}
+export interface FilterCandidatesRequest {
+  filterId:string;
+  dimension:string;
+  level?:string;
+  calendarWindow?:{granularity:'month';from:string;to:string};
+  factRevision?:string;permissionRevision?:string;filterRevision?:number;
+  constraints:{
+    dimensions:Readonly<Record<string,readonly string[]>>;
+    times:Readonly<Record<string,{from:string;to:string;mode?:'day'|'month'|'isoWeek'}>>;
+  };
+}
+export type FilterCandidatesResult =
+  | {kind:'values';candidates:FilterCandidate[]}
+  | {kind:'unavailable'|'denied'|'unconfigured'};
+export interface FilterCandidatesGateway {
+  fetchFilterCandidates(request:FilterCandidatesRequest,options:{signal:AbortSignal}):Promise<FilterCandidatesResult>;
+}
+
+/** Table result candidates preserve stable scalar types; page dimension dictionaries stay separate. */
+export interface ColumnCandidate { value: string | number; label: string; }
+export type ColumnCandidatesPage =
+  | { kind: 'values'; candidates: ColumnCandidate[]; totalCount: number }
+  | { kind: 'unavailable' };
+export interface ColumnCandidatesQuery {
+  query: EffectiveQuery;
+  field: string;
+  queryField: string;
+  search: string;
+  offset: number;
+  limit: number;
+}

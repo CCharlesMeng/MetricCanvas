@@ -1,0 +1,331 @@
+{
+  "schemaVersion": "6.49",
+  "id": "table-search-options-page",
+  "layout": "report",
+  "meta": {
+    "title": "表格搜索字段切换（合成数据与 DQE 仿真）"
+  },
+  "dataSources": {
+    "records": {
+      "fields": {
+        "code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目编码"
+        },
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称"
+        },
+        "owner": {
+          "type": "string",
+          "role": "dimension",
+          "label": "责任人"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "unit": "元"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "code": "00123",
+            "name": "星河项目",
+            "owner": "张三",
+            "amount": 100
+          },
+          {
+            "code": "00124",
+            "name": "星河项目二期",
+            "owner": "李四",
+            "amount": 200
+          },
+          {
+            "code": "00003",
+            "name": "其他项目",
+            "owner": "星河项目",
+            "amount": 300
+          },
+          {
+            "code": "ABC",
+            "name": "英文编码",
+            "owner": "张三",
+            "amount": 400
+          },
+          {
+            "code": "abc",
+            "name": "小写编码",
+            "owner": "李四",
+            "amount": 500
+          },
+          {
+            "code": "A%_",
+            "name": "字面量",
+            "owner": "张三",
+            "amount": 600
+          },
+          {
+            "code": "00125",
+            "name": "星河项目",
+            "owner": "李四",
+            "amount": 700
+          }
+        ]
+      }
+    },
+    "queried": {
+      "fields": {
+        "code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目编码",
+          "queryField": "search_demo_code"
+        },
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "queryField": "search_demo_name"
+        },
+        "owner": {
+          "type": "string",
+          "role": "dimension",
+          "label": "责任人",
+          "queryField": "search_demo_owner"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "unit": "元",
+          "queryField": "search_demo_amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "search_demo_code",
+                  "search_demo_name",
+                  "search_demo_owner"
+                ],
+                "output_metrics": [
+                  "search_demo_amount"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "search_demo_owner",
+                      "dim_value_list": [
+                        "张三",
+                        "李四",
+                        "星河项目"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 2
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "local-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "本地等值搜索（合成数据）",
+            "toolbar": {
+              "search": {
+                "options": [
+                  {
+                    "value": "code",
+                    "label": "项目编码",
+                    "field": "code",
+                    "placeholder": "请输入完整项目编码"
+                  },
+                  {
+                    "value": "name",
+                    "label": "项目名称",
+                    "field": "name",
+                    "placeholder": "请输入完整项目名称"
+                  },
+                  {
+                    "value": "owner",
+                    "label": "责任人",
+                    "field": "owner",
+                    "placeholder": "请输入完整责任人姓名"
+                  }
+                ],
+                "defaultValue": "name"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "本地等值搜索（合成数据）"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            },
+            "columns": [
+              {
+                "field": "code",
+                "sortable": true
+              },
+              {
+                "field": "name",
+                "sortable": true
+              },
+              {
+                "field": "owner",
+                "sortable": true
+              },
+              {
+                "field": "amount",
+                "sortable": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "query-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "queried"
+          },
+          "props": {
+            "title": "查询等值搜索（DQE 仿真）",
+            "toolbar": {
+              "search": {
+                "options": [
+                  {
+                    "value": "code",
+                    "label": "项目编码",
+                    "field": "code",
+                    "placeholder": "请输入完整项目编码"
+                  },
+                  {
+                    "value": "name",
+                    "label": "项目名称",
+                    "field": "name",
+                    "placeholder": "请输入完整项目名称"
+                  },
+                  {
+                    "value": "owner",
+                    "label": "责任人",
+                    "field": "owner",
+                    "placeholder": "请输入完整责任人姓名"
+                  }
+                ],
+                "defaultValue": "name"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "查询等值搜索（DQE 仿真）"
+              }
+            },
+            "pagination": {
+              "mode": "query"
+            },
+            "columns": [
+              {
+                "field": "code",
+                "sortable": true
+              },
+              {
+                "field": "name",
+                "sortable": true
+              },
+              {
+                "field": "owner",
+                "sortable": true
+              },
+              {
+                "field": "amount",
+                "sortable": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "legacy-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "原有包含搜索（合成数据）",
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "code",
+                  "name",
+                  "owner"
+                ],
+                "placeholder": "搜索编码、项目或责任人"
+              },
+              "export": {
+                "format": "xlsx",
+                "filename": "原有包含搜索（合成数据）"
+              }
+            },
+            "pagination": {
+              "mode": "local",
+              "pageSize": 2
+            },
+            "columns": [
+              {
+                "field": "code",
+                "sortable": true
+              },
+              {
+                "field": "name",
+                "sortable": true
+              },
+              {
+                "field": "owner",
+                "sortable": true
+              },
+              {
+                "field": "amount",
+                "sortable": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

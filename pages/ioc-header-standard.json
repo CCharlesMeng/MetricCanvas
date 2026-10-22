@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "6.46",
+  "id": "ioc-header-standard",
+  "layout": "dashboard",
+  "meta": {
+    "title": "IOC页头组件 · 标准"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "项目概览",
+      "tags": [
+        {
+          "text": "进行中",
+          "tone": "neutral",
+          "id": "tag-0"
+        }
+      ]
+    },
+    "back": true,
+    "filterIds": [
+      "month",
+      "region",
+      "currency",
+      "amount",
+      "key"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "filters": [
+    {
+      "id": "month",
+      "type": "timePoint",
+      "granularity": "month",
+      "label": "统计月份",
+      "default": "2026-09",
+      "min": "2020-01",
+      "max": "2026-09",
+      "required": true
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "demo_department",
+      "label": "区域样例",
+      "selection": {
+        "mode": "single"
+      },
+      "display": "tree",
+      "treeSelection": "level",
+      "hierarchy": [
+        {
+          "id": "department",
+          "dimension": "demo_department",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "demo_office",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "department",
+      "emptyLabel": "区域样例"
+    },
+    {
+      "id": "currency",
+      "type": "dimension",
+      "dimension": "currency",
+      "label": "币种",
+      "options": [
+        {
+          "value": "CNY",
+          "label": "人民币"
+        },
+        {
+          "value": "USD",
+          "label": "美元"
+        }
+      ],
+      "default": [
+        "CNY"
+      ],
+      "selection": {
+        "mode": "single"
+      },
+      "emptyLabel": "币种"
+    },
+    {
+      "id": "amount",
+      "type": "numberRange",
+      "label": "金额样例",
+      "presets": [
+        {
+          "id": "preset-0",
+          "label": "100至500",
+          "range": {
+            "from": 100,
+            "to": 500
+          }
+        },
+        {
+          "id": "preset-1",
+          "label": "500以上",
+          "range": {
+            "from": 500
+          }
+        }
+      ],
+      "constraints": {
+        "min": 0,
+        "bounds": "strict"
+      },
+      "clearOnChangeOf": [
+        "currency"
+      ]
+    },
+    {
+      "id": "key",
+      "type": "boolean",
+      "label": "重点样例",
+      "default": false
+    }
+  ],
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "intro",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成演示数据。此页验证正式页头组件和筛选状态；未接真实IOC服务。"
+          }
+        },
+        {
+          "id": "echo",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "parts": [
+                "当前月份：",
+                {
+                  "filter": "month"
+                },
+                "；币种：",
+                {
+                  "filter": "currency"
+                },
+                "；金额：",
+                {
+                  "filter": "amount"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "dashboardToolbar": "hidden"
+}

@@ -1,0 +1,193 @@
+{
+  "case": "required-multiple-version",
+  "invariant": "required-multiple-selection",
+  "input": {
+    "schemaVersion": "6.45",
+    "id": "ioc-header-months",
+    "layout": "dashboard",
+    "meta": {
+      "title": "IOC页头 · 最近十二个月离散选择"
+    },
+    "iocHeader": {
+      "identity": {
+        "title": "月份选择",
+        "tags": [
+          {
+            "text": "合成验收",
+            "id": "tag-0"
+          }
+        ]
+      },
+      "back": true,
+      "filterIds": [
+        "months"
+      ],
+      "presentation": {
+        "layout": "inline",
+        "collapse": "none"
+      }
+    },
+    "filters": [
+      {
+        "id": "months",
+        "type": "dimension",
+        "dimension": "month-code",
+        "label": "最近月份",
+        "emptyLabel": "请选择月份",
+        "options": [
+          {
+            "value": "202610",
+            "label": "2026年10月"
+          },
+          {
+            "value": "202609",
+            "label": "2026年9月"
+          },
+          {
+            "value": "202608",
+            "label": "2026年8月"
+          },
+          {
+            "value": "202607",
+            "label": "2026年7月"
+          },
+          {
+            "value": "202606",
+            "label": "2026年6月"
+          },
+          {
+            "value": "202605",
+            "label": "2026年5月"
+          },
+          {
+            "value": "202604",
+            "label": "2026年4月"
+          },
+          {
+            "value": "202603",
+            "label": "2026年3月"
+          },
+          {
+            "value": "202602",
+            "label": "2026年2月"
+          },
+          {
+            "value": "202601",
+            "label": "2026年1月"
+          },
+          {
+            "value": "202512",
+            "label": "2025年12月"
+          },
+          {
+            "value": "202511",
+            "label": "2025年11月"
+          }
+        ],
+        "default": [
+          "202610",
+          "202608"
+        ],
+        "urlParams": {
+          "value": "months"
+        },
+        "selection": {
+          "mode": "multiple",
+          "required": true
+        }
+      }
+    ],
+    "dataSources": {
+      "month-request": {
+        "fields": {
+          "selected_months": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "selected_months"
+          },
+          "selected_count": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "selected_count"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "selected_months"
+                  ],
+                  "output_metrics": [
+                    "selected_count"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "months": {
+                "target": "dimension",
+                "queryField": "synthetic_month_code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "boundary",
+            "type": "text",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "body": "合成验收：候选以明确的2026-10日历月为锚点，包含当月和此前11个月；保存后不随时钟滚动。表格回显实际提交的离散月份集合，不补齐中间月份。必选多选至少保留一个月份，最后一项不能清空；缺少合法选择时暂停此查询；生产页面清空回退10或12个月的规则仍待配置。未接真实IOC、DQE或导出。"
+            }
+          },
+          {
+            "id": "request",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "month-request"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "selected_months",
+                  "title": "实际离散月份（合成回显）"
+                },
+                {
+                  "field": "selected_count",
+                  "title": "月份个数"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "dashboardToolbar": "hidden"
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0",
+      "message": "必选多选保留非空离散集合 由 6.46 引入，文档声明的是 6.45"
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+[WebServer] (node:39430) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:39431) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 5 tests using 1 worker
+
+(node:39447) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chrome] › tests/browser/selection.spec.ts:3:1 › tree single, local search, geometry and keyboard (428ms)
+  ✓  2 [chrome] › tests/browser/selection.spec.ts:27:1 › tags keep height, scroll and delete exactly one; disabled and states (487ms)
+  ✘  3 [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=false (10.0s)
+(node:39690) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  4 [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=true (10.0s)
+(node:39897) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  5 [chrome] › tests/browser/selection.spec.ts:74:1 › official geometry, neutral tag colors, icons and panel rows (357ms)
+
+
+  1) [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=false
+
+    Test timeout of 10000ms exceeded.
+
+    Error: locator.click: Test timeout of 10000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: '区域', exact: true })
+        - locator resolved to <button type="button" aria-label="区域" aria-haspopup="tree" aria-expanded="false" class="mc-ui-input__inner selection-trigger svelte-bsmqej">…</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <path fill="currentColor" d="M3.16,5.36c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07L8,9.32l3.96-3.96  c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07c0.22,0.22,0.24,0.55,0.07,0.79l-0.07,0.09l-4.4,4.4c-0.22,0.22-0.55,0.24-0.79,0.07  l-0.09-0.07l-4.4-4.4C2.92,6,2.92,5.6,3.16,5.36z"></path> from <span class="mc-ui-input__suffix selection-arrow svelte-bsmqej">…</span> subtree intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <path fill="currentColor" d="M3.16,5.36c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07L8,9.32l3.96-3.96  c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07c0.22,0.22,0.24,0.55,0.07,0.79l-0.07,0.09l-4.4,4.4c-0.22,0.22-0.55,0.24-0.79,0.07  l-0.09-0.07l-4.4-4.4C2.92,6,2.92,5.6,3.16,5.36z"></path> from <span class="mc-ui-input__suffix selection-arrow svelte-bsmqej">…</span> subtree intercepts pointer events
+        - retrying click action
+          - waiting 100ms
+        18 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <path fill="currentColor" d="M3.16,5.36c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07L8,9.32l3.96-3.96  c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07c0.22,0.22,0.24,0.55,0.07,0.79l-0.07,0.09l-4.4,4.4c-0.22,0.22-0.55,0.24-0.79,0.07  l-0.09-0.07l-4.4-4.4C2.92,6,2.92,5.6,3.16,5.36z"></path> from <span class="mc-ui-input__suffix selection-arrow svelte-bsmqej">…</span> subtree intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+
+
+      66 |  await tag.hover();await page.getByRole('button',{name:'清空区域',exact:true}).click();await expect(popup).toHaveCount(0);
+      67 |  await expect(page.getByLabel('值',{exact:true})).toHaveText('[]');
+    > 68 |  await trigger.click({position:{x:220,y:16}});await expect(popup).toBeVisible();await popup.press('Escape');
+         |                ^
+      69 |  await page.getByRole('button',{name:'装载多标签'}).click();await page.getByRole('checkbox',{name:'禁用',exact:true}).check();
+      70 |  await expect(page.getByRole('button',{name:/^打开区域：/}).first()).toBeDisabled();
+      71 |  await expect(popup).toHaveCount(0);
+        at /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/ui/tests/browser/selection.spec.ts:68:16
+
+    Error Context: test-results/selection-mouse-tag-blank--3e841-nd-empty-arrow-shadow-false-chrome/error-context.md
+
+  2) [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=true
+
+    Test timeout of 10000ms exceeded.
+
+    Error: locator.click: Test timeout of 10000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: '区域', exact: true })
+        - locator resolved to <button type="button" aria-label="区域" aria-haspopup="tree" aria-expanded="false" class="mc-ui-input__inner selection-trigger svelte-bsmqej">…</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <path fill="currentColor" d="M3.16,5.36c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07L8,9.32l3.96-3.96  c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07c0.22,0.22,0.24,0.55,0.07,0.79l-0.07,0.09l-4.4,4.4c-0.22,0.22-0.55,0.24-0.79,0.07  l-0.09-0.07l-4.4-4.4C2.92,6,2.92,5.6,3.16,5.36z"></path> from <span class="mc-ui-input__suffix selection-arrow svelte-bsmqej">…</span> subtree intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <path fill="currentColor" d="M3.16,5.36c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07L8,9.32l3.96-3.96  c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07c0.22,0.22,0.24,0.55,0.07,0.79l-0.07,0.09l-4.4,4.4c-0.22,0.22-0.55,0.24-0.79,0.07  l-0.09-0.07l-4.4-4.4C2.92,6,2.92,5.6,3.16,5.36z"></path> from <span class="mc-ui-input__suffix selection-arrow svelte-bsmqej">…</span> subtree intercepts pointer events
+        - retrying click action
+          - waiting 100ms
+        18 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <path fill="currentColor" d="M3.16,5.36c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07L8,9.32l3.96-3.96  c0.22-0.22,0.55-0.24,0.79-0.07l0.09,0.07c0.22,0.22,0.24,0.55,0.07,0.79l-0.07,0.09l-4.4,4.4c-0.22,0.22-0.55,0.24-0.79,0.07  l-0.09-0.07l-4.4-4.4C2.92,6,2.92,5.6,3.16,5.36z"></path> from <span class="mc-ui-input__suffix selection-arrow svelte-bsmqej">…</span> subtree intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+
+
+      66 |  await tag.hover();await page.getByRole('button',{name:'清空区域',exact:true}).click();await expect(popup).toHaveCount(0);
+      67 |  await expect(page.getByLabel('值',{exact:true})).toHaveText('[]');
+    > 68 |  await trigger.click({position:{x:220,y:16}});await expect(popup).toBeVisible();await popup.press('Escape');
+         |                ^
+      69 |  await page.getByRole('button',{name:'装载多标签'}).click();await page.getByRole('checkbox',{name:'禁用',exact:true}).check();
+      70 |  await expect(page.getByRole('button',{name:/^打开区域：/}).first()).toBeDisabled();
+      71 |  await expect(popup).toHaveCount(0);
+        at /Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/ui/tests/browser/selection.spec.ts:68:16
+
+    Error Context: test-results/selection-mouse-tag-blank--8ed0a-and-empty-arrow-shadow-true-chrome/error-context.md
+
+  2 failed
+    [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=false
+    [chrome] › tests/browser/selection.spec.ts:55:35 › mouse tag, blank frame, clear and empty arrow; shadow=true
+  3 passed (23.4s)
+undefined
+/Users/moon/.codex/worktrees/ioc-selection/DataDashboard/packages/ui:
+[ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL] Command failed with exit code 1: playwright test selection.spec.ts '--project=chrome' '--timeout=10000'

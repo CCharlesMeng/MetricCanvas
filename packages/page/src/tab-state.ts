@@ -12,12 +12,21 @@ export function selectedTab(component: TabContainerComponent, selections: TabSel
 }
 export function initialTabSelections(page: Page, search = ''): Record<string, string> {
   const params = new URLSearchParams(search);
-  return Object.fromEntries(flattenPageComponents(page).flatMap(component => component.type === 'tabContainer'
-    ? [[component.id, selectedTab(component, { [component.id]: params.get(`tab.${component.id}`) ?? '' })]] : []));
+  return Object.fromEntries(flattenPageComponents(page).flatMap(component => {
+    if (component.type !== 'tabContainer') return [];
+    const explicit = component.props.initialTabUrlParam ? params.getAll(component.props.initialTabUrlParam) : [];
+    const restored = restoresTab(component) ? params.getAll(`tab.${component.id}`) : [];
+    const valid = (values: string[]) => values.length === 1 && component.props.tabs.some(tab => tab.id === values[0]) ? values[0] : undefined;
+    return [[component.id, selectedTab(component, { [component.id]: valid(restored) ?? valid(explicit) ?? '' })]];
+  }));
 }
-export function tabSearch(search: string, selections: TabSelections): string {
+function restoresTab(component: TabContainerComponent): boolean {
+  return component.props.contentLayout === 'grid' || component.props.tabs.some(tab => tabChildren(tab).some(child => child.type !== 'table'));
+}
+export function tabSearch(search: string, selections: TabSelections, page?: Page): string {
   const params = new URLSearchParams(search);
-  for (const [id, value] of Object.entries(selections)) params.set(`tab.${id}`, value);
+  const ids = page ? new Set(flattenPageComponents(page).filter(component => component.type === 'tabContainer' && restoresTab(component)).map(component => component.id)) : undefined;
+  for (const [id, value] of Object.entries(selections)) if (!ids || ids.has(id)) params.set(`tab.${id}`, value);
   return params.toString();
 }
 /** Presentation demand only; full tree traversal remains available for export/validation. */

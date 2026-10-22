@@ -19,7 +19,7 @@
     "authoring:contracts": "tsx tools/scripts/export-authoring-contracts.ts",
     "authoring:contracts:check": "tsx tools/scripts/export-authoring-contracts.ts --check",
     "authoring:test": "PYTHONDONTWRITEBYTECODE=1 python3 metriccanvas-authoring/test-harness/run_tests.py",
-    "authoring:check": "python3 metriccanvas-authoring/scripts/check_bundle.py && pnpm authoring:test",
+    "authoring:check": "pnpm test tests/local-authoring-tools.test.ts tests/local-authoring-skill.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts",
     "sim:dqe": "tsx tools/dqe-sim/src/server.ts",
     "check": "tsc --noEmit -p tools/package-build && tsc --noEmit -p tests/tsconfig.json && pnpm -r check",
     "build:playground": "pnpm --filter playground build",

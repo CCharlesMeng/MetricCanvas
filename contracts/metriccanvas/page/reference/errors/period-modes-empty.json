@@ -1,0 +1,140 @@
+{
+  "case": "period-modes-empty",
+  "invariant": "unified-page-header",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 dimension",
+      "paths": [
+        "/filters/0/dimension"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 precision(拼写错误?)",
+      "paths": [
+        "/filters/0/precision",
+        "/filters/0/precision",
+        "/filters/0/precision",
+        "/filters/0/precision",
+        "/filters/0/precision"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 required(拼写错误?)",
+      "paths": [
+        "/filters/0/required",
+        "/filters/0/required",
+        "/filters/0/required",
+        "/filters/0/required"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 periodModes(拼写错误?)",
+      "paths": [
+        "/filters/0/periodModes",
+        "/filters/0/periodModes",
+        "/filters/0/periodModes",
+        "/filters/0/periodModes",
+        "/filters/0/periodModes"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be equal to constant",
+      "paths": [
+        "/filters/0/type",
+        "/filters/0/type",
+        "/filters/0/type",
+        "/filters/0/type",
+        "/filters/0/type"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"select\",\"tabs\",\"tree\",\"search\"]",
+      "paths": [
+        "/filters/0/display"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be array",
+      "paths": [
+        "/filters/0/default"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must NOT have fewer than 1 items",
+      "paths": [
+        "/filters/0/periodModes"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 granularity",
+      "paths": [
+        "/filters/0/granularity"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 display(拼写错误?)",
+      "paths": [
+        "/filters/0/display",
+        "/filters/0/display",
+        "/filters/0/display",
+        "/filters/0/display"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be string",
+      "paths": [
+        "/filters/0/default",
+        "/filters/0/default"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be boolean",
+      "paths": [
+        "/filters/0/default"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 mode(拼写错误?)",
+      "paths": [
+        "/filters/0/default/mode"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match exactly one schema in oneOf",
+      "paths": [
+        "/filters/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "period-filter",
+        "type": "timeRange",
+        "display": "period",
+        "precision": "date",
+        "label": "统计年份",
+        "required": true,
+        "default": {
+          "mode": "year"
+        },
+        "periodModes": []
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/period-modes-empty.json"
+}

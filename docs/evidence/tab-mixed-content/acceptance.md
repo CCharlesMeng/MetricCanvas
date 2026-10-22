@@ -1,6 +1,6 @@
 # Tab 混合内容本地验收
 
-日期：2026-10-22。checkout：`codex/tab-mixed-content`，基线 `952b3a27`。方案：[实施规则](../../plan/2026-10-22-tab-mixed-content.md)，决策：[ADR-0115](../../adr/0115-tab-mixed-content-and-activation.md)。未提交推送，未执行远端CI。
+日期：2026-10-22。checkout：`codex/tab-mixed-content`，基线 `952b3a27`。方案：[实施规则](../../plan/2026-10-22-tab-mixed-content.md)，决策：[ADR-0116](../../adr/0116-tab-mixed-content-and-activation.md)。早期验收基线见上；合并交付验收与CI策略见本文末尾。
 
 ## 能力对应
 
@@ -42,3 +42,11 @@
 原示例误用默认组合卡，280px最小高度经同一栅格行撑高普通指标卡；Dashboard与Report示例均改为已有的 `variant: "metricGrid"`，按内容定高。运行时默认组合卡及专用变体的高度约束未改变。原浏览器高度回归先失败（实测280px），修正后1440/390宽度下所有指标卡均低于180px。
 
 当前检出的普通柱图未提供barWidth，由ECharts按类别数自动分配。普通横/纵柱图及组合图柱系列统一默认16px，报表预测专用变体保留40px；折线系列不设置柱宽。新增3项默认宽度回归先失败、修正后通过。图表与组合卡表面测试共29项、Embed浏览器12项通过。类型检查、Embed/Playground生产构建、页面校验、Skill/页面参考26项（含仓外安装）、契约生成漂移与Bundle摘要检查通过。上述宽窄屏截图已更新。
+
+## 合并 main 后的交付验收
+
+交付前获取 `origin/main`（`ba489ae4`），合并已交付能力并将本批能力下限顺延为6.49；ADR编号改为0116。以当前main的独立filterGroup替换本批旧图表内筛选，接纳main已有的filterGroup与button普通组件（合计17种Tab内容，组合卡自身白名单保持当前规则）；Report隐藏维度使用显式静态候选，沿用main的候选门禁。混合内容或显式grid页签保存活动项；旧表格Tab保留initialTabUrlParam只初始化、不回写行为。交集预检查沿用SourceProgram冻结时钟，候选未通过时不提前消费旧初始快照。
+
+最终本地验证：214文件1752项（页面、运行时、Widget、执行、local-authoring独立安装、参考与公开API、目录）通过；12项Embed浏览器通过；原URL初始化Playground浏览器10个场景通过，无页面异常。宽窄屏、保留总结、Report PNG证据已更新。80个页面校验通过；类型检查、包构建、Embed及Playground生产构建、契约生成与漂移检查、Bundle摘要、ADR索引与diff检查通过。
+
+用户明确要求提交信息带 `[skip ci]`，远端CI按要求跳过，不记为通过。以上仅为本地/仿真证据。

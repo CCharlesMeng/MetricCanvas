@@ -1,0 +1,938 @@
+[
+  {
+    "name": "time-modes-1440",
+    "schema_version": 1,
+    "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+    "page_available": true,
+    "observed": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "route": "/pages/ioc-header-time-modes-demo"
+    },
+    "environment": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "dpr": 1,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "scroll": {
+        "width": 1440,
+        "height": 916
+      }
+    },
+    "rules": {
+      "R6-41-header-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-overlap": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-filter]:not([inert])"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header] :is(input,.modes button,.toggle):not([inert] *)"
+        },
+        "matched": 5
+      },
+      "R6-41-popup-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      }
+    }
+  },
+  {
+    "name": "time-modes-1024",
+    "schema_version": 1,
+    "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+    "page_available": true,
+    "observed": {
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "route": "/pages/ioc-header-time-modes-demo"
+    },
+    "environment": {
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "dpr": 1,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "scroll": {
+        "width": 1024,
+        "height": 916
+      }
+    },
+    "rules": {
+      "R6-41-header-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-overlap": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-filter]:not([inert])"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header] :is(input,.modes button,.toggle):not([inert] *)"
+        },
+        "matched": 5
+      },
+      "R6-41-popup-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      }
+    }
+  },
+  {
+    "name": "time-modes-390",
+    "schema_version": 1,
+    "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+    "page_available": true,
+    "observed": {
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "route": "/pages/ioc-header-time-modes-demo"
+    },
+    "environment": {
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "dpr": 1,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "scroll": {
+        "width": 390,
+        "height": 916
+      }
+    },
+    "rules": {
+      "R6-41-header-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-overlap": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-filter]:not([inert])"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header] :is(input,.modes button,.toggle):not([inert] *)"
+        },
+        "matched": 5
+      },
+      "R6-41-popup-overflow": {
+        "status": "ok",
+        "actual": 184,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-clip": {
+        "status": "ok",
+        "actual": 184,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      }
+    }
+  },
+  {
+    "name": "time-presets-1440",
+    "schema_version": 1,
+    "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+    "page_available": true,
+    "observed": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "route": "/pages/ioc-header-time-presets-demo"
+    },
+    "environment": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "dpr": 1,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "scroll": {
+        "width": 1440,
+        "height": 916
+      }
+    },
+    "rules": {
+      "R6-41-header-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-overlap": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-filter]:not([inert])"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header] :is(input,.modes button,.toggle):not([inert] *)"
+        },
+        "matched": 2
+      },
+      "R6-41-popup-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      }
+    }
+  },
+  {
+    "name": "time-presets-1024",
+    "schema_version": 1,
+    "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+    "page_available": true,
+    "observed": {
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "route": "/pages/ioc-header-time-presets-demo"
+    },
+    "environment": {
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "dpr": 1,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "scroll": {
+        "width": 1024,
+        "height": 916
+      }
+    },
+    "rules": {
+      "R6-41-header-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-overlap": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-filter]:not([inert])"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header] :is(input,.modes button,.toggle):not([inert] *)"
+        },
+        "matched": 2
+      },
+      "R6-41-popup-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      }
+    }
+  },
+  {
+    "name": "time-presets-390",
+    "schema_version": 1,
+    "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+    "page_available": true,
+    "observed": {
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "route": "/pages/ioc-header-time-presets-demo"
+    },
+    "environment": {
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "dpr": 1,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "scroll": {
+        "width": 390,
+        "height": 916
+      }
+    },
+    "rules": {
+      "R6-41-header-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-overlap": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-filter]:not([inert])"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header] :is(input,.modes button,.toggle):not([inert] *)"
+        },
+        "matched": 2
+      },
+      "R6-41-popup-overflow": {
+        "status": "ok",
+        "actual": 184,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-clip": {
+        "status": "ok",
+        "actual": 184,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      }
+    }
+  },
+  {
+    "name": "availability-1440",
+    "schema_version": 1,
+    "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+    "page_available": true,
+    "observed": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "route": "/pages/ioc-header-availability-demo"
+    },
+    "environment": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "dpr": 1,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "scroll": {
+        "width": 1440,
+        "height": 961
+      }
+    },
+    "rules": {
+      "R6-41-header-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-overlap": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-filter]:not([inert])"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header] :is(input,.modes button,.toggle):not([inert] *)"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      }
+    }
+  },
+  {
+    "name": "availability-1024",
+    "schema_version": 1,
+    "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+    "page_available": true,
+    "observed": {
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "route": "/pages/ioc-header-availability-demo"
+    },
+    "environment": {
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "dpr": 1,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "scroll": {
+        "width": 1024,
+        "height": 961
+      }
+    },
+    "rules": {
+      "R6-41-header-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-overlap": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-filter]:not([inert])"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header] :is(input,.modes button,.toggle):not([inert] *)"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      }
+    }
+  },
+  {
+    "name": "availability-390",
+    "schema_version": 1,
+    "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+    "page_available": true,
+    "observed": {
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "route": "/pages/ioc-header-availability-demo"
+    },
+    "environment": {
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "dpr": 1,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "scroll": {
+        "width": 390,
+        "height": 994
+      }
+    },
+    "rules": {
+      "R6-41-header-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-overlap": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-filter]:not([inert])"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header] :is(input,.modes button,.toggle):not([inert] *)"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      }
+    }
+  },
+  {
+    "name": "calendar-window-1440",
+    "schema_version": 1,
+    "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+    "page_available": true,
+    "observed": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "route": "/pages/ioc-header-calendar-window-demo?period.mode=month&period.from=2026-01&period.to=2026-03&months=2026-01&months=2026-03&model=A&model=B"
+    },
+    "environment": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "dpr": 1,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "scroll": {
+        "width": 1440,
+        "height": 961
+      }
+    },
+    "rules": {
+      "R6-41-header-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-overlap": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-filter]:not([inert])"
+        },
+        "matched": 3
+      },
+      "R6-41-controls-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header] :is(input,.modes button,.toggle):not([inert] *)"
+        },
+        "matched": 20
+      },
+      "R6-41-popup-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      }
+    }
+  },
+  {
+    "name": "calendar-window-1024",
+    "schema_version": 1,
+    "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+    "page_available": true,
+    "observed": {
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "route": "/pages/ioc-header-calendar-window-demo?period.mode=month&period.from=2026-01&period.to=2026-03&months=2026-01&months=2026-03&model=A&model=B"
+    },
+    "environment": {
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "dpr": 1,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "scroll": {
+        "width": 1024,
+        "height": 961
+      }
+    },
+    "rules": {
+      "R6-41-header-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-overlap": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-filter]:not([inert])"
+        },
+        "matched": 3
+      },
+      "R6-41-controls-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header] :is(input,.modes button,.toggle):not([inert] *)"
+        },
+        "matched": 21
+      },
+      "R6-41-popup-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      }
+    }
+  },
+  {
+    "name": "calendar-window-390",
+    "schema_version": 1,
+    "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+    "page_available": true,
+    "observed": {
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "route": "/pages/ioc-header-calendar-window-demo?period.mode=month&period.from=2026-01&period.to=2026-03&months=2026-01&months=2026-03&model=A&model=B"
+    },
+    "environment": {
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "dpr": 1,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "scroll": {
+        "width": 390,
+        "height": 1063
+      }
+    },
+    "rules": {
+      "R6-41-header-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-overlap": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-filter]:not([inert])"
+        },
+        "matched": 3
+      },
+      "R6-41-controls-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header] :is(input,.modes button,.toggle):not([inert] *)"
+        },
+        "matched": 21
+      },
+      "R6-41-popup-overflow": {
+        "status": "ok",
+        "actual": 184,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-clip": {
+        "status": "ok",
+        "actual": 184,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      }
+    }
+  },
+  {
+    "name": "shadow-390",
+    "schema_version": 1,
+    "contract_sha256": "f00599c327852dbf17af1a946c405b8d7824177e5f3ad43e34a211b1e3f75320",
+    "page_available": true,
+    "observed": {
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "route": "/pages/ioc-header-time-modes-demo"
+    },
+    "environment": {
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "dpr": 1,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+      "scroll": {
+        "width": 390,
+        "height": 933
+      }
+    },
+    "rules": {
+      "R6-41-header-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header]"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-overlap": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-filter]:not([inert])"
+        },
+        "matched": 1
+      },
+      "R6-41-controls-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[data-ioc-header] :is(input,.modes button,.toggle):not([inert] *)"
+        },
+        "matched": 4
+      },
+      "R6-41-popup-overflow": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      },
+      "R6-41-popup-clip": {
+        "status": "ok",
+        "actual": 0,
+        "locator_used": {
+          "strategy": "css",
+          "selector": "[role=\"dialog\"][popover]"
+        },
+        "matched": 1
+      }
+    }
+  }
+]

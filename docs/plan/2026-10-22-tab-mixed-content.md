@@ -5,7 +5,7 @@
 ## 已确认规则
 
 - Tab 接受全部普通内容组件和组合卡，不接受 reportHeader、Tab 嵌套；组合卡内部仍遵守自身白名单。纯容器不绑定数据。子内容禁止分区铺底。
-- `props.contentLayout: "grid"` 显式启用已有 12 列布局；缺省保持旧纵向全宽布局，旧页面不迁移。新能力下限 6.32。
+- `props.contentLayout: "grid"` 显式启用已有 12 列布局；缺省保持旧纵向全宽布局，旧页面不迁移。新能力下限 6.49。
 - 公共筛选作用相关查询；组件局部筛选独立保留，不新增 Tab 筛选栏。继续使用显式 filterId/绑定及现有独立查询源校验，不推断同名筛选、不同 Tab 不隐式共享局部条件。
 - 绑定到同一字段的公共/局部条件取交集；不相交得到空结果，不得被 DQE 后写覆盖。规则集中在查询执行 Module，不在 Tab/图表各实现一遍。
 - 数据首次进入按需查询，包含上游依赖；已访问面板保留挂载、图例、滚动和 AI 总结会话。切换本身不中断生成。
@@ -31,7 +31,9 @@
 本地实施与验收完成，见[逐项验收与截图](../evidence/tab-mixed-content/acceptance.md)。
 
 - Dashboard：`/pages/tab-mixed-content`；Report：`/pages/tab-mixed-content-report`。两页已注册目录。
-- 产品协议与分发已更新至6.32；文档、15类内容正例、4类边界反例及local-authoring闭合。
+- 产品协议与分发已更新至6.49；文档、15类内容正例、4类边界反例及local-authoring闭合。
 - 核心回归、11项浏览器场景、仓外Skill、类型检查、31页校验、包与Playground生产构建通过。
 - 内容栅格复用RuntimeSection的contentOnly模式，不创建内容分区身份、不叠加分区外壳；旧面板保留既有布局。
 - 仅本地/仿真验证，不等同真实DQE、Relay、模型、内网和生产验收。保留独立worktree供审核；本批未请求commit/push，未运行远端CI。
+
+交付合并main时能力下限调整为6.49，普通内容包含main已交付的filterGroup/button；演示图表筛选改用filterGroup。旧表格Tab保留既有显式URL初值行为；混合内容/显式grid才同步活动项。最终证据见 `docs/evidence/tab-mixed-content/acceptance.md`。

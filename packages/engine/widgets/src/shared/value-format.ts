@@ -52,6 +52,8 @@ export function formatValue(
       return `${formatNumber(numeric / 1e6, 2, true)}百万`;
     case 'compact-yi-1':
       return `${formatNumber(numeric / 1e8, 1, true)}亿`;
+    case 'usd-adaptive':
+      return `${formatNumber(numeric,2,true)}美元`;
     case 'cny-adaptive':
       return formatCnyAdaptive(numeric);
     case 'percent-0':

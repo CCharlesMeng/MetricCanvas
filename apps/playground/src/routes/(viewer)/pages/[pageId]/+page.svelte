@@ -1,8 +1,20 @@
 <script lang="ts">
+  import {iocSelectionGateway} from '../../../../../fixtures/selection-gateway';
+  import {pageExternalInputs} from '$lib/page-catalog';
+  import {browser} from '$app/environment';
+  const framed = browser && window.self !== window.top;
+  import {createVisibilityDemoInputs} from '$lib/visibility-inputs';
+  import {createIocHeaderPreview} from '$lib/ioc-header-preview-inputs';
+  import {createIocBusinessPreview} from '$lib/ioc-business-preview';
+  const businessPreview=$derived(createIocBusinessPreview(page.params.pageId??''));
+  const headerPreview = createIocHeaderPreview();
+  const visibilityDemo=createVisibilityDemoInputs();
+  let visibilityInstance=$state(0);
   import { goto, replaceState } from '$app/navigation';
   import { page } from '$app/state';
+  import PageGuide from '$lib/PageGuide.svelte';
   import { documentLayoutForm, documentUsesRuntimeBackToolbar } from '@metriccanvas/page/internal';
-  import type { DataGateway } from '@metriccanvas/engine';
+  import {projectNavigationInputs,type DataGateway} from '@metriccanvas/engine';
   import {
     RuntimeView,
     type RuntimeNavigation
@@ -43,6 +55,13 @@
 
   const navigation = $derived.by<RuntimeNavigation>(() => {
     const base: RuntimeNavigation = {
+      async resolveTargetInputs(href,{signal}) {
+        const target=new URL(href,document.baseURI),match=/^\/pages\/([^/]+)$/.exec(target.pathname);
+        if(target.origin!==location.origin||!match)return undefined;
+        const documentValue=await pageRepository.load(decodeURIComponent(match[1]!));
+        if(signal.aborted)return undefined;
+        return projectNavigationInputs(documentValue);
+      },
       replaceSearch(search) {
         const url = new URL(location.href);
         url.search = search;
@@ -59,7 +78,7 @@
       }
     };
     const href = returnHref;
-    return href ? { ...base, back: () => void goto(href) } : base;
+    return href ? { ...base, returnContext: {entryId:href,label:'返回来源页'}, back: () => void goto(href) } : base;
   });
 
   $effect(() => {
@@ -81,7 +100,7 @@
       pageState = {
         phase: 'ready',
         document,
-        dataGateway
+        dataGateway: pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : dataGateway
       };
     } catch (cause) {
       if (session !== loadSession) return;
@@ -92,6 +111,10 @@
     }
   }
 </script>
+
+{#if pageState.phase === 'ready' && !framed}
+  <PageGuide pageId={page.params.pageId!} document={pageState.document} />
+{/if}
 
 <div class="page-frame" class:frame-dashboard={layoutForm === 'dashboard'}>
   {#if returnHref && !compactRuntimeToolbar}
@@ -108,7 +131,20 @@
       <p>{pageState.message}</p>
     </div>
   {:else}
+    {#if pageExternalInputs(page.params.pageId)==='visibility'}
+      <div data-sim-facts aria-label="Sim事实控制">
+        <strong>Sim 事实输入</strong>
+        <button onclick={()=>visibilityDemo.publish('allow')}>允许</button>
+        <button onclick={()=>visibilityDemo.publish('deny')}>拒绝</button>
+        <button onclick={()=>visibilityDemo.publish('pending')}>等待</button>
+        <button onclick={()=>visibilityDemo.publish('error')}>输入错误</button>
+        <button onclick={()=>visibilityDemo.publish('revoke')}>更换权限会话</button>
+        <button onclick={()=>visibilityInstance++}>重新初始化</button>
+      </div>
+    {/if}
+    {#key visibilityInstance}
     <RuntimeView
+      displayInputs={pageExternalInputs(page.params.pageId)==='ioc-business'?businessPreview.displayInputs:pageExternalInputs(page.params.pageId)==='visibility'?visibilityDemo.source:pageExternalInputs(page.params.pageId)==='ioc-header'?headerPreview.displayInputs:undefined}
       document={pageState.document}
       dataGateway={pageState.dataGateway}
       {aiSummary}
@@ -116,6 +152,7 @@
       {navigation}
       {pageRevisionId}
     />
+    {/key}
   {/if}
 </div>
 

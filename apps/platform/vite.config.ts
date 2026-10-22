@@ -3,7 +3,7 @@ import {fileURLToPath} from 'node:url';
 import {svelte} from '@sveltejs/vite-plugin-svelte';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import {defineConfig, type Plugin} from 'vite';
-import {createDqeDevProxy} from '../../tools/dev-server';
+import {CLOUDIOC_DEV_DOMAIN, createCloudIocDevProxy, createDqeDevProxy, readCloudIocDevConfig} from '../../tools/dev-server';
 
 const appRoot = dirname(fileURLToPath(import.meta.url));
 const localDomain = 'local.cloudbu.huawei.com';
@@ -20,19 +20,22 @@ function htmlEntry(): Plugin {
   };
 }
 
-export default defineConfig(({mode}) => {
+export default defineConfig((config) => {
+  const {mode} = config;
   const debug = mode === 'microfrontend-debug';
   const micro = mode === 'microfrontend' || debug;
   const windows = process.platform === 'win32';
+  const cloudIoc = readCloudIocDevConfig(config, appRoot, 'platform');
+  const domain = cloudIoc ? CLOUDIOC_DEV_DOMAIN : localDomain;
   const proxy = createDqeDevProxy();
   delete proxy['/rest/cdi/cdinl2databuilderservice/v1/dsl/execute'];
-  proxy['/rest/cdi/cdinl2databuilderservice/'] = {
+  proxy['/rest/cdi/cdinl2databuilderservice/'] = cloudIoc ? createCloudIocDevProxy(cloudIoc) : {
     target: 'https://ioc.cloudbu.huawei.com', changeOrigin: true
   };
   return {
     // Library mode intentionally leaves NODE_ENV untouched unless explicitly defined.
     define: micro ? {'process.env.NODE_ENV': JSON.stringify('production')} : {},
-    plugins: [svelte(), ...(micro ? [htmlEntry()] : [basicSsl(windows ? {domains: [localDomain]} : undefined)])],
+    plugins: [svelte(), ...(micro ? [htmlEntry()] : [basicSsl(windows ? {domains: [domain]} : undefined)])],
     resolve: {alias: {
       $lib: resolve(appRoot, 'src/lib'),
       $pages: resolve(appRoot, '../../pages'),
@@ -50,7 +53,7 @@ export default defineConfig(({mode}) => {
       }
     } : {outDir: 'build', target: 'es2022'},
     server: {
-      host: windows ? localDomain : '127.0.0.1', port: windows ? 443 : 5174, strictPort: true,
+      host: windows ? domain : '127.0.0.1', port: windows ? 443 : 5174, strictPort: true,
       proxy
     }
   };

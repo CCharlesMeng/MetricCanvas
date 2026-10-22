@@ -1,0 +1,67 @@
+{
+  "case": "table-search-options-before-6.42",
+  "invariant": "table-search-options",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表格静态搜索选项与单文本字段等值匹配 由 6.42 引入，文档声明的是 6.41",
+      "paths": [
+        "/sections/0/components/0",
+        "/sections/0/components/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "local-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "本地等值搜索（合成数据）",
+              "toolbar": {
+                "…": "共2个键"
+              },
+              "pagination": {
+                "…": "共2个键"
+              },
+              "columns": [
+                "…（共4项）"
+              ]
+            }
+          },
+          {
+            "id": "query-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "queried"
+            },
+            "props": {
+              "title": "查询等值搜索（DQE 仿真）",
+              "toolbar": {
+                "…": "共2个键"
+              },
+              "pagination": {
+                "…": "共1个键"
+              },
+              "columns": [
+                "…（共4项）"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-search-options-before-6.42.json"
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "role": "review-convention",
+  "evidence_epoch": "ioc-b3-final-1",
+  "code_fingerprint": "1fe02a2761bb5f97141e16c76f21bbf1ce0f3206e049e4cac32128629ccdddeb",
+  "judged_files": [
+    "packages/embed/tests/dqe-fixture-endpoint.mjs", "packages/embed/tests/fixtures/ioc-currency-query.mjs", "packages/data-execution/src/candidate-validation.ts", "packages/data-execution/src/effective-query.ts", "packages/data-execution/src/filter-values.ts", "packages/data-execution/src/source-program/session.ts", "packages/engine/runtime/src/filter-state.ts", "packages/engine/runtime/src/orchestrator.ts", "packages/engine/runtime-ui/src/RuntimeSurface.svelte", "packages/engine/runtime-ui/src/ExportView.svelte", "packages/engine/runtime-ui/src/filter-text.ts", "packages/engine/runtime-ui/src/filters/FilterBar.svelte", "packages/engine/runtime-ui/src/filters/NumberRangeFilter.svelte", "packages/engine/runtime-ui/src/table-export.ts", "packages/page/src/amount-filter.ts", "packages/page/src/amount-validation.ts", "packages/page/src/field-selection.ts", "packages/ui/src/components/select/RangePicker.svelte"
+  ],
+  "status": "executed",
+  "coverage": [
+    {
+      "dimension": "C1",
+      "scope": "按 B3 净 diff 相对 Schema6.33 起点复核新增模块及跨包导入。金额控件通过包名引用 Page 和 UI，共用规则位于 Page 真源，新验收 fixture 使用同包导入；未将前批遗留引用算作本批新增偏差。",
+      "evidence_ids": ["PATTERN-STRUCT-2", "packages/engine/runtime-ui/src/filters/NumberRangeFilter.svelte:L6-L7", "packages/engine/runtime-ui/src/filter-text.ts:L1-L6", "packages/embed/tests/dqe-fixture-endpoint.mjs:L1-L3", "packages/page/src/amount-filter.ts:L1-L2"],
+      "result": "clear"
+    },
+    {
+      "dimension": "C4",
+      "scope": "金额约束、未知币种及缺失 metric 的查询拒绝继续使用封闭错误码和脱值文案；金额控件不执行 HTTP，查询与导出继续经过既有执行端口，新增校验没有吞掉请求错误。",
+      "evidence_ids": ["PATTERN-API-1", "PATTERN-API-2", "PATTERN-API-3", "packages/page/src/amount-filter.ts:L23-L25", "packages/data-execution/src/effective-query.ts:L31-L42", "packages/data-execution/src/candidate-validation.ts:L22-L27", "packages/engine/runtime-ui/src/filters/NumberRangeFilter.svelte:L32-L35", "packages/engine/runtime-ui/src/table-export.ts:L19-L25"],
+      "result": "clear"
+    },
+    {
+      "dimension": "C5",
+      "scope": "输入换算、范围校验、已应用金额文字、币种 case 和字段投影复用共享方法；金额草稿仅保存在中立控件，确认后通过既有筛选回调进入统一协调器，渲染与导出复用相同投影。",
+      "evidence_ids": ["PATTERN-DATA-4", "packages/page/src/amount-filter.ts:L4-L12", "packages/page/src/amount-filter.ts:L23-L37", "packages/engine/runtime/src/filter-state.ts:L115-L134", "packages/engine/runtime-ui/src/filters/NumberRangeFilter.svelte:L32-L35", "packages/engine/runtime-ui/src/filter-text.ts:L8-L23", "packages/engine/runtime-ui/src/table-export.ts:L14-L18"],
+      "result": "clear"
+    }
+  ],
+  "findings": [], "skipped": [], "open_questions": [], "deferred_candidates": [], "evidence_reused": [], "evidence_added": [], "known_gaps": []
+}

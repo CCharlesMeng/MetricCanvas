@@ -1,3 +1,4 @@
+import { chartOptionScopes } from './chart-option';
 import type { TypedError } from './errors';
 import { isValueFormatPreset, type ValueFormatPreset } from './field';
 import { matchesTimeValue, type TimeParamGranularity } from './time-param';
@@ -91,17 +92,19 @@ export interface TextValueComposition {
 export function isTextValueComposition(value: unknown): value is TextValueComposition {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const node = value as Record<string, unknown>;
-  return Object.keys(node).length === 1 && Array.isArray(node.parts);
+  return Object.keys(node).length === 1 && Array.isArray(node.parts) && node.parts.every(part=>typeof part==='string'||isTextValueReference(part)||!!part&&typeof part==='object'&&Object.keys(part).every(key=>key==='filter'||key==='format')&&typeof part.filter==='string');
 }
 
 /** 文本取值在物化后统一成为字符串。 */
 export type TextValue = string | TextValueReference | FilterTextValueReference | TextValueComposition;
 
 export function collectTextValueCompositions(document: unknown): Array<{ path: string; value: TextValueComposition }> {
+  const opaque = chartOptionScopes(document);
   const usages: Array<{ path: string; value: TextValueComposition }> = [];
   visit(textValueScope(document), '');
   return usages;
   function visit(value: unknown, path: string): void {
+    if (value && typeof value === 'object' && opaque.has(value)) return;
     if (!value || typeof value !== 'object') return;
     if (Array.isArray(value)) { value.forEach((child, index) => visit(child, `${path}/${index}`)); return; }
     if (isTextValueComposition(value)) { usages.push({ path, value }); return; }
@@ -110,8 +113,8 @@ export function collectTextValueCompositions(document: unknown): Array<{ path: s
 }
 
 /**
- * 文本取值引用按形状识别。页面协议里没有第二个使用 `param` 键的对象,
- * 因此不需要维护一张按位置枚举的白名单——ADR-0047 的规则本就落在位置上。
+ * 文本取值引用在声明扫描范围内按形状识别；DQE/数据与图表选项不透明子树先被排除,
+ * 因此不需要维护一张逐文本位置枚举的白名单——ADR-0047 的规则本就落在位置上。
  */
 export function isTextValueReference(value: unknown): value is TextValueReference {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
@@ -143,6 +146,7 @@ const NUMERIC_FORMATS = new Set<ValueFormatPreset>([
   'compact-million-2',
   'compact-yi-1',
   'cny-adaptive',
+  'usd-adaptive',
   'percent-0',
   'percent-1',
   'percent-2',
@@ -184,11 +188,13 @@ export function textValueScope(document: unknown): unknown {
 }
 
 export function collectTextValueReferences(document: unknown): TextValueReferenceUsage[] {
+  const opaque = chartOptionScopes(document);
   const usages: TextValueReferenceUsage[] = [];
   visit(textValueScope(document), '');
   return usages;
 
   function visit(value: unknown, path: string): void {
+    if (value && typeof value === 'object' && opaque.has(value)) return;
     if (Array.isArray(value)) {
       value.forEach((item, index) => visit(item, `${path}/${index}`));
       return;

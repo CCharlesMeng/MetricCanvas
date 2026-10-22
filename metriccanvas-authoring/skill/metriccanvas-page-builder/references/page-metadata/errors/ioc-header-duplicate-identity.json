@@ -1,0 +1,32 @@
+{
+  "case": "ioc-header-duplicate-identity",
+  "invariant": "ioc-header",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC 页头不能与首个业务 reportHeader 重复承担页面身份",
+      "paths": [
+        "/sections/0/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "old-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "旧标题"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-header-duplicate-identity.json"
+}

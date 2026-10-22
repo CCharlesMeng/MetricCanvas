@@ -5,7 +5,7 @@ import { initialTabSelections, tabSearch } from '../src/tab-state';
 import fixture from '../fixtures/contract-valid/tab-mixed-content.json';
 
 describe('Tab content contract', () => {
-  for (const type of ['table', 'metricCard', 'barChart', 'lineChart', 'pieChart', 'mapChart', 'gauge', 'compositeCard', 'categoryBreakdown', 'rankingCard', 'rankingDetailCard', 'keyValuePanel', 'text', 'fieldText', 'aiSummary']) {
+  for (const type of ['filterGroup', 'button', 'table', 'metricCard', 'barChart', 'lineChart', 'pieChart', 'mapChart', 'gauge', 'compositeCard', 'categoryBreakdown', 'rankingCard', 'rankingDetailCard', 'keyValuePanel', 'text', 'fieldText', 'aiSummary']) {
     it(`accepts ${type} through the same complete page validator`, () => {
       const page = JSON.parse(readFileSync(new URL(`../fixtures/contract-valid/tab-content-${type.toLowerCase()}.json`, import.meta.url), 'utf8'));
       expect(validate(page)).toEqual([]);

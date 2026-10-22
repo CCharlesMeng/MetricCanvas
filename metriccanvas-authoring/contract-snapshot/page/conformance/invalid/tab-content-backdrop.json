@@ -2,7 +2,7 @@
   "case": "tab-content-backdrop",
   "invariant": "tab-content-boundary",
   "input": {
-    "schemaVersion": "6.32",
+    "schemaVersion": "6.49",
     "id": "tab-mixed-content",
     "meta": {
       "title": "Tab 混合内容（合成演示）"
@@ -422,6 +422,26 @@
                       }
                     },
                     {
+                      "id": "orders-filter",
+                      "type": "filterGroup",
+                      "layout": {
+                        "span": 12
+                      },
+                      "props": {
+                        "filterId": "orders-region",
+                        "options": [
+                          {
+                            "label": "中国区",
+                            "value": "CN"
+                          },
+                          {
+                            "label": "海外",
+                            "value": "OVERSEAS"
+                          }
+                        ]
+                      }
+                    },
+                    {
                       "id": "orders",
                       "type": "barChart",
                       "layout": {
@@ -432,19 +452,6 @@
                       },
                       "props": {
                         "title": "订单对比",
-                        "filter": {
-                          "filterId": "orders-region",
-                          "options": [
-                            {
-                              "label": "中国区",
-                              "value": "CN"
-                            },
-                            {
-                              "label": "海外",
-                              "value": "OVERSEAS"
-                            }
-                          ]
-                        },
                         "categoryField": "category",
                         "series": [
                           {
@@ -461,6 +468,26 @@
                   "label": "明细",
                   "components": [
                     {
+                      "id": "revenue-filter",
+                      "type": "filterGroup",
+                      "layout": {
+                        "span": 12
+                      },
+                      "props": {
+                        "filterId": "revenue-region",
+                        "options": [
+                          {
+                            "label": "中国区",
+                            "value": "CN"
+                          },
+                          {
+                            "label": "海外",
+                            "value": "OVERSEAS"
+                          }
+                        ]
+                      }
+                    },
+                    {
                       "id": "revenue",
                       "type": "lineChart",
                       "layout": {
@@ -471,19 +498,6 @@
                       },
                       "props": {
                         "title": "收入趋势",
-                        "filter": {
-                          "filterId": "revenue-region",
-                          "options": [
-                            {
-                              "label": "中国区",
-                              "value": "CN"
-                            },
-                            {
-                              "label": "海外",
-                              "value": "OVERSEAS"
-                            }
-                          ]
-                        },
                         "xField": "category",
                         "series": [
                           {

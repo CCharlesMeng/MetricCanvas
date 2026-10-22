@@ -1,0 +1,100 @@
+{
+  "formatVersion": 1,
+  "pageSha256": "e997a507908e922909ab8e2fd2b594789aec594156db8a71214ac799cc0a0dbb",
+  "mdSha256": "f1481bba6f7ef64a7662f7c393e582bc3867e0ea4e3c772b1954b19b8367383f",
+  "execution": "not-run",
+  "executable": false,
+  "pageUnchanged": true,
+  "dataSources": {},
+  "alternatives": [
+    {
+      "source": "business-summary",
+      "field": "amount",
+      "metricChoices": [
+        "contract_amount",
+        "contract_amount_ytd"
+      ],
+      "selection": null
+    },
+    {
+      "source": "business-summary",
+      "field": "rate",
+      "metric": null,
+      "physicalField": "ads_contract.achievement_percent"
+    },
+    {
+      "source": "business-summary",
+      "field": "region",
+      "dimension": "region_name"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "time-scope",
+      "blocks": "query",
+      "question": "全页需要哪个统计年/月或起止范围？使用何种时间粒度，达成率是否与签约金额同期间？",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/valueField",
+        "/sections/0/components/1/props/rows/0/valueField",
+        "/sections/0/components/2/props/columns/0/field",
+        "/sections/0/components/2/props/columns/1/field",
+        "/sections/0/components/2/props/columns/2/field"
+      ]
+    },
+    {
+      "id": "organization-scope",
+      "blocks": "query",
+      "question": "全页组织/区域范围是什么？如有固定过滤，需提供区域代码与显示名映射及合法过滤值；华东示范区仅为合成演示值。",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/valueField",
+        "/sections/0/components/1/props/rows/0/valueField",
+        "/sections/0/components/2/props/columns/0/field",
+        "/sections/0/components/2/props/columns/1/field",
+        "/sections/0/components/2/props/columns/2/field"
+      ]
+    },
+    {
+      "id": "grain-and-consumers",
+      "blocks": "query",
+      "question": "表格是否每区域一行？两张指标卡要显示全范围汇总还是指定区域？多区域时需明确选择/汇总策略及与表格共享查询的可行性。",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/valueField",
+        "/sections/0/components/1/props/rows/0/valueField",
+        "/sections/0/components/2/props/columns/0/field",
+        "/sections/0/components/2/props/columns/1/field",
+        "/sections/0/components/2/props/columns/2/field"
+      ]
+    },
+    {
+      "id": "amount-basis",
+      "blocks": "matching",
+      "question": "签约金额选择当期 contract_amount 还是年初至所选月累计 contract_amount_ytd？两处共享 amount，需统一确认；累计不可跨月再次求和。",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/valueField",
+        "/sections/0/components/2/props/columns/1/field"
+      ]
+    },
+    {
+      "id": "rate-contract",
+      "blocks": "query",
+      "question": "提供达成率的 DQE 查询标识、目标金额口径、分子分母及零分母规则；区域/期间维度兼容性和跨区域汇总方法也须确认，不能平均已有比率。",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/valueField",
+        "/sections/0/components/2/props/columns/2/field"
+      ]
+    },
+    {
+      "id": "query-completeness",
+      "blocks": "query",
+      "question": "确认查询输出完整性、服务限制和排序/分页策略；页面表格 pagination.mode=none，未声明排序，不能据此假定结果未被截断。",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/valueField",
+        "/sections/0/components/1/props/rows/0/valueField",
+        "/sections/0/components/2/props/columns/0/field",
+        "/sections/0/components/2/props/columns/1/field",
+        "/sections/0/components/2/props/columns/2/field"
+      ]
+    }
+  ],
+  "note": "分析级候选清单，不是完整页面数据源声明或可执行 DQE。条件未充分，未调用 prepare，不添加 initial，不写回页面。"
+}

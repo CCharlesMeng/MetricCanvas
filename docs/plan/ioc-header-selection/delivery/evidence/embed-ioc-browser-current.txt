@@ -1,0 +1,38 @@
+[WebServer] (node:30272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 29 tests using 1 worker
+
+(node:30273) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/browser/ioc-header-business.spec.ts:6:1 › closed enums preserve UI codes, single choice, all-unrestricted, and boolean false (917ms)
+  ✓   2 tests/browser/ioc-header-business.spec.ts:18:1 › explicit structure tree has own values per level; legacy tree still selects leaves (841ms)
+  ✓   3 tests/browser/ioc-header-business.spec.ts:25:1 › time context intersects trusted candidates; empty intersection waits explicit clear; denied and unconfigured remain gated (665ms)
+  ✓   4 tests/browser/ioc-header-business.spec.ts:36:1 › detail enum stays private and single month still emits compact mtime (502ms)
+  ✓   5 tests/browser/ioc-header-business.spec.ts:40:1 › required structural tree drafts a new level until one value can be committed atomically (645ms)
+  ✓   6 tests/browser/ioc-header.spec.ts:6:1 › ordinary header consumes its real page, period anchor and queries; narrow layout (692ms)
+  ✓   7 tests/browser/ioc-header.spec.ts:19:1 › dense measured collapse, candidate retry, recursive gate and export safety (903ms)
+  ✓   8 tests/browser/ioc-header.spec.ts:46:1 › detail single month, optional facts, legal back intent and readonly update (563ms)
+  ✓   9 tests/browser/ioc-header.spec.ts:54:1 › titleless header keeps a discrete January/March predicate (510ms)
+  ✓  10 tests/browser/ioc-header.spec.ts:58:1 › selected URL value waits for candidates; failed candidates retry current request without broadening (503ms)
+  ✓  11 tests/browser/ioc-header.spec.ts:69:1 › two embedded instances own their month anchors and destroy independently (650ms)
+  ✓  12 tests/browser/ioc-navigation.spec.ts:4:1 › actual overview/list/detail pass explicit URL inputs and destination changes remain independent (1.6s)
+  ✓  13 tests/browser/ioc-navigation.spec.ts:11:1 › quarter does not truncate to detail month and empty row cannot fall back to a stale href key (505ms)
+  ✓  14 tests/browser/ioc-navigation.spec.ts:14:1 › missing target capability stays non-navigable (368ms)
+  ✓  15 tests/browser/ioc-navigation.spec.ts:17:181 › destination invalid input stops query project-name=X&origin=直接&month=2026-09 (356ms)
+  ✓  16 tests/browser/ioc-navigation.spec.ts:17:181 › destination invalid input stops query project-id=P&project-name=X&origin=直接&month=bad (346ms)
+  ✓  17 tests/browser/ioc-navigation.spec.ts:17:181 › destination invalid input stops query project-id=P&project-name=X&origin=直接&month=2026-09&currency=BAD (353ms)
+  ✓  18 tests/browser/navigation.spec.ts:6:1 › 无导航适配的 HTML 宿主完成 IOC 概览→清单→详情及浏览器返回 (1.3s)
+  ✓  19 tests/browser/navigation.spec.ts:29:1 › 层级区域筛选按当前层级选谓词字段，三层各自命中 (753ms)
+  ✓  20 tests/browser/navigation.spec.ts:44:1 › 丢单表跳项目详情并传页面月份，保留行立项状态 (783ms)
+  ✓  21 tests/browser/navigation.spec.ts:65:1 › 查询分页与服务端排序共存，排序作用于全表而不是当前页 (548ms)
+  ✓  22 tests/browser/navigation.spec.ts:85:1 › 时间点、布尔与数值区间筛选各自下推到查询 (1.2s)
+  ✓  23 tests/browser/navigation.spec.ts:115:1 › 云行业选定后云子行业候选按上游收窄 (608ms)
+  ✓  24 tests/browser/navigation.spec.ts:137:1 › 相对/绝对链接、三种绑定、复制地址、新标签和缺值都遵循原生 anchor (882ms)
+  ✓  25 tests/browser/navigation.spec.ts:172:1 › 图表直接点击执行默认导航，不依赖宿主回调 (680ms)
+  ✓  26 tests/browser/navigation.spec.ts:186:1 › 宿主可选接管，同文档更换初始参数重新初始化，省略接管恢复默认链接 (553ms)
+  ✓  27 tests/browser/navigation.spec.ts:213:1 › 指标值链接从实际点击的数据槽取行参数 (498ms)
+  ✓  28 tests/browser/section-navigation.spec.ts:4:1 › two query-backed instances keep selection isolated and reuse data across group changes (733ms)
+  ✓  29 tests/browser/section-navigation.spec.ts:54:1 › content groups retain table state; search resets hidden tables; anchors remain within the instance (719ms)
+
+  29 passed (21.2s)

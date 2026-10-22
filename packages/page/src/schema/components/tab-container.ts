@@ -1,6 +1,9 @@
+import { visibilityShape } from '../condition';
 import { z } from 'zod';
 import { componentIdZ, componentLayoutZ, idZ, nonEmptyTextValueZ, textValueZ } from '../primitives';
 import { componentCatalogRegistry } from '../registry';
+import { filterGroupComponentZ } from './filter-group';
+import { buttonComponentZ } from './button';
 import { tableComponentZ } from './table';
 import { metricCardComponentZ } from './metric-card';
 import { barChartComponentZ, lineChartComponentZ, pieChartComponentZ } from './charts';
@@ -17,7 +20,7 @@ import { aiSummaryComponentZ } from './ai-summary';
 
 // 有界内容联合：不引用顶层 componentZ，避免递归和两套类型名单。
 export const tabContentZ = z.discriminatedUnion('type', [
-  tableComponentZ, metricCardComponentZ, barChartComponentZ, lineChartComponentZ,
+  filterGroupComponentZ, buttonComponentZ, tableComponentZ, metricCardComponentZ, barChartComponentZ, lineChartComponentZ,
   pieChartComponentZ, mapChartComponentZ, gaugeComponentZ, compositeCardComponentZ,
   categoryBreakdownComponentZ, rankingCardComponentZ, rankingDetailCardComponentZ,
   keyValuePanelComponentZ, textComponentZ, fieldTextComponentZ, aiSummaryComponentZ
@@ -28,6 +31,7 @@ const tabItemZ = z
     z
       .object({
         id: idZ,
+        ...visibilityShape,
         label: nonEmptyTextValueZ,
         component: tabContentZ
       })
@@ -35,6 +39,7 @@ const tabItemZ = z
     z
       .object({
         id: idZ,
+        ...visibilityShape,
         label: nonEmptyTextValueZ,
         components: z.array(tabContentZ).min(1)
       })
@@ -49,6 +54,7 @@ const tabItemZ = z
 export const tabContainerComponentZ = z
   .object({
     id: componentIdZ,
+    ...visibilityShape,
     type: z.literal('tabContainer'),
     layout: componentLayoutZ,
     props: z
@@ -57,6 +63,7 @@ export const tabContainerComponentZ = z
         contentLayout: z.literal('grid').optional(),
         variant: z.enum(['compact', 'analysisStack']).optional(),
         defaultTab: idZ.optional(),
+        initialTabUrlParam: z.string().min(1).optional(),
         tabs: z.array(tabItemZ).min(1)
       })
       .strict()

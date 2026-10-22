@@ -1,5 +1,6 @@
 ---
 status: accepted
+revised-by: 0115
 note: 协议、widget 与统一运行时已实现；同批附带叶子组件「分类明细」
 ---
 

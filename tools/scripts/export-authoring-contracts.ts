@@ -13,6 +13,7 @@ import {
 } from '../../packages/page/src/internal.ts';
 import { buildPageReference, validateReferenceLinks } from './page-reference.ts';
 import { localPageReference, localValidatorOutputs, localKnowledgeManifest } from './local-authoring-projection.ts';
+import { localAuthoringKnowledge } from './local-authoring-knowledge.ts';
 import { overviewMapLedExample } from './local-authoring-overview-example.ts';
 import { localPagePatternOutputs } from './local-authoring-patterns.ts';
 import { invariants, type InvariantDefinition } from './page-conformance-vectors.ts';
@@ -115,6 +116,13 @@ async function buildProductOutputs(): Promise<OutputMap> {
     outputs.set(`page/conformance/valid/${fileName}`, content);
   }
 
+  // Feature pages are the single source for both browser acceptance and exported examples.
+  for(const name of ['page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','dashboard-title-styles','report-title-styles']) {
+    const content=await readFile(path.join(repoRoot,'pages',`${name}.json`),'utf8');
+    const document=JSON.parse(content);const errors=validate(document);
+    if(errors.length)throw Error(JSON.stringify(errors));
+    outputs.set(`page/conformance/valid/${name}.json`,content);fixtures.set(name,document);
+  }
   const { layout: _currentLayout, layoutForm: _currentLegacyLayout, ...layoutBase } = fixtures.get('inline-report') as Record<string, unknown>;
   const layoutCases = [];
   for (const schemaVersion of ['5.0', '5.4', '6.0', '6.1', '6.2', '6.3', '6.4', '6.5', '6.6', '7.0']) {
@@ -518,7 +526,9 @@ async function writeOutputs(
   await writeTree(snapshotRoot, productOutputs);
   for (const skill of skills) {
     await writeTree(path.join(bundleRoot, skill.directory, 'references/page-metadata'), skill.outputs);
-    if (skill.generated) await rm(path.join(bundleRoot, skill.directory, 'references/page-patterns'), {recursive: true, force: true});
+    if (skill.generated) for (const subtree of ['references/page-patterns','references/authoring-knowledge']) {
+      await rm(path.join(bundleRoot, skill.directory, subtree), {recursive: true, force: true});
+    }
     for (const [relative, content] of skill.generated ?? []) {
       const target = path.join(bundleRoot, skill.directory, relative);
       await mkdir(path.dirname(target), {recursive: true});
@@ -599,6 +609,7 @@ async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{
     for (const file of await listFiles(path.join(bundleRoot, directory))) {
       if (mode !== 'none' && file.startsWith('references/page-metadata/')) continue;
       if (mode === 'local-page-metadata' && file.startsWith('references/page-patterns/')) continue;
+      if (mode === 'local-page-metadata' && (file.startsWith('references/authoring-knowledge/') || ['scripts/read-knowledge.mjs','scripts/analyze-data.mjs'].includes(file))) continue;
       if (mode === 'local-page-metadata' && ['scripts/validate-page.mjs', 'scripts/THIRD-PARTY-LICENSES.md', 'references/knowledge.json', 'references/map-regions.json', 'assets/layouts/overview-map-led.json'].includes(file)) continue;
       documents.set(file, await readFile(path.join(bundleRoot, directory, file), 'utf8'));
     }
@@ -606,6 +617,12 @@ async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{
     const projected = mode === 'local-page-metadata' ? localPageReference(outputs) : outputs;
     const generated = mode === 'local-page-metadata' ? await localValidatorOutputs(repoRoot) : undefined;
     if (generated) {
+      for (const [file,content] of await localAuthoringKnowledge(repoRoot,projected)) generated.set(file,content);
+      for (const [entry,output] of [['local-authoring-knowledge-reader','read-knowledge'],['local-authoring-data-cli','analyze-data']]) {
+        for (const [file,content] of await localValidatorOutputs(repoRoot,`tools/scripts/${entry}.ts`,`scripts/${output}.mjs`)) {
+          if (file.endsWith('.mjs')) generated.set(file,content);
+        }
+      }
       for (const [file, content] of await localPagePatternOutputs(repoRoot)) generated.set(file, content);
       const mapContract = JSON.parse(productOutputs.get('page/map-regions.json')!);
       generated.set('references/map-regions.json', json({contractVersion: mapContract.contractVersion,
@@ -696,9 +713,10 @@ async function assertCurrent(
   for (const skill of await buildSkillProjections(productOutputs)) {
     await collectTreeDrift(path.join(bundleRoot,skill.directory,'references/page-metadata'),skill.outputs,`${skill.directory}/references/page-metadata`,drift);
     if (skill.generated) {
-      const patterns = new Map([...skill.generated].filter(([file]) => file.startsWith('references/page-patterns/'))
-        .map(([file, content]) => [file.slice('references/page-patterns/'.length), content]));
-      await collectTreeDrift(path.join(bundleRoot,skill.directory,'references/page-patterns'),patterns,`${skill.directory}/references/page-patterns`,drift);
+      for (const subtree of ['references/page-patterns','references/authoring-knowledge']) {
+        const files = new Map([...skill.generated].filter(([file])=>file.startsWith(subtree+'/')).map(([file,content])=>[file.slice(subtree.length+1),content]));
+        await collectTreeDrift(path.join(bundleRoot,skill.directory,subtree),files,`${skill.directory}/${subtree}`,drift);
+      }
     }
     for (const [file, content] of skill.generated ?? []) {
       await collectFileDrift(path.join(bundleRoot, skill.directory, file), content, `${skill.directory}/${file}`, drift);

@@ -23,6 +23,8 @@ type ResponsiveRegistry = {
  * `satisfies` 拒绝不存在的 type/variant；下方 MissingVariants 让漏登记也编译失败。
  */
 export const responsiveFixtures = {
+  filterGroup: {behavior:'reflow',variants:['default']},
+  button: {behavior:'reflow',variants:['default']},
   reportHeader: { behavior: 'reflow', variants: ['default', 'projectDetail'] },
   metricCard: {
     behavior: 'reflow',

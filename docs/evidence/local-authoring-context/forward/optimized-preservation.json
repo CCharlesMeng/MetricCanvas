@@ -1,0 +1,15 @@
+{
+  "source": "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-local-authoring-forward-nnwp2lvp/input-page.json",
+  "output": "/var/folders/_7/p5v7g8bs6kb8jy5sm02lbw4h0000gn/T/mc-forward-optimized-result-3hmp7_6r/local-authoring-knowledge-demo.json",
+  "originalSHA256": "e997a507908e922909ab8e2fd2b594789aec594156db8a71214ac799cc0a0dbb",
+  "outputSHA256": "5f68a84dc922e4397a9745dc0ef83c19def8e8e538bfbe8cd72cc66a196804ac",
+  "change": {
+    "path": "sections[0].components[2].props.columns[0].width",
+    "from": 180,
+    "to": 220
+  },
+  "onlyRequestedSemanticChange": true,
+  "sourceUnchanged": true,
+  "originalBytes": 3243,
+  "outputBytes": 3243
+}

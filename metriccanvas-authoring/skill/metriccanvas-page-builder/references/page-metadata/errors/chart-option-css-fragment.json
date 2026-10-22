@@ -1,0 +1,32 @@
+{
+  "case": "chart-option-css-fragment",
+  "invariant": "chart-echarts-option",
+  "expected": [
+    {
+      "type": "CHART_OPTION_ERROR",
+      "message": "只允许单个呈现值，不接受 CSS 声明片段、外部资源或可执行 URL",
+      "paths": [
+        "/sections/0/components/1/props/echartsOption/textStyle/fontFamily"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "echartsOption": {
+                "textStyle": {
+                  "fontFamily": "Arial;position:fixed"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/chart-option-css-fragment.json"
+}

@@ -1,0 +1,31 @@
+{
+  "case": "currency-compute-mixed",
+  "invariant": "currency-selection",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "计算不能混合静态货币字段",
+      "paths": [
+        "/dataSources/main/compute/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "main": {
+        "compute": [
+          {
+            "op": "sumFields",
+            "fields": [
+              "base-cny",
+              "fee-usd"
+            ],
+            "output": "total-cny",
+            "onMissing": "null"
+          }
+        ]
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/currency-compute-mixed.json"
+}

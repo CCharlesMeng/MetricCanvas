@@ -1,0 +1,22 @@
+{
+  "case": "ioc-header-hidden-filter",
+  "invariant": "ioc-header",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC 页头只能认领静态可见的页级筛选",
+      "paths": [
+        "/iocHeader/filterIds/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "iocHeader": {
+      "filterIds": [
+        "…",
+        "region"
+      ]
+    }
+  },
+  "fullInput": "page/conformance/invalid/ioc-header-hidden-filter.json"
+}

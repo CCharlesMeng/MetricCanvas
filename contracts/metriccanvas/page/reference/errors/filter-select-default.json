@@ -1,0 +1,34 @@
+{
+  "case": "filter-select-default",
+  "invariant": "filter-group-presentation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "筛选按钮组 default 必须是候选项中的一个值",
+      "paths": [
+        "/sections/0/components/0/props/components/1/props/filterId"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                "…",
+                {
+                  "props": {
+                    "filterId": "region"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/filter-select-default.json"
+}

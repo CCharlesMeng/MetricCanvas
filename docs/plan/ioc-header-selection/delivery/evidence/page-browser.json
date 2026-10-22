@@ -1,0 +1,37 @@
+{
+  "url": "http://127.0.0.1:5186/pages/ioc-header-selection",
+  "fixture": "pages/ioc-header-selection.json",
+  "results": [
+    {
+      "id": "PAGE-1",
+      "profile": "contract",
+      "passed": true,
+      "steps": "Real page fixture: search does not change URL; tree single replaces stable code; table row and URL update"
+    },
+    {
+      "id": "PAGE-MOUSE",
+      "profile": "contract",
+      "passed": true,
+      "steps": "Actual customer tag mouse click opens/focuses, second click closes; industry tag mouse click opens tree; neutral gray tags and32px option rows"
+    },
+    {
+      "id": "PAGE-2",
+      "profile": "contract",
+      "passed": true,
+      "steps": "Horizontal tags remove one value, other three stable values preserved in URL"
+    },
+    {
+      "id": "PAGE-3",
+      "profile": "contract",
+      "passed": true,
+      "steps": "searchable:false hides search; legacy structural parent selects complete original descendant codes"
+    },
+    {
+      "id": "PAGE-4",
+      "profile": "contract",
+      "passed": true,
+      "steps": "390px page has no horizontal overflow; popup inside viewport; repeated labels preserve two ancestor paths"
+    }
+  ],
+  "pageErrors": []
+}

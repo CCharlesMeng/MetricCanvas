@@ -20,6 +20,8 @@ type ReadyDataSnapshot = Extract<DataSnapshot, { status: 'ready' }>;
  */
 export function rendersWithoutWidgetHost(component: Component): boolean {
   return (
+    component.type === 'filterGroup' ||
+    component.type === 'button' ||
     component.type === 'reportHeader' ||
     component.type === 'text' ||
     component.type === 'aiSummary' ||

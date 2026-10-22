@@ -1,0 +1,1050 @@
+{
+  "code": {
+    "base_ref": "952b3a273f0f4f8be5820f5af1bb76c2f5afa513",
+    "code_fingerprint": "268b23130c6b0d09be05c3ce31ef29ff71b2212683d85613f6b278e79cb284ff",
+    "files": [
+      {
+        "path": "PAGE-METADATA.md",
+        "sha256": "6da9852bba63a80c44a08a5797c7d4a372998fe0981b9a69bb017c8d6b8d0ff8"
+      },
+      {
+        "path": "apps/playground/page-catalog.json",
+        "sha256": "3b7d13d55c3348fd10044eeed9d7de7e3b0d33515a70be5030489f7322b76f52"
+      },
+      {
+        "path": "contracts/metriccanvas/manifest.json",
+        "sha256": "54c57ef08de0189e55f4e8de22c24df28d194f4aad34d093a6ba682b691b7295"
+      },
+      {
+        "path": "contracts/metriccanvas/page/reference/components/table.md",
+        "sha256": "7059dabe90ff11a2a4f2567c3a8ac419b5aa9e9a1f0ad5b292d30fe837556078"
+      },
+      {
+        "path": "docs/page-metadata/components/table.md",
+        "sha256": "39d9e8b3e708af007fb213f63403a9423ea37d6d97db6b85de36cf2959608389"
+      },
+      {
+        "path": "docs/plan/table-tiny-os/dev-baseline.md",
+        "sha256": "cf5a3c5966bedf62647d9bbd0427ee29f4fa82fbbf930b86e913a8e68f6a1cd7"
+      },
+      {
+        "path": "docs/plan/table-tiny-os/evidence/restore-adapter.json",
+        "sha256": "ba51d301a1304bcc30bfddafd20c151a84e4f7d956e39bd3798bd3d589f77ce7"
+      },
+      {
+        "path": "docs/plan/table-tiny-os/evidence/restore-contract.json",
+        "sha256": "66f4e1c48e9cd0256eaab6f59f8f4ce41dbae3d2ea0544f9fbc7f3904a0051f0"
+      },
+      {
+        "path": "metriccanvas-authoring/bundle.lock.json",
+        "sha256": "e27143488a8ff4bee9e0c1fe192e5f3223b7289409c3a87e0344b645c2a1d2cf"
+      },
+      {
+        "path": "metriccanvas-authoring/contract-lock.json",
+        "sha256": "ae421a93f84c5a3aa6df0faa13736cb796ab422c4995158f55c94e6d19fe8c40"
+      },
+      {
+        "path": "metriccanvas-authoring/contract-snapshot/manifest.json",
+        "sha256": "54c57ef08de0189e55f4e8de22c24df28d194f4aad34d093a6ba682b691b7295"
+      },
+      {
+        "path": "metriccanvas-authoring/contract-snapshot/page/reference/components/table.md",
+        "sha256": "7059dabe90ff11a2a4f2567c3a8ac419b5aa9e9a1f0ad5b292d30fe837556078"
+      },
+      {
+        "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/knowledge.json",
+        "sha256": "185aba04de07b065e393844daa70cbdcd8e98b196f149ec9fd5dc22a295fb4d0"
+      },
+      {
+        "path": "metriccanvas-authoring/skill/metriccanvas-local-authoring/references/page-metadata/components/table.md",
+        "sha256": "11c0a3dbc80285ca22c0830b0fa6378893f0cfb4a5d0266028195cc8df6e2a51"
+      },
+      {
+        "path": "metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/components/table.md",
+        "sha256": "7059dabe90ff11a2a4f2567c3a8ac419b5aa9e9a1f0ad5b292d30fe837556078"
+      },
+      {
+        "path": "packages/embed/tests/browser/table-tiny-os.spec.ts",
+        "sha256": "6f9e3d3f1887c6b7425e5fc79c98bbe46857d1af68a87cbc34af585080789094"
+      },
+      {
+        "path": "packages/embed/tests/browser/table-toolbar.spec.ts",
+        "sha256": "3269e8dae72a68865f3eea06342af0bde7b563c914dfd471768ae18025f096a4"
+      },
+      {
+        "path": "packages/embed/tests/fixtures/tiny-os-grid-reference.json",
+        "sha256": "2ab09a5b2fdfbf31ae4f6938c4a308062ae0630fb2023cfd987d77f2691dc043"
+      },
+      {
+        "path": "packages/embed/tests/fixtures/tiny-os-grid.css",
+        "sha256": "0a28d81088961dfc5972eaf3e29af1e637ca0e777e1e677045b2d008f87ac21b"
+      },
+      {
+        "path": "packages/engine/widgets/src/components/table/Table.svelte",
+        "sha256": "9b8435f1f2f2cded6e8db10210f87ccd1a74d448b74696c8fc9a8ab9a3d81159"
+      },
+      {
+        "path": "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+        "sha256": "7872c5cde177108ede04aaa6e3c6dcf30f7e3a32589f6700ad8f71a8c2c364bd"
+      },
+      {
+        "path": "packages/engine/widgets/src/components/table/TableToolbar.svelte",
+        "sha256": "a4cb79804e3ead776c1141bac4673fed10e4576bbb33fed2e4bb9a81697bc2b7"
+      },
+      {
+        "path": "packages/engine/widgets/src/components/table/filter-popover.ts",
+        "sha256": "84100249d095e22612874a4b1efc466cca3488f2e5ccd26832c3afde66d79e08"
+      },
+      {
+        "path": "packages/engine/widgets/src/components/table/table-geometry.ts",
+        "sha256": "2a4551c9b3c8011f07f5f06bcfa53087f7fc4e33b6ed569128141393c6a8d170"
+      },
+      {
+        "path": "packages/page/fixtures/contract-valid/table-toolbar-page.json",
+        "sha256": "77b8e1124984e1ff597c5d0b98a3315a6dbf587ac295d5f77a97d188510f8228"
+      },
+      {
+        "path": "pages/README.md",
+        "sha256": "c2808c8bc467ed46d5acbb19e4fe58b053bfce28936db381339c0ac93fed930e"
+      },
+      {
+        "path": "pages/table-tiny-os.json",
+        "sha256": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      }
+    ],
+    "head": "952b3a273f0f4f8be5820f5af1bb76c2f5afa513"
+  },
+  "evidence_epoch": "table-os-final-20261020",
+  "known_gaps": [
+    "No complete same-browser comparison for all native date calendar, enumeration, hover/focus/disabled states; base-grid pixel equality does not prove these.",
+    "No real DQE/Relay, remote CI or production acceptance requested or claimed."
+  ],
+  "quality_gate": {
+    "code_fingerprint": "268b23130c6b0d09be05c3ce31ef29ff71b2212683d85613f6b278e79cb284ff",
+    "commands": [
+      {
+        "command": "pnpm --filter @metriccanvas/engine check",
+        "exit_code": 0,
+        "failures": [],
+        "name": "engine-check",
+        "observations": [
+          "0 errors,0 warnings"
+        ],
+        "scope": "Table rendering and required local-authoring closure",
+        "toolchain": "pnpm / installed workspace toolchain"
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/embed check",
+        "exit_code": 0,
+        "failures": [],
+        "name": "embed-check",
+        "observations": [
+          "0 errors,0 warnings"
+        ],
+        "scope": "Table rendering and required local-authoring closure",
+        "toolchain": "pnpm / installed workspace toolchain"
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/embed build",
+        "exit_code": 0,
+        "failures": [],
+        "name": "embed-build",
+        "observations": [
+          "build completed"
+        ],
+        "scope": "Table rendering and required local-authoring closure",
+        "toolchain": "pnpm / installed workspace toolchain"
+      },
+      {
+        "command": "pnpm exec vitest run packages/engine/widgets/tests/table-columns.test.ts packages/engine/widgets/tests/table-presentation.test.ts packages/engine/widgets/tests/table-rows.test.ts packages/engine/widgets/tests/table-view-state.test.ts packages/engine/widgets/tests/composite-card-surface.test.ts apps/playground/tests/page-catalog.test.ts",
+        "exit_code": 0,
+        "failures": [],
+        "name": "table-unit",
+        "observations": [
+          "44 tests / 6 files"
+        ],
+        "scope": "Table rendering and required local-authoring closure",
+        "toolchain": "pnpm / installed workspace toolchain"
+      },
+      {
+        "command": "pnpm exec vitest run tests/local-authoring-skill.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts packages/engine/widgets/tests/composite-card-surface.test.ts apps/playground/tests/page-catalog.test.ts",
+        "exit_code": 0,
+        "failures": [],
+        "name": "authoring-local",
+        "observations": [
+          "70 tests / 5 files,195.70sec"
+        ],
+        "scope": "Table rendering and required local-authoring closure",
+        "toolchain": "pnpm / installed workspace toolchain"
+      },
+      {
+        "command": "pnpm authoring:contracts:check",
+        "exit_code": 0,
+        "failures": [],
+        "name": "authoring-contracts",
+        "observations": [
+          "751 product /4 authoring /1 interface"
+        ],
+        "scope": "Table rendering and required local-authoring closure",
+        "toolchain": "pnpm / installed workspace toolchain"
+      },
+      {
+        "command": "python3 metriccanvas-authoring/scripts/check_bundle.py",
+        "exit_code": 0,
+        "failures": [],
+        "name": "bundle",
+        "observations": [
+          "2718 digest checks"
+        ],
+        "scope": "Table rendering and required local-authoring closure",
+        "toolchain": "pnpm / installed workspace toolchain"
+      },
+      {
+        "command": "pnpm --filter @metriccanvas/embed exec playwright test table-tiny-os.spec.ts table-toolbar.spec.ts --workers=2 --reporter=json",
+        "exit_code": 0,
+        "failures": [],
+        "name": "browser",
+        "observations": [
+          "15 tests,0skipped,0unexpected,0flaky; raw duration in playwright-results.json"
+        ],
+        "scope": "Table rendering and required local-authoring closure",
+        "toolchain": "pnpm / installed workspace toolchain"
+      },
+      {
+        "command": "git diff --check",
+        "exit_code": 0,
+        "failures": [],
+        "name": "whitespace",
+        "observations": [
+          "no whitespace errors"
+        ],
+        "scope": "Table rendering and required local-authoring closure",
+        "toolchain": "pnpm / installed workspace toolchain"
+      }
+    ]
+  },
+  "runtime": {
+    "account": "none",
+    "api_mode": "inline; existing table-toolbar contract mock gateway",
+    "browser": "Google Chrome 155.0.8059.85",
+    "dpr": 1,
+    "driver": "Repository Playwright @playwright/test, Chrome channel, headless",
+    "font_fingerprint": "Helvetica,Arial,PingFangSC-Regular,Hiragino Sans GB,Microsoft YaHei,微软雅黑,Microsoft JhengHei; same browser context pixel comparison",
+    "role": "local-render",
+    "tenant": "none",
+    "url": "http://127.0.0.1:4175/examples/inline.html"
+  },
+  "scenarios": [
+    {
+      "artifacts": [
+        "docs/plan/table-tiny-os/evidence/artifacts/grid-values.json",
+        "docs/plan/table-tiny-os/evidence/artifacts/ordinary-os.png",
+        "docs/plan/table-tiny-os/evidence/artifacts/compact-preserved.png"
+      ],
+      "captured_at_code_fingerprint": "268b23130c6b0d09be05c3ce31ef29ff71b2212683d85613f6b278e79cb284ff",
+      "captured_dependency_hashes": {
+        "packages/embed/tests/browser/table-tiny-os.spec.ts": "6f9e3d3f1887c6b7425e5fc79c98bbe46857d1af68a87cbc34af585080789094",
+        "packages/embed/tests/browser/table-toolbar.spec.ts": "3269e8dae72a68865f3eea06342af0bde7b563c914dfd471768ae18025f096a4",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json": "2ab09a5b2fdfbf31ae4f6938c4a308062ae0630fb2023cfd987d77f2691dc043",
+        "packages/embed/tests/fixtures/tiny-os-grid.css": "0a28d81088961dfc5972eaf3e29af1e637ca0e777e1e677045b2d008f87ac21b",
+        "packages/engine/widgets/src/components/table/Table.svelte": "9b8435f1f2f2cded6e8db10210f87ccd1a74d448b74696c8fc9a8ab9a3d81159",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte": "7872c5cde177108ede04aaa6e3c6dcf30f7e3a32589f6700ad8f71a8c2c364bd",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte": "a4cb79804e3ead776c1141bac4673fed10e4576bbb33fed2e4bb9a81697bc2b7",
+        "packages/engine/widgets/src/components/table/filter-popover.ts": "84100249d095e22612874a4b1efc466cca3488f2e5ccd26832c3afde66d79e08",
+        "packages/engine/widgets/src/components/table/table-geometry.ts": "2a4551c9b3c8011f07f5f06bcfa53087f7fc4e33b6ed569128141393c6a8d170",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json": "77b8e1124984e1ff597c5d0b98a3315a6dbf587ac295d5f77a97d188510f8228",
+        "pages/table-tiny-os.json": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "captured_runtime": {
+        "account": "none",
+        "api_mode": "inline; existing table-toolbar contract mock gateway",
+        "browser": "Google Chrome 155.0.8059.85",
+        "dpr": 1,
+        "driver": "Repository Playwright @playwright/test, Chrome channel, headless",
+        "font_fingerprint": "Helvetica,Arial,PingFangSC-Regular,Hiragino Sans GB,Microsoft YaHei,微软雅黑,Microsoft JhengHei; same browser context pixel comparison",
+        "role": "local-render",
+        "tenant": "none",
+        "url": "http://127.0.0.1:4175/examples/inline.html"
+      },
+      "consumers": [
+        "render",
+        "story",
+        "regression",
+        "self-test"
+      ],
+      "depends_on": [
+        "packages/embed/tests/browser/table-tiny-os.spec.ts",
+        "packages/embed/tests/browser/table-toolbar.spec.ts",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json",
+        "packages/embed/tests/fixtures/tiny-os-grid.css",
+        "packages/engine/widgets/src/components/table/Table.svelte",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte",
+        "packages/engine/widgets/src/components/table/filter-popover.ts",
+        "packages/engine/widgets/src/components/table/table-geometry.ts",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json",
+        "pages/table-tiny-os.json"
+      ],
+      "fixture": {
+        "name": "table-tiny-os",
+        "sha256": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "id": "BE-1",
+      "name": "Three scoped skins and compact preservation",
+      "observations": [
+        "Three variants: header40px/#f5f5f5/padding4px16px/weight600; body48px/padding12px16px/line21px; horizontal borders",
+        "Compact: fontweight500,padding5px8px,body42px,sort text ⇅,zero sort SVG"
+      ],
+      "page": "/examples/inline.html",
+      "source": "phase-c",
+      "steps": [
+        "Mount table-tiny-os fixture",
+        "Read computed styles for all three variants and compact"
+      ],
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/table-tiny-os/evidence/artifacts/empty-state.json",
+        "docs/plan/table-tiny-os/evidence/artifacts/sort-active.json"
+      ],
+      "captured_at_code_fingerprint": "268b23130c6b0d09be05c3ce31ef29ff71b2212683d85613f6b278e79cb284ff",
+      "captured_dependency_hashes": {
+        "packages/embed/tests/browser/table-tiny-os.spec.ts": "6f9e3d3f1887c6b7425e5fc79c98bbe46857d1af68a87cbc34af585080789094",
+        "packages/embed/tests/browser/table-toolbar.spec.ts": "3269e8dae72a68865f3eea06342af0bde7b563c914dfd471768ae18025f096a4",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json": "2ab09a5b2fdfbf31ae4f6938c4a308062ae0630fb2023cfd987d77f2691dc043",
+        "packages/embed/tests/fixtures/tiny-os-grid.css": "0a28d81088961dfc5972eaf3e29af1e637ca0e777e1e677045b2d008f87ac21b",
+        "packages/engine/widgets/src/components/table/Table.svelte": "9b8435f1f2f2cded6e8db10210f87ccd1a74d448b74696c8fc9a8ab9a3d81159",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte": "7872c5cde177108ede04aaa6e3c6dcf30f7e3a32589f6700ad8f71a8c2c364bd",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte": "a4cb79804e3ead776c1141bac4673fed10e4576bbb33fed2e4bb9a81697bc2b7",
+        "packages/engine/widgets/src/components/table/filter-popover.ts": "84100249d095e22612874a4b1efc466cca3488f2e5ccd26832c3afde66d79e08",
+        "packages/engine/widgets/src/components/table/table-geometry.ts": "2a4551c9b3c8011f07f5f06bcfa53087f7fc4e33b6ed569128141393c6a8d170",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json": "77b8e1124984e1ff597c5d0b98a3315a6dbf587ac295d5f77a97d188510f8228",
+        "pages/table-tiny-os.json": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "captured_runtime": {
+        "account": "none",
+        "api_mode": "inline; existing table-toolbar contract mock gateway",
+        "browser": "Google Chrome 155.0.8059.85",
+        "dpr": 1,
+        "driver": "Repository Playwright @playwright/test, Chrome channel, headless",
+        "font_fingerprint": "Helvetica,Arial,PingFangSC-Regular,Hiragino Sans GB,Microsoft YaHei,微软雅黑,Microsoft JhengHei; same browser context pixel comparison",
+        "role": "local-render",
+        "tenant": "none",
+        "url": "http://127.0.0.1:4175/examples/inline.html"
+      },
+      "consumers": [
+        "render",
+        "story",
+        "regression",
+        "self-test"
+      ],
+      "depends_on": [
+        "packages/embed/tests/browser/table-tiny-os.spec.ts",
+        "packages/embed/tests/browser/table-toolbar.spec.ts",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json",
+        "packages/embed/tests/fixtures/tiny-os-grid.css",
+        "packages/engine/widgets/src/components/table/Table.svelte",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte",
+        "packages/engine/widgets/src/components/table/filter-popover.ts",
+        "packages/engine/widgets/src/components/table/table-geometry.ts",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json",
+        "pages/table-tiny-os.json"
+      ],
+      "fixture": {
+        "name": "table-tiny-os",
+        "sha256": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "id": "BE-2",
+      "name": "Sort, search, pagination and empty",
+      "observations": [
+        "Descending first客户25,embedded first客户01",
+        "One matching row for客户12; empty-state flex,min60px,padding60px0",
+        "Next page aria-current2,first客户20"
+      ],
+      "page": "/examples/inline.html",
+      "profile": "contract",
+      "source": "phase-c",
+      "steps": [
+        "Sort amount twice",
+        "Search 客户12, then 不存在",
+        "Clear search and choose next page"
+      ],
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/table-tiny-os/evidence/artifacts/filter-menu.json",
+        "docs/plan/table-tiny-os/evidence/artifacts/date-filter-os.png"
+      ],
+      "captured_at_code_fingerprint": "268b23130c6b0d09be05c3ce31ef29ff71b2212683d85613f6b278e79cb284ff",
+      "captured_dependency_hashes": {
+        "packages/embed/tests/browser/table-tiny-os.spec.ts": "6f9e3d3f1887c6b7425e5fc79c98bbe46857d1af68a87cbc34af585080789094",
+        "packages/embed/tests/browser/table-toolbar.spec.ts": "3269e8dae72a68865f3eea06342af0bde7b563c914dfd471768ae18025f096a4",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json": "2ab09a5b2fdfbf31ae4f6938c4a308062ae0630fb2023cfd987d77f2691dc043",
+        "packages/embed/tests/fixtures/tiny-os-grid.css": "0a28d81088961dfc5972eaf3e29af1e637ca0e777e1e677045b2d008f87ac21b",
+        "packages/engine/widgets/src/components/table/Table.svelte": "9b8435f1f2f2cded6e8db10210f87ccd1a74d448b74696c8fc9a8ab9a3d81159",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte": "7872c5cde177108ede04aaa6e3c6dcf30f7e3a32589f6700ad8f71a8c2c364bd",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte": "a4cb79804e3ead776c1141bac4673fed10e4576bbb33fed2e4bb9a81697bc2b7",
+        "packages/engine/widgets/src/components/table/filter-popover.ts": "84100249d095e22612874a4b1efc466cca3488f2e5ccd26832c3afde66d79e08",
+        "packages/engine/widgets/src/components/table/table-geometry.ts": "2a4551c9b3c8011f07f5f06bcfa53087f7fc4e33b6ed569128141393c6a8d170",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json": "77b8e1124984e1ff597c5d0b98a3315a6dbf587ac295d5f77a97d188510f8228",
+        "pages/table-tiny-os.json": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "captured_runtime": {
+        "account": "none",
+        "api_mode": "inline; existing table-toolbar contract mock gateway",
+        "browser": "Google Chrome 155.0.8059.85",
+        "dpr": 1,
+        "driver": "Repository Playwright @playwright/test, Chrome channel, headless",
+        "font_fingerprint": "Helvetica,Arial,PingFangSC-Regular,Hiragino Sans GB,Microsoft YaHei,微软雅黑,Microsoft JhengHei; same browser context pixel comparison",
+        "role": "local-render",
+        "tenant": "none",
+        "url": "http://127.0.0.1:4175/examples/inline.html"
+      },
+      "consumers": [
+        "render",
+        "story",
+        "regression",
+        "self-test"
+      ],
+      "depends_on": [
+        "packages/embed/tests/browser/table-tiny-os.spec.ts",
+        "packages/embed/tests/browser/table-toolbar.spec.ts",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json",
+        "packages/embed/tests/fixtures/tiny-os-grid.css",
+        "packages/engine/widgets/src/components/table/Table.svelte",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte",
+        "packages/engine/widgets/src/components/table/filter-popover.ts",
+        "packages/engine/widgets/src/components/table/table-geometry.ts",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json",
+        "pages/table-tiny-os.json"
+      ],
+      "fixture": {
+        "name": "table-tiny-os",
+        "sha256": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "id": "BE-3",
+      "name": "Number and date filters",
+      "observations": [
+        "Number filter reduces to2 rows; clear restores5",
+        "Future date rejected with 日期不得晚于;5 rows remain",
+        "Open menu270px/shadow0 2px12px#0003;SVG14px"
+      ],
+      "page": "/examples/inline.html",
+      "profile": "contract",
+      "source": "phase-c",
+      "steps": [
+        "Open number filter; set lower2400",
+        "Clear; Escape; open date filter; enter2099-01-01"
+      ],
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/table-tiny-os/evidence/artifacts/fixed-geometry.json",
+        "docs/plan/table-tiny-os/evidence/artifacts/fixed-shadow.json",
+        "docs/plan/table-tiny-os/evidence/artifacts/page-overflow.json",
+        "docs/plan/table-tiny-os/evidence/artifacts/narrow-fixed-multi-header.png"
+      ],
+      "captured_at_code_fingerprint": "268b23130c6b0d09be05c3ce31ef29ff71b2212683d85613f6b278e79cb284ff",
+      "captured_dependency_hashes": {
+        "packages/embed/tests/browser/table-tiny-os.spec.ts": "6f9e3d3f1887c6b7425e5fc79c98bbe46857d1af68a87cbc34af585080789094",
+        "packages/embed/tests/browser/table-toolbar.spec.ts": "3269e8dae72a68865f3eea06342af0bde7b563c914dfd471768ae18025f096a4",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json": "2ab09a5b2fdfbf31ae4f6938c4a308062ae0630fb2023cfd987d77f2691dc043",
+        "packages/embed/tests/fixtures/tiny-os-grid.css": "0a28d81088961dfc5972eaf3e29af1e637ca0e777e1e677045b2d008f87ac21b",
+        "packages/engine/widgets/src/components/table/Table.svelte": "9b8435f1f2f2cded6e8db10210f87ccd1a74d448b74696c8fc9a8ab9a3d81159",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte": "7872c5cde177108ede04aaa6e3c6dcf30f7e3a32589f6700ad8f71a8c2c364bd",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte": "a4cb79804e3ead776c1141bac4673fed10e4576bbb33fed2e4bb9a81697bc2b7",
+        "packages/engine/widgets/src/components/table/filter-popover.ts": "84100249d095e22612874a4b1efc466cca3488f2e5ccd26832c3afde66d79e08",
+        "packages/engine/widgets/src/components/table/table-geometry.ts": "2a4551c9b3c8011f07f5f06bcfa53087f7fc4e33b6ed569128141393c6a8d170",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json": "77b8e1124984e1ff597c5d0b98a3315a6dbf587ac295d5f77a97d188510f8228",
+        "pages/table-tiny-os.json": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "captured_runtime": {
+        "account": "none",
+        "api_mode": "inline; existing table-toolbar contract mock gateway",
+        "browser": "Google Chrome 155.0.8059.85",
+        "dpr": 1,
+        "driver": "Repository Playwright @playwright/test, Chrome channel, headless",
+        "font_fingerprint": "Helvetica,Arial,PingFangSC-Regular,Hiragino Sans GB,Microsoft YaHei,微软雅黑,Microsoft JhengHei; same browser context pixel comparison",
+        "role": "local-render",
+        "tenant": "none",
+        "url": "http://127.0.0.1:4175/examples/inline.html"
+      },
+      "consumers": [
+        "render",
+        "story",
+        "regression",
+        "self-test"
+      ],
+      "depends_on": [
+        "packages/embed/tests/browser/table-tiny-os.spec.ts",
+        "packages/embed/tests/browser/table-toolbar.spec.ts",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json",
+        "packages/embed/tests/fixtures/tiny-os-grid.css",
+        "packages/engine/widgets/src/components/table/Table.svelte",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte",
+        "packages/engine/widgets/src/components/table/filter-popover.ts",
+        "packages/engine/widgets/src/components/table/table-geometry.ts",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json",
+        "pages/table-tiny-os.json"
+      ],
+      "fixture": {
+        "name": "table-tiny-os",
+        "sha256": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "id": "BE-4",
+      "name": "Narrow and multilevel geometry",
+      "observations": [
+        "Left and right fixed offsets match cumulative measured cell widths",
+        "1280px geometry: header tops[0,40,80];row heights[40,40,40]",
+        "Document scrollWidth390 equals viewport390;left shadow30px/inset10px0 8px-8px"
+      ],
+      "page": "/examples/inline.html",
+      "source": "phase-c",
+      "steps": [
+        "390px viewport; two fixed columns each side",
+        "Scroll160px horizontally,150px vertically; read actual widths and header heights"
+      ],
+      "viewport": {
+        "height": 900,
+        "width": 390
+      }
+    },
+    {
+      "artifacts": [],
+      "captured_at_code_fingerprint": "268b23130c6b0d09be05c3ce31ef29ff71b2212683d85613f6b278e79cb284ff",
+      "captured_dependency_hashes": {
+        "packages/embed/tests/browser/table-tiny-os.spec.ts": "6f9e3d3f1887c6b7425e5fc79c98bbe46857d1af68a87cbc34af585080789094",
+        "packages/embed/tests/browser/table-toolbar.spec.ts": "3269e8dae72a68865f3eea06342af0bde7b563c914dfd471768ae18025f096a4",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json": "2ab09a5b2fdfbf31ae4f6938c4a308062ae0630fb2023cfd987d77f2691dc043",
+        "packages/embed/tests/fixtures/tiny-os-grid.css": "0a28d81088961dfc5972eaf3e29af1e637ca0e777e1e677045b2d008f87ac21b",
+        "packages/engine/widgets/src/components/table/Table.svelte": "9b8435f1f2f2cded6e8db10210f87ccd1a74d448b74696c8fc9a8ab9a3d81159",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte": "7872c5cde177108ede04aaa6e3c6dcf30f7e3a32589f6700ad8f71a8c2c364bd",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte": "a4cb79804e3ead776c1141bac4673fed10e4576bbb33fed2e4bb9a81697bc2b7",
+        "packages/engine/widgets/src/components/table/filter-popover.ts": "84100249d095e22612874a4b1efc466cca3488f2e5ccd26832c3afde66d79e08",
+        "packages/engine/widgets/src/components/table/table-geometry.ts": "2a4551c9b3c8011f07f5f06bcfa53087f7fc4e33b6ed569128141393c6a8d170",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json": "77b8e1124984e1ff597c5d0b98a3315a6dbf587ac295d5f77a97d188510f8228",
+        "pages/table-tiny-os.json": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "captured_runtime": {
+        "account": "none",
+        "api_mode": "inline; existing table-toolbar contract mock gateway",
+        "browser": "Google Chrome 155.0.8059.85",
+        "dpr": 1,
+        "driver": "Repository Playwright @playwright/test, Chrome channel, headless",
+        "font_fingerprint": "Helvetica,Arial,PingFangSC-Regular,Hiragino Sans GB,Microsoft YaHei,微软雅黑,Microsoft JhengHei; same browser context pixel comparison",
+        "role": "local-render",
+        "tenant": "none",
+        "url": "http://127.0.0.1:4175/examples/inline.html"
+      },
+      "consumers": [
+        "render",
+        "story",
+        "regression",
+        "self-test"
+      ],
+      "depends_on": [
+        "packages/embed/tests/browser/table-tiny-os.spec.ts",
+        "packages/embed/tests/browser/table-toolbar.spec.ts",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json",
+        "packages/embed/tests/fixtures/tiny-os-grid.css",
+        "packages/engine/widgets/src/components/table/Table.svelte",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte",
+        "packages/engine/widgets/src/components/table/filter-popover.ts",
+        "packages/engine/widgets/src/components/table/table-geometry.ts",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json",
+        "pages/table-tiny-os.json"
+      ],
+      "fixture": {
+        "name": "table-tiny-os",
+        "sha256": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "id": "BE-5",
+      "name": "Business colors and automatic widths",
+      "observations": [
+        "Explicit red link equals cell color",
+        "First column width changes; second fixed-left offset differs by less0.2px"
+      ],
+      "page": "/examples/inline.html",
+      "source": "phase-c",
+      "steps": [
+        "Set value link fixedred",
+        "Replace same window with long customer names"
+      ],
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/table-tiny-os/evidence/artifacts/export-values.json",
+        "docs/plan/table-tiny-os/evidence/artifacts/os-table-export.png"
+      ],
+      "captured_at_code_fingerprint": "268b23130c6b0d09be05c3ce31ef29ff71b2212683d85613f6b278e79cb284ff",
+      "captured_dependency_hashes": {
+        "packages/embed/tests/browser/table-tiny-os.spec.ts": "6f9e3d3f1887c6b7425e5fc79c98bbe46857d1af68a87cbc34af585080789094",
+        "packages/embed/tests/browser/table-toolbar.spec.ts": "3269e8dae72a68865f3eea06342af0bde7b563c914dfd471768ae18025f096a4",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json": "2ab09a5b2fdfbf31ae4f6938c4a308062ae0630fb2023cfd987d77f2691dc043",
+        "packages/embed/tests/fixtures/tiny-os-grid.css": "0a28d81088961dfc5972eaf3e29af1e637ca0e777e1e677045b2d008f87ac21b",
+        "packages/engine/widgets/src/components/table/Table.svelte": "9b8435f1f2f2cded6e8db10210f87ccd1a74d448b74696c8fc9a8ab9a3d81159",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte": "7872c5cde177108ede04aaa6e3c6dcf30f7e3a32589f6700ad8f71a8c2c364bd",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte": "a4cb79804e3ead776c1141bac4673fed10e4576bbb33fed2e4bb9a81697bc2b7",
+        "packages/engine/widgets/src/components/table/filter-popover.ts": "84100249d095e22612874a4b1efc466cca3488f2e5ccd26832c3afde66d79e08",
+        "packages/engine/widgets/src/components/table/table-geometry.ts": "2a4551c9b3c8011f07f5f06bcfa53087f7fc4e33b6ed569128141393c6a8d170",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json": "77b8e1124984e1ff597c5d0b98a3315a6dbf587ac295d5f77a97d188510f8228",
+        "pages/table-tiny-os.json": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "captured_runtime": {
+        "account": "none",
+        "api_mode": "inline; existing table-toolbar contract mock gateway",
+        "browser": "Google Chrome 155.0.8059.85",
+        "dpr": 1,
+        "driver": "Repository Playwright @playwright/test, Chrome channel, headless",
+        "font_fingerprint": "Helvetica,Arial,PingFangSC-Regular,Hiragino Sans GB,Microsoft YaHei,微软雅黑,Microsoft JhengHei; same browser context pixel comparison",
+        "role": "local-render",
+        "tenant": "none",
+        "url": "http://127.0.0.1:4175/examples/inline.html"
+      },
+      "consumers": [
+        "render",
+        "story",
+        "regression",
+        "self-test"
+      ],
+      "depends_on": [
+        "packages/embed/tests/browser/table-tiny-os.spec.ts",
+        "packages/embed/tests/browser/table-toolbar.spec.ts",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json",
+        "packages/embed/tests/fixtures/tiny-os-grid.css",
+        "packages/engine/widgets/src/components/table/Table.svelte",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte",
+        "packages/engine/widgets/src/components/table/filter-popover.ts",
+        "packages/engine/widgets/src/components/table/table-geometry.ts",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json",
+        "pages/table-tiny-os.json"
+      ],
+      "fixture": {
+        "name": "table-tiny-os",
+        "sha256": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "id": "BE-6",
+      "name": "Static PNG export",
+      "observations": [
+        "25 exported rows;statictrue;relative th;top0px;divider16px;no measuredTop/no shadow",
+        "Export iframe removed after download"
+      ],
+      "page": "/examples/inline.html",
+      "profile": "contract",
+      "source": "phase-c",
+      "steps": [
+        "Mount report with PNG export action",
+        "Observe export iframe at Worker creation;download;waitcleanup"
+      ],
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/table-tiny-os/evidence/artifacts/ordinary-official-grid.png",
+        "docs/plan/table-tiny-os/evidence/artifacts/ordinary-grid.png",
+        "docs/plan/table-tiny-os/evidence/artifacts/forecastMatrix-official-grid.png",
+        "docs/plan/table-tiny-os/evidence/artifacts/forecastMatrix-grid.png",
+        "docs/plan/table-tiny-os/evidence/artifacts/embedded-official-grid.png",
+        "docs/plan/table-tiny-os/evidence/artifacts/embedded-grid.png"
+      ],
+      "captured_at_code_fingerprint": "268b23130c6b0d09be05c3ce31ef29ff71b2212683d85613f6b278e79cb284ff",
+      "captured_dependency_hashes": {
+        "packages/embed/tests/browser/table-tiny-os.spec.ts": "6f9e3d3f1887c6b7425e5fc79c98bbe46857d1af68a87cbc34af585080789094",
+        "packages/embed/tests/browser/table-toolbar.spec.ts": "3269e8dae72a68865f3eea06342af0bde7b563c914dfd471768ae18025f096a4",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json": "2ab09a5b2fdfbf31ae4f6938c4a308062ae0630fb2023cfd987d77f2691dc043",
+        "packages/embed/tests/fixtures/tiny-os-grid.css": "0a28d81088961dfc5972eaf3e29af1e637ca0e777e1e677045b2d008f87ac21b",
+        "packages/engine/widgets/src/components/table/Table.svelte": "9b8435f1f2f2cded6e8db10210f87ccd1a74d448b74696c8fc9a8ab9a3d81159",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte": "7872c5cde177108ede04aaa6e3c6dcf30f7e3a32589f6700ad8f71a8c2c364bd",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte": "a4cb79804e3ead776c1141bac4673fed10e4576bbb33fed2e4bb9a81697bc2b7",
+        "packages/engine/widgets/src/components/table/filter-popover.ts": "84100249d095e22612874a4b1efc466cca3488f2e5ccd26832c3afde66d79e08",
+        "packages/engine/widgets/src/components/table/table-geometry.ts": "2a4551c9b3c8011f07f5f06bcfa53087f7fc4e33b6ed569128141393c6a8d170",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json": "77b8e1124984e1ff597c5d0b98a3315a6dbf587ac295d5f77a97d188510f8228",
+        "pages/table-tiny-os.json": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "captured_runtime": {
+        "account": "none",
+        "api_mode": "inline; existing table-toolbar contract mock gateway",
+        "browser": "Google Chrome 155.0.8059.85",
+        "dpr": 1,
+        "driver": "Repository Playwright @playwright/test, Chrome channel, headless",
+        "font_fingerprint": "Helvetica,Arial,PingFangSC-Regular,Hiragino Sans GB,Microsoft YaHei,微软雅黑,Microsoft JhengHei; same browser context pixel comparison",
+        "role": "local-render",
+        "tenant": "none",
+        "url": "http://127.0.0.1:4175/examples/inline.html"
+      },
+      "consumers": [
+        "render",
+        "story",
+        "regression",
+        "self-test"
+      ],
+      "depends_on": [
+        "packages/embed/tests/browser/table-tiny-os.spec.ts",
+        "packages/embed/tests/browser/table-toolbar.spec.ts",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json",
+        "packages/embed/tests/fixtures/tiny-os-grid.css",
+        "packages/engine/widgets/src/components/table/Table.svelte",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte",
+        "packages/engine/widgets/src/components/table/filter-popover.ts",
+        "packages/engine/widgets/src/components/table/table-geometry.ts",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json",
+        "pages/table-tiny-os.json"
+      ],
+      "fixture": {
+        "name": "table-tiny-os",
+        "sha256": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "id": "BE-7",
+      "name": "Frozen official CSS pixel comparison",
+      "observations": [
+        "For all three variants PNG Buffer.equals returns true; no differing encoded pixels",
+        "forecast reference explicitly centered to preserve variant alignment"
+      ],
+      "page": "/examples/inline.html",
+      "source": "phase-c",
+      "steps": [
+        "Build official class DOM using frozen Grid CSS and original sample data",
+        "Match content and130px widths;capture table from both renderers in same context",
+        "Repeat ordinary,forecastMatrix,embedded"
+      ],
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/table-tiny-os/evidence/artifacts/fixed-overflow-geometry.json",
+        "docs/plan/table-tiny-os/evidence/artifacts/narrow-fixed-overflow.png"
+      ],
+      "captured_at_code_fingerprint": "268b23130c6b0d09be05c3ce31ef29ff71b2212683d85613f6b278e79cb284ff",
+      "captured_dependency_hashes": {
+        "packages/embed/tests/browser/table-tiny-os.spec.ts": "6f9e3d3f1887c6b7425e5fc79c98bbe46857d1af68a87cbc34af585080789094",
+        "packages/embed/tests/browser/table-toolbar.spec.ts": "3269e8dae72a68865f3eea06342af0bde7b563c914dfd471768ae18025f096a4",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json": "2ab09a5b2fdfbf31ae4f6938c4a308062ae0630fb2023cfd987d77f2691dc043",
+        "packages/embed/tests/fixtures/tiny-os-grid.css": "0a28d81088961dfc5972eaf3e29af1e637ca0e777e1e677045b2d008f87ac21b",
+        "packages/engine/widgets/src/components/table/Table.svelte": "9b8435f1f2f2cded6e8db10210f87ccd1a74d448b74696c8fc9a8ab9a3d81159",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte": "7872c5cde177108ede04aaa6e3c6dcf30f7e3a32589f6700ad8f71a8c2c364bd",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte": "a4cb79804e3ead776c1141bac4673fed10e4576bbb33fed2e4bb9a81697bc2b7",
+        "packages/engine/widgets/src/components/table/filter-popover.ts": "84100249d095e22612874a4b1efc466cca3488f2e5ccd26832c3afde66d79e08",
+        "packages/engine/widgets/src/components/table/table-geometry.ts": "2a4551c9b3c8011f07f5f06bcfa53087f7fc4e33b6ed569128141393c6a8d170",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json": "77b8e1124984e1ff597c5d0b98a3315a6dbf587ac295d5f77a97d188510f8228",
+        "pages/table-tiny-os.json": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "captured_runtime": {
+        "account": "none",
+        "api_mode": "inline; existing table-toolbar contract mock gateway",
+        "browser": "Google Chrome 155.0.8059.85",
+        "dpr": 1,
+        "driver": "Repository Playwright @playwright/test, Chrome channel, headless",
+        "font_fingerprint": "Helvetica,Arial,PingFangSC-Regular,Hiragino Sans GB,Microsoft YaHei,微软雅黑,Microsoft JhengHei; same browser context pixel comparison",
+        "role": "local-render",
+        "tenant": "none",
+        "url": "http://127.0.0.1:4175/examples/inline.html"
+      },
+      "consumers": [
+        "render",
+        "story",
+        "regression",
+        "self-test"
+      ],
+      "depends_on": [
+        "packages/embed/tests/browser/table-tiny-os.spec.ts",
+        "packages/embed/tests/browser/table-toolbar.spec.ts",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json",
+        "packages/embed/tests/fixtures/tiny-os-grid.css",
+        "packages/engine/widgets/src/components/table/Table.svelte",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte",
+        "packages/engine/widgets/src/components/table/filter-popover.ts",
+        "packages/engine/widgets/src/components/table/table-geometry.ts",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json",
+        "pages/table-tiny-os.json"
+      ],
+      "fixture": {
+        "name": "table-tiny-os",
+        "sha256": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "id": "BE-8",
+      "name": "Oversized fixed banks at390px",
+      "observations": [
+        "Adjacent cell gaps[0,0,0,0];no overlap",
+        "Middle date cell visible width60.953125px;all four th leftauto;shadow displaynone",
+        "At1280px fixed-overflow class removed and second fixed column left>0"
+      ],
+      "page": "/examples/inline.html",
+      "source": "phase-c",
+      "steps": [
+        "Pin four of five columns;scroll160px",
+        "Read all body cell rectangles;expand viewport1280px"
+      ],
+      "viewport": {
+        "height": 900,
+        "width": 390
+      }
+    },
+    {
+      "artifacts": [
+        "docs/plan/table-tiny-os/evidence/artifacts/independent-search.png",
+        "docs/plan/table-tiny-os/evidence/artifacts/playwright-results.json"
+      ],
+      "captured_at_code_fingerprint": "268b23130c6b0d09be05c3ce31ef29ff71b2212683d85613f6b278e79cb284ff",
+      "captured_dependency_hashes": {
+        "packages/embed/tests/browser/table-tiny-os.spec.ts": "6f9e3d3f1887c6b7425e5fc79c98bbe46857d1af68a87cbc34af585080789094",
+        "packages/embed/tests/browser/table-toolbar.spec.ts": "3269e8dae72a68865f3eea06342af0bde7b563c914dfd471768ae18025f096a4",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json": "2ab09a5b2fdfbf31ae4f6938c4a308062ae0630fb2023cfd987d77f2691dc043",
+        "packages/embed/tests/fixtures/tiny-os-grid.css": "0a28d81088961dfc5972eaf3e29af1e637ca0e777e1e677045b2d008f87ac21b",
+        "packages/engine/widgets/src/components/table/Table.svelte": "9b8435f1f2f2cded6e8db10210f87ccd1a74d448b74696c8fc9a8ab9a3d81159",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte": "7872c5cde177108ede04aaa6e3c6dcf30f7e3a32589f6700ad8f71a8c2c364bd",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte": "a4cb79804e3ead776c1141bac4673fed10e4576bbb33fed2e4bb9a81697bc2b7",
+        "packages/engine/widgets/src/components/table/filter-popover.ts": "84100249d095e22612874a4b1efc466cca3488f2e5ccd26832c3afde66d79e08",
+        "packages/engine/widgets/src/components/table/table-geometry.ts": "2a4551c9b3c8011f07f5f06bcfa53087f7fc4e33b6ed569128141393c6a8d170",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json": "77b8e1124984e1ff597c5d0b98a3315a6dbf587ac295d5f77a97d188510f8228",
+        "pages/table-tiny-os.json": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b"
+      },
+      "captured_runtime": {
+        "account": "none",
+        "api_mode": "inline; existing table-toolbar contract mock gateway",
+        "browser": "Google Chrome 155.0.8059.85",
+        "dpr": 1,
+        "driver": "Repository Playwright @playwright/test, Chrome channel, headless",
+        "font_fingerprint": "Helvetica,Arial,PingFangSC-Regular,Hiragino Sans GB,Microsoft YaHei,微软雅黑,Microsoft JhengHei; same browser context pixel comparison",
+        "role": "local-render",
+        "tenant": "none",
+        "url": "http://127.0.0.1:4175/examples/inline.html"
+      },
+      "consumers": [
+        "render",
+        "story",
+        "regression",
+        "self-test"
+      ],
+      "depends_on": [
+        "packages/embed/tests/browser/table-tiny-os.spec.ts",
+        "packages/embed/tests/browser/table-toolbar.spec.ts",
+        "packages/embed/tests/fixtures/tiny-os-grid-reference.json",
+        "packages/embed/tests/fixtures/tiny-os-grid.css",
+        "packages/engine/widgets/src/components/table/Table.svelte",
+        "packages/engine/widgets/src/components/table/TableControlIcon.svelte",
+        "packages/engine/widgets/src/components/table/TableToolbar.svelte",
+        "packages/engine/widgets/src/components/table/filter-popover.ts",
+        "packages/engine/widgets/src/components/table/table-geometry.ts",
+        "packages/page/fixtures/contract-valid/table-toolbar-page.json",
+        "pages/table-tiny-os.json"
+      ],
+      "fixture": {
+        "name": "table-toolbar-page",
+        "sha256": "77b8e1124984e1ff597c5d0b98a3315a6dbf587ac295d5f77a97d188510f8228"
+      },
+      "id": "BE-9",
+      "name": "Existing query and export contract",
+      "observations": [
+        "Inline independent search/export includes full matches",
+        "Mapped query search traverses all matching pages for XLSX; unsupported search stays clearable",
+        "Query state and toolbar regression assertions execute under existing contract fixture"
+      ],
+      "page": "/examples/inline.html",
+      "profile": "contract",
+      "source": "phase-c",
+      "steps": [
+        "Run six existing table-toolbar browser scenarios"
+      ],
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      }
+    }
+  ],
+  "schema_version": 1,
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AT-01",
+        "modules": [
+          "causal",
+          "render"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1,2",
+        "verification_method": "restore_contract",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-02",
+        "modules": [
+          "causal",
+          "targeted-quality",
+          "story"
+        ],
+        "required_profile": "contract",
+        "status": "UNVERIFIED",
+        "task": "1,2",
+        "verification_method": "test_case",
+        "verification_scope": "S3_STORY"
+      },
+      {
+        "id": "AT-03",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1,2",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-04",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "1,2",
+        "verification_method": "test_case",
+        "verification_scope": "S2_PAGE"
+      },
+      {
+        "id": "AT-05",
+        "modules": [
+          "causal",
+          "targeted-quality"
+        ],
+        "required_profile": "mock",
+        "status": "UNVERIFIED",
+        "task": "3",
+        "verification_method": "test_case",
+        "verification_scope": "S1_COMPONENT"
+      }
+    ],
+    "facts": {
+      "cross_page": true,
+      "frozen_r": true,
+      "frozen_r5": true,
+      "frozen_r6": true,
+      "has_f3": true,
+      "has_s3_claim": true,
+      "overflow_state": true,
+      "shared_style": false
+    },
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "story",
+      "regression",
+      "restore-final",
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "phase": "final",
+    "portfolio_narrowed": [],
+    "previous": {
+      "modules": [
+        "causal",
+        "targeted-quality",
+        "story",
+        "self-test"
+      ],
+      "phase": "initial",
+      "required_profiles": {
+        "AT-01": "mock",
+        "AT-02": "contract",
+        "AT-03": "mock",
+        "AT-04": "mock",
+        "AT-05": "mock"
+      },
+      "review_roles": [
+        "self-test"
+      ],
+      "tier": "standard"
+    },
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C3",
+        "C5"
+      ],
+      "review-layout": [
+        "L1",
+        "L2",
+        "L3",
+        "L5"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q6"
+      ],
+      "self-test": [
+        "F3-1",
+        "F3-2",
+        "F3-3"
+      ]
+    },
+    "review_roles": [
+      "review-layout",
+      "review-convention",
+      "review-quality",
+      "self-test"
+    ],
+    "risk_triggers": [
+      "shared-boundary",
+      "spec-gap",
+      "visual"
+    ],
+    "schema_version": 1,
+    "tier": {
+      "blocking_triggers": [
+        "shared-boundary"
+      ],
+      "changed_files": 20,
+      "max_changed_files": 5,
+      "restore_tasks": [
+        "1"
+      ],
+      "value": "standard"
+    },
+    "trigger_sources": {
+      "shared-boundary": [
+        "diff"
+      ],
+      "spec-gap": [
+        "agent",
+        "plan"
+      ],
+      "visual": [
+        "diff"
+      ]
+    }
+  }
+}

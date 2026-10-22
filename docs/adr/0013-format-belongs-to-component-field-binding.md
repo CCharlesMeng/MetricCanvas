@@ -1,5 +1,6 @@
 ---
 status: accepted
+revised-by: [0110]
 ---
 
 # 展示格式属于组件字段绑定

@@ -1,12 +1,19 @@
 # @metriccanvas/data-execution
 
 ## .
+ColumnCandidate
+ColumnCandidatesPage
+ColumnCandidatesQuery
 DataGateway
 DataGatewayResult
 DimensionValueCandidate
 DimensionValuesGateway
 DimensionValuesRequest
 DimensionValuesResult
+FilterCandidate
+FilterCandidatesGateway
+FilterCandidatesRequest
+FilterCandidatesResult
 PageDataExecutor
 QueryDiagnosticContext
 RuntimeDataGateway
@@ -14,6 +21,7 @@ createPageDataExecutor
 
 ## ./runtime
 BooleanFilterValue
+ColumnCandidatesRead
 ComputationContext
 ComputationError
 DimensionFilterValue
@@ -30,22 +38,30 @@ SourceRead
 SourceUpdate
 TimePointFilterValue
 TimeRangeFilterValue
+activeSourceIds
 applyComputation
 automaticQueryPageSize
 automaticQueryTableSources
+candidateContextKey
+candidateKey
+candidateView
 compileSources
 composeEffectiveQuery
 computedSnapshots
+createCandidateGatewaySession
 createSourceProgram
 defaultSourceView
 evaluateTableView
 executeQuery
 executionSourceIds
+filterCandidatesRequest
 filterTableRows
 filterTableRowsByHeaders
 initialFilterValues
 initializePageParams
+intersectQueryFilters
 joinAggregate
+localColumnCandidates
 preservedQueryError
 rawSnapshot
 resolveQueryResultInputs
@@ -53,6 +69,7 @@ reusableInitialSnapshot
 searchTableRows
 sortTableRows
 timeFill
+validFilterCandidates
 visibleSourceIds
 
 ## ./dqe

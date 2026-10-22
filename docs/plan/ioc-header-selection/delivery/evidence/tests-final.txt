@@ -1,0 +1,9 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/ui/tests packages/page/tests packages/engine/runtime/tests packages/engine/runtime-ui/tests packages/data-execution/tests tests/local-authoring-skill.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts apps/playground/tests/page-catalog.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/ioc-selection/DataDashboard
+
+
+ Test Files  177 passed (177)
+      Tests  1417 passed (1417)
+   Start at  21:05:07
+   Duration  189.58s (transform 7.22s, setup 0ms, import 84.77s, tests 221.06s, environment 15ms)

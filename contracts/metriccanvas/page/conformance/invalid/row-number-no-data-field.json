@@ -1,0 +1,1205 @@
+{
+  "case": "row-number-no-data-field",
+  "invariant": "table-row-number",
+  "input": {
+    "schemaVersion": "6.48",
+    "id": "table-row-number-page",
+    "layout": "dashboard",
+    "dataSources": {
+      "records": {
+        "fields": {
+          "name": {
+            "type": "string",
+            "role": "dimension",
+            "label": "客户"
+          },
+          "value": {
+            "type": "number",
+            "role": "measure",
+            "label": "金额",
+            "unit": "元"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "name": "客户1",
+              "value": 1
+            },
+            {
+              "name": "客户2",
+              "value": 2
+            },
+            {
+              "name": "客户3",
+              "value": 3
+            },
+            {
+              "name": "客户4",
+              "value": 4
+            },
+            {
+              "name": "客户5",
+              "value": 5
+            },
+            {
+              "name": "客户6",
+              "value": 6
+            },
+            {
+              "name": "客户7",
+              "value": 7
+            },
+            {
+              "name": "客户8",
+              "value": 8
+            },
+            {
+              "name": "客户9",
+              "value": 9
+            },
+            {
+              "name": "客户10",
+              "value": 10
+            },
+            {
+              "name": "客户11",
+              "value": 11
+            },
+            {
+              "name": "客户12",
+              "value": 12
+            },
+            {
+              "name": "客户13",
+              "value": 13
+            },
+            {
+              "name": "客户14",
+              "value": 14
+            },
+            {
+              "name": "客户15",
+              "value": 15
+            },
+            {
+              "name": "客户16",
+              "value": 16
+            },
+            {
+              "name": "客户17",
+              "value": 17
+            },
+            {
+              "name": "客户18",
+              "value": 18
+            },
+            {
+              "name": "客户19",
+              "value": 19
+            },
+            {
+              "name": "客户20",
+              "value": 20
+            },
+            {
+              "name": "客户21",
+              "value": 21
+            },
+            {
+              "name": "客户22",
+              "value": 22
+            },
+            {
+              "name": "客户23",
+              "value": 23
+            },
+            {
+              "name": "客户24",
+              "value": 24
+            },
+            {
+              "name": "客户25",
+              "value": 25
+            }
+          ]
+        }
+      },
+      "sample": {
+        "fields": {
+          "name": {
+            "type": "string",
+            "role": "dimension",
+            "label": "客户"
+          },
+          "value": {
+            "type": "number",
+            "role": "measure",
+            "label": "金额",
+            "unit": "元"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "name": "客户1",
+              "value": 1
+            },
+            {
+              "name": "客户2",
+              "value": 2
+            },
+            {
+              "name": "客户3",
+              "value": 3
+            }
+          ]
+        }
+      },
+      "empty": {
+        "fields": {
+          "name": {
+            "type": "string",
+            "role": "dimension",
+            "label": "客户"
+          },
+          "value": {
+            "type": "number",
+            "role": "measure",
+            "label": "金额",
+            "unit": "元"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": []
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "records-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "客户明细 · 连续编号",
+              "toolbar": {
+                "search": {
+                  "fields": [
+                    "name"
+                  ],
+                  "placeholder": "搜索客户"
+                },
+                "export": {
+                  "format": "xlsx",
+                  "filename": "客户明细"
+                }
+              },
+              "pagination": {
+                "mode": "local",
+                "pageSize": 10,
+                "numbered": true
+              },
+              "columns": [
+                {
+                  "field": "name",
+                  "title": "客户",
+                  "sortable": true,
+                  "width": 160,
+                  "fixed": "left"
+                },
+                {
+                  "kind": "group",
+                  "id": "metrics",
+                  "title": "业务指标",
+                  "children": [
+                    {
+                      "field": "value",
+                      "title": "金额",
+                      "sortable": true,
+                      "width": 160,
+                      "filterable": {
+                        "mode": "numberRange"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "rowNumber": {
+                "fixed": "left",
+                "field": "name"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "embedded",
+        "components": [
+          {
+            "id": "embedded-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "title": "内嵌表格",
+              "pagination": {
+                "mode": "none"
+              },
+              "columns": [
+                {
+                  "field": "name",
+                  "title": "客户",
+                  "sortable": true,
+                  "width": 160,
+                  "fixed": "left"
+                },
+                {
+                  "kind": "group",
+                  "id": "metrics",
+                  "title": "业务指标",
+                  "children": [
+                    {
+                      "field": "value",
+                      "title": "金额",
+                      "sortable": true,
+                      "width": 160,
+                      "filterable": {
+                        "mode": "numberRange"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "rowNumber": {
+                "title": "编号",
+                "width": 80
+              },
+              "variant": "embedded"
+            }
+          }
+        ]
+      },
+      {
+        "id": "forecast-matrix",
+        "components": [
+          {
+            "id": "forecast-matrix-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "title": "预测矩阵表格",
+              "pagination": {
+                "mode": "none"
+              },
+              "columns": [
+                {
+                  "field": "name",
+                  "title": "客户",
+                  "sortable": true,
+                  "width": 160,
+                  "fixed": "left"
+                },
+                {
+                  "kind": "group",
+                  "id": "metrics",
+                  "title": "业务指标",
+                  "children": [
+                    {
+                      "field": "value",
+                      "title": "金额",
+                      "sortable": true,
+                      "width": 160,
+                      "filterable": {
+                        "mode": "numberRange"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "rowNumber": {
+                "title": "编号",
+                "width": 80
+              },
+              "variant": "forecastMatrix"
+            }
+          }
+        ]
+      },
+      {
+        "id": "report-compact",
+        "components": [
+          {
+            "id": "report-compact-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "title": "紧凑报表表格",
+              "pagination": {
+                "mode": "none"
+              },
+              "columns": [
+                {
+                  "field": "name",
+                  "title": "客户",
+                  "sortable": true,
+                  "width": 160,
+                  "fixed": "left"
+                },
+                {
+                  "kind": "group",
+                  "id": "metrics",
+                  "title": "业务指标",
+                  "children": [
+                    {
+                      "field": "value",
+                      "title": "金额",
+                      "sortable": true,
+                      "width": 160,
+                      "filterable": {
+                        "mode": "numberRange"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "rowNumber": {
+                "title": "编号",
+                "width": 80
+              },
+              "variant": "reportCompact"
+            }
+          }
+        ]
+      },
+      {
+        "id": "empty",
+        "components": [
+          {
+            "id": "empty-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "empty"
+            },
+            "props": {
+              "title": "空结果保留序号表头",
+              "toolbar": {
+                "search": {
+                  "fields": [
+                    "name"
+                  ],
+                  "placeholder": "搜索客户"
+                },
+                "export": {
+                  "format": "xlsx",
+                  "filename": "客户明细"
+                }
+              },
+              "pagination": {
+                "mode": "local",
+                "pageSize": 10,
+                "numbered": true
+              },
+              "columns": [
+                {
+                  "field": "name",
+                  "title": "客户",
+                  "sortable": true,
+                  "width": 160,
+                  "fixed": "left"
+                },
+                {
+                  "kind": "group",
+                  "id": "metrics",
+                  "title": "业务指标",
+                  "children": [
+                    {
+                      "field": "value",
+                      "title": "金额",
+                      "sortable": true,
+                      "width": 160,
+                      "filterable": {
+                        "mode": "numberRange"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "rowNumber": {
+                "fixed": "left"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "meta": {
+      "title": "表格自动序号",
+      "description": "合成内联数据；连续编号、排序筛选、固定列及完整导出。"
+    }
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "缺少必填字段 rows"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/series",
+      "message": "缺少必填字段 series"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/xField",
+      "message": "缺少必填字段 xField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/series",
+      "message": "缺少必填字段 series"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber/field",
+      "message": "存在未定义字段 field(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tabs",
+      "message": "缺少必填字段 tabs"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/components",
+      "message": "缺少必填字段 components"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be number"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be number"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be number"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be number"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be number"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/0/label",
+      "message": "缺少必填字段 label"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/0/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/0/sortable",
+      "message": "存在未定义字段 sortable(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/0/width",
+      "message": "存在未定义字段 width(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/0/fixed",
+      "message": "存在未定义字段 fixed(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/1/label",
+      "message": "缺少必填字段 label"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/1/field",
+      "message": "缺少必填字段 field"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/1/kind",
+      "message": "存在未定义字段 kind(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/1/id",
+      "message": "存在未定义字段 id(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/1/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/1/children",
+      "message": "存在未定义字段 children(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/field",
+      "message": "缺少必填字段 field"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/promptTemplate",
+      "message": "缺少必填字段 promptTemplate"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/relatedData",
+      "message": "缺少必填字段 relatedData"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/label",
+      "message": "缺少必填字段 label"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/action",
+      "message": "缺少必填字段 action"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterId",
+      "message": "缺少必填字段 filterId"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/options",
+      "message": "缺少必填字段 options"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/toolbar",
+      "message": "存在未定义字段 toolbar(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pagination",
+      "message": "存在未定义字段 pagination(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowNumber",
+      "message": "存在未定义字段 rowNumber(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0",
+      "message": "must match exactly one schema in oneOf"
+    }
+  ]
+}

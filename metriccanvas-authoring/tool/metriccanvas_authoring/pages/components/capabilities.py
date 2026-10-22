@@ -33,6 +33,8 @@ class AuthoringCapability:
 
 # 显式覆盖产品目录的全部组件；新增产品组件必须在这里补一行，哪怕两项都是 False。
 AUTHORING_CAPABILITIES: Mapping[str, AuthoringCapability] = {
+    "button": AuthoringCapability(assembled=False, data_editable=False),
+    "filterGroup": AuthoringCapability(assembled=False, data_editable=False),
     "reportHeader": AuthoringCapability(assembled=False, data_editable=False),
     "metricCard": AuthoringCapability(assembled=True, data_editable=True),
     "barChart": AuthoringCapability(assembled=True, data_editable=True),

@@ -1,0 +1,488 @@
+{
+  "schemaVersion": "6.49",
+  "id": "tab-content-filtergroup",
+  "meta": {
+    "title": "Tab 混合内容（合成演示）"
+  },
+  "layout": "dashboard",
+  "filters": [
+    {
+      "id": "domestic",
+      "type": "boolean",
+      "label": "仅国内",
+      "default": false
+    },
+    {
+      "id": "orders-region",
+      "type": "dimension",
+      "dimension": "chart_demo_region",
+      "label": "订单对比区域",
+      "default": [
+        "CN"
+      ]
+    },
+    {
+      "id": "revenue-region",
+      "type": "dimension",
+      "dimension": "chart_demo_region",
+      "label": "收入趋势区域",
+      "default": [
+        "OVERSEAS"
+      ]
+    }
+  ],
+  "dataSources": {
+    "orders-data": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "chart_demo_category"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "chart_demo_orders"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "filterBindings": {
+            "orders-region": {
+              "target": "dimension",
+              "queryField": "chart_demo_region"
+            },
+            "domestic": {
+              "target": "boolean",
+              "queryField": "chart_demo_region",
+              "whenTrue": [
+                "CN"
+              ]
+            }
+          },
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "chart_demo_category"
+                ],
+                "output_metrics": [
+                  "chart_demo_orders"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "revenue-data": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "chart_demo_category"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "chart_demo_revenue"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "filterBindings": {
+            "revenue-region": {
+              "target": "dimension",
+              "queryField": "chart_demo_region"
+            },
+            "domestic": {
+              "target": "boolean",
+              "queryField": "chart_demo_region",
+              "whenTrue": [
+                "CN"
+              ]
+            }
+          },
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "chart_demo_category"
+                ],
+                "output_metrics": [
+                  "chart_demo_revenue"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "metrics": {
+      "fields": {
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "amount": 1280
+          }
+        ]
+      }
+    },
+    "entries": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "客户01",
+            "amount": 10
+          },
+          {
+            "name": "客户02",
+            "amount": 20
+          },
+          {
+            "name": "客户03",
+            "amount": 30
+          },
+          {
+            "name": "客户04",
+            "amount": 40
+          },
+          {
+            "name": "客户05",
+            "amount": 50
+          },
+          {
+            "name": "客户06",
+            "amount": 60
+          },
+          {
+            "name": "客户07",
+            "amount": 70
+          },
+          {
+            "name": "客户08",
+            "amount": 80
+          },
+          {
+            "name": "客户09",
+            "amount": 90
+          },
+          {
+            "name": "客户10",
+            "amount": 100
+          },
+          {
+            "name": "客户11",
+            "amount": 110
+          },
+          {
+            "name": "客户12",
+            "amount": 120
+          },
+          {
+            "name": "客户13",
+            "amount": 130
+          },
+          {
+            "name": "客户14",
+            "amount": 140
+          },
+          {
+            "name": "客户15",
+            "amount": 150
+          },
+          {
+            "name": "客户16",
+            "amount": 160
+          },
+          {
+            "name": "客户17",
+            "amount": 170
+          },
+          {
+            "name": "客户18",
+            "amount": 180
+          },
+          {
+            "name": "客户19",
+            "amount": 190
+          },
+          {
+            "name": "客户20",
+            "amount": 200
+          },
+          {
+            "name": "客户21",
+            "amount": 210
+          },
+          {
+            "name": "客户22",
+            "amount": 220
+          },
+          {
+            "name": "客户23",
+            "amount": 230
+          },
+          {
+            "name": "客户24",
+            "amount": 240
+          },
+          {
+            "name": "客户25",
+            "amount": 250
+          },
+          {
+            "name": "客户26",
+            "amount": 260
+          },
+          {
+            "name": "客户27",
+            "amount": 270
+          },
+          {
+            "name": "客户28",
+            "amount": 280
+          },
+          {
+            "name": "客户29",
+            "amount": 290
+          },
+          {
+            "name": "客户30",
+            "amount": 300
+          }
+        ]
+      }
+    },
+    "summary-data": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "chart_demo_category"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "chart_demo_orders"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "filterBindings": {
+            "domestic": {
+              "target": "boolean",
+              "queryField": "chart_demo_region",
+              "whenTrue": [
+                "CN"
+              ]
+            }
+          },
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "chart_demo_category"
+                ],
+                "output_metrics": [
+                  "chart_demo_orders"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "body",
+      "components": [
+        {
+          "id": "analysis",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "经营分析",
+            "contentLayout": "grid",
+            "defaultTab": "overview",
+            "tabs": [
+              {
+                "id": "overview",
+                "label": "概览",
+                "components": [
+                  {
+                    "id": "extra-filter",
+                    "type": "filterGroup",
+                    "layout": {
+                      "span": 12
+                    },
+                    "props": {
+                      "filterId": "orders-region",
+                      "options": [
+                        {
+                          "label": "国内",
+                          "value": "CN"
+                        },
+                        {
+                          "label": "海外",
+                          "value": "OVERSEAS"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "details",
+                "label": "明细",
+                "components": [
+                  {
+                    "id": "revenue-filter",
+                    "type": "filterGroup",
+                    "layout": {
+                      "span": 12
+                    },
+                    "props": {
+                      "filterId": "revenue-region",
+                      "options": [
+                        {
+                          "label": "中国区",
+                          "value": "CN"
+                        },
+                        {
+                          "label": "海外",
+                          "value": "OVERSEAS"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "revenue",
+                    "type": "lineChart",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "revenue-data"
+                    },
+                    "props": {
+                      "title": "收入趋势",
+                      "xField": "category",
+                      "series": [
+                        {
+                          "field": "value",
+                          "label": "收入趋势"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "detail-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "entries"
+                    },
+                    "props": {
+                      "title": "客户明细",
+                      "columns": [
+                        {
+                          "field": "name"
+                        },
+                        {
+                          "field": "amount"
+                        }
+                      ],
+                      "pagination": {
+                        "mode": "local",
+                        "pageSize": 5
+                      },
+                      "toolbar": {
+                        "search": {
+                          "placeholder": "搜索客户",
+                          "fields": [
+                            "name"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "id": "summary",
+                    "type": "aiSummary",
+                    "layout": {
+                      "span": 12
+                    },
+                    "props": {
+                      "title": "AI 总结（合成数据）",
+                      "promptTemplate": "根据合成数据给出一段简短说明。",
+                      "relatedData": {
+                        "orders": {
+                          "source": "summary-data",
+                          "description": "合成订单",
+                          "fields": [
+                            {
+                              "field": "category",
+                              "term": "类别"
+                            },
+                            {
+                              "field": "value",
+                              "term": "订单量"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

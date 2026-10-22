@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "phase": "final",
+  "tier": {
+    "value": "standard",
+    "restore_tasks": [],
+    "blocking_triggers": [
+      "shared-boundary"
+    ],
+    "changed_files": 5,
+    "max_changed_files": 5
+  },
+  "risk_triggers": [
+    "interaction",
+    "shared-boundary",
+    "visual"
+  ],
+  "trigger_sources": {
+    "visual": [
+      "diff",
+      "plan"
+    ],
+    "interaction": [
+      "plan"
+    ],
+    "shared-boundary": [
+      "diff",
+      "plan"
+    ]
+  },
+  "portfolio_narrowed": [],
+  "facts": {
+    "cross_page": false,
+    "shared_style": false,
+    "overflow_state": true,
+    "frozen_r": false,
+    "frozen_r5": false,
+    "frozen_r6": false,
+    "has_f3": true,
+    "has_s3_claim": false
+  },
+  "modules": [
+    "causal",
+    "targeted-quality",
+    "render",
+    "regression",
+    "review-layout",
+    "review-convention",
+    "review-quality"
+  ],
+  "review_roles": [
+    "review-layout",
+    "review-convention",
+    "review-quality"
+  ],
+  "review_dimensions": {
+    "review-layout": [
+      "L2",
+      "L3",
+      "L5"
+    ],
+    "review-convention": [
+      "C3",
+      "C5"
+    ],
+    "review-quality": [
+      "Q2",
+      "Q6"
+    ]
+  },
+  "claims": [
+    {
+      "id": "AT-P1",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "test_case",
+      "task": "点击标签文字/空白/箭头后面板保持打开；再次触发关闭；删除只删除；禁用不打开",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-P2",
+      "verification_scope": "S1_COMPONENT",
+      "verification_method": "test_case",
+      "task": "输入32px、标签灰底深字、箭头灰色16px垂直居中、圆角6px；搜索和树行间距取冻结官方值",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "AT-P3",
+      "verification_scope": "S2_PAGE",
+      "verification_method": "test_case",
+      "task": "实际IOC客户分类与行业均可点开；浮层不裁切，搜索、标签滚动、窄屏和只读保持正确",
+      "modules": [
+        "causal",
+        "targeted-quality"
+      ],
+      "required_profile": "mock",
+      "status": "UNVERIFIED"
+    }
+  ],
+  "previous": {
+    "phase": "final",
+    "tier": "standard",
+    "modules": [
+      "causal",
+      "targeted-quality",
+      "render",
+      "regression",
+      "review-convention",
+      "review-quality"
+    ],
+    "review_roles": [
+      "review-convention",
+      "review-quality"
+    ],
+    "required_profiles": {
+      "AT-P1": "mock",
+      "AT-P2": "mock",
+      "AT-P3": "mock"
+    }
+  }
+}

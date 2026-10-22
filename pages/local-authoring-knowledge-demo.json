@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "6.44",
+  "id": "local-authoring-knowledge-demo",
+  "layout": "dashboard",
+  "meta": {
+    "title": "本地创作：指标匹配与字段呈现",
+    "description": "内联合成数据；用于数据识别、精确查阅及呈现回归，不代表真实查询。"
+  },
+  "dataSources": {
+    "business-summary": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "amount": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "unit": "元",
+          "label": "签约金额"
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "unit": "%",
+          "label": "达成率"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "华东示范区",
+            "amount": 42000000,
+            "rate": 42
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "overview",
+      "components": [
+        {
+          "id": "amount-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "business-summary"
+          },
+          "props": {
+            "title": "签约概况",
+            "rows": [
+              {
+                "label": "签约金额",
+                "valueField": {
+                  "data": "main",
+                  "field": "amount",
+                  "format": "compact-wan-1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "rate-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "business-summary"
+          },
+          "props": {
+            "title": "目标进度",
+            "rows": [
+              {
+                "label": "达成率",
+                "valueField": {
+                  "data": "main",
+                  "field": "rate",
+                  "format": "percent-1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "summary-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "business-summary"
+          },
+          "props": {
+            "title": "口径核对明细",
+            "columns": [
+              {
+                "field": "region",
+                "title": "区域",
+                "width": 180
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "amount",
+                  "format": "compact-wan-1"
+                },
+                "title": "签约金额",
+                "width": 200
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "rate",
+                  "format": "percent-1"
+                },
+                "title": "达成率",
+                "width": 160
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

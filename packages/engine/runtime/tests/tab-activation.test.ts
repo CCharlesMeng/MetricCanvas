@@ -83,7 +83,7 @@ it('a contradictory default condition never displays nonempty embedded initial r
   if (source.type !== 'query') throw Error('fixture');
   source.initial = { capturedAt: '2026-10-22T00:00:00Z', rows: [{ chart_demo_category: '旧海外结果', chart_demo_revenue: 999 }] };
   const gateway: DataGateway = { async fetchData() { return { rows: [] }; } };
-  const stream = orchestrate(page, gateway, undefined, undefined, undefined, { analysis: 'details' });
+  const stream = orchestrate(page, gateway, undefined, undefined, undefined, undefined, { analysis: 'details' });
   let snapshots: PageDataSnapshots = new Map();
   const stop = stream.subscribe(next => snapshots = next);
   expect(snapshots.get('revenue-data')).toEqual({ status: 'empty', totalCount: 0 });

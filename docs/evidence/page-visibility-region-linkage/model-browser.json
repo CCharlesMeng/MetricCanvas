@@ -1,0 +1,77 @@
+{
+  "ok": true,
+  "pageId": "main-flow-report",
+  "baseUrl": "local-http-fixture",
+  "viewports": [
+    1440,
+    640
+  ],
+  "dqeCalls": 7,
+  "measurements": [
+    {
+      "width": 1440,
+      "geometry": {
+        "left": 460,
+        "right": 1160,
+        "scrollWidth": 700,
+        "clientWidth": 700,
+        "cells": [
+          {
+            "left": 472,
+            "right": 1148,
+            "top": 28,
+            "bottom": 92,
+            "height": 64
+          },
+          {
+            "left": 504,
+            "right": 1116,
+            "top": 213,
+            "bottom": 483,
+            "height": 270
+          },
+          {
+            "left": 504,
+            "right": 1116,
+            "top": 493,
+            "bottom": 691,
+            "height": 198
+          }
+        ]
+      }
+    },
+    {
+      "width": 640,
+      "geometry": {
+        "left": 60,
+        "right": 640,
+        "scrollWidth": 580,
+        "clientWidth": 580,
+        "cells": [
+          {
+            "left": 72,
+            "right": 628,
+            "top": 28,
+            "bottom": 92,
+            "height": 64
+          },
+          {
+            "left": 104,
+            "right": 596,
+            "top": 213,
+            "bottom": 483,
+            "height": 270
+          },
+          {
+            "left": 104,
+            "right": 596,
+            "top": 493,
+            "bottom": 691,
+            "height": 198
+          }
+        ]
+      }
+    }
+  ],
+  "errors": []
+}

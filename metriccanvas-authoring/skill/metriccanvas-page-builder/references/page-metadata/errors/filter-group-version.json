@@ -1,0 +1,69 @@
+{
+  "case": "filter-group-version",
+  "invariant": "filter-group",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐 由 6.45 引入，文档声明的是 6.44",
+      "paths": [
+        "/sections/0/components/0",
+        "/sections/3/components/0/props/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "id": "channel-filter",
+            "type": "filterGroup",
+            "layout": {
+              "span": 12
+            },
+            "visibleWhen": {
+              "filter": "scope",
+              "part": "values",
+              "op": "containsAny",
+              "values": [
+                "…（共1项）"
+              ]
+            },
+            "props": {
+              "filterId": "channel",
+              "options": [
+                "…（共2项）"
+              ]
+            }
+          }
+        ]
+      },
+      "…",
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                {
+                  "id": "card-filter",
+                  "type": "filterGroup",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "filterId": "card-region",
+                    "options": [
+                      "…（共2项）"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/filter-group-version.json"
+}

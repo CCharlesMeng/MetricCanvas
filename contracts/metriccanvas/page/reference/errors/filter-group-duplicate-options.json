@@ -1,0 +1,36 @@
+{
+  "case": "filter-group-duplicate-options",
+  "invariant": "filter-group",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "筛选按钮组选项的 value 不得重复",
+      "paths": [
+        "/sections/0/components/0/props/options"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "options": [
+                {
+                  "label": "直营",
+                  "value": "CN"
+                },
+                {
+                  "label": "加盟",
+                  "value": "CN"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/filter-group-duplicate-options.json"
+}

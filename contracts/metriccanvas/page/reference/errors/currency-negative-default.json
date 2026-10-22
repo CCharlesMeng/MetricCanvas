@@ -1,0 +1,25 @@
+{
+  "case": "currency-negative-default",
+  "invariant": "currency-selection",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "默认范围不符合约束",
+      "paths": [
+        "/filters/2/default"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      "…",
+      {
+        "default": {
+          "from": -1
+        }
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/currency-negative-default.json"
+}

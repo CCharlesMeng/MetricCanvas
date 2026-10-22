@@ -1,0 +1,94 @@
+[WebServer] (node:98228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 57 tests using 2 workers
+
+(node:98288) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:98289) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 tests/browser/ioc-currency.spec.ts:7:1 › amount draft cancel, strict constraints, presets and basic-unit query (1.5s)
+  ✓   1 tests/browser/ioc-header-business.spec.ts:5:1 › closed enums preserve UI codes, single choice, all-unrestricted, and boolean false (1.9s)
+  ✓   4 tests/browser/ioc-header-business.spec.ts:17:1 › explicit structure tree has own values per level; legacy tree still selects leaves (1.3s)
+  ✓   3 tests/browser/ioc-currency.spec.ts:17:1 › currency clears amount in one commit, closes old draft and selects static USD data and workbook (1.7s)
+  ✓   5 tests/browser/ioc-header-business.spec.ts:24:1 › time context intersects trusted candidates; empty intersection waits explicit clear; denied and unconfigured remain gated (997ms)
+  ✓   6 tests/browser/ioc-header.spec.ts:5:1 › ordinary header consumes its real page, period anchor and queries; narrow layout (1.2s)
+  ✓   7 tests/browser/ioc-header-business.spec.ts:35:1 › detail enum stays private and single month still emits compact mtime (853ms)
+  ✓   9 tests/browser/ioc-header-business.spec.ts:39:1 › required structural tree drafts a new level until one value can be committed atomically (1.1s)
+  ✓   8 tests/browser/ioc-header.spec.ts:18:1 › dense measured collapse, candidate retry, recursive gate and export safety (1.6s)
+  ✓  11 tests/browser/ioc-header.spec.ts:45:1 › detail single month, optional facts, legal back intent and readonly update (1.5s)
+  ✓  12 tests/browser/ioc-header.spec.ts:53:1 › titleless header keeps a discrete January/March predicate (1.2s)
+  ✓  10 tests/browser/ioc-navigation-layout.spec.ts:4:1 › three actual navigation pages remain usable at wide and narrow viewports (3.5s)
+  ✓  13 tests/browser/ioc-header.spec.ts:57:1 › selected URL value waits for candidates; failed candidates retry current request without broadening (1.0s)
+  ✓  14 tests/browser/ioc-navigation-lifecycle.spec.ts:3:1 › obsolete projection is aborted and cannot replace the new integrating application contract (802ms)
+  ✓  15 tests/browser/ioc-header.spec.ts:68:1 › two embedded instances own their month anchors and destroy independently (981ms)
+  ✓  16 tests/browser/ioc-navigation-lifecycle.spec.ts:10:1 › withdrawn target-input capability never falls through to an unvalidated browser URL (813ms)
+  ✓  18 tests/browser/ioc-time.spec.ts:8:1 › day/month/ISO week switch, URL priority, memory and workbook all use the selected static case (1.8s)
+  ✓  17 tests/browser/ioc-navigation.spec.ts:4:1 › actual overview/list/detail pass explicit URL inputs and destination changes remain independent (2.7s)
+  ✓  19 tests/browser/ioc-time.spec.ts:17:184 › rejects malformed mode URL period.mode=isoWeek&period.from=2026-10-06&period.to=2026-10-12 (697ms)
+  ✓  21 tests/browser/ioc-time.spec.ts:17:184 › rejects malformed mode URL period.mode=month&period.from=2026-01 (690ms)
+  ✓  20 tests/browser/ioc-navigation.spec.ts:11:1 › quarter does not truncate to detail month and empty row cannot fall back to a stale href key (986ms)
+  ✓  23 tests/browser/ioc-navigation.spec.ts:14:1 › missing target capability stays non-navigable (838ms)
+  ✓  22 tests/browser/ioc-time.spec.ts:17:184 › rejects malformed mode URL period.mode=bad&period.from=2026-01&period.to=2026-03 (896ms)
+  ✓  24 tests/browser/ioc-navigation.spec.ts:17:181 › destination invalid input stops query project-name=X&origin=直接&month=2026-09 (692ms)
+  ✓  25 tests/browser/ioc-time.spec.ts:20:1 › presets use inclusive dates, explicit anchor and reject blocked interior dates without applying drafts (1.0s)
+  ✓  26 tests/browser/ioc-navigation.spec.ts:17:181 › destination invalid input stops query project-id=P&project-name=X&origin=直接&month=bad (659ms)
+  ✓  27 tests/browser/ioc-time.spec.ts:26:1 › trusted latest/complete are separate, URL wins initial, subscriptions preserve selection and identity stops the old instance (1.0s)
+  ✓  28 tests/browser/ioc-navigation.spec.ts:17:181 › destination invalid input stops query project-id=P&project-name=X&origin=直接&month=2026-09&currency=BAD (743ms)
+  ✓  29 tests/browser/ioc-time.spec.ts:33:1 › latest initial uses complete period and missing/future choices remain unapplied (854ms)
+  ✓  31 tests/browser/ioc-time.spec.ts:38:1 › calendarWindow carries 12 months and a discrete 1/3 month selection; mode change reconciles model only after V2 (937ms)
+  ✓  30 tests/browser/navigation.spec.ts:5:1 › 无导航适配的 HTML 宿主完成 IOC 概览→清单→详情及浏览器返回 (2.3s)
+  ✓  32 tests/browser/ioc-time.spec.ts:44:1 › readonly and responsive mode popup stay within 1440/1024/390 and close on readonly update (1.3s)
+  ✓  33 tests/browser/navigation.spec.ts:28:1 › 层级区域筛选按当前层级选谓词字段，三层各自命中 (1.3s)
+  ✓  34 tests/browser/ioc-time.spec.ts:49:1 › a legal URL overrides an unavailable dynamic initial period before default validation (753ms)
+  ✓  36 tests/browser/ioc-time.spec.ts:54:1 › calendar window without V2 stays unavailable and never retries the legacy candidate port (807ms)
+  ✓  35 tests/browser/navigation.spec.ts:43:1 › 丢单表跳项目详情并传页面月份，保留行立项状态 (1.5s)
+  ✓  37 tests/browser/ioc-time.spec.ts:59:39 › anchor fact unavailable invalidates an in-flight candidate success (983ms)
+  ✓  38 tests/browser/navigation.spec.ts:64:1 › 查询分页与服务端排序共存，排序作用于全表而不是当前页 (996ms)
+  ✓  39 tests/browser/ioc-time.spec.ts:59:39 › anchor fact unavailable invalidates an in-flight candidate error (964ms)
+  ✓  41 tests/browser/period-filter.spec.ts:5:41 › period selection queries, restoration and readonly rolling range (date) (1.4s)
+  ✓  40 tests/browser/navigation.spec.ts:84:1 › 时间点、布尔与数值区间筛选各自下推到查询 (2.1s)
+  ✓  43 tests/browser/navigation.spec.ts:114:1 › 云行业选定后云子行业候选按上游收窄 (1.1s)
+  ✓  42 tests/browser/period-filter.spec.ts:5:41 › period selection queries, restoration and readonly rolling range (month) (1.5s)
+  ✘  44 tests/browser/navigation.spec.ts:136:1 › 相对/绝对链接、三种绑定、复制地址、新标签和缺值都遵循原生 anchor (1.1s)
+  ✓  45 tests/browser/period-filter.spec.ts:44:1 › overflow panel and compact readonly consume the same period declaration (1.3s)
+(node:99214) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  46 tests/browser/period-filter.spec.ts:67:1 › default Dashboard period picker disables future years, quarters and months (913ms)
+  ✓  47 tests/browser/navigation.spec.ts:171:1 › 图表直接点击执行默认导航，不依赖宿主回调 (1.2s)
+  ✓  48 tests/browser/section-navigation.spec.ts:4:1 › two query-backed instances keep selection isolated and reuse data across group changes (975ms)
+  ✓  49 tests/browser/navigation.spec.ts:185:1 › 宿主可选接管，同文档更换初始参数重新初始化，省略接管恢复默认链接 (951ms)
+  ✓  50 tests/browser/section-navigation.spec.ts:54:1 › content groups retain table state; search resets hidden tables; anchors remain within the instance (1.2s)
+  ✓  51 tests/browser/navigation.spec.ts:212:1 › 指标值链接从实际点击的数据槽取行参数 (784ms)
+  ✓  52 tests/browser/table-toolbar.spec.ts:8:1 › table-local search finds a later row and downloads all matches while another table remains independent (838ms)
+  ✓  53 tests/browser/table-toolbar.spec.ts:31:1 › query search forwards mapped fields and full export traverses every matching page (706ms)
+  ✓  54 tests/browser/table-toolbar.spec.ts:56:1 › unsupported query search remains clearable after failure (611ms)
+  ✓  55 tests/browser/table-toolbar.spec.ts:76:1 › variants and Tab tables retain individual search on narrow screens without titles (762ms)
+  ✓  56 tests/browser/table-toolbar.spec.ts:92:1 › cancelling a complete-data fetch prevents a late response from downloading a file (631ms)
+  ✓  57 tests/browser/table-toolbar.spec.ts:117:1 › detail tables search and export only their scoped complete result (717ms)
+
+
+  1) tests/browser/navigation.spec.ts:136:1 › 相对/绝对链接、三种绑定、复制地址、新标签和缺值都遵循原生 anchor ─────────────────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "http://127.0.0.1:4175/pages/ioc-project-detail?tab=sales&mtime=2026-04&region=SH&region=BJ#history"
+    Received: "http://127.0.0.1:4212/pages/ioc-project-detail?tab=sales&mtime=2026-04&region=SH&region=BJ#history"
+
+      157 |   const relative=page.getByRole('link',{name:'相对 →',exact:true});
+      158 |   await expect(relative).toHaveAttribute('href','ioc-project-detail?tab=sales&mtime=2026-04&region=SH&region=BJ#history');
+    > 159 |   expect(await relative.evaluate(a=>(a as HTMLAnchorElement).href)).toBe('http://127.0.0.1:4175/pages/ioc-project-detail?tab=sales&mtime=2026-04&region=SH&region=BJ#history');
+          |                                                                     ^
+      160 |   await expect(page.getByRole('link',{name:'缺值 →',exact:true})).toHaveAttribute('href','/pages/ioc-project-detail');
+      161 |   const popupPromise=context.waitForEvent('page');
+      162 |   await relative.click({modifiers:['ControlOrMeta']});
+        at /Users/moon/.codex/worktrees/ioc-header-b0-b1/DataDashboard/packages/embed/tests/browser/navigation.spec.ts:159:69
+
+    Error Context: test-results/navigation-相对-绝对链接、三种绑定、复制地址、新标签和缺值都遵循原生-anchor/error-context.md
+
+  1 failed
+    tests/browser/navigation.spec.ts:136:1 › 相对/绝对链接、三种绑定、复制地址、新标签和缺值都遵循原生 anchor ──────────────────
+  56 passed (38.2s)
+undefined
+/Users/moon/.codex/worktrees/ioc-header-b0-b1/DataDashboard/packages/embed:
+[ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL] Command failed with exit code 1: playwright test ioc-navigation.spec.ts ioc-navigation-lifecycle.spec.ts ioc-navigation-layout.spec.ts navigation.spec.ts ioc-header.spec.ts ioc-header-business.spec.ts ioc-time.spec.ts ioc-currency.spec.ts period-filter.spec.ts table-toolbar.spec.ts '--workers=2'

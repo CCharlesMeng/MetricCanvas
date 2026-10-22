@@ -62,7 +62,7 @@ it('preserves an upstream page window and executes only the selected table depen
   const component = page.sections.flatMap(section => section.components).find(component => component.id === 'details-high-table') as TableComponent;
   const queries = new Map<string, EffectiveQuery>();
   for (const [id, source] of Object.entries(page.dataSources)) if (source.source.type === 'query') queries.set(id, {
-    language: 'dqe', body: source.source.query.body, fieldMappings: source.fields, filterValues: [],
+    language: 'dqe', body: source.source.query.body!, fieldMappings: source.fields, filterValues: [],
     ...(id === 'projects' ? { pagination: { offset: 10, limit: 5 } } : {})
   });
   const calls: string[] = [];
@@ -89,4 +89,20 @@ it('cancels preparation even when a gateway ignores the abort signal', async () 
     controller, state: { currentYear: 2026, filters: new Map(), tables: {}, headerFilters: {} }, gateway: { fetchData: () => new Promise(() => {}) } });
   controller.abort(new Error('cancelled'));
   await expect(promise).rejects.toThrow('cancelled');
+});
+
+it('exports generated row numbers across all sorted matches with a merged header', async () => {
+  const input = JSON.parse(readFileSync(new URL('../../../../pages/table-row-number.json', import.meta.url), 'utf8'));
+  const parsed = parsePage(input); if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
+  const page = parsed.page; const component = page.sections[0].components[0] as TableComponent;
+  const data = await prepareTableExport({ page, component,
+    state: { currentYear:2026, filters:new Map(), tables:{[component.id]:{pageIndex:2,sort:[{field:'value',direction:'desc'}],headerFilters:{},searchQuery:'客户2'}}, headerFilters:{} },
+    queries:new Map(), controller:new AbortController(), gateway:{async fetchData(){throw new Error('inline');}} });
+  const bytes = await encodeTableWorkbook(component, data, new AbortController().signal);
+  const workbook = new ExcelJS.Workbook(); await workbook.xlsx.load(bytes.buffer); const sheet = workbook.worksheets[0];
+  expect(sheet.getCell('A1').value).toBe('序号'); expect(sheet.getCell('A2').isMerged).toBe(true);
+  expect(sheet.getCell('C1').value).toBe('业务指标');
+  expect(sheet.getCell('A3').value).toBe(1); expect(sheet.getCell('B3').value).toBe('客户25');
+  expect(sheet.getCell('A9').value).toBe(7); expect(sheet.getCell('B9').value).toBe('客户2');
+  expect(data.main?.snapshot.rows[0]).not.toHaveProperty('rowNumber');
 });

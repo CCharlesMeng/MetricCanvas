@@ -21,7 +21,7 @@ export function overviewMapLedExample(schemaVersion: string) {
   }});
   return {
     schemaVersion, id: 'overview-map-led', layout: 'dashboard', meta: {title: '市场概览（布局演示）'},
-    dashboardToolbar: 'visible',
+    iocHeader: {identity:{title:'市场概览（布局演示）'},presentation:{layout:'inline'}},
     dataSources: {
       totals: {fields: {visits: measure('访问'), orders: measure('订单'), completed: measure('完成')},
         source: {type: 'inline', rows: [{visits: 240, orders: 60, completed: 18}]}},

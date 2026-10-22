@@ -1,0 +1,379 @@
+{
+  "baseline_sha256": "cf5a3c5966bedf62647d9bbd0427ee29f4fa82fbbf930b86e913a8e68f6a1cd7",
+  "contract_sha256": "5d8e792dc846a0a00f5806246a92633c7f44098fb8b6b3ca75c970944c28a409",
+  "rules": [
+    {
+      "baseline_id": "R3-1",
+      "check_mode": "exact",
+      "expected": {
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "line-height": "21px"
+      },
+      "id": "R3-1-ordinary-font",
+      "scenario": "initial",
+      "subject": "ordinary body typography",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-2",
+      "check_mode": "exact",
+      "expected": {
+        "background-color": "rgb(245, 245, 245)",
+        "color": "rgb(89, 89, 89)",
+        "font-weight": "600",
+        "height": "40px",
+        "padding": "4px 16px"
+      },
+      "id": "R3-2-ordinary-header",
+      "scenario": "initial",
+      "subject": "ordinary header",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-3",
+      "check_mode": "exact",
+      "expected": {
+        "background-color": "rgb(219, 219, 219)",
+        "height": "16px",
+        "width": "1px"
+      },
+      "id": "R3-3-ordinary-divider",
+      "scenario": "initial",
+      "subject": "ordinary header short divider",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-3",
+      "check_mode": "exact",
+      "expected": {
+        "border-bottom": "1px solid rgb(240, 240, 240)",
+        "border-right-width": "0px"
+      },
+      "id": "R3-3-ordinary-borders",
+      "scenario": "initial",
+      "subject": "ordinary body horizontal-only borders",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-4",
+      "check_mode": "exact",
+      "expected": {
+        "height": "48px",
+        "padding": "12px 16px"
+      },
+      "id": "R3-4-ordinary-body",
+      "scenario": "initial",
+      "subject": "ordinary body cell",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-5",
+      "check_mode": "exact",
+      "expected": {
+        "fill": "rgb(128, 128, 128)",
+        "width": "16px"
+      },
+      "id": "R3-5-ordinary-sort",
+      "scenario": "initial",
+      "subject": "ordinary default sort SVG",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-1",
+      "check_mode": "exact",
+      "expected": {
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "line-height": "21px"
+      },
+      "id": "R3-1-forecast-font",
+      "scenario": "initial",
+      "subject": "forecast body typography",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-2",
+      "check_mode": "exact",
+      "expected": {
+        "background-color": "rgb(245, 245, 245)",
+        "color": "rgb(89, 89, 89)",
+        "font-weight": "600",
+        "height": "40px",
+        "padding": "4px 16px"
+      },
+      "id": "R3-2-forecast-header",
+      "scenario": "initial",
+      "subject": "forecast header",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-3",
+      "check_mode": "exact",
+      "expected": {
+        "background-color": "rgb(219, 219, 219)",
+        "height": "16px",
+        "width": "1px"
+      },
+      "id": "R3-3-forecast-divider",
+      "scenario": "initial",
+      "subject": "forecast header short divider",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-3",
+      "check_mode": "exact",
+      "expected": {
+        "border-bottom": "1px solid rgb(240, 240, 240)",
+        "border-right-width": "0px"
+      },
+      "id": "R3-3-forecast-borders",
+      "scenario": "initial",
+      "subject": "forecast body horizontal-only borders",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-4",
+      "check_mode": "exact",
+      "expected": {
+        "height": "48px",
+        "padding": "12px 16px"
+      },
+      "id": "R3-4-forecast-body",
+      "scenario": "initial",
+      "subject": "forecast body cell",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-5",
+      "check_mode": "exact",
+      "expected": {
+        "fill": "rgb(128, 128, 128)",
+        "width": "16px"
+      },
+      "id": "R3-5-forecast-sort",
+      "scenario": "initial",
+      "subject": "forecast default sort SVG",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-1",
+      "check_mode": "exact",
+      "expected": {
+        "color": "rgb(25, 25, 25)",
+        "font-family": "Helvetica, Arial, PingFangSC-Regular, \"Hiragino Sans GB\", \"Microsoft YaHei\", 微软雅黑, \"Microsoft JhengHei\"",
+        "font-size": "14px",
+        "line-height": "21px"
+      },
+      "id": "R3-1-embedded-font",
+      "scenario": "initial",
+      "subject": "embedded body typography",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-2",
+      "check_mode": "exact",
+      "expected": {
+        "background-color": "rgb(245, 245, 245)",
+        "color": "rgb(89, 89, 89)",
+        "font-weight": "600",
+        "height": "40px",
+        "padding": "4px 16px"
+      },
+      "id": "R3-2-embedded-header",
+      "scenario": "initial",
+      "subject": "embedded header",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-3",
+      "check_mode": "exact",
+      "expected": {
+        "background-color": "rgb(219, 219, 219)",
+        "height": "16px",
+        "width": "1px"
+      },
+      "id": "R3-3-embedded-divider",
+      "scenario": "initial",
+      "subject": "embedded header short divider",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-3",
+      "check_mode": "exact",
+      "expected": {
+        "border-bottom": "1px solid rgb(240, 240, 240)",
+        "border-right-width": "0px"
+      },
+      "id": "R3-3-embedded-borders",
+      "scenario": "initial",
+      "subject": "embedded body horizontal-only borders",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-4",
+      "check_mode": "exact",
+      "expected": {
+        "height": "48px",
+        "padding": "12px 16px"
+      },
+      "id": "R3-4-embedded-body",
+      "scenario": "initial",
+      "subject": "embedded body cell",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-5",
+      "check_mode": "exact",
+      "expected": {
+        "fill": "rgb(128, 128, 128)",
+        "width": "16px"
+      },
+      "id": "R3-5-embedded-sort",
+      "scenario": "initial",
+      "subject": "embedded default sort SVG",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-5",
+      "check_mode": "exact",
+      "expected": {
+        "fill": "rgb(25, 25, 25)",
+        "width": "16px"
+      },
+      "id": "R3-5-active-sort",
+      "scenario": "descending",
+      "subject": "descending SVG style",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R3-5",
+      "id": "R3-5-official-paths",
+      "static_check": {
+        "kind": "text",
+        "value": "m8 1.26.15.01c.18.03.36.1.52.23l.05.04 3.85 4.18.07.1c.28.4.22.95-.16 1.26l-.1.07c-.17.11-.36.17-.57.17H4.19l-.12-.01c-.5-.06-.88-.46-.88-.96l.01-.12c.02-.19.11-.38.24-.52l3.81-4.15c.2-.18.47-.3.75-.3zm.01 1.01h-.02L4.24 6.34h7.52L8.02 2.28h.01l-.02-.01zm3.8 5.92c.56 0 .99.44.99.97 0 .23-.08.46-.25.64l-3.79 4.13c-.36.4-.99.44-1.41.08l-.05-.02-3.86-4.2a.946.946 0 0 1 .08-1.36c.18-.16.42-.24.67-.24h7.62zm-.05 1H4.24l3.75 4.07h.02l3.75-4.07z"
+      },
+      "subject": "official SVG vector paths"
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "exact",
+      "expected": {
+        "box-shadow": "rgba(0, 0, 0, 0.2) 0px 2px 12px 0px",
+        "min-width": "270px"
+      },
+      "id": "R4-1-panel",
+      "scenario": "open-number-filter",
+      "subject": "open filter panel",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R4-1",
+      "check_mode": "exact",
+      "expected": {
+        "fill": "rgb(25, 25, 25)",
+        "width": "14px"
+      },
+      "id": "R4-1-open-icon",
+      "scenario": "open-number-filter",
+      "subject": "open/hover filter icon",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R4-2",
+      "check_mode": "exact",
+      "expected": {
+        "box-shadow": "rgba(0, 0, 0, 0.15) 10px 0px 8px -8px inset",
+        "width": "30px"
+      },
+      "id": "R4-2-left-shadow",
+      "scenario": "narrow-scroll",
+      "subject": "scrolled fixed left boundary",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R5-1",
+      "check_mode": "exact",
+      "expected": {
+        "align-items": "center",
+        "display": "flex",
+        "justify-content": "center",
+        "min-height": "60px",
+        "padding": "60px 0px"
+      },
+      "id": "R5-1-empty",
+      "scenario": "empty-search",
+      "subject": "empty state block",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R6-1",
+      "check_mode": "overflow",
+      "id": "R6-1-page-overflow",
+      "scenario": "narrow-scroll",
+      "subject": "390px document overflow",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R6-1",
+      "check_mode": "overlap",
+      "id": "R6-1-fixed-banks-overlap",
+      "scenario": "narrow-fixed-overflow",
+      "subject": "390px oversized fixed banks do not overlap",
+      "tolerance": {
+        "css_px": 0.1
+      }
+    }
+  ],
+  "schema_version": 3
+}

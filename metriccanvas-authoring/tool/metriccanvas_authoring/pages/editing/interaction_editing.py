@@ -1,10 +1,11 @@
+from metriccanvas_authoring.pages.components.field_bindings import binding_keys
 """Atomic dimension-filter bindings and table-link navigation over trusted pages."""
 from copy import deepcopy
 from metriccanvas_authoring.bundle_info import load_bundle_info
 from metriccanvas_authoring.pages.components.component_editing import EditFailure, component_by_id
 from metriccanvas_authoring.pages.validation.page_validation import _resolved_fields
 
-FILTER_PROPERTIES = {'dimension','label','emptyLabel','display','visible','default'}
+FILTER_PROPERTIES = {'dimension','label','emptyLabel','display','visible','default','selection','options','treeSelection','hint','hierarchy','hierarchyPicker','defaultLevel','initialParam','dependsOn','candidateContext','candidateWindow','clearOnChangeOf'}
 
 
 def _filter(page,filter_id):
@@ -12,6 +13,14 @@ def _filter(page,filter_id):
     if existing is None:raise EditFailure('FILTER_NOT_FOUND','/filterId')
     if existing['type']!='dimension':raise EditFailure('DIMENSION_FILTER_REQUIRED','/filterId')
     return existing
+
+
+def _dimension_binding(binding, fields):
+    mapped = {f.get('queryField') for f in fields.values() if f.get('role') == 'dimension'}
+    candidates = list(binding.get('levelQueryFields', {}).values()) if 'levelQueryFields' in binding else [binding['queryField']]
+    if any(field not in mapped for field in candidates):
+        raise EditFailure('FILTER_QUERY_FIELD_UNVERIFIED', '/bindings')
+    return {'target': 'dimension', **{key: deepcopy(binding[key]) for key in ('queryField', 'levelQueryFields') if key in binding}}
 
 
 def _replace_bindings(page,filter_id,bindings):
@@ -25,13 +34,19 @@ def _replace_bindings(page,filter_id,bindings):
         query=source['source']['query']
         if query['language']!='dqe':raise EditFailure('FILTER_QUERY_LANGUAGE_UNSUPPORTED','/bindings')
         fields,_,_= _resolved_fields(source['fields'],'')
-        if not any(f.get('role')=='dimension' and f.get('queryField')==binding['queryField'] for f in fields.values()):
-            raise EditFailure('FILTER_QUERY_FIELD_UNVERIFIED','/bindings')
-        desired[source_id]={'target':'dimension','queryField':binding['queryField']}
+        desired[source_id] = _dimension_binding(binding, fields)
     # The full desired binding set is explicit; only old/new members for this filter change.
     for source_id,source in page.get('dataSources',{}).items():
         if source['source']['type']!='query':continue
         query=source['source']['query']
+        if 'timeModes' in query:
+            for leaf in query['timeModes']['cases'].values():
+                if source_id in desired:
+                    leaf.setdefault('filterBindings', {})[filter_id] = deepcopy(desired[source_id])
+                else:
+                    leaf.get('filterBindings', {}).pop(filter_id, None)
+            source['source'].pop('initial', None)
+            continue
         if source_id in desired:
             query.setdefault('filterBindings',{})[filter_id]=desired[source_id]
         elif filter_id in query.get('filterBindings',{}):
@@ -39,12 +54,21 @@ def _replace_bindings(page,filter_id,bindings):
             if not query['filterBindings']:query.pop('filterBindings')
 
 
+def _filter_version(page, declaration):
+    if any(key in declaration for key in ('selection', 'options', 'treeSelection', 'candidateContext', 'candidateWindow', 'hint', 'clearOnChangeOf', 'hierarchy')):
+        page['schemaVersion'] = load_bundle_info()['pageSchemaVersion']
+
+
 def add_dimension_filter(page,op):
     if any(f['id']==op['filterId'] for f in page.get('filters',[])):
         raise EditFailure('FILTER_ID_EXISTS','/filterId')
-    declaration={'id':op['filterId'],'type':'dimension',**{k:deepcopy(op[k]) for k in FILTER_PROPERTIES if k in op}}
+    flat = {k: deepcopy(op[k]) for k in FILTER_PROPERTIES if k in op and k != 'dependsOn'}
+    nested = op.get('declaration', {})
+    if flat.keys() & nested.keys(): raise EditFailure('FILTER_DECLARATION_DUPLICATE', '/declaration')
+    declaration = {'id': op['filterId'], 'type': 'dimension', **flat, **deepcopy(nested)}
     _replace_bindings(page,op['filterId'],op['bindings'])
     page.setdefault('filters',[]).append(declaration)
+    _filter_version(page, declaration)
     return []
 
 
@@ -54,6 +78,7 @@ def update_dimension_filter(page,op):
         raise EditFailure('HIERARCHICAL_DIMENSION_CHANGE_UNSUPPORTED','/changes/dimension')
     declaration.update(deepcopy(op['changes']))
     _replace_bindings(page,op['filterId'],op['bindings'])
+    _filter_version(page, declaration)
     return []
 
 
@@ -79,9 +104,7 @@ def _table_column(page,op):
     matches=[]
     for column in columns:
         binding=column['field']
-        field=binding if isinstance(binding,str) else binding['field']
-        slot='main' if isinstance(binding,str) else binding.get('data','main')
-        if field==op['fieldId'] and slot==op.get('slot','main'):matches.append(column)
+        if (op.get('slot','main'),op['fieldId']) in binding_keys(binding):matches.append(column)
     if len(matches)!=1:raise EditFailure('COLUMN_NOT_FOUND','/fieldId')
     return component,matches[0],columns
 
@@ -93,6 +116,7 @@ def set_table_link(page,op):
     navigation=[a for a in actions if 'navigate' in a]
     if len(navigation)>1:raise EditFailure('TABLE_NAVIGATION_AMBIGUOUS')
     desired=op['navigate']
+    if desired.get('validateTargetInputs'): page['schemaVersion'] = load_bundle_info()['pageSchemaVersion']
     others=any(c is not column and c.get('link') for c in columns)
     if others and (not navigation or navigation[0]['navigate']!=desired):
         raise EditFailure('TABLE_NAVIGATION_SHARED','/navigate')
@@ -157,6 +181,14 @@ def _date_bindings(page, filter_id, declaration, bindings):
     for source_id, source in page.get('dataSources', {}).items():
         if source['source']['type'] != 'query': continue
         query = source['source']['query']
+        if 'timeModes' in query:
+            for leaf in query['timeModes']['cases'].values():
+                if source_id in desired:
+                    leaf.setdefault('filterBindings', {})[filter_id] = deepcopy(desired[source_id])
+                else:
+                    leaf.get('filterBindings', {}).pop(filter_id, None)
+            source['source'].pop('initial', None)
+            continue
         if source_id in desired:
             binding = desired[source_id]
             query.setdefault('filterBindings', {})[filter_id] = binding
@@ -234,3 +266,59 @@ def _prune_date_param(page, param_id):
     if not query['times']: query.pop('times')
     if not query: params.pop('query', None)
     if not params: page.pop('params', None)
+
+
+def set_ioc_header(page, op):
+    """Replace only the root declaration; shared product validation owns conflicts."""
+    if op['header'] is None:
+        page.pop('iocHeader', None)
+    else:
+        page['iocHeader'] = deepcopy(op['header'])
+    if 'dashboardToolbar' in op:
+        page['dashboardToolbar'] = op['dashboardToolbar']
+    page['schemaVersion'] = load_bundle_info()['pageSchemaVersion']
+    return []
+
+
+INTERACTION_HANDLERS['set_ioc_header'] = set_ioc_header
+
+from metriccanvas_authoring.pages.editing.range_editing import add_number_range_filter, update_number_range_filter
+INTERACTION_HANDLERS.update(add_number_range_filter=add_number_range_filter, update_number_range_filter=update_number_range_filter)
+
+
+def set_time_program(page, op):
+    """Replace one temporal declaration and its complete static programs atomically."""
+    existing = next((f for f in page.get('filters', []) if f['id'] == op['filterId']), None)
+    declaration = deepcopy(op['declaration'])
+    if declaration.get('type') not in ('timePoint', 'timeRange') or 'id' in declaration:
+        raise EditFailure('DATE_FILTER_REQUIRED', '/declaration')
+    for source_id in op['queries']:
+        source = page.get('dataSources', {}).get(source_id)
+        if not source or source['source']['type'] != 'query':
+            raise EditFailure('FILTER_QUERY_SOURCE_REQUIRED', '/queries')
+    replacement = {'id': op['filterId'], **declaration}
+    if existing is None:
+        page.setdefault('filters', []).append(replacement)
+    else:
+        existing.clear()
+        existing.update(replacement)
+    for source_id, query in op['queries'].items():
+        source = page['dataSources'][source_id]['source']
+        source['query'] = deepcopy(query)
+        source.pop('initial', None)
+    page['schemaVersion'] = load_bundle_info()['pageSchemaVersion']
+    return []
+
+INTERACTION_HANDLERS['set_time_program'] = set_time_program
+
+
+def set_url_input_validation(page, op):
+    if op['enabled']:
+        page['strictURLInputs'] = True
+        page['schemaVersion'] = load_bundle_info()['pageSchemaVersion']
+    else:
+        page.pop('strictURLInputs', None)
+    return []
+
+
+INTERACTION_HANDLERS['set_url_input_validation'] = set_url_input_validation

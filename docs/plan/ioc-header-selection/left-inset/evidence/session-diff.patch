@@ -1,0 +1,26 @@
+--- a/packages/ui/src/components/select/Selection.svelte
++++ b/packages/ui/src/components/select/Selection.svelte
+@@ -203,7 +203,7 @@
+   .choice:focus-visible{outline:2px solid var(--tv-color-text-active,#1476ff);outline-offset:-2px;background:var(--tv-color-bg-hover,#f5f5f5)}
+   .selection-check{display:inline-flex;flex:none;color:var(--tv-color-border,#c2c2c2)}
+   .selection-check.is-checked,.selection-check.is-indeterminate{color:var(--tv-color-text-active,#1476ff)}
+-  .selection-tree{padding:0 var(--tv-space-xl,16px)}.mc-ui-tree-node__content{display:flex;align-items:center;height:var(--tv-Tree-node-content-height,32px);position:relative}
++  .selection-popup.mc-ui-select-dropdown .selection-tree.mc-ui-tree{padding:0 var(--tv-space-xl,16px)}.mc-ui-tree-node__content{display:flex;align-items:center;height:var(--tv-Tree-node-content-height,32px);position:relative}
+   .expand{display:flex;align-items:center;justify-content:center;width:var(--tv-Tree-node-showline-icon-size,16px);height:var(--tv-Tree-node-showline-icon-size,16px);padding:0;margin-right:var(--tv-space-md,8px);border:0;background:transparent;color:var(--tv-color-icon,#808080);cursor:pointer;flex:none;z-index:1}
+   .expand.is-leaf{visibility:hidden}.tree-choice{height:var(--tv-Tree-node-content-height,32px);flex:1;padding:0;white-space:nowrap}.tree-choice.is-disabled{color:var(--tv-color-text-disabled,#c2c2c2)}
+   .mc-ui-tree-node__children{margin-left:calc(var(--tv-Tree-node-indent,16px) + var(--tv-Tree-node-guide-line-width,8px));position:relative;overflow:visible!important}
+--- a/packages/ui/tests/browser/selection.spec.ts
++++ b/packages/ui/tests/browser/selection.spec.ts
+@@ -87,3 +87,12 @@
+  await panel.press('Escape');await page.getByRole('button',{name:'普通单选',exact:true}).click();
+  await expect(page.getByRole('option',{name:'选项 A',exact:true})).toHaveCSS('height','32px');
+ });
++
++for(const shadow of [false,true]) test(`tree content inset is16px; shadow=${shadow}`,async({page})=>{
++ if(shadow) await page.goto('/tests/browser/index.html?selection&shadow');
++ await page.getByRole('button',{name:'区域',exact:true}).click();
++ const popup=page.getByRole('dialog',{name:'区域候选'});
++ const treeInset=()=>popup.evaluate(el=>el.querySelector('.expand')!.getBoundingClientRect().left-el.getBoundingClientRect().left);
++ expect(await treeInset()).toBe(16);
++ await page.getByRole('button',{name:'展开中国地区部',exact:true}).click();expect(await treeInset()).toBe(16);
++});

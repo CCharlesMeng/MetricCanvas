@@ -43,7 +43,7 @@ describe('正式页面 DQE 场景', () => {
   it('客户活动风险页的每条查询都能返回非空结果', () => {
     const sources = Object.values(customerActivityRiskSources);
     const items = sources.flatMap(
-      (dataSource) => dataSource.source.query.body.dsl_list
+      (dataSource) => dataSource.source.query.body!.dsl_list
     );
     const results = items.map(executeDqeItem);
 
@@ -64,7 +64,7 @@ describe('正式页面 DQE 场景', () => {
 
   it('按页面筛选绑定过滤客户明细', () => {
     const item = structuredClone(
-      customerActivityRiskSources['inspection-detail']!.source.query.body.dsl_list[0]
+      customerActivityRiskSources['inspection-detail']!.source.query.body!.dsl_list[0]
     ) as {
       filter: {
         dims: Array<{ dim_name: string; dim_value_list: string[]; operator?: string }>;
@@ -109,7 +109,7 @@ describe('正式页面 DQE 场景', () => {
   it('流水分析报告的每条查询均按迁移后的结果字段契约返回', () => {
     const sources = Object.values(flowAnalysisReportSources);
     const results = sources.map((source) =>
-      executeDqeItem(source.source.query.body.dsl_list[0])
+      executeDqeItem(source.source.query.body!.dsl_list[0])
     );
 
     expect(results).toHaveLength(9);

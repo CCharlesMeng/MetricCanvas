@@ -1,0 +1,29 @@
+
+Running 20 tests using 2 workers
+
+(node:23943) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:23944) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 tests/browser/ioc-header.spec.ts:5:1 › ordinary header consumes its real page, period anchor and queries; narrow layout (1.1s)
+  ✓   1 tests/browser/ioc-header-business.spec.ts:5:1 › closed enums preserve UI codes, single choice, all-unrestricted, and boolean false (1.2s)
+  ✓   4 tests/browser/ioc-header-business.spec.ts:17:1 › explicit structure tree has own values per level; legacy tree still selects leaves (772ms)
+  ✓   3 tests/browser/ioc-header.spec.ts:18:1 › dense measured collapse, candidate retry, recursive gate and export safety (1.0s)
+  ✓   5 tests/browser/ioc-header-business.spec.ts:24:1 › time context intersects trusted candidates; empty intersection waits explicit clear; denied and unconfigured remain gated (709ms)
+  ✓   6 tests/browser/ioc-header.spec.ts:45:1 › detail single month, optional facts, legal back intent and readonly update (631ms)
+  ✓   7 tests/browser/ioc-header-business.spec.ts:35:1 › detail enum stays private and single month still emits compact mtime (546ms)
+  ✓   8 tests/browser/ioc-header.spec.ts:53:1 › titleless header keeps a discrete January/March predicate (557ms)
+  ✓   9 tests/browser/ioc-header-business.spec.ts:39:1 › required structural tree drafts a new level until one value can be committed atomically (689ms)
+  ✓  10 tests/browser/ioc-header.spec.ts:57:1 › selected URL value waits for candidates; failed candidates retry current request without broadening (591ms)
+  ✓  12 tests/browser/ioc-header.spec.ts:68:1 › two embedded instances own their month anchors and destroy independently (604ms)
+  ✓  11 tests/browser/period-filter.spec.ts:5:41 › period selection queries, restoration and readonly rolling range (date) (1.0s)
+  ✓  13 tests/browser/time-point-no-future.spec.ts:9:1 › months, years, typing, keyboard, URL and month rollover respect the current month (1.0s)
+  ✓  14 tests/browser/period-filter.spec.ts:5:41 › period selection queries, restoration and readonly rolling range (month) (1.0s)
+  ✓  15 tests/browser/time-point-no-future.spec.ts:37:1 › day selection and typing include today and reject tomorrow (545ms)
+  ✓  16 tests/browser/period-filter.spec.ts:44:1 › overflow panel and compact readonly consume the same period declaration (743ms)
+  ✓  17 tests/browser/time-point-no-future.spec.ts:50:1 › the exact ultimate SDT file defaults to October and future input cannot trigger queries (717ms)
+  ✓  18 tests/browser/period-filter.spec.ts:67:1 › default Dashboard period picker disables future years, quarters and months (635ms)
+  ✓  19 tests/browser/time-point-no-future.spec.ts:73:1 › all default point and range inputs reject future values, panels and URL overrides (607ms)
+  ✓  20 tests/browser/time-point-no-future.spec.ts:106:1 › table header date ranges also default to today and reject future typing (496ms)
+
+  20 passed (9.0s)
