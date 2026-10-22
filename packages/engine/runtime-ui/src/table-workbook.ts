@@ -51,8 +51,9 @@ export async function encodeTableWorkbook(component: TableComponent, data: Named
       children: [{ ...node, title: title(node.field) }, ...extras.map(field => ({ field, title: title(field) }))] };
   });
   const layout = buildTableColumnLayout(project(component.props.columns));
+  const leadingColumns = component.props.rowNumber ? 1 : 0;
   layout.headerRows.forEach((cells, rowIndex) => {
-    let columnIndex = 1;
+    let columnIndex = 1 + leadingColumns;
     for (const cell of cells) {
       while (sheet.getCell(rowIndex + 1, columnIndex).isMerged) columnIndex++;
       const target = sheet.getCell(rowIndex + 1, columnIndex);
@@ -64,13 +65,21 @@ export async function encodeTableWorkbook(component: TableComponent, data: Named
     }
   });
   const headerCount = layout.headerRows.length;
+  if (component.props.rowNumber) {
+    const cell = sheet.getCell(1, 1);
+    cell.value = component.props.rowNumber.title ?? '序号';
+    cell.font = { bold: true };
+    cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    if (headerCount > 1) sheet.mergeCells(1, 1, headerCount, 1);
+  }
   const rows = alignTableRows(data, component.props.rowKey);
   rows.forEach((row, index) => {
     signal.throwIfAborted();
+    if (leadingColumns) sheet.getCell(headerCount + index + 1, 1).value = index + 1;
     layout.leaves.forEach((column, columnIndex) => {
       const resolved = resolveField(column.field, data);
       const value = alignedFieldValue(column.field, data, row);
-      const cell = sheet.getCell(headerCount + index + 1, columnIndex + 1);
+      const cell = sheet.getCell(headerCount + index + 1, columnIndex + 1 + leadingColumns);
       if (value == null) { cell.value = resolved.missingText ?? null; return; }
       if (typeof value === 'number') {
         cell.value = value; cell.numFmt = numberFormat(value, resolved.format);
@@ -83,7 +92,7 @@ export async function encodeTableWorkbook(component: TableComponent, data: Named
       } else cell.value = typeof value === 'string' ? value : JSON.stringify(value);
     });
   });
-  sheet.columns.forEach((column, index) => { column.width = Math.min(60, Math.max(14, (layout.leaves[index]?.width ?? 150) / 7)); });
+  sheet.columns.forEach((column, index) => { column.width = Math.min(60, Math.max(14, (index < leadingColumns ? component.props.rowNumber?.width ?? 64 : layout.leaves[index - leadingColumns]?.width ?? 150) / 7)); });
   sheet.views = [{ state: 'frozen', ySplit: headerCount }];
   const buffer = await workbook.xlsx.writeBuffer();
   signal.throwIfAborted();

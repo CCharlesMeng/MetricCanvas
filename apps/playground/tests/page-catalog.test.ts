@@ -44,7 +44,7 @@ describe('页面试验场目录', () => {
       id: page.id, title: `文档标题 ${page.id}`, description: '技术说明', layoutForm: 'report'
     })));
     expect(groups[0]?.pages[0]?.title).toBe(`文档标题 ${catalog.pages[0]?.id}`);
-    expect(filterPageCatalog(groups, 'EXCEL 导出', 'features').flatMap((group) => group.pages)).toHaveLength(1);
+    expect(filterPageCatalog(groups, 'EXCEL 导出', 'features').flatMap((group) => group.pages).map(page => page.id).sort()).toEqual(['table-row-number', 'table-toolbar-demo']);
     expect(filterPageCatalog(groups, 'EXCEL', 'business')).toEqual([]);
     expect(filterPageCatalog(groups, 'flow-analysis 参数').flatMap((group) => group.pages)).toHaveLength(1);
     expect(filterPageCatalog(groups, '技术说明').flatMap((group) => group.pages)).toHaveLength(catalog.pages.length);

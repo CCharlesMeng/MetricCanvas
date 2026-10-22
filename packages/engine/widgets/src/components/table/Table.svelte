@@ -117,6 +117,10 @@
     return new Set([...counts].filter(([, count]) => count === 1).map(([key]) => key));
   });
 
+  const rowNumberWidth = $derived(props.rowNumber ? props.rowNumber.width ?? 64 : 0);
+  const leadingColumnCount = $derived((expandable ? 1 : 0) + (props.rowNumber ? 1 : 0));
+  const rowNumberOffset = $derived(staticExport ? 0 : view.pageIndex * (pagination?.pageSize ?? 0));
+  const rowNumberStyle = $derived(props.rowNumber?.fixed ? `position: sticky; left: ${expandable ? 40 : 0}px;` : '');
   const columnLayout = $derived(buildTableColumnLayout(props.columns, data.main.fields));
   const leaves = $derived(columnLayout.leaves);
   const wrapHeaders = $derived(shouldWrapTableHeaders(props.fit, leaves.length));
@@ -126,12 +130,12 @@
   const rowSpans = $derived(mergeSpans(rows, props.mergeBy));
   const mergedColumnField = $derived(props.mergeBy);
   const columnWidthTotal = $derived(
-    leaves.reduce((total, column) => total + (column.width ?? 120), 0)
+    leaves.reduce((total, column) => total + (column.width ?? 120), rowNumberWidth + (expandable ? 40 : 0))
   );
   // Preserve proportional columns, with room for a short number plus cell padding.
   // Below this width the table owns horizontal scrolling rather than crushing text.
   const fitMinWidth = $derived(
-    leaves.length ? columnWidthTotal * 52 / Math.min(...leaves.map(column => column.width ?? 120)) : 0
+    leaves.length ? columnWidthTotal * 52 / Math.min(...leaves.map(column => column.width ?? 120), ...(props.rowNumber ? [rowNumberWidth] : [])) : 0
   );
 
   function columnField(column: TableColumn): string {
@@ -143,7 +147,7 @@
   const FALLBACK_FIXED_WIDTH = 120;
   const stickyOffsets = $derived.by(() => {
     const offsets = new Map<string, number>();
-    let left = expandable ? 40 : 0;
+    let left = (expandable ? 40 : 0) + (props.rowNumber?.fixed ? rowNumberWidth : 0);
     for (const column of leaves) {
       if (column.fixed !== 'left') continue;
       offsets.set(columnField(column), left);
@@ -372,6 +376,7 @@
     <table>
       <colgroup>
         {#if expandable}<col style="width:40px;min-width:40px" />{/if}
+        {#if props.rowNumber}<col style={props.fit === 'container' ? `width: ${rowNumberWidth / columnWidthTotal * 100}%;` : `width: ${rowNumberWidth}px; min-width: ${rowNumberWidth}px;`} />{/if}
         {#each leaves as column (columnField(column))}
           <col style={columnStyle(column)} />
         {/each}
@@ -380,6 +385,12 @@
         {#each columnLayout.headerRows as headerRow, rowIndex (rowIndex)}
           <tr>
             {#if expandable && rowIndex === 0}<th class="expand-column fixed" data-column-index="0" rowspan={columnLayout.headerRows.length} style="left:0;top:0" aria-label="展开子表格"></th>{/if}
+            {#if props.rowNumber && rowIndex === 0}
+              <th class:fixed={props.rowNumber.fixed === 'left'} data-row-number data-column-index={expandable ? 1 : 0}
+                rowspan={columnLayout.headerRows.length} style={`${rowNumberStyle} top: 0px;`}>
+                <div class="head"><span>{props.rowNumber.title ?? '序号'}</span></div>
+              </th>
+            {/if}
             {#each headerRow as cell (cell.key)}
               {#if cell.kind === 'group'}
                 <th
@@ -396,7 +407,7 @@
                   class:align-right={column.align === 'right'}
                   class:fixed={!!column.fixed}
                   data-column-field={columnField(column)}
-                  data-column-index={leaves.findIndex(leaf => columnField(leaf) === columnField(column)) + (expandable ? 1 : 0)}
+                  data-column-index={leaves.findIndex(leaf => columnField(leaf) === columnField(column)) + leadingColumnCount}
                   class:last-column={columnField(column) === columnField(leaves[leaves.length - 1])}
                   colspan={cell.colspan}
                   rowspan={cell.rowspan}
@@ -509,6 +520,9 @@
                 {/if}
               </td>
             {/if}
+            {#if props.rowNumber}
+              <td class:fixed={props.rowNumber.fixed === 'left'} data-row-number data-column-index={expandable ? 1 : 0} style={rowNumberStyle}>{rowNumberOffset + i + 1}</td>
+            {/if}
             {#each leaves as column, columnIndex (columnField(column))}
               <!-- 合并列上被并入上方单元格的行不渲染该列 -->
               {#if columnField(column) !== mergedColumnField || rowSpans[i] !== 0}
@@ -543,7 +557,7 @@
                   class:positive={semanticPresentation === undefined && color === 'green'}
                   class:explicit-color={column.colorRule !== undefined}
                   data-column-field={columnField(column)}
-                  data-column-index={columnIndex + (expandable ? 1 : 0)}
+                  data-column-index={columnIndex + leadingColumnCount}
                   rowspan={columnField(column) === mergedColumnField ? rowSpans[i] : undefined}
                   style={cellStyle(column)}
                   style:color={column.colorRule ? valueColorStyle(color) : undefined}
@@ -631,13 +645,13 @@
             {/each}
           </tr>
           {#if expandable && expandedRow && validExpansionKeys.has(expansion!.key(row.main) ?? '') && expansion!.expanded(row.main)}
-            <tr class="row-expansion-row"><td class="row-expansion-cell" colspan={leaves.length + 1}>
+            <tr class="row-expansion-row"><td class="row-expansion-cell" colspan={leaves.length + leadingColumnCount}>
               <div id={`${expansion!.id}-${encodeURIComponent(expansion!.key(row.main)!)}`} role="region" aria-label="子表格" class="row-expansion-content">{@render expandedRow(row.main)}</div>
             </td></tr>
           {/if}
         {:else}
           <tr>
-            <td class="empty-row" colspan={Math.max(leaves.length + (expandable ? 1 : 0), 1)}>{#if props.variant === 'reportCompact'}暂无数据{:else}<div class="empty-state">暂无数据</div>{/if}</td>
+            <td class="empty-row" colspan={Math.max(leaves.length + leadingColumnCount, 1)}>{#if props.variant === 'reportCompact'}暂无数据{:else}<div class="empty-state">暂无数据</div>{/if}</td>
           </tr>
         {/each}
       </tbody>

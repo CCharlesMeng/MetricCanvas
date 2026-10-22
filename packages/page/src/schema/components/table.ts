@@ -129,8 +129,15 @@ const paginationZ = z.discriminatedUnion('mode', [
   z.object({ mode: z.literal('query') }).strict()
 ]);
 
+const rowNumberZ = z.object({
+  title: textValueZ.optional(),
+  width: z.int().min(1).optional(),
+  fixed: z.literal('left').optional()
+}).strict();
+
 const rowTableZ = z.object({
   title: textValueZ.optional(),
+  rowNumber: rowNumberZ.optional(),
   rowKey: fieldNameZ,
   columns: z.array(tableColumnNodeZ).min(1),
   fit: z.enum(['content', 'container']).optional(),
@@ -190,6 +197,8 @@ export const tableComponentZ = z
         /** 容器底部的渐隐提示；只表示有更多纵向内容，不改变数据。 */
         bottomFade: z.boolean().optional(),
         compoundCellLayout: z.literal('inline').optional(),
+        /** 呈现列：不占用页面字段；按当前行集顺序从 1 开始，分页连续。 */
+        rowNumber: rowNumberZ.optional(),
         rowKey: fieldNameZ.optional(),
         /**
          * 行类别字段（ADR-0049）：取值来自计算阶段折叠算子写入的闭集，

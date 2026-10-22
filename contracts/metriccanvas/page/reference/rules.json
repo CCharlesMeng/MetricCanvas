@@ -203,6 +203,18 @@
       ]
     },
     {
+      "id": "table-row-number",
+      "description": "6.48表格序号列不绑定数据字段且受版本约束",
+      "valid": [
+        "table-row-number-page"
+      ],
+      "invalid": [
+        "row-number-before-6.48",
+        "row-number-invalid-width",
+        "row-number-no-data-field"
+      ]
+    },
+    {
       "id": "table-row-expansion",
       "description": "6.44单层子表格的作用域、只读及查询分页约束",
       "valid": [

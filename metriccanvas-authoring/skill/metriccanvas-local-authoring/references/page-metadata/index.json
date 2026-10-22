@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.47",
-  "schemaSha256": "aca00179dd0494b52471e6d3a8d89883611b2102c4502c60676dbd3489e2847b",
+  "schemaVersion": "6.48",
+  "schemaSha256": "fa5b4a20d1d04e7e0facdf453ad0940288964298858a84091b558b17f7c7ad74",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -614,7 +614,8 @@
         "table-row-expansion-inline",
         "table-row-expansion-query",
         "table-row-expansion-inputs",
-        "table-row-expansion-none"
+        "table-row-expansion-none",
+        "table-row-number-page"
       ],
       "rules": [
         "table-row-key",
@@ -1060,7 +1061,8 @@
         "6.44",
         "6.45",
         "6.46",
-        "6.47"
+        "6.47",
+        "6.48"
       ]
     },
     {
@@ -10422,6 +10424,38 @@
       "const": "inline"
     },
     {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/rowNumber",
+      "path": "@tableComponent.props.rowNumber",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/rowNumber/properties/title",
+      "path": "@tableComponent.props.rowNumber.title",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/rowNumber/properties/title/allOf/0",
+      "path": "@tableComponent.props.rowNumber.title · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/rowNumber/properties/width",
+      "path": "@tableComponent.props.rowNumber.width",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/rowNumber/properties/fixed",
+      "path": "@tableComponent.props.rowNumber.fixed",
+      "required": "本分支可选",
+      "module": "components/table.md",
+      "const": "left"
+    },
+    {
       "pointer": "#/definitions/tableComponent/properties/props/properties/rowKey",
       "path": "@tableComponent.props.rowKey",
       "required": "本分支可选",
@@ -11382,6 +11416,38 @@
       "required": "独立分支（不合并required）",
       "module": "components/table.md",
       "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/rowNumber",
+      "path": "@rowExpansionTable.rowNumber",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/rowNumber/properties/title",
+      "path": "@rowExpansionTable.rowNumber.title",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/rowNumber/properties/title/allOf/0",
+      "path": "@rowExpansionTable.rowNumber.title · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/table.md",
+      "ref": "#/definitions/textValue"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/rowNumber/properties/width",
+      "path": "@rowExpansionTable.rowNumber.width",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
+      "pointer": "#/definitions/rowExpansionTable/properties/rowNumber/properties/fixed",
+      "path": "@rowExpansionTable.rowNumber.fixed",
+      "required": "本分支可选",
+      "module": "components/table.md",
+      "const": "left"
     },
     {
       "pointer": "#/definitions/rowExpansionTable/properties/rowKey",
@@ -16169,5 +16235,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "d18b1a722d60bd530e33c5b94f554b24e4d159fea38e8e6b1ad1838e784ddd3f"
+  "semanticSourceDigest": "d457311a4ef4d05df40575811cccc1537ebf4bf667d72fc0d895fc9bfa5f027b"
 }

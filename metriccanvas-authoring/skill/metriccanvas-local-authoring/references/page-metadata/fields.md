@@ -25,7 +25,7 @@ recordList使用显式items.fields约束每条嵌套记录，限制在已支持�
 嵌套明细字段可通过6.32的`table.props.rowExpansion.data:{type:"recordList",field:"..."}`被显式消费为子表格；字段契约仍为一层、每父行最多100项，子表列直接引用items.fields中的页面字段id。
 
 
-页面协议 6.47。结构真源为本册[schema.json](schema.json)，SHA256 `aca00179dd0494b52471e6d3a8d89883611b2102c4502c60676dbd3489e2847b`。字段表自动生成；可选不等于有默认值。
+页面协议 6.48。结构真源为本册[schema.json](schema.json)，SHA256 `fa5b4a20d1d04e7e0facdf453ad0940288964298858a84091b558b17f7c7ad74`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

@@ -2782,6 +2782,42 @@
       },
       "externalInputs": "ioc-business",
       "scenario": "batch-unconfigured"
+    },
+    {
+      "id": "table-row-number",
+      "group": "features",
+      "displayTitle": "表格自动序号列",
+      "summary": "查看普通表格的跨页连续序号、排序筛选后重编号与 Excel 导出。",
+      "tags": [
+        "表格",
+        "序号",
+        "编号",
+        "分页",
+        "导出"
+      ],
+      "capabilities": [
+        "tables"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "none",
+        "scope": "可直接体验"
+      },
+      "guide": {
+        "steps": [
+          "将客户明细切到第2页，序号为11—20。",
+          "按金额降序，客户25的序号变为1；搜索客户25后仅保留序号1。",
+          "清空搜索并导出Excel，序号从1连续到25；下方对照三种变体和空结果。"
+        ],
+        "configPaths": [
+          "sections[].components[].props.rowNumber"
+        ],
+        "boundary": "内联合成数据；查询分页的偏移另由网关桩验收，不证明真实DQE能力。",
+        "related": [
+          "table-toolbar-demo",
+          "multi-query-table"
+        ]
+      }
     }
   ],
   "capabilities": [

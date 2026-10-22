@@ -732,7 +732,8 @@
         "table-row-expansion-inline",
         "table-row-expansion-query",
         "table-row-expansion-inputs",
-        "table-row-expansion-none"
+        "table-row-expansion-none",
+        "table-row-number-page"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -1524,7 +1525,9 @@
     "#/definitions/rowExpansionTable/properties/toolbar/properties/search/properties/placeholder": "子表格搜索提示文本，省略时沿用现有表格默认提示。",
     "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets": "6.46按该币种显示单位定义预设；全部case必须声明，不能与公共presets混用。",
     "#/definitions/filterGroupComponent/properties/props/properties/display": "6.47固定单选呈现：buttons（默认）或select；共用筛选状态、固定候选和查询绑定。",
-    "#/definitions/filterGroupComponent/properties/props/properties/align": "6.47控件在所占栅格内左/右对齐，默认left；不改变筛选范围。"
+    "#/definitions/filterGroupComponent/properties/props/properties/align": "6.47控件在所占栅格内左/右对齐，默认left；不改变筛选范围。",
+    "#/definitions/tableComponent/properties/props/properties/rowNumber": "6.48呈现序号列；默认标题序号、宽度64px，可左固定；按排序筛选后的当前行集跨页连续编号，不绑定数据字段。",
+    "#/definitions/rowExpansionTable/properties/rowNumber": "6.48子表格独立序号列，复用普通表格声明和编号规则。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1788,7 +1791,8 @@
     "6.46": "必选多选、显式无依赖候选和单位case中的币种档位。",
     "#/properties/schemaVersion=\"6.47\"": "独立固定单选筛选支持下拉呈现和左右对齐。",
     "#/definitions/filterGroupComponent/properties/props/properties/display=\"buttons\"": "固定单选按钮，省略display时保持此呈现。",
-    "#/definitions/filterGroupComponent/properties/props/properties/display=\"select\"": "复用维度下拉，固定候选且必选单选。"
+    "#/definitions/filterGroupComponent/properties/props/properties/display=\"select\"": "复用维度下拉，固定候选且必选单选。",
+    "#/properties/schemaVersion=\"6.48\"": "普通表格和子表格支持独立的自动序号列。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2152,6 +2156,18 @@
         "固定单选下拉与对齐（6.47）"
       ],
       "dependencies": []
+    },
+    "table.row-number": {
+      "module": "table",
+      "title": "表格自动序号列",
+      "roots": [
+        "#/definitions/tableComponent/properties/props/properties/rowNumber",
+        "#/definitions/rowExpansionTable/properties/rowNumber"
+      ],
+      "headings": [
+        "自动序号列（6.48）"
+      ],
+      "dependencies": []
     }
   },
   "authoringSemanticHeadings": {
@@ -2255,7 +2271,8 @@
       "查阅方式",
       "数值范围和组合表（6.22）",
       "行内子表格（6.44）",
-      "列筛选候选值"
+      "列筛选候选值",
+      "自动序号列（6.48）"
     ],
     "components/mapChart.md": [
       "查阅方式"

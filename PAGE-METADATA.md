@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.47**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45、6.46和6.47；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.48**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45、6.46、6.47和6.48；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 
@@ -435,3 +435,7 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 标题按页面layout分别呈现：Dashboard分区标题与text.heading使用黑色16px左对齐无装饰标题；Report保留独立标题层级。plain只表示分区无外壳，不表示共用标题。参见[分区与布局](docs/page-metadata/sections-and-layout.md)及[看板标题验收](pages/dashboard-title-styles.json)、[报表标题验收](pages/report-title-styles.json)。
 
 6.45 独立 `filterGroup` 将固定单选按钮组从图表属性提升为可布局组件，支持 Dashboard 正文、组合卡、多个查询消费者和统一显隐。旧 `chart.props.filter` 统一迁移，不保留兼容入口。声明、边界与验收见[筛选按钮组](docs/page-metadata/components/filterGroup.md)。
+
+## 表格自动序号（6.48）
+
+普通表格通过 `props.rowNumber: {}` 开启独立序号列，可设置标题、宽度和左固定；排序筛选后重新编号，跨页连续，完整导出从1开始。声明及边界见[表格自动序号列](docs/page-metadata/components/table.md#自动序号列648)，可运行场景为 [table-row-number](pages/table-row-number.json)。

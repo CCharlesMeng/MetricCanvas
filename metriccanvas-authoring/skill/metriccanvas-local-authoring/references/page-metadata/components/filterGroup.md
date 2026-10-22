@@ -38,7 +38,7 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 按钮切换指标仍是显式筛选：合成数据有 `toolbar_metric` 维度，图表和合计查询都绑定它以及区域维度；不同指标的单位和内容分别通过集中 `visibleWhen` 选择。运行时不替换查询字段、不执行脚本。原型链接 `/prototypes/chart-filter-toolbar` 重定向到正式示例。
 
 
-页面协议 6.47。结构真源为本册[schema.json](../schema.json)，SHA256 `aca00179dd0494b52471e6d3a8d89883611b2102c4502c60676dbd3489e2847b`。字段表自动生成；可选不等于有默认值。
+页面协议 6.48。结构真源为本册[schema.json](../schema.json)，SHA256 `fa5b4a20d1d04e7e0facdf453ad0940288964298858a84091b558b17f7c7ad74`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

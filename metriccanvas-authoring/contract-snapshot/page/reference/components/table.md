@@ -140,8 +140,20 @@ inline 和已声明完整且未截断的 query 从完整行集枚举；计算产
 
 可观察示例：table-column-candidates（pages/table-column-candidates.json），在 Playground 的 /pages/table-column-candidates 打开。使用64行内联合成数据，演示跨页候选、继续加载、搜索、多列联动、数字编码与两表隔离。远程编码通过合成网关契约测试；真实 DQE/Relay 尚待外部服务核验。产品决策与兼容例外见 ADR-0114。
 
+## 自动序号列（6.48）
 
-页面协议 6.47。结构真源为本册[schema.json](../schema.json)，SHA256 `aca00179dd0494b52471e6d3a8d89883611b2102c4502c60676dbd3489e2847b`。字段表自动生成；可选不等于有默认值。
+普通表格可声明 `props.rowNumber: {}`，在字段列之前增加默认标题为「序号」、宽度64px的呈现列。可设置 `title`、正整数 `width` 和 `fixed: "left"`；省略整个属性则不显示。展开子表格时，序号位于展开按钮之后，子表格可独立声明 `rowExpansion.table.rowNumber`。
+
+```json
+{ "rowNumber": { "title": "序号", "width": 64, "fixed": "left" } }
+```
+
+序号不绑定页面字段，不要求查询返回编号，也不参与排序、筛选、合并或单元格动作。它为当前呈现行集的每一行（包括小计、合计）编号；本地或查询分页按当前页偏移连续显示，排序、搜索和筛选后从当前结果顺序重新编号。无分页从1开始；空结果保留表头，不生成数据行。各表格变体、多级表头、固定列和Tab内表格共用该能力。
+
+Excel完整导出按导出行集从1编号，并保留多级表头；报告静态导出按展开后的行集从1编号。该列是显示顺序，不是固定业务排名；固定排名仍由数据源返回，组合查询源的 `ordinalField` 保持原义。可观察场景为 `table-row-number`，使用内联合成数据。
+
+
+页面协议 6.48。结构真源为本册[schema.json](../schema.json)，SHA256 `fa5b4a20d1d04e7e0facdf453ad0940288964298858a84091b558b17f7c7ad74`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -652,6 +664,60 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/compoun
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "inline" | 用于选择@tableComponent.props.compoundCellLayout分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f774e756d626572"></a>
+
+### `@tableComponent.props.rowNumber`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/rowNumber`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 6.48呈现序号列；默认标题序号、宽度64px，可左固定；按排序筛选后的当前行集跨页连续编号，不绑定数据字段。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f774e756d6265722f70726f706572746965732f7469746c65"></a>
+
+### `@tableComponent.props.rowNumber.title`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/rowNumber/properties/title`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 展示标题；是否必需由此处Schema分支决定，不能推断为空时的行为。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f774e756d6265722f70726f706572746965732f7469746c652f616c6c4f662f30"></a>
+
+### `@tableComponent.props.rowNumber.title · allOf[0]`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/rowNumber/properties/title/allOf/0`。目标：[#/definitions/textValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f774e756d6265722f70726f706572746965732f7769647468"></a>
+
+### `@tableComponent.props.rowNumber.width`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/rowNumber/properties/width`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支可选 | minimum=1; maximum=9007199254740991 | Schema未设默认；装配/运行时默认见语义说明 | 受控列宽数值。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f774e756d6265722f70726f706572746965732f6669786564"></a>
+
+### `@tableComponent.props.rowNumber.fixed`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/rowNumber/properties/fixed`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | const="left" | Schema未设默认；装配/运行时默认见语义说明 | 表格固定列位置。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "left" | 左对齐或左侧固定，由字段位置决定。 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f774b6579"></a>
 
@@ -2231,6 +2297,60 @@ Schema位置：`#/definitions/rowExpansionTable/properties/title/allOf/0`。目�
 |---|---|---|---|---|
 | 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f726f774e756d626572"></a>
+
+### `@rowExpansionTable.rowNumber`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/rowNumber`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 6.48子表格独立序号列，复用普通表格声明和编号规则。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f726f774e756d6265722f70726f706572746965732f7469746c65"></a>
+
+### `@rowExpansionTable.rowNumber.title`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/rowNumber/properties/title`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 展示标题；是否必需由此处Schema分支决定，不能推断为空时的行为。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f726f774e756d6265722f70726f706572746965732f7469746c652f616c6c4f662f30"></a>
+
+### `@rowExpansionTable.rowNumber.title · allOf[0]`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/rowNumber/properties/title/allOf/0`。目标：[#/definitions/textValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f7465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f726f774e756d6265722f70726f706572746965732f7769647468"></a>
+
+### `@rowExpansionTable.rowNumber.width`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/rowNumber/properties/width`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支可选 | minimum=1; maximum=9007199254740991 | Schema未设默认；装配/运行时默认见语义说明 | 受控列宽数值。 |
+
+<a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f726f774e756d6265722f70726f706572746965732f6669786564"></a>
+
+### `@rowExpansionTable.rowNumber.fixed`
+
+Schema位置：`#/definitions/rowExpansionTable/properties/rowNumber/properties/fixed`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | const="left" | Schema未设默认；装配/运行时默认见语义说明 | 表格固定列位置。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "left" | 左对齐或左侧固定，由字段位置决定。 |
+
 <a id="schema-232f646566696e6974696f6e732f726f77457870616e73696f6e5461626c652f70726f706572746965732f726f774b6579"></a>
 
 ### `@rowExpansionTable.rowKey`
@@ -2493,6 +2613,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [table-row-expansion-query](../examples/table-row-expansion-query.json)：完整合法页面；查询仅为静态契约证据。
 - [table-row-expansion-inputs](../examples/table-row-expansion-inputs.json)：完整合法页面；查询仅为静态契约证据。
 - [table-row-expansion-none](../examples/table-row-expansion-none.json)：完整合法页面；查询仅为静态契约证据。
+- [table-row-number-page](../examples/table-row-number-page.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-table.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

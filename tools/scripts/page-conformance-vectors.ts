@@ -153,6 +153,11 @@ export const invariants: InvariantDefinition[] = [
     {case:'ioc-header-missing-filter',base:'ioc-header-page',expect:/静态可见/,mutate:d=>{d.iocHeader.filterIds.push('missing');}},
     {case:'ioc-header-duplicate-identity',base:'ioc-header-page',expect:/重复承担/,mutate:d=>{d.sections[0].components.unshift({id:'old-header',type:'reportHeader',layout:{span:12},props:{title:'旧标题'}});}}
   ]},
+  { id:'table-row-number', description:'6.48表格序号列不绑定数据字段且受版本约束', valid:['table-row-number-page'], cases:[
+    {case:'row-number-before-6.48',base:'table-row-number-page',expect:/由 6.48 引入/,mutate:d=>{d.schemaVersion='6.47';}},
+    {case:'row-number-invalid-width',base:'table-row-number-page',expect:/./,mutate:d=>{d.sections[0].components[0].props.rowNumber.width=0;}},
+    {case:'row-number-no-data-field',base:'table-row-number-page',expect:/./,mutate:d=>{d.sections[0].components[0].props.rowNumber.field='name';}}
+  ]},
   { id:'table-row-expansion', description:'6.44单层子表格的作用域、只读及查询分页约束', valid:['table-row-expansion-inline','table-row-expansion-query'], cases:[
     {case:'row-expansion-before-6.44',base:'table-row-expansion-inline',expect:/由 6.44 引入/,mutate:d=>{d.schemaVersion='6.43';}},
     {case:'row-expansion-missing-parent-key',base:'table-row-expansion-inline',expect:/稳定的.*维度行键/,mutate:d=>{delete d.sections[0].components[0].props.rowKey;}},
