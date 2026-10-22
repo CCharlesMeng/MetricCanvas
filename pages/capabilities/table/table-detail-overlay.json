@@ -4,7 +4,7 @@
   "layout": "dashboard",
   "meta": {
     "title": "表格点击与详情弹窗",
-    "description": "内联合成数据：点击订单数打开弹窗表格，点击待交付打开抽屉，点击异常订单查看空结果；无需 DQE。"
+    "description": "内联合成数据：含表格的弹窗和抽屉自动扩宽，空结果保持宽度；普通字段详情保持原宽度。无需 DQE。"
   },
   "dataSources": {
     "summary": {
@@ -200,7 +200,7 @@
             "span": 12
           },
           "props": {
-            "body": "合成演示数据 · 2026年9月\n点击下表「订单数 8」查看居中弹窗；点击「待交付 3」查看右侧抽屉；点击「异常订单 0」查看空结果。详情内可搜索、排序、翻页和导出，按 Esc 或点击关闭按钮返回。"
+            "body": "合成演示数据 · 2026年9月\n点击「订单数 8」查看宽版弹窗；点击「待交付 3」查看宽版抽屉；点击「异常订单 0」查看同宽空结果；点击订单总额查看普通字段详情。下方指标卡也打开相同订单详情。宽度为容器的90%，最大1440px，窄屏保留至少32px宽度余量，表格列可内部横向滚动。按 Esc 或关闭按钮返回。"
           }
         }
       ]
@@ -261,7 +261,50 @@
                   "field": "amount",
                   "format": "number-grouped"
                 },
-                "title": "订单总额（元）"
+                "title": "订单总额（元）",
+                "link": true,
+                "openDetail": {
+                  "surface": "modal",
+                  "titleField": "period",
+                  "fields": [
+                    {
+                      "label": "月份",
+                      "field": "period"
+                    },
+                    {
+                      "label": "订单总额",
+                      "field": "amount"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "order-detail-metric",
+          "type": "metricCard",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "summary"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "订单详情",
+                "valueField": "order-count",
+                "link": true
+              }
+            ],
+            "actions": [
+              {
+                "on": "click",
+                "openDetail": {
+                  "surface": "modal",
+                  "view": "all-order-detail"
+                }
               }
             ]
           }
@@ -304,11 +347,13 @@
             "columns": [
               {
                 "field": "order-id",
-                "title": "订单号"
+                "title": "订单号",
+                "width": 240
               },
               {
                 "field": "customer",
-                "title": "客户"
+                "title": "客户",
+                "width": 240
               },
               {
                 "field": {
@@ -317,11 +362,13 @@
                   "format": "number-grouped"
                 },
                 "title": "金额（元）",
-                "sortable": true
+                "sortable": true,
+                "width": 240
               },
               {
                 "field": "status",
-                "title": "状态"
+                "title": "状态",
+                "width": 240
               }
             ],
             "pagination": {
@@ -364,11 +411,13 @@
             "columns": [
               {
                 "field": "order-id",
-                "title": "订单号"
+                "title": "订单号",
+                "width": 240
               },
               {
                 "field": "customer",
-                "title": "客户"
+                "title": "客户",
+                "width": 240
               },
               {
                 "field": {
@@ -377,11 +426,13 @@
                   "format": "number-grouped"
                 },
                 "title": "金额（元）",
-                "sortable": true
+                "sortable": true,
+                "width": 240
               },
               {
                 "field": "status",
-                "title": "状态"
+                "title": "状态",
+                "width": 240
               }
             ],
             "pagination": {
@@ -424,11 +475,13 @@
             "columns": [
               {
                 "field": "order-id",
-                "title": "订单号"
+                "title": "订单号",
+                "width": 240
               },
               {
                 "field": "customer",
-                "title": "客户"
+                "title": "客户",
+                "width": 240
               },
               {
                 "field": {
@@ -437,11 +490,13 @@
                   "format": "number-grouped"
                 },
                 "title": "金额（元）",
-                "sortable": true
+                "sortable": true,
+                "width": 240
               },
               {
                 "field": "status",
-                "title": "状态"
+                "title": "状态",
+                "width": 240
               }
             ],
             "pagination": {

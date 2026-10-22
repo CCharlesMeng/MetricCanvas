@@ -154,7 +154,7 @@ pages/
 - 页面：[table-detail-overlay.json](capabilities/table/table-detail-overlay.json)，试验场「功能演示」，直接打开 [表格点击与详情弹窗](http://localhost:5173/pages/table-detail-overlay)。
 - 数据：2026年9月的内联合成数据，无需 DQE。主表汇总8笔订单、3笔待交付、0笔异常，金额合计861,000元；三个列入口分别引用预先准备的完整快照。
 - 点击「订单数（弹窗）」的8：居中显示全部订单表格，每页5笔；支持搜索、原始金额排序与Excel导出。点击「待交付（抽屉）」的3：右侧只显示3笔待交付订单。点击「异常订单（空结果）」的0：打开空表格。关闭按钮、Esc与背板可关闭浮层，URL保持不变。
-- 此页仅复用现有 `openDetail.view` 和 `detailViews.mode: snapshot`，不新增协议或运行时能力。它不证明按任意点击行动态过滤、query详情传参或真实DQE取数；查询取消与迟到响应由既有详情视图测试覆盖。
+- 含表格详情自动使用宽版浮层，支持普通字段详情与指标卡入口对比；[宽度、窄屏滚动与验收步骤](capabilities/table/README.md#表格详情浮层宽度)。此页复用 `openDetail.view` 和 `detailViews.mode: snapshot`，不新增协议字段。它不证明按任意点击行动态过滤、query详情传参或真实DQE取数；查询取消与迟到响应由既有详情视图测试覆盖。
 
 ### 多查询表格
 

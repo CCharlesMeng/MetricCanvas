@@ -879,6 +879,7 @@
       }
     | undefined
   >(undefined);
+  let detailHasTable = $derived(openDetail?.view?.components.some(component => component.type === 'table') ?? false);
   let detailSnapshots = $state<PageDataSnapshots>(new Map());
   let detailFilters=$state<FilterValues>(new Map());
   let detailOrigin=$state.raw<{component:Component;row:Row;action:OpenDetailAction}|undefined>();
@@ -932,6 +933,7 @@
     if ('view' in detail && pageState.phase === 'ready') {
       const page = declarationPage??pageState.page;
       const view = page.detailViews?.find(candidate => candidate.id === detail.view);
+      openDetail = { ...openDetail, view };
       try {
         const input = detailViewInput(page, action, row, filterValues, pageParams);
         openDetail = { ...openDetail, view:view?{...view,components:input.page.sections[0]!.components}:undefined, page: input.page };
@@ -1379,6 +1381,7 @@
     <!-- 页内详情浮层（ADR-0087）：不离开当前页，Esc 与背板关闭。 -->
     <div
       class="detail-backdrop"
+      class:has-table={detailHasTable}
       data-detail-surface={openDetail.surface}
       role="presentation"
       onclick={(event) => {
@@ -1460,6 +1463,7 @@
     outline: auto;
   }
   .runtime-view {
+    position: relative;
     container: mc-runtime / inline-size;
 
     --mc-color-canvas: #daeaff;
@@ -1770,6 +1774,16 @@
     width: min(420px, 100%);
     height: 100%;
     padding: 20px 24px;
+  }
+  .detail-backdrop.has-table {
+    padding: 0;
+  }
+  .detail-backdrop.has-table .detail-panel {
+    box-sizing: border-box;
+    width: min(90%, 1440px, calc(100% - 32px));
+  }
+  .detail-backdrop.has-table .detail-panel.modal {
+    max-height: calc(100% - 32px);
   }
   .detail-panel header {
     display: flex;
