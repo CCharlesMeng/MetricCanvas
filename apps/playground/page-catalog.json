@@ -2818,6 +2818,50 @@
           "multi-query-table"
         ]
       }
+    },
+    {
+      "id": "ioc-header-demo",
+      "group": "ioc-header",
+      "displayTitle": "IOC Header · 独立经营概览",
+      "summary": "重点国代、全球/地区部/代表处、客户分类和年季月/近一年，联动指标卡、趋势图与Tab明细。",
+      "tags": [
+        "IOC",
+        "Header",
+        "Region",
+        "期间",
+        "Tab",
+        "图表"
+      ],
+      "externalInputs": "ioc-business",
+      "capabilities": [
+        "ioc-header",
+        "filters",
+        "tables"
+      ],
+      "environment": {
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "2024—2026月度样例；无真实IOC或DQE网络请求"
+      },
+      "guide": {
+        "steps": [
+          "打开Region单个下拉框，在树内选择全球、地区部或代表处；勾选重点国代，观察指标、趋势和明细。",
+          "选择多个客户分类；切换年、季、月、近一年。",
+          "趋势左上切签约额/收入，右上切柱状图/折线图。",
+          "切换地区部/代表处明细；URL加back=1显示返回目录的小箭头。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters",
+          "sections"
+        ],
+        "related": [
+          "ioc-header-standard",
+          "ioc-header-business",
+          "filter-group-page"
+        ],
+        "boundary": "仅本地合成数据。右上图表类型下拉由此展示页通过公开组合接口呈现，不是新增页面协议字段。"
+      }
     }
   ],
   "capabilities": [

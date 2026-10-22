@@ -1,3 +1,4 @@
+import { createIocHeaderDemoGateway } from './ioc-header-demo';
 import type { FilterCandidate, FilterCandidatesResult, RuntimeDataGateway } from '@metriccanvas/engine';
 import { createIocHeaderPreview } from '../src/lib/ioc-header-preview-inputs';
 
@@ -38,6 +39,7 @@ export function collaborationCandidates(payload:unknown,complete:boolean):Filter
 /** Development-only isolated gateway; it cannot fall back to a production service. */
 export function createIocBusinessPreview(pageId:string,scenario='ready',context='synthetic-business') {
   const base=createIocHeaderPreview(),attempts=new Map<string,number>();
+  if(pageId==='ioc-header-demo')return {dataGateway:createIocHeaderDemoGateway(),displayInputs:base.displayInputs};
   let modelCalls=0;
   const dataGateway:RuntimeDataGateway={
     async fetchFilterCandidates(request){

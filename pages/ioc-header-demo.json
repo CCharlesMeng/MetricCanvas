@@ -1,0 +1,766 @@
+{
+  "schemaVersion": "6.46",
+  "id": "ioc-header-demo",
+  "layout": "dashboard",
+  "meta": {
+    "title": "IOC Header · 经营概览"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "经营概览"
+    },
+    "back": true,
+    "filterIds": [
+      "key",
+      "region",
+      "customer-type",
+      "period"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "filters": [
+    {
+      "id": "key",
+      "type": "boolean",
+      "label": "仅看重点国代",
+      "default": false
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "demo_region",
+      "label": "Region",
+      "emptyLabel": "Region",
+      "display": "tree",
+      "treeSelection": "independent",
+      "selection": {
+        "mode": "single",
+        "required": true
+      },
+      "default": [
+        "GLOBAL"
+      ]
+    },
+    {
+      "id": "customer-type",
+      "type": "dimension",
+      "dimension": "demo_customer",
+      "label": "客户分类",
+      "emptyLabel": "客户分类",
+      "selection": {
+        "mode": "multiple"
+      },
+      "options": [
+        {
+          "value": "EXCELLENT",
+          "label": "卓越NA"
+        },
+        {
+          "value": "STRATEGIC",
+          "label": "战略NA"
+        },
+        {
+          "value": "CORE",
+          "label": "核心NA"
+        },
+        {
+          "value": "SMB",
+          "label": "商业客户（SMB）"
+        }
+      ]
+    },
+    {
+      "id": "period",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "month",
+      "label": "统计期间",
+      "required": true,
+      "periodModes": [
+        "year",
+        "quarter",
+        "month",
+        "last12Months"
+      ],
+      "default": {
+        "mode": "year",
+        "value": "2026"
+      }
+    },
+    {
+      "id": "chart-metric",
+      "type": "dimension",
+      "dimension": "demo_metric",
+      "label": "趋势指标",
+      "default": [
+        "SIGNINGS"
+      ]
+    }
+  ],
+  "dataSources": {
+    "summary": {
+      "fields": {
+        "demo_summary": {
+          "type": "string",
+          "role": "dimension",
+          "label": "demo_summary",
+          "queryField": "demo_summary"
+        },
+        "signings": {
+          "type": "number",
+          "role": "measure",
+          "label": "签约额",
+          "queryField": "signings"
+        },
+        "revenue": {
+          "type": "number",
+          "role": "measure",
+          "label": "收入",
+          "queryField": "revenue"
+        },
+        "opportunities": {
+          "type": "number",
+          "role": "measure",
+          "label": "机会点数",
+          "queryField": "opportunities"
+        },
+        "win_rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "赢单率",
+          "queryField": "win_rate"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            },
+            "region": {
+              "target": "dimension",
+              "queryField": "demo_region"
+            },
+            "customer-type": {
+              "target": "dimension",
+              "queryField": "demo_customer"
+            },
+            "key": {
+              "target": "boolean",
+              "queryField": "demo_key",
+              "whenTrue": [
+                "1"
+              ]
+            }
+          },
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "demo_summary"
+                ],
+                "output_metrics": [
+                  "signings",
+                  "revenue",
+                  "opportunities",
+                  "win_rate"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "departments": {
+      "fields": {
+        "demo_department_name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "demo_department_name",
+          "queryField": "demo_department_name"
+        },
+        "signings": {
+          "type": "number",
+          "role": "measure",
+          "label": "签约额",
+          "queryField": "signings"
+        },
+        "revenue": {
+          "type": "number",
+          "role": "measure",
+          "label": "收入",
+          "queryField": "revenue"
+        },
+        "opportunities": {
+          "type": "number",
+          "role": "measure",
+          "label": "机会点数",
+          "queryField": "opportunities"
+        },
+        "win_rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "赢单率",
+          "queryField": "win_rate"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            },
+            "region": {
+              "target": "dimension",
+              "queryField": "demo_region"
+            },
+            "customer-type": {
+              "target": "dimension",
+              "queryField": "demo_customer"
+            },
+            "key": {
+              "target": "boolean",
+              "queryField": "demo_key",
+              "whenTrue": [
+                "1"
+              ]
+            }
+          },
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "demo_department_name"
+                ],
+                "output_metrics": [
+                  "signings",
+                  "revenue",
+                  "opportunities",
+                  "win_rate"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "offices": {
+      "fields": {
+        "demo_department_name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "demo_department_name",
+          "queryField": "demo_department_name"
+        },
+        "demo_office_name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "demo_office_name",
+          "queryField": "demo_office_name"
+        },
+        "signings": {
+          "type": "number",
+          "role": "measure",
+          "label": "签约额",
+          "queryField": "signings"
+        },
+        "revenue": {
+          "type": "number",
+          "role": "measure",
+          "label": "收入",
+          "queryField": "revenue"
+        },
+        "opportunities": {
+          "type": "number",
+          "role": "measure",
+          "label": "机会点数",
+          "queryField": "opportunities"
+        },
+        "win_rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "赢单率",
+          "queryField": "win_rate"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            },
+            "region": {
+              "target": "dimension",
+              "queryField": "demo_region"
+            },
+            "customer-type": {
+              "target": "dimension",
+              "queryField": "demo_customer"
+            },
+            "key": {
+              "target": "boolean",
+              "queryField": "demo_key",
+              "whenTrue": [
+                "1"
+              ]
+            }
+          },
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "demo_department_name",
+                  "demo_office_name"
+                ],
+                "output_metrics": [
+                  "signings",
+                  "revenue",
+                  "opportunities",
+                  "win_rate"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "trend": {
+      "fields": {
+        "demo_month": {
+          "type": "string",
+          "role": "dimension",
+          "label": "demo_month",
+          "queryField": "demo_month"
+        },
+        "demo_value": {
+          "type": "number",
+          "role": "measure",
+          "label": "趋势金额",
+          "queryField": "demo_value"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            },
+            "region": {
+              "target": "dimension",
+              "queryField": "demo_region"
+            },
+            "customer-type": {
+              "target": "dimension",
+              "queryField": "demo_customer"
+            },
+            "key": {
+              "target": "boolean",
+              "queryField": "demo_key",
+              "whenTrue": [
+                "1"
+              ]
+            },
+            "chart-metric": {
+              "target": "dimension",
+              "queryField": "demo_metric"
+            }
+          },
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "demo_month"
+                ],
+                "output_metrics": [
+                  "demo_value"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "overview",
+      "container": "plain",
+      "components": [
+        {
+          "id": "metric-signings",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "summary"
+          },
+          "props": {
+            "title": "签约额",
+            "rows": [
+              {
+                "label": "合计",
+                "valueField": {
+                  "field": "signings",
+                  "format": "number-grouped",
+                  "data": "main"
+                },
+                "unit": "万元"
+              }
+            ]
+          }
+        },
+        {
+          "id": "metric-revenue",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "summary"
+          },
+          "props": {
+            "title": "收入",
+            "rows": [
+              {
+                "label": "合计",
+                "valueField": {
+                  "field": "revenue",
+                  "format": "number-grouped",
+                  "data": "main"
+                },
+                "unit": "万元"
+              }
+            ]
+          }
+        },
+        {
+          "id": "metric-opportunities",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "summary"
+          },
+          "props": {
+            "title": "机会点数",
+            "rows": [
+              {
+                "label": "合计",
+                "valueField": {
+                  "field": "opportunities",
+                  "format": "number",
+                  "data": "main"
+                },
+                "unit": "个"
+              }
+            ]
+          }
+        },
+        {
+          "id": "metric-win-rate",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "summary"
+          },
+          "props": {
+            "title": "赢单率",
+            "rows": [
+              {
+                "label": "合计",
+                "valueField": {
+                  "field": "win_rate",
+                  "format": "number-1",
+                  "data": "main"
+                },
+                "unit": "%"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "trend",
+      "container": "card",
+      "components": [
+        {
+          "id": "trend-metric",
+          "type": "filterGroup",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "filterId": "chart-metric",
+            "options": [
+              {
+                "value": "SIGNINGS",
+                "label": "签约额"
+              },
+              {
+                "value": "REVENUE",
+                "label": "收入"
+              }
+            ]
+          }
+        },
+        {
+          "id": "trend-bar",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "trend"
+          },
+          "props": {
+            "title": "经营趋势（万元）",
+            "categoryField": "demo_month",
+            "series": [
+              {
+                "field": "demo_value",
+                "label": "金额"
+              }
+            ],
+            "showValueLabels": true
+          }
+        },
+        {
+          "id": "trend-line",
+          "type": "lineChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "trend"
+          },
+          "props": {
+            "title": "经营趋势（万元）",
+            "xField": "demo_month",
+            "series": [
+              {
+                "field": "demo_value",
+                "label": "金额"
+              }
+            ],
+            "showValueLabels": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "details",
+      "container": "plain",
+      "components": [
+        {
+          "id": "business-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "经营明细",
+            "defaultTab": "departments",
+            "tabs": [
+              {
+                "id": "departments",
+                "label": "地区部",
+                "component": {
+                  "id": "departments-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "departments"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "demo_department_name",
+                        "title": "地区部"
+                      },
+                      {
+                        "field": {
+                          "field": "signings",
+                          "format": "number-grouped",
+                          "data": "main"
+                        },
+                        "title": "签约额（万元）",
+                        "align": "right",
+                        "sortable": true
+                      },
+                      {
+                        "field": {
+                          "field": "revenue",
+                          "format": "number-grouped",
+                          "data": "main"
+                        },
+                        "title": "收入（万元）",
+                        "align": "right",
+                        "sortable": true
+                      },
+                      {
+                        "field": {
+                          "field": "opportunities",
+                          "format": "number-grouped",
+                          "data": "main"
+                        },
+                        "title": "机会点数",
+                        "align": "right",
+                        "sortable": true
+                      },
+                      {
+                        "field": {
+                          "field": "win_rate",
+                          "format": "number-1",
+                          "data": "main"
+                        },
+                        "title": "赢单率（%）",
+                        "align": "right",
+                        "sortable": true
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "offices",
+                "label": "代表处",
+                "component": {
+                  "id": "offices-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "offices"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "demo_department_name",
+                        "title": "地区部"
+                      },
+                      {
+                        "field": "demo_office_name",
+                        "title": "代表处"
+                      },
+                      {
+                        "field": {
+                          "field": "signings",
+                          "format": "number-grouped",
+                          "data": "main"
+                        },
+                        "title": "签约额（万元）",
+                        "align": "right",
+                        "sortable": true
+                      },
+                      {
+                        "field": {
+                          "field": "revenue",
+                          "format": "number-grouped",
+                          "data": "main"
+                        },
+                        "title": "收入（万元）",
+                        "align": "right",
+                        "sortable": true
+                      },
+                      {
+                        "field": {
+                          "field": "opportunities",
+                          "format": "number-grouped",
+                          "data": "main"
+                        },
+                        "title": "机会点数",
+                        "align": "right",
+                        "sortable": true
+                      },
+                      {
+                        "field": {
+                          "field": "win_rate",
+                          "format": "number-1",
+                          "data": "main"
+                        },
+                        "title": "赢单率（%）",
+                        "align": "right",
+                        "sortable": true
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "note",
+      "container": "plain",
+      "components": [
+        {
+          "id": "demo-note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "本页使用合成演示数据；筛选联动指标、趋势和明细。金额单位：万元。"
+          }
+        }
+      ]
+    }
+  ]
+}
