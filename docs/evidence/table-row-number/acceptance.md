@@ -17,7 +17,8 @@
 ```sh
 pnpm --filter playground dev --port 5186
 pnpm --filter @metriccanvas/embed build
-PLAYGROUND_BASE_URL=http://127.0.0.1:5186 pnpm --filter @metriccanvas/embed exec playwright test tests/browser/table-row-number.spec.ts tests/browser/table-toolbar.spec.ts tests/browser/table-row-expansion.spec.ts --workers=1
+pnpm --filter @metriccanvas/embed exec playwright test tests/browser/table-row-number.spec.ts tests/browser/table-toolbar.spec.ts tests/browser/table-row-expansion.spec.ts --workers=1
+PLAYGROUND_BASE_URL=http://127.0.0.1:5186 node apps/playground/tests/table-row-number-browser.mjs
 ```
 
 16项通过：本地第2页11—20；金额降序客户25序号1；搜索客户2结果为1—7；数值下限24匹配2行并重编号；Excel完整行集从1编号且跨行表头正确；query网关桩第2页从11开始且未增加查询字段；多级表头、三种变体、空结果、390px固定列无重叠；父表展开colspan包含序号，子表第2页从11开始且父表仍为1；已有搜索、导出、子表行为回归通过。
@@ -38,3 +39,5 @@ PLAYGROUND_BASE_URL=http://127.0.0.1:5186 pnpm --filter @metriccanvas/embed exec
 ## CI门禁修复
 
 首轮CI在页面id中立性测试失败：内部能力标识与示例页面id同为 `table-row-number`。本地 `pnpm test apps/playground/tests/page-id-neutrality.test.ts` 确定性复现后，将内部能力标识改为 `table-row-ordinal-column`，保留页面id、6.48版本下限和所有运行行为；不修改或放宽门禁。重新运行页面id中立性、版本和序号列测试，并重新生成协议分发物。
+
+消费端兼容性产物还显示472项通过、2项跳过：跳过项是需要独立服务的Playground路由验收。将其迁至 `apps/playground/tests/table-row-number-browser.mjs` 单独执行，嵌入端4项序号测试继续在Chrome/Edge消费端执行，保留全套消费端零跳过门禁。分离后本地嵌入端15项回归与独立Playground验收通过。

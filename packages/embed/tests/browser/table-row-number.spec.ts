@@ -80,11 +80,3 @@ test('parent expansion spans the generated column and children number independen
   await child.getByRole('button',{name:'2',exact:true}).click(); await expect(numbers(child).first()).toHaveText('11');
   await expect(table.locator('table').first().locator(':scope > tbody > tr > td[data-row-number]').first()).toHaveText('1');
 });
-
-test('registered Playground route exposes working row numbers', async ({page},info)=>{
-  test.skip(!process.env.PLAYGROUND_BASE_URL,'Set PLAYGROUND_BASE_URL to verify the real Playground.');
-  await page.goto(`${process.env.PLAYGROUND_BASE_URL}/pages/table-row-number`);
-  const table=main(page); await expect(numbers(table).first()).toHaveText('1');
-  await table.getByRole('button',{name:'2',exact:true}).click(); await expect(numbers(table).first()).toHaveText('11');
-  await page.screenshot({path:info.outputPath('playground-row-number.png'),fullPage:true});
-});
