@@ -1,4 +1,4 @@
-import {timeQueryLeaves} from '@metriccanvas/page/internal';
+import {queryLeaves} from '@metriccanvas/page/internal';
 import { canonicalizeJson, declaredPaginationLimit, type DataSnapshot, type DataSource, type EffectiveQuery, type TableQueryView, type Row } from '@metriccanvas/page/internal';
 import type { QueryRunner } from '../query-runner';
 import type { QueryDiagnosticContext } from '../ports';
@@ -41,7 +41,7 @@ export function checkOrdinaryRange(source: DataSource, snapshot: DataSnapshot, l
 /** A static limit without offset is a business selection unless a table owns its window. */
 export function isBusinessSelection(source:DataSource,mutableWindow:boolean):boolean {
   if(source.source.type!=='query'||mutableWindow||declaredPaginationLimit(source.source.query)===undefined)return false;
-  return timeQueryLeaves(source.source.query).every(query=>{const order=query.body.dsl_list[0].order;
+  return queryLeaves(source.source.query).every(query=>{const order=query.body.dsl_list[0].order;
   return typeof order==='object'&&order!==null&&!Array.isArray(order)&&!('offset' in order);});
 }
 export function correctedPageIndex(query: EffectiveQuery, snapshot: DataSnapshot): number | undefined {

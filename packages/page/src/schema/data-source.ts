@@ -93,6 +93,14 @@ const filterBindingsZ=z
           ])
       );
 
+const queryCasesZ = z.object({
+  filterId: idZ,
+  cases: z.record(z.string().min(1), z.object({
+    body: z.object({dsl_list: z.array(dslItemZ).length(1)}).strict(),
+    filterBindings: filterBindingsZ
+  }).strict()).meta({minProperties: 1})
+}).strict();
+
 export const dqeQueryZ = z
   .object({
     language: z.literal('dqe'),
@@ -110,7 +118,8 @@ export const dqeQueryZ = z
       z.object({ target: z.literal('time'), window: timeWindowZ }).strict()
     ])).optional(),
     filterBindings: filterBindingsZ.optional(),
-    timeModes:z.object({filterId:idZ,cases:z.record(z.string().min(1),z.object({body:z.object({dsl_list:z.array(dslItemZ).length(1)}).strict(),filterBindings:filterBindingsZ}).strict())}).strict().optional()
+    timeModes: queryCasesZ.optional(),
+    queryModes: queryCasesZ.optional()
   })
   .meta({ id: 'dqeQuery' });
 

@@ -1,0 +1,35 @@
+{
+  "case": "query-modes-selector-missing",
+  "invariant": "query-modes",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "queryModes必须引用固定单选filterGroup或required单选封闭枚举",
+      "paths": [
+        "/dataSources/amount-trend/source/query/queryModes"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "amount-trend": {
+        "source": {
+          "query": {
+            "queryModes": {
+              "filterId": "absent",
+              "cases": {
+                "contracts": {
+                  "…": "共2个键"
+                },
+                "opportunities": {
+                  "…": "共2个键"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/query-modes-selector-missing.json"
+}

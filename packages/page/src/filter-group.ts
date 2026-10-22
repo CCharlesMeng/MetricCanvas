@@ -1,3 +1,4 @@
+import {queryFilterIds} from './amount-filter';
 import { filterDependencies } from './filter-dependencies';
 import { flattenPageComponents, walkPageComponents, walkDocumentComponents } from './component-walk';
 import type { FilterDeclaration } from './filter';
@@ -33,7 +34,7 @@ export function filterGroupErrors(page: Page): TypedError[] {
     if (new Set(values).size !== values.length) error(`${location}/options`, '筛选按钮组选项的 value 不得重复');
     if (declaration.default?.length !== 1 || !values.includes(declaration.default[0]!)) error(`${location}/filterId`, '筛选按钮组 default 必须是候选项中的一个值');
     if (page.filters?.some(filter => filterDependencies(filter).includes(declaration.id))) error(`${location}/filterId`, '固定筛选按钮组不能驱动其他筛选器的级联');
-    if (!Object.values(page.dataSources).some(source => source.source.type === 'query' && source.source.query.filterBindings?.[declaration.id])) error(location, '筛选按钮组需要至少一个查询通过 filterBindings 消费');
+    if (!Object.values(page.dataSources).some(source => source.source.type === 'query' && queryFilterIds(source.source.query).includes(declaration.id))) error(location, '筛选按钮组需要至少一个查询通过 filterBindings 或查询模式消费');
   });
   return errors;
 }

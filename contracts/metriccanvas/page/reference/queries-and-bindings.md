@@ -142,8 +142,43 @@ data.main选择数据源，sortable开放列头交互，pagination.mode=query使
 
 SourceProgram、Node执行入口、分页/组合查询、导出统一选择合法已应用模式；没有首case回退。未证明模式/事实上下文的initial/seeds/执行快照不复用；捕获查询的时间及筛选谓词按冻结条件重编译，不能让旧谓词绕过可信上限。一次read冻结时钟、条件、事实与相关filterRevision，导出亦冻结。Relay部署入口可传可信context，但本批只验证公共Node执行和本地合成HTTP；真实Relay/DQE week聚合及私有周码未验真。
 
+<a id="query-modes"></a>
 
-页面协议 6.49。结构真源为本册[schema.json](schema.json)，SHA256 `f7595ffbdcf2fe8b269b74567933759d72d6ed3067022eb2cc8fc84196ac0f34`。字段表自动生成；可选不等于有默认值。
+## 6.50 固定单选查询分支
+
+一个页面数据源表示一份稳定结果，不等于一张物理表。`queryModes` 允许按普通维度筛选的固定单选值选择不同完整 DQE 查询；各查询可以关联不同数据对象，数据网关仍提交生效查询并按显式别名归一化。页面不增加数据库地址、物理表推断、自由 SQL 或渲染期查询生成。
+
+```json
+{
+  "language": "dqe",
+  "queryModes": {
+    "filterId": "business",
+    "cases": {
+      "contracts": {
+        "body": {"dsl_list": [{"output_dims": ["月份"], "output_metrics": [{"name": "签约金额", "alias": "金额"}], "filter": {"dims": [], "metrics": []}, "order": {}}]},
+        "filterBindings": {"region": {"target": "dimension", "queryField": "签约区域"}}
+      },
+      "opportunities": {
+        "body": {"dsl_list": [{"output_dims": ["月份"], "output_metrics": [{"name": "商机金额", "alias": "金额"}], "filter": {"dims": [], "metrics": []}, "order": {}}]},
+        "filterBindings": {"region": {"target": "dimension", "queryField": "商机区域"}}
+      }
+    }
+  }
+}
+```
+
+这是查询定义片段；完整页面还声明 `business` 和 `region` 筛选器、固定选项、结果字段与组件。`business` 必须由固定单选 `filterGroup` 提供选项，或声明 `options` 及 `selection:{mode:"single",required:true}`。case 键与全部可用选项全等，不允许缺项、额外项、首项回退、动态候选、多选、空选或自由条件匹配。`queryModes`、`timeModes` 和根 `body` 三选一；模式查询不声明根 `filterBindings/paramBindings`，各 case 显式声明完整 `body/filterBindings`。首版不嵌套时间模式；普通时间筛选仍可在 case 内绑定。选择器不能同时作为本 case 的 DQE 谓词。
+
+所有 case 输出同一组维度与度量别名，映射到页面数据源唯一的结果字段契约；类型、角色、货币、单位和行粒度保持一致。物理来源与业务口径由创作期分别验证；静态字段校验不证明两条真实查询的业务可比性。不能把人民币与美元、金额与数量或明细与汇总共用一个结果字段冒充一致；此类需求拆分独立契约与呈现。
+
+统一运行时先按已应用筛选选择 case，再编译该 case 的普通筛选与参数引用。只执行当前 case，同一选择器可控制多个数据源，所有结果消费者共享数据快照；分支选择本身计入查询依赖，不需要虚构 DQE 维度。case 外不声明受控组件列表。所有静态 case 都参与校验、参数引用、依赖分析；候选门禁只核验当前分支实际消费的筛选及祖先，未激活分支的候选未就绪不阻断当前分支；时间模式、查询模式与字段选择共用4096组合上限。
+
+浏览器、SourceProgram、公共 Node 执行、分页/组合查询和导出共用选择实现。缓存按实际生效查询及筛选条件隔离；取消和迟到结果保护沿用统一查询执行。没有分支上下文证明的 initial、seeds 和执行快照不直接复用；捕获查询须与冻结条件的分支相符，导出固定捕获的分支与区域，不在导出过程中跟随屏幕切换。运行期非法选择阻断相关查询，不改查其他表。URL 非法值仍按既有固定筛选控件规则恢复默认。
+
+验收：`query-mode-chart-demo`，Dashboard 一张折线图、合计卡和共享结果明细表；签约与商机由 DQE Sim 的两张独立合成表提供。切换口径与区域应改变实际请求中的业务指标、区域目标字段和图表数值。演示数据与真实 DQE/Relay、数据库权限及业务数值验真分开报告。
+
+
+页面协议 6.50。结构真源为本册[schema.json](schema.json)，SHA256 `d7df3a55bf6fd38b988d4ead99bcf7e2cf07b0ff1f544a5d98d20ae664c0f67e`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1132,7 +1167,7 @@ Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/filterId`
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 显式引用当前页面已声明筛选器；timeModes要求modes范围，metricByFilter要求required单选枚举。 |
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 显式引用当前页面已声明筛选器；timeModes要求modes范围，queryModes要求固定必选单选，metricByFilter要求required单选枚举。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f6361736573"></a>
 
@@ -1142,7 +1177,7 @@ Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 本分支必填 | propertyNames={"type":"string","minLength":1} | Schema未设默认；装配/运行时默认见语义说明 | 完整穷尽已声明模式或封闭枚举的静态case，没有隐式首项回退。 |
+| "object" | 本分支必填 | propertyNames={"type":"string","minLength":1}; minProperties=1 | Schema未设默认；装配/运行时默认见语义说明 | 完整穷尽已声明模式或封闭枚举的静态case，没有隐式首项回退。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f70657274696573"></a>
 
@@ -1531,7 +1566,7 @@ Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/add
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 显式引用当前页面已声明筛选器；timeModes要求modes范围，metricByFilter要求required单选枚举。 |
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 显式引用当前页面已声明筛选器；timeModes要求modes范围，queryModes要求固定必选单选，metricByFilter要求required单选枚举。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f352f70726f706572746965732f6d6574726963427946696c7465722f70726f706572746965732f6361736573"></a>
 
@@ -1583,6 +1618,475 @@ Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/pro
 |---|---|---|---|---|
 | "string" | 条件结构 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f646573"></a>
+
+### `@dqeQuery.queryModes`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["filterId","cases"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 6.50：固定单选filterGroup或required单选枚举选择完整静态DQE查询；与timeModes及普通body互斥，共享结果字段契约。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f66696c7465724964"></a>
+
+### `@dqeQuery.queryModes.filterId`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/filterId`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 显式引用当前页面已声明筛选器；timeModes要求modes范围，queryModes要求固定必选单选，metricByFilter要求required单选枚举。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f6361736573"></a>
+
+### `@dqeQuery.queryModes.cases`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | propertyNames={"type":"string","minLength":1}; minProperties=1 | Schema未设默认；装配/运行时默认见语义说明 | 完整穷尽已声明模式或封闭枚举的静态case，没有隐式首项回退。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@dqeQuery.queryModes.cases{key}`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 动态键的值 | required=["body","filterBindings"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f626f6479"></a>
+
+### `@dqeQuery.queryModes.cases{key}.body`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/body`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | required=["dsl_list"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 静态正文或页面参数文本取值；bodyFormat决定是否走受控语义HTML。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f626f64792f70726f706572746965732f64736c5f6c697374"></a>
+
+### `@dqeQuery.queryModes.cases{key}.body.dsl_list`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/body/properties/dsl_list`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1; maxItems=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE协议中的查询DSL列表。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f626f64792f70726f706572746965732f64736c5f6c6973742f6974656d73"></a>
+
+### `@dqeQuery.queryModes.cases{key}.body.dsl_list[]`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/body/properties/dsl_list/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | propertyNames={"type":"string"} | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f626f64792f70726f706572746965732f64736c5f6c6973742f6974656d732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@dqeQuery.queryModes.cases{key}.body.dsl_list[]{key}`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/body/properties/dsl_list/items/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 开放JSON | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f626f64792f70726f706572746965732f64736c5f6c6973742f6974656d732f70726f70657274794e616d6573"></a>
+
+### `@dqeQuery.queryModes.cases{key}.body.dsl_list[] · propertyNames`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/body/properties/dsl_list/items/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e6773"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | propertyNames={"type":"string","pattern":"^[a-z0-9][a-z0-9-]*$"} | Schema未设默认；装配/运行时默认见语义说明 | 筛选器id到当前查询目标的显式绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key}`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f30"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[0]`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["target","queryField"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f746172676574"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[0].target`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/target`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="dimension" | Schema未设默认；装配/运行时默认见语义说明 | 写回目标或查询绑定目标，按所在结构明确类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "dimension" | 分类维度或维度目标；不是数值度量。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f71756572794669656c64"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[0].queryField`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/queryField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f31"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1]`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["target","levelQueryFields"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f746172676574"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1].target`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/target`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="dimension" | Schema未设默认；装配/运行时默认见语义说明 | 写回目标或查询绑定目标，按所在结构明确类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "dimension" | 分类维度或维度目标；不是数值度量。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f6c6576656c51756572794669656c6473"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1].levelQueryFields`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | propertyNames={"type":"string","pattern":"^[a-z0-9][a-z0-9-]*$"}; minProperties=2 | Schema未设默认；装配/运行时默认见语义说明 | 层级维度筛选器逐级声明的谓词字段：键是层级id，值是该层的DQE字段；必须逐级写全。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f6c6576656c51756572794669656c64732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1].levelQueryFields{key}`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 动态键的值 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f6c6576656c51756572794669656c64732f70726f70657274794e616d6573"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1].levelQueryFields · propertyNames`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f32"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2]`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["target"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f746172676574"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].target`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/target`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="time" | Schema未设默认；装配/运行时默认见语义说明 | 写回目标或查询绑定目标，按所在结构明确类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "time" | 用于选择@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].target分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f77696e646f77"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].window`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/window`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 确定性查询时间窗口：由绑定参数推导起止，起止包含；不决定指标口径。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f77696e646f772f616c6c4f662f30"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].window · allOf[0]`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/window/allOf/0`。目标：[#/definitions/timeWindow](params-and-text-values.md#schema-232f646566696e6974696f6e732f74696d6557696e646f77)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/timeWindow | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f33"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[3]`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["target","queryField"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f332f70726f706572746965732f746172676574"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[3].target`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3/properties/target`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="timePoint" | Schema未设默认；装配/运行时默认见语义说明 | 写回目标或查询绑定目标，按所在结构明确类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "timePoint" | 用于选择@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[3].target分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f332f70726f706572746965732f71756572794669656c64"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[3].queryField`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3/properties/queryField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f332f70726f706572746965732f76616c7565466f726d6174"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[3].valueFormat`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3/properties/valueFormat`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["iso","compact"] | Schema未设默认；装配/运行时默认见语义说明 | 时间点取值送进谓词的写法：iso原样YYYY-MM，compact去掉分隔符。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "iso" | 时间点原样送 YYYY-MM / YYYY-MM-DD。 |
+| "compact" | 时间点去掉分隔符后送出，例如 202604。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f34"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[4]`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["target","queryField","whenTrue"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f342f70726f706572746965732f746172676574"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[4].target`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/target`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="boolean" | Schema未设默认；装配/运行时默认见语义说明 | 写回目标或查询绑定目标，按所在结构明确类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "boolean" | 布尔值；false是显式取值。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f342f70726f706572746965732f71756572794669656c64"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[4].queryField`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/queryField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f342f70726f706572746965732f7768656e54727565"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[4].whenTrue`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/whenTrue`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 布尔筛选器勾选时下推的取值；不勾选默认无条件。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f342f70726f706572746965732f7768656e547275652f6974656d73"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[4].whenTrue[]`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/whenTrue/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f342f70726f706572746965732f7768656e46616c7365"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[4].whenFalse`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/whenFalse`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 布尔筛选器显式为假时下推的取值；缺席即不勾选不加条件。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f342f70726f706572746965732f7768656e46616c73652f6974656d73"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[4].whenFalse[]`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/whenFalse/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f35"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5]`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["target"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f352f70726f706572746965732f746172676574"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5].target`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/target`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="numberRange" | Schema未设默认；装配/运行时默认见语义说明 | 写回目标或查询绑定目标，按所在结构明确类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "numberRange" | 数值度量的包含端点范围；按原始单位比较，一端可缺省。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f352f70726f706572746965732f6d6574726963"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5].metric`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metric`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 数值区间谓词作用的DQE指标名，不等于页面字段id。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f352f70726f706572746965732f6d6574726963427946696c746572"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["filterId","cases"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按required单选币种选择静态基本单位metric，各case与units货币一致。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f352f70726f706572746965732f6d6574726963427946696c7465722f70726f706572746965732f66696c7465724964"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter.filterId`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/filterId`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 显式引用当前页面已声明筛选器；timeModes要求modes范围，queryModes要求固定必选单选，metricByFilter要求required单选枚举。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f352f70726f706572746965732f6d6574726963427946696c7465722f70726f706572746965732f6361736573"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter.cases`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/cases`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | propertyNames={"type":"string","minLength":1} | Schema未设默认；装配/运行时默认见语义说明 | 完整穷尽已声明模式或封闭枚举的静态case，没有隐式首项回退。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f352f70726f706572746965732f6d6574726963427946696c7465722f70726f706572746965732f63617365732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter.cases{key}`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/cases/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 动态键的值 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f352f70726f706572746965732f6d6574726963427946696c7465722f70726f706572746965732f63617365732f70726f70657274794e616d6573"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter.cases · propertyNames`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/cases/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f70726f70657274794e616d6573"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings · propertyNames`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f70726f70657274794e616d6573"></a>
+
+### `@dqeQuery.queryModes.cases · propertyNames`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 ## 语义规则与反例（生成）
 
 - `query-field-mapping`：query 数据源字段与 DQE 输出字段之间的显式、唯一、角色相容映射。反例：[query-field-without-mapping](errors/query-field-without-mapping.json)、[query-field-duplicate-mapping](errors/query-field-duplicate-mapping.json)、[query-field-not-output](errors/query-field-not-output.json)、[query-detail-item-duplicate-mapping](errors/query-detail-item-duplicate-mapping.json)、[query-dimension-role-mismatch](errors/query-dimension-role-mismatch.json)、[query-role-mismatch](errors/query-role-mismatch.json)、[query-output-unmapped](errors/query-output-unmapped.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -1603,6 +2107,8 @@ Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/pro
 - [availability-page](examples/availability-page.json)：完整合法页面；查询仅为静态契约证据。
 - [calendar-window-page](examples/calendar-window-page.json)：完整合法页面；查询仅为静态契约证据。
 - [time-binding-branches-page](examples/time-binding-branches-page.json)：完整合法页面；查询仅为静态契约证据。
+- [query-modes-page](examples/query-modes-page.json)：完整合法页面；查询仅为静态契约证据。
+- [query-mode-binding-branches-page](examples/query-mode-binding-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/query.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
@@ -1641,3 +2147,9 @@ Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/pro
 - `#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3`：[合法完整页面](examples/time-binding-branches-page.json)，JSON Pointer `#/dataSources/main/source/query/timeModes/cases/month/filterBindings/point`。
 - `#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4`：[合法完整页面](examples/time-binding-branches-page.json)，JSON Pointer `#/dataSources/main/source/query/timeModes/cases/month/filterBindings/flag`。
 - `#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5`：[合法完整页面](examples/time-binding-branches-page.json)，JSON Pointer `#/dataSources/main/source/query/timeModes/cases/month/filterBindings/amount`。
+- `#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0`：[合法完整页面](examples/query-modes-page.json)，JSON Pointer `#/dataSources/amount-trend/source/query/queryModes/cases/contracts/filterBindings/region`。
+- `#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1`：[合法完整页面](examples/query-mode-binding-branches-page.json)，JSON Pointer `#/dataSources/main/source/query/queryModes/cases/a/filterBindings/closed`。
+- `#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2`：[合法完整页面](examples/query-mode-binding-branches-page.json)，JSON Pointer `#/dataSources/main/source/query/queryModes/cases/a/filterBindings/period`。
+- `#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3`：[合法完整页面](examples/query-mode-binding-branches-page.json)，JSON Pointer `#/dataSources/main/source/query/queryModes/cases/a/filterBindings/point`。
+- `#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4`：[合法完整页面](examples/query-mode-binding-branches-page.json)，JSON Pointer `#/dataSources/main/source/query/queryModes/cases/a/filterBindings/flag`。
+- `#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5`：[合法完整页面](examples/query-mode-binding-branches-page.json)，JSON Pointer `#/dataSources/main/source/query/queryModes/cases/a/filterBindings/amount`。

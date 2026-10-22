@@ -207,7 +207,9 @@
         "time-presets-page",
         "availability-page",
         "calendar-window-page",
-        "time-binding-branches-page"
+        "time-binding-branches-page",
+        "query-modes-page",
+        "query-mode-binding-branches-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1522,7 +1524,7 @@
     "candidateWindow": "V2候选必须携带12个日历月闭区间及完整上下文，不能降级旧维度端口。",
     "anchorFact": "可信具名期间事实的latest作为月份锚点；省略使用同次时钟。",
     "presets": "快捷范围按同次时钟或显式anchor解析，不改变已应用值直至合法提交。",
-    "filterId": "显式引用当前页面已声明筛选器；timeModes要求modes范围，metricByFilter要求required单选枚举。",
+    "filterId": "显式引用当前页面已声明筛选器；timeModes要求modes范围，queryModes要求固定必选单选，metricByFilter要求required单选枚举。",
     "cases": "完整穷尽已声明模式或封闭枚举的静态case，没有隐式首项回退。",
     "metricByFilter": "按required单选币种选择静态基本单位metric，各case与units货币一致。",
     "disableFuture": "默认保持禁止未来期间；显式false取消该项限制，仍受min/max/可信期间及禁选范围约束。",
@@ -1549,7 +1551,8 @@
     "#/definitions/filterGroupComponent/properties/props/properties/align": "6.47控件在所占栅格内左/右对齐，默认left；不改变筛选范围。",
     "#/definitions/tableComponent/properties/props/properties/rowNumber": "6.48呈现序号列；默认标题序号、宽度64px，可左固定；按排序筛选后的当前行集跨页连续编号，不绑定数据字段。",
     "#/definitions/rowExpansionTable/properties/rowNumber": "6.48子表格独立序号列，复用普通表格声明和编号规则。",
-    "#/definitions/tabContainerComponent/properties/props/properties/contentLayout": "6.49：显式grid复用12列栅格；缺省保留旧纵向全宽。普通内容与组合卡可入Tab，页头与嵌套Tab禁止。"
+    "#/definitions/tabContainerComponent/properties/props/properties/contentLayout": "6.49：显式grid复用12列栅格；缺省保留旧纵向全宽。普通内容与组合卡可入Tab，页头与嵌套Tab禁止。",
+    "queryModes": "6.50：固定单选filterGroup或required单选枚举选择完整静态DQE查询；与timeModes及普通body互斥，共享结果字段契约。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1815,7 +1818,8 @@
     "#/definitions/filterGroupComponent/properties/props/properties/display=\"buttons\"": "固定单选按钮，省略display时保持此呈现。",
     "#/definitions/filterGroupComponent/properties/props/properties/display=\"select\"": "复用维度下拉，固定候选且必选单选。",
     "#/properties/schemaVersion=\"6.48\"": "普通表格和子表格支持独立的自动序号列。",
-    "6.49": "Tab 混合普通内容与组合卡、显式12列栅格、按需取数及保活恢复。"
+    "6.49": "Tab 混合普通内容与组合卡、显式12列栅格、按需取数及保活恢复。",
+    "6.50": "固定单选选择不同数据对象的完整静态DQE查询分支，共享结果字段契约与SourceProgram执行。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2191,6 +2195,19 @@
         "自动序号列（6.48）"
       ],
       "dependencies": []
+    },
+    "query.modes": {
+      "module": "queries-and-bindings",
+      "title": "固定单选跨表查询分支",
+      "roots": [
+        "#/definitions/dqeQuery/properties/queryModes"
+      ],
+      "headings": [
+        "6.50 固定单选查询分支"
+      ],
+      "dependencies": [
+        "query.core"
+      ]
     }
   },
   "authoringSemanticHeadings": {
@@ -2223,7 +2240,8 @@
       "查询输入行过滤 6.19",
       "排序与查询分页驱动结果绑定 6.20",
       "配置解读：首轮查询、任意列排序与分页级联",
-      "6.39 静态时间查询模式"
+      "6.39 静态时间查询模式",
+      "6.50 固定单选查询分支"
     ],
     "compute.md": [
       "查阅方式",

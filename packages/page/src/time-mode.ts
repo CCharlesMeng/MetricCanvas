@@ -1,6 +1,6 @@
 import {isRelativeTimeExpression,resolveRelativeTime,validateCalendarTimeRange,type TimeRangeFilterDeclaration,type TimeRangeValue} from './filter';
-import type {DqeQueryDefinition,DqeRequestBody} from './query';
-import type {Page} from './page';
+import type {DqeQueryDefinition} from './query';
+import {queryLeaves,hasQuerySelection} from './query-selection';
 export type TimeMode='day'|'month'|'isoWeek';
 export interface ModeRange extends TimeRangeValue {mode?:TimeMode}
 export function modeRangeIssue(declaration:TimeRangeFilterDeclaration,range:ModeRange):string|undefined {
@@ -23,32 +23,18 @@ export function initialModeRange(declaration:TimeRangeFilterDeclaration,mode:Tim
  const range=isRelativeTimeExpression(entry.default)?resolveRelativeTime(entry.default,now,mode==='month'?'month':'date'):entry.default;
  const result={...range,mode};const issue=modeRangeIssue(declaration,result);if(issue)throw new Error(issue);return result;
 }
-export function ordinaryQuery(query:DqeQueryDefinition):DqeQueryDefinition&{body:DqeRequestBody} {
- if(!query.body||query.timeModes)throw Object.assign(new Error('模式查询须先按合法已应用模式选择'),{code:'DQE_QUERY_REJECTED'});return query as DqeQueryDefinition&{body:DqeRequestBody};
-}
-export function selectTimeQuery(query:DqeQueryDefinition,values:ReadonlyMap<string,{type:string;mode?:TimeMode}>):DqeQueryDefinition&{body:DqeRequestBody} {
- if(!query.timeModes)return ordinaryQuery(query);
- const selected=values.get(query.timeModes.filterId);const leaf=selected?.type==='timeRange'&&selected.mode?query.timeModes.cases[selected.mode]:undefined;
- if(!leaf)throw Object.assign(new Error('时间模式查询未通过合法选择'),{code:'DQE_QUERY_REJECTED'});
- const {timeModes,body,filterBindings,paramBindings,...base}=query;return {...base,...leaf};
-}
-/** All static leaves are visible to validation and dependency discovery. */
-export function timeQueryLeaves(query:DqeQueryDefinition):Array<DqeQueryDefinition&{body:DqeRequestBody}>{
- if(!query.timeModes)return [ordinaryQuery(query)];
- const {timeModes,body,filterBindings,paramBindings,...base}=query;return Object.values(timeModes.cases).map(leaf=>({...base,...leaf}));
-}
-export function* timeQueryVariants(page:Page):Generator<Page>{
- const selectors=new Map<string,TimeMode[]>();for(const source of Object.values(page.dataSources))if(source.source.type==='query'&&source.source.query.timeModes){const selection=source.source.query.timeModes;selectors.set(selection.filterId,Object.keys(selection.cases) as TimeMode[]);}
- if(!selectors.size){yield page;return;}
- let assignments:Map<string,{type:string;mode:TimeMode}>[]=[new Map()];for(const [id,modes]of selectors){if(assignments.length*modes.length>4096)throw new Error('查询模式组合超过4096');assignments=assignments.flatMap(values=>modes.map(mode=>new Map(values).set(id,{type:'timeRange',mode})));}
- for(const values of assignments){const sources=Object.fromEntries(Object.entries(page.dataSources).map(([id,source])=>[id,source.source.type==='query'?{...source,source:{...source.source,query:selectTimeQuery(source.source.query,values)}}:source]));yield {...page,dataSources:sources};}
-}
-
+// Historical internal names retain the same shared static-query selection implementation.
+export {ordinaryQuery,selectQuery as selectTimeQuery,queryLeaves as timeQueryLeaves,queryVariants as timeQueryVariants} from './query-selection';
 /** Unannotated receipts cannot establish the time/period-fact context for these queries. */
 export function requiresTimeValidation(filter:import('./filter').FilterDeclaration):boolean {
  return (filter.type==='timeRange'||filter.type==='timePoint')&&!!(filter.availability||filter.max||filter.blockedRanges||filter.type==='timeRange'&&(filter.display==='modes'||filter.min!==undefined||filter.disableFuture!==undefined));
 }
 export function hasTimeConstraints(query:DqeQueryDefinition,declarations:readonly import('./filter').FilterDeclaration[]=[]):boolean {
- const ids=new Set(timeQueryLeaves(query).flatMap(leaf=>Object.keys(leaf.filterBindings??{})));
+ const ids=new Set(queryLeaves(query).flatMap(leaf=>Object.keys(leaf.filterBindings??{})));
  return !!query.timeModes||declarations.some(filter=>ids.has(filter.id)&&requiresTimeValidation(filter));
+}
+
+/** Query receipts must prove both the selected branch and constrained input context. */
+export function requiresQueryContext(query:DqeQueryDefinition,declarations:readonly import('./filter').FilterDeclaration[]=[]):boolean {
+ return hasQuerySelection(query)||hasTimeConstraints(query,declarations);
 }

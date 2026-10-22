@@ -1,0 +1,192 @@
+{
+  "baseline": "3541d5d69d71c0fd81ab05307dbb35183bd3e7d2",
+  "checkout": "/Users/moon/.codex/worktrees/query-branches/DataDashboard",
+  "branch": "codex/query-branches",
+  "target": "origin/main",
+  "commitMarker": "[skip ci]",
+  "ci": "user requested skip; not green",
+  "lockfile": {
+    "file": "pnpm-lock.yaml",
+    "sha256": "1a33c68c0755b6d9bf6d05bbf45438b9b5e2b9bc574a6f41908944dfe5fc2f4f"
+  },
+  "sourceInputs": [
+    {
+      "file": "PAGE-METADATA.md",
+      "sha256": "f5caff40a21604d735712212d0b0efa5da62f672fe21b2e209600519cb8efba3"
+    },
+    {
+      "file": "docs/page-metadata/components/filterGroup.md",
+      "sha256": "854ecee826a955580d625cc3411eff1d72fcc79816e6a1ac62e7fea334833543"
+    },
+    {
+      "file": "docs/page-metadata/queries-and-bindings.md",
+      "sha256": "2aec94a489b95f1a9bad25e3f8be8921be62f9a59b6bab784211f93639fa082e"
+    },
+    {
+      "file": "docs/page-metadata/reference-map.json",
+      "sha256": "dd55537f980cfbbd7f4ac29b688a30aa071367cd6df5f853250a3858fd23619d"
+    },
+    {
+      "file": "packages/data-execution/src/candidate-validation.ts",
+      "sha256": "92adac70e20703a638176736445a87603046849b7e24c23c5d8ed045aefcba25"
+    },
+    {
+      "file": "packages/data-execution/src/effective-query.ts",
+      "sha256": "ef6f86e25363c330808ab7ade52adcad072562fc3f3d3ff67724298e5fac9203"
+    },
+    {
+      "file": "packages/data-execution/src/execute.ts",
+      "sha256": "d96397f787e7ecba7a64130a8dc3331a65dc6405d4cdd493db1e65c10828c424"
+    },
+    {
+      "file": "packages/data-execution/src/source-program/range-policy.ts",
+      "sha256": "135ed55ccd0dbce4c11463a8d145ba2e1f4bb3e2eaa23f4dfa9290f0a838f9bf"
+    },
+    {
+      "file": "packages/data-execution/src/source-program/session.ts",
+      "sha256": "a929ea76ca94751a79953c7a745708fb9e1feb68ba9eaf16b79f9a79c6c84437"
+    },
+    {
+      "file": "packages/data-execution/tests/query-modes.test.ts",
+      "sha256": "649e1746a608ff8a16182da1c3f49da95d3732fec90f397e7885e9b06e130709"
+    },
+    {
+      "file": "packages/engine/runtime/src/orchestrator.ts",
+      "sha256": "5e558f7cfae81c9ae96a909065216db4e9fcd14f0447e14b7a3bb5748813a616"
+    },
+    {
+      "file": "packages/engine/runtime/tests/query-modes.test.ts",
+      "sha256": "d44986e9be8ff9b3fdacef480dcd38c0a2989ad3f7c30cb55bfe63750d54c533"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/query-mode-binding-branches-page.json",
+      "sha256": "eb66ca082ae117ce16b70595ed362043fa61a781856120561537be9f9a09f0c5"
+    },
+    {
+      "file": "packages/page/fixtures/contract-valid/query-modes-page.json",
+      "sha256": "2fe52b38d9f93879cd6ea529e27c9e02b971090f29b2db53463fa2c2b5f87371"
+    },
+    {
+      "file": "packages/page/src/amount-filter.ts",
+      "sha256": "e6a88f252150f9109b787f85027cbfb00d73d3030d901ac5053cfe2b918ef634"
+    },
+    {
+      "file": "packages/page/src/extract-param-candidates.ts",
+      "sha256": "e33128587274f06d6c0b99b66b98fba9b10777404dc62176ff3335cbc5fa0d49"
+    },
+    {
+      "file": "packages/page/src/filter-group.ts",
+      "sha256": "84be5d8937e896970d0ff180b3e0eaadbc9874c9da7dfd41777504e84ecaf0d0"
+    },
+    {
+      "file": "packages/page/src/internal.ts",
+      "sha256": "c77805b32b0821bba0480777cac577b5292d53b26e0ea568599919e4eca9434c"
+    },
+    {
+      "file": "packages/page/src/param-bindings.ts",
+      "sha256": "a5841c3a3fd093467d547b6de9d6d4a8fe6e0cec5d221cdbe3c46504b1169eb3"
+    },
+    {
+      "file": "packages/page/src/presentation-policy.ts",
+      "sha256": "fbd5ab6780fa0244d5f2c8386ae1bcc00a418d4289bd2f8ad9da044aca44511c"
+    },
+    {
+      "file": "packages/page/src/query-dependencies.ts",
+      "sha256": "b9a54c69a79e8be07018aa7b70780b37abf6610a5362b36c7e3e9c7fb3ac1dc8"
+    },
+    {
+      "file": "packages/page/src/query-param-references.ts",
+      "sha256": "3c73f212f7b072082940b67bab33030c3f1991dec64bec9da103a5a6eef46644"
+    },
+    {
+      "file": "packages/page/src/query-selection-validation.ts",
+      "sha256": "b2279f0b1e779975023a1c541154afb56a5bd214dca9de81f1a18799d04a6329"
+    },
+    {
+      "file": "packages/page/src/query-selection.ts",
+      "sha256": "35eece17a0725238bdbdce40fa496f1db84ab58ff1ff9317c9fc31bb88787c91"
+    },
+    {
+      "file": "packages/page/src/query.ts",
+      "sha256": "accab551b67c229d394fdde24f4746ad6ac1d19685538fbe929ed2708e1955a3"
+    },
+    {
+      "file": "packages/page/src/schema/data-source.ts",
+      "sha256": "a39a6b4fe877fd6f80742087cbb19d65301a37bd8774c36ef706623b6a73d519"
+    },
+    {
+      "file": "packages/page/src/selection-variants.ts",
+      "sha256": "65478eb7f1c702a771d398106475c4d9ddfa2fa0ce4970d5ae9f061ddfe2672c"
+    },
+    {
+      "file": "packages/page/src/time-extension-validation.ts",
+      "sha256": "929d6581f3b6bb5e3a4390164d54322a355d2a47d21ab4c9ef619b8e5df081e5"
+    },
+    {
+      "file": "packages/page/src/time-mode.ts",
+      "sha256": "c60382a21830738cefd2e591ea5854f60cae6511019553dc9faa314bb83b8e21"
+    },
+    {
+      "file": "packages/page/src/validate.ts",
+      "sha256": "70f5a79295f7735dc54597e89eae0e1c1ec00828aaadd1bd64838a60cbd1c6ec"
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "sha256": "3ea9b108076e9f1bb6245372f462469067bb7eaba72ff342e016ebb1c6954319"
+    },
+    {
+      "file": "packages/page/tests/query-modes.test.ts",
+      "sha256": "e11b57b90a3886b0aaeb6abf6487caa5343c8fd81e9248083d8641c6fad2c90f"
+    },
+    {
+      "file": "packages/page/tests/version.test.ts",
+      "sha256": "585acac16cd5318bbd05dc1cc8550bee1aa6192425c2f0385c281318efb70d2c"
+    },
+    {
+      "file": "pages/README.md",
+      "sha256": "d2528928581ed98dd13b01140c14b7275ca4a186c2d6c586d04acf5e4134281b"
+    },
+    {
+      "file": "pages/capabilities/filters/README.md",
+      "sha256": "1dbd717c5b00d1b83dc8d9431deb221d57910898e22c9ba7b730192d8e70bf50"
+    },
+    {
+      "file": "pages/capabilities/filters/query-mode-chart-demo.json",
+      "sha256": "ead19f2881c5de1f066186ccd561643d7f673398b1a2502a80b64db0844e5678"
+    },
+    {
+      "file": "tests/public-api/page.txt",
+      "sha256": "a856b85157d84f19877e8d1ce09d8a9579ea74fcfbc839abaaa2a9253b0eab17"
+    },
+    {
+      "file": "tools/dqe-sim/fixtures/query-modes.json",
+      "sha256": "a5aa8333c73e2610b674b3949f0068cea196928426064047b586227ae7092835"
+    },
+    {
+      "file": "tools/dqe-sim/src/execute.ts",
+      "sha256": "d52949787c508630ccfca69bd16d90e7848df903588249d2b1ea5c45aaf8c038"
+    },
+    {
+      "file": "tools/dqe-sim/src/query-modes.ts",
+      "sha256": "9f7889587fde7a2c0be72658fdcfe0dcf15267f1407ef577acc6c90016eaca95"
+    },
+    {
+      "file": "tools/dqe-sim/tests/query-modes.test.ts",
+      "sha256": "a6526f23363e31aa1d9664931abde33f8e473fb90673dccb25227c053b5a2ed2"
+    },
+    {
+      "file": "tools/scripts/page-conformance-vectors.ts",
+      "sha256": "0a247424ca437a7635f7eb0ed15e7def8011fb40c0957dbb82172e30d0fada69"
+    }
+  ],
+  "checks": {
+    "contracts": "pass",
+    "focusedTests": "59 passed; 28 newly added",
+    "localAuthoringAndReference": "58 passed",
+    "localAuthoringIsolation": "8 passed; other 15 not added",
+    "productRegression": "1361 passed; 19 pre-existing failures reproduced on baseline",
+    "typeChecks": "page/data-execution/engine/tools passed",
+    "builds": "product packages and final page/data-execution builds passed",
+    "browser": "CUA actual page plus local Sim HTTP; synthetic data"
+  }
+}

@@ -502,6 +502,21 @@
       "type": "SCHEMA_ERROR",
       "path": "/dataSources/main/compute/0",
       "message": "计算不能混合静态货币字段"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/main/compute/0",
+      "message": "字段合计必须保持相同类型和单位"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/main/compute/0",
+      "message": "计算不能混合静态货币字段"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/main/compute/0",
+      "message": "字段合计必须保持相同类型和单位"
     }
   ]
 }

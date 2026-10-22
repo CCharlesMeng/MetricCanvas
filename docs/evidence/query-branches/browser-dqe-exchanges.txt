@@ -1,0 +1,1760 @@
+[DQE Sim][dqe-sim-1] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 2ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "east"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "east"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 110000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 120000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 130000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 140000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 150000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 160000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 810000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-2] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 1ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "商机金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "商机区域",
+              "dim_value_list": [
+                "east"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "商机金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "商机区域",
+              "dim_value_list": [
+                "east"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 330000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 360000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 390000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 420000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 450000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 480000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 2430000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-3] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "east"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "east"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 110000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 120000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 130000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 140000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 150000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 160000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 810000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-4] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "商机金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "商机区域",
+              "dim_value_list": [
+                "east"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "商机金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "商机区域",
+              "dim_value_list": [
+                "east"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 330000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 360000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 390000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 420000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 450000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 480000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 2430000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-5] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 1ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "商机金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "商机区域",
+              "dim_value_list": [
+                "east"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "商机金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "商机区域",
+              "dim_value_list": [
+                "east"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 330000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 360000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 390000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 420000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 450000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 480000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 2430000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-6] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "商机金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "商机区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "商机金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "商机区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 240000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 270000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 300000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 330000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 360000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 390000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 1890000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-7] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 80000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 90000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 100000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 110000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 120000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 130000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 630000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-8] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 80000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 90000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 100000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 110000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 120000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 130000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 630000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-9] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 1ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 80000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 90000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 100000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 110000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 120000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 130000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 630000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-10] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 80000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 90000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 100000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 110000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 120000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 130000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 630000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-11] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 80000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 90000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 100000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 110000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 120000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 130000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 630000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-12] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 80000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 90000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 100000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 110000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 120000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 130000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 630000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-13] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 1ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 80000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 90000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 100000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 110000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 120000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 130000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 630000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-14] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 80000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 90000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 100000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 110000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 120000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 130000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 630000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-15] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 1ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "east"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "签约金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "签约区域",
+              "dim_value_list": [
+                "east"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 110000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 120000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 130000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 140000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 150000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 160000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 810000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}
+[DQE Sim][dqe-sim-16] POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute 200 0ms
+{
+  "request": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "月份"
+        ],
+        "output_metrics": [
+          {
+            "name": "商机金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "商机区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      },
+      {
+        "output_dims": [],
+        "output_metrics": [
+          {
+            "name": "商机金额",
+            "alias": "金额"
+          }
+        ],
+        "filter": {
+          "dims": [
+            {
+              "dim_name": "商机区域",
+              "dim_value_list": [
+                "south"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "response": {
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "月份": "2026-01",
+            "金额": 240000
+          },
+          {
+            "月份": "2026-02",
+            "金额": 270000
+          },
+          {
+            "月份": "2026-03",
+            "金额": 300000
+          },
+          {
+            "月份": "2026-04",
+            "金额": 330000
+          },
+          {
+            "月份": "2026-05",
+            "金额": 360000
+          },
+          {
+            "月份": "2026-06",
+            "金额": 390000
+          }
+        ],
+        "total_count": 6,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      },
+      {
+        "code": "SUCCESS",
+        "data": [
+          {
+            "金额": 1890000
+          }
+        ],
+        "total_count": 1,
+        "dqe": {
+          "columns": [],
+          "orders": [],
+          "limit": -1,
+          "offset": -1,
+          "sql": null
+        }
+      }
+    ]
+  }
+}

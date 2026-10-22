@@ -1,0 +1,32 @@
+{
+  "case": "query-modes-missing-case",
+  "invariant": "query-modes",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "查询case必须穷尽声明模式",
+      "paths": [
+        "/dataSources/amount-trend/source/query/queryModes"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "amount-trend": {
+        "source": {
+          "query": {
+            "queryModes": {
+              "filterId": "business",
+              "cases": {
+                "contracts": {
+                  "…": "共2个键"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

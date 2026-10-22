@@ -6,6 +6,7 @@
       "type": "SCHEMA_ERROR",
       "message": "金额case USD需要匹配币种的静态money查询字段",
       "paths": [
+        "/dataSources/main/source/query/filterBindings/amount",
         "/dataSources/main/source/query/filterBindings/amount"
       ]
     }

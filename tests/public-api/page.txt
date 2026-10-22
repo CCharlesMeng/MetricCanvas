@@ -82,6 +82,7 @@ DqeDimensionFilterBinding
 DqeEffectiveQuery
 DqeFilterBinding
 DqeNumberRangeFilterBinding
+DqeQueryCase
 DqeQueryDefinition
 DqeRequestBody
 DqeTimePointFilterBinding
@@ -203,6 +204,7 @@ QueryRowNormalizationIssue
 QueryRowNormalizationWarning
 QueryRowsNormalizationResult
 QueryScalarFieldDefinition
+QuerySelectorValue
 QuerySemanticHtmlFieldDefinition
 QuerySource
 QuerySourceDocument
@@ -351,6 +353,7 @@ formatPeriodFact
 formatSuitsParamType
 hasQueryFieldMapping
 hasQueryParamReferences
+hasQuerySelection
 hasTimeConstraints
 hierarchyLevelOf
 initialFilterTextValues
@@ -408,15 +411,21 @@ presentationTarget
 presentationTargets
 projectComponentFields
 projectFieldSelections
+projectQueries
 queryErrorDisposition
 queryFilterIds
+queryLeaves
 queryResultDependencies
 queryResultFieldContract
 queryResultWhereErrors
+querySelection
+querySelectors
+queryVariants
 rangeContextIssue
 rangeInBaseUnits
 reportExportScale
 requiredMinorVersion
+requiresQueryContext
 requiresTimeValidation
 resolveDataSourceFields
 resolveFilterTextValue
@@ -434,9 +443,11 @@ rowExpansionQuerySources
 rowKinds
 runPageParameterProgram
 sectionBackdrop
+selectQuery
 selectTimeQuery
 selectedCase
 selectedTab
+selectionAssignments
 stableRowQuery
 staticFieldBinding
 supportedVersions

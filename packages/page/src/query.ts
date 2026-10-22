@@ -1,4 +1,4 @@
-import {ordinaryQuery,timeQueryLeaves} from './time-mode';
+import {ordinaryQuery,queryLeaves,querySelection} from './query-selection';
 import { resolveQueryParamReferences } from './query-param-references';
 import type { TimeRangeValue } from './filter';
 import type { QueryDataSourceFieldDefinition } from './field';
@@ -143,11 +143,17 @@ export type QueryResultWhere =
   | { field: string; op: 'gt' | 'gte' | 'lt' | 'lte'; value: number }
   | { field: string; op: 'isNull' | 'isNotNull' };
 
+export interface DqeQueryCase {
+  body: DqeRequestBody;
+  filterBindings: Record<string, DqeFilterBinding>;
+}
+
 export interface DqeQueryDefinition {
   resultBindings?: QueryResultBinding[];
   language: 'dqe';
   body?: DqeRequestBody;
-  timeModes?:{filterId:string;cases:Partial<Record<import('./time-mode').TimeMode,{body:DqeRequestBody;filterBindings:Record<string,DqeFilterBinding>}>>};
+  timeModes?:{filterId:string;cases:Partial<Record<import('./time-mode').TimeMode,DqeQueryCase>>};
+  queryModes?:{filterId:string;cases:Record<string,DqeQueryCase>};
   filterBindings?: Record<string, DqeFilterBinding>;
   paramBindings?: Record<string,
     | { target: 'dimension'; queryField: string }
@@ -250,7 +256,7 @@ void _queryLanguageClosedSetGuard;
  * 读取分页声明,不解析任何协议分支的内部结构。
  */
 export function declaredPaginationLimit(query: PageQuery): number | undefined {
-  if(query.timeModes){const limits=timeQueryLeaves(query).map(declaredPaginationLimit);return limits.every(value=>value===limits[0])?limits[0]:undefined;}
+  if(querySelection(query)){const limits=queryLeaves(query).map(declaredPaginationLimit);return limits.every(value=>value===limits[0])?limits[0]:undefined;}
   switch (query.language) {
     case 'dqe': {
       const order = ordinaryQuery(query).body.dsl_list[0].order;
@@ -272,7 +278,7 @@ export function declaredPaginationLimit(query: PageQuery): number | undefined {
 
 /** A first window can be paged without discarding a caller's explicit offset. */
 export function isFirstQueryWindow(query: PageQuery): boolean {
-  if(query.timeModes)return timeQueryLeaves(query).every(isFirstQueryWindow);
+  if(querySelection(query))return queryLeaves(query).every(isFirstQueryWindow);
   switch (query.language) {
     case 'dqe': {
       const order = ordinaryQuery(query).body.dsl_list[0].order;
@@ -284,29 +290,38 @@ export function isFirstQueryWindow(query: PageQuery): boolean {
 }
 
 /** 参数对查询定义的协议内初始化；有筛选绑定的目标由筛选状态接管。 */
+type ParamBinding = NonNullable<PageQuery['paramBindings']>[string];
+
 export function initializeQueryParams(query: PageQuery, values: ReadonlyMap<string, import('./page-param').PageParamValue>): PageQuery {
-  const initialized = structuredClone(query);
-  if(initialized.timeModes){for(const leaf of Object.values(initialized.timeModes.cases)){const resolved=initializeQueryParams({language:'dqe',...leaf},values);leaf.body=ordinaryQuery(resolved).body;}return initialized;}
-  for (const [id, binding] of Object.entries(initialized.paramBindings ?? {})) {
-    if (binding.target === 'time') {
-      const value = values.get(id);
-      if (typeof value !== 'string') throw new Error(`时间绑定缺少有效参数:${id}`);
-      const item = ordinaryQuery(initialized).body.dsl_list[0];
-      const filter = item.filter;
-      if (!filter || typeof filter !== 'object' || Array.isArray(filter)) throw new Error('时间绑定需要 filter.time');
-      const time = filter.time;
-      if (!time || typeof time !== 'object' || Array.isArray(time)) throw new Error('时间绑定需要 filter.time');
-      filter.time = { ...time, ...resolveTimeWindow(value, binding.window) };
-      continue;
+  const initialized = structuredClone(query), selection=querySelection(initialized);
+  if(selection){
+    for(const leaf of Object.values(selection.cases)){
+      const resolved=initializeQueryParams({language:'dqe',...leaf},values);
+      leaf.body=ordinaryQuery(resolved).body;
     }
-    if (Object.values(initialized.filterBindings ?? {}).some(f => bindingQueryFields(f).includes(binding.queryField))) continue;
-    const value = values.get(id);
-    if (value === undefined) continue;
-    const item = ordinaryQuery(initialized).body.dsl_list[0];
-    const rawFilter = item.filter;
-    const filter = rawFilter && typeof rawFilter === 'object' && !Array.isArray(rawFilter) ? rawFilter : {};
-    const dims = Array.isArray(filter.dims) ? filter.dims : [];
-    item.filter = { ...filter, dims: [...dims, { dim_name: binding.queryField, dim_value_list: Array.isArray(value) ? [...value] : [String(value)] }] };
+    return initialized;
   }
-  return resolveInlineQueryParams(initialized, values);
+  for(const [id,binding]of Object.entries(initialized.paramBindings??{})){
+    if(binding.target==='time')initializeTimeParam(initialized,id,binding,values);
+    else initializeDimensionParam(initialized,id,binding,values);
+  }
+  return resolveInlineQueryParams(initialized,values);
+}
+function initializeTimeParam(query:PageQuery,id:string,binding:Extract<ParamBinding,{target:'time'}>,values:ReadonlyMap<string,PageParamValue>):void {
+  const value=values.get(id);
+  if(typeof value!=='string')throw new Error(`时间绑定缺少有效参数:${id}`);
+  const item=ordinaryQuery(query).body.dsl_list[0],filter=item.filter;
+  if(!filter||typeof filter!=='object'||Array.isArray(filter))throw new Error('时间绑定需要 filter.time');
+  const time=filter.time;
+  if(!time||typeof time!=='object'||Array.isArray(time))throw new Error('时间绑定需要 filter.time');
+  filter.time={...time,...resolveTimeWindow(value,binding.window)};
+}
+function initializeDimensionParam(query:PageQuery,id:string,binding:Extract<ParamBinding,{target:'dimension'}>,values:ReadonlyMap<string,PageParamValue>):void {
+  if(Object.values(query.filterBindings??{}).some(filter=>bindingQueryFields(filter).includes(binding.queryField)))return;
+  const value=values.get(id);
+  if(value===undefined)return;
+  const item=ordinaryQuery(query).body.dsl_list[0],rawFilter=item.filter;
+  const filter=rawFilter&&typeof rawFilter==='object'&&!Array.isArray(rawFilter)?rawFilter:{};
+  const dims=Array.isArray(filter.dims)?filter.dims:[];
+  item.filter={...filter,dims:[...dims,{dim_name:binding.queryField,dim_value_list:Array.isArray(value)?[...value]:[String(value)]}]};
 }

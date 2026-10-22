@@ -18,7 +18,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 49;
+const CURRENT_MINOR = 50;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -105,6 +105,7 @@ export const pageCapabilities = {
     usedAt: document => componentPaths(document, component => ['barChart', 'lineChart', 'pieChart'].includes(String(component.type)) && has(props(component), 'echartsOption')).map(path => `${path}/props/echartsOption`)
   },
  'navigation-inputs':{minor:40,description:'显式跨页传值与目标输入契约验证',usedAt:document=>{const paths:string[]=record(document)?.strictURLInputs===true?['/strictURLInputs']:[];walkDocumentComponents(document,(component,path)=>{const page={sections:[{components:[component]}]} as unknown as Page;if(declaredNavigationTargets(page).some(target=>target?.validateTargetInputs===true))paths.push(path);});return paths;}},
+ 'query-modes':{minor:50,legacyReadable:false,description:'固定单选选择不同静态DQE查询分支，共享结果字段契约',usedAt:document=>dataSourcePaths(document,d=>!!record(record(d.source)?.query)?.queryModes)},
  'time-modes':{minor:39,description:'日月ISO周模式及完整静态查询case',usedAt:document=>[...filterPaths(document,f=>f.display==='modes'),...dataSourcePaths(document,d=>!!record(record(d.source)?.query)?.timeModes)]},
  'time-availability':{minor:39,description:'可信期间事实与显式日期边界',usedAt:document=>[...filterPaths(document,f=>['availability','max','blockedRanges'].some(key=>has(f,key))),...(Array.isArray(record(record(record(document)?.iocHeader)?.identity)?.facts)&&((record(record(record(document)?.iocHeader)?.identity)?.facts) as unknown[]).some(value=>has(record(record(value)?.value),'fact'))?['/iocHeader/identity/facts']:[])]},
  'time-presets':{minor:39,description:'时间快捷范围与候选月份窗口',usedAt:document=>filterPaths(document,f=>f.type==='timeRange'&&has(f,'presets')||f.type==='dimension'&&has(f,'candidateWindow'))},

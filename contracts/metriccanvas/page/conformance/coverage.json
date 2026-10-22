@@ -136,6 +136,20 @@
       ]
     },
     {
+      "id": "query-modes",
+      "description": "6.50 固定单选选择完整静态跨表查询，共享结果字段契约",
+      "valid": [
+        "query-modes-page"
+      ],
+      "invalid": [
+        "query-modes-before-6.50",
+        "query-modes-missing-case",
+        "query-modes-output-mismatch",
+        "query-modes-selector-missing",
+        "query-modes-root-body"
+      ]
+    },
+    {
       "id": "time-extensions",
       "description": "6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口",
       "valid": [

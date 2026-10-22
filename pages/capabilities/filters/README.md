@@ -164,3 +164,21 @@
 关联：[page-visibility-region-linkage](page-visibility-region-linkage.json)。
 
 关联：[page-visibility-inputs](page-visibility-inputs.json)。
+
+## 筛选选择跨表查询 · 签约与商机
+
+入口：`/pages/query-mode-chart-demo`；[页面 JSON](query-mode-chart-demo.json)。
+
+启动：`pnpm dev:dqe`（已有服务时直接打开页面）。隔离工作区演示使用 `DQE_SIM_PORT=18231 pnpm sim:dqe` 与 `DQE_SIM_PORT=18231 pnpm --filter playground dev --host 127.0.0.1 --port 5174 --strictPort`。
+
+数据环境：本地 DQE 仿真，`query-modes.json` 中 `sales_contracts` 和 `sales_opportunities` 是两张独立合成表。DQE 中业务指标 `签约金额` / `商机金额` 分别解析到对应表，输出统一的 `月份` 和 `金额` 别名；真实数据网关继续负责实际业务指标到数据对象的解析。
+
+1. 默认“签约金额 / 华东”：一至六月为110,000、120,000、130,000、140,000、150,000、160,000元，合计810,000元。
+2. 选择“商机金额”：同一张折线图更新为330,000至480,000元，合计2,430,000元；明细同步变化。
+3. 选择“华南”：商机金额变为240,000至390,000元，合计1,890,000元；切回签约金额保留华南，合计630,000元。
+4. 刷新保留URL业务与区域选择。非法URL值 `?business=unknown` 恢复默认签约；合法值 `?business=opportunities&region=south` 直接请求商机华南。
+5. 在浏览器 Network 的 DQE 请求中核对指标名由签约金额变为商机金额，区域谓词字段由签约区域变为商机区域。两个数据源分别请求趋势与合计；Chart和明细共用趋势结果，没有第三条明细请求。
+
+同一 Chart 的组件 id、`data.main`、字段绑定不变。页面可在目录的“筛选”主题中发现。缺少 case、输出不一致、旧版本、未知选择、多值及旧捕获查询由契约夹具与执行测试覆盖，迟到/失败由运行时测试覆盖。
+
+证据范围：本地页面协议、HTTP仿真、浏览器请求及呈现；不代表真实数据库、DQE、Relay或业务口径验收。

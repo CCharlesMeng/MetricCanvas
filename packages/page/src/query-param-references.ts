@@ -1,4 +1,4 @@
-import {ordinaryQuery,timeQueryLeaves} from './time-mode';
+import {ordinaryQuery,queryLeaves,querySelection} from './query-selection';
 import type { TypedError } from './errors';
 import { isQueryInputDeclaration, pageParamDeclarations, type GroupedPageParams, type PageParamDeclaration, type PageParamValue } from './page-param';
 import { bindingQueryFields, type PageQuery } from './query';
@@ -22,7 +22,7 @@ export function queryParamReferenceErrors(document: unknown): TypedError[] {
   for (const [sourceId, source] of Object.entries(page.dataSources)) {
     const definition = source.source.query;
     if (source.source.type !== 'query' || !definition) continue;
-    for(const query of timeQueryLeaves(definition)){
+    for(const query of queryLeaves(definition)){
     const root = `/dataSources/${pointer(sourceId)}/source/query/body`;
     const allowed = new Set<string>();
     const filter = record(ordinaryQuery(query).body.dsl_list[0].filter);
@@ -79,7 +79,7 @@ export function queryParamReferenceErrors(document: unknown): TypedError[] {
 }
 
 export function hasQueryParamReferences(query: PageQuery): boolean {
-  if(query.timeModes)return timeQueryLeaves(query).some(hasQueryParamReferences);
+  if(querySelection(query))return queryLeaves(query).some(hasQueryParamReferences);
   const filter = record(ordinaryQuery(query).body.dsl_list[0].filter);
   return typeof record(filter?.time)?.param === 'string' ||
     (Array.isArray(filter?.dims) && filter.dims.some(d => !!record(record(d)?.dim_value_list)?.param));
@@ -92,7 +92,7 @@ function isRange(value: unknown): value is { start: string; end: string } {
 
 /** 调用前须通过页面校验；只改查询副本，查询粒度、聚合设置和指标保持原样。 */
 export function resolveQueryParamReferences(query: PageQuery, values: ReadonlyMap<string, PageParamValue>): void {
-  if(query.timeModes){for(const leaf of timeQueryLeaves(query))resolveQueryParamReferences(leaf,values);return;}
+  if(querySelection(query)){for(const leaf of queryLeaves(query))resolveQueryParamReferences(leaf,values);return;}
   const filter = record(ordinaryQuery(query).body.dsl_list[0].filter);
   if (!filter) return;
   if (Array.isArray(filter.dims)) for (const raw of filter.dims) {
@@ -102,6 +102,9 @@ export function resolveQueryParamReferences(query: PageQuery, values: ReadonlyMa
     if (!Array.isArray(value)) throw new Error(`维度参数缺失或类型错误:${ref.param}`);
     dim.dim_value_list = [...value];
   }
+  resolveTimeReference(filter,values);
+}
+function resolveTimeReference(filter:Record<string,unknown>,values:ReadonlyMap<string,PageParamValue>):void {
   const time = record(filter.time);
   if (typeof time?.param !== 'string') return;
   const value = record(values.get(time.param));

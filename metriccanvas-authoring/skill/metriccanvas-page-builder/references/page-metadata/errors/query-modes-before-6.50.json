@@ -1,0 +1,50 @@
+{
+  "case": "query-modes-before-6.50",
+  "invariant": "query-modes",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "固定单选选择不同静态DQE查询分支，共享结果字段契约 由 6.50 引入，文档声明的是 6.49",
+      "paths": [
+        "/dataSources/amount-trend",
+        "/dataSources/amount-total"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "amount-trend": {
+        "fields": {
+          "month": {
+            "…": "共3个键"
+          },
+          "amount": {
+            "…": "共6个键"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "…": "共2个键"
+          }
+        }
+      },
+      "amount-total": {
+        "fields": {
+          "amount": {
+            "…": "共6个键"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "…": "共2个键"
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/query-modes-before-6.50.json"
+}

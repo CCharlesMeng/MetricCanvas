@@ -5,9 +5,10 @@ import { filterGroupErrors, obsoleteChartFilterErrors } from './filter-group';
 import { metricBeforeErrors } from './metric-before';
 import {ordinaryQuery} from './time-mode';
 import {timeExtensionErrors} from './time-extension-validation';
-import {timeQueryVariants} from './time-mode';
+import {pageSelectionVariants} from './selection-variants';
+import {querySelectionErrors} from './query-selection-validation';
 import {amountErrors,moneyComputeErrors} from './amount-validation';
-import {fieldSelectionErrors,fieldSelectionVariants} from './field-selection';
+import {fieldSelectionErrors} from './field-selection';
 import { filterExtensionErrors,filterScopeErrors } from './filter-dependencies';
 import { iocHeaderErrors } from './ioc-header';
 import { pagedJoinErrors } from './validate-paged-join';
@@ -162,8 +163,11 @@ export function parsePage(
 
   const page = canonicalLayoutDocument(materialized.document as Page);
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
-  const selectionErrors=[...timeExtensionErrors(page),...fieldSelectionErrors(page),...[...timeQueryVariants(page)].flatMap(variant=>[...amountErrors(variant),...moneyComputeErrors(variant)])];if(selectionErrors.length)return {ok:false,errors:selectionErrors};
-  const errors:TypedError[]=[...presentationPolicyErrors(page)];try{for(const fields of fieldSelectionVariants(page))for(const variant of timeQueryVariants(fields))errors.push(...invariantErrors(variant), ...filterGroupErrors(variant), ...navigationErrors(variant), ...urlInputErrors(variant));}catch(cause){return {ok:false,errors:[schemaError('/sections',String(cause))]};}
+  const selectionErrors=[...timeExtensionErrors(page),...querySelectionErrors(page),...fieldSelectionErrors(page)];
+  if(selectionErrors.length)return {ok:false,errors:selectionErrors};
+  const errors:TypedError[]=[...presentationPolicyErrors(page),...filterGroupErrors(page)];
+  try{for(const variant of pageSelectionVariants(page))errors.push(...amountErrors(variant),...moneyComputeErrors(variant),...invariantErrors(variant),...navigationErrors(variant),...urlInputErrors(variant));}
+  catch(cause){return {ok:false,errors:[schemaError('/sections',String(cause))]};}
   return errors.length === 0
     ? { ok: true, page, errors: [] }
     : { ok: false, errors };

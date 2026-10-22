@@ -117,6 +117,13 @@ export const invariants: InvariantDefinition[] = [
  {case:'navigation-policy-false',base:'navigation-source-page',expect:/must be equal to constant/,mutate:d=>{d.strictURLInputs=false;}},
  {case:'navigation-inputs-false',base:'navigation-source-page',expect:/must be equal to constant/,mutate:d=>{d.sections[0].components[0].props.links[0].validateTargetInputs=false;}},
  {case:'navigation-inputs-unknown-filter',base:'navigation-list-page',expect:/未声明的筛选器/,mutate:d=>{d.sections[0].components[1].props.actions[0].navigate.query.month.id='unknown';}}]},
+  {id:'query-modes',description:'6.50 固定单选选择完整静态跨表查询，共享结果字段契约',valid:['query-modes-page'],cases:[
+    {case:'query-modes-before-6.50',base:'query-modes-page',expect:/由 6.50 引入/,mutate:d=>{d.schemaVersion='6.49';}},
+    {case:'query-modes-missing-case',base:'query-modes-page',expect:/穷尽/,mutate:d=>{delete d.dataSources['amount-trend'].source.query.queryModes.cases.opportunities;}},
+    {case:'query-modes-output-mismatch',base:'query-modes-page',expect:/相同字段/,mutate:d=>{d.dataSources['amount-trend'].source.query.queryModes.cases.opportunities.body.dsl_list[0].output_metrics=['other'];}},
+    {case:'query-modes-selector-missing',base:'query-modes-page',expect:/固定单选/,mutate:d=>{d.dataSources['amount-trend'].source.query.queryModes.filterId='absent';}},
+    {case:'query-modes-root-body',base:'query-modes-page',expect:/互斥/,mutate:d=>{const q=d.dataSources['amount-trend'].source.query;q.body=q.queryModes.cases.contracts.body;}}
+  ]},
   {id:'time-extensions',description:'6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口',valid:['time-modes-page','time-presets-page','availability-page','calendar-window-page','time-binding-branches-page'],cases:[
     {case:'time-before-6.39',base:'time-modes-page',expect:/由 6.39 引入/,mutate:d=>{d.schemaVersion='6.38';}},
     {case:'time-case-missing',base:'time-modes-page',expect:/穷尽/,mutate:d=>{delete d.dataSources.bound.source.query.timeModes.cases.month;}},

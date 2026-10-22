@@ -1,4 +1,4 @@
-import { ordinaryQuery } from './time-mode';
+import { ordinaryQuery, hasQuerySelection } from './query-selection';
 import { isPeriodSelection, resolvePeriodSelection } from './period-filter';
 import { canonicalizeJson } from './canonical-json';
 import { record, pointer } from './inline-query-params';
@@ -14,7 +14,7 @@ type DateFilter = Extract<FilterDeclaration, { type: 'timePoint' | 'timeRange' }
 type DateField = { granularity: 'month' | 'date'; valueFormat?: 'iso' | 'compact'; identity?: string };
 
 export function collectParameterCandidates(source: PageDocument, context: ExtractionContext): Pick<PageParamExtraction, 'candidates' | 'skipped'> {
-  const queries = Object.keys(source.dataSources).filter(id => source.dataSources[id].source.type === 'query' && !('timeModes' in (source.dataSources[id].source as { query: import('./query').PageQuery }).query)).sort();
+  const queries = Object.keys(source.dataSources).filter(id => source.dataSources[id].source.type === 'query' && !hasQuerySelection((source.dataSources[id].source as { query: import('./query').PageQuery }).query)).sort();
   const groups = new Map<string, ParameterCandidate>();
   const skipped: Skipped = [];
   const add: AddCandidate = (identity, declaration, value, location) => {

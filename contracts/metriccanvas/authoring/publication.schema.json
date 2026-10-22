@@ -840,9 +840,10 @@
             "6.46",
             "6.47",
             "6.48",
-            "6.49"
+            "6.49",
+            "6.50"
           ],
-          "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49"
+          "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50"
         },
         "id": {
           "type": "string",
@@ -3871,7 +3872,238 @@
                       "filterBindings"
                     ],
                     "additionalProperties": false
-                  }
+                  },
+                  "minProperties": 1
+                }
+              },
+              "required": [
+                "filterId",
+                "cases"
+              ],
+              "additionalProperties": false
+            },
+            "queryModes": {
+              "type": "object",
+              "properties": {
+                "filterId": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "cases": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "body": {
+                        "type": "object",
+                        "properties": {
+                          "dsl_list": {
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string"
+                              },
+                              "additionalProperties": {}
+                            }
+                          }
+                        },
+                        "required": [
+                          "dsl_list"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "filterBindings": {
+                        "type": "object",
+                        "propertyNames": {
+                          "type": "string",
+                          "pattern": "^[a-z0-9][a-z0-9-]*$"
+                        },
+                        "additionalProperties": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "target": {
+                                  "type": "string",
+                                  "const": "dimension"
+                                },
+                                "queryField": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "required": [
+                                "target",
+                                "queryField"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "target": {
+                                  "type": "string",
+                                  "const": "dimension"
+                                },
+                                "levelQueryFields": {
+                                  "type": "object",
+                                  "propertyNames": {
+                                    "type": "string",
+                                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                                  },
+                                  "additionalProperties": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "minProperties": 2
+                                }
+                              },
+                              "required": [
+                                "target",
+                                "levelQueryFields"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "target": {
+                                  "type": "string",
+                                  "const": "time"
+                                },
+                                "window": {
+                                  "allOf": [
+                                    {
+                                      "$ref": "#/$defs/Page/definitions/timeWindow"
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "target"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "target": {
+                                  "type": "string",
+                                  "const": "timePoint"
+                                },
+                                "queryField": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "valueFormat": {
+                                  "type": "string",
+                                  "enum": [
+                                    "iso",
+                                    "compact"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "target",
+                                "queryField"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "target": {
+                                  "type": "string",
+                                  "const": "boolean"
+                                },
+                                "queryField": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "whenTrue": {
+                                  "minItems": 1,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  }
+                                },
+                                "whenFalse": {
+                                  "minItems": 1,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  }
+                                }
+                              },
+                              "required": [
+                                "target",
+                                "queryField",
+                                "whenTrue"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "target": {
+                                  "type": "string",
+                                  "const": "numberRange"
+                                },
+                                "metric": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "metricByFilter": {
+                                  "type": "object",
+                                  "properties": {
+                                    "filterId": {
+                                      "type": "string",
+                                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                                    },
+                                    "cases": {
+                                      "type": "object",
+                                      "propertyNames": {
+                                        "type": "string",
+                                        "minLength": 1
+                                      },
+                                      "additionalProperties": {
+                                        "type": "string",
+                                        "minLength": 1
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "filterId",
+                                    "cases"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "target"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "body",
+                      "filterBindings"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minProperties": 1
                 }
               },
               "required": [

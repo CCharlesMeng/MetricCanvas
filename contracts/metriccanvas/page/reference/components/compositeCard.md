@@ -17,7 +17,7 @@ Dashboard中放入白底Tab或白底分区时，组合卡复用指标卡的1px�
 组合卡允许独立 filterGroup 及柱、线、饼、地图四类图表作为叶子组件，用于筛选与内容的显式组合；仍禁止组合卡递归和任意子组件。筛选作用范围由查询绑定决定，卡内位置不自动限定数据范围。
 
 
-页面协议 6.49。结构真源为本册[schema.json](../schema.json)，SHA256 `f7595ffbdcf2fe8b269b74567933759d72d6ed3067022eb2cc8fc84196ac0f34`。字段表自动生成；可选不等于有默认值。
+页面协议 6.50。结构真源为本册[schema.json](../schema.json)，SHA256 `d7df3a55bf6fd38b988d4ead99bcf7e2cf07b0ff1f544a5d98d20ae664c0f67e`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -330,9 +330,9 @@ Schema位置：`#/definitions/compositeCardChild/oneOf/8`。目标：[#/definiti
 
 ## 联合分支见证（生成）
 
-- `#/definitions/compositeCardChild/oneOf/0`：[合法完整页面](../examples/chart-local-filter-page.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
+- `#/definitions/compositeCardChild/oneOf/0`：[合法完整页面](../examples/query-modes-page.json)，JSON Pointer `#/sections/1/components/0/props/components/0`。
 - `#/definitions/compositeCardChild/oneOf/1`：[合法完整页面](../examples/chart-local-filter-page.json)，JSON Pointer `#/sections/0/components/0/props/components/1`。
-- `#/definitions/compositeCardChild/oneOf/2`：[合法完整页面](../examples/chart-local-filter-page.json)，JSON Pointer `#/sections/0/components/1/props/components/1`。
+- `#/definitions/compositeCardChild/oneOf/2`：[合法完整页面](../examples/query-modes-page.json)，JSON Pointer `#/sections/1/components/0/props/components/2`。
 - `#/definitions/compositeCardChild/oneOf/3`：[合法完整页面](../examples/chart-local-filter-page.json)，JSON Pointer `#/sections/0/components/3/props/components/1`。
 - `#/definitions/compositeCardChild/oneOf/4`：[合法完整页面](../examples/component-compositeCard.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
 - `#/definitions/compositeCardChild/oneOf/5`：[合法完整页面](../examples/chart-local-filter-page.json)，JSON Pointer `#/sections/0/components/2/props/components/1`。

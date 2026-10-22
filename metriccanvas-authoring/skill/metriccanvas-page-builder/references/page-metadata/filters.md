@@ -140,7 +140,7 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 普通可选维度在空选且没有candidateContext/结构树/窗口要求时，不因显式selection而禁用既有合法嵌入初始行复用；一旦有动态选值，仍须通过候选校验。显式无依赖candidateContext即使空选也须取得可信回执，缺配置不能借初始行绕过门禁。
 
 
-页面协议 6.49。结构真源为本册[schema.json](schema.json)，SHA256 `f7595ffbdcf2fe8b269b74567933759d72d6ed3067022eb2cc8fc84196ac0f34`。字段表自动生成；可选不等于有默认值。
+页面协议 6.50。结构真源为本册[schema.json](schema.json)，SHA256 `d7df3a55bf6fd38b988d4ead99bcf7e2cf07b0ff1f544a5d98d20ae664c0f67e`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

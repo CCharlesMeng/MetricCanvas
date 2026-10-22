@@ -1,0 +1,57 @@
+{
+  "url": "http://127.0.0.1:5174/pages/query-mode-chart-demo",
+  "catalog": "http://127.0.0.1:5174/",
+  "catalogFolder": "capabilities/filters",
+  "layout": "dashboard",
+  "data": "synthetic local DQE Sim",
+  "observations": [
+    {
+      "business": "contracts",
+      "region": "east",
+      "total": 810000,
+      "firstMonth": 110000
+    },
+    {
+      "business": "opportunities",
+      "region": "east",
+      "total": 2430000,
+      "firstMonth": 330000
+    },
+    {
+      "business": "opportunities",
+      "region": "south",
+      "total": 1890000,
+      "firstMonth": 240000
+    },
+    {
+      "business": "contracts",
+      "region": "south",
+      "total": 630000,
+      "firstMonth": 80000
+    }
+  ],
+  "reloadRestores": {
+    "business": "contracts",
+    "region": "south",
+    "total": 630000
+  },
+  "mobile": {
+    "width": 390,
+    "business": "opportunities",
+    "region": "south",
+    "total": 1890000
+  },
+  "invalidUrl": {
+    "businessInput": "unknown",
+    "appliedBusiness": "contracts",
+    "total": 810000
+  },
+  "chartCount": 1,
+  "trendSource": "amount-trend",
+  "captures": [
+    "demo.jpg",
+    "contracts-south.jpg",
+    "mobile-opportunities-south.jpg"
+  ],
+  "verification": "CUA browser observation plus live Sim HTTP logs; no real DQE or Relay acceptance"
+}

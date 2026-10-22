@@ -1,4 +1,4 @@
-import {hasTimeConstraints} from '@metriccanvas/page/internal';
+import {requiresQueryContext} from '@metriccanvas/page/internal';
 import {fieldSelectionIds,flattenPageComponents,queryFilterIds} from '@metriccanvas/page/internal';
 import { createSourceProgram, composeEffectiveQuery, intersectQueryFilters, activeSourceIds, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize } from '@metriccanvas/data-execution/runtime';
 import type { QueryHeaderFilters } from '@metriccanvas/data-execution/runtime';
@@ -66,7 +66,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       let initial=initialSnapshots.get(id);
       if(initial?.status==='loading')initial=undefined;
       if(source.source.type==='inline'&&!initial)initial={status:source.source.rows.length?'ready':'empty',...(source.source.rows.length?{rows:source.source.rows}:{})} as DataSnapshot;
-      const protectedSource=[...conditionSourceIds(page,id)].some(key=>{const s=page.dataSources[key];return s?.source.type==='query'&&(hasTimeConstraints(s.source.query,page.filters));});
+      const protectedSource=[...conditionSourceIds(page,id)].some(key=>{const s=page.dataSources[key];return s?.source.type==='query'&&(requiresQueryContext(s.source.query,page.filters));});
       if (!protectedSource && receipt && same(values, execution!.filters) && execution!.sourceKeys.get(id) === executionSourceKey(source)) { initial = receipt; matched.add(id); }
       try {
         if (source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ now: timeContext.now ?? timeContext.clock?.() ?? new Date(), filters: page.filters, dataSource: source as QueryDataSource }, values, 0, [], {}))) initial = { status: 'empty', totalCount: 0 };

@@ -1,0 +1,9 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run tests/authoring-export-isolation.test.ts --testNamePattern '独立本地 Skill|生成器保留作者参考'
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/query-branches/DataDashboard
+
+
+ Test Files  1 passed (1)
+      Tests  8 passed | 15 skipped (23)
+   Start at  22:38:43
+   Duration  74.93s (transform 17ms, setup 0ms, import 26ms, tests 74.79s, environment 0ms)

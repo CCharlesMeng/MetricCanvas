@@ -506,6 +506,11 @@
       "type": "SCHEMA_ERROR",
       "path": "/filters/2/default",
       "message": "默认范围不符合约束"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/2/default",
+      "message": "默认范围不符合约束"
     }
   ]
 }

@@ -8,9 +8,9 @@ import {candidateContextKey,filterCandidatesRequest,validFilterCandidates} from 
 export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,context:{displayInputs?:()=>DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date}={}) {
   const localOptions=filterGroupOptions(page);
   const declarations=page.filters??[],byId=new Map(declarations.map(filter=>[filter.id,filter]));
-  function filterIds(sourceId:string):string[] {
+  function filterIds(sourceId:string,values?:FilterValues):string[] {
     const ids=new Set<string>();
-    for(const source of conditionSourceIds(page,sourceId)){const definition=page.dataSources[source];if(definition?.source.type==='query')for(const id of queryFilterIds(definition.source.query))ids.add(id);}
+    for(const source of conditionSourceIds(page,sourceId)){const definition=page.dataSources[source];if(definition?.source.type==='query')for(const id of queryFilterIds(definition.source.query,values))ids.add(id);}
     const queue=[...ids];for(const id of queue){const filter=byId.get(id);if(filter)for(const parent of filterDependencies(filter))if(!ids.has(parent)){ids.add(parent);queue.push(parent);}}
     return [...ids];
   }
@@ -35,7 +35,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
     return effective.length>0 && (selected?.type!=='dimension'||selected.values.every(value=>effective.some(item=>item.value===value)));
   }
   function trusted(sourceId:string,values:FilterValues):boolean {
-    return filterIds(sourceId).every(id=>{
+    return filterIds(sourceId,values).every(id=>{
       const filter=byId.get(id);
       if(!filter||!selection(filter,values))return false;
       const selected=values.get(filter.id);
@@ -75,9 +75,9 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
       }
       if(!allowed(dimension,values,candidates))reject();
     }
-    for(const id of filterIds(sourceId))await verifyFilter(id);
+    for(const id of filterIds(sourceId,values))await verifyFilter(id);
   }
-  const requires=(sourceId:string)=>filterIds(sourceId).some(id=>{const filter=byId.get(id);return (filter?.type==='dimension'&&!!(filter.selection||filter.options||filter.candidateContext||filter.treeSelection||filter.candidateWindow))||(filter&&requiresTimeValidation(filter))||(filter?.type==='numberRange'&&!!(filter.constraints||filter.units||filter.presets));});
+  const requires=(sourceId:string)=>filterIds(sourceId).some(id=>{const filter=byId.get(id);return localOptions.has(id)||(filter?.type==='dimension'&&!!(filter.selection||filter.options||filter.candidateContext||filter.treeSelection||filter.candidateWindow))||(filter&&requiresTimeValidation(filter))||(filter?.type==='numberRange'&&!!(filter.constraints||filter.units||filter.presets));});
   return {trusted,verify,requires};
 }
 function reject():never {throw Object.assign(new Error('筛选条件尚未通过当前完整候选或选择规则校验'),{code:'DQE_QUERY_REJECTED'});}

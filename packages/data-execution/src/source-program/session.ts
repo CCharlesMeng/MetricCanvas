@@ -1,5 +1,5 @@
 import { intersectQueryFilters } from '../intersect-filters';
-import {hasTimeConstraints,requiresTimeValidation} from '@metriccanvas/page/internal';
+import {requiresQueryContext,requiresTimeValidation,hasQuerySelection} from '@metriccanvas/page/internal';
 import {type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import {queryFilterIds} from '@metriccanvas/page/internal';
 import { createCandidateValidator } from '../candidate-validation';
@@ -59,6 +59,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   const defaultNow = config.now ?? config.clock?.() ?? new Date(), defaultInputs = config.displayInputs?.(), defaultRevision = config.filterRevision?.();
   for (const filter of page.filters ?? []) try { for (const [id, value] of initialFilterValues([filter], defaultNow, defaultInputs, defaultRevision)) defaults.set(id, value); } catch {/* An unavailable dynamic default cannot override an explicit valid selection. */ }
   function defaultConditions(id: string, values: FilterValues, reuse = true): boolean {
+    if(reuse&&[...conditionSourceIds(page,id)].some(key=>{const source=page.dataSources[key];return source?.source.type==='query'&&hasQuerySelection(source.source.query);}))return false;
     const filters = new Set([...conditionSourceIds(page, id)].flatMap(key => { const source = page.dataSources[key]; return source?.source.type === 'query' ? queryFilterIds(source.source.query) : []; }));
     return [...filters].every(id => {
       const filter = page.filters?.find(filter => filter.id === id);
@@ -237,7 +238,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         function untrustedSeed(id: string): boolean {
           return [...conditionSourceIds(page, id)].some(key => {
             const source = page.dataSources[key];
-            return source?.source.type === 'query' && (hasTimeConstraints(source.source.query, page.filters) || queryFilterIds(source.source.query).some(id => {
+            return source?.source.type === 'query' && (requiresQueryContext(source.source.query, page.filters) || queryFilterIds(source.source.query).some(id => {
               const filter = page.filters?.find(filter => filter.id === id);
               return filter?.type === 'dimension' && !!filter.candidateWindow;
             }));
@@ -267,9 +268,9 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         const requiresCompleteRead = (preserveWindow: boolean) => request.purpose === 'complete' && !preserveWindow;
         function preparedQuery(id: string, source: QueryDataSource, view: TableQueryView, values: EffectiveQuery['filterValues']): EffectiveQuery {
           const captured = request.queries?.get(id);
-          if (captured && hasTimeConstraints(source.source.query, page.filters)) { const expected = composeEffectiveQuery({ now: request.now, filters: page.filters, dataSource: source as QueryDataSource }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), view.search); if (canonicalizeJson(captured.body) !== canonicalizeJson(expected.body)) throw Object.assign(new Error('捕获查询与已应用时间模式不匹配'), { code: 'DQE_QUERY_REJECTED' }); }
+          if (captured && requiresQueryContext(source.source.query, page.filters)) { const expected = composeEffectiveQuery({ now: request.now, filters: page.filters, dataSource: source as QueryDataSource }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), view.search); if (canonicalizeJson(captured.body) !== canonicalizeJson(expected.body)) throw Object.assign(new Error('捕获查询与已应用查询模式不匹配'), { code: 'DQE_QUERY_REJECTED' }); }
           const fresh = () => composeEffectiveQuery({ now: request.now, filters: page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), view.search);
-          const protectedConditions = hasTimeConstraints(source.source.query, page.filters);
+          const protectedConditions = requiresQueryContext(source.source.query, page.filters);
           // Captured views may be reused; their old predicates cannot authorize a different range.
           let query = captured ? { ...structuredClone(captured), ...(protectedConditions ? { filterValues: fresh().filterValues, bindingValues: fresh().bindingValues, tableFilters: fresh().tableFilters, fieldMappings: source.fields } : {}) } : fresh();
           bindQueryResultValues(query, values);

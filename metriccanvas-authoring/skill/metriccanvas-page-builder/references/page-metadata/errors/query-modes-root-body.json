@@ -1,0 +1,43 @@
+{
+  "case": "query-modes-root-body",
+  "invariant": "query-modes",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "查询必须互斥声明普通body、timeModes或queryModes",
+      "paths": [
+        "/dataSources/amount-trend/source/query"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "模式查询与普通body/filterBindings/paramBindings互斥",
+      "paths": [
+        "/dataSources/amount-trend/source/query"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "amount-trend": {
+        "source": {
+          "query": {
+            "language": "dqe",
+            "queryModes": {
+              "filterId": "business",
+              "cases": {
+                "…": "共2个键"
+              }
+            },
+            "body": {
+              "dsl_list": [
+                "…（共1项）"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/query-modes-root-body.json"
+}

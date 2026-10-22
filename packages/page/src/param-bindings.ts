@@ -1,4 +1,4 @@
-import {ordinaryQuery,timeQueryLeaves} from './time-mode';
+import {ordinaryQuery,queryLeaves} from './query-selection';
 import type { TypedError } from './errors';
 import { pageParamDeclarations, type PageParamDeclaration, type GroupedPageParams } from './page-param';
 import type { FilterDeclaration } from './filter';
@@ -20,7 +20,7 @@ export function paramBindingErrors(document: unknown): TypedError[] {
   for (const [sourceId, source] of Object.entries(page.dataSources)) {
     const query = source.source.query;
     if (source.source.type !== 'query' || !query) continue;
-    for (const leaf of timeQueryLeaves(query)) queryBindingErrors(sourceId, leaf, params, filters, consumers, error);
+    for (const leaf of queryLeaves(query)) queryBindingErrors(sourceId, leaf, params, filters, consumers, error);
   }
   (page.filters ?? []).forEach((filter, index) => initialFilterErrors(filter, index, params, consumers, error));
   return errors;

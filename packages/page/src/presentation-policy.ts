@@ -1,3 +1,4 @@
+import {queryFilterIds} from './amount-filter';
 import { conditionDepth, conditionLeaves, conditionTestTypeError, type ConditionValue } from './condition';
 import type { Condition } from './schema/condition';
 import type { Page, Component } from './page';
@@ -71,7 +72,7 @@ export function presentationPolicyErrors(page: Page): TypedError[] {
       const target=page.filters?.find(f=>f.id===action.writeFilter);
       if(target?.type!=='dimension')errors.push({type:'SCHEMA_ERROR',path:`${site.path}/writeFilter`,message:'动作必须写入已声明维度筛选器'});
       else if(action.level && !target.hierarchy?.some(level=>level.id===action.level))errors.push({type:'SCHEMA_ERROR',path:`${site.path}/level`,message:'动作引用了未声明的层级'});
-      if(!consumedFilters.has(action.writeFilter)&&!Object.values(page.dataSources).some(source=>source.source.type==='query'&&source.source.query.filterBindings?.[action.writeFilter!]))errors.push({type:'SCHEMA_ERROR',path:site.path,message:'筛选写入必须有查询绑定或显隐消费方'});
+      if(!consumedFilters.has(action.writeFilter)&&!Object.values(page.dataSources).some(source=>source.source.type==='query'&&queryFilterIds(source.source.query).includes(action.writeFilter!)))errors.push({type:'SCHEMA_ERROR',path:site.path,message:'筛选写入必须有查询绑定或显隐消费方'});
       if(action.field&&!site.fields)errors.push({type:'SCHEMA_ERROR',path:`${site.path}/field`,message:'当前动作没有行上下文'});
     }
   }
@@ -122,5 +123,5 @@ export function filterHasPresentationConsumer(page:Page,id:string):boolean {
  return presentationPolicies(page).some(site=>[site.node.visibleWhen,site.node.enabledWhen].some(condition=>condition&&conditionLeaves(condition).some(leaf=>'filter' in leaf&&leaf.filter===id)));
 }
 export function filterHasObservableConsumer(page:Page,id:string):boolean {
- return filterHasPresentationConsumer(page,id)||Object.values(page.dataSources).some(source=>source.source.type==='query'&&source.source.query.filterBindings?.[id]);
+ return filterHasPresentationConsumer(page,id)||Object.values(page.dataSources).some(source=>source.source.type==='query'&&queryFilterIds(source.source.query).includes(id));
 }

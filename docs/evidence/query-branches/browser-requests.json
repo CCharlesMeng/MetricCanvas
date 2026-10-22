@@ -1,0 +1,965 @@
+{
+  "environment": "local DQE Sim, synthetic tables",
+  "exchanges": [
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "east"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "east"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "商机金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "商机区域",
+                  "dim_value_list": [
+                    "east"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "商机金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "商机区域",
+                  "dim_value_list": [
+                    "east"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "east"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "east"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "商机金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "商机区域",
+                  "dim_value_list": [
+                    "east"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "商机金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "商机区域",
+                  "dim_value_list": [
+                    "east"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "商机金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "商机区域",
+                  "dim_value_list": [
+                    "east"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "商机金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "商机区域",
+                  "dim_value_list": [
+                    "east"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "商机金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "商机区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "商机金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "商机区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "east"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "签约金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "签约区域",
+                  "dim_value_list": [
+                    "east"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    },
+    {
+      "request": {
+        "dsl_list": [
+          {
+            "output_dims": [
+              "月份"
+            ],
+            "output_metrics": [
+              {
+                "name": "商机金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "商机区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          },
+          {
+            "output_dims": [],
+            "output_metrics": [
+              {
+                "name": "商机金额",
+                "alias": "金额"
+              }
+            ],
+            "filter": {
+              "dims": [
+                {
+                  "dim_name": "商机区域",
+                  "dim_value_list": [
+                    "south"
+                  ]
+                }
+              ],
+              "metrics": []
+            },
+            "order": {}
+          }
+        ]
+      },
+      "results": [
+        {
+          "code": "SUCCESS",
+          "totalCount": 6
+        },
+        {
+          "code": "SUCCESS",
+          "totalCount": 1
+        }
+      ]
+    }
+  ]
+}

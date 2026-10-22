@@ -1,3 +1,4 @@
+import { executeQueryModes } from './query-modes';
 import { iocHeaderFixture } from '../fixtures/ioc-header-query.mjs';
 import { executeRowExpansion } from './row-expansion';
 import { executeChartLocalFilter } from './chart-local-filter';
@@ -149,15 +150,15 @@ const customerActivityDetailDimensions = [
   'last-summit'
 ];
 
+/** Exact demo handlers retain their previous precedence. */
+function executeLocalDemo(item:unknown):DqeSimItemResult|undefined {
+  for(const execute of [iocHeaderFixture,executeTableSearchOptions,executeRowExpansion,executeQueryModes,executeChartLocalFilter,executeNumericTolerance,executeMultiQueryTable,executeQueryResultWhere]){
+    const result=execute(item);if(result)return result;
+  }
+}
+
 export function executeDqeItem(item: unknown): DqeSimItemResult {
-  const iocHeader = iocHeaderFixture(item); if(iocHeader)return iocHeader;
-  const searchOptions = executeTableSearchOptions(item); if (searchOptions) return searchOptions;
-  const rowExpansion = executeRowExpansion(item); if (rowExpansion) return rowExpansion;
-  const chartFilter = executeChartLocalFilter(item); if (chartFilter) return chartFilter;
-  const numericTolerance = executeNumericTolerance(item); if (numericTolerance) return numericTolerance;
-  const multiQueryTable=executeMultiQueryTable(item);if(multiQueryTable)return multiQueryTable;
-  const filteredInputDemo = executeQueryResultWhere(item);
-  if (filteredInputDemo) return filteredInputDemo;
+  const demo = executeLocalDemo(item); if (demo) return demo;
   const sdt = executeBusinessSdt(item, process.env.DQE_SDT_SCENARIO);
   if (sdt) return sdt;
   const exactResult = executeExactScenarios(item);

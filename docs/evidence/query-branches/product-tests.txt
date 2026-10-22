@@ -1,0 +1,163 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/page/tests packages/data-execution/tests packages/engine/runtime/tests tools/dqe-sim/tests
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/query-branches/DataDashboard
+
+ ❯ packages/page/tests/metric-before.test.ts (26 tests | 18 failed) 72ms
+     × 直接验收正式示例：四张卡各占三列，连接文字不再作为组件占列 47ms
+     × 支持受控间距 4 1ms
+     × 支持受控间距 8 0ms
+     × 支持受控间距 12 0ms
+     × 支持受控间距 16 0ms
+     × 支持受控间距 24 0ms
+     × 支持受控间距 undefined 0ms
+     × 拒绝非法间距 -1 0ms
+     × 拒绝非法间距 0 0ms
+     × 拒绝非法间距 7 0ms
+     × 拒绝非法间距 32 0ms
+     × 拒绝非法间距 8 0ms
+     × 拒绝非法间距 8px 0ms
+     × 拒绝超出首期范围：span 3ms
+     × 拒绝超出首期范围：empty 0ms
+     × 拒绝超出首期范围：previous 2ms
+     × 缺失可选参数只移除对应连接，不删除指标卡或改写原文 0ms
+     × 首卡 before 保留声明，实际是否显示由相邻排布决定 1ms
+ ❯ packages/engine/runtime/tests/presentation.test.ts (7 tests | 1 failed) 13ms
+   × breaks original metric connections at hidden endpoints without changing the page 9ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 19 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 直接验收正式示例：四张卡各占三列，连接文字不再作为组件占列
+AssertionError: expected [ 12, 3, 3, 3, 3 ] to deeply equal [ 3, 3, 3, 3 ]
+
+- Expected
++ Received
+
+  [
++   12,
+    3,
+    3,
+    3,
+    3,
+  ]
+
+ ❯ packages/page/tests/metric-before.test.ts:12:81
+     10|     const page = example(), original = structuredClone(page);
+     11|     expect(parsePage(page).ok).toBe(true);
+     12|     expect(cards(page).map((card: {layout:{span:number}}) => card.layo…
+       |                                                                                 ^
+     13|     expect(cards(page).map((card: {layout:{before?:{text:string}}}) =>…
+     14|     expect(page).toEqual(original);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/19]⎯
+
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 支持受控间距 4
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 支持受控间距 8
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 支持受控间距 12
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 支持受控间距 16
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 支持受控间距 24
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 支持受控间距 undefined
+TypeError: Cannot set properties of undefined (setting 'gap')
+ ❯ packages/page/tests/metric-before.test.ts:17:56
+     15|   });
+     16|   it.each([4,8,12,16,24,undefined])('支持受控间距 %s', gap => {
+     17|     const page=example(); cards(page)[1].layout.before.gap=gap;
+       |                                                        ^
+     18|     expect(parsePage(page).ok).toBe(true);
+     19|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/19]⎯
+
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 拒绝非法间距 -1
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 拒绝非法间距 0
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 拒绝非法间距 7
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 拒绝非法间距 32
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 拒绝非法间距 8
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 拒绝非法间距 8px
+TypeError: Cannot set properties of undefined (setting 'gap')
+ ❯ packages/page/tests/metric-before.test.ts:21:56
+     19|   });
+     20|   it.each([-1,0,7,32,'8','8px'])('拒绝非法间距 %s', gap => {
+     21|     const page=example(); cards(page)[1].layout.before.gap=gap;
+       |                                                        ^
+     22|     expect(parsePage(page).ok).toBe(false);
+     23|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/19]⎯
+
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 拒绝超出首期范围：span
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 拒绝超出首期范围：previous
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ packages/page/tests/metric-before.test.ts:37:32
+     35|     if(kind==='version')page.schemaVersion='6.33';
+     36|     if(kind==='nested')section.components=[{id:'nested',type:'composit…
+     37|     expect(parsePage(page).ok).toBe(false);
+       |                                ^
+     38|     if(kind==='version')expect(validate(page).some(error=>error.path.e…
+     39|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/19]⎯
+
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 拒绝超出首期范围：empty
+TypeError: Cannot set properties of undefined (setting 'text')
+ ❯ packages/page/tests/metric-before.test.ts:32:59
+     30|     if(kind==='connect')section.components[0].layout.connectPrevious=t…
+     31|     if(kind==='span')section.components[0].layout.span=4;
+     32|     if(kind==='empty')section.components[1].layout.before.text='   ';
+       |                                                           ^
+     33|     if(kind==='previous')section.components[0]={id:'plain',type:'text'…
+     34|     if(kind==='after')section.components[0].layout.after={text:'+'};
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/19]⎯
+
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 缺失可选参数只移除对应连接，不删除指标卡或改写原文
+TypeError: Cannot set properties of undefined (setting 'text')
+ ❯ packages/page/tests/metric-before.test.ts:42:34
+     40|   it('缺失可选参数只移除对应连接，不删除指标卡或改写原文', () => {
+     41|     const page=example(); page.params=[{id:'connector',type:'string',r…
+     42|     cards(page)[1].layout.before.text={param:'connector'};
+       |                                  ^
+     43|     const parsed=parsePage(page);
+     44|     expect(parsed.ok).toBe(true); if(!parsed.ok)return;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/19]⎯
+
+ FAIL  packages/page/tests/metric-before.test.ts > 指标卡前置连接文字 > 首卡 before 保留声明，实际是否显示由相邻排布决定
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ packages/page/tests/metric-before.test.ts:52:32
+     50|   it('首卡 before 保留声明，实际是否显示由相邻排布决定', () => {
+     51|     const page=example(); cards(page)[0].layout.before={text:'其中'};
+     52|     expect(parsePage(page).ok).toBe(true);
+       |                                ^
+     53|   });
+     54| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/19]⎯
+
+ FAIL  packages/engine/runtime/tests/presentation.test.ts > breaks original metric connections at hidden endpoints without changing the page
+Error: [{"type":"SCHEMA_ERROR","path":"/sections/1/components/0","message":"Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐 由 6.45 引入，文档声明的是 6.35"}]
+ ❯ packages/engine/runtime/tests/presentation.test.ts:73:55
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/19]⎯
+
+
+ Test Files  2 failed | 164 passed (166)
+      Tests  19 failed | 1361 passed (1380)
+   Start at  22:41:42
+   Duration  10.90s (transform 10.19s, setup 0ms, import 104.12s, tests 28.19s, environment 12ms)
+
+[ELIFECYCLE] Test failed. See above for more details.

@@ -1,5 +1,5 @@
 import { intersectQueryFilters } from './intersect-filters';
-import {selectTimeQuery,requiresTimeValidation,timeFilterBoundaryError} from '@metriccanvas/page/internal';
+import {selectQuery,requiresTimeValidation,timeFilterBoundaryError} from '@metriccanvas/page/internal';
 import { numberRangeIssue,rangeContextIssue,selectedCase, dimensionSelectionIssue, bindingQueryField, hasQueryFieldMapping, timePointPredicateValue, resolveTimeWindow, type FilterDeclaration, type QueryDataSource, type EffectiveQuery, type DataSnapshot } from '@metriccanvas/page/internal';
 import type { FilterValue, FilterValues } from './filter-values';
 import type { DataGateway, QueryDiagnosticContext } from './ports';
@@ -28,7 +28,7 @@ export function composeEffectiveQuery(
   search?: { fields: readonly string[]; query: string; match?: 'equals' }
 ): EffectiveQuery {
   const dataSource = binding.dataSource;
-  const query = selectTimeQuery(dataSource.source.query, values);
+  const query = selectQuery(dataSource.source.query, values);
   const filterValues: EffectiveQuery['filterValues'] = [];
   for (const [filterId, target] of Object.entries(query.filterBindings ?? {})) {
     const value = values.get(filterId), declaration = binding.filters?.find(filter => filter.id === filterId);

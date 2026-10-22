@@ -1,4 +1,4 @@
-import {hasTimeConstraints} from '@metriccanvas/page/internal';
+import {requiresQueryContext} from '@metriccanvas/page/internal';
 import { resolvePageParams, type PageDocument } from '@metriccanvas/page';
 import { createSourceProgram } from './source-program/session';
 import { initialFilterValues } from './filter-values';
@@ -14,7 +14,7 @@ export function createPageDataExecutor(config: { gateway: RuntimeDataGateway;dis
     if (!resolved.ok) throw new Error(resolved.issues[0].message);
     const page = seedPageParamFilters(resolved.resolvedPage, resolved.effectiveInputs);
     const output = structuredClone(resolved.document);
-    for(const source of Object.values(output.dataSources))if(source.source.type==='query'&&hasTimeConstraints(source.source.query,page.filters))delete source.source.initial;
+    for(const source of Object.values(output.dataSources))if(source.source.type==='query'&&requiresQueryContext(source.source.query,page.filters))delete source.source.initial;
     const now=config.now??new Date(),displayInputs=structuredClone(config.displayInputs?.()),filterRevision=config.filterRevision?.()??0;
     const program = createSourceProgram(page, {...config,now,displayInputs:()=>displayInputs,filterRevision:()=>filterRevision??0});
     try {

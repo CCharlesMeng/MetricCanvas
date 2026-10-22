@@ -19,7 +19,7 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 
 `filterId` 引用同页普通维度筛选器，例如 `{"id":"channel","type":"dimension","dimension":"region","default":["CN"]}`。`options` 是非空固定候选列表，各 value 唯一；label 仅用于展示，value 写入统一筛选状态、URL 和查询。default 必须是候选中的恰好一个值。不使用层级、级联、initialParam 或另一份声明级候选、选择策略。
 
-作用范围只由查询定义中的 `filterBindings` 决定；至少一个查询必须消费这个筛选器。允许多个查询绑定同一筛选器，也允许指标卡、图表或其他组件共同消费受影响结果。不增加受控组件 ID 列表，不按控件位置隐式划范围，不要求复制共享数据源。未绑定且不依赖受影响结果的数据源不因本控件切换刷新。
+作用范围由查询定义中的显式消费决定：普通条件使用 `filterBindings`，6.50 查询分支选择使用 `queryModes.filterId`；至少一个查询必须消费这个筛选器。允许多个查询绑定同一筛选器，也允许指标卡、图表或其他组件共同消费受影响结果。不增加受控组件 ID 列表，不按控件位置隐式划范围，不要求复制共享数据源。未绑定且不依赖受影响结果的数据源不因本控件切换刷新。
 
 组件顶层 `visibleWhen` 与筛选声明的 `visibleWhen`、静态 `visible:false` 及祖先门禁由统一展示模块组合求值。隐藏控件保留筛选状态和查询绑定；内容分别声明自己的条件。再次显示恢复已有选择。候选项固定，不因页头切换自动改变，也不请求候选端口。只读页面禁用按钮或下拉；加载、空结果、查询失败不移除独立控件。
 
@@ -38,3 +38,6 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 按钮切换指标仍是显式筛选：合成数据有 `toolbar_metric` 维度，图表和合计查询都绑定它以及区域维度；不同指标的单位和内容分别通过集中 `visibleWhen` 选择。运行时不替换查询字段、不执行脚本。原型链接 `/prototypes/chart-filter-toolbar` 重定向到正式示例。
 
 指标卡分区可复用相同声明：section.container:card、section.title、span:12 的 filterGroup、连续 Before 指标卡依次组成白底无边框区域；标题和筛选均靠左，筛选在标题下方。示例 `/pages/metric-card-equation` 的 all/east/south 是合成汇总数据中的显式区域值，all 不代表通用的清除查询条件。
+
+
+6.50 的 `queryModes` 可直接消费固定单选值，选择不同数据对象的完整查询；不要求上游存在同名业务维度。现有示例的普通维度谓词语义保持，跨表分支示例见 `/pages/query-mode-chart-demo` 和[查询定义](../queries-and-bindings.md#query-modes)。

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.49",
-  "schemaSha256": "f7595ffbdcf2fe8b269b74567933759d72d6ed3067022eb2cc8fc84196ac0f34",
+  "schemaVersion": "6.50",
+  "schemaSha256": "d7df3a55bf6fd38b988d4ead99bcf7e2cf07b0ff1f544a5d98d20ae664c0f67e",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -56,7 +56,7 @@
     },
     {
       "file": "packages/page/src/amount-filter.ts",
-      "sha256": "078b4fb9b5a71603ba8b579f9ec287dccde6957399939af1f8c98d582db8504a"
+      "sha256": "e6a88f252150f9109b787f85027cbfb00d73d3030d901ac5053cfe2b918ef634"
     },
     {
       "file": "packages/page/src/amount-validation.ts",
@@ -80,7 +80,7 @@
     },
     {
       "file": "packages/page/src/filter-group.ts",
-      "sha256": "420542c311669068a3df59ffa23007046fda81b554a88726e1c6b37b35126f6a"
+      "sha256": "84be5d8937e896970d0ff180b3e0eaadbc9874c9da7dfd41777504e84ecaf0d0"
     },
     {
       "file": "packages/page/src/filter-text-value.ts",
@@ -100,7 +100,7 @@
     },
     {
       "file": "packages/page/src/param-bindings.ts",
-      "sha256": "9c7cb74af45b8ae5e32e02bc57f85e821e2060db69ea490843afbe19c9e02f7b"
+      "sha256": "a5841c3a3fd093467d547b6de9d6d4a8fe6e0cec5d221cdbe3c46504b1169eb3"
     },
     {
       "file": "packages/page/src/period-facts.ts",
@@ -112,7 +112,7 @@
     },
     {
       "file": "packages/page/src/presentation-policy.ts",
-      "sha256": "2f4cef9fa663dedf8041ea43d1eff0820107f46875a80145d93acef59eed3241"
+      "sha256": "fbd5ab6780fa0244d5f2c8386ae1bcc00a418d4289bd2f8ad9da044aca44511c"
     },
     {
       "file": "packages/page/src/query-result-where.ts",
@@ -120,7 +120,7 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "94a84dc5286b577958a50d07d267084c849b566d8e0ce45aa585b83179208e0b"
+      "sha256": "accab551b67c229d394fdde24f4746ad6ac1d19685538fbe929ed2708e1955a3"
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
@@ -216,7 +216,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "f69bba470f8d99e4d180fec192137fcc9f6a11400f5acf8ca2d444d766bd45bf"
+      "sha256": "a39a6b4fe877fd6f80742087cbb19d65301a37bd8774c36ef706623b6a73d519"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -248,7 +248,7 @@
     },
     {
       "file": "packages/page/src/time-extension-validation.ts",
-      "sha256": "b2273a6a74415114d90bc2566e286edeb6e7d71ed86b819c8ae74c5bb64f9e0c"
+      "sha256": "929d6581f3b6bb5e3a4390164d54322a355d2a47d21ab4c9ef619b8e5df081e5"
     },
     {
       "file": "packages/page/src/time-filter-boundary.ts",
@@ -256,7 +256,7 @@
     },
     {
       "file": "packages/page/src/time-mode.ts",
-      "sha256": "006849e7cee48ee0b69390e144a599f20519580dd53fffa964ebbbba7f5f7e91"
+      "sha256": "c60382a21830738cefd2e591ea5854f60cae6511019553dc9faa314bb83b8e21"
     },
     {
       "file": "packages/page/src/time-param.ts",
@@ -276,11 +276,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "97a73e9949e2fb6167b484b5ec872607f4c2721591c80c7b2fc65d88b3415b33"
+      "sha256": "70f5a79295f7735dc54597e89eae0e1c1ec00828aaadd1bd64838a60cbd1c6ec"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "5f3192418b0b84e5e6b1fbb18ba40b811b514fb6484905e342505c8d48d10656"
+      "sha256": "0a247424ca437a7635f7eb0ed15e7def8011fb40c0957dbb82172e30d0fada69"
     }
   ],
   "modules": {
@@ -491,7 +491,9 @@
         "time-presets-page",
         "availability-page",
         "calendar-window-page",
-        "time-binding-branches-page"
+        "time-binding-branches-page",
+        "query-modes-page",
+        "query-mode-binding-branches-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1561,7 +1563,8 @@
         "6.46",
         "6.47",
         "6.48",
-        "6.49"
+        "6.49",
+        "6.50"
       ]
     },
     {
@@ -5488,6 +5491,281 @@
     {
       "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/propertyNames",
       "path": "@dqeQuery.timeModes.cases · propertyNames",
+      "required": "条件结构",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes",
+      "path": "@dqeQuery.queryModes",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/filterId",
+      "path": "@dqeQuery.queryModes.filterId",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases",
+      "path": "@dqeQuery.queryModes.cases",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties",
+      "path": "@dqeQuery.queryModes.cases{key}",
+      "required": "动态键的值",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/body",
+      "path": "@dqeQuery.queryModes.cases{key}.body",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/body/properties/dsl_list",
+      "path": "@dqeQuery.queryModes.cases{key}.body.dsl_list",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/body/properties/dsl_list/items",
+      "path": "@dqeQuery.queryModes.cases{key}.body.dsl_list[]",
+      "required": "每个数组项",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/body/properties/dsl_list/items/additionalProperties",
+      "path": "@dqeQuery.queryModes.cases{key}.body.dsl_list[]{key}",
+      "required": "动态键的值",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/body/properties/dsl_list/items/propertyNames",
+      "path": "@dqeQuery.queryModes.cases{key}.body.dsl_list[] · propertyNames",
+      "required": "条件结构",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key}",
+      "required": "动态键的值",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/target",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[0].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "dimension"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/queryField",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[0].queryField",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/target",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "dimension"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1].levelQueryFields",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields/additionalProperties",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1].levelQueryFields{key}",
+      "required": "动态键的值",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields/propertyNames",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1].levelQueryFields · propertyNames",
+      "required": "条件结构",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/target",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "time"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/window",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].window",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/window/allOf/0",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].window · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md",
+      "ref": "#/definitions/timeWindow"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3/properties/target",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[3].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "timePoint"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3/properties/queryField",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[3].queryField",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3/properties/valueFormat",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[3].valueFormat",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "iso",
+        "compact"
+      ]
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[4]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/target",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[4].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "boolean"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/queryField",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[4].queryField",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/whenTrue",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[4].whenTrue",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/whenTrue/items",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[4].whenTrue[]",
+      "required": "每个数组项",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/whenFalse",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[4].whenFalse",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4/properties/whenFalse/items",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[4].whenFalse[]",
+      "required": "每个数组项",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/target",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "const": "numberRange"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metric",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5].metric",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/filterId",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter.filterId",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/cases",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter.cases",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/cases/additionalProperties",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter.cases{key}",
+      "required": "动态键的值",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5/properties/metricByFilter/properties/cases/propertyNames",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[5].metricByFilter.cases · propertyNames",
+      "required": "条件结构",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/propertyNames",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings · propertyNames",
+      "required": "条件结构",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/propertyNames",
+      "path": "@dqeQuery.queryModes.cases · propertyNames",
       "required": "条件结构",
       "module": "queries-and-bindings.md"
     },
@@ -15802,6 +16080,42 @@
       "pointer": "#/dataSources/main/source/query/timeModes/cases/month/filterBindings/amount"
     },
     {
+      "schemaPointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-modes-page.json",
+      "pointer": "#/dataSources/amount-trend/source/query/queryModes/cases/contracts/filterBindings/region"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-mode-binding-branches-page.json",
+      "pointer": "#/dataSources/main/source/query/queryModes/cases/a/filterBindings/closed"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-mode-binding-branches-page.json",
+      "pointer": "#/dataSources/main/source/query/queryModes/cases/a/filterBindings/period"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-mode-binding-branches-page.json",
+      "pointer": "#/dataSources/main/source/query/queryModes/cases/a/filterBindings/point"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/4",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-mode-binding-branches-page.json",
+      "pointer": "#/dataSources/main/source/query/queryModes/cases/a/filterBindings/flag"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/5",
+      "module": "queries-and-bindings.md",
+      "file": "examples/query-mode-binding-branches-page.json",
+      "pointer": "#/dataSources/main/source/query/queryModes/cases/a/filterBindings/amount"
+    },
+    {
       "schemaPointer": "#/definitions/dataSource/anyOf/2",
       "module": "data-sources.md",
       "file": "examples/paged-join-page.json",
@@ -16662,8 +16976,8 @@
     {
       "schemaPointer": "#/definitions/compositeCardChild/oneOf/0",
       "module": "components/compositeCard.md",
-      "file": "examples/chart-local-filter-page.json",
-      "pointer": "#/sections/0/components/0/props/components/0"
+      "file": "examples/query-modes-page.json",
+      "pointer": "#/sections/1/components/0/props/components/0"
     },
     {
       "schemaPointer": "#/definitions/compositeCardChild/oneOf/1",
@@ -16674,8 +16988,8 @@
     {
       "schemaPointer": "#/definitions/compositeCardChild/oneOf/2",
       "module": "components/compositeCard.md",
-      "file": "examples/chart-local-filter-page.json",
-      "pointer": "#/sections/0/components/1/props/components/1"
+      "file": "examples/query-modes-page.json",
+      "pointer": "#/sections/1/components/0/props/components/2"
     },
     {
       "schemaPointer": "#/definitions/compositeCardChild/oneOf/3",

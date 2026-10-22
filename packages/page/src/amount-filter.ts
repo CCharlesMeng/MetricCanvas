@@ -1,3 +1,4 @@
+import {queryLeaves,querySelection,selectQuery,type QuerySelectorValue} from './query-selection';
 import type {FilterDeclaration,NumberRangeFilterDeclaration,NumberRangeValue} from './filter';
 import type {DqeQueryDefinition} from './query';
 
@@ -25,7 +26,18 @@ export function selectedCase<T>(cases:Record<string,T>,selected:unknown):T {
   return cases[selected[0]]!;
 }
 /** Includes selectors consumed indirectly by metricByFilter. */
-export function queryFilterIds(query:Pick<DqeQueryDefinition,'filterBindings'|'timeModes'>):string[]{const bindings=query.timeModes?Object.values(query.timeModes.cases).flatMap(leaf=>Object.entries(leaf.filterBindings)):Object.entries(query.filterBindings??{});return [...new Set([...(query.timeModes?[query.timeModes.filterId]:[]),...bindings.flatMap(([id,binding])=>binding.target==='numberRange'&&binding.metricByFilter?[id,binding.metricByFilter.filterId]:[id])])];}
+export function queryFilterIds(query:Pick<DqeQueryDefinition,'filterBindings'|'timeModes'|'queryModes'>,values?:ReadonlyMap<string,QuerySelectorValue>):string[]{
+ const selection=querySelection(query);
+ const definition={language:'dqe' as const,...query};
+ const leaves=selection&&values?appliedQueryLeaves(definition,values):queryLeaves(definition);
+ const bindings=leaves.flatMap(leaf=>Object.entries(leaf.filterBindings??{}));
+ return [...new Set([...(selection?[selection.filterId]:[]),...bindings.flatMap(([id,binding])=>binding.target==='numberRange'&&binding.metricByFilter?[id,binding.metricByFilter.filterId]:[id])])];
+}
+/** Invalid selectors still participate in validation, without guessing a branch's inputs. */
+function appliedQueryLeaves(query:DqeQueryDefinition,values:ReadonlyMap<string,QuerySelectorValue>){
+ try{return [selectQuery(query,values)];}catch{return [];}
+}
+
 export function rangeContextIssue(declaration:NumberRangeFilterDeclaration,values:ReadonlyMap<string,{type:string;values?:readonly string[]}>):string|undefined {
  if(!declaration.units)return;
  try{selectedCase(declaration.units.cases,values.get(declaration.units.filterId)?.values);}catch{return '金额单位的币种选择未就绪';}

@@ -4,7 +4,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "筛选按钮组需要至少一个查询通过 filterBindings 消费",
+      "message": "筛选按钮组需要至少一个查询通过 filterBindings 或查询模式消费",
       "paths": [
         "/sections/0/components/0/props"
       ]

@@ -502,6 +502,11 @@
       "type": "SCHEMA_ERROR",
       "path": "/dataSources/main/source/query/filterBindings/amount",
       "message": "金额case USD需要匹配币种的静态money查询字段"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/main/source/query/filterBindings/amount",
+      "message": "金额case USD需要匹配币种的静态money查询字段"
     }
   ]
 }
