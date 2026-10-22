@@ -46,3 +46,13 @@ DOM 测量保存在 `measurements.json`。IAB 的截图视口与窗口缩放不�
 修复后直接 TypeScript 声明输出通过；真实 package build 同时生成上述两个声明；已有 data-execution 独立消费者验证通过（Node ESM 执行、无渲染依赖、外部类型、安装后 CLI）。补齐生成的源文件哈希索引与锁，未修改 JSON Schema 输出或页面版本。继续以修复提交对应的完整 CI 作为最终交付状态。
 
 最终本地回归 6 文件 / 84 项通过（Schema 边界、Tab 混合内容、版本、参考分发、local-authoring 工具与独立安装）；authoring:contracts:check 通过。
+
+## 窄柱点击导航验收修复
+
+`612d2e5159273d70b0fdece01b70f5472acfa20e` 对应 CI `39736310641` 的 types / tests / build / authoring 全通过，compatibility 的独立消费者类型、构建、UI 与 482 项嵌入浏览器验收通过；剩余 Chrome / Edge 各一项相同的图表直接点击导航用例失败。归档 consumer-browser.log 显示固定画布中心点击后没有跳转，断言仍停留在 IOC 概览。
+
+原测试把画布中心当作柱形命中坐标，16px 默认柱宽下该假设不成立。测试改为沿画布中间行读取已绘制的彩色柱形像素，取柱形中心并按实际 DOM/像素尺寸换算点击位置；继续执行真实点击与 `opportunity-code=A001` 导航断言，无修改产品导航代码、无加宽测试柱、无延长超时。
+
+本地 Chrome 聚焦用例连续 3 次通过，完整 navigation.spec.ts 10 项通过；embed 检查 0 errors / 0 warnings。本机缺少 Edge，尝试运行明确报浏览器未安装，未将其记为本地通过；Edge 以新提交 CI 为准。
+
+同一 AST 口径实测：修改测试回调自身 CC 1 → 1，poll 回调 1 → 1，删除旧像素回调 CC 2，新增 paintedBarCenter 自身 CC 5；全部新增/修改函数 ≤ 15。完整相关函数结果见 navigation-complexity.json。本次仅测试与证据，协议及 local-authoring 无变化。

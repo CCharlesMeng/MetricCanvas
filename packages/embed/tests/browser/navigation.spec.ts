@@ -3,6 +3,21 @@ import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 const navigationPage = JSON.parse(readFileSync(new URL('../../../page/fixtures/contract-valid/url-navigation-page.json', import.meta.url), 'utf8'));
 
+function paintedBarCenter(element: HTMLElement | SVGElement) {
+  const canvas = element as HTMLCanvasElement;
+  const y = Math.floor(canvas.height / 2);
+  const pixels = canvas.getContext('2d')!.getImageData(0, y, canvas.width, 1).data;
+  const colored: number[] = [];
+  for (let x = 0; x < canvas.width; x++) {
+    const offset = x * 4;
+    const [red, green, blue, alpha] = pixels.slice(offset, offset + 4);
+    if (alpha > 0 && Math.max(red, green, blue) - Math.min(red, green, blue) > 20) colored.push(x);
+  }
+  const middle = colored[Math.floor(colored.length / 2)];
+  const box = canvas.getBoundingClientRect();
+  return middle === undefined ? null : {x: (middle + 0.5) * box.width / canvas.width, y: (y + 0.5) * box.height / canvas.height};
+}
+
 test('无导航适配的 HTML 宿主完成 IOC 概览→清单→详情及浏览器返回', async ({page}) => {
   await page.goto('/pages/ioc-project-overview');
   const list = page.locator('a.link-cell[href*="ioc-opportunity-list"]').first();
@@ -175,11 +190,12 @@ test('图表直接点击执行默认导航，不依赖宿主回调', async ({pag
   await page.evaluate(() => window.runtime.update({document:{schemaVersion:'6.5',id:'chart-link',dataSources:{values:{fields:{category:{type:'string',role:'dimension'},amount:{type:'number',role:'measure'}},source:{type:'inline',rows:[{category:'A001',amount:10}]}}},sections:[{id:'main',components:[{id:'chart',type:'barChart',layout:{span:12},data:{main:'values'},props:{categoryField:'category',series:[{field:'amount',label:'金额'}],actions:[{on:'click',navigate:{href:'/pages/ioc-project-detail',query:{'opportunity-code':{source:'row',field:'category'}}}}]}}]}]}}));
   const chart=page.locator('[data-component="main/chart"] canvas').first();
   await expect(chart).toBeVisible();
-  // The canvas exists before ECharts finishes drawing its initial animated bar.
-  // Wait for the colored data mark at the actual click point, not just the canvas box.
-  await expect.poll(()=>chart.evaluate(canvas=>{const el=canvas as HTMLCanvasElement;const pixel=el.getContext('2d')!.getImageData(Math.floor(el.width/2),Math.floor(el.height/2),1,1).data;return pixel[3]>0&&Math.max(pixel[0],pixel[1],pixel[2])-Math.min(pixel[0],pixel[1],pixel[2])>20;})).toBe(true);
-  const box=await chart.boundingBox();
-  await chart.click({position:{x:box!.width/2,y:box!.height/2}});
+  // The canvas can appear before its animated bar. Locate the painted mark;
+  // a fixed canvas center can fall outside the default 16px bar.
+  await expect.poll(()=>chart.evaluate(paintedBarCenter)).not.toBeNull();
+  const point=await chart.evaluate(paintedBarCenter);
+  expect(point).not.toBeNull();
+  await chart.click({position:point!});
   await expect(page).toHaveURL(/opportunity-code=A001/);
 });
 

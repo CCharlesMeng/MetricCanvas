@@ -1,0 +1,96 @@
+{
+  "before": {
+    "analyzer": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "file": "/tmp/ioc-navigation-before.ts",
+    "functions": [
+      {
+        "name": "<anonymous@172:30>",
+        "qualifiedName": "<anonymous@172:30>",
+        "line": 172,
+        "endLine": 184,
+        "selfCC": 1,
+        "optionalChains": 0,
+        "subtreeCC": 2,
+        "nestedFunctions": 3
+      },
+      {
+        "name": "<anonymous@175:23>",
+        "qualifiedName": "<anonymous@172:30>/<anonymous@175:23>",
+        "line": 175,
+        "endLine": 175,
+        "selfCC": 1,
+        "optionalChains": 0,
+        "subtreeCC": 1,
+        "nestedFunctions": 0
+      },
+      {
+        "name": "<anonymous@180:21>",
+        "qualifiedName": "<anonymous@172:30>/<anonymous@180:21>",
+        "line": 180,
+        "endLine": 180,
+        "selfCC": 1,
+        "optionalChains": 0,
+        "subtreeCC": 2,
+        "nestedFunctions": 1
+      },
+      {
+        "name": "<anonymous@180:40>",
+        "qualifiedName": "<anonymous@172:30>/<anonymous@180:21>/<anonymous@180:40>",
+        "line": 180,
+        "endLine": 180,
+        "selfCC": 2,
+        "optionalChains": 0,
+        "subtreeCC": 2,
+        "nestedFunctions": 0
+      }
+    ]
+  },
+  "after": {
+    "analyzer": "metriccanvas-ts-ast/1",
+    "typescriptVersion": "5.9.3",
+    "file": "packages/embed/tests/browser/navigation.spec.ts",
+    "functions": [
+      {
+        "name": "paintedBarCenter",
+        "qualifiedName": "paintedBarCenter",
+        "line": 6,
+        "endLine": 19,
+        "selfCC": 5,
+        "optionalChains": 0,
+        "subtreeCC": 5,
+        "nestedFunctions": 0
+      },
+      {
+        "name": "<anonymous@187:30>",
+        "qualifiedName": "<anonymous@187:30>",
+        "line": 187,
+        "endLine": 200,
+        "selfCC": 1,
+        "optionalChains": 0,
+        "subtreeCC": 1,
+        "nestedFunctions": 2
+      },
+      {
+        "name": "<anonymous@190:23>",
+        "qualifiedName": "<anonymous@187:30>/<anonymous@190:23>",
+        "line": 190,
+        "endLine": 190,
+        "selfCC": 1,
+        "optionalChains": 0,
+        "subtreeCC": 1,
+        "nestedFunctions": 0
+      },
+      {
+        "name": "<anonymous@195:21>",
+        "qualifiedName": "<anonymous@187:30>/<anonymous@195:21>",
+        "line": 195,
+        "endLine": 195,
+        "selfCC": 1,
+        "optionalChains": 0,
+        "subtreeCC": 1,
+        "nestedFunctions": 0
+      }
+    ]
+  }
+}
