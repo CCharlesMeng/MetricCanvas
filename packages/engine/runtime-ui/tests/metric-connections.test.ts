@@ -3,7 +3,7 @@ import { expect, it } from 'vitest';
 import { parsePage } from '../../../page/src/validate';
 import { metricConnectionItems } from '../src/metric-connections';
 function cards() {
-  const parsed=parsePage(JSON.parse(readFileSync('pages/metric-card-equation.json','utf8')));
+  const parsed=parsePage(JSON.parse(readFileSync('pages/capabilities/layout/metric-card-equation.json','utf8')));
   if(!parsed.ok)throw new Error(JSON.stringify(parsed.errors));
   return parsed.page.sections.find(section=>section.id==='equation')!.components;
 }

@@ -4,7 +4,7 @@
 
 状态：当前范围与目标已由用户确认；具体新增协议设计仍待对应评审。2026-09-30。
 
-用户指明以 `pages/ioc-project-overview.json` 及其有链接跳转的相关页面为优先，并要求保留此前其他页面的缺口。本文覆盖 [9月29日计划](../archive/ioc-planning-2026-09/2026-09-29-ioc-delivery-design.md) 的近期五页顺序和客户详情先行安排，不撤销其中仍适用的业务决定、验收规则和21入口长期目标。
+用户指明以 `pages/business/dashboard/ioc/project/ioc-project-overview.json` 及其有链接跳转的相关页面为优先，并要求保留此前其他页面的缺口。本文覆盖 [9月29日计划](../archive/ioc-planning-2026-09/2026-09-29-ioc-delivery-design.md) 的近期五页顺序和客户详情先行安排，不撤销其中仍适用的业务决定、验收规则和21入口长期目标。
 
 ## 1. 本阶段目标与范围
 
@@ -12,10 +12,10 @@
 
 | 优先次序 | 页面资产 | 本阶段完成目标 |
 |---|---|---|
-| 1 | `pages/ioc-project-overview.json` 项目主页 | 对齐机会点概况、项目分层分级管理、复盘总结、两层地图与概览/TOP已立项/丢单三表；闭合每个启用入口及参数 |
-| 2 | `pages/ioc-opportunity-list.json` 机会点清单 | 对齐实际启用主模板、完整列与格式、入口筛选、查询排序/分页/序号、可表达的筛选以及机会点名称到详情的导航 |
-| 3 | `pages/ioc-opportunity-analysis.json` 机会点分析 | 先确认与来源opportunity-page的映射，再对齐地区部/代表处两态、指标分组、两态各三表及超期等清单入口；不以同名证明等价 |
-| 4 | `pages/ioc-project-detail.json` 项目详情 | 对齐必需入口参数、信息/规范性、销售预测、背景/目标/友商/分析会/风险/进展等实际启用内容；先消除来源“信息卡+3表/四表”矛盾 |
+| 1 | `pages/business/dashboard/ioc/project/ioc-project-overview.json` 项目主页 | 对齐机会点概况、项目分层分级管理、复盘总结、两层地图与概览/TOP已立项/丢单三表；闭合每个启用入口及参数 |
+| 2 | `pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json` 机会点清单 | 对齐实际启用主模板、完整列与格式、入口筛选、查询排序/分页/序号、可表达的筛选以及机会点名称到详情的导航 |
+| 3 | `pages/business/dashboard/ioc/opportunity/ioc-opportunity-analysis.json` 机会点分析 | 先确认与来源opportunity-page的映射，再对齐地区部/代表处两态、指标分组、两态各三表及超期等清单入口；不以同名证明等价 |
+| 4 | `pages/business/dashboard/ioc/project/ioc-project-detail.json` 项目详情 | 对齐必需入口参数、信息/规范性、销售预测、背景/目标/友商/分析会/风险/进展等实际启用内容；先消除来源“信息卡+3表/四表”矛盾 |
 
 顺序表示推进重点，明确的导航传参修复可与目标页同时完成。来源核实后发现的启用关联入口必须登记；不得用当前JSON缺链接排除真实功能，也不得自动扩大到未核实的所有相似页面。
 

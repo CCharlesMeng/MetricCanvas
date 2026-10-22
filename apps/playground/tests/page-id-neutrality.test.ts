@@ -1,3 +1,4 @@
+import { pageFiles } from '../../../tools/scripts/page-files.mjs';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -23,8 +24,7 @@ function productSourceFiles(root: string): string[] {
 
 describe('页面 id 中立性', () => {
   it('产品源码不得根据任何正式页面 id 分支', () => {
-    const pageIds = readdirSync(resolve(repoRoot, 'pages'))
-      .filter((name) => name.endsWith('.json'))
+    const pageIds = pageFiles(resolve(repoRoot, 'pages'))
       .map((name) => JSON.parse(readFileSync(resolve(repoRoot, 'pages', name), 'utf8')) as { id: string })
       .map((page) => page.id);
     const violations = productSourceRoots.flatMap(productSourceFiles).flatMap((file) => {

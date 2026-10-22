@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import fixture from '../../../../pages/tab-url-initialization.json';
-import source from '../../../../pages/tab-url-source.json';
+import fixture from '../../../../pages/capabilities/navigation/tab-url-initialization.json';
+import source from '../../../../pages/capabilities/navigation/tab-url-source.json';
 import { parsePage } from '@metriccanvas/page';
 import { navigationHref } from '../../runtime/src/navigate';
 import { resolveActiveTab } from '../../widgets/src/components/tab-container/tabs';

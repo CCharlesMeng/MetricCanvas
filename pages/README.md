@@ -1,25 +1,50 @@
 # 页面示例与验收场景
 
-页面试验场为引擎使用者提供“查找能力 → 体验操作 → 查看配置 → 参考业务页面”的路径。首页保留业务示例／功能演示／验收样例及 Dashboard／Report 布局形态筛选，并新增能力主题、运行条件筛选；同一页面可属于多个能力主题；IOC 公共页头的多个场景集中为一个目录入口，其余页面各显示一个目录卡片。
+## 目录组织
 
-每页顶部的“体验与配置说明”提供操作与预期、数据环境、启动方式、关键配置、完整 JSON 下载、适用边界和关联入口。配置片段从当前加载文档提取，不维护第二份运行声明。说明属于试验场外框，不进入引擎页面或导出结果。协议文档链接指向仓库 main，当前运行输入以下载的 JSON 为准。
+页面以实际文件和页面文档为唯一运行输入，无需目录登记。文件名与页面 id 一致且全树唯一；移动文件保留 id 与 `/pages/<id>` 地址。业务页面按实际布局形态归类。
 
-新功能仍按[必选验收要求](../docs/agents/feature-acceptance.md)维护页面、协议文档和本地创作 Skill。JSON 是运行输入，测试直接读取同一文件。本次目录信息结构调整只改变开发工具导航与说明，不新增页面协议、运行时能力或本地创作流程；已有协议文档和 Skill 声明规则继续适用。
+```text
+pages/
+├── business/
+│   ├── report/{sdt,flow,tokens,customer}/
+│   └── dashboard/ioc/{project,opportunity}/
+├── capabilities/{table,chart,filters,export,layout,navigation,query,ioc-header}/
+└── platform/
+```
 
-本轮信息结构改进的范围、浏览器结果与截图见[目录验收记录](../docs/evidence/page-catalog-information-structure/result.md)。
+新增业务模块只需创建目录并放入完整页面，例如 `business/dashboard/供应链/supply-overview.json`，显式使用 `layout: "dashboard"` 与 `id: "supply-overview"`。执行 `pnpm validate pages/business/dashboard/供应链`；保存后自动进入试验场并可通过 `/pages/supply-overview` 访问。中文目录名直接显示，无需修改其他配置或页面列表测试。
 
-#新增示例默认使用 Dashboard，布局与例外遵循[仓库约定](../AGENTS.md#playground-示例)。
+启动 `pnpm dev:playground`，从“文件夹路径”选择 `business/dashboard/ioc/project`；切到父目录 `business/dashboard/ioc` 会包含项目与机会点两个子目录。页面标题、说明、布局、组件类型和数据来源均从实际文档提取。搜索支持名称、路径和页面 id，可与文件夹、布局、组件及数据来源组合。
 
-## 目录返回时恢复查找条件
+打开页面后通过“页面目录”返回，或刷新、前进与后退，查找状态及滚动位置保持；重置恢复全部页面。详情中的“查看页面 JSON”可查看和下载实际运行输入。新增、修改、删除页面自动刷新，已删除文件夹回退为全部页面；空文件夹不显示，根文件展示在“根目录”。静态部署需重新构建。
 
-- 启动 `pnpm dev:playground`，入口 `/`；无需 DQE，详情复用内联合成示例 `/pages/table-detail-overlay` 和 `/pages/table-toolbar-demo`。
-- 在目录选择“表格与明细”、Dashboard、“无需额外服务”、“功能演示”，搜索“详情弹窗”。打开唯一结果，再点顶部“页面目录”：关键词、四项选择、匹配结果及滚动位置保持原样。也可从详情的相关示例继续跳转后返回目录。
-- 切换为 Report，修改搜索为“Excel”并打开结果，连续使用浏览器后退／前进：各目录历史记录恢复各自的条件；刷新目录或详情后返回，条件仍保留。无匹配结果也保留；点击“重置筛选”后再往返，不恢复旧条件。
-- 会话存储损坏或分类选项已删除时回退默认值；存储被禁用时保留当前应用内状态。范围仅为试验场目录，不改变页面协议、业务页面筛选、页面参数或本地创作 Skill。浏览器验收脚本：`node apps/playground/tests/catalog-navigation-browser.mjs`；可用 `PLAYGROUND_BASE_URL` 指定服务地址。
+目录只区分内联／静态与包含查询，不推断 DQE Sim、真实服务或生产可用性。具体操作、启动方式、边界和关联入口留在页面所在目录 README.md；这些说明供阅读，不被应用解析。新功能验收遵循[统一要求](../docs/agents/feature-acceptance.md)。
+
+主题说明：
+
+- IOC 公共页头：[专题场景](capabilities/ioc-header/scenarios/README.md)、[业务确认](capabilities/ioc-header/business/README.md)、[选择回执](capabilities/ioc-header/selection/README.md)。
+
+- [business/dashboard/ioc/opportunity](business/dashboard/ioc/opportunity/README.md)
+- [business/dashboard/ioc/project](business/dashboard/ioc/project/README.md)
+- [business/report/customer](business/report/customer/README.md)
+- [business/report/flow](business/report/flow/README.md)
+- [business/report/sdt](business/report/sdt/README.md)
+- [business/report/tokens](business/report/tokens/README.md)
+- [capabilities/chart](capabilities/chart/README.md)
+- [capabilities/export](capabilities/export/README.md)
+- [capabilities/filters](capabilities/filters/README.md)
+- [capabilities/layout](capabilities/layout/README.md)
+- [capabilities/navigation](capabilities/navigation/README.md)
+- [capabilities/query](capabilities/query/README.md)
+- [capabilities/table](capabilities/table/README.md)
+- [platform](platform/README.md)
+
+目录发现和浏览器验证见[当前清理记录](../docs/evidence/page-folder-aggregation/cleanup.md)；[原迁移记录](../docs/evidence/page-folder-aggregation/result.md)保留此前阶段证据。
 
 ## IOC 公共页头统一入口
 
-打开 Playground 的 `/ioc-header`；首页可选择“IOC 公共页头”能力和“功能演示”用途，或用 `/#group-ioc-header` 定位入口。首页收拢为一张卡片，原始 15 份页面 JSON 与 `/pages/<id>` 地址保持有效。
+打开 Playground 的 `/ioc-header`，保留现有专题演示与能力一览。各页面也按实际路径展示在 `capabilities/ioc-header/`，原 `/pages/<id>` 地址保持有效。
 
 - `/ioc-header`：常用完整演示，期间、币种、区域可以直接操作。
 - `/ioc-header?topic=time&scene=time-modes`：时间专题，含年季月、详情单月、离散月份、日/月/ISO周、快捷范围与可信最新期场景。
@@ -38,14 +63,14 @@
 
 ### 本地创作：指标匹配与字段呈现
 
-- 页面：[local-authoring-knowledge-demo.json](local-authoring-knowledge-demo.json)，入口 `/pages/local-authoring-knowledge-demo`；`pnpm dev:playground` 启动，无 URL 参数或外部服务，使用内联合成数据。
+- 页面：[local-authoring-knowledge-demo.json](capabilities/layout/local-authoring-knowledge-demo.json)，入口 `/pages/local-authoring-knowledge-demo`；`pnpm dev:playground` 启动，无 URL 参数或外部服务，使用内联合成数据。
 - 签约金额为 4,200.0万，达成率为 42.0%；明细表显示同一数据，三列声明宽度分别为 180/200/160px。窄屏通过现有表格布局查看，百分格式不把 42 再乘 100。
 - 指标材料：[合成说明](../tools/fixtures/local-authoring-data/metrics.md)。用 local-authoring 的 analyze-data.mjs 扫描页面、检索说明并输出报告；“签约金额”有当期/累计两种口径，“达成率”缺目标口径与 DQE 标识，须报告候选/缺口，不直接写真实数据源。
 - 静态/仓外工具回归见 `tests/local-authoring-tools.test.ts`；浏览器直接读取本页面。脚本与运行时呈现、真实查询分层验收。
 
 ### 表格单元格点击与筛选联动
 
-- 页面：[table-cell-selection.json](table-cell-selection.json)，入口 `/pages/table-cell-selection`；无必填 URL 参数。启动 `pnpm sim:dqe` 与 `pnpm dev:playground`，使用 DQE Sim 合成数据。
+- 页面：[table-cell-selection.json](capabilities/table/table-cell-selection.json)，入口 `/pages/table-cell-selection`；无必填 URL 参数。启动 `pnpm sim:dqe` 与 `pnpm dev:playground`，使用 DQE Sim 合成数据。
 - 点击上表带下划线的“华南地区部”，下表仅显示“深圳代表处”；点击“华东地区部”切换为“杭州代表处”。上表不订阅筛选，因此保留全部选择入口；重复点击同值保持选中。代表处链接列也显示下划线。
 - `selection.writes.region` 写入页面筛选器，下游查询通过 `filterBindings.region` 显式订阅。内联入口可写入具有可观察结果的筛选；未订阅的查询与内联数据不会自动过滤。维度值通过页面显式枚举确认。
 - 浏览器回归：`pnpm --filter @metriccanvas/embed exec playwright test table-cell-selection.spec.ts`（先执行该包 `build`）。覆盖正常选择、键盘选择、重复点击、缺少下游绑定、纯内联入口和四种表格变体下划线。仅证明本地运行时与合成数据链路，不代表真实 DQE、Relay 或模型验收。
@@ -53,7 +78,7 @@
 
 ### TinyVue OS 表格外观
 
-- 页面：[table-tiny-os.json](table-tiny-os.json)，直接打开 [TinyVue OS 表格样式验收](http://localhost:5173/pages/table-tiny-os)。启动 `pnpm dev:playground`，无需 DQE。
+- 页面：[table-tiny-os.json](capabilities/table/table-tiny-os.json)，直接打开 [TinyVue OS 表格样式验收](http://localhost:5173/pages/table-tiny-os)。启动 `pnpm dev:playground`，无需 DQE。
 - 普通、预测矩阵、内嵌三种表格显示灰色 40px 表头、短分隔线、SVG 排序图标与统一网格间距；`reportCompact` 保持原外观。点击金额列切换排序，搜索客户25、清空、翻页，展开数值下限与日期筛选后清除；导出沿用完整匹配结果范围。
 - 窄屏在表格内部横滚，固定列随实际列宽定位；下方多级表头按实际层高定位。维度候选值端口未注入时显示不可用，不用假候选项冒充真实取值。
 - 浏览器验证直接读取上述 JSON：`packages/embed/tests/browser/table-tiny-os.spec.ts`。冻结官方 CSS 与相同数据/宽度的局部像素比较只证明对应网格场景，不代表所有业务页面和全部交互状态均已像素一致；真实 DQE/Relay 未在本场景验收。
@@ -62,12 +87,12 @@
 
 | 能力 | 推荐主示例 | 扩展与业务应用 |
 |---|---|---|
-| 布局与内容组织 | [指标卡与文字混排](metric-card-equation.json)、[内容导航](ioc-content-navigation.json) | [IOC 地图概览](ioc-project-overview.json)、[分析简报](flow-analysis-report.json) |
-| 筛选与状态联动 | [Report 时间联动](report-date-filter-example.json)、[Dashboard 期间选择](dashboard-period-filter.json) | [图表独立筛选](chart-local-filter-page.json)、[SDT 单月报告](business-sdt-report-monthly.json) |
-| 表格与明细 | [多级表头、搜索和导出](table-toolbar-demo.json)、[详情弹窗与抽屉](table-detail-overlay.json) | [多查询组合表](multi-query-table.json)、[IOC 清单](ioc-opportunity-list.json) |
-| 查询与数据处理 | [查询分页与级联](query-result-where-page.json)、[数值容错](query-numeric-tolerance.json) | [SDT 两条级联链](business-sdt-cascade-example.json)、[空数据呈现](empty-state-showcase.json) |
-| 导航与页面参数 | [来源演示页](demo.json) → [销售明细](sales-detail.json) | [IOC 清单](ioc-opportunity-list.json) → [项目详情](ioc-project-detail.json)、[显式参数报告](flow-analysis-report-params.json) |
-| 导出与分享 | [报告 PDF／PNG](report-png-export.json)、[表格 Excel](table-toolbar-demo.json) | [单张长图](report-png-long-export.json)、[无效倍率回退](report-export-scale-fallback.json)、[业务月报](sdt/commercial-sdt-efficiency-ultimate-monthly.json) |
+| 布局与内容组织 | [指标卡与文字混排](capabilities/layout/metric-card-equation.json)、[内容导航](capabilities/navigation/ioc-content-navigation.json) | [IOC 地图概览](business/dashboard/ioc/project/ioc-project-overview.json)、[分析简报](business/report/flow/flow-analysis-report.json) |
+| 筛选与状态联动 | [Report 时间联动](capabilities/filters/report-date-filter-example.json)、[Dashboard 期间选择](capabilities/filters/dashboard-period-filter.json) | [图表独立筛选](capabilities/chart/chart-local-filter-page.json)、[SDT 单月报告](business/report/sdt/business-sdt-report-monthly.json) |
+| 表格与明细 | [多级表头、搜索和导出](capabilities/table/table-toolbar-demo.json)、[详情弹窗与抽屉](capabilities/table/table-detail-overlay.json) | [多查询组合表](capabilities/table/multi-query-table.json)、[IOC 清单](business/dashboard/ioc/opportunity/ioc-opportunity-list.json) |
+| 查询与数据处理 | [查询分页与级联](capabilities/query/query-result-where-page.json)、[数值容错](capabilities/query/query-numeric-tolerance.json) | [SDT 两条级联链](business/report/sdt/business-sdt-cascade-example.json)、[空数据呈现](capabilities/layout/empty-state-showcase.json) |
+| 导航与页面参数 | [来源演示页](capabilities/layout/demo.json) → [销售明细](capabilities/table/sales-detail.json) | [IOC 清单](business/dashboard/ioc/opportunity/ioc-opportunity-list.json) → [项目详情](business/dashboard/ioc/project/ioc-project-detail.json)、[显式参数报告](business/report/flow/flow-analysis-report-params.json) |
+| 导出与分享 | [报告 PDF／PNG](capabilities/export/report-png-export.json)、[表格 Excel](capabilities/table/table-toolbar-demo.json) | [单张长图](capabilities/export/report-png-long-export.json)、[无效倍率回退](capabilities/export/report-export-scale-fallback.json)、[业务月报](business/report/sdt/commercial-sdt-efficiency-ultimate-monthly.json) |
 
 ## 数据与运行条件
 
@@ -86,16 +111,16 @@
 
 ### 本地创作的布局形态范式
 
-本批增强本地创作流程，不新增运行时能力；复用以下已注册的完整页面作为范式源，避免另造同能力演示页。试验场可搜索“创作范式”。选择依据与业务边界由 Skill 的范式卡说明，结构摘要由导出器读取这些精确页面生成，不复制其业务数据、查询或地址。
+本批增强本地创作流程，不新增运行时能力；复用以下已有的完整页面作为范式源，避免另造同能力演示页。在试验场按表内页面 id 搜索。选择依据与业务边界由 Skill 的范式卡说明，结构摘要由导出器读取这些精确页面生成，不复制其业务数据、查询或地址。
 
 | 布局形态／范式 | 实际页面与入口 | 核对重点 | 数据环境 |
 |---|---|---|---|
-| Dashboard 地图概览 | [ioc-project-overview](ioc-project-overview.json)，`/pages/ioc-project-overview` | backdrop 地图、权重轨、业务组合卡和 Tab 明细 | 合成页面；动态交互需对应网关 |
-| Dashboard 主题分析 | [ioc-opportunity-analysis](ioc-opportunity-analysis.json)，`/pages/ioc-opportunity-analysis` | 四组主题指标和每个组织 Tab 内的多表 | 合成数据；筛选下推需对应查询服务 |
-| Dashboard 筛选清单 | [ioc-opportunity-list](ioc-opportunity-list.json)，`/pages/ioc-opportunity-list` | 页面筛选与全宽主表，完整列和表格操作 | 合成页面；查询分页依赖网关 |
-| Dashboard 对象详情 | [ioc-project-detail](ioc-project-detail.json)，`/pages/ioc-project-detail` | hidden 工具栏、自有 reportHeader、概况／规范、预测／叙述 | 合成页面；对象参数与查询需项目提供 |
-| Report 经营月报 | [business-sdt-report-monthly](business-sdt-report-monthly.json)，`/pages/business-sdt-report-monthly` | 报告期间、总览／趋势、分层明细章节 | 业务查询；完整取数需真实 DQE，不由仿真保证 |
-| Report 分析简报 | [flow-analysis-report](flow-analysis-report.json)，`/pages/flow-analysis-report` | 指标／趋势／风险及客户、赛道、产业的阅读顺序 | 页面初始行供预览，真实查询另验 |
+| Dashboard 地图概览 | [ioc-project-overview](business/dashboard/ioc/project/ioc-project-overview.json)，`/pages/ioc-project-overview` | backdrop 地图、权重轨、业务组合卡和 Tab 明细 | 合成页面；动态交互需对应网关 |
+| Dashboard 主题分析 | [ioc-opportunity-analysis](business/dashboard/ioc/opportunity/ioc-opportunity-analysis.json)，`/pages/ioc-opportunity-analysis` | 四组主题指标和每个组织 Tab 内的多表 | 合成数据；筛选下推需对应查询服务 |
+| Dashboard 筛选清单 | [ioc-opportunity-list](business/dashboard/ioc/opportunity/ioc-opportunity-list.json)，`/pages/ioc-opportunity-list` | 页面筛选与全宽主表，完整列和表格操作 | 合成页面；查询分页依赖网关 |
+| Dashboard 对象详情 | [ioc-project-detail](business/dashboard/ioc/project/ioc-project-detail.json)，`/pages/ioc-project-detail` | hidden 工具栏、自有 reportHeader、概况／规范、预测／叙述 | 合成页面；对象参数与查询需项目提供 |
+| Report 经营月报 | [business-sdt-report-monthly](business/report/sdt/business-sdt-report-monthly.json)，`/pages/business-sdt-report-monthly` | 报告期间、总览／趋势、分层明细章节 | 业务查询；完整取数需真实 DQE，不由仿真保证 |
+| Report 分析简报 | [flow-analysis-report](business/report/flow/flow-analysis-report.json)，`/pages/flow-analysis-report` | 指标／趋势／风险及客户、赛道、产业的阅读顺序 | 页面初始行供预览，真实查询另验 |
 
 自动验收直接读取上表页面，核对提炼后的布局、权重轨与完整嵌套组件树，并在仓外复制安装 Skill 检查链接和知识哈希。原页面的 `reportHeader`、Tab、多筛选保留，特别验证“详情页含 reportHeader 仍为 Dashboard”。创作行为复测分别覆盖未确认时只提问、明确指定 Dashboard 后显式写 layout、确认后沿分支范式生成；确认状态属于会话，不写入页面 JSON。
 
@@ -103,12 +128,12 @@
 
 ### 指标卡与文字混排、内容导航
 
-- [metric-card-equation](metric-card-equation.json)，入口 `/pages/metric-card-equation`：内联合成数据，无需额外服务。观察等号、加号与指标卡的同行排列，再查看文字和组件的 `layout.span`；符号只表达展示关系，不声明计算公式。
-- [ioc-content-navigation](ioc-content-navigation.json)，入口 `/pages/ioc-content-navigation`：内联合成数据，无需额外服务。在分区 A 翻页，切到 B 再返回 A，检查局部状态保留。它是匿名导航样例，不是 IOC 来源页面。
+- [metric-card-equation](capabilities/layout/metric-card-equation.json)，入口 `/pages/metric-card-equation`：内联合成数据，无需额外服务。观察等号、加号与指标卡的同行排列，再查看文字和组件的 `layout.span`；符号只表达展示关系，不声明计算公式。
+- [ioc-content-navigation](capabilities/navigation/ioc-content-navigation.json)，入口 `/pages/ioc-content-navigation`：内联合成数据，无需额外服务。在分区 A 翻页，切到 B 再返回 A，检查局部状态保留。它是匿名导航样例，不是 IOC 来源页面。
 
 ### Platform 搭建画布体验
 
-- 页面：[platform-canvas-experience.json](platform-canvas-experience.json)，页面试验场「验收样例 → 画布交互验收（静态演示）」。全部为静态演示文字，无 DQE、Relay 或真实业务数据依赖。
+- 页面：[platform-canvas-experience.json](platform/platform-canvas-experience.json)，页面试验场「验收样例 → 画布交互验收（静态演示）」。全部为静态演示文字，无 DQE、Relay 或真实业务数据依赖。
 - 操作入口：在 Platform 页面搭建工作台打开该页面；浏览器自动验收直接读取此文件，使用受控页面资产与保存端口运行 `node apps/platform/tests/workbench/canvas-experience-browser.mjs`。试验场仅展示页面，搭建操作须在 Platform 验收。
 - 悬停或键盘聚焦组件后，右上角显示拖动手柄；选中后显示蓝色微渐变细框，组件旁的就地操作条提供上移、下移与删除。拖动手柄可同分区重排或跨分区移动；整行组件按上/下半区判断前后，同行组件按左/右半区判断。靠近滚动区边缘继续拖动可滚屏；结束或取消后清除落点。
 - 组件配置提供常用宽度、逐轨调节及展示属性，不再重复摘要卡或移动/删除按钮；页面设置独立呈现日期筛选配置。操作条跟随选择、尺寸和滚动，目标完全滚出视野后隐藏。选中组件按 Delete 可删除，输入框中的 Delete 不触发删除。
@@ -118,7 +143,7 @@
 
 ### 三层表头
 
-- 页面：[table-toolbar-demo.json](table-toolbar-demo.json)，入口：[三层表头示例](http://localhost:5173/pages/table-toolbar-demo)。目录中可搜索“三层表头”。
+- 页面：[table-toolbar-demo.json](capabilities/table/table-toolbar-demo.json)，入口：[三层表头示例](http://localhost:5173/pages/table-toolbar-demo)。目录中可搜索 `table-toolbar-demo`。
 - 数据：6 个区域的 `inline` 静态演示数据，无需 DQE；沿用原页 Report 布局及下方客户搜索、导出场景。
 - 初次打开：顶部表格显示三行表头，“经营指标 → 收入／利润 → 目标／实际”；区域跨三行，客户数跨两行，经营指标跨五列，收入和利润各跨两列。
 - 点击收入的“实际”列排序：升序首行为西北（420），降序首行为华东（1,320）；数据保持 6 行，表头结构保持三层。
@@ -126,14 +151,14 @@
 
 ### 表格点击与详情弹窗
 
-- 页面：[table-detail-overlay.json](table-detail-overlay.json)，试验场「功能演示」，直接打开 [表格点击与详情弹窗](http://localhost:5173/pages/table-detail-overlay)。
+- 页面：[table-detail-overlay.json](capabilities/table/table-detail-overlay.json)，试验场「功能演示」，直接打开 [表格点击与详情弹窗](http://localhost:5173/pages/table-detail-overlay)。
 - 数据：2026年9月的内联合成数据，无需 DQE。主表汇总8笔订单、3笔待交付、0笔异常，金额合计861,000元；三个列入口分别引用预先准备的完整快照。
 - 点击「订单数（弹窗）」的8：居中显示全部订单表格，每页5笔；支持搜索、原始金额排序与Excel导出。点击「待交付（抽屉）」的3：右侧只显示3笔待交付订单。点击「异常订单（空结果）」的0：打开空表格。关闭按钮、Esc与背板可关闭浮层，URL保持不变。
 - 此页仅复用现有 `openDetail.view` 和 `detailViews.mode: snapshot`，不新增协议或运行时能力。它不证明按任意点击行动态过滤、query详情传参或真实DQE取数；查询取消与迟到响应由既有详情视图测试覆盖。
 
 ### 多查询表格
 
-- 页面：[multi-query-table.json](multi-query-table.json)，试验场「验收样例 → 多查询表格验收（仿真）」。
+- 页面：[multi-query-table.json](capabilities/table/multi-query-table.json)，试验场「验收样例 → 多查询表格验收（仿真）」。
 - 启动：在仓库根运行 `pnpm dev:dqe`，打开 [多查询表格](http://localhost:5173/pages/multi-query-table)。该命令同时启动 DQE Sim 与页面试验场；保持统计月份为 2026-09。
 - 数据：8 个代表处的合成数据，仅支持本地 DQE Sim；页面无真实业务查询或能力证明。顶部月份改变到其他期间会显式失败。
 
@@ -168,14 +193,14 @@
 
 ### 时间选择统一入口
 
-时间选择控件统一默认禁止未来时间；表头日期范围在 [IOC 机会点清单](ioc-opportunity-list.json) 的“机会点创建时间／进展更新时间”列验证。
+时间选择控件统一默认禁止未来时间；表头日期范围在 [IOC 机会点清单](business/dashboard/ioc/opportunity/ioc-opportunity-list.json) 的“机会点创建时间／进展更新时间”列验证。
 
 时间选择集中在两个页面，均位于页面试验场「功能演示」，可按“时间选择”搜索；不再为测试变体新增独立演示卡片。
 
 | 页面 | 入口 | 覆盖能力 |
 |---|---|---|
-| [Report 时间选择与联动](report-date-filter-example.json) | `/pages/report-date-filter-example` | 单月、月份范围、标题及正文联动、清空、参数初值、禁止未来月份及日期 |
-| [Dashboard 期间选择与查询](dashboard-period-filter.json) | `/pages/dashboard-period-filter` | 统一页头中的单年份筛选，以及完整自然年查询与未绑定查询对照 |
+| [Report 时间选择与联动](capabilities/filters/report-date-filter-example.json) | `/pages/report-date-filter-example` | 单月、月份范围、标题及正文联动、清空、参数初值、禁止未来月份及日期 |
+| [Dashboard 期间选择与查询](capabilities/filters/dashboard-period-filter.json) | `/pages/dashboard-period-filter` | 统一页头中的单年份筛选，以及完整自然年查询与未绑定查询对照 |
 
 Report 页面按三节组织，控件相互独立：
 
@@ -197,7 +222,7 @@ Report 页面按三节组织，控件相互独立：
 
 ### Dashboard 图表独立筛选
 
-- 页面：[chart-local-filter-page.json](chart-local-filter-page.json)，页面试验场「验收样例」，入口 `/pages/chart-local-filter-page`。启动 `pnpm dev:dqe`，数据由本地 DQE Sim 提供，为固定合成数据。
+- 页面：[chart-local-filter-page.json](capabilities/chart/chart-local-filter-page.json)，页面试验场 `capabilities/chart/` 目录，入口 `/pages/chart-local-filter-page`。启动 `pnpm dev:dqe`，数据由本地 DQE Sim 提供，为固定合成数据。
 - 四张图左上角分别显示圆角单选按钮组，选中项黑底白字：订单默认中国区、收入默认海外、渠道默认亚太、地图默认中国区。每个选项的显示名称与查询值可在页面创作时配置，例如“中国区”对应 CN、“海外”对应 OVERSEAS。
 - 将订单切到海外：只重新查询订单，图中从国内一组/二组变为海外一组/二组；其他三个筛选和全区域对照图保持原值。收入与地图也能独立切换。
 - 渠道切到“欧洲（空结果）”：图表为空，但标题和筛选仍可操作；切回亚太恢复两组数据。查询失败同样保留筛选。
@@ -207,8 +232,8 @@ Report 页面按三节组织，控件相互独立：
 
 ### 商务 SDT 报告与单月筛选
 
-- 原页面：[business-sdt-report.json](business-sdt-report.json)，入口 `/pages/business-sdt-report`，保留人工维护的固定2026年10月报告。
-- 新页面：[business-sdt-report-monthly.json](business-sdt-report-monthly.json)，入口 [商务SDT报告（单月筛选）](http://localhost:5173/pages/business-sdt-report-monthly)，目录「经营分析」。从当前原页复制，保留全部图表、表格和业务查询口径。
+- 原页面：[business-sdt-report.json](business/report/sdt/business-sdt-report.json)，入口 `/pages/business-sdt-report`，保留人工维护的固定2026年10月报告。
+- 新页面：[business-sdt-report-monthly.json](business/report/sdt/business-sdt-report-monthly.json)，入口 [商务SDT报告（单月筛选）](http://localhost:5173/pages/business-sdt-report-monthly)，目录 `business/report/sdt/`。从当前原页复制，保留全部图表、表格和业务查询口径。
 - 在报告顶部「报告月份」提交2026-09，报告主标题和「统计月份」同步变化；15个查询声明均绑定月份；实际呈现的14个查询联动，其中11个取所选月，3个趋势取含所选月的近6个月。2026-09对应2026-04～2026-09，2020-06对应2020-01～2020-06。
 - 月份必选，最早2020-06，无上限。日历禁用2020年1—5月和更早年份；手工提交2020-05或非法月份时显示错误，标题、已应用月份与查询保持不变。URL `?report-month=2020-06` 可初始化，越界URL回退合法默认月2026-10。
 - 原页另有未被组件消费的 `rep-office-efficiency` 查询声明，新页保留并配置月份绑定，运行时按既有规则不主动执行。
@@ -219,13 +244,13 @@ Report 页面按三节组织，控件相互独立：
 
 ### 业务月份限制
 
-[商务SDT终极版](sdt/commercial-sdt-efficiency-ultimate-monthly.json)保留为独立业务报告，默认2026-10并禁止未来月份，报告期间和全部查询继续跟随月份；主标题保持“商务SDT行权效率专项报告”。业务页需要真实 DQE，本地选择器验收不证明业务取数成功。通用月份／日期限制请使用上方 Report 时间选择入口。
+[商务SDT终极版](business/report/sdt/commercial-sdt-efficiency-ultimate-monthly.json)保留为独立业务报告，默认2026-10并禁止未来月份，报告期间和全部查询继续跟随月份；主标题保持“商务SDT行权效率专项报告”。业务页需要真实 DQE，本地选择器验收不证明业务取数成功。通用月份／日期限制请使用上方 Report 时间选择入口。
 
 ## 查询与数据处理
 
 ### 查询数值容错
 
-- 页面：[query-numeric-tolerance.json](query-numeric-tolerance.json)，试验场「验收样例」，或直接打开 [数值容错](http://localhost:5173/pages/query-numeric-tolerance)。
+- 页面：[query-numeric-tolerance.json](capabilities/query/query-numeric-tolerance.json)，试验场 `capabilities/query/` 目录，或直接打开 [数值容错](http://localhost:5173/pages/query-numeric-tolerance)。
 - 数据：八行固定合成数据，含正常数值、占位符、null、数字字符串、真实零、负数、布尔和空串；首屏使用 initial，本地动态查询由 DQE Sim 提供相同原始值。
 - 操作：启动 `pnpm dev:dqe` 后打开页面；表格应保留八行，数值依次为 10.0、—、—、12.5、0.0、-4.0、—、—，完成率按相同缺失规则计算。折线保留 10、12.5、0、-4 四个有效点及其间缺口。排序后八行仍保留。两张指标卡分别显示缺失占位符和真实的 0%，缺失值进度环不能显示 0%。
 - 动态链路：自动行为测试直接读取此页面，通过真实网关和 Sim 执行函数验证无 initial 的动态结果、告警计数、计算、保存与重开；内嵌首屏不请求 DQE。
@@ -236,11 +261,11 @@ Report 页面按三节组织，控件相互独立：
 
 ### 商务SDT级联查询保留场景
 
-[business-sdt-cascade-example.json](business-sdt-cascade-example.json)，试验场「验收样例」。它保存原有Top5项目→阶段明细的完整配置，替代人工业务报告作为自动级联与展示格式的回归输入。运行本地DQE Sim后，9/10月HTTP验收检查两条独立链使用各自商务编号，并验证导出与屏幕结果一致；不证明真实业务数据。
+[business-sdt-cascade-example.json](business/report/sdt/business-sdt-cascade-example.json)，试验场 `business/report/sdt/` 目录。它保存原有Top5项目→阶段明细的完整配置，替代人工业务报告作为自动级联与展示格式的回归输入。运行本地DQE Sim后，9/10月HTTP验收检查两条独立链使用各自商务编号，并验证导出与屏幕结果一致；不证明真实业务数据。
 
 ### 查询分页、排序与级联
 
-[query-result-where-page](query-result-where-page.json)，入口 `/pages/query-result-where-page`，使用本地 DQE Sim。改变主表任意列排序后回到第一页，翻页后两张下游评估表随当前窗口项目更新；大额与小额条件各自过滤输入。下游读取当前查询窗口，不是全部 80 个项目。配置解读见[查询定义与绑定](../docs/page-metadata/queries-and-bindings.md)。
+[query-result-where-page](capabilities/query/query-result-where-page.json)，入口 `/pages/query-result-where-page`，使用本地 DQE Sim。改变主表任意列排序后回到第一页，翻页后两张下游评估表随当前窗口项目更新；大额与小额条件各自过滤输入。下游读取当前查询窗口，不是全部 80 个项目。配置解读见[查询定义与绑定](../docs/page-metadata/queries-and-bindings.md)。
 
 ## 导航与页面参数
 
@@ -256,7 +281,7 @@ Report 页面按三节组织，控件相互独立：
 
 ### Report 内置 PDF 下载
 
-[report-pdf-export.json](report-pdf-export.json)（页面 id：`report-pdf-export`，页面试验场 `/pages/report-pdf-export`）使用纯 inline 合成数据，无外部网关。顶部更改月份后点击“下载经营报告”，预期下载包含全部45行的多页PDF，文件名和正文期间使用点击时已应用的月份；日期与下载工具带不进入PDF。第二个页头不配置日期，`pdfExport: {}` 显示默认“下载 PDF”；最后一个页头未配置导出，不显示按钮。点击任意按钮均下载整页，文件名取触发按钮所在页头的配置或标题。
+[report-pdf-export.json](capabilities/export/report-pdf-export.json)（页面 id：`report-pdf-export`，页面试验场 `/pages/report-pdf-export`）使用纯 inline 合成数据，无外部网关。顶部更改月份后点击“下载经营报告”，预期下载包含全部45行的多页PDF，文件名和正文期间使用点击时已应用的月份；日期与下载工具带不进入PDF。第二个页头不配置日期，`pdfExport: {}` 显示默认“下载 PDF”；最后一个页头未配置导出，不显示按钮。点击任意按钮均下载整页，文件名取触发按钮所在页头的配置或标题。
 
 生成失败、实例更新/销毁、并发和宽内容由对应行为回归覆盖；高于一页的块按原布局连续切片。图片和PDF编码在Worker，DOM按时间预算分批处理；无取消入口，旧withExportView已移除。浏览器需要Worker/ImageBitmap/OffscreenCanvas及允许Blob Worker的CSP。合成数据验收不代表真实DQE、内网浏览器或部署已验证。
 按钮使用白底描边，准备／生成状态在按钮内显示，成功后恢复配置名称；失败可重试，悬停可看原因。自动回归检查 Worker、实际文件和临时资源清理。
@@ -271,7 +296,7 @@ Report 页面按三节组织，控件相互独立：
 
 ## 开发环境
 
-- 页面：[platform-canvas-experience.json](platform-canvas-experience.json)，页面试验场「验收样例 → 画布交互验收（静态演示）」。全部为静态演示文字，无 DQE、Relay 或真实业务数据依赖。
+- 页面：[platform-canvas-experience.json](platform/platform-canvas-experience.json)，页面试验场「验收样例 → 画布交互验收（静态演示）」。全部为静态演示文字，无 DQE、Relay 或真实业务数据依赖。
 - 操作入口：在 Platform 页面搭建工作台打开该页面；浏览器自动验收直接读取此文件，使用受控页面资产与保存端口运行 `node apps/platform/tests/workbench/canvas-experience-browser.mjs`。试验场仅展示页面，搭建操作须在 Platform 验收。
 - 悬停或键盘聚焦组件后，右上角显示拖动手柄；选中后显示蓝色微渐变细框，组件旁的就地操作条提供上移、下移与删除。拖动手柄可同分区重排或跨分区移动；整行组件按上/下半区判断前后，同行组件按左/右半区判断。靠近滚动区边缘继续拖动可滚屏；结束或取消后清除落点。
 - 组件配置提供常用宽度、逐轨调节及展示属性，不再重复摘要卡或移动/删除按钮；页面设置独立呈现日期筛选配置。操作条跟随选择、尺寸和滚动，目标完全滚出视野后隐藏。选中组件按 Delete 可删除，输入框中的 Delete 不触发删除。
@@ -299,7 +324,7 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 
 这是页面试验场与平台的开发服务器配置，不新增页面能力或协议字段，页面文档与本地创作 Skill 沿用当前版本。配置与 hosts/HTTPS 步骤见[试验场说明](../apps/playground/README.md#windows-本地连接-gray-cloudioc)与[平台说明](../apps/platform/README.md)。
 
-- 复用已在目录注册的完整业务页面 [business-sdt-report-monthly.json](business-sdt-report-monthly.json)，入口 `https://local.cloudioc.huawei.com/pages/business-sdt-report-monthly`；它包含业务查询，不承诺 gray 环境具备对应数据集和权限。
+- 复用已在目录注册的完整业务页面 [business-sdt-report-monthly.json](business/report/sdt/business-sdt-report-monthly.json)，入口 `https://local.cloudioc.huawei.com/pages/business-sdt-report-monthly`；它包含业务查询，不承诺 gray 环境具备对应数据集和权限。
 - Windows 填入有效 cftk 并打开开关后，运行 `pnpm dev:playground`，加载页面并提交报告月份。动态查询经本地 DQE 路径代理到 gray 的同路径；浏览器和上游请求均带配置中的 cftk，可在 Network 的 Request Headers 查看。请求体及页面绑定沿用原规则；静态构建不注入 cftk。仅该开发代理设置 `secure: false`。
 - Windows 启用但 cftk 为空或包含无效换行时启动失败；关闭开关恢复原有仿真代理。macOS/Linux 即使打开开关也保持 HTTP 5173 和仿真代理。灰度服务的查询拒绝或鉴权失败沿现有错误处理呈现，不回退到仿真数据。
 - 可选 `PLAYGROUND_CLOUDIOC_COOKIE` 将完整 Cookie 请求头由 Vite 代理发往 gray；留空保留浏览器 Cookie，配置后覆盖整个上游 Cookie 头。Cookie 不注入浏览器，更新后须重启；非法 HTTP 头字符导致启动失败且错误不回显凭据。
@@ -309,13 +334,13 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 
 ## 图表高级呈现扩展（6.32）
 
-入口：[chart-echarts-option-page.json](chart-echarts-option-page.json)，页面 id 与文件名一致，Playground 注册于验证分组。全部为 inline 演示数据，无外部查询依赖。
+入口：[chart-echarts-option-page.json](capabilities/chart/chart-echarts-option-page.json)，页面 id 与文件名一致，Playground 注册于验证分组。全部为 inline 演示数据，无外部查询依赖。
 
 查看柱图声明序/stackOrder 的颜色对应、折线平滑与标签模板、饼图半径数组；调整容器宽度并下载 PDF/PNG。移除 echartsOption 后应恢复普通属性效果。缺失行不绘成零，真实零保留。页面不出现诊断文案；错误、单次回退和导出终止由浏览器故障注入用例验证，详情仅 console；保护路径拒绝由契约向量验证。静态/浏览器证据不等于真实 DQE 或真实模型验收。
 
 ## URL 初始化 Tab 与跨页链接
 
-- 入口 `/pages/tab-url-source`（[来源页](tab-url-source.json)）及 `/pages/tab-url-initialization`（[目标页](tab-url-initialization.json)）。使用内联合成数据，无需 DQE 服务。
+- 入口 `/pages/tab-url-source`（[来源页](capabilities/navigation/tab-url-source.json)）及 `/pages/tab-url-initialization`（[目标页](capabilities/navigation/tab-url-initialization.json)）。使用内联合成数据，无需 DQE 服务。
 - 来源页点击“固定打开明细与已关闭工单”，目标两个独立容器分别选中“销售明细”和“已关闭工单”；URL 保留 `#tabs` 锚点，引擎不额外负责定位滚动。
 - 点击“页面参数打开明细”或表格中的当前行链接，核对 `sales-tab` 来自来源页参数或行字段，目标选中对应页签。参数绑定不自动携带其他来源页输入。
 - 直接打开目标页时，销售容器选中已声明默认“销售概览”（不是第一项），工单容器选中第一项“未关闭工单”。来源页的无效、空值、重复值链接均回退同样的默认页签。
@@ -334,7 +359,7 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 
 ## 指标卡前置连接文字
 
-入口：`/pages/metric-card-equation`（`pages/metric-card-equation.json`），`pnpm dev:playground` 后在页面目录选择“指标卡与文字混排｜收入构成”。无需 URL 参数、数据网关或 DQE，使用静态演示数据。
+入口：`/pages/metric-card-equation`（`pages/capabilities/layout/metric-card-equation.json`），`pnpm dev:playground` 后在页面目录选择“指标卡与文字混排｜收入构成”。无需 URL 参数、数据网关或 DQE，使用静态演示数据。
 
 观察四张 span 3 指标卡在默认 12 列中等宽同行，`=`、`+` 和“其中”按内容占宽，两侧各为 8 CSS px；缩小集成应用容器时转为单列，文字在两卡之间且纵向双侧仍为 8px。宽度不足的部分跨列组合同样不能撑出页面。页面搭建中编辑前置文字和间距，保存重开仍保留；移动/删除打断相邻关系后只清理失效前缀，撤销一起恢复。
 
@@ -400,7 +425,7 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 
 ## 表格搜索字段切换（6.42）
 
-- 页面：[table-search-options-demo.json](table-search-options-demo.json)，目录「Dashboard · 看板 → 功能演示」，入口 `/pages/table-search-options-demo`，不需要 URL 参数。使用标准 Dashboard 页头、满宽画布与表格卡片；右上角保留字段选择、搜索和导出。
+- 页面：[table-search-options-demo.json](capabilities/table/table-search-options-demo.json)，目录「Dashboard · 看板 → 功能演示」，入口 `/pages/table-search-options-demo`，不需要 URL 参数。使用标准 Dashboard 页头、满宽画布与表格卡片；右上角保留字段选择、搜索和导出。
 - 根目录运行 `pnpm dev:dqe`，同时启动页面试验场和 DQE Sim。第一、三张表使用 inline 合成数据，第二张表使用真实 HTTP 链路访问本地 DQE Sim；均不包含真实业务数据。
 - 默认选「项目名称」。输入「星河项目」并 Enter：等值表匹配2行，不含「星河项目二期」；旧包含搜索则匹配更多行。
 - 保留「星河项目」切到「责任人」：立即匹配责任人为该文本的「其他项目」记录；切换 placeholder。输入「00123」后切到「项目编码」：立即匹配前导零完整编码。清空保留「项目编码」，恢复7行并回第一页。
@@ -424,7 +449,7 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 
 ## 表格列筛选候选值
 
-入口：[table-column-candidates.json](table-column-candidates.json)，Playground /pages/table-column-candidates；Dashboard 布局，复用统一工具栏与独立表格面板；无 URL 参数，pnpm dev:playground 即可运行。64行内联合成数据，不请求真实 DQE。
+入口：[table-column-candidates.json](capabilities/table/table-column-candidates.json)，Playground /pages/table-column-candidates；Dashboard 布局，复用统一工具栏与独立表格面板；无 URL 参数，pnpm dev:playground 即可运行。64行内联合成数据，不请求真实 DQE。
 
 1. 打开第一张表的代表处筛选，当前表格每页仅5行，候选首先显示50项，点击“加载更多”可取得64项。
 2. 搜索候选“办事处64”，表格本身仍保持64行；勾选该项后表格变成1行。清空候选搜索后仍可选其他代表处。
@@ -440,7 +465,7 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 
 ### 独立筛选按钮组
 
-- 页面：[filter-group-state-page.json](filter-group-state-page.json)，已注册页面试验场验收目录，直接入口 `/pages/filter-group-state-page`。启动 `pnpm dev:dqe` 使用本地 DQE Sim 合成数据。
+- 页面：[filter-group-state-page.json](capabilities/filters/filter-group-state-page.json)，已注册页面试验场验收目录，直接入口 `/pages/filter-group-state-page`。启动 `pnpm dev:dqe` 使用本地 DQE Sim 合成数据。
 - 切换“直营 / 加盟”，两张带符号指标卡和趋势图同时更新；全区域对照不变。点击已选项不重复提交。
 - 页头“业务范围”切换到“海外业务”，独立按钮组和趋势分别按自身条件隐藏；两张指标卡继续显示原已选口径。切回“国内业务”恢复已有按钮选择，不清空条件，不额外取数。
 - 组合卡内的区域组只通过 card-region 绑定影响卡内查询。切换后复制 URL 或重新加载，两个按钮组分别恢复；非法或多值 URL 使用各自默认项。
@@ -461,7 +486,7 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 
 ### 图表卡内左侧按钮与右侧下拉（6.47）
 
-- 页面：[filter-group-page.json](filter-group-page.json)，入口 `/pages/filter-group-page`；替换原独立筛选示例的主入口，原型入口 `/prototypes/chart-filter-toolbar` 自动转入本页。原显隐与指标卡场景移至 `/pages/filter-group-state-page`。
+- 页面：[filter-group-page.json](capabilities/filters/filter-group-page.json)，入口 `/pages/filter-group-page`；替换原独立筛选示例的主入口，原型入口 `/prototypes/chart-filter-toolbar` 自动转入本页。原显隐与指标卡场景移至 `/pages/filter-group-state-page`。
 - 启动 `pnpm dev:dqe` 与 `pnpm dev:playground`，使用 DQE Sim 合成数据。既有筛选器演示服务重启后加载新增夹具；不需要业务服务或真实权限。
 - 左上在营业收入／订单量间切换，右上在全部区域／华东／华南间选择。两个控件共同过滤图表和合计查询；宽屏左右对齐，窄屏按组合卡布局换行。
 - 初始全部区域收入合计 1,710 万元，切换订单合计 5,579 笔，选择华东为 3,095 笔；切回收入为 951 万元。两项选择写入 URL，刷新恢复；非法或多值输入回退各自默认项。只读时禁用两个控件，静态导出仅显示已选 label。

@@ -3,7 +3,7 @@ import {describe,it,expect} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
 import {createFilterState,initialFilterValues} from '../src/filter-state';
 import type {FilterValues} from '../src/filter-state';
-const load=()=>{const result=parsePage(JSON.parse(readFileSync('pages/ioc-header-currency-demo.json','utf8')));if(!result.ok)throw Error(JSON.stringify(result.errors));return result.page;};
+const load=()=>{const result=parsePage(JSON.parse(readFileSync('pages/capabilities/ioc-header/scenarios/ioc-header-currency-demo.json','utf8')));if(!result.ok)throw Error(JSON.stringify(result.errors));return result.page;};
 describe('amount coordinator',()=>{
  it('clears amount atomically with currency, waits explicit confirmation, and rejects an entire invalid group',()=>{
   const page=load(),state=createFilterState(initialFilterValues(page.filters??[]),page.filters);let updates=0;let values:FilterValues=initialFilterValues(page.filters??[]);state.subscribe(next=>{updates++;values=next;});

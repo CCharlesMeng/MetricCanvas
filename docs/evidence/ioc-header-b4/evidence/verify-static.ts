@@ -1,3 +1,4 @@
+import { pageFilesById } from '../../../../tools/scripts/page-files.mjs';
 import {createServer} from 'vite';
 import {svelte} from '@sveltejs/vite-plugin-svelte';
 import {readFileSync,writeFileSync} from 'node:fs';
@@ -10,7 +11,7 @@ try{
  const {render}=await server.ssrLoadModule('svelte/server');const {default:View}=await server.ssrLoadModule('/packages/engine/runtime-ui/src/ExportView.svelte');
  const facts={contextRevision:'u1',timeZone:'Asia/Shanghai',periods:{sales:{status:'ready' as const,granularity:'month' as const,latest:'2026-10',latestComplete:'2026-09',refreshedAt:'2026-10-19T02:00:00Z'}}};
  for(const name of ['time-modes','availability']){
-  const raw=JSON.parse(readFileSync(`pages/ioc-header-${name}-demo.json`,'utf8'));const parsed=parsePage(raw);if(!parsed.ok)throw Error(JSON.stringify(parsed));
+  const raw=JSON.parse(readFileSync(pageFilesById('pages').get(`ioc-header-${name}-demo`)!,'utf8'));const parsed=parsePage(raw);if(!parsed.ok)throw Error(JSON.stringify(parsed));
   const filters=initialFilterValues(parsed.page.filters??[],new Date(2026,9,19),facts);if(name==='time-modes')filters.set('period',{type:'timeRange',mode:'isoWeek',from:'2026-10-05',to:'2026-10-11'});
   const page=periodFactPage(filterTextPage(parsed.page,collectFilterTextValueReferences(raw),filters),facts,0),state={page,currentYear:2026,displayInputs:facts,filterRevision:0,filters,snapshots:new Map([['bound',{status:'ready',rows:[{scope:name==='time-modes'?'2026-10-05 至 2026-10-11':'2026-09',count:1}]}]]),tables:{},headerFilters:{},summaries:{}};
   const html=render(View,{props:{state,width:1024,padding:'0px',gap:'16px'}}).body;

@@ -1,7 +1,9 @@
+import { fileURLToPath } from 'node:url';
+import { pageFilesById } from '../../../../tools/scripts/page-files.mjs';
 import {readFileSync} from 'node:fs';
 import {expect,test} from '@playwright/test';
 
-const documents=Object.fromEntries(['report','dashboard'].map(layout=>[layout,JSON.parse(readFileSync(new URL(`../../../../pages/${layout}-title-styles.json`,import.meta.url),'utf8'))]));
+const documents=Object.fromEntries(['report','dashboard'].map(layout=>[layout,JSON.parse(readFileSync(pageFilesById(fileURLToPath(new URL('../../../../pages', import.meta.url))).get(`${layout}-title-styles`)!,'utf8'))]));
 
 for(const width of [1440,390]) {
   test(`${width} 标题按Report和Dashboard分别呈现，plain不回退共用标题`,async({page})=>{

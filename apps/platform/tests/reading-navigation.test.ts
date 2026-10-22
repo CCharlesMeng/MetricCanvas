@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs';
 import {createReadingRuntimeNavigation} from '../src/lib/integration/reading-navigation';
 import type {PlatformServices} from '../src/lib/integration/services';
 it('translates canonical reading URLs, projects actual target inputs and preserves repeated explicit values',async()=>{
- const document=JSON.parse(readFileSync('pages/ioc-header-navigation-detail-demo.json','utf8'));
+ const document=JSON.parse(readFileSync('pages/capabilities/ioc-header/scenarios/ioc-header-navigation-detail-demo.json','utf8'));
  const navigate=vi.fn(async()=>true),replaceSearch=vi.fn();
  const services={navigation:{base:'/metrics',current:()=>new URL('https://portal.test/metrics/manage/pages/source?resource=r1'),navigate,replaceSearch},pageAssets:{resolve:vi.fn(async()=>({pageId:document.id,resourceId:'target-r'})),read:vi.fn(async()=>({pageId:document.id,document}))}} as unknown as Pick<PlatformServices,'navigation'|'pageAssets'>;
  const adapter=createReadingRuntimeNavigation(services),href='/pages/'+document.id+'?project-id=P&project-name=N&origin=O&regions=north&regions=south#title';

@@ -5,7 +5,7 @@ import type { EffectiveQuery, DataSnapshot } from '@metriccanvas/page/internal';
 import { createFilterState, initializePageParams, orchestrate, pageParamSearch, resolvePageParams } from '../src';
 import { effectiveDqeItem } from '../../data-gateway/src/dqe';
 
-const document = () => JSON.parse(readFileSync('pages/flow-analysis-report-params.json', 'utf8'));
+const document = () => JSON.parse(readFileSync('pages/business/report/flow/flow-analysis-report-params.json', 'utf8'));
 function parse(raw: unknown): Page {
   const parsed = parsePage(raw);
   if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));

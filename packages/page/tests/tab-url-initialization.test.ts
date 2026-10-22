@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import fixture from '../../../pages/tab-url-initialization.json';
-import source from '../../../pages/tab-url-source.json';
+import fixture from '../../../pages/capabilities/navigation/tab-url-initialization.json';
+import source from '../../../pages/capabilities/navigation/tab-url-source.json';
 import { parsePage } from '../src';
 
 describe('Tab URL 初始化协议', () => {

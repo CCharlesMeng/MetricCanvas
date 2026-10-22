@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import scene from '../../../../pages/chart-echarts-option-page.json';
+import scene from '../../../../pages/capabilities/chart/chart-echarts-option-page.json';
 import { flattenPageComponents, parsePage, resolveDataSourceFields } from '@metriccanvas/page/internal';
 import type { MainDataSlots } from '../src/shared/component-data';
 import { barOption, barSeriesOrder } from '../src/components/bar-chart/options';

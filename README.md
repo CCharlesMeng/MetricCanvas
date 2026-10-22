@@ -91,7 +91,7 @@ Windows 连接 gray 时，两个应用均可在各自 `.env.local` 配置开关�
 ## 常用命令
 
 ```bash
-pnpm validate     # 校验 pages/*.json
+pnpm validate     # 递归校验 pages/**/*.json
 pnpm test         # 自动化测试
 pnpm design:facts # 重新抽取设计稿字面量(docs/design-facts/)
 pnpm check        # 各包 TypeScript 与 Svelte 检查(pnpm -r check)

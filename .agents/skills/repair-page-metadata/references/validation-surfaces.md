@@ -38,7 +38,7 @@
 单文档：
 
 ```bash
-pnpm exec tsx .agents/skills/repair-page-metadata/scripts/inspect-page-metadata.ts pages/demo.json
+pnpm exec tsx .agents/skills/repair-page-metadata/scripts/inspect-page-metadata.ts pages/capabilities/layout/demo.json
 ```
 
 页面目录：
@@ -47,7 +47,7 @@ pnpm exec tsx .agents/skills/repair-page-metadata/scripts/inspect-page-metadata.
 pnpm validate
 ```
 
-`packages/page/src/validate-cli.ts` 当前把位置参数当作目录，因此文档中的 `pnpm validate pages/demo.json` 不是可用的单文件入口；单文件使用本 skill 脚本。
+`packages/page/src/validate-cli.ts` 当前把位置参数当作目录，因此文档中的 `pnpm validate pages/capabilities/layout/demo.json` 不是可用的单文件入口；单文件使用本 skill 脚本。
 
 当前页面校验核心回归：
 

@@ -4,7 +4,7 @@ import type { EffectiveQuery, Row } from '@metriccanvas/page/internal';
 import inlineReportDocument from '../../../page/fixtures/contract-valid/inline-report.json';
 import mixedPageDocument from '../../../page/fixtures/contract-valid/mixed-page.json';
 import queryDashboardDocument from '../../../page/fixtures/contract-valid/query-dashboard.json';
-import tokensReportDocument from '../../../../pages/tokens-report.json';
+import tokensReportDocument from '../../../../pages/business/report/tokens/tokens-report.json';
 import { orchestrate, type PageDataSnapshots } from '../src/orchestrator';
 import type { DataGateway } from '../src/ports';
 

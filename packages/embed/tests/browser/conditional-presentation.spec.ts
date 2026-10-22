@@ -1,8 +1,10 @@
+import { fileURLToPath } from 'node:url';
+import { pageFilesById } from '../../../../tools/scripts/page-files.mjs';
 import { expect, test } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
 async function featureDocument(id: string) {
-  return JSON.parse(await readFile(new URL(`../../../../pages/${id}.json`,import.meta.url), 'utf8'));
+  return JSON.parse(await readFile(pageFilesById(fileURLToPath(new URL('../../../../pages', import.meta.url))).get(`${id}`)!, 'utf8'));
 }
 
 test('installed runtime projects the actual hierarchy page', async ({ page }) => {

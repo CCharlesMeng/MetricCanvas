@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import fixture from '../../../pages/multi-query-table.json';
+import fixture from '../../../pages/capabilities/table/multi-query-table.json';
 import {parsePage} from '../../../packages/page/src';
 import {createDqeGateway} from '../../../packages/data-execution/src/dqe';
 import {createSourceProgram,defaultSourceView,initialFilterValues} from '../../../packages/data-execution/src/runtime';
@@ -36,6 +36,6 @@ it('executes selection/fill, complete cross-source filters and complete export t
 it('the copy-ready real-acceptance CLI mechanics run against Sim without claiming real evidence',async()=>{
  const {execFile}=await import('node:child_process');const {promisify}=await import('node:util');
  const server=createDqeSimServer({logger:false});await new Promise<void>(resolve=>server.listen(0,'127.0.0.1',resolve));const address=server.address();if(!address||typeof address==='string')throw Error('server');
- try{const result=await promisify(execFile)(process.execPath,['--import','tsx','tools/scripts/verify-paged-join-real.ts','pages/multi-query-table.json','office-overview'],{env:{...process.env,METRICCANVAS_DQE_ENDPOINT:`http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`,METRICCANVAS_DQE_HEADERS:'{}'},timeout:60000});const receipt=JSON.parse(result.stdout);expect(receipt.status).toBe('PASS');expect(receipt.domainRows).toBe(8);expect(receipt.results.find((v:{case:string})=>v.case==='complete-export')).toMatchObject({rows:8,passed:true});}
+ try{const result=await promisify(execFile)(process.execPath,['--import','tsx','tools/scripts/verify-paged-join-real.ts','pages/capabilities/table/multi-query-table.json','office-overview'],{env:{...process.env,METRICCANVAS_DQE_ENDPOINT:`http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`,METRICCANVAS_DQE_HEADERS:'{}'},timeout:60000});const receipt=JSON.parse(result.stdout);expect(receipt.status).toBe('PASS');expect(receipt.domainRows).toBe(8);expect(receipt.results.find((v:{case:string})=>v.case==='complete-export')).toMatchObject({rows:8,passed:true});}
  finally{server.closeAllConnections();await new Promise<void>((resolve,reject)=>server.close(e=>e?reject(e):resolve()));}
 });

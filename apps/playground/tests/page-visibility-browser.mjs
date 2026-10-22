@@ -79,7 +79,7 @@ try{
  await page.evaluate(()=>window.Worker=window.visibilityWorker);
  // Public JS API receives the same source, without Playground-specific wiring.
  await page.goto(`${base}/pages/page-visibility-region-linkage`);
- const inputDocument=JSON.parse(await readFile(new URL('../../../pages/page-visibility-inputs.json',import.meta.url),'utf8'));
+ const inputDocument=JSON.parse(await readFile(new URL('../../../pages/capabilities/filters/page-visibility-inputs.json',import.meta.url),'utf8'));
  const embedModule='/@fs'+new URL('../../../packages/embed/src/index.ts',import.meta.url).pathname;
  await page.evaluate(async({document:metadata,embedModule})=>{
   const {mount}=await import(embedModule);

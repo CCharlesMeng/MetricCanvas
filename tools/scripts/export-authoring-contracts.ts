@@ -1,3 +1,4 @@
+import { pageFilesById } from './page-files.mjs';
 import { buildPublicationSchema } from '../../metriccanvas-authoring/contracts/authored/publication-contract.ts';
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
@@ -117,8 +118,9 @@ async function buildProductOutputs(): Promise<OutputMap> {
   }
 
   // Feature pages are the single source for both browser acceptance and exported examples.
+  const pageAssets = pageFilesById(path.join(repoRoot, 'pages'));
   for(const name of ['page-visibility-region-linkage','page-visibility-inputs','page-visibility-report','dashboard-title-styles','report-title-styles']) {
-    const content=await readFile(path.join(repoRoot,'pages',`${name}.json`),'utf8');
+    const content=await readFile(pageAssets.get(name)!,'utf8');
     const document=JSON.parse(content);const errors=validate(document);
     if(errors.length)throw Error(JSON.stringify(errors));
     outputs.set(`page/conformance/valid/${name}.json`,content);fixtures.set(name,document);

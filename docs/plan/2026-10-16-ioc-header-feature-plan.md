@@ -966,7 +966,7 @@ interface RuntimeViewStateHandle {
 
 `numberRange`新增constraints、units、presets；金额状态/URL/查询保存基本单位，输入与预设按显示scale仅换算一次。金额拒绝负数与非有限值，支持单边/全部，新金额默认严格双边，旧通用相等范围兼容。`metricByFilter`是查询的隐式选择依赖，与units的静态money币种逐项匹配。币种变化沿共用状态事务清金额，并继续等待明确确认范围；错误整组写入拒绝，无关查询继续。表格旧列排序/搜索/表头条件在case变化时清理，候选字段按已应用case准备；导出在首次异步前冻结case及条件，显示选择器未合法选择时禁止导出等待占位。
 
-实际验收页为`pages/ioc-header-currency-demo.json`，本地合成HTTP提供独立人民币/美元基本单位字段及两组同币种计算结果。已同步页面协议正文、能力门槛、正反契约、金额受控创建/更新与保存重开、字段选择列编辑、独立Skill、Bundle与六包仓外消费者。没有迁移已有业务页，没有新增默认可选操作，也未启用B6的IOC整页导出按钮；已有静态呈现与表格XLSX路径消费相同case。
+实际验收页为`pages/capabilities/ioc-header/scenarios/ioc-header-currency-demo.json`，本地合成HTTP提供独立人民币/美元基本单位字段及两组同币种计算结果。已同步页面协议正文、能力门槛、正反契约、金额受控创建/更新与保存重开、字段选择列编辑、独立Skill、Bundle与六包仓外消费者。没有迁移已有业务页，没有新增默认可选操作，也未启用B6的IOC整页导出按钮；已有静态呈现与表格XLSX路径消费相同case。
 
 证据入口：[B3验收](../evidence/ioc-header-b3/acceptance.md)、[B3结果](../evidence/ioc-header-b3/result.md)、[B3账本](../evidence/ioc-header-b3/alpha-tests.md)。可交互预览为`http://127.0.0.1:4200/pages/ioc-header-currency-demo`。本批本地实施不等于真实USD业务、DQE、CloudIOC、Relay、DS模型、门户、CI或部署验收；这些仍未运行。B4–B6及待审Condition/displayInputs保持原规划，原88项清单和期间语义不变。不提交、不推送。
 

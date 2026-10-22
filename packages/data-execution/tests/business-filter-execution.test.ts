@@ -1,3 +1,4 @@
+import { pageFilesById } from '../../../tools/scripts/page-files.mjs';
 import {readFileSync} from 'node:fs';
 import {describe,it,expect,vi} from 'vitest';
 import {createPageDataExecutor} from '../src/execute';
@@ -7,7 +8,7 @@ import {createSourceProgram} from '../src/source-program/session';
 import {composeEffectiveQuery} from '../src/effective-query';
 import {createCandidateGatewaySession} from '../src/candidate-session';
 import type {RuntimeDataGateway} from '../src/ports';
-const load=(kind:string)=>{const result=parsePage(JSON.parse(readFileSync(`pages/ioc-header-business-${kind}-demo.json`,'utf8')));if(!result.ok)throw Error(JSON.stringify(result.errors));return result.page;};
+const load=(kind:string)=>{const result=parsePage(JSON.parse(readFileSync(pageFilesById('pages').get(`ioc-header-business-${kind}-demo`)!,'utf8')));if(!result.ok)throw Error(JSON.stringify(result.errors));return result.page;};
 describe('B2 complete execution boundary',()=>{
   it('all-unrestricted omits only the dynamic enum predicate and capture/read share it',async()=>{
     const page=load('options'),values=initialFilterValues(page.filters??[]),source=page.dataSources.bound;if(source.source.type!=='query')throw Error();
@@ -57,7 +58,7 @@ describe('B2 complete execution boundary',()=>{
     expect(fetchDimensionValues).toHaveBeenCalledOnce();expect(fetchData).toHaveBeenCalledTimes(value==='real'?1:0);program.dispose();
   });
   it('a B2 page enum and an independent closed filter group share a query without requiring a candidate port',async()=>{
-    const doc=JSON.parse(readFileSync('pages/chart-local-filter-page.json','utf8'));doc.filters.push({id:'kind',type:'dimension',dimension:'kind',selection:{mode:'single'},options:[{value:'A',label:'A'}],default:['A']});
+    const doc=JSON.parse(readFileSync('pages/capabilities/chart/chart-local-filter-page.json','utf8'));doc.filters.push({id:'kind',type:'dimension',dimension:'kind',selection:{mode:'single'},options:[{value:'A',label:'A'}],default:['A']});
     doc.dataSources['orders-data'].source.query.filterBindings.kind={target:'dimension',queryField:'kind_code'};
     const parsed=parsePage(doc);if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));
     const fetchData=vi.fn(async()=>({rows:[]}));const program=createSourceProgram(parsed.page,{gateway:{fetchData}}),updates=[];
@@ -65,7 +66,7 @@ describe('B2 complete execution boundary',()=>{
     expect(fetchData).toHaveBeenCalledOnce();expect(updates.at(-1)?.snapshot.status).toBe('empty');program.dispose();
   });
   it.each(['denied','network'])('one-shot removes stale initial when B2 candidates are %s',async(kind)=>{
-    const page=JSON.parse(readFileSync('pages/ioc-header-business-tree-demo.json','utf8'));page.dataSources.bound.source.initial={totalCount:1,capturedAt:'2026-10-19T00:00:00Z',rows:[{ioc_header_scope:'STALE',ioc_header_count:1,department_code:null,office_code:null,model_code:null,legacy_path:null}]};
+    const page=JSON.parse(readFileSync('pages/capabilities/ioc-header/scenarios/ioc-header-business-tree-demo.json','utf8'));page.dataSources.bound.source.initial={totalCount:1,capturedAt:'2026-10-19T00:00:00Z',rows:[{ioc_header_scope:'STALE',ioc_header_count:1,department_code:null,office_code:null,model_code:null,legacy_path:null}]};
     const fetchData=vi.fn(async()=>({rows:[]}));
     const result=await createPageDataExecutor({gateway:{fetchData,async fetchFilterCandidates(){if(kind==='network')throw Object.assign(new Error('upstream private details'),{code:'DQE_NETWORK_ERROR'});return {kind:'denied'};}}}).execute(page);
     expect(result.dataSources.bound.source).not.toHaveProperty('initial');expect(fetchData).toHaveBeenCalledOnce();

@@ -6,7 +6,7 @@ import { formatValue } from '../../widgets/src/shared/value-format';
 
 const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 function load() {
-  const result = parsePage(JSON.parse(readFileSync(new URL('../../../../pages/ioc-project-detail.json', import.meta.url), 'utf8')));
+  const result = parsePage(JSON.parse(readFileSync(new URL('../../../../pages/business/dashboard/ioc/project/ioc-project-detail.json', import.meta.url), 'utf8')));
   if (!result.ok) throw new Error(JSON.stringify(result.errors));
   return result.page;
 }

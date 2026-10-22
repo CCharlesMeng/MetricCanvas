@@ -1,11 +1,10 @@
 import { chromium, expect } from '../../../packages/embed/node_modules/@playwright/test/index.mjs';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const base = process.env.PLAYGROUND_BASE_URL ?? 'http://127.0.0.1:5173';
 const output = process.argv[2] ?? '/tmp/metriccanvas-ioc-header-showcase';
-const catalog = JSON.parse(await readFile(new URL('../page-catalog.json', import.meta.url), 'utf8'));
-const entries = catalog.pages.filter(entry => entry.group === 'ioc-header');
+const entries = (await readdir(new URL('../../../pages/capabilities/ioc-header/scenarios/', import.meta.url))).filter(file => file.endsWith('.json')).map(file => ({ id: file.slice(0, -5), scenario: file.slice('ioc-header-'.length, -'-demo.json'.length) }));
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true, channel:'chrome' });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
@@ -16,16 +15,10 @@ const facts = { scenarios: [], capabilityItems: 0, filtering: false, catalogRetu
 async function fits(target = page) { expect(await target.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true); }
 
 try {
-  await page.goto(`${base}/#group-ioc-header`);
-  const collection = page.locator('section[aria-labelledby="group-ioc-header"]');
-  await expect(collection.locator('.page-card')).toHaveCount(1);
-  await page.getByRole('button', { name: /^IOC 公共页头/ }).click();
-  await page.getByRole('button', { name: /^功能演示/ }).click();
-  await expect(page.locator('.page-card')).toHaveCount(1);
-  await expect(collection).toContainText('15 个匹配场景');
-  await page.getByRole('searchbox').fill('ISO周');
-  await expect(collection).toContainText('1 个匹配场景');
-  await collection.getByRole('link').click();
+  await page.goto(`${base}/`);
+  await page.getByLabel('文件夹路径').selectOption('capabilities/ioc-header/scenarios');
+  await expect(page.locator('.page-card')).toHaveCount(15);
+  await page.goto(`${base}/ioc-header?scene=time-modes`);
   await expect(page.getByLabel('选择场景')).toHaveValue('time-modes');
   await page.reload();
   await expect(page.getByLabel('选择场景')).toHaveValue('time-modes');
@@ -35,13 +28,11 @@ try {
   await expect(page.getByLabel('选择场景')).toHaveValue('time-modes');
   facts.history = true;
   await page.getByRole('link', { name: /页面目录/ }).click();
-  await expect(page.getByRole('searchbox')).toHaveValue('ISO周');
-  await expect(page.getByRole('button', { name: /^IOC 公共页头/ })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('.page-card')).toHaveCount(1);
-  await page.locator('.collection-card').click();
-  await expect(page.getByLabel('选择场景')).toHaveValue('time-modes');
+  await expect(page.getByLabel('文件夹路径')).toHaveValue('capabilities/ioc-header/scenarios');
+  await expect(page.locator('.page-card')).toHaveCount(15);
   facts.catalogReturn = true;
   facts.filtering = true;
+  await page.goto(`${base}/ioc-header?scene=time-modes`);
 
   await page.getByRole('button', { name: '能力一览', exact: true }).click();
   const inventory = page.getByRole('region', { name: '页头能力一览' });

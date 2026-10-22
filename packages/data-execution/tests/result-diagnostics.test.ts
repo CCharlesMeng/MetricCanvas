@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { parsePage } from '@metriccanvas/page';
 import type { DataSnapshot, EffectiveQuery, QueryDataSource } from '@metriccanvas/page/internal';
-import fixture from '../../../pages/query-numeric-tolerance.json';
+import fixture from '../../../pages/capabilities/query/query-numeric-tolerance.json';
 import { checkOrdinaryRange, correctedPageIndex } from '../src/source-program/range-policy';
 import { computedSnapshots } from '../src/compute/snapshots';
 import { createSourceProgram } from '../src/source-program/session';

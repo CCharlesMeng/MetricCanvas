@@ -138,7 +138,7 @@ inline 和已声明完整且未截断的 query 从完整行集枚举；计算产
 
 沿用现有 NO_PERMISSION 等非成功码带非空数据的消费规则，随后独立检查字段、分页长度、去重总数及续页重复；HTTP和信封失败仍按现有规则处理。数据可消费不表示候选已经完整。
 
-可观察示例：table-column-candidates（pages/table-column-candidates.json），在 Playground 的 /pages/table-column-candidates 打开。使用64行内联合成数据，演示跨页候选、继续加载、搜索、多列联动、数字编码与两表隔离。远程编码通过合成网关契约测试；真实 DQE/Relay 尚待外部服务核验。产品决策与兼容例外见 ADR-0114。
+可观察示例：table-column-candidates（pages/capabilities/table/table-column-candidates.json），在 Playground 的 /pages/table-column-candidates 打开。使用64行内联合成数据，演示跨页候选、继续加载、搜索、多列联动、数字编码与两表隔离。远程编码通过合成网关契约测试；真实 DQE/Relay 尚待外部服务核验。产品决策与兼容例外见 ADR-0114。
 
 ## 自动序号列（6.48）
 

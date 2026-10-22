@@ -2,7 +2,7 @@
   import { RuntimeView } from '@metriccanvas/engine/ui';
   import { MetricCanvas, normalizeAuthoringDropTarget, type AuthoringComponentLocator, type AuthoringDraftSection, type AuthoringIntent } from '@metriccanvas/metric-canvas';
   import { document, gateway, validDocument } from './document';
-  import metricExample from '../../../../../pages/metric-card-equation.json';
+  import metricExample from '../../../../../pages/capabilities/layout/metric-card-equation.json';
 
   const params = new URLSearchParams(location.search);
   const layout = params.get('layout') === 'dashboard' ? 'dashboard' : 'report';

@@ -20,7 +20,7 @@
 
 ## 2. 商务SDT的请求与计算顺序
 
-页面[商务SDT报告](../pages/business-sdt-cascade-example.json)包含两条独立的链：
+页面[商务SDT报告](../pages/business/report/sdt/business-sdt-cascade-example.json)包含两条独立的链：
 
 | 表格 | 主源 | 阶段源 | 排序 |
 | --- | --- | --- | --- |

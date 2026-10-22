@@ -75,7 +75,7 @@ PDF与PNG使用同一实例状态捕获、数据准备和独立文档。正式Sv
 
 PNG Worker只接收像素尺寸和ImageBitmap，不接收查询、凭据或DOM。每次用有界画布读取最多32行RGBA，增量过滤/压缩；已编码片段保留到最终Blob，因此文件内存仍随压缩后大小增长。浏览器和查看工具解码可能需要整图内存，流式编码不意味着任意长度都可导出。图表按3/4倍初始化，源画布仍独立检查8192最长边和16777216像素预算。单次只准备并处理一个截图块，消费后释放画布和bitmap。
 
-新增验收`packages/embed/tests/browser/report-image.spec.ts`直接消费`pages/report-png-export.json`和`pages/report-png-long-export.json`，覆盖固定名称、原生解码、3倍图表、4倍跨块长图、父文档合成水印、Worker失败及销毁。`runtime-ui/tests/report-png.test.ts`由Node zlib独立校验CRC、解压行像素、跨块连续和拒绝未完成文件。真实DQE、Relay和门户水印仍需分别验收。
+新增验收`packages/embed/tests/browser/report-image.spec.ts`直接消费`pages/capabilities/export/report-png-export.json`和`pages/capabilities/export/report-png-long-export.json`，覆盖固定名称、原生解码、3倍图表、4倍跨块长图、父文档合成水印、Worker失败及销毁。`runtime-ui/tests/report-png.test.ts`由Node zlib独立校验CRC、解压行像素、跨块连续和拒绝未完成文件。真实DQE、Relay和门户水印仍需分别验收。
 
 ### IOC静态身份（6.36，B1）
 

@@ -92,7 +92,7 @@ it('cancels preparation even when a gateway ignores the abort signal', async () 
 });
 
 it('exports generated row numbers across all sorted matches with a merged header', async () => {
-  const input = JSON.parse(readFileSync(new URL('../../../../pages/table-row-number.json', import.meta.url), 'utf8'));
+  const input = JSON.parse(readFileSync(new URL('../../../../pages/capabilities/table/table-row-number.json', import.meta.url), 'utf8'));
   const parsed = parsePage(input); if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
   const page = parsed.page; const component = page.sections[0].components[0] as TableComponent;
   const data = await prepareTableExport({ page, component,

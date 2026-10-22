@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { headerTopics, headerScene, headerSceneHref, resolveHeaderSelection, headerCapabilityGroups, headerPlannedCapabilities, headerStatusLabels } from '$lib/ioc-header-showcase';
+  import { headerTopics, headerScene, headerSceneHref, resolveHeaderSelection, headerCapabilityGroups, headerPlannedCapabilities, headerStatusLabels } from '../../../../fixtures/ioc-header-showcase';
   const selection = $derived(resolveHeaderSelection(page.url.searchParams.get('topic'), page.url.searchParams.get('scene')));
   const view = $derived(page.url.searchParams.get('view') === 'capabilities' ? 'capabilities' : 'interactive');
   const entry = $derived(headerScene(selection.scene)!);
@@ -51,10 +51,6 @@
         <div><h3>{entry.displayTitle}</h3><p>{entry.summary}</p></div>
         <a href={src} target="_blank" rel="noreferrer">在新标签页体验 ↗</a>
       </div>
-      <details class="steps"><summary>操作提示与接入条件</summary>
-        <ol>{#each entry.guide.steps as step}<li>{step}</li>{/each}</ol>
-        <p>{entry.guide.boundary}</p>
-      </details>
       {#key src}<iframe src={src} title={`交互演示：${entry.displayTitle}`} class="preview-frame"></iframe>{/key}
     </section>
   {:else}
@@ -110,7 +106,6 @@
   select { max-width: 100%; }
   .preview-heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; padding: 20px 20px 0; border: 1px solid #e4e4e7; border-radius: 10px 10px 0 0; background: #fafafa; }
   .preview-heading a { flex-shrink: 0; font-size: 13px; }
-  .steps { padding: 10px 20px; border: solid #e4e4e7; border-width: 0 1px 1px; background: #fafafa; font-size: 13px; }
   .preview-frame { display: block; width: 100%; height: 850px; border: 1px solid #e4e4e7; border-top: 0; border-radius: 0 0 10px 10px; background: white; box-sizing: border-box; }
   .flow { background: #eef2ff; padding: 12px 16px; border-radius: 6px; color: #3730a3; }
   .legend { display: flex; flex-wrap: wrap; gap: 8px 24px; color: #52525b; font-size: 12px; }

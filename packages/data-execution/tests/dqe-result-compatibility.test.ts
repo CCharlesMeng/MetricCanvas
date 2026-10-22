@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { EffectiveQuery } from '@metriccanvas/page/internal';
 import { parsePage } from '@metriccanvas/page';
-import fixture from '../../../pages/query-numeric-tolerance.json';
+import fixture from '../../../pages/capabilities/query/query-numeric-tolerance.json';
 import { executeDqeItem } from '../../../tools/dqe-sim/src/execute';
 import { createDqeGateway, createInMemoryDqeDiagnostics } from '../src/dqe';
 import { createSourceProgram, initialFilterValues } from '../src/runtime';

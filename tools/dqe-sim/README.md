@@ -80,7 +80,7 @@ curl 'http://127.0.0.1:18228/rest/cdi/cdinl2databuilderservice/v1/dsl/execute' \
 查询项与 `results` 对位。不匹配场景的查询项返回
 `DQE_SIM_UNSUPPORTED_QUERY`，不会自动生成看似成功的数据。
 
-商务 SDT 的 Top5 与阶段明细场景使用 `pages/business-sdt-cascade-example.json`，
+商务 SDT 的 Top5 与阶段明细场景使用 `pages/business/report/sdt/business-sdt-cascade-example.json`，
 仅支持夹具中的 2026 年 9、10 月，月份可写成 `2026-09` 或 `202609`。
 非法月份、未知月份及不匹配的商务编号仍拒绝。本场景不覆盖业务月报全部查询，
 也不代表真实 DQE 或业务数据验收。

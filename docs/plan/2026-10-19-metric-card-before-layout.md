@@ -118,7 +118,7 @@ before 仅声明展示关系，不执行 A=B+C+D，不校验各数值能否相�
 | P1 排布与运行时 | packages/engine/runtime-ui/src/section-grid.ts 或同目录独立排布函数、RuntimeSection.svelte | 外层 12 列、内部连接排布、固有文字宽度、精确 gap、窄屏和生命周期 |
 | P2 页面搭建 | packages/metric-canvas、apps/platform/src/lib/workbench 及属性面板 | 布局字段编辑、稳定选择/移动/删除、断边清理、保存重开和撤销 |
 | P3 本地创作与校验 | 产品契约向量、local-authoring 知识及独立校验器 | 本地 Skill 可创作 before；仓外安装验证与产品校验一致 |
-| P4 场景与知识分发 | pages/metric-card-equation.json、目录与使用说明、PAGE-METADATA.md、docs/page-metadata、生成契约和 Skill | 可直接浏览的正式验收页、完整示例、独立安装后可用的知识与校验器 |
+| P4 场景与知识分发 | pages/capabilities/layout/metric-card-equation.json、目录与使用说明、PAGE-METADATA.md、docs/page-metadata、生成契约和 Skill | 可直接浏览的正式验收页、完整示例、独立安装后可用的知识与校验器 |
 | P5 集成交付 | 包兼容检查、浏览器与 CI、scoped-main-delivery | main 远端 SHA 和 CI 对账；保留并行工作 |
 
 行对齐特别处理：当前行对齐 Module 只收集所属 Grid 的直接 .cell。内部连接行应注册自身直接单元格并复用现有对齐 Module；外层继续管理原有直接单元格，不改成全子树搜索，以免把组合卡或 Tab 内部单元格串在一起。成员仍通过原 cellAttachment/cellOverlay 使用原组件 id 和原数组索引。
@@ -127,7 +127,7 @@ before 仅声明展示关系，不执行 A=B+C+D，不校验各数值能否相�
 
 ## 6 验收与完成条件
 
-实际页面与自动验收共用 `pages/metric-card-equation.json`。迁移时仅删除旧例子的独立连接文字与七条 columnTracks，保留演示数据性质。新增或更新 pages/README.md、页面使用指南及目录条目时保留最新 main 已有分类和指南字段。
+实际页面与自动验收共用 `pages/capabilities/layout/metric-card-equation.json`。迁移时仅删除旧例子的独立连接文字与七条 columnTracks，保留演示数据性质。新增或更新 pages/README.md、页面使用指南及目录条目时保留最新 main 已有分类和指南字段。
 
 | 验收项 | 明确判据 |
 |---|---|

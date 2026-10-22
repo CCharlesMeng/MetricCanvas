@@ -36,7 +36,7 @@ console.log(JSON.stringify({measurement:'deterministic reference retrieval only;
   skillEntrySha256:createHash('sha256').update(current('SKILL.md')).digest('hex'),
   readerSha256:createHash('sha256').update(current('scripts/read-knowledge.mjs')).digest('hex'),
   knowledgeSha256:createHash('sha256').update(current('references/authoring-knowledge/model.json')).digest('hex'),
-  fixturePageSha256:createHash('sha256').update(readFileSync('pages/local-authoring-knowledge-demo.json')).digest('hex'),
+  fixturePageSha256:createHash('sha256').update(readFileSync('pages/capabilities/layout/local-authoring-knowledge-demo.json')).digest('hex'),
   fixtureMdSha256:createHash('sha256').update(readFileSync('tools/fixtures/local-authoring-data/metrics.md')).digest('hex'),
   units:'UTF-8 bytes',cases,actualAgentComparison:'not-run',inputTokens:'unavailable',cachedTokens:'unavailable',outputTokens:'unavailable',
   note:'当前结果未计入未知模型的后续指针深查/修复轮次，不能据此推算总input或费用节省。'},null,2));

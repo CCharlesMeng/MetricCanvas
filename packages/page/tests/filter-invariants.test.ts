@@ -82,7 +82,7 @@ describe('ioc-project-overview 页面文档', () => {
   it('通过页面校验', () => {
     const document = JSON.parse(
       readFileSync(
-        fileURLToPath(new URL('../../../pages/ioc-project-overview.json', import.meta.url)),
+        fileURLToPath(new URL('../../../pages/business/dashboard/ioc/project/ioc-project-overview.json', import.meta.url)),
         'utf8'
       )
     );
@@ -96,7 +96,7 @@ describe('ioc-opportunity-list 页面文档', () => {
   it('通过页面校验', () => {
     const document = JSON.parse(
       readFileSync(
-        fileURLToPath(new URL('../../../pages/ioc-opportunity-list.json', import.meta.url)),
+        fileURLToPath(new URL('../../../pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json', import.meta.url)),
         'utf8'
       )
     );

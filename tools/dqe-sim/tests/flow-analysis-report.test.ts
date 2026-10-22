@@ -6,7 +6,7 @@ import { parsePage } from '../../../packages/page/src';
 import { initializePageParams, resolvePageParams } from '../../../packages/engine/runtime/src/page-params';
 
 it('参数报告接受代表处与时间条件；未配置样本的期间返回空结果且不回退', () => {
-  const parsed = parsePage(JSON.parse(readFileSync('pages/flow-analysis-report-params.json','utf8')));
+  const parsed = parsePage(JSON.parse(readFileSync('pages/business/report/flow/flow-analysis-report-params.json','utf8')));
   if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
   for (const [search, nonempty] of [['',11], ['report-month=2099-01',0], ['representative-office=上海代表处',0]] as const) {
     const values = resolvePageParams(search, parsed.page.params ?? []).values;
@@ -21,7 +21,7 @@ it('参数报告接受代表处与时间条件；未配置样本的期间返回�
 });
 
 it('时间范围趋势返回范围内已有月份，不要求与全年样本范围完全相等', () => {
-  const parsed = parsePage(JSON.parse(readFileSync('pages/flow-analysis-report-params.json','utf8')));
+  const parsed = parsePage(JSON.parse(readFileSync('pages/business/report/flow/flow-analysis-report-params.json','utf8')));
   if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
   const page = initializePageParams(parsed.page, resolvePageParams('', parsed.page.params ?? []).values);
   for (const [id, months] of [

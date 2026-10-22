@@ -1,0 +1,30 @@
+{
+  "status": "pass",
+  "scenarios": [
+    "availability",
+    "business-detail",
+    "business-options",
+    "business-tree",
+    "calendar-window",
+    "currency",
+    "dense-filter",
+    "detail",
+    "month-set",
+    "navigation-detail",
+    "navigation-list",
+    "navigation-source",
+    "overview",
+    "time-modes",
+    "time-presets"
+  ],
+  "capabilityItems": 32,
+  "filtering": true,
+  "catalogReturn": true,
+  "navigation": true,
+  "currency": true,
+  "hierarchy": true,
+  "mobile": true,
+  "history": true,
+  "errors": [],
+  "externalDataRequests": []
+}

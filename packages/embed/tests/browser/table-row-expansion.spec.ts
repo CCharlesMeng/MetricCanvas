@@ -1,7 +1,9 @@
+import { fileURLToPath } from 'node:url';
+import { pageFilesById } from '../../../../tools/scripts/page-files.mjs';
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 
-const fixture = (kind: string) => JSON.parse(readFileSync(new URL(`../../../../pages/table-row-expansion-${kind}.json`, import.meta.url), 'utf8'));
+const fixture = (kind: string) => JSON.parse(readFileSync(pageFilesById(fileURLToPath(new URL('../../../../pages', import.meta.url))).get(`table-row-expansion-${kind}`)!, 'utf8'));
 async function mount(page: Page, kind: string) {
   await page.goto('/examples/inline.html');
   await page.evaluate(document => {

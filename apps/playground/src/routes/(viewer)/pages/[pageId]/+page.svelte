@@ -1,6 +1,6 @@
 <script lang="ts">
   import {iocSelectionGateway} from '../../../../../fixtures/selection-gateway';
-  import {pageExternalInputs} from '$lib/page-catalog';
+  import {pageExternalInputs} from '../../../../../fixtures/preview-inputs';
   import {browser} from '$app/environment';
   const framed = browser && window.self !== window.top;
   import {createVisibilityDemoInputs} from '$lib/visibility-inputs';
@@ -12,7 +12,7 @@
   let visibilityInstance=$state(0);
   import { goto, replaceState } from '$app/navigation';
   import { page } from '$app/state';
-  import PageGuide from '$lib/PageGuide.svelte';
+  import PageDocument from '$lib/PageDocument.svelte';
   import { documentLayoutForm, documentUsesRuntimeBackToolbar } from '@metriccanvas/page/internal';
   import {projectNavigationInputs,type DataGateway} from '@metriccanvas/engine';
   import {
@@ -113,7 +113,7 @@
 </script>
 
 {#if pageState.phase === 'ready' && !framed}
-  <PageGuide pageId={page.params.pageId!} document={pageState.document} />
+  <PageDocument pageId={page.params.pageId!} document={pageState.document} />
 {/if}
 
 <div class="page-frame" class:frame-dashboard={layoutForm === 'dashboard'}>

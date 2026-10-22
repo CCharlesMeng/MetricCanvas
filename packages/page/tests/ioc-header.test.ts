@@ -1,10 +1,12 @@
+import { fileURLToPath } from 'node:url';
+import { pageFilesById } from '../../../tools/scripts/page-files.mjs';
 import { readFileSync } from 'node:fs';
 import { describe,expect,it } from 'vitest';
 import { parsePage,normalizePageDocument } from '../src/validate';
 import { collectFilterTextValueReferences } from '../src/filter-text-value';
 import { requiredMinorVersion,capabilityFloorErrors,versionPolicy,versionErrors } from '../src/version';
 import { documentUsesRuntimeBackToolbar } from '../src/page';
-const load=(name:string)=>JSON.parse(readFileSync(new URL(`../../../pages/ioc-header-${name}-demo.json`,import.meta.url),'utf8'));
+const load=(name:string)=>JSON.parse(readFileSync(pageFilesById(fileURLToPath(new URL('../../../pages', import.meta.url))).get(`ioc-header-${name}-demo`)!,'utf8'));
 describe('IOC root header contract from acceptance pages',()=>{
   for(const name of ['overview','dense-filter','detail','month-set'])it(`consumes ${name} and preserves the declaration on normalize`,()=>{
     const doc=load(name);expect(parsePage(doc)).toMatchObject({ok:true});expect(normalizePageDocument(doc)).toMatchObject({ok:true,document:{...doc,schemaVersion:versionPolicy.current}});

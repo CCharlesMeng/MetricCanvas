@@ -6,8 +6,8 @@ import {
   type DataSources,
   type QueryDataSource
 } from '../../../packages/page/src/internal';
-import customerActivityRiskPage from '../../../pages/customer-activity-risk-briefing.json';
-import flowAnalysisReportPage from '../../../pages/flow-analysis-report.json';
+import customerActivityRiskPage from '../../../pages/business/report/customer/customer-activity-risk-briefing.json';
+import flowAnalysisReportPage from '../../../pages/business/report/flow/flow-analysis-report.json';
 import { executeDqeItem } from '../src/execute';
 
 function requireQueryDataSources(

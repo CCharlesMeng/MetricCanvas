@@ -25,7 +25,7 @@
 
 | 领域 | 已知事实 | 本轮判断与归属 |
 |---|---|---|
-| 页面覆盖 | 来源报告列出 21 个路由入口；本仓只有 `pages/ioc-project-overview.json`、`ioc-opportunity-list.json`、`ioc-opportunity-analysis.json`、`ioc-project-detail.json` 四份 IOC 页面元数据。路由入口与页面资产不一定一一对应。 | **缺覆盖映射**。逐入口核对业务内容、页面参数、内容分区与组件；复用路由变体可共用页面资产，但不能以“四页已存在”代替 21 入口验收。 |
+| 页面覆盖 | 来源报告列出 21 个路由入口；本仓只有 `pages/business/dashboard/ioc/project/ioc-project-overview.json`、`ioc-opportunity-list.json`、`ioc-opportunity-analysis.json`、`ioc-project-detail.json` 四份 IOC 页面元数据。路由入口与页面资产不一定一一对应。 | **缺覆盖映射**。逐入口核对业务内容、页面参数、内容分区与组件；复用路由变体可共用页面资产，但不能以“四页已存在”代替 21 入口验收。 |
 | 查询结果之后的计算 | 来源报告示例含四源合并、动态比较字段、12 个月对齐、空值/零值差异和排序后名次。当前闭集只有 `ratio`、`delta`、`groupSubtotal`、`grandTotal`、`pivot`；`joinAggregate` 未实现。 | **确认有表达缺口**。以输入输出样例裁决新的具名算子及失败传播；按稳定字段做对齐，禁止直接执行来源 `fitFunction`。名次先核对是否应属于表格视图态。 |
 | Tab 与内容组合 | 来源报告有多页/整块内容的 Tab 和客户详情 7 个锚点 Tab。当前 `tabContainer` 的 Tab 子项只容纳表格；`compositeCard` 子组件也有白名单。 | **确认有结构缺口**。比较“多个独立页面由集成应用切换”与“同一页面内受控内容分区切换”的语义，再扩展最小表达；不开放任意嵌套组件树。 |
 | 弹窗 | 来源报告列出 8 个业务弹窗，部分展示趋势图与表格。当前 `openDetail` 只展示被点击行的字段，可选 modal/drawer 外观。 | **确认有内容缺口**。定义受控的图表/表格详情浮层或页面资产浮层，并核对打开、关闭、筛选上下文及返回状态。 |

@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parsePage, validate } from '../src/validate';
 
-const example = () => JSON.parse(readFileSync('pages/metric-card-equation.json', 'utf8'));
+const example = () => JSON.parse(readFileSync('pages/capabilities/layout/metric-card-equation.json', 'utf8'));
 const cards = (page: ReturnType<typeof example>) => page.sections.find((section: {id:string}) => section.id === 'equation').components;
 
 describe('指标卡前置连接文字', () => {

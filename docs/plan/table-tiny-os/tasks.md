@@ -19,7 +19,7 @@
 | packages/engine/widgets/src/components/table/Table.svelte | OS 隔离皮肤、短线、排序/筛选图标、空态、滚动边界 | 1 |
 | packages/engine/widgets/src/components/table/TableControlIcon.svelte | 官方 SVG 路径及状态形状 | 1 |
 | packages/engine/widgets/src/components/table/table-geometry.ts | 实际表头和固定列几何与滚动状态 | 1 |
-| pages/table-tiny-os.json | 内联合成场景及 reportCompact 对照 | 2 |
+| pages/capabilities/table/table-tiny-os.json | 内联合成场景及 reportCompact 对照 | 2 |
 | apps/playground/page-catalog.json | 可发现入口 | 2 |
 | packages/embed/tests/browser/table-tiny-os.spec.ts | 样式值、状态交互与排除项回归 | 2 |
 | docs/page-metadata/components/table.md | 变体外观边界说明与示例路由 | 2 |

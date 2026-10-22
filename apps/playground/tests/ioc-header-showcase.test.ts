@@ -1,25 +1,27 @@
 import { describe, expect, it } from 'vitest';
-import catalog from '../page-catalog.json';
-import { headerTopics, headerScene, headerSceneHref, resolveHeaderSelection, headerCapabilityGroups, headerPlannedCapabilities } from '../src/lib/ioc-header-showcase';
+import { readFileSync } from 'node:fs';
+import { pageFilesById } from '../../../tools/scripts/page-files.mjs';
+import { pageEntry } from '../src/lib/page-entry';
+import { filterPageDirectory, organizePageDirectory } from '../src/lib/page-directory';
+import { headerTopics, headerScene, headerSceneHref, resolveHeaderSelection, headerCapabilityGroups, headerPlannedCapabilities } from '../fixtures/ioc-header-showcase';
 import { createIocHeaderPreview } from '../src/lib/ioc-header-preview-inputs';
-import { filterPageCatalog, organizePageCatalog, pageExternalInputs } from '../src/lib/page-catalog';
+import { pageExternalInputs } from '../fixtures/preview-inputs';
 import type { EffectiveQuery } from '@metriccanvas/page/internal';
 
 describe('IOC 公共页头统一入口', () => {
-  it('能力与功能演示可组合筛选，且原有业务示例不进入页头集合', () => {
-    const groups = organizePageCatalog(catalog.pages.map(entry => ({ id: entry.id, title: entry.displayTitle, layoutForm: 'dashboard' })));
-    const matches = filterPageCatalog(groups, '', 'features', 'all', 'ioc-header', 'none');
-    expect(matches).toHaveLength(1);
-    expect(matches[0]?.id).toBe('ioc-header');
-    expect(matches[0]?.pages).toHaveLength(15);
-    expect(matches[0]?.collection?.href).toBe('/ioc-header');
-    expect(filterPageCatalog(groups, 'ISO周', 'features', 'all', 'ioc-header').flatMap(group => group.pages).map(entry => entry.scenario)).toEqual(['time-modes']);
-    expect(groups.find(group => group.id === 'ioc')?.pages).toHaveLength(4);
+  it('页头页面按实际文件夹发现，业务页面保留各自路径与预览适配器', () => {
+    const entries = [...pageFilesById('pages')].map(([id, file]) => ({ ...pageEntry(JSON.parse(readFileSync(file, 'utf8')), id), filePath: file.slice('pages/'.length) }));
+    const groups = organizePageDirectory(entries);
+    const matches = filterPageDirectory(groups, '', 'all', 'all', 'all', 'capabilities/ioc-header/scenarios').flatMap(group => group.pages);
+    expect(matches).toHaveLength(15);
+    expect(matches.every(entry => pageExternalInputs(entry.id) === 'ioc-header')).toBe(true);
+    expect(entries.filter(entry => entry.filePath.startsWith('business/dashboard/ioc/'))).toHaveLength(4);
+    expect(pageExternalInputs('ioc-header-standard')).toBe('ioc-business');
   });
 
   it('完整演示与四个专题覆盖全部原场景，并为直接入口补充必要演示参数', () => {
     const scenes = new Set(headerTopics.flatMap(topic => [...topic.scenes]));
-    expect([...scenes].map(scene => headerScene(scene)?.id).sort()).toEqual(catalog.pages.filter(entry => entry.group === 'ioc-header').map(entry => entry.id).sort());
+    expect([...scenes].map(scene => headerScene(scene)?.id).sort()).toEqual([...pageFilesById('pages')].filter(([, file]) => file.includes('/ioc-header/scenarios/')).map(([id]) => id).sort());
     expect(headerTopics).toHaveLength(5);
     for (const scene of scenes) expect(pageExternalInputs(headerScene(scene)?.id)).toBe('ioc-header');
     expect(headerSceneHref('navigation-detail')).toContain('project-id=P-001');

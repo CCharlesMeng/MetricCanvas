@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parsePage } from '../../packages/page/src/validate';
+import { pageFilesById } from './page-files.mjs';
 import type { Component } from '../../packages/page/src/page';
 
 /** Selection is editorial; structure and provenance always come from the actual page. */
@@ -65,8 +66,11 @@ export function pagePattern(source: PatternSource, content: string) {
 
 export async function localPagePatternOutputs(root: string): Promise<Map<string, string>> {
   const outputs = new Map<string, string>();
+  const pages = pageFilesById(path.join(root, 'pages'));
   for (const source of pagePatternSources) {
-    const content = await readFile(path.join(root, 'pages', `${source.pageId}.json`), 'utf8');
+    const file = pages.get(source.pageId);
+    if (!file) throw new Error(`Missing pattern source: ${source.pageId}`);
+    const content = await readFile(file, 'utf8');
     outputs.set(`references/page-patterns/${source.id}.json`, JSON.stringify(pagePattern(source, content), null, 2) + '\n');
   }
   return outputs;

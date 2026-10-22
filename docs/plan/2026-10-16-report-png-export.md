@@ -183,7 +183,7 @@ B0 是风险收敛步骤，不是现成能力。优先消除跨文档样式注�
 
 ## 10. 验收矩阵
 
-实施时提供 `pages/report-png-export.json` 完整页面，包含短报告、长内容、图表、表格、Tabs、动态标题、PDF+PNG/PNG-only/未启用对照；若单页无法覆盖超长规模，另建 `pages/report-png-long-export.json`。两份完整页面均已创建并注册目录，验收直接消费。水印由测试集成应用包裹注入，不把测试水印写进业务页面协议。自动验收读取这些页面，不临时拼配置替代。
+实施时提供 `pages/capabilities/export/report-png-export.json` 完整页面，包含短报告、长内容、图表、表格、Tabs、动态标题、PDF+PNG/PNG-only/未启用对照；若单页无法覆盖超长规模，另建 `pages/capabilities/export/report-png-long-export.json`。两份完整页面均已创建并注册目录，验收直接消费。水印由测试集成应用包裹注入，不把测试水印写进业务页面协议。自动验收读取这些页面，不临时拼配置替代。
 
 | 编号 | 场景 | 必须成立 |
 |---|---|---|

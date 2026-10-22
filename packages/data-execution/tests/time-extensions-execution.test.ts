@@ -1,3 +1,4 @@
+import { pageFilesById } from '../../../tools/scripts/page-files.mjs';
 import {readFileSync} from 'node:fs';
 import {describe,it,expect,vi} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
@@ -5,7 +6,7 @@ import {type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import {createSourceProgram} from '../src/source-program/session';
 import {initialFilterValues} from '../src/filter-values';
 import {filterCandidatesRequest} from '../src/filter-candidates';
-const load=(name='time-modes')=>{const p=parsePage(JSON.parse(readFileSync(`pages/ioc-header-${name}-demo.json`,'utf8')));if(!p.ok)throw Error(JSON.stringify(p.errors));return p.page;};
+const load=(name='time-modes')=>{const p=parsePage(JSON.parse(readFileSync(pageFilesById('pages').get(`ioc-header-${name}-demo`)!,'utf8')));if(!p.ok)throw Error(JSON.stringify(p.errors));return p.page;};
 const facts:DisplayInputsSnapshot={permissions:{},values:{},permissionRevision:'u1',timeZone:'Asia/Shanghai',periods:{sales:{status:'ready',granularity:'month',latest:'2026-10',latestComplete:'2026-09'}}};
 const collect=async(program:ReturnType<typeof createSourceProgram>,request:Parameters<ReturnType<typeof createSourceProgram>['read']>[0])=>{const result=[];for await(const update of program.read(request))result.push(update);return result;};
 describe('B4 execution boundaries',()=>{
@@ -49,7 +50,7 @@ it('uses a frozen read/capture clock throughout effective compilation',async()=>
  const program=createSourceProgram(page,{gateway:{fetchData},now:new Date(2030,9,19)});const queries=program.captureQueries(values,new Map(),new Map());await collect(program,{roots:['bound'],conditions:values,queries});expect(fetchData).toHaveBeenCalledOnce();program.dispose();
 });
 it('one-shot execution writes fresh mode rows and removes old unproved rows after a failed read',async()=>{
- const {createPageDataExecutor}=await import('../src/execute');const raw=JSON.parse(readFileSync('pages/ioc-header-time-modes-demo.json','utf8'));raw.dataSources.bound.source.initial={capturedAt:'2026-10-19T00:00:00Z',rows:[{ioc_header_scope:'old',ioc_header_count:9}],totalCount:1};
+ const {createPageDataExecutor}=await import('../src/execute');const raw=JSON.parse(readFileSync('pages/capabilities/ioc-header/scenarios/ioc-header-time-modes-demo.json','utf8'));raw.dataSources.bound.source.initial={capturedAt:'2026-10-19T00:00:00Z',rows:[{ioc_header_scope:'old',ioc_header_count:9}],totalCount:1};
  const result=await createPageDataExecutor({now:new Date(2026,9,19),gateway:{async fetchData(){return {rows:[{scope:'fresh',count:1}],totalCount:1};}}}).execute(raw);expect(result.dataSources.bound.source).toMatchObject({initial:{rows:[{ioc_header_scope:'fresh',ioc_header_count:1}],totalCount:1}});
  const failed=await createPageDataExecutor({now:new Date(2026,9,19),gateway:{async fetchData(){throw Error('failed');}}}).execute(raw);expect('initial' in failed.dataSources.bound.source).toBe(false);
 });

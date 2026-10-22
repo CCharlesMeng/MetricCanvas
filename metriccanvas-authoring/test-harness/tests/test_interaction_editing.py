@@ -184,7 +184,7 @@ class ReportDateEditingTest(unittest.TestCase):
         self.assertEqual(p,original)
 
     def test_dashboard_period_add_update_preserves_query_aggregation(self):
-        p=json.loads((Path(__file__).resolve().parents[3]/'pages/dashboard-period-filter.json').read_text())
+        p=json.loads((Path(__file__).resolve().parents[3]/'pages/capabilities/filters/dashboard-period-filter.json').read_text())
         p.pop('filters');p['dataSources']['sales']['source']['query'].pop('filterBindings')
         before=deepcopy(p)
         added=run(p,{'id':'add','type':'add_date_filter','filterId':'test-period',
@@ -233,7 +233,7 @@ class IocHeaderEditingTest(unittest.TestCase):
 
     def test_invalid_header_conflicts_roll_back_the_whole_operation(self):
         root = Path(__file__).resolve().parents[3]
-        doc = json.loads((root / 'pages/ioc-header-overview-demo.json').read_text())
+        doc = json.loads((root / 'pages/capabilities/ioc-header/ioc-header-overview-demo.json').read_text())
         for header in [{}, {'filterIds': ['missing']}, {'filterIds': ['period', 'period']}]:
             result = run(doc, {'id': 'invalid', 'type': 'set_ioc_header', 'header': header})
             self.assertEqual(result['status'], 'failed', result)
@@ -277,7 +277,7 @@ class BusinessFilterEditingTest(unittest.TestCase):
 
     def test_structural_tree_edit_preserves_each_level_binding(self):
         root = Path(__file__).resolve().parents[3]
-        page = json.loads((root / 'pages/ioc-header-business-tree-demo.json').read_text())
+        page = json.loads((root / 'pages/capabilities/ioc-header/ioc-header-business-tree-demo.json').read_text())
         bindings = [{'dataSourceId': 'bound', 'levelQueryFields': {'department': 'department_code', 'office': 'office_code'}}]
         result = run(page, {'id': 'tree-b2', 'type': 'update_dimension_filter', 'filterId': 'region',
             'changes': {'hint': '显式层级保持'}, 'bindings': bindings})
@@ -287,7 +287,7 @@ class BusinessFilterEditingTest(unittest.TestCase):
 
     def test_date_edit_reopens_with_common_interaction_fields(self):
         root = Path(__file__).resolve().parents[3]
-        page = json.loads((root / 'pages/ioc-header-business-options-demo.json').read_text())
+        page = json.loads((root / 'pages/capabilities/ioc-header/ioc-header-business-options-demo.json').read_text())
         declaration = {key: value for key, value in page['filters'][0].items() if key != 'id'}
         declaration.update(hint='分类变更后确认期间', clearOnChangeOf=['kind'])
         result = run(page, {'id': 'date-b2', 'type': 'update_date_filter', 'filterId': 'period',
@@ -300,7 +300,7 @@ class BusinessFilterEditingTest(unittest.TestCase):
 
 class CurrencyRangeEditingTest(unittest.TestCase):
     def page(self):
-        return json.loads((Path(__file__).resolve().parents[3]/'pages/ioc-header-currency-demo.json').read_text())
+        return json.loads((Path(__file__).resolve().parents[3]/'pages/capabilities/ioc-header/ioc-header-currency-demo.json').read_text())
 
     def operation(self, page, kind='update_number_range_filter'):
         declaration=deepcopy(next(f for f in page['filters'] if f['id']=='amount'));declaration.pop('id')
@@ -325,7 +325,7 @@ class CurrencyRangeEditingTest(unittest.TestCase):
 
 class TimeProgramEditingTest(unittest.TestCase):
     def page(self):
-        return json.loads((Path(__file__).resolve().parents[3] / 'pages/ioc-header-time-modes-demo.json').read_text())
+        return json.loads((Path(__file__).resolve().parents[3] / 'pages/capabilities/ioc-header/ioc-header-time-modes-demo.json').read_text())
 
     def test_atomic_time_program_save_reopen_and_invalid_case_rollback(self):
         baseline = self.page()
@@ -347,7 +347,7 @@ class TimeProgramEditingTest(unittest.TestCase):
         self.assertEqual(baseline, self.page())
 
     def test_candidate_window_preserved_in_controlled_dimension_edit(self):
-        page = json.loads((Path(__file__).resolve().parents[3] / 'pages/ioc-header-calendar-window-demo.json').read_text())
+        page = json.loads((Path(__file__).resolve().parents[3] / 'pages/capabilities/ioc-header/ioc-header-calendar-window-demo.json').read_text())
         # One controlled dimension edit updates the common binding in every mode case.
         result = run(page, {'id': 'month-label', 'type': 'update_dimension_filter', 'filterId': 'months',
                             'changes': {'label': '选择月份', 'candidateWindow': {'unit': 'month', 'n': 12, 'includeCurrent': False}},

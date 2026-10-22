@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[3]
 
 class PresentationEditingTests(unittest.TestCase):
     def page(self):
-        return json.loads((ROOT / 'pages/page-visibility-region-linkage.json').read_text())
+        return json.loads((ROOT / 'pages/capabilities/filters/page-visibility-region-linkage.json').read_text())
 
     def test_same_product_edit_and_hidden_target(self):
         page = self.page()

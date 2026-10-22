@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import fixture from '../../../pages/ioc-header-selection.json';
+import fixture from '../../../pages/capabilities/ioc-header/selection/ioc-header-selection.json';
 import {parsePage} from '../src';
 describe('dimension selection protocol',()=>{
  it('accepts full page and gates only new declarations',()=>{

@@ -8,7 +8,7 @@ import { createDqeSimServer, DQE_EXECUTE_PATH } from '../src/server';
 import { executeRowExpansion } from '../src/row-expansion';
 
 it('executes the registered query page through the real gateway and Sim with isolated windows', async () => {
-  const parsed = parsePage(JSON.parse(readFileSync(new URL('../../../pages/table-row-expansion-query.json', import.meta.url), 'utf8')));
+  const parsed = parsePage(JSON.parse(readFileSync(new URL('../../../pages/capabilities/table/table-row-expansion-query.json', import.meta.url), 'utf8')));
   if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));
   const server = createDqeSimServer();
   await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));

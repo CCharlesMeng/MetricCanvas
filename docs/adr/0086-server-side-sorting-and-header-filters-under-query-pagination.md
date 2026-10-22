@@ -9,7 +9,7 @@ note: 解除 ADR-0049 查询分页与排序/表头筛选的互斥；排序编码
 
 [ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 把表格分页分成 `none` / `local` / `query` 三档，但 `query` 档同时拒绝列上的 `sortable` 与 `filterable`（`validate.ts` 里两条硬拒绝）。原因是当时只有本地实现：本地排序与本地表头筛选都只作用于**当前页快照**，在分页下那不是降级，是错的——「按金额降序」的第一行应该是全表最大值，而不是首页那几行里的最大值。
 
-代价在 `pages/ioc-opportunity-list.json` 上很具体：它有 15 列金额排序和 5 列表头筛选，为了保住这些，分页只能退到 `none`。现在才 10 行看不出问题，接上真库就是每次全表拉取。**「有分页」和「能排序」二选一**，这不是一个可以长期接受的形状。
+代价在 `pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json` 上很具体：它有 15 列金额排序和 5 列表头筛选，为了保住这些，分页只能退到 `none`。现在才 10 行看不出问题，接上真库就是每次全表拉取。**「有分页」和「能排序」二选一**，这不是一个可以长期接受的形状。
 
 ## 决策
 

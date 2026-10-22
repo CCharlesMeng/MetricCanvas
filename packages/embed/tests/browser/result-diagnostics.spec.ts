@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 
-const fixture = () => JSON.parse(readFileSync(new URL('../../../../pages/query-numeric-tolerance.json', import.meta.url), 'utf8'));
+const fixture = () => JSON.parse(readFileSync(new URL('../../../../pages/capabilities/query/query-numeric-tolerance.json', import.meta.url), 'utf8'));
 
 for (const mode of ['missing-field', 'invalid-dimension', 'total-smaller', 'total-larger'] as const) {
   test(`${mode}: DQE错误显示空组件，总数不一致保留数据并打印诊断`, async ({ page }, testInfo) => {

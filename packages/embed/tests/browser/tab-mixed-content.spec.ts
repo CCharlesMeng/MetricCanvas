@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
-const reportFixture = JSON.parse(await readFile(new URL('../../../../pages/tab-mixed-content-report.json', import.meta.url), 'utf8'));
-const fixture = JSON.parse(await readFile(new URL('../../../../pages/tab-mixed-content.json', import.meta.url), 'utf8'));
+const reportFixture = JSON.parse(await readFile(new URL('../../../../pages/capabilities/layout/tab-mixed-content-report.json', import.meta.url), 'utf8'));
+const fixture = JSON.parse(await readFile(new URL('../../../../pages/capabilities/layout/tab-mixed-content.json', import.meta.url), 'utf8'));
 
 for (const variant of ['compact', 'analysisStack']) test(`legacy ${variant}: full-width tables and retained hidden panels`, async ({ page }) => {
   await page.goto('/pages/tab-mixed-content');

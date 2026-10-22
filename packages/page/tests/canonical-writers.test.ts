@@ -1,11 +1,12 @@
+import { pageFiles } from '../../../tools/scripts/page-files.mjs';
 import { readFileSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import { expect, it } from 'vitest';
 import { normalizePageDocument, versionPolicy, supportedVersions } from '../src/index';
 
 it('当前页面与样例使用受支持版本/layout，旧兼容夹具明确隔离', () => {
   for (const directory of ['pages', 'packages/page/fixtures/contract-valid']) {
-    for (const name of readdirSync(directory).filter(name => name.endsWith('.json'))) {
+    for (const name of pageFiles(directory)) {
       const raw = JSON.parse(readFileSync(join(directory, name), 'utf8'));
       const normalized = normalizePageDocument(raw);
       expect(normalized.ok, name).toBe(true);
@@ -17,7 +18,7 @@ it('当前页面与样例使用受支持版本/layout，旧兼容夹具明确隔
         expect(raw, name).not.toHaveProperty('layoutForm');
         if (normalized.ok) {
           // This author scenario deliberately exercises tolerant reading; writing drops invalid scales.
-          if (name === 'report-export-scale-fallback.json') expect(normalizePageDocument(normalized.document)).toEqual(normalized);
+          if (basename(name) === 'report-export-scale-fallback.json') expect(normalizePageDocument(normalized.document)).toEqual(normalized);
           else expect(normalized.document, name).toEqual({ ...raw, schemaVersion: ['6.5','6.13','6.14'].includes(raw.schemaVersion) ? raw.schemaVersion : versionPolicy.current });
         }
       }

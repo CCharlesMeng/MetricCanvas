@@ -176,7 +176,7 @@ Q1=A白底、Q2=B查询分页、Q3=A多行配置、Q4=A只读、Q6=A销毁重查
 
 1. 根据 grill 答案更新唯一方案；将已确定的领域规则写 ADR 并并入主题页。遵循当前仓库的组件API复用和实际页面验收约定，不执行已停用的SDD流程。非导出设计决策已确认；后续实施需按原型维护要求保存可追溯参考，本轮仍不执行git交付。
 2. Schema/校验/版本与实例控制器先行；补确定性边界行为测试；随后接共享 Table 呈现，检查编译产物及生产构建。
-3. 正式 `pages/table-row-expansion-inline.json` + query 场景，注册页面试验场目录及使用说明；浏览器覆盖多实例独立分页、缺键/重复键、非法绑定、空/失败/重试、取消迟到响应、父页变更、窄容器、固定列和导出范围。真实 DQE 与 Relay 另列环境证据。
+3. 正式 `pages/capabilities/table/table-row-expansion-inline.json` + query 场景，注册页面试验场目录及使用说明；浏览器覆盖多实例独立分页、缺键/重复键、非法绑定、空/失败/重试、取消迟到响应、父页变更、窄容器、固定列和导出范围。真实 DQE 与 Relay 另列环境证据。
 4. 更新 PAGE-METADATA.md、table/fields/data-source/actions 实际归属文档；生成 local-authoring 知识/示例/独立校验器，复制仓外安装验收。
 5. 按 docs/agents/feature-acceptance.md 对账；交付若获授权再使用 scoped-main-delivery，显式文件范围，保留并行改动。
 

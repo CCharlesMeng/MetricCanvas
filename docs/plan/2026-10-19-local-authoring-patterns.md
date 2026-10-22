@@ -36,12 +36,12 @@
 
 | 候选 | 来源页面 | 值得提炼的关系 | 不能直接固化的部分 |
 |---|---|---|---|
-| Dashboard 地图概览 | [ioc-project-overview](../../pages/ioc-project-overview.json) | 地域背景与业务主题共同扫描，卡内指标／分类／比率保持归属，Tab 切换重点对象 | backdrop、固定权重及业务卡数量 |
-| Dashboard 主题分析 | [ioc-opportunity-analysis](../../pages/ioc-opportunity-analysis.json) | 主题 KPI 分组，组织层级 Tab 承载整组分析表 | compact 工具栏、层级名称和每组表数 |
-| Dashboard 筛选清单 | [ioc-opportunity-list](../../pages/ioc-opportunity-list.json) | 从条件到对象集合，再到搜索、排序、分页、详情 | 具体列、筛选数量、导航目标与查询完备性 |
-| Dashboard 对象详情 | [ioc-project-detail](../../pages/ioc-project-detail.json) | 单对象身份、概况／规范、预测和进展之间的阅读关系 | 隐藏工具栏、特殊比例和字段叙述组合 |
-| Report 经营月报 | [business-sdt-report-monthly](../../pages/business-sdt-report-monthly.json) | 基准期下先总体／趋势，后组织层级，再重点对象 | SDT 口径、近六月窗口和固定摘要 |
-| Report 分析简报 | [flow-analysis-report](../../pages/flow-analysis-report.json) | 指标、推演、风险和业务视角逐层提供证据 | 业务分类、推演字段及固定结论文字 |
+| Dashboard 地图概览 | [ioc-project-overview](../../pages/business/dashboard/ioc/project/ioc-project-overview.json) | 地域背景与业务主题共同扫描，卡内指标／分类／比率保持归属，Tab 切换重点对象 | backdrop、固定权重及业务卡数量 |
+| Dashboard 主题分析 | [ioc-opportunity-analysis](../../pages/business/dashboard/ioc/opportunity/ioc-opportunity-analysis.json) | 主题 KPI 分组，组织层级 Tab 承载整组分析表 | compact 工具栏、层级名称和每组表数 |
+| Dashboard 筛选清单 | [ioc-opportunity-list](../../pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json) | 从条件到对象集合，再到搜索、排序、分页、详情 | 具体列、筛选数量、导航目标与查询完备性 |
+| Dashboard 对象详情 | [ioc-project-detail](../../pages/business/dashboard/ioc/project/ioc-project-detail.json) | 单对象身份、概况／规范、预测和进展之间的阅读关系 | 隐藏工具栏、特殊比例和字段叙述组合 |
+| Report 经营月报 | [business-sdt-report-monthly](../../pages/business/report/sdt/business-sdt-report-monthly.json) | 基准期下先总体／趋势，后组织层级，再重点对象 | SDT 口径、近六月窗口和固定摘要 |
+| Report 分析简报 | [flow-analysis-report](../../pages/business/report/flow/flow-analysis-report.json) | 指标、推演、风险和业务视角逐层提供证据 | 业务分类、推演字段及固定结论文字 |
 
 入选标准建议：有可解释的信息关系、当前协议能表达、能够提供可观察的页面结果。来源页面本身的未完成能力和缺陷必须标记；不将整页视为已验收的标准答案。当前目录中的其他页面可以补充组件或交互样本，但先说明它补足哪一条关系，避免目录越大越难检索。
 

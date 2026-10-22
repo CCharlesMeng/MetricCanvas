@@ -1,3 +1,5 @@
+import { pageFilesById } from '../../../../tools/scripts/page-files.mjs';
+import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parsePage, type Page } from '@metriccanvas/page';
@@ -5,7 +7,7 @@ import { flattenPageComponents, type Row } from '@metriccanvas/page/internal';
 import { initialFilterValues, initializePageParams, navigationHref, resolvePageParams, type FilterValues } from '../src';
 
 function load(name: string): Page {
-  const document: unknown = JSON.parse(readFileSync(new URL(`../../../../pages/${name}.json`, import.meta.url), 'utf8'));
+  const document: unknown = JSON.parse(readFileSync(pageFilesById(fileURLToPath(new URL('../../../../pages', import.meta.url))).get(name)!, 'utf8'));
   const parsed = parsePage(document);
   if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
   return parsed.page;

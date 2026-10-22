@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parsePage, validate } from '@metriccanvas/page';
-import flowReportPageJson from '../../../pages/flow-analysis-report.json';
+import flowReportPageJson from '../../../pages/business/report/flow/flow-analysis-report.json';
 import flowFixtureJson from '../../../tools/dqe-sim/fixtures/flow-analysis-report.json';
 
 type JsonRow = Record<string, string | number | boolean | null>;

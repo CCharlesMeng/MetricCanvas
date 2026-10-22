@@ -1,3 +1,4 @@
+import { pageFilesById } from '../tools/scripts/page-files.mjs';
 import {readFileSync} from 'node:fs';
 import {expect,it} from 'vitest';
 import {parsePage} from '../packages/page/src/validate';
@@ -5,7 +6,7 @@ import {createFilterState,initialFilterValues} from '../packages/engine/runtime/
 import {filterCandidatesRequest} from '../packages/engine/runtime/src/filter-candidates';
 import {businessReviewPages,collaborationCandidates,createIocBusinessPreview} from '../apps/playground/src/lib/ioc-business-preview';
 import {recentMonthOptions} from '../tools/scripts/recent-month-options';
-function load(id:string){const parsed=parsePage(JSON.parse(readFileSync(`pages/${id}.json`,'utf8')));if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));return parsed.page;}
+function load(id:string){const parsed=parsePage(JSON.parse(readFileSync(pageFilesById('pages').get(`${id}`)!,'utf8')));if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));return parsed.page;}
 it.each(businessReviewPages)('review consumes the canonical page: $value',({value})=>{
  const page=load(value);expect(page.iocHeader?.identity?.title).toBeTruthy();expect(page.iocHeader?.presentation).toMatchObject({layout:'inline',collapse:'none'});
 });

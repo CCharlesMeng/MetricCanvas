@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..');
 const appRoot = resolve(repo, 'apps/platform');
 const output = process.env.CANVAS_EVIDENCE_DIR || '/private/tmp/metriccanvas-canvas-experience';
-const scenario = JSON.parse(await readFile(resolve(repo, 'pages/platform-canvas-experience.json'), 'utf8'));
+const scenario = JSON.parse(await readFile(resolve(repo, 'pages/platform/platform-canvas-experience.json'), 'utf8'));
 let stored = structuredClone(scenario), revision = 1;
 const writes = [], errors = [];
 process.chdir(appRoot);

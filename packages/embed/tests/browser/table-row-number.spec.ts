@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const ExcelJS = createRequire(require.resolve('@metriccanvas/engine/ui'))('exceljs');
-const fixture = () => JSON.parse(readFileSync(new URL('../../../../pages/table-row-number.json', import.meta.url), 'utf8'));
+const fixture = () => JSON.parse(readFileSync(new URL('../../../../pages/capabilities/table/table-row-number.json', import.meta.url), 'utf8'));
 async function mount(page: import('@playwright/test').Page, document = fixture()) {
   await page.goto('/examples/inline.html');
   await page.evaluate(document => { window.runtime.destroy(); window.runtime = MetricCanvas.mount('#dashboard', { document }); }, document);
@@ -69,7 +69,7 @@ test('query pagination uses the current window offset without adding a query fie
 });
 
 test('parent expansion spans the generated column and children number independently', async ({page})=>{
-  const document=JSON.parse(readFileSync(new URL('../../../../pages/table-row-expansion-inline.json',import.meta.url),'utf8'));
+  const document=JSON.parse(readFileSync(new URL('../../../../pages/capabilities/table/table-row-expansion-inline.json',import.meta.url),'utf8'));
   document.schemaVersion='6.48'; document.sections=document.sections.slice(0,1);
   const props=document.sections[0].components[0].props; props.rowNumber={fixed:'left'}; props.rowExpansion.table.rowNumber={};
   await mount(page,document); const table=page.locator('article').first();

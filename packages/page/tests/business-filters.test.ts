@@ -2,7 +2,7 @@ import { dimensionSelectionIssue } from '../src/filter-dependencies';
 import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {parsePage} from '../src/validate';
-const base=()=>({...JSON.parse(readFileSync('pages/ioc-header-overview-demo.json','utf8')),schemaVersion:'6.37'});
+const base=()=>({...JSON.parse(readFileSync('pages/capabilities/ioc-header/scenarios/ioc-header-overview-demo.json','utf8')),schemaVersion:'6.37'});
 const apply=(filter:object)=>{const page=base();page.filters.push({id:'business',type:'dimension',dimension:'kind',...filter});return page;};
 describe('B2 shared business filter declarations',()=>{
   it('accepts closed single/multiple choices and hint TextValue',()=>{

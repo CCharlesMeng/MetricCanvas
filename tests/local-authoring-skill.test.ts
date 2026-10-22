@@ -1,3 +1,4 @@
+import { pageFilesById } from '../tools/scripts/page-files.mjs';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { chmod, cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
@@ -57,9 +58,23 @@ describe('独立本地创作 Skill', () => {
     expect(run(['--expected-layout']).status).toBe(2);
   });
 
+  it('仓外安装递归校验嵌套目录，并拒绝跨目录同名页面', async () => {
+    const directory = await mkdtemp(path.join(isolated, 'nested-pages-'));
+    const document = JSON.parse(files.get('references/page-metadata/examples/inline-report.json')!);
+    await mkdir(path.join(directory, 'business/report'), { recursive: true });
+    await writeFile(path.join(directory, 'business/report', `${document.id}.json`), JSON.stringify(document));
+    const result = run([directory]);
+    expect(result.status, result.stderr).toBe(0);
+    expect(JSON.parse(result.stdout).ok).toBe(true);
+    await writeFile(path.join(directory, `${document.id}.json`), JSON.stringify(document));
+    const duplicate = run([directory]);
+    expect(duplicate.status).toBe(2);
+    expect(duplicate.stderr).toContain(`重复页面 ID ${document.id}`);
+  });
+
   it('成型页面范式覆盖真实布局和全部嵌套组件，且仓外知识仅保留结构', async () => {
     for (const source of pagePatternSources) {
-      const content = await readFile(`pages/${source.pageId}.json`, 'utf8');
+      const content = await readFile(pageFilesById('pages').get(source.pageId)!, 'utf8');
       const parsed = parsePage(JSON.parse(content));
       expect(parsed.ok).toBe(true);
       if (!parsed.ok) continue;
@@ -96,7 +111,7 @@ describe('独立本地创作 Skill', () => {
 
   it('范式生成拒绝形态漂移、损坏页面与身份错配，且不复制自由文本', async () => {
     const source = pagePatternSources[5];
-    const page = JSON.parse(await readFile(`pages/${source.pageId}.json`, 'utf8'));
+    const page = JSON.parse(await readFile(pageFilesById('pages').get(source.pageId)!, 'utf8'));
     page.sections[0].components[0].props.title = 'PRIVATE-CONTENT-MUST-STAY-IN-SOURCE';
     expect(JSON.stringify(pagePattern(source, JSON.stringify(page)))).not.toContain('PRIVATE-CONTENT');
     page.layout = 'dashboard';

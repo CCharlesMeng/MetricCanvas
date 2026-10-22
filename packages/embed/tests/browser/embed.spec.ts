@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+import { pageFilesById } from '../../../../tools/scripts/page-files.mjs';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import type { DataGatewayResult } from '@metriccanvas/engine';
@@ -75,7 +77,7 @@ test.beforeEach(async ({ page }) => {
 
 async function iocPageDocument(pageId: string) {
   return JSON.parse(await readFile(
-    new URL(`../../../../pages/${pageId}.json`, import.meta.url),
+    pageFilesById(fileURLToPath(new URL('../../../../pages', import.meta.url))).get(`${pageId}`)!,
     'utf8'
   ));
 }

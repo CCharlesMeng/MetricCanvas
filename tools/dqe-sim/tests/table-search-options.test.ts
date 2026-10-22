@@ -6,7 +6,7 @@ import { composeEffectiveQuery } from '../../../packages/data-execution/src/effe
 import { parsePage } from '../../../packages/page/src/validate';
 
 it('encodes equality through the real gateway shape, preserves same-field AND, pagination and source immutability', () => {
-  const parsed = parsePage(JSON.parse(readFileSync(new URL('../../../pages/table-search-options-demo.json', import.meta.url), 'utf8')));
+  const parsed = parsePage(JSON.parse(readFileSync(new URL('../../../pages/capabilities/table/table-search-options-demo.json', import.meta.url), 'utf8')));
   if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
   const source = parsed.page.dataSources.queried;
   if (source.source.type !== 'query') throw new Error('Expected query');

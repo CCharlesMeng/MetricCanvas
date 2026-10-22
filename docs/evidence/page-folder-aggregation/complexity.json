@@ -1,0 +1,633 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "files": [
+    {
+      "file": "apps/playground/src/lib/PageDocument.svelte",
+      "functions": []
+    },
+    {
+      "file": "apps/playground/src/lib/directory-navigation-state.ts",
+      "functions": [
+        {
+          "name": "normalizeDirectoryNavigationState",
+          "qualifiedName": "normalizeDirectoryNavigationState",
+          "line": 16,
+          "endLine": 28,
+          "selfCC": 9,
+          "optionalChains": 0,
+          "subtreeCC": 14,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "selection",
+          "qualifiedName": "normalizeDirectoryNavigationState/selection",
+          "line": 18,
+          "endLine": 19,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@19:45>",
+          "qualifiedName": "normalizeDirectoryNavigationState/selection/<anonymous@19:45>",
+          "line": 19,
+          "endLine": 19,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@25:104>",
+          "qualifiedName": "normalizeDirectoryNavigationState/<anonymous@25:104>",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "readDirectoryNavigationState",
+          "qualifiedName": "readDirectoryNavigationState",
+          "line": 30,
+          "endLine": 37,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "rememberDirectoryNavigationState",
+          "qualifiedName": "rememberDirectoryNavigationState",
+          "line": 39,
+          "endLine": 46,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/lib/page-file-index.ts",
+      "functions": [
+        {
+          "name": "indexPagePaths",
+          "qualifiedName": "indexPagePaths",
+          "line": 2,
+          "endLine": 11,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "relativePagePath",
+          "qualifiedName": "relativePagePath",
+          "line": 13,
+          "endLine": 18,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/lib/page-directory.ts",
+      "functions": [
+        {
+          "name": "pageFolder",
+          "qualifiedName": "pageFolder",
+          "line": 7,
+          "endLine": 9,
+          "selfCC": 2,
+          "optionalChains": 1,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "folderIncludes",
+          "qualifiedName": "folderIncludes",
+          "line": 11,
+          "endLine": 13,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "folderTitle",
+          "qualifiedName": "folderTitle",
+          "line": 15,
+          "endLine": 17,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "pageFolders",
+          "qualifiedName": "pageFolders",
+          "line": 19,
+          "endLine": 29,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@25:26>",
+          "qualifiedName": "pageFolders/<anonymous@25:26>",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@25:69>",
+          "qualifiedName": "pageFolders/<anonymous@25:69>",
+          "line": 25,
+          "endLine": 28,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@27:25>",
+          "qualifiedName": "pageFolders/<anonymous@25:69>/<anonymous@27:25>",
+          "line": 27,
+          "endLine": 27,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "organizePageDirectory",
+          "qualifiedName": "organizePageDirectory",
+          "line": 31,
+          "endLine": 41,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@38:36>",
+          "qualifiedName": "organizePageDirectory/<anonymous@38:36>",
+          "line": 38,
+          "endLine": 38,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@38:85>",
+          "qualifiedName": "organizePageDirectory/<anonymous@38:85>",
+          "line": 38,
+          "endLine": 40,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@39:39>",
+          "qualifiedName": "organizePageDirectory/<anonymous@38:85>/<anonymous@39:39>",
+          "line": 39,
+          "endLine": 39,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "filterPageDirectory",
+          "qualifiedName": "filterPageDirectory",
+          "line": 43,
+          "endLine": 58,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 7
+        },
+        {
+          "name": "<anonymous@47:24>",
+          "qualifiedName": "filterPageDirectory/<anonymous@47:24>",
+          "line": 47,
+          "endLine": 47,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@47:71>",
+          "qualifiedName": "filterPageDirectory/<anonymous@47:71>",
+          "line": 47,
+          "endLine": 57,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 4
+        },
+        {
+          "name": "<anonymous@48:41>",
+          "qualifiedName": "filterPageDirectory/<anonymous@47:71>/<anonymous@48:41>",
+          "line": 48,
+          "endLine": 56,
+          "selfCC": 7,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@52:52>",
+          "qualifiedName": "filterPageDirectory/<anonymous@47:71>/<anonymous@48:41>/<anonymous@52:52>",
+          "line": 52,
+          "endLine": 52,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@54:51>",
+          "qualifiedName": "filterPageDirectory/<anonymous@47:71>/<anonymous@48:41>/<anonymous@54:51>",
+          "line": 54,
+          "endLine": 54,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@55:26>",
+          "qualifiedName": "filterPageDirectory/<anonymous@47:71>/<anonymous@48:41>/<anonymous@55:26>",
+          "line": 55,
+          "endLine": 55,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@57:14>",
+          "qualifiedName": "filterPageDirectory/<anonymous@57:14>",
+          "line": 57,
+          "endLine": 57,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/lib/page-entry.ts",
+      "functions": [
+        {
+          "name": "<anonymous@4:56>",
+          "qualifiedName": "<anonymous@4:56>",
+          "line": 4,
+          "endLine": 4,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "isRecord",
+          "qualifiedName": "isRecord",
+          "line": 16,
+          "endLine": 18,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "pageEntry",
+          "qualifiedName": "pageEntry",
+          "line": 21,
+          "endLine": 41,
+          "selfCC": 7,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@26:72>",
+          "qualifiedName": "pageEntry/<anonymous@26:72>",
+          "line": 26,
+          "endLine": 26,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@27:59>",
+          "qualifiedName": "pageEntry/<anonymous@27:59>",
+          "line": 27,
+          "endLine": 27,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/lib/page-repository.ts",
+      "functions": [
+        {
+          "name": "createStaticPageRepository",
+          "qualifiedName": "createStaticPageRepository",
+          "line": 17,
+          "endLine": 44,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 11,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "load",
+          "qualifiedName": "createStaticPageRepository/load",
+          "line": 21,
+          "endLine": 32,
+          "selfCC": 9,
+          "optionalChains": 0,
+          "subtreeCC": 9,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "list",
+          "qualifiedName": "createStaticPageRepository/list",
+          "line": 34,
+          "endLine": 42,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/routes/(viewer)/+page.svelte",
+      "functions": [
+        {
+          "name": "<anonymous@18:13>",
+          "qualifiedName": "<anonymous@18:13>",
+          "line": 18,
+          "endLine": 18,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "captureState",
+          "qualifiedName": "captureState",
+          "line": 20,
+          "endLine": 22,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "rememberState",
+          "qualifiedName": "rememberState",
+          "line": 24,
+          "endLine": 24,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "restoreScroll",
+          "qualifiedName": "restoreScroll",
+          "line": 27,
+          "endLine": 34,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@30:39>",
+          "qualifiedName": "restoreScroll/<anonymous@30:39>",
+          "line": 30,
+          "endLine": 30,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@30:67>",
+          "qualifiedName": "restoreScroll/<anonymous@30:67>",
+          "line": 30,
+          "endLine": 30,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@37:17>",
+          "qualifiedName": "<anonymous@37:17>",
+          "line": 37,
+          "endLine": 40,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "restore",
+          "qualifiedName": "restore",
+          "line": 44,
+          "endLine": 48,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "resetFilters",
+          "qualifiedName": "resetFilters",
+          "line": 51,
+          "endLine": 53,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/fixtures/preview-inputs.ts",
+      "functions": [
+        {
+          "name": "<anonymous@1:123>",
+          "qualifiedName": "<anonymous@1:123>",
+          "line": 1,
+          "endLine": 1,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "pageExternalInputs",
+          "qualifiedName": "pageExternalInputs",
+          "line": 4,
+          "endLine": 11,
+          "selfCC": 7,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/fixtures/legacy-preview.ts",
+      "functions": []
+    },
+    {
+      "file": "tools/scripts/page-files.mjs",
+      "functions": [
+        {
+          "name": "pageFiles",
+          "qualifiedName": "pageFiles",
+          "line": 5,
+          "endLine": 10,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@6:61>",
+          "qualifiedName": "pageFiles/<anonymous@6:61>",
+          "line": 6,
+          "endLine": 9,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@7:75>",
+          "qualifiedName": "pageFiles/<anonymous@6:61>/<anonymous@7:75>",
+          "line": 7,
+          "endLine": 7,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "pageFilesById",
+          "qualifiedName": "pageFilesById",
+          "line": 12,
+          "endLine": 20,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "tools/scripts/local-authoring-validator.ts",
+      "functions": [
+        {
+          "name": "inspectPageDocument",
+          "qualifiedName": "inspectPageDocument",
+          "line": 12,
+          "endLine": 22,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "validationFiles",
+          "qualifiedName": "validationFiles",
+          "line": 24,
+          "endLine": 28,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "main",
+          "qualifiedName": "main",
+          "line": 31,
+          "endLine": 67,
+          "selfCC": 14,
+          "optionalChains": 0,
+          "subtreeCC": 15,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@41:24>",
+          "qualifiedName": "main/<anonymous@41:24>",
+          "line": 41,
+          "endLine": 41,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/page/src/validate-cli.ts",
+      "functions": [
+        {
+          "name": "main",
+          "qualifiedName": "main",
+          "line": 9,
+          "endLine": 70,
+          "selfCC": 12,
+          "optionalChains": 0,
+          "subtreeCC": 12,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@18:55>",
+          "qualifiedName": "main/<anonymous@18:55>",
+          "line": 18,
+          "endLine": 18,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "report",
+          "qualifiedName": "report",
+          "line": 72,
+          "endLine": 77,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}

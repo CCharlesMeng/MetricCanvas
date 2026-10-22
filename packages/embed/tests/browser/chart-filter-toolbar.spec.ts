@@ -40,7 +40,7 @@ test('invalid fixed selections fall back and readOnly disables both presentation
  await page.goto('/pages/filter-group-page?metric=unknown&region=east&region=south');
  await expect(page.locator('[data-filter-group="metric"] button[aria-pressed=true]')).toHaveText('营业收入');
  await expect(page.locator('[data-filter-group="region"]')).toContainText('全部区域');
- const document=JSON.parse(readFileSync(new URL('../../../../pages/filter-group-page.json',import.meta.url),'utf8'));
+ const document=JSON.parse(readFileSync(new URL('../../../../pages/capabilities/filters/filter-group-page.json',import.meta.url),'utf8'));
  document.dashboardToolbar={readOnly:true};
  await page.route('**/pages/filter-group-page.json',route=>route.fulfill({json:document}));
  await page.goto('/pages/filter-group-page');

@@ -8,7 +8,7 @@ import { knowledgeSelection, topicClosure, validateSemanticHeadings, type Author
 
 const source='metriccanvas-authoring/skill/metriccanvas-local-authoring';
 const model=JSON.parse(readFileSync(`${source}/references/authoring-knowledge/model.json`,'utf8')) as AuthoringKnowledge;
-const page=JSON.parse(readFileSync('pages/local-authoring-knowledge-demo.json','utf8'));
+const page=JSON.parse(readFileSync('pages/capabilities/layout/local-authoring-knowledge-demo.json','utf8'));
 const md=readFileSync('tools/fixtures/local-authoring-data/metrics.md','utf8');
 const pageText=JSON.stringify(page);
 const isolated=mkdtempSync(path.join(tmpdir(),'local-authoring-tools-'));
@@ -63,7 +63,7 @@ describe('页面用数和指标材料',()=>{
   it('合流后的独立筛选按钮组可查阅，卡内与正文绑定均被发现',()=>{
     const result=knowledgeSelection(model,['filterGroup.core']) as any;
     expect(result.semantics[0].blocks.join('\n')).toContain('旧图表 `props.filter` 已移除');
-    const fixture=JSON.parse(readFileSync('pages/filter-group-state-page.json','utf8'));
+    const fixture=JSON.parse(readFileSync('pages/capabilities/filters/filter-group-state-page.json','utf8'));
     const scan=scanPageData(fixture,model.schema);
     expect(scan.diagnostics).toEqual([]);
     const filterIds=scan.uses.filter(use=>use.componentType==='filterGroup').map(use=>use.declaration?.filterId);

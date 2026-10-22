@@ -14,7 +14,7 @@ page.on('pageerror', error => errors.push(error.message));
 page.on('request', request => {
   if (request.url().includes('/dsl/execute') && request.method() === 'POST') requests.push(request.postDataJSON());
 });
-const sample = JSON.parse(await readFile(new URL('../../../pages/table-search-options-demo.json', import.meta.url), 'utf8'));
+const sample = JSON.parse(await readFile(new URL('../../../pages/capabilities/table/table-search-options-demo.json', import.meta.url), 'utf8'));
 const table = id => page.locator(`[data-component="main/${id}"]`);
 async function select(target, label) {
   await target.getByRole('button', { name: '表格搜索字段', exact: true }).click();

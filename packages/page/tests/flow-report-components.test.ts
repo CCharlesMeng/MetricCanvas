@@ -1,3 +1,4 @@
+import { pageFiles, pageFilesById } from '../../../tools/scripts/page-files.mjs';
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -180,7 +181,7 @@ describe('流水报告公共组件契约', () => {
 
   it('拒绝越过报告统计月的实际/预测柱数据', () => {
     const source = JSON.parse(
-      readFileSync(path.join(pagesDir, 'flow-analysis-report.json'), 'utf8')
+      readFileSync(pageFilesById(pagesDir).get('flow-analysis-report')!, 'utf8')
     );
     const pastForecast = structuredClone(source);
     pastForecast.dataSources['overall-monthly-trend'].source.initial.rows[0][
@@ -208,9 +209,7 @@ describe('流水报告公共组件契约', () => {
   });
 
   it('存量正式页面继续通过当前 Schema', () => {
-    const pages = readdirSync(pagesDir)
-      .filter((name) => name.endsWith('.json'))
-      .sort();
+    const pages = pageFiles(pagesDir);
     expect(pages.length).toBeGreaterThanOrEqual(5);
     for (const name of pages) {
       const document = JSON.parse(readFileSync(path.join(pagesDir, name), 'utf8'));

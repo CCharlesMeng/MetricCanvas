@@ -7,7 +7,7 @@ import { prepareTableExport } from '../src/table-export';
 import { orchestrate, type PageDataSnapshots } from '../../runtime/src/orchestrator';
 
 function fixture() {
-  const result = parsePage(JSON.parse(readFileSync(new URL('../../../../pages/table-search-options-demo.json', import.meta.url), 'utf8')));
+  const result = parsePage(JSON.parse(readFileSync(new URL('../../../../pages/capabilities/table/table-search-options-demo.json', import.meta.url), 'utf8')));
   if (!result.ok) throw new Error(JSON.stringify(result.errors));
   return result.page;
 }

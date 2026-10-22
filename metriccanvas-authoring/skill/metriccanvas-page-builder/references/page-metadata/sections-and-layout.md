@@ -26,7 +26,7 @@ Tab和组合卡是受控容器组件，子项允许类型由各自Schema分支�
 
 移动、宽度和删除共用工作台的本地保护、撤销和显式保存流程。整页预览与保存期间停止搭建操作；输入控件内的 Delete 仍是文字编辑。搭建画布只发出意图，工作台拥有文档改写和撤销。独立集成应用须显式启用 `allowDelete` 并处理 `delete_component` 才展示删除入口。搭建画布配置 `inlineControls: false` 时，标题与宽度交给外部属性面板，同时在选中组件旁提供上移/下移及已启用的删除操作；默认行内标题/宽度入口保留。
 
-完整验收场景为 `pages/platform-canvas-experience.json`，运行步骤及受控端口的证据边界见 `pages/README.md`。本次交互调整未改变 Schema 版本或运行时组件语义。
+完整验收场景为 `pages/platform/platform-canvas-experience.json`，运行步骤及受控端口的证据边界见 `pages/README.md`。本次交互调整未改变 Schema 版本或运行时组件语义。
 
 ## 查阅方式
 

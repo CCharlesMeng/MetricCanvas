@@ -1,6 +1,7 @@
+import { pageFilesById } from '../../../tools/scripts/page-files.mjs';
 import {iocTimeCandidates} from './fixtures/ioc-time-candidates.mjs';
 import {iocBusinessCandidates} from './fixtures/ioc-header-business-candidates.mjs';
-import { createReadStream, readdirSync } from 'node:fs';
+import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { extname, resolve, sep } from 'node:path';
@@ -8,12 +9,22 @@ import { DQE_EXECUTE_PATH, executeFixtureItem } from './dqe-fixture-endpoint.mjs
 
 const root = resolve(import.meta.dirname, '..');
 const pagesRoot = resolve(root, '../../pages');
+const pages = pageFilesById(pagesRoot);
 const contentTypes = new Map([
   ['.html', 'text/html; charset=utf-8'],
   ['.js', 'text/javascript; charset=utf-8'],['.mjs','text/javascript; charset=utf-8'],
   ['.json', 'application/json; charset=utf-8'],
   ['.svg', 'image/svg+xml']
 ]);
+
+function contentFile(pathname) {
+  const servingPages = pathname.startsWith('/pages/');
+  const publicRoot = servingPages ? pagesRoot : root;
+  const publicPath = servingPages ? pathname.slice('/pages'.length) : pathname;
+  const pageId = servingPages && /^\/[^/]+\.json$/.test(publicPath) ? publicPath.slice(1, -5) : undefined;
+  const file = pageId ? pages.get(pageId) ?? resolve(publicRoot, `.${publicPath}`) : resolve(publicRoot, `.${publicPath}`);
+  return { publicRoot, file };
+}
 
 createServer(async (request, response) => {
   try {
@@ -43,12 +54,7 @@ createServer(async (request, response) => {
       createReadStream(resolve(root, 'examples/navigation.html')).pipe(response);
       return;
     }
-    const servingPages = pathname.startsWith('/pages/');
-    const publicRoot = servingPages ? pagesRoot : root;
-    const publicPath = servingPages
-      ? pathname.slice('/pages'.length)
-      : pathname;
-    const file = resolve(publicRoot, `.${publicPath}`);
+    const { publicRoot, file } = contentFile(pathname);
     if (file !== publicRoot && !file.startsWith(`${publicRoot}${sep}`)) {
       response.writeHead(403).end('Forbidden');
       return;
@@ -72,10 +78,7 @@ createServer(async (request, response) => {
 /** 启动时列出可直接打开的页面，省得对着一个没有回显的进程猜它起没起。 */
 function pageIds() {
   try {
-    return readdirSync(pagesRoot)
-      .filter((name) => name.endsWith('.json'))
-      .map((name) => name.slice(0, -'.json'.length))
-      .sort();
+    return [...pages.keys()].sort();
   } catch {
     return [];
   }

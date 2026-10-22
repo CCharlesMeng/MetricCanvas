@@ -10,7 +10,7 @@ note: 补齐 ADR-0050 层级维度筛选器在查询侧的绑定形状；6.7 新
 
 **但查询侧没有接住它。** `filterBindings` 的 dimension 目标只有一个恒定的 `queryField`，`composeEffectiveQuery` 读的也只是这一个字段，`value.level` 在编排层被整个丢掉。后果不是"层级不起作用"，而是更糟的一种：用户切到代表处层选了几个代表处，发出去的谓词仍然是 `geo_pc_code IN (代表处编码)`——字段是上层的，取值是下层的，上游照常返回结果，页面照常渲染，**没有任何一处会报错**。
 
-这就是 `pages/ioc-opportunity-list.json` 的 `region` 当初宁可整个不绑的原因：在"不筛"和"静默错数据"之间只能选前者。本仓其余两处行使过这个开放面的样例（`packages/page/fixtures/contract-valid/` 下的 `filters-page` 与 `map-page`）都把 `queryField` 写成了第一层的维度，也就是说它们在默认层正确、在其它层错——只是没人切过层。
+这就是 `pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json` 的 `region` 当初宁可整个不绑的原因：在"不筛"和"静默错数据"之间只能选前者。本仓其余两处行使过这个开放面的样例（`packages/page/fixtures/contract-valid/` 下的 `filters-page` 与 `map-page`）都把 `queryField` 写成了第一层的维度，也就是说它们在默认层正确、在其它层错——只是没人切过层。
 
     20|## 决策
 
@@ -45,7 +45,7 @@ note: 补齐 ADR-0050 层级维度筛选器在查询侧的绑定形状；6.7 新
 
 ## Consequences
 
-- `pages/ioc-opportunity-list.json` 的 `region` 从"故意不绑"变成三层各自绑定，页面随之声明 6.7。这是本决策的第一个、也是目前唯一的行使者。
+- `pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json` 的 `region` 从"故意不绑"变成三层各自绑定，页面随之声明 6.7。这是本决策的第一个、也是目前唯一的行使者。
     40|- 浏览器证据钉住了行为而不只是结构：`packages/embed/tests/browser/navigation.spec.ts` 用同一个筛选器在 geo / region-dept / office 三层各取一个值，断言行数分别是 9 / 3 / 1。忽略 `level` 的实现会让三个数字塌成一个，或让其中两次取到空集。
 - 6.8 是一个只含收紧、不含新能力的次版本，因此 `version.ts` 的能力表里没有 minor=8 的条目。能力下限计算不受影响：用了 `levelQueryFields` 的文档要求的仍是 6.7。
 - 开放面就此关闭，代价是 ADR-0051 的零使用例外在本仓第二次被行使（第一次是 5.2 给组件 `layout` 补 `.strict()`）。这条例外每用一次都在消耗它自身的约束力，所以判据二的扫描测试必须留在仓里——它不是一次性的证明，而是防止开放面重新长出来的守卫。

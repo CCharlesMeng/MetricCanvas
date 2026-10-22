@@ -2,7 +2,7 @@ import {expect,test} from '@playwright/test';
 import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),ExcelJS=createRequire(require.resolve('@metriccanvas/engine/ui'))('exceljs');
-const fixture=()=>JSON.parse(readFileSync(new URL('../../../../pages/multi-query-table.json',import.meta.url),'utf8'));
+const fixture=()=>JSON.parse(readFileSync(new URL('../../../../pages/capabilities/table/multi-query-table.json',import.meta.url),'utf8'));
 const originalOffices=JSON.parse(readFileSync(new URL('../../../data-execution/tests/fixtures/offices.json',import.meta.url),'utf8')) as Array<Record<string,string|number>>;
 const byAmount=[...originalOffices].sort((a,b)=>Number(b['bidding-amount'])-Number(a['bidding-amount']));
 const offices=originalOffices.map(row=>({...row,'bidding-rank':byAmount.findIndex(candidate=>candidate['rep-office-code']===row['rep-office-code'])+1}));

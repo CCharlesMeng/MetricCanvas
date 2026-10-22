@@ -28,7 +28,7 @@ it('非法默认值和旧版本声明拒绝；页面参数不能绕过上限', (
   expect(validate(page)).toEqual(expect.arrayContaining([expect.objectContaining({ path: '/filters/0/default', message: expect.stringContaining('不得晚于') })]));
   page.filters[0].default = '2026-10'; page.schemaVersion = '6.24';
   expect(validate(page).some(e => e.message.includes('由 6.25 引入'))).toBe(true);
-  const paramPage = JSON.parse(readFileSync(new URL('../../../pages/sdt/commercial-sdt-efficiency-ultimate-monthly.json', import.meta.url), 'utf8'));
+  const paramPage = JSON.parse(readFileSync(new URL('../../../pages/business/report/sdt/commercial-sdt-efficiency-ultimate-monthly.json', import.meta.url), 'utf8'));
   expect(resolvePageParams(paramPage).ok).toBe(true);
   expect(resolvePageParams(paramPage, { 'report-period': { start: '2026-11', end: '2026-11' } }).ok).toBe(false);
 });

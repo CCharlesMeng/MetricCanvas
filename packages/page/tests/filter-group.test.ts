@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { parsePage } from '../src/validate';
 import { filterGroupOptions } from '../src/filter-group';
 
-const original = JSON.parse(readFileSync(new URL('../../../pages/filter-group-state-page.json', import.meta.url), 'utf8'));
+const original = JSON.parse(readFileSync(new URL('../../../pages/capabilities/filters/filter-group-state-page.json', import.meta.url), 'utf8'));
 const copy=()=>structuredClone(original);
 describe('Dashboard filterGroup', () => {
   it('accepts shared query consumers, signed metrics, independent content gates and a nested control', () => {
@@ -11,7 +11,7 @@ describe('Dashboard filterGroup', () => {
     if(parsed.ok)expect([...filterGroupOptions(parsed.page)]).toEqual([['channel',['CN','OVERSEAS']],['card-region',['CN','OVERSEAS']]]);
   });
   it('accepts all four migrated chart kinds in existing composite cards',()=>{
-    expect(parsePage(JSON.parse(readFileSync(new URL('../../../pages/chart-local-filter-page.json',import.meta.url),'utf8'))).ok).toBe(true);
+    expect(parsePage(JSON.parse(readFileSync(new URL('../../../pages/capabilities/chart/chart-local-filter-page.json',import.meta.url),'utf8'))).ok).toBe(true);
   });
   it('permits static or conditional hiding without deleting the filter contract',()=>{
     const document=copy();document.filters[1].visible=false;expect(parsePage(document).ok).toBe(true);
@@ -55,7 +55,7 @@ it('gates newly admitted composite chart children even without a filter control'
 });
 
  it('accepts the approved dual-control page and gates both new presentation fields at 6.47',()=>{
-  const d=JSON.parse(readFileSync(new URL('../../../pages/filter-group-page.json',import.meta.url),'utf8'));
+  const d=JSON.parse(readFileSync(new URL('../../../pages/capabilities/filters/filter-group-page.json',import.meta.url),'utf8'));
   expect(parsePage(d).ok).toBe(true);
   for(const props of [{display:'select'},{align:'right'}]){
    const old=copy();old.schemaVersion='6.46';Object.assign(old.sections[0].components[0].props,props);

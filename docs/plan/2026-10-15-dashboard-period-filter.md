@@ -139,7 +139,7 @@ Schema 采用增量次版本及 capability gate，同步公共类型、Zod、语
 9. 人工配置和本地创作分别产出可校验页面；参数只初始化、不反写，报告页头和存量日期筛选回归。
 10. 导出沿用已应用范围；跨月情况下导出日期、查询日期和页面所示日期一致。
 
-建议新增 `pages/dashboard-period-filter.json` 与月份精度场景，注册到 `apps/playground/page-catalog.json`，写入 `pages/README.md`。自动验收直接读取这些页面，不在测试内临时拼出功能。异常由非法契约夹具及状态／执行测试补充。
+建议新增 `pages/capabilities/filters/dashboard-period-filter.json` 与月份精度场景，注册到 `apps/playground/page-catalog.json`，写入 `pages/README.md`。自动验收直接读取这些页面，不在测试内临时拼出功能。异常由非法契约夹具及状态／执行测试补充。
 
 静态／单元、浏览器与 Sim、独立 Skill 安装、真实模型、真实 Relay／DQE／Java、推送与 CI 分开报告。本次已验证正式控件、实际请求合成与安装包；真实接入未验证。
 

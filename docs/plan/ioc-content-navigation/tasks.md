@@ -30,7 +30,7 @@
 | packages/engine/runtime-ui/src/section-navigation.ts | 逻辑 | 新建 | 可见分区与定位组 | PageSection | T2 |
 | packages/engine/runtime-ui/src/RuntimeSurface.svelte | 渲染 | 修改 | 页实例状态、控制按钮、章节定位 | RuntimeSection | T2 |
 | packages/engine/runtime-ui/tests/section-navigation.test.ts | 测试 | 新建 | 状态选择与分区引用 | vitest | T2 |
-| pages/ioc-content-navigation.json | 样例 | 新建 | 匿名功能验收页，不冒充来源业务页 | 既有表格组件 | T3 |
+| pages/capabilities/navigation/ioc-content-navigation.json | 样例 | 新建 | 匿名功能验收页，不冒充来源业务页 | 既有表格组件 | T3 |
 | packages/embed/tests/browser/section-navigation.spec.ts | 浏览器测试 | 新建 | 切组、状态、定位及窄屏不破 | 现有浏览器测试设施 | T3 |
 
 ## 用例追溯

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
+  import PageDocument from '$lib/PageDocument.svelte';
+  const framed = browser && window.self !== window.top;
   import { page } from '$app/state';
   import { goto, replaceState } from '$app/navigation';
   import { RuntimeSurface, RuntimeSection } from '@metriccanvas/engine/ui/composition';
@@ -22,6 +25,7 @@
 
 <svelte:head><title>IOC Header · 经营概览</title></svelte:head>
 {#await document}<p role="status">加载页面…</p>{:then document}
+  {#if !framed}<PageDocument {pageId} {document} />{/if}
   <RuntimeSurface {document} {dataGateway} {navigation} {initialSearch}>
     {#snippet sectionsContent(sections, componentContent)}
       {#each sections as section (section.id)}

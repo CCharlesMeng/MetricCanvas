@@ -321,9 +321,9 @@ Python `page_validation.py` 的产品 Bridge 能力探测纳入全部新字段�
 
 | 页面 | 可观察内容 | 环境 |
 |---|---|---|
-| `pages/page-visibility-region-linkage.json` | organization 的默认层、地区部、代表处；目标分区与子组件条件；Tab和分区组；按钮；片段；筛选文字；本地表格行与交互 | 本地可直接运行；需要重查的源使用明确 DQE Sim 查询 |
-| `pages/page-visibility-inputs.json` | pending/allow/deny/error、外部事实迟到、权限会话改变、导出冻结和取消 | Playground 中立示例 Adapter，明显标注 Sim 事实 |
-| `pages/page-visibility-report.json` | 条件相同的PDF/PNG/XLSX，捕获后普通筛选变动保持冻结，权限修订取消 | 本地inline与真实Worker下载 |
+| `pages/capabilities/filters/page-visibility-region-linkage.json` | organization 的默认层、地区部、代表处；目标分区与子组件条件；Tab和分区组；按钮；片段；筛选文字；本地表格行与交互 | 本地可直接运行；需要重查的源使用明确 DQE Sim 查询 |
+| `pages/capabilities/filters/page-visibility-inputs.json` | pending/allow/deny/error、外部事实迟到、权限会话改变、导出冻结和取消 | Playground 中立示例 Adapter，明显标注 Sim 事实 |
+| `pages/capabilities/filters/page-visibility-report.json` | 条件相同的PDF/PNG/XLSX，捕获后普通筛选变动保持冻结，权限修订取消 | 本地inline与真实Worker下载 |
 | 旧页面兼容入口 | 已有 sectionGroups、Tab URL初选、图表局部筛选、PNG/PDF 与表格导出 | 复用现有 pages，B0 登记实际 ID，不复制旧页制造第二份声明 |
 
 Playground 示例 Adapter 通过开发应用接缝注入，不增加页面模拟权限字段或把模拟开关带入生产 Schema。目录入口必须能从 /pages/<id> 直接打开，并登记需要的 URL 参数和启动方式。

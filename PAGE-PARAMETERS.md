@@ -67,7 +67,7 @@
 
 分层参数的显式非法输入不回退保存值，缺必需输入时不能执行。执行回执已核验的实际输入与筛选值为初始化权威，不再次用URL或模板值覆盖。
 
-6.23 起，主标题可使用 `{"parts":[{"filter":"report-period-filter","format":"period"}," 经营分析报告"]}`，将已应用时间与固定名称组合。参数片段仍在打开时固定，筛选片段随已应用状态更新；任一可选参数片段缺失则整个文本属性移除。完整场景见 [Report 时间选择与联动](pages/report-date-filter-example.json)。
+6.23 起，主标题可使用 `{"parts":[{"filter":"report-period-filter","format":"period"}," 经营分析报告"]}`，将已应用时间与固定名称组合。参数片段仍在打开时固定，筛选片段随已应用状态更新；任一可选参数片段缺失则整个文本属性移除。完整场景见 [Report 时间选择与联动](pages/capabilities/filters/report-date-filter-example.json)。
 
 参数文字用 `{param:"report-period",format:"period"}` 显示固定期间。需要文字随读者筛选变化时，用 `{filter:"report-period-filter",format:"period"}`；两者分别引用参数ID和筛选器ID。精确格式与缺值规则见[文本取值参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
 
@@ -75,7 +75,7 @@
 
 6.41 统一页头通过 `iocHeader.filterIds` 认领已声明的时间筛选。仅选年份用 `periodModes:["year"]`；参数初始化需 `initialParam` 与 `initialMode:"year"`，不再声明 default，参数恰好覆盖精度匹配的完整自然年。声明和限制见[筛选模块](docs/page-metadata/filters.md)。
 
-时间点可在6.24起使用 `min` 指定包含式下限，格式须与 granularity 一致。例：`{"id":"report-month","type":"timePoint","granularity":"month","required":true,"default":"2026-10","min":"2020-06"}`。越界输入不能更新已应用月份；参数初值越界则拒绝初始化。该限制不裁剪近N期窗口；详细行为见[筛选声明](docs/page-metadata/filters.md#时间点下限624)，完整场景见[商务SDT单月报告](pages/business-sdt-report-monthly.json)。
+时间点可在6.24起使用 `min` 指定包含式下限，格式须与 granularity 一致。例：`{"id":"report-month","type":"timePoint","granularity":"month","required":true,"default":"2026-10","min":"2020-06"}`。越界输入不能更新已应用月份；参数初值越界则拒绝初始化。该限制不裁剪近N期窗口；详细行为见[筛选声明](docs/page-metadata/filters.md#时间点下限624)，完整场景见[商务SDT单月报告](pages/business/report/sdt/business-sdt-report-monthly.json)。
 
 页面参数确定打开时的输入；时间筛选器保存页内可变状态。需要读者切换期间时，应同时声明筛选器、查询绑定、控件位置和期间文字。以下用法对应报告页头 `reportHeader`；dashboard 的顶部工具栏消费页面筛选声明，布局形态本身不能代替查询绑定。
 
@@ -89,7 +89,7 @@
 
 ### 月份范围完整页面与配置摘录
 
-[完整页面 JSON](pages/report-date-filter-example.json)包含参数、筛选器、DQE查询、结果字段契约、报告页头和月度明细表。以下摘录关键配置；省略的字段契约、查询体和表格声明请从完整页面读取，不能将此片段单独提交校验。
+[完整页面 JSON](pages/capabilities/filters/report-date-filter-example.json)包含参数、筛选器、DQE查询、结果字段契约、报告页头和月度明细表。以下摘录关键配置；省略的字段契约、查询体和表格声明请从完整页面读取，不能将此片段单独提交校验。
 
 ```json
 {
@@ -452,7 +452,7 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 
 ### 7. 实际页面与查阅入口
 
-[流水分析报告参数版](pages/flow-analysis-report-params.json)是完整业务演示：
+[流水分析报告参数版](pages/business/report/flow/flow-analysis-report-params.json)是完整业务演示：
 
 - 保存“北京代表处”和“2026-02”两个默认值。
 - 12个查询都绑定代表处与报告月份。
@@ -474,7 +474,7 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 
 ### Report 日期工具带与 PDF 下载
 
-6.28起，`reportHeader.props.pdfExport`与`filterIds`共用工具带。按钮文字`label`和文件名`filename`均遵循文本取值协议，可用`{parts:["经营报告-",{filter:"report-month",format:"period"}]}`引用当前已应用期间。导出点击时捕获期间、数据作用域与文件名，未提交草稿不参与；PDF不包含日期及下载控件。声明和默认行为见[报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628)，完整示例见[内置PDF下载页面](pages/report-pdf-export.json)。
+6.28起，`reportHeader.props.pdfExport`与`filterIds`共用工具带。按钮文字`label`和文件名`filename`均遵循文本取值协议，可用`{parts:["经营报告-",{filter:"report-month",format:"period"}]}`引用当前已应用期间。导出点击时捕获期间、数据作用域与文件名，未提交草稿不参与；PDF不包含日期及下载控件。声明和默认行为见[报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628)，完整示例见[内置PDF下载页面](pages/capabilities/export/report-pdf-export.json)。
 
 ## Dashboard 期间筛选初始化
 
@@ -490,7 +490,7 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 
 ### IOC身份与独立详情月份（6.36）
 
-根iocHeader的title/code/description/tags/facts消费同一TextValue引用与一层parts；参数不反向读取筛选草稿。显式标题缺值显示“未命名”，可选身份项缺值整体省略，不生成当前刷新时间。详情用timePoint.initialParam取得单月初值，后续修改只改变FilterState；完整例见[详情单月](pages/ioc-header-detail-demo.json)，行为与限制由[页面模块](docs/page-metadata/page.md#ioc-公共页头632)拥有。
+根iocHeader的title/code/description/tags/facts消费同一TextValue引用与一层parts；参数不反向读取筛选草稿。显式标题缺值显示“未命名”，可选身份项缺值整体省略，不生成当前刷新时间。详情用timePoint.initialParam取得单月初值，后续修改只改变FilterState；完整例见[详情单月](pages/capabilities/ioc-header/scenarios/ioc-header-detail-demo.json)，行为与限制由[页面模块](docs/page-metadata/page.md#ioc-公共页头632)拥有。
 
 业务筛选6.37的selection/options也约束initialParam物化值、URL和restore；参数仍只初始化，不随页内筛选回写。详见[业务筛选](docs/page-metadata/filters.md#business-filters)。
 
@@ -508,4 +508,4 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 层级维度筛选可只通过 `<filterId>.level` 恢复当前层级；没有附加取值时保留 `values: []`，不写空值查询谓词。`visibleWhen` 读取已提交的同一筛选状态；隐藏控件不会删除筛选值。示例 `/pages/page-visibility-region-linkage?organization.level=department` 和完整规则见 [条件显隐](docs/page-metadata/conditions.md)。
 
 
-IOC 最近月份使用 dimension 的 `selection:{mode:"multiple",required:true}`（6.46）和 `urlParams:{value:"months"}`；`?months=202610&months=202608` 保留两个离散值，不扩成连续范围。清空写入拒绝，缺值门禁；生产空选回退仍未裁决。参见 [IOC业务场景](docs/page-metadata/filters.md#ioc-业务批量场景与必选多选646) 与 `pages/ioc-header-months.json`。
+IOC 最近月份使用 dimension 的 `selection:{mode:"multiple",required:true}`（6.46）和 `urlParams:{value:"months"}`；`?months=202610&months=202608` 保留两个离散值，不扩成连续范围。清空写入拒绝，缺值门禁；生产空选回退仍未裁决。参见 [IOC业务场景](docs/page-metadata/filters.md#ioc-业务批量场景与必选多选646) 与 `pages/capabilities/ioc-header/business/ioc-header-months.json`。

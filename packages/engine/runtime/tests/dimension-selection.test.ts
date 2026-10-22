@@ -4,7 +4,7 @@ import {seedPageParamFilters} from '../../../data-execution/src/page-params';
 import {detailViewInput} from '../src/detail-view';
 import {parsePage} from '@metriccanvas/page';
 import type {OpenDetailAction} from '@metriccanvas/page/internal';
-import fixture from '../../../../pages/ioc-header-selection.json';
+import fixture from '../../../../pages/capabilities/ioc-header/selection/ioc-header-selection.json';
 import {createFilterState,parseFilterSearch,initialFilterValues} from '../src/filter-state';
 
 const declarations:FilterDeclaration[]=[{id:'region',type:'dimension',dimension:'region',selection:{mode:'single'},default:['SZ']}];

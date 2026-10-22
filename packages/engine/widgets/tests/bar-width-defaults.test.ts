@@ -1,6 +1,6 @@
 import {expect,it} from 'vitest';
 import * as echarts from 'echarts';
-import scene from '../../../../pages/bar-width-defaults.json';
+import scene from '../../../../pages/capabilities/chart/bar-width-defaults.json';
 import {flattenPageComponents,parsePage,resolveDataSourceFields} from '@metriccanvas/page/internal';
 import {barOption,barSeriesOrder} from '../src/components/bar-chart/options';
 import {chartSource} from '../src/shared/chart-option-extension';

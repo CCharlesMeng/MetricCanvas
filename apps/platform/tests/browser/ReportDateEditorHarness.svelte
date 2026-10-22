@@ -1,7 +1,7 @@
 <script lang="ts">
   import { RuntimeView } from '@metriccanvas/engine/ui';
   import type { RuntimeDataGateway } from '@metriccanvas/engine';
-  import dashboardFixture from '../../../../pages/dashboard-period-filter.json';
+  import dashboardFixture from '../../../../pages/capabilities/filters/dashboard-period-filter.json';
   import fixture from '../../../../packages/page/fixtures/contract-valid/report-date-filters-page.json';
   import ReportDateProperties from '../../src/lib/workbench/ReportDateProperties.svelte';
   import { createCanvasAuthoringDraft, type CanvasAuthoringDraft } from '../../src/lib/workbench/document-edit';

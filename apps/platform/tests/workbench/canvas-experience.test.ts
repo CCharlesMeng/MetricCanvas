@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { validate } from '@metriccanvas/page';
-import scenario from '../../../../pages/platform-canvas-experience.json';
+import scenario from '../../../../pages/platform/platform-canvas-experience.json';
 import queryPage from './fixtures/document-edit.json';
 import { createCanvasAuthoringDraft, deleteComponent, moveComponent, restoreCanvasAuthoringDraft } from '../../src/lib/workbench/document-edit';
 

@@ -6,7 +6,7 @@ import {
   type TableColumn,
   type TableComponent
 } from '@metriccanvas/page/internal';
-import customerActivityRiskBriefing from '../../../pages/customer-activity-risk-briefing.json';
+import customerActivityRiskBriefing from '../../../pages/business/report/customer/customer-activity-risk-briefing.json';
 
 describe('客户活动风险简报页面文档', () => {
   it('通过当前契约，并声明查询驱动的表格联动', () => {

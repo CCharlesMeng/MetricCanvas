@@ -1,5 +1,6 @@
-import { readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
-import { basename, join, resolve } from 'node:path';
+import { readFileSync, realpathSync, statSync } from 'node:fs';
+import { basename, resolve } from 'node:path';
+import { pageFilesById } from './page-files.mjs';
 import { fileURLToPath } from 'node:url';
 import { parsePage } from '../../packages/page/src/validate';
 import { fileNameErrors } from '../../packages/page/src/file-name';
@@ -18,6 +19,12 @@ export function inspectPageDocument(fileName: string, document: unknown, expecte
     message: `布局形态与本次确认不一致：预期 ${expectedLayout}，实际 ${actual}`
   });
   return errors;
+}
+
+function validationFiles(target: string): string[] {
+  const files = statSync(target).isDirectory() ? [...pageFilesById(target).values()] : [target];
+  if (!files.length) throw new Error('No JSON page documents found');
+  return files;
 }
 
 /** Distribution entrypoint: bundled with the product validator, never imports the author's checkout. */
@@ -40,10 +47,7 @@ function main(args: string[]): number {
   const target = resolve(args[0]);
   let files: string[];
   try {
-    files = statSync(target).isDirectory()
-      ? readdirSync(target).filter(name => name.endsWith('.json')).sort().map(name => join(target, name))
-      : [target];
-    if (!files.length) throw new Error('No JSON page documents found');
+    files = validationFiles(target);
   } catch (cause) {
     console.error(String(cause));
     return 2;

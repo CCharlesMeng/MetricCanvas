@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 
 test('packaged runtime renders static search options and submits the new field immediately', async ({ page }) => {
-  const document = JSON.parse(readFileSync(new URL('../../../../pages/table-search-options-demo.json', import.meta.url), 'utf8'));
+  const document = JSON.parse(readFileSync(new URL('../../../../pages/capabilities/table/table-search-options-demo.json', import.meta.url), 'utf8'));
   // Keep the acceptance page's interaction declarations; this smoke test exercises its inline table.
   document.sections[0].components = [document.sections[0].components[0]];
   delete document.dataSources.queried;
@@ -25,7 +25,7 @@ test('packaged runtime renders static search options and submits the new field i
 });
 
 test('static search options respect the existing toolbar execution condition', async ({ page }) => {
-  const document = JSON.parse(readFileSync(new URL('../../../../pages/table-search-options-demo.json', import.meta.url), 'utf8'));
+  const document = JSON.parse(readFileSync(new URL('../../../../pages/capabilities/table/table-search-options-demo.json', import.meta.url), 'utf8'));
   document.sections[0].components = [document.sections[0].components[0]];
   document.sections[0].components[0].props.toolbar.search.enabledWhen = { permission: 'search' };
   delete document.dataSources.queried;

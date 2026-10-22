@@ -8,7 +8,7 @@ note: 补齐 ADR-0050 闭集里三类筛选器在查询侧的绑定目标；交�
 
 [ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md) 把筛选器收成六类闭集，但 `filterBindings` 只接住了两类：`dimension` 和 `time`，而 `time` 被 `validate.ts` 硬限定必须对应 **timeRange** 筛选器。于是另外三类在协议上**无处可绑**——不是"绑了不生效"，是压根写不出绑定。
 
-代价在 `pages/ioc-opportunity-list.json` 上很具体：十一个筛选器里，`mtime`（数据月份）、`key-office`（仅看重点国代）、`bidding-amount`（预签金额）三个拉了完全不动数。`mtime` 尤其要紧，四张 IOC 页面都有它，它是这套看板的基本口径。
+代价在 `pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json` 上很具体：十一个筛选器里，`mtime`（数据月份）、`key-office`（仅看重点国代）、`bidding-amount`（预签金额）三个拉了完全不动数。`mtime` 尤其要紧，四张 IOC 页面都有它，它是这套看板的基本口径。
 
 `search` 是第四个没有绑定目标的，但它不在本决策范围内：全文检索的谓词语义与上面三类不同构，而且它今天有一条能用的路（客户端 `inline-search` 过滤当前快照行）。
 

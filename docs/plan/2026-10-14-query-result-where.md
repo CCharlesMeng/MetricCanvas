@@ -56,7 +56,7 @@ A的完整性按其声明范围判断。显式Top5只能在5行内过滤；完�
 
 ## 5173验证入口（首轮排序场景）
 
-页面：pages/query-result-where-page.json。打开http://localhost:5173/pages/query-result-where-page；缺服务时在仓库根执行pnpm dev:dqe。本地仿真数据位于tools/dqe-sim/fixtures/query-result-where.json。
+页面：pages/capabilities/query/query-result-where-page.json。打开http://localhost:5173/pages/query-result-where-page；缺服务时在仓库根执行pnpm dev:dqe。本地仿真数据位于tools/dqe-sim/fixtures/query-result-where.json。
 
 首轮projects查询体明确声明order为{"order_by_field":"金额","type":"desc"}，不带limit/offset，完整返回8行。页面按金额从480万元降至30万元显示所有项目。B筛选进行中且金额>100万元，传P-001/P-005/P-008集合并返回3行评估；C筛选进行中且金额<=100万元，传P-003/P-006集合并返回2行评估。下游查询各自也声明金额降序；集合为稳定谓词排序，展示顺序由各查询排序决定。
 

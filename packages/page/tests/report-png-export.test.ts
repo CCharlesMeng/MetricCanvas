@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import fixture from '../../../pages/report-png-export.json';
-import longFixture from '../../../pages/report-png-long-export.json';
+import fixture from '../../../pages/capabilities/export/report-png-export.json';
+import longFixture from '../../../pages/capabilities/export/report-png-long-export.json';
 import legacy from '../fixtures/contract-valid/report-png-export.json';
-import fallback from '../../../pages/report-export-scale-fallback.json';
+import fallback from '../../../pages/capabilities/export/report-export-scale-fallback.json';
 import { parsePage, normalizePageDocument, resolvePageParams } from '../src';
 
 describe('Report 统一导出按钮', () => {

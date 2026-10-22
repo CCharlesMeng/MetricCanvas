@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import fixture from '../../../pages/query-numeric-tolerance.json';
+import fixture from '../../../pages/capabilities/query/query-numeric-tolerance.json';
 import joinFixture from '../../page/fixtures/contract-valid/paged-join-page.json';
 import { parsePage, versionPolicy, type PageDocument } from '@metriccanvas/page';
 import type { DataSnapshot, EffectiveQuery } from '@metriccanvas/page/internal';

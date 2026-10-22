@@ -20,7 +20,7 @@
 | packages/metric-canvas/src/selection-actions.ts | 跟随、滚动裁切和清理 | T2 |
 | packages/metric-canvas/tests/browser/metric-canvas.spec.ts | 蓝框、操作、模式状态及定位回归 | T3 |
 | apps/platform/tests/workbench/canvas-experience-browser.mjs | 实际页面、显式保存与撤销路径 | T3 |
-| pages/platform-canvas-experience.json | 直接消费的完整静态场景 | T3 |
+| pages/platform/platform-canvas-experience.json | 直接消费的完整静态场景 | T3 |
 | pages/README.md, PAGE-METADATA.md, docs/page-metadata/sections-and-layout.md | 行为与入口说明 | T3 |
 | contracts/metriccanvas/**, metriccanvas-authoring/** | 产品真源导出更新，独立校验 | T3 |
 

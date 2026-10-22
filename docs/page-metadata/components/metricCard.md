@@ -17,7 +17,7 @@ Dashboard 的 plain/card 内容分区可以在顶层相邻指标卡的 `layout.b
 
 原文档第一张卡的 before 保留声明但不显示；其他位置的前项必须是相邻指标卡。只有原相邻两项均呈现时显示连接文字，不跨隐藏项重连，也不以查询加载或错误代替可见性判断。页面搭建移动或删除打断相邻关系时清除失效前缀，撤销会一起恢复。
 
-第一版仅支持 Dashboard、plain/card、默认 12 列的顶层指标卡；不支持 Report、columnTracks、panel、backdrop、connectPrevious、嵌套及 after。非法组合由页面校验明确拒绝。连接只表达展示关系，不执行等式计算。完整验收入口为 `pages/metric-card-equation.json`，包括 `=`、`+` 和“其中”，使用静态演示数据。
+第一版仅支持 Dashboard、plain/card、默认 12 列的顶层指标卡；不支持 Report、columnTracks、panel、backdrop、connectPrevious、嵌套及 after。非法组合由页面校验明确拒绝。连接只表达展示关系，不执行等式计算。完整验收入口为 `pages/capabilities/layout/metric-card-equation.json`，包括 `=`、`+` 和“其中”，使用静态演示数据。
 
 ## 查阅方式
 

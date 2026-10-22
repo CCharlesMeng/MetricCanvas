@@ -124,7 +124,7 @@ P1 把下表落实成一份产品真源规则，协议校验与运行时防御�
 | P2 合并与实例恢复 | 三图 Svelte/options、`shared/EChart.svelte`、`shared/chart-presentation.ts`、拟新增共享扩展模块；饼图有效行投影 | 顺序、非变异、几何、完整捕获、一次回退、基础失败空图、resize 不循环；饼图缺失值后点击仍对应原行 |
 | P3 运行时与导出 | `runtime-ui/src/ComponentRenderer.svelte`、`RuntimeSurface.svelte`、`report-view.ts` 与内部错误类型/导出测试 | 传诊断上下文；校验、绘制、PDF/PNG 失败只 console；导出无下载且释放 busy；其他错误行为不变 |
 | P4 创作与切换 | 平台 `document-edit.ts`、`property-edit.ts`、实际 message 消费者、历史事务；Python `pages/components/component_editing.py` 及测试 | 面板仍隐藏，普通修改保留，跨类型清除、console 提示、撤销精确恢复；Python/TS 一致 |
-| P5 场景与协议说明 | `pages/chart-echarts-option-page.json`（拟新增）、Playground catalog、`pages/README.md`、`PAGE-METADATA.md`、`docs/page-metadata/`、reference-map、契约向量 | 一个正常完整页面作为直接验收输入；非法场景用协议 fixtures，故障恢复用可控注入；共用高级说明不复制三份规则 |
+| P5 场景与协议说明 | `pages/capabilities/chart/chart-echarts-option-page.json`（拟新增）、Playground catalog、`pages/README.md`、`PAGE-METADATA.md`、`docs/page-metadata/`、reference-map、契约向量 | 一个正常完整页面作为直接验收输入；非法场景用协议 fixtures，故障恢复用可控注入；共用高级说明不复制三份规则 |
 | P6 分发与验收 | authoring 产品导出、契约快照、本地 Skill 作者说明/生成知识/校验器/哈希、`tools/package-build/compatibility.mjs` 测试复制闭包 | 隔离检出生成并核对差异；仓外安装校验闭合；浏览器与安装消费证据齐备，才标实施完成 |
 
 P1/P1b → P2 → P3 → P4/P5 → P6；P5 页面设计可提前，但最终自动验收读取落盘页面。控制复杂度：不引入通用插件系统、不新增对外 ECharts 实例接口、不重做平台错误总线、不增加面板编辑器、不扩展地图。

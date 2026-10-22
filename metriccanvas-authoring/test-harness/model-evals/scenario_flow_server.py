@@ -30,7 +30,7 @@ if not Path(metriccanvas_authoring.__file__).resolve().is_relative_to(LIBRARY_RO
     raise RuntimeError('EVAL_LIBRARY_ROOT_MISMATCH')
 
 FIXTURE = json.loads((ROOT / 'tools/dqe-sim/fixtures/flow-analysis-report.json').read_text())
-PAGE = json.loads((ROOT / 'pages/flow-analysis-report.json').read_text())
+PAGE = json.loads((ROOT / 'pages/business/report/flow/flow-analysis-report.json').read_text())
 SOURCES = {'flow-kpis': '流水概览', 'overall-monthly-trend': '流水趋势', 'region-monthly-trend': '流水结构'}
 
 

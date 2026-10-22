@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest';
-import fixture from '../../../../pages/table-column-candidates.json';
+import fixture from '../../../../pages/capabilities/table/table-column-candidates.json';
 import { parsePage } from '@metriccanvas/page';
 import { orchestrate } from '../../runtime/src/orchestrator';
 import type { FilterValue } from '@metriccanvas/data-execution/runtime';

@@ -1,4 +1,11 @@
-import catalog from '../../page-catalog.json';
+import { pageEntry } from '../src/lib/page-entry';
+
+const documents = import.meta.glob<{ default: unknown }>('../../../pages/capabilities/ioc-header/scenarios/*-demo.json', { eager: true });
+const scenes = Object.entries(documents).map(([path, module]) => {
+  const id = path.split('/').pop()!.slice(0, -5);
+  const entry = pageEntry(module.default, id);
+  return { id, scenario: id.slice('ioc-header-'.length, -'-demo'.length), displayTitle: entry.title, summary: entry.description ?? '' };
+});
 
 export const headerTopics = [
   { id: 'overview', title: '完整演示', description: '先操作一个常用组合：期间、币种、区域。公共页头是共用结构，下面四个专题分别介绍其中的功能。', scenes: ['navigation-source', 'overview', 'dense-filter'] },
@@ -8,8 +15,8 @@ export const headerTopics = [
   { id: 'navigation', title: '跨页传值', description: '从概览开始，选择条件后进入清单，再打开项目详情。各页面独立修改，只传值，不恢复来源视图。', scenes: ['navigation-source', 'navigation-list', 'navigation-detail'] }
 ] as const;
 
-export function headerScene(scene: string) { return catalog.pages.find(entry => entry.group === 'ioc-header' && entry.scenario === scene); }
-export function headerSceneKey(id: string) { return catalog.pages.find(entry => entry.id === id)?.scenario; }
+export function headerScene(scene: string) { return scenes.find(entry => entry.scenario === scene); }
+export function headerSceneKey(id: string) { return scenes.find(entry => entry.id === id)?.scenario; }
 export function headerSceneHref(scene: string) {
   const suffix = scene === 'navigation-list' ? '?origin=专题直接入口'
     : scene === 'navigation-detail' ? '?project-id=P-001&project-name=示例项目甲&origin=专题直接入口&month=2026-09' : '';

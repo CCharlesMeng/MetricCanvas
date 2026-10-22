@@ -2,6 +2,8 @@ import {cpSync} from 'node:fs';
 import {join} from 'node:path';
 
 export const consumerFixturePaths = [
+  "tools/scripts/page-files.mjs",
+  "tools/scripts/page-files.d.mts",
   "packages/metric-canvas/tests/browser",
   "packages/embed/tests/browser",
   "packages/embed/examples",

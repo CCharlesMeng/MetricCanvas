@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest';
-import scene from '../../../../pages/chart-echarts-option-page.json';
+import scene from '../../../../pages/capabilities/chart/chart-echarts-option-page.json';
 import typeFixture from './fixtures/document-edit.json';
 import { changeComponentType, createCanvasAuthoringDraft, editComponent, restoreCanvasAuthoringDraft } from '../../src/lib/workbench/document-edit';
 import { editProperty, propertyControls } from '../../src/lib/workbench/property-edit';

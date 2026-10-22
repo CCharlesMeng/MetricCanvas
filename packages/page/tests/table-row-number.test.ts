@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { expect, it } from 'vitest';
 import { parsePage } from '../src/validate';
-const fixture = () => JSON.parse(readFileSync(new URL('../../../pages/table-row-number.json', import.meta.url), 'utf8'));
+const fixture = () => JSON.parse(readFileSync(new URL('../../../pages/capabilities/table/table-row-number.json', import.meta.url), 'utf8'));
 it('supports a presentation-only row number without a result field', () => {
   expect(parsePage(fixture()).ok).toBe(true);
 });

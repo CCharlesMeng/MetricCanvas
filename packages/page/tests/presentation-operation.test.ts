@@ -2,7 +2,7 @@ import {readFileSync} from 'node:fs';
 import {it,expect} from 'vitest';
 import {applyPresentationOperation} from '../src/presentation-operation';
 import {presentationTargets} from '../src/presentation-edit';
-const input=()=>JSON.parse(readFileSync(new URL('../../../pages/page-visibility-region-linkage.json',import.meta.url),'utf8'));
+const input=()=>JSON.parse(readFileSync(new URL('../../../pages/capabilities/filters/page-visibility-region-linkage.json',import.meta.url),'utf8'));
 it('edits hidden nodes by stable identity and preserves unrelated source data',()=>{
  const page=input();const before=structuredClone(page);
  const result=applyPresentationOperation(page,{type:'set_presentation_condition',target:{kind:'section',id:'department-norms'},field:'visibleWhen',condition:{permission:'read'}});

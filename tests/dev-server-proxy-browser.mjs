@@ -12,7 +12,7 @@ import platformConfig from '../apps/platform/vite.config.ts';
 const root = process.cwd();
 const output = resolve(root, '.scratch/cloudioc-proxy/evidence');
 await mkdir(output, {recursive: true});
-const doc = JSON.parse(await readFile(resolve(root, 'pages/business-sdt-report-monthly.json'), 'utf8'));
+const doc = JSON.parse(await readFile(resolve(root, 'pages/business/report/sdt/business-sdt-report-monthly.json'), 'utf8'));
 const receipt = {retCode: 'CBC.0000', page_id: doc.id, page_metadata_id: 'metadata-proxy',
   revision_id: 'revision-proxy', revision_number: 1, is_draft: true, page_metadata_definition: JSON.stringify(doc)};
 const dqePath = '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute';

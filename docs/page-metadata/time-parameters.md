@@ -76,7 +76,7 @@
 
 ## 流水分析报告接入
 
-`pages/flow-analysis-report-params.json` 保存代表处与报告月份。7个月度查询使用当月窗口，2个月度趋势查询使用所在完整自然年；保留各指标与查询聚合设置。该页沿用已有演示查询字段，生产取数仍依赖数据服务支持相应契约。
+`pages/business/report/flow/flow-analysis-report-params.json` 保存代表处与报告月份。7个月度查询使用当月窗口，2个月度趋势查询使用所在完整自然年；保留各指标与查询聚合设置。该页沿用已有演示查询字段，生产取数仍依赖数据服务支持相应契约。
 
 验证见 `packages/page/tests/time-params.test.ts`、`time-param-bindings.test.ts` 与 `packages/engine/runtime/tests/time-param-initialization.test.ts`。跨语言静态校验矩阵由 `tools/scripts/export-authoring-contracts.ts` 输出至 `contracts/metriccanvas/page/conformance/time-param-bindings.json`。
 

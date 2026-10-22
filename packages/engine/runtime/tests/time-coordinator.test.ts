@@ -1,10 +1,11 @@
+import { pageFilesById } from '../../../../tools/scripts/page-files.mjs';
 import {readFileSync} from 'node:fs';
 import {it,expect,vi} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
 import {type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import {createFilterState,initialFilterValues,parseFilterSearch} from '../src/filter-state';
 import {orchestrate} from '../src/orchestrator';
-const load=(name='time-modes')=>{const p=parsePage(JSON.parse(readFileSync(`pages/ioc-header-${name}-demo.json`,'utf8')));if(!p.ok)throw Error(JSON.stringify(p));return p.page;};
+const load=(name='time-modes')=>{const p=parsePage(JSON.parse(readFileSync(pageFilesById('pages').get(`ioc-header-${name}-demo`)!,'utf8')));if(!p.ok)throw Error(JSON.stringify(p));return p.page;};
 it('serializes mode/from/to atomically, validates ISO weeks and prevents readonly writes',()=>{
  const page=load(),state=createFilterState(initialFilterValues(page.filters??[]),page.filters);let events=0;state.subscribe(()=>events++);
  expect(state.commit({type:'set',filterId:'period',value:{type:'timeRange',mode:'isoWeek',from:'2026-10-06',to:'2026-10-12'}}).ok).toBe(false);expect(events).toBe(1);

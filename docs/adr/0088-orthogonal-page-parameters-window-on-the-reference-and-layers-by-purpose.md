@@ -17,7 +17,7 @@ note: 就地改写 6.6 的 params 形状——window 挪到查询侧时间引用
 
 三条边界都用最小页面跑 `validate` 实测过：分组 `dimensions` 配旧 `time`+window 报「时间绑定必须引用必需的time参数」；旧数组 params 配原位维度引用报「原位引用需要 6.6 分组参数声明」；分组 `times` 只写 `start` 报「实际值不符合参数类型 timeRange」。**一个页面只能整体二选一。**
 
-代价落在 `pages/flow-analysis-report-params.json` 上：它是「一个基准月驱动全报告」那类页，迁到 6.6 后一个 `report-month` 被展开成五个独立时间参数，声明的输入从 2 个变 6 个。变长不是重点，**约束消失了**才是——「上月 = 报告月 -1」原本是机器能算的规则，换月自动跟；展开成五个字面量之后，改了 `report-month` 而忘了改 `last-12-months`，页面照样合法，只是静默地错了。旧设计让这类错误不可表达，6.6 让它可表达且不可检测。
+代价落在 `pages/business/report/flow/flow-analysis-report-params.json` 上：它是「一个基准月驱动全报告」那类页，迁到 6.6 后一个 `report-month` 被展开成五个独立时间参数，声明的输入从 2 个变 6 个。变长不是重点，**约束消失了**才是——「上月 = 报告月 -1」原本是机器能算的规则，换月自动跟；展开成五个字面量之后，改了 `report-month` 而忘了改 `last-12-months`，页面照样合法，只是静默地错了。旧设计让这类错误不可表达，6.6 让它可表达且不可检测。
 
 `scalars` 是另一处分类学问题。它是旧数组减掉 dimension 和 time 剩下的那部分：`dimensions` 与 `times` 分的是「落到 DQE filter 的哪个位置」，`scalars` 分的是「哪儿也不落」——按消费位置分它是异类，按数据类型分这五者本该平级。它更像拆分时没地方放的残余，顺手开的第三个键。
 
@@ -71,7 +71,7 @@ note: 就地改写 6.6 的 params 形状——window 挪到查询侧时间引用
 
 ### 四、版本：把 6.6 当未发布，就地改定义
 
-不另开次版本。判据是**手写源只有三处**：`packages/page/fixtures/contract-valid/` 下的 `grouped-params-page.json` 与 `grouped-scalar-params-page.json`，以及 `tools/scripts/export-authoring-contracts.ts` 的 `groupedCase` 块；`contracts/metriccanvas/**` 与 `metriccanvas-authoring/**` 下的命中全是这三处的导出副本。加上工作区里刚迁的 `pages/flow-analysis-report-params.json`，就是全部。没有 Java 侧或生产页面在用，`@metriccanvas/page` 还是 `1.0.0-rc.4`，6.6 是前一天落的，仓里没有对应发布标签。
+不另开次版本。判据是**手写源只有三处**：`packages/page/fixtures/contract-valid/` 下的 `grouped-params-page.json` 与 `grouped-scalar-params-page.json`，以及 `tools/scripts/export-authoring-contracts.ts` 的 `groupedCase` 块；`contracts/metriccanvas/**` 与 `metriccanvas-authoring/**` 下的命中全是这三处的导出副本。加上工作区里刚迁的 `pages/business/report/flow/flow-analysis-report-params.json`，就是全部。没有 Java 侧或生产页面在用，`@metriccanvas/page` 还是 `1.0.0-rc.4`，6.6 是前一天落的，仓里没有对应发布标签。
 
 这不是行使 [ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 的零使用例外——例外针对的是「已发布的次版本要收紧」。6.6 从未出仓，改的是一个还没交付出去的定义。另一条路（发新次版本、两端点写法保留为可读旧形状）被否决：除上述理由外，**6.7 与 6.8 已被别的在途改动占了**（6.7 层级筛选绑定逐级谓词字段、6.8 [ADR-0084](./0084-hierarchical-filter-bindings-declare-a-query-field-per-level.md) 的收紧），本决策若另开次版本，号还得往后排，而它要改的恰恰是 6.6 自己引入的形状。
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import fixture from '../../../pages/report-pdf-export.json';
+import fixture from '../../../pages/capabilities/export/report-pdf-export.json';
 import { parsePage } from '../src';
 
 describe('Report 内置 PDF 配置', () => {

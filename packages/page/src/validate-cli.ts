@@ -1,5 +1,6 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { basename, join, relative, resolve } from 'node:path';
+import { pageFilesById } from '../../../tools/scripts/page-files.mjs';
 import type { TypedError } from './errors';
 import { fileNameErrors } from './file-name';
 import type { Page } from './page';
@@ -12,7 +13,14 @@ function main(argv: string[]): number {
     return 2;
   }
 
-  const files = readdirSync(pagesDir).filter((file) => file.endsWith('.json'));
+  let files: string[];
+  try {
+    files = [...pageFilesById(pagesDir).values()].map(file => relative(pagesDir, file));
+    if (!files.length) throw new Error(`没有找到页面文档:${pagesDir}`);
+  } catch (cause) {
+    console.error(String(cause));
+    return 2;
+  }
   const results: Array<{ file: string; errors: TypedError[]; page?: Page }> = [];
 
   for (const file of files) {
@@ -41,7 +49,7 @@ function main(argv: string[]): number {
 
     const page = parsed.page;
     const errors: TypedError[] = [];
-    errors.push(...fileNameErrors(file, page));
+    errors.push(...fileNameErrors(basename(file), page));
     results.push({ file, errors, ...(errors.length === 0 ? { page } : {}) });
   }
 

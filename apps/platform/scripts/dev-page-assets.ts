@@ -4,6 +4,7 @@ import {mkdir, readFile, rename, writeFile} from 'node:fs/promises';
 import {dirname, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {validate, type PageDocument} from '@metriccanvas/page';
+import {pageFilesById} from '../../../tools/scripts/page-files.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const collection = '/rest/cdi/cdinl2databuilderservice/v1/user-page-metadata';
@@ -29,8 +30,11 @@ try {
   if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
   const now = new Date().toISOString();
   const records: RecordValue[] = [];
+  const pages = pageFilesById(resolve(root, 'pages'));
   for (const [index, name] of seeds.entries()) {
-    const document: PageDocument = JSON.parse(await readFile(resolve(root, 'pages', name + '.json'), 'utf8'));
+    const pageFile = pages.get(name);
+    if (!pageFile) throw Error(`Missing seed page: ${name}`);
+    const document: PageDocument = JSON.parse(await readFile(pageFile, 'utf8'));
     if (validate(document).length) throw Error(`Invalid seed page: ${name}`);
     records.push({page_metadata_id: 'local-' + name, page_id: String(document.id),
       revision_id: randomUUID(), revision_number: 1, is_draft: index !== 2 && index !== 3,

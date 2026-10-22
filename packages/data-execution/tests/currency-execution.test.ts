@@ -4,7 +4,7 @@ import {parsePage} from '@metriccanvas/page';
 import {createSourceProgram} from '../src/source-program/session';
 import {initialFilterValues} from '../src/filter-values';
 import {composeEffectiveQuery} from '../src/effective-query';
-const load=()=>{const result=parsePage(JSON.parse(readFileSync('pages/ioc-header-currency-demo.json','utf8')));if(!result.ok)throw Error(JSON.stringify(result.errors));return result.page;};
+const load=()=>{const result=parsePage(JSON.parse(readFileSync('pages/capabilities/ioc-header/scenarios/ioc-header-currency-demo.json','utf8')));if(!result.ok)throw Error(JSON.stringify(result.errors));return result.page;};
 describe('currency execution boundary',()=>{
  it('uses currency as an implicit dependency and never rescales basic amounts',async()=>{
   const page=load(),values=initialFilterValues(page.filters??[]);values.set('currency',{type:'dimension',dimension:'currency_code',values:['USD']});values.set('amount',{type:'numberRange',from:1000000});

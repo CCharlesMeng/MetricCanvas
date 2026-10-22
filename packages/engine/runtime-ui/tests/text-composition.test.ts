@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import fixture from '../../../../pages/report-date-filter-example.json';
+import fixture from '../../../../pages/capabilities/filters/report-date-filter-example.json';
 import { parsePage } from '@metriccanvas/page';
 import { collectFilterTextValueReferences, resolveParamTextValues } from '@metriccanvas/page/internal';
 import { createFilterState, initialFilterValues, initializePageParams, resolvePageParams } from '../../runtime/src';

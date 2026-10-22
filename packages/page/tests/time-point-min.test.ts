@@ -30,7 +30,7 @@ describe('timePoint.min', () => {
     expect(validate(page).some(e => e.message.includes('由 6.24 引入'))).toBe(true);
   });
   it('rejects lower initialParam values through public initialization', () => {
-    const page = JSON.parse(readFileSync(new URL('../../../pages/business-sdt-report-monthly.json', import.meta.url), 'utf8'));
+    const page = JSON.parse(readFileSync(new URL('../../../pages/business/report/sdt/business-sdt-report-monthly.json', import.meta.url), 'utf8'));
     delete page.filters[0].default;
     page.filters[0].initialParam = 'month';
     page.params = { query: { times: [{ id: 'month', granularity: 'month', start: '2020-05', end: '2020-05' }] } };

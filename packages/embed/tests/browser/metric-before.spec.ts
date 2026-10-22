@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
-const document=JSON.parse(readFileSync(new URL('../../../../pages/metric-card-equation.json',import.meta.url),'utf8'));
+const document=JSON.parse(readFileSync(new URL('../../../../pages/capabilities/layout/metric-card-equation.json',import.meta.url),'utf8'));
 
 for(const mode of ['classic','esm'] as const) {
   test(`${mode} 正式页面的连接文字双侧8px、四卡等宽与窄屏单列`,async({page})=>{

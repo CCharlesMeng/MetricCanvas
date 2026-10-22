@@ -1,0 +1,94 @@
+# pages/capabilities/chart
+
+页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
+
+## 地图着色、散点与层级筛选
+
+入口：`/pages/region-map`；[页面 JSON](region-map.json)。
+
+启动：`pnpm dev:playground` 与 `pnpm sim:dqe`，或 `pnpm dev:dqe`。
+
+结合地图着色与散点展示区域指标，体验层级维度筛选和带参链接。
+
+合成演示
+
+初始行可预览；动态交互需仿真
+
+1. 查看中国地图的区域颜色与散点叠加。
+2. 启动本地 DQE Sim 后体验层级筛选，并查看说明文字中的带参链接。
+
+地图展示与筛选取数分别由组件和查询绑定声明；示例不代表真实地理业务数据。
+
+关键声明：`filters`, `sections[].components[].props.actions`, `sections[].components[].props.links`。
+
+关联：[ioc-project-overview](../../business/dashboard/ioc/project/ioc-project-overview.json)。
+
+关联：[demo](../layout/demo.json)。
+
+## 独立筛选组件：四类图表与 URL 恢复
+
+入口：`/pages/chart-local-filter-page`；[页面 JSON](chart-local-filter-page.json)。
+
+启动：`pnpm dev:playground` 与 `pnpm sim:dqe`，或 `pnpm dev:dqe`。
+
+四类图表均迁移为 filterGroup 组件；每组只刷新绑定的查询，保留原筛选值与独立作用范围。
+
+合成演示
+
+交互取数需本地仿真
+
+1. 启动本地 DQE Sim，将订单切到海外，观察其他图和全区域对照不变。
+2. 渠道切到欧洲查看空结果，再切回亚太；复制当前 URL 重新打开。
+
+每张图使用独立筛选及查询；导出状态投影由行为测试覆盖，本页没有下载按钮。
+
+关键声明：`filters`, `sections[].components[].props.components`, `dataSources.*.source.query.filterBindings`。
+
+关联：[dashboard-period-filter](../filters/dashboard-period-filter.json)。
+
+关联：[report-png-export](../export/report-png-export.json)。
+
+## 图表高级呈现配置｜柱、线、饼图
+
+入口：`/pages/chart-echarts-option-page`；[页面 JSON](chart-echarts-option-page.json)。
+
+启动：`pnpm dev:playground`。
+
+调整柱、线、饼图的高级呈现选项，对照声明顺序、标签模板和 PDF／PNG 导出。
+
+合成演示
+
+可直接体验
+
+1. 查看三种图表的高级呈现配置，比较颜色、线形和半径。
+2. 调整容器宽度，再体验 PDF／PNG 导出。
+
+内联合成数据；数据与交互仍由正式属性负责，高级选项只扩展受控的呈现能力。
+
+关键声明：`sections[].components[].props.echartsOption`。
+
+关联：[report-png-export](../export/report-png-export.json)。
+
+## 柱状图统一默认16px
+
+入口：`/pages/bar-width-defaults`；[页面 JSON](bar-width-defaults.json)。
+
+启动：`pnpm dev:playground`。
+
+对照普通、分组、堆叠、横向、预测和混合柱系列的16px默认宽度，保留显式宽度覆盖。
+
+内联合成数据
+
+无需DQE或其他服务
+
+1. 查看普通、分组、堆叠及横向图的柱宽，默认均为16px。
+2. 报告预测与柱线混合图的柱系列同样为16px。
+3. 最后一张显式配置32px，作为覆盖默认值的对照；缩窄窗口后默认柱宽保持16px。
+
+只验证公共图表呈现默认值，数据为合成样例。
+
+关键声明：`sections[].components[].props`。
+
+关联：[ioc-header-demo](../ioc-header/business/ioc-header-demo.json)。
+
+关联：[chart-echarts-option-page](chart-echarts-option-page.json)。

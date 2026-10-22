@@ -39,8 +39,8 @@
 
 | 目标 | 当前文件 | 必须保留的能力 |
 |---|---|---|
-| 全球与区域作战地图概览 | [ioc-project-overview.json](../../pages/ioc-project-overview.json) | 7 个查询数据源、6 个筛选器、铺底地图、3 张组合卡、4 个受控比率、3 个 Tab 与表格、权重列轨、地图层级切换及导航 |
-| 机会点列表 | [ioc-opportunity-list.json](../../pages/ioc-opportunity-list.json) | 1 个查询数据源、10 个筛选器、40 列表格、固定列、查询分页、排序、5 列表头筛选、行导航 |
+| 全球与区域作战地图概览 | [ioc-project-overview.json](../../pages/business/dashboard/ioc/project/ioc-project-overview.json) | 7 个查询数据源、6 个筛选器、铺底地图、3 张组合卡、4 个受控比率、3 个 Tab 与表格、权重列轨、地图层级切换及导航 |
+| 机会点列表 | [ioc-opportunity-list.json](../../pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json) | 1 个查询数据源、10 个筛选器、40 列表格、固定列、查询分页、排序、5 列表头筛选、行导航 |
 
 2026-10-12 当前工作区基线，两页均通过 Python 页面校验：
 

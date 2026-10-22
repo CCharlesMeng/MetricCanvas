@@ -1,8 +1,6 @@
-import {error,redirect} from '@sveltejs/kit';
-import {pageLegacyPathTarget} from '$lib/page-catalog';
+import { chartFilterPreview } from '../../../../../fixtures/legacy-preview';
+import { redirect } from '@sveltejs/kit';
 
-export function load({url}: {url: URL}) {
-  const target=pageLegacyPathTarget(url.pathname);
-  if(!target)error(404,'示例入口不存在');
-  redirect(307,target+url.search);
+export function load({ url }: { url: URL }) {
+  redirect(307, chartFilterPreview + url.search);
 }

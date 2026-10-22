@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { it, expect } from 'vitest';
 import { parsePage } from '../src/validate';
-const input=()=>JSON.parse(readFileSync(new URL('../../../pages/page-visibility-region-linkage.json',import.meta.url),'utf8'));
+const input=()=>JSON.parse(readFileSync(new URL('../../../pages/capabilities/filters/page-visibility-region-linkage.json',import.meta.url),'utf8'));
 it('accepts the actual feature page and preserves conditional text parts',()=>{
  const parsed=parsePage(input());expect(parsed.ok,JSON.stringify(parsed.errors)).toBe(true);
  if(parsed.ok)expect(parsed.page.sections[3]?.components.find(c=>c.type==='text')?.props).toHaveProperty('parts');

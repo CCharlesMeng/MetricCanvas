@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import scene from '../../../pages/chart-echarts-option-page.json';
+import scene from '../../../pages/capabilities/chart/chart-echarts-option-page.json';
 import { chartOptionErrors, chartOptionErrorsFor, collectFilterTextValueReferences, collectTextValueCompositions, collectTextValueReferences, parsePage, resolveTextValues, requiredMinorVersion } from '../src/internal';
 
 function withOption(option: unknown, index = 1) {

@@ -1,7 +1,7 @@
 import { parsePage } from '@metriccanvas/page';
 import { expect, it } from 'vitest';
 import fixture from '../../../../packages/page/fixtures/contract-valid/report-date-filters-page.json';
-import dashboardFixture from '../../../../pages/dashboard-period-filter.json';
+import dashboardFixture from '../../../../pages/capabilities/filters/dashboard-period-filter.json';
 import { createCanvasAuthoringDraft } from '../../src/lib/workbench/document-edit';
 import { editReportDate } from '../../src/lib/workbench/report-date-edit';
 function draft() { const result=createCanvasAuthoringDraft(fixture);if(!result.ok)throw Error(result.message);return result.draft; }

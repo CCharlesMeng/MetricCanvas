@@ -2,7 +2,7 @@ import {createRequire} from 'node:module';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 const require=createRequire(new URL('../../../packages/ui/package.json',import.meta.url));
 const {chromium,expect}=require('@playwright/test');
-const fixture=JSON.parse(readFileSync(new URL('../../../pages/ioc-header-selection.json',import.meta.url),'utf8'));
+const fixture=JSON.parse(readFileSync(new URL('../../../pages/capabilities/ioc-header/selection/ioc-header-selection.json',import.meta.url),'utf8'));
 const out=new URL('../../../docs/plan/ioc-header-selection/delivery/evidence/',import.meta.url);mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({channel:'chrome',headless:true});
 const page=await browser.newPage({viewport:{width:1440,height:1000}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -43,6 +43,6 @@ try {
  results.push({id:'PAGE-4',profile:'contract',passed:true,steps:'390px page has no horizontal overflow; popup inside viewport; repeated labels preserve two ancestor paths'});
  await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).toHaveCount(0);await page.setViewportSize({width:1440,height:1000});await page.getByRole('button',{name:'区域',exact:true}).click();if(await page.getByRole('button',{name:'展开中国地区部'}).isVisible()) await page.getByRole('button',{name:'展开中国地区部'}).click();
  await page.screenshot({path:new URL('page-tree-single.png',out).pathname,fullPage:true});expect(errors).toEqual([]);
- writeFileSync(new URL('page-browser.json',out),JSON.stringify({url,fixture:'pages/ioc-header-selection.json',results,pageErrors:errors},null,2));
+ writeFileSync(new URL('page-browser.json',out),JSON.stringify({url,fixture:'pages/capabilities/ioc-header/selection/ioc-header-selection.json',results,pageErrors:errors},null,2));
  console.log(`${results.length} page scenarios passed; ${errors.length} page errors`);
 } finally {await browser.close();}

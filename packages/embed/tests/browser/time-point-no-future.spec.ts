@@ -48,7 +48,7 @@ test('day selection and typing include today and reject tomorrow', async ({ page
 });
 
 test('the exact ultimate SDT file defaults to October and future input cannot trigger queries', async ({ page }) => {
-  const fixture = readFileSync(new URL('../../../../pages/sdt/commercial-sdt-efficiency-ultimate-monthly.json', import.meta.url), 'utf8');
+  const fixture = readFileSync(new URL('../../../../pages/business/report/sdt/commercial-sdt-efficiency-ultimate-monthly.json', import.meta.url), 'utf8');
   await page.route('**/pages/commercial-sdt-efficiency-ultimate-monthly.json', route => route.fulfill({ contentType: 'application/json', body: fixture }));
   const requests: any[] = [];
   await page.route('**/rest/cdi/cdinl2databuilderservice/v1/dsl/execute', async route => {

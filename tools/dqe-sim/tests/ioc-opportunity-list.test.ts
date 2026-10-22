@@ -9,7 +9,7 @@ import {
 import { DEFAULT_DQE_ENDPOINT } from '../../../packages/engine/data-gateway/src/dqe';
 import { parsePage } from '../../../packages/page/src';
 
-const page = JSON.parse(readFileSync('pages/ioc-opportunity-list.json', 'utf8'));
+const page = JSON.parse(readFileSync('pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json', 'utf8'));
 const pageItem = page.dataSources['opportunity-list'].source.query.body!.dsl_list[0];
 
 function query(

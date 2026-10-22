@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const base=process.env.PLAYGROUND_BASE_URL ?? 'http://127.0.0.1:5193';
 const output=process.argv[2] ?? '/tmp/metriccanvas-local-authoring-browser';
-const document=JSON.parse(await readFile(new URL('../../../pages/local-authoring-knowledge-demo.json',import.meta.url),'utf8'));
+const document=JSON.parse(await readFile(new URL('../../../pages/capabilities/layout/local-authoring-knowledge-demo.json',import.meta.url),'utf8'));
 await mkdir(output,{recursive:true});
 const browser=await chromium.launch({headless:true,channel:'chrome'});
 const page=await browser.newPage();const errors=[];const receipts=[];

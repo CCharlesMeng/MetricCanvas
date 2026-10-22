@@ -7,7 +7,7 @@ import { prepareExportSnapshots } from '../../../packages/engine/runtime/src/exp
 import { createDqeSimServer, DQE_EXECUTE_PATH } from '../src/server';
 import { executeQueryResultWhere } from '../src/query-result-where';
 import fixture from '../fixtures/query-result-where-paged.json';
-const document = (): PageDocument => JSON.parse(readFileSync(new URL('../../../pages/query-result-where-page.json', import.meta.url), 'utf8'));
+const document = (): PageDocument => JSON.parse(readFileSync(new URL('../../../pages/capabilities/query/query-result-where-page.json', import.meta.url), 'utf8'));
 const ids = (rows: Array<Record<string, unknown>>, field='项目编号') => rows.map(row => row[field]);
 const sorted = (field: string, direction: 'asc'|'desc') => [...fixture.projects].sort((a,b) => {
   const x=Reflect.get(a,field),y=Reflect.get(b,field);

@@ -1,0 +1,579 @@
+{
+  "baseline": "612d2e5159273d70b0fdece01b70f5472acfa20e",
+  "pages": [
+    {
+      "from": "pages/ioc-project-overview.json",
+      "to": "pages/business/dashboard/ioc/project/ioc-project-overview.json",
+      "id": "ioc-project-overview",
+      "sha256": "02de54f0ffe424e2b4c9c35763998165750dd3d639db3dda972358b19865d3e9",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-project-detail.json",
+      "to": "pages/business/dashboard/ioc/project/ioc-project-detail.json",
+      "id": "ioc-project-detail",
+      "sha256": "d327818655a68d7690b73e6d4f1787ed517404da34e9b082703859ccef7e6b4d",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-opportunity-analysis.json",
+      "to": "pages/business/dashboard/ioc/opportunity/ioc-opportunity-analysis.json",
+      "id": "ioc-opportunity-analysis",
+      "sha256": "cf2bb971d64429da7118efae29802c512495f2cc6f54b38529e1c3d5f54279d3",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-opportunity-list.json",
+      "to": "pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json",
+      "id": "ioc-opportunity-list",
+      "sha256": "464cc00d99a228d49a160013746f34d9332e4a2734989f1144d948883be5449d",
+      "unchanged": true
+    },
+    {
+      "from": "pages/business-sdt-report.json",
+      "to": "pages/business/report/sdt/business-sdt-report.json",
+      "id": "business-sdt-report",
+      "sha256": "33172d7e9d46683ac2398d0c5df6d4b441c8fb5e3a487de89cb1fb300f2ddc40",
+      "unchanged": true
+    },
+    {
+      "from": "pages/business-sdt-report-monthly.json",
+      "to": "pages/business/report/sdt/business-sdt-report-monthly.json",
+      "id": "business-sdt-report-monthly",
+      "sha256": "9cd5e4b55408f6a452dcd436f3d964aa5f9ea6e37ce9e9a19a9f13bfc5ebcc0e",
+      "unchanged": true
+    },
+    {
+      "from": "pages/business-sdt-cascade-example.json",
+      "to": "pages/business/report/sdt/business-sdt-cascade-example.json",
+      "id": "business-sdt-cascade-example",
+      "sha256": "2d7dfd8a3ceef936d0e243873270b71c9dbe46c5854af9d7e63be324841baa80",
+      "unchanged": true
+    },
+    {
+      "from": "pages/sdt/commercial-sdt-efficiency-ultimate-monthly.json",
+      "to": "pages/business/report/sdt/commercial-sdt-efficiency-ultimate-monthly.json",
+      "id": "commercial-sdt-efficiency-ultimate-monthly",
+      "sha256": "596717eb6955b3b588490faf39494ab79ceb492eed9ee7c5225c3e10b112c1a3",
+      "unchanged": true
+    },
+    {
+      "from": "pages/flow-analysis-report.json",
+      "to": "pages/business/report/flow/flow-analysis-report.json",
+      "id": "flow-analysis-report",
+      "sha256": "7afe51d4083c9241fa14b52f282cb8eb8a451f266ca9206fe8b3954a9a7fca54",
+      "unchanged": true
+    },
+    {
+      "from": "pages/flow-analysis-report-params.json",
+      "to": "pages/business/report/flow/flow-analysis-report-params.json",
+      "id": "flow-analysis-report-params",
+      "sha256": "e9f91dcaf6c824aa2b8af64bc9ffcf8a85e643420e7828e528866de0d775c8d3",
+      "unchanged": true
+    },
+    {
+      "from": "pages/tokens-report.json",
+      "to": "pages/business/report/tokens/tokens-report.json",
+      "id": "tokens-report",
+      "sha256": "fb265844ac24b2a372f1d8f9ac0e9ce093b50d3ea0204538117de90e1b5963a2",
+      "unchanged": true
+    },
+    {
+      "from": "pages/tokens-monthly-trend.json",
+      "to": "pages/business/report/tokens/tokens-monthly-trend.json",
+      "id": "tokens-monthly-trend",
+      "sha256": "b27b197541ed41077b8acc07bb9574a29b0fd401bf3b49351b6c457cf5a35eb9",
+      "unchanged": true
+    },
+    {
+      "from": "pages/customer-activity-risk-briefing.json",
+      "to": "pages/business/report/customer/customer-activity-risk-briefing.json",
+      "id": "customer-activity-risk-briefing",
+      "sha256": "0b377cfaaea09178d0719de52f28902e1a09d3f4a6690d84017536d630673258",
+      "unchanged": true
+    },
+    {
+      "from": "pages/table-toolbar-demo.json",
+      "to": "pages/capabilities/table/table-toolbar-demo.json",
+      "id": "table-toolbar-demo",
+      "sha256": "c476277dbb7d15328d2b9d44807cb0d1856c04aefcbe98091a1b5921c4d36156",
+      "unchanged": true
+    },
+    {
+      "from": "pages/table-cell-selection.json",
+      "to": "pages/capabilities/table/table-cell-selection.json",
+      "id": "table-cell-selection",
+      "sha256": "d4f786576ec15bf8298cf62aa035736d740b916e50fd64b7594c1fa7fd4b91b5",
+      "unchanged": true
+    },
+    {
+      "from": "pages/table-detail-overlay.json",
+      "to": "pages/capabilities/table/table-detail-overlay.json",
+      "id": "table-detail-overlay",
+      "sha256": "e81377b19e71cec743e17326c9d2d16ed17ddb208349f17dcf8124f8082c21d7",
+      "unchanged": true
+    },
+    {
+      "from": "pages/table-tiny-os.json",
+      "to": "pages/capabilities/table/table-tiny-os.json",
+      "id": "table-tiny-os",
+      "sha256": "bf475aae004a1cabeb976219f9b0b39eee7e377a2a23f510cfbd0bc53c54a33b",
+      "unchanged": true
+    },
+    {
+      "from": "pages/multi-query-table.json",
+      "to": "pages/capabilities/table/multi-query-table.json",
+      "id": "multi-query-table",
+      "sha256": "f52148254cb4f443d68f8a3526fbbd676b99a0f0f47d61ebaa4594486332fd8e",
+      "unchanged": true
+    },
+    {
+      "from": "pages/sales-detail.json",
+      "to": "pages/capabilities/table/sales-detail.json",
+      "id": "sales-detail",
+      "sha256": "29a8ab4fd2f6058ca38858380c7e8fd56e6770381cc9a70317ba4c45b0fd7390",
+      "unchanged": true
+    },
+    {
+      "from": "pages/region-map.json",
+      "to": "pages/capabilities/chart/region-map.json",
+      "id": "region-map",
+      "sha256": "c5821dbe6a094e1fdf61592d4cb4e3ec754abf6173092ff18fa96292c10dab65",
+      "unchanged": true
+    },
+    {
+      "from": "pages/chart-local-filter-page.json",
+      "to": "pages/capabilities/chart/chart-local-filter-page.json",
+      "id": "chart-local-filter-page",
+      "sha256": "7d7b4a80dcf3a6c870d5a0fe158034a622b943ce60a899a526d11d08a8208f8c",
+      "unchanged": true
+    },
+    {
+      "from": "pages/dashboard-period-filter.json",
+      "to": "pages/capabilities/filters/dashboard-period-filter.json",
+      "id": "dashboard-period-filter",
+      "sha256": "b40299e882343444be52f4fed41241109e191d767ebb995ea5707aff9271080e",
+      "unchanged": true
+    },
+    {
+      "from": "pages/report-date-filter-example.json",
+      "to": "pages/capabilities/filters/report-date-filter-example.json",
+      "id": "report-date-filter-example",
+      "sha256": "c993c55dd6d5284896ae4030766478d0060b9da8310cac3e908b74698fb43674",
+      "unchanged": true
+    },
+    {
+      "from": "pages/report-pdf-export.json",
+      "to": "pages/capabilities/export/report-pdf-export.json",
+      "id": "report-pdf-export",
+      "sha256": "fd3091ec36a03ff27481d79d9ad1b6dbe590037296adc5cdce41b1324c0daf01",
+      "unchanged": true
+    },
+    {
+      "from": "pages/report-png-export.json",
+      "to": "pages/capabilities/export/report-png-export.json",
+      "id": "report-png-export",
+      "sha256": "3eb17ecd197af9977c77fdc36d039c8e46bb48ce07333e7f761982a0b124c009",
+      "unchanged": true
+    },
+    {
+      "from": "pages/report-png-long-export.json",
+      "to": "pages/capabilities/export/report-png-long-export.json",
+      "id": "report-png-long-export",
+      "sha256": "727d9c53f7a0b831883b63fdc0ebcad5c09fe73ad2a950a5190af6345f5b5ffb",
+      "unchanged": true
+    },
+    {
+      "from": "pages/report-export-scale-fallback.json",
+      "to": "pages/capabilities/export/report-export-scale-fallback.json",
+      "id": "report-export-scale-fallback",
+      "sha256": "916b23d5f7ba0594ad181415b3c0098d5701a8d072cfbcd25fd08c817fd84e1a",
+      "unchanged": true
+    },
+    {
+      "from": "pages/demo.json",
+      "to": "pages/capabilities/layout/demo.json",
+      "id": "demo",
+      "sha256": "3b3d05a2661ad23135342a4b6781a33ac3851fe714b26ab50846db950dc43ac2",
+      "unchanged": true
+    },
+    {
+      "from": "pages/metric-card-equation.json",
+      "to": "pages/capabilities/layout/metric-card-equation.json",
+      "id": "metric-card-equation",
+      "sha256": "975f01e19769a278098df76ab5f863e290f8d76cf4d432b7e5d49c47b5f06d5d",
+      "unchanged": true
+    },
+    {
+      "from": "pages/empty-state-showcase.json",
+      "to": "pages/capabilities/layout/empty-state-showcase.json",
+      "id": "empty-state-showcase",
+      "sha256": "a90580e7e04f8780ffe6f4cb21bc13dcf5ea02fccf15aea9598ed7a7a24b7e1e",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-content-navigation.json",
+      "to": "pages/capabilities/navigation/ioc-content-navigation.json",
+      "id": "ioc-content-navigation",
+      "sha256": "9bc179720e677fa851c192804f8fb4ecdd28814d9ee01554ff34376cda310212",
+      "unchanged": true
+    },
+    {
+      "from": "pages/query-numeric-tolerance.json",
+      "to": "pages/capabilities/query/query-numeric-tolerance.json",
+      "id": "query-numeric-tolerance",
+      "sha256": "d96ca6bf668a60ca778d3a289021cc48663d337833c316678f9c75462991d100",
+      "unchanged": true
+    },
+    {
+      "from": "pages/query-result-where-page.json",
+      "to": "pages/capabilities/query/query-result-where-page.json",
+      "id": "query-result-where-page",
+      "sha256": "bd455e41c52cca7d91ff0a1068477e92717edcd059f0faaa7a050763b066c771",
+      "unchanged": true
+    },
+    {
+      "from": "pages/platform-canvas-experience.json",
+      "to": "pages/platform/platform-canvas-experience.json",
+      "id": "platform-canvas-experience",
+      "sha256": "c2e318a52da9c0192b8a4d9721b20f282b610be0532338df08c1c4e76edc5e58",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-time-presets-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-time-presets-demo.json",
+      "id": "ioc-header-time-presets-demo",
+      "sha256": "db240f1d25b2dbad3fc1feee945ec9f5fb7746000384545f9f9a136f05f235d2",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-currency.json",
+      "to": "pages/capabilities/ioc-header/business/ioc-header-currency.json",
+      "id": "ioc-header-currency",
+      "sha256": "22296de8ee4aceaaca990713392ba36d9e2c66e3e10c48b6065f87a1899c3760",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-time.json",
+      "to": "pages/capabilities/ioc-header/business/ioc-header-time.json",
+      "id": "ioc-header-time",
+      "sha256": "99e96fdfb7047e4bb79d57045cb8910e77528a047a8fa21ff22bed91d29391b2",
+      "unchanged": true
+    },
+    {
+      "from": "pages/table-search-options-demo.json",
+      "to": "pages/capabilities/table/table-search-options-demo.json",
+      "id": "table-search-options-demo",
+      "sha256": "1704c9b95e4f415ffaa4c3f863afad7ed7350864ba50cd09fd3fd1b4643a6d5c",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-unconfigured.json",
+      "to": "pages/capabilities/ioc-header/business/ioc-header-unconfigured.json",
+      "id": "ioc-header-unconfigured",
+      "sha256": "8f52b57cc36b6a0cac96f2547ce43c6fb6dee4fa72a711ecaaef8114cc6724dc",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-overview-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-overview-demo.json",
+      "id": "ioc-header-overview-demo",
+      "sha256": "130e9af6c24ff3eda57f45a9de92a82dadf15da01e9cb499ee7e00a77a3c9b4d",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-dense-filter-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-dense-filter-demo.json",
+      "id": "ioc-header-dense-filter-demo",
+      "sha256": "4fda37b44d7ee3c48e41c4e78da6384e2f19e255e5941e2cb9cf1df38680ff2c",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-availability-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-availability-demo.json",
+      "id": "ioc-header-availability-demo",
+      "sha256": "49557e3b983110128855e07daabcd8aa553577c77739faa78db21cbc6ff7fcf4",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-models.json",
+      "to": "pages/capabilities/ioc-header/business/ioc-header-models.json",
+      "id": "ioc-header-models",
+      "sha256": "9c24fd11d40ddf33fc7a892a0edbc02af739c32e1bcc371516a37d8c884cc9fc",
+      "unchanged": true
+    },
+    {
+      "from": "pages/filter-group-page.json",
+      "to": "pages/capabilities/filters/filter-group-page.json",
+      "id": "filter-group-page",
+      "sha256": "a81410d6997a196188416fd005598e25fecd2822be054031b005e5d7e3578550",
+      "unchanged": true
+    },
+    {
+      "from": "pages/dashboard-title-styles.json",
+      "to": "pages/capabilities/layout/dashboard-title-styles.json",
+      "id": "dashboard-title-styles",
+      "sha256": "71b01ef4e363049d1769d50e96ca37a0333e1b33d0f99df280e6f920bb9d7f3a",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-detail.json",
+      "to": "pages/capabilities/ioc-header/business/ioc-header-detail.json",
+      "id": "ioc-header-detail",
+      "sha256": "048e0e08e1a771a573ee25dc1b50523b4aa7d144bc11599a4da8cb52aad2b183",
+      "unchanged": true
+    },
+    {
+      "from": "pages/report-title-styles.json",
+      "to": "pages/capabilities/layout/report-title-styles.json",
+      "id": "report-title-styles",
+      "sha256": "5a69e82dac55f11110b323b56c760eaa7ab2576adc0202410234eac3a3e01e36",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-incentives.json",
+      "to": "pages/capabilities/ioc-header/business/ioc-header-incentives.json",
+      "id": "ioc-header-incentives",
+      "sha256": "a1d7e0a447f235c2fdc08b5c98d4ccd13633e4a644b1fc5b6f724a758f4ad362",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-currency-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-currency-demo.json",
+      "id": "ioc-header-currency-demo",
+      "sha256": "32fb3004373061357239733f435f9f0f43f794981f08842cb03899972485019b",
+      "unchanged": true
+    },
+    {
+      "from": "pages/table-row-expansion-query.json",
+      "to": "pages/capabilities/table/table-row-expansion-query.json",
+      "id": "table-row-expansion-query",
+      "sha256": "2702b694ca175719c2f6b418183b52743dfc6376bb951b9c3116fc1133b06466",
+      "unchanged": true
+    },
+    {
+      "from": "pages/tab-url-initialization.json",
+      "to": "pages/capabilities/navigation/tab-url-initialization.json",
+      "id": "tab-url-initialization",
+      "sha256": "70eab3b892a1e61e0c15e196ac74777b0a32809ef02a674b92c4cb1a8f82fef3",
+      "unchanged": true
+    },
+    {
+      "from": "pages/page-visibility-region-linkage.json",
+      "to": "pages/capabilities/filters/page-visibility-region-linkage.json",
+      "id": "page-visibility-region-linkage",
+      "sha256": "bc027ff9df53fcd52da272d28d0e243f41fe62986661ec769d4778e0053fea44",
+      "unchanged": true
+    },
+    {
+      "from": "pages/page-visibility-report.json",
+      "to": "pages/capabilities/filters/page-visibility-report.json",
+      "id": "page-visibility-report",
+      "sha256": "37423239fa3f22b8ba1062a38b6b177339827ac9cb545d6779d8c1fbcfbec09b",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-business-options-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-business-options-demo.json",
+      "id": "ioc-header-business-options-demo",
+      "sha256": "16186a28aa991369586635a869b64639323d8410fc9e715c9fd93361aa10c44a",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-navigation-list-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-navigation-list-demo.json",
+      "id": "ioc-header-navigation-list-demo",
+      "sha256": "d229296d7c5d6ee10f85d44f06d6802197a453b3a664e7d9902621e802ed2fc5",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-business-tree-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-business-tree-demo.json",
+      "id": "ioc-header-business-tree-demo",
+      "sha256": "50f59dc709fde3566d316a77f30d14b0fe9bbb546ea7929b494e355147ec140e",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-business.json",
+      "to": "pages/capabilities/ioc-header/business/ioc-header-business.json",
+      "id": "ioc-header-business",
+      "sha256": "b531856674b0a0f1d96b6cfb522e42b052c6c577dfe2804c96a05ad5a33c8ff4",
+      "unchanged": true
+    },
+    {
+      "from": "pages/tab-url-source.json",
+      "to": "pages/capabilities/navigation/tab-url-source.json",
+      "id": "tab-url-source",
+      "sha256": "d90a236cc1bc0a2affa64afd22a2fac2640381d0d5f852be43ca444c71da4406",
+      "unchanged": true
+    },
+    {
+      "from": "pages/bar-width-defaults.json",
+      "to": "pages/capabilities/chart/bar-width-defaults.json",
+      "id": "bar-width-defaults",
+      "sha256": "80662020cff7fdb3ee3e5f81ffdaf28b4a5a8a5fe787fc4b7df5f113dd057dd0",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-month-set-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-month-set-demo.json",
+      "id": "ioc-header-month-set-demo",
+      "sha256": "6d3dd682add281f5551b253708e1f8be9dfa43f1106e3882220fd42fb93063c1",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-detail-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-detail-demo.json",
+      "id": "ioc-header-detail-demo",
+      "sha256": "3579f95137a040a4173ada7b68ef0f06de2a9b18b9109a09bbd1b10099693c8a",
+      "unchanged": true
+    },
+    {
+      "from": "pages/table-row-expansion-inline.json",
+      "to": "pages/capabilities/table/table-row-expansion-inline.json",
+      "id": "table-row-expansion-inline",
+      "sha256": "9460be8da9a1c7cdd616f81214002b07623b8c71ce34fdfa572de94fa1f51720",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-standard.json",
+      "to": "pages/capabilities/ioc-header/business/ioc-header-standard.json",
+      "id": "ioc-header-standard",
+      "sha256": "4bad3cf194436281eb9ad11b6c3e5343da3c4a6406f80ed4ce5da3651808f9bb",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-inputs.json",
+      "to": "pages/capabilities/ioc-header/business/ioc-header-inputs.json",
+      "id": "ioc-header-inputs",
+      "sha256": "dddfc44c7b442fec71dd7c986be9dc70d8197da81d1812c6b8619f5551f1c9b3",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-dense.json",
+      "to": "pages/capabilities/ioc-header/business/ioc-header-dense.json",
+      "id": "ioc-header-dense",
+      "sha256": "824dc883f4c7d53942fb2d823165d49a93392264a4496996e2c4da21ad1f1ba5",
+      "unchanged": true
+    },
+    {
+      "from": "pages/table-row-number.json",
+      "to": "pages/capabilities/table/table-row-number.json",
+      "id": "table-row-number",
+      "sha256": "922fc204f76966bb1d54415fc7e44d8ece2047a1cbfd21a04ca01846fb1397ee",
+      "unchanged": true
+    },
+    {
+      "from": "pages/table-column-candidates.json",
+      "to": "pages/capabilities/table/table-column-candidates.json",
+      "id": "table-column-candidates",
+      "sha256": "fbb37f849cbb37c4eb654ef2d3288935fb8b9308ce484b540fd61b7e605c3637",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-months.json",
+      "to": "pages/capabilities/ioc-header/business/ioc-header-months.json",
+      "id": "ioc-header-months",
+      "sha256": "119f46bda1349f81168e306e4da84d423498fe0a1475fb657a33b6ee0ec74005",
+      "unchanged": true
+    },
+    {
+      "from": "pages/tab-mixed-content-report.json",
+      "to": "pages/capabilities/layout/tab-mixed-content-report.json",
+      "id": "tab-mixed-content-report",
+      "sha256": "0a557c41ab60a0a2bb24225e980548f6b1e94c2029d2e260cc09d7a9402da00c",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-navigation-detail-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-navigation-detail-demo.json",
+      "id": "ioc-header-navigation-detail-demo",
+      "sha256": "ea6055753653079f5cbbe749225806497f72ee13b1fc6e289e03081763728e67",
+      "unchanged": true
+    },
+    {
+      "from": "pages/local-authoring-knowledge-demo.json",
+      "to": "pages/capabilities/layout/local-authoring-knowledge-demo.json",
+      "id": "local-authoring-knowledge-demo",
+      "sha256": "e997a507908e922909ab8e2fd2b594789aec594156db8a71214ac799cc0a0dbb",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-groups.json",
+      "to": "pages/capabilities/ioc-header/business/ioc-header-groups.json",
+      "id": "ioc-header-groups",
+      "sha256": "572872f0c9137873f8b2c2e372da7bfc05d22ddeb617d21b6e5a6876f21dd70d",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-demo.json",
+      "to": "pages/capabilities/ioc-header/business/ioc-header-demo.json",
+      "id": "ioc-header-demo",
+      "sha256": "670f742934e09017417bc408409308c7cd070c296a8035e9c87bb4270576c31d",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-navigation-source-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-navigation-source-demo.json",
+      "id": "ioc-header-navigation-source-demo",
+      "sha256": "f7c66250ac59ccc1c448e223bea256c9f06d242380fa2fb975a061095b395182",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-calendar-window-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-calendar-window-demo.json",
+      "id": "ioc-header-calendar-window-demo",
+      "sha256": "7c52e29ab2051f7ea2e15a19c13da793773b213193bebd236f6f5f74fc37efe5",
+      "unchanged": true
+    },
+    {
+      "from": "pages/filter-group-state-page.json",
+      "to": "pages/capabilities/filters/filter-group-state-page.json",
+      "id": "filter-group-state-page",
+      "sha256": "d61b96b3986ce102cedc695a9111218277c17d6cff987c032ba619e795496ba2",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-selection.json",
+      "to": "pages/capabilities/ioc-header/selection/ioc-header-selection.json",
+      "id": "ioc-header-selection",
+      "sha256": "33aca3a3a0b3adc350ef8bedb349622fb6a8dc0063829cd1f58dcd0e70c97d38",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-time-modes-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-time-modes-demo.json",
+      "id": "ioc-header-time-modes-demo",
+      "sha256": "47d453b1af57eb7947869a98cf3f3e4b1cfe8e9052013c2c226ed75296f6a8ca",
+      "unchanged": true
+    },
+    {
+      "from": "pages/chart-echarts-option-page.json",
+      "to": "pages/capabilities/chart/chart-echarts-option-page.json",
+      "id": "chart-echarts-option-page",
+      "sha256": "d62bc3d296bae33138b2a3c09a6246b7d61a9ed0179e1710481ec680cf1182b5",
+      "unchanged": true
+    },
+    {
+      "from": "pages/page-visibility-inputs.json",
+      "to": "pages/capabilities/filters/page-visibility-inputs.json",
+      "id": "page-visibility-inputs",
+      "sha256": "598a86bf3f67c3514a4e15e2038eb7019f283f574aff02df622de67977fecd14",
+      "unchanged": true
+    },
+    {
+      "from": "pages/tab-mixed-content.json",
+      "to": "pages/capabilities/layout/tab-mixed-content.json",
+      "id": "tab-mixed-content",
+      "sha256": "5290230319f400f4172e1853e0dea7e49325d45bc38c268bcf38a1ca4fbb2cdd",
+      "unchanged": true
+    },
+    {
+      "from": "pages/ioc-header-business-detail-demo.json",
+      "to": "pages/capabilities/ioc-header/scenarios/ioc-header-business-detail-demo.json",
+      "id": "ioc-header-business-detail-demo",
+      "sha256": "57c0265f55ad14249b3ebaf3db5506b832939f4149f3d38c7efc270bb6c86d18",
+      "unchanged": true
+    }
+  ]
+}

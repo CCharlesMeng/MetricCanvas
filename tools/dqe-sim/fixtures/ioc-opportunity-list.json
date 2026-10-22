@@ -1,5 +1,5 @@
 {
-  "note": "IOC 机会点清单:页面 pages/ioc-opportunity-list.json 内嵌初始行的同源副本，另附各级区域编码与维度编码列，供 filter.dims 谓词命中。仅按 output 投影返回。",
+  "note": "IOC 机会点清单:页面 pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json 内嵌初始行的同源副本，另附各级区域编码与维度编码列，供 filter.dims 谓词命中。仅按 output 投影返回。",
   "capturedAt": "2026-04-30T00:00:00Z",
   "output_dims": [
     "opportunity_code",

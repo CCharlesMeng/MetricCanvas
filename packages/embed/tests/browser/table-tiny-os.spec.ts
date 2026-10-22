@@ -5,7 +5,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 // Chromium documents this switch in content/public/common/content_switches.cc.
 test.use({ launchOptions: { args: ['--disable-lcd-text'] } });
 
-const fixture = () => JSON.parse(readFileSync(new URL('../../../../pages/table-tiny-os.json', import.meta.url), 'utf8'));
+const fixture = () => JSON.parse(readFileSync(new URL('../../../../pages/capabilities/table/table-tiny-os.json', import.meta.url), 'utf8'));
 async function mount(page: Page, document = fixture()) {
   await page.goto('/examples/inline.html');
   await page.evaluate(document => {

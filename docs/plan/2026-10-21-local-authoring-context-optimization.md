@@ -191,7 +191,7 @@ pnpm exec tsc --noEmit -p tests/tsconfig.json
 
 若新增知识读取专用测试，将其加入定向命令。`authoring:test` 是维护流程已有检查，不以此扩展其他 Skill 的专项行为复验或真实模型调用。
 
-按[功能与协议能力验收要求](../agents/feature-acceptance.md)落实：用优化后的入口生成 `pages/local-authoring-knowledge-demo.json`，显式 dashboard、inline 演示数据，复用现有组件；注册 Playground 并写入 `pages/README.md`。页面覆盖标题、列宽、金额/比率格式等可观察结果，不展示内部 token 统计。
+按[功能与协议能力验收要求](../agents/feature-acceptance.md)落实：用优化后的入口生成 `pages/capabilities/layout/local-authoring-knowledge-demo.json`，显式 dashboard、inline 演示数据，复用现有组件；注册 Playground 并写入 `pages/README.md`。页面覆盖标题、列宽、金额/比率格式等可观察结果，不展示内部 token 统计。
 
 查询、时间绑定、报告导出和组合源任务复用相应现有可观察示例及其已有数据环境。验证浏览器实际行为；只有 Sim 的证据不能写为真实 DQE。`PAGE-METADATA.md` 及对应模块仅更新精确知识查阅入口/示例路由，不制造新的协议语义。新知识工具的操作说明归 Skill 维护文档。
 

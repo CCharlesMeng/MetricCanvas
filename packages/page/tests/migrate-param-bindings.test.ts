@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import timePage from '../fixtures/contract-valid/time-params-page.json';
 import dimensionPage from '../fixtures/contract-valid/dimension-params-page.json';
-import flowPage from '../../../pages/flow-analysis-report-params.json';
+import flowPage from '../../../pages/business/report/flow/flow-analysis-report-params.json';
 import { resolvePageParams, migrateParamBindings } from '../src';
 
 const requiredDimensions=structuredClone(dimensionPage);

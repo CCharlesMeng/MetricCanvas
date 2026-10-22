@@ -3,7 +3,7 @@ import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 const base=process.env.REPORT_PDF_BASE_URL??'http://127.0.0.1:5173';
 const output=process.argv[2]??'/tmp/metriccanvas-pdf-performance';await mkdir(output,{recursive:true});
-const input=JSON.parse(await readFile(new URL('../../../pages/sdt/commercial-sdt-efficiency-ultimate-monthly.json',import.meta.url),'utf8'));
+const input=JSON.parse(await readFile(new URL('../../../pages/business/report/sdt/commercial-sdt-efficiency-ultimate-monthly.json',import.meta.url),'utf8'));
 const browser=await chromium.launch({headless:true,channel:process.env.REPORT_PDF_CHANNEL??'chrome'});
 const page=await browser.newPage({viewport:{width:1440,height:1000},acceptDownloads:true});
 const results=[];

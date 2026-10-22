@@ -3,7 +3,7 @@ import {it,expect} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
 import {metricConnectionItems} from '../../runtime-ui/src/metric-connections';
 import {compilePresentation,resolvePresentationRow} from '../src/presentation';
-const parsed=parsePage(JSON.parse(readFileSync(new URL('../../../../pages/page-visibility-region-linkage.json',import.meta.url),'utf8')));
+const parsed=parsePage(JSON.parse(readFileSync(new URL('../../../../pages/capabilities/filters/page-visibility-region-linkage.json',import.meta.url),'utf8')));
 if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));
 const page=parsed.page;
 it('projects the feature page without pruning the source document or collapsing an empty parent',()=>{
@@ -66,7 +66,7 @@ it('hides filter controls without deleting the declared filter or its applied st
 });
 
 it('breaks original metric connections at hidden endpoints without changing the page',()=>{
- const document=JSON.parse(readFileSync('pages/metric-card-equation.json','utf8'));
+ const document=JSON.parse(readFileSync('pages/capabilities/layout/metric-card-equation.json','utf8'));
  document.schemaVersion='6.35';
  const section=document.sections.find((section:{id:string})=>section.id==='equation');
  section.components[1].visibleWhen={permission:'read'};

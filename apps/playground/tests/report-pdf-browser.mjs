@@ -9,7 +9,7 @@ const errors=[];page.on('pageerror',error=>errors.push(error.message));
 try {
   await page.goto(`${base}/preview?prototype=report-date`);
   await page.locator('.echart canvas').first().waitFor();
-  const input=JSON.parse(await readFile(new URL('../../../pages/report-pdf-export.json',import.meta.url),'utf8'));
+  const input=JSON.parse(await readFile(new URL('../../../pages/capabilities/export/report-pdf-export.json',import.meta.url),'utf8'));
   input.dataSources.sales.source.rows=Array.from({length:500},(_,index)=>({region:`项目 ${index+1}`,amount:index+1}));
   await page.evaluate(async input=>{
     const {mountPdfRuntimeFixture}=await import('/tests/report-pdf-runtime-fixture.ts');

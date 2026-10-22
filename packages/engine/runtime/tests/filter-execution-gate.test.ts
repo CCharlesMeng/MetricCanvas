@@ -6,7 +6,7 @@ import { createFilterState,initialFilterValues,type FilterValues } from '../src/
 import { orchestrate,type PageDataSnapshots } from '../src/orchestrator';
 const flush=()=>new Promise(resolve=>setTimeout(resolve,0));
 it('the acceptance page gates selected candidates and downstream sources, leaving unrelated requests live',async()=>{
-  const parsed=parsePage(JSON.parse(readFileSync(new URL('../../../../pages/ioc-header-overview-demo.json',import.meta.url),'utf8')));expect(parsed.ok).toBe(true);if(!parsed.ok)return;
+  const parsed=parsePage(JSON.parse(readFileSync(new URL('../../../../pages/capabilities/ioc-header/scenarios/ioc-header-overview-demo.json',import.meta.url),'utf8')));expect(parsed.ok).toBe(true);if(!parsed.ok)return;
   const page=parsed.page;
   const downstream=structuredClone(page.dataSources.bound);
   if(downstream.source.type!=='query')throw Error('query fixture required');

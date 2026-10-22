@@ -7,7 +7,7 @@ import {createTableController} from '../src/table-controller';
 import {prepareTableExport} from '../src/table-export';
 import {encodeTableWorkbook} from '../src/table-workbook';
 import ExcelJS from 'exceljs';
-function fixture(){const parsed=parsePage(JSON.parse(readFileSync('pages/ioc-header-currency-demo.json','utf8')));if(!parsed.ok)throw Error(JSON.stringify(parsed));return parsed.page;}
+function fixture(){const parsed=parsePage(JSON.parse(readFileSync('pages/capabilities/ioc-header/scenarios/ioc-header-currency-demo.json','utf8')));if(!parsed.ok)throw Error(JSON.stringify(parsed));return parsed.page;}
 it('clears old table sort, headers and search on a presentation-only currency change',()=>{
  const page=fixture(),table=page.sections[0].components[2] as TableComponent;
  const controller=createTableController(page,()=>null,()=>{});

@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { executeDqeItem } from '../src/execute';
 
 it('serves the actual acceptance page and refuses unknown demo predicates', () => {
-  const page = JSON.parse(readFileSync(new URL('../../../pages/chart-local-filter-page.json', import.meta.url), 'utf8'));
+  const page = JSON.parse(readFileSync(new URL('../../../pages/capabilities/chart/chart-local-filter-page.json', import.meta.url), 'utf8'));
   for (const source of Object.values(page.dataSources) as any[]) {
     const item = structuredClone(source.source.query.body!.dsl_list[0]);
     const id = Object.keys(source.source.query.filterBindings ?? {})[0];
@@ -17,7 +17,7 @@ it('serves the actual acceptance page and refuses unknown demo predicates', () =
 });
 
  it('serves both toolbar predicates and an independently totaled summary',()=>{
-  const page=JSON.parse(readFileSync(new URL('../../../pages/filter-group-page.json',import.meta.url),'utf8'));
+  const page=JSON.parse(readFileSync(new URL('../../../pages/capabilities/filters/filter-group-page.json',import.meta.url),'utf8'));
   for(const [metric,region,total] of [['revenue','all',1710],['orders','all',5579],['orders','east',3095],['revenue','south',759]] as const){
    const dims=[{dim_name:'toolbar_metric',dim_value_list:[metric]},{dim_name:'toolbar_region',dim_value_list:[region]}];
    const trend=structuredClone(page.dataSources['trend-data'].source.query.body.dsl_list[0]);trend.filter.dims=dims;

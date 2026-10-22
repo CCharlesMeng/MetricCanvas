@@ -46,7 +46,7 @@ for(const width of [1440,390])test(`${width}: one fixed filter controls signed m
 });
 
 test('page readOnly disables standalone and nested controls',async({page})=>{
- const document=JSON.parse(readFileSync(new URL('../../../../pages/filter-group-state-page.json',import.meta.url),'utf8'));
+ const document=JSON.parse(readFileSync(new URL('../../../../pages/capabilities/filters/filter-group-state-page.json',import.meta.url),'utf8'));
  document.dashboardToolbar={variant:'compact',readOnly:true};
  await page.route('**/pages/filter-group-state-page.json',route=>route.fulfill({json:document}));
  await page.goto('/pages/filter-group-state-page');

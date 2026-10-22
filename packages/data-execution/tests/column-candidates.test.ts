@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import fixture from '../../../pages/table-toolbar-demo.json';
+import fixture from '../../../pages/capabilities/table/table-toolbar-demo.json';
 import joined from '../../page/fixtures/contract-valid/paged-join-page.json';
 import { parsePage } from '@metriccanvas/page';
 import type { EffectiveQuery, Page, TableQueryView } from '@metriccanvas/page/internal';
