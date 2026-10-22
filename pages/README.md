@@ -376,7 +376,7 @@ Report 页面按三节组织，控件相互独立：
 
 ## 表格搜索字段切换（6.42）
 
-- 页面：[table-search-options-demo.json](table-search-options-demo.json)，目录「功能演示」，入口 `/pages/table-search-options-demo`，不需要 URL 参数。
+- 页面：[table-search-options-demo.json](table-search-options-demo.json)，目录「Dashboard · 看板 → 功能演示」，入口 `/pages/table-search-options-demo`，不需要 URL 参数。使用标准 Dashboard 页头、满宽画布与表格卡片；右上角保留字段选择、搜索和导出。
 - 根目录运行 `pnpm dev:dqe`，同时启动页面试验场和 DQE Sim。第一、三张表使用 inline 合成数据，第二张表使用真实 HTTP 链路访问本地 DQE Sim；均不包含真实业务数据。
 - 默认选「项目名称」。输入「星河项目」并 Enter：等值表匹配2行，不含「星河项目二期」；旧包含搜索则匹配更多行。
 - 保留「星河项目」切到「责任人」：立即匹配责任人为该文本的「其他项目」记录；切换 placeholder。输入「00123」后切到「项目编码」：立即匹配前导零完整编码。清空保留「项目编码」，恢复7行并回第一页。

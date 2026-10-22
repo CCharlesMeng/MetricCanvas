@@ -1,9 +1,10 @@
 {
   "schemaVersion": "6.42",
   "id": "table-search-options-demo",
-  "layout": "report",
+  "layout": "dashboard",
   "meta": {
-    "title": "表格搜索字段切换（合成数据与 DQE 仿真）"
+    "title": "表格搜索｜字段切换与精确匹配",
+    "description": "合成演示数据：在表格右上角选择项目编码、项目名称或责任人，输入完整值后搜索。查询表需本地 DQE Sim。"
   },
   "dataSources": {
     "records": {
