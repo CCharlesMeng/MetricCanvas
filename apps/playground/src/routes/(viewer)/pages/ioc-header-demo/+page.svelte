@@ -6,13 +6,14 @@
   import type { RuntimeNavigation } from '@metriccanvas/engine/ui';
   import { pageRepository } from '$lib/services';
   import { pageReturnHref } from '$lib/page-return';
-  import { createIocHeaderDemoGateway } from '../../../../../fixtures/ioc-header-demo';
+  import { createIocBusinessPreview } from '$lib/ioc-business-preview';
 
-  const document=pageRepository.load('ioc-header-demo');
-  const dataGateway=createIocHeaderDemoGateway();
+  const pageId=decodeURIComponent(page.url.pathname.split('/').filter(Boolean).at(-1) ?? '');
+  const document=pageRepository.load(pageId);
+  const dataGateway=createIocBusinessPreview(pageId).dataGateway;
   const initialSearch=page.url.searchParams.toString();
   let chartType=$state('bar');
-  const returnHref=page.url.searchParams.get('back')==='1' ? '/' : pageReturnHref('ioc-header-demo');
+  const returnHref=page.url.searchParams.get('back')==='1' ? '/' : pageReturnHref(pageId);
   const navigation:RuntimeNavigation={
     ...(returnHref?{returnContext:{entryId:returnHref,label:'返回'},back:()=>void goto(returnHref)}:{}),
     replaceSearch(search){const url=new URL(page.url);url.search=search;if(returnHref==='/')url.searchParams.set('back','1');replaceState(url,{});}
@@ -26,7 +27,7 @@
       {#each sections as section (section.id)}
         {#if section.id==='trend'}
           <!-- Public composition seam: only this showcase owns chart-type presentation. -->
-          <div class="trend-card" data-demo-trend>
+          <div class="trend-card" data-showcase-trend>
             <div class="trend-controls">
               <div>{@render componentContent(section.components[0]!)}</div>
               <div class="chart-type"><Select label="图表类型" value={chartType} options={[{value:'bar',label:'柱状图'},{value:'line',label:'折线图'}]} onchange={value=>chartType=value}/></div>

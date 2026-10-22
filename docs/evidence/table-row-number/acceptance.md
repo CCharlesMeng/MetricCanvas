@@ -41,3 +41,5 @@ PLAYGROUND_BASE_URL=http://127.0.0.1:5186 node apps/playground/tests/table-row-n
 首轮CI在页面id中立性测试失败：内部能力标识与示例页面id同为 `table-row-number`。本地 `pnpm test apps/playground/tests/page-id-neutrality.test.ts` 确定性复现后，将内部能力标识改为 `table-row-ordinal-column`，保留页面id、6.48版本下限和所有运行行为；不修改或放宽门禁。重新运行页面id中立性、版本和序号列测试，并重新生成协议分发物。
 
 消费端兼容性产物还显示472项通过、2项跳过：跳过项是需要独立服务的Playground路由验收。将其迁至 `apps/playground/tests/table-row-number-browser.mjs` 单独执行，嵌入端4项序号测试继续在Chrome/Edge消费端执行，保留全套消费端零跳过门禁。分离后本地嵌入端15项回归与独立Playground验收通过。
+
+重放到远端 `54a0f2a2` 后，中立性门禁还命中新合入的IOC专用展示路由（固定页面id和demo标记）。路由改用当前URL的页面id及已有中立预览数据入口，并将DOM测试标记改为showcase命名；保留展示内容与数据工厂，补跑中立性、目录、构建和实际展示路由检查。
