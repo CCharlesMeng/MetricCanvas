@@ -64,10 +64,7 @@ export function createAuthoringSync(options: {
   online?: boolean;
   retryDelays?: readonly number[];
 }) {
-  let state = structuredClone(options.initial);
-  if ((options.manualSave && state.format !== 3 && state.queue.length) || (options.port.delivery === 'single' && state.format === 1 && state.queue.length)) throw Error('旧版未决工作已保留，不能自动重放，请先人工核实。');
-  if (options.manualSave) { state.format = 3; state.localDirty ??= false; }
-  else if (options.port.delivery === 'single') state.format = 2;
+  let state = initialDurableState();
   let storageVersion = options.restoredVersion ?? 0;
   let durable = options.restoredVersion !== undefined, disposed = false, running = false;
   // A durable command may have crossed the network even when no outcome was stored.
@@ -79,9 +76,19 @@ export function createAuthoringSync(options: {
   let identityInvalidated = false;
   let undoing = false;
   const restoredOutcome = state.queue[0]?.outcome;
-  let status: SyncSnapshot = { pending: state.queue.length, protection: durable ? 'protected' : 'pending', phase: state.queue[0]?.outcome?.status === 'rejected' ? 'rejected' : 'idle', message: restoredOutcome && restoredOutcome.status !== 'saved' ? restoredOutcome.message ?? '' : '', base: state.base, lastSaved: null };
+  let status = initialSyncStatus();
   let serial: Promise<unknown> = Promise.resolve();
   const listeners = new Set<(value: SyncSnapshot) => void>();
+  function initialDurableState(): DurableAuthoringState {
+    let state = structuredClone(options.initial);
+    if ((options.manualSave && state.format !== 3 && state.queue.length) || (options.port.delivery === 'single' && state.format === 1 && state.queue.length)) throw Error('旧版未决工作已保留，不能自动重放，请先人工核实。');
+    if (options.manualSave) { state.format = 3; state.localDirty ??= false; }
+    else if (options.port.delivery === 'single') state.format = 2;
+    return state;
+  }
+  function initialSyncStatus(): SyncSnapshot {
+    return { pending: state.queue.length, protection: durable ? 'protected' : 'pending', phase: state.queue[0]?.outcome?.status === 'rejected' ? 'rejected' : 'idle', message: restoredOutcome && restoredOutcome.status !== 'saved' ? restoredOutcome.message ?? '' : '', base: state.base, lastSaved: null };
+  }
   const identityMatches = () => {
     const identity = options.identity();
     if (!identity.actorId || !identity.workspaceId || identity.actorId !== state.scope.actorId || identity.workspaceId !== state.scope.workspaceId) identityInvalidated = true;
@@ -103,7 +110,7 @@ export function createAuthoringSync(options: {
         status = { ...status, phase: 'storage-failed', protection: 'failed', message: messageOf(error) }; emit(); return false;
       }
     });
-    serial = result.catch(() => {}); return result;
+    serial = result.catch(() => { }); return result;
   }
   function scheduleRetry() {
     if (options.manualSave || options.port.delivery === 'single') return;
@@ -111,26 +118,47 @@ export function createAuthoringSync(options: {
     timer = setTimeout(() => { timer = undefined; attempts++; void api.retry(false); }, delays[attempts]);
   }
   function pause(phase: SyncSnapshot['phase'], message: string) { status = { ...status, phase, message }; emit(); }
+  function savedReceiptMatches(command: DurableSaveCommand, outcome: StrongSaved): boolean {
+    return !!outcome.ref && typeof outcome.ref === 'object' && same(outcome.base, command.base) && outcome.ref.pageId === command.pageId &&
+      Number.isInteger(outcome.revisionNumber) && outcome.revisionNumber > 0 &&
+      [outcome.ref.revisionId, outcome.ref.resourceId, ...(options.port.delivery === 'single' ? [] : [outcome.contentHash, outcome.canonicalization])].every((value) => typeof value === 'string' && value.length > 0) &&
+      (!command.base || (outcome.ref.resourceId === command.base.resourceId && outcome.ref.revisionId !== command.base.revisionId));
+  }
+  function declaredReceipt(command: DurableSaveCommand, outcome: StrongSaveOutcome): StrongSaveOutcome {
+    return outcome.status === 'saved'
+      ? { status: 'saved', operationId: outcome.operationId, ref: { pageId: outcome.ref.pageId, revisionId: outcome.ref.revisionId, resourceId: outcome.ref.resourceId }, base: command.base, contentHash: outcome.contentHash, canonicalization: outcome.canonicalization, revisionNumber: outcome.revisionNumber, ...(outcome.revision ? { revision: outcome.revision } : {}) }
+      : outcome.status === 'rejected'
+        ? { status: 'rejected', operationId: outcome.operationId, code: outcome.code, message: outcome.message, retryable: outcome.retryable === true }
+        : { status: outcome.status, operationId: outcome.operationId, message: outcome.message };
+  }
+  const supportsStableDelivery = () => !!options.port.stableSave || options.port.delivery === 'single';
+  const canPump = () => !running && !disposed && durable && !!state.queue.length && online;
+  const canContinue = () => !disposed && durable && online && !!state.queue.length && identityMatches();
+  const shouldPumpAgain = () => !disposed && durable && online && !!state.queue.length && !state.queue[0].outcome && identityMatches() && supportsStableDelivery();
+  function resetRetry(manual: boolean): void {
+    if (manual) { attempts = 0; if (timer) { clearTimeout(timer); timer = undefined; } }
+  }
+  const retryAvailable = () => !disposed && !running && online && identityMatches();
+  function singleDeliveryLocked(head: DurableAuthoringState['queue'][number]): boolean {
+    if (options.port.delivery !== 'single' || (!head.command && !head.outcome)) return false;
+    pause(head.outcome?.status === 'rejected' ? 'rejected' : 'unknown', head.outcome?.status === 'rejected' ? head.outcome.message : '原保存结果未确认，已停止重发，请保留工作并核实。');
+    return true;
+  }
+  function matchesLookup(result: OperationLookup, operationId: string): boolean {
+    return !!result && typeof result === 'object' && result.operationId === operationId;
+  }
   async function accept(command: DurableSaveCommand, outcome: StrongSaveOutcome): Promise<boolean> {
     if (!identityMatches()) { pause('identity-changed', '身份已变化，已停止同步；原工作保留在原用户范围。'); return false; }
     if (!outcome || typeof outcome !== 'object' || !['saved', 'pending', 'unknown', 'rejected'].includes(outcome.status) || outcome.operationId !== command.context.operationId) { retryBlocked = true; outcome = { status: 'unknown', operationId: command.context.operationId, message: 'RESPONSE_MISMATCH：操作回执不匹配。' }; }
     if (outcome.status === 'saved') {
-      const matching = !!outcome.ref && typeof outcome.ref === 'object' && same(outcome.base, command.base) && outcome.ref.pageId === command.pageId &&
-        Number.isInteger(outcome.revisionNumber) && outcome.revisionNumber > 0 &&
-        [outcome.ref.revisionId, outcome.ref.resourceId, ...(options.port.delivery === 'single' ? [] : [outcome.contentHash, outcome.canonicalization])].every((value) => typeof value === 'string' && value.length > 0) &&
-        (!command.base || (outcome.ref.resourceId === command.base.resourceId && outcome.ref.revisionId !== command.base.revisionId));
+      const matching = savedReceiptMatches(command, outcome);
       let verified = false;
       try { verified = matching && await options.port.verifySaved(command, outcome); } catch { /* uncertain verification never acknowledges a save */ }
-      if (!verified) { retryBlocked = true; }
-      if (!verified) outcome = { status: 'unknown', operationId: command.context.operationId, message: 'RESPONSE_MISMATCH：保存引用或完整性验证失败。' };
+      if (!verified) { retryBlocked = true; outcome = { status: 'unknown', operationId: command.context.operationId, message: 'RESPONSE_MISMATCH：保存引用或完整性验证失败。' }; }
     }
     if (!identityMatches()) { pause('identity-changed', '身份已变化，原已发操作等待原身份重新打开后核实。'); return false; }
     // Persist only the declared receipt fields, never arbitrary transport metadata.
-    const result: StrongSaveOutcome = outcome.status === 'saved'
-      ? { status: 'saved', operationId: outcome.operationId, ref: { pageId: outcome.ref.pageId, revisionId: outcome.ref.revisionId, resourceId: outcome.ref.resourceId }, base: command.base, contentHash: outcome.contentHash, canonicalization: outcome.canonicalization, revisionNumber: outcome.revisionNumber, ...(outcome.revision ? {revision:outcome.revision} : {}) }
-      : outcome.status === 'rejected'
-        ? { status: 'rejected', operationId: outcome.operationId, code: outcome.code, message: outcome.message, retryable: outcome.retryable === true }
-        : { status: outcome.status, operationId: outcome.operationId, message: outcome.message };
+    const result = declaredReceipt(command, outcome);
     const protectedResult = await transaction(() => {
       const head = state.queue[0];
       if (!head || head.operationId !== command.context.operationId) return;
@@ -143,20 +171,22 @@ export function createAuthoringSync(options: {
     return false;
   }
   async function pump() {
-    if (running || disposed || !durable || !state.queue.length || !online) return;
+    if (!canPump()) return;
     if (!identityMatches()) { pause('identity-changed', '身份已变化，已暂停同步。'); return; }
-    if (!options.port.stableSave && options.port.delivery !== 'single') { pause('unavailable', '服务尚未确认稳定幂等保存，工作已在浏览器保护。'); return; }
+    if (!supportsStableDelivery()) { pause('unavailable', '服务尚未确认稳定幂等保存，工作已在浏览器保护。'); return; }
     if (state.queue[0].outcome || status.phase === 'identity-changed') return;
     running = true;
     try {
-      while (!disposed && durable && online && state.queue.length && identityMatches()) {
+      while (canContinue()) {
         const operation = state.queue[0];
         if (operation.outcome) break;
         if (!operation.command) {
           const protectedCommand = await transaction(() => {
-            operation.command = { context: { operationId: operation.operationId, actorId: state.scope.actorId, workspaceId: state.scope.workspaceId, origin: { kind: 'manual' } },
+            operation.command = {
+              context: { operationId: operation.operationId, actorId: state.scope.actorId, workspaceId: state.scope.workspaceId, origin: { kind: 'manual' } },
               base: structuredClone(state.base), pageId: state.scope.pageId, document: operation.document,
-              description: operation.description, retainDimensionValues: operation.retainDimensionValues, ...(operation.intent ? {intent:operation.intent} : {}) };
+              description: operation.description, retainDimensionValues: operation.retainDimensionValues, ...(operation.intent ? { intent: operation.intent } : {})
+            };
           });
           if (!protectedCommand || disposed || !identityMatches()) break;
         }
@@ -169,14 +199,14 @@ export function createAuthoringSync(options: {
       }
     } finally {
       running = false;
-      if (!disposed && durable && online && state.queue.length && !state.queue[0].outcome && identityMatches() && (options.port.stableSave || options.port.delivery === 'single')) queueMicrotask(() => void pump());
+      if (shouldPumpAgain()) queueMicrotask(() => void pump());
       else scheduleRetry();
     }
   }
   const api = {
     snapshot,
     start() {
-      if (!durable) { void transaction(() => {}).then((protectedWork) => { if (protectedWork) void pump(); }); return; }
+      if (!durable) { void transaction(() => { }).then((protectedWork) => { if (protectedWork) void pump(); }); return; }
       if (options.manualSave && options.restoredVersion && state.queue.length) { pause('unknown', '恢复的原保存需要核实，不会自动重发。'); return; }
       if (state.queue[0]?.outcome) void api.retry(false); else void pump();
     },
@@ -197,7 +227,7 @@ export function createAuthoringSync(options: {
         state.undoDraft = structuredClone(state.draft);
         state.draft = structuredClone(draft);
         if (options.manualSave && !intent) state.localDirty = true;
-        else state.queue.push({ operationId, document: parsed.document, description, retainDimensionValues, ...(intent ? {intent} : {}) });
+        else state.queue.push({ operationId, document: parsed.document, description, retainDimensionValues, ...(intent ? { intent } : {}) });
       });
       if (persisted) void pump();
     },
@@ -211,56 +241,56 @@ export function createAuthoringSync(options: {
       const parsed = normalizePageDocument(state.draft.pageDocument);
       if (!parsed.ok) throw Error('页面校验未通过，不能保存。');
       const persisted = await transaction(() => {
-        state.queue.push({operationId:options.operationId?.() ?? crypto.randomUUID(),document:structuredClone(parsed.document),description:'人工明确保存',retainDimensionValues,intent:'saveDraft'});
+        state.queue.push({ operationId: options.operationId?.() ?? crypto.randomUUID(), document: structuredClone(parsed.document), description: '人工明确保存', retainDimensionValues, intent: 'saveDraft' });
         state.localDirty = false;
       });
       if (persisted) await pump();
     },
-    async protect(): Promise<boolean> { await serial; return durable || await transaction(() => {}); },
+    async protect(): Promise<boolean> { await serial; return durable || await transaction(() => { }); },
     async undo(retainDimensionValues = true): Promise<CanvasAuthoringDraft | null> {
       if (undoing) return null;
       undoing = true;
       try {
-      await serial;
-      if (disposed || !identityMatches()) throw Error('身份已变化或工作台已关闭。');
-      if (!durable) throw Error('本地工作尚未保护，不能撤销。');
-      const requested = structuredClone(state.draft);
-      if (running || state.queue.some((item) => item.command)) {
-        await api.retry();
-        if (running || state.queue.some((item) => item.command)) throw Error('原操作结果尚未确定或存在冲突，请先核实后撤销。');
-      }
-      if (!same(state.draft, requested)) throw Error('撤销期间工作副本已变化，请重新选择操作。');
-      if (!state.undoDraft) return null;
-      const draft = structuredClone(state.undoDraft);
-      const parsed = normalizePageDocument(draft.pageDocument);
-      if (!parsed.ok) throw Error('撤销目标未通过页面校验。');
-      await transaction(() => {
-        if (!same(state.draft, requested)) throw Error('撤销期间工作副本已变化。');
-        state.draft = draft; delete state.undoDraft;
-        if (options.manualSave) state.localDirty = true;
-        else state.queue.push({ operationId: options.operationId?.() ?? crypto.randomUUID(), document: parsed.document, description: '撤销上一步完整操作', retainDimensionValues });
-      });
-      if (disposed || !identityMatches()) throw Error('工作范围已变化，原操作已保留。');
-      void pump(); return structuredClone(state.draft);
+        await serial;
+        if (disposed || !identityMatches()) throw Error('身份已变化或工作台已关闭。');
+        if (!durable) throw Error('本地工作尚未保护，不能撤销。');
+        const requested = structuredClone(state.draft);
+        if (running || state.queue.some((item) => item.command)) {
+          await api.retry();
+          if (running || state.queue.some((item) => item.command)) throw Error('原操作结果尚未确定或存在冲突，请先核实后撤销。');
+        }
+        if (!same(state.draft, requested)) throw Error('撤销期间工作副本已变化，请重新选择操作。');
+        if (!state.undoDraft) return null;
+        const draft = structuredClone(state.undoDraft);
+        const parsed = normalizePageDocument(draft.pageDocument);
+        if (!parsed.ok) throw Error('撤销目标未通过页面校验。');
+        await transaction(() => {
+          if (!same(state.draft, requested)) throw Error('撤销期间工作副本已变化。');
+          state.draft = draft; delete state.undoDraft;
+          if (options.manualSave) state.localDirty = true;
+          else state.queue.push({ operationId: options.operationId?.() ?? crypto.randomUUID(), document: parsed.document, description: '撤销上一步完整操作', retainDimensionValues });
+        });
+        if (disposed || !identityMatches()) throw Error('工作范围已变化，原操作已保留。');
+        void pump(); return structuredClone(state.draft);
       } finally { undoing = false; }
     },
     /** Explicit retry first resolves the original key; unknown is never treated as not applied. */
     async retry(manual = true): Promise<void> {
-      if (manual) { attempts = 0; if (timer) { clearTimeout(timer); timer = undefined; } }
+      resetRetry(manual);
       await serial;
-      if (disposed || running || !online || !identityMatches()) return;
-      if (!durable && !await transaction(() => {})) return;
+      if (!retryAvailable()) return;
+      if (!durable && !await transaction(() => { })) return;
       const head = state.queue[0];
       if (!head) return;
-      if (options.port.delivery === 'single' && (head.command || head.outcome)) { pause(head.outcome?.status === 'rejected' ? 'rejected' : 'unknown', head.outcome?.status === 'rejected' ? head.outcome.message : '原保存结果未确认，已停止重发，请保留工作并核实。'); return; }
-      if (!options.port.stableSave && options.port.delivery !== 'single') { void pump(); return; }
+      if (singleDeliveryLocked(head)) return;
+      if (!supportsStableDelivery()) { void pump(); return; }
       if (!head.command || !head.outcome) { void pump(); return; }
       if (head.outcome.status === 'rejected') return;
       running = true;
       try {
         const result = await options.port.lookup(head.command.context);
         if (!identityMatches()) { pause('identity-changed', '身份已变化，已暂停同步。'); return; }
-        if (!result || typeof result !== 'object' || result.operationId !== head.operationId) { retryBlocked = true; pause('unknown', '操作查询回执不匹配。'); return; }
+        if (!matchesLookup(result, head.operationId)) { retryBlocked = true; pause('unknown', '操作查询回执不匹配。'); return; }
         if (result.status === 'not-applied') {
           if (result.retrySafe !== true) { retryBlocked = true; pause('unknown', '服务无法保证幂等重试窗口，请保留工作并人工核实。'); return; }
           await transaction(() => { delete head.outcome; });

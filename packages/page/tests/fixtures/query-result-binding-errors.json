@@ -1,0 +1,47 @@
+[
+  {
+    "type": "SCHEMA_ERROR",
+    "path": "/dataSources/details-high/source/query/resultBindings/0",
+    "message": "结果输入要求完整查询、显式有限选择或声明正整数limit的查询分页窗口；分页窗口不能声明complete"
+  },
+  {
+    "type": "SCHEMA_ERROR",
+    "path": "/dataSources/details-high/source/query/resultBindings/0",
+    "message": "有限选择源不能作为全量统计输入"
+  },
+  {
+    "type": "SCHEMA_ERROR",
+    "path": "/dataSources/details-high/source/query/resultBindings/0/where/field",
+    "message": "查询输入过滤必须引用同一上游查询的原始标量字段"
+  },
+  {
+    "type": "SCHEMA_ERROR",
+    "path": "/dataSources/details-high/source/query/resultBindings/1",
+    "message": "结果输入要求完整查询、显式有限选择或声明正整数limit的查询分页窗口；分页窗口不能声明complete"
+  },
+  {
+    "type": "SCHEMA_ERROR",
+    "path": "/dataSources/details-high/source/query/resultBindings/1",
+    "message": "有限选择源不能作为全量统计输入"
+  },
+  {
+    "type": "SCHEMA_ERROR",
+    "path": "/dataSources/details-high/source/query/resultBindings/1/queryField",
+    "message": "结果输入与已有维度条件重复"
+  },
+  {
+    "type": "SCHEMA_ERROR",
+    "path": "/dataSources/details-low/source/query/resultBindings/0",
+    "message": "结果输入要求完整查询、显式有限选择或声明正整数limit的查询分页窗口；分页窗口不能声明complete"
+  },
+  {
+    "type": "SCHEMA_ERROR",
+    "path": "/dataSources/details-low/source/query/resultBindings/0",
+    "message": "有限选择源不能作为全量统计输入"
+  },
+  {
+    "type": "SCHEMA_ERROR",
+    "path": "/dataSources/projects",
+    "message": "查询或计算阶段依赖成环"
+  }
+]

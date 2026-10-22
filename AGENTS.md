@@ -28,6 +28,10 @@ SDD 系列 skill(`sdd-dev-frontend`、`sdd-init-frontend`、`sdd-task-frontend`�
 
 新增 `pages/` 示例显式使用 `layout: "dashboard"`，复用现有 Dashboard 页头与组件；仅用户明确要求或验收 Report 专属能力时使用 `report`。
 
+### 每次编码的复杂度检查（必选）
+
+每次新增、修改或重构代码，均执行 [代码复杂度规则](docs/agents/code-complexity.md)：编码前识别职责与分支，编码后实测修改函数和全部新增辅助函数，按规则处理存量超限，并验证行为保持。完成说明须给出测量口径、相关函数前后结果及未关闭项。
+
 ### Git 交付
 
 提交、push 或跨分支交付使用 [scoped-main-delivery](.agents/skills/scoped-main-delivery/SKILL.md)，以本仓入口为准。

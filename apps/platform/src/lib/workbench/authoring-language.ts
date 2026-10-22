@@ -89,18 +89,18 @@ export function createAuthoringLanguage(options: {
     const result = await options.port.read(draftId, signal);
     return validateDelivery(turn, draftId, result, signal);
   }
-  function validateDelivery(turn: NonNullable<typeof active>, draftId: string, result: {binding:LanguageContext;draft:SavedDraft}, signal: AbortSignal) {
+  function validateDelivery(turn: NonNullable<typeof active>, draftId: string, result: { binding: LanguageContext; draft: SavedDraft }, signal: AbortSignal) {
     if (signal.aborted || !current(turn) || !sameBinding(result.binding, turn.context) ||
-        result.draft.draftId !== draftId || !result.draft.ref || result.draft.ref.pageId !== turn.context.binding.pageId || ![result.draft.ref.pageId, result.draft.ref.revisionId, result.draft.ref.resourceId].every((value) => draftIdOf({ draftId: value })) ||
-        validate(result.draft.document).length > 0 || result.draft.document.id !== result.draft.ref.pageId ||
-        (turn.context.base && (result.draft.ref.pageId !== turn.context.base.pageId || result.draft.ref.resourceId !== turn.context.base.resourceId || result.draft.ref.revisionId === turn.context.base.revisionId))) {
+      result.draft.draftId !== draftId || !result.draft.ref || result.draft.ref.pageId !== turn.context.binding.pageId || ![result.draft.ref.pageId, result.draft.ref.revisionId, result.draft.ref.resourceId].every((value) => draftIdOf({ draftId: value })) ||
+      validate(result.draft.document).length > 0 || result.draft.document.id !== result.draft.ref.pageId ||
+      (turn.context.base && (result.draft.ref.pageId !== turn.context.base.pageId || result.draft.ref.resourceId !== turn.context.base.resourceId || result.draft.ref.revisionId === turn.context.base.revisionId))) {
       throw Error('RESPONSE_MISMATCH：通知不属于当前可信操作，保留当前页面。');
     }
     return result.draft;
   }
   async function waitForSync(signal: AbortSignal) {
     await new Promise<void>((resolve, reject) => {
-      let unsubscribe = () => {};
+      let unsubscribe = () => { };
       const check = () => {
         const state = options.coordinator.snapshot();
         if (signal.aborted || disposed) { unsubscribe(); reject(Error('已取消等待同步。')); return; }
@@ -108,8 +108,8 @@ export function createAuthoringLanguage(options: {
           unsubscribe(); reject(Error(state.sync?.message || '同步失败，保留当前工作。')); return;
         }
         if (!state.loading && !state.dirty &&
-            (!state.sync || (state.sync.protection === 'protected' && state.sync.pending === 0)) &&
-            state.save?.status !== 'pending') {
+          (!state.sync || (state.sync.protection === 'protected' && state.sync.pending === 0)) &&
+          state.save?.status !== 'pending') {
           unsubscribe(); resolve();
         }
       };
@@ -123,9 +123,9 @@ export function createAuthoringLanguage(options: {
     if (result.status === 'saved') {
       if (turn.context.binding.access === 'read') { emit({ phase: 'unknown', message: 'RESPONSE_MISMATCH：只读轮次收到写入回执，需核实服务结果。' }); return; }
       if (result.delivery) {
-        const draft = validateDelivery(turn,result.draftId,result.delivery,new AbortController().signal);
-        if (pageState.acceptVerifiedPage(turn.handle,draft.document) !== 'accepted' || !turn.lease.accept(draft)) throw Error('保存回执不能应用到当前工作副本。');
-        emit({phase:'saved',message:'已核对保存回执并更新页面。'});finish(turn);return;
+        const draft = validateDelivery(turn, result.draftId, result.delivery, new AbortController().signal);
+        if (pageState.acceptVerifiedPage(turn.handle, draft.document) !== 'accepted' || !turn.lease.accept(draft)) throw Error('保存回执不能应用到当前工作副本。');
+        emit({ phase: 'saved', message: '已核对保存回执并更新页面。' }); finish(turn); return;
       }
       emit({ phase: 'reading', message: '已保存，正在读取可信程序回执。' });
       options.target.dispatchEvent(new CustomEvent(DRAFT_SAVED_EVENT, { detail: { draftId: result.draftId } }));
@@ -138,11 +138,40 @@ export function createAuthoringLanguage(options: {
       finish(turn);
     }
   }
+  function preparationCurrent(controller: AbortController, preparing: ReturnType<Coordinator['beginPreparation']>): boolean {
+    return !controller.signal.aborted && !disposed && preparing.current();
+  }
+  function selectedId(latest: PageRevision | null): string | null {
+    const selection = options.selection?.();
+    return latest && selection?.pageId === latest.pageId && latest.document.sections.some(section => section.components.some(component => component.id === selection.componentId)) ? selection.componentId : null;
+  }
+  function prepareRequest(mode: 'new' | 'existing', latest: PageRevision | null, intent: { access?: 'read' | 'write' }, selectedComponentId: string | null): PrepareLanguageRequest {
+    const id = options.id ?? (() => crypto.randomUUID());
+    return { ...options.identity(), requestId: id(), runId: id(), turnId: id(), mode, access: intent.access ?? 'write', pageId: latest?.pageId ?? null, latest, documentJson: latest ? canonicalizeJson(latest.document) : null, selectedComponentId };
+  }
+  function assertPreparedContext(binding: AuthoringTurnBinding, request: PrepareLanguageRequest, latest: PageRevision | null, hash: string | null, selected: string | null): void {
+    if (!validateAuthoringTurn(binding) || binding.status !== 'active' || binding.capabilityVersion !== '1.0' || !matchingPreparedRequest(binding, request, hash, selected) || !matchingPreparedSource(binding, latest)) throw Error('RESPONSE_MISMATCH：本轮上下文绑定不匹配。');
+  }
+  function matchingPreparedRequest(binding: AuthoringTurnBinding, request: PrepareLanguageRequest, hash: string | null, selected: string | null): boolean {
+    return !['actorId', 'workspaceId', 'requestId', 'runId', 'turnId', 'mode', 'access'].some(key => binding[key as keyof AuthoringTurnBinding] !== request[key as keyof PrepareLanguageRequest]) && binding.documentSha256 === hash && binding.selectedComponentId === selected;
+  }
+  function matchingPreparedSource(binding: AuthoringTurnBinding, latest: PageRevision | null): boolean {
+    return !((latest && (binding.pageId !== latest.pageId || !sameRef(binding.baseRef, { pageId: latest.pageId, revisionId: latest.revisionId, resourceId: latest.resourceId! }))) || (!latest && (binding.baseRef !== null || binding.documentSha256 !== null)));
+  }
+  function startBlocked(prompt: string): boolean {
+    return disposed || !!active || !!startController || !prompt.trim();
+  }
+  function reportStartFailure(controller: AbortController, error: unknown): void {
+    if (!disposed && !controller.signal.aborted && (!active || current(active))) emit({ phase: active ? 'unknown' : 'failed', message: message(error) });
+  }
+  function releasePreparation(controller: AbortController): void {
+    if (startController === controller) { preparation?.release(); preparation = null; startController = null; }
+  }
   const api = {
     snapshot: (): LanguageSnapshot => active && !identityMatches(active.context) ? { phase: 'unknown', message: '身份已变化，请重新打开页面。', operations: [], recovery: null } : structuredClone(snapshot),
     subscribe(listener: (value: LanguageSnapshot) => void) { listeners.add(listener); listener(api.snapshot()); return () => { listeners.delete(listener); }; },
     async start(prompt: string, intent: { mode?: 'new' | 'existing'; access?: 'read' | 'write' } = {}) {
-      if (disposed || active || startController || !prompt.trim()) return;
+      if (startBlocked(prompt)) return;
       const controller = new AbortController(); startController = controller;
       emit({ phase: 'synchronizing', message: '等待当前工作同步完成。', operations: [], recovery: null });
       try {
@@ -151,27 +180,19 @@ export function createAuthoringLanguage(options: {
         preparing.flush(() => options.flushPendingInput?.());
         await preparing.synchronize();
         await waitForSync(controller.signal);
-        if (controller.signal.aborted || disposed || !preparing.current()) return;
+        if (!preparationCurrent(controller, preparing)) return;
         if (!options.port.prepare) throw Error('CAPABILITY_UNAVAILABLE：可信本轮上下文服务尚未接通。');
         const mode = intent.mode ?? 'existing';
         const latest = mode === 'existing' ? await preparing.latest(controller.signal) : null;
-        const selection = options.selection?.();
-        const selectedComponentId = latest && selection?.pageId === latest.pageId &&
-          latest.document.sections.some(section => section.components.some(component => component.id === selection.componentId)) ? selection.componentId : null;
-        const id = options.id ?? (() => crypto.randomUUID());
-        const request: PrepareLanguageRequest = { ...options.identity(), requestId: id(), runId: id(), turnId: id(),
-          mode, access: intent.access ?? 'write', pageId: latest?.pageId ?? null, latest, documentJson: latest ? canonicalizeJson(latest.document) : null, selectedComponentId };
+        const selectedComponentId = selectedId(latest);
+        const request = prepareRequest(mode, latest, intent, selectedComponentId);
         const expectedHash = latest ? await authoringDocumentHash(latest.document) : null;
-        if (controller.signal.aborted || disposed || !preparing.current()) return;
+        if (!preparationCurrent(controller, preparing)) return;
         const binding = await options.port.prepare(structuredClone(request), controller.signal);
-        if (controller.signal.aborted || disposed || !preparing.current()) return;
-        if (!validateAuthoringTurn(binding) || binding.status !== 'active' || binding.capabilityVersion !== '1.0' ||
-          ['actorId', 'workspaceId', 'requestId', 'runId', 'turnId', 'mode', 'access'].some(key => binding[key as keyof AuthoringTurnBinding] !== request[key as keyof PrepareLanguageRequest]) ||
-          binding.documentSha256 !== expectedHash || binding.selectedComponentId !== selectedComponentId ||
-          (latest && (binding.pageId !== latest.pageId || !sameRef(binding.baseRef, { pageId: latest.pageId, revisionId: latest.revisionId, resourceId: latest.resourceId! }))) ||
-          (!latest && (binding.baseRef !== null || binding.documentSha256 !== null))) throw Error('RESPONSE_MISMATCH：本轮上下文绑定不匹配。');
+        if (!preparationCurrent(controller, preparing)) return;
+        assertPreparedContext(binding, request, latest, expectedHash, selectedComponentId);
         if (latest) { await preparing.adoptLatest(latest); await waitForSync(controller.signal); }
-        if (controller.signal.aborted || disposed || !preparing.current()) return;
+        if (!preparationCurrent(controller, preparing)) return;
         const lease = preparing.acquire(mode === 'new' ? binding.pageId : undefined); preparation = null;
         const context: LanguageContext = { ...lease.identity, base: binding.baseRef, binding, retainDimensionValues: lease.retainDimensionValues, runId: request.runId, operationId: request.requestId };
         const turn = { context, lease, handle: pageState.begin(), cancelled: false }; active = turn;
@@ -189,8 +210,8 @@ export function createAuthoringLanguage(options: {
         emit({ phase: 'running', message: '语言修改处理中，暂不能手工修改当前页面。' });
         await outcome(turn, await options.port.run(structuredClone(context), prompt, controller.signal));
       } catch (error) {
-        if (!disposed && !controller.signal.aborted && (!active || current(active))) emit({ phase: active ? 'unknown' : 'failed', message: message(error) });
-      } finally { if (startController === controller) { preparation?.release(); preparation = null; startController = null; } }
+        reportStartFailure(controller, error);
+      } finally { releasePreparation(controller); }
     },
     cancel() {
       startController?.abort(); startController = null; preparation?.release(); preparation = null;
@@ -210,7 +231,7 @@ export function createAuthoringLanguage(options: {
         if (!current(turn)) return;
         if (!turn.cancelled) await outcome(turn, result);
         else if (result.status === 'saved') {
-          const draft = result.delivery ? validateDelivery(turn,result.draftId,result.delivery,controller.signal) : await trustedRead(turn, result.draftId, controller.signal);
+          const draft = result.delivery ? validateDelivery(turn, result.draftId, result.delivery, controller.signal) : await trustedRead(turn, result.draftId, controller.signal);
           if (pageState.snapshot().phase !== 'cancelled') return;
           emit({ phase: 'recovered', recovery: draft.ref, message: '取消后服务已保存；当前页面保留，可查看该精确修订。' });
           // Keep the lease: the service head advanced, so old local content is not a synchronized base.

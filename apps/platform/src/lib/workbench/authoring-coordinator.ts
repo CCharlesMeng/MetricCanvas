@@ -77,9 +77,9 @@ export function createAuthoringCoordinator(options: {
   const snapshot = () => structuredClone(state);
   const emit = () => { for (const listener of listeners) listener(snapshot()); };
   const identityKey = () => { const value = options.identity(); return JSON.stringify([value.actorId, value.workspaceId]); };
-  const targetScope = () => ({...(options.storageTarget ? {serviceTarget:options.storageTarget()} : {}),...(options.localTaskId ? {taskId:options.localTaskId} : {})});
+  const targetScope = () => ({ ...(options.storageTarget ? { serviceTarget: options.storageTarget() } : {}), ...(options.localTaskId ? { taskId: options.localTaskId } : {}) });
   const durableFormat = () => options.manualSave ? 3 as const : syncConfig?.port.delivery === 'single' ? 2 as const : 1 as const;
-  const localState = () => options.manualSave ? {localDirty:false} : {};
+  const localState = () => options.manualSave ? { localDirty: false } : {};
   const scope = () => `${epoch}:${identityKey()}`;
   const recoveryLocked = () => state.sync?.phase === 'rejected' || state.save?.status === 'unknown' || state.save?.status === 'pending' || state.sync?.phase === 'unknown';
   const unresolved = () => state.loading || state.sync?.protection === 'failed' || state.save?.status === 'pending' || state.save?.status === 'unknown' || (state.sync?.pending ?? 0) > 0;
@@ -87,28 +87,46 @@ export function createAuthoringCoordinator(options: {
     (!!syncConfig && !!state.draft && state.sync?.protection !== 'protected');
   function change(draft: CanvasAuthoringDraft) { epoch++; read?.abort(); state = { ...state, draft: structuredClone(draft), loading: false, error: '' }; }
 
+  const currentScopeMatches = (expected: string) => !disposed && scope() === expected;
+  function syncStorageScope(identity: ReturnType<typeof options.identity>): DurableAuthoringState['scope'] {
+    return { ...identity, ...targetScope(), pageId: String(state.draft!.pageDocument.id), ...(options.port.assets && !options.localTaskId && state.ref?.resourceId ? { resourceId: state.ref.resourceId } : {}) };
+  }
+  function freshSyncState(storageScope: DurableAuthoringState['scope'], receipt?: PageRevision): DurableAuthoringState {
+    return { format: durableFormat(), ...localState(), scope: storageScope, base: state.ref, draft: state.draft!, queue: [], ...(receipt ? { confirmed: receipt } : {}) };
+  }
+  function incomingSyncState(storageScope: DurableAuthoringState['scope'], stored: StoredRecord<DurableAuthoringState>, receipt?: PageRevision): DurableAuthoringState {
+    return { format: durableFormat(), ...localState(), scope: storageScope, base: state.ref, draft: state.draft!, queue: [], ...(receipt ? { confirmed: receipt } : stored.value.confirmed?.revisionId === state.ref?.revisionId ? { confirmed: stored.value.confirmed } : {}) };
+  }
+  function assertSyncIdentity(identity: ReturnType<typeof options.identity>): void {
+    if (!identity.actorId || !identity.workspaceId) throw new Error('身份失效，原记录已保留，请重新登录后打开页面。');
+  }
+  const replacementBlocked = () => !!((preparation && !flushing) || languageLease || recoveryLocked() || disposed || (syncConfig && state.loading) || state.save?.status === 'pending' || (options.manualSave && (state.sync?.pending ?? 0) > 0));
+  const restorationBlocked = () => !!preparation || !!languageLease || disposed || owner !== identityKey();
+  function incompatibleSavedDraft(draft: SavedDraft, newPage: boolean): boolean {
+    return !!(draft.document.id !== draft.ref.pageId || state.dirty || (!newPage && state.ref?.resourceId && state.ref.resourceId !== draft.ref.resourceId) || (!newPage && state.draft && state.draft.pageDocument.id !== draft.ref.pageId));
+  }
   async function attachSync(prepared?: StoredRecord<DurableAuthoringState> | null, incoming = false, receipt?: PageRevision) {
     if (!syncConfig || !state.draft) return;
     sync?.dispose(); sync = null;
     const identity = options.identity();
     const expected = scope();
-    const storageScope = { ...identity, ...targetScope(), pageId: String(state.draft.pageDocument.id), ...(options.port.assets && !options.localTaskId && state.ref?.resourceId ? {resourceId:state.ref.resourceId} : {}) };
+    const storageScope = syncStorageScope(identity);
     state = { ...state, loading: true, sync: null }; emit();
     try {
-      if (!identity.actorId || !identity.workspaceId) throw new Error('身份失效，原记录已保留，请重新登录后打开页面。');
+      assertSyncIdentity(identity);
       const raw = prepared === undefined ? await syncConfig.storage.read(storageScope) : prepared;
       let stored = raw === null ? null : validateAuthoringRecord(raw, storageScope);
-      if (disposed || scope() !== expected) return;
+      if (!currentScopeMatches(expected)) return;
       if (incoming && stored && stored.value.queue.length === 0) {
-        const value: DurableAuthoringState = { format: durableFormat(), ...localState(), scope: storageScope, base: state.ref, draft: state.draft!, queue: [], ...(receipt ? {confirmed:receipt} : stored.value.confirmed?.revisionId === state.ref?.revisionId ? {confirmed: stored.value.confirmed} : {}) };
+        const value = incomingSyncState(storageScope, stored, receipt);
         const version = await syncConfig.storage.write(storageScope, stored.version, structuredClone(value));
-        if (disposed || scope() !== expected) return;
+        if (!currentScopeMatches(expected)) return;
         stored = { version, value };
       }
-      if (stored) state = { ...state, draft: stored.value.draft, ref: stored.value.base, dirty: !!stored.value.localDirty || stored.value.queue.length > 0 };
+      if (stored) state = { ...state, draft: stored.value.draft, ref: stored.value.base, dirty: hasPendingWork(stored) };
       const active = createAuthoringSync({
-        initial: stored?.value ?? { format: durableFormat(), ...localState(), scope: storageScope, base: state.ref, draft: state.draft!, queue: [], ...(receipt ? {confirmed:receipt} : {}) },
-        ...syncConfig, manualSave:options.manualSave, identity: options.identity, restoredVersion: stored?.version, online
+        initial: stored?.value ?? freshSyncState(storageScope, receipt),
+        ...syncConfig, manualSave: options.manualSave, identity: options.identity, restoredVersion: stored?.version, online
       });
       sync = active;
       active.subscribe((value) => {
@@ -121,12 +139,74 @@ export function createAuthoringCoordinator(options: {
       state = { ...state, loading: false }; emit();
       active.start();
     } catch (error) {
-      if (!disposed && scope() === expected) {
+      if (currentScopeMatches(expected)) {
         state = { ...state, loading: false, sync: { pending: 0, protection: 'failed', phase: 'storage-failed', message: messageOf(error), base: state.ref, lastSaved: null } }; emit();
       }
     }
   }
 
+  type LocalWork = StoredRecord<DurableAuthoringState>;
+  const workBlocked = () => !!preparation || !!languageLease || disposed || unresolved();
+  const outdatedLoad = (signal: AbortSignal, expected: string) => disposed || signal.aborted || scope() !== expected;
+  const hasPendingWork = (stored: LocalWork) => stored.value.queue.length > 0 || !!stored.value.localDirty;
+  function refreshBlockedReason(pageId: string, refresh: boolean): string | undefined {
+    if (!refresh) return;
+    if (workBlocked() || state.dirty || (owner !== null && owner !== identityKey()) || (state.ref && state.ref.pageId !== pageId)) return '当前页面有未完成工作、身份已变化或通知属于其他页面，保留当前页面。';
+    if (!options.port.capabilities.currentRead) return 'CAPABILITY_UNAVAILABLE：当前页面读取未接通。';
+  }
+  function loadStorageScope(pageId: string, resourceId: string | undefined): DurableAuthoringState['scope'] {
+    const storageScope = { ...options.identity(), ...targetScope(), pageId, ...(resourceId && !options.localTaskId ? { resourceId } : {}) };
+    if (!storageScope.actorId || !storageScope.workspaceId) throw new Error('身份失效，请重新登录后打开页面。');
+    return storageScope;
+  }
+  function assertLegacyWorkResolved(legacy: LocalWork | null): void {
+    if (legacy?.value.queue.length) throw Error('旧版未决工作已保留，请先人工核实，不能在新入口重放。');
+  }
+  function checkedLoadRecord(raw: LocalWork | null, storageScope: DurableAuthoringState['scope'], refresh: boolean): LocalWork | null {
+    const stored = raw === null ? null : validateAuthoringRecord(raw, storageScope);
+    if (refresh && stored && hasPendingWork(stored)) throw new Error('本地仍有未同步修改，保留当前页面。');
+    return stored;
+  }
+  function shouldRestoreLocal(stored: LocalWork | null, localOnly: boolean | undefined, refresh: boolean): stored is LocalWork {
+    return !!stored && (!options.port.assets || !!localOnly || hasPendingWork(stored)) && !refresh;
+  }
+  function restoreLocalDraft(stored: LocalWork): void {
+    owner = identityKey();
+    change(stored.value.draft);
+    state = { ...state, ref: stored.value.base, dirty: hasPendingWork(stored), save: null };
+  }
+  function preferConfirmedRevision(stored: LocalWork | null, revision: PageRevision): PageRevision {
+    const confirmed = stored?.value.confirmed;
+    return confirmed && confirmed.resourceId === revision.resourceId && confirmed.revisionNumber > revision.revisionNumber ? confirmed : revision;
+  }
+  function adoptLoadedRevision(revision: PageRevision, pageId: string): void {
+    if (revision.pageId !== pageId || revision.document.id !== pageId) throw new Error('RESPONSE_MISMATCH：页面身份不匹配。');
+    const ref = refOf(revision);
+    const parsed = createCanvasAuthoringDraft({ ...revision.document });
+    if (!parsed.ok) throw new Error(parsed.message);
+    owner = identityKey();
+    change(parsed.draft);
+    state = { ...state, ref, dirty: false, save: null };
+  }
+  function recordLoadError(cause: unknown, signal: AbortSignal, expected: string): void {
+    if (!outdatedLoad(signal, expected)) state = { ...state, error: String(cause) };
+  }
+  function finishLoad(signal: AbortSignal): void {
+    if (!disposed && read?.signal === signal) { state = { ...state, loading: false }; emit(); }
+  }
+  const savePermitted = (permit?: symbol) => !(preparation && preparation !== permit) && !languageLease && !disposed;
+  const saveBlockedByReceipt = () => unresolved() || (state.save?.status === 'rejected' && state.save.code === 'REVISION_CONFLICT');
+  function acceptedSaveRevision(revision: PageRevision, pageId: string, base: DraftRef | null, document: Record<string, unknown>, context: OperationContext): SaveOutcome {
+    const ref = refOf(revision);
+    const parsed = normalizePageDocument(revision.document);
+    if (ref.pageId !== pageId || (base && ref.resourceId !== base.resourceId) || !parsed.ok || stable(parsed.document) !== stable(document)) throw new Error('RESPONSE_MISMATCH：保存回执与提交内容不匹配，结果未确定。');
+    return { status: 'saved', context, ref, revision, assurance: 'provider-response' };
+  }
+  function failedSaveOutcome(cause: unknown, context: OperationContext): SaveOutcome {
+    const error = cause as { code?: string; message?: string };
+    const knownRejected = (cause instanceof PageAssetsError && cause.code !== 'PAGE_ASSETS_RESPONSE_ERROR' && cause.status < 500) || ['DQE_CONFIG_ERROR', 'DQE_AUTH_REQUIRED'].includes(error.code ?? '');
+    return knownRejected ? { status: 'rejected', context, code: error.code ?? 'REJECTED', message: error.message ?? String(cause) } : { status: 'unknown', context, message: error.message ?? String(cause) };
+  }
   const coordinator = {
     snapshot, scope,
     enableAutoSync(config: { storage: AuthoringStorage<DurableAuthoringState>; port: StableSavePort }) {
@@ -222,7 +302,7 @@ export function createAuthoringCoordinator(options: {
     capabilities: options.port.capabilities,
     subscribe(listener: (state: AuthoringSnapshot) => void) { listeners.add(listener); listener(snapshot()); return () => { listeners.delete(listener); }; },
     replaceDraft(draft: CanvasAuthoringDraft, description = '手工页面修改', forceOperation = false): boolean {
-      if ((preparation && !flushing) || languageLease || recoveryLocked() || disposed || (syncConfig && state.loading) || state.save?.status === 'pending' || (options.manualSave && (state.sync?.pending ?? 0) > 0)) return false;
+      if (replacementBlocked()) return false;
       if (owner && owner !== identityKey()) { state = { ...state, error: '身份已变化，请重新打开页面后编辑。' }; emit(); return false; }
       if (state.ref && draft.pageDocument.id !== state.ref.pageId) {
         state = { ...state, error: 'RESPONSE_MISMATCH：编辑不能改变页面身份。' }; emit(); return false;
@@ -239,7 +319,7 @@ export function createAuthoringCoordinator(options: {
     /** Supplied metadata has no saved-revision receipt; apply locally without provider requests. */
     applyPreview(previewJson: unknown): boolean {
       if (preparation || languageLease || recoveryLocked() || disposed ||
-          (state.sync?.pending ?? 0) > 0 || (owner !== null && owner !== identityKey())) {
+        (state.sync?.pending ?? 0) > 0 || (owner !== null && owner !== identityKey())) {
         throw new Error('当前有未完成操作或身份已变化，暂不能应用页面文档。');
       }
       const document: unknown = typeof previewJson === 'string' ? JSON.parse(previewJson) : previewJson;
@@ -251,57 +331,44 @@ export function createAuthoringCoordinator(options: {
       change(parsed.draft);
       state = { ...state, ref: null, dirty: true, save: null, sync: null };
       emit();
-      if(syncConfig) void attachSync().then(async()=>{await sync?.enqueue(parsed.draft,'应用页面工作副本',retainDimensionValues,true);});
+      if (syncConfig) void attachSync().then(async () => { await sync?.enqueue(parsed.draft, '应用页面工作副本', retainDimensionValues, true); });
       return true;
     },
-    async load(pageId: string, optionsForLoad: { refreshCurrent?: boolean; resourceId?: string; localOnly?:boolean } = {}): Promise<void> {
+    async load(pageId: string, optionsForLoad: { refreshCurrent?: boolean; resourceId?: string; localOnly?: boolean } = {}): Promise<void> {
       const refreshCurrent = optionsForLoad.refreshCurrent === true;
-      if (refreshCurrent && (preparation || languageLease || disposed || unresolved() || state.dirty ||
-          (owner !== null && owner !== identityKey()) || (state.ref && state.ref.pageId !== pageId))) {
-        state = { ...state, error: '当前页面有未完成工作、身份已变化或通知属于其他页面，保留当前页面。' }; emit(); return;
-      }
-      if (refreshCurrent && !options.port.capabilities.currentRead) {
-        state = { ...state, error: 'CAPABILITY_UNAVAILABLE：当前页面读取未接通。' }; emit(); return;
-      }
-      if (preparation || languageLease || disposed || unresolved()) return;
+      const blocked = refreshBlockedReason(pageId, refreshCurrent);
+      if (blocked) { state = { ...state, error: blocked }; emit(); return; }
+      if (workBlocked()) return;
       epoch++; read?.abort(); read = new AbortController();
       const signal = read.signal, expected = scope();
       state = { ...state, loading: true, error: '' }; emit();
       try {
         let stored: StoredRecord<DurableAuthoringState> | null = null;
         const resourceId = optionsForLoad.resourceId ?? (options.port.assets && !options.localTaskId ? (await options.port.assets.resolve(pageId, signal)).resourceId : undefined);
-        if (disposed || signal.aborted || scope() !== expected) return;
+        if (outdatedLoad(signal, expected)) return;
         if (syncConfig) {
-          const storageScope = { ...options.identity(), ...targetScope(), pageId, ...(resourceId && !options.localTaskId ? {resourceId} : {}) };
-          if (!storageScope.actorId || !storageScope.workspaceId) throw new Error('身份失效，请重新登录后打开页面。');
+          const storageScope = loadStorageScope(pageId, resourceId);
           if (resourceId && !options.storageTarget) {
-            const legacy = await syncConfig.storage.read({...options.identity(),pageId});
-            if (legacy?.value.queue.length) throw Error('旧版未决工作已保留，请先人工核实，不能在新入口重放。');
+            const legacy = await syncConfig.storage.read({ ...options.identity(), pageId });
+            assertLegacyWorkResolved(legacy);
           }
           const raw = await syncConfig.storage.read(storageScope);
-          if (disposed || signal.aborted || scope() !== expected) return;
-          stored = raw === null ? null : validateAuthoringRecord(raw, storageScope);
-          if (refreshCurrent && stored && (stored.value.queue.length > 0 || stored.value.localDirty)) throw new Error('本地仍有未同步修改，保留当前页面。');
-          if (stored && (!options.port.assets || optionsForLoad.localOnly || (stored.value.queue.length > 0 || stored.value.localDirty)) && !refreshCurrent) {
-            owner = identityKey();
-            change(stored.value.draft); state = { ...state, ref: stored.value.base, dirty: !!stored.value.localDirty || stored.value.queue.length > 0, save: null };
+          if (outdatedLoad(signal, expected)) return;
+          stored = checkedLoadRecord(raw, storageScope, refreshCurrent);
+          if (shouldRestoreLocal(stored, optionsForLoad.localOnly, refreshCurrent)) {
+            restoreLocalDraft(stored);
             await attachSync(stored); return;
           }
         }
-        if(optionsForLoad.localOnly)return;
-        let revision = await options.port.getLatest(pageId, signal, resourceId);
-        if (stored?.value.confirmed && stored.value.confirmed.resourceId === revision.resourceId && stored.value.confirmed.revisionNumber > revision.revisionNumber) revision = stored.value.confirmed;
-        if (disposed || signal.aborted || scope() !== expected) return;
-        if (revision.pageId !== pageId || revision.document.id !== pageId) throw new Error('RESPONSE_MISMATCH：页面身份不匹配。');
-        const ref = refOf(revision);
-        const parsed = createCanvasAuthoringDraft({ ...revision.document });
-        if (!parsed.ok) throw new Error(parsed.message);
-        owner = identityKey();
-        change(parsed.draft); state = { ...state, ref, dirty: false, save: null }; await attachSync(stored, true); emit();
+        if (optionsForLoad.localOnly) return;
+        const revision = preferConfirmedRevision(stored, await options.port.getLatest(pageId, signal, resourceId));
+        if (outdatedLoad(signal, expected)) return;
+        adoptLoadedRevision(revision, pageId);
+        await attachSync(stored, true); emit();
       } catch (cause) {
-        if (!disposed && !signal.aborted && scope() === expected) { state = { ...state, error: String(cause) }; }
+        recordLoadError(cause, signal, expected);
       } finally {
-        if (!disposed && read?.signal === signal) { state = { ...state, loading: false }; emit(); }
+        finishLoad(signal);
       }
     },
     readSavedDraft: (async (draftId, signal) => {
@@ -315,11 +382,11 @@ export function createAuthoringCoordinator(options: {
     }) as ReadSavedDraft,
     acceptSavedDraft(draft: SavedDraft, lease?: symbol, newPage = false): boolean {
       if (preparation || (languageLease && languageLease !== lease) || languageBlocked()) return false;
-      if (draft.document.id !== draft.ref.pageId || state.dirty || (!newPage && state.ref?.resourceId && state.ref.resourceId !== draft.ref.resourceId) || (!newPage && state.draft && state.draft.pageDocument.id !== draft.ref.pageId)) {
+      if (incompatibleSavedDraft(draft, newPage)) {
         state = { ...state, error: '草稿通知与当前工作副本不兼容，保留当前页面。' }; emit(); return false;
       }
       if (options.port.assets && (!Number.isSafeInteger(draft.revisionNumber) || Number(draft.revisionNumber) < 1 || draft.isDraft !== true)) return false;
-      const receipt: PageRevision | undefined = draft.revisionNumber ? {...draft.ref,document:draft.document,revisionNumber:draft.revisionNumber,isDraft:draft.isDraft} : undefined;
+      const receipt: PageRevision | undefined = draft.revisionNumber ? { ...draft.ref, document: draft.document, revisionNumber: draft.revisionNumber, isDraft: draft.isDraft } : undefined;
       const parsed = createCanvasAuthoringDraft({ ...draft.document });
       if (!parsed.ok) { state = { ...state, error: parsed.message }; emit(); return false; }
       owner = identityKey();
@@ -337,14 +404,14 @@ export function createAuthoringCoordinator(options: {
       if (!sync || !state.draft) throw Error('工作尚未保护。');
       await sync.enqueue(state.draft, '发布页面', true, true, 'publish');
     },
-    async publishTemplate(document:PageDocument, expectedSource:string, selectedIds:readonly string[]):Promise<void> {
-      const ref=coordinator.requireSynchronizedRef();
-      if(expectedSource!==canonicalizeJson({ref,scope:coordinator.scope()}))throw Error('发布来源已变化');
-      if(!sync||!state.draft||document.id!==ref.pageId)throw Error('工作尚未保护或页面不匹配');
+    async publishTemplate(document: PageDocument, expectedSource: string, selectedIds: readonly string[]): Promise<void> {
+      const ref = coordinator.requireSynchronizedRef();
+      if (expectedSource !== canonicalizeJson({ ref, scope: coordinator.scope() })) throw Error('发布来源已变化');
+      if (!sync || !state.draft || document.id !== ref.pageId) throw Error('工作尚未保护或页面不匹配');
       const declarations = pageParamDeclarations(document.params);
-      if(selectedIds.some(id=>!declarations.some(p=>p.id===id))||declarations.some(p=>selectedIds.includes(p.id)&&(p.value!==undefined||p.default!==undefined))||selectedIds.length&&Object.values(document.dataSources).some(ds=>ds.source.type==='query'&&ds.source.initial))throw Error('模板不得保存所选参数实际值或旧初始行');
-      const draft=createCanvasAuthoringDraft({...document});if(!draft.ok)throw Error(draft.message);
-      await sync.enqueue(draft.draft,'发布参数模板',false,true,'publish');
+      if (selectedIds.some(id => !declarations.some(p => p.id === id)) || declarations.some(p => selectedIds.includes(p.id) && (p.value !== undefined || p.default !== undefined)) || selectedIds.length && Object.values(document.dataSources).some(ds => ds.source.type === 'query' && ds.source.initial)) throw Error('模板不得保存所选参数实际值或旧初始行');
+      const draft = createCanvasAuthoringDraft({ ...document }); if (!draft.ok) throw Error(draft.message);
+      await sync.enqueue(draft.draft, '发布参数模板', false, true, 'publish');
     },
     async listHistory(cursor: string | null = null, expectedSnapshot?: DraftRef, signal?: AbortSignal) {
       if (disposed || !state.ref || owner !== identityKey()) throw Error('当前工作副本不能读取历史。');
@@ -359,7 +426,7 @@ export function createAuthoringCoordinator(options: {
     },
     async restoreRevision(ref: DraftRef, signal?: AbortSignal): Promise<void> {
       if (!options.port.capabilities.exactRead) throw Error('当前生命周期端口尚未开放历史精确读取。');
-      if (preparation || languageLease || disposed || !sync || owner !== identityKey()) throw Error('当前工作副本不能恢复历史。');
+      if (!sync || restorationBlocked()) throw Error('当前工作副本不能恢复历史。');
       const before = scope();
       if ((state.sync?.pending ?? 0) > 0) await sync.retry();
       if (disposed || scope() !== before) throw Error('历史恢复范围已变化。');
@@ -381,9 +448,9 @@ export function createAuthoringCoordinator(options: {
       return { ...revision, document: parsed.document };
     },
     async save(preparationPermit?: symbol): Promise<SaveOutcome | null> {
-      if ((preparation && preparation !== preparationPermit) || languageLease || disposed || !state.draft) return null;
+      if (!savePermitted(preparationPermit) || !state.draft) return null;
       if (sync) { if (options.manualSave) await sync.commit(retainDimensionValues); else await sync.retry(); return null; }
-      if (unresolved() || (state.save?.status === 'rejected' && state.save.code === 'REVISION_CONFLICT')) return state.save;
+      if (saveBlockedByReceipt()) return state.save;
       const identity = options.identity();
       const context: OperationContext = { ...identity, origin: { kind: 'manual' }, operationId: options.operationId?.() ?? crypto.randomUUID() };
       if (owner !== identityKey()) {
@@ -401,19 +468,9 @@ export function createAuthoringCoordinator(options: {
           document, baseRevisionId: base?.revisionId ?? null,
           resourceId: base?.resourceId, idempotencyKey: context.operationId, pageIdConfirmed: true
         });
-        const ref = refOf(revision);
-        const parsed = normalizePageDocument(revision.document);
-        if (ref.pageId !== pageId || (base && ref.resourceId !== base.resourceId) || !parsed.ok || stable(parsed.document) !== stable(document)) {
-          throw new Error('RESPONSE_MISMATCH：保存回执与提交内容不匹配，结果未确定。');
-        }
-        outcome = { status: 'saved', context, ref, revision, assurance: 'provider-response' };
+        outcome = acceptedSaveRevision(revision, pageId, base, document, context);
       } catch (cause) {
-        const error = cause as { code?: string; message?: string };
-        const knownRejected = (cause instanceof PageAssetsError && cause.code !== 'PAGE_ASSETS_RESPONSE_ERROR' && cause.status < 500) ||
-          ['DQE_CONFIG_ERROR', 'DQE_AUTH_REQUIRED'].includes(error.code ?? '');
-        outcome = knownRejected
-          ? { status: 'rejected', context, code: error.code ?? 'REJECTED', message: error.message ?? String(cause) }
-          : { status: 'unknown', context, message: error.message ?? String(cause) };
+        outcome = failedSaveOutcome(cause, context);
       }
       if (!disposed) {
         if (scope() !== expected) outcome = { status: 'unknown', context, message: '身份或工作副本已变化，保存结果需核实。' };

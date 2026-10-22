@@ -1,0 +1,166 @@
+{
+  "date": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "日期工具带只允许放在报表的顶层页头"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds/0",
+      "message": "页头只能引用已声明的日期筛选器"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds/1",
+      "message": "页头只能引用已声明的日期筛选器"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds/1",
+      "message": "一个日期筛选器只能在一个页头出现一次"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds/2",
+      "message": "页头日期筛选器不能声明为隐藏"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds/3",
+      "message": "页头日期筛选器不能声明为隐藏"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds/3",
+      "message": "一个日期筛选器只能在一个页头出现一次"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/sales/source/query/filterBindings/period-filter",
+      "message": "期间筛选需要精度匹配的查询时间配置"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/sales/source/query/filterBindings/period-filter",
+      "message": "期间筛选不能另有固定时间来源"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/sales/source/query/filterBindings/period-filter",
+      "message": "月份范围需要查询 period=month"
+    }
+  ],
+  "join": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/office-overview/source/rowKey",
+      "message": "行键必须是非空 string/number 维度"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/office-overview/source/members/bidding/key/queryField",
+      "message": "编码输入目标不能为空"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/office-overview/source/projection/bidding-amount",
+      "message": "投影必须引用成员的原始字段"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/office-overview/fields/support-rate",
+      "message": "可能缺匹配的投影必须允许 null"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/office-overview/source/ordering/default",
+      "message": "默认排序字段不得重复"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/office-overview/source/ordering",
+      "message": "排序必须引用可比较的投影字段"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/office-overview/source/ordering",
+      "message": "排序必须引用可比较的投影字段"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/office-overview/source/ordering",
+      "message": "排序必须引用可比较的投影字段"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/office-overview/source/ordering",
+      "message": "排序必须引用可比较的投影字段"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/office-overview/source/ordering",
+      "message": "排序必须引用可比较的投影字段"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/office-overview/source/ordering/sortableFields",
+      "message": "排序字段不得重复"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/columns",
+      "message": "交互排序字段必须在组合排序声明中"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/columns",
+      "message": "交互排序字段必须在组合排序声明中"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/columns",
+      "message": "交互排序字段必须在组合排序声明中"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/columns",
+      "message": "交互排序字段必须在组合排序声明中"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/columns",
+      "message": "交互排序字段必须在组合排序声明中"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/columns",
+      "message": "交互排序字段必须在组合排序声明中"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/columns",
+      "message": "交互排序字段必须在组合排序声明中"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/columns",
+      "message": "交互排序字段必须在组合排序声明中"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/columns",
+      "message": "交互排序字段必须在组合排序声明中"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/columns",
+      "message": "交互排序字段必须在组合排序声明中"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/office-overview",
+      "message": "组合源必须由一张查询分页表独占"
+    }
+  ]
+}

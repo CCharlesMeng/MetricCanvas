@@ -8,17 +8,13 @@ export function memberRows(plan: PagedJoinPlan, id: string, result: DataSnapshot
   if (result.status === 'error') throw Object.assign(new Error(result.error.message), { code: result.error.code });
   if (result.status === 'loading') throw rowFailure('成员结果尚未完成');
   const rows = result.status === 'ready' ? result.rows : [], total = result.totalCount;
-  if (total !== undefined && (!Number.isSafeInteger(total) || total < rows.length)) throw rowFailure('成员总数不合法');
-  if (!window && (rows.length > plan.source.source.fallback.maxRows || (total !== undefined && total > plan.source.source.fallback.maxRows))) throw Object.assign(new Error('完整关联范围超过声明上限'), { code: 'DQE_QUERY_REJECTED' });
-  if (window) {
-    if (total === undefined || rows.length !== Math.min(window.limit, Math.max(0, total - window.offset))) throw rowFailure('选页结果缺少完整窗口或总数');
-  } else if (total !== undefined && total !== rows.length) throw rowFailure('完整补列结果被截断');
+  assertMemberRange(rows.length, total, plan.source.source.fallback.maxRows, window);
   if (!validateContractRows(rows, queryResultFields(plan.members.get(id)!.fields)).ok) throw rowFailure('成员结果违反原始字段契约');
   const member = plan.source.source.members[id], type = plan.members.get(id)!.fields[member.key.field].type;
   const resultRows = new Map<string | number, Row>();
   for (const row of rows) {
     const key = row[member.key.field];
-    if ((typeof key !== 'string' && typeof key !== 'number') || typeof key !== type || (typeof key === 'string' ? !key.trim() : !Number.isFinite(key))) throw rowFailure('成员行键缺失或类型错误');
+    if (!validMemberKey(key, type)) throw rowFailure('成员行键缺失或类型错误');
     if (resultRows.has(key) || (keys && !keys.includes(key))) throw rowFailure('成员返回重复键或未请求编码');
     resultRows.set(key, row);
   }
@@ -39,4 +35,15 @@ export function projectRows(plan: PagedJoinPlan, keys: readonly (string | number
 export function ordinalRows(plan: PagedJoinPlan, rows: Row[], offset: number): Row[] {
   const ordinal = plan.source.source.ordinalField;
   return ordinal ? rows.map((row, index) => ({ ...row, [ordinal]: offset + index + 1 })) : rows;
+}
+
+function assertMemberRange(count: number, total: number | undefined, maxRows: number, window?: { offset: number; limit: number }): void {
+  if (total !== undefined && (!Number.isSafeInteger(total) || total < count)) throw rowFailure('成员总数不合法');
+  if (!window && (count > maxRows || (total !== undefined && total > maxRows))) throw Object.assign(new Error('完整关联范围超过声明上限'), { code: 'DQE_QUERY_REJECTED' });
+  if (window) {
+    if (total === undefined || count !== Math.min(window.limit, Math.max(0, total - window.offset))) throw rowFailure('选页结果缺少完整窗口或总数');
+  } else if (total !== undefined && total !== count) throw rowFailure('完整补列结果被截断');
+}
+function validMemberKey(key: unknown, type: FieldDefinition['type']): key is string | number {
+  return (typeof key === 'string' || typeof key === 'number') && typeof key === type && (typeof key === 'string' ? !!key.trim() : Number.isFinite(key));
 }

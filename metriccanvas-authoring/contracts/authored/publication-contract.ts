@@ -150,69 +150,97 @@ function declarations(document: Record<string,any>): any[] {
 }
 
 /** Structural/relational checks only. This cannot authenticate a source, review or extraction. */
-export function validateCandidateRelations(value:Candidate,context:CandidateContext): ContractIssue[] {
-  const errors:ContractIssue[]=[];
-  const fail=(path:string,code='CANDIDATE_MISMATCH')=>errors.push({code,path});
-  const document=value.document as Record<string,any>;
-  if(!context.validatePage(document))return issue('/document','PAGE_INVALID');
-  if(document.id!==value.ref.source.pageId)fail('/ref/source/pageId');
-  const params=new Map<string,any>(declarations(document).map((param:any)=>[param.id,param]));
-  const inline=[...params.values()].some(p=>p.type==='timeRange'||own(p,'value'))||Object.values(document.dataSources??{}).some((ds:any)=>{
-    const filter=ds.source?.query?.body?.dsl_list?.[0]?.filter;
-    return filter?.time?.param!==undefined||filter?.dims?.some((d:any)=>d.dim_value_list?.param!==undefined);
-  });
-  const dimensions=new Map([...params].filter(([,param])=>param.type==='dimension'||inline&&['time','timeRange'].includes(param.type)));
-  if(inline&&(value.retainDimensionValues||Object.values(document.dataSources??{}).some((ds:any)=>ds.source.type==='query'&&own(ds.source,'initial'))))fail('/document');
-  const summaries=new Map<string,Value<typeof parameter>>();
-  const source=context.source;
-  if(source && (!same(source.ref,value.ref.source)||source.document.id!==source.ref.pageId||!context.validatePage(source.document)))fail('/ref/source','SOURCE_MISMATCH');
-  const sourceParams=new Map<string,any>(declarations(source?.document??{}).map((param:any)=>[param.id,param]));
-  for(const [index,entry] of value.parameterSummary.entries()) {
-    const p=`/parameterSummary/${index}`;
-    if(summaries.has(entry.parameterId))fail(`${p}/parameterId`);
-    summaries.set(entry.parameterId,entry);
-    const targets=sortedTargets(entry.targets);
-    if(new Set(targets).size!==targets.length)fail(`${p}/targets`);
-    for(const [targetIndex,target] of entry.targets.entries())if(document.dataSources[target.dataSourceId]?.source?.type!=='query')fail(`${p}/targets/${targetIndex}/dataSourceId`);
-    if(!entry.selected) {
-      if(entry.valueState!=='not-selected'||own(entry,'defaultValue')||params.has(entry.parameterId))fail(p);
-      // Only selected, preserved declarations can be classified as pre-existing.
-      if(entry.extractionKind===null)fail(`${p}/extractionKind`);
-      continue;
-    }
-    const declaration=dimensions.get(entry.parameterId);
-    if(!declaration){fail(`${p}/parameterId`);continue;}
-    if(entry.valueType!==(['time','timeRange'].includes(declaration.type)?declaration.type:declaration.multiple===true?'string[]':'string'))fail(`${p}/valueType`);
-    if(entry.required!==(declaration.required??true))fail(`${p}/required`);
-    if(inline&&(own(declaration,'value')||own(declaration,'default')))fail(`${p}/valueState`);
-    if(!same(targets,sortedTargets(parameterTargets(document,entry.parameterId))))fail(`${p}/targets`);
-    if(entry.valueState==='retained') {
-      if(!own(entry,'defaultValue')||!own(declaration,'default')||!same(entry.defaultValue,declaration.default))fail(`${p}/defaultValue`);
-    } else if(entry.valueState!=='missing'||own(entry,'defaultValue')||own(declaration,'default'))fail(`${p}/valueState`);
-    if(entry.extractionKind===null) {
-      if(!source)fail(p,'SOURCE_REQUIRED');
-      else if(!dimensions.has(entry.parameterId)||!same(sourceParams.get(entry.parameterId),declaration)||
-        !same(sortedTargets(parameterTargets(source.document,entry.parameterId)),targets))fail(p,'EXISTING_PARAMETER_CHANGED');
-    } else {
-      if(entry.extractionKind!==(declaration.type==='timeRange'?'time-range':declaration.multiple===true?'dimension-in':'dimension-eq'))fail(`${p}/extractionKind`);
-      if(!entry.targets.length)fail(`${p}/targets`);
-      if(!value.retainDimensionValues&&entry.valueState==='retained')fail(`${p}/valueState`);
-    }
-    if(entry.targets.length>1&&entry.sharing!=='identical-values')fail(`${p}/sharing`);
-  }
-  for(const id of dimensions.keys())if(!summaries.get(id)?.selected)fail('/parameterSummary');
-  if(new Set(value.affectedDataSources).size!==value.affectedDataSources.length)fail('/affectedDataSources');
-  for(const [index,id] of value.affectedDataSources.entries())if(document.dataSources[id]?.source?.type!=='query')fail(`/affectedDataSources/${index}`);
-  if(value.validation.valid!==!value.validation.issues.some(entry=>entry.severity==='blocking'))fail('/validation/valid');
-  for(const [index,entry] of value.validation.issues.entries())if(entry.parameterId&&!summaries.has(entry.parameterId))fail(`/validation/issues/${index}/parameterId`);
-  for(const [index,entry] of value.diff.entries())if(entry.parameterId&&!summaries.has(entry.parameterId))fail(`/diff/${index}/parameterId`);
-  if(source) {
-    const preserved=(param:any)=>inline?!['dimension','time','timeRange'].includes(param.type):param.type!=='dimension';
-    const existing=[...sourceParams].filter(([,param])=>preserved(param));
-    const retained=[...params].filter(([,param])=>preserved(param));
-    if(!same(existing.sort(([a],[b])=>a<b?-1:a>b?1:0),retained.sort(([a],[b])=>a<b?-1:a>b?1:0)))fail('/document/params','NON_DIMENSION_PARAMETER_CHANGED');
-  }
+export function validateCandidateRelations(value: Candidate, context: CandidateContext): ContractIssue[] {
+  const errors: ContractIssue[] = [];
+  const fail = (path: string, code = 'CANDIDATE_MISMATCH') => errors.push({ code, path });
+  const document = value.document as Record<string, any>;
+  if (!context.validatePage(document)) return issue('/document', 'PAGE_INVALID');
+  if (document.id !== value.ref.source.pageId) fail('/ref/source/pageId');
+  const params = new Map<string, any>(declarations(document).map((param: any) => [param.id, param]));
+  const inline = hasInlineParameters();
+  const dimensions = new Map([...params].filter(([, param]) => param.type === 'dimension' || inline && ['time', 'timeRange'].includes(param.type)));
+  if (inline && (value.retainDimensionValues || Object.values(document.dataSources ?? {}).some((ds: any) => ds.source.type === 'query' && own(ds.source, 'initial')))) fail('/document');
+  const summaries = new Map<string, Value<typeof parameter>>();
+  const source = context.source;
+  validateSource();
+  const sourceParams = new Map<string, any>(declarations(source?.document ?? {}).map((param: any) => [param.id, param]));
+  for (const [index, entry] of value.parameterSummary.entries()) validateSummary(entry, `/parameterSummary/${index}`);
+  for (const id of dimensions.keys()) if (!summaries.get(id)?.selected) fail('/parameterSummary');
+  validateResultReferences();
+  validatePreservedParameters();
   return errors;
+
+  function hasInlineParameters(): boolean {
+    return [...params.values()].some(p => p.type === 'timeRange' || own(p, 'value')) || Object.values(document.dataSources ?? {}).some((ds: any) => {
+      const filter = ds.source?.query?.body?.dsl_list?.[0]?.filter;
+      return filter?.time?.param !== undefined || filter?.dims?.some((d: any) => d.dim_value_list?.param !== undefined);
+    });
+  }
+
+  function validateSource(): void {
+    if (source && (!same(source.ref, value.ref.source) || source.document.id !== source.ref.pageId || !context.validatePage(source.document))) fail('/ref/source', 'SOURCE_MISMATCH');
+  }
+
+  function validateSummary(entry: Value<typeof parameter>, path: string): void {
+    if (summaries.has(entry.parameterId)) fail(`${path}/parameterId`);
+    summaries.set(entry.parameterId, entry);
+    const targets = sortedTargets(entry.targets);
+    if (new Set(targets).size !== targets.length) fail(`${path}/targets`);
+    for (const [index, target] of entry.targets.entries()) if (document.dataSources[target.dataSourceId]?.source?.type !== 'query') fail(`${path}/targets/${index}/dataSourceId`);
+    if (!entry.selected) {
+      if (entry.valueState !== 'not-selected' || own(entry, 'defaultValue') || params.has(entry.parameterId)) fail(path);
+      if (entry.extractionKind === null) fail(`${path}/extractionKind`);
+      return;
+    }
+    const declaration = dimensions.get(entry.parameterId);
+    if (!declaration) { fail(`${path}/parameterId`); return; }
+    validateSummaryValue(entry, declaration, targets, path);
+    validateSummaryExtraction(entry, declaration, targets, path);
+    if (entry.targets.length > 1 && entry.sharing !== 'identical-values') fail(`${path}/sharing`);
+  }
+
+  function validateSummaryValue(entry: Value<typeof parameter>, declaration: any, targets: string[], path: string): void {
+    const type = ['time', 'timeRange'].includes(declaration.type) ? declaration.type : declaration.multiple === true ? 'string[]' : 'string';
+    if (entry.valueType !== type) fail(`${path}/valueType`);
+    if (entry.required !== (declaration.required ?? true)) fail(`${path}/required`);
+    if (inline && (own(declaration, 'value') || own(declaration, 'default'))) fail(`${path}/valueState`);
+    if (!same(targets, sortedTargets(parameterTargets(document, entry.parameterId)))) fail(`${path}/targets`);
+    validateDefaultValue(entry, declaration, path);
+  }
+
+  function validateDefaultValue(entry: Value<typeof parameter>, declaration: any, path: string): void {
+    if (entry.valueState === 'retained') {
+      if (!own(entry, 'defaultValue') || !own(declaration, 'default') || !same(entry.defaultValue, declaration.default)) fail(`${path}/defaultValue`);
+    } else if (entry.valueState !== 'missing' || own(entry, 'defaultValue') || own(declaration, 'default')) fail(`${path}/valueState`);
+  }
+
+  function validateSummaryExtraction(entry: Value<typeof parameter>, declaration: any, targets: string[], path: string): void {
+    if (entry.extractionKind === null) {
+      if (!source) fail(path, 'SOURCE_REQUIRED');
+      else if (!dimensions.has(entry.parameterId) || !same(sourceParams.get(entry.parameterId), declaration) ||
+        !same(sortedTargets(parameterTargets(source.document, entry.parameterId)), targets)) fail(path, 'EXISTING_PARAMETER_CHANGED');
+    } else {
+      if (entry.extractionKind !== (declaration.type === 'timeRange' ? 'time-range' : declaration.multiple === true ? 'dimension-in' : 'dimension-eq')) fail(`${path}/extractionKind`);
+      if (!entry.targets.length) fail(`${path}/targets`);
+      if (!value.retainDimensionValues && entry.valueState === 'retained') fail(`${path}/valueState`);
+    }
+  }
+
+  function validateResultReferences(): void {
+    if (new Set(value.affectedDataSources).size !== value.affectedDataSources.length) fail('/affectedDataSources');
+    for (const [index, id] of value.affectedDataSources.entries()) if (document.dataSources[id]?.source?.type !== 'query') fail(`/affectedDataSources/${index}`);
+    if (value.validation.valid !== !value.validation.issues.some(entry => entry.severity === 'blocking')) fail('/validation/valid');
+    for (const [index, entry] of value.validation.issues.entries()) if (entry.parameterId && !summaries.has(entry.parameterId)) fail(`/validation/issues/${index}/parameterId`);
+    for (const [index, entry] of value.diff.entries()) if (entry.parameterId && !summaries.has(entry.parameterId)) fail(`/diff/${index}/parameterId`);
+  }
+
+  function validatePreservedParameters(): void {
+    if (!source) return;
+    const preserved = (param: any) => inline ? !['dimension', 'time', 'timeRange'].includes(param.type) : param.type !== 'dimension';
+    const existing = [...sourceParams].filter(([, param]) => preserved(param));
+    const retained = [...params].filter(([, param]) => preserved(param));
+    if (!same(existing.sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0), retained.sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0))) fail('/document/params', 'NON_DIMENSION_PARAMETER_CHANGED');
+  }
 }
 
 /** No current time check: proof authenticity/expiry and publication authorization belong to trusted ports. */
@@ -233,22 +261,26 @@ export function validateCorrectionsRelations(value:Corrections,candidate:Candida
   });
 }
 /** A matching replay is not a new authorization. verifyResult must still validate the complete original request. */
-export function validateResultRelations(request:MutationRequest,result:LookupOutcome):ContractIssue[] {
-  const errors:ContractIssue[]=[];const fail=(path:string)=>errors.push({code:'RESULT_MISMATCH',path});
-  const kind=request.kind;
-  if(result.operationKind!==kind||result.operationId!==request.context.operationId)fail('/operationId');
-  if(result.status!=='completed')return errors;
-  if(request.kind==='publish') {
-    if(result.operationKind!=='publish'||!('template' in result)||!same(result.template.source,request.ref.source))fail('/template/source');
+export function validateResultRelations(request: MutationRequest, result: LookupOutcome): ContractIssue[] {
+  const errors: ContractIssue[] = []; const fail = (path: string) => errors.push({ code: 'RESULT_MISMATCH', path });
+  const kind = request.kind;
+  if (result.operationKind !== kind || result.operationId !== request.context.operationId) fail('/operationId');
+  if (result.status !== 'completed') return errors;
+  if (request.kind === 'publish') {
+    if (result.operationKind !== 'publish' || !('template' in result) || !same(result.template.source, request.ref.source)) fail('/template/source');
   } else {
-    if(!('candidate' in result)){fail('/candidate');return errors;}
-    const candidate=result.candidate;
-    if(request.kind==='prepare') {
-      if(!same(candidate.ref.source,request.source)||candidate.retainDimensionValues!==request.retainDimensionValues)fail('/candidate');
+    if (!('candidate' in result)) { fail('/candidate'); return errors; }
+    const candidate = result.candidate;
+    validateCandidateResult(request, candidate);
+
+  }
+  function validateCandidateResult(request: Exclude<MutationRequest, { kind: 'publish' }>, candidate: Candidate): void {
+    if (request.kind === 'prepare') {
+      if (!same(candidate.ref.source, request.source) || candidate.retainDimensionValues !== request.retainDimensionValues) fail('/candidate');
     } else {
-      if(candidate.ref.candidateId!==request.ref.candidateId||candidate.ref.candidateVersion===request.ref.candidateVersion||!same(candidate.ref.source,request.ref.source))fail('/candidate/ref');
-      if(request.corrections.retainDimensionValues!==undefined&&candidate.retainDimensionValues!==request.corrections.retainDimensionValues)fail('/candidate/retainDimensionValues');
-      for(const selection of request.corrections.parameterSelections??[])if(candidate.parameterSummary.find(entry=>entry.parameterId===selection.parameterId)?.selected!==selection.selected)fail('/candidate/parameterSummary');
+      if (candidate.ref.candidateId !== request.ref.candidateId || candidate.ref.candidateVersion === request.ref.candidateVersion || !same(candidate.ref.source, request.ref.source)) fail('/candidate/ref');
+      if (request.corrections.retainDimensionValues !== undefined && candidate.retainDimensionValues !== request.corrections.retainDimensionValues) fail('/candidate/retainDimensionValues');
+      for (const selection of request.corrections.parameterSelections ?? []) if (candidate.parameterSummary.find(entry => entry.parameterId === selection.parameterId)?.selected !== selection.selected) fail('/candidate/parameterSummary');
     }
   }
   return errors;

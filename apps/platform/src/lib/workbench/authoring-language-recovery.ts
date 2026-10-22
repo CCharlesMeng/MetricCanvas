@@ -48,14 +48,22 @@ export function createAuthoringLanguageRecovery(options: {
     return !disposed && !signal.aborted && generation === version && !!expected && identityMatches() &&
       (!options.currentPageId || options.currentPageId() === requestedPageId);
   }
-  function validateSummary(value: RecoverySummary) {
-    if (!value || !expected || value.formatVersion !== '1.0' ||
-      ![value.actorId, value.workspaceId, value.pageId, value.operationId, value.recoveryRef].every(text) ||
-      value.actorId !== expected.actorId || value.workspaceId !== expected.workspaceId || (expected.pageId !== null && value.pageId !== expected.pageId) ||
-      !['unknown', 'pending', 'not-applied', 'rejected', 'unchanged', 'saved-unverified', 'saved'].includes(value.status) ||
-      typeof value.cancelRequested !== 'boolean' || !['not-requested', 'failed', 'ready'].includes(value.previewState) ||
-      (value.ref !== null && (!value.ref || Object.keys(value.ref).sort().join() !== 'pageId,resourceId,revisionId' || !Object.values(value.ref).every(text) || value.ref.pageId !== value.pageId)) ||
-      (['saved', 'saved-unverified'].includes(value.status) && value.ref === null)) throw Error('RESPONSE_MISMATCH：恢复结果范围或格式不匹配，保持当前页面锁定。');
+  function validateSummary(value: RecoverySummary): void {
+    if (!matchingRecoveryIdentity(value) || !validRecoveryState(value) || !validRecoveryRef(value)) throw Error('RESPONSE_MISMATCH：恢复结果范围或格式不匹配，保持当前页面锁定。');
+    assertRecoveryProgress(value);
+  }
+  function matchingRecoveryIdentity(value: RecoverySummary): boolean {
+    return !!value && !!expected && value.formatVersion === '1.0' && [value.actorId, value.workspaceId, value.pageId, value.operationId, value.recoveryRef].every(text) && value.actorId === expected.actorId && value.workspaceId === expected.workspaceId && (expected.pageId === null || value.pageId === expected.pageId);
+  }
+  function validRecoveryState(value: RecoverySummary): boolean {
+    return ['unknown', 'pending', 'not-applied', 'rejected', 'unchanged', 'saved-unverified', 'saved'].includes(value.status) && typeof value.cancelRequested === 'boolean' && ['not-requested', 'failed', 'ready'].includes(value.previewState);
+  }
+  function validRecoveryRef(value: RecoverySummary): boolean {
+    const ref = value.ref;
+    if (ref !== null && (!ref || Object.keys(ref).sort().join() !== 'pageId,resourceId,revisionId' || !Object.values(ref).every(text) || ref.pageId !== value.pageId)) return false;
+    return !(['saved', 'saved-unverified'].includes(value.status) && ref === null);
+  }
+  function assertRecoveryProgress(value: RecoverySummary): void {
     const old = state.summary;
     if (old && (old.recoveryRef !== value.recoveryRef || old.operationId !== value.operationId ||
       (old.ref !== null && !equal(old.ref, value.ref)) || (old.cancelRequested && !value.cancelRequested) ||
@@ -67,9 +75,11 @@ export function createAuthoringLanguageRecovery(options: {
   async function consume(summary: RecoverySummary, signal: AbortSignal, version: number) {
     validateSummary(summary);
     expected!.pageId = summary.pageId;
-    emit({ summary: structuredClone(summary), phase: 'pending', message: summary.status === 'saved' ? '已核实保存结果，可打开已保存修订。' :
-      summary.status === 'saved-unverified' ? '服务已保存，精确读取尚未核实；请继续查询恢复。' :
-      summary.cancelRequested ? '已记录取消；原操作结果仍需核实。' : '检测到未决语言操作，请先查询恢复。' });
+    emit({
+      summary: structuredClone(summary), phase: 'pending', message: summary.status === 'saved' ? '已核实保存结果，可打开已保存修订。' :
+        summary.status === 'saved-unverified' ? '服务已保存，精确读取尚未核实；请继续查询恢复。' :
+          summary.cancelRequested ? '已记录取消；原操作结果仍需核实。' : '检测到未决语言操作，请先查询恢复。'
+    });
     if (!current(signal, version)) return;
     if (terminal(summary)) {
       lease?.release(); lease = null;
@@ -89,7 +99,7 @@ export function createAuthoringLanguageRecovery(options: {
   }
   async function waitForProtection(signal: AbortSignal) {
     await new Promise<void>((resolve, reject) => {
-      let unsubscribe = () => {};
+      let unsubscribe = () => { };
       const done = (error?: Error) => { unsubscribe(); signal.removeEventListener('abort', check); error ? reject(error) : resolve(); };
       const check = () => {
         const value = options.coordinator.snapshot();
