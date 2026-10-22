@@ -34,6 +34,17 @@
       "category": "verification",
       "title": "验收样例",
       "description": "专门检查运行时交互与异常状态的演示页面。"
+    },
+    {
+      "id": "ioc-business-review",
+      "category": "verification",
+      "title": "IOC 业务筛选整体确认",
+      "description": "七主题业务输入与正常、异常边界的合成验收。",
+      "collection": {
+        "href": "/ioc-header-review",
+        "title": "IOC 业务筛选 · 整体确认",
+        "summary": "复用主线选择、候选、事实和金额契约，切换七个主题与异常场景。"
+      }
     }
   ],
   "pages": [
@@ -2290,6 +2301,445 @@
         "boundary": "指标说明有同名不同口径和缺失查询映射，名称命中不等于真实执行。",
         "related": []
       }
+    },
+    {
+      "id": "ioc-header-business",
+      "group": "ioc-business-review",
+      "displayTitle": "ioc-header-business",
+      "summary": "IOC页头 · 业务筛选整体组合；批量交互验收，合成输入，生产接线缺口在正文说明。",
+      "tags": [
+        "IOC页头",
+        "B组整体验收",
+        "合成数据"
+      ],
+      "capabilities": [
+        "ioc-header",
+        "filters",
+        "layout"
+      ],
+      "environment": {
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "固定2026-10锚点；业务字典、权限与查询均为合成输入"
+      },
+      "guide": {
+        "steps": [
+          "打开 /ioc-header-review 切换七个主题。",
+          "选择候选后检查正文回显；切换异常场景检查相关查询门禁。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters"
+        ],
+        "boundary": "演示不代表真实 IOC、DQE、Relay 或组织权限接线验收。",
+        "related": [
+          "ioc-header-overview-demo"
+        ]
+      },
+      "externalInputs": "ioc-business",
+      "scenario": "batch-business"
+    },
+    {
+      "id": "ioc-header-currency",
+      "group": "ioc-business-review",
+      "displayTitle": "ioc-header-currency",
+      "summary": "IOC页头 · 币种与原始金额档位；批量交互验收，合成输入，生产接线缺口在正文说明。",
+      "tags": [
+        "IOC页头",
+        "B组整体验收",
+        "合成数据"
+      ],
+      "capabilities": [
+        "ioc-header",
+        "filters",
+        "layout"
+      ],
+      "environment": {
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "固定2026-10锚点；业务字典、权限与查询均为合成输入"
+      },
+      "guide": {
+        "steps": [
+          "打开 /ioc-header-review 切换七个主题。",
+          "选择候选后检查正文回显；切换异常场景检查相关查询门禁。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters"
+        ],
+        "boundary": "演示不代表真实 IOC、DQE、Relay 或组织权限接线验收。",
+        "related": [
+          "ioc-header-overview-demo"
+        ]
+      },
+      "externalInputs": "ioc-business",
+      "scenario": "batch-currency"
+    },
+    {
+      "id": "ioc-header-dense",
+      "group": "ioc-business-review",
+      "displayTitle": "ioc-header-dense",
+      "summary": "密集筛选自然换行并完整展示，全部使用合成数据。",
+      "tags": [
+        "IOC页头",
+        "组件验收"
+      ],
+      "capabilities": [
+        "ioc-header",
+        "filters",
+        "layout"
+      ],
+      "environment": {
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "固定2026-10锚点；业务字典、权限与查询均为合成输入"
+      },
+      "guide": {
+        "steps": [
+          "打开 /ioc-header-review 切换七个主题。",
+          "选择候选后检查正文回显；切换异常场景检查相关查询门禁。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters"
+        ],
+        "boundary": "演示不代表真实 IOC、DQE、Relay 或组织权限接线验收。",
+        "related": [
+          "ioc-header-overview-demo"
+        ]
+      },
+      "externalInputs": "ioc-business",
+      "scenario": "batch-dense"
+    },
+    {
+      "id": "ioc-header-detail",
+      "group": "ioc-business-review",
+      "displayTitle": "ioc-header-detail",
+      "summary": "参数标题、灰色标签、筛选与可信返回，全部使用合成数据。",
+      "tags": [
+        "IOC页头",
+        "组件验收"
+      ],
+      "capabilities": [
+        "ioc-header",
+        "filters",
+        "layout"
+      ],
+      "environment": {
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "固定2026-10锚点；业务字典、权限与查询均为合成输入"
+      },
+      "guide": {
+        "steps": [
+          "打开 /ioc-header-review 切换七个主题。",
+          "选择候选后检查正文回显；切换异常场景检查相关查询门禁。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters"
+        ],
+        "boundary": "演示不代表真实 IOC、DQE、Relay 或组织权限接线验收。",
+        "related": [
+          "ioc-header-overview-demo"
+        ]
+      },
+      "externalInputs": "ioc-business",
+      "scenario": "batch-detail"
+    },
+    {
+      "id": "ioc-header-groups",
+      "group": "ioc-business-review",
+      "displayTitle": "ioc-header-groups",
+      "summary": "IOC页头 · 协同小组权限输入；批量交互验收，合成输入，生产接线缺口在正文说明。",
+      "tags": [
+        "IOC页头",
+        "B组整体验收",
+        "合成数据"
+      ],
+      "capabilities": [
+        "ioc-header",
+        "filters",
+        "layout"
+      ],
+      "environment": {
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "固定2026-10锚点；业务字典、权限与查询均为合成输入"
+      },
+      "guide": {
+        "steps": [
+          "打开 /ioc-header-review 切换七个主题。",
+          "选择候选后检查正文回显；切换异常场景检查相关查询门禁。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters"
+        ],
+        "boundary": "演示不代表真实 IOC、DQE、Relay 或组织权限接线验收。",
+        "related": [
+          "ioc-header-overview-demo"
+        ]
+      },
+      "externalInputs": "ioc-business",
+      "scenario": "batch-groups"
+    },
+    {
+      "id": "ioc-header-incentives",
+      "group": "ioc-business-review",
+      "displayTitle": "ioc-header-incentives",
+      "summary": "IOC页头 · 激励策略与所选月份；批量交互验收，合成输入，生产接线缺口在正文说明。",
+      "tags": [
+        "IOC页头",
+        "B组整体验收",
+        "合成数据"
+      ],
+      "capabilities": [
+        "ioc-header",
+        "filters",
+        "layout"
+      ],
+      "environment": {
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "固定2026-10锚点；业务字典、权限与查询均为合成输入"
+      },
+      "guide": {
+        "steps": [
+          "打开 /ioc-header-review 切换七个主题。",
+          "选择候选后检查正文回显；切换异常场景检查相关查询门禁。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters"
+        ],
+        "boundary": "演示不代表真实 IOC、DQE、Relay 或组织权限接线验收。",
+        "related": [
+          "ioc-header-overview-demo"
+        ]
+      },
+      "externalInputs": "ioc-business",
+      "scenario": "batch-incentives"
+    },
+    {
+      "id": "ioc-header-inputs",
+      "group": "ioc-business-review",
+      "displayTitle": "ioc-header-inputs",
+      "summary": "外部输入状态、模型Provider与查询门禁，全部使用合成数据。",
+      "tags": [
+        "IOC页头",
+        "组件验收"
+      ],
+      "capabilities": [
+        "ioc-header",
+        "filters",
+        "layout"
+      ],
+      "environment": {
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "固定2026-10锚点；业务字典、权限与查询均为合成输入"
+      },
+      "guide": {
+        "steps": [
+          "打开 /ioc-header-review 切换七个主题。",
+          "选择候选后检查正文回显；切换异常场景检查相关查询门禁。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters"
+        ],
+        "boundary": "演示不代表真实 IOC、DQE、Relay 或组织权限接线验收。",
+        "related": [
+          "ioc-header-overview-demo"
+        ]
+      },
+      "externalInputs": "ioc-business",
+      "scenario": "batch-inputs"
+    },
+    {
+      "id": "ioc-header-models",
+      "group": "ioc-business-review",
+      "displayTitle": "ioc-header-models",
+      "summary": "IOC页头 · 模型与时间范围；批量交互验收，合成输入，生产接线缺口在正文说明。",
+      "tags": [
+        "IOC页头",
+        "B组整体验收",
+        "合成数据"
+      ],
+      "capabilities": [
+        "ioc-header",
+        "filters",
+        "layout"
+      ],
+      "environment": {
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "固定2026-10锚点；业务字典、权限与查询均为合成输入"
+      },
+      "guide": {
+        "steps": [
+          "打开 /ioc-header-review 切换七个主题。",
+          "选择候选后检查正文回显；切换异常场景检查相关查询门禁。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters"
+        ],
+        "boundary": "演示不代表真实 IOC、DQE、Relay 或组织权限接线验收。",
+        "related": [
+          "ioc-header-overview-demo"
+        ]
+      },
+      "externalInputs": "ioc-business",
+      "scenario": "batch-models"
+    },
+    {
+      "id": "ioc-header-months",
+      "group": "ioc-business-review",
+      "displayTitle": "ioc-header-months",
+      "summary": "明确锚点生成并冻结12个月，非连续多选按离散集合提交；清空暂停查询。合成数据，生产10/12月回退未配置。",
+      "tags": [
+        "IOC页头",
+        "月份多选",
+        "本地合成数据"
+      ],
+      "capabilities": [
+        "ioc-header",
+        "filters",
+        "layout"
+      ],
+      "environment": {
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "固定2026-10锚点；业务字典、权限与查询均为合成输入"
+      },
+      "guide": {
+        "steps": [
+          "打开 /ioc-header-review 切换七个主题。",
+          "选择候选后检查正文回显；切换异常场景检查相关查询门禁。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters"
+        ],
+        "boundary": "演示不代表真实 IOC、DQE、Relay 或组织权限接线验收。",
+        "related": [
+          "ioc-header-overview-demo"
+        ]
+      },
+      "externalInputs": "ioc-business",
+      "scenario": "batch-months"
+    },
+    {
+      "id": "ioc-header-standard",
+      "group": "ioc-business-review",
+      "displayTitle": "ioc-header-standard",
+      "summary": "标准页头与静态候选，全部使用合成数据。",
+      "tags": [
+        "IOC页头",
+        "组件验收"
+      ],
+      "capabilities": [
+        "ioc-header",
+        "filters",
+        "layout"
+      ],
+      "environment": {
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "固定2026-10锚点；业务字典、权限与查询均为合成输入"
+      },
+      "guide": {
+        "steps": [
+          "打开 /ioc-header-review 切换七个主题。",
+          "选择候选后检查正文回显；切换异常场景检查相关查询门禁。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters"
+        ],
+        "boundary": "演示不代表真实 IOC、DQE、Relay 或组织权限接线验收。",
+        "related": [
+          "ioc-header-overview-demo"
+        ]
+      },
+      "externalInputs": "ioc-business",
+      "scenario": "batch-standard"
+    },
+    {
+      "id": "ioc-header-time",
+      "group": "ioc-business-review",
+      "displayTitle": "ioc-header-time",
+      "summary": "单日、范围、自然期间与快捷窗口，全部使用合成数据。",
+      "tags": [
+        "IOC页头",
+        "组件验收"
+      ],
+      "capabilities": [
+        "ioc-header",
+        "filters",
+        "layout"
+      ],
+      "environment": {
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "固定2026-10锚点；业务字典、权限与查询均为合成输入"
+      },
+      "guide": {
+        "steps": [
+          "打开 /ioc-header-review 切换七个主题。",
+          "选择候选后检查正文回显；切换异常场景检查相关查询门禁。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters"
+        ],
+        "boundary": "演示不代表真实 IOC、DQE、Relay 或组织权限接线验收。",
+        "related": [
+          "ioc-header-overview-demo"
+        ]
+      },
+      "externalInputs": "ioc-business",
+      "scenario": "batch-time"
+    },
+    {
+      "id": "ioc-header-unconfigured",
+      "group": "ioc-business-review",
+      "displayTitle": "ioc-header-unconfigured",
+      "summary": "IOC页头 · 缺配置与局部查询门禁；批量交互验收，合成输入，生产接线缺口在正文说明。",
+      "tags": [
+        "IOC页头",
+        "B组整体验收",
+        "合成数据"
+      ],
+      "capabilities": [
+        "ioc-header",
+        "filters",
+        "layout"
+      ],
+      "environment": {
+        "data": "内置合成演示数据",
+        "runtime": "none",
+        "scope": "固定2026-10锚点；业务字典、权限与查询均为合成输入"
+      },
+      "guide": {
+        "steps": [
+          "打开 /ioc-header-review 切换七个主题。",
+          "选择候选后检查正文回显；切换异常场景检查相关查询门禁。"
+        ],
+        "configPaths": [
+          "iocHeader",
+          "filters"
+        ],
+        "boundary": "演示不代表真实 IOC、DQE、Relay 或组织权限接线验收。",
+        "related": [
+          "ioc-header-overview-demo"
+        ]
+      },
+      "externalInputs": "ioc-business",
+      "scenario": "batch-unconfigured"
     }
   ],
   "capabilities": [

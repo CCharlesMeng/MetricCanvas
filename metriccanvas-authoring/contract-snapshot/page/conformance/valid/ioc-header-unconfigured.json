@@ -1,0 +1,206 @@
+{
+  "schemaVersion": "6.46",
+  "id": "ioc-header-unconfigured",
+  "layout": "dashboard",
+  "meta": {
+    "title": "IOC页头 · 缺配置与局部查询门禁"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "缺配置与局部查询门禁",
+      "tags": [
+        {
+          "text": "合成候选与查询",
+          "id": "tag-0"
+        }
+      ]
+    },
+    "back": true,
+    "filterIds": [
+      "industry",
+      "band"
+    ],
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "filters": [
+    {
+      "id": "industry",
+      "type": "dimension",
+      "dimension": "industry",
+      "label": "行业（待配置）",
+      "urlParams": {
+        "value": "industry"
+      },
+      "selection": {
+        "mode": "multiple"
+      },
+      "candidateContext": {
+        "filterIds": [],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "行业（待配置）"
+    },
+    {
+      "id": "band",
+      "type": "dimension",
+      "dimension": "band",
+      "label": "执行率档位（待配置）",
+      "urlParams": {
+        "value": "band"
+      },
+      "selection": {
+        "mode": "multiple"
+      },
+      "candidateContext": {
+        "filterIds": [],
+        "reconcile": "clear"
+      },
+      "emptyLabel": "执行率档位（待配置）"
+    }
+  ],
+  "dataSources": {
+    "request": {
+      "fields": {
+        "item": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "item"
+        },
+        "state": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "state"
+        },
+        "selection_count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "selection_count"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "item",
+                  "state"
+                ],
+                "output_metrics": [
+                  "selection_count"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "industry": {
+              "target": "dimension",
+              "queryField": "demo_industry"
+            },
+            "band": {
+              "target": "dimension",
+              "queryField": "demo_band"
+            }
+          }
+        }
+      }
+    },
+    "independent": {
+      "fields": {
+        "item": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "state": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "item": "无关内容",
+            "state": "仍可阅读"
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "此页故意不提供真实字典：行业和执行率档位保持未配置，相关查询暂停。其余正文仍可阅读。不会把缺配置、截断候选或无权限解释为不限；不会用示例码冒充生产码。该状态用于整体确认失败呈现。"
+          }
+        },
+        {
+          "id": "request-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "request"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "item",
+                "title": "筛选项 / 观察项"
+              },
+              {
+                "field": "state",
+                "title": "实际生效值（合成回显）"
+              },
+              {
+                "field": "selection_count",
+                "title": "数量"
+              }
+            ]
+          }
+        },
+        {
+          "id": "independent",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "independent"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "item",
+                "title": "独立内容"
+              },
+              {
+                "field": "state",
+                "title": "状态"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "dashboardToolbar": "hidden"
+}

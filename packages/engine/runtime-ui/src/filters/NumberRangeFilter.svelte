@@ -7,7 +7,7 @@
   import {rangeInBaseUnits,type NumberRangeFilterDeclaration} from '@metriccanvas/page/internal';
   interface Props {
     declaration?:NumberRangeFilterDeclaration;
-    unit?:{currency:'CNY'|'USD';label:string;scale:number};
+    unit?:{currency:'CNY'|'USD';label:string;scale:number;presets?:NumberRangeFilterDeclaration['presets']};
     label?: string;
     from?: number;
     to?: number;
@@ -30,7 +30,7 @@
 </script>
 
 {#if declaration?.constraints||declaration?.units||declaration?.presets}
-<div class="filter">{#if label}<span class="label">{label}</span>{/if}<RangePicker label={label??'金额'} context={unit?.currency??''} unit={unit?.label} value={{...(from===undefined?{}:{from:from/(unit?.scale??1)}),...(to===undefined?{}:{to:to/(unit?.scale??1)})}} presets={declaration.presets}
+<div class="filter">{#if label}<span class="label">{label}</span>{/if}<RangePicker label={label??'金额'} context={unit?.currency??''} unit={unit?.label} value={{...(from===undefined?{}:{from:from/(unit?.scale??1)}),...(to===undefined?{}:{to:to/(unit?.scale??1)})}} presets={unit?.presets??declaration.presets}
 validate={range=>{try{rangeInBaseUnits(declaration,range,unit?.scale??1);return undefined;}catch{return '请输入合法范围；双边下限须严格小于上限，金额不能为负';}}}
 onchange={range=>{const value=rangeInBaseUnits(declaration,range,unit?.scale??1);onchange(value.from===undefined&&value.to===undefined?null:value);}}/></div>
 {:else}

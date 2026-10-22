@@ -30,7 +30,7 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 验收入口：`filter-group-page` 展示带符号指标卡、一控多、独立与卡内布局、页头条件显隐、无关对照和 URL 恢复；`chart-local-filter-page` 为四类旧图表声明迁移后的页面。两者数据均为本地合成数据，不代表真实 DQE、Relay 或生产接入验收。
 
 
-页面协议 6.45。结构真源为本册[schema.json](../schema.json)，SHA256 `23830b5ce5063c01351c5ddc96f736dd0d80aaf80e7f094dec8a47eb23b8d190`。字段表自动生成；可选不等于有默认值。
+页面协议 6.46。结构真源为本册[schema.json](../schema.json)，SHA256 `17340e522c38419e5b951fd50a7a2e72784ea28fd67bf8539c10d39580e426f3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

@@ -70,7 +70,7 @@ urlParams仅映射该类允许的value/from/to/level键，不能与本页其它�
 
 本增量适用于页级筛选，与根iocHeader的位置声明分开。普通看板、报表和详情独立消费，不批量改已有业务页。
 
-- dimension.selection声明mode为single/multiple；缺省保持旧多选，tabs交互继续单选。旧页未声明selection时，initialParam仍可用多值数组初始化tabs的已应用条件；后续点选替换为单值。显式selection.mode=single始终严格校验初值及后续写入。single至多一个值；required恰好一个值，缺失时相关查询等待选择，非法整组写入拒绝。options是创作期确认的穷尽枚举，稳定value与label分开，可显式disabled；有options不请求候选网关，不允许同时配置动态依赖或hierarchy。disabled值不参与选择或默认值。
+- dimension.selection声明mode为single/multiple；缺省保持旧多选，tabs交互继续单选。旧页未声明selection时，initialParam仍可用多值数组初始化tabs的已应用条件；后续点选替换为单值。显式selection.mode=single始终严格校验初值及后续写入。single至多一个值；required要求非空，single与required组合恰好一个值，6.46起multiple与required组合允许非空多值，缺失时相关查询等待选择，非法整组写入拒绝。options是创作期确认的穷尽枚举，稳定value与label分开，可显式disabled；有options不请求候选网关，不允许同时配置动态依赖或hierarchy。disabled值不参与选择或默认值。
 - allBehavior缺省values。只有multiple+显式options可用unrestricted：选中全部有效枚举后仅省略对应动态查询谓词，UI/URL保留实际值，查询体原有静态条件仍保留。禁用项不算必须选中。boolean与枚举分别处理：勾选走whenTrue，明确false走whenFalse；省略whenFalse仍为无条件。default:false仍保留旧的不加初始化条件行为；需要确定的否值谓词时，使用显式false输入或用户取消勾选，并声明whenFalse。
 - display:tree带treeSelection:level为新结构树，必须有hierarchy。候选显式提供level和parent，不从业务码拆斜杠；不同层可使用相同value。当前只有一个level，可选父节点只选择自身，切层清掉旧值并保留新层级；其他层节点只展开。旧tree不带该字段仍按父节点批量选择叶子。
 - candidateContext用filterIds列出维度/单点时间/范围时间依赖，reconcile为clear/intersection。与旧dependsOn、clearOnChangeOf合图查重、检环；旧dependsOn仍只支持单个维度上游。clear在上游变化时递归清值，等用户显式确认；intersection保留摘要，等新完整可信候选到达后取交集。空交集、未就绪、失败、拒绝和未配置不能自动查询全部。上游被阻断时，候选依赖后代同样阻断。
@@ -121,7 +121,26 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 验收场景：[ioc-header-selection](examples/dimension-selection-page.json)，仅本地合成候选与表格查询；不代表真实服务验收。
 
 
-页面协议 6.45。结构真源为本册[schema.json](schema.json)，SHA256 `23830b5ce5063c01351c5ddc96f736dd0d80aaf80e7f094dec8a47eb23b8d190`。字段表自动生成；可选不等于有默认值。
+<a id="ioc-业务批量场景与必选多选646"></a>
+
+## IOC 业务批量场景与必选多选（6.46）
+
+`selection.mode` 与 `required` 分别约束基数上限和是否允许空值。`{mode:"multiple",required:true}` 允许一个或多个合法且不重复的候选；控件保留多选和单项移除，最后一项不能移除。程序写入、URL恢复、默认值、查询门禁均使用相同规则；不存在默认值时只阻断相关查询。6.45及更早文档不能声明这一组合。`single` 原有最多一个值的规则保持，单选必选仍只允许一个。月份使用普通维度与重复 URL 键保存离散 YYYYMM 集合，不能补齐中间月或改成连续期间。
+
+主线迁移示例统一使用 `iocHeader.identity`、`selection.mode`、`candidateContext`、`clearOnChangeOf` 和 `FilterCandidatesGateway` / `DisplayInputs`，不接受旧的 `inputResources`、`multiple` 或 `presetGroups` 页面字段。地区部和代表处显式 single，结构树逐级绑定各自 queryField；它们的生产谓词和权限含义需 Adapter 确认。模型候选只依赖 range，重试读取当前日期，其他筛选不进入候选约束。
+
+[币种档位页](examples/ioc-header-currency.json)复用单个 numberRange 与主线 units.cases / metricByFilter；每个单位 case 可声明 presets，分别冻结 RMB 五档和 USD 四档，金额 clearOnChangeOf currency。按币种预设必须覆盖全部单位case，且与公共presets互斥；每个case的范围按其自己的scale与约束校验。币种变化在同一事务清除旧范围；自动清空继续沿主线等待用户确认的门禁，选择新档位或“全部”并确定后继续。RangePicker 预设填入草稿，确定才应用，取消保留已应用值；自定义双边严格递增。不换汇，不把两个币种的业务字段当作已接通。
+
+[业务组合](examples/ioc-header-business.json)、[模型联动](examples/ioc-header-models.json)、[协同小组](examples/ioc-header-groups.json)、[激励策略](examples/ioc-header-incentives.json)、[币种金额](examples/ioc-header-currency.json)、[最近月份](examples/ioc-header-months.json)、[缺配置](examples/ioc-header-unconfigured.json)均可从 Playground `/ioc-header-review` 打开。协同小组只加工明确完整的组织权限输入；不完整在 Adapter 归一为 unconfigured，不提供全量授权兜底。激励候选固定演示日历月2026-10，正文选择月2026-08变化不重取；是否改变生产行为待定。月份固定锚点2026-10，清空回退10/12个月的生产差异仍未裁决。
+
+正常/慢请求/失败重试/空/拒绝/缺配置/不完整/只读均为本地合成输入。只读使用主线 `filterEditing` 统一限制编辑，没有恢复旧版每个筛选器的 readOnly 字段。局部查询门禁不影响无关 inline。真实候选字典、组织 payload、逐源查询字段、金额单位、导出及 IOC/DQE/Relay 尚未接通或验收。
+
+6.46起 `candidateContext:{filterIds:[],reconcile:"clear"}` 显式声明无筛选依赖的外部候选，仍走完整 `FilterCandidatesGateway` 状态、重试及门禁。适用于权限组织加工、日历月预拉等；月份选择或无关筛选变化不重取。未声明 candidateContext 的旧页面继续既有候选端口，不自动改变路由。
+
+普通可选维度在空选且没有candidateContext/结构树/窗口要求时，不因显式selection而禁用既有合法嵌入初始行复用；一旦有动态选值，仍须通过候选校验。显式无依赖candidateContext即使空选也须取得可信回执，缺配置不能借初始行绕过门禁。
+
+
+页面协议 6.46。结构真源为本册[schema.json](schema.json)，SHA256 `17340e522c38419e5b951fd50a7a2e72784ea28fd67bf8539c10d39580e426f3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -644,7 +663,7 @@ Schema位置：`#/definitions/dimensionFilter/properties/candidateContext/proper
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "array" | 本分支必填 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 维度及已应用期间依赖，合并旧dependsOn后检环。 |
+| "array" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 维度及已应用期间依赖，合并旧dependsOn后检环。 |
 
 <a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f63616e646964617465436f6e746578742f70726f706572746965732f66696c7465724964732f6974656d73"></a>
 
@@ -2333,6 +2352,76 @@ Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/case
 |---|---|---|---|---|
 | "integer" | 本分支必填 | exclusiveMinimum=0; maximum=9007199254740991 | Schema未设默认；装配/运行时默认见语义说明 | ratio输出刻度；显式100转换为百分刻度。 |
 
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f70726573657473"></a>
+
+### `@numberRangeFilter.units.cases{key}.presets`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 6.46按该币种显示单位定义预设；全部case必须声明，不能与公共presets混用。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f707265736574732f6974656d73"></a>
+
+### `@numberRangeFilter.units.cases{key}.presets[]`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["id","label","range"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f707265736574732f6974656d732f70726f706572746965732f6964"></a>
+
+### `@numberRangeFilter.units.cases{key}.presets[].id`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f707265736574732f6974656d732f70726f706572746965732f6c6162656c"></a>
+
+### `@numberRangeFilter.units.cases{key}.presets[].label`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/label`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f707265736574732f6974656d732f70726f706572746965732f72616e6765"></a>
+
+### `@numberRangeFilter.units.cases{key}.presets[].range`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/range`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 受控范围结构。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f707265736574732f6974656d732f70726f706572746965732f72616e67652f70726f706572746965732f66726f6d"></a>
+
+### `@numberRangeFilter.units.cases{key}.presets[].range.from`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/range/properties/from`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 范围起点；与to的顺序和精度须匹配。 |
+
+<a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f707265736574732f6974656d732f70726f706572746965732f72616e67652f70726f706572746965732f746f"></a>
+
+### `@numberRangeFilter.units.cases{key}.presets[].range.to`
+
+Schema位置：`#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/range/properties/to`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 范围终点；与from的顺序和精度须匹配。 |
+
 <a id="schema-232f646566696e6974696f6e732f6e756d62657252616e676546696c7465722f70726f706572746965732f756e6974732f70726f706572746965732f63617365732f70726f70657274794e616d6573"></a>
 
 ### `@numberRangeFilter.units.cases · propertyNames`
@@ -2607,6 +2696,9 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - `currency-selection`：6.38金额范围和静态货币字段选择。反例：[currency-before-6.38](errors/currency-before-6.38.json)、[currency-case-missing](errors/currency-case-missing.json)、[currency-metric-mismatch](errors/currency-metric-mismatch.json)、[currency-negative-default](errors/currency-negative-default.json)、[currency-equal-default](errors/currency-equal-default.json)、[currency-compute-mixed](errors/currency-compute-mixed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `time-extensions`：6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口。反例：[time-before-6.39](errors/time-before-6.39.json)、[time-case-missing](errors/time-case-missing.json)、[time-query-xor](errors/time-query-xor.json)、[time-period-mismatch](errors/time-period-mismatch.json)、[time-output-mismatch](errors/time-output-mismatch.json)、[time-default-week](errors/time-default-week.json)、[time-availability-default](errors/time-availability-default.json)、[time-fact-kind](errors/time-fact-kind.json)、[time-window-static-options](errors/time-window-static-options.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `unified-page-header`：6.41 唯一页头及自然年选择。反例：[unified-header-version](errors/unified-header-version.json)、[unified-header-conflict](errors/unified-header-conflict.json)、[period-modes-empty](errors/period-modes-empty.json)、[period-modes-duplicate](errors/period-modes-duplicate.json)、[period-modes-default](errors/period-modes-default.json)、[period-modes-plain-range](errors/period-modes-plain-range.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `required-multiple-selection`：6.46必选多选保持非空离散集合。反例：[required-multiple-version](errors/required-multiple-version.json)、[required-multiple-empty](errors/required-multiple-empty.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `independent-filter-candidates`：6.46显式无依赖候选使用V2及局部门禁。反例：[independent-candidates-version](errors/independent-candidates-version.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `currency-range-presets`：6.46单位case内的币种预设保持单一金额状态。反例：[currency-presets-version](errors/currency-presets-version.json)、[currency-presets-missing](errors/currency-presets-missing.json)、[currency-presets-shared](errors/currency-presets-shared.json)、[currency-presets-invalid](errors/currency-presets-invalid.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -2631,6 +2723,13 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - [calendar-window-page](examples/calendar-window-page.json)：完整合法页面；查询仅为静态契约证据。
 - [unified-year-header](examples/unified-year-header.json)：完整合法页面；查询仅为静态契约证据。
 - [dimension-selection-page](examples/dimension-selection-page.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-business](examples/ioc-header-business.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-currency](examples/ioc-header-currency.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-groups](examples/ioc-header-groups.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-incentives](examples/ioc-header-incentives.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-models](examples/ioc-header-models.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-months](examples/ioc-header-months.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-unconfigured](examples/ioc-header-unconfigured.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

@@ -1,0 +1,201 @@
+{
+  "case": "independent-candidates-version",
+  "invariant": "independent-filter-candidates",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "显式无依赖候选复用FilterCandidatesGateway 由 6.46 引入，文档声明的是 6.45",
+      "paths": [
+        "/filters/0",
+        "/filters/1",
+        "/filters/2",
+        "/filters/3",
+        "/filters/4",
+        "/filters/5",
+        "/filters/6",
+        "/filters/7",
+        "/filters/8"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "sector",
+        "type": "dimension",
+        "dimension": "sector",
+        "label": "产业",
+        "urlParams": {
+          "value": "sector"
+        },
+        "selection": {
+          "mode": "multiple"
+        },
+        "candidateContext": {
+          "filterIds": [
+            "…（共0项）"
+          ],
+          "reconcile": "clear"
+        },
+        "emptyLabel": "产业"
+      },
+      {
+        "id": "industry",
+        "type": "dimension",
+        "dimension": "industry",
+        "label": "行业",
+        "urlParams": {
+          "value": "industry"
+        },
+        "selection": {
+          "mode": "multiple"
+        },
+        "display": "tree",
+        "treeSelection": "independent",
+        "candidateContext": {
+          "filterIds": [
+            "…（共0项）"
+          ],
+          "reconcile": "clear"
+        },
+        "emptyLabel": "行业"
+      },
+      {
+        "id": "business-type",
+        "type": "dimension",
+        "dimension": "business-type",
+        "label": "业务类型",
+        "urlParams": {
+          "value": "business-type"
+        },
+        "selection": {
+          "mode": "multiple"
+        },
+        "display": "tree",
+        "treeSelection": "independent",
+        "candidateContext": {
+          "filterIds": [
+            "…（共0项）"
+          ],
+          "reconcile": "clear"
+        },
+        "emptyLabel": "业务类型"
+      },
+      {
+        "id": "customer-type",
+        "type": "dimension",
+        "dimension": "customer-type",
+        "label": "客户分类",
+        "urlParams": {
+          "value": "customer-type"
+        },
+        "selection": {
+          "mode": "multiple"
+        },
+        "candidateContext": {
+          "filterIds": [
+            "…（共0项）"
+          ],
+          "reconcile": "clear"
+        },
+        "emptyLabel": "客户分类"
+      },
+      {
+        "id": "customer-sort",
+        "type": "dimension",
+        "dimension": "customer-sort",
+        "label": "客户排序",
+        "urlParams": {
+          "value": "customer-sort"
+        },
+        "selection": {
+          "mode": "multiple"
+        },
+        "candidateContext": {
+          "filterIds": [
+            "…（共0项）"
+          ],
+          "reconcile": "clear"
+        },
+        "emptyLabel": "客户排序"
+      },
+      {
+        "id": "project-level",
+        "type": "dimension",
+        "dimension": "project-level",
+        "label": "项目级别",
+        "urlParams": {
+          "value": "project-level"
+        },
+        "selection": {
+          "mode": "multiple"
+        },
+        "candidateContext": {
+          "filterIds": [
+            "…（共0项）"
+          ],
+          "reconcile": "clear"
+        },
+        "emptyLabel": "项目级别"
+      },
+      {
+        "id": "contact-days",
+        "type": "dimension",
+        "dimension": "contact-days",
+        "label": "无接触天数",
+        "urlParams": {
+          "value": "contact-days"
+        },
+        "selection": {
+          "mode": "multiple"
+        },
+        "candidateContext": {
+          "filterIds": [
+            "…（共0项）"
+          ],
+          "reconcile": "clear"
+        },
+        "emptyLabel": "无接触天数"
+      },
+      {
+        "id": "execution-band",
+        "type": "dimension",
+        "dimension": "execution-band",
+        "label": "框架执行率档位",
+        "urlParams": {
+          "value": "execution-band"
+        },
+        "selection": {
+          "mode": "multiple"
+        },
+        "candidateContext": {
+          "filterIds": [
+            "…（共0项）"
+          ],
+          "reconcile": "clear"
+        },
+        "emptyLabel": "框架执行率档位"
+      },
+      {
+        "id": "margin-band",
+        "type": "dimension",
+        "dimension": "margin-band",
+        "label": "销毛率偏差档位",
+        "urlParams": {
+          "value": "margin-band"
+        },
+        "selection": {
+          "mode": "multiple"
+        },
+        "candidateContext": {
+          "filterIds": [
+            "…（共0项）"
+          ],
+          "reconcile": "clear"
+        },
+        "emptyLabel": "销毛率偏差档位"
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/independent-candidates-version.json"
+}

@@ -25,6 +25,8 @@ export interface PlatformPortalProps<TrustedAuthoring = never> {
   authoring?: TrustedAuthoring;
   /** Optional engine DisplayInputs; validated at platform composition, no credentials. */
   displayInputs?: unknown;
+  /** Optional engine FilterCandidatesGateway, owned by the trusted deployment Adapter. */
+  filterCandidates?: unknown;
 }
 
 /** Versioned deployment seam. Implementations live outside the platform repository. */

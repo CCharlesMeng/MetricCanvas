@@ -54,6 +54,19 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'currency-range-presets',description:'6.46单位case内的币种预设保持单一金额状态',valid:['ioc-header-currency'],cases:[
+    {case:'currency-presets-version',base:'ioc-header-currency',expect:/由 6.46 引入/,mutate:d=>{d.schemaVersion='6.45';}},
+    {case:'currency-presets-missing',base:'ioc-header-currency',expect:/覆盖全部/,mutate:d=>{delete d.filters[1].units.cases.USD.presets;}},
+    {case:'currency-presets-shared',base:'ioc-header-currency',expect:/不能与公共/,mutate:d=>{d.filters[1].presets=[{id:'all',label:'全部',range:{}}];}},
+    {case:'currency-presets-invalid',base:'ioc-header-currency',expect:/不符合约束/,mutate:d=>{d.filters[1].units.cases.USD.presets[1].range={from:10,to:10};}}
+  ]},
+  {id:'independent-filter-candidates',description:'6.46显式无依赖候选使用V2及局部门禁',valid:['ioc-header-business','ioc-header-unconfigured'],cases:[
+    {case:'independent-candidates-version',base:'ioc-header-business',expect:/由 6.46 引入/,mutate:d=>{d.schemaVersion='6.45';}}
+  ]},
+  {id:'required-multiple-selection',description:'6.46必选多选保持非空离散集合',valid:['ioc-header-months'],cases:[
+    {case:'required-multiple-version',base:'ioc-header-months',expect:/由 6.46 引入/,mutate:d=>{d.schemaVersion='6.45';}},
+    {case:'required-multiple-empty',base:'ioc-header-months',expect:/至少选择一个/,mutate:d=>{d.filters[0].default=[];}}
+  ]},
   {id:'unified-page-header',description:'6.41 唯一页头及自然年选择',valid:['unified-year-header','unified-overflow-header'],cases:[
     {case:'unified-header-version',base:'unified-year-header',expect:/由 6.41 引入/,mutate:d=>{d.schemaVersion='6.40';}},
     {case:'unified-header-conflict',base:'unified-year-header',expect:/显式关闭/,mutate:d=>{d.dashboardToolbar='visible';}},

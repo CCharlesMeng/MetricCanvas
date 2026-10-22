@@ -14,7 +14,7 @@
     return {value: node.value ?? `structure:${node.path}`, label: node.label, disabled:node.disabled, selectable: node.value !== null, children: node.children.length ? node.children.map(toUi) : undefined};
   }
   function toStructuralUi(node:import('@metriccanvas/ui').UiTreeNode):UiTreeOption {return {value:node.value??`structure:${node.key}`,label:node.label,disabled:node.disabled,selectable:node.value!==undefined,children:node.children?.map(toStructuralUi)};}
-  function commit(next:string[]) {if(selection?.required&&next.length!==1)return;onchange(next);}
+  function commit(next:string[]) {if(selection?.required&&next.length===0)return;onchange(next);}
   const treeResult = $derived.by(() => {
     if (display !== 'tree') return {options, error:false};
     try {return {options:structural ? structuralTree(options,treeLevel).map(toStructuralUi) : buildFilterTree(options).map(toUi), error:false};}
@@ -35,7 +35,7 @@
     {#if statusText}<span role={candidates.status === 'error' ? 'alert' : 'status'} data-candidates-status={candidates.status}>{statusText}</span>{/if}
   {:else}
     <div class="dropdown" data-candidates-status={candidates.status}>
-      <Selection label={label ?? '维度筛选'} options={treeResult.options} {value} {onretry} tree={display === 'tree'} multiple={selection?.mode !== 'single' && !selection?.required} {searchable} treeSelection={structural?'independent':treeSelection} {disabled} required={selection?.required} clearable={!selection?.required} placeholder={emptyLabel} {statusText} statusError={treeResult.error || candidates.status === 'error'} onchange={commit}/>
+      <Selection label={label ?? '维度筛选'} options={treeResult.options} {value} {onretry} tree={display === 'tree'} multiple={selection?.mode !== 'single'} {searchable} treeSelection={structural?'independent':treeSelection} {disabled} required={selection?.required} clearable={!selection?.required} placeholder={emptyLabel} {statusText} statusError={treeResult.error || candidates.status === 'error'} onchange={commit}/>
     </div>
   {/if}
 </div>

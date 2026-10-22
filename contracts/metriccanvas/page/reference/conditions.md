@@ -25,7 +25,7 @@ PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不
 验收入口：[层级联动](examples/page-visibility-region-linkage.json)、[外部事实Sim](examples/page-visibility-inputs.json)。示例使用明确的本地演示输入；内联数据与Sim事实不能替代真实CloudIOC/DQE联调。
 
 
-页面协议 6.45。结构真源为本册[schema.json](schema.json)，SHA256 `23830b5ce5063c01351c5ddc96f736dd0d80aaf80e7f094dec8a47eb23b8d190`。字段表自动生成；可选不等于有默认值。
+页面协议 6.46。结构真源为本册[schema.json](schema.json)，SHA256 `17340e522c38419e5b951fd50a7a2e72784ea28fd67bf8539c10d39580e426f3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

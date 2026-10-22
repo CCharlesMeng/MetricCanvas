@@ -46,7 +46,10 @@
           "label": "代表处"
         }
       ],
-      "defaultLevel": "geo"
+      "defaultLevel": "geo",
+      "selection": {
+        "mode": "single"
+      }
     },
     {
       "id": "na-type",

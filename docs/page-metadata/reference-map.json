@@ -22,7 +22,14 @@
         "availability-page",
         "calendar-window-page",
         "unified-year-header",
-        "unified-overflow-header"
+        "unified-overflow-header",
+        "ioc-header-business",
+        "ioc-header-currency",
+        "ioc-header-groups",
+        "ioc-header-incentives",
+        "ioc-header-models",
+        "ioc-header-months",
+        "ioc-header-unconfigured"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -41,7 +48,10 @@
         "detail-view-component-types",
         "ioc-header",
         "time-extensions",
-        "unified-page-header"
+        "unified-page-header",
+        "required-multiple-selection",
+        "independent-filter-candidates",
+        "currency-range-presets"
       ]
     },
     "params-and-text-values.md": {
@@ -281,7 +291,14 @@
         "availability-page",
         "calendar-window-page",
         "unified-year-header",
-        "dimension-selection-page"
+        "dimension-selection-page",
+        "ioc-header-business",
+        "ioc-header-currency",
+        "ioc-header-groups",
+        "ioc-header-incentives",
+        "ioc-header-models",
+        "ioc-header-months",
+        "ioc-header-unconfigured"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -318,7 +335,10 @@
         "business-filters",
         "currency-selection",
         "time-extensions",
-        "unified-page-header"
+        "unified-page-header",
+        "required-multiple-selection",
+        "independent-filter-candidates",
+        "currency-range-presets"
       ]
     },
     "sections-and-layout.md": {
@@ -1497,7 +1517,8 @@
     "#/definitions/tableRowExpansion/properties/table": "独立列定义的只读子表格；默认仅内容与分页。",
     "#/definitions/rowExpansionTable/properties/toolbar": "按需启用子表格实例搜索，省略时不显示工具区。",
     "#/definitions/rowExpansionTable/properties/toolbar/properties/search": "按需声明实例内搜索；查询搜索需要网关编码能力。",
-    "#/definitions/rowExpansionTable/properties/toolbar/properties/search/properties/placeholder": "子表格搜索提示文本，省略时沿用现有表格默认提示。"
+    "#/definitions/rowExpansionTable/properties/toolbar/properties/search/properties/placeholder": "子表格搜索提示文本，省略时沿用现有表格默认提示。",
+    "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets": "6.46按该币种显示单位定义预设；全部case必须声明，不能与公共presets混用。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1757,7 +1778,8 @@
     "#/definitions/tableRowExpansion/properties/mode=\"multiple\"": "允许同时展开多行，缺省模式。",
     "#/definitions/tableRowExpansion/properties/mode=\"single\"": "同一父表最多展开一行。",
     "#/properties/schemaVersion=\"6.44\"": "增加行内子表格及私有查询分页。",
-    "6.45": "Dashboard 独立固定单选筛选按钮组、一控多及统一显隐；旧图表筛选声明按明确批准的受控迁移例外移除。"
+    "6.45": "Dashboard 独立固定单选筛选按钮组、一控多及统一显隐；旧图表筛选声明按明确批准的受控迁移例外移除。",
+    "6.46": "必选多选、显式无依赖候选和单位case中的币种档位。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2168,7 +2190,8 @@
       "业务筛选（6.37）",
       "金额范围（6.38）",
       "6.39 复杂时间与候选",
-      "下拉搜索与普通树（6.43）"
+      "下拉搜索与普通树（6.43）",
+      "IOC 业务批量场景与必选多选（6.46）"
     ],
     "sections-and-layout.md": [
       "Report 与 Dashboard 标题",

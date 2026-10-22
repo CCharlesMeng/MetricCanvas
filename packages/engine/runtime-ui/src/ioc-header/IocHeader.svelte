@@ -6,6 +6,7 @@
     model:ResolvedIocHeader;filterIds:string[];overflowIds?:string[];controls:Snippet<[string,boolean]>;
     returnContext?:{entryId:string;label?:string};onback?:()=>void;readOnly?:boolean;note?:string;staticView?:boolean;
   } = $props();
+  const flow=$derived(model.layout==='inline' && model.density==='normal' && model.collapse==='none');
   const uid = $props.id();
   const displayedIds=$derived(staticView?[...filterIds,...overflowIds]:filterIds);
   const showBack=$derived(!staticView && model.back && !!onback && (model.legacyBack || !!returnContext?.entryId));
@@ -35,11 +36,11 @@
   }
 </script>
 {#if model.title || model.code || model.tags.length || model.description || model.facts.length || displayedIds.length || overflowIds.length || showBack}
-<header data-ioc-header data-dashboard-toolbar={model.layout==='inline'?true:undefined} data-density={model.density} class:inline={model.layout==='inline'} class:identityless={!hasIdentity} class:static-view={staticView} class:compact={model.density==='compact'}>
+<header data-ioc-header data-dashboard-toolbar={model.layout==='inline'?true:undefined} data-density={model.density} class:flow={flow} class:inline={model.layout==='inline'} class:identityless={!hasIdentity} class:static-view={staticView} class:compact={model.density==='compact'}>
   {#if hasIdentity}
     <div class="identity">
       <div class="heading">
-        {#if showBack}<button data-dashboard-back class="back" type="button" aria-label={model.legacyBack?'返回':returnContext?.label ?? '返回来源页'} onclick={onback}>←</button>{/if}
+        {#if showBack}<button data-dashboard-back class="back" type="button" aria-label={model.legacyBack?'返回':returnContext?.label ?? '返回来源页'} onclick={onback}>{flow?'<':'←'}</button>{/if}
         {#if model.title}<h1 data-ioc-title>{model.title}</h1>{/if}
         {#each model.tags as tag (tag.id)}<span data-ioc-tag={tag.id} data-tone={tag.tone} class="tag">{tag.text}</span>{/each}
       </div>
@@ -115,4 +116,10 @@
   .static-view.inline.compact .filter-region{overflow:visible;flex-basis:100%;}
   .static-view.inline.compact .filters{flex:1;flex-wrap:wrap;}
   .static-view.inline.compact>.note{flex-basis:100%;white-space:normal;}
+
+  header.flow{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;}
+  .flow .identity,.flow .heading,.flow .filter-region,.flow .filters{display:contents;}
+  .flow .back{font-size:20px;width:20px;min-height:32px;padding:0;}
+  .flow h1{margin:0 24px 0 0;white-space:normal;}
+  .flow .code,.flow .description,.flow dl,.flow .note{flex-basis:100%;}
 </style>

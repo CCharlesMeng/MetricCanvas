@@ -506,3 +506,6 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 ### 层级筛选与展示条件（6.34）
 
 层级维度筛选可只通过 `<filterId>.level` 恢复当前层级；没有附加取值时保留 `values: []`，不写空值查询谓词。`visibleWhen` 读取已提交的同一筛选状态；隐藏控件不会删除筛选值。示例 `/pages/page-visibility-region-linkage?organization.level=department` 和完整规则见 [条件显隐](docs/page-metadata/conditions.md)。
+
+
+IOC 最近月份使用 dimension 的 `selection:{mode:"multiple",required:true}`（6.46）和 `urlParams:{value:"months"}`；`?months=202610&months=202608` 保留两个离散值，不扩成连续范围。清空写入拒绝，缺值门禁；生产空选回退仍未裁决。参见 [IOC业务场景](docs/page-metadata/filters.md#ioc-业务批量场景与必选多选646) 与 `pages/ioc-header-months.json`。

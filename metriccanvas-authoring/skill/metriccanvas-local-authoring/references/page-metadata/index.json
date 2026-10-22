@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.45",
-  "schemaSha256": "23830b5ce5063c01351c5ddc96f736dd0d80aaf80e7f094dec8a47eb23b8d190",
+  "schemaVersion": "6.46",
+  "schemaSha256": "17340e522c38419e5b951fd50a7a2e72784ea28fd67bf8539c10d39580e426f3",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -24,7 +24,14 @@
         "availability-page",
         "calendar-window-page",
         "unified-year-header",
-        "unified-overflow-header"
+        "unified-overflow-header",
+        "ioc-header-business",
+        "ioc-header-currency",
+        "ioc-header-groups",
+        "ioc-header-incentives",
+        "ioc-header-models",
+        "ioc-header-months",
+        "ioc-header-unconfigured"
       ],
       "rules": [
         "page-layout-compatibility",
@@ -33,7 +40,10 @@
         "detail-view-component-types",
         "ioc-header",
         "time-extensions",
-        "unified-page-header"
+        "unified-page-header",
+        "required-multiple-selection",
+        "independent-filter-candidates",
+        "currency-range-presets"
       ]
     },
     "params-and-text-values.md": {
@@ -239,7 +249,14 @@
         "availability-page",
         "calendar-window-page",
         "unified-year-header",
-        "dimension-selection-page"
+        "dimension-selection-page",
+        "ioc-header-business",
+        "ioc-header-currency",
+        "ioc-header-groups",
+        "ioc-header-incentives",
+        "ioc-header-models",
+        "ioc-header-months",
+        "ioc-header-unconfigured"
       ],
       "rules": [
         "filter-id-unique",
@@ -259,7 +276,10 @@
         "business-filters",
         "currency-selection",
         "time-extensions",
-        "unified-page-header"
+        "unified-page-header",
+        "required-multiple-selection",
+        "independent-filter-candidates",
+        "currency-range-presets"
       ]
     },
     "sections-and-layout.md": {
@@ -1034,7 +1054,8 @@
         "6.42",
         "6.43",
         "6.44",
-        "6.45"
+        "6.45",
+        "6.46"
       ]
     },
     {
@@ -7434,6 +7455,48 @@
       "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/scale",
       "path": "@numberRangeFilter.units.cases{key}.scale",
       "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets",
+      "path": "@numberRangeFilter.units.cases{key}.presets",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items",
+      "path": "@numberRangeFilter.units.cases{key}.presets[]",
+      "required": "每个数组项",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/id",
+      "path": "@numberRangeFilter.units.cases{key}.presets[].id",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/label",
+      "path": "@numberRangeFilter.units.cases{key}.presets[].label",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/range",
+      "path": "@numberRangeFilter.units.cases{key}.presets[].range",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/range/properties/from",
+      "path": "@numberRangeFilter.units.cases{key}.presets[].range.from",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/range/properties/to",
+      "path": "@numberRangeFilter.units.cases{key}.presets[].range.to",
+      "required": "本分支可选",
       "module": "filters.md"
     },
     {
@@ -16081,5 +16144,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "5cb5f621c547c573a1db889b3cbbf7dae2676a625a46cc954d23d1cfc2143c81"
+  "semanticSourceDigest": "1deb1c928d91504b297c3b4abef035973a71f50ae1a08e899ae30bb67b6a5715"
 }

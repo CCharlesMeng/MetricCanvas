@@ -35,7 +35,14 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
     return effective.length>0 && (selected?.type!=='dimension'||selected.values.every(value=>effective.some(item=>item.value===value)));
   }
   function trusted(sourceId:string,values:FilterValues):boolean {
-    return filterIds(sourceId).every(id=>{const filter=byId.get(id);if(!filter||!selection(filter,values))return false;return !dynamic(filter)||!requires(sourceId);});
+    return filterIds(sourceId).every(id=>{
+      const filter=byId.get(id);
+      if(!filter||!selection(filter,values))return false;
+      const selected=values.get(filter.id);
+      // Optional empty choices need no candidate receipt; explicit contexts still do.
+      const receipt=filter.type==='dimension'&&(filter.candidateContext||filter.treeSelection==='level'||filter.candidateWindow||selected?.type==='dimension'&&selected.values.length>0);
+      return !dynamic(filter)||!requires(sourceId)||!receipt;
+    });
   }
   async function verify(sourceId:string,values:FilterValues,signal:AbortSignal) {
     const done=new Set<string>();

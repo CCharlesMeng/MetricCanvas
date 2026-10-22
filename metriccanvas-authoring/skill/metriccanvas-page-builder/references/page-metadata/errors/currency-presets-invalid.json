@@ -1,0 +1,20 @@
+{
+  "case": "currency-presets-invalid",
+  "invariant": "currency-range-presets",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "预设换算溢出或不符合约束",
+      "paths": [
+        "/filters/1/presets"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {}
+    ]
+  },
+  "fullInput": "page/conformance/invalid/currency-presets-invalid.json"
+}

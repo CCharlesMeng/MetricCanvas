@@ -1,0 +1,281 @@
+{
+  "case": "currency-presets-invalid",
+  "invariant": "currency-range-presets",
+  "input": {
+    "schemaVersion": "6.46",
+    "id": "ioc-header-currency",
+    "layout": "dashboard",
+    "meta": {
+      "title": "IOC页头 · 币种与原始金额档位"
+    },
+    "iocHeader": {
+      "identity": {
+        "title": "币种与原始金额档位",
+        "tags": [
+          {
+            "text": "原始档位 / 合成查询",
+            "id": "tag-0"
+          }
+        ]
+      },
+      "back": true,
+      "filterIds": [
+        "currency",
+        "amount"
+      ],
+      "presentation": {
+        "layout": "inline",
+        "collapse": "none"
+      }
+    },
+    "filters": [
+      {
+        "id": "currency",
+        "type": "dimension",
+        "dimension": "currency",
+        "label": "币种",
+        "urlParams": {
+          "value": "currency"
+        },
+        "default": [
+          "RMB"
+        ],
+        "options": [
+          {
+            "value": "RMB",
+            "label": "人民币"
+          },
+          {
+            "value": "USD",
+            "label": "美元"
+          }
+        ],
+        "selection": {
+          "mode": "single",
+          "required": true
+        },
+        "emptyLabel": "币种"
+      },
+      {
+        "id": "amount",
+        "type": "numberRange",
+        "label": "预签金额",
+        "constraints": {
+          "min": 0,
+          "bounds": "strict"
+        },
+        "units": {
+          "filterId": "currency",
+          "cases": {
+            "RMB": {
+              "currency": "CNY",
+              "label": "元",
+              "scale": 1,
+              "presets": [
+                {
+                  "id": "preset-0",
+                  "label": "全部",
+                  "range": {}
+                },
+                {
+                  "id": "preset-1",
+                  "label": "小于2百万￥",
+                  "range": {
+                    "to": 2000000
+                  }
+                },
+                {
+                  "id": "preset-2",
+                  "label": "2百万￥~1千万￥",
+                  "range": {
+                    "from": 2000000,
+                    "to": 10000000
+                  }
+                },
+                {
+                  "id": "preset-3",
+                  "label": "1千万￥~2千万￥",
+                  "range": {
+                    "from": 10000000,
+                    "to": 20000000
+                  }
+                },
+                {
+                  "id": "preset-4",
+                  "label": "2千万￥以上",
+                  "range": {
+                    "from": 20000000
+                  }
+                }
+              ]
+            },
+            "USD": {
+              "currency": "USD",
+              "label": "美元",
+              "scale": 1,
+              "presets": [
+                {
+                  "id": "preset-0",
+                  "label": "全部",
+                  "range": {}
+                },
+                {
+                  "id": "preset-1",
+                  "label": "小于1M$",
+                  "range": {
+                    "from": 10,
+                    "to": 10
+                  }
+                },
+                {
+                  "id": "preset-2",
+                  "label": "1M$~10M$",
+                  "range": {
+                    "from": 1000000,
+                    "to": 10000000
+                  }
+                },
+                {
+                  "id": "preset-3",
+                  "label": "10M$以上",
+                  "range": {
+                    "from": 10000000
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "clearOnChangeOf": [
+          "currency"
+        ]
+      }
+    ],
+    "dataSources": {
+      "request": {
+        "fields": {
+          "item": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "item"
+          },
+          "state": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "state"
+          },
+          "selection_count": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "selection_count"
+          },
+          "amount_rmb": {
+            "type": "money",
+            "role": "measure",
+            "currency": "CNY",
+            "queryField": "demo_amount_rmb"
+          },
+          "amount_usd": {
+            "type": "money",
+            "role": "measure",
+            "currency": "USD",
+            "queryField": "demo_amount_usd"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "item",
+                    "state"
+                  ],
+                  "output_metrics": [
+                    "selection_count",
+                    "demo_amount_rmb",
+                    "demo_amount_usd"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "currency": {
+                "target": "dimension",
+                "queryField": "demo_currency"
+              },
+              "amount": {
+                "target": "numberRange",
+                "metricByFilter": {
+                  "filterId": "currency",
+                  "cases": {
+                    "RMB": "demo_amount_rmb",
+                    "USD": "demo_amount_usd"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "note",
+            "type": "text",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "body": "合成验收：RMB五档、USD四档按报告原文冻结，切币种一次清空已应用金额并切换面板档位。预设边界为包含式，保留原“小于”文案的边界重叠事实；自定义金额双边必须严格小于。不会换算金额。表格只回显币种和范围，真实每源选行/选字段、原始单位和导出尚未接通。"
+            }
+          },
+          {
+            "id": "request-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "request"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "item",
+                  "title": "筛选项 / 观察项"
+                },
+                {
+                  "field": "state",
+                  "title": "实际生效值（合成回显）"
+                },
+                {
+                  "field": "selection_count",
+                  "title": "数量"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "dashboardToolbar": "hidden"
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/1/presets",
+      "message": "预设换算溢出或不符合约束"
+    }
+  ]
+}

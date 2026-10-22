@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.45",
-  "schemaSha256": "23830b5ce5063c01351c5ddc96f736dd0d80aaf80e7f094dec8a47eb23b8d190",
+  "schemaVersion": "6.46",
+  "schemaSha256": "17340e522c38419e5b951fd50a7a2e72784ea28fd67bf8539c10d39580e426f3",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -60,7 +60,7 @@
     },
     {
       "file": "packages/page/src/amount-validation.ts",
-      "sha256": "b0a1a1c6d3dd5fc12f279cd0901474984480e63bc74f41fc822c109332339e44"
+      "sha256": "e7a49a6f3e3f9ff5dd4addc3adadd41f7c32e21ed320b6b67ccd02607c73876f"
     },
     {
       "file": "packages/page/src/chart-option.ts",
@@ -76,7 +76,7 @@
     },
     {
       "file": "packages/page/src/filter-dependencies.ts",
-      "sha256": "d3b0fc3f4ad8aebde9d2367d485cd05e9cab4edfb94c69cc1841f1257b50fb23"
+      "sha256": "dea324c4ab6e7d73632ed6b80109a9fb7a23692787f454cbbbabc91f431d2782"
     },
     {
       "file": "packages/page/src/filter-group.ts",
@@ -220,7 +220,7 @@
     },
     {
       "file": "packages/page/src/schema/filter.ts",
-      "sha256": "13bae9f5ee81ea471e291159c23bb3755da104d077066494c5e5e15e77457104"
+      "sha256": "016ccfcfd901fa7d8d8f9c55f50905ba68e349fe6fb062dcec5057e125a90133"
     },
     {
       "file": "packages/page/src/schema/ioc-header.ts",
@@ -280,7 +280,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "b1f23b5b07de6b9f7f909f761f2cb6dad982a67bb33529d3fde6fae73afa100a"
+      "sha256": "72c6b9d64a0bf03dd037edce6d1b19bdf4b39561a109cfd724abf229c144abf3"
     }
   ],
   "modules": {
@@ -306,7 +306,14 @@
         "availability-page",
         "calendar-window-page",
         "unified-year-header",
-        "unified-overflow-header"
+        "unified-overflow-header",
+        "ioc-header-business",
+        "ioc-header-currency",
+        "ioc-header-groups",
+        "ioc-header-incentives",
+        "ioc-header-models",
+        "ioc-header-months",
+        "ioc-header-unconfigured"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -325,7 +332,10 @@
         "detail-view-component-types",
         "ioc-header",
         "time-extensions",
-        "unified-page-header"
+        "unified-page-header",
+        "required-multiple-selection",
+        "independent-filter-candidates",
+        "currency-range-presets"
       ]
     },
     "params-and-text-values.md": {
@@ -565,7 +575,14 @@
         "availability-page",
         "calendar-window-page",
         "unified-year-header",
-        "dimension-selection-page"
+        "dimension-selection-page",
+        "ioc-header-business",
+        "ioc-header-currency",
+        "ioc-header-groups",
+        "ioc-header-incentives",
+        "ioc-header-models",
+        "ioc-header-months",
+        "ioc-header-unconfigured"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -602,7 +619,10 @@
         "business-filters",
         "currency-selection",
         "time-extensions",
-        "unified-page-header"
+        "unified-page-header",
+        "required-multiple-selection",
+        "independent-filter-candidates",
+        "currency-range-presets"
       ]
     },
     "sections-and-layout.md": {
@@ -1511,7 +1531,8 @@
         "6.42",
         "6.43",
         "6.44",
-        "6.45"
+        "6.45",
+        "6.46"
       ]
     },
     {
@@ -7911,6 +7932,48 @@
       "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/scale",
       "path": "@numberRangeFilter.units.cases{key}.scale",
       "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets",
+      "path": "@numberRangeFilter.units.cases{key}.presets",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items",
+      "path": "@numberRangeFilter.units.cases{key}.presets[]",
+      "required": "每个数组项",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/id",
+      "path": "@numberRangeFilter.units.cases{key}.presets[].id",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/label",
+      "path": "@numberRangeFilter.units.cases{key}.presets[].label",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/range",
+      "path": "@numberRangeFilter.units.cases{key}.presets[].range",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/range/properties/from",
+      "path": "@numberRangeFilter.units.cases{key}.presets[].range.from",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets/items/properties/range/properties/to",
+      "path": "@numberRangeFilter.units.cases{key}.presets[].range.to",
+      "required": "本分支可选",
       "module": "filters.md"
     },
     {

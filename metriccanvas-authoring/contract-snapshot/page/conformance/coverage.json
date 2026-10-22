@@ -1,6 +1,41 @@
 {
   "invariants": [
     {
+      "id": "currency-range-presets",
+      "description": "6.46单位case内的币种预设保持单一金额状态",
+      "valid": [
+        "ioc-header-currency"
+      ],
+      "invalid": [
+        "currency-presets-version",
+        "currency-presets-missing",
+        "currency-presets-shared",
+        "currency-presets-invalid"
+      ]
+    },
+    {
+      "id": "independent-filter-candidates",
+      "description": "6.46显式无依赖候选使用V2及局部门禁",
+      "valid": [
+        "ioc-header-business",
+        "ioc-header-unconfigured"
+      ],
+      "invalid": [
+        "independent-candidates-version"
+      ]
+    },
+    {
+      "id": "required-multiple-selection",
+      "description": "6.46必选多选保持非空离散集合",
+      "valid": [
+        "ioc-header-months"
+      ],
+      "invalid": [
+        "required-multiple-version",
+        "required-multiple-empty"
+      ]
+    },
+    {
       "id": "unified-page-header",
       "description": "6.41 唯一页头及自然年选择",
       "valid": [

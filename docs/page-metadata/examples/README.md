@@ -5,3 +5,5 @@
 组件示例含17类及其显式variant，由完整页面裁剪必要依赖并重新校验。`index.json`的`exampleCoverage`登记源夹具与JSON Pointer；`branchCoverage`逐项登记anyOf/oneOf分支。109项由合法页面实际命中，文本链接的row来源一项由拒绝反例记录，不能当作合法用法。allOf引用包装保留在结构目录，不冒充独立行为分支。
 
 新增示例目前只完成结构与语义验证，没有逐variant新增截图或视觉验收。模块中的运行时源码和既有浏览器测试用于说明已实现语义；精确到这些新示例的外观仍待验证。真实DQE需受控查询端口、有效查询定义及数据上下文；AI总结需宿主可信SSE配置及可用服务。已有本地HTTP/SSE证据不能替代外部提供方连通性验收。
+
+IOC B组主线迁移：[ioc-header-business](../../../contracts/metriccanvas/page/reference/examples/ioc-header-business.json)、[ioc-header-currency](../../../contracts/metriccanvas/page/reference/examples/ioc-header-currency.json)、[ioc-header-groups](../../../contracts/metriccanvas/page/reference/examples/ioc-header-groups.json)、[ioc-header-incentives](../../../contracts/metriccanvas/page/reference/examples/ioc-header-incentives.json)、[ioc-header-models](../../../contracts/metriccanvas/page/reference/examples/ioc-header-models.json)、[ioc-header-months](../../../contracts/metriccanvas/page/reference/examples/ioc-header-months.json)、[ioc-header-unconfigured](../../../contracts/metriccanvas/page/reference/examples/ioc-header-unconfigured.json)。使用当前主线选择、候选和事实接口，合成验收不等于真实业务接线。

@@ -13,8 +13,13 @@ export function amountErrors(page:Page):TypedError[]{
    if(!exhaustiveCases(filters,filter.units.filterId,filter.units.cases))fail(path+'/units','金额单位必须穷尽required单选封闭枚举');
    if(!filter.clearOnChangeOf?.includes(filter.units.filterId))fail(path+'/clearOnChangeOf','币种变化必须在同一事务清除金额');
   }
-  if(new Set(filter.presets?.map(p=>p.id)).size!==(filter.presets?.length??0))fail(path+'/presets','范围预设id必须唯一');
-  for(const preset of filter.presets??[])for(const scale of filter.units?Object.values(filter.units.cases).map(unit=>unit.scale):[1])try{rangeInBaseUnits(filter,preset.range,scale);}catch{fail(path+'/presets','预设换算溢出或不符合约束');}
+  const units=Object.values(filter.units?.cases??{}),perUnit=units.some(unit=>unit.presets!==undefined);
+  if(perUnit&&(filter.presets||units.some(unit=>!unit.presets)))fail(path+'/units','按币种预设必须覆盖全部单位case，且不能与公共presets混用');
+  const groups=perUnit?units.map(unit=>({presets:unit.presets??[],scale:unit.scale})):(units.length?units:[{scale:1}]).map(unit=>({presets:filter.presets??[],scale:unit.scale}));
+  for(const group of groups){
+   if(new Set(group.presets.map(p=>p.id)).size!==group.presets.length)fail(path+'/presets','范围预设id必须唯一');
+   for(const preset of group.presets)try{rangeInBaseUnits(filter,preset.range,group.scale);}catch{fail(path+'/presets','预设换算溢出或不符合约束');}
+  }
  }
  for(const [id,source]of Object.entries(page.dataSources))if(source.source.type==='query')for(const [filterId,binding]of Object.entries(source.source.query.filterBindings??{}))if(binding.target==='numberRange'){
   const path=`/dataSources/${id}/source/query/filterBindings/${filterId}`,filter=filters.find(f=>f.id===filterId);

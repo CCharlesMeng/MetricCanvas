@@ -423,3 +423,14 @@ Report 页面按三节组织，控件相互独立：
 - 四类旧图表页面保留 `/pages/chart-local-filter-page` 入口，声明已全部迁移至独立组件。旧 props.filter 反例由产品契约矩阵和校验测试验证，外部分发由 local-authoring 独立安装测试验证。
 - 浏览器测试直接消费以上 pages 中的配置，覆盖宽窄屏、请求范围、隐藏恢复、URL、只读、加载、查询失败和迟到响应。静态导出显示捕获的所选标签，共用统一显隐投影。
 - 证据边界：静态、运行时、浏览器与 DQE Sim 可分别验证；本示例不证明真实 DQE、Relay、线上服务或真实模型验收。
+
+
+### IOC 业务批量确认（主线契约迁移）
+
+启动 `pnpm dev:playground`，打开 `/ioc-header-review`，依次操作业务筛选、模型、协同小组、激励、币种金额、最近月份、缺配置。也可直接打开 `/pages/ioc-header-business`、`ioc-header-models`、`ioc-header-groups`、`ioc-header-incentives`、`ioc-header-currency`、`ioc-header-months`、`ioc-header-unconfigured`。附加页为 `ioc-header-standard/dense/detail/time/inputs`；详情可传 `?project-name=示例项目`，月份可传 `?months=202610&months=202608`。全部使用 dashboard，无需业务服务。
+
+模型只随统计范围重取，重点/区域/客户分类不增加候选请求数；失败场景打开模型重试，日期保留。区域地区部/代表处在主线结构树中分别单选；展开不提交，选新节点替换稳定码并关闭。币种页人民币五档、美元四档分别填草稿并确定，取消不应用，自定义两端必须严格递增；换币原子清除金额，新范围或全部需显式确认。激励候选固定2026-10，改变正文月份仍回显2026-10预拉；此项尚未改变生产行为。月份选择保留跳月，至少一项，最后一项不可移除。
+
+上方场景选择可观察慢请求、首次失败后重试、空、无权限、未配置、不完整归一为未配置和统一只读；上下文按钮重新挂载，隔离旧候选。缺配置相关查询等待，无关静态块仍显示。标准/密集页全部筛选自然换行，不加折叠。浏览器命令：`pnpm --filter playground test:ioc`（测试自动使用5183，不占5173）。
+
+候选码、完整组织权限夹具、查询及计数回显均为合成数据，不能作为生产字典、授权或真实IOC/DQE/Relay证据。生产字典、payload、每源字段与金额单位/导出仍待接线，C组继续暂缓。创作可用 `pnpm exec tsx tools/scripts/recent-month-options.ts 2026-10` 冻结12个月选项，不从执行机器隐式推断业务月份。

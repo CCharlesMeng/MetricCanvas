@@ -2,7 +2,7 @@
 
 页面元数据是统一运行时消费的声明式文档；数据上下文、会话、修订和执行身份由宿主管理。页面id、字段id、组件id分别属于自己的命名空间，组件id在整页唯一。
 
-作者版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义，当前写出6.42，公开读取接受5.0—5.4、6.5及6.11—6.42；本册 `index.json` 的 `schemaVersion` 标明导出时的作者版本。5.x在读取边界转换为6.x运行态文档。6.0使用layoutForm，6.1起允许layout。双字段同时出现即拒绝；缺布局默认report。normalizePageDocument只进行已声明的兼容规范化并保留文档原始字段，不将运行时参数替换结果保存。历史修订先核验原文hash再规范化。
+作者版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义，当前写出6.46，公开读取接受5.0—5.4、6.5及6.11—6.46；本册 `index.json` 的 `schemaVersion` 标明导出时的作者版本。5.x在读取边界转换为6.x运行态文档。6.0使用layoutForm，6.1起允许layout。双字段同时出现即拒绝；缺布局默认report。normalizePageDocument只进行已声明的兼容规范化并保留文档原始字段，不将运行时参数替换结果保存。历史修订先核验原文hash再规范化。
 
 report定宽居中，dashboard占满宿主宽度。页面页头统一由 IocHeader 呈现。dashboardToolbar 仅兼容读取：缺省／visible 自动适配行内页头，hidden 不生成默认页头，compact 对象适配紧凑呈现及只读说明；不保留旧工具栏实现。新页面使用 iocHeader。meta.title是页面级标题，缺席时消费方可回退页头再回退页面id。
 
@@ -55,7 +55,10 @@ IOC `identity.facts[].value:{fact,part}` 只允许固定part latest/latestComple
 实际页面复用既有 `ioc-project-overview`、`ioc-opportunity-list`、`ioc-opportunity-analysis`：分别验证普通、更多筛选及紧凑呈现。`dashboard-period-filter` 使用同一页头且仅保留一个年份入口。旧文档回归使用完整兼容夹具，不再新增演示入口。筛选声明见[筛选模块](filters.md)。
 
 
-页面协议 6.45。结构真源为本册[schema.json](schema.json)，SHA256 `23830b5ce5063c01351c5ddc96f736dd0d80aaf80e7f094dec8a47eb23b8d190`。字段表自动生成；可选不等于有默认值。
+普通行内页头（`layout:"inline"`、`density:"normal"`、`collapse:"none"`）按小箭头 `<`、标题、可选灰色标签、筛选依次进入同一个换行流；窄容器不固定两栏。标准/密集/详情合成页不自动添加说明、编码或期间事实。compact、firstRow、overflow和stacked继续各自原有呈现。返回仍要求可信 returnContext/back。完整场景见 `ioc-header-standard`、`ioc-header-dense`、`ioc-header-detail` 与 `/ioc-header-review`。
+
+
+页面协议 6.46。结构真源为本册[schema.json](schema.json)，SHA256 `17340e522c38419e5b951fd50a7a2e72784ea28fd67bf8539c10d39580e426f3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -77,7 +80,7 @@ Schema位置：`#/properties/schemaVersion`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39","6.40","6.41","6.42","6.43","6.44","6.45"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 |
+| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.5","6.11","6.12","6.13","6.14","6.15","6.16","6.17","6.18","6.19","6.20","6.21","6.22","6.23","6.24","6.25","6.26","6.27","6.28","6.29","6.30","6.31","6.32","6.33","6.34","6.35","6.36","6.37","6.38","6.39","6.40","6.41","6.42","6.43","6.44","6.45","6.46"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -122,6 +125,7 @@ Schema位置：`#/properties/schemaVersion`。
 | "6.43" | 维度下拉默认搜索、可关闭，普通树显式父子策略。 |
 | "6.44" | 增加行内子表格及私有查询分页。 |
 | "6.45" | Dashboard 独立固定单选筛选按钮组、一控多及统一显隐；旧图表筛选声明按明确批准的受控迁移例外移除。 |
+| "6.46" | 必选多选、显式无依赖候选和单位case中的币种档位。 |
 
 <a id="schema-232f70726f706572746965732f6964"></a>
 
@@ -1312,6 +1316,9 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - `ioc-header`：6.36 页级IOC身份与唯一筛选归属。反例：[ioc-header-before-6.36](errors/ioc-header-before-6.36.json)、[ioc-header-empty](errors/ioc-header-empty.json)、[ioc-header-toolbar-conflict](errors/ioc-header-toolbar-conflict.json)、[ioc-header-hidden-filter](errors/ioc-header-hidden-filter.json)、[ioc-header-missing-filter](errors/ioc-header-missing-filter.json)、[ioc-header-duplicate-identity](errors/ioc-header-duplicate-identity.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `time-extensions`：6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口。反例：[time-before-6.39](errors/time-before-6.39.json)、[time-case-missing](errors/time-case-missing.json)、[time-query-xor](errors/time-query-xor.json)、[time-period-mismatch](errors/time-period-mismatch.json)、[time-output-mismatch](errors/time-output-mismatch.json)、[time-default-week](errors/time-default-week.json)、[time-availability-default](errors/time-availability-default.json)、[time-fact-kind](errors/time-fact-kind.json)、[time-window-static-options](errors/time-window-static-options.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `unified-page-header`：6.41 唯一页头及自然年选择。反例：[unified-header-version](errors/unified-header-version.json)、[unified-header-conflict](errors/unified-header-conflict.json)、[period-modes-empty](errors/period-modes-empty.json)、[period-modes-duplicate](errors/period-modes-duplicate.json)、[period-modes-default](errors/period-modes-default.json)、[period-modes-plain-range](errors/period-modes-plain-range.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `required-multiple-selection`：6.46必选多选保持非空离散集合。反例：[required-multiple-version](errors/required-multiple-version.json)、[required-multiple-empty](errors/required-multiple-empty.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `independent-filter-candidates`：6.46显式无依赖候选使用V2及局部门禁。反例：[independent-candidates-version](errors/independent-candidates-version.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `currency-range-presets`：6.46单位case内的币种预设保持单一金额状态。反例：[currency-presets-version](errors/currency-presets-version.json)、[currency-presets-missing](errors/currency-presets-missing.json)、[currency-presets-shared](errors/currency-presets-shared.json)、[currency-presets-invalid](errors/currency-presets-invalid.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -1327,6 +1334,13 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - [calendar-window-page](examples/calendar-window-page.json)：完整合法页面；查询仅为静态契约证据。
 - [unified-year-header](examples/unified-year-header.json)：完整合法页面；查询仅为静态契约证据。
 - [unified-overflow-header](examples/unified-overflow-header.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-business](examples/ioc-header-business.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-currency](examples/ioc-header-currency.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-groups](examples/ioc-header-groups.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-incentives](examples/ioc-header-incentives.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-models](examples/ioc-header-models.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-months](examples/ioc-header-months.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-unconfigured](examples/ioc-header-unconfigured.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/page.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。

@@ -5,6 +5,8 @@
   const framed = browser && window.self !== window.top;
   import {createVisibilityDemoInputs} from '$lib/visibility-inputs';
   import {createIocHeaderPreview} from '$lib/ioc-header-preview-inputs';
+  import {createIocBusinessPreview} from '$lib/ioc-business-preview';
+  const businessPreview=$derived(createIocBusinessPreview(page.params.pageId??''));
   const headerPreview = createIocHeaderPreview();
   const visibilityDemo=createVisibilityDemoInputs();
   let visibilityInstance=$state(0);
@@ -98,7 +100,7 @@
       pageState = {
         phase: 'ready',
         document,
-        dataGateway: pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : dataGateway
+        dataGateway: pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : dataGateway
       };
     } catch (cause) {
       if (session !== loadSession) return;
@@ -142,7 +144,7 @@
     {/if}
     {#key visibilityInstance}
     <RuntimeView
-      displayInputs={pageExternalInputs(page.params.pageId)==='visibility'?visibilityDemo.source:pageExternalInputs(page.params.pageId)==='ioc-header'?headerPreview.displayInputs:undefined}
+      displayInputs={pageExternalInputs(page.params.pageId)==='ioc-business'?businessPreview.displayInputs:pageExternalInputs(page.params.pageId)==='visibility'?visibilityDemo.source:pageExternalInputs(page.params.pageId)==='ioc-header'?headerPreview.displayInputs:undefined}
       document={pageState.document}
       dataGateway={pageState.dataGateway}
       {aiSummary}

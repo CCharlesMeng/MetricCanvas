@@ -1,5 +1,7 @@
 # IOC 公共页头交接：Prototype → 组件 API → 正式编码
 
+> 2026-10-22接续：用户已确认按主线6.45契约迁移原归档批次行为后交付，最终增量为6.46。使用 `/ioc-header-review` 查看七主题；普通行内页头自然换行，地区部/代表处显式单选。当前结果与生产接线缺口见[主线迁移验收](../evidence/ioc-header-main-delivery-2026-10-22/acceptance.md)。旧6.33的inputResources/Provider、multiple、presetGroups及RuntimeInputs不并入主线；以下历史阶段不重新开工。
+
 > 历史交接记录：原型、API审查和B0–B5现已完成。B5按用户收窄为仅传值，恢复不实施，B6挂起。当前范围和合并版本以[主计划§22–23](2026-10-16-ioc-header-feature-plan.md)及[交付记录](../evidence/ioc-header-delivery/result.md)为准，以下保留当时上下文。
 
 交接日期：2026-10-19。当前阶段：功能盘点已完成，下一步开始交互原型。用户要求在新会话中依次完成 prototype、查看组件 API、最后正式编码；本交接不创建新会话，也不实施原型或产品代码。

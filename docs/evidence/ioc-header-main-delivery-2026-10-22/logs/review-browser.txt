@@ -1,0 +1,17 @@
+$ playwright test
+
+Running 9 tests using 1 worker
+
+(node:40833) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/ioc-business-review.browser.ts:3:1 › seven real review pages render and retain narrow wrapping (2.4s)
+  ✓  2 tests/ioc-business-review.browser.ts:16:1 › region department and office each select one stable code (565ms)
+  ✓  3 tests/ioc-business-review.browser.ts:22:1 › model retries preserve dates and unrelated changes do not refetch (779ms)
+  ✓  4 tests/ioc-business-review.browser.ts:29:1 › currency presets keep draft cancellation, strict bounds, and atomic clearing (768ms)
+  ✓  5 tests/ioc-business-review.browser.ts:36:1 › months remain discrete, required multi can add and remove without clearing last (615ms)
+  ✓  6 tests/ioc-business-review.browser.ts:41:1 › permission and configuration failures gate related body while unrelated inline remains (732ms)
+  ✓  7 tests/ioc-business-review.browser.ts:46:1 › independent candidate dictionaries load and strategy selection month does not refetch (754ms)
+  ✓  8 tests/ioc-business-review.browser.ts:51:1 › slow superseded model responses cannot restore an old date selection (1.4s)
+  ✓  9 tests/ioc-business-review.browser.ts:57:1 › additional formal header pages run directly with the canonical period facts (1.3s)
+
+  9 passed (9.7s)

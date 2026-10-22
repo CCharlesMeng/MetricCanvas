@@ -76,12 +76,12 @@
     if ((!multiple || policy === 'independent') && node.selectable === false || policy === 'leaf' && node.children?.length && !multiple) { expand(node); return; }
     const original = flat.find(candidate => candidate.value === node.value) ?? node;
     const next = toggleSelection(value, original, multiple, policy);
-    if (required && next.length !== 1) return;
+    if (required && next.length === 0) return;
     if (next.join('\0') !== value.join('\0')) onchange?.(next);
     if (!multiple) close();
   }
   function remove(candidate: string) {
-    if (disabled || required) return;
+    if (disabled || required && value.length <= 1) return;
     onchange?.(value.filter(item => item !== candidate));
     tick().then(() => trigger?.focus());
   }
@@ -130,7 +130,7 @@
         <span class="tag-track">{#each value as candidate (candidate)}<span class="tag-item">
           <span class="mc-ui-tag mc-ui-tag--light" class:is-disabled={disabled} title={labels.get(candidate)?.path ?? candidate}>
             <button type="button" class="mc-ui-tag__text tag-label" aria-label={`打开${label}：${labels.get(candidate)?.path ?? candidate}`} {disabled} onpointerdown={rememberTriggerState} onclick={toggleFromClick}>{labels.get(candidate)?.label ?? candidate}</button>
-            <button type="button" class="mc-ui-tag__close" aria-label={`移除${label}：${labels.get(candidate)?.path ?? candidate}`} disabled={disabled||required} onclick={() => remove(candidate)}><Icon name="close"/></button>
+            <button type="button" class="mc-ui-tag__close" aria-label={`移除${label}：${labels.get(candidate)?.path ?? candidate}`} disabled={disabled||required&&value.length<=1} onclick={() => remove(candidate)}><Icon name="close"/></button>
           </span>
         </span>{/each}</span>
       </div>

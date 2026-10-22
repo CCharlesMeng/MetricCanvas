@@ -196,7 +196,7 @@ export interface NumberRangeFilterDeclaration extends FilterInteractionExtension
   visibleWhen?: import('./schema/condition').Condition;
   default?: NumberRangeValue;
   constraints?:{min?:number;max?:number;bounds?:'strict'|'inclusive'};
-  units?:{filterId:string;cases:Record<string,{currency:'CNY'|'USD';label:string;scale:number}>};
+  units?:{filterId:string;cases:Record<string,{currency:'CNY'|'USD';label:string;scale:number;presets?:Array<{id:string;label:string;range:NumberRangeValue}>}>};
   presets?:Array<{id:string;label:string;range:NumberRangeValue}>;
 }
 

@@ -99,7 +99,7 @@ export function filterPageCatalog(
 }
 
 /** Optional development-only inputs are configured outside Page metadata. */
-export function pageExternalInputs(id: string | undefined): 'visibility' | 'ioc-header' | 'selection' | undefined {
+export function pageExternalInputs(id: string | undefined): 'visibility' | 'ioc-header' | 'selection' | 'ioc-business' | undefined {
   const input = catalog.pages.find(entry => entry.id === id)?.externalInputs;
-  return input === 'visibility' || input === 'ioc-header' || input === 'selection' ? input : undefined;
+  return input === 'visibility' || input === 'ioc-header' || input === 'selection' || input === 'ioc-business' ? input : undefined;
 }

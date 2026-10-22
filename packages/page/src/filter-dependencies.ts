@@ -13,7 +13,7 @@ export function dimensionSelectionIssue(filter: DimensionFilterDeclaration, valu
   // An explicit selection contract always takes precedence over this compatibility case.
   const single = filter.selection?.mode === 'single' || filter.display === 'tabs' && !filter.initialParam;
   if (single && values.length > 1) return '单选筛选器至多选择一个值';
-  if (filter.selection?.required && values.length !== 1) return '必选筛选器必须恰好选择一个值';
+  if (filter.selection?.required && values.length === 0) return '必选筛选器必须至少选择一个值';
   if (filter.options && values.some(value => !filter.options!.some(option => option.value === value && !option.disabled))) return '筛选值不在可用封闭枚举中';
   if (filter.selection && new Set(values).size !== values.length) return '筛选值不能重复';
   return undefined;

@@ -15,6 +15,8 @@
 | 多个普通查询组成可全局排序、过滤、分页的表格 | [组合查询源](data-sources.md)的 `pagedJoin` → [表格](components/table.md)的查询分页、数值范围与工具区 | [多查询组合表](examples/paged-join-page.json) |
 | 固定指标排名跟随业务行，切换表格排序后保留名次 | [数据源](data-sources.md)的普通查询排名字段 → `projection`；当前序号另用 `ordinalField` | [固定业务排名](examples/paged-join-fixed-rank-page.json) |
 
+IOC 业务批量场景见 [筛选声明](filters.md#ioc-业务批量场景与必选多选646)：模型、协同小组、策略、币种档位、离散月份和缺配置共用主线输入契约。
+
 ## 按模块查阅
 
 - [页面、版本与布局](page.md)：page

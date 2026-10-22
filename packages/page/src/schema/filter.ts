@@ -41,7 +41,7 @@ const dimensionFilterZ = z
     treeSelection:z.enum(['level','descendants','independent','leaf']).optional(),
     searchable:z.boolean().optional(),
     candidateWindow:z.object({unit:z.literal('month'),n:z.literal(12),includeCurrent:z.boolean(),anchorFact:idZ.optional()}).strict().optional(),
-    candidateContext:z.object({filterIds:z.array(idZ).min(1),reconcile:z.enum(['clear','intersection'])}).strict().optional()
+    candidateContext:z.object({filterIds:z.array(idZ),reconcile:z.enum(['clear','intersection'])}).strict().optional()
   })
   .meta({ id: 'dimensionFilter' });
 
@@ -137,6 +137,8 @@ const numberRangeValueZ = z
   })
   .strict();
 
+const numberRangePresetsZ=z.array(z.object({id:idZ,label:z.string().min(1),range:numberRangeValueZ}).strict()).min(1);
+
 const numberRangeFilterZ = z
   .object({
     ...interaction,
@@ -148,8 +150,8 @@ const numberRangeFilterZ = z
     ...visibilityShape,
     default: numberRangeValueZ.optional(),
     constraints:z.object({min:z.number().optional(),max:z.number().optional(),bounds:z.enum(['strict','inclusive']).optional()}).strict().optional(),
-    units:z.object({filterId:idZ,cases:z.record(z.string().min(1),z.object({currency:z.enum(['CNY','USD']),label:z.string().min(1),scale:z.number().int().positive().max(Number.MAX_SAFE_INTEGER)}).strict())}).strict().optional(),
-    presets:z.array(z.object({id:idZ,label:z.string().min(1),range:numberRangeValueZ}).strict()).min(1).optional()
+    units:z.object({filterId:idZ,cases:z.record(z.string().min(1),z.object({currency:z.enum(['CNY','USD']),label:z.string().min(1),scale:z.number().int().positive().max(Number.MAX_SAFE_INTEGER),presets:numberRangePresetsZ.optional()}).strict())}).strict().optional(),
+    presets:numberRangePresetsZ.optional()
   })
   .meta({ id: 'numberRangeFilter' });
 

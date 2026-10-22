@@ -92,7 +92,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     for (const declaration of declarations) {
       const selected = current.get(declaration.id);
       if(declaration.type!=='dimension')continue;
-      if(declaration.selection?.required && (selected?.type!=='dimension'||selected.values.length!==1))result.add(declaration.id);
+      if(declaration.selection?.required && (selected?.type!=='dimension'||selected.values.length===0))result.add(declaration.id);
       if(intersections.has(declaration.id))result.add(declaration.id);
       if(!editing.candidates||dimensionOptions.has(declaration.id)||declaration.options)continue;
       if(declaration.candidateContext||declaration.treeSelection==='level'||declaration.candidateWindow){if(receipts.get(declaration.id)?.status!=='ready')result.add(declaration.id);}
