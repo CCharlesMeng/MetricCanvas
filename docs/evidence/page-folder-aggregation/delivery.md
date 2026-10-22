@@ -25,3 +25,7 @@
 - ioc-header-showcase-browser：15 个场景、32 项能力索引、层级候选、币种、跨页传值、移动布局和历史记录通过，无页面异常或外部查询请求。
 
 机器结果见本目录 browser JSON；桌面与窄屏截图见 directory-desktop.png / directory-mobile.png。核心目录、文件索引、校验入口及新增适配器函数 selfCC 均不超过 15，测量见 complexity.json。未改变页面协议版本，不表示真实 DQE、Relay 或生产环境已验收。
+
+## CI 回归修正
+
+首次最终 CI 的 tests 任务中，新增目录 CLI 用例连续启动 4 次完整 Node/tsx 校验进程，累计超过单测默认 5 秒限制；其余 311 个测试文件通过。改为 empty/nested/wrong/duplicate 四个独立进程场景，保留状态码和诊断断言，不更改全局超时或产品校验。修正后的定向 CLI 回归通过；远端结论以最终提交 CI 为准。

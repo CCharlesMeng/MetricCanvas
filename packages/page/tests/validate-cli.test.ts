@@ -1,25 +1,28 @@
 import { mkdtempSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 describe('validate CLI', () => {
-  it('递归检查嵌套页面，拒绝文件名错配、跨目录重名和空目录', () => {
+  it.each(['empty', 'nested', 'wrong', 'duplicate'] as const)('递归目录场景：%s', kind => {
     const directory = mkdtempSync(join(tmpdir(), 'page-folders-'));
-    const run = () => spawnSync(process.execPath, ['--import', 'tsx', 'packages/page/src/validate-cli.ts', directory], { encoding: 'utf8' });
+    const raw = JSON.parse(readFileSync('pages/capabilities/layout/demo.json', 'utf8'));
+    const files = kind === 'empty' ? [] : kind === 'duplicate'
+      ? ['demo.json', 'nested/deep/demo.json'] : ['nested/deep/demo.json'];
     try {
-      expect(run().status).toBe(2);
-      mkdirSync(join(directory, 'nested/deep'), { recursive: true });
-      const raw = JSON.parse(readFileSync('pages/capabilities/layout/demo.json', 'utf8'));
-      writeFileSync(join(directory, 'nested/deep/demo.json'), JSON.stringify(raw));
-      expect(run().stdout).toContain('共 1 个页面文档,1 通过,0 失败');
-      writeFileSync(join(directory, 'nested/deep/demo.json'), JSON.stringify({ ...raw, id: 'wrong' }));
-      expect(run().stderr).toContain('与 Page.id(wrong)不一致');
-      writeFileSync(join(directory, 'demo.json'), JSON.stringify(raw));
-      const duplicate = run();
-      expect(duplicate.status).toBe(2);
-      expect(duplicate.stderr).toContain('重复页面 ID demo');
+      for (const file of files) {
+        const target = join(directory, file);
+        mkdirSync(dirname(target), { recursive: true });
+        writeFileSync(target, JSON.stringify(kind === 'wrong' ? { ...raw, id: 'wrong' } : raw));
+      }
+      const result = spawnSync(process.execPath, ['--import', 'tsx', 'packages/page/src/validate-cli.ts', directory], { encoding: 'utf8' });
+      expect(result.status, result.stderr).toBe(kind === 'nested' ? 0 : kind === 'wrong' ? 1 : 2);
+      const expected = {
+        empty: '没有找到页面文档', nested: '共 1 个页面文档,1 通过,0 失败',
+        wrong: '与 Page.id(wrong)不一致', duplicate: '重复页面 ID demo'
+      };
+      expect(result.stdout + result.stderr).toContain(expected[kind]);
     } finally {
       rmSync(directory, { recursive: true, force: true });
     }
