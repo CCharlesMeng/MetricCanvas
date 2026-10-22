@@ -1,4 +1,4 @@
-# 筛选按钮组 filterGroup
+# 独立筛选 filterGroup
 
 6.45 引入，旧图表筛选采用本次明确批准的受控迁移。
 
@@ -21,16 +21,24 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 
 作用范围只由查询定义中的 `filterBindings` 决定；至少一个查询必须消费这个筛选器。允许多个查询绑定同一筛选器，也允许指标卡、图表或其他组件共同消费受影响结果。不增加受控组件 ID 列表，不按控件位置隐式划范围，不要求复制共享数据源。未绑定且不依赖受影响结果的数据源不因本控件切换刷新。
 
-组件顶层 `visibleWhen` 与筛选声明的 `visibleWhen`、静态 `visible:false` 及祖先门禁由统一展示模块组合求值。隐藏控件保留筛选状态和查询绑定；内容分别声明自己的条件。再次显示恢复已有选择。候选项固定，不因页头切换自动改变，也不请求候选端口。只读页面禁用按钮；加载、空结果、查询失败不移除独立控件。
+组件顶层 `visibleWhen` 与筛选声明的 `visibleWhen`、静态 `visible:false` 及祖先门禁由统一展示模块组合求值。隐藏控件保留筛选状态和查询绑定；内容分别声明自己的条件。再次显示恢复已有选择。候选项固定，不因页头切换自动改变，也不请求候选端口。只读页面禁用按钮或下拉；加载、空结果、查询失败不移除独立控件。
 
-同一筛选器只能声明一个 filterGroup，不在页头重复显示。Report、详情视图、动态候选、多选与空选不在首批范围。非法或多值 URL 输入回退声明默认项；运行期非法写入保留已应用选择。静态导出共用冻结筛选与展示投影，以当前选中 label 替代按钮。
+同一筛选器只能声明一个 filterGroup，不在页头重复显示。Report、详情视图、动态候选、多选与空选不在首批范围。非法或多值 URL 输入回退声明默认项；运行期非法写入保留已应用选择。静态导出共用冻结筛选与展示投影，以当前选中 label 替代按钮或下拉。
 
 旧图表 `props.filter` 已移除，校验器给出明确迁移提示，不提供旧渲染分支。迁移将 filterId/options 移到独立组件，保留筛选声明、默认项、查询绑定和稳定业务值；需要保持同组布局时使用组合卡。四类图表均可作为组合卡的叶子组件，不开放递归容器。
 
-验收入口：`filter-group-page` 展示带符号指标卡、一控多、独立与卡内布局、页头条件显隐、无关对照和 URL 恢复；`chart-local-filter-page` 为四类旧图表声明迁移后的页面。两者数据均为本地合成数据，不代表真实 DQE、Relay 或生产接入验收。
+验收入口：`filter-group-page` 展示图表卡左上按钮切换指标、右上区域下拉，两项通过查询绑定共同刷新图表与合计；`filter-group-state-page` 展示带符号指标卡、一控多、独立与卡内布局、页头条件显隐、无关对照和 URL 恢复；`chart-local-filter-page` 为四类旧图表声明迁移后的页面。这些场景数据均为本地合成数据，不代表真实 DQE、Relay 或生产接入验收。
+
+## 固定单选下拉与对齐（6.47）
+
+`props.display` 可取 `buttons`（省略时的默认值）或 `select`。下拉复用现有维度筛选控件，保持固定候选、必选单选、不请求候选端口；状态、URL、条件显隐、只读与静态导出与按钮完全一致。`props.align` 可取 `left`（默认）或 `right`，只控制控件在所占栅格中的对齐，不改变查询范围。显式配置任一属性均要求 6.47。
+
+图表卡中的两个控件各占 `layout.span:6`，图表占 12；右侧使用 `{"filterId":"region","display":"select","align":"right","options":[{"label":"全部区域","value":"all"},{"label":"华东","value":"east"},{"label":"华南","value":"south"}]}`。两个筛选器分别绑定 queryField，组合条件由查询消费。示例的 `all` 是合成数据集显式提供的全区域汇总行，不代表通用的“不过滤”值，也不能把该业务值移植到真实查询。
+
+按钮切换指标仍是显式筛选：合成数据有 `toolbar_metric` 维度，图表和合计查询都绑定它以及区域维度；不同指标的单位和内容分别通过集中 `visibleWhen` 选择。运行时不替换查询字段、不执行脚本。原型链接 `/prototypes/chart-filter-toolbar` 重定向到正式示例。
 
 
-页面协议 6.46。结构真源为本册[schema.json](../schema.json)，SHA256 `17340e522c38419e5b951fd50a7a2e72784ea28fd67bf8539c10d39580e426f3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.47。结构真源为本册[schema.json](../schema.json)，SHA256 `aca00179dd0494b52471e6d3a8d89883611b2102c4502c60676dbd3489e2847b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -118,6 +126,36 @@ Schema位置：`#/definitions/filterGroupComponent/properties/props/properties/f
 |---|---|---|---|---|
 | "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 引用页面独立普通维度筛选器；初值由该筛选器 default 声明，查询范围仅由 filterBindings 声明。 |
 
+<a id="schema-232f646566696e6974696f6e732f66696c74657247726f7570436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f646973706c6179"></a>
+
+### `@filterGroupComponent.props.display`
+
+Schema位置：`#/definitions/filterGroupComponent/properties/props/properties/display`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["buttons","select"] | Schema未设默认；装配/运行时默认见语义说明 | 6.47固定单选呈现：buttons（默认）或select；共用筛选状态、固定候选和查询绑定。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "buttons" | 固定单选按钮，省略display时保持此呈现。 |
+| "select" | 复用维度下拉，固定候选且必选单选。 |
+
+<a id="schema-232f646566696e6974696f6e732f66696c74657247726f7570436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f616c69676e"></a>
+
+### `@filterGroupComponent.props.align`
+
+Schema位置：`#/definitions/filterGroupComponent/properties/props/properties/align`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["left","right"] | Schema未设默认；装配/运行时默认见语义说明 | 6.47控件在所占栅格内左/右对齐，默认left；不改变筛选范围。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "left" | 左对齐或左侧固定，由字段位置决定。 |
+| "right" | 右对齐或右侧固定，由字段位置决定。 |
+
 <a id="schema-232f646566696e6974696f6e732f66696c74657247726f7570436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6f7074696f6e73"></a>
 
 ### `@filterGroupComponent.props.options`
@@ -161,11 +199,13 @@ Schema位置：`#/definitions/filterGroupComponent/properties/props/properties/o
 ## 语义规则与反例（生成）
 
 - `filter-group`：6.45 Dashboard 独立固定单选筛选按钮组、多查询与统一显隐。反例：[filter-group-version](../errors/filter-group-version.json)、[filter-group-report](../errors/filter-group-report.json)、[filter-group-detail](../errors/filter-group-detail.json)、[filter-group-invalid-default](../errors/filter-group-invalid-default.json)、[filter-group-duplicate-options](../errors/filter-group-duplicate-options.json)、[filter-group-duplicate-control](../errors/filter-group-duplicate-control.json)、[filter-group-no-binding](../errors/filter-group-no-binding.json)、[filter-group-removed-chart-filter](../errors/filter-group-removed-chart-filter.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `filter-group-presentation`：6.47固定单选下拉和左右对齐。反例：[filter-select-version](../errors/filter-select-version.json)、[filter-select-default](../errors/filter-select-default.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
 - [最小组件](../examples/component-filterGroup.json)：独立完整页面，保留必要语义依赖。
 - [filter-group-page](../examples/filter-group-page.json)：完整合法页面；查询仅为静态契约证据。
+- [filter-group-state-page](../examples/filter-group-state-page.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-local-filter-page](../examples/chart-local-filter-page.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-filterGroup.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。

@@ -1,0 +1,44 @@
+{
+  "case": "filter-select-version",
+  "invariant": "filter-group-presentation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "独立固定单选筛选的下拉呈现与左右对齐 由 6.47 引入，文档声明的是 6.46",
+      "paths": [
+        "/sections/0/components/0/props/components/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                "…",
+                {
+                  "id": "region-select",
+                  "type": "filterGroup",
+                  "layout": {
+                    "span": 6
+                  },
+                  "props": {
+                    "filterId": "region",
+                    "display": "select",
+                    "align": "right",
+                    "options": [
+                      "…（共3项）"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,313 @@
+{
+  "case": "filter-select-version",
+  "invariant": "filter-group-presentation",
+  "input": {
+    "schemaVersion": "6.46",
+    "id": "filter-group-page",
+    "layout": "dashboard",
+    "meta": {
+      "title": "月度经营趋势（合成演示）"
+    },
+    "filters": [
+      {
+        "id": "metric",
+        "type": "dimension",
+        "dimension": "toolbar_metric",
+        "label": "指标切换",
+        "default": [
+          "revenue"
+        ]
+      },
+      {
+        "id": "region",
+        "type": "dimension",
+        "dimension": "toolbar_region",
+        "label": "区域",
+        "default": [
+          "all"
+        ]
+      }
+    ],
+    "dataSources": {
+      "trend-data": {
+        "fields": {
+          "month": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "toolbar_month"
+          },
+          "value": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "toolbar_value"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "filterBindings": {
+              "metric": {
+                "target": "dimension",
+                "queryField": "toolbar_metric"
+              },
+              "region": {
+                "target": "dimension",
+                "queryField": "toolbar_region"
+              }
+            },
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "toolbar_month"
+                  ],
+                  "output_metrics": [
+                    "toolbar_value"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "summary-data": {
+        "fields": {
+          "total": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "toolbar_total"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "filterBindings": {
+              "metric": {
+                "target": "dimension",
+                "queryField": "toolbar_metric"
+              },
+              "region": {
+                "target": "dimension",
+                "queryField": "toolbar_region"
+              }
+            },
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [],
+                  "output_metrics": [
+                    "toolbar_total"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "trend",
+        "components": [
+          {
+            "id": "chart-card",
+            "type": "compositeCard",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "variant": "metricGrid",
+              "components": [
+                {
+                  "id": "metric-switch",
+                  "type": "filterGroup",
+                  "layout": {
+                    "span": 6
+                  },
+                  "props": {
+                    "filterId": "metric",
+                    "options": [
+                      {
+                        "label": "营业收入",
+                        "value": "revenue"
+                      },
+                      {
+                        "label": "订单量",
+                        "value": "orders"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "region-select",
+                  "type": "filterGroup",
+                  "layout": {
+                    "span": 6
+                  },
+                  "props": {
+                    "filterId": "region",
+                    "display": "select",
+                    "align": "right",
+                    "options": [
+                      {
+                        "label": "全部区域",
+                        "value": "all"
+                      },
+                      {
+                        "label": "华东",
+                        "value": "east"
+                      },
+                      {
+                        "label": "华南",
+                        "value": "south"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "revenue-trend",
+                  "type": "lineChart",
+                  "layout": {
+                    "span": 12
+                  },
+                  "visibleWhen": {
+                    "filter": "metric",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "revenue"
+                    ]
+                  },
+                  "data": {
+                    "main": "trend-data"
+                  },
+                  "props": {
+                    "title": "营业收入（万元）",
+                    "xField": "month",
+                    "series": [
+                      {
+                        "field": "value",
+                        "label": "营业收入"
+                      }
+                    ],
+                    "smooth": true
+                  }
+                },
+                {
+                  "id": "orders-trend",
+                  "type": "lineChart",
+                  "layout": {
+                    "span": 12
+                  },
+                  "visibleWhen": {
+                    "filter": "metric",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "orders"
+                    ]
+                  },
+                  "data": {
+                    "main": "trend-data"
+                  },
+                  "props": {
+                    "title": "订单量（笔）",
+                    "xField": "month",
+                    "series": [
+                      {
+                        "field": "value",
+                        "label": "订单量"
+                      }
+                    ],
+                    "smooth": true
+                  }
+                },
+                {
+                  "id": "revenue-total",
+                  "type": "metricCard",
+                  "layout": {
+                    "span": 12
+                  },
+                  "visibleWhen": {
+                    "filter": "metric",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "revenue"
+                    ]
+                  },
+                  "data": {
+                    "main": "summary-data"
+                  },
+                  "props": {
+                    "variant": "compactStrip",
+                    "rows": [
+                      {
+                        "label": "上半年营业收入合计（万元）",
+                        "valueField": {
+                          "data": "main",
+                          "field": "total",
+                          "format": "number-grouped"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "orders-total",
+                  "type": "metricCard",
+                  "layout": {
+                    "span": 12
+                  },
+                  "visibleWhen": {
+                    "filter": "metric",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "orders"
+                    ]
+                  },
+                  "data": {
+                    "main": "summary-data"
+                  },
+                  "props": {
+                    "variant": "compactStrip",
+                    "rows": [
+                      {
+                        "label": "上半年订单量合计（笔）",
+                        "valueField": {
+                          "data": "main",
+                          "field": "total",
+                          "format": "number-grouped"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/components/1",
+      "message": "独立固定单选筛选的下拉呈现与左右对齐 由 6.47 引入，文档声明的是 6.46"
+    }
+  ]
+}

@@ -1,10 +1,12 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.46**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45和6.46；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.47**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45、6.46和6.47；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 
 6.41 将通用 DashboardToolbar 的呈现能力并入 IocHeader，只保留一个页头实现。新页面使用 `iocHeader`，旧 `dashboardToolbar` 只作兼容读取；布局、更多筛选、只读和说明见[唯一页头](docs/page-metadata/page.md#唯一页头641)。仅选年份使用共享 `periodModes:["year"]`，见[现有期间页面](pages/dashboard-period-filter.json)。
+
+6.47 为独立 `filterGroup` 增加 `display:"select"` 与 `align:"right"`，支持图表卡左侧按钮、右侧下拉共享查询筛选。入口 `/pages/filter-group-page`，声明与状态规则见[独立筛选](docs/page-metadata/components/filterGroup.md)。
 
 6.46 补齐 `selection:{mode:"multiple",required:true}` 的非空多选：保持离散集合并拒绝清空，单选仍至多一个。七主题 IOC 合成验收入口为 `/ioc-header-review`；完整声明、主线迁移及证据边界见[筛选声明](docs/page-metadata/filters.md#ioc-业务批量场景与必选多选646)。
 

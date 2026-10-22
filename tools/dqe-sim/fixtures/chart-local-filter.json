@@ -170,5 +170,277 @@
         "chart_demo_map": 60
       }
     ]
+  },
+  {
+    "output_dims": [
+      "toolbar_month"
+    ],
+    "output_metrics": [
+      "toolbar_value"
+    ],
+    "filterableDims": [
+      "toolbar_metric",
+      "toolbar_region"
+    ],
+    "rows": [
+      {
+        "toolbar_month": "1月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "all",
+        "toolbar_value": 224
+      },
+      {
+        "toolbar_month": "2月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "all",
+        "toolbar_value": 250
+      },
+      {
+        "toolbar_month": "3月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "all",
+        "toolbar_value": 255
+      },
+      {
+        "toolbar_month": "4月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "all",
+        "toolbar_value": 293
+      },
+      {
+        "toolbar_month": "5月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "all",
+        "toolbar_value": 328
+      },
+      {
+        "toolbar_month": "6月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "all",
+        "toolbar_value": 360
+      },
+      {
+        "toolbar_month": "1月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "east",
+        "toolbar_value": 128
+      },
+      {
+        "toolbar_month": "2月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "east",
+        "toolbar_value": 142
+      },
+      {
+        "toolbar_month": "3月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "east",
+        "toolbar_value": 136
+      },
+      {
+        "toolbar_month": "4月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "east",
+        "toolbar_value": 165
+      },
+      {
+        "toolbar_month": "5月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "east",
+        "toolbar_value": 182
+      },
+      {
+        "toolbar_month": "6月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "east",
+        "toolbar_value": 198
+      },
+      {
+        "toolbar_month": "1月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "south",
+        "toolbar_value": 96
+      },
+      {
+        "toolbar_month": "2月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "south",
+        "toolbar_value": 108
+      },
+      {
+        "toolbar_month": "3月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "south",
+        "toolbar_value": 119
+      },
+      {
+        "toolbar_month": "4月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "south",
+        "toolbar_value": 128
+      },
+      {
+        "toolbar_month": "5月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "south",
+        "toolbar_value": 146
+      },
+      {
+        "toolbar_month": "6月",
+        "toolbar_metric": "revenue",
+        "toolbar_region": "south",
+        "toolbar_value": 162
+      },
+      {
+        "toolbar_month": "1月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "all",
+        "toolbar_value": 738
+      },
+      {
+        "toolbar_month": "2月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "all",
+        "toolbar_value": 820
+      },
+      {
+        "toolbar_month": "3月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "all",
+        "toolbar_value": 840
+      },
+      {
+        "toolbar_month": "4月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "all",
+        "toolbar_value": 948
+      },
+      {
+        "toolbar_month": "5月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "all",
+        "toolbar_value": 1068
+      },
+      {
+        "toolbar_month": "6月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "all",
+        "toolbar_value": 1165
+      },
+      {
+        "toolbar_month": "1月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "east",
+        "toolbar_value": 420
+      },
+      {
+        "toolbar_month": "2月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "east",
+        "toolbar_value": 465
+      },
+      {
+        "toolbar_month": "3月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "east",
+        "toolbar_value": 448
+      },
+      {
+        "toolbar_month": "4月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "east",
+        "toolbar_value": 532
+      },
+      {
+        "toolbar_month": "5月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "east",
+        "toolbar_value": 590
+      },
+      {
+        "toolbar_month": "6月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "east",
+        "toolbar_value": 640
+      },
+      {
+        "toolbar_month": "1月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "south",
+        "toolbar_value": 318
+      },
+      {
+        "toolbar_month": "2月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "south",
+        "toolbar_value": 355
+      },
+      {
+        "toolbar_month": "3月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "south",
+        "toolbar_value": 392
+      },
+      {
+        "toolbar_month": "4月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "south",
+        "toolbar_value": 416
+      },
+      {
+        "toolbar_month": "5月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "south",
+        "toolbar_value": 478
+      },
+      {
+        "toolbar_month": "6月",
+        "toolbar_metric": "orders",
+        "toolbar_region": "south",
+        "toolbar_value": 525
+      }
+    ]
+  },
+  {
+    "output_dims": [],
+    "output_metrics": [
+      "toolbar_total"
+    ],
+    "filterableDims": [
+      "toolbar_metric",
+      "toolbar_region"
+    ],
+    "rows": [
+      {
+        "toolbar_metric": "revenue",
+        "toolbar_region": "all",
+        "toolbar_total": 1710
+      },
+      {
+        "toolbar_metric": "revenue",
+        "toolbar_region": "east",
+        "toolbar_total": 951
+      },
+      {
+        "toolbar_metric": "revenue",
+        "toolbar_region": "south",
+        "toolbar_total": 759
+      },
+      {
+        "toolbar_metric": "orders",
+        "toolbar_region": "all",
+        "toolbar_total": 5579
+      },
+      {
+        "toolbar_metric": "orders",
+        "toolbar_region": "east",
+        "toolbar_total": 3095
+      },
+      {
+        "toolbar_metric": "orders",
+        "toolbar_region": "south",
+        "toolbar_total": 2484
+      }
+    ]
   }
 ]

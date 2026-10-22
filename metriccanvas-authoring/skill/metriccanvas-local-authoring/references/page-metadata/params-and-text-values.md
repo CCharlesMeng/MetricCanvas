@@ -73,7 +73,7 @@ filter 读取当前已应用筛选状态，初次从 default/initialParam/URL �
 6.35新增的就地条件与层级状态语义见[条件显隐与动作资格](conditions.md)，旧页面原有行为保持。
 
 
-页面协议 6.46。结构真源为本册[schema.json](schema.json)，SHA256 `17340e522c38419e5b951fd50a7a2e72784ea28fd67bf8539c10d39580e426f3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.47。结构真源为本册[schema.json](schema.json)，SHA256 `aca00179dd0494b52471e6d3a8d89883611b2102c4502c60676dbd3489e2847b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

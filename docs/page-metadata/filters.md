@@ -56,7 +56,7 @@ urlParams仅映射该类允许的value/from/to/level键，不能与本页其它�
 
 ## 独立筛选按钮组
 
-固定按钮组选项由独立 `filterGroup` 组件声明，筛选状态仍归页面 filters，查询范围仍归 filterBindings。一个控件可以控制多个查询及其组件消费者，并复用统一 visibleWhen 策略。完整声明、显隐与状态语义、限制、旧图表声明迁移和验收场景见[筛选按钮组](components/filterGroup.md)。
+固定单选选项由独立 `filterGroup` 组件声明（6.47 支持按钮或下拉及左右对齐），筛选状态仍归页面 filters，查询范围仍归 filterBindings。一个控件可以控制多个查询及其组件消费者，并复用统一 visibleWhen 策略。完整声明、显隐与状态语义、限制、旧图表声明迁移和验收场景见[筛选按钮组](components/filterGroup.md)。
 
 原图表 `props.filter` 已移除；原锚点保留为本文档跳转入口，不代表旧协议继续可读。
 

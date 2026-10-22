@@ -1092,17 +1092,20 @@
       ]
     },
     "components/filterGroup.md": {
-      "title": "筛选按钮组 filterGroup",
+      "title": "独立筛选 filterGroup",
       "definitions": [
         "filterGroupComponent"
       ],
       "keywords": [
         "filterGroup",
         "独立筛选",
-        "单选按钮组"
+        "单选按钮组",
+        "下拉",
+        "对齐"
       ],
       "examples": [
         "filter-group-page",
+        "filter-group-state-page",
         "chart-local-filter-page"
       ],
       "sources": [
@@ -1112,7 +1115,8 @@
         "packages/engine/runtime-ui/src/dashboard/FilterGroup.svelte"
       ],
       "rules": [
-        "filter-group"
+        "filter-group",
+        "filter-group-presentation"
       ]
     }
   },
@@ -1518,7 +1522,9 @@
     "#/definitions/rowExpansionTable/properties/toolbar": "按需启用子表格实例搜索，省略时不显示工具区。",
     "#/definitions/rowExpansionTable/properties/toolbar/properties/search": "按需声明实例内搜索；查询搜索需要网关编码能力。",
     "#/definitions/rowExpansionTable/properties/toolbar/properties/search/properties/placeholder": "子表格搜索提示文本，省略时沿用现有表格默认提示。",
-    "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets": "6.46按该币种显示单位定义预设；全部case必须声明，不能与公共presets混用。"
+    "#/definitions/numberRangeFilter/properties/units/properties/cases/additionalProperties/properties/presets": "6.46按该币种显示单位定义预设；全部case必须声明，不能与公共presets混用。",
+    "#/definitions/filterGroupComponent/properties/props/properties/display": "6.47固定单选呈现：buttons（默认）或select；共用筛选状态、固定候选和查询绑定。",
+    "#/definitions/filterGroupComponent/properties/props/properties/align": "6.47控件在所占栅格内左/右对齐，默认left；不改变筛选范围。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1779,7 +1785,10 @@
     "#/definitions/tableRowExpansion/properties/mode=\"single\"": "同一父表最多展开一行。",
     "#/properties/schemaVersion=\"6.44\"": "增加行内子表格及私有查询分页。",
     "6.45": "Dashboard 独立固定单选筛选按钮组、一控多及统一显隐；旧图表筛选声明按明确批准的受控迁移例外移除。",
-    "6.46": "必选多选、显式无依赖候选和单位case中的币种档位。"
+    "6.46": "必选多选、显式无依赖候选和单位case中的币种档位。",
+    "#/properties/schemaVersion=\"6.47\"": "独立固定单选筛选支持下拉呈现和左右对齐。",
+    "#/definitions/filterGroupComponent/properties/props/properties/display=\"buttons\"": "固定单选按钮，省略display时保持此呈现。",
+    "#/definitions/filterGroupComponent/properties/props/properties/display=\"select\"": "复用维度下拉，固定候选且必选单选。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2139,7 +2148,9 @@
       "roots": [
         "#/definitions/filterGroupComponent"
       ],
-      "headings": [],
+      "headings": [
+        "固定单选下拉与对齐（6.47）"
+      ],
       "dependencies": []
     }
   },
@@ -2287,6 +2298,8 @@
     ],
     "conditions.md": [],
     "components/button.md": [],
-    "components/filterGroup.md": []
+    "components/filterGroup.md": [
+      "固定单选下拉与对齐（6.47）"
+    ]
   }
 }

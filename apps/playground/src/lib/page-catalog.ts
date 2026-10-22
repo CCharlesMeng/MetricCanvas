@@ -13,6 +13,12 @@ export function pageCatalogGuide(id: string) {
   return catalog.pages.find((entry) => entry.id === id);
 }
 
+/** Prototype handoffs are catalog data, not page-specific runtime branches. */
+export function pageLegacyPathTarget(pathname: string): string | undefined {
+  const entry = catalog.pages.find(entry => entry.legacyPaths?.includes(pathname));
+  return entry ? `/pages/${entry.id}` : undefined;
+}
+
 export function runtimeInfo(id: string) {
   return catalogRuntimes.find((entry) => entry.id === id);
 }

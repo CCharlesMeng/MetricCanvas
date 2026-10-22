@@ -469,9 +469,9 @@
   },
   {
     "type": "filterGroup",
-    "label": "筛选按钮组",
+    "label": "独立筛选",
     "aliases": [],
-    "purpose": "用固定单选按钮控制一个或多个查询消费者",
+    "purpose": "用固定单选按钮或下拉控制一个或多个查询消费者",
     "chooseWhen": [
       "Dashboard 正文独立筛选，或组合卡内多个指标共用筛选"
     ],

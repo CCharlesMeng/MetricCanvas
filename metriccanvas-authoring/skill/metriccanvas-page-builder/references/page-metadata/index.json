@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.46",
-  "schemaSha256": "17340e522c38419e5b951fd50a7a2e72784ea28fd67bf8539c10d39580e426f3",
+  "schemaVersion": "6.47",
+  "schemaSha256": "aca00179dd0494b52471e6d3a8d89883611b2102c4502c60676dbd3489e2847b",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -20,7 +20,7 @@
     },
     {
       "file": "packages/engine/runtime-ui/src/dashboard/FilterGroup.svelte",
-      "sha256": "641f0165790368a24b1877a5eadfac7204981a5fe3c10bf84deeb096a25c01be"
+      "sha256": "9113d06c3c43d066a827eeba042af5b016b921d5e297608a20a92ded2632707e"
     },
     {
       "file": "packages/engine/runtime-ui/src/initial-tabs.ts",
@@ -164,7 +164,7 @@
     },
     {
       "file": "packages/page/src/schema/components/filter-group.ts",
-      "sha256": "7e3d2eaca827c73e54167fec29dd158e55878bef4bee863e0e605c10b5b8a406"
+      "sha256": "94f40d04b0008a887c32f612f669af2cc8905255bd7d44625f46a909a5f98d2f"
     },
     {
       "file": "packages/page/src/schema/components/gauge.ts",
@@ -280,7 +280,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "72c6b9d64a0bf03dd037edce6d1b19bdf4b39561a109cfd724abf229c144abf3"
+      "sha256": "dd49d4455842a4337e36ab7e709cd21b55d5bf38c8a9c503f3b4fd59e7c85381"
     }
   ],
   "modules": {
@@ -1376,17 +1376,20 @@
       ]
     },
     "components/filterGroup.md": {
-      "title": "筛选按钮组 filterGroup",
+      "title": "独立筛选 filterGroup",
       "definitions": [
         "filterGroupComponent"
       ],
       "keywords": [
         "filterGroup",
         "独立筛选",
-        "单选按钮组"
+        "单选按钮组",
+        "下拉",
+        "对齐"
       ],
       "examples": [
         "filter-group-page",
+        "filter-group-state-page",
         "chart-local-filter-page"
       ],
       "sources": [
@@ -1396,7 +1399,8 @@
         "packages/engine/runtime-ui/src/dashboard/FilterGroup.svelte"
       ],
       "rules": [
-        "filter-group"
+        "filter-group",
+        "filter-group-presentation"
       ]
     }
   },
@@ -1532,7 +1536,8 @@
         "6.43",
         "6.44",
         "6.45",
-        "6.46"
+        "6.46",
+        "6.47"
       ]
     },
     {
@@ -12866,6 +12871,26 @@
       "module": "components/filterGroup.md"
     },
     {
+      "pointer": "#/definitions/filterGroupComponent/properties/props/properties/display",
+      "path": "@filterGroupComponent.props.display",
+      "required": "本分支可选",
+      "module": "components/filterGroup.md",
+      "enum": [
+        "buttons",
+        "select"
+      ]
+    },
+    {
+      "pointer": "#/definitions/filterGroupComponent/properties/props/properties/align",
+      "path": "@filterGroupComponent.props.align",
+      "required": "本分支可选",
+      "module": "components/filterGroup.md",
+      "enum": [
+        "left",
+        "right"
+      ]
+    },
+    {
       "pointer": "#/definitions/filterGroupComponent/properties/props/properties/options",
       "path": "@filterGroupComponent.props.options",
       "required": "本分支必填",
@@ -14653,14 +14678,14 @@
       "type": "barChart",
       "file": "examples/component-barChart.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/filter-group-page.json"
+      "source": "page/conformance/valid/chart-local-filter-page.json"
     },
     {
       "type": "barChart",
       "variant": "reportForecast",
       "file": "examples/component-barChart-reportForecast.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/filter-group-page.json"
+      "source": "page/conformance/valid/chart-local-filter-page.json"
     },
     {
       "type": "lineChart",

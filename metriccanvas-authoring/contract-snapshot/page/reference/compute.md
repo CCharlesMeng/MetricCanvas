@@ -19,7 +19,7 @@ groupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复
 pivot.columns可指定valueField覆盖算子默认字段。同类别可用于不同度量，重复的有效valueField与类别组合拒绝；新多度量透视的分组键与类别必须唯一。缺阶段产出null，0保持0。有限主结果仅在被结果绑定引用且声明正整数limit、无offset/查询分页时允许左关联；辅助源仍须complete，无分页窗口。导出保持此选择范围并使用本轮原始结果重建明细输入。
 
 
-页面协议 6.46。结构真源为本册[schema.json](schema.json)，SHA256 `17340e522c38419e5b951fd50a7a2e72784ea28fd67bf8539c10d39580e426f3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.47。结构真源为本册[schema.json](schema.json)，SHA256 `aca00179dd0494b52471e6d3a8d89883611b2102c4502c60676dbd3489e2847b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

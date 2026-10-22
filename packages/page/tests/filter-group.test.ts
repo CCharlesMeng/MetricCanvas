@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { parsePage } from '../src/validate';
 import { filterGroupOptions } from '../src/filter-group';
 
-const original = JSON.parse(readFileSync(new URL('../../../pages/filter-group-page.json', import.meta.url), 'utf8'));
+const original = JSON.parse(readFileSync(new URL('../../../pages/filter-group-state-page.json', import.meta.url), 'utf8'));
 const copy=()=>structuredClone(original);
 describe('Dashboard filterGroup', () => {
   it('accepts shared query consumers, signed metrics, independent content gates and a nested control', () => {
@@ -53,3 +53,12 @@ it('gates newly admitted composite chart children even without a filter control'
  delete card.props.components[0].visibleWhen;d.schemaVersion='6.44';
  const parsed=parsePage(d);expect(parsed.ok).toBe(false);expect(parsed.errors.some(e=>e.message.includes('由 6.45 引入'))).toBe(true);
 });
+
+ it('accepts the approved dual-control page and gates both new presentation fields at 6.47',()=>{
+  const d=JSON.parse(readFileSync(new URL('../../../pages/filter-group-page.json',import.meta.url),'utf8'));
+  expect(parsePage(d).ok).toBe(true);
+  for(const props of [{display:'select'},{align:'right'}]){
+   const old=copy();old.schemaVersion='6.46';Object.assign(old.sections[0].components[0].props,props);
+   const parsed=parsePage(old);expect(parsed.ok).toBe(false);expect(parsed.errors.some(e=>e.message.includes('由 6.47 引入'))).toBe(true);
+  }
+ });

@@ -416,7 +416,7 @@ Report 页面按三节组织，控件相互独立：
 
 ### 独立筛选按钮组
 
-- 页面：[filter-group-page.json](filter-group-page.json)，已注册页面试验场验收目录，直接入口 `/pages/filter-group-page`。启动 `pnpm dev:dqe` 使用本地 DQE Sim 合成数据。
+- 页面：[filter-group-state-page.json](filter-group-state-page.json)，已注册页面试验场验收目录，直接入口 `/pages/filter-group-state-page`。启动 `pnpm dev:dqe` 使用本地 DQE Sim 合成数据。
 - 切换“直营 / 加盟”，两张带符号指标卡和趋势图同时更新；全区域对照不变。点击已选项不重复提交。
 - 页头“业务范围”切换到“海外业务”，独立按钮组和趋势分别按自身条件隐藏；两张指标卡继续显示原已选口径。切回“国内业务”恢复已有按钮选择，不清空条件，不额外取数。
 - 组合卡内的区域组只通过 card-region 绑定影响卡内查询。切换后复制 URL 或重新加载，两个按钮组分别恢复；非法或多值 URL 使用各自默认项。
@@ -434,3 +434,11 @@ Report 页面按三节组织，控件相互独立：
 上方场景选择可观察慢请求、首次失败后重试、空、无权限、未配置、不完整归一为未配置和统一只读；上下文按钮重新挂载，隔离旧候选。缺配置相关查询等待，无关静态块仍显示。标准/密集页全部筛选自然换行，不加折叠。浏览器命令：`pnpm --filter playground test:ioc`（测试自动使用5183，不占5173）。
 
 候选码、完整组织权限夹具、查询及计数回显均为合成数据，不能作为生产字典、授权或真实IOC/DQE/Relay证据。生产字典、payload、每源字段与金额单位/导出仍待接线，C组继续暂缓。创作可用 `pnpm exec tsx tools/scripts/recent-month-options.ts 2026-10` 冻结12个月选项，不从执行机器隐式推断业务月份。
+
+### 图表卡内左侧按钮与右侧下拉（6.47）
+
+- 页面：[filter-group-page.json](filter-group-page.json)，入口 `/pages/filter-group-page`；替换原独立筛选示例的主入口，原型入口 `/prototypes/chart-filter-toolbar` 自动转入本页。原显隐与指标卡场景移至 `/pages/filter-group-state-page`。
+- 启动 `pnpm dev:dqe` 与 `pnpm dev:playground`，使用 DQE Sim 合成数据。既有筛选器演示服务重启后加载新增夹具；不需要业务服务或真实权限。
+- 左上在营业收入／订单量间切换，右上在全部区域／华东／华南间选择。两个控件共同过滤图表和合计查询；宽屏左右对齐，窄屏按组合卡布局换行。
+- 初始全部区域收入合计 1,710 万元，切换订单合计 5,579 笔，选择华东为 3,095 笔；切回收入为 951 万元。两项选择写入 URL，刷新恢复；非法或多值输入回退各自默认项。只读时禁用两个控件，静态导出仅显示已选 label。
+- `all` 在本合成夹具中是显式全区域汇总成员，不是引擎通用的无条件值。合成 HTTP 往返只证明演示绑定和呈现，不证明真实 DQE、Relay 或生产部署。

@@ -1,6 +1,7 @@
 <svelte:options css="injected" />
 <script lang="ts">
   import type { FilterGroupComponent } from '@metriccanvas/page/internal';
+  import DimensionFilter from '../filters/DimensionFilter.svelte';
 
   let { control, value, label, exportMode = false, disabled = false, onchange }: {
     control: FilterGroupComponent['props'];
@@ -12,9 +13,12 @@
   } = $props();
 </script>
 
-<div class="filter-group" data-filter-group={control.filterId} role={exportMode ? undefined : 'group'} aria-label={exportMode ? undefined : label}>
+<div class="filter-group" class:right={control.align === 'right'} data-filter-group={control.filterId} role={exportMode ? undefined : 'group'} aria-label={exportMode ? undefined : label}>
   {#if exportMode}
     <span data-filter-group-selection>{control.options.find(option => option.value === value)?.label}</span>
+  {:else if control.display === 'select'}
+    <DimensionFilter {label} {disabled} candidates={{status:'ready',candidates:control.options}} value={value ? [value] : []}
+      selection={{mode:'single',required:true}} searchable={false} onchange={values=>{if(values[0] && values[0]!==value)onchange(values[0]);}}/>
   {:else}
     {#each control.options as option (option.value)}
       <button {disabled} type="button" data-value={option.value} aria-pressed={value === option.value}
@@ -33,12 +37,15 @@
     flex: none;
     min-width: 0;
     max-width: 100%;
+    width: 100%;
     margin-bottom: 8px;
     align-self: flex-start;
     color: var(--mc-color-text, #191919);
     font-size: 14px;
     line-height: 20px;
   }
+  .right { justify-content: flex-end; }
+  .filter-group { --mc-filter-select-width: 160px; }
   button {
     max-width: 100%;
     min-height: 28px;

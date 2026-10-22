@@ -269,11 +269,22 @@
       ]
     },
     {
+      "id": "filter-group-presentation",
+      "description": "6.47固定单选下拉和左右对齐",
+      "valid": [
+        "filter-group-page"
+      ],
+      "invalid": [
+        "filter-select-version",
+        "filter-select-default"
+      ]
+    },
+    {
       "id": "filter-group",
       "description": "6.45 Dashboard 独立固定单选筛选按钮组、多查询与统一显隐",
       "valid": [
         "chart-local-filter-page",
-        "filter-group-page"
+        "filter-group-state-page"
       ],
       "invalid": [
         "filter-group-version",

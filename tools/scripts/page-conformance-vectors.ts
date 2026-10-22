@@ -181,16 +181,20 @@ export const invariants: InvariantDefinition[] = [
     {case:'period-filter-no-default',base:'dashboard-period-filter',expect:/期间默认选择/,mutate:d=>{delete d.filters[0].default;}},
     {case:'period-filter-static-time',base:'dashboard-period-filter',expect:/固定时间来源/,mutate:d=>{d.dataSources.sales.source.query.body.dsl_list[0].filter.time.start='2026-01-01';}}
   ]},
+  {id:'filter-group-presentation',description:'6.47固定单选下拉和左右对齐',valid:['filter-group-page'],cases:[
+    {case:'filter-select-version',base:'filter-group-page',expect:/由 6.47 引入/,mutate:d=>{d.schemaVersion='6.46';}},
+    {case:'filter-select-default',base:'filter-group-page',expect:/default/,mutate:d=>{d.filters[1].default=['unknown'];}}
+  ]},
   {
-    id: 'filter-group', description: '6.45 Dashboard 独立固定单选筛选按钮组、多查询与统一显隐', valid: ['chart-local-filter-page','filter-group-page'], cases: [
-      {case:'filter-group-version',base:'filter-group-page',expect:/由 6.45 引入/,mutate:d=>{d.schemaVersion='6.44';}},
-      {case:'filter-group-report',base:'filter-group-page',expect:/Dashboard/,mutate:d=>{d.layout='report';}},
-      {case:'filter-group-detail',base:'filter-group-page',expect:/Dashboard/,mutate:d=>{d.detailViews=[{id:'detail-filter',mode:'snapshot',components:[{...structuredClone(firstComponent(d)),id:'detail-control'}]}];}},
-      {case:'filter-group-invalid-default',base:'filter-group-page',expect:/default/,mutate:d=>{d.filters[1].default=['unknown'];}},
-      {case:'filter-group-duplicate-options',base:'filter-group-page',expect:/不得重复/,mutate:d=>{firstComponent(d).props.options[1].value='CN';}},
-      {case:'filter-group-duplicate-control',base:'filter-group-page',expect:/只能声明一个/,mutate:d=>{d.sections[0].components.push({...structuredClone(firstComponent(d)),id:'duplicate'});}},
-      {case:'filter-group-no-binding',base:'filter-group-page',expect:/filterBindings/,mutate:d=>{delete d.dataSources['orders-data'].source.query.filterBindings;delete d.dataSources['revenue-data'].source.query.filterBindings;}},
-      {case:'filter-group-removed-chart-filter',base:'filter-group-page',expect:/迁移为独立 filterGroup/,mutate:d=>{d.sections[2].components[0].props.filter={filterId:'channel',options:[{label:'直营',value:'CN'}]};}}
+    id: 'filter-group', description: '6.45 Dashboard 独立固定单选筛选按钮组、多查询与统一显隐', valid: ['chart-local-filter-page','filter-group-state-page'], cases: [
+      {case:'filter-group-version',base:'filter-group-state-page',expect:/由 6.45 引入/,mutate:d=>{d.schemaVersion='6.44';}},
+      {case:'filter-group-report',base:'filter-group-state-page',expect:/Dashboard/,mutate:d=>{d.layout='report';}},
+      {case:'filter-group-detail',base:'filter-group-state-page',expect:/Dashboard/,mutate:d=>{d.detailViews=[{id:'detail-filter',mode:'snapshot',components:[{...structuredClone(firstComponent(d)),id:'detail-control'}]}];}},
+      {case:'filter-group-invalid-default',base:'filter-group-state-page',expect:/default/,mutate:d=>{d.filters[1].default=['unknown'];}},
+      {case:'filter-group-duplicate-options',base:'filter-group-state-page',expect:/不得重复/,mutate:d=>{firstComponent(d).props.options[1].value='CN';}},
+      {case:'filter-group-duplicate-control',base:'filter-group-state-page',expect:/只能声明一个/,mutate:d=>{d.sections[0].components.push({...structuredClone(firstComponent(d)),id:'duplicate'});}},
+      {case:'filter-group-no-binding',base:'filter-group-state-page',expect:/filterBindings/,mutate:d=>{delete d.dataSources['orders-data'].source.query.filterBindings;delete d.dataSources['revenue-data'].source.query.filterBindings;}},
+      {case:'filter-group-removed-chart-filter',base:'filter-group-state-page',expect:/迁移为独立 filterGroup/,mutate:d=>{d.sections[2].components[0].props.filter={filterId:'channel',options:[{label:'直营',value:'CN'}]};}}
     ]
   },
   {

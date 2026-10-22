@@ -18,7 +18,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 46;
+const CURRENT_MINOR = 47;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -42,6 +42,7 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'filter-group-presentation': {minor:47,legacyReadable:false,description:'独立固定单选筛选的下拉呈现与左右对齐',usedAt:document=>componentPaths(document,c=>c.type==='filterGroup'&&(has(props(c),'display')||has(props(c),'align')))},
   'currency-range-presets': {minor:46,legacyReadable:false,description:'复用金额单位case的封闭币种预设',usedAt:document=>filterPaths(document,f=>f.type==='numberRange'&&Object.values(record(record(f.units)?.cases)??{}).some(unit=>has(record(unit),'presets')))},
   'independent-filter-candidates': {minor:46,legacyReadable:false,description:'显式无依赖候选复用FilterCandidatesGateway',usedAt:document=>filterPaths(document,f=>f.type==='dimension'&&Array.isArray(record(f.candidateContext)?.filterIds)&&(record(f.candidateContext)?.filterIds as unknown[]).length===0)},
   'required-multiple-selection': {minor:46,legacyReadable:false,description:'必选多选保留非空离散集合',usedAt:document=>filterPaths(document,f=>f.type==='dimension'&&record(f.selection)?.mode==='multiple'&&record(f.selection)?.required===true)},

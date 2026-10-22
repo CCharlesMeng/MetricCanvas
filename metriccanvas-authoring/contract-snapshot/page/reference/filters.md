@@ -56,7 +56,7 @@ urlParams仅映射该类允许的value/from/to/level键，不能与本页其它�
 
 ## 独立筛选按钮组
 
-固定按钮组选项由独立 `filterGroup` 组件声明，筛选状态仍归页面 filters，查询范围仍归 filterBindings。一个控件可以控制多个查询及其组件消费者，并复用统一 visibleWhen 策略。完整声明、显隐与状态语义、限制、旧图表声明迁移和验收场景见[筛选按钮组](components/filterGroup.md)。
+固定单选选项由独立 `filterGroup` 组件声明（6.47 支持按钮或下拉及左右对齐），筛选状态仍归页面 filters，查询范围仍归 filterBindings。一个控件可以控制多个查询及其组件消费者，并复用统一 visibleWhen 策略。完整声明、显隐与状态语义、限制、旧图表声明迁移和验收场景见[筛选按钮组](components/filterGroup.md)。
 
 原图表 `props.filter` 已移除；原锚点保留为本文档跳转入口，不代表旧协议继续可读。
 
@@ -140,7 +140,7 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 普通可选维度在空选且没有candidateContext/结构树/窗口要求时，不因显式selection而禁用既有合法嵌入初始行复用；一旦有动态选值，仍须通过候选校验。显式无依赖candidateContext即使空选也须取得可信回执，缺配置不能借初始行绕过门禁。
 
 
-页面协议 6.46。结构真源为本册[schema.json](schema.json)，SHA256 `17340e522c38419e5b951fd50a7a2e72784ea28fd67bf8539c10d39580e426f3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.47。结构真源为本册[schema.json](schema.json)，SHA256 `aca00179dd0494b52471e6d3a8d89883611b2102c4502c60676dbd3489e2847b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

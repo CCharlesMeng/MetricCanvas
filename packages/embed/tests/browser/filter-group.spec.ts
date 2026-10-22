@@ -7,7 +7,7 @@ for(const width of [1440,390])test(`${width}: one fixed filter controls signed m
  const requests:any[]=[],errors:string[]=[];
  page.on('request',request=>{if(request.url().endsWith('/dsl/execute'))requests.push(...request.postDataJSON().dsl_list);});
  page.on('pageerror',error=>errors.push(error.message));
- await page.goto('/pages/filter-group-page');
+ await page.goto('/pages/filter-group-state-page');
  const group=page.locator('[data-filter-group="channel"]'),card=page.locator('[data-filter-group="card-region"]');
  const orders=page.locator('[data-component="metrics/orders-metric"]'),revenue=page.locator('[data-component="metrics/revenue-metric"]');
  const control=page.locator('[data-component="views/control"]'),trend=page.locator('[data-component="views/trend"]');
@@ -46,10 +46,10 @@ for(const width of [1440,390])test(`${width}: one fixed filter controls signed m
 });
 
 test('page readOnly disables standalone and nested controls',async({page})=>{
- const document=JSON.parse(readFileSync(new URL('../../../../pages/filter-group-page.json',import.meta.url),'utf8'));
+ const document=JSON.parse(readFileSync(new URL('../../../../pages/filter-group-state-page.json',import.meta.url),'utf8'));
  document.dashboardToolbar={variant:'compact',readOnly:true};
- await page.route('**/pages/filter-group-page.json',route=>route.fulfill({json:document}));
- await page.goto('/pages/filter-group-page');
+ await page.route('**/pages/filter-group-state-page.json',route=>route.fulfill({json:document}));
+ await page.goto('/pages/filter-group-state-page');
  for(const id of ['channel','card-region']){
   const buttons=page.locator(`[data-filter-group="${id}"] button`);await expect(buttons).toHaveCount(2);
   for(const button of await buttons.all())await expect(button).toBeDisabled();

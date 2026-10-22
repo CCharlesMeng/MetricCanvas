@@ -5,7 +5,7 @@ import { compilePresentation } from '../src/presentation';
 import type { FilterValues } from '../src/filter-state';
 import { createFilterState, initialFilterValues } from '../src/filter-state';
 import { filterGroupOptions } from '@metriccanvas/page/internal';
-const document=JSON.parse(readFileSync(new URL('../../../../pages/filter-group-page.json',import.meta.url),'utf8'));
+const document=JSON.parse(readFileSync(new URL('../../../../pages/filter-group-state-page.json',import.meta.url),'utf8'));
 function page():Page {const result=parsePage(document);if(!result.ok)throw new Error(JSON.stringify(result.errors));return result.page;}
 it('uses the shared presentation policy, leaves filter values intact, and restores the original choice',()=>{
  const p=page(),state=createFilterState(initialFilterValues(p.filters??[]),p.filters,filterGroupOptions(p));

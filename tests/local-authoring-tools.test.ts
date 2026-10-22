@@ -63,7 +63,7 @@ describe('页面用数和指标材料',()=>{
   it('合流后的独立筛选按钮组可查阅，卡内与正文绑定均被发现',()=>{
     const result=knowledgeSelection(model,['filterGroup.core']) as any;
     expect(result.semantics[0].blocks.join('\n')).toContain('旧图表 `props.filter` 已移除');
-    const fixture=JSON.parse(readFileSync('pages/filter-group-page.json','utf8'));
+    const fixture=JSON.parse(readFileSync('pages/filter-group-state-page.json','utf8'));
     const scan=scanPageData(fixture,model.schema);
     expect(scan.diagnostics).toEqual([]);
     const filterIds=scan.uses.filter(use=>use.componentType==='filterGroup').map(use=>use.declaration?.filterId);

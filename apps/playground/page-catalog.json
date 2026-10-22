@@ -1197,6 +1197,48 @@
     {
       "id": "filter-group-page",
       "group": "verification",
+      "summary": "同一张图表卡左上切换营业收入/订单量，右上按区域筛选；图表与合计共同刷新。",
+      "tags": [
+        "独立筛选",
+        "图表",
+        "下拉",
+        "Dashboard"
+      ],
+      "displayTitle": "图表筛选：左侧按钮与右侧下拉",
+      "capabilities": [
+        "filters",
+        "queries",
+        "export"
+      ],
+      "environment": {
+        "data": "合成演示",
+        "runtime": "sim",
+        "scope": "交互取数需本地仿真"
+      },
+      "guide": {
+        "steps": [
+          "左上切换营业收入/订单量，观察图表、单位和合计更新。",
+          "右上选择华东/华南，图表与合计只显示所选区域。",
+          "刷新页面确认两项选择从 URL 恢复；窄屏控件可换行。"
+        ],
+        "configPaths": [
+          "filters",
+          "sections[].components[].props.components[].props.display",
+          "sections[].components[].props.components[].props.align",
+          "dataSources.*.source.query.filterBindings"
+        ],
+        "related": [
+          "filter-group-state-page",
+          "chart-local-filter-page"
+        ]
+      },
+      "legacyPaths": [
+        "/prototypes/chart-filter-toolbar"
+      ]
+    },
+    {
+      "id": "filter-group-state-page",
+      "group": "verification",
       "summary": "固定按钮组控制多个查询和带符号指标卡；页头条件控制筛选组件与内容各自显隐。",
       "tags": [
         "独立筛选",
