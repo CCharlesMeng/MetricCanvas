@@ -1,0 +1,303 @@
+{
+  "schemaVersion": "6.48",
+  "id": "metric-card-review",
+  "layout": "dashboard",
+  "iocHeader": {
+    "identity": {
+      "title": "指标卡现有组件对比"
+    },
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "dataSources": {
+    "sample": {
+      "fields": {
+        "signings": {
+          "type": "number",
+          "role": "measure"
+        },
+        "revenue": {
+          "type": "number",
+          "role": "measure"
+        },
+        "opportunities": {
+          "type": "number",
+          "role": "measure"
+        },
+        "win_rate": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "signings": 393840,
+            "revenue": 299318,
+            "opportunities": 8352,
+            "win_rate": 39.3
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "current",
+      "title": "当前：默认指标卡与浅灰卡面",
+      "container": "plain",
+      "components": [
+        {
+          "id": "signings-current",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "合计",
+                "valueField": {
+                  "data": "main",
+                  "field": "signings",
+                  "format": "number-grouped"
+                },
+                "unit": "万元"
+              }
+            ],
+            "title": "签约额"
+          }
+        },
+        {
+          "id": "revenue-current",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "合计",
+                "valueField": {
+                  "data": "main",
+                  "field": "revenue",
+                  "format": "number-grouped"
+                },
+                "unit": "万元"
+              }
+            ],
+            "title": "收入"
+          }
+        },
+        {
+          "id": "opportunities-current",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "合计",
+                "valueField": {
+                  "data": "main",
+                  "field": "opportunities",
+                  "format": "number-grouped"
+                },
+                "unit": "个"
+              }
+            ],
+            "title": "机会点数"
+          }
+        },
+        {
+          "id": "win-rate-current",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "合计",
+                "valueField": {
+                  "data": "main",
+                  "field": "win_rate",
+                  "format": "number-1"
+                },
+                "unit": "%"
+              }
+            ],
+            "title": "赢单率"
+          }
+        }
+      ]
+    },
+    {
+      "id": "candidate",
+      "title": "建议：现有白底组合卡 + compactStack 指标卡",
+      "container": "plain",
+      "components": [
+        {
+          "id": "signings-wrapper",
+          "type": "compositeCard",
+          "layout": {
+            "span": 3
+          },
+          "props": {
+            "variant": "metricGrid",
+            "components": [
+              {
+                "id": "signings-candidate",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sample"
+                },
+                "props": {
+                  "rows": [
+                    {
+                      "label": "签约额",
+                      "valueField": {
+                        "data": "main",
+                        "field": "signings",
+                        "format": "number-grouped"
+                      },
+                      "unit": "万元"
+                    }
+                  ],
+                  "variant": "compactStack"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "revenue-wrapper",
+          "type": "compositeCard",
+          "layout": {
+            "span": 3
+          },
+          "props": {
+            "variant": "metricGrid",
+            "components": [
+              {
+                "id": "revenue-candidate",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sample"
+                },
+                "props": {
+                  "rows": [
+                    {
+                      "label": "收入",
+                      "valueField": {
+                        "data": "main",
+                        "field": "revenue",
+                        "format": "number-grouped"
+                      },
+                      "unit": "万元"
+                    }
+                  ],
+                  "variant": "compactStack"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "opportunities-wrapper",
+          "type": "compositeCard",
+          "layout": {
+            "span": 3
+          },
+          "props": {
+            "variant": "metricGrid",
+            "components": [
+              {
+                "id": "opportunities-candidate",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sample"
+                },
+                "props": {
+                  "rows": [
+                    {
+                      "label": "机会点数",
+                      "valueField": {
+                        "data": "main",
+                        "field": "opportunities",
+                        "format": "number-grouped"
+                      },
+                      "unit": "个"
+                    }
+                  ],
+                  "variant": "compactStack"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "win-rate-wrapper",
+          "type": "compositeCard",
+          "layout": {
+            "span": 3
+          },
+          "props": {
+            "variant": "metricGrid",
+            "components": [
+              {
+                "id": "win-rate-candidate",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sample"
+                },
+                "props": {
+                  "rows": [
+                    {
+                      "label": "赢单率",
+                      "valueField": {
+                        "data": "main",
+                        "field": "win_rate",
+                        "format": "number-1"
+                      },
+                      "unit": "%"
+                    }
+                  ],
+                  "variant": "compactStack"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

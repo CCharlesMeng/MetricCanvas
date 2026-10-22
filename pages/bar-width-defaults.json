@@ -1,0 +1,238 @@
+{
+  "schemaVersion": "6.48",
+  "id": "bar-width-defaults",
+  "layout": "dashboard",
+  "meta": {
+    "title": "柱状图统一默认柱宽"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "柱状图默认16px"
+    },
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "dataSources": {
+    "sample": {
+      "fields": {
+        "month": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "actual": {
+          "type": "number",
+          "role": "measure",
+          "unit": "件"
+        },
+        "previous": {
+          "type": "number",
+          "role": "measure",
+          "unit": "件"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "month": "一月",
+            "actual": 120,
+            "previous": 80
+          },
+          {
+            "month": "二月",
+            "actual": 160,
+            "previous": 110
+          },
+          {
+            "month": "三月",
+            "actual": 140,
+            "previous": 90
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "bars",
+      "container": "plain",
+      "components": [
+        {
+          "id": "normal",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "categoryField": "month",
+            "series": [
+              {
+                "field": "actual",
+                "label": "本期"
+              }
+            ],
+            "title": "普通柱状图"
+          }
+        },
+        {
+          "id": "grouped",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "categoryField": "month",
+            "series": [
+              {
+                "field": "actual",
+                "label": "本期"
+              },
+              {
+                "field": "previous",
+                "label": "上期"
+              }
+            ],
+            "title": "分组柱状图"
+          }
+        },
+        {
+          "id": "stacked",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "categoryField": "month",
+            "series": [
+              {
+                "field": "actual",
+                "label": "本期"
+              },
+              {
+                "field": "previous",
+                "label": "上期"
+              }
+            ],
+            "stacked": true,
+            "title": "堆叠柱状图"
+          }
+        },
+        {
+          "id": "horizontal",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "categoryField": "month",
+            "series": [
+              {
+                "field": "actual",
+                "label": "本期"
+              }
+            ],
+            "horizontal": true,
+            "title": "横向条形图"
+          }
+        },
+        {
+          "id": "forecast",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "categoryField": "month",
+            "series": [
+              {
+                "field": "actual",
+                "label": "实际",
+                "role": "actual"
+              },
+              {
+                "field": "previous",
+                "label": "预测",
+                "role": "forecast"
+              }
+            ],
+            "variant": "reportForecast",
+            "title": "报告预测柱状图"
+          }
+        },
+        {
+          "id": "mixed",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "categoryField": "month",
+            "series": [
+              {
+                "field": "actual",
+                "label": "本期",
+                "kind": "bar",
+                "axis": "primary"
+              },
+              {
+                "field": "previous",
+                "label": "上期",
+                "kind": "line",
+                "axis": "secondary"
+              }
+            ],
+            "dualAxis": true,
+            "title": "柱线混合图"
+          }
+        },
+        {
+          "id": "override",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "categoryField": "month",
+            "series": [
+              {
+                "field": "actual",
+                "label": "本期"
+              }
+            ],
+            "echartsOption": {
+              "series": [
+                {
+                  "barWidth": 32
+                }
+              ]
+            },
+            "title": "显式32px覆盖对照"
+          }
+        }
+      ]
+    }
+  ]
+}

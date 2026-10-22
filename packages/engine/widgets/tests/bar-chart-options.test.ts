@@ -167,7 +167,7 @@ describe('barOption 实际/预测系列', () => {
       borderType: 'dashed',
       borderWidth: 1
     });
-    expect(option.series.every((series) => series.barWidth === 40)).toBe(true);
+    expect(option.series.every((series) => series.barWidth === 16)).toBe(true);
   });
 
   it('只提供轴向 Tooltip 与图例，不生成标签、缩放或工具箱', () => {
@@ -368,5 +368,25 @@ describe('barOption 默认柱宽', () => {
     ] }) as unknown as TestedBarOption;
     expect(option.series[0]?.barWidth).toBe(16);
     expect(option.series[1]?.barWidth).toBeUndefined();
+  });
+});
+
+describe('统一默认柱宽', () => {
+  it.each([
+    ['普通', {}],
+    ['横向', { horizontal: true }],
+    ['堆叠', { stacked: true }],
+    ['报告预测', { variant: 'reportForecast' as const }]
+  ])('%s柱图的所有柱系列默认16px', (_name, variant) => {
+    const option = barOption(data, { categoryField: 'month', series: [{field:'coreActual'},{field:'communicationActual'}], ...variant });
+    expect(option.series).toMatchObject([{barWidth:16},{barWidth:16}]);
+  });
+
+  it('混合图仅为柱系列设置默认宽度，折线保持自身类型', () => {
+    const option = barOption(data, {categoryField:'month', dualAxis:true, series:[
+      {field:'coreActual',kind:'bar',axis:'primary'}, {field:'communicationActual',kind:'line',axis:'secondary'}
+    ]});
+    expect(option.series).toMatchObject([{type:'bar',barWidth:16},{type:'line'}]);
+    expect(option.series).not.toMatchObject([{}, {barWidth:16}]);
   });
 });

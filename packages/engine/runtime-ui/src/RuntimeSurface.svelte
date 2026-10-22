@@ -1572,7 +1572,7 @@
     --mc-white-metric-panel-border-width: 1px;
     --mc-page-content-padding-block-start: 0;
     --mc-page-content-padding-inline: 0;
-    --mc-page-sections-margin-top: 16px;
+    --mc-page-sections-margin-top: 0;
     --mc-section-card-padding: 16px 20px 20px;
     --mc-section-card-title-margin: 0 0 12px;
     --mc-section-card-title-color: #191919;
@@ -1701,7 +1701,7 @@
     --mc-page-sections-margin-top: 0;
   }
   .page-content.layout-dashboard[data-dashboard-toolbar='compact'] > .page-sections {
-    padding: 16px 24px 24px;
+    padding: 0 24px 24px;
   }
   @container mc-runtime (max-width: 1050px) {
     .page-content {

@@ -1,0 +1,26 @@
+{
+  "desktop": {
+    "margin": "16px",
+    "nextGap": 16,
+    "sectionsGap": 16,
+    "viewport": 2304
+  },
+  "narrow": {
+    "margin": "16px",
+    "nextGap": 15.99609375,
+    "overflow": false,
+    "sectionsGap": 15.99609375,
+    "viewport": 390
+  },
+  "compact": {
+    "gap": 16,
+    "header": true,
+    "margin": "16px",
+    "sectionsPadding": "0px",
+    "viewport": 1280
+  },
+  "hidden": {
+    "headerCount": 0,
+    "sectionMargin": "0px"
+  }
+}

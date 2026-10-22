@@ -27,7 +27,7 @@
   }
   const nested:NestedComponentRender={summarySnapshot:c=>state.summaries[c.id],map:c=>exportComponentMap(state,c),data:c=>exportComponentData(state,c),snapshot:c=>exportComponentSnapshot(state,c),table,onchartclick:()=>undefined,onmetriclink:()=>undefined,metricHref:()=>()=>undefined};
 </script>
-<div class="export-view" data-page-layout-form={state.page.layout ?? 'report'} data-export-view style:width={`${width}px`} style:padding={padding} style:gap={gap}>
+<div class="export-view" data-page-layout-form={state.page.layout ?? 'report'} data-export-view style:width={`${width}px`} style:padding={padding}>
   {#if state.page.iocHeader}
     <IocHeader model={resolvedIocHeader(state.page.iocHeader)} filterIds={state.page.iocHeader.filterIds??[]} controls={iocStaticControls} note={state.page.iocHeader.note} staticView/>
   {/if}
@@ -35,6 +35,7 @@
     <FilterBar timeContext={{snapshot:state.displaySnapshot,revision:state.filterRevision}} declarations={(state.page.filters??[]).filter(f=>f.id===id)} values={state.filters} candidates={new Map()} {readOnly}
       ondimension={()=>{}} ontimerange={()=>{}} ontimepoint={()=>{}} onboolean={()=>{}} onnumberrange={()=>{}} onsearch={()=>{}}/>
   {/snippet}
+  <div class="export-content" style:gap={gap}>
   {#each state.page.filters??[] as filter}{#if filter.type==='timeRange' && filter.display==='period' && !state.page.iocHeader?.filterIds?.includes(filter.id)}{@const applied=state.filters.get(filter.id)}{#if applied?.type==='timeRange'}<p data-export-period>{filter.label??'统计期间'}：{applied.from} 至 {applied.to}</p>{/if}{/if}{/each}
   {#snippet componentContent(component:Component)}
     <div data-export-component={component.id}>
@@ -52,9 +53,11 @@
   {#each presentation.sections as section (section.id)}
     <RuntimeSection {section} {componentContent}/>
   {/each}
+  </div>
 </div>
 <style>
   .export-view { display:flex; flex-direction:column; box-sizing:border-box; color:var(--mc-color-text,#191919); background:inherit; }
+  .export-content { display:flex; flex-direction:column; min-width:0; }
   [data-export-component] { display:contents; }
   .export-view :global(*) { box-sizing:border-box; animation:none!important; transition:none!important; }
 </style>

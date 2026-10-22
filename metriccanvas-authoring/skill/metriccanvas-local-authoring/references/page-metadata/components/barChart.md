@@ -4,7 +4,13 @@
 
 每个series显式绑定measure并声明适用角色，维度轴来自dimension字段。forecast/actual等角色与色彩语义应与真实业务口径一致。
 
-普通柱状图默认柱宽16px（横向为柱条厚度），组合图中的柱系列沿用该默认值；`reportForecast` 变体保留40px。无需为默认宽度增加页面字段。可观察入口：[`tab-mixed-content`](../examples/tab-mixed-content.json)。
+## 默认柱宽
+
+所有内置柱系列的默认宽度统一为 **16 CSS px**，包括普通、分组、堆叠、横向条形、`reportForecast` 以及混合图中的柱系列；横向图的16px表示条形厚度。折线系列不设置柱宽。宽度不随容器或类别数量自动放大。
+
+这是公共呈现默认值，不新增页面字段或协议版本。已有高级 `props.echartsOption.series[].barWidth` 显式配置仍按高级扩展规则覆盖默认值；普通页面无需为16px添加高级配置。
+
+可观察场景：`/pages/bar-width-defaults`，使用内联合成数据，覆盖上述变体及显式32px覆盖的对照。
 
 ## 查阅方式
 

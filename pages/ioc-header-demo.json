@@ -434,97 +434,145 @@
       "container": "plain",
       "components": [
         {
-          "id": "metric-signings",
-          "type": "metricCard",
+          "id": "metric-signings-card",
+          "type": "compositeCard",
           "layout": {
             "span": 3
           },
-          "data": {
-            "main": "summary"
-          },
           "props": {
-            "title": "签约额",
-            "rows": [
+            "variant": "metricGrid",
+            "components": [
               {
-                "label": "合计",
-                "valueField": {
-                  "field": "signings",
-                  "format": "number-grouped",
-                  "data": "main"
+                "id": "metric-signings",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
                 },
-                "unit": "万元"
+                "data": {
+                  "main": "summary"
+                },
+                "props": {
+                  "rows": [
+                    {
+                      "label": "签约额",
+                      "valueField": {
+                        "field": "signings",
+                        "format": "number-grouped",
+                        "data": "main"
+                      },
+                      "unit": "万元"
+                    }
+                  ],
+                  "variant": "compactStack"
+                }
               }
             ]
           }
         },
         {
-          "id": "metric-revenue",
-          "type": "metricCard",
+          "id": "metric-revenue-card",
+          "type": "compositeCard",
           "layout": {
             "span": 3
           },
-          "data": {
-            "main": "summary"
-          },
           "props": {
-            "title": "收入",
-            "rows": [
+            "variant": "metricGrid",
+            "components": [
               {
-                "label": "合计",
-                "valueField": {
-                  "field": "revenue",
-                  "format": "number-grouped",
-                  "data": "main"
+                "id": "metric-revenue",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
                 },
-                "unit": "万元"
+                "data": {
+                  "main": "summary"
+                },
+                "props": {
+                  "rows": [
+                    {
+                      "label": "收入",
+                      "valueField": {
+                        "field": "revenue",
+                        "format": "number-grouped",
+                        "data": "main"
+                      },
+                      "unit": "万元"
+                    }
+                  ],
+                  "variant": "compactStack"
+                }
               }
             ]
           }
         },
         {
-          "id": "metric-opportunities",
-          "type": "metricCard",
+          "id": "metric-opportunities-card",
+          "type": "compositeCard",
           "layout": {
             "span": 3
           },
-          "data": {
-            "main": "summary"
-          },
           "props": {
-            "title": "机会点数",
-            "rows": [
+            "variant": "metricGrid",
+            "components": [
               {
-                "label": "合计",
-                "valueField": {
-                  "field": "opportunities",
-                  "format": "number",
-                  "data": "main"
+                "id": "metric-opportunities",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
                 },
-                "unit": "个"
+                "data": {
+                  "main": "summary"
+                },
+                "props": {
+                  "rows": [
+                    {
+                      "label": "机会点数",
+                      "valueField": {
+                        "field": "opportunities",
+                        "format": "number-grouped",
+                        "data": "main"
+                      },
+                      "unit": "个"
+                    }
+                  ],
+                  "variant": "compactStack"
+                }
               }
             ]
           }
         },
         {
-          "id": "metric-win-rate",
-          "type": "metricCard",
+          "id": "metric-win-rate-card",
+          "type": "compositeCard",
           "layout": {
             "span": 3
           },
-          "data": {
-            "main": "summary"
-          },
           "props": {
-            "title": "赢单率",
-            "rows": [
+            "variant": "metricGrid",
+            "components": [
               {
-                "label": "合计",
-                "valueField": {
-                  "field": "win_rate",
-                  "format": "number-1",
-                  "data": "main"
+                "id": "metric-win-rate",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
                 },
-                "unit": "%"
+                "data": {
+                  "main": "summary"
+                },
+                "props": {
+                  "rows": [
+                    {
+                      "label": "赢单率",
+                      "valueField": {
+                        "field": "win_rate",
+                        "format": "number-1",
+                        "data": "main"
+                      },
+                      "unit": "%"
+                    }
+                  ],
+                  "variant": "compactStack"
+                }
               }
             ]
           }

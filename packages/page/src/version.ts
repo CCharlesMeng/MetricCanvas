@@ -42,7 +42,7 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
-  'tab-mixed-content': {
+  'tab-content-layout': {
     minor: 49, legacyReadable: false, description: 'Tab 混合内容、显式栅格与按需呈现',
     usedAt: document => componentPaths(document, component => {
       if (component.type !== 'tabContainer') return false;

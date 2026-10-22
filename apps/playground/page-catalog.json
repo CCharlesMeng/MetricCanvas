@@ -2936,6 +2936,41 @@
           "tab-mixed-content"
         ]
       }
+    },
+    {
+      "id": "bar-width-defaults",
+      "group": "verification",
+      "displayTitle": "柱状图统一默认16px",
+      "summary": "对照普通、分组、堆叠、横向、预测和混合柱系列的16px默认宽度，保留显式宽度覆盖。",
+      "tags": [
+        "柱状图",
+        "柱宽",
+        "16px",
+        "默认样式"
+      ],
+      "capabilities": [
+        "layout"
+      ],
+      "environment": {
+        "data": "内联合成数据",
+        "runtime": "none",
+        "scope": "无需DQE或其他服务"
+      },
+      "guide": {
+        "steps": [
+          "查看普通、分组、堆叠及横向图的柱宽，默认均为16px。",
+          "报告预测与柱线混合图的柱系列同样为16px。",
+          "最后一张显式配置32px，作为覆盖默认值的对照；缩窄窗口后默认柱宽保持16px。"
+        ],
+        "configPaths": [
+          "sections[].components[].props"
+        ],
+        "related": [
+          "ioc-header-demo",
+          "chart-echarts-option-page"
+        ],
+        "boundary": "只验证公共图表呈现默认值，数据为合成样例。"
+      }
     }
   ],
   "capabilities": [

@@ -77,7 +77,7 @@
 </header>
 {/if}
 <style>
-  header{background:#fff;color:#191919;padding:22px 32px;min-width:0;max-width:100%;box-sizing:border-box;font-size:14px;}
+  header{margin-bottom:16px;background:#fff;color:#191919;padding:22px 32px;min-width:0;max-width:100%;box-sizing:border-box;font-size:14px;}
   header.compact{padding-block:16px;}
   .identity{margin-bottom:16px;min-width:0;}.heading{display:flex;gap:12px;align-items:center;flex-wrap:wrap;min-width:0;}
   h1{font-size:24px;line-height:36px;font-weight:600;margin:0 40px 0 0;overflow-wrap:anywhere;max-width:100%;}

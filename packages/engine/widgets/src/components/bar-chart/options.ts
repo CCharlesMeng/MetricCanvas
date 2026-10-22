@@ -151,7 +151,7 @@ export function barOption(
         name: series.label ?? field.definition?.label ?? field.field,
         type: 'bar' as const,
         ...(props.stacked ? { stack: 'total' } : {}),
-        barWidth: reportForecast ? 40 : DEFAULT_BAR_WIDTH,
+        barWidth: DEFAULT_BAR_WIDTH,
         ...(props.dualAxis && originalIndex > 0 ? { yAxisIndex: 1 } : {}),
         ...(Object.keys(itemStyle).length > 0 ? { itemStyle } : {}),
         ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText), labelLayout: valueLabelLayout(values, false, props.horizontal) } : {}),
