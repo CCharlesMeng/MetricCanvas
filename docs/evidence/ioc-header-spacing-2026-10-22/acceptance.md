@@ -36,3 +36,13 @@ DOM 测量保存在 `measurements.json`。IAB 的截图视口与窗口缩放不�
 目录门禁发现上游内部能力 ID 与正式示例页面 ID 同名：将内部能力名从原值改为 `tab-content-layout`，同步版本断言及生成的独立校验器，不改变示例 URL 或功能。命名修复未新增函数，版本断言回调自身 CC 58 → 58（既有连续版本断言，保留以避免扩大本批范围）；完整测量见 version-complexity-before.json / version-complexity-after.json，其余源码函数均未修改。该存量测试复杂度仍由后续复杂度治理计划处理。
 
 新基线验证：核心 10 文件 / 87 项通过；目录、页面中立性、版本及 local-authoring 6 文件 / 63 项通过；engine、page、Playground 类型检查通过；生产构建及 authoring 生成一致性通过。合并后实际页面仍为 Header 到正文 16px，指标与图表正常，截图 merged-main.jpg。仅文档和交付证据在验证后补充；提交、远端 SHA 与 CI 结论单独报告，不以前述本地通过代替。
+
+## CI 发布声明修复
+
+`49c25f8c6dca37a7012c3eb154b8696092f6b194` 已推送并读取远端 ref 确认。CI `39735672515` 的 compatibility / build 独立消费者捕获发布包缺失 `schema.d.ts` 与 `schema/page.d.ts`。直接执行 TypeScript 声明输出复现 TS7056：上游 Tab 联合扩展后，文档态根 Schema 的推导类型超过可序列化长度；普通 noEmit 检查与 svelte-package 的成功退出不能证明声明完整。
+
+修复只为文档态 `pageDocumentSchemaZ` 显式声明 `z.ZodType` 边界：此值仅供 JSON Schema 生成，领域类型继续从各组件及 sectionZ 推导，运行时 Schema 与结构校验不变。没有新增/修改可执行函数；同口径 AST 实测该文件前后函数数均为 0，见 schema-boundary-complexity.json。
+
+修复后直接 TypeScript 声明输出通过；真实 package build 同时生成上述两个声明；已有 data-execution 独立消费者验证通过（Node ESM 执行、无渲染依赖、外部类型、安装后 CLI）。补齐生成的源文件哈希索引与锁，未修改 JSON Schema 输出或页面版本。继续以修复提交对应的完整 CI 作为最终交付状态。
+
+最终本地回归 6 文件 / 84 项通过（Schema 边界、Tab 混合内容、版本、参考分发、local-authoring 工具与独立安装）；authoring:contracts:check 通过。

@@ -96,7 +96,8 @@ export const dashboardToolbarZ = z
  * （文档态才有的形状，见 `page-document.ts`），因此不能作为 `Page`
  * 领域类型的推导来源——领域类型继续见 `../page.ts`。
  */
-export const pageDocumentSchemaZ = z
+// 此处仅导出文档校验边界；避免把完整组件联合展开到发布包的声明文件。
+export const pageDocumentSchemaZ: z.ZodType = z
   .object({
     schemaVersion: z
       .enum(supportedVersions() as [string, ...string[]])
