@@ -6,21 +6,20 @@
 
 入口：`/pages/metric-card-equation`；[页面 JSON](metric-card-equation.json)。
 
-启动：`pnpm dev:playground`。
+启动：已有试验场时运行 `pnpm sim:dqe`；一起启动用 `pnpm dev:dqe`。
 
-指标卡前置等号、加号与文字按内容占宽，两侧各 8px；四卡同行并在窄屏自动堆叠。
+同一白底无边框 card 分区内依次放置小标题、左对齐区域筛选按钮和四张 Before 指标卡；第二组保留静态业务拆分对照。
 
-合成演示
+数据性质：合成演示；完整筛选联动需 DQE Sim。
 
-可直接预览
+1. 检查标题、其下按钮、四卡均在同一白底分区内；标题和按钮左对齐，外层无边框，小卡仍有灰边。
+2. 全部区域为1200/680/360/160；选华东变为720/408/216/96，选华南变为480/272/144/64。第二组静态指标不变。
+3. 拉宽容器，四卡均分文字及双侧8px之外的剩余宽度；390px容器中纵向排列，无页面横向溢出。
+4. 未启动Sim时查询显示取数失败或空数据，控件与分区仍保留；不能据此判断真实查询可用。
 
-1. 查看收入构成：四卡等宽同行，等号、加号两侧各 8px。
-2. 对照业务拆分中的“其中”，文字按内容占宽。
-3. 缩小容器：卡片转为单列，文字在两张卡之间居中。
+边界：等号与加号仅表达展示关系；all/east/south 是合成数据的显式汇总行，all 不代表通用的取消过滤。此场景不证明真实 DQE/Relay 接入。
 
-等号与加号是展示文字，不建立计算关系；数值来自静态演示数据。
-
-关键声明：`sections[].components[].layout.span`, `sections[].components[].layout.before.text`, `sections[].components[].layout.before.gap`。
+关键声明：`section.container:card`、`section.title`、`filterGroup`、`layout.before`、查询 `filterBindings`。
 
 关联：[ioc-project-overview](../../business/dashboard/ioc/project/ioc-project-overview.json)。
 

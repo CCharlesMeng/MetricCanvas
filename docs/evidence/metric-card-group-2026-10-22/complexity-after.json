@@ -1,0 +1,786 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "/Users/moon/.codex/backups/metric-card-group-20261022/complexity/0-after.ts",
+      "functions": [
+        {
+          "name": "<anonymous@16:45>",
+          "qualifiedName": "<anonymous@16:45>",
+          "line": 16,
+          "endLine": 17,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@19:11>",
+          "qualifiedName": "<anonymous@19:11>",
+          "line": 19,
+          "endLine": 19,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@20:11>",
+          "qualifiedName": "<anonymous@20:11>",
+          "line": 20,
+          "endLine": 42,
+          "selfCC": 4,
+          "optionalChains": 1,
+          "subtreeCC": 6,
+          "nestedFunctions": 5
+        },
+        {
+          "name": "<anonymous@24:39>",
+          "qualifiedName": "<anonymous@20:11>/<anonymous@24:39>",
+          "line": 24,
+          "endLine": 24,
+          "selfCC": 2,
+          "optionalChains": 1,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "measure",
+          "qualifiedName": "<anonymous@20:11>/measure",
+          "line": 26,
+          "endLine": 35,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@29:37>",
+          "qualifiedName": "<anonymous@20:11>/measure/<anonymous@29:37>",
+          "line": 29,
+          "endLine": 30,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@31:51>",
+          "qualifiedName": "<anonymous@20:11>/measure/<anonymous@31:51>",
+          "line": 31,
+          "endLine": 31,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@41:12>",
+          "qualifiedName": "<anonymous@20:11>/<anonymous@41:12>",
+          "line": 41,
+          "endLine": 41,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "/Users/moon/.codex/backups/metric-card-group-20261022/complexity/1-after.ts",
+      "functions": [
+        {
+          "name": "<anonymous@37:58>",
+          "qualifiedName": "<anonymous@37:58>",
+          "line": 37,
+          "endLine": 37,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@40:11>",
+          "qualifiedName": "<anonymous@40:11>",
+          "line": 40,
+          "endLine": 43,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@63:16>",
+          "qualifiedName": "<anonymous@63:16>",
+          "line": 63,
+          "endLine": 63,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "measureSafeArea",
+          "qualifiedName": "measureSafeArea",
+          "line": 71,
+          "endLine": 94,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@80:11>",
+          "qualifiedName": "measureSafeArea/<anonymous@80:11>",
+          "line": 80,
+          "endLine": 89,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@96:11>",
+          "qualifiedName": "<anonymous@96:11>",
+          "line": 96,
+          "endLine": 138,
+          "selfCC": 4,
+          "optionalChains": 1,
+          "subtreeCC": 7,
+          "nestedFunctions": 4
+        },
+        {
+          "name": "schedule",
+          "qualifiedName": "<anonymous@96:11>/schedule",
+          "line": 108,
+          "endLine": 115,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@111:37>",
+          "qualifiedName": "<anonymous@96:11>/schedule/<anonymous@111:37>",
+          "line": 111,
+          "endLine": 114,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "onResize",
+          "qualifiedName": "<anonymous@96:11>/onResize",
+          "line": 128,
+          "endLine": 128,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@132:12>",
+          "qualifiedName": "<anonymous@96:11>/<anonymous@132:12>",
+          "line": 132,
+          "endLine": 137,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "componentVariant",
+          "qualifiedName": "componentVariant",
+          "line": 140,
+          "endLine": 143,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "/Users/moon/.codex/backups/metric-card-group-20261022/complexity/2-after.ts",
+      "functions": [
+        {
+          "name": "cards",
+          "qualifiedName": "cards",
+          "line": 5,
+          "endLine": 9,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@8:36>",
+          "qualifiedName": "cards/<anonymous@8:36>",
+          "line": 8,
+          "endLine": 8,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@8:89>",
+          "qualifiedName": "cards/<anonymous@8:89>",
+          "line": 8,
+          "endLine": 8,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@10:27>",
+          "qualifiedName": "<anonymous@10:27>",
+          "line": 10,
+          "endLine": 15,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@13:31>",
+          "qualifiedName": "<anonymous@10:27>/<anonymous@13:31>",
+          "line": 13,
+          "endLine": 13,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@16:33>",
+          "qualifiedName": "<anonymous@16:33>",
+          "line": 16,
+          "endLine": 19,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@18:20>",
+          "qualifiedName": "<anonymous@16:33>/<anonymous@18:20>",
+          "line": 18,
+          "endLine": 18,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@18:43>",
+          "qualifiedName": "<anonymous@16:33>/<anonymous@18:20>/<anonymous@18:43>",
+          "line": 18,
+          "endLine": 18,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@20:26>",
+          "qualifiedName": "<anonymous@20:26>",
+          "line": 20,
+          "endLine": 24,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@21:28>",
+          "qualifiedName": "<anonymous@20:26>/<anonymous@21:28>",
+          "line": 21,
+          "endLine": 21,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@22:44>",
+          "qualifiedName": "<anonymous@20:26>/<anonymous@22:44>",
+          "line": 22,
+          "endLine": 22,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@23:36>",
+          "qualifiedName": "<anonymous@20:26>/<anonymous@23:36>",
+          "line": 23,
+          "endLine": 23,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "/Users/moon/.codex/backups/metric-card-group-20261022/complexity/3-after.ts",
+      "functions": [
+        {
+          "name": "<anonymous@6:39>",
+          "qualifiedName": "<anonymous@6:39>",
+          "line": 6,
+          "endLine": 36,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@8:25>",
+          "qualifiedName": "<anonymous@6:39>/<anonymous@8:25>",
+          "line": 8,
+          "endLine": 13,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@19:46>",
+          "qualifiedName": "<anonymous@6:39>/<anonymous@19:46>",
+          "line": 19,
+          "endLine": 24,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@40:43>",
+          "qualifiedName": "<anonymous@40:43>",
+          "line": 40,
+          "endLine": 114,
+          "selfCC": 6,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 34
+        },
+        {
+          "name": "<anonymous@43:25>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@43:25>",
+          "line": 43,
+          "endLine": 48,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@63:23>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@63:23>",
+          "line": 63,
+          "endLine": 63,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@63:71>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@63:23>/<anonymous@63:71>",
+          "line": 63,
+          "endLine": 63,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@63:96>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@63:23>/<anonymous@63:71>/<anonymous@63:96>",
+          "line": 63,
+          "endLine": 63,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@64:35>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@64:35>",
+          "line": 64,
+          "endLine": 68,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 4
+        },
+        {
+          "name": "<anonymous@65:70>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@64:35>/<anonymous@65:70>",
+          "line": 65,
+          "endLine": 65,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@66:76>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@64:35>/<anonymous@66:76>",
+          "line": 66,
+          "endLine": 66,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@67:32>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@64:35>/<anonymous@67:32>",
+          "line": 67,
+          "endLine": 67,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@67:68>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@64:35>/<anonymous@67:68>",
+          "line": 67,
+          "endLine": 67,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@71:93>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@71:93>",
+          "line": 71,
+          "endLine": 76,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@72:70>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@71:93>/<anonymous@72:70>",
+          "line": 72,
+          "endLine": 72,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@73:76>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@71:93>/<anonymous@73:76>",
+          "line": 73,
+          "endLine": 75,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@81:25>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@81:25>",
+          "line": 81,
+          "endLine": 87,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@81:42>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@81:25>/<anonymous@81:42>",
+          "line": 81,
+          "endLine": 87,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@84:72>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@81:25>/<anonymous@81:42>/<anonymous@84:72>",
+          "line": 84,
+          "endLine": 84,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@91:47>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@91:47>",
+          "line": 91,
+          "endLine": 91,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@92:23>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@92:23>",
+          "line": 92,
+          "endLine": 92,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@92:71>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@92:23>/<anonymous@92:71>",
+          "line": 92,
+          "endLine": 92,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@92:96>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@92:23>/<anonymous@92:71>/<anonymous@92:96>",
+          "line": 92,
+          "endLine": 92,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@93:47>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@93:47>",
+          "line": 93,
+          "endLine": 93,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@95:46>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@95:46>",
+          "line": 95,
+          "endLine": 95,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@97:44>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@97:44>",
+          "line": 97,
+          "endLine": 97,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@98:25>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@98:25>",
+          "line": 98,
+          "endLine": 98,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@102:23>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@102:23>",
+          "line": 102,
+          "endLine": 102,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@102:71>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@102:23>/<anonymous@102:71>",
+          "line": 102,
+          "endLine": 102,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@102:96>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@102:23>/<anonymous@102:71>/<anonymous@102:96>",
+          "line": 102,
+          "endLine": 102,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@103:25>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@103:25>",
+          "line": 103,
+          "endLine": 103,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@105:23>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@105:23>",
+          "line": 105,
+          "endLine": 105,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@105:71>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@105:23>/<anonymous@105:71>",
+          "line": 105,
+          "endLine": 105,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@105:96>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@105:23>/<anonymous@105:71>/<anonymous@105:96>",
+          "line": 105,
+          "endLine": 105,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@106:32>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@106:32>",
+          "line": 106,
+          "endLine": 106,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@107:39>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@107:39>",
+          "line": 107,
+          "endLine": 112,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@108:70>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@107:39>/<anonymous@108:70>",
+          "line": 108,
+          "endLine": 108,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@109:76>",
+          "qualifiedName": "<anonymous@40:43>/<anonymous@107:39>/<anonymous@109:76>",
+          "line": 109,
+          "endLine": 111,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "/Users/moon/.codex/backups/metric-card-group-20261022/complexity/4-after.ts",
+      "functions": [
+        {
+          "name": "<anonymous@5:77>",
+          "qualifiedName": "<anonymous@5:77>",
+          "line": 5,
+          "endLine": 17,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@10:96>",
+          "qualifiedName": "<anonymous@5:77>/<anonymous@10:96>",
+          "line": 10,
+          "endLine": 10,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@19:75>",
+          "qualifiedName": "<anonymous@19:75>",
+          "line": 19,
+          "endLine": 29,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@26:30>",
+          "qualifiedName": "<anonymous@19:75>/<anonymous@26:30>",
+          "line": 26,
+          "endLine": 26,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@32:102>",
+          "qualifiedName": "<anonymous@32:102>",
+          "line": 32,
+          "endLine": 41,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/src/routes/(viewer)/prototypes/metric-card-group/+page.ts",
+      "functions": [
+        {
+          "name": "load",
+          "qualifiedName": "load",
+          "line": 3,
+          "endLine": 5,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}

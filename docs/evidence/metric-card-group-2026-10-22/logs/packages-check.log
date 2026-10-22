@@ -1,0 +1,47 @@
+$ tsx tools/package-build/check.ts
+{
+  "packages": [
+    {
+      "name": "@metriccanvas/data-execution",
+      "version": "1.0.0-rc.4",
+      "entries": 4,
+      "files": 84,
+      "components": 0
+    },
+    {
+      "name": "@metriccanvas/ui",
+      "version": "0.1.0",
+      "entries": 1,
+      "files": 52,
+      "components": 19
+    },
+    {
+      "name": "@metriccanvas/page",
+      "version": "1.0.0-rc.4",
+      "entries": 2,
+      "files": 207,
+      "components": 0
+    },
+    {
+      "name": "@metriccanvas/engine",
+      "version": "1.0.0-rc.4",
+      "entries": 6,
+      "files": 398,
+      "components": 48
+    },
+    {
+      "name": "@metriccanvas/metric-canvas",
+      "version": "1.0.0-rc.4",
+      "entries": 2,
+      "files": 16,
+      "components": 3
+    },
+    {
+      "name": "@metriccanvas/embed",
+      "version": "1.0.0-rc.4",
+      "entries": 1,
+      "files": 6,
+      "components": 0
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+[WebServer] (node:16740) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:16741) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/browser/metric-before.spec.ts:6:3 › classic 白底无外边框分区内标题、筛选与四卡联动 (616ms)
+  ✓  2 tests/browser/metric-before.spec.ts:6:3 › esm 白底无外边框分区内标题、筛选与四卡联动 (785ms)
+  ✓  3 tests/browser/metric-before.spec.ts:40:3 › classic 正式页面的连接文字双侧8px、四卡等宽与窄屏单列 (539ms)
+  ✓  4 tests/browser/metric-before.spec.ts:40:3 › esm 正式页面的连接文字双侧8px、四卡等宽与窄屏单列 (790ms)
+
+  4 passed (3.4s)

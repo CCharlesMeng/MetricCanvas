@@ -27,3 +27,15 @@ it('serves the actual acceptance page and refuses unknown demo predicates', () =
    expect(executeDqeItem(summary)).toMatchObject({code:'SUCCESS',data:[{toolbar_total:total}]});
   }
  });
+
+
+it('serves four connected metrics from the declared synthetic region and rejects unknown predicates',()=>{
+ const page=JSON.parse(readFileSync(new URL('../../../pages/capabilities/layout/metric-card-equation.json',import.meta.url),'utf8'));
+ for(const [region,total,product,service,other] of [['all',1200,680,360,160],['east',720,408,216,96],['south',480,272,144,64]]){
+  const item=structuredClone(page.dataSources['region-metrics'].source.query.body.dsl_list[0]);
+  item.filter.dims=[{dim_name:'metric_equation_region',dim_value_list:[region]}];
+  expect(executeDqeItem(item)).toMatchObject({code:'SUCCESS',total_count:1,data:[{metric_equation_total:total,metric_equation_product:product,metric_equation_service:service,metric_equation_other:other}]});
+  item.filter.dims=[{dim_name:'unknown_region',dim_value_list:[region]}];
+  expect(executeDqeItem(item).code).toBe('DQE_SIM_UNSUPPORTED_QUERY');
+ }
+});

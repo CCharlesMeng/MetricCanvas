@@ -37,6 +37,8 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 
 按钮切换指标仍是显式筛选：合成数据有 `toolbar_metric` 维度，图表和合计查询都绑定它以及区域维度；不同指标的单位和内容分别通过集中 `visibleWhen` 选择。运行时不替换查询字段、不执行脚本。原型链接 `/prototypes/chart-filter-toolbar` 重定向到正式示例。
 
+指标卡分区可复用相同声明：section.container:card、section.title、span:12 的 filterGroup、连续 Before 指标卡依次组成白底无边框区域；标题和筛选均靠左，筛选在标题下方。示例 `/pages/metric-card-equation` 的 all/east/south 是合成汇总数据中的显式区域值，all 不代表通用的清除查询条件。
+
 
 页面协议 6.49。结构真源为本册[schema.json](../schema.json)，SHA256 `f7595ffbdcf2fe8b269b74567933759d72d6ed3067022eb2cc8fc84196ac0f34`。字段表自动生成；可选不等于有默认值。
 

@@ -447,3 +447,5 @@ Tab 6.49 支持普通内容与组合卡，显式 `props.contentLayout: "grid"` �
 Dashboard白底容器中的指标卡自动补充统一边框，组合卡只保留外框；声明与呈现边界见[指标卡](docs/page-metadata/components/metricCard.md)。
 
 普通柱图及组合图的柱系列默认16px，`reportForecast` 保留40px，见[柱状图](docs/page-metadata/components/barChart.md)。纯指标组合采用现有 `metricGrid` 自适应高度。
+
+指标卡与筛选的同框布局复用内容分区：card 提供白底无边框外观，section.title 在上，filterGroup 在其下左对齐，Before 四卡行自适应铺满所占列。连接排布盒在 card 内不重复绘制外框。见[指标连接排布](docs/page-metadata/sections-and-layout.md)与 `/pages/metric-card-equation`。

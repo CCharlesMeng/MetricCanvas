@@ -5,7 +5,7 @@ import { metricConnectionItems } from '../src/metric-connections';
 function cards() {
   const parsed=parsePage(JSON.parse(readFileSync('pages/capabilities/layout/metric-card-equation.json','utf8')));
   if(!parsed.ok)throw new Error(JSON.stringify(parsed.errors));
-  return parsed.page.sections.find(section=>section.id==='equation')!.components;
+  return parsed.page.sections.find(section=>section.id==='equation')!.components.filter(component=>component.type==='metricCard');
 }
 it('四卡连接保持原组件身份、索引与整行十二列',()=>{
   const source=cards(), items=metricConnectionItems(source);

@@ -5,9 +5,10 @@
   import { installRowAlignment } from './row-alignment';
   import { metricBefore, type SectionLayoutItem } from './metric-connections';
 
-  let { item, cell, onbeforeselect }: {
+  let { item, cell, contained = false, onbeforeselect }: {
     item: SectionLayoutItem;
     cell: Snippet<[Component, number, string?]>;
+    contained?: boolean;
     onbeforeselect?: (component: Component, index: number) => void;
   } = $props();
   let box = $state<HTMLDivElement | null>(null);
@@ -42,7 +43,7 @@
   });
 </script>
 
-<div class="connection-row" data-metric-connection-row={item.id} style={`grid-column:span ${item.span}`} bind:this={box}>
+<div class="connection-row" class:contained data-metric-connection-row={item.id} style={`grid-column:span ${item.span}`} bind:this={box}>
   <div class="connection-grid" class:stacked style={`--connection-columns:${columns}`} bind:this={grid}>
     {#each item.members as member, index (member.component.id)}
       {#if index > 0}
@@ -68,11 +69,12 @@
     min-width:0;
     width:100%;
     padding:20px;
-    border:1px solid rgba(0, 0, 0, 0.1);
+    border:0;
     border-radius:16px;
     background:rgba(255, 255, 255, 1);
     container:mc-connection-row / inline-size;
   }
+  .connection-row.contained { padding:0; border-radius:0; background:transparent; }
   .connection-grid { display:grid; grid-template-columns:var(--connection-columns); align-items:stretch; gap:0; min-width:0; }
   .connector { display:block; align-self:center; justify-self:center; box-sizing:border-box; max-inline-size:min(12em, 20cqi); margin:0 var(--connector-gap); padding:0; border:0; background:transparent; color:var(--mc-color-text,#191919); font:inherit; font-size:16px; font-weight:500; line-height:24px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   button.connector { cursor:pointer; }

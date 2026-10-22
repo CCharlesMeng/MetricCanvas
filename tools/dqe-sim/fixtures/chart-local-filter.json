@@ -442,5 +442,40 @@
         "toolbar_total": 2484
       }
     ]
+  },
+  {
+    "output_dims": [],
+    "output_metrics": [
+      "metric_equation_total",
+      "metric_equation_product",
+      "metric_equation_service",
+      "metric_equation_other"
+    ],
+    "filterableDims": [
+      "metric_equation_region"
+    ],
+    "rows": [
+      {
+        "metric_equation_region": "all",
+        "metric_equation_total": 1200,
+        "metric_equation_product": 680,
+        "metric_equation_service": 360,
+        "metric_equation_other": 160
+      },
+      {
+        "metric_equation_region": "east",
+        "metric_equation_total": 720,
+        "metric_equation_product": 408,
+        "metric_equation_service": 216,
+        "metric_equation_other": 96
+      },
+      {
+        "metric_equation_region": "south",
+        "metric_equation_total": 480,
+        "metric_equation_product": 272,
+        "metric_equation_service": 144,
+        "metric_equation_other": 64
+      }
+    ]
   }
 ]

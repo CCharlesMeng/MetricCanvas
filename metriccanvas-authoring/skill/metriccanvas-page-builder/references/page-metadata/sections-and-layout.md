@@ -14,7 +14,7 @@ Tab和组合卡是受控容器组件，子项允许类型由各自Schema分支�
 
 ## 指标卡连接排布 6.34
 
-`metricCard.layout.before` 由统一运行时派生内部连接排布盒，页面文档仍由内容分区直接包含组件。外层默认 12 列保持；整组占成员 span 之和，内部从文字与双侧间距之外的剩余宽度按 span 分配。连接整组铺满其 span 对应的宽度，并统一包裹在灰色 1px 边框、16px 圆角、白底的区域内；每张小卡保留独立白底灰边，连接文字两侧gap固定，卡片按span比例吸收剩余宽度；宽度预算扣除边框和内边距。无 before 的页面继续采用原栅格规则。声明、限制与场景见[指标卡](components/metricCard.md#metric-card-before)。
+`metricCard.layout.before` 由统一运行时派生内部连接排布盒，页面文档仍由内容分区直接包含组件。外层默认 12 列保持；整组占成员 span 之和，内部从文字与双侧间距之外的剩余宽度按 span 分配。连接整组铺满其 span 对应的可用宽度；外层不绘制边框，每张小卡保留独立白底灰边，连接文字两侧gap固定，卡片按span比例吸收剩余宽度。在 plain 分区内，连接排布盒保留白底、16px圆角与20px内边距；在显式 card 分区内，白底与内边距统一由分区承担，连接排布盒不再叠加外框或内边距。标题使用 section.title；filterGroup 作为分区内首个 span:12 组件，放在标题下方并左对齐，后接相邻的 Before 指标卡。无需新增容器字段，也不允许把标题、筛选器塞入 layout.before；筛选影响仍只由 filterBindings 决定。无 before 的页面继续采用原栅格规则。声明、限制与场景见[指标卡](components/metricCard.md#metric-card-before)。
 
 ## 页面搭建中的移动与删除
 

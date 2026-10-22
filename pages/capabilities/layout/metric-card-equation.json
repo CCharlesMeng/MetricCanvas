@@ -1,9 +1,10 @@
 {
-  "schemaVersion": "6.34",
+  "schemaVersion": "6.45",
   "id": "metric-card-equation",
   "layout": "dashboard",
   "meta": {
-    "title": "收入构成看板"
+    "title": "收入构成看板",
+    "description": "白底无边框内容分区内，标题、区域筛选按钮、四张Before指标卡依次排列；筛选使用合成查询数据。"
   },
   "dataSources": {
     "demo-metrics": {
@@ -36,6 +37,60 @@
           }
         ]
       }
+    },
+    "region-metrics": {
+      "fields": {
+        "total": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "metric_equation_total"
+        },
+        "product": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "metric_equation_product"
+        },
+        "service": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "metric_equation_service"
+        },
+        "other": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "metric_equation_other"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "filterBindings": {
+            "revenue-region": {
+              "target": "dimension",
+              "queryField": "metric_equation_region"
+            }
+          },
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "metric_equation_total",
+                  "metric_equation_product",
+                  "metric_equation_service",
+                  "metric_equation_other"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
     }
   },
   "sections": [
@@ -51,7 +106,7 @@
           },
           "props": {
             "variant": "plain",
-            "body": "收入概览 · 单位：万元 · 演示数据 · 独立白色小卡 · 文字双侧8px · 灰边圆角区域包裹"
+            "body": "收入概览 · 单位：万元 · 合成演示数据 · 白底无边框分区 · 标题下方筛选 · 独立白色小卡 · 连接文字双侧8px"
           }
         }
       ]
@@ -59,8 +114,32 @@
     {
       "id": "equation",
       "title": "收入构成",
-      "container": "plain",
+      "container": "card",
       "components": [
+        {
+          "id": "revenue-region-buttons",
+          "type": "filterGroup",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "filterId": "revenue-region",
+            "options": [
+              {
+                "label": "全部区域",
+                "value": "all"
+              },
+              {
+                "label": "华东",
+                "value": "east"
+              },
+              {
+                "label": "华南",
+                "value": "south"
+              }
+            ]
+          }
+        },
         {
           "id": "total-card",
           "type": "metricCard",
@@ -68,7 +147,7 @@
             "span": 3
           },
           "data": {
-            "main": "demo-metrics"
+            "main": "region-metrics"
           },
           "props": {
             "variant": "compactStack",
@@ -96,7 +175,7 @@
             }
           },
           "data": {
-            "main": "demo-metrics"
+            "main": "region-metrics"
           },
           "props": {
             "variant": "compactStack",
@@ -124,7 +203,7 @@
             }
           },
           "data": {
-            "main": "demo-metrics"
+            "main": "region-metrics"
           },
           "props": {
             "variant": "compactStack",
@@ -152,7 +231,7 @@
             }
           },
           "data": {
-            "main": "demo-metrics"
+            "main": "region-metrics"
           },
           "props": {
             "variant": "compactStack",
@@ -174,7 +253,7 @@
     {
       "id": "word-connection",
       "title": "业务拆分",
-      "container": "plain",
+      "container": "card",
       "components": [
         {
           "id": "word-total",
@@ -284,6 +363,17 @@
             ]
           }
         }
+      ]
+    }
+  ],
+  "filters": [
+    {
+      "id": "revenue-region",
+      "type": "dimension",
+      "dimension": "metric_equation_region",
+      "label": "区域",
+      "default": [
+        "all"
       ]
     }
   ]

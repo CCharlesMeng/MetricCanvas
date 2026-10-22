@@ -36,3 +36,5 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 图表卡中的两个控件各占 `layout.span:6`，图表占 12；右侧使用 `{"filterId":"region","display":"select","align":"right","options":[{"label":"全部区域","value":"all"},{"label":"华东","value":"east"},{"label":"华南","value":"south"}]}`。两个筛选器分别绑定 queryField，组合条件由查询消费。示例的 `all` 是合成数据集显式提供的全区域汇总行，不代表通用的“不过滤”值，也不能把该业务值移植到真实查询。
 
 按钮切换指标仍是显式筛选：合成数据有 `toolbar_metric` 维度，图表和合计查询都绑定它以及区域维度；不同指标的单位和内容分别通过集中 `visibleWhen` 选择。运行时不替换查询字段、不执行脚本。原型链接 `/prototypes/chart-filter-toolbar` 重定向到正式示例。
+
+指标卡分区可复用相同声明：section.container:card、section.title、span:12 的 filterGroup、连续 Before 指标卡依次组成白底无边框区域；标题和筛选均靠左，筛选在标题下方。示例 `/pages/metric-card-equation` 的 all/east/south 是合成汇总数据中的显式区域值，all 不代表通用的清除查询条件。

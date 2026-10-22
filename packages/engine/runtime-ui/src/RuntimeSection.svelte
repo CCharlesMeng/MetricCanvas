@@ -210,7 +210,7 @@
     {/if}
     {#each layoutItems as item (item.id)}
       {#if item.members.length > 1}
-        <MetricConnectionRow {item} {cell} {onbeforeselect} />
+        <MetricConnectionRow {item} {cell} contained={container === 'card'} {onbeforeselect} />
       {:else}
         {@render cell(item.members[0].component, item.members[0].index)}
       {/if}

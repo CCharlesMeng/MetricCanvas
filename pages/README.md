@@ -128,7 +128,7 @@ pages/
 
 ### 指标卡与文字混排、内容导航
 
-- [metric-card-equation](capabilities/layout/metric-card-equation.json)，入口 `/pages/metric-card-equation`：内联合成数据，无需额外服务。观察等号、加号与指标卡的同行排列，再查看文字和组件的 `layout.span`；符号只表达展示关系，不声明计算公式。
+- [metric-card-equation](capabilities/layout/metric-card-equation.json)，入口 `/pages/metric-card-equation`：白底无边框分区内依次展示标题、左对齐筛选与 Before 四卡；DQE Sim 提供合成区域联动，第二组为静态对照。符号只表达展示关系。
 - [ioc-content-navigation](capabilities/navigation/ioc-content-navigation.json)，入口 `/pages/ioc-content-navigation`：内联合成数据，无需额外服务。在分区 A 翻页，切到 B 再返回 A，检查局部状态保留。它是匿名导航样例，不是 IOC 来源页面。
 
 ### Platform 搭建画布体验
@@ -359,11 +359,13 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 
 ## 指标卡前置连接文字
 
-入口：`/pages/metric-card-equation`（`pages/capabilities/layout/metric-card-equation.json`），`pnpm dev:playground` 后在页面目录选择“指标卡与文字混排｜收入构成”。无需 URL 参数、数据网关或 DQE，使用静态演示数据。
+入口：`/pages/metric-card-equation`（`pages/capabilities/layout/metric-card-equation.json`），`pnpm dev:playground` 后在页面目录选择“指标卡与文字混排｜收入构成”。无需 URL 参数；区域联动需 `pnpm sim:dqe`，或一起启动 `pnpm dev:dqe`，数据为固定合成行。
 
 观察四张 span 3 指标卡在默认 12 列中等宽同行，`=`、`+` 和“其中”按内容占宽，两侧各为 8 CSS px；缩小集成应用容器时转为单列，文字在两卡之间且纵向双侧仍为 8px。宽度不足的部分跨列组合同样不能撑出页面。页面搭建中编辑前置文字和间距，保存重开仍保留；移动/删除打断相邻关系后只清理失效前缀，撤销一起恢复。
 
 2026-10-21 连接组外框验收：在上述入口拉宽或缩窄窗口，四卡保留独立白色背景、1px灰边与12px圆角，连接文字到两侧小卡外框各为8px；卡片自动均分外框内部剩余宽度，首尾贴齐内容区左右边缘；整组具有 1px rgba(0,0,0,0.1) 灰边、16px 圆角、白底及 20px 内边距。窄屏和局部跨度不足仍纵向排列，外框不溢出。
+
+2026-10-22 用户确认的当前呈现：外层白底且无边框，由显式 card 分区承载小标题、其下左对齐筛选按钮及连接四卡；连接排布盒不再叠加外框或内边距。选全部区域/华东/华南分别显示1200/720/480总收入，其他三卡同步切换，静态对照组不变。完整操作和服务边界见[布局示例说明](capabilities/layout/README.md)。
 
 协议边界由 metric-before 契约向量及单元测试覆盖：Report、自定义列轨、嵌套、backdrop、connectPrevious、非法间距及连接跨度超过 12 均被拒绝。连接是展示关系，不执行收入计算；本页不证明真实 DQE、权限隐藏或生产部署。
 
