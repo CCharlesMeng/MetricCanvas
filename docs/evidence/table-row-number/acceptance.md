@@ -33,3 +33,8 @@ PLAYGROUND_BASE_URL=http://127.0.0.1:5186 pnpm --filter @metriccanvas/embed exec
 - `pnpm authoring:contracts:check`、Bundle哈希检查通过（3535项）；local-authoring仓外安装、契约向量一致性、参考生成及导出隔离等7个测试文件75项通过。
 
 真实DQE/Relay、真实模型与线上环境未验收；查询分页浏览器测试使用网关桩。原混合工作区保留；用户已确认示例并授权提交至main，远端提交与CI结果以GitHub交付记录为准。
+
+
+## CI门禁修复
+
+首轮CI在页面id中立性测试失败：内部能力标识与示例页面id同为 `table-row-number`。本地 `pnpm test apps/playground/tests/page-id-neutrality.test.ts` 确定性复现后，将内部能力标识改为 `table-row-ordinal-column`，保留页面id、6.48版本下限和所有运行行为；不修改或放宽门禁。重新运行页面id中立性、版本和序号列测试，并重新生成协议分发物。

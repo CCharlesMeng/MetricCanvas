@@ -42,7 +42,7 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
-  'table-row-number': {
+  'table-row-ordinal-column': {
     minor: 48, legacyReadable: false, description: '表格独立序号列，排序筛选后重编号且跨页连续',
     usedAt: document => componentPaths(document, component => component.type === 'table' && (has(props(component), 'rowNumber') || has(record(record(props(component)?.rowExpansion)?.table), 'rowNumber')))
   },
