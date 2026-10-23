@@ -1,11 +1,13 @@
 ---
 name: metriccanvas-local-authoring
-description: 在本地创建或修改 MetricCanvas 页面 JSON；也可用页面 JSON 和指标说明 MD 识别用数、匹配指标、整理查询条件与缺口。附协议知识和独立校验器；用于看板、报表和 IOC，线上工具编排不属于此入口。
+description: 在本地创建、继续开发旧版本或修复 MetricCanvas 页面 JSON；也可结合指标说明 MD 识别用数与查询缺口。附协议知识、升级工具和独立校验器；用于看板、报表和 IOC，线上工具编排不属于此入口。
 ---
 
 # 本地页面创作
 
 直接编辑用户指定文件。知识与脚本只用本 Skill 目录；用户页面、设计源、指标说明和数据契约可在项目内。无需其他 Skill、仓库源码、在线 MCP 或 npm 安装，脚本需要 Node.js 22+。
+
+已有页面在编辑前先运行 `node "<skill-dir>/scripts/upgrade-page.mjs" "<page-file>"`。`unchanged` 继续原任务；`ready` 按[旧页面继续开发](references/page-upgrade.md)保留原件、升级并接回工作文件；`blocked` 先按该说明校验原页，原版有效且本次能力已支持时保留原版本继续局部开发，否则处理明确缺口。旧版本不必由用户手动改成最新版，也不因可迁移的版本报错中止原任务。
 
 ## 选择任务路径
 

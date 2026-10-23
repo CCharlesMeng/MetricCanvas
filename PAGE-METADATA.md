@@ -123,6 +123,8 @@ Report顶层页头统一声明`exportButtons`（6.31），每项配置`format`�
 
 新文档写当前作者版本和 `layout`。已支持版本的 `layoutForm` 在输入边界兼容读取，双字段同时出现拒绝；布局兼容规范化不自动升级其他能力。历史修订先核验原文hash，迁移结果另存新修订。详见[布局迁移](docs/page-metadata/layout-migration.md)。
 
+使用 local-authoring 继续开发旧页面时，先运行独立 `upgrade-page.mjs` 检查；可迁移时保留原始字节与报告，再升级工作文件并继续原任务。升级规则、版本范围和语义缺口见[旧页面继续开发](docs/page-metadata/page.md#旧页面继续开发与显式升级)，可观察场景见[升级示例](pages/capabilities/layout/README.md#旧页面升级后继续开发)。此创作期能力不扩大运行时的旧版本读取范围。
+
 无值参数模板可以结构合法，必需输入完整性在执行前验证。执行时的查询副本与可变筛选状态不作为模板原文保存；提取、填值及旧绑定迁移见[参数专题](PAGE-PARAMETERS.md#程序化提取与填值)。
 
 Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面构建规格与工具能力另见[Authoring Bundle](metriccanvas-authoring/README.md)。

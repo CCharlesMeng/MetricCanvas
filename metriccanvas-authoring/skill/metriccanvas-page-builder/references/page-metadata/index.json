@@ -287,6 +287,18 @@
       "sha256": "d567d0457111b52d8f854c26e7ba7434470ef9111436082ad85e1816b77dfacb"
     },
     {
+      "file": "packages/page/src/upgrade-chart-filters.ts",
+      "sha256": "9ba4a538e03b633c236da3675b7f4a46c51869891812df2eb0e6e69344f83fc4"
+    },
+    {
+      "file": "packages/page/src/upgrade-document.ts",
+      "sha256": "b2fcc9ec7291f1e0c747bdd48245ec4b7356b6de127c8336eee6b4490ced7d73"
+    },
+    {
+      "file": "packages/page/src/upgrade-types.ts",
+      "sha256": "4696a0fe72de845020e761a4f95e43c8308d0052ca53bad4da3a77499ed13448"
+    },
+    {
       "file": "packages/page/src/validate-object-query.ts",
       "sha256": "29bb4b69632c57ed82d4aee6ab144787530c1d1ad3230bad112a022db6f5a271"
     },
@@ -352,7 +364,10 @@
         "packages/page/src/ioc-header.ts",
         "packages/page/src/time-mode.ts",
         "packages/page/src/period-facts.ts",
-        "packages/page/src/time-extension-validation.ts"
+        "packages/page/src/time-extension-validation.ts",
+        "packages/page/src/upgrade-document.ts",
+        "packages/page/src/upgrade-chart-filters.ts",
+        "packages/page/src/upgrade-types.ts"
       ],
       "rules": [
         "page-layout-compatibility",

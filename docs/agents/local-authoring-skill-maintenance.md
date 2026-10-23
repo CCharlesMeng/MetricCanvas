@@ -21,6 +21,7 @@
 | 注册与分发 | metriccanvas-authoring/bundle.json、scripts/check_bundle.py |
 | 精确知识主题与结构 | `reference-map.json` 的 `authoringTopics`、`local-authoring-knowledge.ts` 与纯读取核心；语义从产品参考原文分块，不另写摘要 |
 | 页面用数、MD 索引与报告/候选检查 | `local-authoring-data-analysis.ts`、`local-authoring-data-cli.ts`；组件字段位置沿产品 Schema 和组件树遍历发现 |
+| 旧页面继续开发与确定性升级 | `packages/page/src/upgrade-document.ts`、`upgrade-chart-filters.ts` 与 `tools/scripts/local-authoring-upgrade.ts`；生成 `scripts/upgrade-page.mjs`，作者流程在 `references/page-upgrade.md` |
 
 精确知识的生成树为 `references/authoring-knowledge/`；新增 `scripts/read-knowledge.mjs`、`scripts/analyze-data.mjs`，均接入清单、漂移检查和仓外测试。模型按任务读取 JSON 输出，不读取机器知识包或脚本全文。精确主题失效/过大时修复真源，不截断约束。语义章节保持单一原文，显式主题的标题选择器在更名时生成失败；全部章节自动成为可发现主题，新语义不静默丢弃。
 

@@ -40,7 +40,10 @@
         "packages/page/src/ioc-header.ts",
         "packages/page/src/time-mode.ts",
         "packages/page/src/period-facts.ts",
-        "packages/page/src/time-extension-validation.ts"
+        "packages/page/src/time-extension-validation.ts",
+        "packages/page/src/upgrade-document.ts",
+        "packages/page/src/upgrade-chart-filters.ts",
+        "packages/page/src/upgrade-types.ts"
       ],
       "rules": [
         "page-layout-compatibility",
@@ -2238,6 +2241,7 @@
   },
   "authoringSemanticHeadings": {
     "page.md": [
+      "旧页面继续开发与显式升级",
       "创作时显式选择布局形态",
       "查阅方式",
       "IOC 公共页头（6.36）",

@@ -25,6 +25,8 @@ pages/
 
 主题说明：
 
+- 旧页面升级后继续开发：[步骤与边界](capabilities/layout/README.md#旧页面升级后继续开发)、[实际页面](capabilities/layout/schema-upgrade-demo.json)。
+
 - IOC 公共页头：[专题场景](capabilities/ioc-header/scenarios/README.md)、[业务确认](capabilities/ioc-header/business/README.md)、[选择回执](capabilities/ioc-header/selection/README.md)。
 
 - [business/dashboard/ioc/opportunity](business/dashboard/ioc/opportunity/README.md)

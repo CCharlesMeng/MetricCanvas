@@ -2,7 +2,15 @@
 
 页面元数据是统一运行时消费的声明式文档；数据上下文、会话、修订和执行身份由宿主管理。页面id、字段id、组件id分别属于自己的命名空间，组件id在整页唯一。
 
-作者版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义，当前写出6.46，公开读取接受5.0—5.4、6.5及6.11—6.46；本册 `index.json` 的 `schemaVersion` 标明导出时的作者版本。5.x在读取边界转换为6.x运行态文档。6.0使用layoutForm，6.1起允许layout。双字段同时出现即拒绝；缺布局默认report。normalizePageDocument只进行已声明的兼容规范化并保留文档原始字段，不将运行时参数替换结果保存。历史修订先核验原文hash再规范化。
+作者版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；本册 `index.json` 的 `schemaVersion` 标明导出时的作者版本，可读范围以 `schema.json` 为准。5.x在读取边界转换为6.x运行态文档。6.0使用layoutForm，6.1起允许layout。双字段同时出现即拒绝；缺布局默认report。normalizePageDocument只进行已声明的兼容规范化并保留文档原始字段，不将运行时参数替换结果保存。历史修订先核验原文hash再规范化。
+
+## 旧页面继续开发与显式升级
+
+创作期升级与渲染期兼容读取分开：local-authoring的upgrade-page.mjs默认只检查，指定新输出目录后保存原始字节、SHA256、完整目标校验通过的新页面和迁移报告，保留页面id。工具接受5.0—5.4和6.0至当前版本作为候选，检查原始能力下限，仅按明确规则转换为工具当前作者版本；不支持降级，不改变运行时可读范围。目标运行时需支持写出版本。
+
+规则包含旧布局、5.x导航兼容转换，以及旧图表props.filter向组合卡内独立filterGroup的显式转换。图表id、外层跨度、筛选器默认值、选项和查询绑定保持；组合卡内旧图表筛选需在原卡内显式拆分。历史修订只读，迁移产物保存为新文档或新修订。未知属性和目标校验错误仍拒绝，不能通过丢弃查询或initial获得通过。
+
+未知/未来版本、6.5/6.6非空数组参数旧写入语义、6.13/6.14页头filterIds自动期间文字返回具体错误并保留原件，不直接改版本号。整页升级被阻止时，原页若仍通过校验且本次修改只使用原版本能力，可以保留原版本继续局部开发；只有原页无效或需要新能力时才处理相应迁移缺口。静态成功后继续原任务并预览所涉交互；静态校验不证明真实数据执行。schema-upgrade-demo场景展示旧布局升级、继续编辑标题以及原数据和排序保留。
 
 report定宽居中，dashboard占满宿主宽度。页面页头统一由 IocHeader 呈现。dashboardToolbar 仅兼容读取：缺省／visible 自动适配行内页头，hidden 不生成默认页头，compact 对象适配紧凑呈现及只读说明；不保留旧工具栏实现。新页面使用 iocHeader。meta.title是页面级标题，缺席时消费方可回退页头再回退页面id。
 
@@ -1361,6 +1369,9 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - 源码/验证定位：`packages/page/src/time-mode.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/period-facts.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/time-extension-validation.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/upgrade-document.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/upgrade-chart-filters.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/page/src/upgrade-types.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 

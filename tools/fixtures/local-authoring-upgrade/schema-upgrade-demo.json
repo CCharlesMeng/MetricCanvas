@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "6.0",
+  "id": "schema-upgrade-demo",
+  "meta": {
+    "title": "旧页面升级后继续开发",
+    "description": "6.0 旧布局迁移为当前协议；内联合成数据，升级后继续修改标题，保留金额和字段绑定。"
+  },
+  "dataSources": {
+    "overview": {
+      "fields": {
+        "gmv": {
+          "type": "number",
+          "role": "measure",
+          "label": "成交总额",
+          "nullable": false
+        },
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "华东",
+            "gmv": 632300000000
+          },
+          {
+            "region": "华南",
+            "gmv": 120000000000
+          },
+          {
+            "region": "华北",
+            "gmv": 350000000000
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "overview",
+      "components": [
+        {
+          "id": "gmv-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "overview"
+          },
+          "props": {
+            "title": "GMV",
+            "rows": [
+              {
+                "label": "当日",
+                "valueField": {
+                  "data": "main",
+                  "field": "gmv",
+                  "format": "compact-yi-1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "overview"
+          },
+          "props": {
+            "title": "原始数据（排序保留）",
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": "gmv",
+                "sortable": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "layoutForm": "dashboard"
+}

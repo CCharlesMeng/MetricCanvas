@@ -11,7 +11,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "2fa9b3e50ae73ba57a95183f0e0a92018595179506af9fea38f51d44cfcc5cd6"
+      "sha256": "0d2f706bf1aa21ce2409bf39bbf7419ae61a53b3578617bd539e26ddce21e071"
     },
     {
       "file": "references/map-regions.json",
@@ -2339,11 +2339,11 @@
     },
     {
       "file": "references/page-metadata/index.json",
-      "sha256": "7f1fd394ffd369fb57768748019b7f4a6dad8cf529a7960f738ef25180f45c79"
+      "sha256": "7f7ef73320f40a99dc3a5890ac27ba8d274560d224b84bf93ef2d4a01600d9c0"
     },
     {
       "file": "references/page-metadata/page.md",
-      "sha256": "3e30f1f6cc20002e2dbc331af50dcf82fbeff087f7b81a7502d61eebf3503138"
+      "sha256": "e1b9bea553fd352744038c5d2989dc3f699f6b710af06444d6b1f319785aa375"
     },
     {
       "file": "references/page-metadata/params-and-text-values.md",
@@ -2412,6 +2412,10 @@
     {
       "file": "scripts/THIRD-PARTY-LICENSES.md",
       "sha256": "14799d6420e31cfdd26ec7a76f5e55b2ee55f5a35e8f780d0577231dcf18afee"
+    },
+    {
+      "file": "scripts/upgrade-page.mjs",
+      "sha256": "e0cf36b88491d69df71075dc0ad9c9d2a4daa620aa204ae393a21e4f0358e9a4"
     },
     {
       "file": "scripts/validate-page.mjs",

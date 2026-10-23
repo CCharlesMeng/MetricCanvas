@@ -2,6 +2,19 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+## 旧页面升级后继续开发
+
+入口：`/pages/schema-upgrade-demo`；[实际页面](schema-upgrade-demo.json)。启动 `pnpm dev:playground`。数据为3条内联合成记录，无需DQE服务。
+
+原件为 `tools/fixtures/local-authoring-upgrade/schema-upgrade-demo.json`（6.0、layoutForm:dashboard）。在仓库根目录运行 `node metriccanvas-authoring/skill/metriccanvas-local-authoring/scripts/upgrade-page.mjs tools/fixtures/local-authoring-upgrade/schema-upgrade-demo.json --out-dir /tmp/<尚不存在的目录>`，检查原件备份、migration.json与page目录中的新页面。升级后继续修改meta.title为“已升级：继续开发旧页面”和指标卡标题为“继续开发：GMV”，即本演示文件。
+
+1. 页面以Dashboard呈现上述新标题，指标卡显示原始GMV 6323.0亿；三个区域与金额保持。
+2. 点击表格“成交总额”排序，验证升序为华南、华北、华东，降序相反；升级后仍可使用已有交互。
+3. 原6.0文件仍被运行时读取策略拒绝；本工具只负责显式创作期升级，新文件通过独立校验，运行时兼容范围保持原策略。
+4. 将输入副本schemaVersion改为7.0，升级返回blocked及/schemaVersion错误，不创建输出目录；未知字段不被删除来换取通过。
+
+旧图表筛选回归输入为 `tools/fixtures/local-authoring-upgrade/chart-filter.json`；迁移后保留4个原图表id、默认值和查询绑定，输出filterGroup与组合卡。真实查询和视觉交互另以原有 `chart-local-filter-page` 场景核对，此离线迁移不证明真实DQE/Relay可用。
+
 ## 指标卡与文字混排｜收入构成
 
 入口：`/pages/metric-card-equation`；[页面 JSON](metric-card-equation.json)。

@@ -611,7 +611,7 @@ async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{
     for (const file of await listFiles(path.join(bundleRoot, directory))) {
       if (mode !== 'none' && file.startsWith('references/page-metadata/')) continue;
       if (mode === 'local-page-metadata' && file.startsWith('references/page-patterns/')) continue;
-      if (mode === 'local-page-metadata' && (file.startsWith('references/authoring-knowledge/') || ['scripts/read-knowledge.mjs','scripts/analyze-data.mjs'].includes(file))) continue;
+      if (mode === 'local-page-metadata' && (file.startsWith('references/authoring-knowledge/') || ['scripts/read-knowledge.mjs','scripts/analyze-data.mjs','scripts/upgrade-page.mjs'].includes(file))) continue;
       if (mode === 'local-page-metadata' && ['scripts/validate-page.mjs', 'scripts/THIRD-PARTY-LICENSES.md', 'references/knowledge.json', 'references/map-regions.json', 'assets/layouts/overview-map-led.json'].includes(file)) continue;
       documents.set(file, await readFile(path.join(bundleRoot, directory, file), 'utf8'));
     }
@@ -620,7 +620,7 @@ async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{
     const generated = mode === 'local-page-metadata' ? await localValidatorOutputs(repoRoot) : undefined;
     if (generated) {
       for (const [file,content] of await localAuthoringKnowledge(repoRoot,projected)) generated.set(file,content);
-      for (const [entry,output] of [['local-authoring-knowledge-reader','read-knowledge'],['local-authoring-data-cli','analyze-data']]) {
+      for (const [entry,output] of [['local-authoring-knowledge-reader','read-knowledge'],['local-authoring-data-cli','analyze-data'],['local-authoring-upgrade','upgrade-page']]) {
         for (const [file,content] of await localValidatorOutputs(repoRoot,`tools/scripts/${entry}.ts`,`scripts/${output}.mjs`)) {
           if (file.endsWith('.mjs')) generated.set(file,content);
         }

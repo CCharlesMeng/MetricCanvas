@@ -132,7 +132,7 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
     } finally { writeFileSync(file,original); }
   }, scenarioTimeout);
 
-  it.each(['references/page-metadata/schema.json', 'references/knowledge.json', 'references/page-patterns/dashboard-detail.json', 'scripts/validate-page.mjs', 'references/authoring-knowledge/model.json', 'scripts/read-knowledge.mjs', 'scripts/analyze-data.mjs'])('拒绝独立本地 Skill 生成内容漂移：%s', file => {
+  it.each(['references/page-metadata/schema.json', 'references/knowledge.json', 'references/page-patterns/dashboard-detail.json', 'scripts/validate-page.mjs', 'references/authoring-knowledge/model.json', 'scripts/read-knowledge.mjs', 'scripts/analyze-data.mjs', 'scripts/upgrade-page.mjs'])('拒绝独立本地 Skill 生成内容漂移：%s', file => {
     const relative = `metriccanvas-authoring/skill/metriccanvas-local-authoring/${file}`;
     withChangedFile(relative, readFileSync(path.join(isolated,relative),'utf8') + '\nchanged generated content\n', () => {
       const result = runExport();
