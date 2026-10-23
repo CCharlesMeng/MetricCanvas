@@ -49,7 +49,7 @@ for (const width of [1440, 390]) test(`${width}: mixed Tabs load on demand, keep
   await page.getByRole('tab', { name: '明细', exact: true }).click();
   await expect(page.getByRole('tab', { name: '明细' })).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('[data-tab-panel=details] canvas').first()).toBeVisible();
-  await expect.poll(() => requests.length).toBe(3);
+  await expect.poll(() => requests.length).toBe(2);
   await expect(page).toHaveURL(/tab.analysis=details/);
   expect(new URL(page.url()).searchParams.get('revision')).toBe('keep');
   expect(await page.evaluate(() => history.length)).toBe(historyLength);
@@ -60,10 +60,10 @@ for (const width of [1440, 390]) test(`${width}: mixed Tabs load on demand, keep
   await expect(page.locator('[data-tab-panel=details]')).toBeHidden();
   await page.getByRole('tab', { name: '明细', exact: true }).click();
   await expect(input).toHaveValue('客户21');
-  expect(requests).toHaveLength(3);
+  expect(requests).toHaveLength(2);
   await page.getByRole('tab', { name: '概览', exact: true }).click();
   await page.getByRole('checkbox', { name: '仅国内', exact: true }).check();
-  await expect.poll(() => requests.length).toBe(4);
+  await expect.poll(() => requests.length).toBe(3);
   await page.getByRole('tab', { name: '明细', exact: true }).click();
   // The retained overseas local choice conflicts with the public domestic condition.
   await expect(page.locator('[data-tab-panel=details] .filter-group [aria-pressed=true]')).toContainText('海外');

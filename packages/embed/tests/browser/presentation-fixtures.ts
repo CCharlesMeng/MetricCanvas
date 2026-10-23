@@ -7,8 +7,8 @@ import { responsiveFixtures } from '../../../engine/widgets/tests/responsive-fix
 const examples = new URL('../../../../contracts/metriccanvas/page/reference/examples/', import.meta.url);
 
 /** Public contract examples supply all schema branches; no business attachment is checked in. */
-export function presentationFixtures(): Array<{ name: string; document: PageDocument }> {
-  return Object.entries(responsiveFixtures).filter(([type])=>type!=='filterGroup').flatMap(([type, { variants }]) => variants.map(variant => {
+export function presentationFixtures(layout: 'report' | 'dashboard' = 'report'): Array<{ name: string; document: PageDocument }> {
+  return Object.entries(responsiveFixtures).filter(([type])=>type!=='filterGroup' && (layout === 'report' || type !== 'aiSummary')).flatMap(([type, { variants }]) => variants.map(variant => {
     const name = `${type}${variant === 'default' ? '' : `-${variant}`}`;
     const document = JSON.parse(readFileSync(new URL(`component-${name}.json`, examples), 'utf8'));
     // This matrix exercises chart presentation in both layouts. Dashboard-only controls

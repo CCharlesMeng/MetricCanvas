@@ -18,15 +18,15 @@ async function show(page: Page, document: unknown) {
 
 for (const width of [1440, 390]) for (const layout of ['report', 'dashboard'] as const) {
   for (const container of [undefined, 'plain', 'panel', 'card'] as const) {
-    test(`${width} ${layout} ${container ?? 'default'}: all 54 declared component branches remain visible`, async ({ page }) => {
+    test(`${width} ${layout} ${container ?? 'default'}: all applicable declared component branches remain visible`, async ({ page }) => {
       test.setTimeout(120_000);
       await page.setViewportSize({ width, height: 900 });
       await page.goto('/examples/inline.html');
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
       const failures: string[] = [];
-      const fixtures = presentationFixtures();
-      expect(fixtures).toHaveLength(54);
+      const fixtures = presentationFixtures(layout);
+      expect(fixtures).toHaveLength(layout === 'report' ? 54 : 52);
       for (const fixture of fixtures) await test.step(fixture.name, async () => {
         const document = { ...fixture.document, layout, sections: fixture.document.sections.map(section => ({ ...section, container })) };
         await show(page, document);

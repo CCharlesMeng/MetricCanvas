@@ -81,3 +81,11 @@ Playground 实际入口 http://127.0.0.1:5177/pages/report-ai-summary 已观察�
 交付补充复杂度使用 metriccanvas-ts-ast/1 / TypeScript 5.9.3。改动测试回调最高 13，页面 id 扫描回调 3→5；其余相关函数保持原值或减少一个已无意义的等待回调。tools/package-build/surface.ts 仅登记导出入口，未改的 exportedNames 仍为 CC=30，不归本次重构范围。全部修改函数无超限未关闭项，详见 delivery-complexity.json。此前功能实现/目录重构的测量继续适用。
 
 主工作区与其他并行 worktree 的文件不作修改；本次按精确路径清单提交。真实云宝、内网身份、DQE/Relay 联调仍需内网另验。
+
+## 安装消费者浏览器验收补齐（2026-10-23）
+
+首个交付提交 ac64e8f6 的 CI 中，build/tests/types/authoring 均成功；compatibility 的 Chrome/Edge 共 498 个浏览器场景中 478 个成功、20 个失败。下载 consumer-browser.log 后确认失败全部是旧验收预期：16 个 Dashboard 展示矩阵仍放入 Report 专用 AI Summary，4 个 Tab 场景仍计入已经移除的 Dashboard 摘要查询。
+
+测试矩阵按声明适用布局选择用例：Report 保留全部 54 个分支，Dashboard 为 52 个；非法 Dashboard AI Summary 仍由页面协议负例验收。Tab 请求预期与真实已消费来源同步，不减少页面内的交互或保活断言。产品源码和协议不变。
+
+本地重跑对应 10 个 Chrome 场景全部成功（8.1 秒），Embed 检查及契约漂移检查通过；Edge 安装消费者结果以补充提交 CI 为准。复杂度 metriccanvas-ts-ast/1 / TypeScript 5.9.3：适用布局筛选回调 1→3，矩阵测试回调 2→3，Tab 回调不变；无超限未关闭项，见 browser-compatibility-complexity.json。
