@@ -178,7 +178,30 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 验收：`query-mode-chart-demo`，Dashboard 一张折线图、合计卡和共享结果明细表；签约与商机由 DQE Sim 的两张独立合成表提供。切换口径与区域应改变实际请求中的业务指标、区域目标字段和图表数值。演示数据与真实 DQE/Relay、数据库权限及业务数值验真分开报告。
 
 
-页面协议 6.54。结构真源为本册[schema.json](schema.json)，SHA256 `6c563f3b7097df343bf49b2f5485f98074c066572e501404dd8c473a47c10aa3`。字段表自动生成；可选不等于有默认值。
+## 6.55 DQE 对象查询
+
+对象查询仍使用 `source.type:query` 和 `language:dqe`；原始 `body.dsl_list` 恰好一个查询项，以 `query_type:object` 识别，`object_type` 必须明确。`output_fields` 为非空、不重复的字段名数组，不与 `output_dims/output_metrics` 混用。每项输出仍须有显式 `queryField` 映射；角色、类型、单位、可空性依据已有对象字段信息声明，不能从返回样例猜测。`columns:null` 不影响归一化。上游原始行保留，商务编号不自动成为唯一行键；结果绑定提取集合时才去重。
+
+对象条件使用 `filter.fields:[{field_name,value_list,operator}]`。静态原始条件保持；显式页面绑定接管其目标字段的默认条件，清空可选筛选后不恢复该字段的静态默认条件；未绑定字段保持。表头筛选、搜索继续以 AND 收窄，日期表头使用同字段已声明的时间格式。维度、层级、布尔、数值区间及查询结果绑定消费现有页面状态；对象数值区间直接落在字段条件，不发送 `filter.metrics`。`operator:'='` 的多值列表按集合等值语义编码，其真实后端行为须验真。原始未知运算符保留给上游，不能由页面端清洗删除。
+
+时间范围仍使用 `target:time`，对象分支必须增加 `queryField` 和 `valueFormat:iso|compact|datetime`。`window` 继续绑定 timePoint，未声明 window 时绑定 timeRange。例如：
+
+```json
+{"period":{"target":"time","queryField":"特价审批通过时间","valueFormat":"datetime"}}
+```
+
+`iso` 保留页面日期/月；`compact` 去掉连字符；`datetime` 明确采用源日历、秒精度和闭区间，起点补 `00:00:00`、终点补 `23:59:59`，月范围扩为对应月首日至月末日，不进行时区转换。不同精度/时区必须由可信接入适配，不能猜测。普通指标查询的 time 绑定保持原规则，不接受对象字段或格式。
+
+固定维度参数可以在对应 `value_list` 使用 `{param:id}`。固定日期参数使用同字段成对引用：`{param:id,part:start|end,valueFormat:...}`，分别对应 `>=` 和 `<=`，必须来自同一个 `params.query.times` 参数及同一格式，不能混入该字段固定条件或绑定。可在成对引用中声明完全相同的 `window`，此时参数必须为单点并遵循既有窗口精度规则。参数解析仅修改查询副本。旧 paramBindings 的 time 分支在对象查询也须声明 queryField/valueFormat。
+
+查询分页继续使用 `order.offset/limit`。单字段排序编码为 `order_by_field/type`；多字段（包括子表格稳定行键补排序）需要数据网关的可信 `encodeObjectSort`，未提供时明确报错，不静默丢键或本地排序。文本包含搜索与列候选沿用可信 encodeSearch/encodeColumnCandidates 能力；缺失时明确不可用，不从当前页生成候选。
+
+窗口、有限选择、complete 的用途边界及取消、缓存、URL、筛选写入规则与普通 DQE 一致。对象 complete 源经共享范围读取取得完整行集后再计算或关联；显式完整导出使用完整读取入口。分页失败、总数变化或累计行数超出总数时不返回部分对象结果冒充完整结果；不收紧普通指标查询原有兼容规则。导出单表最多 10000 行，结果绑定去重集合最多 1000 值，超限拒绝而不截断。没有真实记录标识时不能从重复投影行推断上游重复翻页，也不能据此删除重复行；稳定分页需真实服务验真。
+
+完整 Dashboard 场景为 `/pages/dqe-object-query-demo`，使用 DQE Sim 合成记录；操作与证据边界见 `pages/capabilities/query/README.md`。用户提供的实际回执（请求1000行却仅返回10行、total_count1393）只作为响应兼容夹具，不能证明分页、排序、计数或真实业务口径。
+
+
+页面协议 6.55。结构真源为本册[schema.json](schema.json)，SHA256 `8d3c674ebdc434c588dbd64753ec5b75f0b91e8a65ba74628afe9d049df23ac4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -770,6 +793,32 @@ Schema位置：`#/definitions/dqeQuery/properties/paramBindings/additionalProper
 |---|---|---|---|---|
 | 引用 #/definitions/timeWindow | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 确定性查询时间窗口：由绑定参数推导起止，起止包含；不决定指标口径。 |
 
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f706172616d42696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f312f70726f706572746965732f71756572794669656c64"></a>
+
+### `@dqeQuery.paramBindings{key} · oneOf[1].queryField`
+
+Schema位置：`#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1/properties/queryField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f706172616d42696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f312f70726f706572746965732f76616c7565466f726d6174"></a>
+
+### `@dqeQuery.paramBindings{key} · oneOf[1].valueFormat`
+
+Schema位置：`#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1/properties/valueFormat`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["iso","compact","datetime"] | Schema未设默认；装配/运行时默认见语义说明 | 时间点取值送进谓词的写法：iso原样YYYY-MM，compact去掉分隔符。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "iso" | 时间点原样送 YYYY-MM / YYYY-MM-DD。 |
+| "compact" | 时间点去掉分隔符后送出，例如 202604。 |
+| "datetime" | 带时间部分的日期时间字段。 |
+
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f706172616d42696e64696e67732f70726f70657274794e616d6573"></a>
 
 ### `@dqeQuery.paramBindings · propertyNames`
@@ -931,6 +980,32 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/timeWindow | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f71756572794669656c64"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].queryField`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/queryField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f76616c7565466f726d6174"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].valueFormat`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/valueFormat`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["iso","compact","datetime"] | Schema未设默认；装配/运行时默认见语义说明 | 时间点取值送进谓词的写法：iso原样YYYY-MM，compact去掉分隔符。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "iso" | 时间点原样送 YYYY-MM / YYYY-MM-DD。 |
+| "compact" | 时间点去掉分隔符后送出，例如 202604。 |
+| "datetime" | 带时间部分的日期时间字段。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f33"></a>
 
@@ -1390,6 +1465,32 @@ Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/add
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/timeWindow | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f71756572794669656c64"></a>
+
+### `@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].queryField`
+
+Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/queryField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f76616c7565466f726d6174"></a>
+
+### `@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].valueFormat`
+
+Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/valueFormat`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["iso","compact","datetime"] | Schema未设默认；装配/运行时默认见语义说明 | 时间点取值送进谓词的写法：iso原样YYYY-MM，compact去掉分隔符。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "iso" | 时间点原样送 YYYY-MM / YYYY-MM-DD。 |
+| "compact" | 时间点去掉分隔符后送出，例如 202604。 |
+| "datetime" | 带时间部分的日期时间字段。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f33"></a>
 
@@ -1860,6 +1961,32 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/ad
 |---|---|---|---|---|
 | 引用 #/definitions/timeWindow | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f71756572794669656c64"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].queryField`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/queryField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f76616c7565466f726d6174"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].valueFormat`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/valueFormat`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["iso","compact","datetime"] | Schema未设默认；装配/运行时默认见语义说明 | 时间点取值送进谓词的写法：iso原样YYYY-MM，compact去掉分隔符。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "iso" | 时间点原样送 YYYY-MM / YYYY-MM-DD。 |
+| "compact" | 时间点去掉分隔符后送出，例如 202604。 |
+| "datetime" | 带时间部分的日期时间字段。 |
+
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f33"></a>
 
 ### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[3]`
@@ -2109,6 +2236,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 - [time-binding-branches-page](examples/time-binding-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 - [query-modes-page](examples/query-modes-page.json)：完整合法页面；查询仅为静态契约证据。
 - [query-mode-binding-branches-page](examples/query-mode-binding-branches-page.json)：完整合法页面；查询仅为静态契约证据。
+- [object-query-page](examples/object-query-page.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

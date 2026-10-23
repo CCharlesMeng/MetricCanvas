@@ -193,7 +193,11 @@
         "查询定义与显式绑定",
         "分页级联",
         "任意列排序",
-        "配置解读"
+        "配置解读",
+        "object",
+        "对象查询",
+        "output_fields",
+        "filter.fields"
       ],
       "examples": [
         "dimension-params-page",
@@ -209,7 +213,8 @@
         "calendar-window-page",
         "time-binding-branches-page",
         "query-modes-page",
-        "query-mode-binding-branches-page"
+        "query-mode-binding-branches-page",
+        "object-query-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -219,7 +224,10 @@
         "packages/page/src/validate-query-results.ts",
         "packages/page/src/time-mode.ts",
         "packages/page/src/period-facts.ts",
-        "packages/page/src/time-extension-validation.ts"
+        "packages/page/src/time-extension-validation.ts",
+        "packages/page/src/dqe-object.ts",
+        "packages/page/src/validate-object-query.ts",
+        "packages/page/src/object-query-params.ts"
       ],
       "rules": [
         "query-field-mapping",
@@ -1834,6 +1842,7 @@
     "6.51": "Report 双模式 AI 总结、区域范围与异步会话缓存。",
     "6.52": "AI 总结直接引用页面数据源 ID（旧拼写 relatedDataSource）。",
     "6.53": "AI 总结数据源数组统一采用 relatedDataSources，与 relatedSections 对称。",
+    "6.55": "DQE object 查询、显式字段时间绑定与共享完整结果执行。",
     "6.54": "AI 总结按非空 body 直接展示，否则动态生成，无需 mode。",
     "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"provided\"": "历史值；当前按非空 body 直接展示，无需 mode。",
     "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"generated\"": "历史值；当前无正文时根据提示词和范围生成，无需 mode。"
@@ -2258,7 +2267,8 @@
       "排序与查询分页驱动结果绑定 6.20",
       "配置解读：首轮查询、任意列排序与分页级联",
       "6.39 静态时间查询模式",
-      "6.50 固定单选查询分支"
+      "6.50 固定单选查询分支",
+      "6.55 DQE 对象查询"
     ],
     "compute.md": [
       "查阅方式",

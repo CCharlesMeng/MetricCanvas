@@ -1,3 +1,4 @@
+import { dqeDimensionConditions, isObjectDqeItem } from './dqe-object';
 import {ordinaryQuery,queryLeaves} from './query-selection';
 import type { TypedError } from './errors';
 import { pageParamDeclarations, type PageParamDeclaration, type GroupedPageParams } from './page-param';
@@ -45,7 +46,9 @@ function timeParamErrors(query: DqeQueryDefinition, binding: Extract<ParamBindin
   if (declaration?.type !== 'time' || !declaration.required) error(path, '时间绑定必须引用必需的time参数');
   if (duplicate) error(path, '同一查询的时间只能有一个参数来源');
   if (Object.values(query.filterBindings ?? {}).some(f => f.target === 'time')) error(path, '固定时间参数不得与页内时间筛选器共同控制查询');
-  timeBodyErrors(query, declaration, path, error);
+  const item=ordinaryQuery(query).body.dsl_list[0];
+  if(isObjectDqeItem(item)){if(!binding.queryField||!binding.valueFormat)error(path,'object 时间参数必须声明 queryField 和 valueFormat');}
+  else timeBodyErrors(query, declaration, path, error);
   if (declaration?.granularity && !timeWindowCompatible(declaration.granularity, binding.window)) error(path, '时间窗口单位与参数精度不相容');
   if (typeof declaration?.default === 'string') {
     try { resolveTimeWindow(declaration.default, binding.window); }
@@ -66,8 +69,7 @@ function timeBodyErrors(query: DqeQueryDefinition, declaration: PageParamDeclara
 }
 
 function bodyHasDimensionDefault(query: DqeQueryDefinition, queryField: string): boolean {
-  const filter = ordinaryQuery(query).body.dsl_list[0].filter;
-  return !!filter && typeof filter === 'object' && !Array.isArray(filter) && Array.isArray(filter.dims) && filter.dims.some(d => d && typeof d === 'object' && !Array.isArray(d) && d.dim_name === queryField);
+  return dqeDimensionConditions(ordinaryQuery(query).body.dsl_list[0]).some(condition=>condition.dim_name===queryField);
 }
 
 function dimensionParamErrors(query: DqeQueryDefinition, id: string, binding: Extract<ParamBinding, { target: 'dimension' }>, params: ReadonlyMap<string, PageParamDeclaration>, filters: ReadonlyMap<string, FilterDeclaration>, owners: Map<string, string>, consumers: Set<string>, path: string, error: ErrorReporter): void {

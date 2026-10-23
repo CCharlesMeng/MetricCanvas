@@ -1,3 +1,4 @@
+import { isObjectDqeItem, objectOutputFields } from './dqe-object';
 import {fieldSelectionIds} from './field-selection';
 import {enumSelector} from './amount-filter';
 import {filterGroupOptions} from './filter-group';
@@ -12,9 +13,11 @@ function selectorOptions(page:Page,id:string):string[]|undefined {
   if(group)return [...group];
   return enumSelector(page.filters??[],id)?.options?.filter(option=>!option.disabled).map(option=>option.value);
 }
-function projection(leaf:DqeQueryCase):string {
+function projection(leaf:DqeQueryCase, flat=false):string {
   const item=leaf.body.dsl_list[0];
-  return JSON.stringify([captions(item.output_dims),captions(item.output_metrics)]);
+  if(isObjectDqeItem(item))return JSON.stringify(objectOutputFields(item).sort());
+  const groups=[captions(item.output_dims),captions(item.output_metrics)];
+  return JSON.stringify(flat?groups.flat().sort():groups);
 }
 function captions(value:unknown):unknown[] {
   if(!Array.isArray(value))return [];
@@ -23,7 +26,7 @@ function captions(value:unknown):unknown[] {
 function alias(value:unknown):unknown {return value&&typeof value==='object'&&'alias' in value?value.alias:null;}
 function caseErrors(query:DqeQueryDefinition,path:string):TypedError[] {
   const selection=querySelection(query)!;
-  const errors:TypedError[]=[],outputs=Object.values(selection.cases).map(projection);
+  const errors:TypedError[]=[],outputs=Object.values(selection.cases).map(leaf=>projection(leaf,hasObjectCase(query)));
   if(new Set(outputs).size>1)errors.push(issue(path,'查询模式case必须输出相同字段/类型/货币映射'));
   for(const [key,leaf]of Object.entries(selection.cases)){
     const location=`${path}/cases/${key.replaceAll('~','~0').replaceAll('/','~1')}`;
@@ -96,7 +99,7 @@ function timeModeErrors(page:Page,query:DqeQueryDefinition,path:string):TypedErr
   let previous:string|undefined;
   for(const [mode,leaf]of Object.entries(selection.cases)){
     if(leaf.filterBindings[filter.id]?.target!=='time')errors.push(issue(path,'每个case须显式绑定模式时间范围'));
-    const outputs=projection(leaf);
+    const outputs=projection(leaf,hasObjectCase(query));
     if(previous!==undefined&&outputs!==previous)errors.push(issue(path,'模式case必须输出相同字段/类型/货币映射'));
     previous=outputs;
     if(!timePeriodMatches(mode,leaf))errors.push(issue(path,'静态查询period必须匹配显式模式'));
@@ -104,9 +107,15 @@ function timeModeErrors(page:Page,query:DqeQueryDefinition,path:string):TypedErr
   return errors;
 }
 function timePeriodMatches(mode:string,leaf:DqeQueryCase):boolean {
-  const filter=leaf.body.dsl_list[0].filter;
+  const item=leaf.body.dsl_list[0];
+  if(isObjectDqeItem(item))return Object.values(leaf.filterBindings).some(binding=>binding.target==='time'&&!!binding.queryField&&!!binding.valueFormat);
+  const filter=item.filter;
   if(!filter||typeof filter!=='object'||Array.isArray(filter))return false;
   const time=filter.time;
   if(!time||typeof time!=='object'||Array.isArray(time))return false;
   return time.period===(mode==='month'?'month':mode==='isoWeek'?'week':'day');
+}
+
+function hasObjectCase(query: DqeQueryDefinition): boolean {
+  return Object.values(querySelection(query)!.cases).some(leaf=>isObjectDqeItem(leaf.body.dsl_list[0]));
 }

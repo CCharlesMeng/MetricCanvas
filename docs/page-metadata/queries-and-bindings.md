@@ -176,3 +176,26 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 浏览器、SourceProgram、公共 Node 执行、分页/组合查询和导出共用选择实现。缓存按实际生效查询及筛选条件隔离；取消和迟到结果保护沿用统一查询执行。没有分支上下文证明的 initial、seeds 和执行快照不直接复用；捕获查询须与冻结条件的分支相符，导出固定捕获的分支与区域，不在导出过程中跟随屏幕切换。运行期非法选择阻断相关查询，不改查其他表。URL 非法值仍按既有固定筛选控件规则恢复默认。
 
 验收：`query-mode-chart-demo`，Dashboard 一张折线图、合计卡和共享结果明细表；签约与商机由 DQE Sim 的两张独立合成表提供。切换口径与区域应改变实际请求中的业务指标、区域目标字段和图表数值。演示数据与真实 DQE/Relay、数据库权限及业务数值验真分开报告。
+
+
+## 6.55 DQE 对象查询
+
+对象查询仍使用 `source.type:query` 和 `language:dqe`；原始 `body.dsl_list` 恰好一个查询项，以 `query_type:object` 识别，`object_type` 必须明确。`output_fields` 为非空、不重复的字段名数组，不与 `output_dims/output_metrics` 混用。每项输出仍须有显式 `queryField` 映射；角色、类型、单位、可空性依据已有对象字段信息声明，不能从返回样例猜测。`columns:null` 不影响归一化。上游原始行保留，商务编号不自动成为唯一行键；结果绑定提取集合时才去重。
+
+对象条件使用 `filter.fields:[{field_name,value_list,operator}]`。静态原始条件保持；显式页面绑定接管其目标字段的默认条件，清空可选筛选后不恢复该字段的静态默认条件；未绑定字段保持。表头筛选、搜索继续以 AND 收窄，日期表头使用同字段已声明的时间格式。维度、层级、布尔、数值区间及查询结果绑定消费现有页面状态；对象数值区间直接落在字段条件，不发送 `filter.metrics`。`operator:'='` 的多值列表按集合等值语义编码，其真实后端行为须验真。原始未知运算符保留给上游，不能由页面端清洗删除。
+
+时间范围仍使用 `target:time`，对象分支必须增加 `queryField` 和 `valueFormat:iso|compact|datetime`。`window` 继续绑定 timePoint，未声明 window 时绑定 timeRange。例如：
+
+```json
+{"period":{"target":"time","queryField":"特价审批通过时间","valueFormat":"datetime"}}
+```
+
+`iso` 保留页面日期/月；`compact` 去掉连字符；`datetime` 明确采用源日历、秒精度和闭区间，起点补 `00:00:00`、终点补 `23:59:59`，月范围扩为对应月首日至月末日，不进行时区转换。不同精度/时区必须由可信接入适配，不能猜测。普通指标查询的 time 绑定保持原规则，不接受对象字段或格式。
+
+固定维度参数可以在对应 `value_list` 使用 `{param:id}`。固定日期参数使用同字段成对引用：`{param:id,part:start|end,valueFormat:...}`，分别对应 `>=` 和 `<=`，必须来自同一个 `params.query.times` 参数及同一格式，不能混入该字段固定条件或绑定。可在成对引用中声明完全相同的 `window`，此时参数必须为单点并遵循既有窗口精度规则。参数解析仅修改查询副本。旧 paramBindings 的 time 分支在对象查询也须声明 queryField/valueFormat。
+
+查询分页继续使用 `order.offset/limit`。单字段排序编码为 `order_by_field/type`；多字段（包括子表格稳定行键补排序）需要数据网关的可信 `encodeObjectSort`，未提供时明确报错，不静默丢键或本地排序。文本包含搜索与列候选沿用可信 encodeSearch/encodeColumnCandidates 能力；缺失时明确不可用，不从当前页生成候选。
+
+窗口、有限选择、complete 的用途边界及取消、缓存、URL、筛选写入规则与普通 DQE 一致。对象 complete 源经共享范围读取取得完整行集后再计算或关联；显式完整导出使用完整读取入口。分页失败、总数变化或累计行数超出总数时不返回部分对象结果冒充完整结果；不收紧普通指标查询原有兼容规则。导出单表最多 10000 行，结果绑定去重集合最多 1000 值，超限拒绝而不截断。没有真实记录标识时不能从重复投影行推断上游重复翻页，也不能据此删除重复行；稳定分页需真实服务验真。
+
+完整 Dashboard 场景为 `/pages/dqe-object-query-demo`，使用 DQE Sim 合成记录；操作与证据边界见 `pages/capabilities/query/README.md`。用户提供的实际回执（请求1000行却仅返回10行、total_count1393）只作为响应兼容夹具，不能证明分页、排序、计数或真实业务口径。

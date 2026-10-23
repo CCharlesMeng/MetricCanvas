@@ -1,3 +1,4 @@
+import { executeObjectQuery } from './object-query';
 import { executeQueryModes } from './query-modes';
 import { iocHeaderFixture } from '../fixtures/ioc-header-query.mjs';
 import { executeRowExpansion } from './row-expansion';
@@ -152,7 +153,7 @@ const customerActivityDetailDimensions = [
 
 /** Exact demo handlers retain their previous precedence. */
 function executeLocalDemo(item:unknown):DqeSimItemResult|undefined {
-  for(const execute of [iocHeaderFixture,executeTableSearchOptions,executeRowExpansion,executeQueryModes,executeChartLocalFilter,executeNumericTolerance,executeMultiQueryTable,executeQueryResultWhere]){
+  for(const execute of [executeObjectQuery,iocHeaderFixture,executeTableSearchOptions,executeRowExpansion,executeQueryModes,executeChartLocalFilter,executeNumericTolerance,executeMultiQueryTable,executeQueryResultWhere]){
     const result=execute(item);if(result)return result;
   }
 }

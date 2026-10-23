@@ -1,3 +1,4 @@
+import {bindingOwnedDqeBody} from '@metriccanvas/page/internal';
 import { intersectQueryFilters } from './intersect-filters';
 import {selectQuery,requiresTimeValidation,timeFilterBoundaryError} from '@metriccanvas/page/internal';
 import { numberRangeIssue,rangeContextIssue,selectedCase, dimensionSelectionIssue, bindingQueryField, hasQueryFieldMapping, timePointPredicateValue, resolveTimeWindow, type FilterDeclaration, type QueryDataSource, type EffectiveQuery, type DataSnapshot } from '@metriccanvas/page/internal';
@@ -51,7 +52,7 @@ export function composeEffectiveQuery(
   // language 与查询体按数据源的查询定义分支原样透传,编排层不合成协议细节。
   return {
     language: query.language,
-    body: query.body,
+    body: bindingOwnedDqeBody(query),
     fieldMappings: dataSource.fields,
     ...(searchPredicate ? { search: searchPredicate } : {}),
     ...(sort.length > 0 ? { sort } : {}),
@@ -88,10 +89,11 @@ function bindingPredicates(binding: FilterBinding, value: FilterValue | undefine
 }
 
 function timePredicates(binding: Extract<FilterBinding, { target: 'time' }>, value: FilterValue | undefined): Predicates {
-  if (value?.type === 'timeRange') return [{ target: 'time', value: { from: value.from, to: value.to } }];
+  const target = binding.queryField ? { queryField: binding.queryField, valueFormat: binding.valueFormat } : {};
+  if (value?.type === 'timeRange') return [{ target: 'time', ...target, value: { from: value.from, to: value.to } }];
   if (binding.window && value?.type === 'timePoint') {
     const range = resolveTimeWindow(value.value, binding.window);
-    return [{ target: 'time', value: { from: range.start, to: range.end } }];
+    return [{ target: 'time', ...target, value: { from: range.start, to: range.end } }];
   }
   return [];
 }

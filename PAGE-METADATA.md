@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.54**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45、6.46、6.47、6.48、6.49、6.50、6.51、6.52、6.53和6.54；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.55**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45、6.46、6.47、6.48、6.49、6.50、6.51、6.52、6.53、6.54和6.55；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 
@@ -47,6 +47,8 @@
 | 模块语义源与生成参考 | `docs/page-metadata/`维护作者语义；[模块参考](contracts/metriccanvas/page/reference/README.md)提供Schema生成的字段表、分支、合法示例和反例，同时分发到Authoring Bundle与Skill |
 
 [机器索引](contracts/metriccanvas/page/reference/index.json)记录Schema位置、模块与示例覆盖；[完整Schema](contracts/metriccanvas/page/reference/schema.json)与参考正文同时生成。修改模块语义或示例索引后运行 `pnpm authoring:contracts`，不要手工维护分发副本。
+
+6.55 支持 DQE object 查询：显式 `object_type/output_fields/filter.fields`、对象时间字段绑定及共享交互/完整结果执行。见[对象查询契约](docs/page-metadata/queries-and-bindings.md#655-dqe-对象查询)，验收入口 `/pages/dqe-object-query-demo`。
 
 ## 快速查阅与验证
 

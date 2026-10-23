@@ -3,7 +3,7 @@ import type { EffectiveQuery } from '@metriccanvas/page/internal';
 type Predicate = EffectiveQuery['filterValues'][number];
 type Bounds<T> = { from?: T; to?: T };
 const key = (value: Predicate) => value.target === 'dimension' || value.target === 'dimensionRange'
-  ? `${value.target}:${value.queryField}` : value.target === 'metricRange' ? `${value.target}:${value.metric}` : value.target;
+  ? `${value.target}:${value.queryField}` : value.target === 'metricRange' ? `${value.target}:${value.metric}` : `${value.target}:${value.queryField ?? ''}:${value.valueFormat ?? ''}`;
 
 function stringBounds(left: Bounds<string>, right: Bounds<string>): Bounds<string> | undefined {
   const from = [left.from, right.from].filter((item): item is string => item !== undefined).sort().at(-1);

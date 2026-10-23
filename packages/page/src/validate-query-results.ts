@@ -1,3 +1,4 @@
+import { dqeDimensionConditions } from './dqe-object';
 import {ordinaryQuery} from './time-mode';
 import { queryResultWhereErrors } from './query-result-where';
 import type { Page } from './page';
@@ -73,8 +74,7 @@ function orderRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function occupiedDimensionTargets(query: PageQuery): Set<string> {
-  const filter = ordinaryQuery(query).body.dsl_list[0].filter;
-  const staticDims = filter && typeof filter === 'object' && !Array.isArray(filter) ? filter.dims : undefined;
+  const staticDims = dqeDimensionConditions(ordinaryQuery(query).body.dsl_list[0]);
   return new Set([
     ...Object.values(query.filterBindings ?? {}).flatMap(bindingQueryFields),
     ...Object.values(query.paramBindings ?? {}).flatMap(binding => binding.target === 'dimension' ? [binding.queryField] : []),

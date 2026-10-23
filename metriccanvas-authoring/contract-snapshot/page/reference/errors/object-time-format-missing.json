@@ -1,0 +1,30 @@
+{
+  "case": "object-time-format-missing",
+  "invariant": "dqe-object-query",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "object 时间绑定必须显式声明 queryField 和 valueFormat",
+      "paths": [
+        "/dataSources/approvals/source/query/filterBindings/period"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "approvals": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "period": {
+                "target": "time",
+                "queryField": "特价审批通过时间"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/object-time-format-missing.json"
+}

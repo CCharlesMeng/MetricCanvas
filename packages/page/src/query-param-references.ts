@@ -1,3 +1,5 @@
+import { isObjectDqeItem } from './dqe-object';
+import { objectParamReferenceErrors, objectConditions, resolveObjectParamReferences } from './object-query-params';
 import {ordinaryQuery,queryLeaves,querySelection} from './query-selection';
 import type { TypedError } from './errors';
 import { isQueryInputDeclaration, pageParamDeclarations, type GroupedPageParams, type PageParamDeclaration, type PageParamValue } from './page-param';
@@ -24,6 +26,10 @@ export function queryParamReferenceErrors(document: unknown): TypedError[] {
     if (source.source.type !== 'query' || !definition) continue;
     for(const query of queryLeaves(definition)){
     const root = `/dataSources/${pointer(sourceId)}/source/query/body`;
+    if(isObjectDqeItem(ordinaryQuery(query).body.dsl_list[0])){
+      errors.push(...objectParamReferenceErrors(query,declarations,root,outsideQueryLayer,layered));
+      continue;
+    }
     const allowed = new Set<string>();
     const filter = record(ordinaryQuery(query).body.dsl_list[0].filter);
     const filterPath = `${root}/dsl_list/0/filter`;
@@ -54,13 +60,7 @@ export function queryParamReferenceErrors(document: unknown): TypedError[] {
       if (outsideQueryLayer(p)) error(path, `引用的参数不在 params.query 下:${time.param}`);
       else if (p?.type !== 'timeRange' || !p.required) error(path, '时间引用必须指向必需的 times 参数');
       if (time.period !== (p?.granularity === 'month' ? 'month' : 'day')) error(path, '查询 period 与时间参数精度不兼容');
-      if (time.window !== undefined) {
-        const window = timeWindowZ.safeParse(time.window);
-        // 未填值模板没有起止可判,基准点是否单点留到取值代入时再判。
-        if (!window.success) error(`${path}/window`, '时间窗口不是合法的具名窗口');
-        else if (p?.granularity && !timeWindowCompatible(p.granularity, window.data)) error(`${path}/window`, '时间窗口单位与参数精度不相容');
-        else if (isRange(p?.value) && p.value.start !== p.value.end) error(`${path}/window`, '窗口派生要求基准时间参数为单点');
-      }
+      timeReferenceWindowErrors(time,p,path,error);
       if (Object.values(query.filterBindings ?? {}).some(b => b.target === 'time') || Object.values(query.paramBindings ?? {}).some(b => b.target === 'time')) error(path, '时间原位引用不能与筛选/旧参数绑定共同控制');
     }
     function visit(value: unknown, path: string): void {
@@ -80,7 +80,9 @@ export function queryParamReferenceErrors(document: unknown): TypedError[] {
 
 export function hasQueryParamReferences(query: PageQuery): boolean {
   if(querySelection(query))return queryLeaves(query).some(hasQueryParamReferences);
-  const filter = record(ordinaryQuery(query).body.dsl_list[0].filter);
+  const item=ordinaryQuery(query).body.dsl_list[0];
+  if(isObjectDqeItem(item))return objectConditions(item).some(field=>typeof record(field.value_list)?.param==='string');
+  const filter = record(item.filter);
   return typeof record(filter?.time)?.param === 'string' ||
     (Array.isArray(filter?.dims) && filter.dims.some(d => !!record(record(d)?.dim_value_list)?.param));
 }
@@ -93,6 +95,7 @@ function isRange(value: unknown): value is { start: string; end: string } {
 /** 调用前须通过页面校验；只改查询副本，查询粒度、聚合设置和指标保持原样。 */
 export function resolveQueryParamReferences(query: PageQuery, values: ReadonlyMap<string, PageParamValue>): void {
   if(querySelection(query)){for(const leaf of queryLeaves(query))resolveQueryParamReferences(leaf,values);return;}
+  if(isObjectDqeItem(ordinaryQuery(query).body.dsl_list[0])){resolveObjectParamReferences(query,values);return;}
   const filter = record(ordinaryQuery(query).body.dsl_list[0].filter);
   if (!filter) return;
   if (Array.isArray(filter.dims)) for (const raw of filter.dims) {
@@ -116,4 +119,12 @@ function resolveTimeReference(filter:Record<string,unknown>,values:ReadonlyMap<s
   delete time.window;
   time.start = range.start;
   time.end = range.end;
+}
+
+function timeReferenceWindowErrors(time: Record<string,unknown>, p: PageParamDeclaration | undefined, path: string, error: (path:string,message:string)=>void): void {
+  if(time.window===undefined)return;
+  const window=timeWindowZ.safeParse(time.window);
+  if (!window.success) error(`${path}/window`, '时间窗口不是合法的具名窗口');
+  else if (p?.granularity && !timeWindowCompatible(p.granularity, window.data)) error(`${path}/window`, '时间窗口单位与参数精度不相容');
+  else if (isRange(p?.value) && p.value.start !== p.value.end) error(`${path}/window`, '窗口派生要求基准时间参数为单点');
 }

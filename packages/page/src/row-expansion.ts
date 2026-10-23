@@ -1,3 +1,4 @@
+import { dqeDefaultSort } from './dqe-object';
 import type { Page, TableComponent, TableProps, TableColumn, TableColumnNode } from './page';
 import type { Row } from './snapshot';
 import type { EffectiveQuery } from './query';
@@ -56,16 +57,7 @@ export function expansionRowKey(value: unknown): string | undefined {
 export function stableRowQuery(query: EffectiveQuery, rowKey: string): EffectiveQuery {
   const field = query.fieldMappings[rowKey];
   if (!field || !hasQueryFieldMapping(field)) throw new Error('子表格行键没有查询映射');
-  const order = query.body.dsl_list[0]?.order;
-  const by = order && typeof order === 'object' && !Array.isArray(order) ? order.by : undefined;
-  const defaults: NonNullable<EffectiveQuery['sort']> = [];
-  if (!query.sort && by !== undefined) {
-    if (!Array.isArray(by)) throw new Error('子表格默认排序格式不可用');
-    for (const item of by) {
-      if (!item || typeof item !== 'object' || Array.isArray(item) || typeof item.field !== 'string' || !['asc', 'desc'].includes(String(item.type))) throw new Error('子表格默认排序格式不可用');
-      defaults.push({ queryField: item.field, direction: item.type as 'asc' | 'desc' });
-    }
-  }
+  const defaults = query.sort ? [] : dqeDefaultSort(query.body.dsl_list[0]);
   const sort = [...(query.sort ?? defaults)];
   if (!sort.some(rule => rule.queryField === field.queryField)) sort.push({ queryField: field.queryField, direction: 'asc' });
   return { ...query, sort };

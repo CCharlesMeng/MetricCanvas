@@ -1,0 +1,181 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "packages/data-execution/src/paged-join/execute.ts",
+      "functions": [
+        {
+          "name": "executePagedJoin",
+          "qualifiedName": "executePagedJoin",
+          "line": 9,
+          "endLine": 51,
+          "selfCC": 16,
+          "optionalChains": 3,
+          "subtreeCC": 18,
+          "nestedFunctions": 6
+        },
+        {
+          "name": "run",
+          "qualifiedName": "executePagedJoin/run",
+          "line": 11,
+          "endLine": 11,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@17:72>",
+          "qualifiedName": "executePagedJoin/<anonymous@17:72>",
+          "line": 17,
+          "endLine": 17,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@17:99>",
+          "qualifiedName": "executePagedJoin/<anonymous@17:99>",
+          "line": 17,
+          "endLine": 21,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@25:20>",
+          "qualifiedName": "executePagedJoin/<anonymous@25:20>",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@41:70>",
+          "qualifiedName": "executePagedJoin/<anonymous@41:70>",
+          "line": 41,
+          "endLine": 41,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@41:103>",
+          "qualifiedName": "executePagedJoin/<anonymous@41:103>",
+          "line": 41,
+          "endLine": 45,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/data-execution/src/paged-join/member-query.ts",
+      "functions": [
+        {
+          "name": "memberQuery",
+          "qualifiedName": "memberQuery",
+          "line": 5,
+          "endLine": 11,
+          "selfCC": 7,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@7:66>",
+          "qualifiedName": "memberQuery/<anonymous@7:66>",
+          "line": 7,
+          "endLine": 7,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@8:45>",
+          "qualifiedName": "memberQuery/<anonymous@8:45>",
+          "line": 8,
+          "endLine": 8,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@9:96>",
+          "qualifiedName": "memberQuery/<anonymous@9:96>",
+          "line": 9,
+          "endLine": 9,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "restrictKeys",
+          "qualifiedName": "restrictKeys",
+          "line": 13,
+          "endLine": 25,
+          "selfCC": 12,
+          "optionalChains": 1,
+          "subtreeCC": 12,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@20:49>",
+          "qualifiedName": "restrictKeys/<anonymous@20:49>",
+          "line": 20,
+          "endLine": 20,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@22:160>",
+          "qualifiedName": "restrictKeys/<anonymous@22:160>",
+          "line": 22,
+          "endLine": 22,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/data-execution/src/paged-join/export.ts",
+      "functions": [
+        {
+          "name": "exportPagedJoin",
+          "qualifiedName": "exportPagedJoin",
+          "line": 9,
+          "endLine": 48,
+          "selfCC": 21,
+          "optionalChains": 3,
+          "subtreeCC": 21,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "partial",
+          "qualifiedName": "exportPagedJoin/partial",
+          "line": 13,
+          "endLine": 19,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}

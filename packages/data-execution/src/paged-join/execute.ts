@@ -1,3 +1,5 @@
+import {isObjectDqeItem,type EffectiveQuery} from '@metriccanvas/page/internal';
+import {fetchComplete} from '../source-program/range-policy';
 import type { DataSnapshot, TableQueryView } from '@metriccanvas/page/internal';
 import type { QueryRunner } from '../query-runner';
 import { evaluateTableView } from '../table-view';
@@ -8,7 +10,7 @@ import type { PagedJoinPlan } from './plan';
 
 export async function executePagedJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false): Promise<{ snapshot: DataSnapshot; viewCorrection?: TableQueryView }> {
   signal?.throwIfAborted();
-  const run = (id: string, query = memberQuery(plan, id)) => runner.run(query, { pageId: plan.page.id, dataSourceIds: [plan.source.source.members[id].source] }, scope, signal);
+  const run = (id: string, query = memberQuery(plan, id)) => runMemberQuery(plan,id,query,runner,scope,signal);
   if (!plan.selection) {
     const domainId = plan.source.source.domainMember;
     const domain = memberRows(plan, domainId, await run(domainId));
@@ -48,4 +50,10 @@ export async function executePagedJoin(plan: PagedJoinPlan, runner: QueryRunner,
   if (selection.status !== 'ready' && selection.status !== 'empty') throw rowFailure('选页未完成');
   return { snapshot: rawSnapshot(ordinalRows(plan, rows, pageIndex * plan.view.pageSize), selection.totalCount),
     ...(pageIndex === plan.view.pageIndex ? {} : { viewCorrection: { ...plan.view, pageIndex } }) };
+}
+
+async function runMemberQuery(plan: PagedJoinPlan, id: string, query: EffectiveQuery, runner: QueryRunner, scope: string, signal?: AbortSignal): Promise<DataSnapshot> {
+  const diagnostics={pageId:plan.page.id,dataSourceIds:[plan.source.source.members[id].source]};
+  if(isObjectDqeItem(query.body.dsl_list[0]) && !query.pagination) return fetchComplete(query,runner,scope,signal,diagnostics,true);
+  return runner.run(query,diagnostics,scope,signal);
 }

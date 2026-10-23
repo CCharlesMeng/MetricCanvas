@@ -1,3 +1,4 @@
+import { dqeDefaultSort, isObjectDqeItem } from './dqe-object';
 import { ordinaryQuery } from './time-mode';
 import type { Page, TableComponent } from './page';
 import type { TypedError } from './errors';
@@ -47,11 +48,7 @@ export function rowExpansionErrors(page: Page, validateScope: (page: Page) => Ty
         errors.push(error(`${path}/data/source`, '子表格要求普通分页 query，不能使用 complete、compute、结果绑定或组合查询源'));
       }
       if (source?.source.type === 'query') {
-        const order = ordinaryQuery(source.source.query).body.dsl_list[0]?.order;
-        if (order && typeof order === 'object' && !Array.isArray(order)) {
-          const by = order.by;
-          if (order.order_by_field !== undefined || (by !== undefined && (!Array.isArray(by) || by.some((rule, index) => !rule || typeof rule !== 'object' || Array.isArray(rule) || typeof rule.field !== 'string' || !['asc', 'desc'].includes(String(rule.type)) || (rule.priority !== undefined && rule.priority !== index + 1))))) errors.push(error(`${path}/data/source`, '子表格默认排序须使用 order.by 的 field/type 有序数组'));
-        }
+        errors.push(...childDefaultSortErrors(ordinaryQuery(source.source.query).body.dsl_list[0],`${path}/data/source`));
       }
       if (expansion.table.pagination?.mode !== 'query') errors.push(error(`${path}/table/pagination`, '查询子表格必须显式声明 mode:query'));
       if (input.filters.some(id => !input.bindings[id]) || Object.keys(input.bindings).some(id => !input.filters.includes(id))) errors.push(error(`${path}/data/bindings`, '必须且只能绑定子表格声明的全部输入'));
@@ -107,4 +104,19 @@ export function rowExpansionErrors(page: Page, validateScope: (page: Page) => Ty
     if (components.some(component => component.type === 'reportHeader' && component.props.exportButtons?.length)) errors.push(error('/sections', '子表格页面导出范围待确认，暂不启用页面导出'));
   }
   return errors;
+}
+
+function childDefaultSortErrors(item: import('./query').JsonObject, path: string): TypedError[] {
+  if(isObjectDqeItem(item)){
+    try { dqeDefaultSort(item); return []; }
+    catch { return [error(path,'object 子表格默认排序格式不可用')]; }
+  }
+  const order=item.order;
+  if(!order || typeof order!=='object' || Array.isArray(order))return [];
+  const by=order.by;
+  const invalid=order.order_by_field!==undefined || (by!==undefined && (!Array.isArray(by) || by.some(invalidDefaultRule)));
+  return invalid?[error(path,'子表格默认排序须使用 order.by 的 field/type 有序数组')]:[];
+}
+function invalidDefaultRule(rule: import('./query').JsonValue, index: number): boolean {
+  return !rule || typeof rule!=='object' || Array.isArray(rule) || typeof rule.field!=='string' || !['asc','desc'].includes(String(rule.type)) || (rule.priority!==undefined && rule.priority!==index+1);
 }

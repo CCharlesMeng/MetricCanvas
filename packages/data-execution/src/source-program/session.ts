@@ -1,3 +1,4 @@
+import { isObjectDqeItem } from '@metriccanvas/page/internal';
 import { intersectQueryFilters } from '../intersect-filters';
 import {requiresQueryContext,requiresTimeValidation,hasQuerySelection} from '@metriccanvas/page/internal';
 import {type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
@@ -189,7 +190,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
             let query = preparedQuery(id, source as QueryDataSource, view, input.values);
             const diagnostics = { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] };
             const preserveWindow = preserveBusinessWindow(id, source);
-            if (requiresCompleteRead(preserveWindow)) { resultLimit = undefined; snapshot = await fetchComplete(query, runner, scope, request.signal, diagnostics, querySource.source.resultScope === 'complete', () => describeExportSource(page, id), request.allowPartial); }
+            if (requiresCompleteRead(preserveWindow,source,query)) { resultLimit = undefined; snapshot = await fetchComplete(query, runner, scope, request.signal, diagnostics, querySource.source.resultScope === 'complete', () => describeExportSource(page, id), request.allowPartial); }
             else {
               snapshot = await runner.run(query, diagnostics, scope, request.signal);
               const corrected = correctedPageIndex(query, snapshot);
@@ -265,7 +266,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           if (input.status === 'waiting') throw new Error('页面查询依赖未就绪');
           return input;
         }
-        const requiresCompleteRead = (preserveWindow: boolean) => request.purpose === 'complete' && !preserveWindow;
+        const requiresCompleteRead = (preserveWindow: boolean, source: DataSource, query: EffectiveQuery) => (request.purpose === 'complete' && !preserveWindow) || objectCompleteSource(source,query);
         function preparedQuery(id: string, source: QueryDataSource, view: TableQueryView, values: EffectiveQuery['filterValues']): EffectiveQuery {
           const captured = request.queries?.get(id);
           if (captured && requiresQueryContext(source.source.query, page.filters)) { const expected = composeEffectiveQuery({ now: request.now, filters: page.filters, dataSource: source as QueryDataSource }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), view.search); if (canonicalizeJson(captured.body) !== canonicalizeJson(expected.body)) throw Object.assign(new Error('捕获查询与已应用查询模式不匹配'), { code: 'DQE_QUERY_REJECTED' }); }
@@ -331,3 +332,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   return program;
 }
 export type SourceProgram = ReturnType<typeof createSourceProgram>;
+
+function objectCompleteSource(source: DataSource, query: EffectiveQuery): boolean {
+  return source.source.type==='query' && source.source.resultScope==='complete' && isObjectDqeItem(query.body.dsl_list[0]);
+}

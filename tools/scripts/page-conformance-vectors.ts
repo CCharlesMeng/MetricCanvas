@@ -54,6 +54,14 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'dqe-object-query',description:'6.55 对象输出、显式时间字段与原始行契约',valid:['object-query-page'],cases:[
+    {case:'object-version',base:'object-query-page',expect:/由 6.55 引入/,mutate:d=>{d.schemaVersion='6.51';}},
+    {case:'object-type-missing',base:'object-query-page',expect:/object_type/,mutate:d=>{delete d.dataSources.approvals.source.query.body.dsl_list[0].object_type;}},
+    {case:'object-output-missing',base:'object-query-page',expect:/output_fields/,mutate:d=>{d.dataSources.approvals.source.query.body.dsl_list[0].output_fields=[];}},
+    {case:'object-output-mixed',base:'object-query-page',expect:/不得混用/,mutate:d=>{d.dataSources.approvals.source.query.body.dsl_list[0].output_dims=['商务编号'];}},
+    {case:'object-time-field-missing',base:'object-query-page',expect:/queryField/,mutate:d=>{delete d.dataSources.approvals.source.query.filterBindings.period.queryField;}},
+    {case:'object-time-format-missing',base:'object-query-page',expect:/valueFormat/,mutate:d=>{delete d.dataSources.approvals.source.query.filterBindings.period.valueFormat;}}
+  ]},
   {id:'currency-range-presets',description:'6.46单位case内的币种预设保持单一金额状态',valid:['ioc-header-currency'],cases:[
     {case:'currency-presets-version',base:'ioc-header-currency',expect:/由 6.46 引入/,mutate:d=>{d.schemaVersion='6.45';}},
     {case:'currency-presets-missing',base:'ioc-header-currency',expect:/覆盖全部/,mutate:d=>{delete d.filters[1].units.cases.USD.presets;}},

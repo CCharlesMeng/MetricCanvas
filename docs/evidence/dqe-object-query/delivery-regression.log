@@ -1,0 +1,10 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/page/tests packages/data-execution/tests packages/engine/runtime/tests packages/engine/runtime-ui/tests tools/dqe-sim/tests apps/playground/tests tests/public-api.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/dqe-object-query/DataDashboard
+
+
+ Test Files  222 passed (222)
+      Tests  1685 passed (1685)
+   Start at  15:00:43
+   Duration  19.51s (transform 14.53s, setup 0ms, import 187.62s, tests 55.58s, environment 12ms)
+

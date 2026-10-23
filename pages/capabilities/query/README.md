@@ -45,3 +45,18 @@
 关联：[business-sdt-cascade-example](../../business/report/sdt/business-sdt-cascade-example.json)。
 
 关联：[multi-query-table](../table/multi-query-table.json)。
+
+
+## DQE 对象查询
+
+页面：[`dqe-object-query-demo.json`](dqe-object-query-demo.json)，入口 `/pages/dqe-object-query-demo`。使用 Dashboard 现有页头与表格；数据全部来自本地 DQE Sim 合成表（24条一月、4条二月审批；每商务两条审批；隐藏商务筛选显式声明14个已知合成编号作为可信候选）。无必需 URL 参数。
+
+运行 `pnpm dev:dqe` 后打开 Playground 页面。若为独立工作树使用其他端口，给 Sim 与 Playground 设置同一 DQE_SIM_PORT，并通过 Vite --port 指定空闲端口。
+
+1. 首屏审批表查询分页5行，总24行；完整结果表包含差额计算及关联合同金额。商务重复保留、审批记录ID唯一。
+2. 翻到下一页或按金额排序，当前窗口驱动的指标表随窗口编号集合变化。搜索完整 B003 得两条审批；空匹配显示空态。
+3. 修改审批日期为二月，总4行；选择东区或设置金额下限继续收窄，原始一月默认条件不残留。点击编号写入隐藏商务筛选并联动已绑定源。
+4. 完整审批表导出包含当前条件下的完整记录；窗口源导出范围继续按共享的显式完整/窗口用途决定，不冒充全量。
+5. 指标结果反向驱动对象查询；主表完整对象结果通过 joinAggregate 关联普通指标结果。详见行为测试对窗口绑定、完整绑定及行数的断言。
+
+异常夹具位于 `packages/page/tests/dqe-object-query.test.ts` 与 `packages/data-execution/tests/dqe-object-query.test.ts`：缺对象、字段或时间目标、版本过低、参数不成对、完整结果总数失配、多列排序未提供可信编码。包含搜索、列候选及多列排序需要与普通 DQE 相同的可信接入能力，默认网关明确报错；这些真实能力没有被 Sim 页面证明。

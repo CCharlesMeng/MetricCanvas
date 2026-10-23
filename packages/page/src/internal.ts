@@ -79,5 +79,6 @@ export * from './presentation-operation';
 export * from './row-expansion';
 
 export * from './query-selection';
+export * from './dqe-object';
 
 export * from './ai-summary';

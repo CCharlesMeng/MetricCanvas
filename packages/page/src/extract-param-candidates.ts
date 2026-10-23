@@ -1,3 +1,4 @@
+import { dqeRecord, isObjectDqeItem } from './dqe-object';
 import { ordinaryQuery, hasQuerySelection } from './query-selection';
 import { isPeriodSelection, resolvePeriodSelection } from './period-filter';
 import { canonicalizeJson } from './canonical-json';
@@ -39,7 +40,9 @@ function collectQueryCandidates(source: PageDocument, id: string, context: Extra
   const query = ds.source.query;
   const base = `/dataSources/${pointer(id)}/source/query/body/dsl_list/0/filter`;
   if (Object.keys(query.paramBindings ?? {}).length) { skipped.push({ path: base, reason: '旧绑定须先显式迁移' }); return; }
-  const rawFilter = ordinaryQuery(query).body.dsl_list[0].filter;
+  const item=ordinaryQuery(query).body.dsl_list[0];
+  if(isObjectDqeItem(item)){collectObjectCandidates(source,id,item,query,context,add,skipped,base);return;}
+  const rawFilter = item.filter;
   const filter: Record<string, any> = record(rawFilter) ? rawFilter : {};
   if (Array.isArray(filter.dims)) for (const [index, dim] of filter.dims.entries()) {
     collectDimensionCandidate(source, id, dim, filter.dims, `${base}/dims/${index}/dim_value_list`, query, context, add, skipped);
@@ -146,4 +149,17 @@ function finalizeCandidate(candidate: ParameterCandidate, source: PageDocument, 
   candidate.coveredQueries = [...new Set(candidate.locations.map(l => l.dataSourceId))].sort();
   candidate.uncoveredQueries = queries.filter(id => !candidate.coveredQueries.includes(id));
   candidate.defaultSelected = candidate.coveredQueries.length > 1 && candidate.coveredQueries.length > queries.length / 2;
+}
+
+function collectObjectCandidates(source: PageDocument, id: string, item: import('./query').JsonObject, query: DqeQueryDefinition, context: ExtractionContext, add: AddCandidate, skipped: Skipped, base: string): void {
+  const fields=dqeRecord(item.filter).fields;
+  if(!Array.isArray(fields))return;
+  const projected=fields.map(value=>{const field=dqeRecord(value);return {dim_name:field.field_name,dim_value_list:field.value_list};});
+  fields.forEach((value,index)=>{
+    const field=dqeRecord(value),path=`${base}/fields/${index}/value_list`;
+    if(Object.keys(field).some(key=>!['field_name','value_list','operator'].includes(key)) || (field.operator!==undefined && field.operator!=='=')) {
+      skipped.push({path,reason:'object 只自动提取无歧义的等值字段；日期区间通过显式筛选绑定提取'});return;
+    }
+    collectDimensionCandidate(source,id,projected[index],projected,path,query,context,add,skipped);
+  });
 }

@@ -509,3 +509,8 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 
 
 IOC 最近月份使用 dimension 的 `selection:{mode:"multiple",required:true}`（6.46）和 `urlParams:{value:"months"}`；`?months=202610&months=202608` 保留两个离散值，不扩成连续范围。清空写入拒绝，缺值门禁；生产空选回退仍未裁决。参见 [IOC业务场景](docs/page-metadata/filters.md#ioc-业务批量场景与必选多选646) 与 `pages/capabilities/ioc-header/business/ioc-header-months.json`。
+
+
+## 对象查询参数（6.55）
+
+DQE object 查询复用分组参数及筛选初值；维度原位引用放在 `filter.fields[].value_list:{param:id}`，dim_name 必须与 field_name 一致。日期原位引用由同字段的两条条件成对声明 `{param:id,part:start|end,valueFormat:iso|compact|datetime}`；或使用 `target:time` 的显式字段/格式绑定（允许既有 window）。固定输入与页内筛选不共同控制同一目标。具体边界见[对象查询](docs/page-metadata/queries-and-bindings.md#652-dqe-对象查询)。参数提取只自动识别无歧义的字符串等值对象条件；日期条件优先通过已声明的日期筛选绑定提取，原始任意比较式不猜测。

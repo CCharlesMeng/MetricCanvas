@@ -1,3 +1,5 @@
+import { encodeObjectQuery, type ObjectSortEncoder } from './object-query';
+import { isObjectDqeItem } from '@metriccanvas/page/internal';
 import { applyTableFilters, EmptyTableQuery, TableFilterConflict } from './table-filters';
 import { validateCandidatePage } from '../column-candidates';
 import type { ColumnCandidatesQuery } from '../ports';
@@ -93,6 +95,8 @@ export function createInMemoryDqeDiagnostics(limit = 100): InMemoryDqeDiagnostic
 }
 
 export interface DqeGatewayConfig {
+  /** Deployment-verified multi-field object ordering; single-field uses native order_by_field. */
+  encodeObjectSort?: ObjectSortEncoder;
   /** Trusted, deployment-verified original-result DISTINCT encoding; absent means unavailable. */
   encodeColumnCandidates?: (request: ColumnCandidatesQuery) => { query: EffectiveQuery; valueField: string; labelField?: string };
 
@@ -456,7 +460,7 @@ export function createDqeGateway(
       }
       let item: JsonObject;
       try {
-        item = encodedDqeItem(query, config.encodeSearch);
+        item = encodedDqeItem(query, config.encodeSearch, config.encodeObjectSort);
       } catch (cause) {
         if (cause instanceof EmptyTableQuery) {
           recordDiagnostic(execution, { status: 'success', rowCount: 0, totalCount: 0 });
@@ -642,8 +646,18 @@ function classifiedFetchError(
 /** 在不改变页面查询定义的前提下，克隆并覆盖当前生效筛选。 */
 export function effectiveDqeItem(query: EffectiveQuery): JsonObject { return encodedDqeItem(query); }
 
-function encodedDqeItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfig['encodeSearch']): JsonObject {
+function encodedDqeItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfig['encodeSearch'], encodeObjectSort?: ObjectSortEncoder): JsonObject {
   assertNoQueryParamReferences(query.body);
+  if (isObjectDqeItem(query.body.dsl_list[0])) return encodedObjectItem(query, encodeSearch, encodeObjectSort);
+  return encodedMetricItem(query, encodeSearch);
+}
+function encodedObjectItem(query: EffectiveQuery, encodeSearch: DqeGatewayConfig['encodeSearch'], encodeSort?: ObjectSortEncoder): JsonObject {
+  const item=encodeObjectQuery(query,encodeSort);
+  if(!query.search || query.search.match==='equals')return item;
+  if(!encodeSearch)throw new DqeGatewayError('DQE_CONFIG_ERROR','数据网关未配置全表文本搜索能力');
+  return encodeSearch(item,structuredClone(query.search));
+}
+function encodedMetricItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfig['encodeSearch']): JsonObject {
   const item = cloneJson(query.body.dsl_list[0]);
   for (const filter of query.bindingValues ?? query.filterValues) {
     if (filter.target === 'dimension') {

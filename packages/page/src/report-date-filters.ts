@@ -1,3 +1,4 @@
+import { isObjectDqeItem } from './dqe-object';
 import {ordinaryQuery} from './time-mode';
 import { isPeriodSelection, resolvePeriodSelection } from './period-filter';
 import type { Component, Page } from './page';
@@ -96,7 +97,8 @@ function queryDateFilterErrors(query: DqeQueryDefinition, path: string, filters:
   if (times.length > 1) error(path, '查询时间目标只能由一个筛选器控制');
   for (const [filterId, binding] of times) {
     if (binding.target !== 'time') continue;
-    boundDateFilterErrors(binding, filters.get(filterId), queryTimeConfig(query), `${path}/${filterId}`, error);
+    if(isObjectDqeItem(ordinaryQuery(query).body.dsl_list[0])) objectDateFilterErrors(binding,filters.get(filterId),`${path}/${filterId}`,error);
+    else boundDateFilterErrors(binding, filters.get(filterId), queryTimeConfig(query), `${path}/${filterId}`, error);
   }
 }
 
@@ -126,4 +128,8 @@ function periodModeErrors(filter: RangeFilter, path: string, error: ErrorReporte
     if (isPeriodSelection(filter.default) && !filter.periodModes.includes(filter.default.mode)) error(`${path}/default/mode`, '默认期间模式必须在 periodModes 中');
     if (filter.initialMode && !filter.periodModes.includes(filter.initialMode)) error(`${path}/initialMode`, '参数初始化期间模式必须在 periodModes 中');
   }
+}
+
+function objectDateFilterErrors(binding: TimeBinding, declaration: FilterDeclaration | undefined, path: string, error: ErrorReporter): void {
+  if(binding.window && declaration?.type==='timePoint' && !timeWindowCompatible(declaration.granularity,binding.window)) error(path,'时间窗口单位与筛选器精度不相容');
 }

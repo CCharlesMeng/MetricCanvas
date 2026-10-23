@@ -1,0 +1,29 @@
+{
+  "case": "object-type-missing",
+  "invariant": "dqe-object-query",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "object 查询必须声明 object_type",
+      "paths": [
+        "/dataSources/approvals/source/query/body/dsl_list/0/object_type"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "approvals": {
+        "source": {
+          "query": {
+            "body": {
+              "dsl_list": [
+                {}
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/object-type-missing.json"
+}

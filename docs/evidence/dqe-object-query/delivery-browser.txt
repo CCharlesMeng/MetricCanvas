@@ -1,0 +1,281 @@
+- navigation "试验场导航":
+  - link "← 页面目录":
+    - /url: /
+  - link "JSON 即时预览":
+    - /url: /preview
+- complementary "页面 JSON":
+  - generic "查看页面 JSON"
+- banner:
+  - heading "DQE 对象查询｜完整结果与指标联动" [level=1]
+  - group "审批日期":
+    - combobox "审批日期开始": 2025-02-01
+    - generic: "-"
+    - textbox "审批日期结束":
+      - /placeholder: 结束日期
+      - text: 2025-02-28
+    - button "打开日期选择器":
+  - group "区域":
+    - button "区域":
+      - generic: 全部
+  - group "审批金额":
+    - spinbutton: "2700"
+    - generic: 至
+    - spinbutton
+    - button "✕"
+- article:
+  - heading "审批明细（合成数据，查询分页）" [level=3]
+  - button "表格搜索字段":
+    - generic: 商务编号
+  - searchbox "表格搜索"
+  - button "搜索":
+  - button "导出":
+    - generic: 导出
+  - table:
+    - rowgroup:
+      - row "审批记录ID 商务编号 特价审批通过时间 区域 审批金额 预算金额":
+        - columnheader "审批记录ID":
+          - button "审批记录ID":
+            - generic: 审批记录ID
+        - columnheader "商务编号":
+          - button "商务编号":
+            - generic: 商务编号
+        - columnheader "特价审批通过时间":
+          - button "特价审批通过时间":
+            - generic: 特价审批通过时间
+        - columnheader "区域":
+          - button "区域":
+            - generic: 区域
+        - columnheader "审批金额":
+          - button "审批金额":
+            - generic: 审批金额
+          - generic "表头筛选":
+        - columnheader "预算金额":
+          - button "预算金额":
+            - generic: 预算金额
+    - rowgroup:
+      - row "R027 B014 2025-02-03 12:00:00 东区 2700 3375":
+        - cell "R027":
+          - generic: R027
+        - cell "B014":
+          - button "B014" [pressed]:
+            - generic: B014
+        - cell "2025-02-03 12:00:00":
+          - generic: 2025-02-03 12:00:00
+        - cell "东区":
+          - generic: 东区
+        - cell "2700":
+          - generic: "2700"
+        - cell "3375":
+          - generic: "3375"
+      - row "R028 B014 2025-02-04 12:00:00 西区 2800 3500":
+        - cell "R028":
+          - generic: R028
+        - cell "B014":
+          - button "B014":
+            - generic: B014
+        - cell "2025-02-04 12:00:00":
+          - generic: 2025-02-04 12:00:00
+        - cell "西区":
+          - generic: 西区
+        - cell "2800":
+          - generic: "2800"
+        - cell "3500":
+          - generic: "3500"
+  - generic: 总条数： 2
+- article:
+  - heading "完整审批、差额计算与指标关联" [level=3]
+  - button "表格搜索字段":
+    - generic: 商务编号
+  - searchbox "表格搜索"
+  - button "搜索":
+  - button "导出":
+    - generic: 导出
+  - table:
+    - rowgroup:
+      - row "审批记录ID 商务编号 特价审批通过时间 区域 审批金额 预算金额 预算差额 关联合同金额":
+        - columnheader "审批记录ID":
+          - button "审批记录ID":
+            - generic: 审批记录ID
+        - columnheader "商务编号":
+          - button "商务编号":
+            - generic: 商务编号
+        - columnheader "特价审批通过时间":
+          - button "特价审批通过时间":
+            - generic: 特价审批通过时间
+        - columnheader "区域":
+          - button "区域":
+            - generic: 区域
+        - columnheader "审批金额":
+          - button "审批金额":
+            - generic: 审批金额
+          - generic "表头筛选":
+        - columnheader "预算金额":
+          - button "预算金额":
+            - generic: 预算金额
+        - columnheader "预算差额":
+          - generic: 预算差额
+        - columnheader "关联合同金额":
+          - generic: 关联合同金额
+    - rowgroup:
+      - row "R027 B014 2025-02-03 12:00:00 东区 2700 3375 675 14000":
+        - cell "R027":
+          - generic: R027
+        - cell "B014":
+          - generic: B014
+        - cell "2025-02-03 12:00:00":
+          - generic: 2025-02-03 12:00:00
+        - cell "东区":
+          - generic: 东区
+        - cell "2700":
+          - generic: "2700"
+        - cell "3375":
+          - generic: "3375"
+        - cell "675":
+          - generic: "675"
+        - cell "14000":
+          - generic: "14000"
+      - row "R028 B014 2025-02-04 12:00:00 西区 2800 3500 700 14000":
+        - cell "R028":
+          - generic: R028
+        - cell "B014":
+          - generic: B014
+        - cell "2025-02-04 12:00:00":
+          - generic: 2025-02-04 12:00:00
+        - cell "西区":
+          - generic: 西区
+        - cell "2800":
+          - generic: "2800"
+        - cell "3500":
+          - generic: "3500"
+        - cell "700":
+          - generic: "700"
+        - cell "14000":
+          - generic: "14000"
+  - generic: 总条数： 2
+- article:
+  - heading "当前查询窗口 → 指标查询" [level=3]
+  - button "表格搜索字段":
+    - generic: 商务编号
+  - searchbox "表格搜索"
+  - button "搜索":
+  - button "导出":
+    - generic: 导出
+  - table:
+    - rowgroup:
+      - row "business contract":
+        - columnheader "business":
+          - generic: business
+        - columnheader "contract":
+          - generic: contract
+    - rowgroup:
+      - row "B014 14000":
+        - cell "B014":
+          - generic: B014
+        - cell "14000":
+          - generic: "14000"
+  - generic: 总条数： 1
+- article:
+  - heading "指标查询结果 → 对象查询" [level=3]
+  - button "表格搜索字段":
+    - generic: 商务编号
+  - searchbox "表格搜索"
+  - button "搜索":
+  - button "导出":
+    - generic: 导出
+  - table:
+    - rowgroup:
+      - row "审批记录ID 商务编号 特价审批通过时间 区域 审批金额 预算金额":
+        - columnheader "审批记录ID":
+          - button "审批记录ID":
+            - generic: 审批记录ID
+        - columnheader "商务编号":
+          - button "商务编号":
+            - generic: 商务编号
+        - columnheader "特价审批通过时间":
+          - button "特价审批通过时间":
+            - generic: 特价审批通过时间
+        - columnheader "区域":
+          - button "区域":
+            - generic: 区域
+        - columnheader "审批金额":
+          - button "审批金额":
+            - generic: 审批金额
+          - generic "表头筛选":
+        - columnheader "预算金额":
+          - button "预算金额":
+            - generic: 预算金额
+    - rowgroup:
+      - row "R001 B001 2025-01-01 12:00:00 东区 100 125":
+        - cell "R001":
+          - generic: R001
+        - cell "B001":
+          - generic: B001
+        - cell "2025-01-01 12:00:00":
+          - generic: 2025-01-01 12:00:00
+        - cell "东区":
+          - generic: 东区
+        - cell "100":
+          - generic: "100"
+        - cell "125":
+          - generic: "125"
+      - row "R002 B001 2025-01-02 12:00:00 西区 200 250":
+        - cell "R002":
+          - generic: R002
+        - cell "B001":
+          - generic: B001
+        - cell "2025-01-02 12:00:00":
+          - generic: 2025-01-02 12:00:00
+        - cell "西区":
+          - generic: 西区
+        - cell "200":
+          - generic: "200"
+        - cell "250":
+          - generic: "250"
+      - row "R003 B002 2025-01-03 12:00:00 东区 300 375":
+        - cell "R003":
+          - generic: R003
+        - cell "B002":
+          - generic: B002
+        - cell "2025-01-03 12:00:00":
+          - generic: 2025-01-03 12:00:00
+        - cell "东区":
+          - generic: 东区
+        - cell "300":
+          - generic: "300"
+        - cell "375":
+          - generic: "375"
+      - row "R004 B002 2025-01-04 12:00:00 西区 400 500":
+        - cell "R004":
+          - generic: R004
+        - cell "B002":
+          - generic: B002
+        - cell "2025-01-04 12:00:00":
+          - generic: 2025-01-04 12:00:00
+        - cell "西区":
+          - generic: 西区
+        - cell "400":
+          - generic: "400"
+        - cell "500":
+          - generic: "500"
+      - row "R005 B003 2025-01-05 12:00:00 东区 500 625":
+        - cell "R005":
+          - generic: R005
+        - cell "B003":
+          - generic: B003
+        - cell "2025-01-05 12:00:00":
+          - generic: 2025-01-05 12:00:00
+        - cell "东区":
+          - generic: 东区
+        - cell "500":
+          - generic: "500"
+        - cell "625":
+          - generic: "625"
+  - generic: 总条数： 28
+  - generic "每页 5 条":
+    - generic: "5"
+  - button "上一页" [disabled]:
+  - generic: 第 1 页
+  - button "下一页":
+  - generic: 跳至
+  - textbox "跳转页码": "1"
+  - generic: 页

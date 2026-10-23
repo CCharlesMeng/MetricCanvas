@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.54",
-  "schemaSha256": "6c563f3b7097df343bf49b2f5485f98074c066572e501404dd8c473a47c10aa3",
+  "schemaVersion": "6.55",
+  "schemaSha256": "8d3c674ebdc434c588dbd64753ec5b75f0b91e8a65ba74628afe9d049df23ac4",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -166,7 +166,11 @@
         "查询定义与显式绑定",
         "分页级联",
         "任意列排序",
-        "配置解读"
+        "配置解读",
+        "object",
+        "对象查询",
+        "output_fields",
+        "filter.fields"
       ],
       "examples": [
         "dimension-params-page",
@@ -182,7 +186,8 @@
         "calendar-window-page",
         "time-binding-branches-page",
         "query-modes-page",
-        "query-mode-binding-branches-page"
+        "query-mode-binding-branches-page",
+        "object-query-page"
       ],
       "rules": [
         "query-field-mapping",
@@ -1094,7 +1099,8 @@
         "6.51",
         "6.52",
         "6.53",
-        "6.54"
+        "6.54",
+        "6.55"
       ]
     },
     {
@@ -4529,6 +4535,23 @@
       ]
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1/properties/queryField",
+      "path": "@dqeQuery.paramBindings{key} · oneOf[1].queryField",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1/properties/valueFormat",
+      "path": "@dqeQuery.paramBindings{key} · oneOf[1].valueFormat",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "iso",
+        "compact",
+        "datetime"
+      ]
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/paramBindings/propertyNames",
       "path": "@dqeQuery.paramBindings · propertyNames",
       "required": "条件结构",
@@ -4621,6 +4644,23 @@
       "required": "独立分支（不合并required）",
       "module": "queries-and-bindings.md",
       "ref": "#/definitions/timeWindow"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/queryField",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].queryField",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/valueFormat",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].valueFormat",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "iso",
+        "compact",
+        "datetime"
+      ]
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/3",
@@ -4890,6 +4930,23 @@
       "required": "独立分支（不合并required）",
       "module": "queries-and-bindings.md",
       "ref": "#/definitions/timeWindow"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/queryField",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].queryField",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/valueFormat",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].valueFormat",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "iso",
+        "compact",
+        "datetime"
+      ]
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3",
@@ -5165,6 +5222,23 @@
       "required": "独立分支（不合并required）",
       "module": "queries-and-bindings.md",
       "ref": "#/definitions/timeWindow"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/queryField",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].queryField",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/valueFormat",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].valueFormat",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "iso",
+        "compact",
+        "datetime"
+      ]
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3",
@@ -16890,5 +16964,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "484c0161f854d1c3b49fff93e5903139c4f1de21bfb529fe6faa15bf75a9ad4b"
+  "semanticSourceDigest": "997e622665c56150b578d6cbde9652d0393455513fc240ef5933a628ac0ba8a1"
 }

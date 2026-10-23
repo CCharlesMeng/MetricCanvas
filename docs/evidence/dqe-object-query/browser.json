@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:5175/pages/dqe-object-query-demo",
+  "steps": [
+    {
+      "step": "query-page-2",
+      "text": "审批记录ID\n\t\n商务编号\n\t\n特价审批通过时间\n\t\n区域\n\t\n审批金额\n\t\n预算金额\n\n\nR006\n\t\nB003\n\t\n2025-01-06 12:00:00\n\t\n西区\n\t\n600\n\t\n750\n\n\nR007\n\t\nB004\n\t\n2025-01-07 12:00:00\n\t\n东区\n\t\n700\n\t\n875\n\n\nR008\n\t\nB004\n\t\n2025-01-08 12:00:00\n\t\n西区\n\t\n800\n\t\n1000\n\n\nR009\n\t\nB005\n\t\n2025-01-09 12:00:00\n\t\n东区\n\t\n900\n\t\n1125\n\n\nR010\n\t\nB005\n\t\n2025-01-10 12:00:00\n\t\n西区\n\t\n1000\n\t\n1250",
+      "linked": "business\n\t\ncontract\n\n\nB003\n\t\n3000\n\n\nB004\n\t\n4000\n\n\nB005\n\t\n5000"
+    },
+    {
+      "step": "amount-descending",
+      "text": "审批记录ID\n\t\n商务编号\n\t\n特价审批通过时间\n\t\n区域\n\t\n审批金额\n\t\n预算金额\n\n\nR024\n\t\nB012\n\t\n2025-01-24 12:00:00\n\t\n西区\n\t\n2400\n\t\n3000\n\n\nR023\n\t\nB012\n\t\n2025-01-23 12:00:00\n\t\n东区\n\t\n2300\n\t\n2875\n\n\nR022\n\t\nB011\n\t\n2025-01-22 12:00:00\n\t\n西区\n\t\n2200\n\t\n2750\n\n\nR021\n\t\nB011\n\t\n2025-01-21 12:00:00\n\t\n东区\n\t\n2100\n\t\n2625\n\n\nR020\n\t\nB010\n\t\n2025-01-20 12:00:00\n\t\n西区\n\t\n2000\n\t\n2500"
+    },
+    {
+      "step": "equals-search",
+      "text": "审批记录ID\n\t\n商务编号\n\t\n特价审批通过时间\n\t\n区域\n\t\n审批金额\n\t\n预算金额\n\n\nR006\n\t\nB003\n\t\n2025-01-06 12:00:00\n\t\n西区\n\t\n600\n\t\n750\n\n\nR005\n\t\nB003\n\t\n2025-01-05 12:00:00\n\t\n东区\n\t\n500\n\t\n625"
+    },
+    {
+      "step": "empty-search",
+      "text": "审批记录ID\n\t\n商务编号\n\t\n特价审批通过时间\n\t\n区域\n\t\n审批金额\n\t\n预算金额\n\n\n暂无数据"
+    },
+    {
+      "step": "February-range",
+      "text": "审批记录ID\n\t\n商务编号\n\t\n特价审批通过时间\n\t\n区域\n\t\n审批金额\n\t\n预算金额\n\n\nR025\n\t\nB013\n\t\n2025-02-01 12:00:00\n\t\n东区\n\t\n2500\n\t\n3125\n\n\nR026\n\t\nB013\n\t\n2025-02-02 12:00:00\n\t\n西区\n\t\n2600\n\t\n3250\n\n\nR027\n\t\nB014\n\t\n2025-02-03 12:00:00\n\t\n东区\n\t\n2700\n\t\n3375\n\n\nR028\n\t\nB014\n\t\n2025-02-04 12:00:00\n\t\n西区\n\t\n2800\n\t\n3500"
+    },
+    {
+      "step": "business-selection-and-URL-restore",
+      "url": "http://127.0.0.1:5175/pages/dqe-object-query-demo?period.from=2025-02-01&period.to=2025-02-28&business=B013",
+      "text": "审批记录ID\n\t\n商务编号\n\t\n特价审批通过时间\n\t\n区域\n\t\n审批金额\n\t\n预算金额\n\n\nR025\n\t\nB013\n\t\n2025-02-01 12:00:00\n\t\n东区\n\t\n2500\n\t\n3125\n\n\nR026\n\t\nB013\n\t\n2025-02-02 12:00:00\n\t\n西区\n\t\n2600\n\t\n3250"
+    },
+    {
+      "step": "February-and-amount-2700",
+      "text": "审批记录ID\n\t\n商务编号\n\t\n特价审批通过时间\n\t\n区域\n\t\n审批金额\n\t\n预算金额\n\n\nR027\n\t\nB014\n\t\n2025-02-03 12:00:00\n\t\n东区\n\t\n2700\n\t\n3375\n\n\nR028\n\t\nB014\n\t\n2025-02-04 12:00:00\n\t\n西区\n\t\n2800\n\t\n3500",
+      "url": "http://127.0.0.1:5175/pages/dqe-object-query-demo?period.from=2025-02-01&period.to=2025-02-28&amount.from=2700"
+    }
+  ]
+}

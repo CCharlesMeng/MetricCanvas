@@ -1,0 +1,43 @@
+{
+  "case": "object-output-missing",
+  "invariant": "dqe-object-query",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "output_fields 必须是非空、不重复的字段名称数组",
+      "paths": [
+        "/dataSources/approvals/source/query/body/dsl_list/0/output_fields"
+      ]
+    },
+    {
+      "type": "QUERY_MAPPING_ERROR",
+      "message": "queryField 商务编号 不在 DQE 输出字段中",
+      "paths": [
+        "/dataSources/approvals/fields/business/queryField"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "approvals": {
+        "source": {
+          "query": {
+            "body": {
+              "dsl_list": [
+                {
+                  "output_fields": []
+                }
+              ]
+            }
+          }
+        },
+        "fields": {
+          "business": {
+            "queryField": "商务编号"
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/object-output-missing.json"
+}

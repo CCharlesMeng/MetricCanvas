@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.54",
-  "schemaSha256": "6c563f3b7097df343bf49b2f5485f98074c066572e501404dd8c473a47c10aa3",
+  "schemaVersion": "6.55",
+  "schemaSha256": "8d3c674ebdc434c588dbd64753ec5b75f0b91e8a65ba74628afe9d049df23ac4",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -87,6 +87,10 @@
       "sha256": "f3776da3440021550d0c0bd519213db2c3cbdecefdaceb3407db1070759bb4af"
     },
     {
+      "file": "packages/page/src/dqe-object.ts",
+      "sha256": "a1166137dad1b75dbae1128523c3a686fef3e288cc414fdd96e3975bf3450866"
+    },
+    {
       "file": "packages/page/src/field-selection.ts",
       "sha256": "5f7d954ec04dd0836512ba66e5b1529a0525458096c970aaa453dc9989b480e0"
     },
@@ -115,8 +119,12 @@
       "sha256": "05145718ac61d1ae70207b3afda4d5bd96220d02ce85ccfbf359343d1faa0767"
     },
     {
+      "file": "packages/page/src/object-query-params.ts",
+      "sha256": "442c6b7fbd05443b81e87ab83b6802e4f80d2021fd67c05212f3adfa29f66acc"
+    },
+    {
       "file": "packages/page/src/param-bindings.ts",
-      "sha256": "a5841c3a3fd093467d547b6de9d6d4a8fe6e0cec5d221cdbe3c46504b1169eb3"
+      "sha256": "38d7afd270e748144ce5bc3d604ced06c2a1a9cf49d5e68948fc520ed70a7304"
     },
     {
       "file": "packages/page/src/period-facts.ts",
@@ -136,11 +144,11 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "accab551b67c229d394fdde24f4746ad6ac1d19685538fbe929ed2708e1955a3"
+      "sha256": "420d45a0ff4aea85d3876f7d3d663b6680e2c9d3a91c8152f1275da64025ce36"
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
-      "sha256": "c5a112344796e829424e9ee693f29ae3519769aa36d58364b202dcf52518bde4"
+      "sha256": "3c605ca1598e261d87fa7306cd151e47d2f11bdb78120db18a84d2036a0b2506"
     },
     {
       "file": "packages/page/src/report-export.ts",
@@ -148,7 +156,7 @@
     },
     {
       "file": "packages/page/src/row-expansion.ts",
-      "sha256": "958a529d4d3184c5b73e6d7c248e9d4687807514d74359bdf83ab9fb7f3c560e"
+      "sha256": "c9a09bed1ac816a295ca905bc9740dee3d75ab06467657bcd063bac3086035b8"
     },
     {
       "file": "packages/page/src/schema/actions.ts",
@@ -232,7 +240,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "a39a6b4fe877fd6f80742087cbb19d65301a37bd8774c36ef706623b6a73d519"
+      "sha256": "5e579765d2a1f47e7b990f5bc91c3126a4a34af29bf06e98a6e41ecbd7a6577e"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -279,24 +287,28 @@
       "sha256": "d567d0457111b52d8f854c26e7ba7434470ef9111436082ad85e1816b77dfacb"
     },
     {
+      "file": "packages/page/src/validate-object-query.ts",
+      "sha256": "29bb4b69632c57ed82d4aee6ab144787530c1d1ad3230bad112a022db6f5a271"
+    },
+    {
       "file": "packages/page/src/validate-paged-join.ts",
       "sha256": "2d37cb0bea2f3ef81b7e6159e7f086b04001546557a0411fbdfbb1887c2696c4"
     },
     {
       "file": "packages/page/src/validate-query-results.ts",
-      "sha256": "3228e53bbf08ba1139fa777a65722e8c26431f19468641ceea929cfee901499e"
+      "sha256": "370ae12f0981e2b6aef1c7e9220613450ed744a6f616d46d626a03d9f2b7bbb3"
     },
     {
       "file": "packages/page/src/validate-row-expansion.ts",
-      "sha256": "e8324404da70f33282b9696da6506471a3e365f3b45b7f0f02c23f5f664213aa"
+      "sha256": "84cdc391cd454bb9652259c30234b903ccc0c98dcdab285583824244cd88d1be"
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "b77b9e84da56f2451ba7b79900e9d7a3c2d7e4bd7a606d55d72f7174ffde8188"
+      "sha256": "66b26f99b8cb704b1198938eb8298815016156205ecefa321fcc6cf5f1e1d397"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "d11f322be6f1956738170bfc4f3e3a9ae512472a5b3dcfd9e8b441f03b67bdec"
+      "sha256": "6ce221f155d7b6b6a4e950b4dab9dfd4f006a1b8ba4dca5c134db3d741ba0f8c"
     }
   ],
   "modules": {
@@ -493,7 +505,11 @@
         "查询定义与显式绑定",
         "分页级联",
         "任意列排序",
-        "配置解读"
+        "配置解读",
+        "object",
+        "对象查询",
+        "output_fields",
+        "filter.fields"
       ],
       "examples": [
         "dimension-params-page",
@@ -509,7 +525,8 @@
         "calendar-window-page",
         "time-binding-branches-page",
         "query-modes-page",
-        "query-mode-binding-branches-page"
+        "query-mode-binding-branches-page",
+        "object-query-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -519,7 +536,10 @@
         "packages/page/src/validate-query-results.ts",
         "packages/page/src/time-mode.ts",
         "packages/page/src/period-facts.ts",
-        "packages/page/src/time-extension-validation.ts"
+        "packages/page/src/time-extension-validation.ts",
+        "packages/page/src/dqe-object.ts",
+        "packages/page/src/validate-object-query.ts",
+        "packages/page/src/object-query-params.ts"
       ],
       "rules": [
         "query-field-mapping",
@@ -1593,7 +1613,8 @@
         "6.51",
         "6.52",
         "6.53",
-        "6.54"
+        "6.54",
+        "6.55"
       ]
     },
     {
@@ -5028,6 +5049,23 @@
       ]
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1/properties/queryField",
+      "path": "@dqeQuery.paramBindings{key} · oneOf[1].queryField",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1/properties/valueFormat",
+      "path": "@dqeQuery.paramBindings{key} · oneOf[1].valueFormat",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "iso",
+        "compact",
+        "datetime"
+      ]
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/paramBindings/propertyNames",
       "path": "@dqeQuery.paramBindings · propertyNames",
       "required": "条件结构",
@@ -5120,6 +5158,23 @@
       "required": "独立分支（不合并required）",
       "module": "queries-and-bindings.md",
       "ref": "#/definitions/timeWindow"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/queryField",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].queryField",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/valueFormat",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].valueFormat",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "iso",
+        "compact",
+        "datetime"
+      ]
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/3",
@@ -5389,6 +5444,23 @@
       "required": "独立分支（不合并required）",
       "module": "queries-and-bindings.md",
       "ref": "#/definitions/timeWindow"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/queryField",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].queryField",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/valueFormat",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[2].valueFormat",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "iso",
+        "compact",
+        "datetime"
+      ]
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3",
@@ -5664,6 +5736,23 @@
       "required": "独立分支（不合并required）",
       "module": "queries-and-bindings.md",
       "ref": "#/definitions/timeWindow"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/queryField",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].queryField",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/2/properties/valueFormat",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[2].valueFormat",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "iso",
+        "compact",
+        "datetime"
+      ]
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/3",

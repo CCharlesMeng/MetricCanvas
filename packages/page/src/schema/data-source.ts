@@ -70,7 +70,7 @@ const filterBindingsZ=z
                   .meta({ minProperties: 2 })
               })
               .strict(),
-            z.object({ target: z.literal('time'), window: timeWindowZ.optional() }).strict(),
+            z.object({ target: z.literal('time'), window: timeWindowZ.optional(), queryField: z.string().min(1).optional(), valueFormat: z.enum(['iso', 'compact', 'datetime']).optional() }).strict(),
             // 非维度筛选器的三支谓词(ADR-0085)。
             z
               .object({
@@ -115,7 +115,7 @@ export const dqeQueryZ = z
       .strict().optional(),
     paramBindings: z.record(idZ, z.discriminatedUnion('target', [
       z.object({ target: z.literal('dimension'), queryField: z.string().min(1) }).strict(),
-      z.object({ target: z.literal('time'), window: timeWindowZ }).strict()
+      z.object({ target: z.literal('time'), window: timeWindowZ, queryField: z.string().min(1).optional(), valueFormat: z.enum(['iso', 'compact', 'datetime']).optional() }).strict()
     ])).optional(),
     filterBindings: filterBindingsZ.optional(),
     timeModes: queryCasesZ.optional(),

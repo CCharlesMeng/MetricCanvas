@@ -1,0 +1,165 @@
+{
+    "retCode": "CBC.0000",
+    "retDesc": null,
+    "results": [
+        {
+            "code": "SUCCESS",
+            "columns": null,
+            "data": [
+                {
+                    "商务编号": "0CCI002410040L"
+                },
+                {
+                    "商务编号": "0CCI002410040Q"
+                },
+                {
+                    "商务编号": "0CCI0025100001"
+                },
+                {
+                    "商务编号": "0CCI0025100002"
+                },
+                {
+                    "商务编号": "0CCIAE2410040H"
+                },
+                {
+                    "商务编号": "0CCIAE2410040J"
+                },
+                {
+                    "商务编号": "0CCIAE25100004"
+                },
+                {
+                    "商务编号": "0CCIAE25100006"
+                },
+                {
+                    "商务编号": "0CCIAE25100007"
+                },
+                {
+                    "商务编号": "0CCIAE25100008"
+                }
+            ],
+            "desc": null,
+            "dqe": {
+                "columns": null,
+                "orders": [
+                    {
+                        "caption": "商务编号",
+                        "formula": null,
+                        "order": "asc"
+                    }
+                ],
+                "limit": 10,
+                "offset": -1,
+                "sql": null,
+                "model_id": "985f4460-ea4f-4eea-b98f-fdb74f3edc12",
+                "dimension_columns": [
+                    {
+                        "id": "bb01cfaa-5cf3-45fb-9883-bed64ce9e61e.商务编号",
+                        "name": "bb01cf_商务编号",
+                        "caption": "商务编号",
+                        "description": null,
+                        "synonyms": null,
+                        "hierarchies": [
+                            {
+                                "name": "bb01cf_商务编号",
+                                "levels": [
+                                    {
+                                        "id": "bb01cfaa-5cf3-45fb-9883-bed64ce9e61e.商务编号",
+                                        "caption": "商务编号",
+                                        "visible": true,
+                                        "sql": null,
+                                        "expression": null,
+                                        "description": null,
+                                        "formatter": null,
+                                        "origin_column_name": "商务编号",
+                                        "origin_column_type": "varchar",
+                                        "origin_data_type": "STRING",
+                                        "converted_data_type": null,
+                                        "data_type": "STRING",
+                                        "level_type": null,
+                                        "column_formula": "商务编号",
+                                        "ordinal_column": "1",
+                                        "icon_skin": "STRING",
+                                        "origin_data_format": null,
+                                        "complex_filter": null,
+                                        "column_bound_filters": null,
+                                        "default_filters": null,
+                                        "time_limit": null,
+                                        "is_expansion": 0,
+                                        "expansion_type": 0,
+                                        "has_col_permission": true
+                                    }
+                                ],
+                                "caption": "商务编号"
+                            }
+                        ],
+                        "dimension_type": "StandardDimension",
+                        "public_synonyms": null,
+                        "public_synonyms_id": null,
+                        "regex_pattern": null,
+                        "is_vectorized_enums": true,
+                        "fusion_dimension_id": "01945c8a-dc1e-4dba-8e72-6d4a2d4955bd",
+                        "cube_id": "bb01cfaa-5cf3-45fb-9883-bed64ce9e61e",
+                        "model_id": "985f4460-ea4f-4eea-b98f-fdb74f3edc12"
+                    }
+                ],
+                "measure_columns": [],
+                "filters": {
+                    "dimFilters": null,
+                    "meaFilters": null,
+                    "query_filters": {
+                        "logic_operator": "AND",
+                        "sub_conditions": [
+                            {
+                                "logic_operator": null,
+                                "condition_node": {
+                                    "column_id": "bb01cfaa-5cf3-45fb-9883-bed64ce9e61e.特价审批通过时间",
+                                    "column_name": "特价审批通过时间",
+                                    "type": null,
+                                    "formula": null,
+                                    "enum_need_verify": 0,
+                                    "relation_operator": "GREATER-THAN-OR-EQUAL-TO",
+                                    "data_type": "STRING",
+                                    "value": {
+                                        "formula": null,
+                                        "values": [
+                                            "2025-01-01 00:00:00"
+                                        ],
+                                        "value_type": "CONDITION"
+                                    }
+                                },
+                                "sub_conditions": []
+                            },
+                            {
+                                "logic_operator": null,
+                                "condition_node": {
+                                    "column_id": "bb01cfaa-5cf3-45fb-9883-bed64ce9e61e.特价审批通过时间",
+                                    "column_name": "特价审批通过时间",
+                                    "type": null,
+                                    "formula": null,
+                                    "enum_need_verify": 0,
+                                    "relation_operator": "LESS-THAN-OR-EQUAL-TO",
+                                    "data_type": "STRING",
+                                    "value": {
+                                        "formula": null,
+                                        "values": [
+                                            "2025-01-31 23:59:59"
+                                        ],
+                                        "value_type": "CONDITION"
+                                    }
+                                },
+                                "sub_conditions": []
+                            }
+                        ],
+                        "condition_node": null
+                    },
+                    "having_filters": null
+                },
+                "depends_dqe": null,
+                "count_query": false,
+                "advanced_analysis": null,
+                "ds_id": null
+            },
+            "total_count": 1393
+        }
+    ]
+}

@@ -151,6 +151,8 @@ NavigationBinding
 NavigationTarget
 NumberRangeFilterDeclaration
 NumberRangeValue
+ObjectTimeFormat
+ObjectTimeTarget
 OpenDetailAction
 PAGE_SCHEMA_MAJOR
 Page
@@ -289,12 +291,14 @@ activePageComponents
 affectedSourceIds
 aiSummaryErrors
 aiSummaryRelatedData
+aiSummarySourceReferences
 appliedAmountRange
 applyFilterTextValues
 applyPresentationOperation
 assertNoQueryParamReferences
 availabilityInitial
 barForecastBoundaryIssues
+bindingOwnedDqeBody
 bindingQueryField
 bindingQueryFields
 calendarEndpoint
@@ -331,6 +335,9 @@ dimensionOfLevel
 dimensionSelectionIssue
 documentLayoutForm
 documentUsesRuntimeBackToolbar
+dqeDefaultSort
+dqeDimensionConditions
+dqeRecord
 enumSelector
 evaluateCondition
 exhaustiveCases
@@ -353,6 +360,7 @@ flattenPageComponents
 formatPeriod
 formatPeriodFact
 formatSuitsParamType
+hasAiSummaryBody
 hasQueryFieldMapping
 hasQueryParamReferences
 hasQuerySelection
@@ -375,6 +383,7 @@ isFoldingOperator
 isInlineDataSource
 isLevelDimensionBinding
 isNavigationHref
+isObjectDqeItem
 isPagedJoinDataSource
 isPeriodSelection
 isQueryDataSource
@@ -397,6 +406,8 @@ navigationErrors
 normalizePageDocument
 normalizeQueryRows
 numberRangeIssue
+objectDateBoundary
+objectOutputFields
 ordinaryQuery
 pageCapabilities
 pageListEntry
@@ -450,6 +461,8 @@ selectTimeQuery
 selectedCase
 selectedTab
 selectionAssignments
+setObjectFieldValues
+setObjectTimeRange
 stableRowQuery
 staticFieldBinding
 supportedVersions

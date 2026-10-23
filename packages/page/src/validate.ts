@@ -18,6 +18,8 @@ import { reportDateFilterErrors } from './report-date-filters';
 import { normalizeReportExportScales } from './report-export';
 import { crossSourceComputeErrors } from './validate-compute-dependencies';
 import { queryParamReferenceErrors } from './query-param-references';
+import { isObjectDqeItem, objectOutputFields } from './dqe-object';
+import { objectQueryErrors } from './validate-object-query';
 import { paramBindingErrors } from './param-bindings';
 import { navigationErrors, urlInputErrors } from './navigate';
 import { Ajv, type ErrorObject } from 'ajv';
@@ -802,7 +804,8 @@ function queryContractErrors(
     return level && mappedNames.has(level) ? level : name;
   });
   const metrics = dqeMetricNames(item.output_metrics);
-  const outputs = new Set([...dimensions, ...metrics]);
+  const outputs = new Set(isObjectDqeItem(item) ? objectOutputFields(item) : [...dimensions, ...metrics]);
+  errors.push(...objectQueryErrors(query, `${sourcePath}/source/query`));
   const mapped = new Map<string, string>();
 
   if (dataSource.source.initial) {

@@ -1,0 +1,30 @@
+{
+  "case": "object-time-field-missing",
+  "invariant": "dqe-object-query",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "object 时间绑定必须显式声明 queryField 和 valueFormat",
+      "paths": [
+        "/dataSources/approvals/source/query/filterBindings/period"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "approvals": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "period": {
+                "target": "time",
+                "valueFormat": "datetime"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

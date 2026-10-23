@@ -1,4 +1,4 @@
-import { tableHeaders, type EffectiveQuery, type TablePredicate } from '@metriccanvas/page/internal';
+import { dqeDimensionConditions, isObjectDqeItem, tableHeaders, type EffectiveQuery, type TablePredicate } from '@metriccanvas/page/internal';
 import { composeEffectiveQuery, bindQueryResultValues } from '../effective-query';
 import type { PagedJoinPlan } from './plan';
 
@@ -13,13 +13,17 @@ export function memberQuery(plan: PagedJoinPlan, id: string, pageIndex?: number)
 export function restrictKeys(query: EffectiveQuery, queryField: string, keys: readonly (string | number)[]): (string | number)[] {
   let allowed = [...keys];
   const item = query.body.dsl_list[0];
-  const filter = item.filter as { dims?: Array<{ dim_name?: string; dim_value_list?: unknown; operator?:unknown }> } | undefined;
-  for (const entry of filter?.dims ?? []) if (entry.dim_name === queryField) {
-    if (entry.operator!==undefined || !Array.isArray(entry.dim_value_list)) throw Object.assign(new Error('编码静态条件无法安全求交集'), { code: 'DQE_QUERY_REJECTED' });
-    const values = entry.dim_value_list;
-    if (values.length) allowed = allowed.filter(key => values.includes(key));
+  for (const entry of dqeDimensionConditions(item)) if (entry.dim_name === queryField) {
+    assertKeyCondition(entry,isObjectDqeItem(item));
+    const values=entry.dim_value_list as unknown[];
+    if (values.length) allowed=allowed.filter(key=>values.includes(key));
   }
   for (const value of query.filterValues) if (value.target === 'dimension' && value.queryField === queryField && value.values.length) allowed = allowed.filter(key => value.values.includes(key));
   if (allowed.length) bindQueryResultValues(query, [{ target: 'dimension', queryField, values: allowed }]);
   return allowed;
+}
+
+function assertKeyCondition(entry: import('@metriccanvas/page/internal').JsonObject, object: boolean): void {
+  const validOperator=entry.operator===undefined || (object && entry.operator==='=');
+  if(!validOperator || !Array.isArray(entry.dim_value_list) || (object && entry.is_exclude===true)) throw Object.assign(new Error('编码静态条件无法安全求交集'),{code:'DQE_QUERY_REJECTED'});
 }

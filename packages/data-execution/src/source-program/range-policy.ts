@@ -1,4 +1,4 @@
-import {queryLeaves} from '@metriccanvas/page/internal';
+import {isObjectDqeItem,queryLeaves} from '@metriccanvas/page/internal';
 import { canonicalizeJson, declaredPaginationLimit, type DataSnapshot, type DataSource, type EffectiveQuery, type TableQueryView, type Row } from '@metriccanvas/page/internal';
 import type { QueryRunner } from '../query-runner';
 import type { QueryDiagnosticContext } from '../ports';
@@ -29,6 +29,7 @@ export function checkOrdinaryRange(source: DataSource, snapshot: DataSnapshot, l
   if (limit !== undefined && count > limit) {
     return { status: 'error', error: { code: 'DQE_ROW_CONTRACT_ERROR', message: `查询返回 ${count} 行，超过请求上限 ${limit} 行` } };
   }
+  if (incompleteObjectSource(source,count,snapshot.totalCount)) return {status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR',message:'object complete 结果与 totalCount 不一致'}};
   if (diagnostics && snapshot.totalCount !== undefined &&
     totalCountMismatch(count, snapshot.totalCount, source.source.resultScope, diagnostics)) {
     console.warn('[MetricCanvas][TOTAL_COUNT_MISMATCH] 查询结果总数与返回行数不一致；继续使用已返回数据', {
@@ -54,6 +55,7 @@ export function correctedPageIndex(query: EffectiveQuery, snapshot: DataSnapshot
 }
 export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, scope: string, signal: AbortSignal | undefined, diagnostics: QueryDiagnosticContext, trustedComplete = false, describeSource?: () => ExportSourceDetails, allowPartial = false): Promise<DataSnapshot> {
   const { frozen, declared, limit } = exportReadWindow(query);
+  const strict = isObjectDqeItem(query.body.dsl_list[0]);
   let paged = declared !== undefined, offset = 0, expected: number | undefined;
   const rows: Row[] = [];
   while (true) {
@@ -79,7 +81,7 @@ export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, 
     offset = rows.length;
   }
   function failedPage(result: DataSnapshot): DataSnapshot {
-    if (!allowPartial || !rows.length) return result;
+    if (strict || !allowPartial || !rows.length) return result;
     console.warn('[MetricCanvas][EXPORT_PARTIAL_DATA] 后续分页取数失败；导出已取得的数据，完整性未确认', {
       code: 'EXPORT_PARTIAL_DATA', ...diagnostics, ...describeSource?.(),
       accumulatedRowCount: rows.length, expectedTotalCount: expected,
@@ -88,6 +90,7 @@ export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, 
     return rawSnapshot(rows, rows.length);
   }
   function excessRows(pageRowCount: number): DataSnapshot {
+    if(strict)throw new SourceRangeError('EXPORT_INCOMPLETE_DATA','object 完整结果行数超过 totalCount');
     const sourceDetails = describeSource?.();
     const location = sourceDetails ? ` [数据源 ${sourceDetails.dataSourceId}；组件 ${sourceDetails.components.map(component => `${component.componentTitle ?? component.componentType} (${component.componentId})`).join('、') || '无组件引用'}]` : '';
     console.warn(`[MetricCanvas][EXPORT_TOTAL_COUNT_MISMATCH]${location} 导出行数超出结果总数；继续导出已取得的数据，完整性未确认`, {
@@ -137,4 +140,8 @@ function assertExportRowLimit(count: number): void {
 }
 function assertExportCompleteness(paged: boolean, expected: number | undefined, trusted: boolean): void {
   if (!paged && expected === undefined && !trusted) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '完整导出需要 totalCount 或显式完整结果契约');
+}
+
+function incompleteObjectSource(source: DataSource, count: number, total: number | undefined): boolean {
+  return source.source.type==='query' && source.source.resultScope==='complete' && total!==undefined && count!==total && queryLeaves(source.source.query).some(query=>isObjectDqeItem(query.body.dsl_list[0]));
 }

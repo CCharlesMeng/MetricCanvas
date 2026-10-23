@@ -528,3 +528,5 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 跨表查询分支：筛选主题中的 [签约与商机金额趋势](capabilities/filters/query-mode-chart-demo.json)，直接入口 `/pages/query-mode-chart-demo`；演示同一 Chart 按固定单选执行不同表对应的查询。
 
 - [Report 区域 AI 总结](capabilities/ai-summary/README.md)：后端正文、时间切换生成、单文件云宝 mock 与后台缓存。
+
+DQE 对象查询及对象/指标联动：见[查询能力目录](capabilities/query/README.md#dqe-对象查询)，入口 `/pages/dqe-object-query-demo`（DQE Sim 合成数据）。

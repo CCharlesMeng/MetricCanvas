@@ -1,0 +1,11 @@
+$ pnpm test tests/local-authoring-tools.test.ts tests/local-authoring-skill.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts
+$ pnpm --filter playground exec svelte-kit sync && vitest run tests/local-authoring-tools.test.ts tests/local-authoring-skill.test.ts tests/page-reference.test.ts tests/authoring-export-isolation.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/dqe-object-query/DataDashboard
+
+
+ Test Files  4 passed (4)
+      Tests  73 passed (73)
+   Start at  14:45:08
+   Duration  236.55s (transform 2.34s, setup 0ms, import 13.29s, tests 253.84s, environment 0ms)
+

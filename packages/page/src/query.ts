@@ -1,3 +1,4 @@
+import { isObjectDqeItem, setObjectFieldValues, setObjectTimeRange, type ObjectTimeTarget } from './dqe-object';
 import {ordinaryQuery,queryLeaves,querySelection} from './query-selection';
 import { resolveQueryParamReferences } from './query-param-references';
 import type { TimeRangeValue } from './filter';
@@ -82,7 +83,7 @@ export type DqeNumberRangeFilterBinding = {
 
 export type DqeFilterBinding =
   | DqeDimensionFilterBinding
-  | { target: 'time'; window?: TimeWindow }
+  | ({ target: 'time'; window?: TimeWindow } & ObjectTimeTarget)
   | DqeTimePointFilterBinding
   | DqeBooleanFilterBinding
   | DqeNumberRangeFilterBinding;
@@ -157,7 +158,7 @@ export interface DqeQueryDefinition {
   filterBindings?: Record<string, DqeFilterBinding>;
   paramBindings?: Record<string,
     | { target: 'dimension'; queryField: string }
-    | { target: 'time'; window: TimeWindow }
+    | ({ target: 'time'; window: TimeWindow } & ObjectTimeTarget)
   >;
 }
 
@@ -216,6 +217,8 @@ export interface DqeEffectiveQuery {
       }
     | {
         target: 'time';
+        queryField?: string;
+        valueFormat?: import('./dqe-object').ObjectTimeFormat;
         value: TimeRangeValue;
       }
     | {
@@ -311,6 +314,7 @@ function initializeTimeParam(query:PageQuery,id:string,binding:Extract<ParamBind
   const value=values.get(id);
   if(typeof value!=='string')throw new Error(`时间绑定缺少有效参数:${id}`);
   const item=ordinaryQuery(query).body.dsl_list[0],filter=item.filter;
+  if(isObjectDqeItem(item)){const range=resolveTimeWindow(value,binding.window);setObjectTimeRange(item,binding,range.start,range.end);return;}
   if(!filter||typeof filter!=='object'||Array.isArray(filter))throw new Error('时间绑定需要 filter.time');
   const time=filter.time;
   if(!time||typeof time!=='object'||Array.isArray(time))throw new Error('时间绑定需要 filter.time');
@@ -321,6 +325,7 @@ function initializeDimensionParam(query:PageQuery,id:string,binding:Extract<Para
   const value=values.get(id);
   if(value===undefined)return;
   const item=ordinaryQuery(query).body.dsl_list[0],rawFilter=item.filter;
+  if(isObjectDqeItem(item)){setObjectFieldValues(item,binding.queryField,Array.isArray(value)?[...value]:[String(value)]);return;}
   const filter=rawFilter&&typeof rawFilter==='object'&&!Array.isArray(rawFilter)?rawFilter:{};
   const dims=Array.isArray(filter.dims)?filter.dims:[];
   item.filter={...filter,dims:[...dims,{dim_name:binding.queryField,dim_value_list:Array.isArray(value)?[...value]:[String(value)]}]};
