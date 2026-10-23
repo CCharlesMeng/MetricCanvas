@@ -43,8 +43,8 @@
   {/if}
 </div>
 <style>
-  .candidates { min-width: 220px; display: grid; gap: 8px; font-weight: normal; }
-  input[type="search"] { width: 100%; box-sizing: border-box; height: 32px; padding: 0 8px; border: 1px solid #c2c2c2; border-radius: 6px; color: #191919; font: inherit; }
+  .candidates { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; font-weight: normal; }
+  input[type="search"] { width: 0; min-width: 100%; box-sizing: border-box; height: 32px; padding: 0 8px; border: 1px solid #c2c2c2; border-radius: 6px; color: #191919; font: inherit; }
   .list { max-height: 240px; overflow: auto; }
   .candidate { display: flex; align-items: center; gap: 8px; padding: 6px 2px; }
   .candidate span { overflow-wrap: anywhere; white-space: normal; min-width: 0; }

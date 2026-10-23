@@ -1,0 +1,271 @@
+{
+  "schemaVersion": "6.51",
+  "id": "decision-opinion-details",
+  "layout": "dashboard",
+  "meta": {
+    "title": "决策意见明细"
+  },
+  "iocHeader": {
+    "identity": {
+      "title": "决策意见明细",
+      "description": {
+        "text": "合同与商务审批意见统计",
+        "presentation": "inline"
+      },
+      "tags": [
+        {
+          "id": "synthetic",
+          "text": "合成演示",
+          "tone": "neutral"
+        }
+      ]
+    },
+    "presentation": {
+      "layout": "inline",
+      "collapse": "none"
+    }
+  },
+  "dataSources": {
+    "opinions": {
+      "fields": {
+        "rowKey": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "opinion_row_key",
+          "label": "行标识",
+          "nullable": false
+        },
+        "localRowId": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "local_row_id",
+          "label": "来源内编码",
+          "nullable": false
+        },
+        "memberId": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "member_id",
+          "label": "来源编码",
+          "nullable": false
+        },
+        "approverId": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "approver_id",
+          "label": "审批人编码",
+          "nullable": false
+        },
+        "approver": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "approver_name",
+          "label": "审批人",
+          "nullable": false
+        },
+        "regionId": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "region_id",
+          "label": "区域编码",
+          "nullable": false
+        },
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "region_name",
+          "label": "区域",
+          "nullable": false
+        },
+        "officeId": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "office_id",
+          "label": "代表处编码",
+          "nullable": false
+        },
+        "office": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "office_name",
+          "label": "代表处",
+          "nullable": false
+        },
+        "roleId": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "role_id",
+          "label": "角色编码",
+          "nullable": false
+        },
+        "role": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "role_name",
+          "label": "审批人角色",
+          "nullable": false
+        },
+        "businessType": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "business_type",
+          "label": "类型",
+          "nullable": false
+        },
+        "decisionCount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "decision_count",
+          "label": "决策总次数",
+          "defaultFormat": "number-grouped",
+          "nullable": false
+        },
+        "validOpinionCount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "valid_opinion_count",
+          "label": "有效意见数",
+          "defaultFormat": "number-grouped",
+          "nullable": false
+        },
+        "validOpinionRate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "valid_opinion_rate",
+          "label": "有效意见占比",
+          "defaultFormat": "percent-1",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "opinion_row_key",
+                  "local_row_id",
+                  "member_id",
+                  "approver_id",
+                  "approver_name",
+                  "region_id",
+                  "region_name",
+                  "office_id",
+                  "office_name",
+                  "role_id",
+                  "role_name",
+                  "business_type"
+                ],
+                "output_metrics": [
+                  "decision_count",
+                  "valid_opinion_count",
+                  "valid_opinion_rate"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "by": [
+                    {
+                      "field": "decision_count",
+                      "type": "desc",
+                      "priority": 1
+                    }
+                  ],
+                  "offset": 0,
+                  "limit": 20
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "container": "card",
+      "components": [
+        {
+          "id": "opinions-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "opinions"
+          },
+          "props": {
+            "title": "审批统计明细",
+            "subtitle": "默认按决策总次数降序",
+            "rowNumber": {
+              "title": "序号",
+              "width": 64
+            },
+            "rowKey": "rowKey",
+            "columns": [
+              {
+                "field": "approver",
+                "title": "审批人",
+                "width": 160,
+                "fixed": "left"
+              },
+              {
+                "field": "region",
+                "title": "区域",
+                "width": 140
+              },
+              {
+                "field": "office",
+                "title": "代表处",
+                "width": 140
+              },
+              {
+                "field": "role",
+                "title": "审批人角色",
+                "width": 150
+              },
+              {
+                "field": "businessType",
+                "title": "类型",
+                "width": 100,
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "decisionCount",
+                "title": "决策总次数",
+                "width": 175,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "validOpinionCount",
+                "title": "有效意见数",
+                "width": 160,
+                "align": "right",
+                "sortable": true
+              },
+              {
+                "field": "validOpinionRate",
+                "title": "有效意见占比",
+                "width": 175,
+                "align": "right",
+                "sortable": true
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            },
+            "fit": "content"
+          }
+        }
+      ]
+    }
+  ]
+}

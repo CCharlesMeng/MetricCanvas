@@ -438,7 +438,7 @@
                     {#if interactive && column.filterable}
                       <details class="filter" use:tableFilterPopover ontoggle={event => { if (column.filterable?.mode === 'select') oncandidateopen?.(columnField(column), event.currentTarget.open); }}>
                         <summary class:active={hasActiveFilter(columnField(column))} title="表头筛选">{#if props.variant === 'reportCompact'}▼{:else}<TableControlIcon name="filter" />{/if}</summary>
-                        <div class="menu" popover="auto">
+                        <div class="menu" class:select-menu={column.filterable.mode === 'select'} popover="auto">
                           {#if column.filterable.mode === 'select'}
                             {#if columnCandidates}
                               <ColumnCandidateOptions field={columnField(column)} snapshot={columnCandidates[columnField(column)]}
@@ -1121,6 +1121,16 @@
   .menu[popover]:not(:popover-open) {
     display: none;
   }
+  .menu.select-menu {
+    box-sizing: border-box;
+    width: max-content;
+    min-width: min(160px, calc(100vw - 16px));
+    max-width: min(360px, calc(100vw - 16px));
+  }
+  .select-menu .option {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
   .option {
     display: flex;
     align-items: center;
@@ -1688,7 +1698,6 @@
   .table-widget.os-theme .filter summary.active { color: #191919; }
   .table-widget.os-theme .menu {
     box-sizing: border-box;
-    min-width: min(270px, calc(100vw - 16px));
     padding: 4px 8px 8px;
     border: 0;
     border-radius: 6px;
@@ -1697,6 +1706,7 @@
     font-size: 14px;
     line-height: 21px;
   }
+  .table-widget.os-theme .menu:not(.select-menu) { min-width: min(270px, calc(100vw - 16px)); }
   .table-widget.os-theme .option , .table-widget.os-theme :global(.candidate-option) { box-sizing: border-box; min-height: 28px; padding: 0 8px; border-radius: 0; }
   .table-widget.os-theme .option:hover , .table-widget.os-theme :global(.candidate-option:hover) { background: #f5f5f5; }
   .table-widget.os-theme .option input , .table-widget.os-theme :global(.candidate-option input) {

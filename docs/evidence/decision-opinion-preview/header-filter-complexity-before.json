@@ -1,0 +1,401 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "files": [
+    {
+      "file": "apps/playground/fixtures/decision-opinion/model.ts",
+      "functions": [
+        {
+          "name": "normalizeSeed",
+          "qualifiedName": "normalizeSeed",
+          "line": 17,
+          "endLine": 33,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "generatedRow",
+          "qualifiedName": "generatedRow",
+          "line": 35,
+          "endLine": 49,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "createMemberRows",
+          "qualifiedName": "createMemberRows",
+          "line": 52,
+          "endLine": 57,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@54:40>",
+          "qualifiedName": "createMemberRows/<anonymous@54:40>",
+          "line": 54,
+          "endLine": 54,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@55:47>",
+          "qualifiedName": "createMemberRows/<anonymous@55:47>",
+          "line": 55,
+          "endLine": 55,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "compareValue",
+          "qualifiedName": "compareValue",
+          "line": 59,
+          "endLine": 63,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "compareOpinionRows",
+          "qualifiedName": "compareOpinionRows",
+          "line": 65,
+          "endLine": 72,
+          "selfCC": 6,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/fixtures/decision-opinion/preview.ts",
+      "functions": [
+        {
+          "name": "declaredSort",
+          "qualifiedName": "declaredSort",
+          "line": 11,
+          "endLine": 17,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 8,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@13:22>",
+          "qualifiedName": "declaredSort/<anonymous@13:22>",
+          "line": 13,
+          "endLine": 16,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "querySort",
+          "qualifiedName": "querySort",
+          "line": 19,
+          "endLine": 27,
+          "selfCC": 3,
+          "optionalChains": 1,
+          "subtreeCC": 6,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@22:20>",
+          "qualifiedName": "querySort/<anonymous@22:20>",
+          "line": 22,
+          "endLine": 26,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "queryMembers",
+          "qualifiedName": "queryMembers",
+          "line": 29,
+          "endLine": 37,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@34:32>",
+          "qualifiedName": "queryMembers/<anonymous@34:32>",
+          "line": 34,
+          "endLine": 34,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "queryWindow",
+          "qualifiedName": "queryWindow",
+          "line": 39,
+          "endLine": 45,
+          "selfCC": 7,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "createDecisionOpinionPreview",
+          "qualifiedName": "createDecisionOpinionPreview",
+          "line": 48,
+          "endLine": 75,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "fetchData",
+          "qualifiedName": "createDecisionOpinionPreview/fetchData",
+          "line": 52,
+          "endLine": 72,
+          "selfCC": 7,
+          "optionalChains": 1,
+          "subtreeCC": 7,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "apps/playground/tests/decision-opinion-preview.test.ts",
+      "functions": [
+        {
+          "name": "request",
+          "qualifiedName": "request",
+          "line": 10,
+          "endLine": 17,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@19:34>",
+          "qualifiedName": "<anonymous@19:34>",
+          "line": 19,
+          "endLine": 112,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 20
+        },
+        {
+          "name": "<anonymous@20:33>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@20:33>",
+          "line": 20,
+          "endLine": 31,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@24:28>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@20:33>/<anonymous@24:28>",
+          "line": 24,
+          "endLine": 24,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@27:28>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@20:33>/<anonymous@27:28>",
+          "line": 27,
+          "endLine": 27,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@30:36>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@20:33>/<anonymous@30:36>",
+          "line": 30,
+          "endLine": 30,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@33:97>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@33:97>",
+          "line": 33,
+          "endLine": 45,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 4
+        },
+        {
+          "name": "<anonymous@41:30>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@33:97>/<anonymous@41:30>",
+          "line": 41,
+          "endLine": 41,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@41:82>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@33:97>/<anonymous@41:82>",
+          "line": 41,
+          "endLine": 41,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@43:35>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@33:97>/<anonymous@43:35>",
+          "line": 43,
+          "endLine": 43,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@44:34>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@33:97>/<anonymous@44:34>",
+          "line": 44,
+          "endLine": 44,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@47:36>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@47:36>",
+          "line": 47,
+          "endLine": 54,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@51:30>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@47:36>/<anonymous@51:30>",
+          "line": 51,
+          "endLine": 51,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@52:35>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@47:36>/<anonymous@52:35>",
+          "line": 52,
+          "endLine": 52,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@56:33>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@56:33>",
+          "line": 56,
+          "endLine": 62,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@60:26>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@56:33>/<anonymous@60:26>",
+          "line": 60,
+          "endLine": 60,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@61:25>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@56:33>/<anonymous@61:25>",
+          "line": 61,
+          "endLine": 61,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@64:39>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@64:39>",
+          "line": 64,
+          "endLine": 75,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@77:31>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@77:31>",
+          "line": 77,
+          "endLine": 80,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@82:34>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@82:34>",
+          "line": 82,
+          "endLine": 88,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@90:28>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@90:28>",
+          "line": 90,
+          "endLine": 97,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@99:33>",
+          "qualifiedName": "<anonymous@19:34>/<anonymous@99:33>",
+          "line": 99,
+          "endLine": 111,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ]
+}

@@ -28,7 +28,7 @@
 
 页面搭建的拖动手柄、蓝色选框、就地操作条与删除属于创作期交互，不新增页面协议字段。组件顺序与宽度仍由 `sections[].components`、`layout.span` 声明；空分区草稿与删除行为见[内容分区与布局](docs/page-metadata/sections-and-layout.md#页面搭建中的移动与删除)，验收页面为 `pages/platform/platform-canvas-experience.json`。
 
-表格 select 列筛选统一从本表完整匹配结果取候选，保留其他条件并排除自身表头条件，不新增 scope 配置。候选分页和搜索独立于表格；已选值失配时保留。语义及远程能力边界见[明细表候选值](docs/page-metadata/components/table.md#列筛选候选值)。
+表格 select 列筛选统一从本表完整匹配结果取候选，保留其他条件并排除自身表头条件，不新增 scope 配置。候选分页和搜索独立于表格；已选值失配时保留。弹层按内容自适应宽度。语义及远程能力边界见[明细表候选值](docs/page-metadata/components/table.md#列筛选候选值)。
 
 ## 文档结构与维护分工
 
@@ -92,6 +92,8 @@
 `timePoint.min` 从6.24起声明可选的最早月份/日期，下限包含自身；选择器、手工提交、URL和筛选状态共同约束。字段语义见[筛选声明](docs/page-metadata/filters.md#时间点下限624)，可操作场景见[商务SDT单月报告](pages/business/report/sdt/business-sdt-report-monthly.json)。
 
 ## 级联查询
+
+决策意见明细提供合同与商务记录合并分页的[合成预览说明](docs/page-metadata/components/table.md)及[运行入口](pages/capabilities/table/README.md#决策意见明细)：沿用现有 query、初始 order 与表格分页，通过 Playground 专用适配器演示全局排序和类型筛选；不增加通用合并源协议。
 
 查询结果绑定自6.14起由下游 `source.query.resultBindings` 声明，读取上游原始维度集合形成查询输入；6.19起可用where独立筛选输入行而保留上游结果；6.20起允许查询分页窗口输入及任意列查询排序驱动依赖更新；与用户筛选状态分别管理。完整声明、执行顺序、边界及与 `pivot`/`joinAggregate` 的协作见[级联查询专题](docs/cascading-queries.md)，字段表见[查询定义与显式绑定](contracts/metriccanvas/page/reference/queries-and-bindings.md)。
 

@@ -3,6 +3,7 @@ const businessPages = new Set(Object.keys(import.meta.glob('../../../pages/capab
 /** Fixture routing belongs to preview adapters; directory discovery has no registrations. */
 export function pageExternalInputs(id: string | undefined) {
   if (!id) return undefined;
+  if (id === 'decision-opinion-details') return 'decision-opinion';
   if (id === 'page-visibility-inputs') return 'visibility';
   if (id === 'ioc-header-selection') return 'selection';
   if (businessPages.has(id)) return 'ioc-business';

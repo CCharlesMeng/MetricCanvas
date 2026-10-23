@@ -1,0 +1,196 @@
+{
+  "schemaVersion": "6.22",
+  "id": "table-column-candidates",
+  "layout": "dashboard",
+  "dataSources": {
+    "records": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处"
+        },
+        "grade": {
+          "type": "number",
+          "role": "dimension",
+          "label": "级别编码"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "unit": "元"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region": "华北",
+            "office": "华北区域企业业务合同审批代表处",
+            "grade": 1,
+            "amount": 10000
+          },
+          {
+            "region": "华南",
+            "office": "这是用于验证超长候选自动换行且不会撑破筛选菜单和页面边界的合成代表处名称",
+            "grade": 2,
+            "amount": 20000
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "header-title",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "64 行合成数据 · 两张表独立筛选。\n打开「代表处」可搜索选项或加载更多；先选择代表处，再将金额下限设为 650000，可查看已选项在无匹配时的保留状态。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "candidate-table-section",
+      "container": "card",
+      "components": [
+        {
+          "id": "candidate-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "多列联动与候选搜索",
+            "pagination": {
+              "mode": "local",
+              "pageSize": 5,
+              "numbered": true
+            },
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "office"
+                ],
+                "placeholder": "搜索表格代表处"
+              }
+            },
+            "columns": [
+              {
+                "field": "region",
+                "filterable": {
+                  "mode": "select"
+                },
+                "sortable": true
+              },
+              {
+                "field": "office",
+                "filterable": {
+                  "mode": "select"
+                },
+                "sortable": true
+              },
+              {
+                "field": "grade",
+                "filterable": {
+                  "mode": "select"
+                },
+                "sortable": true
+              },
+              {
+                "field": "amount",
+                "filterable": {
+                  "mode": "numberRange"
+                },
+                "sortable": true
+              }
+            ],
+            "fit": "container"
+          }
+        }
+      ]
+    },
+    {
+      "id": "independent-table-section",
+      "container": "card",
+      "components": [
+        {
+          "id": "independent-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "同一数据源，独立表格条件",
+            "pagination": {
+              "mode": "local",
+              "pageSize": 5,
+              "numbered": true
+            },
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "office"
+                ],
+                "placeholder": "搜索表格代表处"
+              }
+            },
+            "columns": [
+              {
+                "field": "region",
+                "filterable": {
+                  "mode": "select"
+                },
+                "sortable": true
+              },
+              {
+                "field": "office",
+                "filterable": {
+                  "mode": "select"
+                },
+                "sortable": true
+              },
+              {
+                "field": "grade",
+                "filterable": {
+                  "mode": "select"
+                },
+                "sortable": true
+              },
+              {
+                "field": "amount",
+                "filterable": {
+                  "mode": "numberRange"
+                },
+                "sortable": true
+              }
+            ],
+            "fit": "container"
+          }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "title": "表格列筛选候选值"
+  }
+}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {createDecisionOpinionPreview} from '../../../../../fixtures/decision-opinion/preview';
   import {iocSelectionGateway} from '../../../../../fixtures/selection-gateway';
   import {pageExternalInputs} from '../../../../../fixtures/preview-inputs';
   import {browser} from '$app/environment';
@@ -100,7 +101,7 @@
       pageState = {
         phase: 'ready',
         document,
-        dataGateway: pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : dataGateway
+        dataGateway: pageExternalInputs(pageId) === 'decision-opinion' ? createDecisionOpinionPreview({failMember:page.url.searchParams.get('sourceFailure')}).dataGateway : pageExternalInputs(pageId) === 'ioc-business' ? businessPreview.dataGateway : pageExternalInputs(pageId) === 'selection' ? iocSelectionGateway : pageExternalInputs(pageId) === 'ioc-header' ? headerPreview.dataGateway : dataGateway
       };
     } catch (cause) {
       if (session !== loadSession) return;
