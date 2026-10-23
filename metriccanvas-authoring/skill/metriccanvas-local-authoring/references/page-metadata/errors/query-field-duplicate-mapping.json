@@ -46,7 +46,7 @@
             "nullable": false
           },
           "orders": {
-            "queryField": "order_cnt",
+            "queryField": "订单数",
             "type": "number",
             "role": "measure"
           }

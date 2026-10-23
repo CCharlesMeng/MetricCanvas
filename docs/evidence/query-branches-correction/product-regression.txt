@@ -1,0 +1,10 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/page/tests packages/data-execution/tests packages/engine/runtime/tests tools/dqe-sim/tests
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/query-branches/DataDashboard
+
+
+ Test Files  170 passed (170)
+      Tests  1435 passed (1435)
+   Start at  16:27:45
+   Duration  10.41s (transform 9.73s, setup 0ms, import 99.23s, tests 27.93s, environment 8ms)
+

@@ -1,0 +1,314 @@
+[
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/captured-at-invalid-month.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/default-level-unknown.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/default-level-without-hierarchy.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/depends-on-cycle.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/depends-on-non-dimension.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/depends-on-self.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/depends-on-undeclared.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/duplicate-filter-id.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/duplicate-hierarchy-level-id.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/filter-binding-dimension-target-not-dimension.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/filter-binding-time-target-not-time-range.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/hidden-hierarchy-picker-without-map.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/hierarchy-picker-without-hierarchy.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/initial-row-date-invalid.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/initial-row-null-not-allowed.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/initial-row-type-mismatch.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/navigation-filter-undeclared.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/number-range-empty.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/number-range-inverted.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/pagination-initial-not-full-page.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/pagination-initial-without-total-count.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/query-dimension-role-mismatch.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/query-field-duplicate-mapping.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/query-field-without-mapping.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/relative-time-anchor-invalid.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/table-filterable-on-measure.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/table-selection-writes-non-dimension.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/table-selection-writes-unknown-filter.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/time-point-date-calendar.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/time-point-date-format.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/time-point-month-format.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/time-point-month-range.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/time-range-datetime-without-precision.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/time-range-from-after-to.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/time-range-from-format.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/time-range-to-calendar.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/write-filter-non-dimension.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/errors/write-filter-on-inline-component.json",
+    "path": "/input/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  },
+  {
+    "file": "docs/archive/unified-authoring/page-metadata-2026-09-15/page/reference/examples/filters-page.json",
+    "path": "/dataSources/orders/source/query/body/dsl_list/0/output_metrics/1",
+    "metric": {
+      "name": "订单数",
+      "alias": "order_cnt"
+    }
+  }
+]

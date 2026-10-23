@@ -119,7 +119,14 @@ export const dqeQueryZ = z
     ])).optional(),
     filterBindings: filterBindingsZ.optional(),
     timeModes: queryCasesZ.optional(),
-    queryModes: queryCasesZ.optional()
+    queryModes: z.object({
+      filterId: idZ,
+      cases: z.record(z.string().min(1), z.object({
+        body: z.object({dsl_list: z.array(dslItemZ).length(1)}).strict(),
+        filterBindings: filterBindingsZ,
+        fieldMappings: z.record(fieldNameZ, z.string().min(1)).meta({minProperties: 1}).optional()
+      }).strict()).meta({minProperties: 1})
+    }).strict().optional()
   })
   .meta({ id: 'dqeQuery' });
 

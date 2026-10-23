@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.56",
+  "schemaVersion": "6.57",
   "id": "query-mode-binding-branches-page",
   "layout": "dashboard",
   "dashboardToolbar": "hidden",
@@ -177,13 +177,11 @@
       "fields": {
         "project": {
           "type": "string",
-          "role": "dimension",
-          "queryField": "ioc_amount_project"
+          "role": "dimension"
         },
         "scope": {
           "type": "string",
-          "role": "dimension",
-          "queryField": "ioc_amount_scope"
+          "role": "dimension"
         },
         "base-cny": {
           "type": "money",
@@ -192,8 +190,7 @@
           "unit": "元",
           "label": "预签金额",
           "defaultFormat": "number-grouped",
-          "nullable": true,
-          "queryField": "ioc_amount_base_cny"
+          "nullable": true
         },
         "fee-cny": {
           "type": "money",
@@ -202,8 +199,7 @@
           "unit": "元",
           "label": "费用",
           "defaultFormat": "number-grouped",
-          "nullable": true,
-          "queryField": "ioc_amount_fee_cny"
+          "nullable": true
         },
         "total-cny": {
           "type": "money",
@@ -221,8 +217,7 @@
           "unit": "美元",
           "label": "预签金额",
           "defaultFormat": "number-grouped",
-          "nullable": true,
-          "queryField": "ioc_amount_base_usd"
+          "nullable": true
         },
         "fee-usd": {
           "type": "money",
@@ -231,8 +226,7 @@
           "unit": "美元",
           "label": "费用",
           "defaultFormat": "number-grouped",
-          "nullable": true,
-          "queryField": "ioc_amount_fee_usd"
+          "nullable": true
         },
         "total-usd": {
           "type": "money",
@@ -309,6 +303,14 @@
                       "Y"
                     ]
                   }
+                },
+                "fieldMappings": {
+                  "project": "ioc_amount_project",
+                  "scope": "ioc_amount_scope",
+                  "base-cny": "ioc_amount_base_cny",
+                  "fee-cny": "ioc_amount_fee_cny",
+                  "base-usd": "ioc_amount_base_usd",
+                  "fee-usd": "ioc_amount_fee_usd"
                 }
               },
               "b": {
@@ -368,6 +370,14 @@
                       "Y"
                     ]
                   }
+                },
+                "fieldMappings": {
+                  "project": "ioc_amount_project",
+                  "scope": "ioc_amount_scope",
+                  "base-cny": "ioc_amount_base_cny",
+                  "fee-cny": "ioc_amount_fee_cny",
+                  "base-usd": "ioc_amount_base_usd",
+                  "fee-usd": "ioc_amount_fee_usd"
                 }
               }
             }

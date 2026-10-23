@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { normalizePageDocument } from '../src';
 import { parsePage, validate } from '../src/validate';
-import { requiredMinorVersion } from '../src/version';
+import { requiredMinorVersion,versionPolicy } from '../src/version';
 
 function document() {
   return JSON.parse(readFileSync('packages/page/fixtures/contract-valid/stored-count-measures.json', 'utf8'));
@@ -28,7 +28,7 @@ describe('DQE 直接返回的数值显式作为度量', () => {
     expect(input).toEqual(before);
     const normalized = normalizePageDocument(input);
     if (!normalized.ok) throw new Error(JSON.stringify(normalized.errors));
-    expect(normalized.document).toEqual(input);
+    expect(normalized.document).toEqual({...input,schemaVersion:versionPolicy.current});
   });
 
   it('分组写法支持现成金额；缺失与数值字符串沿用查询度量归一化', () => {
@@ -84,7 +84,7 @@ describe('DQE 直接返回的数值显式作为度量', () => {
 
   it.each(['query-modes-page', 'time-modes-page'])('所有静态分支参与能力探测：%s', id => {
     const input = JSON.parse(readFileSync(`packages/page/fixtures/contract-valid/${id}.json`, 'utf8'));
-    input.schemaVersion = '6.56';
+    input.schemaVersion = versionPolicy.current;
     for (const source of Object.values(input.dataSources) as any[]) {
       const query = source.source.query;
       const selection = query.queryModes ?? query.timeModes;
@@ -96,7 +96,7 @@ describe('DQE 直接返回的数值显式作为度量', () => {
       }
     }
     expect(validate(input)).toEqual([]);
-    expect(requiredMinorVersion(input)).toBe(56);
+    expect(requiredMinorVersion(input)).toBe(id==='query-modes-page'?57:56);
     input.schemaVersion = '6.55';
     expect(validate(input)).toContainEqual(expect.objectContaining({ message: expect.stringContaining('由 6.56 引入') }));
   });

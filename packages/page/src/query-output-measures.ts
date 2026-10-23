@@ -9,10 +9,21 @@ export function isNumericMeasure(field: { type?: unknown; role?: unknown }): boo
 export function hasNumericDimensionMeasure(value: unknown): boolean {
   const source = record(record(value)?.source);
   if (source?.type !== 'query') return false;
-  const outputs = dimensionOutputs(record(source.query));
-  return measureFields(record(record(value)?.fields)).some(field =>
+  const query=record(source.query),fields=record(record(value)?.fields);
+  const outputs = dimensionOutputs(query);
+  return branchDimensionMeasure(fields,query) || measureFields(fields).some(field =>
     isNumericMeasure(field) && typeof field.queryField === 'string' && outputs.has(field.queryField)
   );
+}
+
+function branchDimensionMeasure(fields:JsonRecord|undefined,query:JsonRecord|undefined):boolean {
+  for(const leaf of Object.values(record(record(query?.queryModes)?.cases)??{})){
+    const branch=record(leaf),outputs=dimensionOutputs(branch);
+    if(Object.entries(record(branch?.fieldMappings)??{}).some(([id,name])=>
+      typeof name==='string'&&outputs.has(name)&&isNumericMeasure(record(fields?.[id])??{})
+    ))return true;
+  }
+  return false;
 }
 
 function dimensionOutputs(query: JsonRecord | undefined): Set<string> {

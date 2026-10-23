@@ -3,29 +3,34 @@
   "invariant": "query-modes",
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
-      "message": "查询模式case必须输出相同字段/类型/货币映射",
+      "type": "QUERY_MAPPING_ERROR",
+      "message": "queryField 商机金额 不在 DQE 输出字段中",
       "paths": [
-        "/dataSources/amount-trend/source/query/queryModes"
+        "/dataSources/amount-trend/fields/amount/queryField"
+      ]
+    },
+    {
+      "type": "QUERY_MAPPING_ERROR",
+      "message": "DQE 输出字段 other 缺少显式 queryField 映射",
+      "paths": [
+        "/dataSources/amount-trend/fields"
       ]
     }
   ],
   "inputExcerpt": {
     "dataSources": {
       "amount-trend": {
-        "source": {
-          "query": {
-            "queryModes": {
-              "filterId": "business",
-              "cases": {
-                "contracts": {
-                  "…": "共2个键"
-                },
-                "opportunities": {
-                  "…": "共2个键"
-                }
-              }
-            }
+        "fields": {
+          "month": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "amount": {
+            "type": "money",
+            "role": "measure",
+            "currency": "CNY",
+            "unit": "元",
+            "nullable": false
           }
         }
       }

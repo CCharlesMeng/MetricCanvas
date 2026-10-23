@@ -23,7 +23,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 6.32 的隐含高级入口 `props.echartsOption` 用于显式要求的 ECharts 呈现定制；普通创作优先使用上面的封闭属性。规则、保护路径、console 诊断与降级见[高级呈现扩展](../chart-option.md)。
 
 
-页面协议 6.56。结构真源为本册[schema.json](../schema.json)，SHA256 `914784cf3a9ce0b90b98d47185181599e9c35065c893c15cbe50ec3e708ecc7b`。字段表自动生成；可选不等于有默认值。
+页面协议 6.57。结构真源为本册[schema.json](../schema.json)，SHA256 `7c423995f3d706ad39a1400e73ff0e88aadbb9b02cb77a041946923a1f3f64e5`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

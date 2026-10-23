@@ -1,0 +1,10 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/page/tests/query-output-measures.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/query-branches/DataDashboard
+
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  16:35:44
+   Duration  619ms (transform 226ms, setup 0ms, import 475ms, tests 36ms, environment 0ms)
+

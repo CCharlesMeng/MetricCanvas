@@ -11,13 +11,13 @@ describe('fixed single-select query branches',()=>{
     const page=load();expect(validate(page)).toEqual([]);
     const query=page.dataSources['amount-trend'].source.query;
     expect(queryFilterIds(query)).toEqual(['business','region']);
-    expect(queryLeaves(query).map(leaf=>leaf.body.dsl_list[0].output_metrics)).toEqual([[{name:'签约金额',alias:'金额'}],[{name:'商机金额',alias:'金额'}]]);
+    expect(queryLeaves(query).map(leaf=>leaf.body.dsl_list[0].output_metrics)).toEqual([['签约金额'],['商机金额']]);
   });
   it.each(['missing-case','extra-case','wrong-output','wrong-selector','root-body','root-binding','unknown-field','selector-predicate','time-and-dimension'])('rejects %s',kind=>{
     const page=load(),query=page.dataSources['amount-trend'].source.query,cases=query.queryModes.cases;
     if(kind==='missing-case')delete cases.opportunities;
     if(kind==='extra-case')cases.unknown=structuredClone(cases.contracts);
-    if(kind==='wrong-output')cases.opportunities.body.dsl_list[0].output_metrics=[{name:'商机金额',alias:'其他金额'}];
+    if(kind==='wrong-output')cases.opportunities.body.dsl_list[0].output_metrics=['其他金额'];
     if(kind==='wrong-selector')query.queryModes.filterId='absent';
     if(kind==='root-body')query.body=cases.contracts.body;
     if(kind==='root-binding')query.filterBindings={};
@@ -34,6 +34,25 @@ describe('fixed single-select query branches',()=>{
   });
   it('gates the feature at 6.50',()=>{
     const page=load();page.schemaVersion='6.49';expect(validate(page).some(error=>error.message.includes('6.50'))).toBe(true);
+  });
+  it('gates branch response mappings at 6.57',()=>{
+    const page=load();page.schemaVersion='6.56';expect(validate(page).some(error=>error.message.includes('6.57'))).toBe(true);
+  });
+  it.each(['missing','unknown','duplicate','mixed-root','missing-branch','fake-alias','initial'])('rejects invalid response mapping: %s',kind=>{
+    const page=load(),source=page.dataSources['amount-trend'],leaf=source.source.query.queryModes.cases.opportunities;
+    if(kind==='missing')delete leaf.fieldMappings.amount;
+    if(kind==='unknown')leaf.fieldMappings.unknown='商机金额';
+    if(kind==='duplicate')leaf.fieldMappings.amount='月份';
+    if(kind==='mixed-root')source.fields.amount.queryField='金额';
+    if(kind==='missing-branch')delete leaf.fieldMappings;
+    if(kind==='fake-alias')leaf.body.dsl_list[0].output_metrics=[{name:'商机金额',alias:'商机金额'}];
+    if(kind==='initial')source.source.initial={capturedAt:'2026-10-23T00:00:00Z',rows:[]};
+    expect(validate(page).length).toBeGreaterThan(0);
+  });
+  it('accepts explicit formula columns without treating ordinary metrics as formulas',()=>{
+    const page=load(),leaf=page.dataSources['amount-trend'].source.query.queryModes.cases.opportunities;
+    leaf.body.dsl_list[0].output_metrics=[{formula:'COUNT(*)',alias:'商机金额'}];
+    expect(validate(page)).toEqual([]);
   });
   it('uses one coherent assignment when query branches and field selection share an enum',()=>{
     const page=JSON.parse(readFileSync('packages/page/fixtures/contract-valid/query-mode-binding-branches-page.json','utf8'));

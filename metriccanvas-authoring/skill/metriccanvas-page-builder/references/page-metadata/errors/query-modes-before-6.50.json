@@ -4,6 +4,14 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
+      "message": "查询分支原始响应字段到稳定页面字段的显式映射 由 6.57 引入，文档声明的是 6.49",
+      "paths": [
+        "/dataSources/amount-trend",
+        "/dataSources/amount-total"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "固定单选选择不同静态DQE查询分支，共享结果字段契约 由 6.50 引入，文档声明的是 6.49",
       "paths": [
         "/dataSources/amount-trend",
@@ -16,10 +24,10 @@
       "amount-trend": {
         "fields": {
           "month": {
-            "…": "共3个键"
+            "…": "共2个键"
           },
           "amount": {
-            "…": "共6个键"
+            "…": "共5个键"
           }
         },
         "source": {
@@ -33,7 +41,7 @@
       "amount-total": {
         "fields": {
           "amount": {
-            "…": "共6个键"
+            "…": "共5个键"
           }
         },
         "source": {

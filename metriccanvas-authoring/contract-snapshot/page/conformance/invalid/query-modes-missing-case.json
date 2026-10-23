@@ -2,7 +2,7 @@
   "case": "query-modes-missing-case",
   "invariant": "query-modes",
   "input": {
-    "schemaVersion": "6.50",
+    "schemaVersion": "6.57",
     "id": "query-modes-page",
     "layout": "dashboard",
     "meta": {
@@ -34,13 +34,11 @@
         "fields": {
           "month": {
             "type": "string",
-            "role": "dimension",
-            "queryField": "月份"
+            "role": "dimension"
           },
           "amount": {
             "type": "money",
             "role": "measure",
-            "queryField": "金额",
             "currency": "CNY",
             "unit": "元",
             "nullable": false
@@ -62,10 +60,7 @@
                           "月份"
                         ],
                         "output_metrics": [
-                          {
-                            "name": "签约金额",
-                            "alias": "金额"
-                          }
+                          "签约金额"
                         ],
                         "filter": {
                           "dims": [],
@@ -80,6 +75,10 @@
                       "target": "dimension",
                       "queryField": "签约区域"
                     }
+                  },
+                  "fieldMappings": {
+                    "month": "月份",
+                    "amount": "签约金额"
                   }
                 }
               }
@@ -92,7 +91,6 @@
           "amount": {
             "type": "money",
             "role": "measure",
-            "queryField": "金额",
             "currency": "CNY",
             "unit": "元",
             "nullable": false
@@ -112,10 +110,7 @@
                       {
                         "output_dims": [],
                         "output_metrics": [
-                          {
-                            "name": "签约金额",
-                            "alias": "金额"
-                          }
+                          "签约金额"
                         ],
                         "filter": {
                           "dims": [],
@@ -130,6 +125,9 @@
                       "target": "dimension",
                       "queryField": "签约区域"
                     }
+                  },
+                  "fieldMappings": {
+                    "amount": "签约金额"
                   }
                 },
                 "opportunities": {
@@ -138,10 +136,7 @@
                       {
                         "output_dims": [],
                         "output_metrics": [
-                          {
-                            "name": "商机金额",
-                            "alias": "金额"
-                          }
+                          "商机金额"
                         ],
                         "filter": {
                           "dims": [],
@@ -156,6 +151,9 @@
                       "target": "dimension",
                       "queryField": "商机区域"
                     }
+                  },
+                  "fieldMappings": {
+                    "amount": "商机金额"
                   }
                 }
               }

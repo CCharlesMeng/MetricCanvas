@@ -34,13 +34,11 @@
         "fields": {
           "month": {
             "type": "string",
-            "role": "dimension",
-            "queryField": "月份"
+            "role": "dimension"
           },
           "amount": {
             "type": "money",
             "role": "measure",
-            "queryField": "金额",
             "currency": "CNY",
             "unit": "元",
             "nullable": false
@@ -62,10 +60,7 @@
                           "月份"
                         ],
                         "output_metrics": [
-                          {
-                            "name": "签约金额",
-                            "alias": "金额"
-                          }
+                          "签约金额"
                         ],
                         "filter": {
                           "dims": [],
@@ -80,6 +75,10 @@
                       "target": "dimension",
                       "queryField": "签约区域"
                     }
+                  },
+                  "fieldMappings": {
+                    "month": "月份",
+                    "amount": "签约金额"
                   }
                 },
                 "opportunities": {
@@ -90,10 +89,7 @@
                           "月份"
                         ],
                         "output_metrics": [
-                          {
-                            "name": "商机金额",
-                            "alias": "金额"
-                          }
+                          "商机金额"
                         ],
                         "filter": {
                           "dims": [],
@@ -108,6 +104,10 @@
                       "target": "dimension",
                       "queryField": "商机区域"
                     }
+                  },
+                  "fieldMappings": {
+                    "month": "月份",
+                    "amount": "商机金额"
                   }
                 }
               }
@@ -120,7 +120,6 @@
           "amount": {
             "type": "money",
             "role": "measure",
-            "queryField": "金额",
             "currency": "CNY",
             "unit": "元",
             "nullable": false
@@ -140,10 +139,7 @@
                       {
                         "output_dims": [],
                         "output_metrics": [
-                          {
-                            "name": "签约金额",
-                            "alias": "金额"
-                          }
+                          "签约金额"
                         ],
                         "filter": {
                           "dims": [],
@@ -158,6 +154,9 @@
                       "target": "dimension",
                       "queryField": "签约区域"
                     }
+                  },
+                  "fieldMappings": {
+                    "amount": "签约金额"
                   }
                 },
                 "opportunities": {
@@ -166,10 +165,7 @@
                       {
                         "output_dims": [],
                         "output_metrics": [
-                          {
-                            "name": "商机金额",
-                            "alias": "金额"
-                          }
+                          "商机金额"
                         ],
                         "filter": {
                           "dims": [],
@@ -184,6 +180,9 @@
                       "target": "dimension",
                       "queryField": "商机区域"
                     }
+                  },
+                  "fieldMappings": {
+                    "amount": "商机金额"
                   }
                 }
               }
@@ -352,6 +351,16 @@
     ]
   },
   "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/amount-trend",
+      "message": "查询分支原始响应字段到稳定页面字段的显式映射 由 6.57 引入，文档声明的是 6.49"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/amount-total",
+      "message": "查询分支原始响应字段到稳定页面字段的显式映射 由 6.57 引入，文档声明的是 6.49"
+    },
     {
       "type": "SCHEMA_ERROR",
       "path": "/dataSources/amount-trend",

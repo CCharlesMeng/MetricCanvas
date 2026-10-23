@@ -1,6 +1,6 @@
 import { isObjectDqeItem } from '@metriccanvas/page/internal';
 import { intersectQueryFilters } from '../intersect-filters';
-import {requiresQueryContext,requiresTimeValidation,hasQuerySelection} from '@metriccanvas/page/internal';
+import {selectQuerySource,requiresQueryContext,requiresTimeValidation,hasQuerySelection} from '@metriccanvas/page/internal';
 import {type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import {queryFilterIds} from '@metriccanvas/page/internal';
 import { createCandidateValidator } from '../candidate-validation';
@@ -121,6 +121,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       const scope = sourceReadScope(request.freshness, frozenInputs, frozenRevision);
       try {
         const ids = executionSourceIds(page, request.roots);
+        const sources = new Map(compiled.sources);
         const raw = new Map(request.seeds);
         removeUntrustedSeeds();
         const views = new Map(request.views);
@@ -157,9 +158,10 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         const tasks = new Map<string, Promise<void>>();
         async function execute(id: string): Promise<void> {
           request.signal?.throwIfAborted();
-          const source = requiredSource(id);
+          let source = requiredSource(id);
           try { if (candidates.requires(id)) await candidates.verify(id, request.conditions, request.signal); }
           catch (cause) { rejectCandidate(id, cause); return; }
+          source = appliedSource(id,source);
           if (raw.has(id)) return;
           const view = views.get(id) ?? defaultSourceView(page, id, limits.get(id));
           if (contradictorySource(source)) { raw.set(id, { status: 'empty', totalCount: 0 }); return; }
@@ -224,9 +226,16 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           if ([...executionSourceIds(page, [id])].every(dependency => raw.has(dependency))) reportError(id, snapshots.get(id) ?? raw.get(id)!);
         }
         function requiredSource(id: string): DataSource {
-          const source = compiled.sources.get(id);
+          const source = sources.get(id);
           if (!source) throw new Error('页面数据源不存在');
           return source;
+        }
+        function appliedSource(id:string,source:DataSource):DataSource {
+          if(source.source.type!=='query')return source;
+          // Keep branch metadata for context guards; downstream filters need resolved raw fields.
+          const applied={...source,fields:selectQuerySource(source as QueryDataSource,request.conditions).fields};
+          sources.set(id,applied);
+          return applied;
         }
         function rejectCandidate(id: string, cause: unknown): void {
           if (request.signal.aborted) throw cause;
@@ -262,7 +271,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           return request.purpose !== 'complete' && defaultConditions(id, request.conditions, false) && applied.pageIndex === 0 && applied.pageSize === source.source.pagination.pageSize && !applied.predicates.length && !applied.search?.query.trim() && canonicalizeJson(applied.sort) === canonicalizeJson(source.source.ordering.default);
         }
         function readyQueryInputs(source: QueryDataSource) {
-          const input = resolveQueryResultInputs(source, raw, compiled.sources, limits);
+          const input = resolveQueryResultInputs(source, raw, sources, limits);
           if (input.status === 'waiting') throw new Error('页面查询依赖未就绪');
           return input;
         }
@@ -273,7 +282,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           const fresh = () => composeEffectiveQuery({ now: request.now, filters: page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), view.search);
           const protectedConditions = requiresQueryContext(source.source.query, page.filters);
           // Captured views may be reused; their old predicates cannot authorize a different range.
-          let query = captured ? { ...structuredClone(captured), ...(protectedConditions ? { filterValues: fresh().filterValues, bindingValues: fresh().bindingValues, tableFilters: fresh().tableFilters, fieldMappings: source.fields } : {}) } : fresh();
+          let query = captured ? { ...structuredClone(captured), ...(protectedConditions ? { filterValues: fresh().filterValues, bindingValues: fresh().bindingValues, tableFilters: fresh().tableFilters, fieldMappings: fresh().fieldMappings } : {}) } : fresh();
           bindQueryResultValues(query, values);
           queries.set(id, query);
           return query;
@@ -285,7 +294,8 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           return defaultConditions(id, request.conditions, false) && view.pageIndex === 0 && !view.sort.length && !view.predicates.length && !view.search?.query.trim() && (!compiled.limits.has(id) || view.pageSize === compiled.limits.get(id));
         }
         function finishQueryRead(id: string, source: QueryDataSource, view: TableQueryView, snapshot: DataSnapshot): void {
-          if (snapshot.status === 'ready' || snapshot.status === 'empty') {
+          // Embedded initials cannot identify a query branch or its raw response mapping.
+          if ((snapshot.status === 'ready' || snapshot.status === 'empty') && !source.source.query.queryModes) {
             try {
               const rows = queryRowsFromPageRows(snapshot.status === 'ready' ? snapshot.rows : [], source.fields);
               // Keep inconsistent live rows visible without persisting an invalid first-page initial.
@@ -312,7 +322,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         while (pending.size) {
           const id = await Promise.race(pending.values()); pending.delete(id);
           request.signal?.throwIfAborted();
-          const all = new Map(compiled.sources);
+          const all = new Map(sources);
           // Sources outside this read cannot create spurious missing-compute errors.
           for (const key of all.keys()) if (!ids.has(key) && !raw.has(key)) all.delete(key);
           const snapshots = computedSnapshots(all, raw, context);
@@ -320,7 +330,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           yield { ...candidateMarker(id), sourceId: id, snapshot: sourceProjection(id, snapshots), raw: raw.get(id)!, initial: initials.get(id), viewCorrection: corrections.get(id), query: queries.get(id) };
         }
         // Raw success can precede compute dependencies. Publish final projections after all settle.
-        const final = computedSnapshots(new Map([...compiled.sources].filter(([id]) => ids.has(id) || raw.has(id))), raw, context);
+        const final = computedSnapshots(new Map([...sources].filter(([id]) => ids.has(id) || raw.has(id))), raw, context);
         for (const id of ids) if (compiled.sources.get(id)?.compute?.length) {
           reportError(id, final.get(id)!);
           yield { ...candidateMarker(id), sourceId: id, snapshot: final.get(id)!, raw: raw.get(id)! };

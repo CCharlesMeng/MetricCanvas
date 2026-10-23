@@ -1,0 +1,40 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run tools/dqe-sim/tests/query-modes.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/query-branches/DataDashboard
+
+ ❯ tools/dqe-sim/tests/query-modes.test.ts (2 tests | 1 failed) 49ms
+   × ordinary demo metrics use native names, never unsupported name/alias objects 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tools/dqe-sim/tests/query-modes.test.ts > ordinary demo metrics use native names, never unsupported name/alias objects
+AssertionError: expected [ { name: '签约金额', alias: '金额' } ] to deeply equal [ '签约金额' ]
+
+- Expected
++ Received
+
+  [
+-   "签约金额",
++   {
++     "alias": "金额",
++     "name": "签约金额",
++   },
+  ]
+
+ ❯ tools/dqe-sim/tests/query-modes.test.ts:12:61
+     10|   for(const source of Object.values(page.dataSources) as any[]){
+     11|     const cases=source.source.query.queryModes.cases;
+     12|     expect(cases.contracts.body.dsl_list[0].output_metrics).toEqual(['…
+       |                                                             ^
+     13|     expect(cases.opportunities.body.dsl_list[0].output_metrics).toEqua…
+     14|   }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  16:12:15
+   Duration  985ms (transform 516ms, setup 0ms, import 848ms, tests 49ms, environment 0ms)
+
+[ELIFECYCLE] Test failed. See above for more details.

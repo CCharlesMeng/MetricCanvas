@@ -1,0 +1,35 @@
+{
+  "case": "query-modes-mapping-unknown",
+  "invariant": "query-modes",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "fieldMappings必须引用已声明的外部结果字段:unknown",
+      "paths": [
+        "/dataSources/amount-trend/source/query/queryModes/cases/opportunities/fieldMappings"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "amount-trend": {
+        "source": {
+          "query": {
+            "queryModes": {
+              "cases": {
+                "opportunities": {
+                  "fieldMappings": {
+                    "month": "月份",
+                    "amount": "商机金额",
+                    "unknown": "商机金额"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/query-modes-mapping-unknown.json"
+}

@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "6.50",
+  "schemaVersion": "6.57",
   "id": "query-mode-chart-demo",
   "layout": "dashboard",
   "meta": {
     "title": "签约与商机金额趋势",
-    "description": "跨表查询分支演示 · 本地 DQE 仿真合成数据，非生产业务数据"
+    "description": "查询分支与页面字段映射 · 本地合成数据，未接入真实 DQE"
   },
   "filters": [
     {
@@ -31,13 +31,11 @@
       "fields": {
         "month": {
           "type": "string",
-          "role": "dimension",
-          "queryField": "月份"
+          "role": "dimension"
         },
         "amount": {
           "type": "money",
           "role": "measure",
-          "queryField": "金额",
           "currency": "CNY",
           "unit": "元",
           "nullable": false
@@ -59,10 +57,7 @@
                         "月份"
                       ],
                       "output_metrics": [
-                        {
-                          "name": "签约金额",
-                          "alias": "金额"
-                        }
+                        "签约金额"
                       ],
                       "filter": {
                         "dims": [],
@@ -77,6 +72,10 @@
                     "target": "dimension",
                     "queryField": "签约区域"
                   }
+                },
+                "fieldMappings": {
+                  "month": "月份",
+                  "amount": "签约金额"
                 }
               },
               "opportunities": {
@@ -87,10 +86,7 @@
                         "月份"
                       ],
                       "output_metrics": [
-                        {
-                          "name": "商机金额",
-                          "alias": "金额"
-                        }
+                        "商机金额"
                       ],
                       "filter": {
                         "dims": [],
@@ -105,6 +101,10 @@
                     "target": "dimension",
                     "queryField": "商机区域"
                   }
+                },
+                "fieldMappings": {
+                  "month": "月份",
+                  "amount": "商机金额"
                 }
               }
             }
@@ -117,7 +117,6 @@
         "amount": {
           "type": "money",
           "role": "measure",
-          "queryField": "金额",
           "currency": "CNY",
           "unit": "元",
           "nullable": false
@@ -137,10 +136,7 @@
                     {
                       "output_dims": [],
                       "output_metrics": [
-                        {
-                          "name": "签约金额",
-                          "alias": "金额"
-                        }
+                        "签约金额"
                       ],
                       "filter": {
                         "dims": [],
@@ -155,6 +151,9 @@
                     "target": "dimension",
                     "queryField": "签约区域"
                   }
+                },
+                "fieldMappings": {
+                  "amount": "签约金额"
                 }
               },
               "opportunities": {
@@ -163,10 +162,7 @@
                     {
                       "output_dims": [],
                       "output_metrics": [
-                        {
-                          "name": "商机金额",
-                          "alias": "金额"
-                        }
+                        "商机金额"
                       ],
                       "filter": {
                         "dims": [],
@@ -181,6 +177,9 @@
                     "target": "dimension",
                     "queryField": "商机区域"
                   }
+                },
+                "fieldMappings": {
+                  "amount": "商机金额"
                 }
               }
             }
@@ -200,7 +199,7 @@
             "span": 12
           },
           "props": {
-            "body": "本地仿真演示：签约金额与商机金额分别来自两张独立演示表。切换业务口径后，趋势、合计和明细同步更新；区域条件继续生效。",
+            "body": "本地合成数据演示：签约与商机使用两组独立固定数据；切换口径会改变请求指标及区域字段。普通指标保留原名，由页面映射为图表字段。未验证真实 DQE 的指标、表路由、权限与业务口径。",
             "variant": "plain"
           }
         }

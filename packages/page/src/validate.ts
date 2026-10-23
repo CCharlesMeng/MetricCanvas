@@ -805,6 +805,7 @@ function queryContractErrors(
     return level && mappedNames.has(level) ? level : name;
   });
   const metrics = dqeMetricNames(item.output_metrics);
+  if(Array.isArray(item.output_metrics)&&metrics.length!==item.output_metrics.length)errors.push(schemaError(`${sourcePath}/source/query/body/dsl_list/0/output_metrics`,'普通DQE指标须为名称字符串；公式列须显式声明formula和alias，不支持name/alias重命名'));
   const outputs = new Set(isObjectDqeItem(item) ? objectOutputFields(item) : [...dimensions, ...metrics]);
   errors.push(...objectQueryErrors(query, `${sourcePath}/source/query`));
   const mapped = new Map<string, string>();
@@ -1319,8 +1320,10 @@ function dqeMetricNames(value: unknown): string[] {
       typeof item === 'object' &&
       item !== null &&
       !Array.isArray(item) &&
+      'formula' in item && typeof item.formula === 'string' && item.formula.trim().length > 0 &&
+      !('name' in item) &&
       'alias' in item &&
-      typeof item.alias === 'string'
+      typeof item.alias === 'string' && item.alias.trim().length > 0
     ) {
       return [item.alias];
     }

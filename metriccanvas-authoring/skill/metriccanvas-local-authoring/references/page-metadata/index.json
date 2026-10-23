@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.56",
-  "schemaSha256": "914784cf3a9ce0b90b98d47185181599e9c35065c893c15cbe50ec3e708ecc7b",
+  "schemaVersion": "6.57",
+  "schemaSha256": "7c423995f3d706ad39a1400e73ff0e88aadbb9b02cb77a041946923a1f3f64e5",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -1107,7 +1107,8 @@
         "6.53",
         "6.54",
         "6.55",
-        "6.56"
+        "6.56",
+        "6.57"
       ]
     },
     {
@@ -5371,6 +5372,24 @@
     {
       "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/propertyNames",
       "path": "@dqeQuery.queryModes.cases{key}.filterBindings · propertyNames",
+      "required": "条件结构",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/fieldMappings",
+      "path": "@dqeQuery.queryModes.cases{key}.fieldMappings",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/fieldMappings/additionalProperties",
+      "path": "@dqeQuery.queryModes.cases{key}.fieldMappings{key}",
+      "required": "动态键的值",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/fieldMappings/propertyNames",
+      "path": "@dqeQuery.queryModes.cases{key}.fieldMappings · propertyNames",
       "required": "条件结构",
       "module": "queries-and-bindings.md"
     },
@@ -16971,5 +16990,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "eb59a4416a9ca1c874c456ed29027c5ab2bae2b0c7023c4f7942f6feb1081d22"
+  "semanticSourceDigest": "deb0c22426c4d8df84219de59900f776f878c6c29d9ca3afacc96095c3608f57"
 }

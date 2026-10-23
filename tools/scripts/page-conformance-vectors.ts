@@ -159,7 +159,11 @@ export const invariants: InvariantDefinition[] = [
   {id:'query-modes',description:'6.50 固定单选选择完整静态跨表查询，共享结果字段契约',valid:['query-modes-page'],cases:[
     {case:'query-modes-before-6.50',base:'query-modes-page',expect:/由 6.50 引入/,mutate:d=>{d.schemaVersion='6.49';}},
     {case:'query-modes-missing-case',base:'query-modes-page',expect:/穷尽/,mutate:d=>{delete d.dataSources['amount-trend'].source.query.queryModes.cases.opportunities;}},
-    {case:'query-modes-output-mismatch',base:'query-modes-page',expect:/相同字段/,mutate:d=>{d.dataSources['amount-trend'].source.query.queryModes.cases.opportunities.body.dsl_list[0].output_metrics=['other'];}},
+    {case:'query-modes-mapping-version',base:'query-modes-page',expect:/6.57/,mutate:d=>{d.schemaVersion='6.56';}},
+    {case:'query-modes-mapping-missing',base:'query-modes-page',expect:/fieldMappings缺少/,mutate:d=>{delete d.dataSources['amount-trend'].source.query.queryModes.cases.opportunities.fieldMappings.amount;}},
+    {case:'query-modes-mapping-unknown',base:'query-modes-page',expect:/fieldMappings必须引用/,mutate:d=>{d.dataSources['amount-trend'].source.query.queryModes.cases.opportunities.fieldMappings.unknown='商机金额';}},
+    {case:'query-modes-native-alias-rejected',base:'query-modes-page',expect:/不支持name\/alias/,mutate:d=>{d.dataSources['amount-trend'].source.query.queryModes.cases.opportunities.body.dsl_list[0].output_metrics=[{name:'商机金额',alias:'商机金额'}];}},
+    {case:'query-modes-output-mismatch',base:'query-modes-page',expect:/queryField 映射|不在 DQE 输出/,mutate:d=>{d.dataSources['amount-trend'].source.query.queryModes.cases.opportunities.body.dsl_list[0].output_metrics=['other'];}},
     {case:'query-modes-selector-missing',base:'query-modes-page',expect:/固定单选/,mutate:d=>{d.dataSources['amount-trend'].source.query.queryModes.filterId='absent';}},
     {case:'query-modes-root-body',base:'query-modes-page',expect:/互斥/,mutate:d=>{const q=d.dataSources['amount-trend'].source.query;q.body=q.queryModes.cases.contracts.body;}}
   ]},

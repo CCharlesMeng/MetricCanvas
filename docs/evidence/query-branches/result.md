@@ -1,5 +1,7 @@
 # 固定单选跨表查询分支验收
 
+> 本记录的普通指标 `{name,alias}` 请求及对应 Sim 成功不能证明真实 DQE 支持，现已纠正。历史截图、请求和通过计数只保留为当时执行记录；当前声明、修复及未验真项见[纠错审计](../query-branches-correction/result.md)。
+
 日期：2026-10-22。基线：`3541d5d69d71c0fd81ab05307dbb35183bd3e7d2`。实现位于独立工作区 `/Users/moon/.codex/worktrees/query-branches/DataDashboard`，保留原工作区的并行改动。Git交付按用户要求推送main，提交使用 `[skip ci]`，CI按跳过报告。
 
 ## 可查看的结果

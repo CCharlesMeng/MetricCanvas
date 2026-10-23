@@ -1,4 +1,4 @@
-import { hasQueryFieldMapping, type Page, type PagedJoinDataSource, type QueryDataSource, type TableQueryView } from '@metriccanvas/page/internal';
+import { selectQuerySource, hasQueryFieldMapping, type Page, type PagedJoinDataSource, type QueryDataSource, type TableQueryView } from '@metriccanvas/page/internal';
 import type { FilterValues } from '../filter-values';
 import { composeEffectiveQuery } from '../effective-query';
 
@@ -14,7 +14,7 @@ export function compilePagedJoin(page: Page, sourceId: string, conditions: Filte
   if (view.predicates.some(p => !source.source.projection[p.field])) throw Object.assign(new Error('未声明的组合筛选字段'), { code: 'DQE_QUERY_REJECTED' });
   if(view.predicates.some(predicate=>{const field=source.fields[predicate.field];return predicate.op==='gte'||predicate.op==='lte'?field.role!=='measure'||!['number','money'].includes(field.type):field.role!=='dimension';}))throw Object.assign(new Error('组合筛选与最终字段类型不相容'),{code:'DQE_QUERY_REJECTED'});
   if (view.search?.fields.some(field => !source.source.projection[field] || source.fields[field]?.type !== 'string')) throw Object.assign(new Error('组合搜索字段必须为已投影文本'), { code: 'DQE_QUERY_REJECTED' });
-  const members = new Map(Object.entries(source.source.members).map(([id, member]) => [id, page.dataSources[member.source] as QueryDataSource]));
+  const members = new Map(Object.entries(source.source.members).map(([id, member]) => [id, selectQuerySource(page.dataSources[member.source] as QueryDataSource,conditions)]));
   const owners = new Set(view.sort.map(rule => source.source.projection[rule.field]?.member));
   let selection = owners.size === 1 ? [...owners][0] : undefined;
   let reason:PagedJoinPlan['reason']=selection?'single-owner':'multiple-owners';

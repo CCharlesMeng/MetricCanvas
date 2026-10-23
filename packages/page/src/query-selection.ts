@@ -1,5 +1,6 @@
 import type {DqeQueryCase,DqeQueryDefinition} from './query';
 import type {Page} from './page';
+import type {QueryDataSource} from './data-source';
 
 export interface QuerySelectorValue {type:string;mode?:string;values?:readonly string[]}
 type Selection = {filterId:string;cases:Record<string,DqeQueryCase>};
@@ -33,6 +34,18 @@ export function selectQuery(query:DqeQueryDefinition,values:ReadonlyMap<string,Q
   if(key===undefined||!Object.hasOwn(selection.cases,key))throw rejected('查询模式未通过合法单选校验');
   return {...baseQuery(query),...selection.cases[key]} as OrdinaryQuery;
 }
+
+/** Resolve page-owned response mappings alongside the selected request. */
+export function selectQuerySource(source:QueryDataSource,values:ReadonlyMap<string,QuerySelectorValue>):QueryDataSource {
+  const query=selectQuery(source.source.query,values);
+  if(!source.source.query.queryModes)return {...source,source:{...source.source,query}};
+  const mappings=(query as OrdinaryQuery & {fieldMappings:Record<string,string>}).fieldMappings;
+  if(!mappings)return {...source,source:{...source.source,query}};
+  const fields=Object.fromEntries(Object.entries(source.fields).map(([id,field])=>[
+    id,Object.hasOwn(mappings,id)?{...field,queryField:mappings[id]}:field
+  ]));
+  return {...source,fields,source:{...source.source,query}};
+}
 /** Every static leaf participates in validation, parameter resolution and dependencies. */
 export function queryLeaves(query:DqeQueryDefinition):OrdinaryQuery[] {
   const selection=querySelection(query);
@@ -58,7 +71,7 @@ export function* selectionAssignments(selectors:ReadonlyMap<string,QuerySelector
   yield* assignments;
 }
 export function projectQueries(page:Page,values:ReadonlyMap<string,QuerySelectorValue>):Page {
-  const sources=Object.fromEntries(Object.entries(page.dataSources).map(([id,source])=>[id,source.source.type==='query'?{...source,source:{...source.source,query:selectQuery(source.source.query,values)}}:source]));
+  const sources=Object.fromEntries(Object.entries(page.dataSources).map(([id,source])=>[id,source.source.type==='query'?selectQuerySource(source as QueryDataSource,values):source]));
   return {...page,dataSources:sources};
 }
 /** One selector drives a coherent assignment across all query sources. */

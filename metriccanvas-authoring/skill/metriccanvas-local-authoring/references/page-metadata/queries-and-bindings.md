@@ -140,7 +140,7 @@ data.main选择数据源，sortable开放列头交互，pagination.mode=query使
 
 ## 6.39 静态时间查询模式
 
-普通query继续 `body/filterBindings`。模式查询使用 `timeModes:{filterId,cases:{day?:{body,filterBindings},month?:{body,filterBindings},isoWeek?:{body,filterBindings}}}`，与根body/filterBindings/paramBindings互斥；每case是一个完整静态DQE请求体，穷尽控制筛选的配置模式。day/month/isoWeek静态period分别为day/month/week。每case必须显式绑定该时间范围，输出同一组结果字段/类型/货币及queryField别名映射；所有case均参与静态校验、参数引用及依赖分析；同页时间模式与字段选择的联合验证组合共用4096上限，超限返回可定位的协议错误。
+普通query继续 `body/filterBindings`。模式查询使用 `timeModes:{filterId,cases:{day?:{body,filterBindings},month?:{body,filterBindings},isoWeek?:{body,filterBindings}}}`，与根body/filterBindings/paramBindings互斥；每case是一个完整静态DQE请求体，穷尽控制筛选的配置模式。day/month/isoWeek静态period分别为day/month/week。每case必须显式绑定该时间范围，输出同一组结果字段/类型/货币及queryField映射；所有case均参与静态校验、参数引用及依赖分析；同页时间模式与字段选择的联合验证组合共用4096上限，超限返回可定位的协议错误。
 
 SourceProgram、Node执行入口、分页/组合查询、导出统一选择合法已应用模式；没有首case回退。未证明模式/事实上下文的initial/seeds/执行快照不复用；捕获查询的时间及筛选谓词按冻结条件重编译，不能让旧谓词绕过可信上限。一次read冻结时钟、条件、事实与相关filterRevision，导出亦冻结。Relay部署入口可传可信context，但本批只验证公共Node执行和本地合成HTTP；真实Relay/DQE week聚合及私有周码未验真。
 
@@ -148,7 +148,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 ## 6.50 固定单选查询分支
 
-一个页面数据源表示一份稳定结果，不等于一张物理表。`queryModes` 允许按普通维度筛选的固定单选值选择不同完整 DQE 查询；各查询可以关联不同数据对象，数据网关仍提交生效查询并按显式别名归一化。页面不增加数据库地址、物理表推断、自由 SQL 或渲染期查询生成。
+一个页面数据源表示一份稳定结果，不等于一张物理表。`queryModes` 允许按普通维度筛选的固定单选值选择不同完整 DQE 查询；各查询提交不同业务指标，数据网关提交生效查询；真实指标到表的路由须由实际 DQE 环境确认。页面不增加数据库地址、物理表推断、自由 SQL 或渲染期查询生成。
 
 ```json
 {
@@ -157,12 +157,14 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
     "filterId": "business",
     "cases": {
       "contracts": {
-        "body": {"dsl_list": [{"output_dims": ["月份"], "output_metrics": [{"name": "签约金额", "alias": "金额"}], "filter": {"dims": [], "metrics": []}, "order": {}}]},
-        "filterBindings": {"region": {"target": "dimension", "queryField": "签约区域"}}
+        "body": {"dsl_list": [{"output_dims": ["月份"], "output_metrics": ["签约金额"], "filter": {"dims": [], "metrics": []}, "order": {}}]},
+        "filterBindings": {"region": {"target": "dimension", "queryField": "签约区域"}},
+        "fieldMappings": {"month":"月份", "amount":"签约金额"}
       },
       "opportunities": {
-        "body": {"dsl_list": [{"output_dims": ["月份"], "output_metrics": [{"name": "商机金额", "alias": "金额"}], "filter": {"dims": [], "metrics": []}, "order": {}}]},
-        "filterBindings": {"region": {"target": "dimension", "queryField": "商机区域"}}
+        "body": {"dsl_list": [{"output_dims": ["月份"], "output_metrics": ["商机金额"], "filter": {"dims": [], "metrics": []}, "order": {}}]},
+        "filterBindings": {"region": {"target": "dimension", "queryField": "商机区域"}},
+        "fieldMappings": {"month":"月份", "amount":"商机金额"}
       }
     }
   }
@@ -171,13 +173,13 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 这是查询定义片段；完整页面还声明 `business` 和 `region` 筛选器、固定选项、结果字段与组件。`business` 必须由固定单选 `filterGroup` 提供选项，或声明 `options` 及 `selection:{mode:"single",required:true}`。case 键与全部可用选项全等，不允许缺项、额外项、首项回退、动态候选、多选、空选或自由条件匹配。`queryModes`、`timeModes` 和根 `body` 三选一；模式查询不声明根 `filterBindings/paramBindings`，各 case 显式声明完整 `body/filterBindings`。首版不嵌套时间模式；普通时间筛选仍可在 case 内绑定。选择器不能同时作为本 case 的 DQE 谓词。
 
-所有 case 输出同一组维度与度量别名，映射到页面数据源唯一的结果字段契约；类型、角色、货币、单位和行粒度保持一致。物理来源与业务口径由创作期分别验证；静态字段校验不证明两条真实查询的业务可比性。不能把人民币与美元、金额与数量或明细与汇总共用一个结果字段冒充一致；此类需求拆分独立契约与呈现。
+从 6.57 起，case 可用 `fieldMappings` 显式声明“页面字段 id → 本分支原始响应字段名”。上例的根 `fields` 声明 `month` 和 `amount` 的类型/角色/货币/单位，不声明 `queryField`；每个 case 都须完整映射全部外部结果字段，不映射计算产出或未知字段。选择 case 时同时解析请求与响应映射，映射不发送给 DQE。不同原始列名由页面归一化为同一稳定字段，不要求 DQE 重命名普通指标。普通指标使用名称字符串；仅公式列使用显式 `{formula,alias}`，`{name,alias}` 被拒绝。旧版无 `fieldMappings` 的分支保留根 `fields.queryField`，要求各 case 的原始输出一致。不能混用这两种映射位置；使用分支映射的查询拒绝缺少分支证明的 initial。类型、角色、货币、单位和行粒度保持一致。物理来源与业务口径由创作期分别验证；静态字段校验不证明两条真实查询的业务可比性。不能把人民币与美元、金额与数量或明细与汇总共用一个结果字段冒充一致；此类需求拆分独立契约与呈现。
 
 统一运行时先按已应用筛选选择 case，再编译该 case 的普通筛选与参数引用。只执行当前 case，同一选择器可控制多个数据源，所有结果消费者共享数据快照；分支选择本身计入查询依赖，不需要虚构 DQE 维度。case 外不声明受控组件列表。所有静态 case 都参与校验、参数引用、依赖分析；候选门禁只核验当前分支实际消费的筛选及祖先，未激活分支的候选未就绪不阻断当前分支；时间模式、查询模式与字段选择共用4096组合上限。
 
-浏览器、SourceProgram、公共 Node 执行、分页/组合查询和导出共用选择实现。缓存按实际生效查询及筛选条件隔离；取消和迟到结果保护沿用统一查询执行。没有分支上下文证明的 initial、seeds 和执行快照不直接复用；捕获查询须与冻结条件的分支相符，导出固定捕获的分支与区域，不在导出过程中跟随屏幕切换。运行期非法选择阻断相关查询，不改查其他表。URL 非法值仍按既有固定筛选控件规则恢复默认。
+浏览器、SourceProgram 与公共 Node 执行共用选择实现；本场景覆盖屏幕请求、冻结分支的完整读取和取消/迟到响应。分页及组合查询的兼容性按本批专项回归报告，不把共用代码当作真实 DQE 验收。缓存按实际生效查询及筛选条件隔离；取消和迟到结果保护沿用统一查询执行。没有分支上下文证明的 initial、seeds 和执行快照不直接复用；捕获查询须与冻结条件的分支相符，导出固定捕获的分支与区域，不在导出过程中跟随屏幕切换。运行期非法选择阻断相关查询，不改查其他表。URL 非法值仍按既有固定筛选控件规则恢复默认。
 
-验收：`query-mode-chart-demo`，Dashboard 一张折线图、合计卡和共享结果明细表；签约与商机由 DQE Sim 的两张独立合成表提供。切换口径与区域应改变实际请求中的业务指标、区域目标字段和图表数值。演示数据与真实 DQE/Relay、数据库权限及业务数值验真分开报告。
+验收：`query-mode-chart-demo`，Dashboard 一张折线图、合计卡和共享结果明细表；签约与商机由 DQE Sim 的两组独立固定数据提供；指标名、区域名、月份粒度、人民币单位及无维度求和均为样例约定，未验证真实数据目录/物理表路由或聚合语义。切换口径与区域应改变实际请求中的业务指标、区域目标字段和图表数值。演示数据与真实 DQE/Relay、数据库权限及业务数值验真分开报告。
 
 
 ## 6.55 DQE 对象查询
@@ -203,7 +205,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 完整 Dashboard 场景为 `/pages/dqe-object-query-demo`，使用 DQE Sim 合成记录；操作与证据边界见 `pages/capabilities/query/README.md`。用户提供的实际回执（请求1000行却仅返回10行、total_count1393）只作为响应兼容夹具，不能证明分页、排序、计数或真实业务口径。
 
 
-页面协议 6.56。结构真源为本册[schema.json](schema.json)，SHA256 `914784cf3a9ce0b90b98d47185181599e9c35065c893c15cbe50ec3e708ecc7b`。字段表自动生成；可选不等于有默认值。
+页面协议 6.57。结构真源为本册[schema.json](schema.json)，SHA256 `7c423995f3d706ad39a1400e73ff0e88aadbb9b02cb77a041946923a1f3f64e5`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -2205,6 +2207,36 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/ad
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 条件结构 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f6669656c644d617070696e6773"></a>
+
+### `@dqeQuery.queryModes.cases{key}.fieldMappings`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/fieldMappings`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | propertyNames={"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_-]*$"}; minProperties=1 | Schema未设默认；装配/运行时默认见语义说明 | 6.57：queryModes各case的页面字段id到原始响应字段映射；不发送给DQE；全部case完整声明，根fields不再声明queryField。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f6669656c644d617070696e67732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@dqeQuery.queryModes.cases{key}.fieldMappings{key}`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/fieldMappings/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 动态键的值 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f6669656c644d617070696e67732f70726f70657274794e616d6573"></a>
+
+### `@dqeQuery.queryModes.cases{key}.fieldMappings · propertyNames`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/fieldMappings/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f70726f70657274794e616d6573"></a>
 

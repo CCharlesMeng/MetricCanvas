@@ -1,0 +1,33 @@
+{
+  "case": "query-modes-mapping-missing",
+  "invariant": "query-modes",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "fieldMappings缺少页面字段:amount",
+      "paths": [
+        "/dataSources/amount-trend/source/query/queryModes/cases/opportunities/fieldMappings"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "amount-trend": {
+        "source": {
+          "query": {
+            "queryModes": {
+              "cases": {
+                "opportunities": {
+                  "fieldMappings": {
+                    "month": "月份"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/query-modes-mapping-missing.json"
+}

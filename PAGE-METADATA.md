@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.56**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45、6.46、6.47、6.48、6.49、6.50、6.51、6.52、6.53、6.54、6.55和6.56；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.57**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45、6.46、6.47、6.48、6.49、6.50、6.51、6.52、6.53、6.54、6.55、6.56和6.57；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 
@@ -12,7 +12,7 @@
 
 6.46 补齐 `selection:{mode:"multiple",required:true}` 的非空多选：保持离散集合并拒绝清空，单选仍至多一个。七主题 IOC 合成验收入口为 `/ioc-header-review`；完整声明、主线迁移及证据边界见[筛选声明](docs/page-metadata/filters.md#ioc-业务批量场景与必选多选646)。
 
-6.50 新增 `query.queryModes`：固定单选筛选选择完整静态 DQE 查询，允许不同分支关联不同数据对象并通过稳定别名共享结果字段契约。Chart 保持同一个 `data.main`，其他筛选按当前分支绑定下推；演示 `/pages/query-mode-chart-demo`，声明与限制见[查询分支](docs/page-metadata/queries-and-bindings.md#query-modes)。
+6.50 新增 `query.queryModes`：固定单选筛选选择完整静态 DQE 查询，允许不同分支提交不同完整查询并共享稳定结果字段契约；真实表路由须实测，原始字段不同使用6.57页面响应映射。Chart 保持同一个 `data.main`，其他筛选按当前分支绑定下推；演示 `/pages/query-mode-chart-demo`，声明与限制见[查询分支](docs/page-metadata/queries-and-bindings.md#query-modes)。
 
 6.56 允许 DQE `output_dims` 中的现成计数或金额显式映射为页面数值度量，直接用于图表系列；不改写查询或自动聚合。声明与限制见[结果字段角色](docs/page-metadata/fields.md#dqe-output-measures)，验收入口 `/pages/stored-count-measures`。
 
@@ -459,3 +459,5 @@ Dashboard白底容器中的指标卡自动补充统一边框，组合卡只保�
 普通柱图及组合图的柱系列默认16px，`reportForecast` 保留40px，见[柱状图](docs/page-metadata/components/barChart.md)。纯指标组合采用现有 `metricGrid` 自适应高度。
 
 指标卡与筛选的同框布局复用内容分区：card 提供白底无边框外观，section.title 在上，filterGroup 在其下左对齐，Before 四卡行自适应铺满所占列。连接排布盒在 card 内不重复绘制外框。见[指标连接排布](docs/page-metadata/sections-and-layout.md)与 `/pages/metric-card-equation`。
+
+6.57 查询分支响应映射：`queryModes.cases.*.fieldMappings` 在页面端连接不同原始字段与稳定结果字段；普通指标保留名称字符串，不支持 `{name,alias}`。见[查询定义与绑定](docs/page-metadata/queries-and-bindings.md#query-modes)。

@@ -149,12 +149,17 @@ export interface DqeQueryCase {
   filterBindings: Record<string, DqeFilterBinding>;
 }
 
+export interface DqeQueryModeCase extends DqeQueryCase {
+  /** 页面字段 id → 本分支的原始响应字段；属于页面元数据，不发送给 DQE。 */
+  fieldMappings?: Record<string, string>;
+}
+
 export interface DqeQueryDefinition {
   resultBindings?: QueryResultBinding[];
   language: 'dqe';
   body?: DqeRequestBody;
   timeModes?:{filterId:string;cases:Partial<Record<import('./time-mode').TimeMode,DqeQueryCase>>};
-  queryModes?:{filterId:string;cases:Record<string,DqeQueryCase>};
+  queryModes?:{filterId:string;cases:Record<string,DqeQueryModeCase>};
   filterBindings?: Record<string, DqeFilterBinding>;
   paramBindings?: Record<string,
     | { target: 'dimension'; queryField: string }

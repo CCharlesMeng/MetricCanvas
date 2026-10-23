@@ -1,0 +1,10 @@
+$ pnpm --filter playground exec svelte-kit sync && vitest run packages/page/tests/version.test.ts packages/data-execution/tests/query-modes.test.ts tests/local-authoring-upgrade.test.ts
+
+ RUN  v4.1.11 /Users/moon/.codex/worktrees/query-branches/DataDashboard
+
+
+ Test Files  3 passed (3)
+      Tests  101 passed (101)
+   Start at  16:24:57
+   Duration  3.60s (transform 855ms, setup 0ms, import 1.75s, tests 2.90s, environment 0ms)
+

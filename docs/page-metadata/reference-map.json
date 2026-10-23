@@ -1583,7 +1583,8 @@
     "#/definitions/tableComponent/properties/props/properties/rowNumber": "6.48呈现序号列；默认标题序号、宽度64px，可左固定；按排序筛选后的当前行集跨页连续编号，不绑定数据字段。",
     "#/definitions/rowExpansionTable/properties/rowNumber": "6.48子表格独立序号列，复用普通表格声明和编号规则。",
     "#/definitions/tabContainerComponent/properties/props/properties/contentLayout": "6.49：显式grid复用12列栅格；缺省保留旧纵向全宽。普通内容与组合卡可入Tab，页头与嵌套Tab禁止。",
-    "queryModes": "6.50：固定单选filterGroup或required单选枚举选择完整静态DQE查询；与timeModes及普通body互斥，共享结果字段契约。"
+    "queryModes": "6.50：固定单选filterGroup或required单选枚举选择完整静态DQE查询；与timeModes及普通body互斥，共享结果字段契约。",
+    "fieldMappings": "6.57：queryModes各case的页面字段id到原始响应字段映射；不发送给DQE；全部case完整声明，根fields不再声明queryField。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -1858,7 +1859,8 @@
     "6.54": "AI 总结按非空 body 直接展示，否则动态生成，无需 mode。",
     "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"provided\"": "历史值；当前按非空 body 直接展示，无需 mode。",
     "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"generated\"": "历史值；当前无正文时根据提示词和范围生成，无需 mode。",
-    "6.56": "DQE output_dims 中的现成数值显式声明为页面度量，保留查询与结果行粒度。"
+    "6.56": "DQE output_dims 中的现成数值显式声明为页面度量，保留查询与结果行粒度。",
+    "6.57": "查询分支页面响应映射，普通指标保留原名。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

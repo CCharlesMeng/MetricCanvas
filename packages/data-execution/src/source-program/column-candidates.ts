@@ -1,5 +1,5 @@
 import { createCandidateValidator } from '../candidate-validation';
-import { canonicalizeJson, type DisplayInputsSnapshot } from '@metriccanvas/page/internal';
+import { selectQuerySource, canonicalizeJson, type DisplayInputsSnapshot } from '@metriccanvas/page/internal';
 import type { RuntimeDataGateway } from '../ports';
 import { compilePagedJoin } from '../paged-join/plan';
 import { executePagedJoin } from '../paged-join/execute';
@@ -11,6 +11,15 @@ import type { SourceRead, SourceUpdate } from './session';
 import { candidateView, localColumnCandidates } from '../column-candidates';
 import { composeEffectiveQuery, bindQueryResultValues } from '../effective-query';
 import { resolveQueryResultInputs } from '../query-result-inputs';
+
+function appliedInputSources(page:Page,source:QueryDataSource,conditions:FilterValues) {
+  const sources=new Map(Object.entries(page.dataSources));
+  for(const binding of source.source.query.resultBindings??[]){
+    const upstream=sources.get(binding.source);
+    if(upstream?.source.type==='query')sources.set(binding.source,selectQuerySource(upstream as QueryDataSource,conditions));
+  }
+  return sources;
+}
 
 export interface ColumnCandidatesRead {
   displayInputs?: DisplayInputsSnapshot; filterRevision?: number; now?: Date;
@@ -41,20 +50,20 @@ export function createColumnCandidatesReader(page: Page, runner: QueryRunner, re
     const scope = request.displayInputs ? `context:${canonicalizeJson([request.displayInputs, request.filterRevision ?? null])}` : 'session';
     const view = candidateView(request.view, request.field);
     const views = new Map(request.views); views.set(request.sourceId, view);
-    const sources = new Map(Object.entries(page.dataSources));
     if (source.source.type === 'query' && source.source.resultScope !== 'complete') {
-      if (!hasQueryFieldMapping(field)) return { kind: 'unavailable' };
       const query: EffectiveQuery = composeEffectiveQuery({ now: request.now, filters: page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], tableHeaders(view.predicates), view.search);
+      const mappedField=query.fieldMappings[request.field];
+      if (!hasQueryFieldMapping(mappedField)) return { kind: 'unavailable' };
       const windows = new Map(limits);
       for (const [id, current] of views) if (windows.has(id)) windows.set(id, current.pageSize);
-      const inputs = resolveQueryResultInputs(source, new Map(request.seeds), sources, windows);
+      const inputs = resolveQueryResultInputs(source, new Map(request.seeds), appliedInputSources(page,source as QueryDataSource,request.conditions), windows);
       if (inputs.status === 'waiting') return { kind: 'unavailable' };
       if (inputs.status === 'terminal') {
         if (inputs.snapshot.status === 'empty') return { kind: 'values', candidates: [], totalCount: 0 };
         throw Object.assign(new Error('候选查询的业务输入不可用'), { code: 'DQE_QUERY_REJECTED' });
       }
       bindQueryResultValues(query, inputs.values);
-      return runner.runCandidates({ query, field: request.field, queryField: field.queryField, search: request.candidateSearch ?? '', offset, limit },
+      return runner.runCandidates({ query, field: request.field, queryField: mappedField.queryField, search: request.candidateSearch ?? '', offset, limit },
         { pageId: page.id, dataSourceIds: [request.sourceId] }, scope, signal);
     }
     if (source.source.type === 'pagedJoin') {

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.56",
-  "schemaSha256": "914784cf3a9ce0b90b98d47185181599e9c35065c893c15cbe50ec3e708ecc7b",
+  "schemaVersion": "6.57",
+  "schemaSha256": "7c423995f3d706ad39a1400e73ff0e88aadbb9b02cb77a041946923a1f3f64e5",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -140,7 +140,7 @@
     },
     {
       "file": "packages/page/src/query-output-measures.ts",
-      "sha256": "356f10adb70548b5bc50e9b61b99379305fbde0a7441c6d5e7f51cc5478065f3"
+      "sha256": "5fe290579ba1d65de7c2ea42062a8ae8a28ea9c29308da9b8ec84ca68c0a388d"
     },
     {
       "file": "packages/page/src/query-result-where.ts",
@@ -148,7 +148,7 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "420d45a0ff4aea85d3876f7d3d663b6680e2c9d3a91c8152f1275da64025ce36"
+      "sha256": "847e710fa5a0195dd3a19f454c30aa793b0d4b1a279a3e49c8079c0cfb54dd7d"
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
@@ -244,7 +244,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "5e579765d2a1f47e7b990f5bc91c3126a4a34af29bf06e98a6e41ecbd7a6577e"
+      "sha256": "9681cb5b29a1c030b83793f8cabca62ffe0d81d89324d9163c9449dca9614b0b"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -320,11 +320,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "69ef2f848579a01ca9730b02839ce13a457b7ed033c38e5f61074b605250a31f"
+      "sha256": "427a19895fd7ddd3a2719e99283f097478824ef5240c9b1af14643a6438a73c1"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "12be63cb2f86c8ca617c3f23c48b0c065cd43c5e6d5c7677c1b6512837e7cc73"
+      "sha256": "3be63073725098d93f19cbceb11153da500e143dbeb7d98ce62c906423c047ad"
     }
   ],
   "modules": {
@@ -1643,7 +1643,8 @@
         "6.53",
         "6.54",
         "6.55",
-        "6.56"
+        "6.56",
+        "6.57"
       ]
     },
     {
@@ -5907,6 +5908,24 @@
     {
       "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/propertyNames",
       "path": "@dqeQuery.queryModes.cases{key}.filterBindings · propertyNames",
+      "required": "条件结构",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/fieldMappings",
+      "path": "@dqeQuery.queryModes.cases{key}.fieldMappings",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/fieldMappings/additionalProperties",
+      "path": "@dqeQuery.queryModes.cases{key}.fieldMappings{key}",
+      "required": "动态键的值",
+      "module": "queries-and-bindings.md"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/fieldMappings/propertyNames",
+      "path": "@dqeQuery.queryModes.cases{key}.fieldMappings · propertyNames",
       "required": "条件结构",
       "module": "queries-and-bindings.md"
     },

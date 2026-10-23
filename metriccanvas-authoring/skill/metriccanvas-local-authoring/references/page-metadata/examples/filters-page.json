@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.56",
+  "schemaVersion": "6.57",
   "layout": "report",
   "id": "filters-page",
   "meta": {
@@ -33,7 +33,7 @@
           "nullable": false
         },
         "orders": {
-          "queryField": "order_cnt",
+          "queryField": "订单数",
           "type": "number",
           "role": "measure"
         }
@@ -48,14 +48,14 @@
               "city": "上海",
               "stat_date": "2026-07-31",
               "amount": 120.5,
-              "order_cnt": 3
+              "订单数": 3
             },
             {
               "region": "华北",
               "city": "北京",
               "stat_date": "2026-07-30",
               "amount": 80,
-              "order_cnt": null
+              "订单数": null
             }
           ]
         },
@@ -71,10 +71,7 @@
                 ],
                 "output_metrics": [
                   "amount",
-                  {
-                    "name": "订单数",
-                    "alias": "order_cnt"
-                  }
+                  "订单数"
                 ],
                 "filter": {
                   "dims": [],

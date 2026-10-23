@@ -1,0 +1,33 @@
+{
+  "case": "query-modes-native-alias-rejected",
+  "invariant": "query-modes",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "普通DQE指标须为名称字符串；公式列须显式声明formula和alias，不支持name/alias重命名",
+      "paths": [
+        "/dataSources/amount-trend/source/query/body/dsl_list/0/output_metrics"
+      ]
+    },
+    {
+      "type": "QUERY_MAPPING_ERROR",
+      "message": "queryField 商机金额 不在 DQE 输出字段中",
+      "paths": [
+        "/dataSources/amount-trend/fields/amount/queryField"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "amount-trend": {
+        "source": {
+          "query": {}
+        },
+        "fields": {
+          "amount": {}
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/query-modes-native-alias-rejected.json"
+}

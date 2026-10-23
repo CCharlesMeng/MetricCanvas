@@ -3,6 +3,7 @@ import { PAGE_SCHEMA_MAJOR, pageCapabilities, requiredMinorVersion, supportedVer
 // 固定能力引入版本表，避免用高分支三元表达式维护同一份期望。
 const introducedAt: Record<string, number> = {
   "query-dimension-measures": 56,
+  "query-mode-field-mappings": 57,
   "ai-summary-body-routing": 54,
   "ai-summary-plural-source-references": 53,
   "ai-summary-source-references": 52,
@@ -123,8 +124,8 @@ const introducedAt: Record<string, number> = {
 describe('5.x 的兼容读取与 6.x 版本边界', () => {
   it('当前主版本全部原有能力从 0 起算', () => {
     expect(PAGE_SCHEMA_MAJOR).toBe(6);
-    expect(supportedVersions()).toEqual(['5.0', '5.1', '5.2', '5.3', '5.4', '6.5', '6.11', '6.12', '6.13', '6.14', '6.15', '6.16', '6.17', '6.18', '6.19', '6.20', '6.21', '6.22', '6.23', '6.24', '6.25', '6.26', '6.27', '6.28', '6.29', '6.30', '6.31', '6.32', '6.33', '6.34', '6.35', '6.36', '6.37', '6.38', '6.39', '6.40', '6.41', '6.42', '6.43', '6.44', '6.45', '6.46', '6.47', '6.48', '6.49', '6.50', '6.51', '6.52', '6.53', '6.54', '6.55', '6.56']);
-    expect(versionPolicy.current).toBe('6.56');
+    expect(supportedVersions()).toEqual(['5.0', '5.1', '5.2', '5.3', '5.4', '6.5', '6.11', '6.12', '6.13', '6.14', '6.15', '6.16', '6.17', '6.18', '6.19', '6.20', '6.21', '6.22', '6.23', '6.24', '6.25', '6.26', '6.27', '6.28', '6.29', '6.30', '6.31', '6.32', '6.33', '6.34', '6.35', '6.36', '6.37', '6.38', '6.39', '6.40', '6.41', '6.42', '6.43', '6.44', '6.45', '6.46', '6.47', '6.48', '6.49', '6.50', '6.51', '6.52', '6.53', '6.54', '6.55', '6.56', '6.57']);
+    expect(versionPolicy.current).toBe('6.57');
     for (const [id, definition] of Object.entries(pageCapabilities)) expect(definition.minor).toBe(introducedAt[id]);
     expect(requiredMinorVersion({params:[{id:'x'}],layoutForm:'dashboard'})).toBe(0);
   });

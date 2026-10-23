@@ -1,0 +1,31 @@
+{
+  "baseline": "e6706d4af1c9e8295581b182b62ecc8472c53fca",
+  "checkout": "/Users/moon/.codex/worktrees/query-branches/DataDashboard",
+  "lockSha256": "1a33c68c0755b6d9bf6d05bbf45438b9b5e2b9bc574a6f41908944dfe5fc2f4f",
+  "sources": {
+    "docs/page-metadata/reference-map.json": "1119e31a2187baee05b6f6eb6da36ef916993388d3a3149cd8819823b69b5ce5",
+    "packages/data-execution/src/effective-query.ts": "08b4fee497fb35e3dfb6a2aa5873a1667efc46a60ebb6e0d4e75301b8042739f",
+    "packages/data-execution/src/paged-join/plan.ts": "fb48e0d8de104b92fff92d6a2356677945bda9036933819bdd0eeb0780e99b3f",
+    "packages/data-execution/src/source-program/column-candidates.ts": "56ee66f70717637085e448299003a0f9ee7c4c982e5345c480a4b4525d4c04dd",
+    "packages/data-execution/src/source-program/session.ts": "206a8ce7b01188f7815dc0907ac7cf835c532460c1ee9c5416cb7177144aa431",
+    "packages/data-execution/tests/query-modes.test.ts": "d7fc3658224f7029ec5e512475a66f5d2bfc71e875114987422a67397e438baa",
+    "packages/page/fixtures/contract-valid/filters-page.json": "2137c4cb6635f98c6bb88d14158756dfaa6c9777ddca1772bc84fedfc03e6135",
+    "packages/page/fixtures/contract-valid/query-mode-binding-branches-page.json": "5957389dd0c9a006bf6177b1ec848b26e4d3e5edbdde0003a63e0d126d108e2b",
+    "packages/page/fixtures/contract-valid/query-modes-page.json": "e22aac2b81a2eee7b6ff2e63a90df9d0845e9e89ce94171d4f7010eb18b30c1a",
+    "packages/page/src/query-output-measures.ts": "5fe290579ba1d65de7c2ea42062a8ae8a28ea9c29308da9b8ec84ca68c0a388d",
+    "packages/page/src/query-selection-validation.ts": "a171f46650864b66cb17d208680db0d4c0b0c6d393ef16e00fb8938de6573989",
+    "packages/page/src/query-selection.ts": "e82f97f97bc6518ff36a2b40477c3a689545bab3256eb9520a51a235484e2a93",
+    "packages/page/src/query.ts": "847e710fa5a0195dd3a19f454c30aa793b0d4b1a279a3e49c8079c0cfb54dd7d",
+    "packages/page/src/schema/data-source.ts": "9681cb5b29a1c030b83793f8cabca62ffe0d81d89324d9163c9449dca9614b0b",
+    "packages/page/src/validate.ts": "427a19895fd7ddd3a2719e99283f097478824ef5240c9b1af14643a6438a73c1",
+    "packages/page/src/version.ts": "51842f98f0c11c912de80af3901a2e65b70564ac06ff1cdedc8d4b002a5972b3",
+    "packages/page/tests/query-modes.test.ts": "a14b2e253463380018278dd5fa63ca0e424cd3eb5f8c61d2cf6f430f1efe901c",
+    "packages/page/tests/query-output-measures.test.ts": "cd13f0090176079e46655b88588a921b086a49e8105d593e72a7022235eae58b",
+    "packages/page/tests/version.test.ts": "0697a8e21afc8cb807f04dc82441fcf72cd710da6d709167eaffee678e235038",
+    "pages/capabilities/filters/query-mode-chart-demo.json": "eb4e516603bd949c6287fc6caebbaa7f639fe68d9aa212c9739532cb8e2147f0",
+    "pages/capabilities/layout/schema-upgrade-demo.json": "38cac45609634fd71813184a05fa7ff69d0d3b53a1c72afbeaaa42d6c537b9f1",
+    "tools/dqe-sim/src/query-modes.ts": "34a610da7078ac3293171eb3d38023e27ae922ed9060fb4d4cd3dad15b58297e",
+    "tools/dqe-sim/tests/query-modes.test.ts": "f461fe0d156e347601787667cacf3af36abad67407eef57222c56fd1113de54d",
+    "tools/scripts/page-conformance-vectors.ts": "3be63073725098d93f19cbceb11153da500e143dbeb7d98ce62c906423c047ad"
+  }
+}

@@ -527,7 +527,7 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 
 入口 `/pages/bar-width-defaults`，从目录搜索“柱宽”进入；`pnpm dev:playground` 后即可查看，无需DQE。内联合成数据对照普通、分组、堆叠、横向条形、报告预测、柱线混合图：所有内置柱系列默认16 CSS px，横向表示条形厚度；缩窄窗口保持该默认值。最后一张显式声明32px高级覆盖，作为仍可定制的对照。当前IOC Header独立展示页的柱图同步使用这个公共默认值。此项不新增协议字段或版本，不改变折线系列。
 
-跨表查询分支：筛选主题中的 [签约与商机金额趋势](capabilities/filters/query-mode-chart-demo.json)，直接入口 `/pages/query-mode-chart-demo`；演示同一 Chart 按固定单选执行不同表对应的查询。
+跨表查询分支：筛选主题中的 [签约与商机金额趋势](capabilities/filters/query-mode-chart-demo.json)，直接入口 `/pages/query-mode-chart-demo`；演示同一 Chart 按固定单选提交不同指标查询，并由页面映射原始响应字段；两组本地固定数据不证明真实 DQE 跨表路由。
 
 - [Report 区域 AI 总结](capabilities/ai-summary/README.md)：后端正文、时间切换生成、单文件云宝 mock 与后台缓存。
 
