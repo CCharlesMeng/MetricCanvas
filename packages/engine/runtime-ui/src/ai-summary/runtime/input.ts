@@ -1,4 +1,4 @@
-import { aiSummaryRelatedData, canonicalizeJson, resolveDataSourceFields,
+import { aiSummaryRelatedData, aiSummarySourceReferences, canonicalizeJson, resolveDataSourceFields,
   type AiSummaryProps, type DataSnapshot, type Page, type EffectiveQuery, type TabSelections } from '@metriccanvas/page/internal';
 import type { PageDataSnapshots, FilterValue, FilterValues } from '../../../../runtime/src';
 import type { AiSummaryContextInfo, AiSummaryDataSource } from '../types';
@@ -40,7 +40,7 @@ export function assembleGenerationInput(
   const question = `${props.promptTemplate ?? ''}\n\n${OUTPUT_INSTRUCTION}`;
   const contextInfo: AiSummaryContextInfo = {
     pageId: runtime.page.id, pageRevision: runtime.pageRevision ?? '', componentId,
-    sectionIds: props.relatedDataSource || props.relatedData ? [] : [...(props.relatedSections ?? [])].sort(),
+    sectionIds: aiSummarySourceReferences(props) || props.relatedData ? [] : [...(props.relatedSections ?? [])].sort(),
     timeFilters: headerTimeFilters(runtime),
     dataSources: Object.entries(related).sort(([a], [b]) => a.localeCompare(b))
       .map(([id, definition]) => summaryDataSource(id, definition, snapshots, runtime))

@@ -6,7 +6,7 @@
       "type": "SCHEMA_ERROR",
       "message": "关联数据引用了未知数据源:missing",
       "paths": [
-        "/sections/3/components/1/props/relatedDataSource/0"
+        "/sections/3/components/1/props/relatedDataSources/0"
       ]
     }
   ],
@@ -20,7 +20,7 @@
           "…",
           {
             "props": {
-              "relatedDataSource": [
+              "relatedDataSources": [
                 "missing"
               ]
             }

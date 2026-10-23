@@ -22,13 +22,21 @@ function setup() {
 }
 
 describe('summary input scopes and identity', () => {
+  it('normalizes the legacy spelling into the same scope, frozen context and cache input', () => {
+    const { props, context, snapshots } = setup();
+    const current = assembleGenerationInput({ ...props, relatedDataSources: ['usage'] }, 'summary', snapshots, context)!;
+    const legacy = assembleGenerationInput({ ...props, relatedDataSource: ['usage'] }, 'summary', snapshots, context)!;
+    expect(legacy.contextInfo).toEqual(current.contextInfo);
+    expect(legacy.key).toBe(current.key);
+    expect(current.contextInfo.sectionIds).toEqual([]);
+  });
   it('uses direct source IDs ahead of sections and derives non-detail fields and labels', () => {
     const { page, props, context, snapshots } = setup();
     page.dataSources.comparison!.fields = { month: { type: 'string', role: 'dimension', queryField: 'month', label: '月份' },
       tokens: { type: 'number', role: 'measure', queryField: 'tokens', label: '消耗量', unit: '个' },
       detail: { type: 'recordList', role: 'detail', queryField: 'detail', items: { fields: { value: { type: 'string', role: 'dimension', queryField: 'value' } } } } };
     snapshots.set('comparison', { status: 'ready', rows: [{ month: '2026-09', tokens: 7, detail: [{ value: 'excluded' }] }] });
-    const direct = { ...props, relatedDataSource: ['comparison'] };
+    const direct = { ...props, relatedDataSources: ['comparison'] };
     const before = structuredClone({ direct, snapshots });
     const input = assembleGenerationInput(direct, 'summary', snapshots, context)!;
     expect(input.contextInfo.sectionIds).toEqual([]);
@@ -43,10 +51,10 @@ describe('summary input scopes and identity', () => {
   it('normalizes multiple source IDs for caching and executes sources without visible data slots', () => {
     const { page, props, context, snapshots } = setup();
     snapshots.set('comparison', { status: 'empty', totalCount: 0 });
-    const direct = { ...props, relatedDataSource: ['usage', 'comparison'] };
+    const direct = { ...props, relatedDataSources: ['usage', 'comparison'] };
     const input = assembleGenerationInput(direct, 'summary', snapshots, context)!;
     expect(input.contextInfo.dataSources.map(source => source.id)).toEqual(['comparison', 'usage']);
-    expect(assembleGenerationInput({ ...direct, relatedDataSource: ['comparison', 'usage'] }, 'summary', snapshots, context)!.key).toBe(input.key);
+    expect(assembleGenerationInput({ ...direct, relatedDataSources: ['comparison', 'usage'] }, 'summary', snapshots, context)!.key).toBe(input.key);
     const summary = page.sections[2]!.components[1]!;
     if (summary.type !== 'aiSummary') throw Error('fixture summary');
     summary.props = direct;

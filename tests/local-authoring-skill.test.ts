@@ -28,6 +28,24 @@ afterAll(() => rm(isolated, {recursive: true, force: true}));
 const run = (args: string[]) => spawnSync(process.execPath, [script, ...args], {cwd: isolated, encoding: 'utf8', timeout: 10_000, env: {PATH: process.env.PATH}});
 
 describe('独立本地创作 Skill', () => {
+  it('仓外使用复数正式声明，并保留 6.52 单数旧拼写的读取与版本约束', async () => {
+    const page = JSON.parse(files.get('references/page-metadata/examples/report-ai-summary.json')!);
+    const target = path.join(await mkdtemp(path.join(isolated, 'summary-')), `${page.id}.json`);
+    await writeFile(target, JSON.stringify(page));
+    expect(run([target]).status).toBe(0);
+    const props = page.sections[3].components[1].props;
+    expect(props.relatedDataSources).toEqual(['comparison']);
+    delete props.relatedDataSources;
+    props.relatedDataSource = ['comparison'];
+    page.schemaVersion = '6.52';
+    await writeFile(target, JSON.stringify(page));
+    expect(run([target]).status).toBe(0);
+    page.schemaVersion = '6.51';
+    await writeFile(target, JSON.stringify(page));
+    const old = run([target]);
+    expect(old.status).toBe(1);
+    expect(JSON.parse(old.stdout).errors).toContainEqual(expect.objectContaining({ message: expect.stringContaining('6.52') }));
+  });
   it.each([
     ['report', 'report', 0],
     ['dashboard', 'dashboard', 0],

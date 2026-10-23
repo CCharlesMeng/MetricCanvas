@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises';
 const fixture = JSON.parse(await readFile(new URL('../../../../pages/capabilities/ai-summary/report-ai-summary.json', import.meta.url), 'utf8'));
 
 test('Report time switching preserves background tasks, exact cache and independent region contexts', async ({ page }, info) => {
+  expect(fixture.sections[3].components[1].props.relatedDataSources).toEqual(['comparison']);
+  expect(fixture.sections[3].components[1].props).not.toHaveProperty('relatedDataSource');
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/examples/inline.html');

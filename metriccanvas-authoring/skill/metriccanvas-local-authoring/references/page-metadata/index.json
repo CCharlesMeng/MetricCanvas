@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.52",
-  "schemaSha256": "935df063e0ef892c7a908ca0e4a93ec17c54f74662db2b3b761817199c83e5d0",
+  "schemaVersion": "6.53",
+  "schemaSha256": "507e543f6d7a3adcefdac11b8e1cf0b88d4e2dc7b9045480800899ed4d4fd8b0",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -1092,7 +1092,8 @@
         "6.49",
         "6.50",
         "6.51",
-        "6.52"
+        "6.52",
+        "6.53"
       ]
     },
     {
@@ -14159,6 +14160,25 @@
       "module": "components/aiSummary.md"
     },
     {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSources",
+      "path": "@aiSummaryComponent.props.relatedDataSources",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSources/items",
+      "path": "@aiSummaryComponent.props.relatedDataSources[]",
+      "required": "每个数组项",
+      "module": "components/aiSummary.md",
+      "ref": "#/definitions/aiSummaryDataSourceReference"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryDataSourceReference",
+      "path": "@aiSummaryDataSourceReference",
+      "required": "类型/分支",
+      "module": "components/aiSummary.md"
+    },
+    {
       "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSource",
       "path": "@aiSummaryComponent.props.relatedDataSource",
       "required": "本分支可选",
@@ -14170,12 +14190,6 @@
       "required": "每个数组项",
       "module": "components/aiSummary.md",
       "ref": "#/definitions/aiSummaryDataSourceReference"
-    },
-    {
-      "pointer": "#/definitions/aiSummaryDataSourceReference",
-      "path": "@aiSummaryDataSourceReference",
-      "required": "类型/分支",
-      "module": "components/aiSummary.md"
     },
     {
       "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedSections",
@@ -16875,5 +16889,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "cdcc0addd52bf7d63f7d2e50f6542aa446254303ce6e74dc23d68ba15d517b87"
+  "semanticSourceDigest": "d81b15539030797d04699271c3cc99a1d9e3de83d75379ddc99b724eba030079"
 }

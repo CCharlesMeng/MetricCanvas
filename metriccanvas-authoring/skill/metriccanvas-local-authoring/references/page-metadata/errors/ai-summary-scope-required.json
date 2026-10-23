@@ -4,7 +4,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "动态生成需要 relatedDataSource 或 relatedSections（旧 relatedData 仍可读取）",
+      "message": "动态生成需要 relatedDataSources 或 relatedSections（旧声明仍可读取）",
       "paths": [
         "/sections/2/components/1/props"
       ]

@@ -18,7 +18,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 52;
+const CURRENT_MINOR = 53;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -42,6 +42,7 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'ai-summary-plural-source-references': {minor: 53, legacyReadable: false, description: 'AI 总结数据源数组采用复数 relatedDataSources', usedAt: document => componentPaths(document, c => c.type === 'aiSummary' && has(props(c), 'relatedDataSources'))},
   'ai-summary-source-references': {minor: 52, legacyReadable: false, description: 'AI 总结直接引用页面数据源 ID', usedAt: document => componentPaths(document, c => c.type === 'aiSummary' && has(props(c), 'relatedDataSource'))},
   'ai-summary-report-modes': {minor: 51, legacyReadable: false, description: 'Report 双模式区域 AI 总结与会话缓存', usedAt: document => componentPaths(document, c => c.type === 'aiSummary' && ['mode','body','initial','relatedSections'].some(key => has(props(c), key)))},
   'tab-content-layout': {

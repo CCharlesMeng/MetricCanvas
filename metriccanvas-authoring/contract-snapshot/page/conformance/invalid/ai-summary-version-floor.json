@@ -267,7 +267,7 @@
               "mode": "generated",
               "title": "独立数据源分析",
               "promptTemplate": "概括对照数据，不使用其他区域的数据。",
-              "relatedDataSource": [
+              "relatedDataSources": [
                 "comparison"
               ]
             }
@@ -280,7 +280,7 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/3/components/1",
-      "message": "AI 总结直接引用页面数据源 ID 由 6.52 引入，文档声明的是 6.50"
+      "message": "AI 总结数据源数组采用复数 relatedDataSources 由 6.53 引入，文档声明的是 6.50"
     },
     {
       "type": "SCHEMA_ERROR",

@@ -2,7 +2,7 @@
   "case": "ai-summary-source-id-duplicate",
   "invariant": "ai-summary-source-references",
   "input": {
-    "schemaVersion": "6.52",
+    "schemaVersion": "6.53",
     "id": "report-ai-summary",
     "layout": "report",
     "meta": {
@@ -267,7 +267,7 @@
               "mode": "generated",
               "title": "独立数据源分析",
               "promptTemplate": "概括对照数据，不使用其他区域的数据。",
-              "relatedDataSource": [
+              "relatedDataSources": [
                 "comparison",
                 "comparison"
               ]
@@ -280,7 +280,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/3/components/1/props/relatedDataSource",
+      "path": "/sections/3/components/1/props/relatedDataSources",
       "message": "数据源引用不能重复"
     }
   ]

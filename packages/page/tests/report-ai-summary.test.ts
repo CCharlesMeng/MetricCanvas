@@ -6,6 +6,36 @@ describe('Report summary modes', () => {
   it('accepts provided and generated modes including section inference', () => {
     expect(validate(fixture)).toEqual([]);
   });
+  it('authors the plural collection name next to relatedSections', () => {
+    const props = fixture.sections[3]!.components[1]!.props;
+    expect(props).toHaveProperty('relatedDataSources', ['comparison']);
+    expect(Object.hasOwn(props, 'relatedDataSource')).toBe(false);
+    expect(Object.hasOwn(fixture.sections[2]!.components[1]!.props, 'relatedSections')).toBe(true);
+  });
+  it('keeps the published 6.52 spelling readable with its original error path and version floor', () => {
+    const document = structuredClone(fixture);
+    const props = document.sections[3]!.components[1]!.props;
+    Reflect.deleteProperty(props, 'relatedDataSources');
+    Object.assign(props, { relatedDataSource: ['comparison'] });
+    document.schemaVersion = '6.52';
+    expect(validate(document)).toEqual([]);
+    expect(validate({ ...document, schemaVersion: '6.51' }).some(error => error.message.includes('6.52'))).toBe(true);
+    Object.assign(props, { relatedDataSource: ['missing'] });
+    expect(validate(document)).toContainEqual(expect.objectContaining({
+      path: '/sections/3/components/1/props/relatedDataSource/0', message: '关联数据引用了未知数据源:missing'
+    }));
+  });
+  it('rejects simultaneous spellings, mistaken names and a scalar instead of an ID array', () => {
+    const mixed = structuredClone(fixture);
+    Object.assign(mixed.sections[3]!.components[1]!.props, { relatedDataSource: ['comparison'] });
+    expect(validate(mixed).some(error => error.message.includes('relatedDataSources 不能与旧 relatedDataSource'))).toBe(true);
+    const typo = structuredClone(fixture);
+    Object.assign(typo.sections[3]!.components[1]!.props, { relatedDatasources: ['comparison'] });
+    expect(validate(typo).length).toBeGreaterThan(0);
+    const scalar = structuredClone(fixture);
+    Object.assign(scalar.sections[3]!.components[1]!.props, { relatedDataSources: 'comparison' });
+    expect(validate(scalar).length).toBeGreaterThan(0);
+  });
   it('rejects Dashboard, unknown sections, absent scope and invalid mode combinations', () => {
     const dashboard = structuredClone(fixture); dashboard.layout = 'dashboard';
     expect(validate(dashboard).some(error => error.message.includes('仅支持 Report'))).toBe(true);
@@ -25,21 +55,21 @@ describe('Report summary modes', () => {
   });
   it('validates direct source references and their version floor', () => {
     const unknown = structuredClone(fixture);
-    Object.assign(unknown.sections[3]!.components[1]!.props, { relatedDataSource: ['missing'] });
+    Object.assign(unknown.sections[3]!.components[1]!.props, { relatedDataSources: ['missing'] });
     expect(validate(unknown)).toContainEqual(expect.objectContaining({
-      path: '/sections/3/components/1/props/relatedDataSource/0', message: '关联数据引用了未知数据源:missing'
+      path: '/sections/3/components/1/props/relatedDataSources/0', message: '关联数据引用了未知数据源:missing'
     }));
     const duplicate = structuredClone(fixture);
-    Object.assign(duplicate.sections[3]!.components[1]!.props, { relatedDataSource: ['comparison', 'comparison'] });
+    Object.assign(duplicate.sections[3]!.components[1]!.props, { relatedDataSources: ['comparison', 'comparison'] });
     expect(validate(duplicate).some(error => error.message.includes('数据源引用不能重复'))).toBe(true);
     const empty = structuredClone(fixture);
-    Object.assign(empty.sections[3]!.components[1]!.props, { relatedDataSource: [] });
+    Object.assign(empty.sections[3]!.components[1]!.props, { relatedDataSources: [] });
     expect(validate(empty).length).toBeGreaterThan(0);
-    expect(validate({ ...fixture, schemaVersion: '6.51' }).some(error => error.message.includes('6.52'))).toBe(true);
+    expect(validate({ ...fixture, schemaVersion: '6.52' }).some(error => error.message.includes('6.53'))).toBe(true);
   });
   it('rejects direct sources in provided mode and mixed legacy declarations', () => {
     const provided = structuredClone(fixture);
-    Object.assign(provided.sections[1]!.components[0]!.props, { relatedDataSource: ['comparison'] });
+    Object.assign(provided.sections[1]!.components[0]!.props, { relatedDataSources: ['comparison'] });
     expect(validate(provided).some(error => error.message.includes('不能同时声明生成输入'))).toBe(true);
     const mixed = structuredClone(fixture);
     Object.assign(mixed.sections[3]!.components[1]!.props, { relatedData: {

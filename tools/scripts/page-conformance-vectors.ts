@@ -1737,13 +1737,15 @@ export const invariants: InvariantDefinition[] = [
     valid: ['report-ai-summary'],
     cases: [
       { case: 'ai-summary-source-id-unknown', base: 'report-ai-summary', expect: /未知数据源:missing/,
-        mutate: document => { firstComponent(document, 3, 1).props.relatedDataSource = ['missing']; } },
+        mutate: document => { firstComponent(document, 3, 1).props.relatedDataSources = ['missing']; } },
       { case: 'ai-summary-source-id-duplicate', base: 'report-ai-summary', expect: /数据源引用不能重复/,
-        mutate: document => { firstComponent(document, 3, 1).props.relatedDataSource = ['comparison', 'comparison']; } },
+        mutate: document => { firstComponent(document, 3, 1).props.relatedDataSources = ['comparison', 'comparison']; } },
+      { case: 'ai-summary-source-spellings-mixed', base: 'report-ai-summary', expect: /relatedDataSources 不能与旧 relatedDataSource/,
+        mutate: document => { firstComponent(document, 3, 1).props.relatedDataSource = ['comparison']; } },
       { case: 'ai-summary-source-id-empty', base: 'report-ai-summary', expect: /fewer than 1 items/,
-        mutate: document => { firstComponent(document, 3, 1).props.relatedDataSource = []; } },
-      { case: 'ai-summary-source-id-version', base: 'report-ai-summary', expect: /6.52/,
-        mutate: document => { document.schemaVersion = '6.51'; } }
+        mutate: document => { firstComponent(document, 3, 1).props.relatedDataSources = []; } },
+      { case: 'ai-summary-source-id-version', base: 'report-ai-summary', expect: /6.53/,
+        mutate: document => { document.schemaVersion = '6.52'; } }
     ]
   },
   {

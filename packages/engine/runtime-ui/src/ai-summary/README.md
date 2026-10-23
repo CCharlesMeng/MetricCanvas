@@ -66,7 +66,7 @@ export const aiSummary: AiSummaryConfig = {
 
 ### 两个输入参数怎么使用
 
-页面通过 `relatedDataSource: ["usage", "comparison"]` 直接指定数据源，或用 `relatedSections` 从可见区域推导；字段含义和当前结果由引擎自动组装。云宝 Adapter 无需再读取页面声明或维护字段映射。新字段从 Schema 6.52 起可用；旧 relatedData 仅保留读取兼容。
+页面通过 `relatedDataSources: ["usage", "comparison"]` 直接指定数据源，或用 `relatedSections` 从可见区域推导；字段含义和当前结果由引擎自动组装。云宝 Adapter 无需再读取页面声明或维护字段映射。复数正式声明从 Schema 6.53 起可用；6.52 的 relatedDataSource 和旧 relatedData 保留读取兼容，不与正式声明同时配置。
 
 `question` 是完整分析指令，由页面业务提示词和引擎固定输出约束拼成。固定约束包括只依据所给数据分析，以及受控 HTML 的标签和语义类要求。将完整字符串传给云宝，不要像当前 Mock 的展示文案那样只取第一行，也不要用固定提示词覆盖它。
 
@@ -79,7 +79,7 @@ export const aiSummary: AiSummaryConfig = {
 | `componentId` | 当前摘要标识，用于区分一个页面中的多个分析区域。 |
 | `sectionIds` | 通过分区推导范围时的分区标识；显式声明数据源时可以为空。 |
 | `timeFilters` | Report 页头生效的时间筛选，按筛选 id 索引；值有 `timePoint` / `timeRange` 判别类型。 |
-| `dataSources` | 本摘要范围内的数据源数组，由 `relatedDataSource` ID 列表或可见分区确定，采用数据源非明细结果字段；旧声明沿用字段白名单。 |
+| `dataSources` | 本摘要范围内的数据源数组，由 `relatedDataSources` ID 列表或可见分区确定，采用数据源非明细结果字段；旧声明沿用字段白名单。 |
 | `dataSources[].id / description` | 数据源标识；直接引用或分区推导时 description 使用 ID，旧声明可保留原业务说明。分析业务背景写在 promptTemplate。 |
 | `dataSources[].fields` | 字段类型、角色、业务标签等元信息；保留实际传入的完整字段信息。 |
 | `dataSources[].query` | 可选的生效查询，包含实际查询体及可能的筛选、分页、排序等信息；有值时保留原意传入，静态来源可能没有此项。 |
