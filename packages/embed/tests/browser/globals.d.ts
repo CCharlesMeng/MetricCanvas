@@ -28,6 +28,7 @@ declare global {
     missingRuntime: RuntimeHandle;
     failingRuntime: RuntimeHandle;
     aiSummaryRuntime: RuntimeHandle;
+    aiSummaryBodyStats: { queries: number; generates: number };
     aiSummaryRequests: Array<{
       question: string;
       contextInfo: import('@metriccanvas/engine/ui').AiSummaryContextInfo;

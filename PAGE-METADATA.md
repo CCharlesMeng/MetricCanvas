@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.53**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45、6.46、6.47、6.48、6.49、6.50、6.51、6.52和6.53；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.54**，读取支持5.0—5.4、6.5、6.11、6.12、6.13、6.14、6.15、6.16、6.17、6.18、6.19、6.20、6.21、6.22、6.23、6.24、6.25、6.26、6.27、6.28、6.29、6.30、6.31、6.32、6.33、6.34、6.35、6.36、6.37、6.38、6.39、6.40、6.41、6.42、6.43、6.44、6.45、6.46、6.47、6.48、6.49、6.50、6.51、6.52、6.53和6.54；各能力的版本下限独立校验。结构事实由 `packages/page/src/schema/` 单向导出，当前版本与可读范围由 `versionPolicy` 和 `supportedVersions()` 定义；未声明属性不被接受。
 
 高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
 
@@ -328,7 +328,7 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 <a id="711-aisummary"></a>
 
-7.11 `aiSummary`（6.51：Report 双模式、区域范围、异步调用与会话缓存；6.52：数据源 ID 直接引用；6.53：正式命名 relatedDataSources，与 relatedSections 对称） → [模块参考](contracts/metriccanvas/page/reference/components/aiSummary.md)。
+7.11 `aiSummary`（6.51：Report 双模式、区域范围、异步调用与会话缓存；6.52：数据源 ID 直接引用；6.53：正式命名 relatedDataSources；6.54：非空 body 直接展示，否则根据提示词和范围生成，无需 mode） → [模块参考](contracts/metriccanvas/page/reference/components/aiSummary.md)。
 
 <a id="8-数据槽字段绑定与有限交互"></a>
 

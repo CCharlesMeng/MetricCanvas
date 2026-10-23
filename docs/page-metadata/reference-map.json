@@ -1834,8 +1834,9 @@
     "6.51": "Report 双模式 AI 总结、区域范围与异步会话缓存。",
     "6.52": "AI 总结直接引用页面数据源 ID（旧拼写 relatedDataSource）。",
     "6.53": "AI 总结数据源数组统一采用 relatedDataSources，与 relatedSections 对称。",
-    "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"provided\"": "直接展示后端已生成正文，不调用 AI。",
-    "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"generated\"": "根据提示词和区域输入异步生成，支持绑定首屏正文。"
+    "6.54": "AI 总结按非空 body 直接展示，否则动态生成，无需 mode。",
+    "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"provided\"": "历史值；当前按非空 body 直接展示，无需 mode。",
+    "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"generated\"": "历史值；当前无正文时根据提示词和范围生成，无需 mode。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2366,7 +2367,7 @@
       "查阅方式"
     ],
     "components/aiSummary.md": [
-      "模式与范围",
+      "正文与范围",
       "查询与生成",
       "会话与缓存",
       "呈现与导出",

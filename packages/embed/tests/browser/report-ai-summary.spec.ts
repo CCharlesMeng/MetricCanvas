@@ -3,6 +3,47 @@ import { readFile } from 'node:fs/promises';
 
 const fixture = JSON.parse(await readFile(new URL('../../../../pages/capabilities/ai-summary/report-ai-summary.json', import.meta.url), 'utf8'));
 
+test('nonblank body renders without an AI config or scoped queries; blank body generates', async ({ page }, info) => {
+  await page.goto('/examples/inline.html');
+  await page.evaluate(document => {
+    window.runtime.destroy();
+    window.aiSummaryBodyStats = { queries: 0, generates: 0 };
+    const bodyPage = structuredClone(document);
+    bodyPage.sections = [document.sections[0], { id: 'direct-body', components: [{
+      ...document.sections[1].components[0], props: { body: '<p>直接正文，不等待查询。</p>',
+        promptTemplate: '分析当前数据', relatedDataSources: ['usage'] }
+    }] }];
+    window.pageDocument = bodyPage;
+    window.runtime = MetricCanvas.mount('#dashboard', { document: bodyPage, dataGateway: { async fetchData() {
+      window.aiSummaryBodyStats.queries++;
+      return { rows: [{ month: '已查询', tokens: 42 }], totalCount: 1 };
+    } } });
+  }, fixture);
+  await expect(page.getByText('直接正文，不等待查询。')).toBeVisible();
+  await page.getByLabel('报告期间开始', { exact: true }).fill('2026-08');
+  await page.getByLabel('报告期间开始', { exact: true }).press('Enter');
+  await expect(page.getByText('直接正文，不等待查询。')).toBeVisible();
+  expect(await page.evaluate(() => window.aiSummaryBodyStats)).toEqual({ queries: 0, generates: 0 });
+  await page.screenshot({ path: info.outputPath('body-direct-no-generation.png'), fullPage: true });
+
+  await page.evaluate(() => {
+    window.runtime.destroy();
+    const document = structuredClone(window.pageDocument);
+    document.sections[1].components[0].props.body = ' \n\t ';
+    window.runtime = MetricCanvas.mount('#dashboard', { document, dataGateway: { async fetchData() {
+      window.aiSummaryBodyStats.queries++;
+      return { rows: [{ month: '已查询', tokens: 42 }], totalCount: 1 };
+    } }, aiSummary: { throttleMs: 0, async generate() {
+      window.aiSummaryBodyStats.generates++;
+      return '空白正文走动态生成';
+    } } });
+  });
+  await expect(page.getByText('空白正文走动态生成')).toBeVisible();
+  expect(await page.evaluate(() => window.aiSummaryBodyStats.queries)).toBeGreaterThan(0);
+  expect(await page.evaluate(() => window.aiSummaryBodyStats.generates)).toBe(1);
+  await page.screenshot({ path: info.outputPath('blank-body-generated.png'), fullPage: true });
+});
+
 test('Report time switching preserves background tasks, exact cache and independent region contexts', async ({ page }, info) => {
   expect(fixture.sections[3].components[1].props.relatedDataSources).toEqual(['comparison']);
   expect(fixture.sections[3].components[1].props).not.toHaveProperty('relatedDataSource');

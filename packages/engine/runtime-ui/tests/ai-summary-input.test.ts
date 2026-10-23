@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import fixture from '../../../../pages/capabilities/ai-summary/report-ai-summary.json';
 import { parsePage, type Page } from '@metriccanvas/page';
-import { aiSummaryRelatedData, type AiSummaryProps, type DataSnapshot } from '@metriccanvas/page/internal';
+import { aiSummaryRelatedData, hasAiSummaryBody, type AiSummaryProps, type DataSnapshot } from '@metriccanvas/page/internal';
+import { exportSummarySnapshot } from '../src/ai-summary/view/content';
 import { assembleGenerationInput } from '../src/ai-summary/runtime/input';
 import type { FilterValue } from '../../runtime/src';
 import type { AiSummaryRuntimeContext } from '../src/ai-summary/runtime/input';
@@ -22,6 +23,27 @@ function setup() {
 }
 
 describe('summary input scopes and identity', () => {
+  it('does not select, query or generate sources for a nonblank body, regardless of legacy mode', () => {
+    const { page, context, snapshots } = setup();
+    const props: AiSummaryProps = { body: '  已有正文  ', mode: 'generated', relatedDataSources: ['usage'] };
+    expect(hasAiSummaryBody(props)).toBe(true);
+    expect(aiSummaryRelatedData(page, props)).toEqual({});
+    expect(assembleGenerationInput(props, 'summary', snapshots, context)).toBeUndefined();
+    const summary = page.sections[2]!.components[1]!;
+    if (summary.type !== 'aiSummary') throw Error('fixture summary');
+    summary.props = props;
+    expect([...activeSourceIds({ ...page, sections: [{ id: 'body-only', components: [summary] }] })]).toEqual([]);
+    expect(exportSummarySnapshot(props, { status: 'ready', text: '旧的生成结果' })).toMatchObject({ text: '  已有正文  ' });
+  });
+  it('generates for omitted and blank body with the same input and cache key', () => {
+    const { props, context, snapshots } = setup();
+    const expected = assembleGenerationInput(props, 'summary', snapshots, context)!;
+    for (const body of [undefined, '', ' \n\t ']) {
+      const current = { ...props, body };
+      expect(hasAiSummaryBody(current)).toBe(false);
+      expect(assembleGenerationInput(current, 'summary', snapshots, context)).toEqual(expected);
+    }
+  });
   it('normalizes the legacy spelling into the same scope, frozen context and cache input', () => {
     const { props, context, snapshots } = setup();
     const current = assembleGenerationInput({ ...props, relatedDataSources: ['usage'] }, 'summary', snapshots, context)!;

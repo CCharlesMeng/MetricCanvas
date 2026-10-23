@@ -178,7 +178,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 验收：`query-mode-chart-demo`，Dashboard 一张折线图、合计卡和共享结果明细表；签约与商机由 DQE Sim 的两张独立合成表提供。切换口径与区域应改变实际请求中的业务指标、区域目标字段和图表数值。演示数据与真实 DQE/Relay、数据库权限及业务数值验真分开报告。
 
 
-页面协议 6.53。结构真源为本册[schema.json](schema.json)，SHA256 `507e543f6d7a3adcefdac11b8e1cf0b88d4e2dc7b9045480800899ed4d4fd8b0`。字段表自动生成；可选不等于有默认值。
+页面协议 6.54。结构真源为本册[schema.json](schema.json)，SHA256 `6c563f3b7097df343bf49b2f5485f98074c066572e501404dd8c473a47c10aa3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

@@ -1,4 +1,4 @@
-import { aiSummaryRelatedData, aiSummarySourceReferences, canonicalizeJson, resolveDataSourceFields,
+import { aiSummaryRelatedData, aiSummarySourceReferences, hasAiSummaryBody, canonicalizeJson, resolveDataSourceFields,
   type AiSummaryProps, type DataSnapshot, type Page, type EffectiveQuery, type TabSelections } from '@metriccanvas/page/internal';
 import type { PageDataSnapshots, FilterValue, FilterValues } from '../../../../runtime/src';
 import type { AiSummaryContextInfo, AiSummaryDataSource } from '../types';
@@ -35,6 +35,7 @@ export function assembleGenerationInput(
   props: AiSummaryProps, componentId: string,
   snapshots: PageDataSnapshots, runtime: AiSummaryRuntimeContext
 ): AiSummaryGenerationInput | undefined {
+  if (hasAiSummaryBody(props)) return;
   const related = aiSummaryRelatedData(runtime.page, props, runtime.tabs);
   if (Object.values(related).some(value => !snapshots.get(value.source) || snapshots.get(value.source)?.status === 'loading')) return;
   const question = `${props.promptTemplate ?? ''}\n\n${OUTPUT_INSTRUCTION}`;

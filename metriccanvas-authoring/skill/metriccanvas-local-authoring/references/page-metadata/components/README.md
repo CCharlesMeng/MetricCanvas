@@ -16,6 +16,6 @@
 - [分类明细 categoryBreakdown](categoryBreakdown.md)：按类别逐行、按度量逐列列出少数几行带列头的紧凑明细；每行一个类别;一个 dimension 类别字段 + 一到多个 measure 字段。
 - [字段长文本 fieldText](fieldText.md)：把数据源里的一段长文本按段落呈现，标题写在组件上；单行记录；绑定一个 string 字段，或一个 semanticHtml/detail 字段。
 - [文本 text](text.md)：承载说明、口径提示或由后端返回的人工/AI 已确认分析结论；可显式使用受控语义 HTML 正文；不绑定页面数据源。
-- [AI 总结 aiSummary](aiSummary.md)：Report 双模式摘要；不声明数据槽；relatedDataSources 直接引用数据源 ID，或 relatedSections 推导可见区域；异步调用由集成应用适配。
+- [AI 总结 aiSummary](aiSummary.md)：Report 非空 body 直接展示，无正文时生成；不声明数据槽；relatedDataSources 直接引用数据源 ID，或 relatedSections 推导可见区域；异步调用由集成应用适配。
 
 [总索引](../README.md)。字段requiredProps摘要不能替代每份组件参考的所有联合分支。

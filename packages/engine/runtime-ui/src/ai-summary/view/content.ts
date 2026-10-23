@@ -1,13 +1,13 @@
 import { parseSemanticHtml } from '../../../../widgets/src/shared/semantic-html';
 import type { AiSummarySnapshot } from '../types';
-import type { AiSummaryProps } from '@metriccanvas/page/internal';
+import { hasAiSummaryBody, type AiSummaryProps } from '@metriccanvas/page/internal';
 
 export function exportSummarySnapshot(props: AiSummaryProps, snapshot?: AiSummarySnapshot): AiSummarySnapshot {
-  if (snapshot) return snapshot;
-  if (props.mode === 'provided') {
+  if (hasAiSummaryBody(props)) {
     try { return summaryContent(props.body ?? ''); }
     catch { return { status: 'empty' }; }
   }
+  if (snapshot) return snapshot;
   return { status: 'empty' };
 }
 

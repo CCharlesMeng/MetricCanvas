@@ -118,7 +118,7 @@ flowchart LR
 | URL 同步 | 从默认值和 URL 恢复筛选状态，变化后反向序列化 |
 | 页内下钻 | 图表 action 回写筛选状态；表格单元格可原子写入多个筛选器 |
 | 跨页下钻 | 通过导航适配器携带或设置目标页筛选条件 |
-| AI 总结 | Report 双模式；`relatedDataSources` 直接引用数据源或从 `relatedSections` 推导非明细字段；异步生成、后台完成、缓存与重试，受控 HTML 或文字回退 |
+| AI 总结 | Report 非空 body 直接渲染，否则动态生成，无需 mode；`relatedDataSources` 直接引用数据源或从 `relatedSections` 推导非明细字段；异步生成、后台完成、缓存与重试，受控 HTML 或文字回退 |
 
 AI 总结是独立的垂直组件 Module，不是第三种页面数据源。它的配置或生成失败只影响当前 AI 总结组件。
 摘要默认由后端随页面文档返回并用 `text` 渲染；未明确声明运行时 SSE 时不选择 AI 总结组件。

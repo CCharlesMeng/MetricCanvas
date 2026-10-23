@@ -37,6 +37,9 @@ describe('独立本地创作 Skill', () => {
     expect(props.relatedDataSources).toEqual(['comparison']);
     delete props.relatedDataSources;
     props.relatedDataSource = ['comparison'];
+    for (const section of page.sections) for (const component of section.components) {
+      if (component.type === 'aiSummary' && component.props.body) component.props.mode = 'provided';
+    }
     page.schemaVersion = '6.52';
     await writeFile(target, JSON.stringify(page));
     expect(run([target]).status).toBe(0);

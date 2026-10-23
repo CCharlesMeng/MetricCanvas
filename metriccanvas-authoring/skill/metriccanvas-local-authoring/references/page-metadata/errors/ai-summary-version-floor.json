@@ -4,6 +4,14 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
+      "message": "AI 总结由非空 body 直接决定展示，无正文时动态生成 由 6.54 引入，文档声明的是 6.50",
+      "paths": [
+        "/sections/1/components/0",
+        "/sections/1/components/1"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "AI 总结数据源数组采用复数 relatedDataSources 由 6.53 引入，文档声明的是 6.50",
       "paths": [
         "/sections/3/components/1"
@@ -15,8 +23,7 @@
       "paths": [
         "/sections/1/components/0",
         "/sections/1/components/1",
-        "/sections/2/components/1",
-        "/sections/3/components/1"
+        "/sections/2/components/1"
       ]
     }
   ],
@@ -32,7 +39,6 @@
               "span": 12
             },
             "props": {
-              "mode": "provided",
               "title": "后端已生成正文",
               "body": "<p><strong>已有结论：</strong>本段由页面直接提供，无需调用 AI。</p>"
             }
@@ -44,7 +50,6 @@
               "span": 12
             },
             "props": {
-              "mode": "provided",
               "title": "结构容错示例",
               "body": "<h3>可读结论</h3><p><strong>标签未闭合仍展示文字"
             }
@@ -61,7 +66,6 @@
               "span": 12
             },
             "props": {
-              "mode": "generated",
               "title": "用量区域分析",
               "promptTemplate": "分析当前期间的用量走势，仅依据本区域数据。",
               "relatedSections": [
@@ -81,7 +85,6 @@
               "span": 12
             },
             "props": {
-              "mode": "generated",
               "title": "独立数据源分析",
               "promptTemplate": "概括对照数据，不使用其他区域的数据。",
               "relatedDataSources": [

@@ -7,7 +7,7 @@ Report 专用摘要 Module。从 `AiSummary.svelte` 看页面生命周期，从 
 ```text
 ai-summary/
 ├─ index.ts                    # 引擎内部统一入口
-├─ AiSummary.svelte            # 组件入口：已有正文 / 生成任务订阅
+├─ AiSummary.svelte            # 组件入口：非空 body 直接展示 / 无正文时订阅生成任务
 ├─ types.ts                    # 生成 Interface、上下文与共享结果状态
 ├─ runtime/
 │  ├─ input.ts                 # 页面上下文、范围与提示词、确定性输入键
@@ -21,6 +21,8 @@ ai-summary/
 
 ## 引用与接入
 
+页面无需 mode。非空 body 直接渲染，摘要不取数、不调用 generate，也不随时间切换重新生成；缺少 body、空字符串或纯空白时，才使用 promptTemplate 与 relatedDataSources/relatedSections 生成。当前不要求 initial 或 inputKey；这些字段只保留历史读取兼容。
+
 模块外的引擎代码从 index.ts 引用，不直接定位内部文件。集成应用沿用 @metriccanvas/engine/ui 的类型与公开能力；云宝从 @metriccanvas/engine/ui/ai-summary/yunbao-assistant 单独导入。Adapter 不从主入口自动加载，替换实现仍通过 generate(question, contextInfo): Promise<string> 注入。
 
 runtime/input 收集当前可见区域的数据源与实际查询，等待关联查询退出 loading 后组装完整输入。runtime/session 持有应用会话；AiSummary 卸载只退订，已经启动的任务继续完成并缓存。任务不能放回组件的局部生命周期。
@@ -29,7 +31,7 @@ view/content 是组件容错的唯一实现，生成结果和后端正文共用�
 
 ## 验证入口
 
-- 页面：/pages/report-ai-summary（双模式、双区域、时间切换、文字降级和导出）
+- 页面：/pages/report-ai-summary（正文优先、双区域、时间切换、文字降级和导出）
 - 输入与任务：runtime-ui/tests/ai-summary-input.test.ts、ai-summary-tasks.test.ts
 - 浏览器：embed/tests/browser/report-ai-summary.spec.ts，含 SDT 宽窄外观对比
 - 产品协议：docs/page-metadata/components/aiSummary.md

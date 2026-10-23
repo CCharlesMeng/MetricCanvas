@@ -435,7 +435,7 @@
     "aliases": [],
     "purpose": "Report 区域分析摘要：展示已有正文，或基于限定范围和时间条件异步生成",
     "chooseWhen": [
-      "Report 的后端摘要或时间切换后的区域分析使用 aiSummary；集成应用注入异步 generate",
+      "Report 已有非空 body 直接展示；否则根据提示词和区域范围生成，集成应用注入异步 generate",
       "明确声明运行时 SSE 的旧动态摘要继续可读，SSE 由集成应用适配"
     ],
     "dataShape": "不声明数据槽；relatedDataSources 直接引用页面数据源 ID，或 relatedSections 收集可见区域的数据源；采用非明细结果字段",

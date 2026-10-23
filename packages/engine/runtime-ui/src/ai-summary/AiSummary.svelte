@@ -1,7 +1,7 @@
 <script lang="ts">
   import { getContext, untrack } from 'svelte';
   import { SUMMARY_EXPORT_CAPTURE, type SummaryCapture } from '../export-render-state';
-  import type { AiSummaryProps } from '@metriccanvas/page/internal';
+  import { hasAiSummaryBody, type AiSummaryProps } from '@metriccanvas/page/internal';
   import type { PageDataSnapshots } from '../../../runtime/src';
   import AiSummaryView from './view/AiSummaryView.svelte';
   import { AI_SUMMARY_RUNTIME_CONTEXT, assembleGenerationInput, type AiSummaryRuntimeReader } from './runtime/input';
@@ -29,7 +29,7 @@
   $effect(() => {
     const force = retry !== lastRetry;
     lastRetry = retry;
-    if (props.mode === 'provided') {
+    if (hasAiSummaryBody(props)) {
       data = providedContent(props.body ?? '');
       return;
     }

@@ -4,6 +4,11 @@ import type { AiSummaryProps, Page } from './page';
 import type { TypedError } from './errors';
 import { walkPageComponents } from './component-walk';
 
+/** 非空正文直接展示；空字符串或纯空白继续走生成流程。 */
+export function hasAiSummaryBody(props: AiSummaryProps): boolean {
+  return Boolean(props.body?.trim());
+}
+
 /** 兼容拼写在此归一化；保留原键以报告准确的文档路径。 */
 export function aiSummarySourceReferences(props: AiSummaryProps) {
   if (props.relatedDataSources) return { key: 'relatedDataSources' as const, ids: props.relatedDataSources };
@@ -12,7 +17,7 @@ export function aiSummarySourceReferences(props: AiSummaryProps) {
 
 /** 显式来源优先；section 只推导实际组件数据槽，不递归其他摘要或查询上游。 */
 export function aiSummaryRelatedData(page: Page, props: AiSummaryProps, selections: TabSelections = {}) {
-  if (props.mode === 'provided') return {};
+  if (hasAiSummaryBody(props)) return {};
   const sources = aiSummarySourceReferences(props);
   if (sources) return relatedSources(page, sources.ids);
   if (props.relatedData && Object.keys(props.relatedData).length) return props.relatedData;
@@ -40,11 +45,7 @@ export function aiSummaryErrors(page: Page): TypedError[] {
     if (component.type !== 'aiSummary') return;
     const props = component.props;
     if (page.layout === 'dashboard') error(path, 'AI 总结仅支持 Report 布局');
-    if (props.mode === 'provided') {
-      providedErrors(props, path, error);
-      return;
-    }
-    if (props.body !== undefined) error(`${path}/props/body`, '动态生成模式的首屏正文使用 initial 并绑定 inputKey');
+    if (hasAiSummaryBody(props)) return;
     if (!props.promptTemplate?.trim()) error(`${path}/props/promptTemplate`, '动态生成需要非空业务提示词');
     if (!aiSummarySourceReferences(props) && !props.relatedData && !props.relatedSections) error(`${path}/props`, '动态生成需要 relatedDataSources 或 relatedSections（旧声明仍可读取）');
     sourceErrors(page, props, path, error);
@@ -54,10 +55,6 @@ export function aiSummaryErrors(page: Page): TypedError[] {
 }
 
 type ErrorReporter = (path: string, message: string) => void;
-function providedErrors(props: AiSummaryProps, path: string, error: ErrorReporter): void {
-  if (!props.body?.trim()) error(`${path}/props/body`, '提供正文模式需要非空正文');
-  if (props.promptTemplate || aiSummarySourceReferences(props) || props.relatedData || props.relatedSections || props.initial) error(`${path}/props`, '提供正文模式不能同时声明生成输入');
-}
 function sourceErrors(page: Page, props: AiSummaryProps, path: string, error: ErrorReporter): void {
   const sources = aiSummarySourceReferences(props);
   if (!sources) return;

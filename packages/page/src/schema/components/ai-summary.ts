@@ -33,12 +33,12 @@ export const aiSummaryComponentZ = z
       .object({
         title: textValueZ.optional(),
         variant: z.literal('reportInline').optional(),
-        mode: z.enum(['provided', 'generated']).optional(),
-        body: z.string().optional(),
+        mode: z.enum(['provided', 'generated']).describe('旧声明读取兼容；当前由 body 是否非空决定直接展示或生成，无需 mode').optional(),
+        body: z.string().describe('非空时直接渲染且不调用 AI；省略、空字符串或纯空白时按提示词和关联范围生成').optional(),
         initial: z.object({
           body: z.string(),
           inputKey: nonBlankZ(1).describe('与生成输入精确匹配的 aiSummaryInputKey(question, contextInfo) 标识')
-        }).strict().optional(),
+        }).strict().describe('历史动态首屏缓存声明，仅保留读取兼容；当前用法无需 initial 或 inputKey').optional(),
         promptTemplate: nonBlankZ(1).optional(),
         relatedDataSources: aiSummarySourceIdsZ.describe('页面数据源 ID 数组，采用其全部非明细结果字段；优先于 relatedSections').optional(),
         relatedDataSource: aiSummarySourceIdsZ.describe('6.52 旧拼写，仅保留读取兼容；新页面使用 relatedDataSources').optional(),
@@ -56,7 +56,7 @@ componentCatalogRegistry.add(aiSummaryComponentZ, {
   label: 'AI 总结',
   purpose: 'Report 区域分析摘要：展示已有正文，或基于限定范围和时间条件异步生成',
   chooseWhen: [
-    'Report 的后端摘要或时间切换后的区域分析使用 aiSummary；集成应用注入异步 generate',
+    'Report 已有非空 body 直接展示；否则根据提示词和区域范围生成，集成应用注入异步 generate',
     '明确声明运行时 SSE 的旧动态摘要继续可读，SSE 由集成应用适配'
   ],
   dataShape: '不声明数据槽；relatedDataSources 直接引用页面数据源 ID，或 relatedSections 收集可见区域的数据源；采用非明细结果字段',

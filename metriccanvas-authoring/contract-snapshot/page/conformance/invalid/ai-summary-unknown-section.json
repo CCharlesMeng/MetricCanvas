@@ -2,12 +2,12 @@
   "case": "ai-summary-unknown-section",
   "invariant": "report-ai-summary",
   "input": {
-    "schemaVersion": "6.53",
+    "schemaVersion": "6.54",
     "id": "report-ai-summary",
     "layout": "report",
     "meta": {
       "title": "Report 区域 AI 总结",
-      "description": "本地 Mock：双模式正文、页头时间查询、多区域范围、后台任务复用与安全文字降级。"
+      "description": "本地 Mock：正文优先、页头时间查询、多区域范围、后台任务复用与安全文字降级。"
     },
     "filters": [
       {
@@ -159,7 +159,6 @@
               "span": 12
             },
             "props": {
-              "mode": "provided",
               "title": "后端已生成正文",
               "body": "<p><strong>已有结论：</strong>本段由页面直接提供，无需调用 AI。</p>"
             }
@@ -171,7 +170,6 @@
               "span": 12
             },
             "props": {
-              "mode": "provided",
               "title": "结构容错示例",
               "body": "<h3>可读结论</h3><p><strong>标签未闭合仍展示文字"
             }
@@ -216,7 +214,6 @@
               "span": 12
             },
             "props": {
-              "mode": "generated",
               "title": "用量区域分析",
               "promptTemplate": "分析当前期间的用量走势，仅依据本区域数据。",
               "relatedSections": [
@@ -264,7 +261,6 @@
               "span": 12
             },
             "props": {
-              "mode": "generated",
               "title": "独立数据源分析",
               "promptTemplate": "概括对照数据，不使用其他区域的数据。",
               "relatedDataSources": [

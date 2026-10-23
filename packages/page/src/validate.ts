@@ -1,4 +1,4 @@
-import { aiSummaryErrors, aiSummarySourceReferences } from './ai-summary';
+import { aiSummaryErrors, aiSummarySourceReferences, hasAiSummaryBody } from './ai-summary';
 import { filterHasObservableConsumer, presentationPolicyErrors } from './presentation-policy';
 import { chartOptionErrors, withoutChartOptions } from './chart-option';
 import { rowExpansionErrors } from './validate-row-expansion';
@@ -1434,7 +1434,7 @@ function componentErrors(
   }
 
   function checkAiSummary(component: Extract<Component, { type: 'aiSummary' }>): void {
-
+    if (hasAiSummaryBody(component.props)) return;
     const terms = new Map<string, string>();
     for (const [relatedId, related] of Object.entries(component.props.relatedData ?? {})) {
       const relatedPath =
@@ -2034,6 +2034,7 @@ function queryPaginationErrors(page: Page): TypedError[] {
   }
   return errors;
   function addSummaryReferences(props: Extract<Component, { type: 'aiSummary' }>['props'], componentPath: string): void {
+    if (hasAiSummaryBody(props)) return;
     const sources = aiSummarySourceReferences(props);
     if (sources) {
       for (const [index, sourceId] of sources.ids.entries()) {

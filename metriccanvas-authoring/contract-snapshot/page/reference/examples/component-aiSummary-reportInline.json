@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.53",
+  "schemaVersion": "6.54",
   "id": "report-ai-summary",
   "layout": "report",
   "dataSources": {},
@@ -14,7 +14,6 @@
             "span": 12
           },
           "props": {
-            "mode": "provided",
             "title": "结构容错示例",
             "body": "<h3>可读结论</h3><p><strong>标签未闭合仍展示文字",
             "variant": "reportInline"

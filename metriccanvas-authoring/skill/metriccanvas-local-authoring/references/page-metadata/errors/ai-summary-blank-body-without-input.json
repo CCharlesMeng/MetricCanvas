@@ -1,10 +1,17 @@
 {
-  "case": "ai-summary-mixed-mode",
+  "case": "ai-summary-blank-body-without-input",
   "invariant": "report-ai-summary",
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "提供正文模式不能同时声明生成输入",
+      "message": "动态生成需要非空业务提示词",
+      "paths": [
+        "/sections/1/components/0/props/promptTemplate"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "动态生成需要 relatedDataSources 或 relatedSections（旧声明仍可读取）",
       "paths": [
         "/sections/1/components/0/props"
       ]
@@ -17,10 +24,8 @@
         "components": [
           {
             "props": {
-              "mode": "provided",
               "title": "后端已生成正文",
-              "body": "<p><strong>已有结论：</strong>本段由页面直接提供，无需调用 AI。</p>",
-              "promptTemplate": "不应生成"
+              "body": "  "
             }
           }
         ]
