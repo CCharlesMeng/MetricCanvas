@@ -1,0 +1,33 @@
+{
+  "case": "ai-summary-source-id-unknown",
+  "invariant": "ai-summary-source-references",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "关联数据引用了未知数据源:missing",
+      "paths": [
+        "/sections/3/components/1/props/relatedDataSource/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      "…",
+      "…",
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "relatedDataSource": [
+                "missing"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ai-summary-source-id-unknown.json"
+}

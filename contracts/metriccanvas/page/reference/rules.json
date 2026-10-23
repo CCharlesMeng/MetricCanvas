@@ -1183,6 +1183,19 @@
       ]
     },
     {
+      "id": "ai-summary-source-references",
+      "description": "AI 总结直接引用数据源 ID，采用数据源非明细字段",
+      "valid": [
+        "report-ai-summary"
+      ],
+      "invalid": [
+        "ai-summary-source-id-unknown",
+        "ai-summary-source-id-duplicate",
+        "ai-summary-source-id-empty",
+        "ai-summary-source-id-version"
+      ]
+    },
+    {
       "id": "report-ai-summary",
       "description": "AI 总结仅用于 Report，模式与区域引用必须明确",
       "valid": [

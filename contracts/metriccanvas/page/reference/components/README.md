@@ -16,7 +16,7 @@
 - [分类明细 categoryBreakdown](categoryBreakdown.md)：按类别逐行、按度量逐列列出少数几行带列头的紧凑明细；每行一个类别;一个 dimension 类别字段 + 一到多个 measure 字段。
 - [字段长文本 fieldText](fieldText.md)：把数据源里的一段长文本按段落呈现，标题写在组件上；单行记录；绑定一个 string 字段，或一个 semanticHtml/detail 字段。
 - [文本 text](text.md)：承载说明、口径提示或由后端返回的人工/AI 已确认分析结论；可显式使用受控语义 HTML 正文；不绑定页面数据源。
-- [AI 总结 aiSummary](aiSummary.md)：仅在需求明确声明时，基于关联数据通过 SSE 流式生成 AI 总结；不声明数据槽；relatedData 显式引用页面数据源字段。
+- [AI 总结 aiSummary](aiSummary.md)：Report 双模式摘要；不声明数据槽；relatedDataSource 直接引用数据源 ID，或 relatedSections 推导可见区域；异步调用由集成应用适配。
 
 [总索引](../README.md)。字段requiredProps摘要不能替代每份组件参考的所有联合分支。
 
@@ -30,7 +30,7 @@
 | 地图 | china/world，可显式nameMap；string维度+number/money度量、非空可映射有限行；plain/card宿主拒绝，panel/缺省支持 | t09地图几何及浙江省18悬浮；Schema合法不代表任意宿主能装配 |
 | 组合卡 | 子recipe只metricCard/pieChart/gauge/keyValuePanel/categoryBreakdown | t10复合指标与完整子树删除；不是任意嵌套编辑器 |
 | Tab | 每Tab的子recipe只table，非空子树，id/defaultTab整页校验 | t10两形态切换与表格数据；产品Schema的表达面仍独立 |
-| 动态总结 | generation=runtime_sse、非空promptTemplate/relatedData、部署侧AiSummaryConfig | t10真实本地HTTP/SSE，出站只白名单字段；不证明生产端点、认证或权限 |
+| 动态总结 | Report、非空 promptTemplate、relatedDataSource 或 relatedSections、集成应用 AiSummaryConfig | Report 浏览器验证区域范围、后台请求和缓存；不证明真实云宝端点、认证或权限 |
 
 删除操作仅覆盖允许的顶层文本、地图、容器及总结，容器完整子树一起删除，共享数据源保留；connectPrevious后继依赖阻止删除。内容工具不保存/发布，不在创作期调用总结服务；标题含“AI”不自动升级动态总结。
 

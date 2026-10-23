@@ -51,9 +51,10 @@
         "6.48",
         "6.49",
         "6.50",
-        "6.51"
+        "6.51",
+        "6.52"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51 / 6.52"
     },
     "id": {
       "type": "string",
@@ -9957,6 +9958,14 @@
               "minLength": 1,
               "pattern": "\\S"
             },
+            "relatedDataSource": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/aiSummaryDataSourceReference"
+              },
+              "description": "直接引用页面数据源 ID，采用其全部非明细结果字段；优先于 relatedSections"
+            },
             "relatedSections": {
               "minItems": 1,
               "type": "array",
@@ -9964,7 +9973,7 @@
                 "type": "string",
                 "pattern": "^[a-z0-9][a-z0-9-]*$"
               },
-              "description": "未显式声明 relatedData 时，收集指定内容分区的可见组件所引用的非明细数据"
+              "description": "未显式声明数据源时，收集指定内容分区的可见组件所引用的非明细数据"
             },
             "relatedData": {
               "type": "object",
@@ -9975,7 +9984,8 @@
               "additionalProperties": {
                 "$ref": "#/definitions/aiSummaryRelatedDataDefinition"
               },
-              "minProperties": 1
+              "minProperties": 1,
+              "description": "旧声明读取兼容；新页面使用 relatedDataSource"
             }
           },
           "additionalProperties": false
@@ -9988,6 +9998,10 @@
         "props"
       ],
       "additionalProperties": false
+    },
+    "aiSummaryDataSourceReference": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
     },
     "aiSummaryRelatedDataDefinition": {
       "type": "object",
@@ -10163,5 +10177,5 @@
       "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
     }
   },
-  "$id": "https://metriccanvas/page/v6.51"
+  "$id": "https://metriccanvas/page/v6.52"
 }

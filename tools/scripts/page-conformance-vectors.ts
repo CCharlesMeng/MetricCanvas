@@ -1732,6 +1732,21 @@ export const invariants: InvariantDefinition[] = [
     ]
   },
   {
+    id: 'ai-summary-source-references',
+    description: 'AI 总结直接引用数据源 ID，采用数据源非明细字段',
+    valid: ['report-ai-summary'],
+    cases: [
+      { case: 'ai-summary-source-id-unknown', base: 'report-ai-summary', expect: /未知数据源:missing/,
+        mutate: document => { firstComponent(document, 3, 1).props.relatedDataSource = ['missing']; } },
+      { case: 'ai-summary-source-id-duplicate', base: 'report-ai-summary', expect: /数据源引用不能重复/,
+        mutate: document => { firstComponent(document, 3, 1).props.relatedDataSource = ['comparison', 'comparison']; } },
+      { case: 'ai-summary-source-id-empty', base: 'report-ai-summary', expect: /fewer than 1 items/,
+        mutate: document => { firstComponent(document, 3, 1).props.relatedDataSource = []; } },
+      { case: 'ai-summary-source-id-version', base: 'report-ai-summary', expect: /6.52/,
+        mutate: document => { document.schemaVersion = '6.51'; } }
+    ]
+  },
+  {
     id: 'report-ai-summary',
     description: 'AI 总结仅用于 Report，模式与区域引用必须明确',
     valid: ['report-ai-summary'],

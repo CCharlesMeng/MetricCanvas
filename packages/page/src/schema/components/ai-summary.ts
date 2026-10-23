@@ -39,10 +39,11 @@ export const aiSummaryComponentZ = z
           inputKey: nonBlankZ(1).describe('与生成输入精确匹配的 aiSummaryInputKey(question, contextInfo) 标识')
         }).strict().optional(),
         promptTemplate: nonBlankZ(1).optional(),
-        relatedSections: z.array(idZ).min(1).describe('未显式声明 relatedData 时，收集指定内容分区的可见组件所引用的非明细数据').optional(),
+        relatedDataSource: z.array(idZ.meta({ id: 'aiSummaryDataSourceReference' })).min(1).describe('直接引用页面数据源 ID，采用其全部非明细结果字段；优先于 relatedSections').optional(),
+        relatedSections: z.array(idZ).min(1).describe('未显式声明数据源时，收集指定内容分区的可见组件所引用的非明细数据').optional(),
         relatedData: z
           .record(idZ, aiSummaryRelatedDataDefinitionZ)
-          .meta({ minProperties: 1 }).optional()
+          .meta({ minProperties: 1 }).describe('旧声明读取兼容；新页面使用 relatedDataSource').optional()
       })
       .strict()
   })
@@ -56,7 +57,7 @@ componentCatalogRegistry.add(aiSummaryComponentZ, {
     'Report 的后端摘要或时间切换后的区域分析使用 aiSummary；集成应用注入异步 generate',
     '明确声明运行时 SSE 的旧动态摘要继续可读，SSE 由集成应用适配'
   ],
-  dataShape: '不声明数据槽；relatedData 显式引用字段，或 relatedSections 收集可见区域的数据源',
+  dataShape: '不声明数据槽；relatedDataSource 直接引用页面数据源 ID，或 relatedSections 收集可见区域的数据源；采用非明细结果字段',
   authoringShape: { bindsData: false },
   title: 'optional',
   defaultSpan: 12

@@ -66,6 +66,8 @@ export const aiSummary: AiSummaryConfig = {
 
 ### 两个输入参数怎么使用
 
+页面通过 `relatedDataSource: ["usage", "comparison"]` 直接指定数据源，或用 `relatedSections` 从可见区域推导；字段含义和当前结果由引擎自动组装。云宝 Adapter 无需再读取页面声明或维护字段映射。新字段从 Schema 6.52 起可用；旧 relatedData 仅保留读取兼容。
+
 `question` 是完整分析指令，由页面业务提示词和引擎固定输出约束拼成。固定约束包括只依据所给数据分析，以及受控 HTML 的标签和语义类要求。将完整字符串传给云宝，不要像当前 Mock 的展示文案那样只取第一行，也不要用固定提示词覆盖它。
 
 `contextInfo` 是本次分析已经冻结的数据上下文。类型真源在 [types.ts](types.ts)，内容按以下语义传给云宝：
@@ -77,8 +79,8 @@ export const aiSummary: AiSummaryConfig = {
 | `componentId` | 当前摘要标识，用于区分一个页面中的多个分析区域。 |
 | `sectionIds` | 通过分区推导范围时的分区标识；显式声明数据源时可以为空。 |
 | `timeFilters` | Report 页头生效的时间筛选，按筛选 id 索引；值有 `timePoint` / `timeRange` 判别类型。 |
-| `dataSources` | 本摘要范围内的数据源数组，已经按显式字段白名单或可见分区投影。 |
-| `dataSources[].id / description` | 数据源标识与业务说明。 |
+| `dataSources` | 本摘要范围内的数据源数组，由 `relatedDataSource` ID 列表或可见分区确定，采用数据源非明细结果字段；旧声明沿用字段白名单。 |
+| `dataSources[].id / description` | 数据源标识；直接引用或分区推导时 description 使用 ID，旧声明可保留原业务说明。分析业务背景写在 promptTemplate。 |
 | `dataSources[].fields` | 字段类型、角色、业务标签等元信息；保留实际传入的完整字段信息。 |
 | `dataSources[].query` | 可选的生效查询，包含实际查询体及可能的筛选、分页、排序等信息；有值时保留原意传入，静态来源可能没有此项。 |
 | `dataSources[].resultScope` | `complete` 表示来源声明的完整结果；`window` 表示窗口结果，不能据此声称是全部数据。 |
@@ -205,7 +207,7 @@ import { aiSummary } from '@metriccanvas/engine/ui/ai-summary/yunbao-assistant';
 // 集成应用把同一个 aiSummary 对象传给 RuntimeView 或 Embed mount。
 ```
 
-本地功能页面为 `/pages/report-ai-summary`。当前页面数据来自 DQE Sim，云宝来自 Mock；替换云宝后，只能证明真实云宝调用，不会自动变成真实 DQE/Relay 联调。启动方式见 [示例 README](../../../../../pages/capabilities/ai-summary/README.md)，端口以服务实际输出为准；本批工作区预览使用 5177。
+本地功能页面为 `/pages/report-ai-summary`。当前页面数据来自 DQE Sim，云宝来自 Mock；替换云宝后，只能证明真实云宝调用，不会自动变成真实 DQE/Relay 联调。启动方式见 [示例 README](../../../../../pages/capabilities/ai-summary/README.md)，端口以服务实际输出为准；以实际启动输出为准。
 
 联调按以下顺序验收：
 

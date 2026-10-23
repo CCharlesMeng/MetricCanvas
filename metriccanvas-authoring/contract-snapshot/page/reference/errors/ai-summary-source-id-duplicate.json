@@ -1,0 +1,34 @@
+{
+  "case": "ai-summary-source-id-duplicate",
+  "invariant": "ai-summary-source-references",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "数据源引用不能重复",
+      "paths": [
+        "/sections/3/components/1/props/relatedDataSource"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      "…",
+      "…",
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "relatedDataSource": [
+                "comparison",
+                "comparison"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ai-summary-source-id-duplicate.json"
+}

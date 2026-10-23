@@ -5,6 +5,7 @@ import { aiSummaryRelatedData, type AiSummaryProps, type DataSnapshot } from '@m
 import { assembleGenerationInput } from '../src/ai-summary/runtime/input';
 import type { FilterValue } from '../../runtime/src';
 import type { AiSummaryRuntimeContext } from '../src/ai-summary/runtime/input';
+import { activeSourceIds } from '../../../data-execution/src/source-program/compiler';
 
 function setup() {
   const parsed = parsePage(fixture);
@@ -21,6 +22,40 @@ function setup() {
 }
 
 describe('summary input scopes and identity', () => {
+  it('uses direct source IDs ahead of sections and derives non-detail fields and labels', () => {
+    const { page, props, context, snapshots } = setup();
+    page.dataSources.comparison!.fields = { month: { type: 'string', role: 'dimension', queryField: 'month', label: '月份' },
+      tokens: { type: 'number', role: 'measure', queryField: 'tokens', label: '消耗量', unit: '个' },
+      detail: { type: 'recordList', role: 'detail', queryField: 'detail', items: { fields: { value: { type: 'string', role: 'dimension', queryField: 'value' } } } } };
+    snapshots.set('comparison', { status: 'ready', rows: [{ month: '2026-09', tokens: 7, detail: [{ value: 'excluded' }] }] });
+    const direct = { ...props, relatedDataSource: ['comparison'] };
+    const before = structuredClone({ direct, snapshots });
+    const input = assembleGenerationInput(direct, 'summary', snapshots, context)!;
+    expect(input.contextInfo.sectionIds).toEqual([]);
+    expect(input.contextInfo.dataSources).toMatchObject([{ id: 'comparison',
+      fields: { month: { label: '月份' }, tokens: { label: '消耗量', unit: '个' } },
+      result: { rows: [{ month: '2026-09', tokens: 7 }] } }]);
+    expect(input.contextInfo.dataSources[0]!.fields).not.toHaveProperty('detail');
+    expect(JSON.stringify(input.contextInfo)).not.toContain('excluded');
+    expect({ direct, snapshots }).toEqual(before);
+  });
+
+  it('normalizes multiple source IDs for caching and executes sources without visible data slots', () => {
+    const { page, props, context, snapshots } = setup();
+    snapshots.set('comparison', { status: 'empty', totalCount: 0 });
+    const direct = { ...props, relatedDataSource: ['usage', 'comparison'] };
+    const input = assembleGenerationInput(direct, 'summary', snapshots, context)!;
+    expect(input.contextInfo.dataSources.map(source => source.id)).toEqual(['comparison', 'usage']);
+    expect(assembleGenerationInput({ ...direct, relatedDataSource: ['comparison', 'usage'] }, 'summary', snapshots, context)!.key).toBe(input.key);
+    const summary = page.sections[2]!.components[1]!;
+    if (summary.type !== 'aiSummary') throw Error('fixture summary');
+    summary.props = direct;
+    const summaryOnly: Page = { ...page, sections: [{ id: 'summary-only', components: [summary] }] };
+    expect([...activeSourceIds(summaryOnly)].sort()).toEqual(['comparison', 'usage']);
+    snapshots.delete('comparison');
+    expect(assembleGenerationInput(direct, 'summary', snapshots, context)).toBeUndefined();
+  });
+
   it('collects only the selected section, deduplicates and honors explicit field scope', () => {
     const { page, props, context, snapshots } = setup();
     expect(Object.keys(aiSummaryRelatedData(page, props))).toEqual(['usage']);

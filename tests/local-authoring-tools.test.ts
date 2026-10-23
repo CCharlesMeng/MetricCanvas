@@ -86,7 +86,7 @@ describe('页面用数和指标材料',()=>{
     card.data.compare='other';document.dataSources.other=structuredClone(document.dataSources['business-summary']);
     card.props.rows[0].valueField={byFilter:{filterId:'currency',cases:{CNY:'amount',USD:{data:'compare',field:'amount'}}}};
     card.visibleWhen={filter:'region',part:'value',op:'eq',value:'CN'};
-    document.sections[0].components.push({id:'ai',type:'aiSummary',layout:{span:12},props:{promptTemplate:'summary',relatedData:{main:{source:'other',description:'业务',fields:[{field:'amount',term:'金额'}]}}}});
+    document.sections[0].components.push({id:'ai',type:'aiSummary',layout:{span:12},props:{promptTemplate:'summary',relatedDataSource:['other']}});
     const scan=scanPageData(document,model.schema);
     expect(scan.uses.some(use=>use.slot==='compare' && use.source==='other' && use.field==='amount')).toBe(true);
     expect(scan.uses.some(use=>use.kind==='related-data' && use.source==='other')).toBe(true);

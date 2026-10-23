@@ -6,13 +6,17 @@
 
 `mode: provided` 必须提供非空 `body`，不声明生成提示词、范围或 initial；无需 AI 接口。`body` 支持现有受控 semantic HTML。
 
-`mode: generated` 必须提供非空 `promptTemplate`，并声明 `relatedData` 或 `relatedSections`。省略 mode 的旧动态声明按 generated 读取。显式 relatedData 优先，其中每项声明 source、description 和 fields（field/term）；引用字段必须存在且不是明细字段；术语一致性按数据源与字段共同判断，不同数据源可使用同名字段。未声明 relatedData 时，relatedSections 按内容分区 id 收集当前可见组件的数据槽，包含活动 Tab 与组合卡子组件；去重后选择结果字段契约内全部非明细字段，不跟随其他 AI 总结、其他分区或查询上游。显隐沿用统一 visibleWhen 投影。
+`mode: generated` 必须提供非空 `promptTemplate`，并声明 `relatedDataSource` 或 `relatedSections`。`relatedDataSource: ["sales-summary", "regional-comparison"]`（6.52）直接引用页面数据源 ID，不再重复声明 source、description、fields 或 field/term 映射；采用结果字段契约内全部非明细字段及原有标签、类型、单位等信息。ID 必须存在、列表非空且不能重复，顺序不影响生成输入和缓存。显式数据源优先于 relatedSections。
+
+未声明显式数据源时，`relatedSections` 按内容分区 id 收集当前可见组件的数据槽，包含活动 Tab 与组合卡子组件；去重后选择结果字段契约内全部非明细字段，不跟随其他 AI 总结、其他分区或查询上游。显隐沿用统一 visibleWhen 投影。
+
+省略 mode 的旧动态声明按 generated 读取。旧 `relatedData` 保留读取兼容及原字段白名单、术语映射规则；新页面使用 relatedDataSource，两者不能同时声明。旧显式声明仍优先于 relatedSections。需要缩小分析字段范围时，引用专门提供该范围的页面数据源。
 
 可选 `initial: { body, inputKey }` 提供动态模式首屏正文。inputKey 必须等于 `aiSummaryInputKey(question, contextInfo)` 的结果；条件、范围或数据变化后不复用不匹配的正文。不要将只有正文、没有输入绑定的结果用作动态首屏缓存。
 
 ## 查询与生成
 
-Report 页头时间筛选仍由 filterBindings 控制既有查询。关联查询退出 loading 后冻结实际查询条件、时间范围、字段含义、单位、结果范围、数据与状态，再提交生成任务。空结果与失败如实交给分析实现，不由引擎决定业务分析是否可行。数据仅按声明白名单投影，不静默截断或自动发起全量查询。
+Report 页头时间筛选仍由 filterBindings 控制既有查询。关联查询退出 loading 后冻结实际查询条件、时间范围、字段含义、单位、结果范围、数据与状态，再提交生成任务。空结果与失败如实交给分析实现，不由引擎决定业务分析是否可行。数据按选定数据源的非明细结果字段投影（旧声明沿用字段白名单），不静默截断或自动发起全量查询。
 
 集成应用注入 `aiSummary: { generate(question, contextInfo): Promise<string> }`。question 由业务提示词和固定输出约束组成；contextInfo 含页面/修订/组件、区域、页头时间筛选与 dataSources。每份数据源含 id、业务说明、字段、实际生效查询、结果范围和查询快照。页面 JSON 不得保存地址、鉴权、函数或 SSE 协议。SSE 构建与流累积由 Adapter 独占，组件只接收完整字符串。
 
@@ -32,7 +36,7 @@ Report 页头时间筛选仍由 filterBindings 控制既有查询。关联查询
 
 ## 本地示例与接入
 
-Playground：`/pages/report-ai-summary`。双区域、直接正文与结构降级共用既有 Report 呈现。
+Playground：`/pages/report-ai-summary`。双区域、直接正文与结构降级共用既有 Report 呈现；对照区域使用 relatedDataSource，业务用量区域使用 relatedSections。forecast-page 仅保留为旧 relatedData 读取兼容样例。
 
 云宝助手 Adapter 集中在 ai-summary/adapters/yunbao-assistant.ts，通过 @metriccanvas/engine/ui/ai-summary/yunbao-assistant 独立入口注入；当前明确为本地 Mock。具体替换位置见集成应用的接入说明。内网替换 generate 函数体，保持两参数和 Promise<string>；自行构建 SSE、消费事件并累积正文。Playground 与 Platform 共用该实现。真实云宝、DQE/Relay 与内网身份联调独立验收。
 
@@ -41,7 +45,7 @@ Playground：`/pages/report-ai-summary`。双区域、直接正文与结构降�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.51。结构真源为本册[schema.json](../schema.json)，SHA256 `9302c984389196b0d7d4476ad3ea11cca480ea3d9a7b7292aff4ecdbf71f44b5`。字段表自动生成；可选不等于有默认值。
+页面协议 6.52。结构真源为本册[schema.json](../schema.json)，SHA256 `935df063e0ef892c7a908ca0e4a93ec17c54f74662db2b3b761817199c83e5d0`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -216,7 +220,37 @@ Schema位置：`#/definitions/aiSummaryComponent/properties/props/properties/pro
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | minLength=1; pattern="\\S" | Schema未设默认；装配/运行时默认见语义说明 | 动态总结提示模板；字段数据受relatedData白名单约束。 |
+| "string" | 本分支可选 | minLength=1; pattern="\\S" | Schema未设默认；装配/运行时默认见语义说明 | 动态总结业务提示词；数据范围由 relatedDataSource 或 relatedSections 确定。 |
+
+<a id="schema-232f646566696e6974696f6e732f616953756d6d617279436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f72656c6174656444617461536f75726365"></a>
+
+### `@aiSummaryComponent.props.relatedDataSource`
+
+Schema位置：`#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSource`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 直接引用页面数据源 ID，采用其全部非明细结果字段；优先于 relatedSections |
+
+<a id="schema-232f646566696e6974696f6e732f616953756d6d617279436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f72656c6174656444617461536f757263652f6974656d73"></a>
+
+### `@aiSummaryComponent.props.relatedDataSource[]`
+
+Schema位置：`#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSource/items`。目标：[#/definitions/aiSummaryDataSourceReference](../components/aiSummary.md#schema-232f646566696e6974696f6e732f616953756d6d61727944617461536f757263655265666572656e6365)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/aiSummaryDataSourceReference | 每个数组项 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f616953756d6d61727944617461536f757263655265666572656e6365"></a>
+
+### `@aiSummaryDataSourceReference`
+
+Schema位置：`#/definitions/aiSummaryDataSourceReference`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 类型/分支 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f616953756d6d617279436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f72656c6174656453656374696f6e73"></a>
 
@@ -226,7 +260,7 @@ Schema位置：`#/definitions/aiSummaryComponent/properties/props/properties/rel
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 未显式声明 relatedData 时，收集指定内容分区的可见组件所引用的非明细数据 |
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 未显式声明数据源时，收集指定内容分区的可见组件所引用的非明细数据 |
 
 <a id="schema-232f646566696e6974696f6e732f616953756d6d617279436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f72656c6174656453656374696f6e732f6974656d73"></a>
 
@@ -246,7 +280,7 @@ Schema位置：`#/definitions/aiSummaryComponent/properties/props/properties/rel
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 本分支可选 | propertyNames={"type":"string","pattern":"^[a-z0-9][a-z0-9-]*$"}; minProperties=1 | Schema未设默认；装配/运行时默认见语义说明 | 动态总结允许读取的数据源/字段集合。 |
+| "object" | 本分支可选 | propertyNames={"type":"string","pattern":"^[a-z0-9][a-z0-9-]*$"}; minProperties=1 | Schema未设默认；装配/运行时默认见语义说明 | 旧声明读取兼容；新页面使用 relatedDataSource |
 
 <a id="schema-232f646566696e6974696f6e732f616953756d6d617279436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f72656c61746564446174612f6164646974696f6e616c50726f70657274696573"></a>
 

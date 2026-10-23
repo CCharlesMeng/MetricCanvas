@@ -438,7 +438,7 @@
       "Report 的后端摘要或时间切换后的区域分析使用 aiSummary；集成应用注入异步 generate",
       "明确声明运行时 SSE 的旧动态摘要继续可读，SSE 由集成应用适配"
     ],
-    "dataShape": "不声明数据槽；relatedData 显式引用字段，或 relatedSections 收集可见区域的数据源",
+    "dataShape": "不声明数据槽；relatedDataSource 直接引用页面数据源 ID，或 relatedSections 收集可见区域的数据源；采用非明细结果字段",
     "authoringShape": {
       "bindsData": false
     },

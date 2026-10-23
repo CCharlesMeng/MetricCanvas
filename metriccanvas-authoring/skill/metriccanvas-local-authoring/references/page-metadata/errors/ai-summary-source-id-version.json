@@ -1,0 +1,41 @@
+{
+  "case": "ai-summary-source-id-version",
+  "invariant": "ai-summary-source-references",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "AI 总结直接引用页面数据源 ID 由 6.52 引入，文档声明的是 6.51",
+      "paths": [
+        "/sections/3/components/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      "…",
+      "…",
+      {
+        "components": [
+          "…",
+          {
+            "id": "comparison-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "mode": "generated",
+              "title": "独立数据源分析",
+              "promptTemplate": "概括对照数据，不使用其他区域的数据。",
+              "relatedDataSource": [
+                "…（共1项）"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

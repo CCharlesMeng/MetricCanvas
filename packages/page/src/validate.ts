@@ -1990,12 +1990,7 @@ function queryPaginationErrors(page: Page): TypedError[] {
       addReference(sourceId, `${componentPath}/data/${escapePointer(slot)}`);
     }
     if (component.type === 'aiSummary') {
-      for (const [name, related] of Object.entries(component.props.relatedData ?? {})) {
-        addReference(
-          related.source,
-          `${componentPath}/props/relatedData/${escapePointer(name)}/source`
-        );
-      }
+      addSummaryReferences(component.props, componentPath);
     }
     if (component.type !== 'table') return;
     const pagination = component.props.pagination;
@@ -2038,6 +2033,14 @@ function queryPaginationErrors(page: Page): TypedError[] {
     }
   }
   return errors;
+  function addSummaryReferences(props: Extract<Component, { type: 'aiSummary' }>['props'], componentPath: string): void {
+    for (const [index, sourceId] of (props.relatedDataSource ?? []).entries()) {
+      addReference(sourceId, `${componentPath}/props/relatedDataSource/${index}`);
+    }
+    for (const [name, related] of Object.entries(props.relatedData ?? {})) {
+      addReference(related.source, `${componentPath}/props/relatedData/${escapePointer(name)}/source`);
+    }
+  }
   function querySearchNeedsOwner(component: Extract<Component, { type: 'table' }>, source: DataSource | undefined): boolean {
     return !!component.props.toolbar?.search && source?.source.type === 'query' && source.source.resultScope !== 'complete' && component.props.pagination?.mode !== 'query';
   }

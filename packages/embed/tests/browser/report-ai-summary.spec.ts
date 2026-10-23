@@ -36,6 +36,10 @@ test('Report time switching preserves background tasks, exact cache and independ
   await expect.poll(() => page.evaluate(() => window.aiSummaryRequests.length)).toBe(2);
   const scopes = await page.evaluate(() => window.aiSummaryRequests.map(request => request.contextInfo.dataSources.map(source => source.id)));
   expect(scopes).toEqual([['usage'], ['comparison']]);
+  const directContext = await page.evaluate(() => window.aiSummaryRequests.find(request => request.contextInfo.componentId === 'comparison-summary')!.contextInfo);
+  expect(directContext.sectionIds).toEqual([]);
+  expect(Object.keys(directContext.dataSources[0]!.fields).sort()).toEqual(['month', 'tokens']);
+  expect(directContext.dataSources[0]!.fields.tokens!.label).toBe(fixture.dataSources.comparison.fields.tokens.label);
   await page.getByLabel('报告期间开始', { exact: true }).fill('2026-08');
   await page.getByLabel('报告期间开始', { exact: true }).press('Enter');
   await expect.poll(() => page.evaluate(() => window.aiSummaryRequests.length)).toBe(4);

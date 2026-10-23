@@ -49,17 +49,26 @@ function visitSchema(value:any,node:Json,root:Json,path:string,context:Omit<Data
   if(typeof value==='string' && fieldPattern && node.pattern===fieldPattern) {
     uses.push(...bindingUses(value,path,context));return;
   }
-  if(node.$ref) {
-    const name=node.$ref.split('/').at(-1)!;
-    if(fieldRefs.has(name)) {uses.push(...bindingUses(value,path,context));return;}
-    if(name==='aiSummaryRelatedDataDefinition' && typeof value?.source==='string') {
-      (value.fields ?? []).forEach((field:Json,i:number)=>uses.push({...context,path:`${path}/fields/${i}/field`,kind:'related-data',source:value.source,field:field.field,label:field.term ?? context.label}));
-      return;
-    }
-    visitSchema(value,at(root,node.$ref),root,path,context,uses,depth+1);return;
-  }
+  if(node.$ref) {visitReference(value,node.$ref,root,path,context,uses,depth);return;}
   for(const key of ['anyOf','oneOf','allOf']) for(const branch of node[key] ?? []) visitSchema(value,branch,root,path,context,uses,depth+1);
   if(Array.isArray(value) && node.items) value.forEach((item,i)=>visitSchema(item,node.items,root,`${path}/${i}`,context,uses,depth+1));
+  visitProperties(value,node,root,path,context,uses,depth);
+}
+
+function visitReference(value:any,reference:string,root:Json,path:string,context:Omit<DataUse,'path'|'kind'>,uses:DataUse[],depth:number):void {
+  const name=reference.split('/').at(-1)!;
+  if(fieldRefs.has(name)) {uses.push(...bindingUses(value,path,context));return;}
+  if(name==='aiSummaryDataSourceReference' && typeof value==='string') {
+    uses.push({...context,path,kind:'related-data-source',source:value});return;
+  }
+  if(name==='aiSummaryRelatedDataDefinition' && typeof value?.source==='string') {
+    (value.fields ?? []).forEach((field:Json,i:number)=>uses.push({...context,path:`${path}/fields/${i}/field`,kind:'related-data',source:value.source,field:field.field,label:field.term ?? context.label}));
+    return;
+  }
+  visitSchema(value,at(root,reference),root,path,context,uses,depth+1);
+}
+
+function visitProperties(value:any,node:Json,root:Json,path:string,context:Omit<DataUse,'path'|'kind'>,uses:DataUse[],depth:number):void {
   if(!value || typeof value!=='object' || Array.isArray(value)) return;
   const label=typeof value.label==='string'?value.label:typeof value.title==='string'?value.title:context.label;
   for(const [key,item] of Object.entries(value)) {
@@ -114,9 +123,16 @@ export function scanPageData(page:Json,schema:Json):{uses:DataUse[];diagnostics:
   const sources=Object.fromEntries(Object.entries(page.dataSources ?? {}).map(([id,source]:[string,any])=>[id,{
     fields:source.fields,source:source.source?.type==='inline'?{type:'inline'}:withoutRows(source.source),compute:source.compute
   }]));
-  const unique=[...new Map(uses.map(use=>[`${use.path}:${use.kind}:${use.field ?? ''}`,use])).values()];
+  const expanded=uses.flatMap(use=>use.kind==='related-data-source'?relatedSourceFields(use,sources):[use]);
+  const unique=[...new Map(expanded.map(use=>[`${use.path}:${use.kind}:${use.field ?? ''}`,use])).values()];
   for(const use of unique) if(use.field && use.source && !sources[use.source]?.fields?.[use.field]) diagnostics.push({path:use.path,type:'UNKNOWN_FIELD',source:use.source,field:use.field});
   return {uses:unique,diagnostics,sources,filters:page.filters ?? [],params:page.params ?? []};
+}
+
+function relatedSourceFields(use:DataUse,sources:Json):DataUse[] {
+  const fields=sources[use.source ?? '']?.fields ?? {};
+  return [use,...Object.entries(fields).filter(([,field]:[string,any])=>field.role!=='detail')
+    .map(([field,definition]:[string,any])=>({...use,kind:'related-data',field,label:definition.label ?? field}))];
 }
 
 function withoutRows(value:any):any {

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.51",
-  "schemaSha256": "9302c984389196b0d7d4476ad3ea11cca480ea3d9a7b7292aff4ecdbf71f44b5",
+  "schemaVersion": "6.52",
+  "schemaSha256": "935df063e0ef892c7a908ca0e4a93ec17c54f74662db2b3b761817199c83e5d0",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -863,6 +863,7 @@
       "title": "AI 总结 aiSummary",
       "definitions": [
         "aiSummaryComponent",
+        "aiSummaryDataSourceReference",
         "aiSummaryRelatedDataDefinition",
         "aiSummaryRelatedField"
       ],
@@ -1090,7 +1091,8 @@
         "6.48",
         "6.49",
         "6.50",
-        "6.51"
+        "6.51",
+        "6.52"
       ]
     },
     {
@@ -14157,6 +14159,25 @@
       "module": "components/aiSummary.md"
     },
     {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSource",
+      "path": "@aiSummaryComponent.props.relatedDataSource",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedDataSource/items",
+      "path": "@aiSummaryComponent.props.relatedDataSource[]",
+      "required": "每个数组项",
+      "module": "components/aiSummary.md",
+      "ref": "#/definitions/aiSummaryDataSourceReference"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryDataSourceReference",
+      "path": "@aiSummaryDataSourceReference",
+      "required": "类型/分支",
+      "module": "components/aiSummary.md"
+    },
+    {
       "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedSections",
       "path": "@aiSummaryComponent.props.relatedSections",
       "required": "本分支可选",
@@ -16854,5 +16875,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "9dd12c7408684e8c1700bc30d9830b16f340c26f28599e430b75c5bb9b292d33"
+  "semanticSourceDigest": "cdcc0addd52bf7d63f7d2e50f6542aa446254303ce6e74dc23d68ba15d517b87"
 }
