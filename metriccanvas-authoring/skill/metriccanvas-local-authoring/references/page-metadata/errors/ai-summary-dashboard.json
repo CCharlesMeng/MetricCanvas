@@ -1,0 +1,122 @@
+{
+  "case": "ai-summary-dashboard",
+  "invariant": "report-ai-summary",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "AI 总结仅支持 Report 布局",
+      "paths": [
+        "/sections/1/components/0",
+        "/sections/1/components/1",
+        "/sections/2/components/1",
+        "/sections/3/components/1"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "导出按钮只允许放在报表的顶层页头",
+      "paths": [
+        "/sections/0/components/0/props/exportButtons"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "日期工具带只允许放在报表的顶层页头",
+      "paths": [
+        "/sections/0/components/0/props/filterIds"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "exportButtons": [
+                {
+                  "format": "png"
+                },
+                {
+                  "format": "pdf"
+                }
+              ],
+              "filterIds": [
+                "month"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "id": "provided-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "mode": "provided",
+              "title": "后端已生成正文",
+              "body": "<p><strong>已有结论：</strong>本段由页面直接提供，无需调用 AI。</p>"
+            }
+          },
+          {
+            "id": "fallback-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "mode": "provided",
+              "title": "结构容错示例",
+              "body": "<h3>可读结论</h3><p><strong>标签未闭合仍展示文字"
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          "…",
+          {
+            "id": "usage-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "mode": "generated",
+              "title": "用量区域分析",
+              "promptTemplate": "分析当前期间的用量走势，仅依据本区域数据。",
+              "relatedSections": [
+                "…（共1项）"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          "…",
+          {
+            "id": "comparison-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "mode": "generated",
+              "title": "独立数据源分析",
+              "promptTemplate": "概括对照数据，不使用其他区域的数据。",
+              "relatedData": {
+                "…": "共1个键"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

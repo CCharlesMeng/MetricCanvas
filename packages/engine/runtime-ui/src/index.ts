@@ -14,3 +14,6 @@ export type {
 } from './types';
 
 export type {DisplayInputsSource,DisplayInputsSnapshot,DataPeriodFact} from '@metriccanvas/page/internal';
+
+export { createAiSummaryTaskSession, aiSummaryInputKey } from './ai-summary';
+export type { AiSummaryGenerate, AiSummaryContextInfo, AiSummaryDataSource } from './ai-summary';

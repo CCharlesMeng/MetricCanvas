@@ -75,20 +75,19 @@ DQE 端点和鉴权由集成应用配置。端点、令牌和长期凭据不写�
 
 Schema 元数据只用于页面创作，不传入 Embed。
 
-包含 `aiSummary` 的页面由集成应用提供固定的 AI 总结连接配置。页面文档本身不保存端点或协议参数：
+Report 的动态 AI 总结由集成应用注入 `generate(question, contextInfo): Promise<string>`。contextInfo 包含限定范围内的数据源、字段、查询条件与结果；函数内部自行构建和消费 SSE，最终返回完整 HTML 或纯文字。页面文档不保存端点、鉴权或协议参数。
 
 ```js
+// 独立文件实现 generate；同一个配置对象跨 Report 挂载复用后台任务与缓存。
+const aiSummary = { generate, throttleMs: 1000, concurrency: 2 };
 const runtime = MetricCanvas.mount('#dashboard', {
   document: pageDocument,
   dataGateway,
-  aiSummary: {
-    conversationBaseUrl: '/ai/conversations/',
-    env: 'beta'
-  }
+  aiSummary
 });
 ```
 
-`env` 可选。缺少 `aiSummary` 配置时，只由当前 AI 总结组件显示配置错误，页面其他内容继续渲染。
+本仓 Playground 和 Platform 共用 [云宝助手实现](../engine/runtime-ui/src/ai-summary/adapters/yunbao-assistant.ts)，当前为本地 mock。内网替换该文件中的 generate 函数体即可。提供正文模式不需要此配置；动态模式缺少配置时仅摘要局部显示错误。
 
 ## ESM
 
@@ -124,7 +123,7 @@ interface RuntimeInput {
 |---|---|
 | `document` | 未校验的页面文档 |
 | `dataGateway` | 查询页面使用的数据网关 |
-| `aiSummary` | AI 总结组件的连接配置，仅包含 `conversationBaseUrl` 与可选 `env` |
+| `aiSummary` | Report AI 总结调用与会话配置：`generate` 及可选节流、并发、缓存容量与过期时间 |
 | `initialSearch` | 不含前导 `?` 的页面参数与筛选查询串 |
 | `navigation` | 可选接管；`navigate(target)` 返回 `true` 时阻止默认跳转 |
 

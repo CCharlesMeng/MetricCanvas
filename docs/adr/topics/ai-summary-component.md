@@ -2,6 +2,6 @@
 
 > 摘要默认走 `text`，只有明确声明 SSE 动态生成才用 `aiSummary`；它是垂直组件而不是第三种数据源。
 
-**现行结论:** 页面摘要默认使用 `text`,由后端随页面文档在 `props.body` 中返回正文;正文默认按纯文本渲染,需要分色时显式声明 `bodyFormat: "semanticHtml"`,并与排行详情共用受控语义 HTML Module。只有需求明确声明运行时 SSE 动态生成时才选择 `aiSummary`,不得根据标题、已有数据或 AI 文案自动推断。显式声明的 AI 总结是内化执行的生成型垂直组件 Module,不是第三种页面数据源。`aiSummary` 组件只声明可选标题、纯文本 `promptTemplate` 和必填的 `relatedData`(对既有页面数据源字段的显式只读引用),不声明 `data`,不暴露端点、Header 或 SSE 协议参数。Host、请求组装、私有 SSE Adapter、会话管理与纯渲染 View 在组件目录内高内聚地分工;数据网关不为此新增 AI/Prompt/SSE 方法。只有出现真实的多组件共享生成能力时,才从当前的单一垂直组件中提取公共 Module。正文的受限 Markdown 渲染此前隔在 `widgets` 包,已由 0025 迁入同一组件目录,该垂直模块至此完整;同一份决策也说明了为什么 `aiSummary` 不该有 `widgets` 侧实现。
+**本轮已确认的新契约（6.50，实现与验收见 [主计划](../../plan/2026-10-22-report-ai-summary.md)）：** AI 总结仅用于 Report，统一提供正文与动态生成两种模式；普通说明仍由 text 承载。动态模式按显式数据源字段或当前可见 section 推导分析范围，传入 question 与包含 dataSources 的 contextInfo；集成应用通过独立 Adapter 实现 generate(question, contextInfo): Promise<string>，SSE 协议与鉴权留在 Adapter。组件不拥有请求生命周期，应用会话集中管理节流、并发、去重与缓存；时间切换和报表卸载不取消已启动任务。完整正文遵守受控语义 HTML，结构不合规时安全降级为纯文字；导出使用当前输入的完整结果。数据网关不新增 AI 方法，AI 总结仍是垂直 Module。下列早期 ADR 的“默认 text、仅 SSE 动态生成、私有盘古 Client”由本轮用户确认修订，不再作为新页面创作规则。
 
 来源:[ADR-0019](../0019-internalize-ai-summary-generation.md)、[ADR-0025](../0025-converge-runtime-presentation-packages.md)、[ADR-0027](../0027-default-summary-to-text-unless-sse-explicit.md)、[ADR-0029](../0029-share-controlled-semantic-html-rendering.md)。

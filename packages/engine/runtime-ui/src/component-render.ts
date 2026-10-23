@@ -44,7 +44,7 @@ export interface TableRenderBinding {
 /** Tab 容器递归分发时,子组件的数据与交互仍由统一运行时提供。 */
 export interface NestedComponentRender {
   textLinks?(component: Component): import('../../widgets/src/components/text/links').TextBlockLink[];
-  summarySnapshot?(component: Component): import('./ai-summary/session').AiSummarySnapshot | undefined;
+  summarySnapshot?(component: Component): import('./ai-summary').AiSummarySnapshot | undefined;
   data(component: Component): NamedDataSlots;
   snapshot(component: Component): DataSnapshot;
   table(component: Component): TableRenderBinding | undefined;

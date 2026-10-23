@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { aiSummary } from '@metriccanvas/engine/ui/ai-summary/yunbao-assistant';
   import {createHref} from './integration/routes';
   import PrimaryAction from './PrimaryAction.svelte';
 
@@ -486,7 +487,7 @@
         <InlineParameterReview publication={parameterReview} {dataGateway}/>
       {:else if publicationOpen && publication}
         <PublicationReview {publication} />
-      {:else if previewOpen && !previewRef && currentDocument && active}<RuntimeView displayInputs={services.displayInputs} document={currentDocument} {dataGateway}/>
+      {:else if previewOpen && !previewRef && currentDocument && active}<RuntimeView {aiSummary} displayInputs={services.displayInputs} document={currentDocument} {dataGateway}/>
       {:else if previewOpen && previewRef && active}
         <RevisionPreview pageId={previewRef.pageId} revisionId={previewRef.revisionId}
           readRevision={readSavedPreview} />
@@ -495,7 +496,7 @@
           <p>临时运行，不修改或保存当前页面。<button onclick={() => parameterInstance?.close()}>关闭运行预览</button></p>
           {#if instanceState.error}<p role="alert">{instanceState.error}</p>
           {:else if instanceState.loading}<p role="status">正在读取运行产物…</p>
-          {:else if instanceState.document}<RuntimeView displayInputs={services.displayInputs} document={instanceState.document} {dataGateway} />{/if}
+          {:else if instanceState.document}<RuntimeView {aiSummary} displayInputs={services.displayInputs} document={instanceState.document} {dataGateway} />{/if}
         </div>
       {:else if currentDocument&&active}
         <MetricCanvas

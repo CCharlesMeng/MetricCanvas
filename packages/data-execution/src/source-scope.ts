@@ -7,7 +7,7 @@ function referencedSources(page: Pick<Page, 'sections' | 'detailViews'>): Set<st
   for (const component of flattenPageComponents(page)) {
     Object.values(component.data ?? {}).forEach(id => ids.add(id));
     if (component.type === 'aiSummary') {
-      Object.values(component.props.relatedData).forEach(value => ids.add(value.source));
+      Object.values(component.props.relatedData ?? {}).forEach(value => ids.add(value.source));
     }
   }
   return ids;
@@ -30,7 +30,7 @@ export function initialQuerySourceIds(page: Page): string[] {
     detailViews: page.detailViews?.filter(view => view.mode === 'snapshot')
   }));
   const allLive = new Set(live);
-  const active = dependencies(page, new Set(activePageComponents(page).flatMap(component => [...Object.values(component.data ?? {}), ...(component.type === 'aiSummary' ? Object.values(component.props.relatedData).map(data => data.source) : [])])));
+  const active = dependencies(page, new Set(activePageComponents(page).flatMap(component => [...Object.values(component.data ?? {}), ...(component.type === 'aiSummary' ? Object.values(component.props.relatedData ?? {}).map(data => data.source) : [])])));
   const delayed = dependencies(page, referencedSources({
     sections: [], detailViews: page.detailViews?.filter(view => view.mode === 'query')
   }));

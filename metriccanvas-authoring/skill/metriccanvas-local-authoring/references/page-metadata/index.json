@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.50",
-  "schemaSha256": "d7df3a55bf6fd38b988d4ead99bcf7e2cf07b0ff1f544a5d98d20ae664c0f67e",
+  "schemaVersion": "6.51",
+  "schemaSha256": "9302c984389196b0d7d4476ad3ea11cca480ea3d9a7b7292aff4ecdbf71f44b5",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -871,10 +871,12 @@
         "AI 总结 aiSummary"
       ],
       "examples": [
-        "forecast-page"
+        "forecast-page",
+        "report-ai-summary"
       ],
       "rules": [
-        "ai-summary-related-data"
+        "ai-summary-related-data",
+        "report-ai-summary"
       ]
     },
     "chart-option.md": {
@@ -1087,7 +1089,8 @@
         "6.47",
         "6.48",
         "6.49",
-        "6.50"
+        "6.50",
+        "6.51"
       ]
     },
     {
@@ -14114,15 +14117,61 @@
       "const": "reportInline"
     },
     {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/mode",
+      "path": "@aiSummaryComponent.props.mode",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md",
+      "enum": [
+        "provided",
+        "generated"
+      ]
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/body",
+      "path": "@aiSummaryComponent.props.body",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/initial",
+      "path": "@aiSummaryComponent.props.initial",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/initial/properties/body",
+      "path": "@aiSummaryComponent.props.initial.body",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/initial/properties/inputKey",
+      "path": "@aiSummaryComponent.props.initial.inputKey",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md"
+    },
+    {
       "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/promptTemplate",
       "path": "@aiSummaryComponent.props.promptTemplate",
-      "required": "本分支必填",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedSections",
+      "path": "@aiSummaryComponent.props.relatedSections",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedSections/items",
+      "path": "@aiSummaryComponent.props.relatedSections[]",
+      "required": "每个数组项",
       "module": "components/aiSummary.md"
     },
     {
       "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedData",
       "path": "@aiSummaryComponent.props.relatedData",
-      "required": "本分支必填",
+      "required": "本分支可选",
       "module": "components/aiSummary.md"
     },
     {
@@ -16588,8 +16637,8 @@
     {
       "schemaPointer": "#/definitions/tabContent/oneOf/16",
       "module": "components/tabContainer.md",
-      "file": "examples/tab-mixed-content.json",
-      "pointer": "#/sections/0/components/0/props/tabs/1/components/3"
+      "file": "examples/tab-content-aisummary.json",
+      "pointer": "#/sections/0/components/0/props/tabs/0/component"
     },
     {
       "schemaPointer": "#/definitions/tabItem/anyOf/1",
@@ -16805,5 +16854,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "a634abffbee2708397d9732deeb0a011f058071972e8a597aded026bf1c690de"
+  "semanticSourceDigest": "9dd12c7408684e8c1700bc30d9830b16f340c26f28599e430b75c5bb9b292d33"
 }

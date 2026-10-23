@@ -66,7 +66,7 @@ it('hides filter controls without deleting the declared filter or its applied st
 });
 
 it('breaks original metric connections at hidden endpoints without changing the page',()=>{
- const document=JSON.parse(readFileSync('pages/capabilities/layout/metric-card-equation.json','utf8'));
+ const document=JSON.parse(readFileSync('packages/page/tests/fixtures/metric-before-legacy.json','utf8'));
  document.schemaVersion='6.35';
  const section=document.sections.find((section:{id:string})=>section.id==='equation');
  section.components[1].visibleWhen={permission:'read'};

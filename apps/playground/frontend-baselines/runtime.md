@@ -38,7 +38,7 @@
 | --- | --- | --- | --- | --- |
 | `RUN-9` | ~~`VITE_PLATFORM_URL`~~ | 已退场：页面试验场固定读取仓库页面，不再连接旧平台 API | 否 | 否 |
 | `RUN-10` | ~~`VITE_DQE_ENDPOINT`~~ | 已退场（ADR-0073）：页面试验场 DQE 端点改由运行配置注入面供给，不再读构建期变量 | 否 | 否 |
-| `RUN-11` | `VITE_AI_SUMMARY_ENDPOINT`、`VITE_AI_SUMMARY_ENV` | playground 浏览器侧 | 否 | `VITE_AI_SUMMARY_ENDPOINT` 在 `.env.example` 中以可选示例说明。缺席时 AI 总结组件局部显示配置错误,页面其余部分照常 |
+| `RUN-11` | 独立云宝助手 generate 注入 | Playground 与 Platform | 否 | 共用单文件本地 mock，内网替换该实现 |
 | `RUN-15` | `DQE_SIM_PORT` | `tools/dqe-sim` | 否 | 否 |
 | `RUN-21` | `METRICCANVAS_BASE_PATH` | Platform 构建期路由前缀 | 否 | 是(`apps/platform/.env.example` 中为空) |
 

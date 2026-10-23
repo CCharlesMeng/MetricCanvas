@@ -1,0 +1,614 @@
+{
+  "analyzer": "metriccanvas-ts-ast/1",
+  "typescriptVersion": "5.9.3",
+  "scope": "AI Summary implementation, Adapter and extracted Svelte scripts; imports only outside module; templates unchanged",
+  "comparison": [
+    {
+      "before": "generation-input.ts",
+      "after": "input.ts",
+      "functionMetricsUnchanged": true,
+      "maxSelfCC": 7
+    },
+    {
+      "before": "task-session.ts",
+      "after": "session.ts",
+      "functionMetricsUnchanged": true,
+      "maxSelfCC": 8
+    },
+    {
+      "before": "content.ts",
+      "after": "content.ts",
+      "functionMetricsUnchanged": true,
+      "maxSelfCC": 6
+    },
+    {
+      "before": "yunbao-assistant.ts",
+      "after": "yunbao-assistant.ts",
+      "functionMetricsUnchanged": true,
+      "maxSelfCC": 4
+    },
+    {
+      "before": "AiSummaryHost.svelte.before.ts",
+      "after": "AiSummary.svelte.after.ts",
+      "functionMetricsUnchanged": true,
+      "maxSelfCC": 6
+    },
+    {
+      "before": "AiSummaryView.svelte.before.ts",
+      "after": "AiSummaryView.svelte.after.ts",
+      "functionMetricsUnchanged": true,
+      "maxSelfCC": 5
+    }
+  ],
+  "after": [
+    {
+      "file": "packages/engine/runtime-ui/src/ai-summary/types.ts",
+      "functions": []
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ai-summary/index.ts",
+      "functions": []
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ai-summary/runtime/input.ts",
+      "functions": [
+        {
+          "name": "aiSummaryInputKey",
+          "qualifiedName": "aiSummaryInputKey",
+          "line": 30,
+          "endLine": 32,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "assembleGenerationInput",
+          "qualifiedName": "assembleGenerationInput",
+          "line": 34,
+          "endLine": 52,
+          "selfCC": 7,
+          "optionalChains": 1,
+          "subtreeCC": 8,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@39:35>",
+          "qualifiedName": "assembleGenerationInput/<anonymous@39:35>",
+          "line": 39,
+          "endLine": 39,
+          "selfCC": 2,
+          "optionalChains": 1,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@45:47>",
+          "qualifiedName": "assembleGenerationInput/<anonymous@45:47>",
+          "line": 45,
+          "endLine": 45,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@46:12>",
+          "qualifiedName": "assembleGenerationInput/<anonymous@46:12>",
+          "line": 46,
+          "endLine": 46,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "summaryDataSource",
+          "qualifiedName": "summaryDataSource",
+          "line": 55,
+          "endLine": 67,
+          "selfCC": 6,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@59:59>",
+          "qualifiedName": "summaryDataSource/<anonymous@59:59>",
+          "line": 59,
+          "endLine": 60,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@66:60>",
+          "qualifiedName": "summaryDataSource/<anonymous@66:60>",
+          "line": 66,
+          "endLine": 66,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "selectSnapshot",
+          "qualifiedName": "selectSnapshot",
+          "line": 69,
+          "endLine": 72,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@71:49>",
+          "qualifiedName": "selectSnapshot/<anonymous@71:49>",
+          "line": 71,
+          "endLine": 71,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@71:86>",
+          "qualifiedName": "selectSnapshot/<anonymous@71:49>/<anonymous@71:86>",
+          "line": 71,
+          "endLine": 71,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "headerTimeFilters",
+          "qualifiedName": "headerTimeFilters",
+          "line": 74,
+          "endLine": 81,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@75:53>",
+          "qualifiedName": "headerTimeFilters/<anonymous@75:53>",
+          "line": 75,
+          "endLine": 76,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@75:91>",
+          "qualifiedName": "headerTimeFilters/<anonymous@75:53>/<anonymous@75:91>",
+          "line": 75,
+          "endLine": 76,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@77:53>",
+          "qualifiedName": "headerTimeFilters/<anonymous@77:53>",
+          "line": 77,
+          "endLine": 80,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ai-summary/runtime/session.ts",
+      "functions": [
+        {
+          "name": "createAiSummaryTaskSession",
+          "qualifiedName": "createAiSummaryTaskSession",
+          "line": 19,
+          "endLine": 138,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 30,
+          "nestedFunctions": 17
+        },
+        {
+          "name": "publish",
+          "qualifiedName": "createAiSummaryTaskSession/publish",
+          "line": 31,
+          "endLine": 34,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "prune",
+          "qualifiedName": "createAiSummaryTaskSession/prune",
+          "line": 36,
+          "endLine": 46,
+          "selfCC": 7,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@37:52>",
+          "qualifiedName": "createAiSummaryTaskSession/prune/<anonymous@37:52>",
+          "line": 37,
+          "endLine": 37,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@38:13>",
+          "qualifiedName": "createAiSummaryTaskSession/prune/<anonymous@38:13>",
+          "line": 38,
+          "endLine": 38,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@44:54>",
+          "qualifiedName": "createAiSummaryTaskSession/prune/<anonymous@44:54>",
+          "line": 44,
+          "endLine": 44,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "complete",
+          "qualifiedName": "createAiSummaryTaskSession/complete",
+          "line": 48,
+          "endLine": 53,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "generate",
+          "qualifiedName": "createAiSummaryTaskSession/generate",
+          "line": 55,
+          "endLine": 66,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "start",
+          "qualifiedName": "createAiSummaryTaskSession/start",
+          "line": 68,
+          "endLine": 74,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "pump",
+          "qualifiedName": "createAiSummaryTaskSession/pump",
+          "line": 76,
+          "endLine": 87,
+          "selfCC": 8,
+          "optionalChains": 0,
+          "subtreeCC": 8,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "schedule",
+          "qualifiedName": "createAiSummaryTaskSession/schedule",
+          "line": 89,
+          "endLine": 93,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "supersedeQueued",
+          "qualifiedName": "createAiSummaryTaskSession/supersedeQueued",
+          "line": 95,
+          "endLine": 101,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "enqueue",
+          "qualifiedName": "createAiSummaryTaskSession/enqueue",
+          "line": 103,
+          "endLine": 107,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "find",
+          "qualifiedName": "createAiSummaryTaskSession/find",
+          "line": 109,
+          "endLine": 119,
+          "selfCC": 6,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "watch",
+          "qualifiedName": "createAiSummaryTaskSession/watch",
+          "line": 122,
+          "endLine": 130,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@123:95>",
+          "qualifiedName": "createAiSummaryTaskSession/watch/<anonymous@123:95>",
+          "line": 123,
+          "endLine": 123,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@129:14>",
+          "qualifiedName": "createAiSummaryTaskSession/watch/<anonymous@129:14>",
+          "line": 129,
+          "endLine": 129,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "dispose",
+          "qualifiedName": "createAiSummaryTaskSession/dispose",
+          "line": 131,
+          "endLine": 136,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "initialSnapshot",
+          "qualifiedName": "initialSnapshot",
+          "line": 140,
+          "endLine": 144,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 4,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "bounded",
+          "qualifiedName": "bounded",
+          "line": 146,
+          "endLine": 148,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "aiSummaryTaskSession",
+          "qualifiedName": "aiSummaryTaskSession",
+          "line": 152,
+          "endLine": 156,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ai-summary/adapters/yunbao-assistant.ts",
+      "functions": [
+        {
+          "name": "generate",
+          "qualifiedName": "generate",
+          "line": 8,
+          "endLine": 21,
+          "selfCC": 4,
+          "optionalChains": 0,
+          "subtreeCC": 7,
+          "nestedFunctions": 3
+        },
+        {
+          "name": "<anonymous@9:21>",
+          "qualifiedName": "generate/<anonymous@9:21>",
+          "line": 9,
+          "endLine": 9,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@10:60>",
+          "qualifiedName": "generate/<anonymous@10:60>",
+          "line": 10,
+          "endLine": 14,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@15:47>",
+          "qualifiedName": "generate/<anonymous@15:47>",
+          "line": 15,
+          "endLine": 18,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "escapeHtml",
+          "qualifiedName": "escapeHtml",
+          "line": 23,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/ai-summary/view/content.ts",
+      "functions": [
+        {
+          "name": "exportSummarySnapshot",
+          "qualifiedName": "exportSummarySnapshot",
+          "line": 5,
+          "endLine": 12,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "summaryContent",
+          "qualifiedName": "summaryContent",
+          "line": 15,
+          "endLine": 22,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "summaryPlainText",
+          "qualifiedName": "summaryPlainText",
+          "line": 25,
+          "endLine": 34,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "decodeEntity",
+          "qualifiedName": "decodeEntity",
+          "line": 36,
+          "endLine": 41,
+          "selfCC": 6,
+          "optionalChains": 0,
+          "subtreeCC": 6,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "/tmp/AiSummary.svelte.after.ts",
+      "functions": [
+        {
+          "name": "<anonymous@22:11>",
+          "qualifiedName": "<anonymous@22:11>",
+          "line": 22,
+          "endLine": 27,
+          "selfCC": 3,
+          "optionalChains": 0,
+          "subtreeCC": 3,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@25:21>",
+          "qualifiedName": "<anonymous@22:11>/<anonymous@25:21>",
+          "line": 25,
+          "endLine": 25,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@26:12>",
+          "qualifiedName": "<anonymous@22:11>/<anonymous@26:12>",
+          "line": 26,
+          "endLine": 26,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "<anonymous@29:11>",
+          "qualifiedName": "<anonymous@29:11>",
+          "line": 29,
+          "endLine": 47,
+          "selfCC": 6,
+          "optionalChains": 1,
+          "subtreeCC": 6,
+          "nestedFunctions": 2
+        },
+        {
+          "name": "<anonymous@46:20>",
+          "qualifiedName": "<anonymous@29:11>/<anonymous@46:20>",
+          "line": 46,
+          "endLine": 46,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 1
+        },
+        {
+          "name": "<anonymous@46:69>",
+          "qualifiedName": "<anonymous@29:11>/<anonymous@46:20>/<anonymous@46:69>",
+          "line": 46,
+          "endLine": 46,
+          "selfCC": 1,
+          "optionalChains": 0,
+          "subtreeCC": 1,
+          "nestedFunctions": 0
+        },
+        {
+          "name": "providedContent",
+          "qualifiedName": "providedContent",
+          "line": 49,
+          "endLine": 52,
+          "selfCC": 2,
+          "optionalChains": 0,
+          "subtreeCC": 2,
+          "nestedFunctions": 0
+        }
+      ]
+    },
+    {
+      "file": "/tmp/AiSummaryView.svelte.after.ts",
+      "functions": [
+        {
+          "name": "summaryBody",
+          "qualifiedName": "summaryBody",
+          "line": 16,
+          "endLine": 23,
+          "selfCC": 5,
+          "optionalChains": 0,
+          "subtreeCC": 5,
+          "nestedFunctions": 0
+        }
+      ]
+    }
+  ],
+  "unresolved": []
+}

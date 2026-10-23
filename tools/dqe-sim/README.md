@@ -16,15 +16,7 @@ pnpm dev:dqe
 /rest/cdi/cdinl2databuilderservice/v1/dsl/execute
 ```
 
-同时把 `VITE_AI_SUMMARY_ENDPOINT` 注入为：
-
-```text
-/api/ai/conversations/
-```
-
-两个路径都由 Vite 开发服务器代理到启动机器的 DQE Sim；浏览器不直接请求 `127.0.0.1`。
-该开发端点按字符、按时间间隔返回 SSE，用于本地验收 AI Summary
-的请求组装、流式状态与页面渲染。
+Report AI 总结使用 [独立云宝助手实现](../../packages/engine/runtime-ui/src/ai-summary/adapters/yunbao-assistant.ts) 中的本地 mock，输出完整 HTML 或纯文字；内网通过替换 generate 函数体构建并消费真实 SSE。示例入口 `/pages/report-ai-summary`。
 
 页面地址：
 

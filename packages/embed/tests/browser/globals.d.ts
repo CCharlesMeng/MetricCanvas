@@ -29,10 +29,8 @@ declare global {
     failingRuntime: RuntimeHandle;
     aiSummaryRuntime: RuntimeHandle;
     aiSummaryRequests: Array<{
-      url: string;
-      credentials: RequestCredentials;
-      headers: Record<string, string>;
-      body: any;
+      question: string;
+      contextInfo: import('@metriccanvas/engine/ui').AiSummaryContextInfo;
     }>;
   }
 }

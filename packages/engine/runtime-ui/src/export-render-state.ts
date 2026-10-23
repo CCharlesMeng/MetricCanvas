@@ -10,7 +10,7 @@ import { applySearchFilters } from './filters/inline-search';
 import { filterMapRows, isHierarchyDeclaration, resolveMapBasemap } from './map-hierarchy';
 import { sortTableRows, filterTableRowsByHeaders } from './table-state';
 import { renderableDataSnapshot, hostRenderSnapshot } from './widget-host-state';
-import type { AiSummarySnapshot } from './ai-summary/session';
+import type { AiSummarySnapshot } from './ai-summary';
 
 export const SUMMARY_EXPORT_CAPTURE = Symbol('metriccanvas.summaryCapture');
 export type SummaryCapture = Map<string, () => AiSummarySnapshot>;

@@ -1,3 +1,4 @@
+import { aiSummaryRelatedData } from './ai-summary';
 import {ordinaryQuery} from './time-mode';
 import {queryFilterIds} from './amount-filter';
 import {fieldName} from './field';
@@ -134,14 +135,14 @@ function orderingErrors(data: PagedJoinDataSource, path: string, error: ErrorRep
   if (new Set(source.ordering.sortableFields).size !== source.ordering.sortableFields.length) error(`${path}/source/ordering/sortableFields`, '排序字段不得重复');
 }
 
-function consumesSource(component: Component, id: string): boolean {
-  return Object.values(component.data ?? {}).includes(id) || (component.type === 'aiSummary' && Object.values(component.props.relatedData).some(v => v.source === id));
+function consumesSource(page: Page, component: Component, id: string): boolean {
+  return Object.values(component.data ?? {}).includes(id) || (component.type === 'aiSummary' && Object.values(aiSummaryRelatedData(page, component.props)).some(v => v.source === id));
 }
 
 function consumerErrors(page: Page, id: string, source: PagedJoinSource, path: string, error: ErrorReporter): void {
   let consumers = 0;
   walkPageComponents(page, (component, cp) => {
-    if (!consumesSource(component, id)) return;
+    if (!consumesSource(page, component, id)) return;
     consumers++;
     if (component.type !== 'table' || component.data.main !== id || component.props.pagination?.mode !== 'query' || Object.keys(component.data).length !== 1) error(cp, '组合源只允许单槽查询分页表消费');
     if (component.type === 'table') {

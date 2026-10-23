@@ -116,6 +116,9 @@ tableRowTier
 
 ## ./ui
 AiSummaryConfig
+AiSummaryContextInfo
+AiSummaryDataSource
+AiSummaryGenerate
 DataPeriodFact
 DisplayInputsSnapshot
 DisplayInputsSource
@@ -126,11 +129,16 @@ RuntimeNavigation
 RuntimeNavigationTarget
 RuntimeView
 RuntimeViewEvent
+aiSummaryInputKey
 configurationError
+createAiSummaryTaskSession
 isDataGateway
 
 ## ./ui/types
 AiSummaryConfig
+AiSummaryContextInfo
+AiSummaryDataSource
+AiSummaryGenerate
 DataErrorEvent
 NavigationInputContract
 RuntimeConfigurationError
@@ -166,3 +174,7 @@ createInMemoryDqeDiagnostics
 dimensionValuesDqeItem
 effectiveDqeItem
 isAbortError
+
+## ./ui/ai-summary/yunbao-assistant
+aiSummary
+generate

@@ -44,9 +44,7 @@
     type NamedDataSlots,
     type TextBlockLink
   } from '../../widgets/src';
-  import AiSummaryView from './ai-summary/AiSummaryView.svelte';
-  import AiSummaryHost from './ai-summary/AiSummaryHost.svelte';
-  import type { AiSummaryConfig } from './ai-summary/pangu-sse';
+  import { AiSummary, AiSummaryView, exportSummarySnapshot, type AiSummaryConfig } from './ai-summary';
   import { fieldRow } from '../../widgets/src/shared/component-data';
   import WidgetHost from './WidgetHost.svelte';
   import FilterGroup from './dashboard/FilterGroup.svelte';
@@ -65,7 +63,7 @@
   interface Props {
     component: Component;
     initialTabs?: ReadonlyMap<string, string>;
-    summarySnapshot?: import('./ai-summary/session').AiSummarySnapshot;
+    summarySnapshot?: import('./ai-summary').AiSummarySnapshot;
     exportMode?: boolean;
     filterGroupReadOnly?: boolean;
     filterGroupValue?: (component: Component) => string | undefined;
@@ -175,9 +173,9 @@
   {:else if component.type === 'text'}
     <TextBlock props={component.props} links={textLinks} />
   {:else if component.type === 'aiSummary' && exportMode}
-    <AiSummaryView props={component.props} data={summarySnapshot ?? {status:'empty'}} onretry={()=>{}}/>
+    <AiSummaryView props={component.props} data={exportSummarySnapshot(component.props, summarySnapshot)} onretry={()=>{}}/>
   {:else if component.type === 'aiSummary'}
-    <AiSummaryHost
+    <AiSummary
       componentId={component.id}
       props={component.props}
       sourceSnapshots={pageSnapshots}

@@ -17,6 +17,8 @@ const productSourceRoots = ['apps', 'packages'].flatMap((scope) =>
 function productSourceFiles(root: string): string[] {
   return readdirSync(root, { withFileTypes: true }).flatMap((entry) => {
     const path = resolve(root, entry.name);
+    // Prototype routes may link to concrete examples; runtime product logic stays page-neutral.
+    if (entry.isDirectory() && entry.name === 'prototypes') return [];
     if (entry.isDirectory()) return productSourceFiles(path);
     return sourceExtensions.has(extname(entry.name)) ? [path] : [];
   });

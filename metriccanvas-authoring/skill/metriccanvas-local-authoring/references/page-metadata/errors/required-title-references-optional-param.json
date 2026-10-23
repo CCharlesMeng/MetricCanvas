@@ -171,20 +171,6 @@
     },
     {
       "type": "SCHEMA_ERROR",
-      "message": "缺少必填字段 promptTemplate",
-      "paths": [
-        "/sections/0/components/0/props/promptTemplate"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
-      "message": "缺少必填字段 relatedData",
-      "paths": [
-        "/sections/0/components/0/props/relatedData"
-      ]
-    },
-    {
-      "type": "SCHEMA_ERROR",
       "message": "缺少必填字段 label",
       "paths": [
         "/sections/0/components/0/props/label"

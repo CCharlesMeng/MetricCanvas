@@ -13,7 +13,7 @@
 | `API-9` | `createInjectedDqeGateway`（`packages/application-runtime`，页面试验场与平台共用） | `API-2` 的第一方装配：每次请求现读注入端点与三个身份头；平台与页面试验场共用 DQE 适配器，不再存在第二个浏览器代理实现 | 平台问数、页面搭建工作台与页面试验场服务装配 |
 | `API-3` | `DimensionValuesGateway` + `DimensionValuesResult`(`packages/engine/runtime/src/ports.ts`),实现在 `API-2` 内 | 维度候选值的**独立**端口。能力可缺席——不支持时返回显式 `unavailable`,**不是空数组**。空数组只表示查询成功且候选为空,两者不能混 | 筛选控件、表格表头筛选 |
 | `API-4` | `PageRepository`(`packages/engine/runtime/src/ports.ts`),实现 `createStaticPageRepository`(`apps/playground/src/lib/`) | 页面文档的取件端口。页面试验场只读静态文件(`STRUCT-7`)，旧平台 API 实现已移除。**`load` 返回 `unknown`**——加载与校验是两步,拿到的是不可信文档 | 目录页与查看器路由 |
-| `API-5` | `packages/engine/runtime-ui/src/ai-summary/pangu-sse.ts` | AI 总结的 SSE 出口。它**不经 `API-1`**,因为它是流式对话而不是查询;配置缺席时组件局部报配置错误,不影响页面其余部分 | `COMP-7` |
+| `API-5` | `packages/engine/runtime-ui/src/ai-summary/adapters/yunbao-assistant.ts` | AI 总结的独立 generate(question, contextInfo): Promise<string> 实现入口；本地 mock，内网 Adapter 自行构建并消费 SSE；不经数据网关 | `COMP-7` |
 | `API-6` | `QueryErrorCode` / `queryErrorDisposition`(`packages/page/src/query-error.ts`,经 `STRUCT-1` 导出) | 查询错误分类的**封闭集合**与它的处理语义(重试 / 重登 / 失败)。错误分类只有这一份定义,数据网关与呈现层都引它 | `API-2`、`COMP-12`、编排器 |
 | `API-7` | `DqeDiagnosticRecord` / `createInMemoryDqeDiagnostics`(`packages/engine/data-gateway/src/dqe.ts`)、`DqeDevDetail`(`.../dev-detail.ts`,只有接口;实现在 `apps/platform/src/lib/server/dqe-dev-detail.ts`,不随引擎发布) | 查询诊断:生产态只留标识与标量(形状封闭),开发期明细走独立通道且必须显式注入。**排查查询问题看这里,不要往错误消息里加信息** | `API-2`;platform 的开发者视图 |
 | `API-8` | `tools/dqe-sim`(`sim:dqe` / `dev:dqe` script,出口 `src/server.ts` 与 `src/execute.ts`) | 本仓的 mock 约定:一个仿真 DQE 服务,`RUN-3` 会自动起它；页面试验场按需联调并通过共享运行配置模块取端点。**要 mock 取数就起它,不要在测试里 stub `fetch`** | `RUN-3`、`packages/engine/data-gateway` 的开发依赖 |

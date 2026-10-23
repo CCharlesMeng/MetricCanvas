@@ -91,7 +91,7 @@
     min-height: 0;
   }
   /* insight 摘要块外观真源在统一运行时根部的 --mc-insight-* 变量,
-     与 AI 总结 View 共用同一组数值,这里只引用不重写。 */
+     这里只引用不重写；完整报告摘要由 ReportSummary 统一呈现。 */
   .text-block.insight {
     box-sizing: border-box;
     justify-content: flex-start;

@@ -1732,6 +1732,23 @@ export const invariants: InvariantDefinition[] = [
     ]
   },
   {
+    id: 'report-ai-summary',
+    description: 'AI 总结仅用于 Report，模式与区域引用必须明确',
+    valid: ['report-ai-summary'],
+    cases: [
+      { case: 'ai-summary-dashboard', base: 'report-ai-summary', expect: /仅支持 Report/,
+        mutate: document => { document.layout = 'dashboard'; } },
+      { case: 'ai-summary-unknown-section', base: 'report-ai-summary', expect: /未知内容分区/,
+        mutate: document => { firstComponent(document, 2, 1).props.relatedSections = ['missing']; } },
+      { case: 'ai-summary-mixed-mode', base: 'report-ai-summary', expect: /不能同时声明生成输入/,
+        mutate: document => { firstComponent(document, 1, 0).props.promptTemplate = '不应生成'; } },
+      { case: 'ai-summary-scope-required', base: 'report-ai-summary', expect: /需要 relatedData/,
+        mutate: document => { delete firstComponent(document, 2, 1).props.relatedSections; } },
+      { case: 'ai-summary-version-floor', base: 'report-ai-summary', expect: /6.51/,
+        mutate: document => { document.schemaVersion = '6.50'; } }
+    ]
+  },
+  {
     id: 'ai-summary-related-data',
     description: 'AI 总结关联数据引用已声明数据源中的非明细字段，不重复且术语一致',
     valid: ['forecast-page'],

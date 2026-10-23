@@ -1,14 +1,18 @@
 {
-  "schemaVersion": "6.50",
-  "schemaSha256": "d7df3a55bf6fd38b988d4ead99bcf7e2cf07b0ff1f544a5d98d20ae664c0f67e",
+  "schemaVersion": "6.51",
+  "schemaSha256": "9302c984389196b0d7d4476ad3ea11cca480ea3d9a7b7292aff4ecdbf71f44b5",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
-      "sha256": "9a8d6c19421b3b2008212c636cefeb016ff5f799862ec6064fb46f3355073896"
+      "sha256": "454697ae7f7e251db6ae588e1f9250c83d0f1cd463a26a53ec64a58f2cdf2481"
     },
     {
       "file": "packages/embed/tests/browser/layout-titles.spec.ts",
       "sha256": "abf699a77613e97fbe440ca40a7af104848db367a6052666cfcb6dfa57673f80"
+    },
+    {
+      "file": "packages/embed/tests/browser/report-ai-summary.spec.ts",
+      "sha256": "63338367911727871648035e18c424867feafa58e658b549dd2d4364ee5b4d10"
     },
     {
       "file": "packages/embed/tests/browser/report-image.spec.ts",
@@ -25,6 +29,14 @@
     {
       "file": "packages/engine/runtime-ui/src/initial-tabs.ts",
       "sha256": "5a65ff2f61b13981bdf03857cf0bebc3b6568e526bdc6bca993d6e4eb45a0387"
+    },
+    {
+      "file": "packages/engine/runtime-ui/tests/ai-summary-input.test.ts",
+      "sha256": "888508f105c6c2a9e0ee66b8cd5f5674b08ab61fb1436cd8e8958d8724505e3e"
+    },
+    {
+      "file": "packages/engine/runtime-ui/tests/ai-summary-tasks.test.ts",
+      "sha256": "13b298128fa9b5adc0ba9be771dcaa81e4640f5149caa6d8b4e54e6cf06047ec"
     },
     {
       "file": "packages/engine/runtime/src/navigate.ts",
@@ -48,11 +60,15 @@
     },
     {
       "file": "packages/engine/widgets/src/components/text/TextBlock.svelte",
-      "sha256": "c0f68520878ad651dd3bebc20c9a786322e993bded7c10a31a5a2353f290f028"
+      "sha256": "03a67c4a86ace0f5063c871895e93cb3538e4f9c571ef1491915a7a2b3e08f2b"
+    },
+    {
+      "file": "packages/engine/widgets/src/shared/ReportSummary.svelte",
+      "sha256": "d0654c4ab45eb5fb0a0d154bc6a1d91f7ff2490afd9ee32c85dd28d67be94973"
     },
     {
       "file": "packages/engine/widgets/src/shared/semantic-html.ts",
-      "sha256": "094d79a9d3fa928f49994caf5c97b50713e152920bb676ab50343f8d21f01ee7"
+      "sha256": "ae844642c42a5718f1f0db15b595f9ce661d50e2c45435785918fd9d86203fe8"
     },
     {
       "file": "packages/page/src/amount-filter.ts",
@@ -140,7 +156,7 @@
     },
     {
       "file": "packages/page/src/schema/components/ai-summary.ts",
-      "sha256": "97e923f27b189c3af6b794749417d48a3046898019578497eba6c6f44a0c393d"
+      "sha256": "b931dd65fdddfe35aee26527dce27fff26c4a3fd199536f595fe3226e340e295"
     },
     {
       "file": "packages/page/src/schema/components/button.ts",
@@ -264,7 +280,7 @@
     },
     {
       "file": "packages/page/src/validate-paged-join.ts",
-      "sha256": "ccee94322001c0b89ea9b44a0f0d8b8c5bfbf87a18b05ab4d9597164d68a365b"
+      "sha256": "2d37cb0bea2f3ef81b7e6159e7f086b04001546557a0411fbdfbb1887c2696c4"
     },
     {
       "file": "packages/page/src/validate-query-results.ts",
@@ -276,11 +292,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "70f5a79295f7735dc54597e89eae0e1c1ec00828aaadd1bd64838a60cbd1c6ec"
+      "sha256": "3cd37950e8d862ecc0399b84e51cc11de8f63d2ad7cb27e46ed11b566d2cf75f"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "0a247424ca437a7635f7eb0ed15e7def8011fb40c0957dbb82172e30d0fada69"
+      "sha256": "d53d131539f2ecf1463923c85d31765754ed73f2e7d54dc6eb3381df8f7992cd"
     }
   ],
   "modules": {
@@ -883,7 +899,9 @@
         "packages/page/src/schema/components/report-header.ts",
         "packages/embed/tests/browser/embed.spec.ts",
         "packages/embed/tests/browser/report-image.spec.ts",
-        "packages/page/src/report-export.ts"
+        "packages/page/src/report-export.ts",
+        "packages/engine/widgets/src/shared/ReportSummary.svelte",
+        "packages/embed/tests/browser/report-ai-summary.spec.ts"
       ],
       "rules": [
         "schema-structure",
@@ -1325,14 +1343,20 @@
         "AI 总结 aiSummary"
       ],
       "examples": [
-        "forecast-page"
+        "forecast-page",
+        "report-ai-summary"
       ],
       "sources": [
         "packages/page/src/schema/components/ai-summary.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/engine/runtime-ui/tests/ai-summary-input.test.ts",
+        "packages/engine/runtime-ui/tests/ai-summary-tasks.test.ts",
+        "packages/engine/widgets/src/shared/ReportSummary.svelte",
+        "packages/embed/tests/browser/report-ai-summary.spec.ts"
       ],
       "rules": [
-        "ai-summary-related-data"
+        "ai-summary-related-data",
+        "report-ai-summary"
       ]
     },
     "chart-option.md": {
@@ -1564,7 +1588,8 @@
         "6.47",
         "6.48",
         "6.49",
-        "6.50"
+        "6.50",
+        "6.51"
       ]
     },
     {
@@ -14591,15 +14616,61 @@
       "const": "reportInline"
     },
     {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/mode",
+      "path": "@aiSummaryComponent.props.mode",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md",
+      "enum": [
+        "provided",
+        "generated"
+      ]
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/body",
+      "path": "@aiSummaryComponent.props.body",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/initial",
+      "path": "@aiSummaryComponent.props.initial",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/initial/properties/body",
+      "path": "@aiSummaryComponent.props.initial.body",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/initial/properties/inputKey",
+      "path": "@aiSummaryComponent.props.initial.inputKey",
+      "required": "本分支必填",
+      "module": "components/aiSummary.md"
+    },
+    {
       "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/promptTemplate",
       "path": "@aiSummaryComponent.props.promptTemplate",
-      "required": "本分支必填",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedSections",
+      "path": "@aiSummaryComponent.props.relatedSections",
+      "required": "本分支可选",
+      "module": "components/aiSummary.md"
+    },
+    {
+      "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedSections/items",
+      "path": "@aiSummaryComponent.props.relatedSections[]",
+      "required": "每个数组项",
       "module": "components/aiSummary.md"
     },
     {
       "pointer": "#/definitions/aiSummaryComponent/properties/props/properties/relatedData",
       "path": "@aiSummaryComponent.props.relatedData",
-      "required": "本分支必填",
+      "required": "本分支可选",
       "module": "components/aiSummary.md"
     },
     {
@@ -15456,14 +15527,14 @@
       "type": "aiSummary",
       "file": "examples/component-aiSummary.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/forecast-page.json"
+      "source": "page/conformance/valid/report-ai-summary.json"
     },
     {
       "type": "aiSummary",
       "variant": "reportInline",
       "file": "examples/component-aiSummary-reportInline.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/forecast-page.json"
+      "source": "page/conformance/valid/report-ai-summary.json"
     },
     {
       "type": "button",
@@ -17130,8 +17201,8 @@
     {
       "schemaPointer": "#/definitions/tabContent/oneOf/16",
       "module": "components/tabContainer.md",
-      "file": "examples/tab-mixed-content.json",
-      "pointer": "#/sections/0/components/0/props/tabs/1/components/3"
+      "file": "examples/tab-content-aisummary.json",
+      "pointer": "#/sections/0/components/0/props/tabs/0/component"
     },
     {
       "schemaPointer": "#/definitions/tabItem/anyOf/1",

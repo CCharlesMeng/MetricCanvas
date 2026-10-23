@@ -5,7 +5,7 @@ import { editProperty, propertyControls } from '../../src/lib/workbench/property
 
 const locator={sectionId:'equation',componentId:'product-card'};
 function setup(){
-  const result=createCanvasAuthoringDraft(JSON.parse(readFileSync('pages/capabilities/layout/metric-card-equation.json','utf8')));
+  const result=createCanvasAuthoringDraft(JSON.parse(readFileSync('packages/page/tests/fixtures/metric-before-legacy.json','utf8')));
   if(!result.ok)throw new Error(result.message);return result.draft;
 }
 function components(document:Record<string,unknown>){

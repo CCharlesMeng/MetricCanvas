@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { aiSummary } from '@metriccanvas/engine/ui/ai-summary/yunbao-assistant';
   import { canonicalizeJson, normalizePageDocument } from '@metriccanvas/page';
   import type { ExecutionBootstrap } from '@metriccanvas/engine';
   import { RuntimeView,type RuntimeNavigation } from '@metriccanvas/engine/ui';
@@ -61,7 +62,7 @@
   {#if error}
     <div role="alert"><p>{error}</p><button onclick={() => retry += 1}>重试</button></div>
   {:else if revision}
-    <RuntimeView {displayInputs} {navigation} {initialSearch} document={renderedDocument ?? revision.document} {execution} {dataGateway} pageRevisionId={revision.revisionId} />
+    <RuntimeView {aiSummary} {displayInputs} {navigation} {initialSearch} document={renderedDocument ?? revision.document} {execution} {dataGateway} pageRevisionId={revision.revisionId} />
   {:else}
     <p role="status">加载精确修订…</p>
   {/if}

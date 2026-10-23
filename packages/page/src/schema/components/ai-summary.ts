@@ -32,10 +32,17 @@ export const aiSummaryComponentZ = z
       .object({
         title: textValueZ.optional(),
         variant: z.literal('reportInline').optional(),
-        promptTemplate: nonBlankZ(1),
+        mode: z.enum(['provided', 'generated']).optional(),
+        body: z.string().optional(),
+        initial: z.object({
+          body: z.string(),
+          inputKey: nonBlankZ(1).describe('与生成输入精确匹配的 aiSummaryInputKey(question, contextInfo) 标识')
+        }).strict().optional(),
+        promptTemplate: nonBlankZ(1).optional(),
+        relatedSections: z.array(idZ).min(1).describe('未显式声明 relatedData 时，收集指定内容分区的可见组件所引用的非明细数据').optional(),
         relatedData: z
           .record(idZ, aiSummaryRelatedDataDefinitionZ)
-          .meta({ minProperties: 1 })
+          .meta({ minProperties: 1 }).optional()
       })
       .strict()
   })
@@ -44,11 +51,12 @@ export const aiSummaryComponentZ = z
 
 componentCatalogRegistry.add(aiSummaryComponentZ, {
   label: 'AI 总结',
-  purpose: '仅在需求明确声明时，基于关联数据通过 SSE 流式生成 AI 总结',
+  purpose: 'Report 区域分析摘要：展示已有正文，或基于限定范围和时间条件异步生成',
   chooseWhen: [
-    '需求明确声明运行时 SSE 动态生成；仅有摘要标题、数据或 AI 文案不得推断为 aiSummary'
+    'Report 的后端摘要或时间切换后的区域分析使用 aiSummary；集成应用注入异步 generate',
+    '明确声明运行时 SSE 的旧动态摘要继续可读，SSE 由集成应用适配'
   ],
-  dataShape: '不声明数据槽；relatedData 显式引用页面数据源字段',
+  dataShape: '不声明数据槽；relatedData 显式引用字段，或 relatedSections 收集可见区域的数据源',
   authoringShape: { bindsData: false },
   title: 'optional',
   defaultSpan: 12

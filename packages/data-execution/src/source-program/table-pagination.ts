@@ -1,6 +1,6 @@
 import type { Page } from '@metriccanvas/page';
 import {
-  computeDependencies, declaredPaginationLimit, flattenPageComponents, isFirstQueryWindow,
+  aiSummaryRelatedData, computeDependencies, declaredPaginationLimit, flattenPageComponents, isFirstQueryWindow,
   queryResultDependencies, type DataSnapshot, type QueryDataSource
 } from '@metriccanvas/page/internal';
 
@@ -14,7 +14,7 @@ export function automaticQueryTableSources(page: Page): Set<string> {
   for (const component of components) {
     Object.values(component.data ?? {}).forEach(reference);
     if (component.type === 'aiSummary') {
-      Object.values(component.props.relatedData).forEach(value => reference(value.source));
+      Object.values(aiSummaryRelatedData(page, component.props)).forEach(value => reference(value.source));
     }
   }
   for (const source of Object.values(page.dataSources)) {

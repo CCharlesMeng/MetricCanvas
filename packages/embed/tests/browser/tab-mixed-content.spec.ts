@@ -77,40 +77,39 @@ for (const width of [1440, 390]) test(`${width}: mixed Tabs load on demand, keep
   await page.screenshot({ path: info.outputPath(`tabs-${width}.png`), fullPage: true });
 });
 
-test('AI generation continues across switching; Report captures all Tabs without generating unseen summaries', async ({ page }, info) => {
+test('AI generation continues across switching; Report export does not generate unseen summaries', async ({ page }, info) => {
   test.setTimeout(60_000);
-  let generationCount = 0;
-  await page.route('**/tab-summary/**', async route => {
-    generationCount++;
-    await new Promise(resolve => setTimeout(resolve, 800));
-    await route.fulfill({ contentType: 'text/event-stream', body: 'data: {"event":"generate","content":"合成总结保留成功"}\n\ndata: {"event":"finish"}\n\n' });
-  });
   await page.goto('/pages/tab-mixed-content');
-  await expect(page.getByRole('tab', { name: '概览' })).toBeVisible();
-  await page.evaluate(document => window.runtime.update({ document, dataGateway: MetricCanvas.createDqeGateway(),
-    aiSummary: { conversationBaseUrl: `${location.origin}/tab-summary` } }), fixture);
+  await page.evaluate(document => {
+    window.aiSummaryRequests = [];
+    window.runtime.update({ document, dataGateway: MetricCanvas.createDqeGateway(), aiSummary: {
+      generate: async (question, contextInfo) => {
+        window.aiSummaryRequests.push({ question, contextInfo });
+        await new Promise(resolve => setTimeout(resolve, 800));
+        return '合成总结保留成功';
+      }
+    } });
+  }, reportFixture);
   await page.getByRole('tab', { name: '明细', exact: true }).click();
-  await expect.poll(() => generationCount).toBe(1);
+  await expect.poll(() => page.evaluate(() => window.aiSummaryRequests.length)).toBe(1);
   await page.getByRole('tab', { name: '概览', exact: true }).click();
   await expect(page.locator('[data-tab-panel=details]')).toContainText('合成总结保留成功');
   await page.getByRole('tab', { name: '明细', exact: true }).click();
   await expect(page.getByText('合成总结保留成功')).toBeVisible();
-  expect(generationCount).toBe(1);
+  expect(await page.evaluate(() => window.aiSummaryRequests.length)).toBe(1);
   await page.screenshot({ path: info.outputPath('tabs-summary-retained.png'), fullPage: true });
-
-  // Consume the registered Report page, including its actual export declaration.
-  const report = structuredClone(reportFixture);
-  await page.evaluate(document => { window.runtime.destroy(); window.runtime = MetricCanvas.mount('#dashboard', { document, dataGateway: MetricCanvas.createDqeGateway(),
-    aiSummary: { conversationBaseUrl: `${location.origin}/tab-summary` } }); }, report);
+  await page.evaluate(document => { window.runtime.destroy(); window.runtime = MetricCanvas.mount('#dashboard', {
+    document, dataGateway: MetricCanvas.createDqeGateway(), aiSummary: { generate: async (question, contextInfo) => {
+      window.aiSummaryRequests.push({ question, contextInfo });
+      return '不应调用';
+    } }
+  }); }, reportFixture);
   await expect(page.getByRole('button', { name: '导出混合内容' })).toBeVisible();
-  expect(generationCount).toBe(1);
   const download = page.waitForEvent('download');
   await page.getByRole('button', { name: '导出混合内容' }).click();
-  const file = await download;
-  await file.saveAs(info.outputPath('mixed-tabs-report.png'));
-  expect(generationCount).toBe(1);
+  await (await download).saveAs(info.outputPath('mixed-tabs-report.png'));
+  expect(await page.evaluate(() => window.aiSummaryRequests.length)).toBe(1);
 });
-
 
 test('metric frames follow white containers and keep composite children flat', async ({ page }) => {
   await page.goto('/pages/tab-mixed-content');

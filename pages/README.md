@@ -305,7 +305,7 @@ Report 页面按三节组织，控件相互独立：
 
 ## Tab 混合内容与按需加载
 
-入口 `/pages/tab-mixed-content`，目录搜索“Tab”可发现。`pnpm sim:dqe` 启动本地DQE Sim，再运行 `VITE_AI_SUMMARY_ENDPOINT=/api/ai/conversations/ pnpm dev:playground`；端点通过现有同源代理访问。全部业务数值和总结为合成演示，不证明真实模型、DQE/Relay或内网接入。
+入口 `/pages/tab-mixed-content`，目录搜索“Tab”可发现。`pnpm sim:dqe` 启动本地DQE Sim，再运行 `pnpm dev:playground`；Report AI 总结使用独立云宝助手 mock，Dashboard 的区域说明使用普通文本。全部业务数值和总结为合成演示，不证明真实模型、DQE/Relay或内网接入。
 
 1. 概览显示两列指标卡/组合卡、说明链接和图表，仅请求订单图所需数据；明细尚未挂载，不请求收入或总结数据。
 2. 切到明细后首次请求收入、总结数据，显示表格和AI总结；表格搜索客户21，切回概览再返回，搜索和已生成文本保留。
@@ -519,3 +519,5 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 入口 `/pages/bar-width-defaults`，从目录搜索“柱宽”进入；`pnpm dev:playground` 后即可查看，无需DQE。内联合成数据对照普通、分组、堆叠、横向条形、报告预测、柱线混合图：所有内置柱系列默认16 CSS px，横向表示条形厚度；缩窄窗口保持该默认值。最后一张显式声明32px高级覆盖，作为仍可定制的对照。当前IOC Header独立展示页的柱图同步使用这个公共默认值。此项不新增协议字段或版本，不改变折线系列。
 
 跨表查询分支：筛选主题中的 [签约与商机金额趋势](capabilities/filters/query-mode-chart-demo.json)，直接入口 `/pages/query-mode-chart-demo`；演示同一 Chart 按固定单选执行不同表对应的查询。
+
+- [Report 区域 AI 总结](capabilities/ai-summary/README.md)：后端正文、时间切换生成、单文件云宝 mock 与后台缓存。

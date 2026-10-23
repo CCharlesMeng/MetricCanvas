@@ -15,7 +15,7 @@ nameMap 的方向是数据地名 → 底图区域名，例如 {"中国":"China"}
 Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按钮组；需要同组放置时使用组合卡。图表本身不再声明 `props.filter`。迁移后的完整页面见 `chart-local-filter-page`。
 
 
-页面协议 6.50。结构真源为本册[schema.json](../schema.json)，SHA256 `d7df3a55bf6fd38b988d4ead99bcf7e2cf07b0ff1f544a5d98d20ae664c0f67e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.51。结构真源为本册[schema.json](../schema.json)，SHA256 `9302c984389196b0d7d4476ad3ea11cca480ea3d9a7b7292aff4ecdbf71f44b5`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

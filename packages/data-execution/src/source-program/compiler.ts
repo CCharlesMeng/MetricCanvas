@@ -1,4 +1,4 @@
-import { activePageComponents, type TabSelections, declaredPaginationLimit, flattenPageComponents, resultSourceIds, type Page, type DataSource } from '@metriccanvas/page/internal';
+import { aiSummaryRelatedData, activePageComponents, type TabSelections, declaredPaginationLimit, flattenPageComponents, resultSourceIds, type Page, type DataSource } from '@metriccanvas/page/internal';
 import { automaticQueryTableSources } from './table-pagination';
 
 export function compileSources(page: Page) {
@@ -21,7 +21,7 @@ export function visibleSourceIds(page: Page): Set<string> {
   const ids = new Set<string>();
   for (const component of flattenPageComponents({ sections: page.sections, detailViews: page.detailViews?.filter(v => v.mode === 'snapshot') })) {
     Object.values(component.data ?? {}).forEach(id => ids.add(id));
-    if (component.type === 'aiSummary') Object.values(component.props.relatedData).forEach(value => ids.add(value.source));
+    if (component.type === 'aiSummary') Object.values(aiSummaryRelatedData(page, component.props)).forEach(value => ids.add(value.source));
   }
   return executionSourceIds(page, ids);
 }
@@ -30,7 +30,7 @@ export function activeSourceIds(page: Page, selections: TabSelections = {}): Set
   const ids = new Set<string>();
   for (const component of activePageComponents(page, selections)) {
     Object.values(component.data ?? {}).forEach(id => ids.add(id));
-    if (component.type === 'aiSummary') Object.values(component.props.relatedData).forEach(value => ids.add(value.source));
+    if (component.type === 'aiSummary') Object.values(aiSummaryRelatedData(page, component.props, selections)).forEach(value => ids.add(value.source));
   }
   return executionSourceIds(page, ids);
 }

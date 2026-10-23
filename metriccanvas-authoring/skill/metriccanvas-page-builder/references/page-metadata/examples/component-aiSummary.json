@@ -1,68 +1,22 @@
 {
-  "schemaVersion": "6.50",
+  "schemaVersion": "6.51",
+  "id": "report-ai-summary",
   "layout": "report",
-  "id": "forecast-page",
-  "dataSources": {
-    "current": {
-      "fields": {
-        "gmv": {
-          "type": "number",
-          "role": "measure"
-        },
-        "yoy": {
-          "type": "number",
-          "role": "measure"
-        },
-        "done": {
-          "type": "number",
-          "role": "measure"
-        },
-        "key": {
-          "type": "string",
-          "role": "dimension"
-        }
-      },
-      "source": {
-        "type": "inline",
-        "rows": [
-          {
-            "gmv": 100,
-            "yoy": 0.2,
-            "done": 80,
-            "key": "gmv"
-          }
-        ]
-      }
-    }
-  },
+  "dataSources": {},
   "sections": [
     {
       "id": "main",
       "components": [
         {
-          "id": "summary",
+          "id": "fallback-summary",
           "type": "aiSummary",
           "layout": {
             "span": 12
           },
           "props": {
-            "promptTemplate": "总结 GMV 表现",
-            "relatedData": {
-              "kpi": {
-                "source": "current",
-                "description": "当期指标",
-                "fields": [
-                  {
-                    "field": "gmv",
-                    "term": "成交额"
-                  },
-                  {
-                    "field": "yoy",
-                    "term": "同比"
-                  }
-                ]
-              }
-            }
+            "mode": "provided",
+            "title": "结构容错示例",
+            "body": "<h3>可读结论</h3><p><strong>标签未闭合仍展示文字"
           }
         }
       ]

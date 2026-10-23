@@ -55,7 +55,7 @@ PNG内部按有界块截图、Worker持续行流式编码，结果始终是一�
 后台导出需要浏览器支持Worker、ImageBitmap和OffscreenCanvas，宿主CSP允许`worker-src blob:`。这些属于引擎运行环境，不新增页面字段。线程调度与资源清理由引擎负责。
 
 
-页面协议 6.50。结构真源为本册[schema.json](../schema.json)，SHA256 `d7df3a55bf6fd38b988d4ead99bcf7e2cf07b0ff1f544a5d98d20ae664c0f67e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.51。结构真源为本册[schema.json](../schema.json)，SHA256 `9302c984389196b0d7d4476ad3ea11cca480ea3d9a7b7292aff4ecdbf71f44b5`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -614,6 +614,8 @@ Schema位置：`#/definitions/reportHeaderComponent/properties/props/properties/
 - 源码/验证定位：`packages/embed/tests/browser/embed.spec.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/embed/tests/browser/report-image.spec.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/report-export.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/engine/widgets/src/shared/ReportSummary.svelte`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/embed/tests/browser/report-ai-summary.spec.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 

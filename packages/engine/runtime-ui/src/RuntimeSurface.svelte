@@ -3,6 +3,7 @@
 </script>
 <svelte:options css="injected" />
 <script lang="ts">
+  import { AI_SUMMARY_RUNTIME_CONTEXT, type AiSummaryRuntimeReader } from './ai-summary';
   import { initialTabSelections, tabSearch } from '@metriccanvas/page/internal';
   import { TAB_SELECTION_CONTEXT, type TabSelectionContext } from './tab-selection';
   import { compilePresentation, resolvePresentationRow } from '../../runtime/src/presentation';
@@ -242,7 +243,7 @@
     const page=JSON.parse(JSON.stringify(pageState.page)) as Page;
     const summaries=Object.fromEntries([...summaryCapture].map(([id,get])=>{
       const value=get();
-      return [id,value.status==='ready'||value.status==='streaming'?{status:'ready' as const,text:value.text}:{status:'empty' as const}];
+      return [id,value.status==='ready'?{...value}:{status:'empty' as const}];
     }));
     if (Object.keys(page.dataSources).some(id=>sourceBlocked(page,id))) throw new ExportViewError('EXPORT_NOT_READY','筛选待确认或候选未就绪，暂不能导出页面');
     const state={page,now:new Date(),displaySnapshot:structuredClone(displaySnapshot),filterRevision,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
@@ -346,6 +347,13 @@
   let filterState: FilterState | null = null;
   let candidatesLoader: ReturnType<typeof createDimensionValuesLoader> | null = null;
   let stream: PageSnapshotStream | null = null;
+  const summaryRuntime: AiSummaryRuntimeReader = () => {
+    if (pageState.phase !== 'ready') return undefined;
+    return { page: { ...pageState.page, sections: presentation?.sections ?? pageState.page.sections },
+      pageRevision: pageRevisionId, documentKey: canonicalizeJson(document),
+      filters: filterValues, queries: stream?.captureQueries() ?? new Map(), tabs: tabSelections };
+  };
+  setContext(AI_SUMMARY_RUNTIME_CONTEXT, summaryRuntime);
   let session = 0;
   let disposers: Array<() => void> = [];
 

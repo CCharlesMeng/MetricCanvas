@@ -3,7 +3,7 @@ import { expect, it } from 'vitest';
 import { parsePage } from '../../page/src/validate';
 import { resolveAuthoringSections } from '../src/authoring-layout';
 function source(){
-  const parsed=parsePage(JSON.parse(readFileSync('pages/capabilities/layout/metric-card-equation.json','utf8')));
+  const parsed=parsePage(JSON.parse(readFileSync('packages/page/tests/fixtures/metric-before-legacy.json','utf8')));
   if(!parsed.ok)throw new Error(JSON.stringify(parsed.errors));return parsed.page.sections;
 }
 it('搭建草稿重排时只清理断开的连接，原页面保持原样',()=>{

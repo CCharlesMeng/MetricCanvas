@@ -6,6 +6,7 @@
 
 | 主题 | 当前状态 | 唯一主入口及剩余工作 |
 |---|---|---|
+| Report AI 总结重启 | 本仓实现与本地验收完成，真实云宝接入待验 | [主计划](2026-10-22-report-ai-summary.md)：双模式、区域范围、应用会话缓存、单文件云宝 mock；真实内网接入另验 |
 | TypeScript 圈复杂度治理 | 已迁入最新main并执行完整验收；原清单现存文件超限175→125，4条定位待核 | [交付与验收](../evidence/code-complexity/2026-10-22-main-delivery.md)、[全部259条及剩余125个函数](../evidence/code-complexity/2026-10-22-original-list-follow-up.md)、[计划与规则](2026-10-22-code-complexity.md)；未宣称全量清零 |
 | local-authoring 上下文与数据识别 | 本仓实现及本地验收收口；真实业务/重复模型统计待验 | [实施主入口](2026-10-21-local-authoring-context-optimization.md)、[验收记录](../evidence/local-authoring-context/result.md)：精确知识读取、页面与指标MD匹配、查询候选及独立分发；与并行filterGroup分开承接 |
 | 表格列候选值与 DQE 对接 | 本仓引擎及本地验收完成；真实 DQE/Relay 编码与权限待核 | [主计划](2026-10-21-table-column-candidates.md)、[实施证据](../evidence/table-column-candidates/result.md)、[DQE 简要说明](table-column-candidates/dqe-handoff.md)：统一候选语义、保留 NO_PERMISSION、共享执行及独立 Skill 验证 |

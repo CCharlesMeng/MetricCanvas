@@ -43,7 +43,7 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 6.50 的 `queryModes` 可直接消费固定单选值，选择不同数据对象的完整查询；不要求上游存在同名业务维度。现有示例的普通维度谓词语义保持，跨表分支示例见 `/pages/query-mode-chart-demo` 和[查询定义](../queries-and-bindings.md#query-modes)。
 
 
-页面协议 6.50。结构真源为本册[schema.json](../schema.json)，SHA256 `d7df3a55bf6fd38b988d4ead99bcf7e2cf07b0ff1f544a5d98d20ae664c0f67e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.51。结构真源为本册[schema.json](../schema.json)，SHA256 `9302c984389196b0d7d4476ad3ea11cca480ea3d9a7b7292aff4ecdbf71f44b5`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

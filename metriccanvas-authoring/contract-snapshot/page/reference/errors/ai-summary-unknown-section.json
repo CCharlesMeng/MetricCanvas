@@ -1,0 +1,32 @@
+{
+  "case": "ai-summary-unknown-section",
+  "invariant": "report-ai-summary",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "未知内容分区:missing",
+      "paths": [
+        "/sections/2/components/1/props/relatedSections/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      "…",
+      {
+        "components": [
+          "…",
+          {
+            "props": {
+              "relatedSections": [
+                "missing"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ai-summary-unknown-section.json"
+}

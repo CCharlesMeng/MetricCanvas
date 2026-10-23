@@ -23,13 +23,13 @@ it('loads active dependency closure, retains inactive results and defers dirty h
     expect(snapshots.get('revenue-data')?.status).toBe('loading');
     stream.setActiveTabs({ analysis: 'details' });
     await vi.waitFor(() => expect(snapshots.get('revenue-data')?.status).toBe('ready'));
-    await vi.waitFor(() => expect(snapshots.get('summary-data')?.status).toBe('ready'));
-    expect(requests).toHaveLength(3);
+    expect(snapshots.has('summary-data')).toBe(false);
+    expect(requests).toHaveLength(2);
     stream.setActiveTabs({ analysis: 'overview' });
-    expect(requests).toHaveLength(3);
+    expect(requests).toHaveLength(2);
     filters.write('domestic', { type: 'boolean', value: true });
     await vi.waitFor(() => expect(snapshots.get('orders-data')?.status).toBe('ready'));
-    expect(requests).toHaveLength(4);
+    expect(requests).toHaveLength(3);
     expect(snapshots.get('revenue-data')?.status).toBe('loading');
     stream.setActiveTabs({ analysis: 'details' });
     // OVERSEAS AND CN produces empty without invoking the gateway.
@@ -48,8 +48,8 @@ it('shared one-shot execution follows the default Tab; Report complete reads sti
   const page = loaded();
   const snapshots = await prepareExportSnapshots(page, gateway, new Map(), initialFilterValues(page.filters ?? []), new AbortController().signal);
   expect(snapshots.get('revenue-data')?.status).toBe('ready');
-  expect(snapshots.get('summary-data')?.status).toBe('ready');
-  expect(calls).toHaveLength(3);
+  expect(snapshots.has('summary-data')).toBe(false);
+  expect(calls).toHaveLength(2);
 });
 it('an obsolete hidden response cannot overwrite the new filter generation', async () => {
   const page = loaded(), filters = createFilterState(initialFilterValues(page.filters ?? []));

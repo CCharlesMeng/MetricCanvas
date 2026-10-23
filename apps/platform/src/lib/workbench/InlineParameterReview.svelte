@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { aiSummary } from '@metriccanvas/engine/ui/ai-summary/yunbao-assistant';
   import {onMount,untrack} from 'svelte';
   import {RuntimeView} from '@metriccanvas/engine/ui';
   import type {DataGateway} from '@metriccanvas/engine';
@@ -26,7 +27,7 @@
     <details><summary>修正仍含原值的展示文本</summary><label>按预览错误中的路径显式替换<textarea aria-label="模板文本修正" bind:value={replacements} oninput={setReplacements} disabled={busy}></textarea></label></details>
     {#if replacementError}<p role="alert">{replacementError}</p>{/if}
     <button disabled={busy||!!inputError||!!replacementError} onclick={()=>publication.preview()}>预览参数模板</button>
-    {#if view.previewDocument}<RuntimeView document={view.previewDocument} {dataGateway}/>{/if}
+    {#if view.previewDocument}<RuntimeView {aiSummary} document={view.previewDocument} {dataGateway}/>{/if}
     <label><input type="checkbox" bind:checked={confirmed} disabled={busy||!view.previewDocument}/>已核对本次参数、覆盖范围和预览，保存无值模板</label>
     <button disabled={busy||!!inputError||!!replacementError||!confirmed||!view.previewDocument} onclick={()=>publication.confirmAndPublish()}>确认保存模板</button>
   {/if}

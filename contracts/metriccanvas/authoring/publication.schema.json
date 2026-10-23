@@ -841,9 +841,10 @@
             "6.47",
             "6.48",
             "6.49",
-            "6.50"
+            "6.50",
+            "6.51"
           ],
-          "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50"
+          "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5 / 6.11 / 6.12 / 6.13 / 6.14 / 6.15 / 6.16 / 6.17 / 6.18 / 6.19 / 6.20 / 6.21 / 6.22 / 6.23 / 6.24 / 6.25 / 6.26 / 6.27 / 6.28 / 6.29 / 6.30 / 6.31 / 6.32 / 6.33 / 6.34 / 6.35 / 6.36 / 6.37 / 6.38 / 6.39 / 6.40 / 6.41 / 6.42 / 6.43 / 6.44 / 6.45 / 6.46 / 6.47 / 6.48 / 6.49 / 6.50 / 6.51"
         },
         "id": {
           "type": "string",
@@ -10713,10 +10714,48 @@
                   "type": "string",
                   "const": "reportInline"
                 },
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "provided",
+                    "generated"
+                  ]
+                },
+                "body": {
+                  "type": "string"
+                },
+                "initial": {
+                  "type": "object",
+                  "properties": {
+                    "body": {
+                      "type": "string"
+                    },
+                    "inputKey": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "description": "与生成输入精确匹配的 aiSummaryInputKey(question, contextInfo) 标识"
+                    }
+                  },
+                  "required": [
+                    "body",
+                    "inputKey"
+                  ],
+                  "additionalProperties": false
+                },
                 "promptTemplate": {
                   "type": "string",
                   "minLength": 1,
                   "pattern": "\\S"
+                },
+                "relatedSections": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "description": "未显式声明 relatedData 时，收集指定内容分区的可见组件所引用的非明细数据"
                 },
                 "relatedData": {
                   "type": "object",
@@ -10730,10 +10769,6 @@
                   "minProperties": 1
                 }
               },
-              "required": [
-                "promptTemplate",
-                "relatedData"
-              ],
               "additionalProperties": false
             }
           },

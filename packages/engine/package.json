@@ -22,7 +22,8 @@
       "svelte": "./runtime-ui/src/composition.ts",
       "default": "./runtime-ui/src/composition.ts"
     },
-    "./dqe": "./data-gateway/src/index.ts"
+    "./dqe": "./data-gateway/src/index.ts",
+    "./ui/ai-summary/yunbao-assistant": "./runtime-ui/src/ai-summary/adapters/yunbao-assistant.ts"
   },
   "dependencies": {
     "@metriccanvas/data-execution": "workspace:*",
@@ -76,6 +77,10 @@
       "./dqe": {
         "types": "./dist/data-gateway/src/index.d.ts",
         "default": "./dist/data-gateway/src/index.js"
+      },
+      "./ui/ai-summary/yunbao-assistant": {
+        "types": "./dist/runtime-ui/src/ai-summary/adapters/yunbao-assistant.d.ts",
+        "default": "./dist/runtime-ui/src/ai-summary/adapters/yunbao-assistant.js"
       }
     }
   }

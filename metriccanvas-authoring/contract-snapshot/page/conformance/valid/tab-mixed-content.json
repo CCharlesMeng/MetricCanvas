@@ -284,52 +284,6 @@
           }
         ]
       }
-    },
-    "summary-data": {
-      "fields": {
-        "category": {
-          "type": "string",
-          "role": "dimension",
-          "queryField": "chart_demo_category"
-        },
-        "value": {
-          "type": "number",
-          "role": "measure",
-          "queryField": "chart_demo_orders"
-        }
-      },
-      "source": {
-        "type": "query",
-        "query": {
-          "language": "dqe",
-          "filterBindings": {
-            "domestic": {
-              "target": "boolean",
-              "queryField": "chart_demo_region",
-              "whenTrue": [
-                "CN"
-              ]
-            }
-          },
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "chart_demo_category"
-                ],
-                "output_metrics": [
-                  "chart_demo_orders"
-                ],
-                "filter": {
-                  "dims": [],
-                  "metrics": []
-                },
-                "order": {}
-              }
-            ]
-          }
-        }
-      }
     }
   },
   "sections": [
@@ -538,29 +492,13 @@
                   },
                   {
                     "id": "summary",
-                    "type": "aiSummary",
+                    "type": "text",
                     "layout": {
                       "span": 12
                     },
                     "props": {
                       "title": "AI 总结（合成数据）",
-                      "promptTemplate": "根据合成数据给出一段简短说明。",
-                      "relatedData": {
-                        "orders": {
-                          "source": "summary-data",
-                          "description": "合成订单",
-                          "fields": [
-                            {
-                              "field": "category",
-                              "term": "类别"
-                            },
-                            {
-                              "field": "value",
-                              "term": "订单量"
-                            }
-                          ]
-                        }
-                      }
+                      "body": "Dashboard 使用普通说明文本；动态 AI 总结见 Report 混合内容示例。"
                     }
                   }
                 ]

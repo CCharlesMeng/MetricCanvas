@@ -1,0 +1,90 @@
+{
+  "case": "ai-summary-version-floor",
+  "invariant": "report-ai-summary",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "Report 双模式区域 AI 总结与会话缓存 由 6.51 引入，文档声明的是 6.50",
+      "paths": [
+        "/sections/1/components/0",
+        "/sections/1/components/1",
+        "/sections/2/components/1",
+        "/sections/3/components/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "id": "provided-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "mode": "provided",
+              "title": "后端已生成正文",
+              "body": "<p><strong>已有结论：</strong>本段由页面直接提供，无需调用 AI。</p>"
+            }
+          },
+          {
+            "id": "fallback-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "mode": "provided",
+              "title": "结构容错示例",
+              "body": "<h3>可读结论</h3><p><strong>标签未闭合仍展示文字"
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          "…",
+          {
+            "id": "usage-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "mode": "generated",
+              "title": "用量区域分析",
+              "promptTemplate": "分析当前期间的用量走势，仅依据本区域数据。",
+              "relatedSections": [
+                "…（共1项）"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          "…",
+          {
+            "id": "comparison-summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "mode": "generated",
+              "title": "独立数据源分析",
+              "promptTemplate": "概括对照数据，不使用其他区域的数据。",
+              "relatedData": {
+                "…": "共1个键"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -15,8 +15,11 @@
   } = $props();
 
   let input = $state(untrack(() => initialInput));
+  // Injected application session identity must survive Svelte's per-root deep proxies.
+  let summaryConfig = $state.raw(untrack(() => initialInput.aiSummary));
 
   export function update(next: RuntimeInput) {
+    summaryConfig = next.aiSummary;
     input = next;
   }
 </script>
@@ -26,7 +29,7 @@
   document={input.document}
   execution={input.execution}
   dataGateway={input.dataGateway}
-  aiSummary={input.aiSummary}
+  aiSummary={summaryConfig}
   initialSearch={input.initialSearch}
   navigation={input.navigation}
   filterEditing={input.filterEditing}

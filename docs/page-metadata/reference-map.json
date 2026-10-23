@@ -599,7 +599,9 @@
         "packages/page/src/schema/components/report-header.ts",
         "packages/embed/tests/browser/embed.spec.ts",
         "packages/embed/tests/browser/report-image.spec.ts",
-        "packages/page/src/report-export.ts"
+        "packages/page/src/report-export.ts",
+        "packages/engine/widgets/src/shared/ReportSummary.svelte",
+        "packages/embed/tests/browser/report-ai-summary.spec.ts"
       ],
       "rules": [
         "schema-structure",
@@ -1041,14 +1043,20 @@
         "AI 总结 aiSummary"
       ],
       "examples": [
-        "forecast-page"
+        "forecast-page",
+        "report-ai-summary"
       ],
       "sources": [
         "packages/page/src/schema/components/ai-summary.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/engine/runtime-ui/tests/ai-summary-input.test.ts",
+        "packages/engine/runtime-ui/tests/ai-summary-tasks.test.ts",
+        "packages/engine/widgets/src/shared/ReportSummary.svelte",
+        "packages/embed/tests/browser/report-ai-summary.spec.ts"
       ],
       "rules": [
-        "ai-summary-related-data"
+        "ai-summary-related-data",
+        "report-ai-summary"
       ]
     },
     "chart-option.md": {
@@ -1819,7 +1827,10 @@
     "#/definitions/filterGroupComponent/properties/props/properties/display=\"select\"": "复用维度下拉，固定候选且必选单选。",
     "#/properties/schemaVersion=\"6.48\"": "普通表格和子表格支持独立的自动序号列。",
     "6.49": "Tab 混合普通内容与组合卡、显式12列栅格、按需取数及保活恢复。",
-    "6.50": "固定单选选择不同数据对象的完整静态DQE查询分支，共享结果字段契约与SourceProgram执行。"
+    "6.50": "固定单选选择不同数据对象的完整静态DQE查询分支，共享结果字段契约与SourceProgram执行。",
+    "6.51": "Report 双模式 AI 总结、区域范围与异步会话缓存。",
+    "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"provided\"": "直接展示后端已生成正文，不调用 AI。",
+    "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"generated\"": "根据提示词和区域输入异步生成，支持绑定首屏正文。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2350,6 +2361,11 @@
       "查阅方式"
     ],
     "components/aiSummary.md": [
+      "模式与范围",
+      "查询与生成",
+      "会话与缓存",
+      "呈现与导出",
+      "本地示例与接入",
       "查阅方式"
     ],
     "chart-option.md": [

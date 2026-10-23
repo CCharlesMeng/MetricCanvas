@@ -10,42 +10,10 @@
     <script src="../dist/metriccanvas-runtime.global.js"></script>
     <script>
       window.aiSummaryRequests = [];
-      window.fetch = async (url, init) => {
-        window.aiSummaryRequests.push({
-          url: String(url),
-          credentials: init.credentials,
-          headers: init.headers,
-          body: JSON.parse(init.body)
-        });
-        const encoder = new TextEncoder();
-        const characters = Array.from('1. **整体风险**：华东代表处有 3 个未考察客户。');
-        let timer;
-        return new Response(
-          new ReadableStream({
-            start(controller) {
-              let index = 0;
-              const emit = () => {
-                if (index < characters.length) {
-                  controller.enqueue(encoder.encode(
-                    `data: ${JSON.stringify({ event: 'generate', content: characters[index] })}\n\n`
-                  ));
-                  index += 1;
-                  timer = window.setTimeout(emit, 35);
-                  return;
-                }
-                controller.enqueue(encoder.encode(
-                  `data: ${JSON.stringify({ event: 'finish', content: {} })}\n\n`
-                ));
-                controller.close();
-              };
-              emit();
-            },
-            cancel() {
-              window.clearTimeout(timer);
-            }
-          }),
-          { status: 200, headers: { 'content-type': 'text/event-stream' } }
-        );
+      const generate = async (question, contextInfo) => {
+        window.aiSummaryRequests.push({ question, contextInfo });
+        await new Promise(resolve => setTimeout(resolve, 150));
+        return '<p><strong>整体风险</strong>：华东代表处有 3 个未考察客户。</p>';
       };
 
       window.aiSummaryRuntime = MetricCanvas.mount('#dashboard', {
@@ -88,7 +56,7 @@
             }]
           }]
         },
-        aiSummary: { conversationBaseUrl: '/fake-ai/conversations/' }
+        aiSummary: { generate }
       });
     </script>
   </body>

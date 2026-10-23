@@ -27,7 +27,7 @@ export function describeExportSource(page: Page, sourceId: string): ExportSource
     if (parts[1] === 'detailViews' && page.detailViews?.[Number(parts[2])]?.mode !== 'snapshot') return;
     const section = parts[1] === 'sections' ? page.sections[Number(parts[2])] : undefined;
     const bindings = Object.entries(component.data ?? {}).map(([slot, id]) => ({ id, path: `${path}/data/${pointer(slot)}` }));
-    if (component.type === 'aiSummary') for (const [slot, value] of Object.entries(component.props.relatedData)) {
+    if (component.type === 'aiSummary') for (const [slot, value] of Object.entries(component.props.relatedData ?? {})) {
       bindings.push({ id: value.source, path: `${path}/props/relatedData/${pointer(slot)}/source` });
     }
     for (const binding of bindings) {

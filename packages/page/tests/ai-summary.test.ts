@@ -85,7 +85,7 @@ describe('AI 总结组件契约', () => {
     const unknownSource = structuredClone(document());
     const summary = unknownSource.sections[0]!.components[0];
     if (summary.type !== 'aiSummary') throw new Error('测试文档类型错误');
-    summary.props.relatedData.risk!.source = 'missing-source';
+    summary.props.relatedData!.risk!.source = 'missing-source';
     expect(validate(unknownSource)).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -98,7 +98,7 @@ describe('AI 总结组件契约', () => {
     const unknownField = structuredClone(document());
     const fieldSummary = unknownField.sections[0]!.components[0];
     if (fieldSummary.type !== 'aiSummary') throw new Error('测试文档类型错误');
-    fieldSummary.props.relatedData.risk!.fields[0]!.field = 'unknown';
+    fieldSummary.props.relatedData!.risk!.fields[0]!.field = 'unknown';
     expect(validate(unknownField)).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -113,7 +113,7 @@ describe('AI 总结组件契约', () => {
     const duplicate = structuredClone(document());
     const summary = duplicate.sections[0]!.components[0];
     if (summary.type !== 'aiSummary') throw new Error('测试文档类型错误');
-    summary.props.relatedData.risk!.fields.push({ field: 'office', term: '代表处' });
+    summary.props.relatedData!.risk!.fields.push({ field: 'office', term: '代表处' });
     expect(validate(duplicate)).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ message: expect.stringContaining('关联字段重复') })
@@ -123,7 +123,7 @@ describe('AI 总结组件契约', () => {
     const conflict = structuredClone(document());
     const conflictSummary = conflict.sections[0]!.components[0];
     if (conflictSummary.type !== 'aiSummary') throw new Error('测试文档类型错误');
-    conflictSummary.props.relatedData.other = {
+    conflictSummary.props.relatedData!.other = {
       source: 'risks',
       description: '其他数据',
       fields: [{ field: 'office', term: '区域' }]

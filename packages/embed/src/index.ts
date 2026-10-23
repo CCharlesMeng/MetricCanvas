@@ -142,3 +142,5 @@ function mountError(message: string): Error {
 }
 
 export { ExportViewError } from '@metriccanvas/engine';
+
+export type { AiSummaryGenerate, AiSummaryContextInfo, AiSummaryDataSource } from '@metriccanvas/engine/ui';

@@ -152,7 +152,7 @@ export type TextLink = NonNullable<TextProps['links']>[number];
 export type TextComponent = z.infer<typeof textComponentZ> & { data?: never };
 
 export type AiSummaryProps = z.infer<typeof aiSummaryComponentZ>['props'];
-export type AiSummaryRelatedDataDefinition = AiSummaryProps['relatedData'][string];
+export type AiSummaryRelatedDataDefinition = NonNullable<AiSummaryProps['relatedData']>[string];
 export type AiSummaryRelatedField = AiSummaryRelatedDataDefinition['fields'][number];
 export type AiSummaryComponent = z.infer<typeof aiSummaryComponentZ> & { data?: never };
 

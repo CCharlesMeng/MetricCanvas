@@ -49,6 +49,11 @@ const allowedClasses = new Set([
   'tone-neutral'
 ]);
 
+/** 生成型消费者与严格渲染器共享同一标签/语义类词表。 */
+export function semanticHtmlInstructions(): string {
+  return `HTML 只允许 ${[...allowedTags, 'data'].join('/')} 标签。class 只允许 ${[...allowedClasses].join('/')}；不得携带其他属性、脚本或样式。data 不允许属性，只包裹一个规范有限数字。`;
+}
+
 const MAX_NODES = 1_000;
 const MAX_DEPTH = 12;
 const CANONICAL_DATA_NUMBER = /^[+-]?(?:0|[1-9]\d*)(?:\.\d+)?$/u;

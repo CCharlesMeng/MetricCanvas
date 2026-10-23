@@ -45,7 +45,7 @@ query.initial保存捕获时间和匹配该查询的初始行，只能在当前�
 6.44查询子表格引用的专属query源从首屏取数中排除；展开后在父行独立作用域中执行。分页、搜索和排序仅改变该实例的生效查询，不改变页面数据源定义、主页面快照或全页筛选。详见[行内子表格](components/table.md#row-expansion)。
 
 
-页面协议 6.50。结构真源为本册[schema.json](schema.json)，SHA256 `d7df3a55bf6fd38b988d4ead99bcf7e2cf07b0ff1f544a5d98d20ae664c0f67e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.51。结构真源为本册[schema.json](schema.json)，SHA256 `9302c984389196b0d7d4476ad3ea11cca480ea3d9a7b7292aff4ecdbf71f44b5`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

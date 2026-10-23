@@ -1,6 +1,5 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import {
-  AI_SUMMARY_CONVERSATIONS_PATH,
   createDqeSimServer,
   DEFAULT_DQE_SIM_HOST,
   DEFAULT_DQE_SIM_PORT,
@@ -10,22 +9,17 @@ import {
 const host = process.env.DQE_SIM_HOST ?? DEFAULT_DQE_SIM_HOST;
 const port = Number(process.env.DQE_SIM_PORT ?? DEFAULT_DQE_SIM_PORT);
 const endpoint = `http://${host}:${port}${DQE_EXECUTE_PATH}`;
-const aiSummaryEndpoint = AI_SUMMARY_CONVERSATIONS_PATH;
 const server = createDqeSimServer();
 let playground: ChildProcess | undefined;
 let stopping = false;
 
 server.listen(port, host, () => {
   console.log(`DQE Sim 已就绪:${endpoint}`);
-  console.log(`AI Summary Sim 已就绪:${aiSummaryEndpoint}`);
   const invocation = playgroundInvocation();
   playground = spawn(invocation.command, invocation.args, {
     stdio: 'inherit',
     shell: false,
-    env: {
-      ...process.env,
-      VITE_AI_SUMMARY_ENDPOINT: aiSummaryEndpoint
-    }
+    env: process.env
   });
   playground.once('error', (error) => {
     console.error(`页面试验场启动失败:${error.message}`);

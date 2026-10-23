@@ -1,7 +1,7 @@
 import type { TypedError } from '@metriccanvas/page';
 import type { RuntimeDataGateway } from '../../runtime/src';
 import type { DataErrorEvent } from './data-error-events';
-export type { AiSummaryConfig } from './ai-summary/pangu-sse';
+export type { AiSummaryConfig, AiSummaryContextInfo, AiSummaryGenerate, AiSummaryDataSource } from './ai-summary';
 export type { DataErrorEvent } from './data-error-events';
 
 export interface RuntimeNavigationTarget {
@@ -99,7 +99,7 @@ export interface RuntimeViewProps {
 
   execution?: import('../../runtime/src').ExecutionBootstrap;
   dataGateway?: RuntimeDataGateway;
-  aiSummary?: import('./ai-summary/pangu-sse').AiSummaryConfig;
+  aiSummary?: import('./ai-summary').AiSummaryConfig;
   filterEditing?: { readOnly: boolean; reason?: string };
   initialSearch?: string;
   navigation?: RuntimeNavigation;

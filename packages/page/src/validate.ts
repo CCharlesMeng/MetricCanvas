@@ -1,3 +1,4 @@
+import { aiSummaryErrors } from './ai-summary';
 import { filterHasObservableConsumer, presentationPolicyErrors } from './presentation-policy';
 import { chartOptionErrors, withoutChartOptions } from './chart-option';
 import { rowExpansionErrors } from './validate-row-expansion';
@@ -318,7 +319,7 @@ function invariantErrors(page: Page): TypedError[] {
   });
   errors.push(...filterDependsOnErrors(filters), ...filterExtensionErrors(filters), ...filterScopeErrors(page));
   errors.push(...iocHeaderErrors(page));
-  errors.push(...reportDateFilterErrors(page));
+  errors.push(...aiSummaryErrors(page), ...reportDateFilterErrors(page));
   errors.push(...crossSourceComputeErrors(page));
   errors.push(...queryResultBindingErrors(page));
   errors.push(...pagedJoinErrors(page));
@@ -1435,7 +1436,7 @@ function componentErrors(
   function checkAiSummary(component: Extract<Component, { type: 'aiSummary' }>): void {
 
     const terms = new Map<string, string>();
-    for (const [relatedId, related] of Object.entries(component.props.relatedData)) {
+    for (const [relatedId, related] of Object.entries(component.props.relatedData ?? {})) {
       const relatedPath =
         `${componentPath}/props/relatedData/${escapePointer(relatedId)}`;
       const source = page.dataSources[related.source];
@@ -1473,7 +1474,8 @@ function componentErrors(
           );
         }
         seen.add(binding.field);
-        const previous = terms.get(binding.field);
+        const termKey = `${related.source}/${binding.field}`;
+        const previous = terms.get(termKey);
         if (previous !== undefined && previous !== binding.term) {
           errors.push(
             schemaError(
@@ -1482,7 +1484,7 @@ function componentErrors(
             )
           );
         } else {
-          terms.set(binding.field, binding.term);
+          terms.set(termKey, binding.term);
         }
       });
     }
@@ -1988,7 +1990,7 @@ function queryPaginationErrors(page: Page): TypedError[] {
       addReference(sourceId, `${componentPath}/data/${escapePointer(slot)}`);
     }
     if (component.type === 'aiSummary') {
-      for (const [name, related] of Object.entries(component.props.relatedData)) {
+      for (const [name, related] of Object.entries(component.props.relatedData ?? {})) {
         addReference(
           related.source,
           `${componentPath}/props/relatedData/${escapePointer(name)}/source`
