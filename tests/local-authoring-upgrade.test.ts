@@ -187,22 +187,50 @@ describe('仓外安装升级工具', () => {
     await writeFile(report.output, JSON.stringify(document));
     const validation = spawnSync(process.execPath, [path.join(folder, 'skill/scripts/validate-page.mjs'), report.output], { cwd: folder, encoding: 'utf8' });
     expect(validation.status, validation.stderr).toBe(0);
-    expect(run([source, '--out-dir', output]).status).toBe(2);
     expect(await readFile(path.join(output, 'original/schema-upgrade-demo.json'))).toEqual(bytes);
   });
 
-  it('未来版本、非法 JSON、错误参数不产生迁移目录或改写输入', async () => {
-    const source = path.join(folder, 'bad.json');
+  it('已有输出目录保持原样，不覆盖原件或失败尝试', async () => {
+    const source = path.join(folder, 'conflict-source.json');
+    const bytes = JSON.stringify(base());
+    await writeFile(source, bytes);
+    const output = await mkdtemp(path.join(folder, 'existing-attempt-'));
+    await writeFile(path.join(output, 'keep.txt'), '保留已有尝试');
+    expect(run([source, '--out-dir', output]).status).toBe(2);
+    expect(await readFile(source, 'utf8')).toBe(bytes);
+    expect(await readdir(output)).toEqual(['keep.txt']);
+    expect(await readFile(path.join(output, 'keep.txt'), 'utf8')).toBe('保留已有尝试');
+  });
+
+  // Each scenario owns one CLI startup and the unchanged default five-second test budget.
+  it('未来版本不产生迁移目录或改写输入', async () => {
+    const source = path.join(folder, 'future.json');
     const output = path.join(folder, 'must-not-exist');
-    await writeFile(source, JSON.stringify({ ...base(), schemaVersion: '7.0' }));
+    const bytes = JSON.stringify({ ...base(), schemaVersion: '7.0' });
+    await writeFile(source, bytes);
     expect(run([source, '--out-dir', output]).status).toBe(1);
     expect(await readdir(folder)).not.toContain('must-not-exist');
+    expect(await readFile(source, 'utf8')).toBe(bytes);
+  });
+
+  it('非法 JSON 不产生迁移目录或改写输入', async () => {
+    const source = path.join(folder, 'malformed.json');
+    const output = path.join(folder, 'malformed-output');
     await writeFile(source, '{invalid');
     expect(run([source, '--out-dir', output]).status).toBe(2);
     expect(await readFile(source, 'utf8')).toBe('{invalid');
-    expect(run([source, '--target']).status).toBe(2);
-    expect(run([source, '--out-dir', 'x', '--out-dir', 'y']).status).toBe(2);
+    expect(await readdir(folder)).not.toContain('malformed-output');
+  });
+
+  it.each([['--target'], ['--out-dir', 'x', '--out-dir', 'y']])('错误参数 %j 明确拒绝', (...args) => {
+    expect(run(['missing.json', ...args]).status).toBe(2);
+  });
+
+  it('仓外可读取帮助', () => {
     expect(run(['--help']).status).toBe(0);
+  });
+
+  it('仓外可读取当前协议版本', () => {
     expect(JSON.parse(run(['--version']).stdout).schemaVersion).toBe(versionPolicy.current);
   });
 });
