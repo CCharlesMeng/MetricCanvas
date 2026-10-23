@@ -532,3 +532,5 @@ Report验收入口 `/pages/tab-mixed-content-report`：初始停留概览，直�
 - [Report 区域 AI 总结](capabilities/ai-summary/README.md)：后端正文、时间切换生成、单文件云宝 mock 与后台缓存。
 
 DQE 对象查询及对象/指标联动：见[查询能力目录](capabilities/query/README.md#dqe-对象查询)，入口 `/pages/dqe-object-query-demo`（DQE Sim 合成数据）。
+
+现成计数绘图：[各区域项目数量](capabilities/query/stored-count-measures.json)，入口 `/pages/stored-count-measures`；DQE `output_dims` 返回已有计数，页面显式声明数值度量。初始合成数据可直接预览，区域筛选需本地 DQE Sim；步骤及零值/缺失预期见[查询场景](capabilities/query/README.md#已存储计数直接绘制柱状图656)。

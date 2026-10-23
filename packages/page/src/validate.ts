@@ -8,6 +8,7 @@ import {ordinaryQuery} from './time-mode';
 import {timeExtensionErrors} from './time-extension-validation';
 import {pageSelectionVariants} from './selection-variants';
 import {querySelectionErrors} from './query-selection-validation';
+import { isNumericMeasure } from './query-output-measures';
 import {amountErrors,moneyComputeErrors} from './amount-validation';
 import {fieldSelectionErrors} from './field-selection';
 import { filterExtensionErrors,filterScopeErrors } from './filter-dependencies';
@@ -884,7 +885,7 @@ function queryContractErrors(
       }
     } else if (
       dimensions.includes(definition.queryField) &&
-      definition.role !== 'dimension'
+      definition.role !== 'dimension' && !isNumericMeasure(definition)
     ) {
       errors.push(
         typedError(

@@ -1,0 +1,31 @@
+{
+  "case": "dimension-number-not-series",
+  "invariant": "query-dimension-measures",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字段 regionId 的 role 为 dimension，此处要求 measure",
+      "paths": [
+        "/sections/0/components/0/props/series/0/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "series": [
+                {
+                  "field": "regionId"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

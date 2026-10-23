@@ -2,6 +2,34 @@
 
 页面字段id是dataSources.<id>.fields的键；queryField指向DQE输出，两者不可隐式当成同一个名字。dimension用于分类，measure用于数值计算，detail承载受控明细；字段类型、角色和nullable必须与真实结果匹配。
 
+<a id="dqe-output-measures"></a>
+
+## DQE 直接输出的数值作为度量（6.56）
+
+DQE 的输出位置与页面的结果字段角色分别声明。`output_dims` 中已经存储的计数、金额等数值，可以显式映射为 `type: number | money`、`role: measure`，供柱状图、折线图、指标卡及表格等现有消费者使用。按角色分组的写法将该字段放入 `fields.measures`；金额仍须声明 `currency`。能力下限为 6.56，旧版本及 5.x 只读兼容文档不得使用。
+
+```json
+{
+  "fields": {
+    "region": {"queryField":"区域","type":"string","role":"dimension"},
+    "projects": {"queryField":"项目数量","type":"number","role":"measure","unit":"个"}
+  },
+  "source": {
+    "type":"query",
+    "query":{"language":"dqe","body":{"dsl_list":[{
+      "output_dims":["区域","项目数量"],"output_metrics":[],
+      "filter":{"dims":[],"metrics":[]},"order":{}
+    }]}}
+  }
+}
+```
+
+字段角色只声明页面用途，不改写 DQE 查询，不增加 `SUM`、`COUNT`、去重或客户端分组。每根柱使用该结果行已返回的数值；同一区域若返回多行，仍保留多行，目标区域粒度须由原查询保证。`measure` 不隐含可加总，折叠仍要求 `collapsible: true`。
+
+未显式选择度量角色的数值编号仍是维度；字符串、布尔、日期和时间等 `output_dims` 标量不得借此声明为度量。`output_metrics` 的标量仍要求 `role: measure`。现有 `detail` 专用消费规则保持原义。数值度量沿用下文的归一化与缺失规则，包括来自 `output_dims` 的字段及其内嵌初始行。
+
+查询筛选目标继续由 `filterBindings` 显式决定；把页面字段声明为度量不会把维度条件改写为指标条件。`numberRange` 等既有绑定仍使用原来的 DQE 指标谓词，不因本能力获得新的上游筛选能力。完整示例 `stored-count-measures` 展示两个现成计数的柱图与明细、真实零和缺失值，并支持区域维度筛选；使用本地合成数据，不代表真实 DQE 取数验真。
+
 <a id="查询数值度量的容错"></a>
 
 ## 查询数值度量的容错

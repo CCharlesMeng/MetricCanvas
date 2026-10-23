@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { parsePage, validate } from '../src/validate';
 import { initializeQueryParams } from '../src/query';
 import { objectDateBoundary } from '../src/dqe-object';
+import { versionPolicy } from '../src/version';
 const load = () => JSON.parse(readFileSync('pages/capabilities/query/dqe-object-query-demo.json', 'utf8'));
 const objectQuery = (page = load()) => page.dataSources.records.source.query;
 
@@ -63,7 +64,7 @@ it('supports month windows and explicit legacy binding migration for object quer
   query.body.dsl_list[0].filter.fields=[];
   page.dataSources={records:page.dataSources.records};page.sections=page.sections.slice(0,1);delete page.sections[0].components[0].props.columns[1].selection;
   const migrated=migrateParamBindings(page);if(!migrated.ok)throw Error(JSON.stringify(migrated.issues));
-  expect(migrated.document.schemaVersion).toBe('6.55');
+  expect(migrated.document.schemaVersion).toBe(versionPolicy.current);
   const resolved=resolvePageParams(migrated.document);if(!resolved.ok)throw Error(JSON.stringify(resolved.issues));
   const source=resolved.resolvedPage.dataSources.records.source;if(source.type!=='query')throw Error('source');
   expect(source.query.body!.dsl_list[0].filter).toMatchObject({fields:[{value_list:['2025-02-01 00:00:00']},{value_list:['2025-02-28 23:59:59']}]});

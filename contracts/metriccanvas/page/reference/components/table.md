@@ -171,7 +171,7 @@ Excel完整导出按导出行集从1编号，并保留多级表头；报告静�
 完整合成场景：`/pages/table-detail-overlay`；操作与预期结果见 `pages/README.md`。该场景不证明真实 DQE/Relay 取数。
 
 
-页面协议 6.55。结构真源为本册[schema.json](../schema.json)，SHA256 `8d3c674ebdc434c588dbd64753ec5b75f0b91e8a65ba74628afe9d049df23ac4`。字段表自动生成；可选不等于有默认值。
+页面协议 6.56。结构真源为本册[schema.json](../schema.json)，SHA256 `914784cf3a9ce0b90b98d47185181599e9c35065c893c15cbe50ec3e708ecc7b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

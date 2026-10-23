@@ -1,5 +1,7 @@
 # 查询定义与显式绑定
 
+6.56 起，`output_dims` 中的现成数值可在结果字段契约中显式声明为数值度量；查询体、行粒度和筛选绑定保持作者声明。平铺与分组写法、普通查询与各静态查询分支使用相同规则。声明及限制见[结果字段角色](fields.md#dqe-output-measures)，完整示例为 `stored-count-measures`。
+
 当前受控查询语言为DQE。查询体遵循真实协议分支，模型不得拼任意SQL或表达式。filterBindings对象键引用页面筛选器；dimension目标必须声明queryField，time目标不带window时绑定时间范围，带window时绑定时间点。页面字段id、筛选器dimension和DQE字段属于不同空间。
 
 未绑定到某源的筛选变化不触发该源；绑定字段须存在于合法查询位置。paramBindings用于6.2维度初始化，目标唯一、共享源显式声明，不与同目标静态条件或多个参数竞争。页面只声明目标，不声明服务权限。
@@ -201,7 +203,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 完整 Dashboard 场景为 `/pages/dqe-object-query-demo`，使用 DQE Sim 合成记录；操作与证据边界见 `pages/capabilities/query/README.md`。用户提供的实际回执（请求1000行却仅返回10行、total_count1393）只作为响应兼容夹具，不能证明分页、排序、计数或真实业务口径。
 
 
-页面协议 6.55。结构真源为本册[schema.json](schema.json)，SHA256 `8d3c674ebdc434c588dbd64753ec5b75f0b91e8a65ba74628afe9d049df23ac4`。字段表自动生成；可选不等于有默认值。
+页面协议 6.56。结构真源为本册[schema.json](schema.json)，SHA256 `914784cf3a9ce0b90b98d47185181599e9c35065c893c15cbe50ec3e708ecc7b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -2219,6 +2221,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 - `query-field-mapping`：query 数据源字段与 DQE 输出字段之间的显式、唯一、角色相容映射。反例：[query-field-without-mapping](errors/query-field-without-mapping.json)、[query-field-duplicate-mapping](errors/query-field-duplicate-mapping.json)、[query-field-not-output](errors/query-field-not-output.json)、[query-detail-item-duplicate-mapping](errors/query-detail-item-duplicate-mapping.json)、[query-dimension-role-mismatch](errors/query-dimension-role-mismatch.json)、[query-role-mismatch](errors/query-role-mismatch.json)、[query-output-unmapped](errors/query-output-unmapped.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `filter-binding`：筛选绑定引用已声明筛选器，time / dimension 目标类型匹配，层级绑定逐级声明谓词字段。反例：[level-query-fields-on-flat-filter](errors/level-query-fields-on-flat-filter.json)、[level-query-fields-missing-level](errors/level-query-fields-missing-level.json)、[level-query-fields-undeclared-level](errors/level-query-fields-undeclared-level.json)、[hierarchy-filter-flat-query-field](errors/hierarchy-filter-flat-query-field.json)、[time-point-target-not-time-point](errors/time-point-target-not-time-point.json)、[boolean-target-not-boolean](errors/boolean-target-not-boolean.json)、[number-range-target-not-number-range](errors/number-range-target-not-number-range.json)、[time-point-initial-param-not-times](errors/time-point-initial-param-not-times.json)、[time-point-initial-param-precision](errors/time-point-initial-param-precision.json)、[time-point-initial-param-range](errors/time-point-initial-param-range.json)、[time-point-initial-param-and-default](errors/time-point-initial-param-and-default.json)、[time-point-initial-param-without-query-target](errors/time-point-initial-param-without-query-target.json)、[unknown-filter-binding](errors/unknown-filter-binding.json)、[filter-binding-time-target-not-time-range](errors/filter-binding-time-target-not-time-range.json)、[filter-binding-dimension-target-not-dimension](errors/filter-binding-dimension-target-not-dimension.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `time-extensions`：6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口。反例：[time-before-6.39](errors/time-before-6.39.json)、[time-case-missing](errors/time-case-missing.json)、[time-query-xor](errors/time-query-xor.json)、[time-period-mismatch](errors/time-period-mismatch.json)、[time-output-mismatch](errors/time-output-mismatch.json)、[time-default-week](errors/time-default-week.json)、[time-availability-default](errors/time-availability-default.json)、[time-fact-kind](errors/time-fact-kind.json)、[time-window-static-options](errors/time-window-static-options.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `query-dimension-measures`：6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度。反例：[dimension-measure-version](errors/dimension-measure-version.json)、[dimension-measure-legacy](errors/dimension-measure-legacy.json)、[dimension-measure-time-qualified-version](errors/dimension-measure-time-qualified-version.json)、[dimension-measure-nonnumeric](errors/dimension-measure-nonnumeric.json)、[dimension-number-not-series](errors/dimension-number-not-series.json)、[dimension-measure-not-collapsible](errors/dimension-measure-not-collapsible.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -2237,6 +2240,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 - [query-modes-page](examples/query-modes-page.json)：完整合法页面；查询仅为静态契约证据。
 - [query-mode-binding-branches-page](examples/query-mode-binding-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 - [object-query-page](examples/object-query-page.json)：完整合法页面；查询仅为静态契约证据。
+- [stored-count-measures](examples/stored-count-measures.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

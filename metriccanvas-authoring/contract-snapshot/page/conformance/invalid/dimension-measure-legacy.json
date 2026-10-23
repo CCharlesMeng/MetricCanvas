@@ -1,0 +1,206 @@
+{
+  "case": "dimension-measure-legacy",
+  "invariant": "query-dimension-measures",
+  "input": {
+    "schemaVersion": "5.4",
+    "id": "stored-count-measures",
+    "layout": "dashboard",
+    "meta": {
+      "title": "各区域项目数量",
+      "description": "本地合成演示 · 直接展示已存储的项目数量与已完成数量"
+    },
+    "filters": [
+      {
+        "id": "region",
+        "type": "dimension",
+        "dimension": "stored-region",
+        "label": "区域",
+        "default": [],
+        "options": [
+          {
+            "value": "东区",
+            "label": "东区"
+          },
+          {
+            "value": "南区",
+            "label": "南区"
+          },
+          {
+            "value": "零值区",
+            "label": "零值区"
+          },
+          {
+            "value": "缺失区",
+            "label": "缺失区"
+          }
+        ],
+        "selection": {
+          "mode": "single",
+          "required": false
+        }
+      }
+    ],
+    "dataSources": {
+      "counts": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "存量区域"
+          },
+          "regionId": {
+            "type": "number",
+            "role": "dimension",
+            "queryField": "存量区域编号"
+          },
+          "projects": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "存量项目数量",
+            "unit": "个",
+            "nullable": true
+          },
+          "completed": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "存量已完成数量",
+            "unit": "个",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "initial": {
+            "capturedAt": "2026-10-23T00:00:00Z",
+            "rows": [
+              {
+                "存量区域": "东区",
+                "存量区域编号": 101,
+                "存量项目数量": 12,
+                "存量已完成数量": 9
+              },
+              {
+                "存量区域": "南区",
+                "存量区域编号": 102,
+                "存量项目数量": 7,
+                "存量已完成数量": 5
+              },
+              {
+                "存量区域": "零值区",
+                "存量区域编号": 103,
+                "存量项目数量": 0,
+                "存量已完成数量": 0
+              },
+              {
+                "存量区域": "缺失区",
+                "存量区域编号": 104,
+                "存量项目数量": null,
+                "存量已完成数量": 3
+              }
+            ],
+            "totalCount": 4
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "存量区域",
+                    "存量区域编号",
+                    "存量项目数量",
+                    "存量已完成数量"
+                  ],
+                  "output_metrics": [],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "queryField": "存量区域"
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "overview",
+        "components": [
+          {
+            "id": "counts-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "counts"
+            },
+            "props": {
+              "title": "项目数量与已完成数量",
+              "categoryField": "region",
+              "series": [
+                {
+                  "field": "projects",
+                  "label": "项目数量"
+                },
+                {
+                  "field": "completed",
+                  "label": "已完成数量"
+                }
+              ],
+              "showValueLabels": true
+            }
+          },
+          {
+            "id": "counts-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "counts"
+            },
+            "props": {
+              "title": "区域明细",
+              "rowKey": "regionId",
+              "columns": [
+                {
+                  "field": "region",
+                  "title": "区域"
+                },
+                {
+                  "field": "regionId",
+                  "title": "区域编号"
+                },
+                {
+                  "field": "projects",
+                  "title": "项目数量"
+                },
+                {
+                  "field": "completed",
+                  "title": "已完成数量"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/counts",
+      "message": "DQE output_dims 数值输出显式声明页面度量 由 6.56 引入，文档声明的是 5.4"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "case": "dimension-measure-not-collapsible",
+  "invariant": "query-dimension-measures",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "折叠算子只能作用于显式声明 collapsible 的度量字段:projects",
+      "paths": [
+        "/dataSources/counts/compute/0/measures/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "counts": {
+        "compute": [
+          {
+            "measures": [
+              "projects"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

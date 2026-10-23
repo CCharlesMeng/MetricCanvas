@@ -54,6 +54,37 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {
+    id: 'query-dimension-measures',
+    description: '6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度',
+    valid: ['stored-count-measures'],
+    cases: [
+      { case: 'dimension-measure-version', base: 'stored-count-measures', expect: /由 6.56 引入/,
+        mutate: document => { document.schemaVersion = '6.55'; } },
+      { case: 'dimension-measure-legacy', base: 'stored-count-measures', expect: /由 6.56 引入/,
+        mutate: document => { document.schemaVersion = '5.4'; } },
+      { case: 'dimension-measure-time-qualified-version', base: 'stored-count-measures', expect: /由 6.56 引入/,
+        mutate: document => {
+          document.schemaVersion = '6.55';
+          delete document.dataSources.counts.source.initial;
+          document.dataSources.counts.fields.projects.queryField = '存量项目数量(month)';
+          const item = document.dataSources.counts.source.query.body.dsl_list[0];
+          item.output_dims = item.output_dims.filter((name: string) => name !== '存量已完成数量');
+          item.output_metrics = ['存量已完成数量'];
+          item.filter.time = { period: 'month', start: '2026-10', end: '2026-10' };
+        } },
+      { case: 'dimension-measure-nonnumeric', base: 'stored-count-measures', expect: /DQE 维度 存量项目数量 的 role 必须为 dimension/,
+        mutate: document => { delete document.dataSources.counts.source.initial; document.dataSources.counts.fields.projects.type = 'string'; } },
+      { case: 'dimension-number-not-series', base: 'stored-count-measures', expect: /字段 regionId 的 role 为 dimension，此处要求 measure/,
+        mutate: document => { firstComponent(document).props.series[0].field = 'regionId'; } },
+      { case: 'dimension-measure-not-collapsible', base: 'stored-count-measures', expect: /collapsible/,
+        mutate: document => {
+          document.dataSources.counts.fields.kind = { type: 'string', role: 'dimension' };
+          document.dataSources.counts.compute = [{ op: 'grandTotal', measures: ['projects'], rowKind: { field: 'kind', value: 'total' }, label: { field: 'region', value: '合计' } }];
+        } }
+    ]
+  },
+
   {id:'dqe-object-query',description:'6.55 对象输出、显式时间字段与原始行契约',valid:['object-query-page'],cases:[
     {case:'object-version',base:'object-query-page',expect:/由 6.55 引入/,mutate:d=>{d.schemaVersion='6.51';}},
     {case:'object-type-missing',base:'object-query-page',expect:/object_type/,mutate:d=>{delete d.dataSources.approvals.source.query.body.dsl_list[0].object_type;}},

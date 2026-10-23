@@ -164,6 +164,22 @@ describe('独立本地创作 Skill', () => {
     expect(run([target]).status).toBe(1);
   });
 
+  it('仓外支持 output_dims 现成计数作为度量，并拒绝旧版本及维度系列', async () => {
+    const document = JSON.parse(files.get('references/page-metadata/examples/stored-count-measures.json')!);
+    const target = path.join(isolated, `${document.id}.json`);
+    await writeFile(target, JSON.stringify(document));
+    expect(run(['--expected-layout', 'dashboard', target]).status).toBe(0);
+    document.schemaVersion = '6.55';
+    await writeFile(target, JSON.stringify(document));
+    const old = run([target]);
+    expect(old.status).toBe(1);
+    expect(old.stdout).toContain('由 6.56 引入');
+    document.schemaVersion = '6.56';
+    document.sections[0].components[0].props.series[0].field = 'regionId';
+    await writeFile(target, JSON.stringify(document));
+    expect(run([target]).status).toBe(1);
+  });
+
   it('整目录复制后知识链接与机器索引闭合，所有生成内容有一致的版本和哈希', () => {
     validateReferenceLinks(files);
     const manifest = JSON.parse(files.get('references/knowledge.json')!);

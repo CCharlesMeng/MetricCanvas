@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.55",
-  "schemaSha256": "8d3c674ebdc434c588dbd64753ec5b75f0b91e8a65ba74628afe9d049df23ac4",
+  "schemaVersion": "6.56",
+  "schemaSha256": "914784cf3a9ce0b90b98d47185181599e9c35065c893c15cbe50ec3e708ecc7b",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -142,7 +142,8 @@
       "examples": [
         "grouped-fields-page",
         "reference-branches-page",
-        "query-numeric-tolerance"
+        "query-numeric-tolerance",
+        "stored-count-measures"
       ],
       "rules": [
         "grouped-query-fields-unique",
@@ -151,7 +152,8 @@
         "detail-item-object",
         "detail-list-max-items",
         "query-field-mapping",
-        "detail-field-consumption"
+        "detail-field-consumption",
+        "query-dimension-measures"
       ]
     },
     "queries-and-bindings.md": {
@@ -187,12 +189,14 @@
         "time-binding-branches-page",
         "query-modes-page",
         "query-mode-binding-branches-page",
-        "object-query-page"
+        "object-query-page",
+        "stored-count-measures"
       ],
       "rules": [
         "query-field-mapping",
         "filter-binding",
-        "time-extensions"
+        "time-extensions",
+        "query-dimension-measures"
       ]
     },
     "compute.md": {
@@ -550,10 +554,12 @@
         "柱状图 barChart"
       ],
       "examples": [
-        "forecast-page"
+        "forecast-page",
+        "stored-count-measures"
       ],
       "rules": [
-        "bar-forecast-boundary"
+        "bar-forecast-boundary",
+        "query-dimension-measures"
       ]
     },
     "components/lineChart.md": {
@@ -1100,7 +1106,8 @@
         "6.52",
         "6.53",
         "6.54",
-        "6.55"
+        "6.55",
+        "6.56"
       ]
     },
     {
@@ -16964,5 +16971,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "f36a18379fc0b17db35a6d4db6f136a66cdb15ac17796e359717730422ddffdd"
+  "semanticSourceDigest": "eb59a4416a9ca1c874c456ed29027c5ab2bae2b0c7023c4f7942f6feb1081d22"
 }

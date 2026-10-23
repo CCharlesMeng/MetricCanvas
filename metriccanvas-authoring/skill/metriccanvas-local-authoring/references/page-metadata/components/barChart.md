@@ -4,6 +4,8 @@
 
 每个series显式绑定measure并声明适用角色，维度轴来自dimension字段。forecast/actual等角色与色彩语义应与真实业务口径一致。
 
+6.56 起，DQE 通过 `output_dims` 返回的现成计数或金额也可显式声明为数值度量，再绑定 `series[].field`；图表直接使用每行数值，不重新聚合。声明见[结果字段角色](../fields.md#dqe-output-measures)，柱图、明细与零值/缺失对照见 `stored-count-measures` 示例。
+
 ## 默认柱宽
 
 所有内置柱系列的默认宽度统一为 **16 CSS px**，包括普通、分组、堆叠、横向条形、`reportForecast` 以及混合图中的柱系列；横向图的16px表示条形厚度。折线系列不设置柱宽。宽度不随容器或类别数量自动放大。
@@ -21,7 +23,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 6.32 的隐含高级入口 `props.echartsOption` 用于显式要求的 ECharts 呈现定制；普通创作优先使用上面的封闭属性。规则、保护路径、console 诊断与降级见[高级呈现扩展](../chart-option.md)。
 
 
-页面协议 6.55。结构真源为本册[schema.json](../schema.json)，SHA256 `8d3c674ebdc434c588dbd64753ec5b75f0b91e8a65ba74628afe9d049df23ac4`。字段表自动生成；可选不等于有默认值。
+页面协议 6.56。结构真源为本册[schema.json](../schema.json)，SHA256 `914784cf3a9ce0b90b98d47185181599e9c35065c893c15cbe50ec3e708ecc7b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -401,12 +403,14 @@ Schema位置：`#/definitions/barChartComponent/properties/props/properties/acti
 ## 语义规则与反例（生成）
 
 - `bar-forecast-boundary`：实际 / 预测系列不得跨越采集时间所在月。反例：[forecast-before-captured-month](../errors/forecast-before-captured-month.json)、[actual-after-captured-month](../errors/actual-after-captured-month.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `query-dimension-measures`：6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度。反例：[dimension-measure-version](../errors/dimension-measure-version.json)、[dimension-measure-legacy](../errors/dimension-measure-legacy.json)、[dimension-measure-time-qualified-version](../errors/dimension-measure-time-qualified-version.json)、[dimension-measure-nonnumeric](../errors/dimension-measure-nonnumeric.json)、[dimension-number-not-series](../errors/dimension-number-not-series.json)、[dimension-measure-not-collapsible](../errors/dimension-measure-not-collapsible.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
 - [最小组件](../examples/component-barChart.json)：独立完整页面，保留必要语义依赖。
 - [reportForecast](../examples/component-barChart-reportForecast.json)：独立完整页面，保留必要语义依赖。
 - [forecast-page](../examples/forecast-page.json)：完整合法页面；查询仅为静态契约证据。
+- [stored-count-measures](../examples/stored-count-measures.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-barChart.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

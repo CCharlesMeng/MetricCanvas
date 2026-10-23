@@ -1,6 +1,21 @@
 {
   "invariants": [
     {
+      "id": "query-dimension-measures",
+      "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+      "valid": [
+        "stored-count-measures"
+      ],
+      "invalid": [
+        "dimension-measure-version",
+        "dimension-measure-legacy",
+        "dimension-measure-time-qualified-version",
+        "dimension-measure-nonnumeric",
+        "dimension-number-not-series",
+        "dimension-measure-not-collapsible"
+      ]
+    },
+    {
       "id": "dqe-object-query",
       "description": "6.55 对象输出、显式时间字段与原始行契约",
       "valid": [

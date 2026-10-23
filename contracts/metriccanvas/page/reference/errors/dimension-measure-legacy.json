@@ -1,0 +1,44 @@
+{
+  "case": "dimension-measure-legacy",
+  "invariant": "query-dimension-measures",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "DQE output_dims 数值输出显式声明页面度量 由 6.56 引入，文档声明的是 5.4",
+      "paths": [
+        "/dataSources/counts"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "counts": {
+        "fields": {
+          "region": {
+            "…": "共3个键"
+          },
+          "regionId": {
+            "…": "共3个键"
+          },
+          "projects": {
+            "…": "共5个键"
+          },
+          "completed": {
+            "…": "共5个键"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "initial": {
+            "…": "共3个键"
+          },
+          "query": {
+            "…": "共3个键"
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/dimension-measure-legacy.json"
+}

@@ -1,0 +1,25 @@
+{
+  "case": "dimension-measure-nonnumeric",
+  "invariant": "query-dimension-measures",
+  "expected": [
+    {
+      "type": "QUERY_MAPPING_ERROR",
+      "message": "DQE 维度 存量项目数量 的 role 必须为 dimension",
+      "paths": [
+        "/dataSources/counts/fields/projects/role"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "counts": {
+        "fields": {
+          "projects": {
+            "role": "measure"
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/dimension-measure-nonnumeric.json"
+}

@@ -167,12 +167,14 @@
       "examples": [
         "grouped-fields-page",
         "reference-branches-page",
-        "query-numeric-tolerance"
+        "query-numeric-tolerance",
+        "stored-count-measures"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/data-source.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/page/src/query-output-measures.ts"
       ],
       "rules": [
         "grouped-query-fields-unique",
@@ -181,7 +183,8 @@
         "detail-item-object",
         "detail-list-max-items",
         "query-field-mapping",
-        "detail-field-consumption"
+        "detail-field-consumption",
+        "query-dimension-measures"
       ]
     },
     "queries-and-bindings.md": {
@@ -217,7 +220,8 @@
         "time-binding-branches-page",
         "query-modes-page",
         "query-mode-binding-branches-page",
-        "object-query-page"
+        "object-query-page",
+        "stored-count-measures"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -230,12 +234,14 @@
         "packages/page/src/time-extension-validation.ts",
         "packages/page/src/dqe-object.ts",
         "packages/page/src/validate-object-query.ts",
-        "packages/page/src/object-query-params.ts"
+        "packages/page/src/object-query-params.ts",
+        "packages/page/src/query-output-measures.ts"
       ],
       "rules": [
         "query-field-mapping",
         "filter-binding",
-        "time-extensions"
+        "time-extensions",
+        "query-dimension-measures"
       ]
     },
     "compute.md": {
@@ -664,14 +670,17 @@
         "柱状图 barChart"
       ],
       "examples": [
-        "forecast-page"
+        "forecast-page",
+        "stored-count-measures"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/page/src/query-output-measures.ts"
       ],
       "rules": [
-        "bar-forecast-boundary"
+        "bar-forecast-boundary",
+        "query-dimension-measures"
       ]
     },
     "components/lineChart.md": {
@@ -1848,7 +1857,8 @@
     "6.55": "DQE object 查询、显式字段时间绑定与共享完整结果执行。",
     "6.54": "AI 总结按非空 body 直接展示，否则动态生成，无需 mode。",
     "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"provided\"": "历史值；当前按非空 body 直接展示，无需 mode。",
-    "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"generated\"": "历史值；当前无正文时根据提示词和范围生成，无需 mode。"
+    "#/definitions/aiSummaryComponent/properties/props/properties/mode=\"generated\"": "历史值；当前无正文时根据提示词和范围生成，无需 mode。",
+    "6.56": "DQE output_dims 中的现成数值显式声明为页面度量，保留查询与结果行粒度。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -2237,6 +2247,20 @@
       "dependencies": [
         "query.core"
       ]
+    },
+    "fields.output-measures": {
+      "module": "fields",
+      "title": "现成数值输出作为页面度量",
+      "roots": [
+        "#/definitions/queryScalarField"
+      ],
+      "headings": [
+        "DQE 直接输出的数值作为度量（6.56）"
+      ],
+      "dependencies": [
+        "fields.core",
+        "query.core"
+      ]
     }
   },
   "authoringSemanticHeadings": {
@@ -2261,6 +2285,7 @@
       "多查询组合源 pagedJoin（6.22）"
     ],
     "fields.md": [
+      "DQE 直接输出的数值作为度量（6.56）",
       "查询数值度量的容错",
       "查阅方式"
     ],

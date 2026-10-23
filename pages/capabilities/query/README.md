@@ -2,6 +2,20 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+## 已存储计数直接绘制柱状图（6.56）
+
+入口：`/pages/stored-count-measures`；[页面 JSON](stored-count-measures.json)。无需 URL 参数。
+
+启动 `pnpm dev:playground` 可看内嵌合成初始行；区域交互需同时启动 `pnpm sim:dqe`，也可用 `pnpm dev:dqe` 一起启动。
+
+1. 首屏柱图与明细显示东区项目数量/已完成数量 12/9、南区 7/5、零值区 0/0、缺失区 —/3。零值显示 0，缺失不补零。
+2. 顶部区域选择“南区”，图表和明细变为同一行 7/5；切换“零值区”和“缺失区”比较真实零和缺失，再清空选择恢复四行。
+3. 查看页面 JSON：两个计数都保留在 `output_dims`，`output_metrics` 为空，页面字段显式声明 `role: measure`；区域编号仍为 `number + dimension`。
+
+异常复现：将页面版本改为 6.55，校验报能力由 6.56 引入；将计数字段角色改为 `dimension`，系列绑定报要求 `measure`。对应反例纳入产品契约与仓外校验器。
+
+此页直接展示合成表中已有数值，不添加求和、计数、去重或重新分组；不能据此证明真实 DQE 支持该查询、真实业务口径或权限已验收。测量与浏览器结果见 `docs/evidence/stored-count-measures/acceptance.md`。
+
 ## 查询数值容错与缺失值呈现
 
 入口：`/pages/query-numeric-tolerance`；[页面 JSON](query-numeric-tolerance.json)。
