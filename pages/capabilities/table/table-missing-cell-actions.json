@@ -1,0 +1,411 @@
+{
+  "schemaVersion": "6.49",
+  "id": "table-missing-cell-actions",
+  "layout": "dashboard",
+  "meta": {
+    "title": "表格缺省值不响应点击",
+    "description": "内联合成数据：四种表格变体的选择、导航、详情及自定义缺省文案对照；无需 DQE。"
+  },
+  "filters": [
+    {
+      "id": "chosen",
+      "type": "dimension",
+      "dimension": "chosen",
+      "label": "选择结果",
+      "selection": {
+        "mode": "single"
+      },
+      "options": [
+        {
+          "value": "—",
+          "label": "—"
+        },
+        {
+          "value": "选择入口",
+          "label": "选择入口"
+        }
+      ]
+    }
+  ],
+  "iocHeader": {
+    "identity": {
+      "title": "表格缺省值不响应点击"
+    },
+    "filterIds": [
+      "chosen"
+    ],
+    "presentation": {
+      "layout": "inline"
+    }
+  },
+  "dataSources": {
+    "records": {
+      "fields": {
+        "label": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "pick": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": true
+        },
+        "destination": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": true
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "custom": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "label": "缺省值",
+            "pick": null,
+            "destination": null,
+            "amount": null,
+            "custom": null
+          },
+          {
+            "label": "真实零和横线",
+            "pick": "—",
+            "destination": "—",
+            "amount": 0,
+            "custom": 0
+          },
+          {
+            "label": "正常值",
+            "pick": "选择入口",
+            "destination": "查看页面",
+            "amount": 12,
+            "custom": 12
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "default",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "default",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "label",
+                "title": "场景"
+              },
+              {
+                "field": "pick",
+                "title": "选择",
+                "secondaryField": "label",
+                "selection": {
+                  "writes": {
+                    "chosen": {
+                      "field": "pick"
+                    }
+                  }
+                }
+              },
+              {
+                "field": "destination",
+                "title": "导航",
+                "link": true,
+                "navigate": {
+                  "href": "/pages/table-missing-cell-actions"
+                }
+              },
+              {
+                "field": "amount",
+                "title": "详情",
+                "link": true,
+                "openDetail": {
+                  "surface": "modal",
+                  "titleField": "label",
+                  "fields": [
+                    {
+                      "label": "金额",
+                      "field": "amount"
+                    }
+                  ]
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "custom",
+                  "missingText": "暂无"
+                },
+                "title": "自定义缺省文案",
+                "link": true,
+                "openDetail": {
+                  "surface": "modal",
+                  "titleField": "label",
+                  "fields": [
+                    {
+                      "label": "金额",
+                      "field": "custom"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "forecast-matrix",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "forecastMatrix",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "label",
+                "title": "场景"
+              },
+              {
+                "field": "pick",
+                "title": "选择",
+                "secondaryField": "label",
+                "selection": {
+                  "writes": {
+                    "chosen": {
+                      "field": "pick"
+                    }
+                  }
+                }
+              },
+              {
+                "field": "destination",
+                "title": "导航",
+                "link": true,
+                "navigate": {
+                  "href": "/pages/table-missing-cell-actions"
+                }
+              },
+              {
+                "field": "amount",
+                "title": "详情",
+                "link": true,
+                "openDetail": {
+                  "surface": "modal",
+                  "titleField": "label",
+                  "fields": [
+                    {
+                      "label": "金额",
+                      "field": "amount"
+                    }
+                  ]
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "custom",
+                  "missingText": "暂无"
+                },
+                "title": "自定义缺省文案",
+                "link": true,
+                "openDetail": {
+                  "surface": "modal",
+                  "titleField": "label",
+                  "fields": [
+                    {
+                      "label": "金额",
+                      "field": "custom"
+                    }
+                  ]
+                }
+              }
+            ],
+            "variant": "forecastMatrix"
+          }
+        },
+        {
+          "id": "embedded",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "embedded",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "label",
+                "title": "场景"
+              },
+              {
+                "field": "pick",
+                "title": "选择",
+                "secondaryField": "label",
+                "selection": {
+                  "writes": {
+                    "chosen": {
+                      "field": "pick"
+                    }
+                  }
+                }
+              },
+              {
+                "field": "destination",
+                "title": "导航",
+                "link": true,
+                "navigate": {
+                  "href": "/pages/table-missing-cell-actions"
+                }
+              },
+              {
+                "field": "amount",
+                "title": "详情",
+                "link": true,
+                "openDetail": {
+                  "surface": "modal",
+                  "titleField": "label",
+                  "fields": [
+                    {
+                      "label": "金额",
+                      "field": "amount"
+                    }
+                  ]
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "custom",
+                  "missingText": "暂无"
+                },
+                "title": "自定义缺省文案",
+                "link": true,
+                "openDetail": {
+                  "surface": "modal",
+                  "titleField": "label",
+                  "fields": [
+                    {
+                      "label": "金额",
+                      "field": "custom"
+                    }
+                  ]
+                }
+              }
+            ],
+            "variant": "embedded"
+          }
+        },
+        {
+          "id": "report-compact",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "reportCompact",
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "field": "label",
+                "title": "场景"
+              },
+              {
+                "field": "pick",
+                "title": "选择",
+                "secondaryField": "label",
+                "selection": {
+                  "writes": {
+                    "chosen": {
+                      "field": "pick"
+                    }
+                  }
+                }
+              },
+              {
+                "field": "destination",
+                "title": "导航",
+                "link": true,
+                "navigate": {
+                  "href": "/pages/table-missing-cell-actions"
+                }
+              },
+              {
+                "field": "amount",
+                "title": "详情",
+                "link": true,
+                "openDetail": {
+                  "surface": "modal",
+                  "titleField": "label",
+                  "fields": [
+                    {
+                      "label": "金额",
+                      "field": "amount"
+                    }
+                  ]
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "custom",
+                  "missingText": "暂无"
+                },
+                "title": "自定义缺省文案",
+                "link": true,
+                "openDetail": {
+                  "surface": "modal",
+                  "titleField": "label",
+                  "fields": [
+                    {
+                      "label": "金额",
+                      "field": "custom"
+                    }
+                  ]
+                }
+              }
+            ],
+            "variant": "reportCompact"
+          }
+        }
+      ]
+    }
+  ]
+}

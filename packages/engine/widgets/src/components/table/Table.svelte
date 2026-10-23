@@ -38,7 +38,7 @@
     TableViewState
   } from './view-state';
   import { shouldShowTablePaginationControls } from './view-state';
-  import { finiteNumber, formatValue } from '../../shared/value-format';
+  import { finiteNumber, formatValue, hasDisplayValue } from '../../shared/value-format';
   import { tableValueColor, valueColorStyle } from '../../shared/value-color';
   import { readPixelLength } from '../../shared/inherited-style';
 
@@ -528,6 +528,7 @@
               {#if columnField(column) !== mergedColumnField || rowSpans[i] !== 0}
                 {@const resolved = resolveField(column.field, data)}
                 {@const rawValue = alignedFieldValue(column.field, data, row)}
+                {@const hasValue = hasDisplayValue(rawValue)}
                 {@const color = tableValueColor(rawValue, column, resolved.format)}
                 {@const semanticPresentation = semanticHtmlFieldPresentation(
                   resolved,
@@ -549,8 +550,8 @@
                   class:align-right={column.align === 'right'}
                   class:fixed={!!column.fixed}
                   class:emphasized={column.emphasis === 'strong'}
-                  class:selectable={Boolean(column.selection && interactive && actionGate.eligible)}
-                  class:linkable={Boolean(column.link && interactive && !column.selection && actionGate.eligible)}
+                  class:selectable={Boolean(hasValue && column.selection && interactive && actionGate.eligible)}
+                  class:linkable={Boolean(hasValue && column.link && interactive && !column.selection && actionGate.eligible)}
                   class:selected={isSelected(i, column)}
                   class:danger={isDanger(column, rawValue)}
                   class:negative={semanticPresentation === undefined && color === 'red'}
@@ -562,7 +563,7 @@
                   style={cellStyle(column)}
                   style:color={column.colorRule ? valueColorStyle(color) : undefined}
                 >
-                  {#if column.selection && interactive && actionGate.eligible}
+                  {#if hasValue && column.selection && interactive && actionGate.eligible}
                     <button
                       type="button"
                       class="selectable-cell"
@@ -584,7 +585,7 @@
                         {@render supplementaryFields()}
                       </span>
                     </button>
-                  {:else if column.link && interactive && !column.selection && actionGate.eligible}
+                  {:else if hasValue && column.link && interactive && !column.selection && actionGate.eligible}
                     <a
                       href={actionGate.enabled?linkHref?.(row.main, column):undefined}
                       aria-disabled={!actionGate.enabled}

@@ -68,6 +68,11 @@ pages/
 - 指标材料：[合成说明](../tools/fixtures/local-authoring-data/metrics.md)。用 local-authoring 的 analyze-data.mjs 扫描页面、检索说明并输出报告；“签约金额”有当期/累计两种口径，“达成率”缺目标口径与 DQE 标识，须报告候选/缺口，不直接写真实数据源。
 - 静态/仓外工具回归见 `tests/local-authoring-tools.test.ts`；浏览器直接读取本页面。脚本与运行时呈现、真实查询分层验收。
 
+### 表格缺省值点击边界
+
+- [table-missing-cell-actions.json](capabilities/table/table-missing-cell-actions.json)，入口 `/pages/table-missing-cell-actions`；无必填 URL 参数，`pnpm dev:playground` 启动，无需 DQE。
+- 四种表格变体的缺省文案只呈现普通文本，选择、导航与详情均不可点；真实 `0` 和 `—` 保留正常交互。[操作与验收](capabilities/table/README.md#表格缺省值不响应点击)。
+
 ### 表格单元格点击与筛选联动
 
 - 页面：[table-cell-selection.json](capabilities/table/table-cell-selection.json)，入口 `/pages/table-cell-selection`；无必填 URL 参数。启动 `pnpm sim:dqe` 与 `pnpm dev:playground`，使用 DQE Sim 合成数据。

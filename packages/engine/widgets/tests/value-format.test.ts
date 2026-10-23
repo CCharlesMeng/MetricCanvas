@@ -1,5 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { formatValue, valuePolarity } from '../src/shared/value-format';
+import { formatValue, hasDisplayValue, valuePolarity } from '../src/shared/value-format';
+
+describe('缺省文案判定', () => {
+  it.each([null, undefined, NaN, Infinity, -Infinity])('缺失值 %s 使用缺省文案', value => {
+    expect(hasDisplayValue(value)).toBe(false);
+    expect(formatValue(value, 'number', '暂无')).toBe('暂无');
+  });
+
+  it.each([0, false, '', '—', '暂无'])('真实值 %s 不因文案相同而被禁用', value => {
+    expect(hasDisplayValue(value)).toBe(true);
+    expect(formatValue(value, 'text', '暂无')).toBe(String(value));
+  });
+});
 
 describe('formatValue', () => {
   it('无格式时保持存量直观输出,空值显示占位符', () => {

@@ -5,6 +5,12 @@ export type ValuePolarity = 'positive' | 'negative' | 'neutral';
 type SignedNumberFormat = Extract<ValueFormatPreset, `number${string}-signed`>;
 
 const DEFAULT_NULL_TEXT = '—';
+
+/** 是否呈现真实值；0、false 和恰好等于缺省文案的文本均有效。 */
+export function hasDisplayValue(value: FieldValue | undefined): value is NonNullable<FieldValue> {
+  return value != null && (typeof value !== 'number' || Number.isFinite(value));
+}
+
 /**
  * 将数据快照中的原始值翻译为展示文本。
  * 百分比值沿用数据服务约定:4.24 表示 4.24%,不在组件侧乘 100。
@@ -14,7 +20,7 @@ export function formatValue(
   format?: ValueFormatPreset,
   missingText = DEFAULT_NULL_TEXT
 ): string {
-  if (value == null || (typeof value === 'number' && !Number.isFinite(value))) return missingText;
+  if (!hasDisplayValue(value)) return missingText;
   if (!format || format === 'text') return String(value);
   if (format === 'period') return formatPeriod(String(value));
   if (format === 'date') return formatDate(value);
